@@ -118,8 +118,8 @@ CpuPtr CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
              "Host '%s' declared several times in the platform file",
              name);
   xbt_assert(xbt_dynar_getfirst_as(power_peak, double) > 0.0,
-      "Power has to be >0.0");
-  xbt_assert(core > 0, "Invalid number of cores %d", core);
+      "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
+  xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
 
   cpu = new CpuCas01(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
   xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);

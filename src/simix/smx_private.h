@@ -55,7 +55,7 @@ typedef struct s_smx_global {
 #endif
 } s_smx_global_t, *smx_global_t;
 
-extern smx_global_t simix_global;
+XBT_PUBLIC_DATA(smx_global_t) simix_global;
 extern unsigned long simix_process_maxpid;
 
 extern xbt_dict_t watched_hosts_lib;

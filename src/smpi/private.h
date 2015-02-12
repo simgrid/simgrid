@@ -180,6 +180,8 @@ smx_rdv_t smpi_process_mailbox(void);
 smx_rdv_t smpi_process_remote_mailbox(int index);
 smx_rdv_t smpi_process_mailbox_small(void);
 smx_rdv_t smpi_process_remote_mailbox_small(int index);
+xbt_mutex_t smpi_process_mailboxes_mutex(void);
+xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index);
 xbt_os_timer_t smpi_process_timer(void);
 void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
@@ -398,6 +400,11 @@ void smpi_mpi_win_set_name(MPI_Win win, char* name);
 
 int smpi_mpi_win_fence( int assert,  MPI_Win win);
 
+int smpi_mpi_win_post(MPI_Group group, int assert, MPI_Win win);
+int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win);
+int smpi_mpi_win_complete(MPI_Win win);
+int smpi_mpi_win_wait(MPI_Win win);
+
 int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win);
 int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
@@ -558,6 +565,10 @@ void mpi_win_free_( int* win, int* ierr);
 void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int *win, int* ierr);
 void mpi_win_set_name_ (int*  win, char * name, int* ierr, int size);
 void mpi_win_get_name_ (int*  win, char * name, int* len, int* ierr);
+void mpi_win_post_(int* group, int assert, int* win, int* ierr);
+void mpi_win_start_(int* group, int assert, int* win, int* ierr);
+void mpi_win_complete_(int* win, int* ierr);
+void mpi_win_wait_(int* win, int* ierr);
 void mpi_info_create_( int *info, int* ierr);
 void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int keylen, unsigned int valuelen);
 void mpi_info_free_(int* info, int* ierr);

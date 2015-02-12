@@ -20,7 +20,18 @@
 	       <prop id="name" value="AS2"/>
 	   </AS>
    </AS>
-   
+
+   <cluster id="acme"
+            prefix="node-"    suffix=".acme.org"
+            radical="0-4"     power="1Gf" 
+            bw="125MBps"      lat="50us"
+            bb_bw="2.25GBps"  bb_lat="500us">
+	    
+      <prop id="bla" value="acme cluster"/>
+      <prop id="Hdd"  value="180"/>
+      <prop id="mem"  value="42"/>
+   </cluster>
+
    <AS  id="AS4"  routing="Full">
 	   <host id="host1" power="1Gf">
 	     <prop id="Hdd" value="180"/>

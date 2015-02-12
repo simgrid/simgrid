@@ -11,7 +11,7 @@
 
 SG_BEGIN_DECL()
 
-typedef struct s_mc_snapshot *mc_snapshot_t;
+typedef struct s_mc_snapshot s_mc_snapshot_t, *mc_snapshot_t;
 
 SG_END_DECL()
 

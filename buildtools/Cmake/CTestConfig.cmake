@@ -10,9 +10,7 @@ else()
   endif()
 endif()
 
-if(enable_memcheck)
-  set(CTEST_TIMEOUT "300") #TIMEOUT FOR EACH TEST
-endif()
+  set(DART_TESTING_TIMEOUT "300") #TIMEOUT FOR EACH TEST
 
 if(enable_compile_warnings AND enable_compile_optimizations)
   SET(BUILDNAME "FULL_FLAGS" CACHE TYPE INTERNAL FORCE)

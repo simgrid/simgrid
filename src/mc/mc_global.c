@@ -159,9 +159,9 @@ void MC_init_pid(pid_t pid, int socket)
 
     /* Main MC state: */
     MC_ignore_global_variable("mc_model_checker");
-    MC_ignore_global_variable("communications_pattern");
     MC_ignore_global_variable("initial_communications_pattern");
     MC_ignore_global_variable("incomplete_communications_pattern");
+    MC_ignore_global_variable("nb_comm_pattern");
 
     /* MC __thread variables: */
     MC_ignore_global_variable("mc_diff_info");
@@ -179,11 +179,11 @@ void MC_init_pid(pid_t pid, int socket)
 
     if (mc_mode == MC_MODE_STANDALONE || mc_mode == MC_MODE_CLIENT) {
       MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
+
       smx_process_t process;
       xbt_swag_foreach(process, simix_global->process_list) {
-        MC_ignore_heap(&(process->process_hookup),
-                       sizeof(process->process_hookup));
-                       }
+        MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
+      }
     }
   }
 
@@ -325,7 +325,8 @@ int MC_deadlock_check()
   return deadlock;
 }
 
-void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value, xbt_dynar_t pattern) {
+void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int value, xbt_dynar_t pattern, int backtracking) {
+
   switch(call_type) {
   case MC_CALL_TYPE_NONE:
     break;
@@ -334,6 +335,7 @@ void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value
     get_comm_pattern(pattern, req, call_type);
     break;
   case MC_CALL_TYPE_WAIT:
+  case MC_CALL_TYPE_WAITANY:
     {
       smx_synchro_t current_comm = NULL;
       if (call_type == MC_CALL_TYPE_WAIT)
@@ -342,11 +344,50 @@ void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value
         current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t);
       // First wait only must be considered:
       if (current_comm->comm.refcount == 1)
-        complete_comm_pattern(pattern, current_comm);
+        complete_comm_pattern(pattern, current_comm, backtracking);
       break;
     }
   default:
     xbt_die("Unexpected call type %i", (int)call_type);
+  }
+  
+}
+
+static void MC_restore_communications_pattern(mc_state_t state) {
+  mc_list_comm_pattern_t list_process_comm;
+  unsigned int cursor, cursor2;
+  xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm){
+    list_process_comm->index_comm = (int)xbt_dynar_get_as(state->index_comm, cursor, int);
+  }
+  mc_comm_pattern_t comm;
+  cursor = 0;
+  xbt_dynar_t initial_incomplete_process_comms, incomplete_process_comms;
+  for(int i=0; i<simix_process_maxpid; i++){
+    initial_incomplete_process_comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
+    xbt_dynar_reset(initial_incomplete_process_comms);
+    incomplete_process_comms = xbt_dynar_get_as(state->incomplete_comm_pattern, i, xbt_dynar_t);
+    xbt_dynar_foreach(incomplete_process_comms, cursor2, comm) {
+      mc_comm_pattern_t copy_comm = xbt_new0(s_mc_comm_pattern_t, 1);
+      copy_comm->index = comm->index;
+      copy_comm->type = comm->type;
+      copy_comm->comm = comm->comm;
+      copy_comm->rdv = strdup(comm->rdv);
+      copy_comm->data_size = -1;
+      copy_comm->data = NULL;
+      if(comm->type == SIMIX_COMM_SEND){
+        copy_comm->src_proc = comm->src_proc;
+        copy_comm->src_host = comm->src_host;
+        if(comm->data != NULL){
+          copy_comm->data_size = comm->data_size;
+          copy_comm->data = xbt_malloc0(comm->data_size);
+          memcpy(copy_comm->data, comm->data, comm->data_size);
+        }
+      }else{
+        copy_comm->dst_proc = comm->dst_proc;
+        copy_comm->dst_host = comm->dst_host;
+      }
+      xbt_dynar_push(initial_incomplete_process_comms, &copy_comm);
+    }
   }
 }
 
@@ -355,63 +396,47 @@ void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t req, int value
  *        a given model-checker stack.
  * \param stack The stack with the transitions to execute.
  * \param start Start index to begin the re-execution.
- *
- *  If start==-1, restore the initial state and replay the actions the
- *  the transitions in the stack.
- *
- *  Otherwise, we only replay a part of the transitions of the stacks
- *  without restoring the state: it is assumed that the current state
- *  match with the transitions to execute.
  */
-void MC_replay(xbt_fifo_t stack, int start)
+void MC_replay(xbt_fifo_t stack)
 {
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
-  int value, i = 1, count = 1, j;
+  int value, count = 1, j;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
   mc_state_t state;
-  smx_process_t process = NULL;
-
+  
   XBT_DEBUG("**** Begin Replay ****");
 
-  if (start == -1) {
-    /* Restore the initial state */
-    MC_restore_snapshot(initial_global_state->snapshot);
-    /* At the moment of taking the snapshot the raw heap was set, so restoring
-     * it will set it back again, we have to unset it to continue  */
-    MC_SET_STD_HEAP;
+  /* Intermediate backtracking */
+  if(_sg_mc_checkpoint > 0) {
+    start_item = xbt_fifo_get_first_item(stack);
+    state = (mc_state_t)xbt_fifo_get_item_content(start_item);
+    if(state->system_state){
+      MC_restore_snapshot(state->system_state);
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
+        MC_restore_communications_pattern(state);
+      MC_SET_STD_HEAP;
+      return;
+    }
   }
+
+
+  /* Restore the initial state */
+  MC_restore_snapshot(initial_global_state->snapshot);
+  /* At the moment of taking the snapshot the raw heap was set, so restoring
+   * it will set it back again, we have to unset it to continue  */
+  MC_SET_STD_HEAP;
 
   start_item = xbt_fifo_get_last_item(stack);
-  if (start != -1) {
-    while (i != start) {
-      start_item = xbt_fifo_get_prev_item(start_item);
-      i++;
-    }
-  }
-
+  
   MC_SET_MC_HEAP;
-
-  if (mc_reduce_kind == e_mc_reduce_dpor) {
-    xbt_dict_reset(first_enabled_state);
-    xbt_swag_foreach(process, simix_global->process_list) {
-      if (MC_process_is_enabled(process)) {
-        char *key = bprintf("%lu", process->pid);
-        char *data = bprintf("%d", count);
-        xbt_dict_set(first_enabled_state, key, data, NULL);
-        xbt_free(key);
-      }
-    }
-  }
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     for (j=0; j<simix_process_maxpid; j++) {
-      xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(communications_pattern, j, xbt_dynar_t));
-    }
-    for (j=0; j<simix_process_maxpid; j++) {
       xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, j, xbt_dynar_t));
+      ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, j, mc_list_comm_pattern_t))->index_comm = 0;
     }
   }
 
@@ -424,16 +449,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 
     state = (mc_state_t) xbt_fifo_get_item_content(item);
     saved_req = MC_state_get_executed_request(state, &value);
-
-    if (mc_reduce_kind == e_mc_reduce_dpor) {
-      MC_SET_MC_HEAP;
-      char *key = bprintf("%lu", saved_req->issuer->pid);
-      if(xbt_dict_get_or_null(first_enabled_state, key))
-         xbt_dict_remove(first_enabled_state, key);
-      xbt_free(key);
-      MC_SET_STD_HEAP;
-    }
-
+    
     if (saved_req) {
       /* because we got a copy of the executed request, we have to fetch the  
          real one, pointed by the request field of the issuer process */
@@ -447,38 +463,20 @@ void MC_replay(xbt_fifo_t stack, int start)
       }
 
       /* TODO : handle test and testany simcalls */
-      mc_call_type call = MC_CALL_TYPE_NONE;
-      if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
+      e_mc_call_type_t call = MC_CALL_TYPE_NONE;
+      if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         call = mc_get_call_type(req);
-      }
 
       SIMIX_simcall_handle(req, value);
 
-      if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-        MC_SET_MC_HEAP;
-        mc_update_comm_pattern(call, req, value, communications_pattern);
-        MC_SET_STD_HEAP;
-      }
-
+      MC_SET_MC_HEAP;
+      if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
+        handle_comm_pattern(call, req, value, NULL, 1);
+      MC_SET_STD_HEAP;
+      
       MC_wait_for_requests();
 
       count++;
-
-      if (mc_reduce_kind == e_mc_reduce_dpor) {
-        MC_SET_MC_HEAP;
-        /* Insert in dict all enabled processes */
-        xbt_swag_foreach(process, simix_global->process_list) {
-          if (MC_process_is_enabled(process) ) {
-            char *key = bprintf("%lu", process->pid);
-            if (xbt_dict_get_or_null(first_enabled_state, key) == NULL) {
-              char *data = bprintf("%d", count);
-              xbt_dict_set(first_enabled_state, key, data, NULL);
-            }
-            xbt_free(key);
-          }
-        }
-        MC_SET_STD_HEAP;
-      }
     }
 
     /* Update statistics */
@@ -491,15 +489,30 @@ void MC_replay(xbt_fifo_t stack, int start)
   mmalloc_set_current_heap(heap);
 }
 
-void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
+void MC_replay_liveness(xbt_fifo_t stack)
 {
 
   initial_global_state->raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   xbt_fifo_item_t item;
-  int depth = 1;
+  mc_pair_t pair = NULL;
+  mc_state_t state = NULL;
+  smx_simcall_t req = NULL, saved_req = NULL;
+  int value, depth = 1;
+  char *req_str;
 
   XBT_DEBUG("**** Begin Replay ****");
+
+  /* Intermediate backtracking */
+  if(_sg_mc_checkpoint > 0) {
+    item = xbt_fifo_get_first_item(stack);
+    pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+    if(pair->graph_state->system_state){
+      MC_restore_snapshot(pair->graph_state->system_state);
+      MC_SET_STD_HEAP;
+      return;
+    }
+  }
 
   /* Restore the initial state */
   MC_restore_snapshot(initial_global_state->snapshot);
@@ -511,26 +524,21 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
     /* Traverse the stack from the initial state and re-execute the transitions */
     for (item = xbt_fifo_get_last_item(stack);
-         all_stack ? depth <= xbt_fifo_size(stack) : item != xbt_fifo_get_first_item(stack);
+         item != xbt_fifo_get_first_item(stack);
          item = xbt_fifo_get_prev_item(item)) {
 
-      mc_pair_t pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+      pair = (mc_pair_t) xbt_fifo_get_item_content(item);
 
-      mc_state_t state = (mc_state_t) pair->graph_state;
-      smx_simcall_t req = NULL, saved_req = NULL;
-      int value;
-      char *req_str;
+      state = (mc_state_t) pair->graph_state;
 
-      if (pair->requests > 0) {
+      if (pair->exploration_started) {
 
         saved_req = MC_state_get_executed_request(state, &value);
-        //XBT_DEBUG("SavedReq->call %u", saved_req->call);
 
         if (saved_req != NULL) {
           /* because we got a copy of the executed request, we have to fetch the
              real one, pointed by the request field of the issuer process */
           req = &saved_req->issuer->simcall;
-          //XBT_DEBUG("Req->call %u", req->call);
 
           /* Debug information */
           if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
@@ -550,7 +558,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
       mc_stats->executed_transitions++;
 
       depth++;
-
+      
     }
 
   XBT_DEBUG("**** End Replay ****");
@@ -572,18 +580,12 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   MC_show_stack_safety(stack);
-
-  if (!_sg_mc_checkpoint) {
-
-    mc_state_t state;
-
-    MC_SET_MC_HEAP;
-    while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
-      MC_state_delete(state);
-    MC_SET_STD_HEAP;
-
-  }
-
+  
+  mc_state_t state;
+  
+  MC_SET_MC_HEAP;
+  while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
+    MC_state_delete(state, !state->in_visited_states ? 1 : 0);
   mmalloc_set_current_heap(heap);
 }
 
@@ -637,20 +639,17 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
   char *req_str = NULL;
 
   for (item = xbt_fifo_get_last_item(stack);
-       (item ? (pair = (mc_pair_t) (xbt_fifo_get_item_content(item)))
-        : (NULL)); item = xbt_fifo_get_prev_item(item)) {
+       (item ? (pair = (mc_pair_t) (xbt_fifo_get_item_content(item))) : (NULL));
+       item = xbt_fifo_get_prev_item(item)) {
     req = MC_state_get_executed_request(pair->graph_state, &value);
-    if (req) {
-      if (pair->requests > 0) {
-        req_str = MC_request_to_string(req, value);
-        XBT_INFO("%s", req_str);
-        xbt_free(req_str);
-      } else {
-        XBT_INFO("End of system requests but evolution in Büchi automaton");
-      }
+    if (req && req->call != SIMCALL_NONE) {
+      req_str = MC_request_to_string(req, value);
+      XBT_INFO("%s", req_str);
+      xbt_free(req_str);
     }
   }
 }
+
 
 void MC_dump_stack_liveness(xbt_fifo_t stack)
 {
@@ -679,11 +678,9 @@ void MC_print_statistics(mc_stats_t stats)
   }
   if (initial_global_state != NULL) {
     if (_sg_mc_comms_determinism)
-      XBT_INFO("Communication-deterministic : %s",
-               !initial_global_state->comm_deterministic ? "No" : "Yes");
+      XBT_INFO("Communication-deterministic : %s", !initial_global_state->comm_deterministic ? "No" : "Yes");
     if (_sg_mc_send_determinism)
-      XBT_INFO("Send-deterministic : %s",
-               !initial_global_state->send_deterministic ? "No" : "Yes");
+      XBT_INFO("Send-deterministic : %s", !initial_global_state->send_deterministic ? "No" : "Yes");
   }
   mmalloc_set_current_heap(heap);
 }

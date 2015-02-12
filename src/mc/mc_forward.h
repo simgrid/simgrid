@@ -8,9 +8,9 @@
 #define MC_FORWARD_H
 
 #include <mc/datatypes.h>
+#include "mc_interface.h"
 
 typedef struct s_mc_object_info s_mc_object_info_t, *mc_object_info_t;
-typedef struct s_mc_transition s_mc_transition_t, *mc_transition_t;
 typedef struct s_dw_type s_dw_type_t, *dw_type_t;
 typedef struct s_memory_map s_memory_map_t, *memory_map_t;
 typedef struct s_dw_variable s_dw_variable_t, *dw_variable_t;

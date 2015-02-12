@@ -1,9 +1,9 @@
 #! tesh
 
 $ java -classpath ${classpath:=.} surfCpuModel/TestCpuModel ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/surfCpuModel/surfCpuModelDeployment.xml --cfg=workstation/model:compound
-> [0.000000] [jmsg/INFO] Initialize Cpu Constant Model
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Initialize Cpu Constant Model
 > [0.000000] [jmsg/INFO] New Cpu(Tremblay, 9.8095E7, 1.0)
 > [0.000000] [jmsg/INFO] New Cpu(Jupiter, 7.6296E7, 1.0)
 > [0.000000] [jmsg/INFO] New Cpu(Fafard, 7.6296E7, 1.0)

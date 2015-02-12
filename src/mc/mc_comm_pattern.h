@@ -27,22 +27,36 @@ typedef struct s_mc_comm_pattern{
   char *rdv;
   ssize_t data_size;
   void *data;
+  int index;
 } s_mc_comm_pattern_t, *mc_comm_pattern_t;
 
+typedef struct s_mc_list_comm_pattern{
+  unsigned int index_comm;
+  xbt_dynar_t list;
+}s_mc_list_comm_pattern_t, *mc_list_comm_pattern_t;
+
 extern xbt_dynar_t initial_communications_pattern;
-extern xbt_dynar_t communications_pattern;
 extern xbt_dynar_t incomplete_communications_pattern;
 
-// Can we use the SIMIX syscall for this?
-typedef enum mc_call_type {
+typedef enum {
   MC_CALL_TYPE_NONE,
   MC_CALL_TYPE_SEND,
   MC_CALL_TYPE_RECV,
   MC_CALL_TYPE_WAIT,
   MC_CALL_TYPE_WAITANY,
-} mc_call_type;
+} e_mc_call_type_t;
 
-static inline mc_call_type mc_get_call_type(smx_simcall_t req)
+typedef enum {
+  NONE_DIFF,
+  TYPE_DIFF,
+  RDV_DIFF,
+  SRC_PROC_DIFF,
+  DST_PROC_DIFF,
+  DATA_SIZE_DIFF,
+  DATA_DIFF,
+} e_mc_comm_pattern_difference_t;
+
+static inline e_mc_call_type_t mc_get_call_type(smx_simcall_t req)
 {
   switch(req->call) {
   case SIMCALL_COMM_ISEND:
@@ -58,9 +72,11 @@ static inline mc_call_type mc_get_call_type(smx_simcall_t req)
   }
 }
 
-void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, mc_call_type call_type);
-void mc_update_comm_pattern(mc_call_type call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern);
-void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm);
+void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, e_mc_call_type_t call_type);
+void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern, int backtracking);
+void comm_pattern_free_voidp(void *p);
+void list_comm_pattern_free_voidp(void *p);
+void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, int backtracking);
 void MC_pre_modelcheck_comm_determinism(void);
 void MC_modelcheck_comm_determinism(void);
 

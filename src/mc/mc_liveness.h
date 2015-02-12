@@ -26,6 +26,9 @@ typedef struct s_mc_pair{
   xbt_automaton_state_t automaton_state;
   xbt_dynar_t atomic_propositions;
   int requests;
+  int depth;
+  int exploration_started;
+  int visited_pair_removed;
 } s_mc_pair_t, *mc_pair_t;
 
 typedef struct s_mc_visited_pair{
@@ -44,7 +47,7 @@ typedef struct s_mc_visited_pair{
 mc_pair_t MC_pair_new(void);
 void MC_pair_delete(mc_pair_t);
 void mc_pair_free_voidp(void *p);
-mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions);
+mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state);
 void MC_visited_pair_delete(mc_visited_pair_t p);
 
 void MC_pre_modelcheck_liveness(void);
@@ -53,7 +56,7 @@ void MC_show_stack_liveness(xbt_fifo_t stack);
 void MC_dump_stack_liveness(xbt_fifo_t stack);
 
 extern xbt_dynar_t visited_pairs;
-int is_visited_pair(mc_visited_pair_t pair, int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions);
+int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair);
 
 SG_END_DECL()
 

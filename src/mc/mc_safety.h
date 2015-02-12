@@ -12,6 +12,7 @@
 #include <simgrid_config.h>
 #include <xbt/dict.h>
 #include "mc_interface.h"
+#include "mc_state.h"
 
 SG_BEGIN_DECL()
 
@@ -22,7 +23,6 @@ typedef enum {
 } e_mc_reduce_t;
 
 extern e_mc_reduce_t mc_reduce_kind;
-extern xbt_dict_t first_enabled_state;
 
 void MC_pre_modelcheck_safety(void);
 void MC_modelcheck_safety(void);
@@ -36,7 +36,7 @@ typedef struct s_mc_visited_state{
 }s_mc_visited_state_t, *mc_visited_state_t;
 
 extern xbt_dynar_t visited_states;
-mc_visited_state_t is_visited_state(void);
+mc_visited_state_t is_visited_state(mc_state_t graph_state);
 void visited_state_free(mc_visited_state_t state);
 void visited_state_free_voidp(void *s);
 

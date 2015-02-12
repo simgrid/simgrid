@@ -46,10 +46,13 @@ typedef struct mc_state {
                                        multi-request like waitany ) */
   mc_snapshot_t system_state;      /* Snapshot of system state */
   int num;
+  int in_visited_states;
+  xbt_dynar_t incomplete_comm_pattern; // comm determinism verification
+  xbt_dynar_t index_comm; // comm determinism verification
 } s_mc_state_t, *mc_state_t;
 
 mc_state_t MC_state_new(void);
-void MC_state_delete(mc_state_t state);
+void MC_state_delete(mc_state_t state, int free_snapshot);
 void MC_state_interleave_process(mc_state_t state, smx_process_t process);
 unsigned int MC_state_interleave_size(mc_state_t state);
 int MC_state_process_is_done(mc_state_t state, smx_process_t process);

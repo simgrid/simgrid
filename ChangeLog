@@ -3,6 +3,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
  cMSG:
  * Interface improvement:
    - Rename MSG_host_is_avail(h) to MSG_host_is_on(h)
+   - Massive cleanups in the functions related to the energy
  jMSG:
  * Interface improvement:
    - Rename Host.isAvail() to Host.isOn()
@@ -51,11 +52,16 @@ SimGrid (3.12) NOT RELEASED; urgency=low
   * Bug fixes 
    - "Full" network optimization flag was broken since Surf++
    - Better handling of precision flags in maxmin
-   - Fix bug causing sometimes "Impossible" errors 
+   - Fix bug causing sometimes "Impossible" errors
+   - Properly pass cluster properties to included hosts
+  * Improvement of the Energy plugin.
+    - Always update the consumption before returning that value
+    - New property: watt_off to denote the disipation when the host is off
  XBT
   * New functions
    - Add a xbt_heap_update function, to avoid costly xbt_heap_remove+xbt_heap_insert use 
    - Add a xbt wrapper for simcall_mutex_trylock (asked in [#17878])
+   - Add two new log appenders : rollfile and splitfile. Patch by Fabien Chaix.
 
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>

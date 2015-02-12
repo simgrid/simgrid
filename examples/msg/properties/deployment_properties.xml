@@ -9,4 +9,6 @@
   </process>
   
   <process host="host2" function="carole" />
+  
+  <process host="host2" function="david" />
 </platform>

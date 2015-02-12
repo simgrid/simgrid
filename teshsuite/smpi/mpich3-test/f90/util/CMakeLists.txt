@@ -9,7 +9,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   #F90 version of the mtest library
   add_library(mtest_f90 STATIC ../util/mtestf90.f90)

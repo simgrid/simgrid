@@ -31,6 +31,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 int alice(int argc, char *argv[]);
 int bob(int argc, char *argv[]);
 int carole(int argc, char *argv[]);
+int david(int argc, char *argv[]);
 msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 
@@ -44,7 +45,7 @@ static void test_host(const char*hostname)
   const char *value;
   char exist[] = "Hdd";
 
-  XBT_INFO("== Print the properties of the host");
+  XBT_INFO("== Print the properties of the host '%s'", hostname);
   xbt_dict_foreach(props, cursor, key, data)
       XBT_INFO("  Host property: '%s' -> '%s'", key, data);
 
@@ -85,6 +86,11 @@ int carole(int argc, char *argv[]) {/* Dump what we have on a remote host */
   test_host("host1");
   return 0;
 }
+int david(int argc, char *argv[]) {/* Dump what we have on a remote host */
+  MSG_process_sleep(2); // Wait for alice and carole to be done with its experiment
+  test_host("node-0.acme.org");
+  return 0;
+}
 
 int bob(int argc, char *argv[])
 {
@@ -120,6 +126,7 @@ msg_error_t test_all(const char *platform_file,
   MSG_function_register("alice", alice);
   MSG_function_register("bob", bob);
   MSG_function_register("carole", carole);
+  MSG_function_register("david", david);
 
   MSG_create_environment(platform_file);
 

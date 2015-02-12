@@ -110,8 +110,8 @@ add_custom_command(
   COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} "NATIVE"
   COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
   COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
-  COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
-  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} doc
+  COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
+  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} doc/javadoc
   )
 add_custom_target(simgrid-java_jar ALL DEPENDS ${SIMGRID_JAR}_finalized)
 

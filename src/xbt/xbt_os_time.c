@@ -18,7 +18,7 @@
 #endif
 
 //Freebsd doesn't provide this clock_gettime flag yet, because it was added too recently (after 1993)
-#ifdef __FreeBSD__
+#if defined (CLOCK_PROF) && ! defined (CLOCK_PROCESS_CPUTIME_ID)
 #define CLOCK_PROCESS_CPUTIME_ID CLOCK_PROF
 #endif
 

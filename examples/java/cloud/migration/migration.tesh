@@ -22,12 +22,33 @@ $ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../platforms
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO]      - Launch migration from host 0 to host 1
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] Start migration of VM vm0 to host1
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:8.10E+11
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 0.000000] [msg_vm/INFO] Stage 1: Gonna send 2147483648
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 18.598067] [msg_vm/INFO] Stage 2, gonna send 1009084906
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 27.337835] [msg_vm/INFO] Stage 2, gonna send 474198119
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 31.445594] [msg_vm/INFO] Stage 2, gonna send 222876798
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 33.376962] [msg_vm/INFO] Stage 2, gonna send 104791237
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.285733] [msg_vm/INFO] Stage 2, gonna send 49307685
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.714029] [msg_vm/INFO] Stage 2, gonna send 23238243
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 34.916568] [msg_vm/INFO] Stage 2, gonna send 10989284
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.013034] [msg_vm/INFO] Stage 2, gonna send 5234001
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.059660] [msg_vm/INFO] Stage 3: Gonna send 2529831.000000
+> [host0:__pr_mig_tx:vm0(host0-host1):(16) 35.082869] [msg_vm/INFO] mig: tx_done
 > [35.082869] [surf_vm_workstation/INFO] migrate VM(vm0): set bound (7285500000.000000) at host1
 > [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO] End of migration of VM vm0 to node host1
 > [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO]      - End of Migration from host 0 to host 1 (duration:35.0841702956701)
 > [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO]      - Launch migration from host 1 to host 0
 > [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO] Start migration of VM vm0 to host0
 > [host0:cloud/migration/Test:(1) 35.084170] [jmsg/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:6.22E+11
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 35.084170] [msg_vm/INFO] Stage 1: Gonna send 2147483648
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 53.682237] [msg_vm/INFO] Stage 2, gonna send 917349915
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 61.627599] [msg_vm/INFO] Stage 2, gonna send 391905106
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 65.022717] [msg_vm/INFO] Stage 2, gonna send 167464266
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 66.474224] [msg_vm/INFO] Stage 2, gonna send 71595605
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 67.095529] [msg_vm/INFO] Stage 2, gonna send 30645837
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 67.362216] [msg_vm/INFO] Stage 2, gonna send 13154371
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 67.477431] [msg_vm/INFO] Stage 2, gonna send 5682988
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 67.527946] [msg_vm/INFO] Stage 3: Gonna send 2491628.000000
+> [host1:__pr_mig_tx:vm0(host1-host0):(18) 67.550824] [msg_vm/INFO] mig: tx_done
 > [67.550824] [surf_vm_workstation/INFO] migrate VM(vm0): set bound (7285500000.000000) at host0
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO] End of migration of VM vm0 to node host0
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO]      - End of Migration from host 1 to host 0 (duration:32.46684874546391)
@@ -38,12 +59,33 @@ $ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../platforms
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO]      - Launch migration from host 0 to host 1
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO] Start migration of VM vm0 to host1
 > [host0:cloud/migration/Test:(1) 67.551019] [jmsg/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:4.64E+11
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 67.551019] [msg_vm/INFO] Stage 1: Gonna send 2147483648
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 86.149086] [msg_vm/INFO] Stage 2, gonna send 1009084906
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 94.888854] [msg_vm/INFO] Stage 2, gonna send 474198119
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 98.996613] [msg_vm/INFO] Stage 2, gonna send 222876798
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 100.927981] [msg_vm/INFO] Stage 2, gonna send 104791237
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 101.836752] [msg_vm/INFO] Stage 2, gonna send 49307685
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 102.265048] [msg_vm/INFO] Stage 2, gonna send 23238243
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 102.467587] [msg_vm/INFO] Stage 2, gonna send 10989284
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 102.564053] [msg_vm/INFO] Stage 2, gonna send 5234001
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 102.610680] [msg_vm/INFO] Stage 3: Gonna send 2529831.000000
+> [host0:__pr_mig_tx:vm0(host0-host1):(20) 102.633888] [msg_vm/INFO] mig: tx_done
 > [102.633888] [surf_vm_workstation/INFO] migrate VM(vm0): set bound (6476000000.000000) at host1
 > [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO] End of migration of VM vm0 to node host1
 > [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO]      - End of Migration from host 0 to host 1 (duration:35.08417029567006)
 > [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO]      - Launch migration from host 1 to host 0
 > [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO] Start migration of VM vm0 to host0
 > [host0:cloud/migration/Test:(1) 102.635189] [jmsg/INFO]     currentLoad:80/ramSize:2048/dpIntensity:70/remaining:2.77E+11
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 102.635189] [msg_vm/INFO] Stage 1: Gonna send 2147483648
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 121.233256] [msg_vm/INFO] Stage 2, gonna send 917349915
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 129.178618] [msg_vm/INFO] Stage 2, gonna send 391905106
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 132.573736] [msg_vm/INFO] Stage 2, gonna send 167464266
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 134.025243] [msg_vm/INFO] Stage 2, gonna send 71595605
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 134.646548] [msg_vm/INFO] Stage 2, gonna send 30645837
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 134.913235] [msg_vm/INFO] Stage 2, gonna send 13154371
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 135.028450] [msg_vm/INFO] Stage 2, gonna send 5682988
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 135.078965] [msg_vm/INFO] Stage 3: Gonna send 2491628.000000
+> [host1:__pr_mig_tx:vm0(host1-host0):(22) 135.101843] [msg_vm/INFO] mig: tx_done
 > [135.101843] [surf_vm_workstation/INFO] migrate VM(vm0): set bound (6476000000.000000) at host0
 > [host0:cloud/migration/Test:(1) 135.102038] [jmsg/INFO] End of migration of VM vm0 to node host0
 > [host0:cloud/migration/Test:(1) 135.102038] [jmsg/INFO]      - End of Migration from host 1 to host 0 (duration:32.46684874546395)

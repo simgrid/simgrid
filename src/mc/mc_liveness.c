@@ -21,7 +21,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
 /********* Global variables *********/
 
 xbt_dynar_t acceptance_pairs;
-xbt_dynar_t successors;
 xbt_parmap_t parmap;
 
 /********* Static functions *********/
@@ -39,22 +38,16 @@ static xbt_dynar_t get_atomic_propositions_values()
   return values;
 }
 
-
-static mc_visited_pair_t is_reached_acceptance_pair(int pair_num,
-                                                    xbt_automaton_state_t
-                                                    automaton_state,
-                                                    xbt_dynar_t
-                                                    atomic_propositions)
-{
+static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair) {
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
-  mc_visited_pair_t pair = NULL;
-  pair = MC_visited_pair_new(pair_num, automaton_state, atomic_propositions);
-  pair->acceptance_pair = 1;
+  mc_visited_pair_t new_pair = NULL;
+  new_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
+  new_pair->acceptance_pair = 1;
 
   if (xbt_dynar_is_empty(acceptance_pairs)) {
 
-    xbt_dynar_push(acceptance_pairs, &pair);
+    xbt_dynar_push(acceptance_pairs, &new_pair);
 
   } else {
 
@@ -63,7 +56,7 @@ static mc_visited_pair_t is_reached_acceptance_pair(int pair_num,
     mc_visited_pair_t pair_test;
     int cursor;
 
-    index = get_search_interval(acceptance_pairs, pair, &min, &max);
+    index = get_search_interval(acceptance_pairs, new_pair, &min, &max);
 
     if (min != -1 && max != -1) {       // Acceptance pair with same number of processes and same heap bytes used exists
 
@@ -76,49 +69,40 @@ static mc_visited_pair_t is_reached_acceptance_pair(int pair_num,
          } */
 
       cursor = min;
-      while (cursor <= max) {
-        pair_test =
-            (mc_visited_pair_t) xbt_dynar_get_as(acceptance_pairs, cursor,
-                                                 mc_visited_pair_t);
-        if (xbt_automaton_state_compare
-            (pair_test->automaton_state, pair->automaton_state) == 0) {
-          if (xbt_automaton_propositional_symbols_compare_value
-              (pair_test->atomic_propositions,
-               pair->atomic_propositions) == 0) {
-            if (snapshot_compare(pair_test, pair) == 0) {
-              XBT_INFO("Pair %d already reached (equal to pair %d) !",
-                       pair->num, pair_test->num);
-
-              xbt_fifo_shift(mc_stack);
-              if (dot_output != NULL)
-                fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-                        initial_global_state->prev_pair, pair_test->num,
-                        initial_global_state->prev_req);
-              mmalloc_set_current_heap(heap);
-              return NULL;
+      if(pair->search_cycle == 1){
+        while (cursor <= max) {
+          pair_test = (mc_visited_pair_t) xbt_dynar_get_as(acceptance_pairs, cursor, mc_visited_pair_t);
+          if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) == 0) {
+            if (xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, new_pair->atomic_propositions) == 0) {
+              if (snapshot_compare(pair_test, new_pair) == 0) {
+                XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
+                xbt_fifo_shift(mc_stack);
+                if (dot_output != NULL)
+                  fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, pair_test->num, initial_global_state->prev_req);
+                mmalloc_set_current_heap(heap);
+                return NULL;
+              }
             }
           }
+          cursor++;
         }
-        cursor++;
       }
-      xbt_dynar_insert_at(acceptance_pairs, min, &pair);
+      xbt_dynar_insert_at(acceptance_pairs, min, &new_pair);
     } else {
-      pair_test =
-          (mc_visited_pair_t) xbt_dynar_get_as(acceptance_pairs, index,
-                                               mc_visited_pair_t);
-      if (pair_test->nb_processes < pair->nb_processes) {
-        xbt_dynar_insert_at(acceptance_pairs, index + 1, &pair);
+      pair_test = (mc_visited_pair_t) xbt_dynar_get_as(acceptance_pairs, index, mc_visited_pair_t);
+      if (pair_test->nb_processes < new_pair->nb_processes) {
+        xbt_dynar_insert_at(acceptance_pairs, index + 1, &new_pair);
       } else {
-        if (pair_test->heap_bytes_used < pair->heap_bytes_used)
-          xbt_dynar_insert_at(acceptance_pairs, index + 1, &pair);
+        if (pair_test->heap_bytes_used < new_pair->heap_bytes_used)
+          xbt_dynar_insert_at(acceptance_pairs, index + 1, &new_pair);
         else
-          xbt_dynar_insert_at(acceptance_pairs, index, &pair);
+          xbt_dynar_insert_at(acceptance_pairs, index, &new_pair);
       }
     }
 
   }
   mmalloc_set_current_heap(heap);
-  return pair;
+  return new_pair;
 }
 
 static void remove_acceptance_pair(int pair_num)
@@ -127,21 +111,23 @@ static void remove_acceptance_pair(int pair_num)
 
   unsigned int cursor = 0;
   mc_visited_pair_t pair_test = NULL;
+  int pair_found = 0;
 
   xbt_dynar_foreach(acceptance_pairs, cursor, pair_test) {
     if (pair_test->num == pair_num) {
+       pair_found = 1;
       break;
     }
   }
 
-  xbt_dynar_remove_at(acceptance_pairs, cursor, &pair_test);
+  if(pair_found == 1) {
+    xbt_dynar_remove_at(acceptance_pairs, cursor, &pair_test);
 
-  pair_test->acceptance_removed = 1;
+    pair_test->acceptance_removed = 1;
 
-  if (_sg_mc_visited == 0) {
-    MC_visited_pair_delete(pair_test);
-  } else if (pair_test->visited_removed == 1) {
-    MC_visited_pair_delete(pair_test);
+    if (_sg_mc_visited == 0 || pair_test->visited_removed == 1) 
+      MC_visited_pair_delete(pair_test);
+
   }
 
   mmalloc_set_current_heap(heap);
@@ -154,36 +140,25 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
 
   switch (l->type) {
   case 0:{
-      int left_res =
-          MC_automaton_evaluate_label(l->u.or_and.left_exp,
-                                      atomic_propositions_values);
-      int right_res =
-          MC_automaton_evaluate_label(l->u.or_and.right_exp,
-                                      atomic_propositions_values);
+      int left_res = MC_automaton_evaluate_label(l->u.or_and.left_exp, atomic_propositions_values);
+      int right_res = MC_automaton_evaluate_label(l->u.or_and.right_exp, atomic_propositions_values);
       return (left_res || right_res);
     }
   case 1:{
-      int left_res =
-          MC_automaton_evaluate_label(l->u.or_and.left_exp,
-                                      atomic_propositions_values);
-      int right_res =
-          MC_automaton_evaluate_label(l->u.or_and.right_exp,
-                                      atomic_propositions_values);
+      int left_res = MC_automaton_evaluate_label(l->u.or_and.left_exp, atomic_propositions_values);
+      int right_res = MC_automaton_evaluate_label(l->u.or_and.right_exp, atomic_propositions_values);
       return (left_res && right_res);
     }
   case 2:{
-      int res =
-          MC_automaton_evaluate_label(l->u.exp_not, atomic_propositions_values);
+      int res = MC_automaton_evaluate_label(l->u.exp_not, atomic_propositions_values);
       return (!res);
     }
   case 3:{
       unsigned int cursor = 0;
       xbt_automaton_propositional_symbol_t p = NULL;
-      xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor,
-                        p) {
+      xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, p) {
         if (strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
-          return (int) xbt_dynar_get_as(atomic_propositions_values, cursor,
-                                        int);
+          return (int) xbt_dynar_get_as(atomic_propositions_values, cursor, int);
       }
       return -1;
     }
@@ -195,8 +170,7 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
   }
 }
 
-void MC_pre_modelcheck_liveness(void)
-{
+void MC_pre_modelcheck_liveness(void) {
 
   initial_global_state->raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
@@ -208,26 +182,23 @@ void MC_pre_modelcheck_liveness(void)
   MC_SET_MC_HEAP;
 
   acceptance_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
-  visited_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
-  successors = xbt_dynar_new(sizeof(mc_pair_t), NULL);
+  if(_sg_mc_visited > 0)
+    visited_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
 
   initial_global_state->snapshot = MC_take_snapshot(0);
   initial_global_state->prev_pair = 0;
 
-  MC_SET_STD_HEAP;
-
   unsigned int cursor = 0;
   xbt_automaton_state_t automaton_state;
-
+  
   xbt_dynar_foreach(_mc_property_automaton->states, cursor, automaton_state) {
     if (automaton_state->type == -1) {  /* Initial automaton state */
-
-      MC_SET_MC_HEAP;
 
       initial_pair = MC_pair_new();
       initial_pair->automaton_state = automaton_state;
       initial_pair->graph_state = MC_state_new();
       initial_pair->atomic_propositions = get_atomic_propositions_values();
+      initial_pair->depth = 1;
 
       /* Get enabled processes and insert them in the interleave set of the graph_state */
       xbt_swag_foreach(process, simix_global->process_list) {
@@ -236,173 +207,134 @@ void MC_pre_modelcheck_liveness(void)
         }
       }
 
-      initial_pair->requests =
-          MC_state_interleave_size(initial_pair->graph_state);
+      initial_pair->requests = MC_state_interleave_size(initial_pair->graph_state);
       initial_pair->search_cycle = 0;
 
       xbt_fifo_unshift(mc_stack, initial_pair);
-      
-      MC_SET_STD_HEAP;
-
-      MC_modelcheck_liveness();
-
-      if (cursor != 0) {
-        MC_restore_snapshot(initial_global_state->snapshot);
-        MC_SET_STD_HEAP;
-      }
     }
   }
 
+  MC_SET_STD_HEAP;
+  
+  MC_modelcheck_liveness();
+
   if (initial_global_state->raw_mem_set)
     MC_SET_MC_HEAP;
-  else
-    MC_SET_STD_HEAP;
 }
-
 
 void MC_modelcheck_liveness()
 {
-  smx_process_t process;
+  smx_process_t process = NULL;
   mc_pair_t current_pair = NULL;
-
-  if (xbt_fifo_size(mc_stack) == 0)
-    return;
-
-  /* Get current pair */
-  current_pair =
-      (mc_pair_t) xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
-
-  /* Update current state in buchi automaton */
-  _mc_property_automaton->current_state = current_pair->automaton_state;
-
-  XBT_DEBUG
-      ("********************* ( Depth = %d, search_cycle = %d, interleave size %d, pair_num %d)",
-       xbt_fifo_size(mc_stack), current_pair->search_cycle,
-       MC_state_interleave_size(current_pair->graph_state), current_pair->num);
-
-  mc_stats->visited_pairs++;
-
-  int value;
+  int value, res, visited_num = -1;
   smx_simcall_t req = NULL;
-
-  xbt_automaton_transition_t transition_succ;
-  unsigned int cursor = 0;
-  int res;
-  int visited_num;
-
+  xbt_automaton_transition_t transition_succ = NULL;
+  int cursor = 0;
   mc_pair_t next_pair = NULL;
   xbt_dynar_t prop_values = NULL;
   mc_visited_pair_t reached_pair = NULL;
-  int counter_example_depth = 0;
+  
+  while(xbt_fifo_size(mc_stack) > 0){
 
-  if (xbt_fifo_size(mc_stack) < _sg_mc_max_depth) {
+    /* Get current pair */
+    current_pair = (mc_pair_t) xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+
+    /* Update current state in buchi automaton */
+    _mc_property_automaton->current_state = current_pair->automaton_state;
+
+    XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d, interleave size %d, pair_num %d)",
+       current_pair->depth, current_pair->search_cycle,
+       MC_state_interleave_size(current_pair->graph_state), current_pair->num);
 
     if (current_pair->requests > 0) {
 
-      if (current_pair->search_cycle) {
-
-        if ((current_pair->automaton_state->type == 1)
-            || (current_pair->automaton_state->type == 2)) {
-          if ((reached_pair =
-               is_reached_acceptance_pair(current_pair->num,
-                                          current_pair->automaton_state,
-                                          current_pair->atomic_propositions)) ==
-              NULL) {
-
-            counter_example_depth = xbt_fifo_size(mc_stack);
-            XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
-            XBT_INFO("|             ACCEPTANCE CYCLE            |");
-            XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
-            XBT_INFO("Counter-example that violates formula :");
-            MC_show_stack_liveness(mc_stack);
-            MC_dump_stack_liveness(mc_stack);
-            MC_print_statistics(mc_stats);
-            XBT_INFO("Counter-example depth : %d", counter_example_depth);
-            xbt_abort();
-
-          }
+      if (current_pair->automaton_state->type == 1 && current_pair->exploration_started == 0) {
+        /* If new acceptance pair, return new pair */
+        if ((reached_pair = is_reached_acceptance_pair(current_pair)) == NULL) {
+          int counter_example_depth = current_pair->depth;
+          XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+          XBT_INFO("|             ACCEPTANCE CYCLE            |");
+          XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+          XBT_INFO("Counter-example that violates formula :");
+          MC_show_stack_liveness(mc_stack);
+          MC_dump_stack_liveness(mc_stack);
+          MC_print_statistics(mc_stats);
+          XBT_INFO("Counter-example depth : %d", counter_example_depth);
+          xbt_abort();
         }
       }
 
-      if ((visited_num =
-           is_visited_pair(reached_pair, current_pair->num,
-                           current_pair->automaton_state,
-                           current_pair->atomic_propositions)) != -1) {
+      /* Pair already visited ? stop the exploration on the current path */
+      if ((current_pair->exploration_started == 0) && (visited_num = is_visited_pair(reached_pair, current_pair)) != -1) {
 
+        if (dot_output != NULL){
+          MC_SET_MC_HEAP;
+          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, visited_num, initial_global_state->prev_req);
+          fflush(dot_output);
+          MC_SET_STD_HEAP;
+        }
+
+        XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
         MC_SET_MC_HEAP;
-        if (dot_output != NULL)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-                  initial_global_state->prev_pair, visited_num,
-                  initial_global_state->prev_req);
+        current_pair->requests = 0;
         MC_SET_STD_HEAP;
+        goto backtracking;
+        
+      }else{
 
-      } else {
+        req = MC_state_get_request(current_pair->graph_state, &value);
 
-        while ((req =
-                MC_state_get_request(current_pair->graph_state,
-                                     &value)) != NULL) {
+         if (dot_output != NULL) {
+           MC_SET_MC_HEAP;
+           if (initial_global_state->prev_pair != 0 && initial_global_state->prev_pair != current_pair->num) {
+             fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, current_pair->num, initial_global_state->prev_req);
+             xbt_free(initial_global_state->prev_req);
+           }
+           initial_global_state->prev_pair = current_pair->num;
+           initial_global_state->prev_req = MC_request_get_dot_output(req, value);
+           if (current_pair->search_cycle)
+             fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
+           fflush(dot_output);
+           MC_SET_STD_HEAP;
+         }
 
-          MC_SET_MC_HEAP;
-          if (dot_output != NULL) {
-            if (initial_global_state->prev_pair != 0
-                && initial_global_state->prev_pair != current_pair->num) {
-              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-                      initial_global_state->prev_pair, current_pair->num,
-                      initial_global_state->prev_req);
-              xbt_free(initial_global_state->prev_req);
-            }
-            initial_global_state->prev_pair = current_pair->num;
-          }
-          MC_SET_STD_HEAP;
+         char* req_str = MC_request_to_string(req, value);  
+         XBT_DEBUG("Execute: %s", req_str);                 
+         xbt_free(req_str);
 
-          MC_LOG_REQUEST(mc_liveness, req, value);
+         /* Set request as executed */
+         MC_state_set_executed_request(current_pair->graph_state, req, value);
 
-          MC_SET_MC_HEAP;
-          if (dot_output != NULL) {
-            initial_global_state->prev_req =
-                MC_request_get_dot_output(req, value);
-            if (current_pair->search_cycle)
-              fprintf(dot_output, "%d [shape=doublecircle];\n",
-                      current_pair->num);
-          }
-          MC_SET_STD_HEAP;
+         /* Update mc_stats */
+         mc_stats->executed_transitions++;
+         if(current_pair->exploration_started == 0)
+           mc_stats->visited_pairs++;
 
-          MC_state_set_executed_request(current_pair->graph_state, req, value);
-          mc_stats->executed_transitions++;
+         /* Answer the request */
+         SIMIX_simcall_handle(req, value);
+         
+         /* Wait for requests (schedules processes) */
+         MC_wait_for_requests();
 
-          /* Answer the request */
-          SIMIX_simcall_handle(req, value);
+         MC_SET_MC_HEAP;
 
-          /* Wait for requests (schedules processes) */
-          MC_wait_for_requests();
+         current_pair->requests--;
+         current_pair->exploration_started = 1;
 
-          MC_SET_MC_HEAP;
-          prop_values = get_atomic_propositions_values();
-          MC_SET_STD_HEAP;
+         /* Get values of atomic propositions (variables used in the property formula) */ 
+         prop_values = get_atomic_propositions_values();
 
-          int new_pair = 0;
-
-          /* Evaluate enabled transition according to atomic propositions values */
-          cursor = 0;
-          xbt_dynar_foreach(current_pair->automaton_state->out, cursor,
-                            transition_succ) {
-
-            res =
-                MC_automaton_evaluate_label(transition_succ->label,
-                                            prop_values);
-
-            if (res == 1) {     // enabled transition in automaton
-
-              if (new_pair)
-                MC_replay_liveness(mc_stack, 1);
-
-              MC_SET_MC_HEAP;
-
+         /* Evaluate enabled/true transitions in automaton according to atomic propositions values and create new pairs */
+         cursor = xbt_dynar_length(current_pair->automaton_state->out) - 1;
+         while (cursor >= 0) {
+           transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(current_pair->automaton_state->out, cursor, xbt_automaton_transition_t);
+           res = MC_automaton_evaluate_label(transition_succ->label, prop_values);
+           if (res == 1 || res == 2) { /* 1 = True transition (always enabled), 2 = enabled transition according to atomic prop values */
               next_pair = MC_pair_new();
               next_pair->graph_state = MC_state_new();
               next_pair->automaton_state = transition_succ->dst;
               next_pair->atomic_propositions = get_atomic_propositions_values();
-
+              next_pair->depth = current_pair->depth + 1;
               /* Get enabled processes and insert them in the interleave set of the next graph_state */
               xbt_swag_foreach(process, simix_global->process_list) {
                 if (MC_process_is_enabled(process)) {
@@ -410,122 +342,56 @@ void MC_modelcheck_liveness()
                 }
               }
 
-              next_pair->requests =
-                  MC_state_interleave_size(next_pair->graph_state);
+              next_pair->requests = MC_state_interleave_size(next_pair->graph_state);
 
-              if (next_pair->automaton_state->type == 1
-                  || next_pair->automaton_state->type == 2
-                  || current_pair->search_cycle)
+              /* FIXME : get search_cycle value for each acceptant state */
+              if (next_pair->automaton_state->type == 1 || current_pair->search_cycle)
                 next_pair->search_cycle = 1;
 
+              /* Add new pair to the exploration stack */
               xbt_fifo_unshift(mc_stack, next_pair);
 
-              if (mc_stats->expanded_pairs % 1000000 == 0)
-                XBT_INFO("Expanded pairs : %lu", mc_stats->expanded_pairs);
+           }
+           cursor--;
+         }
+         
+         MC_SET_STD_HEAP;
+        
+      } /* End of visited_pair test */
+      
+    } else {
 
-              MC_SET_STD_HEAP;
-
-              new_pair = 1;
-
-              MC_modelcheck_liveness();
-
-            }
-
-          }
-
-          /* Then, evaluate true transitions (always true, whatever atomic propositions values) */
-          cursor = 0;
-          xbt_dynar_foreach(current_pair->automaton_state->out, cursor,
-                            transition_succ) {
-
-            res =
-                MC_automaton_evaluate_label(transition_succ->label,
-                                            prop_values);
-
-            if (res == 2) {     // true transition in automaton
-
-              if (new_pair)
-                MC_replay_liveness(mc_stack, 1);
-
-              MC_SET_MC_HEAP;
-
-              next_pair = MC_pair_new();
-              next_pair->graph_state = MC_state_new();
-              next_pair->automaton_state = transition_succ->dst;
-              next_pair->atomic_propositions = get_atomic_propositions_values();
-
-              /* Get enabled process and insert it in the interleave set of the next graph_state */
-              xbt_swag_foreach(process, simix_global->process_list) {
-                if (MC_process_is_enabled(process)) {
-                  MC_state_interleave_process(next_pair->graph_state, process);
-                }
-              }
-
-              next_pair->requests =
-                  MC_state_interleave_size(next_pair->graph_state);
-
-              if (next_pair->automaton_state->type == 1
-                  || next_pair->automaton_state->type == 2
-                  || current_pair->search_cycle)
-                next_pair->search_cycle = 1;
-
-              xbt_fifo_unshift(mc_stack, next_pair);
-
-              if (mc_stats->expanded_pairs % 1000000 == 0)
-                XBT_INFO("Expanded pairs : %lu", mc_stats->expanded_pairs);
-
-              MC_SET_STD_HEAP;
-
-              new_pair = 1;
-
-              MC_modelcheck_liveness();
-
-            }
-
-          }
-
-          if (MC_state_interleave_size(current_pair->graph_state) > 0) {
-            XBT_DEBUG("Backtracking to depth %d", xbt_fifo_size(mc_stack));
-            MC_replay_liveness(mc_stack, 0);
-          }
-
+    backtracking:
+      if(visited_num == -1)
+        XBT_DEBUG("No more request to execute. Looking for backtracking point.");
+    
+      MC_SET_MC_HEAP;
+    
+      xbt_dynar_free(&prop_values);
+    
+      /* Traverse the stack backwards until a pair with a non empty interleave
+         set is found, deleting all the pairs that have it empty in the way. */
+      while ((current_pair = xbt_fifo_shift(mc_stack)) != NULL) {
+        if (current_pair->requests > 0) {
+          /* We found a backtracking point */
+          XBT_DEBUG("Backtracking to depth %d", current_pair->depth);
+          xbt_fifo_unshift(mc_stack, current_pair);
+          MC_SET_STD_HEAP;
+          MC_replay_liveness(mc_stack);
+          XBT_DEBUG("Backtracking done");
+          break;
+        }else{
+          /* Delete pair */
+          XBT_DEBUG("Delete pair %d at depth %d", current_pair->num, current_pair->depth);
+          if (current_pair->automaton_state->type == 1) 
+            remove_acceptance_pair(current_pair->num);
+          MC_pair_delete(current_pair);
         }
-
       }
-
-    }
-
-  } else {
-
-    XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-    if (MC_state_interleave_size(current_pair->graph_state) > 0) {
-      XBT_WARN
-          ("/!\\ But, there are still processes to interleave. Model-checker will not be able to ensure the soundness of the verification from now. /!\\ ");
-      if (_sg_mc_max_depth == 1000)
-        XBT_WARN
-            ("Notice : the default value of max depth is 1000 but you can change it with cfg=model-check/max_depth:value.");
-    }
-
-  }
-
-  if (xbt_fifo_size(mc_stack) == _sg_mc_max_depth) {
-    XBT_DEBUG("Pair %d (depth = %d) shifted in stack, maximum depth reached",
-              current_pair->num, xbt_fifo_size(mc_stack));
-  } else {
-    XBT_DEBUG("Pair %d (depth = %d) shifted in stack", current_pair->num,
-              xbt_fifo_size(mc_stack));
-  }
-
-
-  MC_SET_MC_HEAP;
-  xbt_dynar_free(&prop_values);
-  current_pair = xbt_fifo_shift(mc_stack);
-  if (xbt_fifo_size(mc_stack) != _sg_mc_max_depth - 1
-      && current_pair->requests > 0 && current_pair->search_cycle) {
-    remove_acceptance_pair(current_pair->num);
-  }
-  MC_pair_delete(current_pair);
-
-  MC_SET_STD_HEAP;
-
+    
+      MC_SET_STD_HEAP;
+    } /* End of if (current_pair->requests > 0) else ... */
+    
+  } /* End of while(xbt_fifo_size(mc_stack) > 0) */
+  
 }

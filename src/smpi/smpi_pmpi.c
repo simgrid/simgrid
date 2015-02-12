@@ -2697,7 +2697,7 @@ int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int
   if (comm_old == MPI_COMM_NULL){
     retval =  MPI_ERR_COMM;
   } else if (ndims < 0 ||
-           (ndims > 0 && (dims == NULL || 
+           (ndims > 0 && (dims == NULL ||
                           periodic == NULL)) ||
            comm_cart == NULL) {
     retval = MPI_ERR_ARG;
@@ -2791,7 +2791,7 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
     int blocks[3] = { 1, 1, 1 };
     MPI_Aint disps[3] = { lb, 0, lb+extent };
     MPI_Datatype types[3] = { MPI_LB, oldtype, MPI_UB };
-        
+
     s_smpi_mpi_struct_t* subtype = smpi_datatype_struct_create( blocks,
                                                                 disps,
                                                                 3,
@@ -3012,6 +3012,91 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   return retval;
 }
 
+
+int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (group==MPI_GROUP_NULL){
+    retval = MPI_ERR_GROUP;
+  }
+  else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+    retval = smpi_mpi_win_post(group,assert,win);
+#ifdef HAVE_TRACING
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (group==MPI_GROUP_NULL){
+    retval = MPI_ERR_GROUP;
+  }
+  else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+    retval = smpi_mpi_win_start(group,assert,win);
+#ifdef HAVE_TRACING
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Win_complete(MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  }
+  else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+    retval = smpi_mpi_win_complete(win);
+#ifdef HAVE_TRACING
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_wait(MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  }
+  else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+    retval = smpi_mpi_win_wait(win);
+#ifdef HAVE_TRACING
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  }
+  smpi_bench_begin();
+  return retval;
+}
 
 int PMPI_Alloc_mem(MPI_Aint size, MPI_Info info, void *baseptr){
   void *ptr = xbt_malloc(size);
@@ -3253,10 +3338,10 @@ int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
     return MPI_ERR_ARG;
   if (value == NULL)
     return MPI_ERR_INFO_VALUE;
-  *flag=FALSE;    
+  *flag=FALSE;
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
   if(tmpvalue){
-    memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < valuelen) ? 
+    memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < valuelen) ?
                          strlen(tmpvalue) + 1 : valuelen);
     *flag=TRUE;
   }
@@ -3318,7 +3403,7 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
 int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
   if (info == NULL || key == NULL || valuelen <0)
     return MPI_ERR_ARG;
-  *flag=FALSE;    
+  *flag=FALSE;
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
   if(tmpvalue){
     *valuelen=strlen(tmpvalue);
@@ -3354,9 +3439,9 @@ int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size)
     return MPI_ERR_TYPE;
   if(comm==MPI_COMM_NULL)
     return MPI_ERR_COMM;
-    
+
   *size=incount*smpi_datatype_size(datatype);
-  
+
   return MPI_SUCCESS;
 }
 
@@ -3664,19 +3749,7 @@ int PMPI_Comm_get_parent( MPI_Comm *parent){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Win_complete(MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
 
@@ -3688,6 +3761,3 @@ int PMPI_Win_unlock(int rank, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Win_wait(MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}

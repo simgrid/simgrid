@@ -16,7 +16,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 
 int main(int argc, char **argv)
 {
-  const SD_workstation_t *workstations;
   SD_workstation_t w1;
   SD_workstation_t w2;
   const char *name1;
@@ -38,9 +37,8 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /* init of platform elements */
-  workstations = SD_workstation_get_list();
-  w1 = workstations[0];
-  w2 = workstations[1];
+  w1 = SD_workstation_get_by_name("host1");
+  w2 = SD_workstation_get_by_name("host2");
   SD_workstation_set_access_mode(w2, SD_WORKSTATION_SEQUENTIAL_ACCESS);
   name1 = SD_workstation_get_name(w1);
   name2 = SD_workstation_get_name(w2);

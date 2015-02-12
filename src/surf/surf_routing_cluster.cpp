@@ -90,7 +90,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   xbt_node_t current, previous, backboneNode = NULL, routerNode;
   s_surf_parsing_link_up_down_t info;
 
-  xbt_assert(p_router,"Malformed cluster");
+  xbt_assert(p_router,"Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
 
   /* create the router */
   char *link_name = p_router->getName();

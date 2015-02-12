@@ -57,8 +57,8 @@ extern xbt_parmap_t parmap;
 extern int user_max_depth_reached;
 
 int MC_deadlock_check(void);
-void MC_replay(xbt_fifo_t stack, int start);
-void MC_replay_liveness(xbt_fifo_t stack, int all_stack);
+void MC_replay(xbt_fifo_t stack);
+void MC_replay_liveness(xbt_fifo_t stack);
 void MC_show_deadlock(smx_simcall_t req);
 void MC_show_stack_safety(xbt_fifo_t stack);
 void MC_dump_stack_safety(xbt_fifo_t stack);
@@ -140,15 +140,6 @@ bool mc_address_test(mc_address_set_t p, const void* value);
  *  \result resulting hash
  * */
 uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
-
-/* *********** Snapshot *********** */
-
-#define MC_LOG_REQUEST(log, req, value) \
-  if (XBT_LOG_ISENABLED(log, xbt_log_priority_debug)) { \
-    char* req_str = MC_request_to_string(req, value); \
-    XBT_DEBUG("Execute: %s", req_str); \
-    xbt_free(req_str); \
-  }
 
 /** @brief Dump the stacks of the application processes
  *

@@ -9,6 +9,52 @@
 #include "mc_state.h"
 #include "mc_request.h"
 #include "mc_private.h"
+#include "mc_comm_pattern.h"
+
+static void copy_incomplete_communications_pattern(mc_state_t state) {
+  int i;
+  xbt_dynar_t incomplete_process_comms;
+  mc_comm_pattern_t comm;
+  unsigned int cursor;
+  state->incomplete_comm_pattern = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
+  for (i=0; i<simix_process_maxpid; i++) {
+    incomplete_process_comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
+    xbt_dynar_t incomplete_process_comms_copy = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
+    xbt_dynar_foreach(incomplete_process_comms, cursor, comm) {
+      mc_comm_pattern_t copy_comm = xbt_new0(s_mc_comm_pattern_t, 1);
+      copy_comm->index = comm->index;
+      copy_comm->type = comm->type;
+      copy_comm->comm = comm->comm;
+      copy_comm->rdv = strdup(comm->rdv);
+      copy_comm->data_size = -1;
+      copy_comm->data = NULL;
+      if(comm->type == SIMIX_COMM_SEND){
+        copy_comm->src_proc = comm->src_proc;
+        copy_comm->src_host = comm->src_host;
+        if (comm->data != NULL) {
+          copy_comm->data_size = comm->data_size;
+          copy_comm->data = xbt_malloc0(comm->data_size);
+          memcpy(copy_comm->data, comm->data, comm->data_size);
+        }
+      }else{
+        copy_comm->dst_proc = comm->dst_proc;
+        copy_comm->dst_host = comm->dst_host;
+      }
+      xbt_dynar_push(incomplete_process_comms_copy, &copy_comm);
+    }
+    xbt_dynar_insert_at(state->incomplete_comm_pattern, i, &incomplete_process_comms_copy);
+  }
+}
+
+static void copy_index_communications_pattern(mc_state_t state) {
+
+  state->index_comm = xbt_dynar_new(sizeof(unsigned int), NULL);
+  mc_list_comm_pattern_t list_process_comm;
+  unsigned int cursor;
+  xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm){
+    xbt_dynar_push_as(state->index_comm, unsigned int, list_process_comm->index_comm);
+  }
+}
 
 /**
  * \brief Creates a state data structure used by the exploration algorithm
@@ -22,7 +68,16 @@ mc_state_t MC_state_new()
   state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
   state->system_state = NULL;
   state->num = ++mc_stats->expanded_states;
-
+  state->in_visited_states = 0;
+  state->incomplete_comm_pattern = NULL;
+  /* Stateful model checking */
+  if(_sg_mc_checkpoint > 0 && mc_stats->expanded_states % _sg_mc_checkpoint == 0){
+    state->system_state = MC_take_snapshot(state->num);
+    if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+      copy_incomplete_communications_pattern(state);
+      copy_index_communications_pattern(state);
+    }
+  }
   return state;
 }
 
@@ -30,10 +85,14 @@ mc_state_t MC_state_new()
  * \brief Deletes a state data structure
  * \param trans The state to be deleted
  */
-void MC_state_delete(mc_state_t state)
-{
-  if (state->system_state)
+void MC_state_delete(mc_state_t state, int free_snapshot){
+  if (state->system_state && free_snapshot){
     MC_free_snapshot(state->system_state);
+  }
+  if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
+    xbt_free(state->index_comm);
+    xbt_free(state->incomplete_comm_pattern);
+  }
   xbt_free(state->proc_status);
   xbt_free(state);
 }

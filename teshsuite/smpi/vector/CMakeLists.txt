@@ -9,7 +9,7 @@ if(enable_smpi)
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   add_executable(vector_test vector_test.c)
   target_link_libraries(vector_test simgrid)
 endif()
