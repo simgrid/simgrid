@@ -39,7 +39,7 @@ int MC_protocol_hello(int socket)
 {
   int e;
   if ((e = MC_protocol_send_simple_message(socket, MC_MESSAGE_HELLO)) != 0) {
-    XBT_ERROR("Could not send HELLO message: %s", strerror(e));
+    XBT_ERROR("Could not send HELLO message");
     return 1;
   }
 
@@ -51,7 +51,7 @@ int MC_protocol_hello(int socket)
     if (errno == EINTR)
       continue;
     else {
-      XBT_ERROR("Could not receive HELLO message: %s", strerror(errno));
+      XBT_ERROR("Could not receive HELLO message");
       return 2;
     }
   }

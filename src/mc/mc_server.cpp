@@ -302,7 +302,7 @@ void s_mc_server::handle_waitpid()
         else
           break;
       } else {
-        XBT_ERROR("Could not wait for pid: %s", strerror(errno));
+        XBT_ERROR("Could not wait for pid");
         throw std::system_error(errno, std::system_category());
       }
     }

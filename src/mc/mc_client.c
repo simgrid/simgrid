@@ -77,8 +77,7 @@ void MC_client_handle_messages(void)
     char message_buffer[MC_MESSAGE_LENGTH];
     size_t s;
     if ((s = recv(mc_client->fd, &message_buffer, sizeof(message_buffer), 0)) == -1)
-      xbt_die("Could not receive commands from the model-checker: %s",
-        strerror(errno));
+      xbt_die("Could not receive commands from the model-checker");
 
     XBT_DEBUG("Receive message from model-checker");
     s_mc_message_t message;

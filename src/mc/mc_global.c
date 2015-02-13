@@ -318,7 +318,7 @@ int MC_deadlock_check()
     int res;
     if ((res = MC_protocol_send_simple_message(mc_model_checker->process.socket,
       MC_MESSAGE_DEADLOCK_CHECK)))
-      xbt_die("Could not check deadlock state: %s",strerror(res));
+      xbt_die("Could not check deadlock state");
     s_mc_int_message_t message;
     ssize_t s = MC_receive_message(mc_model_checker->process.socket, &message, sizeof(message));
     if (s == -1)
