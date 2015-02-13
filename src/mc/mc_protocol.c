@@ -62,3 +62,8 @@ int MC_protocol_hello(int socket)
 
   return 0;
 }
+
+ssize_t MC_receive_message(int socket, void* message, size_t size)
+{
+  return recv(socket, message, size, 0);
+}

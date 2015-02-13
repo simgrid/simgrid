@@ -178,6 +178,9 @@ void MC_init_pid(pid_t pid, int socket)
     MC_ignore_global_variable("smx_total_comms");
 
     if (mc_mode == MC_MODE_STANDALONE || mc_mode == MC_MODE_CLIENT) {
+      /* Those requests are handled on the client side and propagated by message
+       * to the server: */
+
       MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
       smx_process_t process;
@@ -311,6 +314,24 @@ void MC_exit(void)
 
 int MC_deadlock_check()
 {
+  if (mc_mode == MC_MODE_SERVER) {
+    int res;
+    if ((res = MC_protocol_send_simple_message(mc_model_checker->process.socket,
+      MC_MESSAGE_DEADLOCK_CHECK)))
+      xbt_die("Could not check deadlock state: %s",strerror(res));
+    s_mc_int_message_t message;
+    ssize_t s = MC_receive_message(mc_model_checker->process.socket, &message, sizeof(message));
+    if (s == -1)
+      xbt_die("Could not receive message");
+    else if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY) {
+      xbt_die("Unexpected message, expected MC_MESSAGE_DEADLOCK_CHECK_REPLY %i %i vs %i %i",
+        (int) s, (int) message.type, (int) sizeof(message), (int) MC_MESSAGE_DEADLOCK_CHECK_REPLY
+        );
+    }
+    else
+      return message.value;
+  }
+
   int deadlock = FALSE;
   smx_process_t process;
   if (xbt_swag_size(simix_global->process_list)) {

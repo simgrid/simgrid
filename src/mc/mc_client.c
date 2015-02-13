@@ -22,6 +22,7 @@
 #include "mc_mmalloc.h"
 #include "mc_ignore.h"
 #include "mc_model_checker.h"
+#include "mc_private.h" // MC_deadlock_check()
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 
@@ -44,7 +45,7 @@ void MC_client_init(void)
   int type;
   socklen_t socklen = sizeof(type);
   if (getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &socklen) != 0)
-    xbt_die("Could not check socket type: %s", strerror(errno));
+    xbt_die("Could not check socket type");
   if (type != SOCK_DGRAM)
     xbt_die("Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
@@ -85,8 +86,21 @@ void MC_client_handle_messages(void)
       xbt_die("Message is too short");
     memcpy(&message, message_buffer, sizeof(message));
     switch (message.type) {
+
+    case MC_MESSAGE_DEADLOCK_CHECK:
+      {
+        int result = MC_deadlock_check();
+        s_mc_int_message_t answer;
+        answer.type = MC_MESSAGE_DEADLOCK_CHECK_REPLY;
+        answer.value = result;
+        if (MC_protocol_send(mc_client->fd, &answer, sizeof(answer)))
+          xbt_die("Could nor send response");
+      }
+      break;
+
     case MC_MESSAGE_CONTINUE:
       return;
+
     default:
       xbt_die("Unexpected message from model-checker %i", message.type);
     }

@@ -45,6 +45,8 @@ typedef enum {
   MC_MESSAGE_IGNORE_MEMORY,
   MC_MESSAGE_STACK_REGION,
   MC_MESSAGE_REGISTER_SYMBOL,
+  MC_MESSAGE_DEADLOCK_CHECK,
+  MC_MESSAGE_DEADLOCK_CHECK_REPLY,
 } e_mc_message_type;
 
 #define MC_MESSAGE_LENGTH 512
@@ -64,6 +66,11 @@ typedef enum {
 typedef struct s_mc_message {
   e_mc_message_type type;
 } s_mc_message_t, *mc_message_t;
+
+typedef struct s_mc_int_message {
+  e_mc_message_type type;
+  uint64_t value;
+} s_mc_int_message_t, *mc_int_message_t;
 
 typedef struct s_mc_ignore_heap_message {
   e_mc_message_type type;
@@ -91,6 +98,7 @@ typedef struct s_mc_register_symbol_message {
 int MC_protocol_send(int socket, void* message, size_t size);
 int MC_protocol_send_simple_message(int socket, int type);
 int MC_protocol_hello(int socket);
+ssize_t MC_receive_message(int socket, void* message, size_t size);
 
 SG_END_DECL()
 
