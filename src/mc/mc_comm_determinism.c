@@ -45,11 +45,13 @@ static e_mc_comm_pattern_difference_t compare_comm_pattern(mc_comm_pattern_t com
     return SRC_PROC_DIFF;
   if (comm1->dst_proc != comm2->dst_proc)
     return DST_PROC_DIFF;
-  if (comm1->data_size != comm2->data_size)
+    if (comm1->tag != comm2->tag)
+    return TAG_DIFF;
+    /*if (comm1->data_size != comm2->data_size)
     return DATA_SIZE_DIFF;
   if(comm1->data == NULL && comm2->data == NULL)
     return 0;
-  /*if(comm1->data != NULL && comm2->data !=NULL) {
+  if(comm1->data != NULL && comm2->data !=NULL) {
     if (!memcmp(comm1->data, comm2->data, comm1->data_size))
       return 0;
     return DATA_DIFF;
@@ -71,6 +73,9 @@ static void print_determinism_result(e_mc_comm_pattern_difference_t diff, int pr
       break;
     case RDV_DIFF:
       XBT_INFO("Different communication rdv for communication %s at index %d",  comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
+      break;
+    case TAG_DIFF:
+      XBT_INFO("Different communication tag for communication %s at index %d",  comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
       break;
     case SRC_PROC_DIFF:
         XBT_INFO("Different communication source process for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
@@ -101,6 +106,9 @@ static void print_determinism_result(e_mc_comm_pattern_difference_t diff, int pr
     case RDV_DIFF:
       XBT_INFO("Different communication rdv for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
       break;
+    case TAG_DIFF:
+      XBT_INFO("Different communication tag for communication %s at index %d",  comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
+      break;
     case SRC_PROC_DIFF:
         XBT_INFO("Different communication source process for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
       break;
@@ -118,50 +126,6 @@ static void print_determinism_result(e_mc_comm_pattern_difference_t diff, int pr
     }
     MC_print_statistics(mc_stats);
     xbt_abort();
-  }
-}
-
-static void print_communications_pattern()
-{
-  unsigned int cursor = 0, cursor2 = 0;
-  mc_comm_pattern_t current_comm;
-  mc_list_comm_pattern_t current_list;
-  unsigned int current_process = 1;
-  while (current_process < simix_process_maxpid) {
-    current_list = (mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, current_process, mc_list_comm_pattern_t);
-    XBT_INFO("Communications from the process %u:", current_process);
-    while(cursor2 < current_list->index_comm){
-      current_comm = (mc_comm_pattern_t)xbt_dynar_get_as(current_list->list, cursor2, mc_comm_pattern_t);
-      if (current_comm->type == SIMIX_COMM_SEND) {
-        XBT_INFO("(%u) [(%lu) %s -> (%lu) %s] %s ", cursor,current_comm->src_proc,
-                 current_comm->src_host, current_comm->dst_proc,
-                 current_comm->dst_host, "iSend");
-      } else {
-        XBT_INFO("(%u) [(%lu) %s <- (%lu) %s] %s ", cursor, current_comm->dst_proc,
-                 current_comm->dst_host, current_comm->src_proc,
-                 current_comm->src_host, "iRecv");
-      }
-      cursor2++;
-    }
-    current_process++;
-    cursor = 0;
-    cursor2 = 0;
-  }
-}
-
-static void print_incomplete_communications_pattern(){
-  unsigned int cursor = 0;
-  unsigned int current_process = 1;
-  xbt_dynar_t current_pattern;
-  mc_comm_pattern_t comm;
-  while (current_process < simix_process_maxpid) {
-    current_pattern = (xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t);
-    XBT_INFO("Incomplete communications from the process %u:", current_process);
-    xbt_dynar_foreach(current_pattern, cursor, comm) {
-      XBT_DEBUG("(%u) Communication %p", cursor, comm);
-    }
-    current_process++;
-    cursor = 0;
   }
 }
 
@@ -233,6 +197,7 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t 
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
     pattern->src_proc = pattern->comm->comm.src_proc->pid;
     pattern->src_host = simcall_host_get_name(request->issuer->smx_host);
+    pattern->tag = ((MPI_Request)simcall_comm_isend__get__data(request))->tag;
     if(pattern->comm->comm.src_buff != NULL){
       pattern->data_size = pattern->comm->comm.src_buff_size;
       pattern->data = xbt_malloc0(pattern->data_size);
@@ -245,6 +210,7 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t 
   } else if (call_type == MC_CALL_TYPE_RECV) {                      
     pattern->type = SIMIX_COMM_RECEIVE;
     pattern->comm = simcall_comm_irecv__get__result(request);
+    pattern->tag = ((MPI_Request)simcall_comm_irecv__get__data(request))->tag;
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
     pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
     pattern->dst_host = simcall_host_get_name(request->issuer->smx_host);

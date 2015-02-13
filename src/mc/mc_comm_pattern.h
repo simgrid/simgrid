@@ -10,6 +10,8 @@
 #include <xbt/dynar.h>
 
 #include "../simix/smx_private.h"
+#include "../smpi/private.h"
+#include <smpi/smpi.h>
 
 #ifndef MC_COMM_PATTERN_H
 #define MC_COMM_PATTERN_H
@@ -27,6 +29,7 @@ typedef struct s_mc_comm_pattern{
   char *rdv;
   ssize_t data_size;
   void *data;
+  int tag;
   int index;
 } s_mc_comm_pattern_t, *mc_comm_pattern_t;
 
@@ -50,6 +53,7 @@ typedef enum {
   NONE_DIFF,
   TYPE_DIFF,
   RDV_DIFF,
+  TAG_DIFF,
   SRC_PROC_DIFF,
   DST_PROC_DIFF,
   DATA_SIZE_DIFF,
