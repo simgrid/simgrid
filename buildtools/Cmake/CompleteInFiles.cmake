@@ -549,6 +549,14 @@ if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
     string(REPLACE "\n" "" GIT_DATE "${GIT_DATE}")
     message(STATUS "Git date: ${GIT_DATE}")
     string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
+    
+    execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --pretty=format:%H -1
+                    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+		    OUTPUT_VARIABLE SIMGRID_GITHASH
+		    RESULT_VARIABLE ret
+		    )
+    string(REPLACE "\n" "" SIMGRID_GITHASH "${SIMGRID_GITHASH}")
+		    
   endif()
 elseif(EXISTS ${CMAKE_HOME_DIRECTORY}/.gitversion)
   FILE(STRINGS ${CMAKE_HOME_DIRECTORY}/.gitversion GIT_VERSION)

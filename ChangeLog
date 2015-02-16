@@ -35,6 +35,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    - Constant times can be injected inside MPI_Wtime and MPI_Test through options smpi/wtime and smpi/test
    - InfiniBand network model added : Based on the works of Jerome Vienne (http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf )
    - When smpi/display_timing is set, also display global simulation time and application times
+   - Have smpirun, smpicc and friends display the simgrid git hash version on --git-version
  * Collective communications
    - SMP-aware algorithms are now dynamically handled. An internal communicator is created for each node, and an external one to handle communications between "leaders" of each node
    - MVAPICH2 (1.9) collective algorithms selector : normal and SMP algorithms are handled, and selection logic is based on the one used on TACC's Stampede cluster (https://www.tacc.utexas.edu/stampede/).
