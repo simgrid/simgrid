@@ -225,6 +225,20 @@ if [ -z "${HOSTFILE}" ] ; then
     HOSTFILETMP=1
     HOSTFILE="$(mktemp tmphostXXXXXX)"
     perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
+    perl -ne 'if (/.*<cluster.*?prefix="(.*?)".*?radical="(.*?)".*?suffix="(.*?)".*/) { 
+                my ($pre,$rad,$post)=($1,$2,$3); 
+	        for my $elm (split(",",$rad)) { 
+	          if ($elm=~/^([^-]*?)-([^-]*)$/) { 
+	             for (my $i=$1; $i<=$2;$i++) { 
+	                print "$pre$i$post\n"; 
+	             }
+	          } else {
+	             print "$pre$elm$post\n";
+	          }
+	        }
+	      } elsif (/<cluster/) {
+	        die ("Unparsable cluster tag. Either provide an hostfile yourself or give the attributes prefix, radical and suffix in that order on the <cluster line");
+	      }' ${PLATFORM} >> ${HOSTFILE}
 fi
 UNROLLEDHOSTFILETMP=0
 
