@@ -282,9 +282,9 @@ so on.
 
 \subsubsection pf_cluster <cluster>
 
-A <b>cluster</b> represents a cluster. It is most of the time used
-when you want to have a bunch of machine defined quickly. It must be
-noted that cluster is meta-tag : <b>from the inner SimGrid point of
+``<cluster />`` represents a machine-cluster. Most of the time it is used
+when you want to define many machines quickly. Technically,
+``cluster`` is a meta-tag: <b>from the inner SimGrid point of
 view, a cluster is an AS where some optimized routing is defined</b>.
 The default inner organization of the cluster is as follow:
 
