@@ -1,11 +1,10 @@
-/* Copyright (c) 2009-2014. The SimGrid Team.
+/* Copyright (c) 2009-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example should be instructive to learn about SMPI_SAMPLE_LOCAL and 
-   SMPI_SAMPLE_GLOBAL macros for execution sampling */
+/* This example should be instructive to learn about SMPI_SHARED_CALL */
 
 #include <stdio.h>
 #include <mpi.h>
@@ -39,7 +38,7 @@ int main(int argc, char *argv[])
   }
   
   MPI_Barrier(MPI_COMM_WORLD);
-  //everyobne reads from it. 
+  //everyone reads from it.
   printf("[%d] The value in the shared buffer is: %" PRIu64"\n", rank, *buf);
   
   
