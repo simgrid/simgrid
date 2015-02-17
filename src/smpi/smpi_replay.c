@@ -314,13 +314,14 @@ static void action_compute(const char *const *action)
 
 static void action_send(const char *const *action)
 {
-  CHECK_ACTION_PARAMS(action, 2, 1);
+  CHECK_ACTION_PARAMS(action, 3, 1);
   int to = atoi(action[2]);
-  double size=parse_double(action[3]);
+  int tag = atoi(action[3]);
+  double size=parse_double(action[4]);
   double clock = smpi_process_simulated_elapsed();
 
-  if(action[4]) {
-    MPI_CURRENT_TYPE=decode_datatype(action[4]);
+  if(action[5]) {
+    MPI_CURRENT_TYPE=decode_datatype(action[5]);
   } else {
     MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
   }
@@ -338,8 +339,14 @@ static void action_send(const char *const *action)
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
-
-  smpi_mpi_send(NULL, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
+ 
+  fprintf(stderr, "!!!!%d: Recv with dst=%d, tag=%d.\n", smpi_process_index(),
+      to, tag);
+  fflush(stderr);
+  smpi_mpi_send(NULL, size, MPI_CURRENT_TYPE, to, tag, MPI_COMM_WORLD);
+  fprintf(stderr, "!!!!%d: DONE! Recv with dst=%d, tag=%d.\n",
+      smpi_process_index(), to, tag);
+  fflush(stderr);
 
   log_timed_action (action, clock);
 
@@ -374,6 +381,9 @@ static void action_Isend(const char *const *action)
   TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
 #endif
 
+  fprintf(stderr, "!!!!%d: ISend with dst=%d, tag=%d.\n", smpi_process_index(),
+      to, tag);
+  fflush(stderr);
   request = smpi_mpi_isend(NULL, size, MPI_CURRENT_TYPE, to, tag, MPI_COMM_WORLD);
 
 #ifdef HAVE_TRACING
@@ -388,13 +398,14 @@ static void action_Isend(const char *const *action)
 }
 
 static void action_recv(const char *const *action) {
-  CHECK_ACTION_PARAMS(action, 2, 1);
+  CHECK_ACTION_PARAMS(action, 3, 1);
   int from = atoi(action[2]);
-  double size=parse_double(action[3]);
+  int tag = atoi(action[3]);
+  double size=parse_double(action[4]);
   double clock = smpi_process_simulated_elapsed();
   MPI_Status status;
 
-  if(action[4]) MPI_CURRENT_TYPE=decode_datatype(action[4]);
+  if(action[5]) MPI_CURRENT_TYPE=decode_datatype(action[5]);
   else MPI_CURRENT_TYPE= MPI_DEFAULT_TYPE;
 
 #ifdef HAVE_TRACING
@@ -412,11 +423,15 @@ static void action_recv(const char *const *action) {
 
   //unknow size from the receiver pov
   if(size==-1){
-      smpi_mpi_probe(from, 0, MPI_COMM_WORLD, &status);
+      smpi_mpi_probe(from, tag, MPI_COMM_WORLD, &status);
       size=status.count;
   }
 
-  smpi_mpi_recv(NULL, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
+  fprintf(stderr, "!!!!%d: Recv with src=%d, tag=%d.\n", smpi_process_index(), from, tag);
+  fflush(stderr);
+  smpi_mpi_recv(NULL, size, MPI_CURRENT_TYPE, from, tag, MPI_COMM_WORLD, &status);
+  fprintf(stderr, "!!!!%d: DONE! Recv with src=%d, tag=%d.\n", smpi_process_index(), from, tag);
+  fflush(stderr);
 
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
@@ -456,6 +471,8 @@ static void action_Irecv(const char *const *action)
       size=status.count;
   }
 
+  fprintf(stderr, "!!!!%d: Irecv with src=%d, tag=%d.\n", smpi_process_index(), from, tag);
+  fflush(stderr);
   request = smpi_mpi_irecv(NULL, size, MPI_CURRENT_TYPE, from, tag, MPI_COMM_WORLD);
 
 #ifdef HAVE_TRACING
@@ -526,13 +543,16 @@ static void action_wait(const char *const *action){
   int dst = atoi(action[3]);
   int tag = atoi(action[4]);
   double clock = smpi_process_simulated_elapsed();
-  MPI_Request request = get_request(src, dst, tag);
+  char *key = build_request_key(src, dst,tag);
+  MPI_Request request = get_request_with_key(key);
   MPI_Status status;
 
   xbt_assert(xbt_dict_length(reqd[smpi_process_index()]),
     "action wait not preceded by any irecv or isend: %s",
     xbt_str_join_array(action," "));
-
+  remove_request_with_key(key);
+  free(key);
+  
 //xbt_assert(xbt_dynar_length(reqq[smpi_process_index()]),
 //    "action wait not preceded by any irecv or isend: %s",
 //    xbt_str_join_array(action," "));
@@ -558,7 +578,13 @@ static void action_wait(const char *const *action){
   extra->type = TRACING_WAIT;
   TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
 #endif
+  fprintf(stderr, "!!!!%d: Wait for request with src=%d, dst=%d, tag=%d.\n",
+      smpi_process_index(), request->src, request->dst, tag);
+  fflush(stderr);
   smpi_mpi_wait(&request, &status);
+  fprintf(stderr, "!!!!%d: DONE! Wait for request with src=%d, dst=%d,"
+      "tag=%d.\n", smpi_process_index(), src, dst, tag);
+//  fflush(stderr);
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, src_traced, dst_traced, __FUNCTION__);
   if (is_wait_for_receive) {
