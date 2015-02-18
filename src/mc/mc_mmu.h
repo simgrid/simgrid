@@ -10,6 +10,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <simgrid_config.h>
+
+SG_BEGIN_DECL()
+
 extern int xbt_pagesize;
 extern int xbt_pagebits;
 
@@ -67,5 +71,7 @@ bool mc_same_page(void* a, void* b)
 {
   return ((uintptr_t) a >> xbt_pagebits) == ((uintptr_t) b >> xbt_pagebits);
 }
+
+SG_END_DECL()
 
 #endif

@@ -14,7 +14,13 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
+#include "mc_object_info.h"
 #include "mc_private.h"
+
+static void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
+static void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+static void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+static void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
@@ -159,7 +165,6 @@ static mc_tag_class MC_dwarf_tag_classify(int tag)
   case DW_TAG_restrict_type:
   case DW_TAG_interface_type:
   case DW_TAG_unspecified_type:
-  case DW_TAG_mutable_type:
   case DW_TAG_shared_type:
     return mc_tag_type;
 
@@ -1256,6 +1261,51 @@ static void MC_post_process_functions(mc_object_info_t info)
   dw_frame_t subprogram = NULL;
   xbt_dict_foreach(info->subprograms, cursor, key, subprogram) {
     mc_post_process_scope(info, subprogram);
+  }
+}
+
+
+/** \brief Fill/lookup the "subtype" field.
+ */
+static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type)
+{
+
+  if (type->dw_type_id == NULL)
+    return;
+  type->subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
+  if (type->subtype == NULL)
+    return;
+  if (type->subtype->byte_size != 0)
+    return;
+  if (type->subtype->name == NULL)
+    return;
+  // Try to find a more complete description of the type:
+  // We need to fix in order to support C++.
+
+  dw_type_t subtype =
+      xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
+  if (subtype != NULL) {
+    type->subtype = subtype;
+  }
+
+}
+
+static void MC_post_process_types(mc_object_info_t info)
+{
+  xbt_dict_cursor_t cursor = NULL;
+  char *origin;
+  dw_type_t type;
+
+  // Lookup "subtype" field:
+  xbt_dict_foreach(info->types, cursor, origin, type) {
+    MC_resolve_subtype(info, type);
+
+    dw_type_t member;
+    unsigned int i = 0;
+    if (type->members != NULL)
+      xbt_dynar_foreach(type->members, i, member) {
+      MC_resolve_subtype(info, member);
+      }
   }
 }
 

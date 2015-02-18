@@ -13,6 +13,7 @@
 #include <stdlib.h>
 
 #include "../src/mc/mc_private.h"
+#include "../src/mc/mc_object_info.h"
 
 static
 uintptr_t eval_binary_operation(mc_expression_state_t state, int op, uintptr_t a, uintptr_t b) {

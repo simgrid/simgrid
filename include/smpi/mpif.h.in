@@ -91,7 +91,7 @@
       parameter(MPI_IO=0)
       integer MPI_ROOT, MPI_INFO_NULL,MPI_COMM_TYPE_SHARED
       parameter(MPI_ROOT=0)
-      parameter(MPI_INFO_NULL=-1)
+      parameter(MPI_INFO_NULL=0)
       parameter(MPI_COMM_TYPE_SHARED=1)
 
 ! These should be ordered as in smpi_f77.c
@@ -137,6 +137,7 @@
       integer MPI_LOGICAL8, MPI_2REAL, MPI_2DOUBLE_PRECISION
       integer MPI_AINT, MPI_OFFSET, MPI_COUNT
       integer MPI_REAL16, MPI_COMPLEX8,MPI_COMPLEX16,MPI_COMPLEX32
+      integer MPI_PACKED
       parameter(MPI_DATATYPE_NULL=-1)
       parameter(MPI_BYTE=0)
       parameter(MPI_CHARACTER=1)
@@ -166,6 +167,7 @@
       parameter(MPI_COMPLEX8=24)
       parameter(MPI_COMPLEX16=25)
       parameter(MPI_COMPLEX32=26)
+      parameter(MPI_PACKED=27)
 
 
 

@@ -16,6 +16,8 @@ static xbt_dict_t request_lookup = NULL;
 static xbt_dict_t datatype_lookup = NULL;
 static xbt_dict_t op_lookup = NULL;
 static xbt_dict_t win_lookup = NULL;
+static xbt_dict_t info_lookup = NULL;
+
 static int running_processes = 0;
 
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
@@ -191,7 +193,27 @@ static void free_win(int win) {
 }
 
 
-void mpi_init_(int* ierr) {
+int smpi_info_c2f(MPI_Info info) {
+  static int info_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(info_lookup, get_key(key, info_id), info, NULL);
+  info_id++;
+  return info_id-1;
+}
+
+MPI_Info smpi_info_f2c(int info) {
+  char key[KEY_SIZE];
+   return info >= 0
+          ? (MPI_Info)xbt_dict_get_or_null(info_lookup,  get_key(key, info))
+          : MPI_INFO_NULL;
+}
+
+static void free_info(int info) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(info_lookup, get_key(key, info));
+}
+
+static void smpi_init_fortran_types(){
    if(!comm_lookup){
      comm_lookup = xbt_dict_new_homogeneous(NULL);
      smpi_comm_c2f(MPI_COMM_WORLD);
@@ -199,6 +221,7 @@ void mpi_init_(int* ierr) {
      request_lookup = xbt_dict_new_homogeneous(NULL);
      datatype_lookup = xbt_dict_new_homogeneous(NULL);
      win_lookup = xbt_dict_new_homogeneous(NULL);
+     info_lookup = xbt_dict_new_homogeneous(NULL);
      smpi_type_c2f(MPI_BYTE);
      smpi_type_c2f(MPI_CHAR);
      #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
@@ -250,6 +273,11 @@ void mpi_init_(int* ierr) {
      smpi_op_c2f(MPI_BOR);
      smpi_op_c2f(MPI_BXOR);
    }
+}
+
+
+void mpi_init_(int* ierr) {
+    smpi_init_fortran_types();
    *ierr = MPI_Init(NULL, NULL);
    running_processes++;
 }
@@ -714,13 +742,35 @@ void mpi_win_free_( int* win, int* ierr){
 
 void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int *win, int* ierr){
   MPI_Win tmp;
-  *ierr =  MPI_Win_create( (void*)base, *size, *disp_unit, *(MPI_Info*)info, smpi_comm_f2c(*comm),&tmp);
+  *ierr =  MPI_Win_create( (void*)base, *size, *disp_unit, smpi_info_f2c(*info), smpi_comm_f2c(*comm),&tmp);
  if(*ierr == MPI_SUCCESS) {
    *win = smpi_win_c2f(tmp);
  }
 }
 
+void mpi_win_post_(int* group, int assert, int* win, int* ierr){
+  *ierr =  MPI_Win_post(smpi_group_f2c(*group), assert, smpi_win_f2c(*win));
+}
+
+void mpi_win_start_(int* group, int assert, int* win, int* ierr){
+  *ierr =  MPI_Win_start(smpi_group_f2c(*group), assert, smpi_win_f2c(*win));
+}
+
+void mpi_win_complete_(int* win, int* ierr){
+  *ierr =  MPI_Win_complete(smpi_win_f2c(*win));
+}
+
+void mpi_win_wait_(int* win, int* ierr){
+  *ierr =  MPI_Win_wait(smpi_win_f2c(*win));
+}
+
 void mpi_win_set_name_ (int*  win, char * name, int* ierr, int size){
+ //handle trailing blanks
+ while(name[size-1]==' ')size--;
+ while(*name==' '){//handle leading blanks
+   size --;
+   name++;
+ }
  char* tname = xbt_malloc((size+1)*sizeof(char));
  strncpy(tname, name, size);
  tname[size]='\0';
@@ -734,15 +784,58 @@ void mpi_win_get_name_ (int*  win, char * name, int* len, int* ierr){
 }
 
 void mpi_info_create_( int *info, int* ierr){
-  *ierr =  MPI_Info_create( (MPI_Info *)info);
+  MPI_Info tmp;
+  *ierr =  MPI_Info_create(&tmp);
+  if(*ierr == MPI_SUCCESS) {
+    *info = smpi_info_c2f(tmp);
+  }
 }
 
-void mpi_info_set_( int *info, char *key, char *value, int* ierr){
-  *ierr =  MPI_Info_set( *(MPI_Info *)info, key, value);
+void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int keylen, unsigned int valuelen){
+ //handle trailing blanks
+ while(key[keylen-1]==' ')keylen--;
+ while(*key==' '){//handle leading blanks
+   keylen --;
+   key++;
+ }
+ char* tkey = xbt_malloc((keylen+1)*sizeof(char));
+ strncpy(tkey, key, keylen);
+ tkey[keylen]='\0';  
+ 
+ while(value[valuelen-1]==' ')valuelen--;
+ while(*value==' '){//handle leading blanks
+   valuelen --;
+   value++;
+ }
+ char* tvalue = xbt_malloc((valuelen+1)*sizeof(char));
+ strncpy(tvalue, value, valuelen);
+ 
+ tvalue[valuelen]='\0'; 
+ *ierr =  MPI_Info_set( smpi_info_f2c(*info), tkey, tvalue);
+ xbt_free(tkey);
+}
+
+void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, int* ierr, unsigned int keylen ){
+ while(key[keylen-1]==' ')keylen--;
+ while(*key==' '){//handle leading blanks
+   keylen --;
+   key++;
+ }  char* tkey = xbt_malloc((keylen+1)*sizeof(char));
+ strncpy(tkey, key, keylen);
+ tkey[keylen]='\0';
+ *ierr = MPI_Info_get(smpi_info_f2c(*info),tkey,*valuelen, value, flag);
+ xbt_free(tkey);
+ int i = 0;
+ for (i=strlen(value); i<*valuelen; i++)
+ value[i]=' ';
 }
 
 void mpi_info_free_(int* info, int* ierr){
-  *ierr =  MPI_Info_free((MPI_Info *) info);
+  MPI_Info tmp = smpi_info_f2c(*info);
+  *ierr =  MPI_Info_free(&tmp);
+  if(*ierr == MPI_SUCCESS) {
+    free_info(*info);
+  }
 }
 
 void mpi_get_( int *origin_addr, int* origin_count, int* origin_datatype, int *target_rank,
@@ -771,52 +864,9 @@ void mpi_finalized_ (int * flag, int* ierr){
 }
 
 void mpi_init_thread_ (int* required, int *provided, int* ierr){
-  if(!comm_lookup){
-    comm_lookup = xbt_dict_new_homogeneous(NULL);
-    smpi_comm_c2f(MPI_COMM_WORLD);
-    group_lookup = xbt_dict_new_homogeneous(NULL);
-
-    request_lookup = xbt_dict_new_homogeneous(NULL);
-
-    datatype_lookup = xbt_dict_new_homogeneous(NULL);
-    smpi_type_c2f(MPI_BYTE);
-    smpi_type_c2f(MPI_CHAR);
-    smpi_type_c2f(MPI_INT);
-    smpi_type_c2f(MPI_INT);
-    smpi_type_c2f(MPI_INT8_T);
-    smpi_type_c2f(MPI_INT16_T);
-    smpi_type_c2f(MPI_INT32_T);
-    smpi_type_c2f(MPI_INT64_T);
-    smpi_type_c2f(MPI_FLOAT);
-    smpi_type_c2f(MPI_FLOAT);
-    smpi_type_c2f(MPI_DOUBLE);
-    smpi_type_c2f(MPI_DOUBLE);
-    smpi_type_c2f(MPI_C_FLOAT_COMPLEX);
-    smpi_type_c2f(MPI_C_DOUBLE_COMPLEX);
-    smpi_type_c2f(MPI_2INT);
-    smpi_type_c2f(MPI_UINT8_T);
-    smpi_type_c2f(MPI_UINT16_T);
-    smpi_type_c2f(MPI_UINT32_T);
-    smpi_type_c2f(MPI_UINT64_T);
-    smpi_type_c2f(MPI_2FLOAT);
-    smpi_type_c2f(MPI_2DOUBLE);
-
-    op_lookup = xbt_dict_new_homogeneous( NULL);
-    smpi_op_c2f(MPI_MAX);
-    smpi_op_c2f(MPI_MIN);
-    smpi_op_c2f(MPI_MAXLOC);
-    smpi_op_c2f(MPI_MINLOC);
-    smpi_op_c2f(MPI_SUM);
-    smpi_op_c2f(MPI_PROD);
-    smpi_op_c2f(MPI_LAND);
-    smpi_op_c2f(MPI_LOR);
-    smpi_op_c2f(MPI_LXOR);
-    smpi_op_c2f(MPI_BAND);
-    smpi_op_c2f(MPI_BOR);
-    smpi_op_c2f(MPI_BXOR);
-  }
-
- *ierr = MPI_Init_thread(NULL, NULL,*required, provided);
+  smpi_init_fortran_types();
+  *ierr = MPI_Init_thread(NULL, NULL,*required, provided);
+  running_processes++;
 }
 
 void mpi_query_thread_ (int *provided, int* ierr){
@@ -1502,7 +1552,7 @@ void mpi_comm_set_name_ (int* comm, char* name, int* ierr, int size){
 
 void mpi_comm_dup_with_info_ (int* comm, int* info, int* newcomm, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_dup_with_info(smpi_comm_f2c(*comm),*(MPI_Info*)info,&tmp);
+  *ierr = MPI_Comm_dup_with_info(smpi_comm_f2c(*comm),smpi_info_f2c(*info),&tmp);
   if(*ierr == MPI_SUCCESS) {
     *newcomm = smpi_comm_c2f(tmp);
   }
@@ -1510,23 +1560,24 @@ void mpi_comm_dup_with_info_ (int* comm, int* info, int* newcomm, int* ierr){
 
 void mpi_comm_split_type_ (int* comm, int* split_type, int* key, int* info, int* newcomm, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_split_type(smpi_comm_f2c(*comm), *split_type, *key, *(MPI_Info*)info, &tmp);
+  *ierr = MPI_Comm_split_type(smpi_comm_f2c(*comm), *split_type, *key, smpi_info_f2c(*info), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newcomm = smpi_comm_c2f(tmp);
   }
 }
 
 void mpi_comm_set_info_ (int* comm, int* info, int* ierr){
- *ierr = MPI_Comm_set_info (smpi_comm_f2c(*comm), *(MPI_Info*)info);
+ *ierr = MPI_Comm_set_info (smpi_comm_f2c(*comm), smpi_info_f2c(*info));
 }
 
 void mpi_comm_get_info_ (int* comm, int* info, int* ierr){
- *ierr = MPI_Comm_get_info (smpi_comm_f2c(*comm), (MPI_Info*)info);
+ MPI_Info tmp;
+ *ierr = MPI_Comm_get_info (smpi_comm_f2c(*comm), &tmp);
+ if(*ierr==MPI_SUCCESS){
+   *info = smpi_info_c2f(tmp);
+ }
 }
 
-void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, int* ierr){
- *ierr = MPI_Info_get(*(MPI_Info*)info,key,*valuelen, value, flag);
-}
 
 void mpi_comm_create_errhandler_ ( void *function, void *errhandler, int* ierr){
  *ierr = MPI_Comm_create_errhandler( (MPI_Comm_errhandler_fn*) function, (MPI_Errhandler*)errhandler);
@@ -1549,23 +1600,48 @@ void mpi_comm_call_errhandler_ (int* comm,int* errorcode, int* ierr){
 }
 
 void mpi_info_dup_ (int* info, int* newinfo, int* ierr){
- *ierr = MPI_Info_dup(*(MPI_Info*)info, (MPI_Info*)newinfo);
+ MPI_Info tmp;
+ *ierr = MPI_Info_dup(smpi_info_f2c(*info), &tmp);
+ if(*ierr==MPI_SUCCESS){
+   *newinfo= smpi_info_c2f(tmp);
+ }
 }
 
-void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, int* ierr){
- *ierr = MPI_Info_get_valuelen( *(MPI_Info*)info, key, valuelen, flag);
+void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, int* ierr, unsigned int keylen){
+ while(key[keylen-1]==' ')keylen--;
+ while(*key==' '){//handle leading blanks
+   keylen --;
+   key++;
+ }
+ char* tkey = xbt_malloc((keylen+1)*sizeof(char));
+ strncpy(tkey, key, keylen);
+ tkey[keylen]='\0';
+ *ierr = MPI_Info_get_valuelen( smpi_info_f2c(*info), tkey, valuelen, flag);
+ xbt_free(tkey);
 }
 
-void mpi_info_delete_ (int* info, char *key, int* ierr){
- *ierr = MPI_Info_delete(*(MPI_Info*)info, key);
+void mpi_info_delete_ (int* info, char *key, int* ierr, unsigned int keylen){
+ while(key[keylen-1]==' ')keylen--;
+ while(*key==' '){//handle leading blanks
+   keylen --;
+   key++;
+ }
+ char* tkey = xbt_malloc((keylen+1)*sizeof(char));
+ strncpy(tkey, key, keylen);
+ tkey[keylen]='\0';
+ *ierr = MPI_Info_delete(smpi_info_f2c(*info), tkey);
+ xbt_free(tkey);
 }
 
 void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr){
- *ierr = MPI_Info_get_nkeys(  *(MPI_Info*)info, nkeys);
+ *ierr = MPI_Info_get_nkeys(  smpi_info_f2c(*info), nkeys);
 }
 
-void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr){
- *ierr = MPI_Info_get_nthkey( *(MPI_Info*)info, *n, key);
+void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, unsigned int keylen){
+ *ierr = MPI_Info_get_nthkey( smpi_info_f2c(*info), *n, key);
+ int i = 0;
+ for (i=strlen(key); i<keylen; i++)
+ key[i]=' ';
 }
 
 void mpi_get_version_ (int *version,int *subversion, int* ierr){
@@ -1669,3 +1745,4 @@ void mpi_comm_get_parent_ ( int* parent, int* ierr){
     *parent = smpi_comm_c2f(tmp);
   }
 }
+

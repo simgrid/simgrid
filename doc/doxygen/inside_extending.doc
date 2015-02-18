@@ -1,29 +1,7 @@
 /*!
 \page inside_extending Extending SimGrid
 
-We start to put TAGS in simgrid source code for having tutorials to see where is the important parts ans steps to create:
-\li \ref simgrid_dev_guide_api
-\li \ref simgrid_dev_guide_model
-\li \ref simgrid_dev_guide_tag
-
-\section simgrid_dev_guide_api How to add a new MSG function?
-Search for expression \"TUTORIAL: New API\".
-\verbatim
-user@caraja:~/workspace/simgrid/src$ cg "TUTORIAL: New API"
- 0 msg/msg_new_api.c             15 /* TUTORIAL: New API*/
- 1 simix/smx_smurf.c            582 /* TUTORIAL: New API*/
- 2 simix/smx_smurf.c            616 /* TUTORIAL: New API*/
- 3 simix/smx_smurf_private.h    102 /* TUTORIAL: New API*/
- 4 simix/smx_smurf_private.h    629 /* TUTORIAL: New API*/
- 5 simix/smx_private.h           28 /* TUTORIAL: New API*/
- 6 simix/smx_private.h          101 /* TUTORIAL: New API*/
- 7 simix/smx_private.h          182 /* TUTORIAL: New API*/
- 8 simix/smx_global.c           454 /* TUTORIAL: New API*/
- 9 simix/smx_new_api.c            8 /* TUTORIAL: New API*/
-10 simix/smx_user.c            1684 /* TUTORIAL: New API*/
-11 simix/smx_new_api_private.h    8 /* TUTORIAL: New API*/
-12 simix/smx_process.c          338 /* TUTORIAL: New API*/
-\endverbatim
+\tableofcontents
 
 \section simgrid_dev_guide_model How to add a new model in surf?
 The figure below show the architecture of the SURF layer. This layer is composed
@@ -139,39 +117,48 @@ s_surf_model_description_t surf_plugin_description[] = {
 ~~~~
 
 \section simgrid_dev_guide_simcall How to add a new simcall?
-A simcall is used to go from user mode to kernel mode. The workflow of
-a simcall is the following:
+
+A simcall is used to go from user mode to kernel mode. There is some
+sort of popping dance involved, as we want to isolate the user
+contextes from their environment (so that they can run in parallel).
+
+The workflow of a simcall is the following:
 
 - `<ret> simcall_<name>(<args>)`
  - `simcall_BODY_<name>(<args>)`
-  - create the simcall
-  - `SIMIX_process_yield` if not maestro
+  - Initializes the simcall (store the arguments in position)
+  - If maestro, executes the simcall directly (and return)
+  - If not, call `SIMIX_process_yield` to give back the control to maestro
   - ========== KERNEL MODE ==========
-  - `SIMIX_simcall_pre`
-   - `SIMIX_pre_<name>(simcall, <args>)`
-   - `SIMIX_simcall_answer(simcall)`
+  - `SIMIX_simcall_handle` large switch (on simcall) doing for each:
+   - `simcall_HANDLER_<name>(simcall, <args>)` (the manual code handling the simcall)
+   - If the simcall is not marked as "blocking" in its definition,
+     call `SIMIX_simcall_answer(simcall)` that adds back the issuer
+     process to the list of processes to run in the next scheduling round.
+     It is thus the responsability of the blocking simcalls to call
+     `SIMIX_simcall_answer(simcall)` themselves in their handler.
 
-To simplify the simcall creation, we have made a python script that
-generate most of the code and give helpers for the remaining stuff.
-The script generating the simcalls (src/simix/simcalls.in) take in input
-the src/simix/simcalls.in file where the simcalls are defined and generate
-the following files:
+Note that empty HANDLERs can be omitted. These functions usually do
+some parameter checking, or retrieve some information about the
+simcall issuer, but when there no need for such things, the handler
+can be omited. In that case, we directly call the function
+`simcall_<name>(<args>)`.
 
-- simcall_generated_args_getter_setter.h:
-  functions to get and set simcall arguments
-- simcall_generated_res_getter_setter.h:
-  functions to get and set simcall result
-- simcall_generated_body.c:
-  the BODY function of the simcall
-- simcall_generated_case.c:
-  the case of the SIMIX_simcall_pre function
-- simcall_generated_enum.h:
-  the enum of simcalls
-- simcall_generated_string.c:
-  string corresponding to the enum to debug
+To simplify the simcall creation, a python script generates most of
+the code and give helpers for the remaining stuff. That script reads
+the simcall definitions from src/simix/simcalls.in, checks that both
+`simcall_<name>()` and `simcall_HANDLER()` are defined somewhere, and
+generates the following files:
 
-Furthermode if the simcall_<name> or the SIMIX_pre_<name> function are missing,
-a warning will show up with a prototype of the corresponding fonction to fill.
+- smx_popping_accessors.h:
+  Helper functions to get and set simcall arguments and results
+- smx_popping_bodies.c:
+  The BODY function of each simcall
+- smx_popping_enum.c:
+  Definition of type `enum e_smx_simcall_t` (one value per existing simcall)
+- smx_popping_generated.c:
+  Definitions of `simcall_names[]` (debug name of each simcall), and
+  SIMIX_simcall_enter() that deals with the simcall from within the kernel
 
 The simcall.in file list all the simcalls in sections. A line starting by "##"
 define a new section which will be replace by a "ifdef" in the generated code.

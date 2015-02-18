@@ -15,7 +15,6 @@ public class File {
 	private long bind = 0;
 	/**
 	 * Constructor, opens the file.
-	 * @param storage is the name where you can find the file descriptor 
 	 * @param path is the file location on the storage 
 	 */
 	public File(String path) {

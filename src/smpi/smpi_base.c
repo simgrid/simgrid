@@ -17,7 +17,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
 
 
-static int match_recv(void* a, void* b, smx_action_t ignored) {
+static int match_recv(void* a, void* b, smx_synchro_t ignored) {
    MPI_Request ref = (MPI_Request)a;
    MPI_Request req = (MPI_Request)b;
    XBT_DEBUG("Trying to match a recv of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
@@ -39,7 +39,7 @@ static int match_recv(void* a, void* b, smx_action_t ignored) {
   }else return 0;
 }
 
-static int match_send(void* a, void* b,smx_action_t ignored) {
+static int match_send(void* a, void* b,smx_synchro_t ignored) {
    MPI_Request ref = (MPI_Request)a;
    MPI_Request req = (MPI_Request)b;
    XBT_DEBUG("Trying to match a send of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
@@ -344,19 +344,22 @@ void smpi_mpi_start(MPI_Request request)
 
   if (request->flags & RECV) {
     print_request("New recv", request);
+        
+    xbt_mutex_t mut=smpi_process_mailboxes_mutex();
+    xbt_mutex_acquire(mut);
     
     if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres")){
     //We have to check both mailboxes (because SSEND messages are sent to the large mbox). begin with the more appropriate one : the small one.
       mailbox = smpi_process_mailbox_small();
-      XBT_DEBUG("Is there a corresponding send already posted the small mailbox %p (in case of SSEND)?", mailbox);
-      smx_action_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
+      XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %p (in case of SSEND)?", mailbox);
+      smx_synchro_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
     
       if(action ==NULL){
         mailbox = smpi_process_mailbox();
         XBT_DEBUG("No, nothing in the small mailbox test the other one : %p", mailbox);
         action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
         if(action ==NULL){
-          XBT_DEBUG("Still notching, switch back to the small mailbox : %p", mailbox);
+          XBT_DEBUG("Still nothing, switch back to the small mailbox : %p", mailbox);
           mailbox = smpi_process_mailbox_small();
           }
       }else{
@@ -365,7 +368,7 @@ void smpi_mpi_start(MPI_Request request)
     }else{
       mailbox = smpi_process_mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
-    smx_action_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
+    smx_synchro_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
     
       if(action ==NULL){
         XBT_DEBUG("No, nothing in the permanent receive mailbox");
@@ -393,7 +396,7 @@ void smpi_mpi_start(MPI_Request request)
                                          request, -1.0);
         XBT_DEBUG("recv simcall posted");
 
-
+    xbt_mutex_release(mut);
   } else {
 
 
@@ -419,10 +422,13 @@ void smpi_mpi_start(MPI_Request request)
         XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
     }
     
+    xbt_mutex_t mut=smpi_process_remote_mailboxes_mutex(receiver);
+    xbt_mutex_acquire(mut);
+    
     if (request->flags & RMA || request->size < sg_cfg_get_int("smpi/async_small_thres")) { // eager mode
       mailbox = smpi_process_remote_mailbox(receiver);
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
-      smx_action_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, (void*)request);
+      smx_synchro_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, (void*)request);
       if(action ==NULL){
        if (! (request->flags & SSEND)){
          mailbox = smpi_process_remote_mailbox_small(receiver);
@@ -490,7 +496,7 @@ void smpi_mpi_start(MPI_Request request)
       simcall_set_category(request->action, TRACE_internal_smpi_get_category());
 
 #endif
-
+    xbt_mutex_release(mut);
   }
 
 }
@@ -776,7 +782,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index,
 
   *index = MPI_UNDEFINED;
   flag = 0;
-  comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
+  comms = xbt_dynar_new(sizeof(smx_synchro_t), NULL);
   map = xbt_new(int, count);
   size = 0;
   for(i = 0; i < count; i++) {
@@ -905,10 +911,9 @@ void smpi_mpi_wait(MPI_Request * request, MPI_Status * status)
 
   if ((*request)->action != NULL) { // this is not a detached send
     simcall_comm_wait((*request)->action, -1.0);
-#ifdef HAVE_MC
-  if(MC_is_active() && (*request)->action)
+
+  if((MC_is_active() || MC_record_replay_is_active()) && (*request)->action)
     (*request)->action->comm.dst_data = NULL; // dangling pointer : dst_data is freed with a wait, need to set it to NULL for system state comparison
-#endif
   }
 
   finish_wait(request, status);
@@ -927,7 +932,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[],
   index = MPI_UNDEFINED;
   if(count > 0) {
     // Wait for a request to complete
-    comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
+    comms = xbt_dynar_new(sizeof(smx_synchro_t), NULL);
     map = xbt_new(int, count);
     size = 0;
     XBT_DEBUG("Wait for one of %d", count);
@@ -993,7 +998,7 @@ int smpi_mpi_waitall(int count, MPI_Request requests[],
   }
   for(c = 0; c < count; c++) {
 
-    if (MC_is_active()) {
+    if (MC_is_active() || MC_record_replay_is_active()) {
       smpi_mpi_wait(&requests[c], pstat);
       index = c;
     } else {
@@ -1587,4 +1592,3 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count,
   xbt_free(tmpbufs);
   xbt_free(requests);
 }
-

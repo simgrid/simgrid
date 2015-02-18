@@ -10,6 +10,9 @@ endif()
 
 enable_language(CXX)
 
+INCLUDE(CheckCCompilerFlag)
+CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
+
 if (APPLE) #MAC
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -63,7 +66,7 @@ set(SIMGRID_VERSION_MINOR "12")
 set(SIMGRID_VERSION_PATCH "0")
 set(SIMGRID_VERSION_EXTRA "-devel") # Extra words to add to version string (e.g. -rc1)
 
-set(SIMGRID_VERSION_DATE  "2014") # Year for copyright information
+set(SIMGRID_VERSION_DATE  "2015") # Year for copyright information
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")

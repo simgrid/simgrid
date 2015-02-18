@@ -95,6 +95,11 @@ described in
     settings (accurate modeling of slow start with correction factors on
     three intervals: < 1KiB, < 64 KiB, >= 64 KiB). See also \ref
     options_model_network_coefs "this section" for more info.
+  - \b IB: Realistic network model specifically tailored for HPC
+    settings with InfiniBand networks (accurate modeling contention 
+    behavior, based on the model explained in 
+    http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf). 
+    See also \ref options_model_network_coefs "this section" for more info.
   - \b CM02: Legacy network analytic model (Very similar to LV08, but
     without corrective factors. The timings of small messages are thus
     poorly modeled)
@@ -208,6 +213,12 @@ If you are using the SMPI model, these correction coeficients are
 themselves corrected by constant values depending on the size of the
 exchange. Again, only hardcore experts should bother about this fact.
 
+InfiniBand network behavior can be modeled through 3 parameters, as explained in
+http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf . These
+factors can be changed through option smpi/IB_penalty_factors:"βe;βs;γs". By 
+default SMPI uses factors computed one Stampede cluster from TACC, with optimal
+deployment of processes on nodes.
+
 \subsubsection options_model_network_crosstraffic Simulating cross-traffic
 
 As of SimGrid v3.7, cross-traffic effects can be taken into account in
@@ -295,7 +306,7 @@ void MC_assert(int prop);
 
 If you want to specify liveness properties (beware, that's
 experimental), you have to pass them on the command line, specifying
-the name of the file containing the property, as formated by the
+the name of the file containing the property, as formatted by the
 ltl2ba program.
 
 \verbatim

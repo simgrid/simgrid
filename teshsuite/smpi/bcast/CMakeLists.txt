@@ -9,7 +9,7 @@ if(enable_smpi)
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   add_executable(bcast bcast.c)
   add_executable(bcast_coll bcast_coll.c)
   target_link_libraries(bcast simgrid)

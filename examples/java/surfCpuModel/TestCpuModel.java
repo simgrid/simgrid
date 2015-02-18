@@ -21,10 +21,10 @@ public class TestCpuModel {
 
   public static void main(String[] args) throws NativeException {
     /* initialize the MSG simulation. Must be done before anything else (even logging). */
+    Msg.init(args);
+    
     CpuConstantModel cm = new CpuConstantModel();
     Surf.setCpuModel(cm);
-
-    Msg.init(args);
 
     if(args.length < 2) {
       Msg.info("Usage   : TestPlugin platform_file deployment_file");

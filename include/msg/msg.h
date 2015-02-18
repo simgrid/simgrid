@@ -136,11 +136,11 @@ XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 XBT_PUBLIC(void) __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
 
-XBT_PUBLIC(double) MSG_get_host_power_peak_at(msg_host_t h, int pstate_index);
-XBT_PUBLIC(double) MSG_get_host_current_power_peak(msg_host_t h);
-XBT_PUBLIC(int) MSG_get_host_nb_pstates(msg_host_t h);
-XBT_PUBLIC(void) MSG_set_host_power_peak_at(msg_host_t h, int pstate);
-XBT_PUBLIC(double) MSG_get_host_consumed_energy(msg_host_t h);
+XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
+XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
+XBT_PUBLIC(int)    MSG_host_get_pstate_number(msg_host_t h);
+XBT_PUBLIC(void)   MSG_host_set_pstate(msg_host_t h, int pstate);
+XBT_PUBLIC(double) MSG_host_get_consumed_energy(msg_host_t h);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(msg_host_t host);
@@ -297,7 +297,7 @@ XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task,
                                                     const char *alias,
-                                                    int (*match_fun)(void*,void*, smx_action_t),
+                                                    int (*match_fun)(void*,void*, smx_synchro_t),
                                                     void *match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
@@ -508,12 +508,6 @@ xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
-
-/* ****************************************************************************************** */
-/* TUTORIAL: New API                                                                        */
-/* Declare all functions for the API                                                          */
-/* ****************************************************************************************** */
-XBT_PUBLIC(int) MSG_new_API_fct(const char* param1, double param2);
 
 SG_END_DECL()
 #endif

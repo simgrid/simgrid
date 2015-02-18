@@ -431,6 +431,31 @@ lmm_variable_t lmm_get_var_from_cnst(lmm_system_t /*sys*/,
     return NULL;
 }
 
+//if we modify the swag between calls, normal version may loop forever
+//this safe version ensures that we browse the swag elements only once
+lmm_variable_t lmm_get_var_from_cnst_safe(lmm_system_t /*sys*/,
+                                     lmm_constraint_t cnst,
+                                     lmm_element_t * elem,
+                                     lmm_element_t * nextelem,
+                                     int * numelem)
+{
+  if (!(*elem)){
+    *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->element_set));
+    *numelem = xbt_swag_size(&(cnst->element_set))-1;
+  }else{
+    *elem = *nextelem;
+    if(*numelem>0){
+     (*numelem) --;
+    }else
+      return NULL;
+  }
+  if (*elem){
+    *nextelem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->element_set.offset);
+    return (*elem)->variable;
+  }else
+    return NULL;
+}
+
 void *lmm_constraint_id(lmm_constraint_t cnst)
 {
   return cnst->id;

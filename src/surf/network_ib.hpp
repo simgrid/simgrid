@@ -7,37 +7,50 @@
 #ifndef SURF_NETWORK_IB_HPP_
 #define SURF_NETWORK_IB_HPP_
 
-class NetworkIBModel : public NetworkModel {
+#include "network_smpi.hpp"
+class IBNode;
+
+
+class ActiveComm{
+public :
+  //IBNode* origin;
+  IBNode* destination;
+  NetworkActionPtr action;
+  double init_rate;
+  ActiveComm() : destination(NULL),action(NULL),init_rate(-1){};
+  ~ActiveComm(){};
+};
+
+class IBNode{
+public :
+  int id;
+    //store related links, to ease computation of the penalties
+  std::vector<ActiveComm*> ActiveCommsUp;
+  //store the number of comms received from each node
+  std::map<IBNode*, int> ActiveCommsDown;
+  //number of comms the node is receiving
+  int nbActiveCommsDown;
+  IBNode(int id) : id(id),nbActiveCommsDown(0){};
+  ~IBNode(){};
+};
+
+class NetworkIBModel : public NetworkSmpiModel {
 private:
+  void updateIBfactors_rec(IBNode *root, bool* updatedlist);
+  void computeIBfactors(IBNode *root);
 public:
   NetworkIBModel();
   NetworkIBModel(const char *name);
-  ~NetworkModel();
-  virtual ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
-                                double size, double rate);
-  virtual NetworkLinkPtr createNetworkLink(const char *name,
-                                          double bw_initial,
-                                          tmgr_trace_t bw_trace,
-                                          double lat_initial,
-                                          tmgr_trace_t lat_trace,
-                                          e_surf_resource_state_t state_initial,
-                                          tmgr_trace_t state_trace,
-                                          e_surf_link_sharing_policy_t policy,
-                                          xbt_dict_t properties);
-};
-
-class NetworkIBLink : public NetworkLink {
-private:
-public:
-  NetworkIBLink(NetworkModelPtr model, const char *name, xbt_dict_t props);
-  NetworkIBLink(NetworkModelPtr model, const char *name, xbt_dict_t props,
-                lmm_constraint_t constraint,
-                tmgr_history_t history,
-                tmgr_trace_t state_trace);
-  ~NetworkIBLink();
-  virtual void updateLatency(double value, double date=surf_get_clock());
-  virtual void updateBandwidth(double value, double date=surf_get_clock());
-
+  ~NetworkIBModel();
+  void updateIBfactors(NetworkActionPtr action, IBNode *from, IBNode * to, int remove);
+  
+  xbt_dict_t active_nodes;
+  std::map<NetworkActionPtr , std::pair<IBNode*,IBNode*> > active_comms;
+  
+  double Bs;
+  double Be;
+  double ys;
 
 };
+
 #endif

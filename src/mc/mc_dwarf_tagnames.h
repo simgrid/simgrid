@@ -59,7 +59,6 @@ case 0x3a: return "DW_TAG_imported_module";
 case 0x3b: return "DW_TAG_unspecified_type";
 case 0x3c: return "DW_TAG_partial_unit";
 case 0x3d: return "DW_TAG_imported_unit";
-case 0x3e: return "DW_TAG_mutable_type";
 case 0x3f: return "DW_TAG_condition";
 case 0x40: return "DW_TAG_shared_type";
 case 0x41: return "DW_TAG_type_unit";

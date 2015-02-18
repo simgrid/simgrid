@@ -180,7 +180,8 @@ void smx_ctx_cojava_stop(smx_context_t context)
   if (context->iwannadie) {
     context->iwannadie = 0;
     JNIEnv *env = get_current_thread_env();
-    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", xbt_strdup("Process killed :)"));
+    // TODO it will be nice to have the name of the process to help the end-user to know which Process has been killed
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", xbt_strdup("Process killed :) (file smx_context_cojava.c)"));
     THROWF(cancel_error, 0, "process cancelled");
   }
   else {

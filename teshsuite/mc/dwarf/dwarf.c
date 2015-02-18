@@ -15,6 +15,7 @@
 #include <mc/mc.h>
 
 #include "../../src/include/mc/datatypes.h"
+#include "../../src/mc/mc_object_info.h"
 #include "../../src/mc/mc_private.h"
 
 int test_some_array[4][5][6];
@@ -82,7 +83,15 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
   assert(var);
 
   void* frame_base = mc_find_frame_base(subprogram, info, cursor);
-  xbt_assert((void*)mc_dwarf_resolve_locations(&var->locations, info, cursor, frame_base, NULL, -1) == address,
+  s_mc_location_t location;
+
+  mc_dwarf_resolve_locations(&location,
+    &var->locations, info, cursor, frame_base, NULL, -1);
+
+  xbt_assert(mc_get_location_type(&location)==MC_LOCATION_TYPE_ADDRESS,
+    "Unexpected location type for variable %s of %s", variable, function);
+
+  xbt_assert(location.memory_location == address,
     "Bad resolution of local variable %s of %s", variable, function);
 
 }

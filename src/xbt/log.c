@@ -104,13 +104,14 @@ higher about the XBT internals.
 \subsection log_app 1.3 Message appenders
 
 The message appenders are the elements in charge of actually displaying the
-message to the user. For now, only two appenders exist: the default one prints
-stuff on stderr while it is possible to create appenders printing to a specific
-file.
+message to the user. For now, four appenders exist: 
+- the default one prints stuff on stderr 
+- file sends the data to a single file
+- rollfile overwrites the file when the file grows too large
+- splitfile creates new files with a specific maximum size
 
-Other are planed (such as the one sending everything to a remote server,
-or the one using only a fixed amount of lines in a file, and rotating content on
-need). One day, for sure ;)
+Other are planed (such as the one sending everything to a remote server) 
+One day, for sure ;)
 
 \subsection log_lay 1.4 Message layouts
 
@@ -398,6 +399,17 @@ messages. This is done through the <tt>app</tt> keyword. For example,
 \verbatim --log=root.app:file:mylogfile\endverbatim redirects the output
 to the file mylogfile.
 
+For splitfile appender, the format is 
+\verbatim --log=root.app:splitfile:size:mylogfile_%.format\endverbatim
+
+The size is in bytes, and the % wildcard will be replaced by the number of the
+file. If no % is present, it will be appended at the end.
+
+rollfile appender is also available, it can be used as
+\verbatim --log=root.app:rollfile:size:mylogfile\endverbatim
+When the file grows to be larger than the size, it will be emptied and new log 
+events will be sent at its beginning 
+
 Any appender setup this way have its own layout format (simple one by default),
 so you may have to change it too afterward. Moreover, the additivity of the log category
 is also set to false to prevent log event displayed by this appender to "leak" to any other
@@ -480,11 +492,8 @@ By default, only the root category have an appender, and any other category has
 its additivity set to true. This causes all messages to be logged by the root
 category's appender.
 
-The default appender function currently prints to stderr, and the only other
-existing one writes to the specified file. More would be needed, like the one
-able to send the logs to a remote dedicated server.
-This is on our TODO list for quite a while now, but your help would be
-welcome here, too. */
+The default appender function currently prints to stderr
+*/
 
 xbt_log_appender_t xbt_log_default_appender = NULL;     /* set in log_init */
 xbt_log_layout_t xbt_log_default_layout = NULL; /* set in log_init */
@@ -651,7 +660,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_io);
   XBT_LOG_CONNECT(msg_kernel);
   XBT_LOG_CONNECT(msg_mailbox);
-  XBT_LOG_CONNECT(msg_new_API);
   XBT_LOG_CONNECT(msg_process);
   XBT_LOG_CONNECT(msg_synchro);
   XBT_LOG_CONNECT(msg_task);
@@ -676,9 +684,8 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(simix_io);
   XBT_LOG_CONNECT(simix_kernel);
   XBT_LOG_CONNECT(simix_network);
-  XBT_LOG_CONNECT(simix_new_api);
   XBT_LOG_CONNECT(simix_process);
-  XBT_LOG_CONNECT(simix_smurf);
+  XBT_LOG_CONNECT(simix_popping);
   XBT_LOG_CONNECT(simix_synchro);
   XBT_LOG_CONNECT(simix_vm);
 
@@ -1158,6 +1165,10 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 
     if (!strncmp(neweq, "file:", 5)) {
       set->appender = xbt_log_appender_file_new(neweq + 5);
+    }else if (!strncmp(neweq, "rollfile:", 9)) {
+		set->appender = xbt_log_appender2_file_new(neweq + 9,1);
+    }else if (!strncmp(neweq, "splitfile:", 10)) {
+		set->appender = xbt_log_appender2_file_new(neweq + 10,0);
     } else {
       THROWF(arg_error, 0, "Unknown appender log type: '%s'", neweq);
     }

@@ -4,164 +4,52 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "mc_base.h"
+
+#ifndef _XBT_WIN32
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <libgen.h>
+#endif
 
 #include "simgrid/sg_config.h"
 #include "../surf/surf_private.h"
 #include "../simix/smx_private.h"
-#include "../xbt/mmalloc/mmprivate.h"
 #include "xbt/fifo.h"
-#include "mc_private.h"
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
 
-XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
+#ifdef HAVE_MC
+#define UNW_LOCAL_ONLY
+#include <libunwind.h>
+
+#include "../xbt/mmalloc/mmprivate.h"
+#include "mc_object_info.h"
+#include "mc_comm_pattern.h"
+#include "mc_request.h"
+#include "mc_safety.h"
+#include "mc_memory_map.h"
+#include "mc_snapshot.h"
+#include "mc_liveness.h"
+#include "mc_private.h"
+#endif
+#include "mc_record.h"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 
-/* Configuration support */
-e_mc_reduce_t mc_reduce_kind = e_mc_reduce_unset;
+double *mc_time = NULL;
 
-int _sg_do_model_check = 0;
-int _sg_mc_checkpoint = 0;
-int _sg_mc_sparse_checkpoint = 0;
-int _sg_mc_soft_dirty = 0;
-char *_sg_mc_property_file = NULL;
-int _sg_mc_timeout = 0;
-int _sg_mc_hash = 0;
-int _sg_mc_max_depth = 1000;
-int _sg_mc_visited = 0;
-char *_sg_mc_dot_output_file = NULL;
-int _sg_mc_comms_determinism = 0;
-int _sg_mc_send_determinism = 0;
-int _sg_mc_safety = 0;
-int _sg_mc_liveness = 0;
-
+#ifdef HAVE_MC
 int user_max_depth_reached = 0;
-
-void _mc_cfg_cb_reduce(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a reduction strategy after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  char *val = xbt_cfg_get_string(_sg_cfg_set, name);
-  if (!strcasecmp(val, "none")) {
-    mc_reduce_kind = e_mc_reduce_none;
-  } else if (!strcasecmp(val, "dpor")) {
-    mc_reduce_kind = e_mc_reduce_dpor;
-  } else {
-    xbt_die("configuration option %s can only take 'none' or 'dpor' as a value",
-            name);
-  }
-}
-
-void _mc_cfg_cb_checkpoint(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_checkpoint = xbt_cfg_get_int(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_sparse_checkpoint(const char *name, int pos) {
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_sparse_checkpoint = xbt_cfg_get_boolean(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_soft_dirty(const char *name, int pos) {
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die("You are specifying a soft dirty value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_soft_dirty = xbt_cfg_get_boolean(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_property(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a property after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_property_file = xbt_cfg_get_string(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_timeout(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a value to enable/disable timeout for wait requests after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_timeout = xbt_cfg_get_boolean(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_hash(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a value to enable/disable the use of global hash to speedup state comparaison, but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_hash = xbt_cfg_get_boolean(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_max_depth(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a max depth value after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_max_depth = xbt_cfg_get_int(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_visited(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a number of stored visited states after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_visited = xbt_cfg_get_int(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_dot_output(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a file name for a dot output of graph state after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_dot_output_file = xbt_cfg_get_string(_sg_cfg_set, name);
-}
-
-void _mc_cfg_cb_comms_determinism(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a value to enable/disable the detection of determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_comms_determinism = xbt_cfg_get_boolean(_sg_cfg_set, name);
-  mc_reduce_kind = e_mc_reduce_none;
-}
-
-void _mc_cfg_cb_send_determinism(const char *name, int pos)
-{
-  if (_sg_cfg_init_status && !_sg_do_model_check) {
-    xbt_die
-        ("You are specifying a value to enable/disable the detection of send-determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
-  }
-  _sg_mc_send_determinism = xbt_cfg_get_boolean(_sg_cfg_set, name);
-  mc_reduce_kind = e_mc_reduce_none;
-}
 
 /* MC global data structures */
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
-double *mc_time = NULL;
+
 __thread mc_comparison_times_t mc_comp_times = NULL;
 __thread double mc_snapshot_comparison_time;
 mc_stats_t mc_stats = NULL;
@@ -240,6 +128,21 @@ static void MC_init_debug_info(void)
 
 mc_model_checker_t mc_model_checker = NULL;
 
+mc_model_checker_t MC_model_checker_new()
+{
+  mc_model_checker_t mc = xbt_new0(s_mc_model_checker_t, 1);
+  mc->pages = mc_pages_store_new();
+  mc->fd_clear_refs = -1;
+  mc->fd_pagemap = -1;
+  return mc;
+}
+
+void MC_model_checker_delete(mc_model_checker_t mc) {
+  mc_pages_store_delete(mc->pages);
+  if(mc->record)
+    xbt_dynar_free(&mc->record);
+}
+
 void MC_init()
 {
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
@@ -251,10 +154,7 @@ void MC_init()
 
   MC_SET_MC_HEAP;
 
-  mc_model_checker = xbt_new0(s_mc_model_checker_t, 1);
-  mc_model_checker->pages = mc_pages_store_new();
-  mc_model_checker->fd_clear_refs = -1;
-  mc_model_checker->fd_pagemap = -1;
+  mc_model_checker = MC_model_checker_new();
 
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
 
@@ -292,33 +192,32 @@ void MC_init()
     /* Ignore local variable about time used for tracing */
     MC_ignore_local_variable("start_time", "*");
 
+    /* Main MC state: */
     MC_ignore_global_variable("mc_model_checker");
-
-    // Mot of those things could be moved into mc_model_checker:
-    MC_ignore_global_variable("compared_pointers");
-    MC_ignore_global_variable("mc_comp_times");
-    MC_ignore_global_variable("mc_snapshot_comparison_time");
-    MC_ignore_global_variable("mc_time");
-    MC_ignore_global_variable("smpi_current_rank");
-    MC_ignore_global_variable("counter");       /* Static variable used for tracing */
-    MC_ignore_global_variable("maestro_stack_start");
-    MC_ignore_global_variable("maestro_stack_end");
-    MC_ignore_global_variable("smx_total_comms");
-    MC_ignore_global_variable("communications_pattern");
     MC_ignore_global_variable("initial_communications_pattern");
     MC_ignore_global_variable("incomplete_communications_pattern");
+    MC_ignore_global_variable("nb_comm_pattern");
 
-    if (MC_is_active()) {
-      MC_ignore_global_variable("mc_diff_info");
-    }
+    /* MC __thread variables: */
+    MC_ignore_global_variable("mc_diff_info");
+    MC_ignore_global_variable("mc_comp_times");
+    MC_ignore_global_variable("mc_snapshot_comparison_time");
+
+    /* This MC state is used in MC replay as well: */
+    MC_ignore_global_variable("mc_time");
+
+    /* Static variable used for tracing */
+    MC_ignore_global_variable("counter");
+
+    /* SIMIX */
+    MC_ignore_global_variable("smx_total_comms");
 
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
     smx_process_t process;
     xbt_swag_foreach(process, simix_global->process_list) {
-      MC_ignore_heap(&(process->process_hookup),
-                     sizeof(process->process_hookup));
-                     }
+      MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
+    }
   }
 
   if (raw_mem_set)
@@ -454,38 +353,6 @@ void MC_exit(void)
   //xbt_abort();
 }
 
-int SIMIX_pre_mc_random(smx_simcall_t simcall, int min, int max)
-{
-
-  return simcall->mc_value;
-}
-
-
-int MC_random(int min, int max)
-{
-  /*FIXME: return mc_current_state->executed_transition->random.value; */
-  return simcall_mc_random(min, max);
-}
-
-/**
- * \brief Schedules all the process that are ready to run
- */
-void MC_wait_for_requests(void)
-{
-  smx_process_t process;
-  smx_simcall_t req;
-  unsigned int iter;
-
-  while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
-    SIMIX_process_runall();
-    xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
-      req = &process->simcall;
-      if (req->call != SIMCALL_NONE && !MC_request_is_visible(req))
-        SIMIX_simcall_pre(req, 0);
-    }
-  }
-}
-
 int MC_deadlock_check()
 {
   int deadlock = FALSE;
@@ -493,8 +360,7 @@ int MC_deadlock_check()
   if (xbt_swag_size(simix_global->process_list)) {
     deadlock = TRUE;
     xbt_swag_foreach(process, simix_global->process_list) {
-      if (process->simcall.call != SIMCALL_NONE
-          && MC_request_is_enabled(&process->simcall)) {
+      if (MC_request_is_enabled(&process->simcall)) {
         deadlock = FALSE;
         break;
       }
@@ -503,67 +369,122 @@ int MC_deadlock_check()
   return deadlock;
 }
 
+void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int value, xbt_dynar_t pattern, int backtracking) {
+
+  switch(call_type) {
+  case MC_CALL_TYPE_NONE:
+    break;
+  case MC_CALL_TYPE_SEND:
+  case MC_CALL_TYPE_RECV:
+    get_comm_pattern(pattern, req, call_type);
+    break;
+  case MC_CALL_TYPE_WAIT:
+  case MC_CALL_TYPE_WAITANY:
+    {
+      smx_synchro_t current_comm = NULL;
+      if (call_type == MC_CALL_TYPE_WAIT)
+        current_comm = simcall_comm_wait__get__comm(req);
+      else
+        current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t);
+      // First wait only must be considered:
+      if (current_comm->comm.refcount == 1)
+        complete_comm_pattern(pattern, current_comm, backtracking);
+      break;
+    }
+  default:
+    xbt_die("Unexpected call type %i", (int)call_type);
+  }
+  
+}
+
+static void MC_restore_communications_pattern(mc_state_t state) {
+  mc_list_comm_pattern_t list_process_comm;
+  unsigned int cursor, cursor2;
+  xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm){
+    list_process_comm->index_comm = (int)xbt_dynar_get_as(state->index_comm, cursor, int);
+  }
+  mc_comm_pattern_t comm;
+  cursor = 0;
+  xbt_dynar_t initial_incomplete_process_comms, incomplete_process_comms;
+  for(int i=0; i<simix_process_maxpid; i++){
+    initial_incomplete_process_comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
+    xbt_dynar_reset(initial_incomplete_process_comms);
+    incomplete_process_comms = xbt_dynar_get_as(state->incomplete_comm_pattern, i, xbt_dynar_t);
+    xbt_dynar_foreach(incomplete_process_comms, cursor2, comm) {
+      mc_comm_pattern_t copy_comm = xbt_new0(s_mc_comm_pattern_t, 1);
+      copy_comm->index = comm->index;
+      copy_comm->type = comm->type;
+      copy_comm->comm = comm->comm;
+      copy_comm->rdv = strdup(comm->rdv);
+      copy_comm->data_size = -1;
+      copy_comm->data = NULL;
+      if(comm->type == SIMIX_COMM_SEND){
+        copy_comm->src_proc = comm->src_proc;
+        copy_comm->src_host = comm->src_host;
+        if(comm->data != NULL){
+          copy_comm->data_size = comm->data_size;
+          copy_comm->data = xbt_malloc0(comm->data_size);
+          memcpy(copy_comm->data, comm->data, comm->data_size);
+        }
+      }else{
+        copy_comm->dst_proc = comm->dst_proc;
+        copy_comm->dst_host = comm->dst_host;
+      }
+      xbt_dynar_push(initial_incomplete_process_comms, &copy_comm);
+    }
+  }
+}
+
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
  * \param stack The stack with the transitions to execute.
  * \param start Start index to begin the re-execution.
  */
-void MC_replay(xbt_fifo_t stack, int start)
+void MC_replay(xbt_fifo_t stack)
 {
   int raw_mem = (mmalloc_get_current_heap() == mc_heap);
 
-  int value, i = 1, count = 1, call = 0, j;
+  int value, count = 1, j;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
   mc_state_t state;
-  smx_process_t process = NULL;
-  smx_action_t current_comm;
-
+  
   XBT_DEBUG("**** Begin Replay ****");
 
-  if (start == -1) {
-    /* Restore the initial state */
-    MC_restore_snapshot(initial_global_state->snapshot);
-    /* At the moment of taking the snapshot the raw heap was set, so restoring
-     * it will set it back again, we have to unset it to continue  */
-    MC_SET_STD_HEAP;
+  /* Intermediate backtracking */
+  if(_sg_mc_checkpoint > 0) {
+    start_item = xbt_fifo_get_first_item(stack);
+    state = (mc_state_t)xbt_fifo_get_item_content(start_item);
+    if(state->system_state){
+      MC_restore_snapshot(state->system_state);
+      if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
+        MC_restore_communications_pattern(state);
+      MC_SET_STD_HEAP;
+      return;
+    }
   }
+
+
+  /* Restore the initial state */
+  MC_restore_snapshot(initial_global_state->snapshot);
+  /* At the moment of taking the snapshot the raw heap was set, so restoring
+   * it will set it back again, we have to unset it to continue  */
+  MC_SET_STD_HEAP;
 
   start_item = xbt_fifo_get_last_item(stack);
-  if (start != -1) {
-    while (i != start) {
-      start_item = xbt_fifo_get_prev_item(start_item);
-      i++;
-    }
-  }
-
+  
   MC_SET_MC_HEAP;
-
-  if (mc_reduce_kind == e_mc_reduce_dpor) {
-    xbt_dict_reset(first_enabled_state);
-    xbt_swag_foreach(process, simix_global->process_list) {
-      if (MC_process_is_enabled(process)) {
-        char *key = bprintf("%lu", process->pid);
-        char *data = bprintf("%d", count);
-        xbt_dict_set(first_enabled_state, key, data, NULL);
-        xbt_free(key);
-      }
-    }
-  }
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     for (j=0; j<simix_process_maxpid; j++) {
-      xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(communications_pattern, j, xbt_dynar_t));
-    }
-    for (j=0; j<simix_process_maxpid; j++) {
       xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, j, xbt_dynar_t));
+      ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, j, mc_list_comm_pattern_t))->index_comm = 0;
     }
   }
 
   MC_SET_STD_HEAP;
-
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (item = start_item;
@@ -572,16 +493,7 @@ void MC_replay(xbt_fifo_t stack, int start)
 
     state = (mc_state_t) xbt_fifo_get_item_content(item);
     saved_req = MC_state_get_executed_request(state, &value);
-
-    if (mc_reduce_kind == e_mc_reduce_dpor) {
-      MC_SET_MC_HEAP;
-      char *key = bprintf("%lu", saved_req->issuer->pid);
-      if(xbt_dict_get_or_null(first_enabled_state, key))
-         xbt_dict_remove(first_enabled_state, key);
-      xbt_free(key);
-      MC_SET_STD_HEAP;
-    }
-
+    
     if (saved_req) {
       /* because we got a copy of the executed request, we have to fetch the  
          real one, pointed by the request field of the issuer process */
@@ -595,58 +507,20 @@ void MC_replay(xbt_fifo_t stack, int start)
       }
 
       /* TODO : handle test and testany simcalls */
-      if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-        if (req->call == SIMCALL_COMM_ISEND)
-          call = 1;
-        else if (req->call == SIMCALL_COMM_IRECV)
-          call = 2;
-        else if (req->call == SIMCALL_COMM_WAIT)
-          call = 3;
-        else if (req->call == SIMCALL_COMM_WAITANY)
-          call = 4;
-      }
+      e_mc_call_type_t call = MC_CALL_TYPE_NONE;
+      if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
+        call = mc_get_call_type(req);
 
-      SIMIX_simcall_pre(req, value);
+      SIMIX_simcall_handle(req, value);
 
-      if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-        MC_SET_MC_HEAP;
-        if (call == 1) { /* Send */
-          get_comm_pattern(communications_pattern, req, call);
-        } else if (call == 2) { /* Recv */
-          get_comm_pattern(communications_pattern, req, call);
-        } else if (call == 3) { /* Wait */
-          current_comm = simcall_comm_wait__get__comm(req);
-          if (current_comm->comm.refcount == 1)  /* First wait only must be considered */
-            complete_comm_pattern(communications_pattern, current_comm);
-        } else if (call == 4) { /* WaitAny */
-          current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_action_t);
-          if (current_comm->comm.refcount == 1) /* First wait only must be considered */
-            complete_comm_pattern(communications_pattern, current_comm);
-        }
-        MC_SET_STD_HEAP;
-        call = 0;
-      }
-
-
+      MC_SET_MC_HEAP;
+      if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
+        handle_comm_pattern(call, req, value, NULL, 1);
+      MC_SET_STD_HEAP;
+      
       MC_wait_for_requests();
 
       count++;
-
-      if (mc_reduce_kind == e_mc_reduce_dpor) {
-        MC_SET_MC_HEAP;
-        /* Insert in dict all enabled processes */
-        xbt_swag_foreach(process, simix_global->process_list) {
-          if (MC_process_is_enabled(process) ) {
-            char *key = bprintf("%lu", process->pid);
-            if (xbt_dict_get_or_null(first_enabled_state, key) == NULL) {
-              char *data = bprintf("%d", count);
-              xbt_dict_set(first_enabled_state, key, data, NULL);
-            }
-            xbt_free(key);
-          }
-        }
-        MC_SET_STD_HEAP;
-      }
     }
 
     /* Update statistics */
@@ -665,15 +539,30 @@ void MC_replay(xbt_fifo_t stack, int start)
 
 }
 
-void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
+void MC_replay_liveness(xbt_fifo_t stack)
 {
 
   initial_global_state->raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   xbt_fifo_item_t item;
-  int depth = 1;
+  mc_pair_t pair = NULL;
+  mc_state_t state = NULL;
+  smx_simcall_t req = NULL, saved_req = NULL;
+  int value, depth = 1;
+  char *req_str;
 
   XBT_DEBUG("**** Begin Replay ****");
+
+  /* Intermediate backtracking */
+  if(_sg_mc_checkpoint > 0) {
+    item = xbt_fifo_get_first_item(stack);
+    pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+    if(pair->graph_state->system_state){
+      MC_restore_snapshot(pair->graph_state->system_state);
+      MC_SET_STD_HEAP;
+      return;
+    }
+  }
 
   /* Restore the initial state */
   MC_restore_snapshot(initial_global_state->snapshot);
@@ -685,26 +574,21 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
     /* Traverse the stack from the initial state and re-execute the transitions */
     for (item = xbt_fifo_get_last_item(stack);
-         all_stack ? depth <= xbt_fifo_size(stack) : item != xbt_fifo_get_first_item(stack);
+         item != xbt_fifo_get_first_item(stack);
          item = xbt_fifo_get_prev_item(item)) {
 
-      mc_pair_t pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+      pair = (mc_pair_t) xbt_fifo_get_item_content(item);
 
-      mc_state_t state = (mc_state_t) pair->graph_state;
-      smx_simcall_t req = NULL, saved_req = NULL;
-      int value;
-      char *req_str;
+      state = (mc_state_t) pair->graph_state;
 
-      if (pair->requests > 0) {
+      if (pair->exploration_started) {
 
         saved_req = MC_state_get_executed_request(state, &value);
-        //XBT_DEBUG("SavedReq->call %u", saved_req->call);
 
         if (saved_req != NULL) {
           /* because we got a copy of the executed request, we have to fetch the
              real one, pointed by the request field of the issuer process */
           req = &saved_req->issuer->simcall;
-          //XBT_DEBUG("Req->call %u", req->call);
 
           /* Debug information */
           if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
@@ -715,7 +599,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
 
         }
 
-        SIMIX_simcall_pre(req, value);
+        SIMIX_simcall_handle(req, value);
         MC_wait_for_requests();
       }
 
@@ -724,7 +608,7 @@ void MC_replay_liveness(xbt_fifo_t stack, int all_stack)
       mc_stats->executed_transitions++;
 
       depth++;
-
+      
     }
 
   XBT_DEBUG("**** End Replay ****");
@@ -747,17 +631,13 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
   int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   MC_show_stack_safety(stack);
-
-  if (!_sg_mc_checkpoint) {
-
-    mc_state_t state;
-
-    MC_SET_MC_HEAP;
-    while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
-      MC_state_delete(state);
-    MC_SET_STD_HEAP;
-
-  }
+  
+  mc_state_t state;
+  
+  MC_SET_MC_HEAP;
+  while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
+    MC_state_delete(state, !state->in_visited_states ? 1 : 0);
+  MC_SET_STD_HEAP;
 
   if (raw_mem_set)
     MC_SET_MC_HEAP;
@@ -820,20 +700,17 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
   char *req_str = NULL;
 
   for (item = xbt_fifo_get_last_item(stack);
-       (item ? (pair = (mc_pair_t) (xbt_fifo_get_item_content(item)))
-        : (NULL)); item = xbt_fifo_get_prev_item(item)) {
+       (item ? (pair = (mc_pair_t) (xbt_fifo_get_item_content(item))) : (NULL));
+       item = xbt_fifo_get_prev_item(item)) {
     req = MC_state_get_executed_request(pair->graph_state, &value);
-    if (req) {
-      if (pair->requests > 0) {
-        req_str = MC_request_to_string(req, value);
-        XBT_INFO("%s", req_str);
-        xbt_free(req_str);
-      } else {
-        XBT_INFO("End of system requests but evolution in Büchi automaton");
-      }
+    if (req && req->call != SIMCALL_NONE) {
+      req_str = MC_request_to_string(req, value);
+      XBT_INFO("%s", req_str);
+      xbt_free(req_str);
     }
   }
 }
+
 
 void MC_dump_stack_liveness(xbt_fifo_t stack)
 {
@@ -872,11 +749,9 @@ void MC_print_statistics(mc_stats_t stats)
   }
   if (initial_global_state != NULL) {
     if (_sg_mc_comms_determinism)
-      XBT_INFO("Communication-deterministic : %s",
-               !initial_global_state->comm_deterministic ? "No" : "Yes");
+      XBT_INFO("Communication-deterministic : %s", !initial_global_state->comm_deterministic ? "No" : "Yes");
     if (_sg_mc_send_determinism)
-      XBT_INFO("Send-deterministic : %s",
-               !initial_global_state->send_deterministic ? "No" : "Yes");
+      XBT_INFO("Send-deterministic : %s", !initial_global_state->send_deterministic ? "No" : "Yes");
   }
   mmalloc_set_current_heap(previous_heap);
 }
@@ -888,6 +763,7 @@ void MC_assert(int prop)
     XBT_INFO("*** PROPERTY NOT VALID ***");
     XBT_INFO("**************************");
     XBT_INFO("Counter-example execution trace:");
+    MC_record_dump_path(mc_stack);
     MC_dump_stack_safety(mc_stack);
     MC_print_statistics(mc_stats);
     xbt_abort();
@@ -897,23 +773,6 @@ void MC_assert(int prop)
 void MC_cut(void)
 {
   user_max_depth_reached = 1;
-}
-
-void MC_process_clock_add(smx_process_t process, double amount)
-{
-  mc_time[process->pid] += amount;
-}
-
-double MC_process_clock_get(smx_process_t process)
-{
-  if (mc_time) {
-    if (process != NULL)
-      return mc_time[process->pid];
-    else
-      return -1;
-  } else {
-    return 0;
-  }
 }
 
 void MC_automaton_load(const char *file)
@@ -952,4 +811,52 @@ void MC_automaton_new_propositional_symbol(const char *id, void *fct)
   if (raw_mem_set)
     MC_SET_MC_HEAP;
 
+}
+
+void MC_dump_stacks(FILE* file)
+{
+  int raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
+  MC_SET_MC_HEAP;
+
+  int nstack = 0;
+  stack_region_t current_stack;
+  unsigned cursor;
+  xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
+    unw_context_t * context = (unw_context_t *)current_stack->context;
+    fprintf(file, "Stack %i:\n", nstack);
+
+    int nframe = 0;
+    char buffer[100];
+    unw_cursor_t c;
+    unw_init_local (&c, context);
+    unw_word_t off;
+    do {
+      const char * name = !unw_get_proc_name(&c, buffer, 100, &off) ? buffer : "?";
+      fprintf(file, "  %i: %s\n", nframe, name);
+      ++nframe;
+    } while(unw_step(&c));
+
+    ++nstack;
+  }
+
+  if (raw_mem_set)
+    MC_SET_MC_HEAP;
+}
+#endif
+
+double MC_process_clock_get(smx_process_t process)
+{
+  if (mc_time) {
+    if (process != NULL)
+      return mc_time[process->pid];
+    else
+      return -1;
+  } else {
+    return 0;
+  }
+}
+
+void MC_process_clock_add(smx_process_t process, double amount)
+{
+  mc_time[process->pid] += amount;
 }

@@ -1,0 +1,32 @@
+#!/usr/bin/perl -w
+# Compiler wrapper with stack-cleaner support (enabled by default).
+# Usage: ./compiler-wrapper target-compiler args [-f[no-]stack-cleaner]
+
+use File::Basename;
+
+my $compiler = shift(@ARGV);
+
+my $enable = 1;
+
+my @args;
+my $arg;
+while($arg=shift(@ARGV)) {
+  if ($arg eq "-fno-stack-cleaner") {
+    $enable = 0;    
+  } elsif ($arg eq "-fstack-cleaner") {
+    $enable = 1;
+  }
+  else {
+    push @args, $arg;
+  }
+}
+
+if ($enable) {
+  if (basename($0) =~ /^clang/) {
+    unshift @args, "-no-integrated-as"
+  }
+  unshift @args, dirname($0);
+  unshift @args, "-B";
+}
+
+exec $compiler, @args

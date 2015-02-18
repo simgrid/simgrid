@@ -39,8 +39,8 @@ SG_BEGIN_DECL()
   ptr = _xbt_ex_t; } while(0)
 
 typedef struct simdata_task {
-  smx_action_t compute;         /* SIMIX modeling of computation */
-  smx_action_t comm;            /* SIMIX modeling of communication */
+  smx_synchro_t compute;         /* SIMIX modeling of computation */
+  smx_synchro_t comm;            /* SIMIX modeling of communication */
   double message_size;          /* Data size */
   double computation_amount;    /* Computation size */
   msg_process_t sender;
@@ -83,7 +83,7 @@ typedef struct simdata_process {
 #ifdef MSG_USE_DEPRECATED
   m_channel_t put_channel;      /* used for debugging purposes */
 #endif
-  smx_action_t waiting_action;
+  smx_synchro_t waiting_action;
   msg_task_t waiting_task;
   char **argv;                  /* arguments table if any */
   int argc;                     /* arguments number if any */
@@ -103,7 +103,7 @@ typedef struct process_arg {
 } s_process_arg_t, *process_arg_t;
 
 typedef struct msg_comm {
-  smx_action_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
+  smx_synchro_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
   msg_task_t task_sent;           /* task sent (NULL for the receiver) */
   msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
   msg_error_t status;           /* status of the communication once finished */
@@ -167,7 +167,7 @@ void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,
                                    int argc, char **argv,
                                    xbt_dict_t properties, int auto_restart,
                                    smx_process_t parent_process);
-void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_size);
+void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size);
 
 void MSG_post_create_environment(void);
 

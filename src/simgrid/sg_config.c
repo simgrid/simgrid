@@ -20,6 +20,7 @@
 #include "simgrid/sg_config.h"
 #include "smpi/smpi_interface.h"
 #include "mc/mc.h"
+#include "mc/mc_record.h"
 #include "instr/instr.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
@@ -368,9 +369,16 @@ static void _sg_cfg_cb__surf_path(const char *name, int pos)
 
 /* callback to decide if we want to use the model-checking */
 #include "xbt_modinter.h"
+
 #ifdef HAVE_MC
 extern int _sg_do_model_check;   /* this variable lives in xbt_main until I find a right location for it */
+extern int _sg_do_model_check_record;
 #endif
+
+static void _sg_cfg_cb_model_check_replay(const char *name, int pos)
+{
+  MC_record_path = xbt_cfg_get_string(_sg_cfg_set, name);
+}
 
 static void _sg_cfg_cb_model_check(const char *name, int pos)
 {
@@ -379,6 +387,17 @@ static void _sg_cfg_cb_model_check(const char *name, int pos)
 #else
   if (xbt_cfg_get_boolean(_sg_cfg_set, name)) {
     xbt_die("You tried to activate the model-checking from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
+  }
+#endif
+}
+
+static void _sg_cfg_cb_model_check_record(const char *name, int pos)
+{
+#ifdef HAVE_MC
+  _sg_do_model_check_record = xbt_cfg_get_boolean(_sg_cfg_set, name);
+#else
+  if (xbt_cfg_get_boolean(_sg_cfg_set, name)) {
+    xbt_die("You tried to activate the model-checking record from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
   }
 #endif
 }
@@ -603,12 +622,23 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_boolean, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/maxmin_selective_update", "no");
 
+    /* Replay (this part is enabled event if MC it disabled) */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/replay",
+      "Uenable replay mode with the given path",
+      xbt_cfgelm_string, 0, 1, _sg_cfg_cb_model_check_replay, NULL);
+
 #ifdef HAVE_MC
     /* do model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check",
                      "Verify the system through model-checking instead of simulating it (EXPERIMENTAL)",
                      xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_model_check, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check", "no");
+
+    /* do model-checking-record */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/record",
+                     "Record the model-checking paths",
+                     xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_model_check_record, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/record", "no");
 
     /* do stateful model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/checkpoint",
@@ -781,6 +811,27 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_string(_sg_cfg_set, "ns3/TcpModel", "default");
 #endif
 
+    //For smpi/bw_factor and smpi/lat_factor
+    //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
+    //test is if( size >= thresholdN ) return valueN;
+    //Values can be modified with command line --cfg=smpi/bw_factor:"threshold0:value0;threshold1:value1;...;thresholdN:valueN"
+    //  or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
+    // SMPI model can be used without enable_smpi, so keep this the ifdef.
+    xbt_cfg_register(&_sg_cfg_set, "smpi/bw_factor",
+                     "Bandwidth factors for smpi.",
+                     xbt_cfgelm_string, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/bw_factor", "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
+
+    xbt_cfg_register(&_sg_cfg_set, "smpi/lat_factor",
+                     "Latency factors for smpi.",
+                     xbt_cfgelm_string, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/lat_factor", "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
+    
+    xbt_cfg_register(&_sg_cfg_set, "smpi/IB_penalty_factors",
+                     "Correction factor to communications using Infiniband model with contention (default value based on Stampede cluster profiling)",
+                     xbt_cfgelm_string, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/IB_penalty_factors", "0.965;0.925;1.35");
+    
 #ifdef HAVE_SMPI
     xbt_cfg_register(&_sg_cfg_set, "smpi/running_power",
                      "Power of the host running the simulation (in flop/s). Used to bench the operations.",
@@ -821,21 +872,6 @@ void sg_config_init(int *argc, char **argv)
                      "Boolean indicating whether we should privatize global variable at runtime.",
                      xbt_cfgelm_boolean, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "smpi/privatize_global_variables", "no");
-
-    //For smpi/bw_factor and smpi/lat_factor
-    //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
-    //test is if( size >= thresholdN ) return valueN;
-    //Values can be modified with command line --cfg=smpi/bw_factor:"threshold0:value0;threshold1:value1;...;thresholdN:valueN"
-    //  or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
-    xbt_cfg_register(&_sg_cfg_set, "smpi/bw_factor",
-                     "Bandwidth factors for smpi.",
-                     xbt_cfgelm_string, 1, 1, NULL, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/bw_factor", "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
-
-    xbt_cfg_register(&_sg_cfg_set, "smpi/lat_factor",
-                     "Latency factors for smpi.",
-                     xbt_cfgelm_string, 1, 1, NULL, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/lat_factor", "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/os",
                      "Small messages timings (MPI_Send minimum time for small messages)",

@@ -23,9 +23,17 @@ if(DOXYGEN_FOUND)
 
   message(STATUS "Doxygen version: ${DOXYGEN_VERSION}")
 
+  # This is a workaround for older cmake versions
+  # (such as 2.8.7 on Ubuntu 12.04). These cmake versions do not provide the
+  # DOXYGEN_VERSION variable and hence, building the documentation will always
+  # fail. This code is the same as used in the cmake library, version 3.
+  if(DOXYGEN_EXECUTABLE)
+    execute_process(COMMAND ${DOXYGEN_EXECUTABLE} "--version" OUTPUT_VARIABLE DOXYGEN_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+  endif()
+
   if(DOXYGEN_VERSION VERSION_LESS "1.8")
     ADD_CUSTOM_TARGET(error_doxygen
-      COMMAND ${CMAKE_COMMAND} -E echo "Doxygen must be at least version 1.8 to generate documentation"
+        COMMAND ${CMAKE_COMMAND} -E echo "Doxygen must be at least version 1.8 to generate documentation. Version found: ${DOXYGEN_VERSION}"
       COMMAND false
     )
 
@@ -106,6 +114,6 @@ add_custom_target(sync-gforge-dtd
   COMMAND ${RSYNC_CMD} src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
-  
+
 endif()
 

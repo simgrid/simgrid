@@ -38,10 +38,10 @@ int dvfs(int argc, char *argv[])
   int new_peak_index=2;
   host = MSG_host_self();; //MSG_get_host_by_name("MyHost1");
 
-  int nb = MSG_get_host_nb_pstates(host);
+  int nb = MSG_host_get_pstate_number(host);
   XBT_INFO("Number of Processor states=%d", nb);
 
-  double current_peak = MSG_get_host_current_power_peak(host);
+  double current_peak = MSG_host_get_current_power_peak(host);
   XBT_INFO("Current power peak=%f", current_peak);
 
   // Run a task
@@ -59,12 +59,12 @@ int dvfs(int argc, char *argv[])
 	  return 0;
 	  }
 
-  double peak_at = MSG_get_host_power_peak_at(host, new_peak_index);
+  double peak_at = MSG_host_get_power_peak_at(host, new_peak_index);
   XBT_INFO("Changing power peak value to %f (at index %d)", peak_at, new_peak_index);
 
-  MSG_set_host_power_peak_at(host, new_peak_index);
+  MSG_host_set_pstate(host, new_peak_index);
 
-  current_peak = MSG_get_host_current_power_peak(host);
+  current_peak = MSG_host_get_current_power_peak(host);
   XBT_INFO("Current power peak=%f", current_peak);
 
   // Run a second task
@@ -78,10 +78,10 @@ int dvfs(int argc, char *argv[])
 
   // Verify the default pstate is set to 0
   host = MSG_get_host_by_name("MyHost2");
-  int nb2 = MSG_get_host_nb_pstates(host);
+  int nb2 = MSG_host_get_pstate_number(host);
   XBT_INFO("Number of Processor states=%d", nb2);
 
-  double current_peak2 = MSG_get_host_current_power_peak(host);
+  double current_peak2 = MSG_host_get_current_power_peak(host);
   XBT_INFO("Current power peak=%f", current_peak2);
   return 0;
 }

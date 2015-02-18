@@ -8,26 +8,6 @@ SFILE=config/suite.def
 default: header
 	@ sys/print_instructions
 
-BT: bt
-bt: header
-	cd BT; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS) SUBTYPE=$(SUBTYPE) VERSION=$(VERSION)
-
-SP: sp
-sp: header
-	cd SP; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
-
-LU: lu
-lu: header
-	cd LU; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS) VERSION=$(VERSION)
-
-MG: mg
-mg: header
-	cd MG; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
-
-FT: ft
-ft: header
-	cd FT; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
-
 IS: is
 is: header
 	cd IS; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
@@ -35,10 +15,6 @@ is: header
 IS-trace: is-trace
 is-trace: header
 	cd IS-trace; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
-
-CG: cg
-cg: header
-	cd CG; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
 
 EP: ep
 ep: header

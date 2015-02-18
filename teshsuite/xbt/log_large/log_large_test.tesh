@@ -115,7 +115,7 @@ $ $SG_EXENV_TEST ${bindir:=.}/log_large_test "--log=root.fmt:%m%n"
 >
 > Done (strlen>10210)
 
-p Check that the dynamic version of the log formated layout works
+p Check that the dynamic version of the log formatted layout works
 $ $SG_EXENV_TEST ${bindir:=.}/log_large_test "--log=root.fmt:%m%n"
 > This is a very large message:
 > 0

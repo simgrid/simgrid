@@ -294,7 +294,7 @@ msg_host_t MSG_process_get_host(msg_process_t process)
   else {
     simdata = simcall_process_get_data(process);
   }
-  return simdata->m_host;
+  return simdata ? simdata->m_host : NULL;
 }
 
 /** \ingroup m_process_management

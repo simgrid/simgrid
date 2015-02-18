@@ -285,6 +285,24 @@ XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst(lmm_system_t sys,
                                      lmm_element_t * elem);
 
 /**
+ * @brief Get a var associated to a constraint
+ * @details Get the first variable of the next variable of elem if elem is not NULL
+ *
+ * @param sys The system associated to the variable (not used)
+ * @param cnst A constraint
+ * @param elem A element of constraint of the constraint or NULL
+ * @param nextelem A element of constraint of the constraint or NULL, the one after elem
+ * @param numelem parameter representing the number of elements to go
+ *
+ * @return A variable associated to a constraint
+ */
+XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst_safe(lmm_system_t /*sys*/,
+                                     lmm_constraint_t cnst,
+                                     lmm_element_t * elem,
+                                     lmm_element_t * nextelem,
+                                     int * numelem);
+
+/**
  * @brief Get the first active constraint of a system
  * 
  * @param sys A system

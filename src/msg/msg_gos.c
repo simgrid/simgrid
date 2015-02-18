@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -399,7 +399,7 @@ MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, double timeou
  */
 static XBT_INLINE
 msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
-                                   int (*match_fun)(void*,void*, smx_action_t),
+                                   int (*match_fun)(void*,void*, smx_synchro_t),
                                    void *match_data, void_f_pvoid_t cleanup,
                                    int detached)
 {
@@ -436,7 +436,7 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_action_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->message_size,
+  smx_synchro_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->message_size,
                                         t_simdata->rate, task, sizeof(void *),
                                         match_fun, cleanup, NULL, match_data,detached);
   t_simdata->comm = act; /* FIXME: is the field t_simdata->comm still useful? */
@@ -511,13 +511,13 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias,
  * \param match_fun boolean function which parameters are:
  *        - match_data_provided_here
  *        - match_data_provided_by_other_side_if_any
- *        - the_smx_action_describing_the_other_side
+ *        - the_smx_synchro_describing_the_other_side
  * \param match_data user provided data passed to match_fun
  * \return the msg_comm_t communication created
  */
 msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
                                         int (*match_fun)(void*, void*,
-                                                         smx_action_t),
+                                                         smx_synchro_t),
                                         void *match_data)
 {
   return MSG_task_isend_internal(task, alias, match_fun, match_data, NULL, 0);
@@ -676,7 +676,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
   int finished_index = -1;
 
   /* create the equivalent dynar with SIMIX objects */
-  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
+  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_synchro_t), NULL);
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
@@ -799,7 +799,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   int finished_index = -1;
 
   /* create the equivalent dynar with SIMIX objects */
-  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_action_t), NULL);
+  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_synchro_t), NULL);
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
@@ -876,7 +876,7 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
  * \param buff the data copied
  * \param buff_size size of the buffer
  */
-void MSG_comm_copy_data_from_SIMIX(smx_action_t comm, void* buff, size_t buff_size) {
+void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size) {
 
   // copy the task
   SIMIX_comm_copy_pointer_callback(comm, buff, buff_size);

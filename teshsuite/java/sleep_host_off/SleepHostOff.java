@@ -38,8 +38,8 @@ public class SleepHostOff extends Process{
           try {
             Process.sleep(10);
           } catch (HostFailureException e) {
-            Msg.info("catch HostException");
-            e.printStackTrace();
+            Msg.info("catch HostException: "+e.getLocalizedMessage());
+            break; //Break is needed to finalize the endless loop 
           }
         }
       }

@@ -1005,10 +1005,14 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
 
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_IRECV;
-    extra->send_size = count;
     extra->src = src_traced;
     extra->dst = rank;
-    extra->datatype1 = encode_datatype(datatype);
+    int known=0;
+    extra->datatype1 = encode_datatype(datatype, &known);
+    int dt_size_send = 1;
+    if(!known)
+      dt_size_send = smpi_datatype_size(datatype);
+    extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
 
@@ -1056,13 +1060,16 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
 #ifdef HAVE_TRACING
     int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
     int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
-
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISEND;
-    extra->send_size = count;
     extra->src = rank;
     extra->dst = dst_traced;
-    extra->datatype1 = encode_datatype(datatype);
+    int known=0;
+    extra->datatype1 = encode_datatype(datatype, &known);
+    int dt_size_send = 1;
+    if(!known)
+      dt_size_send = smpi_datatype_size(datatype);
+    extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, count*smpi_datatype_size(datatype));
 #endif
@@ -1112,10 +1119,14 @@ int PMPI_Issend(void* buf, int count, MPI_Datatype datatype,
     int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_ISSEND;
-    extra->send_size = count;
     extra->src = rank;
     extra->dst = dst_traced;
-    extra->datatype1 = encode_datatype(datatype);
+    int known=0;
+    extra->datatype1 = encode_datatype(datatype, &known);
+    int dt_size_send = 1;
+    if(!known)
+      dt_size_send = smpi_datatype_size(datatype);
+    extra->send_size = count*dt_size_send;
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, count*smpi_datatype_size(datatype));
 #endif
@@ -1163,10 +1174,14 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
   int src_traced = smpi_group_index(smpi_comm_group(comm), src);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_RECV;
-  extra->send_size = count;
   extra->src = src_traced;
   extra->dst = rank;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
 
@@ -1215,10 +1230,14 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
   int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SEND;
-  extra->send_size = count;
   extra->src = rank;
   extra->dst = dst_traced;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced,count*smpi_datatype_size(datatype));
 #endif
@@ -1263,10 +1282,14 @@ int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MP
    int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
    extra->type = TRACING_SSEND;
-   extra->send_size = count;
    extra->src = rank;
    extra->dst = dst_traced;
-   extra->datatype1 = encode_datatype(datatype);
+   int known=0;
+   extra->datatype1 = encode_datatype(datatype, &known);
+   int dt_size_send = 1;
+   if(!known)
+     dt_size_send = smpi_datatype_size(datatype);
+   extra->send_size = count*dt_size_send;
    TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);   TRACE_smpi_send(rank, rank, dst_traced,count*smpi_datatype_size(datatype));
  #endif
 
@@ -1317,12 +1340,19 @@ int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int src_traced = smpi_group_index(smpi_comm_group(comm), src);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SENDRECV;
-  extra->send_size = sendcount;
-  extra->recv_size = recvcount;
   extra->src = src_traced;
   extra->dst = dst_traced;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
 
   TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced,sendcount*smpi_datatype_size(sendtype));
@@ -1379,7 +1409,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
   } else if (*request == MPI_REQUEST_NULL) {
     *flag= TRUE;
     smpi_empty_status(status);
-    retval = MPI_ERR_REQUEST;
+    retval = MPI_SUCCESS;
   } else {
 #ifdef HAVE_TRACING
     int rank = request && (*request)->comm != MPI_COMM_NULL
@@ -1486,7 +1516,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   if (request == NULL) {
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
-    retval = MPI_ERR_REQUEST;
+    retval = MPI_SUCCESS;
   } else {
 
 #ifdef HAVE_TRACING
@@ -1692,9 +1722,13 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
 
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_BCAST;
-  extra->send_size = count;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 
 #endif
@@ -1765,11 +1799,18 @@ int PMPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_GATHER;
-  extra->send_size = sendtmpcount;
-  extra->recv_size = recvcount;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(sendtmptype);
-  extra->datatype2 = encode_datatype(recvtype);
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtmptype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtmptype);
+  extra->send_size = sendtmpcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if((smpi_comm_rank(comm)==root) && !known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
 
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
 #endif
@@ -1820,14 +1861,21 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int size = smpi_comm_size(comm);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_GATHERV;
-  extra->send_size = sendtmpcount;
-  extra->recvcounts= xbt_malloc(size*sizeof(int));
-  for(i=0; i< size; i++)//copy data to avoid bad free
-    extra->recvcounts[i] = recvcounts[i];
   extra->num_processes = size;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(sendtmptype);
-  extra->datatype2 = encode_datatype(recvtype);
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtmptype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendtmpcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recvcounts= xbt_malloc(size*sizeof(int));
+  for(i=0; i< size; i++)//copy data to avoid bad free
+    extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
 
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
 #endif
@@ -1869,10 +1917,17 @@ int PMPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLGATHER;
-  extra->send_size = sendcount;
-  extra->recv_size = recvcount;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
 #endif
@@ -1918,13 +1973,20 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int size = smpi_comm_size(comm);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLGATHERV;
-  extra->send_size = sendcount;
+  extra->num_processes = size;
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
   extra->recvcounts= xbt_malloc(size*sizeof(int));
   for(i=0; i< size; i++)//copy data to avoid bad free
-    extra->recvcounts[i] = recvcounts[i];
-  extra->num_processes = size;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
+    extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -1967,12 +2029,18 @@ int PMPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SCATTER;
-  extra->send_size = sendcount;
-  extra->recv_size= recvcount;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
-
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if((smpi_comm_rank(comm)==root) && !known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->send_size = sendcount*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
 #endif
     mpi_coll_scatter_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount,
@@ -2014,15 +2082,21 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
   int size = smpi_comm_size(comm);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SCATTERV;
-  extra->recv_size = recvcount;
-  extra->sendcounts= xbt_malloc(size*sizeof(int));
-  for(i=0; i< size; i++)//copy data to avoid bad free
-    extra->sendcounts[i] = sendcounts[i];
   extra->num_processes = size;
   extra->root = root_traced;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
-
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  extra->sendcounts= xbt_malloc(size*sizeof(int));
+  for(i=0; i< size; i++)//copy data to avoid bad free
+    extra->sendcounts[i] = sendcounts[i]*dt_size_send;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  int dt_size_recv = 1;
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
+  extra->recv_size = recvcount*dt_size_recv;
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
 
 #endif
@@ -2055,8 +2129,12 @@ int PMPI_Reduce(void *sendbuf, void *recvbuf, int count,
   int root_traced = smpi_group_index(smpi_comm_group(comm), root);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE;
-  extra->send_size = count;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   extra->root = root_traced;
 
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
@@ -2112,8 +2190,12 @@ int PMPI_Allreduce(void *sendbuf, void *recvbuf, int count,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLREDUCE;
-  extra->send_size = count;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -2151,8 +2233,12 @@ int PMPI_Scan(void *sendbuf, void *recvbuf, int count,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_SCAN;
-  extra->send_size = count;
-  extra->datatype1 = encode_datatype(datatype);
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -2184,9 +2270,12 @@ int PMPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_EXSCAN;
-  extra->send_size = count;
-  extra->datatype1 = encode_datatype(datatype);
-
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
+  extra->send_size = count*dt_size_send;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
     smpi_mpi_exscan(sendbuf, recvbuf, count, datatype, op, comm);
@@ -2221,13 +2310,16 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
   int size = smpi_comm_size(comm);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE_SCATTER;
+  extra->num_processes = size;
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = 0;
   extra->recvcounts= xbt_malloc(size*sizeof(int));
   for(i=0; i< size; i++)//copy data to avoid bad free
-    extra->recvcounts[i] = recvcounts[i];
-  extra->num_processes = size;
-  extra->datatype1 = encode_datatype(datatype);
-
+    extra->recvcounts[i] = recvcounts[i]*dt_size_send;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
     void* sendtmpbuf=sendbuf;
@@ -2268,12 +2360,16 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE_SCATTER;
+  extra->num_processes = count;
+  int known=0;
+  extra->datatype1 = encode_datatype(datatype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = 0;
   extra->recvcounts= xbt_malloc(count*sizeof(int));
   for(i=0; i< count; i++)//copy data to avoid bad free
-    extra->recvcounts[i] = recvcount;
-  extra->num_processes = count;
-  extra->datatype1 = encode_datatype(datatype);
+    extra->recvcounts[i] = recvcount*dt_size_send;
 
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
@@ -2310,11 +2406,17 @@ int PMPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLTOALL;
-  extra->send_size = sendcount;
-  extra->recv_size = recvcount;
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
-
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  if(!known)
+    extra->send_size = sendcount*smpi_datatype_size(sendtype);
+  else
+    extra->send_size = sendcount;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  if(!known)
+    extra->recv_size = recvcount*smpi_datatype_size(recvtype);
+  else
+    extra->recv_size = recvcount;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
     retval = mpi_coll_alltoall_fun(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
@@ -2354,19 +2456,23 @@ int PMPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
   extra->recv_size = 0;
   extra->recvcounts= xbt_malloc(size*sizeof(int));
   extra->sendcounts= xbt_malloc(size*sizeof(int));
-
+  int known=0;
+  extra->datatype1 = encode_datatype(sendtype, &known);
+  int dt_size_send = 1;
+  if(!known)
+    dt_size_send = smpi_datatype_size(sendtype);
+  int dt_size_recv = 1;
+  extra->datatype2 = encode_datatype(recvtype, &known);
+  if(!known)
+    dt_size_recv = smpi_datatype_size(recvtype);
   for(i=0; i< size; i++){//copy data to avoid bad free
-    extra->send_size += sendcounts[i];
-    extra->recv_size += recvcounts[i];
+    extra->send_size += sendcounts[i]*dt_size_send;
+    extra->recv_size += recvcounts[i]*dt_size_recv;
 
-    extra->sendcounts[i] = sendcounts[i];
-    extra->recvcounts[i] = recvcounts[i];
+    extra->sendcounts[i] = sendcounts[i]*dt_size_send;
+    extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
   }
   extra->num_processes = size;
-
-  extra->datatype1 = encode_datatype(sendtype);
-  extra->datatype2 = encode_datatype(recvtype);
-
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
 #endif
     retval =
@@ -2591,7 +2697,7 @@ int PMPI_Cart_create(MPI_Comm comm_old, int ndims, int* dims, int* periodic, int
   if (comm_old == MPI_COMM_NULL){
     retval =  MPI_ERR_COMM;
   } else if (ndims < 0 ||
-           (ndims > 0 && (dims == NULL || 
+           (ndims > 0 && (dims == NULL ||
                           periodic == NULL)) ||
            comm_cart == NULL) {
     retval = MPI_ERR_ARG;
@@ -2685,7 +2791,7 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
     int blocks[3] = { 1, 1, 1 };
     MPI_Aint disps[3] = { lb, 0, lb+extent };
     MPI_Datatype types[3] = { MPI_LB, oldtype, MPI_UB };
-        
+
     s_smpi_mpi_struct_t* subtype = smpi_datatype_struct_create( blocks,
                                                                 disps,
                                                                 3,
@@ -2772,7 +2878,15 @@ int PMPI_Win_fence( int assert,  MPI_Win win){
   if (win == MPI_WIN_NULL) {
     retval = MPI_ERR_WIN;
   } else {
-    retval = smpi_mpi_win_fence(assert, win);
+#ifdef HAVE_TRACING
+  int rank = smpi_process_index();
+  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+  retval = smpi_mpi_win_fence(assert, win);
+#ifdef HAVE_TRACING
+  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+
   }
   smpi_bench_begin();
   return retval;
@@ -2798,7 +2912,19 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
             (!is_datatype_valid(target_datatype))) {
     retval = MPI_ERR_TYPE;
   } else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    MPI_Group group;
+    smpi_mpi_win_get_group(win, &group);
+    int src_traced = smpi_group_index(group, target_rank);
+    TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, NULL);
+#endif
+
     retval = smpi_mpi_get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+
+#ifdef HAVE_TRACING
+    TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
+#endif
   }
   smpi_bench_begin();
   return retval;
@@ -2824,7 +2950,21 @@ int PMPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
             (!is_datatype_valid(target_datatype))) {
     retval = MPI_ERR_TYPE;
   } else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    MPI_Group group;
+    smpi_mpi_win_get_group(win, &group);
+    int dst_traced = smpi_group_index(group, target_rank);
+    TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, NULL);
+    TRACE_smpi_send(rank, rank, dst_traced, origin_count*smpi_datatype_size(origin_datatype));
+#endif
+
     retval = smpi_mpi_put( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, win);
+
+#ifdef HAVE_TRACING
+    TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
+#endif
+
   }
   smpi_bench_begin();
   return retval;
@@ -2853,12 +2993,110 @@ int PMPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_da
   } else if (op == MPI_OP_NULL) {
     retval = MPI_ERR_OP;
   } else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    MPI_Group group;
+    smpi_mpi_win_get_group(win, &group);
+    int src_traced = smpi_group_index(group, target_rank);
+    TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, NULL);
+#endif
+
     retval = smpi_mpi_accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count, target_datatype, op, win);
+
+#ifdef HAVE_TRACING
+    TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
+#endif
+
   }
   smpi_bench_begin();
   return retval;
 }
 
+
+int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (group==MPI_GROUP_NULL){
+    retval = MPI_ERR_GROUP;
+  }
+  else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+    retval = smpi_mpi_win_post(group,assert,win);
+#ifdef HAVE_TRACING
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  } else if (group==MPI_GROUP_NULL){
+    retval = MPI_ERR_GROUP;
+  }
+  else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+    retval = smpi_mpi_win_start(group,assert,win);
+#ifdef HAVE_TRACING
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+
+int PMPI_Win_complete(MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  }
+  else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+    retval = smpi_mpi_win_complete(win);
+#ifdef HAVE_TRACING
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  }
+  smpi_bench_begin();
+  return retval;
+}
+
+int PMPI_Win_wait(MPI_Win win){
+  int retval = 0;
+  smpi_bench_end();
+  if (win == MPI_WIN_NULL) {
+    retval = MPI_ERR_WIN;
+  }
+  else {
+#ifdef HAVE_TRACING
+    int rank = smpi_process_index();
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, NULL);
+#endif
+    retval = smpi_mpi_win_wait(win);
+#ifdef HAVE_TRACING
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+#endif
+  }
+  smpi_bench_begin();
+  return retval;
+}
 
 int PMPI_Alloc_mem(MPI_Aint size, MPI_Info info, void *baseptr){
   void *ptr = xbt_malloc(size);
@@ -2951,6 +3189,14 @@ MPI_Comm PMPI_Comm_f2c(MPI_Fint comm){
 
 MPI_Fint PMPI_Comm_c2f(MPI_Comm comm){
   return smpi_comm_c2f(comm);
+}
+
+MPI_Info PMPI_Info_f2c(MPI_Fint info){
+  return smpi_info_f2c(info);
+}
+
+MPI_Fint PMPI_Info_c2f(MPI_Info info){
+  return smpi_info_c2f(info);
 }
 
 int PMPI_Keyval_create(MPI_Copy_function* copy_fn, MPI_Delete_function* delete_fn, int* keyval, void* extra_state) {
@@ -3058,6 +3304,148 @@ int PMPI_Type_free_keyval(int* keyval) {
   return smpi_type_keyval_free(keyval);
 }
 
+int PMPI_Info_create( MPI_Info *info){
+  if (info == NULL)
+    return MPI_ERR_ARG;
+  *info = xbt_new(s_smpi_mpi_info_t, 1);
+  (*info)->info_dict= xbt_dict_new_homogeneous(NULL);
+  (*info)->refcount=1;
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_set( MPI_Info info, char *key, char *value){
+  if (info == NULL || key == NULL || value == NULL)
+    return MPI_ERR_ARG;
+
+  xbt_dict_set(info->info_dict, key, (void*)value, NULL);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_free( MPI_Info *info){
+  if (info == NULL || *info==NULL)
+    return MPI_ERR_ARG;
+  (*info)->refcount--;
+  if((*info)->refcount==0){
+    xbt_dict_free(&((*info)->info_dict));
+    xbt_free(*info);
+  }
+  *info=MPI_INFO_NULL;
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
+  if (info == NULL || key == NULL || valuelen <0)
+    return MPI_ERR_ARG;
+  if (value == NULL)
+    return MPI_ERR_INFO_VALUE;
+  *flag=FALSE;
+  char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
+  if(tmpvalue){
+    memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < valuelen) ?
+                         strlen(tmpvalue) + 1 : valuelen);
+    *flag=TRUE;
+  }
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
+  if (info == NULL || newinfo==NULL)
+    return MPI_ERR_ARG;
+  *newinfo = xbt_new(s_smpi_mpi_info_t, 1);
+  (*newinfo)->info_dict= xbt_dict_new_homogeneous(NULL);
+  xbt_dict_cursor_t cursor = NULL;
+  int *key;
+  void* data;
+  xbt_dict_foreach(info->info_dict,cursor,key,data){
+    xbt_dict_set((*newinfo)->info_dict, (char*)key, data, NULL);
+  }
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_delete(MPI_Info info, char *key){
+  xbt_ex_t e;
+  if (info == NULL || key==NULL)
+    return MPI_ERR_ARG;
+  TRY {
+  xbt_dict_remove(info->info_dict, key);
+  }CATCH(e){
+    xbt_ex_free(e);
+    return MPI_ERR_INFO_NOKEY;
+  }
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_get_nkeys( MPI_Info info, int *nkeys){
+  if (info == NULL || nkeys==NULL)
+    return MPI_ERR_ARG;
+  *nkeys=xbt_dict_size(info->info_dict);
+  return MPI_SUCCESS;
+}
+
+int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
+  if (info == NULL || key==NULL || n<0 || n> MPI_MAX_INFO_KEY)
+    return MPI_ERR_ARG;
+
+  xbt_dict_cursor_t cursor = NULL;
+  char *keyn;
+  void* data;
+  int num=0;
+  xbt_dict_foreach(info->info_dict,cursor,keyn,data){
+    if(num==n){
+     strcpy(key,keyn);
+      return MPI_SUCCESS;
+    }
+    num++;
+  }
+  return MPI_ERR_ARG;
+}
+
+int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
+  if (info == NULL || key == NULL || valuelen <0)
+    return MPI_ERR_ARG;
+  *flag=FALSE;
+  char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
+  if(tmpvalue){
+    *valuelen=strlen(tmpvalue);
+    *flag=TRUE;
+  }
+  return MPI_SUCCESS;
+}
+
+int PMPI_Unpack(void* inbuf, int incount, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
+  if(incount<0 || outcount < 0 || inbuf==NULL || outbuf==NULL)
+    return MPI_ERR_ARG;
+  if(!is_datatype_valid(type))
+    return MPI_ERR_TYPE;
+  if(comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+  return smpi_mpi_unpack(inbuf, incount, position, outbuf,outcount,type, comm);
+}
+
+int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
+  if(incount<0 || outcount < 0|| inbuf==NULL || outbuf==NULL)
+    return MPI_ERR_ARG;
+  if(!is_datatype_valid(type))
+    return MPI_ERR_TYPE;
+  if(comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+  return smpi_mpi_pack(inbuf, incount, type, outbuf,outcount,position, comm);
+}
+
+int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
+  if(incount<0)
+    return MPI_ERR_ARG;
+  if(!is_datatype_valid(datatype))
+    return MPI_ERR_TYPE;
+  if(comm==MPI_COMM_NULL)
+    return MPI_ERR_COMM;
+
+  *size=incount*smpi_datatype_size(datatype);
+
+  return MPI_SUCCESS;
+}
+
+
 /* The following calls are not yet implemented and will fail at runtime. */
 /* Once implemented, please move them above this notice. */
 
@@ -3065,15 +3453,6 @@ int PMPI_Type_free_keyval(int* keyval) {
     XBT_WARN("Not yet implemented : %s. Please contact the Simgrid team if support is needed", __FUNCTION__); \
     return MPI_SUCCESS;                                                 \
   }
-
-
-MPI_Info PMPI_Info_f2c(MPI_Fint info){
-  NOT_YET_IMPLEMENTED
-}
-
-MPI_Fint PMPI_Info_c2f(MPI_Info info){
-  NOT_YET_IMPLEMENTED
-}
 
 MPI_Errhandler PMPI_Errhandler_f2c(MPI_Fint errhandler){
   NOT_YET_IMPLEMENTED
@@ -3083,15 +3462,9 @@ MPI_Fint PMPI_Errhandler_c2f(MPI_Errhandler errhandler){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Pack_size(int incount, MPI_Datatype datatype, MPI_Comm comm, int* size) {
-  NOT_YET_IMPLEMENTED
-}
-
-
 int PMPI_Cart_map(MPI_Comm comm_old, int ndims, int* dims, int* periods, int* newrank) {
   NOT_YET_IMPLEMENTED
 }
-
 
 int PMPI_Graph_create(MPI_Comm comm_old, int nnodes, int* index, int* edges, int reorder, MPI_Comm* comm_graph) {
   NOT_YET_IMPLEMENTED
@@ -3174,9 +3547,6 @@ int PMPI_Pcontrol(const int level )
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm) {
-  NOT_YET_IMPLEMENTED
-}
 
 int PMPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm* comm_out) {
   NOT_YET_IMPLEMENTED
@@ -3222,9 +3592,7 @@ int PMPI_Test_cancelled(MPI_Status* status, int* flag) {
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm) {
-  NOT_YET_IMPLEMENTED
-}
+
 
 int PMPI_Pack_external_size(char *datarep, int incount, MPI_Datatype datatype, MPI_Aint *size){
   NOT_YET_IMPLEMENTED
@@ -3242,17 +3610,7 @@ int PMPI_Get_elements(MPI_Status* status, MPI_Datatype datatype, int* elements) 
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Info_create( MPI_Info *info){
-  NOT_YET_IMPLEMENTED
-}
 
-int PMPI_Info_set( MPI_Info info, char *key, char *value){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_free( MPI_Info *info){
-  NOT_YET_IMPLEMENTED
-}
 
 int PMPI_Type_get_envelope( MPI_Datatype datatype, int *num_integers,
                             int *num_addresses, int *num_datatypes, int *combiner){
@@ -3305,10 +3663,6 @@ int PMPI_Comm_get_info (MPI_Comm comm, MPI_Info* info){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Comm_create_errhandler( MPI_Comm_errhandler_fn *function, MPI_Errhandler *errhandler){
   NOT_YET_IMPLEMENTED
 }
@@ -3326,26 +3680,6 @@ int PMPI_Add_error_string( int errorcode, char *string){
 }
 
 int PMPI_Comm_call_errhandler(MPI_Comm comm,int errorcode){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_delete(MPI_Info info, char *key){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_get_nkeys( MPI_Info info, int *nkeys){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
   NOT_YET_IMPLEMENTED
 }
 
@@ -3415,19 +3749,7 @@ int PMPI_Comm_get_parent( MPI_Comm *parent){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Win_complete(MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}
-
 int PMPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win) {
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Win_post(MPI_Group group, int assert, MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}
-
-int PMPI_Win_start(MPI_Group group, int assert, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
 
@@ -3439,6 +3761,3 @@ int PMPI_Win_unlock(int rank, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
 
-int PMPI_Win_wait(MPI_Win win){
-  NOT_YET_IMPLEMENTED
-}

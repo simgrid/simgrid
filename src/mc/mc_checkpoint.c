@@ -7,11 +7,14 @@
 #define _GNU_SOURCE
 #define UNW_LOCAL_ONLY
 
+#include <unistd.h>
 
 #include <string.h>
 #include <link.h>
+#include <dirent.h>
 
 #include "internal_config.h"
+#include "mc_memory_map.h"
 #include "mc_private.h"
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
@@ -22,12 +25,15 @@
 
 #include "../simix/smx_private.h"
 
+#define UNW_LOCAL_ONLY
 #include <libunwind.h>
 #include <libelf.h>
 
 #include "mc_private.h"
 #include <mc/mc.h>
 
+#include "mc_snapshot.h"
+#include "mc_object_info.h"
 #include "mc_mmu.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
@@ -102,7 +108,7 @@ void MC_free_snapshot(mc_snapshot_t snapshot)
 /*******************************  Snapshot regions ********************************/
 /*********************************************************************************/
 
-  static mc_mem_region_t mc_region_new_dense(int type, void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
+static mc_mem_region_t mc_region_new_dense(int type, void *start_addr, void* permanent_addr, size_t size, mc_mem_region_t ref_reg)
 {
   mc_mem_region_t new_reg = xbt_new(s_mc_mem_region_t, 1);
   new_reg->start_addr = start_addr;
@@ -171,8 +177,8 @@ static void MC_snapshot_add_region(mc_snapshot_t snapshot, int type,
 static void MC_get_memory_regions(mc_snapshot_t snapshot)
 {
 
-  void *start_heap = ((xbt_mheap_t) std_heap)->base;
-  void *end_heap = ((xbt_mheap_t) std_heap)->breakval;
+  void *start_heap = std_heap->base;
+  void *end_heap = std_heap->breakval;
   MC_snapshot_add_region(snapshot, 0, start_heap, start_heap,
                          (char *) end_heap - (char *) start_heap);
   snapshot->heap_bytes_used = mmalloc_get_bytes_used(std_heap);
@@ -243,50 +249,6 @@ void MC_init_memory_map_info()
 
   MC_free_memory_map(maps);
 
-}
-
-/** \brief Fill/lookup the "subtype" field.
- */
-static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type)
-{
-
-  if (type->dw_type_id == NULL)
-    return;
-  type->subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
-  if (type->subtype == NULL)
-    return;
-  if (type->subtype->byte_size != 0)
-    return;
-  if (type->subtype->name == NULL)
-    return;
-  // Try to find a more complete description of the type:
-  // We need to fix in order to support C++.
-
-  dw_type_t subtype =
-      xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
-  if (subtype != NULL) {
-    type->subtype = subtype;
-  }
-
-}
-
-void MC_post_process_types(mc_object_info_t info)
-{
-  xbt_dict_cursor_t cursor = NULL;
-  char *origin;
-  dw_type_t type;
-
-  // Lookup "subtype" field:
-  xbt_dict_foreach(info->types, cursor, origin, type) {
-    MC_resolve_subtype(info, type);
-
-    dw_type_t member;
-    unsigned int i = 0;
-    if (type->members != NULL)
-      xbt_dynar_foreach(type->members, i, member) {
-      MC_resolve_subtype(info, member);
-      }
-  }
 }
 
 /** \brief Fills the position of the segments (executable, read-only, read/write).
@@ -389,12 +351,22 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     if (current_variable->address != NULL) {
       new_var->address = current_variable->address;
     } else if (current_variable->locations.size != 0) {
-      new_var->address =
-          (void *) mc_dwarf_resolve_locations(&current_variable->locations,
+      s_mc_location_t location;
+      mc_dwarf_resolve_locations(&location, &current_variable->locations,
                                               current_variable->object_info,
                                               &(stack_frame->unw_cursor),
                                               (void *) stack_frame->frame_base,
                                               NULL, process_index);
+
+      switch(mc_get_location_type(&location)) {
+      case MC_LOCATION_TYPE_ADDRESS:
+        new_var->address = location.memory_location;
+        break;
+      case MC_LOCATION_TYPE_REGISTER:
+      default:
+        xbt_die("Cannot handle non-address variable");
+      }
+
     } else {
       xbt_die("No address");
     }
@@ -599,11 +571,88 @@ static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
 int mc_important_snapshot(mc_snapshot_t snapshot)
 {
   // We need this snapshot in order to know which
-  // pages needs to be stored in the next snapshot:
+  // pages needs to be stored in the next snapshot.
+  // This field is only non-NULL when using soft-dirty
+  // page tracking.
   if (snapshot == mc_model_checker->parent_snapshot)
     return true;
 
   return false;
+}
+
+static void MC_get_current_fd(mc_snapshot_t snapshot){
+
+  snapshot->total_fd = 0;
+
+  const size_t fd_dir_path_size = 20;
+  char fd_dir_path[fd_dir_path_size];
+  if (snprintf(fd_dir_path, fd_dir_path_size,
+    "/proc/%lli/fd", (long long int) getpid()) > fd_dir_path_size)
+    xbt_die("Unexpected buffer is too small for fd_dir_path");
+
+  DIR* fd_dir = opendir (fd_dir_path);
+  if (fd_dir == NULL)
+    xbt_die("Cannot open directory '/proc/self/fd'\n");
+
+  size_t total_fd = 0;
+  struct dirent* fd_number;
+  while ((fd_number = readdir(fd_dir))) {
+
+    int fd_value = atoi(fd_number->d_name);
+
+    if(fd_value < 3)
+      continue;
+
+    const size_t source_size = 25;
+    char source[25];
+    if (snprintf(source, source_size, "/proc/self/fd/%s", fd_number->d_name) > source_size)
+      xbt_die("Unexpected buffer is too small for fd %s", fd_number->d_name);
+
+    const size_t link_size = 200;
+    char link[200];
+    int res = readlink(source, link, link_size);
+    if (res<0) {
+      xbt_die("Could not read link for %s", source);
+    }
+    if (res==200) {
+      xbt_die("Buffer to small for link of %s", source);
+    }
+    link[res] = '\0';
+
+    if(smpi_is_privatisation_file(link))
+      continue;
+
+    // This is (probably) the DIR* we are reading:
+    // TODO, read all the file entries at once and close the DIR.*
+    if(strcmp(fd_dir_path, link) == 0)
+      continue;
+
+    // We don't handle them.
+    // It does not mean we should silently ignore them however.
+    if (strncmp(link, "pipe:", 5) == 0 || strncmp(link, "socket:", 7) == 0)
+      continue;
+
+    // If dot_output enabled, do not handle the corresponding file
+    if (dot_output !=  NULL && strcmp(basename(link), _sg_mc_dot_output_file) == 0)
+      continue;
+
+    // This is probably a shared memory used by lttng-ust:
+    if(strncmp("/dev/shm/ust-shm-tmp-", link, 21)==0)
+      continue;
+
+    // Add an entry for this FD in the snapshot:
+    fd_infos_t fd = xbt_new0(s_fd_infos_t, 1);
+    fd->filename = strdup(link);
+    fd->number = fd_value;
+    fd->flags = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD) ;
+    fd->current_position = lseek(fd_value, 0, SEEK_CUR);
+    snapshot->current_fd = xbt_realloc(snapshot->current_fd, (total_fd + 1) * sizeof(fd_infos_t));
+    snapshot->current_fd[total_fd] = fd;
+    total_fd++;
+  }
+
+  snapshot->total_fd = total_fd;
+  closedir (fd_dir);
 }
 
 mc_snapshot_t MC_take_snapshot(int num_state)
@@ -617,6 +666,8 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   }
 
   MC_snapshot_handle_ignore(snapshot);
+
+  MC_get_current_fd(snapshot);
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(snapshot);
@@ -649,6 +700,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
 {
   mc_snapshot_t parent_snapshot = mc_model_checker->parent_snapshot;
 
+  int new_fd;
   unsigned int i;
   for (i = 0; i < NB_REGIONS; i++) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
@@ -669,9 +721,30 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
     }
   }
   if(snapshot->privatization_index >= 0) {
-    smpi_switch_data_segment(snapshot->privatization_index);
+    // We just rewrote the global variables.
+    // The privatisation segment SMPI thinks
+    // is mapped might be inconsistent with the segment which
+    // is really mapped in memory (kernel state).
+    // We ask politely SMPI to map the segment anyway,
+    // even if it thinks it is the current one:
+    smpi_really_switch_data_segment(snapshot->privatization_index);
   }
 #endif
+
+  for(i=0; i < snapshot->total_fd; i++){
+    
+    new_fd = open(snapshot->current_fd[i]->filename, snapshot->current_fd[i]->flags);
+    if (new_fd <0) {
+      xbt_die("Could not reopen the file %s fo restoring the file descriptor",
+        snapshot->current_fd[i]->filename);
+    }
+    if(new_fd != -1 && new_fd != snapshot->current_fd[i]->number){
+      dup2(new_fd, snapshot->current_fd[i]->number);
+      //fprintf(stderr, "%p\n", fdopen(snapshot->current_fd[i]->number, "rw"));
+      close(new_fd);
+    };
+    lseek(snapshot->current_fd[i]->number, snapshot->current_fd[i]->current_position, SEEK_SET);
+  }
 
   if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
     mc_softdirty_reset();
@@ -681,9 +754,10 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   if (_sg_mc_sparse_checkpoint && _sg_mc_soft_dirty) {
     mc_model_checker->parent_snapshot = snapshot;
   }
+
 }
 
-mc_snapshot_t SIMIX_pre_mc_snapshot(smx_simcall_t simcall)
+mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)
 {
   return MC_take_snapshot(1);
 }

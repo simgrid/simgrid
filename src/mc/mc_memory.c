@@ -6,16 +6,19 @@
 
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "mc/mc.h"
-#include "mc_private.h"
+
 #include "xbt/log.h"
+
+#include "mc/mc.h"
+#include "mc_object_info.h"
+#include "mc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
                                 "Logging specific to MC (memory)");
 
 /* Pointers to each of the heap regions to use */
-void *std_heap = NULL;          /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
-void *mc_heap = NULL;           /* memory persistent over the MC rollbacks. Only MC stuff should go there */
+xbt_mheap_t std_heap = NULL;          /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
+xbt_mheap_t mc_heap = NULL;           /* memory persistent over the MC rollbacks. Only MC stuff should go there */
 
 /* Initialize the model-checker memory subsystem */
 /* It creates the two heap regions: std_heap and mc_heap */
@@ -25,7 +28,7 @@ void MC_memory_init()
   std_heap = mmalloc_get_default_md();
   xbt_assert(std_heap != NULL);
 
-#if defined HAVE_GNU_LD && !defined MMALLOC_WANT_OVERRIDE_LEGACY
+#if 0 && defined HAVE_GNU_LD && !defined MMALLOC_WANT_OVERRIDE_LEGACY
   /* use the system malloc for the model-checker data */
   mc_heap = NULL;
 #else

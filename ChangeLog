@@ -3,13 +3,67 @@ SimGrid (3.12) NOT RELEASED; urgency=low
  cMSG:
  * Interface improvement:
    - Rename MSG_host_is_avail(h) to MSG_host_is_on(h)
+   - Massive cleanups in the functions related to the energy
  jMSG:
  * Interface improvement:
    - Rename Host.isAvail() to Host.isOn()
+   
  SIMIX:
  * New functions
    - SIMIX_process_throw: raises an exception in a remote process
- 
+ * Refactoring: Separate submodules
+   - libsmx: the public interface, as libc in a real system
+   - popping: the strange dance that converts a user request into a kernel handling
+   - smx_context_*: the virtualization mechanisms that embeed the user code
+   - smx_*: the handling of each simcalls
+ * Rename smx_action_t into smx_synchro_t, making explicit that these
+   things are used to synchronize processes with their environment.    
+   For example, a communication is a sort of synchronization involving
+   the communicating processes (that may block until the exchange) and
+   the platform. The same can be said from computations, etc.
+   
+ SMPI: 
+ * New functions
+   - Onesided early support for : MPI_Win_(create, free, fence, get_name, set_name, get_group), MPI_Get, MPI_Put, MPI_Accumulate, MPI_Alloc_mem, MPI_Free_mem. 
+   - MPI_Keyval*, MPI_Attr* functions, as well as MPI_Comm_attr*, MPI_Type_attr* variants (C only, no Fortran support yet)
+   - MPI_Type_set_name, MPI_Type_get_name
+   - MPI_*_c2f and MPI_*_f2c functions
+   - MPI_Info_* functions (beware, get_nthkey may not follow the insertion order)
+   - MPI_Pack, MPI_Unpack and MPI_Pack_size functions
+   - Activate a lot of new tests from the mpich 3 testsuite
+ * Features 
+   - Constant times can be injected inside MPI_Wtime and MPI_Test through options smpi/wtime and smpi/test
+   - InfiniBand network model added : Based on the works of Jerome Vienne (http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf )
+   - When smpi/display_timing is set, also display global simulation time and application times
+   - Have smpirun, smpicc and friends display the simgrid git hash version on --git-version
+ * Collective communications
+   - SMP-aware algorithms are now dynamically handled. An internal communicator is created for each node, and an external one to handle communications between "leaders" of each node
+   - MVAPICH2 (1.9) collective algorithms selector : normal and SMP algorithms are handled, and selection logic is based on the one used on TACC's Stampede cluster (https://www.tacc.utexas.edu/stampede/).
+   - Support for Rabenseifner Reduce/Allreduce algorithms (https://fs.hlrs.de/projects/par/mpi//myreduce.html)
+ * Replay 
+   - Replay now uses algorithms from wanted collective selector
+   - Replay can be used with SMP-aware algorithms
+   - Memory occupation of replay should now be contained (temporary buffers allocated in collective algorithms should be shared between processes)
+   - Replay can now replay several traces at the same time (check examples/smpi/replay_multiple example), to simulate interactions between several applications on a given platform. User can specify the start time of each instance. This should also allow replay + actual applications to run.
+  * Bug fixes 
+   - [#17799] : have mpi_group_range_incl and mpi_group_range_excl better test some corner cases
+   - Correctly use loopback on fat-tree clusters
+   - Asynchronous small messages shouldn't trigger deadlocks anymore
+ SURF
+  * Bug fixes 
+   - "Full" network optimization flag was broken since Surf++
+   - Better handling of precision flags in maxmin
+   - Fix bug causing sometimes "Impossible" errors
+   - Properly pass cluster properties to included hosts
+  * Improvement of the Energy plugin.
+    - Always update the consumption before returning that value
+    - New property: watt_off to denote the disipation when the host is off
+ XBT
+  * New functions
+   - Add a xbt_heap_update function, to avoid costly xbt_heap_remove+xbt_heap_insert use 
+   - Add a xbt wrapper for simcall_mutex_trylock (asked in [#17878])
+   - Add two new log appenders : rollfile and splitfile. Patch by Fabien Chaix.
+
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

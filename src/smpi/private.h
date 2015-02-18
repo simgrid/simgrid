@@ -102,7 +102,7 @@ typedef struct s_smpi_mpi_request {
   int truncated;
   size_t real_size;
   MPI_Comm comm;
-  smx_action_t action;
+  smx_synchro_t action;
   unsigned flags;
   int detached;
   MPI_Request detached_sender;
@@ -125,6 +125,12 @@ typedef struct s_smpi_mpi_type_key_elem {
   MPI_Type_delete_attr_function* delete_fn;
 } s_smpi_mpi_type_key_elem_t; 
 typedef struct s_smpi_mpi_type_key_elem *smpi_type_key_elem;
+
+typedef struct s_smpi_mpi_info {
+  xbt_dict_t info_dict;
+  int refcount;
+} s_smpi_mpi_info_t; 
+
 
 void smpi_process_destroy(void);
 void smpi_process_finalize(void);
@@ -174,6 +180,8 @@ smx_rdv_t smpi_process_mailbox(void);
 smx_rdv_t smpi_process_remote_mailbox(int index);
 smx_rdv_t smpi_process_mailbox_small(void);
 smx_rdv_t smpi_process_remote_mailbox_small(int index);
+xbt_mutex_t smpi_process_mailboxes_mutex(void);
+xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index);
 xbt_os_timer_t smpi_process_timer(void);
 void smpi_process_simulated_start(void);
 double smpi_process_simulated_elapsed(void);
@@ -185,10 +193,10 @@ int smpi_process_get_replaying(void);
 void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm**, xbt_bar_t*);
 void smpi_deployment_cleanup_instances(void);
 
-void smpi_comm_copy_buffer_callback(smx_action_t comm,
+void smpi_comm_copy_buffer_callback(smx_synchro_t comm,
                                            void *buff, size_t buff_size);
 
-void smpi_comm_null_copy_buffer_callback(smx_action_t comm,
+void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm,
                                            void *buff, size_t buff_size);
 
 void print_request(const char *message, MPI_Request request);
@@ -234,6 +242,9 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int h
 
 void smpi_datatype_free(MPI_Datatype* type);
 void smpi_datatype_commit(MPI_Datatype* datatype);
+
+int smpi_mpi_unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm);
+int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm);
 
 void smpi_empty_status(MPI_Status * status);
 MPI_Op smpi_op_new(MPI_User_function * function, int commute);
@@ -288,6 +299,8 @@ int smpi_op_c2f(MPI_Op op);
 MPI_Op smpi_op_f2c(int op);
 int smpi_win_c2f(MPI_Win win);
 MPI_Win smpi_win_f2c(int win);
+int smpi_info_c2f(MPI_Info info);
+MPI_Info smpi_info_f2c(int info);
 
 MPI_Request smpi_mpi_send_init(void *buf, int count, MPI_Datatype datatype,
                                int dst, int tag, MPI_Comm comm);
@@ -387,6 +400,11 @@ void smpi_mpi_win_set_name(MPI_Win win, char* name);
 
 int smpi_mpi_win_fence( int assert,  MPI_Win win);
 
+int smpi_mpi_win_post(MPI_Group group, int assert, MPI_Win win);
+int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win);
+int smpi_mpi_win_complete(MPI_Win win);
+int smpi_mpi_win_wait(MPI_Win win);
+
 int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win);
 int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
@@ -435,7 +453,10 @@ extern char* start_data_exe; //start of the data+bss segment of the executable
 extern int size_data_exe; //size of the data+bss segment of the executable
 
 
-void smpi_switch_data_segment(int);
+void smpi_switch_data_segment(int dest);
+void smpi_really_switch_data_segment(int dest);
+int smpi_is_privatisation_file(char* file);
+
 void smpi_get_executable_global_size(void);
 void smpi_initialize_global_memory_segments(void);
 void smpi_destroy_global_memory_segments(void);
@@ -544,8 +565,12 @@ void mpi_win_free_( int* win, int* ierr);
 void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int *win, int* ierr);
 void mpi_win_set_name_ (int*  win, char * name, int* ierr, int size);
 void mpi_win_get_name_ (int*  win, char * name, int* len, int* ierr);
+void mpi_win_post_(int* group, int assert, int* win, int* ierr);
+void mpi_win_start_(int* group, int assert, int* win, int* ierr);
+void mpi_win_complete_(int* win, int* ierr);
+void mpi_win_wait_(int* win, int* ierr);
 void mpi_info_create_( int *info, int* ierr);
-void mpi_info_set_( int *info, char *key, char *value, int* ierr);
+void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int keylen, unsigned int valuelen);
 void mpi_info_free_(int* info, int* ierr);
 void mpi_get_( int *origin_addr, int* origin_count, int* origin_datatype, int* target_rank,
     MPI_Aint* target_disp, int* target_count, int* target_datatype, int* win, int* ierr);
@@ -681,17 +706,17 @@ void mpi_comm_dup_with_info_ (int* comm, int* info, int* newcomm, int* ierr);
 void mpi_comm_split_type_ (int* comm, int* split_type, int* key, int* info, int*newcomm, int* ierr);
 void mpi_comm_set_info_ (int* comm, int* info, int* ierr);
 void mpi_comm_get_info_ (int* comm, int* info, int* ierr);
-void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, int* ierr);
+void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, int* ierr, unsigned int keylen);
 void mpi_comm_create_errhandler_ ( void *function, void *errhandler, int* ierr);
 void mpi_add_error_class_ ( int *errorclass, int* ierr);
 void mpi_add_error_code_ (  int* errorclass, int *errorcode, int* ierr);
 void mpi_add_error_string_ ( int* errorcode, char *string, int* ierr);
 void mpi_comm_call_errhandler_ (int* comm,int* errorcode, int* ierr);
 void mpi_info_dup_ (int* info, int* newinfo, int* ierr);
-void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, int* ierr);
-void mpi_info_delete_ (int* info, char *key, int* ierr);
+void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, int* ierr, unsigned int keylen);
+void mpi_info_delete_ (int* info, char *key, int* ierr, unsigned int keylen);
 void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr);
-void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr);
+void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, unsigned int keylen);
 void mpi_get_version_ (int *version,int *subversion, int* ierr);
 void mpi_get_library_version_ (char *version,int *len, int* ierr);
 void mpi_request_get_status_ ( int* request, int *flag, MPI_Status* status, int* ierr);
@@ -738,7 +763,7 @@ void TRACE_smpi_init(int rank);
 void TRACE_smpi_finalize(int rank);
 #endif
 
-const char* encode_datatype(MPI_Datatype datatype);
+const char* encode_datatype(MPI_Datatype datatype, int* known);
 
 // TODO, make this static and expose it more cleanly
 

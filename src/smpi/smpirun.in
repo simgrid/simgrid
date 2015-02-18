@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2007-2014. The SimGrid Team.
+# Copyright (c) 2007-2015. The SimGrid Team.
 # All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
@@ -9,6 +9,7 @@
 @CMAKE_SMPI_COMMAND@
 
 SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
+SIMGRID_GITHASH="@SIMGRID_GITHASH@"
 
 DEFAULT_LOOPBACK_BANDWIDTH="498000000"
 DEFAULT_LOOPBACK_LATENCY="0.000004"
@@ -44,6 +45,9 @@ Options:
   -trace-viva                # generate configuration for Viva's GraphView
   -trace-file <tracefile>    # name of the tracefile (simgrid_smpi.trace)
   -ext <value>               # additional parameter (reserved)
+  
+  -version                   # Displays the SimGrid version (human readable)
+  -git-version               # Displays the git hash of SimGrid
 
 or (deprecated usage):
   $0 [-keep-temps] [-np <numprocs>] [-bandwidth <bytes/sec>] [-latency <secs>] program [program-options]
@@ -172,6 +176,11 @@ while true; do
             printf '%b\n' "$SIMGRID_VERSION"
             exit 0
             ;;
+	    
+        "-git-version" | "--git-version")
+            printf '%b\n' "$SIMGRID_GITHASH"
+            exit 0
+            ;;
 
         "--cfg="*|"--log="*)
             for OPT in ${1#*=}
@@ -225,6 +234,20 @@ if [ -z "${HOSTFILE}" ] ; then
     HOSTFILETMP=1
     HOSTFILE="$(mktemp tmphostXXXXXX)"
     perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
+    perl -ne 'if (/.*<cluster.*?prefix="(.*?)".*?radical="(.*?)".*?suffix="(.*?)".*/) { 
+                my ($pre,$rad,$post)=($1,$2,$3); 
+	        for my $elm (split(",",$rad)) { 
+	          if ($elm=~/^([^-]*?)-([^-]*)$/) { 
+	             for (my $i=$1; $i<=$2;$i++) { 
+	                print "$pre$i$post\n"; 
+	             }
+	          } else {
+	             print "$pre$elm$post\n";
+	          }
+	        }
+	      } elsif (/<cluster/) {
+	        die ("Unparsable cluster tag. Either provide an hostfile yourself or give the attributes prefix, radical and suffix in that order on the <cluster line");
+	      }' ${PLATFORM} >> ${HOSTFILE}
 fi
 UNROLLEDHOSTFILETMP=0
 
@@ -343,9 +366,9 @@ if [ -n "${HAVE_SEQ}" ]; then
     SEQ=`${HAVE_SEQ} 0 $((${NUMPROCS}-1))`
 else
     cnt=0
-    while (( $cnt < ${NUMPROCS} )) ; do
-	SEQ="$SEQ $cnt"
-	cnt=$((cnt + 1));
+    while [ $cnt -lt ${NUMPROCS} ] ; do
+        SEQ="$SEQ $cnt"
+        cnt=$((cnt + 1));
     done
 fi
 

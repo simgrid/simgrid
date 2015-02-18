@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "mc_request.h"
+#include "mc_safety.h"
 #include "mc_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
@@ -228,7 +230,7 @@ static char *buff_size_to_string(size_t buff_size)
 char *MC_request_to_string(smx_simcall_t req, int value)
 {
   char *type = NULL, *args = NULL, *str = NULL, *p = NULL, *bs = NULL;
-  smx_action_t act = NULL;
+  smx_synchro_t act = NULL;
   size_t size = 0;
 
   switch (req->call) {
@@ -305,7 +307,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     if (!xbt_dynar_is_empty(simcall_comm_waitany__get__comms(req))) {
       p = pointer_to_string(xbt_dynar_get_as
                             (simcall_comm_waitany__get__comms(req), value,
-                             smx_action_t));
+                             smx_synchro_t));
       args =
           bprintf("comm=%s (%d of %lu)", p, value + 1,
                   xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
@@ -367,7 +369,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 unsigned int MC_request_testany_fail(smx_simcall_t req)
 {
   unsigned int cursor;
-  smx_action_t action;
+  smx_synchro_t action;
 
   xbt_dynar_foreach(simcall_comm_testany__get__comms(req), cursor, action) {
     if (action->comm.src_proc && action->comm.dst_proc)
@@ -377,67 +379,9 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
   return TRUE;
 }
 
-int MC_request_is_visible(smx_simcall_t req)
-{
-  return req->call == SIMCALL_COMM_ISEND
-      || req->call == SIMCALL_COMM_IRECV
-      || req->call == SIMCALL_COMM_WAIT
-      || req->call == SIMCALL_COMM_WAITANY
-      || req->call == SIMCALL_COMM_TEST
-      || req->call == SIMCALL_COMM_TESTANY
-      || req->call == SIMCALL_MC_RANDOM
-      || req->call == SIMCALL_MC_SNAPSHOT
-      || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS;
-}
-
-int MC_request_is_enabled(smx_simcall_t req)
-{
-  unsigned int index = 0;
-  smx_action_t act;
-
-  switch (req->call) {
-
-  case SIMCALL_COMM_WAIT:
-    /* FIXME: check also that src and dst processes are not suspended */
-
-    /* If it has a timeout it will be always be enabled, because even if the
-     * communication is not ready, it can timeout and won't block.
-     * On the other hand if it hasn't a timeout, check if the comm is ready.*/
-    if (simcall_comm_wait__get__timeout(req) >= 0) {
-      if (_sg_mc_timeout == 1) {
-        return TRUE;
-      } else {
-        act = simcall_comm_wait__get__comm(req);
-        return (act->comm.src_proc && act->comm.dst_proc);
-      }
-    } else {
-      act = simcall_comm_wait__get__comm(req);
-      if (act->comm.detached && act->comm.src_proc == NULL
-          && act->comm.type == SIMIX_COMM_READY)
-        return (act->comm.dst_proc != NULL);
-      return (act->comm.src_proc && act->comm.dst_proc);
-    }
-    break;
-
-  case SIMCALL_COMM_WAITANY:
-    /* Check if it has at least one communication ready */
-    xbt_dynar_foreach(simcall_comm_waitany__get__comms(req), index, act) {
-      if (act->comm.src_proc && act->comm.dst_proc) {
-        return TRUE;
-      }
-    }
-    return FALSE;
-    break;
-
-  default:
-    /* The rest of the request are always enabled */
-    return TRUE;
-  }
-}
-
 int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
-  smx_action_t act;
+  smx_synchro_t act;
 
   switch (req->call) {
 
@@ -450,14 +394,14 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   case SIMCALL_COMM_WAITANY:
     act =
         xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), idx,
-                         smx_action_t);
+                         smx_synchro_t);
     return (act->comm.src_proc && act->comm.dst_proc);
     break;
 
   case SIMCALL_COMM_TESTANY:
     act =
         xbt_dynar_get_as(simcall_comm_testany__get__comms(req), idx,
-                         smx_action_t);
+                         smx_synchro_t);
     return (act->comm.src_proc && act->comm.dst_proc);
     break;
 
@@ -468,18 +412,14 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 
 int MC_process_is_enabled(smx_process_t process)
 {
-  if (process->simcall.call != SIMCALL_NONE
-      && MC_request_is_enabled(&process->simcall))
-    return TRUE;
-
-  return FALSE;
+  return MC_request_is_enabled(&process->simcall);
 }
 
 char *MC_request_get_dot_output(smx_simcall_t req, int value)
 {
 
   char *str = NULL, *label = NULL;
-  smx_action_t act = NULL;
+  smx_synchro_t act = NULL;
 
   switch (req->call) {
   case SIMCALL_COMM_ISEND:

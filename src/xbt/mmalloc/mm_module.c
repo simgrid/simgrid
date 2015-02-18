@@ -137,7 +137,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
         mdptr = (struct mdesc *) newmd.base;
         mdptr->fd = fd;
         if(!mdptr->refcount){
-          sem_init(&mdptr->sem, 0, 1);
+          pthread_mutex_init(&mdptr->mutex, NULL);
           mdptr->refcount++;
         }
       }
@@ -182,8 +182,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
   if (mdp->fd < 0){
     mdp->flags |= MMALLOC_ANONYMOUS;
   }
-  sem_init(&mdp->sem, 0, 1);
-  
+  pthread_mutex_init(&mdp->mutex, NULL);
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */
 
@@ -225,8 +224,7 @@ void xbt_mheap_destroy_no_free(xbt_mheap_t md)
   struct mdesc *mdp = md;
 
   if(--mdp->refcount == 0){
-    LOCK(mdp) ;
-    sem_destroy(&mdp->sem);
+    pthread_mutex_destroy(&mdp->mutex);
   }
 }
 
@@ -330,6 +328,8 @@ void *mmalloc_preinit(void)
 {
   int res;
   if (__mmalloc_default_mdp == NULL) {
+    if(!xbt_pagesize)
+      xbt_pagesize = getpagesize();
     unsigned long mask = ~((unsigned long)xbt_pagesize - 1);
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = xbt_mheap_new_options(-1, addr, XBT_MHEAP_OPTION_MEMSET);
@@ -343,7 +343,7 @@ void *mmalloc_preinit(void)
   }
   xbt_assert(__mmalloc_default_mdp != NULL);
 
-#if defined(HAVE_GNU_LD) && defined(MMALLOC_WANT_OVERRIDE_LEGACY)
+#if 0 && defined(HAVE_GNU_LD) && defined(MMALLOC_WANT_OVERRIDE_LEGACY)
   mm_gnuld_legacy_init();
 #endif
 

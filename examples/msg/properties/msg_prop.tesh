@@ -4,10 +4,15 @@ p Testing a MSG application with properties in the XML for Hosts, Links and Proc
 
 ! output sort
 $ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml ${srcdir:=.}/properties/deployment_properties.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) There are 2 hosts in the environment
+> [  0.000000] (0:@) There are 7 hosts in the environment
+> [  0.000000] (0:@) Host 'node-3.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:@) Host 'node-0.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:@) Host 'node-4.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:@) Host 'node-1.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:@) Host 'node-2.acme.org' runs at 1000000000 flops/s
 > [  0.000000] (0:@) Host 'host1' runs at 1000000000 flops/s
 > [  0.000000] (0:@) Host 'host2' runs at 1000000000 flops/s
-> [  0.000000] (1:alice@host1) == Print the properties of the host
+> [  0.000000] (1:alice@host1) == Print the properties of the host 'host1'
 > [  0.000000] (1:alice@host1)   Host property: 'mem' -> '4'
 > [  0.000000] (1:alice@host1)   Host property: 'Hdd' -> '180'
 > [  0.000000] (1:alice@host1) == Try to get a host property that does not exist
@@ -18,7 +23,7 @@ $ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml $
 > [  0.000000] (2:bob@host1) == Print the properties of the process
 > [  0.000000] (2:bob@host1)    Process property: SomeProp -> SomeValue
 > [  0.000000] (2:bob@host1) == Try to get a process property that does not exist
-> [  1.000000] (3:carole@host2) == Print the properties of the host
+> [  1.000000] (3:carole@host2) == Print the properties of the host 'host1'
 > [  1.000000] (3:carole@host2)   Host property: 'mem' -> '4'
 > [  1.000000] (3:carole@host2)   Host property: 'Hdd' -> '180'
 > [  1.000000] (3:carole@host2) == Try to get a host property that does not exist
@@ -26,3 +31,13 @@ $ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml $
 > [  1.000000] (3:carole@host2)    Property: Hdd old value: 180
 > [  1.000000] (3:carole@host2) == Trying to modify a host property
 > [  1.000000] (3:carole@host2)    Property: Hdd old value: 250
+> [  2.000000] (4:david@host2) == Print the properties of the host 'node-0.acme.org'
+> [  2.000000] (4:david@host2)   Host property: 'mem' -> '42'
+> [  2.000000] (4:david@host2)   Host property: 'bla' -> 'acme cluster'
+> [  2.000000] (4:david@host2)   Host property: 'name' -> 'AS2'
+> [  2.000000] (4:david@host2)   Host property: 'Hdd' -> '180'
+> [  2.000000] (4:david@host2) == Try to get a host property that does not exist
+> [  2.000000] (4:david@host2) == Try to get a host property that does exist
+> [  2.000000] (4:david@host2)    Property: Hdd old value: 180
+> [  2.000000] (4:david@host2) == Trying to modify a host property
+> [  2.000000] (4:david@host2)    Property: Hdd old value: 250

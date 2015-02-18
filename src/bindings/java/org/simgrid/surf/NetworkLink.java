@@ -63,7 +63,6 @@ public class NetworkLink extends Resource {
   
   /**
     * @param value The new bandwidth
-    * @param date When to change the bandwidth
     */
   public void updateBandwidth(double value, double date) {
     SurfJNI.NetworkLink_updateBandwidth__SWIG_0(swigCPtr, this, value, date);
@@ -72,7 +71,6 @@ public class NetworkLink extends Resource {
   
   /**
     * @param value The new bandwidth
-    * @param date When to change the bandwidth
     */
   public void updateBandwidth(double value) {
     SurfJNI.NetworkLink_updateBandwidth__SWIG_1(swigCPtr, this, value);
@@ -89,7 +87,6 @@ public class NetworkLink extends Resource {
   
   /**
     * @param value The new latency
-    * @param date When to change the latency
     */
   public void updateLatency(double value, double date) {
     SurfJNI.NetworkLink_updateLatency__SWIG_0(swigCPtr, this, value, date);
@@ -98,7 +95,6 @@ public class NetworkLink extends Resource {
   
   /**
     * @param value The new latency
-    * @param date When to change the latency
     */
   public void updateLatency(double value) {
     SurfJNI.NetworkLink_updateLatency__SWIG_1(swigCPtr, this, value);

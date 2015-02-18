@@ -9,6 +9,9 @@
 #include <boost/unordered_set.hpp>
 
 #include "internal_config.h"
+#include "mc_object_info.h"
+#include "mc_safety.h"
+#include "mc_liveness.h"
 #include "mc_private.h"
 
 #ifdef HAVE_SMPI
@@ -17,6 +20,8 @@
 
 #include "xbt/mmalloc.h"
 #include "xbt/mmalloc/mmprivate.h"
+
+#include <xbt/probes.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, mc,
                                 "Logging specific to mc_compare");
@@ -280,6 +285,7 @@ static int compare_global_variables(mc_object_info_t object_info,
                                 (char *) current_var->address, snapshot2, r2,
                                 bvariable_type, 0);
     if (res == 1) {
+      XBT_TRACE3(mc, global_diff, -1, -1, current_var->name);
       XBT_VERB("Global variable %s (%p) is different between snapshots",
                current_var->name, (char *) current_var->address);
       return 1;
@@ -336,6 +342,7 @@ static int compare_local_variables(int process_index,
 
       if (res == 1) {
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
+        XBT_TRACE3(mc, local_diff, -1, -1, current_var1->name);
         XBT_VERB
             ("Local variable %s (%p - %p) in frame %s  is different between snapshots",
              current_var1->name, current_var1->address, current_var2->address,
@@ -382,6 +389,7 @@ int snapshot_compare(void *state1, void *state2)
   if (_sg_mc_hash) {
     hash_result = (s1->hash != s2->hash);
     if (hash_result) {
+      XBT_TRACE2(mc, hash_diff, num1, num2);
       XBT_VERB("(%d - %d) Different hash : 0x%" PRIx64 "--0x%" PRIx64, num1,
                num2, s1->hash, s2->hash);
 #ifndef MC_DEBUG
@@ -396,8 +404,11 @@ int snapshot_compare(void *state1, void *state2)
   unsigned int cursor;
   int pid;
   xbt_dynar_foreach(s1->enabled_processes, cursor, pid){
-    if(!xbt_dynar_member(s2->enabled_processes, &pid))
+    if(!xbt_dynar_member(s2->enabled_processes, &pid)) {
+      //XBT_TRACE3(mc, state_diff, num1, num2, "Different enabled processes");
       XBT_VERB("(%d - %d) Different enabled processes", num1, num2);
+      // return 1; ??
+    }
   }
 
   unsigned long i = 0;
@@ -424,6 +435,7 @@ int snapshot_compare(void *state1, void *state2)
       XBT_VERB("(%d - %d) Different size used in stacks : %zu - %zu", num1,
                num2, size_used1, size_used2);
 #endif
+      XBT_TRACE3(mc, state_diff, num1, num2, "Different stack size");
 
       xbt_os_walltimer_stop(timer);
       xbt_os_timer_free(timer);
@@ -455,6 +467,7 @@ int snapshot_compare(void *state1, void *state2)
     errors++;
 #else
 #ifdef MC_VERBOSE
+    XBT_TRACE3(mc, state_diff, num1, num2, "Different heap information");
     XBT_VERB("(%d - %d) Different heap information", num1, num2);
 #endif
 
@@ -492,6 +505,7 @@ int snapshot_compare(void *state1, void *state2)
     else diff_local =
         compare_local_variables(stack1->process_index, s1, s2, stack1, stack2);
     if (diff_local > 0) {
+      XBT_TRACE3(mc, state_diff, num1, num2, "Different local variables");
 #ifdef MC_DEBUG
       if (is_diff == 0) {
         xbt_os_walltimer_stop(timer);
@@ -559,6 +573,7 @@ int snapshot_compare(void *state1, void *state2)
         compare_global_variables(object_infos[k], MC_NO_PROCESS_INDEX, s1->regions[k], s2->regions[k], s1, s2);
 
     if (is_diff != 0) {
+      XBT_TRACE3(mc, state_diff, num1, num2, "Different global variables");
 #ifdef MC_DEBUG
       xbt_os_walltimer_stop(timer);
       *times[k] = xbt_os_timer_elapsed(timer);
@@ -589,6 +604,7 @@ int snapshot_compare(void *state1, void *state2)
 
   /* Compare heap */
   if (mmalloc_compare_heap(s1, s2) > 0) {
+    XBT_TRACE3(mc, state_diff, num1, num2, "Different heap");
 
 #ifdef MC_DEBUG
     xbt_os_walltimer_stop(timer);
@@ -674,7 +690,7 @@ void print_comparison_times()
 /**************************** MC snapshot compare simcall **************************/
 /***********************************************************************************/
 
-int SIMIX_pre_mc_compare_snapshots(smx_simcall_t simcall,
+int simcall_HANDLER_mc_compare_snapshots(smx_simcall_t simcall,
                                    mc_snapshot_t s1, mc_snapshot_t s2)
 {
   return snapshot_compare(s1, s2);
