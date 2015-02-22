@@ -99,9 +99,7 @@ xbt_dict_t watched_hosts_lib;
 surf_callback(void, void) surfExitCallbacks;
 
 s_surf_model_description_t surf_plugin_description[] = {
-    {"Energy",
-     "Cpu energy consumption.",
-     sg_energy_plugin_init},
+    {"Energy", "Cpu energy consumption.", sg_energy_plugin_init},
      {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
