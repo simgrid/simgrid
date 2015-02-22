@@ -303,7 +303,7 @@ static void _sg_cfg_cb__coll(const char *category,
   }
 
   /* New Module missing */
-  find_coll_description(table, val);
+  find_coll_description(table, val, category);
 }
 static void _sg_cfg_cb__coll_gather(const char *name, int pos){
   _sg_cfg_cb__coll("gather", mpi_coll_gather_description, name, pos);

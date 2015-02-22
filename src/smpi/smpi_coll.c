@@ -14,6 +14,9 @@
 #include "colls/colls.h"
 #include "simgrid/sg_config.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
+                                "Logging specific to SMPI (coll)");
+
 s_mpi_coll_description_t mpi_coll_gather_description[] = {
   {"default",
    "gather default collective",
@@ -121,7 +124,7 @@ void coll_help(const char *category, s_mpi_coll_description_t * table)
 }
 
 int find_coll_description(s_mpi_coll_description_t * table,
-                           char *name)
+                           char *name, const char *desc)
 {
   int i;
   char *name_list = NULL;
@@ -132,6 +135,8 @@ int find_coll_description(s_mpi_coll_description_t * table,
   }
   for (i = 0; table[i].name; i++)
     if (!strcmp(name, table[i].name)) {
+      if (strcmp(table[i].name,"default"))
+        XBT_INFO("Switch to algorithm %s for collective %s",table[i].name,desc);
       return i;
     }
 
@@ -144,7 +149,7 @@ int find_coll_description(s_mpi_coll_description_t * table,
     }
   }
   if (!table[0].name)
-    xbt_die("No collective is valid! This is a bug.");
+    xbt_die("No collective is valid for '%s'! This is a bug.",name);
   name_list = xbt_strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
     name_list =
@@ -156,9 +161,6 @@ int find_coll_description(s_mpi_coll_description_t * table,
   xbt_die("Collective '%s' is invalid! Valid collectives are: %s.", name, name_list);
   return -1;
 }
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
-                                "Logging specific to SMPI (coll)");
 
 int (*mpi_coll_gather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, int root, MPI_Comm);
 int (*mpi_coll_allgather_fun)(void *, int, MPI_Datatype, void*, int, MPI_Datatype, MPI_Comm);
