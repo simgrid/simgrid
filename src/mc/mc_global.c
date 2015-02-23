@@ -337,7 +337,7 @@ int MC_deadlock_check()
   if (xbt_swag_size(simix_global->process_list)) {
     deadlock = TRUE;
     xbt_swag_foreach(process, simix_global->process_list) {
-      if (MC_request_is_enabled(&process->simcall)) {
+      if (MC_process_is_enabled(process)) {
         deadlock = FALSE;
         break;
       }
