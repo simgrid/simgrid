@@ -8,41 +8,42 @@
 #include "../cpu_cas01.hpp"
 
 /** @addtogroup SURF_plugin_energy
- *
- *
- *  This is the energy plugin, enabling to account not only for computation time,
- *  but also for the dissipated energy in the simulated platform.
- *
- *  The energy consumption of a CPU depends directly of its current load. Specify that consumption in your platform file as follows:
- *
- *  \beginverbatim
- *  <host id="HostA" power="100.0Mf" >
- *      <prop id="watt_per_state" value="100.0:200.0" />
- *      <prop id="watt_off" value="10" />
- *  </host>
- *  \endverbatim
- *
- *  The first property means that when your host is up and running, but without anything to do, it will dissipate 100 Watts.
- *  If it's fully loaded, it will dissipate 200 Watts. If its load is at 50%, then it will dissipate 150 Watts.
- *  The second property means that when your host is turned off, it will dissipate only 10 Watts (please note that these values are arbitrary).
- *
- *  If your CPU is using pstates, then you can provide one consumption interval per pstate.
- *
- *  \beginverbatim
- *  <host id="HostB" power="100.0Mf,50.0Mf,20.0Mf" pstate="0" >
- *      <prop id="watt_per_state" value="95.0:200.0, 93.0:170.0, 90.0:150.0" />
- *      <prop id="watt_off" value="10" />
- *  </host>
- *  \endverbatim
- *
- *  That host has 3 levels of performance with the following performance: 100 Mflop/s, 50 Mflop/s or 20 Mflop/s.
- *  It starts at pstate 0 (ie, at 100 Mflop/s). In this case, you have to specify one interval per pstate in the watt_per_state property.
- *  In this example, the idle consumption is 95 Watts, 93 Watts and 90 Watts in each pstate while the CPU burn consumption are at 200 Watts,
- *  170 Watts and 150 Watts respectively.
- *
- *  To change the pstate of a given CPU, use the following functions: #MSG_host_get_pstate_number, #MSG_host_set_pstate(), #MSG_host_get_power_peak_at().
- *
- *  To get the amount of dissipated energy, use the following function: #MSG_host_get_consumed_energy().
+
+
+This is the energy plugin, enabling to account not only for computation time,
+but also for the dissipated energy in the simulated platform.
+
+The energy consumption of a CPU depends directly of its current load. Specify that consumption in your platform file as follows:
+
+\verbatim
+<host id="HostA" power="100.0Mf" >
+    <prop id="watt_per_state" value="100.0:200.0" />
+    <prop id="watt_off" value="10" />
+</host>
+\endverbatim
+
+The first property means that when your host is up and running, but without anything to do, it will dissipate 100 Watts.
+If it's fully loaded, it will dissipate 200 Watts. If its load is at 50%, then it will dissipate 150 Watts.
+The second property means that when your host is turned off, it will dissipate only 10 Watts (please note that these values are arbitrary).
+
+If your CPU is using pstates, then you can provide one consumption interval per pstate.
+
+\verbatim
+<host id="HostB" power="100.0Mf,50.0Mf,20.0Mf" pstate="0" >
+    <prop id="watt_per_state" value="95.0:200.0, 93.0:170.0, 90.0:150.0" />
+    <prop id="watt_off" value="10" />
+</host>
+\endverbatim
+
+That host has 3 levels of performance with the following performance: 100 Mflop/s, 50 Mflop/s or 20 Mflop/s.
+It starts at pstate 0 (ie, at 100 Mflop/s). In this case, you have to specify one interval per pstate in the watt_per_state property.
+In this example, the idle consumption is 95 Watts, 93 Watts and 90 Watts in each pstate while the CPU burn consumption are at 200 Watts,
+170 Watts and 150 Watts respectively.
+
+To change the pstate of a given CPU, use the following functions: #MSG_host_get_pstate_number, #MSG_host_set_pstate(), #MSG_host_get_power_peak_at().
+
+To simulate the energy-related elements, first call the #sg_energy_plugin_init() before your #MSG_init(),
+and then use the following function to retrieve the consumption of a given host: #MSG_host_get_consumed_energy().
  */
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
@@ -126,7 +127,7 @@ static void sg_energy_plugin_exit()
 
 /** \ingroup SURF_plugin_energy
  * \brief Enable energy plugin
- * \details Enable energy plugin to get joules consumption of each cpu.
+ * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before #MSG_init().
  */
 void sg_energy_plugin_init() {
   if (surf_energy == NULL) {
