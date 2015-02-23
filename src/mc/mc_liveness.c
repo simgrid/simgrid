@@ -299,8 +299,8 @@ void MC_modelcheck_liveness()
            MC_SET_STD_HEAP;
          }
 
-         char* req_str = MC_request_to_string(req, value);  
-         XBT_DEBUG("Execute: %s", req_str);                 
+         char* req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX); 
+         XBT_DEBUG("Execute: %s", req_str);
          xbt_free(req_str);
 
          /* Set request as executed */

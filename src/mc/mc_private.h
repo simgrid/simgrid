@@ -152,6 +152,8 @@ uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
  */
 void MC_dump_stacks(FILE* file);
 
+void MC_report_assertion_error(void);
+
 SG_END_DECL()
 
 #endif

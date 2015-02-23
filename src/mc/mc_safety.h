@@ -24,7 +24,6 @@ typedef enum {
 
 extern e_mc_reduce_t mc_reduce_kind;
 
-void MC_pre_modelcheck_safety(void);
 void MC_modelcheck_safety(void);
 
 typedef struct s_mc_visited_state{

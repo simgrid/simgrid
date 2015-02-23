@@ -121,7 +121,6 @@ static void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
   message.region = *region;
   if (MC_protocol_send(mc_client->fd, &message, sizeof(message)))
     xbt_die("Could not send ignored region to MCer");
-  XBT_DEBUG("Sent ignored region to the model-checker");
 }
 
 // MCed:

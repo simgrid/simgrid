@@ -13,8 +13,14 @@
 
 SG_BEGIN_DECL()
 
+typedef enum e_mc_request_type {
+  MC_REQUEST_SIMIX,
+  MC_REQUEST_EXECUTED,
+  MC_REQUEST_INTERNAL,
+} e_mc_request_type_t;
+
 int MC_request_depend(smx_simcall_t req1, smx_simcall_t req2);
-char* MC_request_to_string(smx_simcall_t req, int value);
+char* MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t type);
 unsigned int MC_request_testany_fail(smx_simcall_t req);
 /*int MC_waitany_is_enabled_by_comm(smx_req_t req, unsigned int comm);*/
 int MC_request_is_visible(smx_simcall_t req);

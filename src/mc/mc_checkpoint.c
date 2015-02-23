@@ -732,9 +732,12 @@ static s_mc_address_space_class_t mc_snapshot_class = {
 
 mc_snapshot_t MC_take_snapshot(int num_state)
 {
+  XBT_DEBUG("Taking snapshot %i", num_state);
+
   mc_process_t mc_process = &mc_model_checker->process;
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
   snapshot->process = mc_process;
+  snapshot->num_state = num_state;
   snapshot->address_space.address_space_class = &mc_snapshot_class;
 
   snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
@@ -830,6 +833,8 @@ void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
 
 void MC_restore_snapshot(mc_snapshot_t snapshot)
 {
+  XBT_DEBUG("Restore snapshot %i", snapshot->num_state);
+
   const bool use_soft_dirty = _sg_mc_sparse_checkpoint
     && _sg_mc_soft_dirty
     && MC_process_is_self(&mc_model_checker->process);

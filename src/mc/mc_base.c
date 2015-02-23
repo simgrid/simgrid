@@ -17,12 +17,18 @@
 #include "mc_model_checker.h"
 #include "mc_protocol.h"
 #include "mc_smx.h"
+#include "mc_server.h"
 #endif
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 
 void MC_wait_for_requests(void)
 {
+  if (mc_mode == MC_MODE_SERVER) {
+    MC_server_wait_client(&mc_model_checker->process);
+    return;
+  }
+
   smx_process_t process;
   smx_simcall_t req;
   unsigned int iter;

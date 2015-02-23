@@ -55,11 +55,9 @@ void s_mc_server::start()
   /* Wait for the target process to initialize and exchange a HELLO messages
    * before trying to look at its memory map.
    */
-  XBT_DEBUG("Greeting the MC client");
   int res = MC_protocol_hello(socket);
   if (res != 0)
     throw std::system_error(res, std::system_category());
-  XBT_DEBUG("Greeted the MC client");
 
   // Block SIGCHLD (this will be handled with accept/signalfd):
   sigset_t set;
@@ -126,6 +124,7 @@ void s_mc_server::resume(mc_process_t process)
   int res = MC_protocol_send_simple_message(socket, MC_MESSAGE_CONTINUE);
   if (res)
     throw std::system_error(res, std::system_category());
+  process->cache_flags = (e_mc_process_cache_flags_t) 0;
 }
 
 static
@@ -138,7 +137,7 @@ void throw_socket_error(int fd)
   throw std::system_error(error, std::system_category());
 }
 
-void s_mc_server::handle_events()
+bool s_mc_server::handle_events()
 {
   char buffer[MC_MESSAGE_LENGTH];
   struct pollfd* socket_pollfd = &fds[SOCKET_FD_INDEX];
@@ -156,7 +155,7 @@ void s_mc_server::handle_events()
   if (socket_pollfd->revents) {
     if (socket_pollfd->revents & POLLIN) {
 
-      ssize_t size = recv(socket_pollfd->fd, buffer, sizeof(buffer), MSG_DONTWAIT);
+      ssize_t size = MC_receive_message(socket_pollfd->fd, buffer, sizeof(buffer), MSG_DONTWAIT);
       if (size == -1 && errno != EAGAIN)
         throw std::system_error(errno, std::system_category());
 
@@ -169,7 +168,6 @@ void s_mc_server::handle_events()
 
       case MC_MESSAGE_IGNORE_HEAP:
         {
-          XBT_DEBUG("Received ignored region");
           s_mc_ignore_heap_message_t message;
           if (size != sizeof(message))
             xbt_die("Broken messsage");
@@ -180,10 +178,8 @@ void s_mc_server::handle_events()
           break;
         }
 
-
       case MC_MESSAGE_UNIGNORE_HEAP:
         {
-          XBT_DEBUG("Received unignored region");
           s_mc_ignore_memory_message_t message;
           if (size != sizeof(message))
             xbt_die("Broken messsage");
@@ -194,7 +190,6 @@ void s_mc_server::handle_events()
 
       case MC_MESSAGE_IGNORE_MEMORY:
         {
-          XBT_DEBUG("Received ignored memory");
           s_mc_ignore_memory_message_t message;
           if (size != sizeof(message))
             xbt_die("Broken messsage");
@@ -206,7 +201,6 @@ void s_mc_server::handle_events()
 
       case MC_MESSAGE_STACK_REGION:
         {
-          XBT_DEBUG("Received stack area");
           s_mc_stack_region_message_t message;
           if (size != sizeof(message))
             xbt_die("Broken messsage");
@@ -236,11 +230,19 @@ void s_mc_server::handle_events()
           break;
         }
 
+      case MC_MESSAGE_WAITING:
+        return false;
+
+      case MC_MESSAGE_ASSERTION_FAILED:
+        MC_report_assertion_error();
+        xbt_abort();
+        break;
+
       default:
         xbt_die("Unexpected message from model-checked application");
 
       }
-      return;
+      return true;
     }
     if (socket_pollfd->revents & POLLERR) {
       throw_socket_error(socket_pollfd->fd);
@@ -252,7 +254,7 @@ void s_mc_server::handle_events()
   if (signalfd_pollfd->revents) {
     if (signalfd_pollfd->revents & POLLIN) {
       this->handle_signals();
-      return;
+      return true;
     }
     if (signalfd_pollfd->revents & POLLERR) {
       throw_socket_error(signalfd_pollfd->fd);
@@ -260,6 +262,8 @@ void s_mc_server::handle_events()
     if (signalfd_pollfd->revents & POLLHUP)
       xbt_die("Signalfd hang up?");
   }
+
+  return true;
 }
 
 void s_mc_server::loop()
@@ -325,5 +329,29 @@ void s_mc_server::on_signal(const struct signalfd_siginfo* info)
     break;
   default:
     break;
+  }
+}
+
+void MC_server_wait_client(mc_process_t process)
+{
+  mc_server->resume(process);
+  while (mc_model_checker->process.running) {
+    if (!mc_server->handle_events())
+      return;
+  }
+}
+
+void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value)
+{
+  s_mc_simcall_handle_message m;
+  memset(&m, 0, sizeof(m));
+  m.type  = MC_MESSAGE_SIMCALL_HANDLE;
+  m.pid   = pid;
+  m.value = value;
+  MC_protocol_send(mc_model_checker->process.socket, &m, sizeof(m));
+  process->cache_flags = (e_mc_process_cache_flags_t) 0;
+  while (mc_model_checker->process.running) {
+    if (!mc_server->handle_events())
+      return;
   }
 }

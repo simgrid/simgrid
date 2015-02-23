@@ -26,6 +26,7 @@
 #include "mc_snapshot.h"
 #include "mc_ignore.h"
 #include "mc_smx.h"
+#include "mc_server.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
                                 "MC process information");
@@ -161,15 +162,14 @@ void MC_process_refresh_heap(mc_process_t process)
 void MC_process_refresh_malloc_info(mc_process_t process)
 {
   assert(!MC_process_is_self(process));
-  if (!process->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP)
+  if (!(process->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
     MC_process_refresh_heap(process);
   // Refresh process->heapinfo:
   size_t malloc_info_bytesize =
     (process->heap->heaplimit + 1) * sizeof(malloc_info);
 
   xbt_mheap_t heap  = mmalloc_set_current_heap(mc_heap);
-  process->heap_info = (malloc_info*) realloc(process->heap_info,
-    malloc_info_bytesize);
+  process->heap_info = realloc(process->heap_info, malloc_info_bytesize);
   mmalloc_set_current_heap(heap);
 
   MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
@@ -621,26 +621,14 @@ void MC_simcall_handle(smx_simcall_t req, int value)
     return;
   }
 
-  MC_process_smx_refresh(&mc_model_checker->process);
-
   unsigned i;
   mc_smx_process_info_t pi = NULL;
 
   xbt_dynar_foreach_ptr(mc_model_checker->process.smx_process_infos, i, pi) {
-    smx_process_t p = (smx_process_t) pi->address;
     if (req == &pi->copy.simcall) {
-      smx_simcall_t real_req = &p->simcall;
-      // TODO, use a remote call
-      SIMIX_simcall_handle(real_req, value);
+      MC_server_simcall_handle(&mc_model_checker->process, pi->copy.pid, value);
       return;
     }
-  }
-
-  // Check (remove afterwards):
-  xbt_dynar_foreach_ptr(mc_model_checker->process.smx_process_infos, i, pi) {
-    smx_process_t p = (smx_process_t) pi->address;
-    if (req == &p->simcall)
-      xbt_die("The real simcall was passed. We expected the local copy.");
   }
 
   xbt_die("Could not find the request");

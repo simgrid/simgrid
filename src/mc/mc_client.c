@@ -23,6 +23,7 @@
 #include "mc_ignore.h"
 #include "mc_model_checker.h"
 #include "mc_private.h" // MC_deadlock_check()
+#include "mc_smx.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 
@@ -57,16 +58,20 @@ void MC_client_init(void)
 
 void MC_client_hello(void)
 {
-  XBT_DEBUG("Greeting the MC server");
   if (MC_protocol_hello(mc_client->fd) != 0)
     xbt_die("Could not say hello the MC server");
-  XBT_DEBUG("Greeted the MC server");
 }
 
 void MC_client_send_message(void* message, size_t size)
 {
   if (MC_protocol_send(mc_client->fd, message, size))
     xbt_die("Could not send message %i", (int) ((mc_message_t)message)->type);
+}
+
+void MC_client_send_simple_message(int type)
+{
+  if (MC_protocol_send_simple_message(mc_client->fd, type))
+    xbt_die("Could not send message %i", type);
 }
 
 void MC_client_handle_messages(void)
@@ -76,13 +81,12 @@ void MC_client_handle_messages(void)
 
     char message_buffer[MC_MESSAGE_LENGTH];
     size_t s;
-    if ((s = recv(mc_client->fd, &message_buffer, sizeof(message_buffer), 0)) == -1)
+    if ((s = MC_receive_message(mc_client->fd, &message_buffer, sizeof(message_buffer), 0)) == -1)
       xbt_die("Could not receive commands from the model-checker");
 
-    XBT_DEBUG("Receive message from model-checker");
     s_mc_message_t message;
     if (s < sizeof(message))
-      xbt_die("Message is too short");
+      xbt_die("Received message is too small");
     memcpy(&message, message_buffer, sizeof(message));
     switch (message.type) {
 
@@ -93,15 +97,41 @@ void MC_client_handle_messages(void)
         answer.type = MC_MESSAGE_DEADLOCK_CHECK_REPLY;
         answer.value = result;
         if (MC_protocol_send(mc_client->fd, &answer, sizeof(answer)))
-          xbt_die("Could nor send response");
+          xbt_die("Could not send response");
       }
       break;
 
     case MC_MESSAGE_CONTINUE:
       return;
 
+    case MC_MESSAGE_SIMCALL_HANDLE:
+      {
+        s_mc_simcall_handle_message_t message;
+        if (s != sizeof(message))
+          xbt_die("Unexpected size for SIMCALL_HANDLE");
+        memcpy(&message, message_buffer, sizeof(message));
+        smx_process_t process = SIMIX_process_from_PID(message.pid);
+        if (!process)
+          xbt_die("Invalid pid %lu", (unsigned long) message.pid);
+        SIMIX_simcall_handle(&process->simcall, message.value);
+      }
+      return;
+
     default:
-      xbt_die("Unexpected message from model-checker %i", message.type);
+      xbt_die("%s received unexpected message %s (%i)",
+        MC_mode_name(mc_mode),
+        MC_message_type_name(message.type),
+        message.type
+      );
     }
+  }
+}
+
+void MC_client_main_loop(void)
+{
+  while (1) {
+    MC_protocol_send_simple_message(mc_client->fd, MC_MESSAGE_WAITING);
+    MC_client_handle_messages();
+    MC_wait_for_requests();
   }
 }

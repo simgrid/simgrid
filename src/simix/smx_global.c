@@ -219,6 +219,7 @@ void SIMIX_global_init(int *argc, char **argv)
       mc_mode = MC_MODE_CLIENT;
       MC_client_init();
       MC_client_hello();
+      MC_client_handle_messages();
     } else {
       mc_mode = MC_MODE_STANDALONE;
     }

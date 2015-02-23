@@ -28,3 +28,14 @@ void MC_model_checker_delete(mc_model_checker_t mc)
   MC_process_clear(&mc->process);
   xbt_dict_free(&mc->hosts);
 }
+
+unsigned long MC_smx_get_maxpid(void)
+{
+  if (mc_mode == MC_MODE_STANDALONE)
+    return simix_process_maxpid;
+
+  unsigned long maxpid;
+  MC_process_read_variable(&mc_model_checker->process, "simix_process_maxpid",
+    &maxpid, sizeof(maxpid));
+  return maxpid;
+}

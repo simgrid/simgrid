@@ -14,12 +14,16 @@
 #include "mc_comm_pattern.h"
 #include "mc_smx.h"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc,
+                                "Logging specific to MC (state)");
+
 /**
  * \brief Creates a state data structure used by the exploration algorithm
  */
 mc_state_t MC_state_new()
 {
   mc_state_t state = xbt_new0(s_mc_state_t, 1);
+
   state->max_pid = MC_smx_get_maxpid();
   state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
   state->system_state = NULL;
@@ -89,8 +93,8 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
 {
   state->executed_req = *req;
   state->req_num = value;
+
   smx_process_t process = NULL;
-  mc_procstate_t procstate = NULL;
 
   /* The waitany and testany request are transformed into a wait or test request over the
    * corresponding communication action so it can be treated later by the dependence
@@ -140,7 +144,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     int random_max = simcall_mc_random__get__max(req);
     if (value != random_max) {
       MC_EACH_SIMIX_PROCESS(process,
-        procstate = &state->proc_status[process->pid];
+        mc_procstate_t procstate = &state->proc_status[process->pid];
         const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
         if (process->pid == issuer->pid) {
           procstate->state = MC_MORE_INTERLEAVE;
@@ -167,103 +171,108 @@ smx_simcall_t MC_state_get_internal_request(mc_state_t state)
   return &state->internal_req;
 }
 
+static inline smx_simcall_t MC_state_get_request_for_process(
+  mc_state_t state, int*value, smx_process_t process)
+{
+  mc_procstate_t procstate = &state->proc_status[process->pid];
+
+  if (procstate->state != MC_INTERLEAVE
+      && procstate->state != MC_MORE_INTERLEAVE)
+      return NULL;
+  if (!MC_process_is_enabled(process))
+    return NULL;
+
+  switch (process->simcall.call) {
+
+      case SIMCALL_COMM_WAITANY:
+        *value = -1;
+        while (procstate->interleave_count <
+              MC_process_read_dynar_length(&mc_model_checker->process,
+                simcall_comm_waitany__get__comms(&process->simcall))) {
+          if (MC_request_is_enabled_by_idx
+              (&process->simcall, procstate->interleave_count++)) {
+            *value = procstate->interleave_count - 1;
+            break;
+          }
+        }
+
+        if (procstate->interleave_count >=
+            MC_process_read_dynar_length(&mc_model_checker->process,
+              simcall_comm_waitany__get__comms(&process->simcall)))
+          procstate->state = MC_DONE;
+
+        if (*value != -1)
+          return &process->simcall;
+
+        break;
+
+      case SIMCALL_COMM_TESTANY: {
+        unsigned start_count = procstate->interleave_count;
+        *value = -1;
+        while (procstate->interleave_count <
+                MC_process_read_dynar_length(&mc_model_checker->process,
+                  simcall_comm_testany__get__comms(&process->simcall))) {
+          if (MC_request_is_enabled_by_idx
+              (&process->simcall, procstate->interleave_count++)) {
+            *value = procstate->interleave_count - 1;
+            break;
+          }
+        }
+
+        if (procstate->interleave_count >=
+            MC_process_read_dynar_length(&mc_model_checker->process,
+              simcall_comm_testany__get__comms(&process->simcall)))
+          procstate->state = MC_DONE;
+
+        if (*value != -1 || start_count == 0)
+          return &process->simcall;
+
+        break;
+      }
+
+      case SIMCALL_COMM_WAIT: {
+        smx_synchro_t remote_act = simcall_comm_wait__get__comm(&process->simcall);
+        s_smx_synchro_t act;
+        MC_process_read_simple(&mc_model_checker->process,
+          &act, remote_act, sizeof(act));
+        if (act.comm.src_proc && act.comm.dst_proc) {
+          *value = 0;
+        } else {
+          if (act.comm.src_proc == NULL && act.comm.type == SIMIX_COMM_READY
+              && act.comm.detached == 1)
+            *value = 0;
+          else
+            *value = -1;
+        }
+        procstate->state = MC_DONE;
+        return &process->simcall;
+      }
+
+      case SIMCALL_MC_RANDOM:
+        if (procstate->state == MC_INTERLEAVE)
+          *value = simcall_mc_random__get__min(&process->simcall);
+        else {
+          if (state->req_num < simcall_mc_random__get__max(&process->simcall))
+            *value = state->req_num + 1;
+        }
+        procstate->state = MC_DONE;
+        return &process->simcall;
+
+      default:
+        procstate->state = MC_DONE;
+        *value = 0;
+        return &process->simcall;
+  }
+  return NULL;
+}
+
 smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
 {
   smx_process_t process = NULL;
-  mc_procstate_t procstate = NULL;
-  unsigned int start_count;
-  smx_synchro_t act = NULL;
-
   MC_EACH_SIMIX_PROCESS(process,
-    procstate = &state->proc_status[process->pid];
-
-    if (procstate->state != MC_INTERLEAVE
-        && procstate->state != MC_MORE_INTERLEAVE)
-        continue;
-    if (!MC_process_is_enabled(process))
-      continue;
-
-    switch (process->simcall.call) {
-        case SIMCALL_COMM_WAITANY:
-          *value = -1;
-          while (procstate->interleave_count <
-                MC_process_read_dynar_length(&mc_model_checker->process,
-                  simcall_comm_waitany__get__comms(&process->simcall))) {
-            if (MC_request_is_enabled_by_idx
-                (&process->simcall, procstate->interleave_count++)) {
-              *value = procstate->interleave_count - 1;
-              break;
-            }
-          }
-
-          if (procstate->interleave_count >=
-              MC_process_read_dynar_length(&mc_model_checker->process,
-                simcall_comm_waitany__get__comms(&process->simcall)))
-            procstate->state = MC_DONE;
-
-          if (*value != -1)
-            return &process->simcall;
-
-          break;
-
-        case SIMCALL_COMM_TESTANY:
-          start_count = procstate->interleave_count;
-          *value = -1;
-          while (procstate->interleave_count <
-                  MC_process_read_dynar_length(&mc_model_checker->process,
-                    simcall_comm_testany__get__comms(&process->simcall))) {
-            if (MC_request_is_enabled_by_idx
-                (&process->simcall, procstate->interleave_count++)) {
-              *value = procstate->interleave_count - 1;
-              break;
-            }
-          }
-
-          if (procstate->interleave_count >=
-              MC_process_read_dynar_length(&mc_model_checker->process,
-                simcall_comm_testany__get__comms(&process->simcall)))
-            procstate->state = MC_DONE;
-
-          if (*value != -1 || start_count == 0)
-            return &process->simcall;
-
-          break;
-
-        case SIMCALL_COMM_WAIT:
-          act = simcall_comm_wait__get__comm(&process->simcall);
-
-          if (act->comm.src_proc && act->comm.dst_proc) {
-            *value = 0;
-          } else {
-            if (act->comm.src_proc == NULL && act->comm.type == SIMIX_COMM_READY
-                && act->comm.detached == 1)
-              *value = 0;
-            else
-              *value = -1;
-          }
-          procstate->state = MC_DONE;
-          return &process->simcall;
-
-          break;
-
-        case SIMCALL_MC_RANDOM:
-          if (procstate->state == MC_INTERLEAVE)
-            *value = simcall_mc_random__get__min(&process->simcall);
-          else {
-            if (state->req_num < simcall_mc_random__get__max(&process->simcall))
-              *value = state->req_num + 1;
-          }
-          procstate->state = MC_DONE;
-          return &process->simcall;
-          break;
-
-        default:
-          procstate->state = MC_DONE;
-          *value = 0;
-          return &process->simcall;
-          break;
-
-    }
+    smx_simcall_t res = MC_state_get_request_for_process(state, value, process);
+    if (res)
+      return res;
   );
 
   return NULL;

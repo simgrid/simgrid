@@ -29,6 +29,7 @@
 #include "mc_protocol.h"
 #include "mc_server.h"
 #include "mc_model_checker.h"
+#include "mc_safety.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 
@@ -76,8 +77,23 @@ static int do_parent(int socket, pid_t child)
     mc_server = new s_mc_server(child, socket);
     mc_server->start();
     MC_init_pid(child, socket);
-    mc_server->resume(&mc_model_checker->process);
-    mc_server->loop();
+
+    if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
+      mc_server->loop();
+    }
+
+    else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
+      if (mc_reduce_kind == e_mc_reduce_unset)
+        mc_reduce_kind = e_mc_reduce_dpor;
+      XBT_INFO("Check a safety property");
+      MC_wait_for_requests();
+      MC_modelcheck_safety();
+    }
+
+    else {
+      mc_server->loop();
+    }
+
     mc_server->shutdown();
     mc_server->exit();
   }
@@ -107,7 +123,7 @@ int main(int argc, char** argv)
   if (argc < 2)
     xbt_die("Missing arguments.\n");
 
-  bool server_mode = false;
+  bool server_mode = true;
   char* env = std::getenv("SIMGRID_MC_MODE");
   if (env) {
     if (std::strcmp(env, "server") == 0)
@@ -115,7 +131,7 @@ int main(int argc, char** argv)
     else if (std::strcmp(env, "standalone") == 0)
       server_mode = false;
     else
-      XBT_WARN("Unrecognised value for SIMGRID_MC_MODE (server/standalone)");
+      xbt_die("Unrecognised value for SIMGRID_MC_MODE (server/standalone)");
   }
 
   if (!server_mode) {

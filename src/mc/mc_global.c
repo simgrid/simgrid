@@ -106,7 +106,7 @@ void MC_init()
   MC_init_pid(getpid(), -1);
 }
 
-void MC_init_pid(pid_t pid, int socket)
+static void MC_init_mode(void)
 {
   if (mc_mode == MC_MODE_NONE) {
     if (getenv(MC_ENV_SOCKET_FD)) {
@@ -115,7 +115,10 @@ void MC_init_pid(pid_t pid, int socket)
       mc_mode = MC_MODE_STANDALONE;
     }
   }
+}
 
+void MC_init_pid(pid_t pid, int socket)
+{
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
 
@@ -201,12 +204,6 @@ void MC_init_pid(pid_t pid, int socket)
   }
 
   mmalloc_set_current_heap(heap);
-
-  if (mc_mode == MC_MODE_CLIENT) {
-    // This will move somehwere else:
-    MC_client_handle_messages();
-  }
-
 }
 
 /*******************************  Core of MC *******************************/
@@ -215,6 +212,10 @@ void MC_init_pid(pid_t pid, int socket)
 static void MC_modelcheck_comm_determinism_init(void)
 {
   MC_init();
+  if (mc_mode == MC_MODE_CLIENT) {
+    // This will move somehwere else:
+    MC_client_handle_messages();
+  }
 
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
@@ -241,40 +242,15 @@ static void MC_modelcheck_comm_determinism_init(void)
   mmalloc_set_current_heap(heap);
 }
 
-static void MC_modelcheck_safety_init(void)
-{
-  _sg_mc_safety = 1;
-
-  MC_init();
-
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
-  /* Create exploration stack */
-  mc_stack = xbt_fifo_new();
-
-  MC_SET_STD_HEAP;
-
-  MC_pre_modelcheck_safety();
-
-  MC_SET_MC_HEAP;
-  /* Save the initial state */
-  initial_global_state = xbt_new0(s_mc_global_t, 1);
-  initial_global_state->snapshot = MC_take_snapshot(0);
-  MC_SET_STD_HEAP;
-
-  MC_modelcheck_safety();
-
-  mmalloc_set_current_heap(heap);
-
-  xbt_abort();
-  //MC_exit();
-}
-
 static void MC_modelcheck_liveness_init()
 {
   _sg_mc_liveness = 1;
 
   MC_init();
+  if (mc_mode == MC_MODE_CLIENT) {
+    // This will move somehwere else:
+    MC_client_handle_messages();
+  }
 
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
@@ -298,20 +274,39 @@ static void MC_modelcheck_liveness_init()
 
 void MC_do_the_modelcheck_for_real()
 {
+  MC_init_mode();
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     XBT_INFO("Check communication determinism");
     mc_reduce_kind = e_mc_reduce_none;
     MC_modelcheck_comm_determinism_init();
-  } else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
+  }
+
+  else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
     if(_sg_mc_termination){
       XBT_INFO("Check non progressive cycles");
       mc_reduce_kind = e_mc_reduce_none;
-    }else{
-      XBT_INFO("Check a safety property");
+    } else {
+      if (mc_reduce_kind == e_mc_reduce_unset)
+        mc_reduce_kind = e_mc_reduce_dpor;
+      else {
+        _sg_mc_safety = 1;
+        mc_reduce_kind = e_mc_reduce_dpor;
+        if (mc_mode == MC_MODE_SERVER || mc_mode == MC_MODE_STANDALONE) {
+          XBT_INFO("Check a safety property");
+          MC_modelcheck_safety();
+        }
+        else {
+          // Most of this is not needed:
+          MC_init();
+          // Main event loop:
+          MC_client_main_loop();
+        }
+      }
     }
-    MC_modelcheck_safety_init();
-  } else {
+  }
+
+  else {
     if (mc_reduce_kind == e_mc_reduce_unset)
       mc_reduce_kind = e_mc_reduce_none;
     XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
@@ -337,12 +332,15 @@ int MC_deadlock_check()
       MC_MESSAGE_DEADLOCK_CHECK)))
       xbt_die("Could not check deadlock state");
     s_mc_int_message_t message;
-    ssize_t s = MC_receive_message(mc_model_checker->process.socket, &message, sizeof(message));
+    ssize_t s = MC_receive_message(mc_model_checker->process.socket, &message, sizeof(message), 0);
     if (s == -1)
       xbt_die("Could not receive message");
     else if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY) {
-      xbt_die("Unexpected message, expected MC_MESSAGE_DEADLOCK_CHECK_REPLY %i %i vs %i %i",
-        (int) s, (int) message.type, (int) sizeof(message), (int) MC_MESSAGE_DEADLOCK_CHECK_REPLY
+      xbt_die("%s received unexpected message %s (%i, size=%i) "
+        "expected MC_MESSAGE_DEADLOCK_CHECK_REPLY (%i, size=%i)",
+        MC_mode_name(mc_mode),
+        MC_message_type_name(message.type), (int) message.type, (int) s,
+        (int) MC_MESSAGE_DEADLOCK_CHECK_REPLY, (int) sizeof(message)
         );
     }
     else
@@ -457,7 +455,7 @@ void MC_replay(xbt_fifo_t stack)
 
       /* Debug information */
       if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
-        req_str = MC_request_to_string(req, value);
+        req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX);
         XBT_DEBUG("Replay: %s (%p)", req_str, state);
         xbt_free(req_str);
       }
@@ -543,7 +541,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
 
           /* Debug information */
           if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
-            req_str = MC_request_to_string(req, value);
+            req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX);
             XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
             xbt_free(req_str);
           }
@@ -606,7 +604,7 @@ void MC_show_stack_safety(xbt_fifo_t stack)
         : (NULL)); item = xbt_fifo_get_prev_item(item)) {
     req = MC_state_get_executed_request(state, &value);
     if (req) {
-      req_str = MC_request_to_string(req, value);
+      req_str = MC_request_to_string(req, value, MC_REQUEST_EXECUTED);
       XBT_INFO("%s", req_str);
       xbt_free(req_str);
     }
@@ -653,7 +651,7 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
        item = xbt_fifo_get_prev_item(item)) {
     req = MC_state_get_executed_request(pair->graph_state, &value);
     if (req && req->call != SIMCALL_NONE) {
-      req_str = MC_request_to_string(req, value);
+      req_str = MC_request_to_string(req, value, MC_REQUEST_EXECUTED);
       XBT_INFO("%s", req_str);
       xbt_free(req_str);
     }
@@ -811,4 +809,15 @@ double MC_process_clock_get(smx_process_t process)
 void MC_process_clock_add(smx_process_t process, double amount)
 {
   mc_time[process->pid] += amount;
+}
+
+void MC_report_assertion_error(void)
+{
+  XBT_INFO("**************************");
+  XBT_INFO("*** PROPERTY NOT VALID ***");
+  XBT_INFO("**************************");
+  XBT_INFO("Counter-example execution trace:");
+  MC_record_dump_path(mc_stack);
+  MC_dump_stack_safety(mc_stack);
+  MC_print_statistics(mc_stats);
 }

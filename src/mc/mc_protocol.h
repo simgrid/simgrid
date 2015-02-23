@@ -47,6 +47,9 @@ typedef enum {
   MC_MESSAGE_REGISTER_SYMBOL,
   MC_MESSAGE_DEADLOCK_CHECK,
   MC_MESSAGE_DEADLOCK_CHECK_REPLY,
+  MC_MESSAGE_WAITING,
+  MC_MESSAGE_SIMCALL_HANDLE,
+  MC_MESSAGE_ASSERTION_FAILED,
 } e_mc_message_type;
 
 #define MC_MESSAGE_LENGTH 512
@@ -88,6 +91,12 @@ typedef struct s_mc_stack_region_message {
   s_stack_region_t stack_region;
 } s_mc_stack_region_message_t, *mc_stack_region_message_t;
 
+typedef struct s_mc_simcall_handle_message {
+  e_mc_message_type type;
+  unsigned long pid;
+  int value;
+} s_mc_simcall_handle_message_t, *mc_simcall_handle_message;
+
 typedef struct s_mc_register_symbol_message {
   e_mc_message_type type;
   char name[128];
@@ -98,7 +107,10 @@ typedef struct s_mc_register_symbol_message {
 int MC_protocol_send(int socket, void* message, size_t size);
 int MC_protocol_send_simple_message(int socket, int type);
 int MC_protocol_hello(int socket);
-ssize_t MC_receive_message(int socket, void* message, size_t size);
+ssize_t MC_receive_message(int socket, void* message, size_t size, int options);
+
+const char* MC_message_type_name(e_mc_message_type type);
+const char* MC_mode_name(e_mc_mode_t mode);
 
 SG_END_DECL()
 

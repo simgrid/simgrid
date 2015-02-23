@@ -6,8 +6,12 @@
 
 #include <stdio.h>
 
+#include <xbt/log.h>
+
 #include <msg/msg.h>
 #include <simgrid/modelchecker.h>
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(random_bug, "Application");
 
 /** An (fake) application with a bug occuring for some random values
  */
@@ -33,5 +37,5 @@ int main(int argc, char *argv[])
   MSG_function_register("app", &app);
   MSG_create_environment(argv[1]);
   MSG_launch_application(argv[2]);
-  return (int) MSG_main();
+  return MSG_main();
 }

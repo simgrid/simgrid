@@ -7,7 +7,15 @@
 #ifndef MC_SERVER_H
 #define MC_SERVER_H
 
+#include <stdint.h>
+#include <stdbool.h>
+
+#include <sys/signalfd.h>
+#include <sys/types.h>
+
 #include <xbt/misc.h>
+ 
+#include "mc_process.h"
 
 SG_BEGIN_DECL()
 
@@ -16,6 +24,9 @@ SG_BEGIN_DECL()
 typedef struct s_mc_server s_mc_server_t, *mc_server_t;
 
 extern mc_server_t mc_server;
+
+void MC_server_wait_client(mc_process_t process);
+void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value);
 
 SG_END_DECL()
 
@@ -33,7 +44,7 @@ public:
   void exit();
   void resume(mc_process_t process);
   void loop();
-  void handle_events();
+  bool handle_events();
 protected:
   void handle_signals();
   void handle_waitpid();

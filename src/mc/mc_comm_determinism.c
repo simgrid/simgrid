@@ -346,8 +346,8 @@ void MC_modelcheck_comm_determinism(void)
         && (req = MC_state_get_request(state, &value))
         && (visited_state == NULL)) {
 
-      req_str = MC_request_to_string(req, value);  
-      XBT_DEBUG("Execute: %s", req_str);                 
+      req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX);
+      XBT_DEBUG("Execute: %s", req_str);
       xbt_free(req_str);
       
       if (dot_output != NULL) {

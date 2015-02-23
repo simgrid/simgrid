@@ -22,10 +22,13 @@ void MC_client_init(void);
 void MC_client_hello(void);
 void MC_client_handle_messages(void);
 void MC_client_send_message(void* message, size_t size);
+void MC_client_send_simple_message(int type);
 
 #ifdef HAVE_MC
 void MC_ignore(void* addr, size_t size);
 #endif
+
+void MC_client_main_loop(void);
 
 SG_END_DECL()
 

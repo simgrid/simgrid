@@ -23,14 +23,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
 void MC_assert(int prop)
 {
   if (MC_is_active() && !prop) {
-    XBT_INFO("**************************");
-    XBT_INFO("*** PROPERTY NOT VALID ***");
-    XBT_INFO("**************************");
-    XBT_INFO("Counter-example execution trace:");
-    MC_record_dump_path(mc_stack);
-    MC_dump_stack_safety(mc_stack);
-    MC_print_statistics(mc_stats);
-    xbt_abort();
+    if (mc_mode == MC_MODE_STANDALONE) {
+      MC_report_assertion_error();
+    } else {
+      MC_client_send_simple_message(MC_MESSAGE_ASSERTION_FAILED);
+      MC_client_handle_messages();
+    }
   }
 }
 

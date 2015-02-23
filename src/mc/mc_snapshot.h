@@ -200,6 +200,7 @@ typedef struct s_fd_infos{
 
 struct s_mc_snapshot {
   mc_process_t process;
+  int num_state;
   s_mc_address_space_t address_space;
   size_t heap_bytes_used;
   mc_mem_region_t* snapshot_regions;
