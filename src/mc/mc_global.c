@@ -336,12 +336,12 @@ int MC_deadlock_check()
   smx_process_t process;
   if (xbt_swag_size(simix_global->process_list)) {
     deadlock = TRUE;
-    xbt_swag_foreach(process, simix_global->process_list) {
+    MC_EACH_SIMIX_PROCESS(process,
       if (MC_process_is_enabled(process)) {
         deadlock = FALSE;
         break;
       }
-    }
+    );
   }
   return deadlock;
 }
@@ -474,7 +474,9 @@ void MC_replay(xbt_fifo_t stack)
     if (saved_req) {
       /* because we got a copy of the executed request, we have to fetch the  
          real one, pointed by the request field of the issuer process */
-      req = &saved_req->issuer->simcall;
+
+      const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, saved_req);
+      req = &issuer->simcall;
 
       /* Debug information */
       if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
@@ -488,7 +490,7 @@ void MC_replay(xbt_fifo_t stack)
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         call = mc_get_call_type(req);
 
-      SIMIX_simcall_handle(req, value);
+      MC_simcall_handle(req, value);
 
       MC_SET_MC_HEAP;
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
@@ -559,7 +561,8 @@ void MC_replay_liveness(xbt_fifo_t stack)
         if (saved_req != NULL) {
           /* because we got a copy of the executed request, we have to fetch the
              real one, pointed by the request field of the issuer process */
-          req = &saved_req->issuer->simcall;
+          const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, saved_req);
+          req = &issuer->simcall;
 
           /* Debug information */
           if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
@@ -570,7 +573,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
 
         }
 
-        SIMIX_simcall_handle(req, value);
+        MC_simcall_handle(req, value);
         MC_wait_for_requests();
       }
 

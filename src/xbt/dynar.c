@@ -827,6 +827,20 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
     xbt_test_log("Pop %d, length=%lu", cpt, xbt_dynar_length(d));
   }
 
+  int* pi;
+  xbt_dynar_foreach_ptr(d, cursor, pi) {
+    *pi = 0;
+  }
+  xbt_dynar_foreach(d, cursor, i) {
+    xbt_test_assert(i == 0, "The value is not the same as the expected one.");
+  }
+  xbt_dynar_foreach_ptr(d, cursor, pi) {
+    *pi = 1;
+  }
+  xbt_dynar_foreach(d, cursor, i) {
+    xbt_test_assert(i == 1, "The value is not the same as the expected one.");
+  }
+
   /* 5. Free the resources */
   xbt_dynar_free(&d);           /* This code is used both as example and as regression test, so we try to */
   xbt_dynar_free(&d);           /* free the struct twice here to check that it's ok, but freeing  it only once */

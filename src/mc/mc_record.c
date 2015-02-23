@@ -108,7 +108,8 @@ char* MC_record_stack_to_string(xbt_fifo_t stack)
     mc_state_t state = (mc_state_t) xbt_fifo_get_item_content(item);
     int value = 0;
     smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
-    int pid = saved_req->issuer->pid;
+    const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, saved_req);
+    const int pid = issuer->pid;
 
     // Serialization the (pid, value) pair:
     const char* sep = (item!=start) ? ";" : "";

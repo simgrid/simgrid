@@ -201,11 +201,11 @@ void MC_pre_modelcheck_liveness(void) {
       initial_pair->depth = 1;
 
       /* Get enabled processes and insert them in the interleave set of the graph_state */
-      xbt_swag_foreach(process, simix_global->process_list) {
+      MC_EACH_SIMIX_PROCESS(process,
         if (MC_process_is_enabled(process)) {
           MC_state_interleave_process(initial_pair->graph_state, process);
         }
-      }
+      );
 
       initial_pair->requests = MC_state_interleave_size(initial_pair->graph_state);
       initial_pair->search_cycle = 0;
@@ -311,7 +311,7 @@ void MC_modelcheck_liveness()
            mc_stats->visited_pairs++;
 
          /* Answer the request */
-         SIMIX_simcall_handle(req, value);
+         MC_simcall_handle(req, value);
          
          /* Wait for requests (schedules processes) */
          MC_wait_for_requests();
@@ -336,11 +336,11 @@ void MC_modelcheck_liveness()
               next_pair->atomic_propositions = get_atomic_propositions_values();
               next_pair->depth = current_pair->depth + 1;
               /* Get enabled processes and insert them in the interleave set of the next graph_state */
-              xbt_swag_foreach(process, simix_global->process_list) {
+              MC_EACH_SIMIX_PROCESS(process,
                 if (MC_process_is_enabled(process)) {
                   MC_state_interleave_process(next_pair->graph_state, process);
                 }
-              }
+              );
 
               next_pair->requests = MC_state_interleave_size(next_pair->graph_state);
 

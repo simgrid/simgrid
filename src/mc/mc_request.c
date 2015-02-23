@@ -42,6 +42,8 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
         SIMCALL_COMM_ISEND ? simcall_comm_isend__get__rdv(r1) :
         simcall_comm_irecv__get__rdv(r1);
 
+    // FIXME, remote access to comm object
+
     if (rdv != simcall_comm_wait__get__comm(r2)->comm.rdv_cpy
         && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
@@ -233,20 +235,25 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   smx_synchro_t act = NULL;
   size_t size = 0;
 
+  // FIXME, host_get_name
+  // FIXME, buffer access (issuer->name, issuer->smx_host)
+
+  smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, req);
+
   switch (req->call) {
   case SIMCALL_COMM_ISEND:
     type = xbt_strdup("iSend");
     p = pointer_to_string(simcall_comm_isend__get__src_buff(req));
     bs = buff_size_to_string(simcall_comm_isend__get__src_buff_size(req));
-    if (req->issuer->smx_host)
+    if (issuer->smx_host)
       args =
-          bprintf("src=(%lu)%s (%s), buff=%s, size=%s", req->issuer->pid,
-                  MSG_host_get_name(req->issuer->smx_host), req->issuer->name,
+          bprintf("src=(%lu)%s (%s), buff=%s, size=%s", issuer->pid,
+                  MSG_host_get_name(issuer->smx_host), issuer->name,
                   p, bs);
     else
       args =
-          bprintf("src=(%lu)%s, buff=%s, size=%s", req->issuer->pid,
-                  req->issuer->name, p, bs);
+          bprintf("src=(%lu)%s, buff=%s, size=%s", issuer->pid,
+                  issuer->name, p, bs);
     break;
   case SIMCALL_COMM_IRECV:
     size =
@@ -255,15 +262,15 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     type = xbt_strdup("iRecv");
     p = pointer_to_string(simcall_comm_irecv__get__dst_buff(req));
     bs = buff_size_to_string(size);
-    if (req->issuer->smx_host)
+    if (issuer->smx_host)
       args =
-          bprintf("dst=(%lu)%s (%s), buff=%s, size=%s", req->issuer->pid,
-                  MSG_host_get_name(req->issuer->smx_host), req->issuer->name,
+          bprintf("dst=(%lu)%s (%s), buff=%s, size=%s", issuer->pid,
+                  MSG_host_get_name(issuer->smx_host), issuer->name,
                   p, bs);
     else
       args =
-          bprintf("dst=(%lu)%s, buff=%s, size=%s", req->issuer->pid,
-                  req->issuer->name, p, bs);
+          bprintf("dst=(%lu)%s, buff=%s, size=%s", issuer->pid,
+                  issuer->name, p, bs);
     break;
   case SIMCALL_COMM_WAIT:
     act = simcall_comm_wait__get__comm(req);
@@ -349,13 +356,13 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 
   if (args != NULL) {
     str =
-        bprintf("[(%lu)%s (%s)] %s(%s)", req->issuer->pid,
-                MSG_host_get_name(req->issuer->smx_host), req->issuer->name,
+        bprintf("[(%lu)%s (%s)] %s(%s)", issuer->pid,
+                MSG_host_get_name(issuer->smx_host), issuer->name,
                 type, args);
   } else {
     str =
-        bprintf("[(%lu)%s (%s)] %s ", req->issuer->pid,
-                MSG_host_get_name(req->issuer->smx_host), req->issuer->name,
+        bprintf("[(%lu)%s (%s)] %s ", issuer->pid,
+                MSG_host_get_name(issuer->smx_host), issuer->name,
                 type);
   }
 
@@ -417,48 +424,51 @@ int MC_process_is_enabled(smx_process_t process)
 
 char *MC_request_get_dot_output(smx_simcall_t req, int value)
 {
+  // TODO, remote access to MSG_host_get_name(issuer->smx_host)
 
   char *str = NULL, *label = NULL;
   smx_synchro_t act = NULL;
 
+  const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, req);
+
   switch (req->call) {
   case SIMCALL_COMM_ISEND:
-    if (req->issuer->smx_host)
+    if (issuer->smx_host)
       label =
-          bprintf("[(%lu)%s] iSend", req->issuer->pid,
-                  MSG_host_get_name(req->issuer->smx_host));
+          bprintf("[(%lu)%s] iSend", issuer->pid,
+                  MSG_host_get_name(issuer->smx_host));
     else
-      label = bprintf("[(%lu)] iSend", req->issuer->pid);
+      label = bprintf("[(%lu)] iSend", issuer->pid);
     break;
 
   case SIMCALL_COMM_IRECV:
-    if (req->issuer->smx_host)
+    if (issuer->smx_host)
       label =
-          bprintf("[(%lu)%s] iRecv", req->issuer->pid,
-                  MSG_host_get_name(req->issuer->smx_host));
+          bprintf("[(%lu)%s] iRecv", issuer->pid,
+                  MSG_host_get_name(issuer->smx_host));
     else
-      label = bprintf("[(%lu)] iRecv", req->issuer->pid);
+      label = bprintf("[(%lu)] iRecv", issuer->pid);
     break;
 
   case SIMCALL_COMM_WAIT:
     act = simcall_comm_wait__get__comm(req);
     if (value == -1) {
-      if (req->issuer->smx_host)
+      if (issuer->smx_host)
         label =
-            bprintf("[(%lu)%s] WaitTimeout", req->issuer->pid,
-                    MSG_host_get_name(req->issuer->smx_host));
+            bprintf("[(%lu)%s] WaitTimeout", issuer->pid,
+                    MSG_host_get_name(issuer->smx_host));
       else
-        label = bprintf("[(%lu)] WaitTimeout", req->issuer->pid);
+        label = bprintf("[(%lu)] WaitTimeout", issuer->pid);
     } else {
-      if (req->issuer->smx_host)
+      if (issuer->smx_host)
         label =
-            bprintf("[(%lu)%s] Wait [(%lu)->(%lu)]", req->issuer->pid,
-                    MSG_host_get_name(req->issuer->smx_host),
+            bprintf("[(%lu)%s] Wait [(%lu)->(%lu)]", issuer->pid,
+                    MSG_host_get_name(issuer->smx_host),
                     act->comm.src_proc ? act->comm.src_proc->pid : 0,
                     act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
       else
         label =
-            bprintf("[(%lu)] Wait [(%lu)->(%lu)]", req->issuer->pid,
+            bprintf("[(%lu)] Wait [(%lu)->(%lu)]", issuer->pid,
                     act->comm.src_proc ? act->comm.src_proc->pid : 0,
                     act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
     }
@@ -467,81 +477,81 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
   case SIMCALL_COMM_TEST:
     act = simcall_comm_test__get__comm(req);
     if (act->comm.src_proc == NULL || act->comm.dst_proc == NULL) {
-      if (req->issuer->smx_host)
+      if (issuer->smx_host)
         label =
-            bprintf("[(%lu)%s] Test FALSE", req->issuer->pid,
-                    MSG_host_get_name(req->issuer->smx_host));
+            bprintf("[(%lu)%s] Test FALSE", issuer->pid,
+                    MSG_host_get_name(issuer->smx_host));
       else
-        label = bprintf("[(%lu)] Test FALSE", req->issuer->pid);
+        label = bprintf("[(%lu)] Test FALSE", issuer->pid);
     } else {
-      if (req->issuer->smx_host)
+      if (issuer->smx_host)
         label =
-            bprintf("[(%lu)%s] Test TRUE", req->issuer->pid,
-                    MSG_host_get_name(req->issuer->smx_host));
+            bprintf("[(%lu)%s] Test TRUE", issuer->pid,
+                    MSG_host_get_name(issuer->smx_host));
       else
-        label = bprintf("[(%lu)] Test TRUE", req->issuer->pid);
+        label = bprintf("[(%lu)] Test TRUE", issuer->pid);
     }
     break;
 
   case SIMCALL_COMM_WAITANY:
-    if (req->issuer->smx_host)
+    if (issuer->smx_host)
       label =
-          bprintf("[(%lu)%s] WaitAny [%d of %lu]", req->issuer->pid,
-                  MSG_host_get_name(req->issuer->smx_host), value + 1,
+          bprintf("[(%lu)%s] WaitAny [%d of %lu]", issuer->pid,
+                  MSG_host_get_name(issuer->smx_host), value + 1,
                   xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
     else
       label =
-          bprintf("[(%lu)] WaitAny [%d of %lu]", req->issuer->pid, value + 1,
+          bprintf("[(%lu)] WaitAny [%d of %lu]", issuer->pid, value + 1,
                   xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
     break;
 
   case SIMCALL_COMM_TESTANY:
     if (value == -1) {
-      if (req->issuer->smx_host)
+      if (issuer->smx_host)
         label =
-            bprintf("[(%lu)%s] TestAny FALSE", req->issuer->pid,
-                    MSG_host_get_name(req->issuer->smx_host));
+            bprintf("[(%lu)%s] TestAny FALSE", issuer->pid,
+                    MSG_host_get_name(issuer->smx_host));
       else
-        label = bprintf("[(%lu)] TestAny FALSE", req->issuer->pid);
+        label = bprintf("[(%lu)] TestAny FALSE", issuer->pid);
     } else {
-      if (req->issuer->smx_host)
+      if (issuer->smx_host)
         label =
-            bprintf("[(%lu)%s] TestAny TRUE [%d of %lu]", req->issuer->pid,
-                    MSG_host_get_name(req->issuer->smx_host), value + 1,
+            bprintf("[(%lu)%s] TestAny TRUE [%d of %lu]", issuer->pid,
+                    MSG_host_get_name(issuer->smx_host), value + 1,
                     xbt_dynar_length(simcall_comm_testany__get__comms(req)));
       else
         label =
-            bprintf("[(%lu)] TestAny TRUE [%d of %lu]", req->issuer->pid,
+            bprintf("[(%lu)] TestAny TRUE [%d of %lu]", issuer->pid,
                     value + 1,
                     xbt_dynar_length(simcall_comm_testany__get__comms(req)));
     }
     break;
 
   case SIMCALL_MC_RANDOM:
-    if (req->issuer->smx_host)
+    if (issuer->smx_host)
       label =
-          bprintf("[(%lu)%s] MC_RANDOM (%d)", req->issuer->pid,
-                  MSG_host_get_name(req->issuer->smx_host), value);
+          bprintf("[(%lu)%s] MC_RANDOM (%d)", issuer->pid,
+                  MSG_host_get_name(issuer->smx_host), value);
     else
-      label = bprintf("[(%lu)] MC_RANDOM (%d)", req->issuer->pid, value);
+      label = bprintf("[(%lu)] MC_RANDOM (%d)", issuer->pid, value);
     break;
 
   case SIMCALL_MC_SNAPSHOT:
-    if (req->issuer->smx_host)
+    if (issuer->smx_host)
       label =
-          bprintf("[(%lu)%s] MC_SNAPSHOT", req->issuer->pid,
-                  MSG_host_get_name(req->issuer->smx_host));
+          bprintf("[(%lu)%s] MC_SNAPSHOT", issuer->pid,
+                  MSG_host_get_name(issuer->smx_host));
     else
-      label = bprintf("[(%lu)] MC_SNAPSHOT", req->issuer->pid);
+      label = bprintf("[(%lu)] MC_SNAPSHOT", issuer->pid);
     break;
 
   case SIMCALL_MC_COMPARE_SNAPSHOTS:
-    if (req->issuer->smx_host)
+    if (issuer->smx_host)
       label =
-          bprintf("[(%lu)%s] MC_COMPARE_SNAPSHOTS", req->issuer->pid,
-                  MSG_host_get_name(req->issuer->smx_host));
+          bprintf("[(%lu)%s] MC_COMPARE_SNAPSHOTS", issuer->pid,
+                  MSG_host_get_name(issuer->smx_host));
     else
-      label = bprintf("[(%lu)] MC_COMPARE_SNAPSHOTS", req->issuer->pid);
+      label = bprintf("[(%lu)] MC_COMPARE_SNAPSHOTS", issuer->pid);
     break;
 
   default:
@@ -550,7 +560,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
 
   str =
       bprintf("label = \"%s\", color = %s, fontcolor = %s", label,
-              colors[req->issuer->pid - 1], colors[req->issuer->pid - 1]);
+              colors[issuer->pid - 1], colors[issuer->pid - 1]);
   xbt_free(label);
   return str;
 

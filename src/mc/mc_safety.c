@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <assert.h>
+
 #include "mc_state.h"
 #include "mc_request.h"
 #include "mc_safety.h"
@@ -29,7 +31,6 @@ void MC_pre_modelcheck_safety()
     visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
 
   initial_state = MC_state_new();
-
   MC_SET_STD_HEAP;
 
   XBT_DEBUG("**************************************************");
@@ -41,13 +42,13 @@ void MC_pre_modelcheck_safety()
   MC_SET_MC_HEAP;
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
-  xbt_swag_foreach(process, simix_global->process_list) {
+  MC_EACH_SIMIX_PROCESS(process,
     if (MC_process_is_enabled(process)) {
       MC_state_interleave_process(initial_state, process);
       if (mc_reduce_kind != e_mc_reduce_none)
         break;
     }
-  }
+  );
 
   xbt_fifo_unshift(mc_stack, initial_state);
   mmalloc_set_current_heap(heap);
@@ -101,7 +102,7 @@ void MC_modelcheck_safety(void)
       mc_stats->executed_transitions++;
 
       /* Answer the request */
-      SIMIX_simcall_handle(req, value);
+      MC_simcall_handle(req, value);
 
       /* Wait for requests (schedules processes) */
       MC_wait_for_requests();
@@ -114,13 +115,13 @@ void MC_modelcheck_safety(void)
       if ((visited_state = is_visited_state(next_state)) == NULL) {
 
         /* Get an enabled process and insert it in the interleave set of the next state */
-        xbt_swag_foreach(process, simix_global->process_list) {
+        MC_EACH_SIMIX_PROCESS(process,
           if (MC_process_is_enabled(process)) {
             MC_state_interleave_process(next_state, process);
             if (mc_reduce_kind != e_mc_reduce_none)
               break;
           }
-        }
+        );
 
         if (dot_output != NULL)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
@@ -187,6 +188,7 @@ void MC_modelcheck_safety(void)
       while ((state = xbt_fifo_shift(mc_stack)) != NULL) {
         if (mc_reduce_kind == e_mc_reduce_dpor) {
           req = MC_state_get_internal_request(state);
+          const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, req);
           xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
             if (MC_request_depend(req, MC_state_get_internal_request(prev_state))) {
               if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
@@ -201,8 +203,8 @@ void MC_modelcheck_safety(void)
                 xbt_free(req_str);
               }
 
-              if (!MC_state_process_is_done(prev_state, req->issuer))
-                MC_state_interleave_process(prev_state, req->issuer);
+              if (!MC_state_process_is_done(prev_state, issuer))
+                MC_state_interleave_process(prev_state, issuer);
               else
                 XBT_DEBUG("Process %p is in done set", req->issuer);
 
@@ -215,10 +217,11 @@ void MC_modelcheck_safety(void)
 
             } else {
 
+              const smx_process_t previous_issuer = MC_process_get_issuer(&mc_model_checker->process, MC_state_get_internal_request(prev_state));
               XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant",
-                        req->call, req->issuer->pid, state->num,
+                        req->call, issuer->pid, state->num,
                         MC_state_get_internal_request(prev_state)->call,
-                        MC_state_get_internal_request(prev_state)->issuer->pid,
+                        previous_issuer->pid,
                         prev_state->num);
 
             }

@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <assert.h>
+
 #include "../simix/smx_private.h"
 #include "xbt/fifo.h"
 #include "mc_state.h"
@@ -99,6 +101,7 @@ void MC_state_delete(mc_state_t state, int free_snapshot){
 
 void MC_state_interleave_process(mc_state_t state, smx_process_t process)
 {
+  assert(state);
   state->proc_status[process->pid].state = MC_INTERLEAVE;
   state->proc_status[process->pid].interleave_count = 0;
 }
@@ -142,6 +145,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
   case SIMCALL_COMM_WAITANY:
     state->internal_req.call = SIMCALL_COMM_WAIT;
     state->internal_req.issuer = req->issuer;
+    // FIXME, read from remote process
     state->internal_comm =
         *xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value,
                           smx_synchro_t);
@@ -154,6 +158,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     state->internal_req.issuer = req->issuer;
 
     if (value > 0)
+      // FIXME, read from remote process
       state->internal_comm =
           *xbt_dynar_get_as(simcall_comm_testany__get__comms(req), value,
                             smx_synchro_t);
@@ -164,6 +169,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
 
   case SIMCALL_COMM_WAIT:
     state->internal_req = *req;
+    // FIXME, read from remote process
     state->internal_comm = *(simcall_comm_wait__get__comm(req));
     simcall_comm_wait__set__comm(&state->executed_req, &state->internal_comm);
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
@@ -171,6 +177,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
 
   case SIMCALL_COMM_TEST:
     state->internal_req = *req;
+    // FIXME, read from remote process
     state->internal_comm = *simcall_comm_test__get__comm(req);
     simcall_comm_test__set__comm(&state->executed_req, &state->internal_comm);
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
@@ -178,14 +185,16 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
 
   case SIMCALL_MC_RANDOM:
     state->internal_req = *req;
-    if (value != simcall_mc_random__get__max(req)) {
-      xbt_swag_foreach(process, simix_global->process_list) {
+    int random_max = simcall_mc_random__get__max(req);
+    if (value != random_max) {
+      MC_EACH_SIMIX_PROCESS(process,
         procstate = &state->proc_status[process->pid];
-        if (process->pid == req->issuer->pid) {
+        const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, req);
+        if (process->pid == issuer->pid) {
           procstate->state = MC_MORE_INTERLEAVE;
           break;
         }
-      }
+      );
     }
     break;
 
@@ -213,7 +222,7 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
   unsigned int start_count;
   smx_synchro_t act = NULL;
 
-  xbt_swag_foreach(process, simix_global->process_list) {
+  MC_EACH_SIMIX_PROCESS(process,
     procstate = &state->proc_status[process->pid];
 
     if (procstate->state == MC_INTERLEAVE
@@ -300,7 +309,7 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
         }
       }
     }
-  }
+  );
 
   return NULL;
 }

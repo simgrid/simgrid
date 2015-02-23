@@ -23,8 +23,9 @@ void MC_client_hello(void);
 void MC_client_handle_messages(void);
 void MC_client_send_message(void* message, size_t size);
 
+#ifdef HAVE_MC
 void MC_ignore(void* addr, size_t size);
-
+#endif
 
 SG_END_DECL()
 

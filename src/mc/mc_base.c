@@ -13,6 +13,7 @@
 #ifdef HAVE_MC
 #include "mc_process.h"
 #include "mc_model_checker.h"
+#include "mc_protocol.h"
 #endif
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
@@ -37,6 +38,9 @@ int MC_request_is_enabled(smx_simcall_t req)
 {
   unsigned int index = 0;
   smx_synchro_t act = 0;
+#ifdef HAVE_MC
+  s_smx_synchro_t temp_synchro;
+#endif
 
   switch (req->call) {
   case SIMCALL_NONE:
@@ -45,6 +49,17 @@ int MC_request_is_enabled(smx_simcall_t req)
   case SIMCALL_COMM_WAIT:
     /* FIXME: check also that src and dst processes are not suspended */
     act = simcall_comm_wait__get__comm(req);
+
+#ifdef HAVE_MC
+    // Fetch from MCed memory:
+    if (!MC_process_is_self(&mc_model_checker->process)) {
+      MC_process_read(&mc_model_checker->process, MC_PROCESS_NO_FLAG,
+        &temp_synchro, act, sizeof(temp_synchro),
+        MC_PROCESS_INDEX_ANY);
+      act = &temp_synchro;
+    }
+#endif
+
     if (simcall_comm_wait__get__timeout(req) >= 0) {
       /* If it has a timeout it will be always be enabled, because even if the
        * communication is not ready, it can timeout and won't block. */
@@ -60,9 +75,21 @@ int MC_request_is_enabled(smx_simcall_t req)
 
   case SIMCALL_COMM_WAITANY:
     /* Check if it has at least one communication ready */
-    xbt_dynar_foreach(simcall_comm_waitany__get__comms(req), index, act)
+    xbt_dynar_foreach(simcall_comm_waitany__get__comms(req), index, act) {
+
+#ifdef HAVE_MC
+      // Fetch from MCed memory:
+      if (!MC_process_is_self(&mc_model_checker->process)) {
+        MC_process_read(&mc_model_checker->process, MC_PROCESS_NO_FLAG,
+          &temp_synchro, act, sizeof(temp_synchro),
+          MC_PROCESS_INDEX_ANY);
+        act = &temp_synchro;
+      }
+#endif
+
       if (act->comm.src_proc && act->comm.dst_proc)
         return TRUE;
+    }
     return FALSE;
 
   default:

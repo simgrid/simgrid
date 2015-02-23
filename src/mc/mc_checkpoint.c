@@ -737,11 +737,10 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   snapshot->address_space.address_space_class = &mc_snapshot_class;
 
   snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
+
   smx_process_t process;
-  // FIXME, cross-process support (simix_global->process_list)
-  xbt_swag_foreach(process, simix_global->process_list) {
-    xbt_dynar_push_as(snapshot->enabled_processes, int, (int)process->pid);
-  }
+  MC_EACH_SIMIX_PROCESS(process,
+    xbt_dynar_push_as(snapshot->enabled_processes, int, (int)process->pid));
 
   MC_snapshot_handle_ignore(snapshot);
 

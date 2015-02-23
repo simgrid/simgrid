@@ -165,12 +165,14 @@ static void print_incomplete_communications_pattern(){
   }
 }
 
+// FIXME, remote comm
 static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t comm)
 {
   mc_process_t process = &mc_model_checker->process;
   void *addr_pointed;
   comm_pattern->src_proc = comm->comm.src_proc->pid;
   comm_pattern->dst_proc = comm->comm.dst_proc->pid;
+  // FIXME, get remote host name
   comm_pattern->src_host = simcall_host_get_name(comm->comm.src_proc->smx_host);
   comm_pattern->dst_host = simcall_host_get_name(comm->comm.dst_proc->smx_host);
   if (comm_pattern->data_size == -1 && comm->comm.src_buff != NULL) {
@@ -216,7 +218,7 @@ void list_comm_pattern_free_voidp(void *p) {
   list_comm_pattern_free((mc_list_comm_pattern_t) * (void **) p);
 }
 
-void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t call_type)
+void get_comm_pattern(const xbt_dynar_t list, const smx_simcall_t request, const e_mc_call_type_t call_type)
 {
   mc_process_t process = &mc_model_checker->process;
   mc_comm_pattern_t pattern = NULL;
@@ -224,7 +226,13 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t 
   pattern->data_size = -1;
   pattern->data = NULL;
 
-  pattern->index = ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, request->issuer->pid, mc_list_comm_pattern_t))->index_comm + xbt_dynar_length((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, request->issuer->pid, xbt_dynar_t));
+  const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, request);
+  mc_list_comm_pattern_t initial_pattern =
+    (mc_list_comm_pattern_t) xbt_dynar_get_as(initial_communications_pattern, issuer->pid, mc_list_comm_pattern_t);
+  xbt_dynar_t incomplete_pattern =
+    (xbt_dynar_t) xbt_dynar_get_as(incomplete_communications_pattern, issuer->pid, xbt_dynar_t);
+  pattern->index =
+    initial_pattern->index_comm + xbt_dynar_length(incomplete_pattern);
   
   void *addr_pointed;
   
@@ -234,7 +242,8 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t 
     pattern->comm = simcall_comm_isend__get__result(request);
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
     pattern->src_proc = pattern->comm->comm.src_proc->pid;
-    pattern->src_host = simcall_host_get_name(request->issuer->smx_host);
+    // FIXME, get remote host name
+    pattern->src_host = simcall_host_get_name(issuer->smx_host);
     if(pattern->comm->comm.src_buff != NULL){
       pattern->data_size = pattern->comm->comm.src_buff_size;
       pattern->data = xbt_malloc0(pattern->data_size);
@@ -250,14 +259,15 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t 
     pattern->comm = simcall_comm_irecv__get__result(request);
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
     pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
-    pattern->dst_host = simcall_host_get_name(request->issuer->smx_host);
+    // FIXME, remote process access
+    pattern->dst_host = simcall_host_get_name(issuer->smx_host);
   } else {
     xbt_die("Unexpected call_type %i", (int) call_type);
   }
 
-  xbt_dynar_push((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, request->issuer->pid, xbt_dynar_t), &pattern);
+  xbt_dynar_push((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, issuer->pid, xbt_dynar_t), &pattern);
 
-  XBT_DEBUG("Insert incomplete comm pattern %p for process %lu", pattern, request->issuer->pid);
+  XBT_DEBUG("Insert incomplete comm pattern %p for process %lu", pattern, issuer->pid);
 }
 
 void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, int backtracking) {
@@ -358,11 +368,11 @@ void MC_pre_modelcheck_comm_determinism(void)
   MC_SET_MC_HEAP;
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
-  xbt_swag_foreach(process, simix_global->process_list) {
+  MC_EACH_SIMIX_PROCESS(process,
     if (MC_process_is_enabled(process)) {
       MC_state_interleave_process(initial_state, process);
     }
-  }
+  );
 
   xbt_fifo_unshift(mc_stack, initial_state);
 
@@ -417,7 +427,7 @@ void MC_modelcheck_comm_determinism(void)
       }
 
       /* Answer the request */
-      SIMIX_simcall_handle(req, value);    /* After this call req is no longer useful */
+      MC_simcall_handle(req, value);    /* After this call req is no longer useful */
 
       MC_SET_MC_HEAP;
       if(!initial_global_state->initial_communications_pattern_done)
@@ -437,11 +447,11 @@ void MC_modelcheck_comm_determinism(void)
       if ((visited_state = is_visited_state(next_state)) == NULL) {
 
         /* Get enabled processes and insert them in the interleave set of the next state */
-        xbt_swag_foreach(process, simix_global->process_list) {
+        MC_EACH_SIMIX_PROCESS(process,
           if (MC_process_is_enabled(process)) {
             MC_state_interleave_process(next_state, process);
           }
-        }
+        );
 
         if (dot_output != NULL)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,  next_state->num, req_str);

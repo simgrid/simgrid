@@ -284,6 +284,11 @@ xbt_dynar_foreach (dyn,cpt,str) {
       _xbt_dynar_cursor_get(_dynar,_cursor,&_data) ; \
             (_cursor)++         )
 
+#define xbt_dynar_foreach_ptr(_dynar,_cursor,_ptr) \
+       for (_xbt_dynar_cursor_first(_dynar,&(_cursor))       ; \
+      (_ptr = _cursor < _dynar->used ? xbt_dynar_get_ptr(_dynar,_cursor) : NULL) ; \
+            (_cursor)++         )
+
 /** @} */
 
 SG_END_DECL()
