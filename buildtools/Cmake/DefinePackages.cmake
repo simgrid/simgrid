@@ -996,7 +996,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/chainsend/CMakeLists.txt
   examples/msg/chord/CMakeLists.txt
   examples/msg/cloud/CMakeLists.txt
-  examples/msg/energy/e1/CMakeLists.txt
+  examples/msg/energy/pstate/CMakeLists.txt
   examples/msg/energy/e2/CMakeLists.txt
   examples/msg/energy/e3/CMakeLists.txt
   examples/msg/exception/CMakeLists.txt
