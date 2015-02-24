@@ -15,6 +15,7 @@
 #include "surf/surfxml_parse.h"
 #include <lauxlib.h>
 
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
 static lua_State* sglua_maestro_state;
@@ -41,6 +42,7 @@ static int launch_application(lua_State* L) {
   MSG_launch_application(file);
   return 0;
 }
+
 
 /**
  * \brief Creates the platform.
@@ -197,6 +199,7 @@ static const luaL_Reg simgrid_functions[] = {
  *
  * \param L the Lua state
  */
+
 int luaopen_simgrid(lua_State *L)
 {
   XBT_DEBUG("luaopen_simgrid *****");
@@ -232,10 +235,10 @@ int luaopen_simgrid(lua_State *L)
     argv[argc--] = NULL;
 
     /* Initialize the MSG core */
-    MSG_init(&argc, argv);
-    MSG_process_set_data_cleanup((void_f_pvoid_t) lua_close);
     XBT_DEBUG("Still %d arguments on command line", argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
   }
+  MSG_init(&argc, argv);
+  MSG_process_set_data_cleanup((void_f_pvoid_t) lua_close);
 
   /* Keep the context mechanism informed of our lua world today */
   sglua_maestro_state = L;
