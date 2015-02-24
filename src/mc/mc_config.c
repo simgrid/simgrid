@@ -58,6 +58,7 @@ int _sg_mc_comms_determinism = 0;
 int _sg_mc_send_determinism = 0;
 int _sg_mc_safety = 0;
 int _sg_mc_liveness = 0;
+int _sg_mc_termination = 0;
 
 
 void _mc_cfg_cb_reduce(const char *name, int pos)
@@ -162,6 +163,16 @@ void _mc_cfg_cb_send_determinism(const char *name, int pos)
         ("You are specifying a value to enable/disable the detection of send-determinism in the communications schemes after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
   }
   _sg_mc_send_determinism = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  mc_reduce_kind = e_mc_reduce_none;
+}
+
+void _mc_cfg_cb_termination(const char *name, int pos)
+{
+  if (_sg_cfg_init_status && !_sg_do_model_check) {
+    xbt_die
+        ("You are specifying a value to enable/disable the detection of non progressive cycles after the initialization (through MSG_config?), but model-checking was not activated at config time (through --cfg=model-check:1). This won't work, sorry.");
+  }
+  _sg_mc_termination = xbt_cfg_get_boolean(_sg_cfg_set, name);
   mc_reduce_kind = e_mc_reduce_none;
 }
 

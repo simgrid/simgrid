@@ -712,6 +712,12 @@ void sg_config_init(int *argc, char **argv)
                      "Specify the name of dot file corresponding to graph state",
                      xbt_cfgelm_string, 1, 1, _mc_cfg_cb_dot_output, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/dot_output", "");
+
+     /* Enable/disable non progressive cycles detection with model-checking */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/termination",
+                     "Enable/Disable non progressive cycle detection",
+                     xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_termination, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/termination", "no");
 #endif
 
     /* do verbose-exit */

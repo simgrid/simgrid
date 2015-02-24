@@ -32,6 +32,10 @@ if(enable_smpi)
     add_executable(smpi_send_deterministic mc/send_deterministic.c)
     add_executable(smpi_non_deterministic mc/non_deterministic.c)
     add_executable(smpi_mutual_exclusion mc/mutual_exclusion.c)
+    add_executable(smpi_non_termination1 mc/non_termination1.c)
+    add_executable(smpi_non_termination2 mc/non_termination2.c)
+    add_executable(smpi_non_termination3 mc/non_termination3.c)
+    add_executable(smpi_non_termination4 mc/non_termination4.c)
 
     target_link_libraries(smpi_bugged1 simgrid)
     target_link_libraries(smpi_bugged2 simgrid)
@@ -39,6 +43,10 @@ if(enable_smpi)
     target_link_libraries(smpi_send_deterministic simgrid)
     target_link_libraries(smpi_non_deterministic simgrid)
     target_link_libraries(smpi_mutual_exclusion simgrid)
+    target_link_libraries(smpi_non_termination1 simgrid)
+    target_link_libraries(smpi_non_termination2 simgrid)
+    target_link_libraries(smpi_non_termination3 simgrid)
+    target_link_libraries(smpi_non_termination4 simgrid)
     
     set_target_properties(smpi_bugged1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_bugged2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
@@ -46,6 +54,10 @@ if(enable_smpi)
     set_target_properties(smpi_send_deterministic PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_non_deterministic PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_mutual_exclusion PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_non_termination1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_non_termination2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_non_termination3 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_non_termination4 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     
   endif()
   
@@ -74,6 +86,10 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/send_deterministic.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_deterministic.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/mutual_exclusion.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_termination1.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_termination2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_termination3.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_termination4.c
   PARENT_SCOPE
   )
 set(bin_files
@@ -86,6 +102,7 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_send_deterministic
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_deterministic
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_termination
   PARENT_SCOPE
   )
 set(txt_files

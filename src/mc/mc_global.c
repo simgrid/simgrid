@@ -173,7 +173,7 @@ void MC_init()
 
   MC_SET_STD_HEAP;
 
-  if (_sg_mc_visited > 0 || _sg_mc_liveness) {
+  if (_sg_mc_visited > 0 || _sg_mc_liveness  || _sg_mc_termination) {
     /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
     MC_ignore_local_variable("e", "*");
     MC_ignore_local_variable("__ex_cleanup", "*");
@@ -333,7 +333,10 @@ void MC_do_the_modelcheck_for_real()
   } else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
     if (mc_reduce_kind == e_mc_reduce_unset)
       mc_reduce_kind = e_mc_reduce_dpor;
-    XBT_INFO("Check a safety property");
+    if(_sg_mc_termination)
+      XBT_INFO("Check non progressive cycles");
+    else
+      XBT_INFO("Check a safety property");
     MC_modelcheck_safety_init();
   } else {
     if (mc_reduce_kind == e_mc_reduce_unset)
@@ -685,6 +688,15 @@ void MC_show_deadlock(smx_simcall_t req)
   /*req_str = MC_request_to_string(req);
      XBT_INFO("%s", req_str);
      xbt_free(req_str); */
+  XBT_INFO("Counter-example execution trace:");
+  MC_dump_stack_safety(mc_stack);
+  MC_print_statistics(mc_stats);
+}
+
+void MC_show_non_termination(void){
+  XBT_INFO("******************************************");
+  XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
+  XBT_INFO("******************************************");
   XBT_INFO("Counter-example execution trace:");
   MC_dump_stack_safety(mc_stack);
   MC_print_statistics(mc_stats);

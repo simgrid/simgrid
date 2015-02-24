@@ -15,6 +15,20 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
                                 "Logging specific to MC safety verification ");
 
+static int is_exploration_stack_state(mc_state_t current_state){
+
+  xbt_fifo_item_t item;
+  mc_state_t stack_state;
+  for(item = xbt_fifo_get_first_item(mc_stack); item != NULL; item = xbt_fifo_get_next_item(item)) {
+    stack_state = (mc_state_t) xbt_fifo_get_item_content(item);
+    if(snapshot_compare(stack_state, current_state) == 0){
+      XBT_INFO("Non-progressive cycle : state %d -> state %d", stack_state->num, current_state->num);
+      return 1;
+    }
+  }
+  return 0;
+}
+
 /**
  *  \brief Initialize the DPOR exploration algorithm
  */
@@ -117,6 +131,11 @@ void MC_modelcheck_safety(void)
       MC_SET_MC_HEAP;
 
       next_state = MC_state_new();
+
+      if(_sg_mc_termination && is_exploration_stack_state(next_state)){
+          MC_show_non_termination();
+          return;
+      }
 
       if ((visited_state = is_visited_state(next_state)) == NULL) {
 
