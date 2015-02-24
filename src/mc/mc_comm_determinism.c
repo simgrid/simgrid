@@ -45,9 +45,9 @@ static e_mc_comm_pattern_difference_t compare_comm_pattern(mc_comm_pattern_t com
     return SRC_PROC_DIFF;
   if (comm1->dst_proc != comm2->dst_proc)
     return DST_PROC_DIFF;
-    if (comm1->tag != comm2->tag)
+  if (comm1->tag != comm2->tag)
     return TAG_DIFF;
-    /*if (comm1->data_size != comm2->data_size)
+  if (comm1->data_size != comm2->data_size)
     return DATA_SIZE_DIFF;
   if(comm1->data == NULL && comm2->data == NULL)
     return 0;
@@ -57,76 +57,45 @@ static e_mc_comm_pattern_difference_t compare_comm_pattern(mc_comm_pattern_t com
     return DATA_DIFF;
   }else{
     return DATA_DIFF;
-  }*/
+  }
   return 0;
 }
 
-static void print_determinism_result(e_mc_comm_pattern_difference_t diff, int process, mc_comm_pattern_t comm, unsigned int cursor) {
-  if (_sg_mc_comms_determinism && !initial_global_state->comm_deterministic) {
-    XBT_INFO("****************************************************");
-    XBT_INFO("***** Non-deterministic communications pattern *****");
-    XBT_INFO("****************************************************");
-    XBT_INFO("The communications pattern of the process %d is different!",  process);
-    switch(diff) {
-    case TYPE_DIFF:
-      XBT_INFO("Different communication type for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case RDV_DIFF:
-      XBT_INFO("Different communication rdv for communication %s at index %d",  comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case TAG_DIFF:
-      XBT_INFO("Different communication tag for communication %s at index %d",  comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case SRC_PROC_DIFF:
-        XBT_INFO("Different communication source process for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case DST_PROC_DIFF:
-        XBT_INFO("Different communication destination process for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case DATA_SIZE_DIFF:
-      XBT_INFO("Different communication data size for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case DATA_DIFF:
-      XBT_INFO("Different communication data for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    default:
-      break;
-    }
-    MC_print_statistics(mc_stats);
-    xbt_abort();
-  } else if (_sg_mc_send_determinism && !initial_global_state->send_deterministic) {
-    XBT_INFO("*********************************************************");
-    XBT_INFO("***** Non-send-deterministic communications pattern *****");
-    XBT_INFO("*********************************************************");
-    XBT_INFO("The communications pattern of the process %d is different!",  process);
-    switch(diff) {
-    case TYPE_DIFF:
-      XBT_INFO("Different communication type for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case RDV_DIFF:
-      XBT_INFO("Different communication rdv for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case TAG_DIFF:
-      XBT_INFO("Different communication tag for communication %s at index %d",  comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case SRC_PROC_DIFF:
-        XBT_INFO("Different communication source process for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case DST_PROC_DIFF:
-        XBT_INFO("Different communication destination process for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case DATA_SIZE_DIFF:
-      XBT_INFO("Different communication data size for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    case DATA_DIFF:
-      XBT_INFO("Different communication data for communication %s at index %d", comm->type == SIMIX_COMM_SEND ? "Send" : "Recv", cursor);
-      break;
-    default:
-      break;
-    }
-    MC_print_statistics(mc_stats);
-    xbt_abort();
+static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int process, mc_comm_pattern_t comm, unsigned int cursor) {
+  char *type, *res;
+
+  if(comm->type == SIMIX_COMM_SEND)
+    type = bprintf("The send communications pattern of the process %d is different!", process - 1);
+  else
+    type = bprintf("The recv communications pattern of the process %d is different!", process - 1);
+
+  switch(diff) {
+  case TYPE_DIFF:
+    res = bprintf("%s Different type for communication #%d", type, cursor);
+    break;
+  case RDV_DIFF:
+    res = bprintf("%s Different rdv for communication #%d", type, cursor);
+    break;
+  case TAG_DIFF:
+    res = bprintf("%s Different tag for communication #%d", type, cursor);
+    break;
+  case SRC_PROC_DIFF:
+      res = bprintf("%s Different source for communication #%d", type, cursor);
+    break;
+  case DST_PROC_DIFF:
+      res = bprintf("%s Different destination for communication #%d", type, cursor);
+    break;
+  case DATA_SIZE_DIFF:
+    res = bprintf("%s\n Different data size for communication #%d", type, cursor);
+    break;
+  case DATA_DIFF:
+    res = bprintf("%s\n Different data for communication #%d", type, cursor);
+    break;
+  default:
+    break;
   }
+
+  return res;
 }
 
 static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t comm)
@@ -152,18 +121,46 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
   mc_list_comm_pattern_t list_comm_pattern = (mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, process, mc_list_comm_pattern_t);
 
   if(!backtracking){
-    mc_comm_pattern_t initial_comm = xbt_dynar_get_as(list_comm_pattern->list, comm->index, mc_comm_pattern_t);
+    mc_comm_pattern_t initial_comm = xbt_dynar_get_as(list_comm_pattern->list, list_comm_pattern->index_comm, mc_comm_pattern_t);
     e_mc_comm_pattern_difference_t diff;
     
     if((diff = compare_comm_pattern(initial_comm, comm)) != NONE_DIFF){
-      if (comm->type == SIMIX_COMM_SEND)
+      if (comm->type == SIMIX_COMM_SEND){
         initial_global_state->send_deterministic = 0;
-      initial_global_state->comm_deterministic = 0;
-      print_determinism_result(diff, process, comm, list_comm_pattern->index_comm + 1);
+        if(initial_global_state->send_diff != NULL)
+          xbt_free(initial_global_state->send_diff);
+        initial_global_state->send_diff = print_determinism_result(diff, process, comm, list_comm_pattern->index_comm + 1);
+      }else{
+        initial_global_state->recv_deterministic = 0;
+        if(initial_global_state->recv_diff != NULL)
+          xbt_free(initial_global_state->recv_diff);
+        initial_global_state->recv_diff = print_determinism_result(diff, process, comm, list_comm_pattern->index_comm + 1);
+      }
+      if(_sg_mc_send_determinism && !initial_global_state->send_deterministic){
+        XBT_INFO("*********************************************************");
+        XBT_INFO("***** Non-send-deterministic communications pattern *****");
+        XBT_INFO("*********************************************************");
+        XBT_INFO("%s", initial_global_state->send_diff);
+        xbt_free(initial_global_state->send_diff);
+        initial_global_state->send_diff = NULL;
+        MC_print_statistics(mc_stats);
+        xbt_abort(); 
+      }else if(_sg_mc_comms_determinism && (!initial_global_state->send_deterministic && !initial_global_state->recv_deterministic)) {
+        XBT_INFO("****************************************************");
+        XBT_INFO("***** Non-deterministic communications pattern *****");
+        XBT_INFO("****************************************************");
+        XBT_INFO("%s", initial_global_state->send_diff);
+        XBT_INFO("%s", initial_global_state->recv_diff);
+        xbt_free(initial_global_state->send_diff);
+        initial_global_state->send_diff = NULL;
+        xbt_free(initial_global_state->recv_diff);
+        initial_global_state->recv_diff = NULL;
+        MC_print_statistics(mc_stats);
+        xbt_abort();
+      } 
     }
   }
     
-  list_comm_pattern->index_comm++;
   comm_pattern_free(comm);
 
 }
@@ -178,15 +175,13 @@ void list_comm_pattern_free_voidp(void *p) {
   list_comm_pattern_free((mc_list_comm_pattern_t) * (void **) p);
 }
 
-void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t call_type)
+void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking)
 {
 
   mc_comm_pattern_t pattern = NULL;
   pattern = xbt_new0(s_mc_comm_pattern_t, 1);
   pattern->data_size = -1;
   pattern->data = NULL;
-
-  pattern->index = ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, request->issuer->pid, mc_list_comm_pattern_t))->index_comm + xbt_dynar_length((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, request->issuer->pid, xbt_dynar_t));
   
   void *addr_pointed;
   
@@ -207,6 +202,17 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t 
       else
         memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
     }
+    if(((MPI_Request)simcall_comm_isend__get__data(request))->detached){
+      if (!initial_global_state->initial_communications_pattern_done) {
+        /* Store comm pattern */
+        xbt_dynar_push(((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, pattern->src_proc, mc_list_comm_pattern_t))->list, &pattern);
+      } else {
+        /* Evaluate comm determinism */
+        deterministic_comm_pattern(pattern->src_proc, pattern, backtracking);
+        ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, pattern->src_proc, mc_list_comm_pattern_t))->index_comm++;
+      }
+      return;
+    }
   } else if (call_type == MC_CALL_TYPE_RECV) {                      
     pattern->type = SIMIX_COMM_RECEIVE;
     pattern->comm = simcall_comm_irecv__get__result(request);
@@ -223,66 +229,36 @@ void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t 
   XBT_DEBUG("Insert incomplete comm pattern %p for process %lu", pattern, request->issuer->pid);
 }
 
-void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, int backtracking) {
+void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, unsigned int issuer, int backtracking) {
 
   mc_comm_pattern_t current_comm_pattern;
   unsigned int cursor = 0;
-  unsigned int src = comm->comm.src_proc->pid;
-  unsigned int dst = comm->comm.dst_proc->pid;
-  mc_comm_pattern_t src_comm_pattern;
-  mc_comm_pattern_t dst_comm_pattern;
-  int src_completed = 0, dst_completed = 0;
+  mc_comm_pattern_t comm_pattern;
+  int completed = 0;
 
   /* Complete comm pattern */
-  xbt_dynar_foreach((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, src, xbt_dynar_t), cursor, current_comm_pattern) {
+  xbt_dynar_foreach((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, issuer, xbt_dynar_t), cursor, current_comm_pattern) {
     if (current_comm_pattern-> comm == comm) {
       update_comm_pattern(current_comm_pattern, comm);
-      src_completed = 1;
-      xbt_dynar_remove_at((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, src, xbt_dynar_t), cursor, &src_comm_pattern);
-      XBT_DEBUG("Remove incomplete comm pattern for process %u at cursor %u", src, cursor);
+      completed = 1;
+      xbt_dynar_remove_at((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, issuer, xbt_dynar_t), cursor, &comm_pattern);
+      XBT_DEBUG("Remove incomplete comm pattern for process %u at cursor %u", issuer, cursor);
       break;
     }
   }
-  if(!src_completed)
-    xbt_die("Corresponding communication for the source process not found!");
+  if(!completed)
+    xbt_die("Corresponding communication not found!");
 
-  cursor = 0;
-
-  xbt_dynar_foreach((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, dst, xbt_dynar_t), cursor, current_comm_pattern) {
-    if (current_comm_pattern-> comm == comm) {
-      update_comm_pattern(current_comm_pattern, comm);
-      dst_completed = 1;
-      xbt_dynar_remove_at((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, dst, xbt_dynar_t), cursor, &dst_comm_pattern);
-      XBT_DEBUG("Remove incomplete comm pattern for process %u at cursor %u", dst, cursor);
-      break;
-    }
-  }
-  if(!dst_completed)
-    xbt_die("Corresponding communication for the destination process not found!");
-  
   if (!initial_global_state->initial_communications_pattern_done) {
     /* Store comm pattern */
-    if(src_comm_pattern->index < xbt_dynar_length(((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, src, mc_list_comm_pattern_t))->list)){
-      xbt_dynar_set(((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, src, mc_list_comm_pattern_t))->list, src_comm_pattern->index, &src_comm_pattern);
-      ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, src, mc_list_comm_pattern_t))->list->used++;
-    } else {
-      xbt_dynar_insert_at(((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, src, mc_list_comm_pattern_t))->list, src_comm_pattern->index, &src_comm_pattern);
-    }
-    
-    if(dst_comm_pattern->index < xbt_dynar_length(((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, dst, mc_list_comm_pattern_t))->list)) {
-      xbt_dynar_set(((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, dst, mc_list_comm_pattern_t))->list, dst_comm_pattern->index, &dst_comm_pattern);
-      ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, dst, mc_list_comm_pattern_t))->list->used++;
-    } else {
-      xbt_dynar_insert_at(((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, dst, mc_list_comm_pattern_t))->list, dst_comm_pattern->index, &dst_comm_pattern);
-    }
-    ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, src, mc_list_comm_pattern_t))->index_comm++;
-    ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, dst, mc_list_comm_pattern_t))->index_comm++;
+    xbt_dynar_push(((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, issuer, mc_list_comm_pattern_t))->list, &comm_pattern);
   } else {
     /* Evaluate comm determinism */
-    deterministic_comm_pattern(src, src_comm_pattern, backtracking);
-    deterministic_comm_pattern(dst, dst_comm_pattern, backtracking);
+    deterministic_comm_pattern(issuer, comm_pattern, backtracking);
+    ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, issuer, mc_list_comm_pattern_t))->index_comm++;
   }
 }
+
 
 /************************ Main algorithm ************************/
 

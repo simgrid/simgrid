@@ -249,8 +249,11 @@ static void MC_modelcheck_comm_determinism_init(void)
   initial_global_state = xbt_new0(s_mc_global_t, 1);
   initial_global_state->snapshot = MC_take_snapshot(0);
   initial_global_state->initial_communications_pattern_done = 0;
-  initial_global_state->comm_deterministic = 1;
+  initial_global_state->recv_deterministic = 1;
   initial_global_state->send_deterministic = 1;
+  initial_global_state->recv_diff = NULL;
+  initial_global_state->send_diff = NULL;
+
   MC_SET_STD_HEAP;
 
   MC_modelcheck_comm_determinism();
@@ -331,12 +334,13 @@ void MC_do_the_modelcheck_for_real()
     XBT_INFO("Check communication determinism");
     MC_modelcheck_comm_determinism_init();
   } else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
-    if (mc_reduce_kind == e_mc_reduce_unset)
-      mc_reduce_kind = e_mc_reduce_dpor;
-    if(_sg_mc_termination)
+    if(_sg_mc_termination){
       XBT_INFO("Check non progressive cycles");
-    else
+      mc_reduce_kind = e_mc_reduce_none;
+    }else{
       XBT_INFO("Check a safety property");
+      mc_reduce_kind = e_mc_reduce_dpor;
+    }
     MC_modelcheck_safety_init();
   } else {
     if (mc_reduce_kind == e_mc_reduce_unset)
@@ -379,7 +383,7 @@ void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int valu
     break;
   case MC_CALL_TYPE_SEND:
   case MC_CALL_TYPE_RECV:
-    get_comm_pattern(pattern, req, call_type);
+    get_comm_pattern(pattern, req, call_type, backtracking);
     break;
   case MC_CALL_TYPE_WAIT:
   case MC_CALL_TYPE_WAITANY:
@@ -389,10 +393,7 @@ void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int valu
         current_comm = simcall_comm_wait__get__comm(req);
       else
         current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t);
-      // First wait only must be considered:
-      if (current_comm->comm.refcount == 1)
-        complete_comm_pattern(pattern, current_comm, backtracking);
-      break;
+      complete_comm_pattern(pattern, current_comm, req->issuer->pid, backtracking);
     }
   default:
     xbt_die("Unexpected call type %i", (int)call_type);
@@ -457,7 +458,7 @@ void MC_replay(xbt_fifo_t stack)
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Intermediate backtracking */
-  if(_sg_mc_checkpoint > 0) {
+  if(_sg_mc_checkpoint > 0 || _sg_mc_termination || _sg_mc_visited > 0) {
     start_item = xbt_fifo_get_first_item(stack);
     state = (mc_state_t)xbt_fifo_get_item_content(start_item);
     if(state->system_state){
@@ -741,11 +742,23 @@ void MC_dump_stack_liveness(xbt_fifo_t stack)
 
 }
 
-
 void MC_print_statistics(mc_stats_t stats)
 {
   xbt_mheap_t previous_heap = mmalloc_get_current_heap();
 
+  if(_sg_mc_comms_determinism) {
+    if (!initial_global_state->recv_deterministic && initial_global_state->send_deterministic){
+      XBT_INFO("******************************************************");
+      XBT_INFO("**** Only-send-deterministic communication pattern ****");
+      XBT_INFO("******************************************************");
+      XBT_INFO("%s", initial_global_state->recv_diff);
+    }else if(!initial_global_state->send_deterministic && initial_global_state->recv_deterministic) {
+      XBT_INFO("******************************************************");
+      XBT_INFO("**** Only-recv-deterministic communication pattern ****");
+      XBT_INFO("******************************************************");
+      XBT_INFO("%s", initial_global_state->send_diff);
+    }
+  }
   if (stats->expanded_pairs == 0) {
     XBT_INFO("Expanded states = %lu", stats->expanded_states);
     XBT_INFO("Visited states = %lu", stats->visited_states);
@@ -759,11 +772,10 @@ void MC_print_statistics(mc_stats_t stats)
     fprintf(dot_output, "}\n");
     fclose(dot_output);
   }
-  if (initial_global_state != NULL) {
+  if (initial_global_state != NULL && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
+    XBT_INFO("Send-deterministic : %s", !initial_global_state->send_deterministic ? "No" : "Yes");
     if (_sg_mc_comms_determinism)
-      XBT_INFO("Communication-deterministic : %s", !initial_global_state->comm_deterministic ? "No" : "Yes");
-    if (_sg_mc_send_determinism)
-      XBT_INFO("Send-deterministic : %s", !initial_global_state->send_deterministic ? "No" : "Yes");
+      XBT_INFO("Recv-deterministic : %s", !initial_global_state->recv_deterministic ? "No" : "Yes");
   }
   mmalloc_set_current_heap(previous_heap);
 }

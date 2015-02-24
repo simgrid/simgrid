@@ -76,11 +76,11 @@ static inline e_mc_call_type_t mc_get_call_type(smx_simcall_t req)
   }
 }
 
-void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, e_mc_call_type_t call_type);
+void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking);
 void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern, int backtracking);
 void comm_pattern_free_voidp(void *p);
 void list_comm_pattern_free_voidp(void *p);
-void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, int backtracking);
+void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, unsigned int issuer, int backtracking);
 void MC_pre_modelcheck_comm_determinism(void);
 void MC_modelcheck_comm_determinism(void);
 
