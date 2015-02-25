@@ -433,7 +433,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
 
   char *str = NULL, *label = NULL;
   smx_synchro_t act = NULL;
-
+  
   switch (req->call) {
   case SIMCALL_COMM_ISEND:
     if (req->issuer->smx_host)
@@ -528,6 +528,14 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
                     value + 1,
                     xbt_dynar_length(simcall_comm_testany__get__comms(req)));
     }
+    break;
+
+  case SIMCALL_MUTEX_LOCK:
+    label = bprintf("[(%lu)] Mutex LOCK", req->issuer->pid);
+    break;
+    
+  case SIMCALL_MUTEX_UNLOCK:
+    label = bprintf("[(%lu)] Mutex UNLOCK", req->issuer->pid);
     break;
 
   case SIMCALL_MC_RANDOM:
