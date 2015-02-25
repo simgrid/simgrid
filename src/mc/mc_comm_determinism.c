@@ -92,6 +92,7 @@ static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int p
     res = bprintf("%s\n Different data for communication #%d", type, cursor);
     break;
   default:
+    res = NULL;
     break;
   }
 
