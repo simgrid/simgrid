@@ -332,6 +332,7 @@ void MC_do_the_modelcheck_for_real()
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     XBT_INFO("Check communication determinism");
+    mc_reduce_kind = e_mc_reduce_none;
     MC_modelcheck_comm_determinism_init();
   } else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
     if(_sg_mc_termination){
@@ -339,7 +340,6 @@ void MC_do_the_modelcheck_for_real()
       mc_reduce_kind = e_mc_reduce_none;
     }else{
       XBT_INFO("Check a safety property");
-      mc_reduce_kind = e_mc_reduce_dpor;
     }
     MC_modelcheck_safety_init();
   } else {

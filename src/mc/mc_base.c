@@ -38,6 +38,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 
   switch (req->call) {
   case SIMCALL_NONE:
+  case SIMCALL_MUTEX_LOCK: /* If MUTEX_LOCK is catched by the MC, it means that the mutex is locked by another process, thus the request shouldn't be enabled (loop until another process is executed) */ 
     return FALSE;
 
   case SIMCALL_COMM_WAIT:
