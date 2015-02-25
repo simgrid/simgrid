@@ -395,6 +395,7 @@ void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int valu
         current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t);
       complete_comm_pattern(pattern, current_comm, req->issuer->pid, backtracking);
     }
+    break;
   default:
     xbt_die("Unexpected call type %i", (int)call_type);
   }

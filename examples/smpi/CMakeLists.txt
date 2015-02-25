@@ -29,8 +29,7 @@ if(enable_smpi)
     add_executable(smpi_bugged1 mc/bugged1.c)
     add_executable(smpi_bugged2 mc/bugged2.c)
     add_executable(smpi_bugged1_liveness mc/bugged1_liveness.c)
-    add_executable(smpi_send_deterministic mc/send_deterministic.c)
-    add_executable(smpi_non_deterministic mc/non_deterministic.c)
+    add_executable(smpi_only_send_deterministic mc/only_send_deterministic.c)
     add_executable(smpi_mutual_exclusion mc/mutual_exclusion.c)
     add_executable(smpi_non_termination1 mc/non_termination1.c)
     add_executable(smpi_non_termination2 mc/non_termination2.c)
@@ -40,8 +39,7 @@ if(enable_smpi)
     target_link_libraries(smpi_bugged1 simgrid)
     target_link_libraries(smpi_bugged2 simgrid)
     target_link_libraries(smpi_bugged1_liveness simgrid)
-    target_link_libraries(smpi_send_deterministic simgrid)
-    target_link_libraries(smpi_non_deterministic simgrid)
+    target_link_libraries(smpi_only_send_deterministic simgrid)
     target_link_libraries(smpi_mutual_exclusion simgrid)
     target_link_libraries(smpi_non_termination1 simgrid)
     target_link_libraries(smpi_non_termination2 simgrid)
@@ -51,8 +49,7 @@ if(enable_smpi)
     set_target_properties(smpi_bugged1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_bugged2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_bugged1_liveness PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
-    set_target_properties(smpi_send_deterministic PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
-    set_target_properties(smpi_non_deterministic PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+    set_target_properties(smpi_only_send_deterministic PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_mutual_exclusion PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_non_termination1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_non_termination2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
@@ -83,8 +80,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/bugged2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/bugged1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/bugged1_liveness.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/mc/send_deterministic.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_deterministic.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/only_send_deterministic.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/mutual_exclusion.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_termination1.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_termination2.c
@@ -99,8 +95,7 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged2
-  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_send_deterministic
-  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_deterministic
+  ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_only_send_deterministic
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_termination
   PARENT_SCOPE

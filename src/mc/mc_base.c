@@ -35,10 +35,10 @@ int MC_request_is_enabled(smx_simcall_t req)
 {
   unsigned int index = 0;
   smx_synchro_t act = 0;
+  smx_mutex_t mutex = NULL;
 
   switch (req->call) {
   case SIMCALL_NONE:
-  case SIMCALL_MUTEX_LOCK: /* If MUTEX_LOCK is catched by the MC, it means that the mutex is locked by another process, thus the request shouldn't be enabled (loop until another process is executed) */ 
     return FALSE;
 
   case SIMCALL_COMM_WAIT:
@@ -64,6 +64,13 @@ int MC_request_is_enabled(smx_simcall_t req)
         return TRUE;
     return FALSE;
 
+  case SIMCALL_MUTEX_LOCK:
+    mutex = simcall_mutex_lock__get__mutex(req);
+    if(mutex->owner == NULL)
+      return TRUE;
+    else
+      return (mutex->owner->pid == req->issuer->pid);
+
   default:
     /* The rest of the requests are always enabled */
     return TRUE;
@@ -79,6 +86,8 @@ int MC_request_is_visible(smx_simcall_t req)
       || req->call == SIMCALL_COMM_TEST
       || req->call == SIMCALL_COMM_TESTANY
       || req->call == SIMCALL_MC_RANDOM
+      || req->call == SIMCALL_MUTEX_LOCK
+      || req->call == SIMCALL_MUTEX_UNLOCK
 #ifdef HAVE_MC
       || req->call == SIMCALL_MC_SNAPSHOT
       || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS
