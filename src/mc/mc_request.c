@@ -335,12 +335,6 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     args = bprintf("locked = %d, owner = %d, sleeping = %d", mutex->locked, mutex->owner != NULL ? (int)mutex->owner->pid : -1, xbt_swag_size(mutex->sleeping));
     break;
 
-  case SIMCALL_MUTEX_UNLOCK:
-    type = xbt_strdup("Mutex UNLOCK");
-    mutex = simcall_mutex_unlock__get__mutex(req);
-    args = bprintf("locked = %d, owner = %d, sleeping = %d", mutex->locked, mutex->owner != NULL ? (int)mutex->owner->pid : -1, xbt_swag_size(mutex->sleeping));
-    break;
-
   case SIMCALL_MC_SNAPSHOT:
     type = xbt_strdup("MC_SNAPSHOT");
     args = NULL;
@@ -532,10 +526,6 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
 
   case SIMCALL_MUTEX_LOCK:
     label = bprintf("[(%lu)] Mutex LOCK", req->issuer->pid);
-    break;
-    
-  case SIMCALL_MUTEX_UNLOCK:
-    label = bprintf("[(%lu)] Mutex UNLOCK", req->issuer->pid);
     break;
 
   case SIMCALL_MC_RANDOM:

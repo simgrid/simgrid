@@ -17,9 +17,9 @@ $ ../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile_only_send_det
 > [0.000000] [mc_global/INFO] **** Only-send-deterministic communication pattern ****
 > [0.000000] [mc_global/INFO] ******************************************************
 > [0.000000] [mc_global/INFO] The recv communications pattern of the process 0 is different! Different source for communication #2
-> [0.000000] [mc_global/INFO] Expanded states = 2966
-> [0.000000] [mc_global/INFO] Visited states = 13362
-> [0.000000] [mc_global/INFO] Executed transitions = 12576
+> [0.000000] [mc_global/INFO] Expanded states = 1025
+> [0.000000] [mc_global/INFO] Visited states = 3640
+> [0.000000] [mc_global/INFO] Executed transitions = 3360
 > [0.000000] [mc_global/INFO] Send-deterministic : Yes
 > [0.000000] [mc_global/INFO] Recv-deterministic : No
 
