@@ -338,7 +338,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   case SIMCALL_MUTEX_UNLOCK:
     type = xbt_strdup("Mutex UNLOCK");
     mutex = simcall_mutex_unlock__get__mutex(req);
-    args = bprintf("locked = %d, owner = %lu, sleeping = %d", mutex->locked, mutex->owner->pid, xbt_swag_size(mutex->sleeping));
+    args = bprintf("locked = %d, owner = %d, sleeping = %d", mutex->locked, mutex->owner != NULL ? (int)mutex->owner->pid : -1, xbt_swag_size(mutex->sleeping));
     break;
 
   case SIMCALL_MC_SNAPSHOT:
