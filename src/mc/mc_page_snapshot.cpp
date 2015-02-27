@@ -1,3 +1,10 @@
+/* MC interface: definitions that non-MC modules must see, but not the user */
+
+/* Copyright (c) 2014-2015. The SimGrid Team.  All rights reserved.         */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "mc_page_store.h"
 #include "mc_mmu.h"
 #include "mc_private.h"
