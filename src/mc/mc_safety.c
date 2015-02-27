@@ -11,6 +11,7 @@
 #include "mc_safety.h"
 #include "mc_private.h"
 #include "mc_record.h"
+#include "mc_smx.h"
 
 #include "xbt/mmalloc/mmprivate.h"
 
@@ -188,7 +189,7 @@ void MC_modelcheck_safety(void)
       while ((state = xbt_fifo_shift(mc_stack)) != NULL) {
         if (mc_reduce_kind == e_mc_reduce_dpor) {
           req = MC_state_get_internal_request(state);
-          const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, req);
+          const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
           xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
             if (MC_request_depend(req, MC_state_get_internal_request(prev_state))) {
               if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
@@ -217,7 +218,7 @@ void MC_modelcheck_safety(void)
 
             } else {
 
-              const smx_process_t previous_issuer = MC_process_get_issuer(&mc_model_checker->process, MC_state_get_internal_request(prev_state));
+              const smx_process_t previous_issuer = MC_smx_simcall_get_issuer(MC_state_get_internal_request(prev_state));
               XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant",
                         req->call, issuer->pid, state->num,
                         MC_state_get_internal_request(prev_state)->call,

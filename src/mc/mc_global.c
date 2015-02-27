@@ -35,6 +35,7 @@
 #include "mc_liveness.h"
 #include "mc_private.h"
 #include "mc_unw.h"
+#include "mc_smx.h"
 #endif
 #include "mc_record.h"
 #include "mc_protocol.h"
@@ -475,7 +476,7 @@ void MC_replay(xbt_fifo_t stack)
       /* because we got a copy of the executed request, we have to fetch the  
          real one, pointed by the request field of the issuer process */
 
-      const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, saved_req);
+      const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
       req = &issuer->simcall;
 
       /* Debug information */
@@ -561,7 +562,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
         if (saved_req != NULL) {
           /* because we got a copy of the executed request, we have to fetch the
              real one, pointed by the request field of the issuer process */
-          const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, saved_req);
+          const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
           req = &issuer->simcall;
 
           /* Debug information */

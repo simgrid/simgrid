@@ -25,8 +25,7 @@
 #include "mc_unw.h"
 #include "mc_snapshot.h"
 #include "mc_ignore.h"
-
-#include "simix/smx_private.h"
+#include "mc_smx.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
                                 "MC process information");
@@ -82,8 +81,8 @@ void MC_process_init(mc_process_t process, pid_t pid, int sockfd)
     &process->heap_address, std_heap_var->address, sizeof(struct mdesc*),
     MC_PROCESS_INDEX_DISABLED);
 
-  process->smx_process_infos = mc_smx_process_info_list_new();
-  process->smx_old_process_infos = mc_smx_process_info_list_new();
+  process->smx_process_infos = MC_smx_process_info_list_new();
+  process->smx_old_process_infos = MC_smx_process_info_list_new();
 
   process->checkpoint_ignore = MC_checkpoint_ignore_new();
 
@@ -176,66 +175,6 @@ void MC_process_refresh_malloc_info(mc_process_t process)
     process->heap_info,
     process->heap->heapinfo, malloc_info_bytesize,
     MC_PROCESS_INDEX_DISABLED);
-}
-
-/** Load the remote swag of processes into a dynar
- *
- *  @param process     MCed process
- *  @param target      Local dynar (to be filled with copies of `s_smx_process_t`)
- *  @param remote_swag Address of the process SWAG in the remote list
- */
-static void MC_process_refresh_simix_process_list(
-  mc_process_t process,
-  xbt_dynar_t target, xbt_swag_t remote_swag)
-{
-  // swag = REMOTE(*simix_global->process_list)
-  s_xbt_swag_t swag;
-  MC_process_read(process, MC_PROCESS_NO_FLAG, &swag, remote_swag, sizeof(swag),
-    MC_PROCESS_INDEX_ANY);
-
-  smx_process_t p;
-  xbt_dynar_reset(target);
-
-  int i = 0;
-  for (p = swag.head; p; ++i) {
-
-    s_mc_smx_process_info_t info;
-    info.address = p;
-    MC_process_read(process, MC_PROCESS_NO_FLAG,
-      &info.copy, p, sizeof(info.copy), MC_PROCESS_INDEX_ANY);
-    xbt_dynar_push(target, &info);
-
-    // Lookup next process address:
-    p = xbt_swag_getNext(&info.copy, swag.offset);
-  }
-  assert(i == swag.count);
-}
-
-void MC_process_refresh_simix_processes(mc_process_t process)
-{
-  if (process->cache_flags & MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES)
-    return;
-
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
-  // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
-
-  // simix_global_p = REMOTE(simix_global);
-  smx_global_t simix_global_p;
-  MC_process_read_variable(process, "simix_global", &simix_global_p, sizeof(simix_global_p));
-
-  // simix_global = REMOTE(*simix_global)
-  s_smx_global_t simix_global;
-  MC_process_read(process, MC_PROCESS_NO_FLAG, &simix_global, simix_global_p, sizeof(simix_global),
-    MC_PROCESS_INDEX_ANY);
-
-  MC_process_refresh_simix_process_list(
-    process, process->smx_process_infos, simix_global.process_list);
-  MC_process_refresh_simix_process_list(
-    process, process->smx_old_process_infos, simix_global.process_to_destroy);
-
-  process->cache_flags |= MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES;
-  mmalloc_set_current_heap(heap);
 }
 
 #define SO_RE "\\.so[\\.0-9]*$"
@@ -563,6 +502,14 @@ const void* MC_process_read(mc_process_t process, e_adress_space_read_flags_t fl
   }
 }
 
+const void* MC_process_read_simple(mc_process_t process,
+  void* local, const void* remote, size_t len)
+{
+  e_adress_space_read_flags_t flags = MC_PROCESS_NO_FLAG;
+  int index = MC_PROCESS_INDEX_ANY;
+  return MC_process_read(process, flags, local, remote, len, index);
+}
+
 void MC_process_write(mc_process_t process, const void* local, void* remote, size_t len)
 {
   if (MC_process_is_self(process)) {
@@ -603,38 +550,6 @@ void MC_process_clear_memory(mc_process_t process, void* remote, size_t len)
   }
 }
 
-/** Get the issuer of a simcall (`req->issuer`)
- *
- *  In split-process mode, it does the black magic necessary to get an address
- *  of a (shallow) copy of the data structure the issuer SIMIX process in the local
- *  address space.
- *
- *  @param process the MCed process
- *  @param req     the simcall (copied in the local process)
- */
-smx_process_t MC_process_get_issuer(mc_process_t process, smx_simcall_t req)
-{
-  if (MC_process_is_self(&mc_model_checker->process))
-    return req->issuer;
-
-  MC_process_refresh_simix_processes(process);
-
-  // This is the address of the smx_process in the MCed process:
-  void* address = req->issuer;
-
-  unsigned i;
-  mc_smx_process_info_t p;
-
-  xbt_dynar_foreach_ptr(process->smx_process_infos, i, p)
-    if (p->address == address)
-      return &p->copy;
-  xbt_dynar_foreach_ptr(process->smx_old_process_infos, i, p)
-    if (p->address == address)
-      return &p->copy;
-
-  xbt_die("Issuer not found");
-}
-
 void MC_simcall_handle(smx_simcall_t req, int value)
 {
   if (MC_process_is_self(&mc_model_checker->process)) {
@@ -642,7 +557,7 @@ void MC_simcall_handle(smx_simcall_t req, int value)
     return;
   }
 
-  MC_process_refresh_simix_processes(&mc_model_checker->process);
+  MC_process_smx_refresh(&mc_model_checker->process);
 
   unsigned i;
   mc_smx_process_info_t pi = NULL;
@@ -665,9 +580,4 @@ void MC_simcall_handle(smx_simcall_t req, int value)
   }
 
   xbt_die("Could not find the request");
-}
-
-void mc_smx_process_info_clear(mc_smx_process_info_t p)
-{
-  // Nothing yet
 }

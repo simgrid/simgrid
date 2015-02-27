@@ -14,6 +14,7 @@
 #include "mc_liveness.h"
 #include "mc_private.h"
 #include "mc_record.h"
+#include "mc_smx.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");

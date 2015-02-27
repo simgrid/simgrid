@@ -12,6 +12,7 @@
 #include "mc_request.h"
 #include "mc_private.h"
 #include "mc_comm_pattern.h"
+#include "mc_smx.h"
 
 static void copy_incomplete_communications_pattern(mc_state_t state) {
   int i;
@@ -189,7 +190,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     if (value != random_max) {
       MC_EACH_SIMIX_PROCESS(process,
         procstate = &state->proc_status[process->pid];
-        const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, req);
+        const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
         if (process->pid == issuer->pid) {
           procstate->state = MC_MORE_INTERLEAVE;
           break;

@@ -16,6 +16,7 @@ mc_model_checker_t MC_model_checker_new(pid_t pid, int socket)
   mc->fd_clear_refs = -1;
   mc->fd_pagemap = -1;
   MC_process_init(&mc->process, pid, socket);
+  mc->hosts = xbt_dict_new();
   return mc;
 }
 
@@ -25,4 +26,5 @@ void MC_model_checker_delete(mc_model_checker_t mc)
   if(mc->record)
     xbt_dynar_free(&mc->record);
   MC_process_clear(&mc->process);
+  xbt_dict_free(&mc->hosts);
 }

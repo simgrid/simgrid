@@ -43,11 +43,6 @@ typedef enum {
   MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES = 4,
 } e_mc_process_cache_flags_t ;
 
-struct s_mc_smx_process_info {
-  void* address;
-  struct s_smx_process copy;
-};
-
 typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
 
 /** Representation of a process
@@ -67,7 +62,16 @@ struct s_mc_process {
   size_t object_infos_size;
   int memory_file;
 
+  /** Copy of `simix_global->process_list`
+   *
+   *  See mc_smx.c.
+   */
   xbt_dynar_t smx_process_infos;
+
+  /** Copy of `simix_global->process_to_destroy`
+   *
+   *  See mc_smx.c.
+   */
   xbt_dynar_t smx_old_process_infos;
 
   /** State of the cache (which variables are up to date) */
@@ -135,8 +139,6 @@ void MC_process_refresh_heap(mc_process_t process);
  * */
 void MC_process_refresh_malloc_info(mc_process_t process);
 
-void MC_process_refresh_simix_processes(mc_process_t process);
-
 static inline
 bool MC_process_is_self(mc_process_t process)
 {
@@ -156,6 +158,9 @@ const void* MC_process_read(mc_process_t process,
   e_adress_space_read_flags_t flags,
   void* local, const void* remote, size_t len,
   int process_index);
+
+const void* MC_process_read_simple(mc_process_t process,
+  void* local, const void* remote, size_t len);
 
 /** Write data to a process memory
  *
@@ -199,21 +204,6 @@ static inline malloc_info* MC_process_get_malloc_info(mc_process_t process)
 /** Find (one occurence of) the named variable definition
  */
 dw_variable_t MC_process_find_variable_by_name(mc_process_t process, const char* name);
-
-// ***** Things to move somewhere else:
-
-smx_process_t MC_process_get_issuer(mc_process_t process, smx_simcall_t req);
-
-void MC_simcall_handle(smx_simcall_t req, int value);
-
-void mc_smx_process_info_clear(mc_smx_process_info_t p);
-
-static inline
-xbt_dynar_t mc_smx_process_info_list_new()
-{
-  return xbt_dynar_new(
-    sizeof(s_mc_smx_process_info_t), (void_f_pvoid_t) &mc_smx_process_info_clear);
-}
 
 SG_END_DECL()
 

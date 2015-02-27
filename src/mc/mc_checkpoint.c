@@ -35,6 +35,7 @@
 #include "mc_mmu.h"
 #include "mc_unw.h"
 #include "mc_protocol.h"
+#include "mc_smx.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");

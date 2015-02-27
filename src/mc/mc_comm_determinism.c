@@ -10,6 +10,7 @@
 #include "mc_safety.h"
 #include "mc_private.h"
 #include "mc_record.h"
+#include "mc_smx.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc,
                                 "Logging specific to MC communication determinism detection");
@@ -172,9 +173,9 @@ static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t co
   void *addr_pointed;
   comm_pattern->src_proc = comm->comm.src_proc->pid;
   comm_pattern->dst_proc = comm->comm.dst_proc->pid;
-  // FIXME, get remote host name
-  comm_pattern->src_host = simcall_host_get_name(comm->comm.src_proc->smx_host);
-  comm_pattern->dst_host = simcall_host_get_name(comm->comm.dst_proc->smx_host);
+  // TODO, resolve host name
+  comm_pattern->src_host = MC_smx_process_get_host_name(MC_smx_resolve_process(comm->comm.src_proc));
+  comm_pattern->dst_host = MC_smx_process_get_host_name(MC_smx_resolve_process(comm->comm.dst_proc));
   if (comm_pattern->data_size == -1 && comm->comm.src_buff != NULL) {
     comm_pattern->data_size = *(comm->comm.dst_buff_size);
     comm_pattern->data = xbt_malloc0(comm_pattern->data_size);
@@ -226,7 +227,7 @@ void get_comm_pattern(const xbt_dynar_t list, const smx_simcall_t request, const
   pattern->data_size = -1;
   pattern->data = NULL;
 
-  const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, request);
+  const smx_process_t issuer = MC_smx_simcall_get_issuer(request);
   mc_list_comm_pattern_t initial_pattern =
     (mc_list_comm_pattern_t) xbt_dynar_get_as(initial_communications_pattern, issuer->pid, mc_list_comm_pattern_t);
   xbt_dynar_t incomplete_pattern =
@@ -243,7 +244,7 @@ void get_comm_pattern(const xbt_dynar_t list, const smx_simcall_t request, const
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
     pattern->src_proc = pattern->comm->comm.src_proc->pid;
     // FIXME, get remote host name
-    pattern->src_host = simcall_host_get_name(issuer->smx_host);
+    pattern->src_host = MC_smx_process_get_host_name(issuer);
     if(pattern->comm->comm.src_buff != NULL){
       pattern->data_size = pattern->comm->comm.src_buff_size;
       pattern->data = xbt_malloc0(pattern->data_size);
@@ -260,7 +261,7 @@ void get_comm_pattern(const xbt_dynar_t list, const smx_simcall_t request, const
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
     pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
     // FIXME, remote process access
-    pattern->dst_host = simcall_host_get_name(issuer->smx_host);
+    pattern->dst_host = MC_smx_process_get_host_name(issuer);
   } else {
     xbt_die("Unexpected call_type %i", (int) call_type);
   }

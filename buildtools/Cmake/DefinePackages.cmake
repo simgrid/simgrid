@@ -649,6 +649,8 @@ set(MC_SRC
   src/mc/mc_protocol.c
   src/mc/mc_server.cpp
   src/mc/mc_server.h
+  src/mc/mc_smx.h
+  src/mc/mc_smx.c
   )
 
 set(MC_SIMGRID_MC_SRC

@@ -34,25 +34,12 @@ struct s_mc_model_checker {
   int fd_pagemap;
   xbt_dynar_t record;
   s_mc_process_t process;
+  /** String pool for host names */
+  xbt_dict_t /* <hostname, NULL> */ hosts;
 };
 
 mc_model_checker_t MC_model_checker_new(pid_t pid, int socket);
 void MC_model_checker_delete(mc_model_checker_t mc);
-
-#define MC_EACH_SIMIX_PROCESS(process, code) \
-  if (MC_process_is_self(&mc_model_checker->process)) { \
-    xbt_swag_foreach(process, simix_global->process_list) { \
-      code; \
-    } \
-  } else { \
-    MC_process_refresh_simix_processes(&mc_model_checker->process); \
-    unsigned int _smx_process_index; \
-    mc_smx_process_info_t _smx_process_info; \
-    xbt_dynar_foreach_ptr(mc_model_checker->process.smx_process_infos, _smx_process_index, _smx_process_info) { \
-      smx_process_t process = &_smx_process_info->copy; \
-      code; \
-    } \
-  }
 
 SG_END_DECL()
 

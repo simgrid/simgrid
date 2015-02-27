@@ -17,6 +17,7 @@
 #include "mc_private.h"
 #include "mc_model_checker.h"
 #include "mc_state.h"
+#include "mc_smx.h"
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
@@ -108,7 +109,7 @@ char* MC_record_stack_to_string(xbt_fifo_t stack)
     mc_state_t state = (mc_state_t) xbt_fifo_get_item_content(item);
     int value = 0;
     smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
-    const smx_process_t issuer = MC_process_get_issuer(&mc_model_checker->process, saved_req);
+    const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
     const int pid = issuer->pid;
 
     // Serialization the (pid, value) pair:
