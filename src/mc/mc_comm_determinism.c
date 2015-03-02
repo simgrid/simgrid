@@ -241,6 +241,7 @@ void get_comm_pattern(const xbt_dynar_t list, const smx_simcall_t request, const
     /* Create comm pattern */
     pattern->type = SIMIX_COMM_SEND;
     pattern->comm = simcall_comm_isend__get__result(request);
+    // FIXME, remote access to rdv->name
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
     pattern->src_proc = pattern->comm->comm.src_proc->pid;
     // FIXME, get remote host name

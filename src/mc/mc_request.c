@@ -236,9 +236,6 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   smx_synchro_t act = NULL;
   size_t size = 0;
 
-  // FIXME, host_get_name
-  // FIXME, buffer access (issuer->name, issuer->smx_host)
-
   smx_process_t issuer = MC_smx_simcall_get_issuer(req);
 
   switch (req->call) {
@@ -249,12 +246,13 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     if (issuer->smx_host)
       args =
           bprintf("src=(%lu)%s (%s), buff=%s, size=%s", issuer->pid,
-                  MC_smx_process_get_host_name(issuer), issuer->name,
+                  MC_smx_process_get_host_name(issuer),
+                  MC_smx_process_get_name(issuer),
                   p, bs);
     else
       args =
           bprintf("src=(%lu)%s, buff=%s, size=%s", issuer->pid,
-                  issuer->name, p, bs);
+                  MC_smx_process_get_name(issuer), p, bs);
     break;
   case SIMCALL_COMM_IRECV:
     size =
@@ -266,12 +264,14 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     if (issuer->smx_host)
       args =
           bprintf("dst=(%lu)%s (%s), buff=%s, size=%s", issuer->pid,
-                  MC_smx_process_get_host_name(issuer), issuer->name,
+                  MC_smx_process_get_host_name(issuer),
+                  MC_smx_process_get_name(issuer),
                   p, bs);
     else
       args =
           bprintf("dst=(%lu)%s, buff=%s, size=%s", issuer->pid,
-                  issuer->name, p, bs);
+                  MC_smx_process_get_name(issuer),
+                  p, bs);
     break;
   case SIMCALL_COMM_WAIT:
     act = simcall_comm_wait__get__comm(req);
@@ -282,15 +282,16 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     } else {
       type = xbt_strdup("Wait");
       p = pointer_to_string(act);
+      // TODO, fix remote access to comm
+      smx_process_t src_proc = MC_smx_resolve_process(act->comm.src_proc);
+      smx_process_t dst_proc = MC_smx_resolve_process(act->comm.dst_proc);
       args = bprintf("comm=%s [(%lu)%s (%s)-> (%lu)%s (%s)]", p,
-                     act->comm.src_proc ? act->comm.src_proc->pid : 0,
-                     // TODO, get process
-                     act->comm.src_proc ? MC_smx_process_get_host_name(MC_smx_resolve_process(act->comm.src_proc)) : "",
-                     act->comm.src_proc ? act->comm.src_proc->name : "",
-                     act->comm.dst_proc ? act->comm.dst_proc->pid : 0,
-                     // TOTO get process
-                     act->comm.dst_proc ? MC_smx_process_get_host_name(MC_smx_resolve_process(act->comm.dst_proc)) : "",
-                     act->comm.dst_proc ? act->comm.dst_proc->name : "");
+                     src_proc ? src_proc->pid : 0,
+                     src_proc ? MC_smx_process_get_host_name(src_proc) : "",
+                     src_proc ? MC_smx_process_get_name(src_proc) : "",
+                     dst_proc ? dst_proc->pid : 0,
+                     dst_proc ? MC_smx_process_get_host_name(dst_proc) : "",
+                     dst_proc ? MC_smx_process_get_name(dst_proc) : "");
     }
     break;
   case SIMCALL_COMM_TEST:
@@ -303,11 +304,15 @@ char *MC_request_to_string(smx_simcall_t req, int value)
       type = xbt_strdup("Test TRUE");
       p = pointer_to_string(act);
       // TODO, get process, get process name
+      smx_process_t src_proc = MC_smx_resolve_process(act->comm.src_proc);
+      smx_process_t dst_proc = MC_smx_resolve_process(act->comm.dst_proc);
       args = bprintf("comm=%s [(%lu)%s (%s) -> (%lu)%s (%s)]", p,
-                     act->comm.src_proc->pid, act->comm.src_proc->name,
-                     MC_smx_process_get_host_name(MC_smx_resolve_process(act->comm.src_proc)),
-                     act->comm.dst_proc->pid, act->comm.dst_proc->name,
-                     MC_smx_process_get_host_name(MC_smx_resolve_process(act->comm.dst_proc)));
+                     src_proc->pid,
+                     MC_smx_process_get_name(src_proc),
+                     MC_smx_process_get_host_name(src_proc),
+                     dst_proc->pid,
+                     MC_smx_process_get_name(dst_proc),
+                     MC_smx_process_get_host_name(dst_proc));
     }
     break;
 
@@ -360,13 +365,15 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     // FIXME, get process name
     str =
         bprintf("[(%lu)%s (%s)] %s(%s)", issuer->pid,
-                MC_smx_process_get_host_name(issuer), issuer->name,
+                MC_smx_process_get_host_name(issuer),
+                MC_smx_process_get_name(issuer),
                 type, args);
   } else {
     // FIXME, get process name
     str =
         bprintf("[(%lu)%s (%s)] %s ", issuer->pid,
-                MC_smx_process_get_host_name(issuer), issuer->name,
+                MC_smx_process_get_host_name(issuer),
+                MC_smx_process_get_name(issuer),
                 type);
   }
 
@@ -383,6 +390,7 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
   smx_synchro_t action;
 
   xbt_dynar_foreach(simcall_comm_testany__get__comms(req), cursor, action) {
+    // FIXME, remote access to comm object
     if (action->comm.src_proc && action->comm.dst_proc)
       return FALSE;
   }
@@ -393,6 +401,8 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
 int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
   smx_synchro_t act;
+
+  // FIXME, remote access to comm object
 
   switch (req->call) {
 

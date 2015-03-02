@@ -44,6 +44,7 @@ struct s_mc_smx_process_info {
   struct s_smx_process copy;
   /** Hostname (owned by `mc_modelchecker->hostnames`) */
   char* hostname;
+  char* name;
 };
 
 xbt_dynar_t MC_smx_process_info_list_new(void);
@@ -61,6 +62,7 @@ void MC_process_smx_refresh(mc_process_t process);
  */
 smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req);
 
+const char* MC_smx_process_get_name(smx_process_t p);
 const char* MC_smx_process_get_host_name(smx_process_t p);
 
 #define MC_EACH_SIMIX_PROCESS(process, code) \

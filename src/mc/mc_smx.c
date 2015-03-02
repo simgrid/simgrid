@@ -13,10 +13,23 @@
 #include "mc_smx.h"
 #include "mc_model_checker.h"
 
+static
+void MC_smx_process_info_clear(mc_smx_process_info_t p)
+{
+  p->hostname = NULL;
+
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
+  free(p->name);
+  mmalloc_set_current_heap(heap);
+
+  p->name = NULL;
+}
+
 xbt_dynar_t MC_smx_process_info_list_new(void)
 {
   return xbt_dynar_new(
-    sizeof(s_mc_smx_process_info_t), NULL);
+    sizeof(s_mc_smx_process_info_t),
+    ( void_f_pvoid_t) &MC_smx_process_info_clear);
 }
 
 static inline
@@ -61,6 +74,7 @@ static void MC_process_refresh_simix_process_list(
 
     s_mc_smx_process_info_t info;
     info.address = p;
+    info.name = NULL;
     info.hostname = NULL;
     MC_process_read(process, MC_PROCESS_NO_FLAG,
       &info.copy, p, sizeof(info.copy), MC_PROCESS_INDEX_ANY);
@@ -134,6 +148,8 @@ smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
 
 smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address)
 {
+  if (!process_remote_address)
+    return NULL;
   if (MC_process_is_self(&mc_model_checker->process))
     return process_remote_address;
 
@@ -193,4 +209,44 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
     info->hostname = elt->key;
   }
   return info->hostname;
+}
+
+const char* MC_smx_process_get_name(smx_process_t p)
+{
+  mc_process_t process = &mc_model_checker->process;
+  if (MC_process_is_self(process))
+    return p->name;
+  if (!p->name)
+    return NULL;
+
+  mc_smx_process_info_t info = MC_smx_process_get_info(p);
+  if (!info->name) {
+    size_t size = 128;
+    char buffer[size];
+
+    size_t off = 0;
+    while (1) {
+      ssize_t n = pread(process->memory_file, buffer+off, size-off, (off_t)p->name + off);
+      if (n==-1) {
+        if (errno == EINTR)
+          continue;
+        else {
+          perror("MC_smx_process_get_name");
+          xbt_die("Could not read memory");
+        }
+      }
+      if (n==0)
+        return "?";
+      void* end = memchr(buffer+off, '\0', n);
+      if (end)
+        break;
+      off += n;
+      if (off == size)
+        return "?";
+    }
+    xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
+    info->name = strdup(buffer);
+    mmalloc_set_current_heap(heap);
+  }
+  return info->name;
 }
