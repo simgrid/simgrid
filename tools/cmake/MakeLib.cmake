@@ -62,6 +62,7 @@ if(HAVE_LUA)
     COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE} #for test
     )
   SET(SIMGRID_DEP "${SIMGRID_DEP} -l${LIB_LUA_NAME}")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl")
 endif()
 
 if(HAVE_GRAPHVIZ)
