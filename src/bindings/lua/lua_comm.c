@@ -139,7 +139,7 @@ static int l_comm_test(lua_State* L) {
   }
 }
 
-static const luaL_reg comm_functions[] = {
+static const luaL_Reg comm_functions[] = {
   {"wait", l_comm_wait},
   {"test", l_comm_test},
   /* TODO waitany, testany */
@@ -164,7 +164,7 @@ static int l_comm_gc(lua_State* L)
 /**
  * \brief Metamethods of the comm userdata.
  */
-static const luaL_reg comm_meta[] = {
+static const luaL_Reg comm_meta[] = {
   {"__gc", l_comm_gc},
   {NULL, NULL}
 };
@@ -178,17 +178,22 @@ static const luaL_reg comm_meta[] = {
  */
 void sglua_register_comm_functions(lua_State* L)
 {
-  /* create a table simgrid.com and fill it with com functions */
-  luaL_openlib(L, COMM_MODULE_NAME, comm_functions, 0);
+  /* create a table simgrid.comm and fill it with com functions */
+  lua_newtable(L);
+  luaL_setfuncs(L, comm_functions, 0);
+  lua_setglobal(L, COMM_MODULE_NAME);
+  /*luaL_openlib(L, COMM_MODULE_NAME, comm_functions, 0);*/
                                   /* simgrid.comm */
 
   /* create the metatable for comms, add it to the Lua registry */
   luaL_newmetatable(L, COMM_MODULE_NAME);
                                   /* simgrid.comm mt */
   /* fill the metatable */
-  luaL_openlib(L, NULL, comm_meta, 0);
+  luaL_setfuncs(L, comm_meta, 0);
+  luaL_setmetatable(L, COMM_MODULE_NAME);
+  /*luaL_openlib(L, NULL, comm_meta, 0);*/
                                   /* simgrid.comm mt */
-  lua_pushvalue(L, -2);
+  /*lua_pushvalue(L, -2);*/
                                   /* simgrid.comm mt simgrid.comm */
   /* metatable.__index = simgrid.comm
    * we put the comm functions inside the comm itself:

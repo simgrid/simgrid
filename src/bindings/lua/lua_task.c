@@ -61,8 +61,8 @@ static int l_task_new(lua_State* L)
 {
   XBT_DEBUG("Task new");
   const char* name = luaL_checkstring(L, 1);
-  int comp_size = luaL_checkint(L, 2);
-  int msg_size = luaL_checkint(L, 3);
+  int comp_size    = (int) luaL_checkinteger(L, 2);
+  int msg_size     = (int) luaL_checkinteger(L, 3);
                                   /* name comp comm */
   lua_settop(L, 0);
                                   /* -- */
@@ -390,7 +390,7 @@ static int l_task_irecv(lua_State* L)
   return 1;
 }
 
-static const luaL_reg task_functions[] = {
+static const luaL_Reg task_functions[] = {
   {"new", l_task_new},
   {"get_name", l_task_get_name},
   {"get_computation_duration", l_task_get_computation_duration},
@@ -440,7 +440,7 @@ static int l_task_tostring(lua_State* L)
 /**
  * \brief Metamethods of both a task table and the userdata inside it.
  */
-static const luaL_reg task_meta[] = {
+static const luaL_Reg task_meta[] = {
   {"__gc", l_task_gc}, /* will be called only for userdata */
   {"__tostring", l_task_tostring},
   {NULL, NULL}
@@ -456,14 +456,19 @@ static const luaL_reg task_meta[] = {
 void sglua_register_task_functions(lua_State* L)
 {
   /* create a table simgrid.task and fill it with task functions */
-  luaL_openlib(L, TASK_MODULE_NAME, task_functions, 0);
+  lua_newtable(L);
+  luaL_setfuncs(L, task_functions, 0);
+  lua_pushvalue(L, -1);
+  lua_setglobal(L, TASK_MODULE_NAME);
+  /*luaL_openlib(L, TASK_MODULE_NAME, task_functions, 0);*/
                                   /* simgrid.task */
 
   /* create the metatable for tasks, add it to the Lua registry */
   luaL_newmetatable(L, TASK_MODULE_NAME);
                                   /* simgrid.task mt */
   /* fill the metatable */
-  luaL_openlib(L, NULL, task_meta, 0);
+  luaL_setfuncs(L, task_meta, 0);
+  /*luaL_openlib(L, NULL, task_meta, 0);*/
                                   /* simgrid.task mt */
   lua_pushvalue(L, -2);
                                   /* simgrid.task mt simgrid.task */

@@ -276,7 +276,12 @@ lua_State* sglua_get_maestro(void) {
 static void sglua_register_core_functions(lua_State *L)
 {
   /* register the core C functions to lua */
-  luaL_register(L, "simgrid", simgrid_functions);
+  /*luaL_Register(L, "simgrid", simgrid_functions);*/
+  lua_newtable(L);
+  luaL_setfuncs(L, simgrid_functions, 0);
+  lua_pushvalue(L, -1);
+  lua_setglobal(L, "simgrid");
+
                                   /* simgrid */
 
   /* set a finalizer that cleans simgrid, by adding to the simgrid module a

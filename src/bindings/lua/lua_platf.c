@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_platf, bindings, "Lua bindings (platform mod
 /*                               simgrid.platf API                                   */
 /* ********************************************************************************* */
 
-static const luaL_reg platf_functions[] = {
+static const luaL_Reg platf_functions[] = {
     {"open", console_open},
     {"close", console_close},
     {"AS_open", console_AS_open},
@@ -559,7 +559,11 @@ int console_host_set_property(lua_State *L) {
  */
 void sglua_register_platf_functions(lua_State* L)
 {
-  luaL_openlib(L, PLATF_MODULE_NAME, platf_functions, 0);
+  lua_newtable(L);
+  luaL_setfuncs(L, platf_functions, 0);
+  lua_pushvalue(L, -1);
+  lua_setglobal(L, PLATF_MODULE_NAME);
+  /*luaL_openlib(L, PLATF_MODULE_NAME, platf_functions, 0);*/
                                   /* simgrid.platf */
   lua_pop(L, 1);
 }

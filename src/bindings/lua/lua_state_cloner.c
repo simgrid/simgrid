@@ -464,8 +464,12 @@ static void sglua_copy_function(lua_State* src, lua_State* dst) {
     buffer.size = 0;
     buffer.data = xbt_new(char, buffer.capacity);
 
-    /* copy the binary chunk from src into a buffer */
-    XBT_ATTRIB_UNUSED int error = lua_dump(src, sglua_memory_writer, &buffer);
+    /* copy the binary chunk from src into a buffer
+     * c.heinrich: Added parameter TRUE for Lua 5.3 - this strips all debug
+     * information from the function.
+     */
+    // Was before merge: XBT_GNUC_UNUSED and was replaced with XBT_ATTRIB_UNUSED
+    XBT_ATTRIB_UNUSED int error = lua_dump(src, sglua_memory_writer, &buffer, TRUE);
     xbt_assert(!error, "Failed to dump the function from the source state: error %d",
         error);
     XBT_DEBUG("Fonction dumped: %zu bytes", buffer.size);
@@ -506,7 +510,7 @@ static void sglua_copy_userdata(lua_State* src, lua_State* dst) {
   /* copy the data */
                                   /* src: ... udata
                                      dst: ... */
-  size_t size = lua_objlen(src, -1);
+  size_t size = lua_rawlen(src, -1);
   void* src_block = lua_touserdata(src, -1);
   void* dst_block = lua_newuserdata(dst, size);
                                   /* dst: ... udata */
@@ -576,14 +580,14 @@ static int l_get_from_maestro(lua_State *L) {
 
   /* want a global or a registry value? */
   int pseudo_index;
-  if (lua_equal(L, 1, LUA_REGISTRYINDEX)) {
+  if (lua_compare(L, 1, LUA_REGISTRYINDEX, LUA_OPEQ)) {
     /* registry */
     pseudo_index = LUA_REGISTRYINDEX;
     XBT_DEBUG("Will get the value from the registry of maestro");
   }
   else {
     /* global */
-    pseudo_index = LUA_GLOBALSINDEX;
+    pseudo_index = lua_getfield(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
     XBT_DEBUG("Will get the value from the globals of maestro");
   }
 
@@ -655,7 +659,8 @@ lua_State* sglua_clone_maestro(void) {
   lua_setmetatable(L, -2);                  /* thread newenv mt reg */
   lua_pop(L, 1);                            /* thread newenv mt */
   lua_setmetatable(L, -2);                  /* thread newenv */
-  lua_setfenv(L, -2);                       /* thread */
+  // TODO c.heinrich This needs to be re-implemented
+  /*lua_setfenv(L, -2);                       [> thread <]*/
   lua_pop(L, 1);                            /* -- */
 
   /* create the table of known tables from maestro */

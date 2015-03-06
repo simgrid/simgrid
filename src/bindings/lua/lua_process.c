@@ -45,7 +45,7 @@ static int l_process_sleep(lua_State* L)
   }
 }
 
-static const luaL_reg process_functions[] = {
+static const luaL_Reg process_functions[] = {
     {"sleep", l_process_sleep},
     /* TODO: self, create, kill, suspend, is_suspended, resume, get_name,
      * get_pid, get_ppid, migrate
@@ -59,7 +59,11 @@ static const luaL_reg process_functions[] = {
  */
 void sglua_register_process_functions(lua_State* L)
 {
-  luaL_openlib(L, PROCESS_MODULE_NAME, process_functions, 0);
+  lua_newtable(L);
+  luaL_setfuncs(L, process_functions, 0);
+  lua_pushvalue(L, -1);
+  lua_setglobal(L, PROCESS_MODULE_NAME);
+  /*luaL_openlib(L, PROCESS_MODULE_NAME, process_functions, 0);*/
                                   /* simgrid.process */
   lua_pop(L, 1);
 }
