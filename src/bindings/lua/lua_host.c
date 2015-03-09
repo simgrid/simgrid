@@ -232,35 +232,29 @@ static const luaL_Reg host_meta[] = {
 void sglua_register_host_functions(lua_State* L)
 {
   /* create a table simgrid.host and fill it with host functions */
-  lua_newtable(L);
-  luaL_setfuncs(L, host_functions, 0);
-  // Not sure we really need this one here...
-  /*lua_pushvalue(L, -1);*/
-  /*lua_setglobal(L, HOST_MODULE_NAME);*/
-
-  /*luaL_openlib(L, HOST_MODULE_NAME, host_functions, 0);*/
-                                  /* simgrid.host */
+  lua_getglobal(L, "simgrid"); /* simgrid */
+  luaL_newlib(L, host_functions); /* simgrid simgrid.host */
+  lua_setfield(L, -2, "host"); /* simgrid */
 
   /* create the metatable for host, add it to the Lua registry */
-  luaL_newmetatable(L, HOST_MODULE_NAME);
-                                  /* simgrid.host mt */
+  luaL_newmetatable(L, HOST_MODULE_NAME); /* simgrid mt */
+
   /* fill the metatable */
-  luaL_setfuncs(L, host_meta, 0);
-  /*luaL_openlib(L, NULL, host_meta, 0);*/
-                                  /* simgrid.host mt */
+  luaL_setfuncs(L, host_meta, 0);         /* simgrid mt */
+
   /**
    * Copy the table and push it onto the stack.
    * Required for the lua_setfield call below.
    */
-  lua_pushvalue(L, -2);
-                                  /* simgrid.host mt simgrid.host */
+  lua_getfield(L, -2, "host");                   /* simgrid mt simgrid.host */
+
   /* metatable.__index = simgrid.host
    * we put the host functions inside the host userdata itself:
    * this allows to write my_host:method(args) for
    * simgrid.host.method(my_host, args) */
-  lua_setfield(L, -1, "__index");
-                                  /* simgrid.host mt */
-  lua_setmetatable(L, -2);
-                                  /* -- */
+  lua_setfield(L, -2, "__index");         /* simgrid mt */
+
+  lua_setmetatable(L, -2);  /* simgrid */
+  lua_pop(L, 1);
 }
 
