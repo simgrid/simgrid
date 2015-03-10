@@ -394,6 +394,11 @@ int snapshot_compare(void *state1, void *state2)
     s2 = ((mc_visited_pair_t) state2)->graph_state->system_state;
     num1 = ((mc_visited_pair_t) state1)->num;
     num2 = ((mc_visited_pair_t) state2)->num;
+  }else if (_sg_mc_termination) { /* Non-progressive cycle MC */
+    s1 = ((mc_state_t) state1)->system_state;
+    s2 = ((mc_state_t) state2)->system_state;
+    num1 = ((mc_state_t) state1)->num;
+    num2 = ((mc_state_t) state2)->num;
   } else {                      /* Safety or comm determinism MC */
     s1 = ((mc_visited_state_t) state1)->system_state;
     s2 = ((mc_visited_state_t) state2)->system_state;

@@ -15,7 +15,7 @@ $ $SG_TEST_EXENV energy/e2/e2$EXEEXT ${srcdir:=.}/../platforms/energy_platform.x
 > [ 16.000000] (1:dvfs_test@MyHost1) Task done (duration: 5.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=1900 J
 > [ 16.000000] (1:dvfs_test@MyHost1) Sleep for 4 seconds
 > [ 20.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 4.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=2260 J
-> [ 20.000000] (1:dvfs_test@MyHost1) Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 disipated 2000 J so far.
+> [ 20.000000] (1:dvfs_test@MyHost1) Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 dissipated 2000 J so far.
 > [ 30.000000] (0:@) Total simulation time: 30.00
 > [ 30.000000] (0:@) Total energy of host MyHost1: 3160.000000 Joules
 > [ 30.000000] (0:@) Total energy of host MyHost2: 2100.000000 Joules

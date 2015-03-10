@@ -10,6 +10,8 @@
 #include <xbt/dynar.h>
 
 #include "../simix/smx_private.h"
+#include "../smpi/private.h"
+#include <smpi/smpi.h>
 
 #ifndef MC_COMM_PATTERN_H
 #define MC_COMM_PATTERN_H
@@ -27,6 +29,7 @@ typedef struct s_mc_comm_pattern{
   char *rdv;
   ssize_t data_size;
   void *data;
+  int tag;
   int index;
 } s_mc_comm_pattern_t, *mc_comm_pattern_t;
 
@@ -50,6 +53,7 @@ typedef enum {
   NONE_DIFF,
   TYPE_DIFF,
   RDV_DIFF,
+  TAG_DIFF,
   SRC_PROC_DIFF,
   DST_PROC_DIFF,
   DATA_SIZE_DIFF,
@@ -72,11 +76,11 @@ static inline e_mc_call_type_t mc_get_call_type(smx_simcall_t req)
   }
 }
 
-void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, e_mc_call_type_t call_type);
+void get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking);
 void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern, int backtracking);
 void comm_pattern_free_voidp(void *p);
 void list_comm_pattern_free_voidp(void *p);
-void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, int backtracking);
+void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, unsigned int issuer, int backtracking);
 void MC_pre_modelcheck_comm_determinism(void);
 void MC_modelcheck_comm_determinism(void);
 

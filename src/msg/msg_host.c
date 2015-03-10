@@ -350,7 +350,7 @@ void MSG_host_get_params(msg_host_t host, ws_params_t params)
 }
 
 /** \ingroup m_host_management
- * \brief Return the speed of the processor (in flop/s) at a given pstate
+ * \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref SURF_plugin_energy.
  *
  * \param  host host to test
  * \param pstate_index pstate to test
@@ -373,7 +373,7 @@ double MSG_host_get_current_power_peak(msg_host_t host) {
 }
 
 /** \ingroup m_host_management
- * \brief Return the number of pstates defined for a host
+ * \brief Return the number of pstates defined for a host. See also @ref SURF_plugin_energy.
  *
  * \param  host host to test
  */
@@ -384,7 +384,7 @@ int MSG_host_get_pstate_number(msg_host_t host) {
 }
 
 /** \ingroup m_host_management
- * \brief Sets the speed of the processor (in flop/s) at a given pstate
+ * \brief Sets the speed of the processor (in flop/s) at a given pstate. See also @ref SURF_plugin_energy.
  *
  * \param  host host to test
  * \param pstate_index pstate to switch to
@@ -396,7 +396,7 @@ void MSG_host_set_pstate(msg_host_t host, int pstate_index) {
 }
 
 /** \ingroup m_host_management
- * \brief Return the total energy consumed by a host (in Joules)
+ * \brief Return the total energy consumed by a host (in Joules). See also @ref SURF_plugin_energy.
  *
  * \param  host host to test
  * \return Returns the consumed energy

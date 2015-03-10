@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-add_executable(e1 e1.c)
+add_executable(pstate pstate.c)
 
 ### Add definitions for compile
-target_link_libraries(e1 simgrid )
+target_link_libraries(pstate simgrid )
 
 set(tesh_files
   ${tesh_files}
@@ -15,13 +15,13 @@ set(tesh_files
 
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/deployment_e1.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/deployment_pstate.xml
   PARENT_SCOPE
   )
 
 set(examples_src
   ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/e1.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/pstate.c
   PARENT_SCOPE
   )
 

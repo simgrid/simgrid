@@ -74,7 +74,7 @@ mc_state_t MC_state_new()
   state->in_visited_states = 0;
   state->incomplete_comm_pattern = NULL;
   /* Stateful model checking */
-  if(_sg_mc_checkpoint > 0 && mc_stats->expanded_states % _sg_mc_checkpoint == 0){
+  if((_sg_mc_checkpoint > 0 && (mc_stats->expanded_states % _sg_mc_checkpoint == 0)) ||  _sg_mc_termination){
     state->system_state = MC_take_snapshot(state->num);
     if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
       copy_incomplete_communications_pattern(state);

@@ -251,8 +251,10 @@ typedef struct s_mc_global_t {
   int prev_pair;
   char *prev_req;
   int initial_communications_pattern_done;
-  int comm_deterministic;
+  int recv_deterministic;
   int send_deterministic;
+  char *send_diff;
+  char *recv_diff;
 }s_mc_global_t, *mc_global_t;
 
 typedef struct s_mc_checkpoint_ignore_region{

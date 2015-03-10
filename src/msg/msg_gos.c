@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -511,7 +511,7 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias,
  * \param match_fun boolean function which parameters are:
  *        - match_data_provided_here
  *        - match_data_provided_by_other_side_if_any
- *        - the_smx_action_describing_the_other_side
+ *        - the_smx_synchro_describing_the_other_side
  * \param match_data user provided data passed to match_fun
  * \return the msg_comm_t communication created
  */

@@ -52,6 +52,7 @@ extern int _sg_mc_send_determinism;
 extern int _sg_mc_safety;
 extern int _sg_mc_liveness;
 extern int _sg_mc_snapshot_fds;
+extern int _sg_mc_termination;
 
 extern xbt_dynar_t mc_heap_comparison_ignore;
 extern xbt_dynar_t stacks_areas;
@@ -70,6 +71,7 @@ void _mc_cfg_cb_visited(const char *name, int pos);
 void _mc_cfg_cb_dot_output(const char *name, int pos);
 void _mc_cfg_cb_comms_determinism(const char *name, int pos);
 void _mc_cfg_cb_send_determinism(const char *name, int pos);
+void _mc_cfg_cb_termination(const char *name, int pos);
 
 XBT_PUBLIC(void) MC_do_the_modelcheck_for_real(void);
 XBT_PUBLIC(void) MC_init(void);

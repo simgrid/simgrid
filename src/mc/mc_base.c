@@ -41,6 +41,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
   s_smx_synchro_t temp_synchro;
 #endif
+  smx_mutex_t mutex = NULL;
 
   switch (req->call) {
   case SIMCALL_NONE:
@@ -92,6 +93,13 @@ int MC_request_is_enabled(smx_simcall_t req)
     }
     return FALSE;
 
+  case SIMCALL_MUTEX_LOCK:
+    mutex = simcall_mutex_lock__get__mutex(req);
+    if(mutex->owner == NULL)
+      return TRUE;
+    else
+      return (mutex->owner->pid == req->issuer->pid);
+
   default:
     /* The rest of the requests are always enabled */
     return TRUE;
@@ -107,6 +115,7 @@ int MC_request_is_visible(smx_simcall_t req)
       || req->call == SIMCALL_COMM_TEST
       || req->call == SIMCALL_COMM_TESTANY
       || req->call == SIMCALL_MC_RANDOM
+      || req->call == SIMCALL_MUTEX_LOCK
 #ifdef HAVE_MC
       || req->call == SIMCALL_MC_SNAPSHOT
       || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS

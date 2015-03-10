@@ -303,7 +303,7 @@ static void _sg_cfg_cb__coll(const char *category,
   }
 
   /* New Module missing */
-  find_coll_description(table, val);
+  find_coll_description(table, val, category);
 }
 static void _sg_cfg_cb__coll_gather(const char *name, int pos){
   _sg_cfg_cb__coll("gather", mpi_coll_gather_description, name, pos);
@@ -718,6 +718,12 @@ void sg_config_init(int *argc, char **argv)
                      "Specify the name of dot file corresponding to graph state",
                      xbt_cfgelm_string, 1, 1, _mc_cfg_cb_dot_output, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "model-check/dot_output", "");
+
+     /* Enable/disable non progressive cycles detection with model-checking */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/termination",
+                     "Enable/Disable non progressive cycle detection",
+                     xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_termination, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/termination", "no");
 #endif
 
     /* do verbose-exit */

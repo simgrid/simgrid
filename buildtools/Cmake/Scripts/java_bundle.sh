@@ -9,8 +9,8 @@ Usage: $0 simgrid.jar java_command strip_command [-so file.so...] [-txt file.txt
     simgrid.jar    SimGrid jar file
     java_command   path to the Java runtime
     strip_command  path to the command used to strip libraries
-    file.so        library file to stript and bundle into the archive
-    file.txt       other file  to bundle into the archive
+    file.so        library file to strip and bundle into the archive
+    file.txt       other file to bundle into the archive
 EOF
     exit 1
 fi

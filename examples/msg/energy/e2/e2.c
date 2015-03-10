@@ -75,7 +75,7 @@ int dvfs(int argc, char *argv[])
 		  MSG_host_get_current_power_peak(host), MSG_host_get_consumed_energy(host));
 
   // =========== Turn the other host off ==========
-  XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 disipated %.0f J so far.",
+  XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 dissipated %.0f J so far.",
 		  MSG_host_get_consumed_energy(MSG_get_host_by_name("MyHost2")) );
   MSG_host_off(MSG_get_host_by_name("MyHost2"));
   start = MSG_get_clock();

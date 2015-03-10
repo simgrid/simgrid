@@ -129,8 +129,7 @@ set(EXTRA_DIST
   tools/tesh/run_context.h
   tools/tesh/tesh.h
   tools/tesh/generate_tesh
-  examples/smpi/mc/non_deterministic.tesh
-  examples/smpi/mc/send_deterministic.tesh
+  examples/smpi/mc/only_send_deterministic.tesh
   )
 
 set(SMPI_SRC
@@ -1017,7 +1016,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/chainsend/CMakeLists.txt
   examples/msg/chord/CMakeLists.txt
   examples/msg/cloud/CMakeLists.txt
-  examples/msg/energy/e1/CMakeLists.txt
+  examples/msg/energy/pstate/CMakeLists.txt
   examples/msg/energy/e2/CMakeLists.txt
   examples/msg/energy/e3/CMakeLists.txt
   examples/msg/exception/CMakeLists.txt
