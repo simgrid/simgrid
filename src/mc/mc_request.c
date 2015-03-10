@@ -472,17 +472,20 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
       else
         label = bprintf("[(%lu)] WaitTimeout", issuer->pid);
     } else {
+      // FIXME, remote access to act->comm
+      smx_process_t src_proc = MC_smx_resolve_process(act->comm.src_proc);
+      smx_process_t dst_proc = MC_smx_resolve_process(act->comm.dst_proc);
       if (issuer->smx_host)
         label =
             bprintf("[(%lu)%s] Wait [(%lu)->(%lu)]", issuer->pid,
                     MC_smx_process_get_host_name(issuer),
-                    act->comm.src_proc ? act->comm.src_proc->pid : 0,
-                    act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
+                    src_proc ? src_proc->pid : 0,
+                    dst_proc ? dst_proc->pid : 0);
       else
         label =
             bprintf("[(%lu)] Wait [(%lu)->(%lu)]", issuer->pid,
-                    act->comm.src_proc ? act->comm.src_proc->pid : 0,
-                    act->comm.dst_proc ? act->comm.dst_proc->pid : 0);
+                    src_proc ? src_proc->pid : 0,
+                    dst_proc ? dst_proc->pid : 0);
     }
     break;
 

@@ -59,7 +59,7 @@ void MC_process_init(mc_process_t process, pid_t pid, int sockfd)
   process->process_flags = MC_PROCESS_NO_FLAG;
   process->socket = sockfd;
   process->pid = pid;
-  if (0 && pid==getpid())
+  if (pid==getpid())
     process->process_flags |= MC_PROCESS_SELF_FLAG;
   process->running = true;
   process->status = 0;

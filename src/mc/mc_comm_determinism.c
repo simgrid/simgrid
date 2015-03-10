@@ -171,11 +171,13 @@ static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t co
 {
   mc_process_t process = &mc_model_checker->process;
   void *addr_pointed;
-  comm_pattern->src_proc = comm->comm.src_proc->pid;
-  comm_pattern->dst_proc = comm->comm.dst_proc->pid;
+  smx_process_t src_proc = MC_smx_resolve_process(comm->comm.src_proc);
+  smx_process_t dst_proc = MC_smx_resolve_process(comm->comm.dst_proc);
+  comm_pattern->src_proc = src_proc->pid;
+  comm_pattern->dst_proc = dst_proc->pid;
   // TODO, resolve host name
-  comm_pattern->src_host = MC_smx_process_get_host_name(MC_smx_resolve_process(comm->comm.src_proc));
-  comm_pattern->dst_host = MC_smx_process_get_host_name(MC_smx_resolve_process(comm->comm.dst_proc));
+  comm_pattern->src_host = MC_smx_process_get_host_name(src_proc);
+  comm_pattern->dst_host = MC_smx_process_get_host_name(dst_proc);
   if (comm_pattern->data_size == -1 && comm->comm.src_buff != NULL) {
     comm_pattern->data_size = *(comm->comm.dst_buff_size);
     comm_pattern->data = xbt_malloc0(comm_pattern->data_size);
@@ -243,8 +245,7 @@ void get_comm_pattern(const xbt_dynar_t list, const smx_simcall_t request, const
     pattern->comm = simcall_comm_isend__get__result(request);
     // FIXME, remote access to rdv->name
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
-    pattern->src_proc = pattern->comm->comm.src_proc->pid;
-    // FIXME, get remote host name
+    pattern->src_proc = MC_smx_resolve_process(pattern->comm->comm.src_proc)->pid;
     pattern->src_host = MC_smx_process_get_host_name(issuer);
     if(pattern->comm->comm.src_buff != NULL){
       pattern->data_size = pattern->comm->comm.src_buff_size;
@@ -259,8 +260,9 @@ void get_comm_pattern(const xbt_dynar_t list, const smx_simcall_t request, const
   } else if (call_type == MC_CALL_TYPE_RECV) {                      
     pattern->type = SIMIX_COMM_RECEIVE;
     pattern->comm = simcall_comm_irecv__get__result(request);
+    // TODO, remote access
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
-    pattern->dst_proc = pattern->comm->comm.dst_proc->pid;
+    pattern->dst_proc = MC_smx_resolve_process(pattern->comm->comm.dst_proc)->pid;
     // FIXME, remote process access
     pattern->dst_host = MC_smx_process_get_host_name(issuer);
   } else {
@@ -273,11 +275,14 @@ void get_comm_pattern(const xbt_dynar_t list, const smx_simcall_t request, const
 }
 
 void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, int backtracking) {
-
   mc_comm_pattern_t current_comm_pattern;
   unsigned int cursor = 0;
-  unsigned int src = comm->comm.src_proc->pid;
-  unsigned int dst = comm->comm.dst_proc->pid;
+
+  smx_process_t src_proc = MC_smx_resolve_process(comm->comm.src_proc);
+  smx_process_t dst_proc = MC_smx_resolve_process(comm->comm.dst_proc);
+  unsigned int src = src_proc->pid;
+  unsigned int dst = dst_proc->pid;
+
   mc_comm_pattern_t src_comm_pattern;
   mc_comm_pattern_t dst_comm_pattern;
   int src_completed = 0, dst_completed = 0;
