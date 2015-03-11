@@ -276,30 +276,19 @@ lua_State* sglua_get_maestro(void) {
 static void sglua_register_core_functions(lua_State *L)
 {
   /* register the core C functions to lua */
-  /*luaL_Register(L, "simgrid", simgrid_functions);*/
-  lua_newtable(L);
-  luaL_setfuncs(L, simgrid_functions, 0);
-  lua_pushvalue(L, -1);
-  lua_setglobal(L, "simgrid");
-
-                                  /* simgrid */
+  luaL_newlib(L, simgrid_functions); /* simgrid */
+  lua_pushvalue(L, -1);              /* simgrid simgrid */
+  lua_setglobal(L, "simgrid");       /* simgrid */
 
   /* set a finalizer that cleans simgrid, by adding to the simgrid module a
    * dummy userdata whose __gc metamethod calls MSG_clean() */
-  lua_newuserdata(L, sizeof(void*));
-                                  /* simgrid udata */
-  lua_newtable(L);
-                                  /* simgrid udata mt */
-  lua_pushcfunction(L, simgrid_gc);
-                                  /* simgrid udata mt simgrid_gc */
-  lua_setfield(L, -2, "__gc");
-                                  /* simgrid udata mt */
-  lua_setmetatable(L, -2);
-                                  /* simgrid udata */
-  lua_setfield(L, -2, "__simgrid_loaded");
-                                  /* simgrid */
-  lua_pop(L, 1);
-                                  /* -- */
+  lua_newuserdata(L, sizeof(void*)); /* simgrid udata */
+  lua_newtable(L);                   /* simgrid udata mt */
+  lua_pushcfunction(L, simgrid_gc);  /* simgrid udata mt simgrid_gc */
+  lua_setfield(L, -2, "__gc");       /* simgrid udata mt */
+  lua_setmetatable(L, -2);           /* simgrid udata */
+  lua_setfield(L, -2, "__simgrid_loaded"); /* simgrid */
+  lua_pop(L, 1);                     /* -- */
 }
 
 /**

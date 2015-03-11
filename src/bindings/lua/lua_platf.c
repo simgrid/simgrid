@@ -559,12 +559,10 @@ int console_host_set_property(lua_State *L) {
  */
 void sglua_register_platf_functions(lua_State* L)
 {
-  lua_newtable(L);
-  luaL_setfuncs(L, platf_functions, 0);
-  lua_pushvalue(L, -1);
-  lua_setglobal(L, PLATF_MODULE_NAME);
-  /*luaL_openlib(L, PLATF_MODULE_NAME, platf_functions, 0);*/
-                                  /* simgrid.platf */
-  lua_pop(L, 1);
+  lua_getglobal(L, "simgrid");     /* simgrid */
+  luaL_newlib(L, platf_functions); /* simgrid simgrid.platf */
+  lua_setfield(L, -2, "platf");    /* simgrid */
+
+  lua_pop(L, 1);                   /* -- */
 }
 

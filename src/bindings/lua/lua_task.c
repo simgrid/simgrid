@@ -456,30 +456,26 @@ static const luaL_Reg task_meta[] = {
 void sglua_register_task_functions(lua_State* L)
 {
   /* create a table simgrid.task and fill it with task functions */
-  lua_newtable(L);
-  luaL_setfuncs(L, task_functions, 0);
-  lua_pushvalue(L, -1);
-  lua_setglobal(L, TASK_MODULE_NAME);
-  /*luaL_openlib(L, TASK_MODULE_NAME, task_functions, 0);*/
-                                  /* simgrid.task */
+  lua_getglobal(L, "simgrid");    /* simgrid */
+  luaL_newlib(L, task_functions); /* simgrid simgrid.task */
+  lua_setfield(L, -2, "task");    /* simgrid */
+  lua_getfield(L, -1, "task");    /* simgrid simgrid.task */
 
   /* create the metatable for tasks, add it to the Lua registry */
-  luaL_newmetatable(L, TASK_MODULE_NAME);
-                                  /* simgrid.task mt */
+  luaL_newmetatable(L, TASK_MODULE_NAME); /* simgrid simgrid.task mt */
+
   /* fill the metatable */
-  luaL_setfuncs(L, task_meta, 0);
-  /*luaL_openlib(L, NULL, task_meta, 0);*/
-                                  /* simgrid.task mt */
-  lua_pushvalue(L, -2);
-                                  /* simgrid.task mt simgrid.task */
+  luaL_setfuncs(L, task_meta, 0); /* simgrid simgrid.task mt */
+  lua_getfield(L, -3, "task");    /* simgrid simgrid.task mt simgrid.task */
+
   /* metatable.__index = simgrid.task
    * we put the task functions inside the task itself:
    * this allows to write my_task:method(args) for
    * simgrid.task.method(my_task, args) */
-  lua_setfield(L, -2, "__index");
-                                  /* simgrid.task mt */
-  lua_pop(L, 2);
-                                  /* -- */
+  lua_setfield(L, -2, "__index"); /* simgrid simgrid.task mt */
+
+  lua_setmetatable(L, -2);        /* simgrid simgrid.task */
+  lua_pop(L, 2);                  /* -- */
 
   /* set up MSG to copy Lua tasks between states */
   MSG_task_set_copy_callback(task_copy_callback);

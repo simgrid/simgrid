@@ -59,12 +59,9 @@ static const luaL_Reg process_functions[] = {
  */
 void sglua_register_process_functions(lua_State* L)
 {
-  lua_newtable(L);
-  luaL_setfuncs(L, process_functions, 0);
-  lua_pushvalue(L, -1);
-  lua_setglobal(L, PROCESS_MODULE_NAME);
-  /*luaL_openlib(L, PROCESS_MODULE_NAME, process_functions, 0);*/
-                                  /* simgrid.process */
-  lua_pop(L, 1);
+  lua_getglobal(L, "simgrid");       /* simgrid */
+  luaL_newlib(L, process_functions); /* simgrid simgrid.process */
+  lua_setfield(L, -2, "process");    /* simgrid */
+  lua_pop(L, 1);                     /* -- */
 }
 
