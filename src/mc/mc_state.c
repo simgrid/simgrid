@@ -20,7 +20,7 @@ static void copy_incomplete_communications_pattern(mc_state_t state) {
   mc_comm_pattern_t comm;
   unsigned int cursor;
   state->incomplete_comm_pattern = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
-  for (i=0; i<simix_process_maxpid; i++) {
+  for (i=0; i < MC_smx_get_maxpid(); i++) {
     incomplete_process_comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
     xbt_dynar_t incomplete_process_comms_copy = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
     xbt_dynar_foreach(incomplete_process_comms, cursor, comm) {
@@ -64,10 +64,8 @@ static void copy_index_communications_pattern(mc_state_t state) {
  */
 mc_state_t MC_state_new()
 {
-  mc_state_t state = NULL;
-
-  state = xbt_new0(s_mc_state_t, 1);
-  state->max_pid = simix_process_maxpid;
+  mc_state_t state = xbt_new0(s_mc_state_t, 1);
+  state->max_pid = MC_smx_get_maxpid();
   state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
   state->system_state = NULL;
   state->num = ++mc_stats->expanded_states;

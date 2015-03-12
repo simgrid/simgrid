@@ -230,7 +230,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
      are incomplete and they cannot be analyzed and compared with the initial pattern. */
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     int current_process = 1;
-    while (current_process < simix_process_maxpid) {
+    while (current_process < MC_smx_get_maxpid()) {
       if (!xbt_dynar_is_empty((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t))){
         XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
         partial_comm = 1;

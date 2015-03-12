@@ -116,14 +116,22 @@ void MC_init_pid(pid_t pid, int socket)
     }
   }
 
-  mc_time = xbt_new0(double, simix_process_maxpid);
-
   /* Initialize the data structures that must be persistent across every
      iteration of the model-checker (in RAW memory) */
 
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   mc_model_checker = MC_model_checker_new(pid, socket);
+  if (mc_mode == MC_MODE_SERVER) {
+    int maxpid;
+    MC_process_read_variable(&mc_model_checker->process, "simix_process_maxpid",
+      &maxpid, sizeof(maxpid));
+    simix_process_maxpid = maxpid;
+  }
+
+  mmalloc_set_current_heap(std_heap);
+  mc_time = xbt_new0(double, MC_smx_get_maxpid());
+  mmalloc_set_current_heap(mc_heap);
 
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
 
@@ -182,13 +190,14 @@ void MC_init_pid(pid_t pid, int socket)
       /* Those requests are handled on the client side and propagated by message
        * to the server: */
 
-      MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
+      MC_ignore_heap(mc_time, MC_smx_get_maxpid() * sizeof(double));
 
       smx_process_t process;
       xbt_swag_foreach(process, simix_global->process_list) {
         MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
       }
     }
+
   }
 
   mmalloc_set_current_heap(heap);
@@ -389,7 +398,7 @@ static void MC_restore_communications_pattern(mc_state_t state) {
   mc_comm_pattern_t comm;
   cursor = 0;
   xbt_dynar_t initial_incomplete_process_comms, incomplete_process_comms;
-  for(int i=0; i<simix_process_maxpid; i++){
+  for(int i=0; i < MC_smx_get_maxpid(); i++){
     initial_incomplete_process_comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
     xbt_dynar_reset(initial_incomplete_process_comms);
     incomplete_process_comms = xbt_dynar_get_as(state->incomplete_comm_pattern, i, xbt_dynar_t);
@@ -461,7 +470,7 @@ void MC_replay(xbt_fifo_t stack)
   MC_SET_MC_HEAP;
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    for (j=0; j<simix_process_maxpid; j++) {
+    for (j=0; j < simix_process_maxpid; j++) {
       xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, j, xbt_dynar_t));
       ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, j, mc_list_comm_pattern_t))->index_comm = 0;
     }

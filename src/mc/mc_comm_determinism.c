@@ -293,14 +293,14 @@ void MC_pre_modelcheck_comm_determinism(void)
     visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
  
   initial_communications_pattern = xbt_dynar_new(sizeof(mc_list_comm_pattern_t), list_comm_pattern_free_voidp);
-  for (i=0; i<simix_process_maxpid; i++){
+  for (i=0; i < MC_smx_get_maxpid(); i++){
     mc_list_comm_pattern_t process_list_pattern = xbt_new0(s_mc_list_comm_pattern_t, 1);
     process_list_pattern->list = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
     process_list_pattern->index_comm = 0;
     xbt_dynar_insert_at(initial_communications_pattern, i, &process_list_pattern);
   }
   incomplete_communications_pattern = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
-  for (i=0; i<simix_process_maxpid; i++){
+  for (i=0; i < MC_smx_get_maxpid(); i++){
     xbt_dynar_t process_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), NULL);
     xbt_dynar_insert_at(incomplete_communications_pattern, i, &process_pattern);
   }

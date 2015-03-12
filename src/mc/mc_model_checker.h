@@ -41,6 +41,13 @@ struct s_mc_model_checker {
 mc_model_checker_t MC_model_checker_new(pid_t pid, int socket);
 void MC_model_checker_delete(mc_model_checker_t mc);
 
+static inline
+int MC_smx_get_maxpid(void)
+{
+  // Currently we use the same variable in STANDALONE and in SERVER mode:
+  return simix_process_maxpid;
+}
+
 SG_END_DECL()
 
 #endif
