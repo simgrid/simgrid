@@ -144,10 +144,9 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
   case SIMCALL_COMM_WAITANY:
     state->internal_req.call = SIMCALL_COMM_WAIT;
     state->internal_req.issuer = req->issuer;
-    // FIXME, read from remote process
-    state->internal_comm =
-        *xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value,
-                          smx_synchro_t);
+    MC_process_read_dynar_element(&mc_model_checker->process,
+      &state->internal_comm, simcall_comm_waitany__get__comms(req),
+      sizeof(state->internal_comm));
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_wait__set__timeout(&state->internal_req, 0);
     break;
@@ -158,9 +157,9 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
 
     if (value > 0)
       // FIXME, read from remote process
-      state->internal_comm =
-          *xbt_dynar_get_as(simcall_comm_testany__get__comms(req), value,
-                            smx_synchro_t);
+        MC_process_read_dynar_element(&mc_model_checker->process,
+          &state->internal_comm, simcall_comm_testany__get__comms(req),
+          sizeof(state->internal_comm));
 
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_test__set__result(&state->internal_req, value);
@@ -168,16 +167,16 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
 
   case SIMCALL_COMM_WAIT:
     state->internal_req = *req;
-    // FIXME, read from remote process
-    state->internal_comm = *(simcall_comm_wait__get__comm(req));
+    MC_process_read_simple(&mc_model_checker->process, &state->internal_comm ,
+      simcall_comm_wait__get__comm(req), sizeof(state->internal_comm));
     simcall_comm_wait__set__comm(&state->executed_req, &state->internal_comm);
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
     break;
 
   case SIMCALL_COMM_TEST:
     state->internal_req = *req;
-    // FIXME, read from remote process
-    state->internal_comm = *simcall_comm_test__get__comm(req);
+    MC_process_read_simple(&mc_model_checker->process, &state->internal_comm,
+      simcall_comm_test__get__comm(req), sizeof(state->internal_comm));
     simcall_comm_test__set__comm(&state->executed_req, &state->internal_comm);
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
     break;

@@ -93,8 +93,6 @@ smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address);
 /** Get the process info structure from the process remote address */
 mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address);
 
-
-
 SG_END_DECL()
 
 #endif

@@ -507,7 +507,17 @@ const void* MC_process_read_simple(mc_process_t process,
 {
   e_adress_space_read_flags_t flags = MC_PROCESS_NO_FLAG;
   int index = MC_PROCESS_INDEX_ANY;
-  return MC_process_read(process, flags, local, remote, len, index);
+   MC_process_read(process, flags, local, remote, len, index);
+   return local;
+}
+
+const void* MC_process_read_dynar_element(mc_process_t process,
+  void* local, const void* remote_dynar, size_t i)
+{
+  s_xbt_dynar_t d;
+  MC_process_read_simple(process, &d, remote_dynar, sizeof(d));
+  MC_process_read_simple(process, local, xbt_dynar_get_ptr(&d, i), i);
+  return local;
 }
 
 void MC_process_write(mc_process_t process, const void* local, void* remote, size_t len)
