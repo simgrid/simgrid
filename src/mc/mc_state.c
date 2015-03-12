@@ -233,8 +233,8 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
         case SIMCALL_COMM_WAITANY:
           *value = -1;
           while (procstate->interleave_count <
-                 xbt_dynar_length(simcall_comm_waitany__get__comms
-                                  (&process->simcall))) {
+                MC_process_read_dynar_length(&mc_model_checker->process,
+                  simcall_comm_waitany__get__comms(&process->simcall))) {
             if (MC_request_is_enabled_by_idx
                 (&process->simcall, procstate->interleave_count++)) {
               *value = procstate->interleave_count - 1;
@@ -243,8 +243,8 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
           }
 
           if (procstate->interleave_count >=
-              xbt_dynar_length(simcall_comm_waitany__get__comms
-                               (&process->simcall)))
+              MC_process_read_dynar_length(&mc_model_checker->process,
+                simcall_comm_waitany__get__comms(&process->simcall)))
             procstate->state = MC_DONE;
 
           if (*value != -1)
@@ -256,8 +256,8 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
           start_count = procstate->interleave_count;
           *value = -1;
           while (procstate->interleave_count <
-                 xbt_dynar_length(simcall_comm_testany__get__comms
-                                  (&process->simcall))) {
+                  MC_process_read_dynar_length(&mc_model_checker->process,
+                    simcall_comm_testany__get__comms(&process->simcall))) {
             if (MC_request_is_enabled_by_idx
                 (&process->simcall, procstate->interleave_count++)) {
               *value = procstate->interleave_count - 1;
@@ -266,8 +266,8 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
           }
 
           if (procstate->interleave_count >=
-              xbt_dynar_length(simcall_comm_testany__get__comms
-                               (&process->simcall)))
+              MC_process_read_dynar_length(&mc_model_checker->process,
+                simcall_comm_testany__get__comms(&process->simcall)))
             procstate->state = MC_DONE;
 
           if (*value != -1 || start_count == 0)

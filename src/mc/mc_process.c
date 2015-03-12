@@ -530,6 +530,16 @@ void MC_process_write(mc_process_t process, const void* local, void* remote, siz
   }
 }
 
+unsigned long MC_process_read_dynar_length(mc_process_t process, const void* remote_dynar)
+{
+  if (!remote_dynar)
+    return 0;
+  unsigned long res;
+  MC_process_read_simple(process, &res,
+    &((xbt_dynar_t)remote_dynar)->used, sizeof(res));
+  return res;
+}
+
 static pthread_once_t zero_buffer_flag = PTHREAD_ONCE_INIT;
 static const void* zero_buffer;
 static const int zero_buffer_size = 10 * 4096;
