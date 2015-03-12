@@ -226,10 +226,13 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
   MC_EACH_SIMIX_PROCESS(process,
     procstate = &state->proc_status[process->pid];
 
-    if (procstate->state == MC_INTERLEAVE
-        || procstate->state == MC_MORE_INTERLEAVE) {
-      if (MC_process_is_enabled(process)) {
-        switch (process->simcall.call) {
+    if (procstate->state != MC_INTERLEAVE
+        && procstate->state != MC_MORE_INTERLEAVE)
+        continue;
+    if (!MC_process_is_enabled(process))
+      continue;
+
+    switch (process->simcall.call) {
         case SIMCALL_COMM_WAITANY:
           *value = -1;
           while (procstate->interleave_count <
@@ -307,8 +310,7 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
           *value = 0;
           return &process->simcall;
           break;
-        }
-      }
+
     }
   );
 
