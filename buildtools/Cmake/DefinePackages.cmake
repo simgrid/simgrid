@@ -613,6 +613,7 @@ set(MC_SRC
   src/mc/mc_page_store.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
+  src/mc/mc_comm_pattern.c
   src/mc/mc_comm_determinism.c
   src/mc/mc_compare.cpp
   src/mc/mc_diff.c

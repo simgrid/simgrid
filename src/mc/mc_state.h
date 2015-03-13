@@ -47,7 +47,8 @@ typedef struct mc_state {
   mc_snapshot_t system_state;      /* Snapshot of system state */
   int num;
   int in_visited_states;
-  xbt_dynar_t incomplete_comm_pattern; // comm determinism verification
+  // comm determinism verification (xbt_dynar_t<xbt_dynar_t<mc_comm_pattern_t>):
+  xbt_dynar_t incomplete_comm_pattern;
   xbt_dynar_t index_comm; // comm determinism verification
 } s_mc_state_t, *mc_state_t;
 

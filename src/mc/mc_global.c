@@ -389,44 +389,6 @@ void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int valu
   
 }
 
-static void MC_restore_communications_pattern(mc_state_t state) {
-  mc_list_comm_pattern_t list_process_comm;
-  unsigned int cursor, cursor2;
-  xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm){
-    list_process_comm->index_comm = (int)xbt_dynar_get_as(state->index_comm, cursor, int);
-  }
-  mc_comm_pattern_t comm;
-  cursor = 0;
-  xbt_dynar_t initial_incomplete_process_comms, incomplete_process_comms;
-  for(int i=0; i < MC_smx_get_maxpid(); i++){
-    initial_incomplete_process_comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
-    xbt_dynar_reset(initial_incomplete_process_comms);
-    incomplete_process_comms = xbt_dynar_get_as(state->incomplete_comm_pattern, i, xbt_dynar_t);
-    xbt_dynar_foreach(incomplete_process_comms, cursor2, comm) {
-      mc_comm_pattern_t copy_comm = xbt_new0(s_mc_comm_pattern_t, 1);
-      copy_comm->index = comm->index;
-      copy_comm->type = comm->type;
-      copy_comm->comm = comm->comm;
-      copy_comm->rdv = strdup(comm->rdv);
-      copy_comm->data_size = -1;
-      copy_comm->data = NULL;
-      if(comm->type == SIMIX_COMM_SEND){
-        copy_comm->src_proc = comm->src_proc;
-        copy_comm->src_host = comm->src_host;
-        if(comm->data != NULL){
-          copy_comm->data_size = comm->data_size;
-          copy_comm->data = xbt_malloc0(comm->data_size);
-          memcpy(copy_comm->data, comm->data, comm->data_size);
-        }
-      }else{
-        copy_comm->dst_proc = comm->dst_proc;
-        copy_comm->dst_host = comm->dst_host;
-      }
-      xbt_dynar_push(initial_incomplete_process_comms, &copy_comm);
-    }
-  }
-}
-
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.

@@ -13,6 +13,8 @@
 #include "../smpi/private.h"
 #include <smpi/smpi.h>
 
+#include "mc_state.h"
+
 #ifndef MC_COMM_PATTERN_H
 #define MC_COMM_PATTERN_H
 
@@ -83,6 +85,14 @@ void list_comm_pattern_free_voidp(void *p);
 void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, unsigned int issuer, int backtracking);
 void MC_pre_modelcheck_comm_determinism(void);
 void MC_modelcheck_comm_determinism(void);
+
+void MC_restore_communications_pattern(mc_state_t state);
+
+mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm);
+xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t state);
+
+void MC_state_copy_incomplete_communications_pattern(mc_state_t state);
+void MC_state_copy_index_communications_pattern(mc_state_t state);
 
 SG_END_DECL()
 

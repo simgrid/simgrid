@@ -186,11 +186,12 @@ void list_comm_pattern_free_voidp(void *p) {
 void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking)
 {
   mc_process_t process = &mc_model_checker->process;
-  mc_comm_pattern_t pattern = NULL;
-  pattern = xbt_new0(s_mc_comm_pattern_t, 1);
+
+  mc_comm_pattern_t pattern = xbt_new0(s_mc_comm_pattern_t, 1);
   pattern->data_size = -1;
   pattern->data = NULL;
 
+  // Fill initial_pattern->index_comm:
   const smx_process_t issuer = MC_smx_simcall_get_issuer(request);
   mc_list_comm_pattern_t initial_pattern =
     (mc_list_comm_pattern_t) xbt_dynar_get_as(initial_communications_pattern, issuer->pid, mc_list_comm_pattern_t);

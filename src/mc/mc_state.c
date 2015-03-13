@@ -14,51 +14,6 @@
 #include "mc_comm_pattern.h"
 #include "mc_smx.h"
 
-static void copy_incomplete_communications_pattern(mc_state_t state) {
-  int i;
-  xbt_dynar_t incomplete_process_comms;
-  mc_comm_pattern_t comm;
-  unsigned int cursor;
-  state->incomplete_comm_pattern = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
-  for (i=0; i < MC_smx_get_maxpid(); i++) {
-    incomplete_process_comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
-    xbt_dynar_t incomplete_process_comms_copy = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
-    xbt_dynar_foreach(incomplete_process_comms, cursor, comm) {
-      mc_comm_pattern_t copy_comm = xbt_new0(s_mc_comm_pattern_t, 1);
-      copy_comm->index = comm->index;
-      copy_comm->type = comm->type;
-      copy_comm->comm = comm->comm;
-      copy_comm->rdv = strdup(comm->rdv);
-      copy_comm->data_size = -1;
-      copy_comm->data = NULL;
-      if(comm->type == SIMIX_COMM_SEND){
-        copy_comm->src_proc = comm->src_proc;
-        copy_comm->src_host = comm->src_host;
-        if (comm->data != NULL) {
-          copy_comm->data_size = comm->data_size;
-          copy_comm->data = xbt_malloc0(comm->data_size);
-          memcpy(copy_comm->data, comm->data, comm->data_size);
-        }
-      }else{
-        copy_comm->dst_proc = comm->dst_proc;
-        copy_comm->dst_host = comm->dst_host;
-      }
-      xbt_dynar_push(incomplete_process_comms_copy, &copy_comm);
-    }
-    xbt_dynar_insert_at(state->incomplete_comm_pattern, i, &incomplete_process_comms_copy);
-  }
-}
-
-static void copy_index_communications_pattern(mc_state_t state) {
-
-  state->index_comm = xbt_dynar_new(sizeof(unsigned int), NULL);
-  mc_list_comm_pattern_t list_process_comm;
-  unsigned int cursor;
-  xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm){
-    xbt_dynar_push_as(state->index_comm, unsigned int, list_process_comm->index_comm);
-  }
-}
-
 /**
  * \brief Creates a state data structure used by the exploration algorithm
  */
@@ -75,8 +30,8 @@ mc_state_t MC_state_new()
   if((_sg_mc_checkpoint > 0 && (mc_stats->expanded_states % _sg_mc_checkpoint == 0)) ||  _sg_mc_termination){
     state->system_state = MC_take_snapshot(state->num);
     if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-      copy_incomplete_communications_pattern(state);
-      copy_index_communications_pattern(state);
+      MC_state_copy_incomplete_communications_pattern(state);
+      MC_state_copy_index_communications_pattern(state);
     }
   }
   return state;
@@ -277,6 +232,7 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
 
         case SIMCALL_COMM_WAIT:
           act = simcall_comm_wait__get__comm(&process->simcall);
+
           if (act->comm.src_proc && act->comm.dst_proc) {
             *value = 0;
           } else {
