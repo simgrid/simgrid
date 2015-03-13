@@ -363,14 +363,14 @@ int MC_deadlock_check()
   return deadlock;
 }
 
-void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int value, xbt_dynar_t pattern, int backtracking) {
+void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int value, xbt_dynar_t pattern, int backtracking) {
 
   switch(call_type) {
   case MC_CALL_TYPE_NONE:
     break;
   case MC_CALL_TYPE_SEND:
   case MC_CALL_TYPE_RECV:
-    get_comm_pattern(pattern, req, call_type, backtracking);
+    MC_get_comm_pattern(pattern, req, call_type, backtracking);
     break;
   case MC_CALL_TYPE_WAIT:
   case MC_CALL_TYPE_WAITANY:
@@ -380,7 +380,7 @@ void handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int valu
         current_comm = simcall_comm_wait__get__comm(req);
       else
         current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t);
-      complete_comm_pattern(pattern, current_comm, req->issuer->pid, backtracking);
+      MC_complete_comm_pattern(pattern, current_comm, req->issuer->pid, backtracking);
     }
     break;
   default:
@@ -465,13 +465,13 @@ void MC_replay(xbt_fifo_t stack)
       /* TODO : handle test and testany simcalls */
       e_mc_call_type_t call = MC_CALL_TYPE_NONE;
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-        call = mc_get_call_type(req);
+        call = MC_get_call_type(req);
 
       MC_simcall_handle(req, value);
 
       MC_SET_MC_HEAP;
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-        handle_comm_pattern(call, req, value, NULL, 1);
+        MC_handle_comm_pattern(call, req, value, NULL, 1);
       MC_SET_STD_HEAP;
       
       MC_wait_for_requests();

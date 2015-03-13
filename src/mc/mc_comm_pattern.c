@@ -37,7 +37,7 @@ mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm)
 
 xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t patterns)
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(mc_comm_pattern_t), comm_pattern_free_voidp);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(mc_comm_pattern_t), MC_comm_pattern_free_voidp);
 
   mc_comm_pattern_t comm;
   unsigned int cursor;
@@ -92,4 +92,29 @@ void MC_state_copy_index_communications_pattern(mc_state_t state)
   xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm){
     xbt_dynar_push_as(state->index_comm, unsigned int, list_process_comm->index_comm);
   }
+}
+
+void MC_comm_pattern_free(mc_comm_pattern_t p)
+{
+  xbt_free(p->rdv);
+  xbt_free(p->data);
+  xbt_free(p);
+  p = NULL;
+}
+
+static void MC_list_comm_pattern_free(mc_list_comm_pattern_t l)
+{
+  xbt_dynar_free(&(l->list));
+  xbt_free(l);
+  l = NULL;
+}
+
+void MC_comm_pattern_free_voidp(void *p)
+{
+  MC_comm_pattern_free((mc_comm_pattern_t) * (void **) p);
+}
+
+void MC_list_comm_pattern_free_voidp(void *p)
+{
+  MC_list_comm_pattern_free((mc_list_comm_pattern_t) * (void **) p);
 }
