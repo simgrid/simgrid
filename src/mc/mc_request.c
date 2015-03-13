@@ -232,7 +232,8 @@ static char *buff_size_to_string(size_t buff_size)
 
 char *MC_request_to_string(smx_simcall_t req, int value)
 {
-  char *type = NULL, *args = NULL, *str = NULL, *p = NULL, *bs = NULL;
+  const char* type = NULL;
+  char *args = NULL, *str = NULL, *p = NULL, *bs = NULL;
   smx_synchro_t act = NULL;
   smx_mutex_t mutex = NULL;
   size_t size = 0;
@@ -241,7 +242,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 
   switch (req->call) {
   case SIMCALL_COMM_ISEND:
-    type = xbt_strdup("iSend");
+    type = "iSend";
     p = pointer_to_string(simcall_comm_isend__get__src_buff(req));
     bs = buff_size_to_string(simcall_comm_isend__get__src_buff_size(req));
     if (issuer->smx_host)
@@ -256,10 +257,11 @@ char *MC_request_to_string(smx_simcall_t req, int value)
                   MC_smx_process_get_name(issuer), p, bs);
     break;
   case SIMCALL_COMM_IRECV:
+    // TODO, REMOTE(*simcall_comm_irecv__get__dst_buff_size(req))
     size =
         simcall_comm_irecv__get__dst_buff_size(req) ?
         *simcall_comm_irecv__get__dst_buff_size(req) : 0;
-    type = xbt_strdup("iRecv");
+    type = "iRecv";
     p = pointer_to_string(simcall_comm_irecv__get__dst_buff(req));
     bs = buff_size_to_string(size);
     if (issuer->smx_host)
@@ -277,11 +279,11 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   case SIMCALL_COMM_WAIT:
     act = simcall_comm_wait__get__comm(req);
     if (value == -1) {
-      type = xbt_strdup("WaitTimeout");
+      type = "WaitTimeout";
       p = pointer_to_string(act);
       args = bprintf("comm=%s", p);
     } else {
-      type = xbt_strdup("Wait");
+      type = "Wait";
       p = pointer_to_string(act);
       // TODO, fix remote access to comm
       smx_process_t src_proc = MC_smx_resolve_process(act->comm.src_proc);
@@ -298,11 +300,11 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   case SIMCALL_COMM_TEST:
     act = simcall_comm_test__get__comm(req);
     if (act->comm.src_proc == NULL || act->comm.dst_proc == NULL) {
-      type = xbt_strdup("Test FALSE");
+      type = "Test FALSE";
       p = pointer_to_string(act);
       args = bprintf("comm=%s", p);
     } else {
-      type = xbt_strdup("Test TRUE");
+      type = "Test TRUE";
       p = pointer_to_string(act);
       // TODO, get process, get process name
       smx_process_t src_proc = MC_smx_resolve_process(act->comm.src_proc);
@@ -318,7 +320,7 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     break;
 
   case SIMCALL_COMM_WAITANY:
-    type = xbt_strdup("WaitAny");
+    type = "WaitAny";
     if (!xbt_dynar_is_empty(simcall_comm_waitany__get__comms(req))) {
       p = pointer_to_string(xbt_dynar_get_as
                             (simcall_comm_waitany__get__comms(req), value,
@@ -333,10 +335,10 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 
   case SIMCALL_COMM_TESTANY:
     if (value == -1) {
-      type = xbt_strdup("TestAny FALSE");
+      type = "TestAny FALSE";
       args = xbt_strdup("-");
     } else {
-      type = xbt_strdup("TestAny");
+      type = "TestAny";
       args =
           bprintf("(%d of %lu)", value + 1,
                   xbt_dynar_length(simcall_comm_testany__get__comms(req)));
@@ -345,22 +347,22 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 
   case SIMCALL_MUTEX_LOCK:
     mutex = simcall_mutex_lock__get__mutex(req);
-    type = xbt_strdup("Mutex LOCK");
+    type = "Mutex LOCK";
     args = bprintf("locked = %d, owner = %d, sleeping = %d", mutex->locked, mutex->owner != NULL ? (int)mutex->owner->pid : -1, xbt_swag_size(mutex->sleeping));
     break;
 
   case SIMCALL_MC_SNAPSHOT:
-    type = xbt_strdup("MC_SNAPSHOT");
+    type = "MC_SNAPSHOT";
     args = NULL;
     break;
 
   case SIMCALL_MC_COMPARE_SNAPSHOTS:
-    type = xbt_strdup("MC_COMPARE_SNAPSHOTS");
+    type = "MC_COMPARE_SNAPSHOTS";
     args = NULL;
     break;
 
   case SIMCALL_MC_RANDOM:
-    type = xbt_strdup("MC_RANDOM");
+    type = "MC_RANDOM";
     args = bprintf("%d", value);
     break;
 
@@ -385,7 +387,6 @@ char *MC_request_to_string(smx_simcall_t req, int value)
   }
 
   xbt_free(args);
-  xbt_free(type);
   xbt_free(p);
   xbt_free(bs);
   return str;
