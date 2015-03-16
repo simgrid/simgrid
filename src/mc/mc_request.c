@@ -447,35 +447,38 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
 
 int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
-  smx_synchro_t act;
-
-  // FIXME, remote access to comm object
-
+  smx_synchro_t remote_act = NULL;
   switch (req->call) {
 
   case SIMCALL_COMM_WAIT:
     /* FIXME: check also that src and dst processes are not suspended */
-    act = simcall_comm_wait__get__comm(req);
-    return (act->comm.src_proc && act->comm.dst_proc);
+    remote_act = simcall_comm_wait__get__comm(req);
     break;
 
-  case SIMCALL_COMM_WAITANY:
-    act =
-        xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), idx,
-                         smx_synchro_t);
-    return (act->comm.src_proc && act->comm.dst_proc);
+  case SIMCALL_COMM_WAITANY: {
+    smx_synchro_t act;
+    MC_process_read_dynar_element(
+      &mc_model_checker->process, &act, simcall_comm_waitany__get__comms(req),
+      idx);
+    }
     break;
 
-  case SIMCALL_COMM_TESTANY:
-    act =
-        xbt_dynar_get_as(simcall_comm_testany__get__comms(req), idx,
-                         smx_synchro_t);
-    return (act->comm.src_proc && act->comm.dst_proc);
+  case SIMCALL_COMM_TESTANY: {
+    s_smx_synchro_t act;
+    MC_process_read_dynar_element(
+      &mc_model_checker->process, &act, simcall_comm_testany__get__comms(req),
+      idx);
+    }
     break;
 
   default:
     return TRUE;
   }
+
+  s_smx_synchro_t synchro;
+  MC_process_read_simple(&mc_model_checker->process,
+    &synchro, remote_act, sizeof(synchro));
+  return synchro.comm.src_proc && synchro.comm.dst_proc;
 }
 
 int MC_process_is_enabled(smx_process_t process)
