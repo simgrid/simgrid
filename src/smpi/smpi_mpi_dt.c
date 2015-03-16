@@ -23,30 +23,32 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi,
 xbt_dict_t smpi_type_keyvals = NULL;
 int type_keyval_id=0;//avoid collisions
 
-#define CREATE_MPI_DATATYPE(name, type)       \
-  static s_smpi_mpi_datatype_t mpi_##name = { \
+#define CREATE_MPI_DATATYPE(name, type)               \
+  static s_smpi_mpi_datatype_t mpi_##name = {         \
     (char*) # name,                                   \
-    sizeof(type),  /* size */                 \
-    0,             /*was 1 has_subtype*/             \
-    0,             /* lb */                   \
-    sizeof(type),  /* ub = lb + size */       \
-    DT_FLAG_BASIC,  /* flags */              \
-    NULL,           /* attributes */         \
-    NULL,           /* pointer on extended struct*/ \
-  };                                          \
+    sizeof(type),   /* size */                        \
+    0,              /*was 1 has_subtype*/             \
+    0,              /* lb */                          \
+    sizeof(type),   /* ub = lb + size */              \
+    DT_FLAG_BASIC,  /* flags */                       \
+    NULL,           /* attributes */                  \
+    NULL,           /* pointer on extended struct*/   \
+    0               /* in_use counter */              \
+  };                                                  \
 MPI_Datatype name = &mpi_##name;
 
-#define CREATE_MPI_DATATYPE_NULL(name)       \
-  static s_smpi_mpi_datatype_t mpi_##name = { \
+#define CREATE_MPI_DATATYPE_NULL(name)                \
+  static s_smpi_mpi_datatype_t mpi_##name = {         \
     (char*) # name,                                   \
-    0,  /* size */                 \
-    0,             /*was 1 has_subtype*/             \
-    0,             /* lb */                   \
-    0,  /* ub = lb + size */       \
-    DT_FLAG_BASIC,  /* flags */              \
-    NULL,           /* attributes */         \
-    NULL           /* pointer on extended struct*/ \
-  };                                          \
+    0,              /* size */                        \
+    0,              /* was 1 has_subtype*/            \
+    0,              /* lb */                          \
+    0,              /* ub = lb + size */              \
+    DT_FLAG_BASIC,  /* flags */                       \
+    NULL,           /* attributes */                  \
+    NULL,           /* pointer on extended struct*/   \
+    0               /* in_use counter */              \
+  };                                                  \
 MPI_Datatype name = &mpi_##name;
 
 //The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
@@ -446,7 +448,10 @@ void smpi_datatype_use(MPI_Datatype type){
 
 
 void smpi_datatype_unuse(MPI_Datatype type){
-  if(type && type->in_use-- == 0 && (type->flags & DT_FLAG_DESTROYED))
+  if (type->in_use > 0)
+    type->in_use--;
+
+  if(type && type->in_use == 0 && (type->flags & DT_FLAG_DESTROYED))
     smpi_datatype_free(&type);
 
 #ifdef HAVE_MC
