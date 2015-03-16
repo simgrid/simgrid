@@ -488,8 +488,7 @@ int MC_process_is_enabled(smx_process_t process)
 
 char *MC_request_get_dot_output(smx_simcall_t req, int value)
 {
-  char *str = NULL, *label = NULL;
-  smx_synchro_t act = NULL;
+  char *label = NULL;
 
   const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
 
@@ -512,8 +511,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
       label = bprintf("[(%lu)] iRecv", issuer->pid);
     break;
 
-  case SIMCALL_COMM_WAIT:
-    act = simcall_comm_wait__get__comm(req);
+  case SIMCALL_COMM_WAIT: {
     if (value == -1) {
       if (issuer->smx_host)
         label =
@@ -522,9 +520,13 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
       else
         label = bprintf("[(%lu)] WaitTimeout", issuer->pid);
     } else {
-      // FIXME, remote access to act->comm
-      smx_process_t src_proc = MC_smx_resolve_process(act->comm.src_proc);
-      smx_process_t dst_proc = MC_smx_resolve_process(act->comm.dst_proc);
+      smx_synchro_t remote_act = simcall_comm_wait__get__comm(req);
+      s_smx_synchro_t synchro;
+      MC_process_read_simple(&mc_model_checker->process, &synchro,
+        remote_act, sizeof(synchro));
+
+      smx_process_t src_proc = MC_smx_resolve_process(synchro.comm.src_proc);
+      smx_process_t dst_proc = MC_smx_resolve_process(synchro.comm.dst_proc);
       if (issuer->smx_host)
         label =
             bprintf("[(%lu)%s] Wait [(%lu)->(%lu)]", issuer->pid,
@@ -538,10 +540,14 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
                     dst_proc ? dst_proc->pid : 0);
     }
     break;
+  }
 
-  case SIMCALL_COMM_TEST:
-    act = simcall_comm_test__get__comm(req);
-    if (act->comm.src_proc == NULL || act->comm.dst_proc == NULL) {
+  case SIMCALL_COMM_TEST: {
+    smx_synchro_t remote_act = simcall_comm_test__get__comm(req);
+    s_smx_synchro_t synchro;
+    MC_process_read_simple(&mc_model_checker->process, &synchro,
+      remote_act, sizeof(synchro));
+    if (synchro.comm.src_proc == NULL || synchro.comm.dst_proc == NULL) {
       if (issuer->smx_host)
         label =
             bprintf("[(%lu)%s] Test FALSE", issuer->pid,
@@ -557,18 +563,22 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
         label = bprintf("[(%lu)] Test TRUE", issuer->pid);
     }
     break;
+  }
 
-  case SIMCALL_COMM_WAITANY:
+  case SIMCALL_COMM_WAITANY: {
+    unsigned long comms_size = MC_process_read_dynar_length(
+      &mc_model_checker->process, simcall_comm_waitany__get__comms(req));
     if (issuer->smx_host)
       label =
           bprintf("[(%lu)%s] WaitAny [%d of %lu]", issuer->pid,
                   MC_smx_process_get_host_name(issuer), value + 1,
-                  xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
+                  comms_size);
     else
       label =
           bprintf("[(%lu)] WaitAny [%d of %lu]", issuer->pid, value + 1,
-                  xbt_dynar_length(simcall_comm_waitany__get__comms(req)));
+                  comms_size);
     break;
+  }
 
   case SIMCALL_COMM_TESTANY:
     if (value == -1) {
@@ -627,7 +637,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
     THROW_UNIMPLEMENTED;
   }
 
-  str =
+  char* str =
       bprintf("label = \"%s\", color = %s, fontcolor = %s", label,
               colors[issuer->pid - 1], colors[issuer->pid - 1]);
   xbt_free(label);
