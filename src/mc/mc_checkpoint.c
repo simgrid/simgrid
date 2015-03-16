@@ -204,7 +204,7 @@ static mc_mem_region_t MC_region_new_privatized(
     mc_region_type_t region_type, void *start_addr, void* permanent_addr, size_t size,
     mc_mem_region_t ref_reg)
 {
-  size_t process_count = smpi_process_count();
+  size_t process_count = MC_smpi_process_count();
   mc_mem_region_t region = xbt_new(s_mc_mem_region_t, 1);
   region->region_type = region_type;
   region->storage_type = MC_REGION_STORAGE_TYPE_PRIVATIZED;
@@ -242,7 +242,7 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot, mc_region_
 
   mc_mem_region_t region;
   const bool privatization_aware = MC_object_info_is_privatized(object_info);
-  if (privatization_aware && smpi_process_count())
+  if (privatization_aware && MC_smpi_process_count())
     region = MC_region_new_privatized(type, start_addr, permanent_addr, size, ref_reg);
   else
     region = MC_region_new(type, start_addr, permanent_addr, size, ref_reg);
@@ -277,7 +277,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
     MC_process_get_malloc_info(process));
 
 #ifdef HAVE_SMPI
-  if (smpi_privatize_global_variables && smpi_process_count()) {
+  if (smpi_privatize_global_variables && MC_smpi_process_count()) {
     // FIXME, cross-process
     snapshot->privatization_index = smpi_loaded_page;
   } else

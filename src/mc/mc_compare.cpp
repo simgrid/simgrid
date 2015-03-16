@@ -13,6 +13,7 @@
 #include "mc_safety.h"
 #include "mc_liveness.h"
 #include "mc_private.h"
+#include "mc_smx.h"
 
 #ifdef HAVE_SMPI
 #include "smpi/private.h"
@@ -269,7 +270,7 @@ static int compare_global_variables(mc_object_info_t object_info,
       return 1;
     }
 
-    size_t process_count = smpi_process_count();
+    size_t process_count = MC_smpi_process_count();
     xbt_assert(process_count == r1->privatized.regions_count
       && process_count == r2->privatized.regions_count);
 

@@ -250,3 +250,15 @@ const char* MC_smx_process_get_name(smx_process_t p)
   }
   return info->name;
 }
+
+int MC_smpi_process_count(void)
+{
+  if (MC_process_is_self(&mc_model_checker->process))
+    return smpi_process_count();
+  else {
+    int res;
+    MC_process_read_variable(&mc_model_checker->process, "process_count",
+      &res, sizeof(res));
+    return res;
+  }
+}
