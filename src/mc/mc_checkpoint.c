@@ -278,8 +278,10 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 
 #ifdef HAVE_SMPI
   if (smpi_privatize_global_variables && MC_smpi_process_count()) {
-    // FIXME, cross-process
-    snapshot->privatization_index = smpi_loaded_page;
+    // snapshot->privatization_index = smpi_loaded_page
+    MC_process_read_variable(&mc_model_checker->process,
+      "smpi_loaded_page", &snapshot->privatization_index,
+      sizeof(snapshot->privatization_index));
   } else
 #endif
   {
@@ -789,6 +791,7 @@ void MC_restore_snapshot_regions(mc_snapshot_t snapshot)
   }
 
 #ifdef HAVE_SMPI
+  // TODO, send a message to implement this in the MCed process
   if(snapshot->privatization_index >= 0) {
     // We just rewrote the global variables.
     // The privatisation segment SMPI thinks
