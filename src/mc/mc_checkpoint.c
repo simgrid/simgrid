@@ -559,7 +559,6 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
 
 }
 
-// FIXME, cross-process support (mc_heap_comparison_ignore)
 static xbt_dynar_t MC_take_snapshot_ignore()
 {
 
@@ -600,7 +599,6 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
   // Copy the memory:
   unsigned int cursor = 0;
   mc_checkpoint_ignore_region_t region;
-  // FIXME, cross-process support (mc_checkpoint_ignore)
   xbt_dynar_foreach (mc_model_checker->process.checkpoint_ignore, cursor, region) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = region->addr;
