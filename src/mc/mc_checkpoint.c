@@ -191,15 +191,6 @@ static void MC_region_restore(mc_mem_region_t region, mc_mem_region_t ref_region
   }
 }
 
-// FIXME, multiple privatisation regions
-// FIXME, cross-process
-static inline
-void* MC_privatization_address(mc_process_t process, int process_index)
-{
-  xbt_assert(process_index >= 0);
-  return smpi_privatisation_regions[process_index].address;
-}
-
 static mc_mem_region_t MC_region_new_privatized(
     mc_region_type_t region_type, void *start_addr, void* permanent_addr, size_t size,
     mc_mem_region_t ref_reg)
@@ -214,13 +205,22 @@ static mc_mem_region_t MC_region_new_privatized(
   region->privatized.regions_count = process_count;
   region->privatized.regions = xbt_new(mc_mem_region_t, process_count);
 
+  // Read smpi_privatisation_regions from MCed:
+  smpi_privatisation_region_t remote_smpi_privatisation_regions;
+  MC_process_read_variable(&mc_model_checker->process,
+    "smpi_privatisation_regions",
+    &remote_smpi_privatisation_regions, sizeof(remote_smpi_privatisation_regions));
+  s_smpi_privatisation_region_t privatisation_regions[process_count];
+  MC_process_read_simple(&mc_model_checker->process, &privatisation_regions,
+    remote_smpi_privatisation_regions, sizeof(privatisation_regions));
+
   for (size_t i = 0; i < process_count; i++) {
     mc_mem_region_t ref_subreg = NULL;
     if (ref_reg && ref_reg->storage_type == MC_REGION_STORAGE_TYPE_PRIVATIZED)
       ref_subreg = ref_reg->privatized.regions[i];
     region->privatized.regions[i] =
       MC_region_new(region_type, start_addr,
-        MC_privatization_address(&mc_model_checker->process, i), size,
+        privatisation_regions[i].address, size,
         ref_subreg);
   }
 

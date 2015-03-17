@@ -770,7 +770,7 @@ const char* encode_datatype(MPI_Datatype datatype, int* known);
 typedef struct s_smpi_privatisation_region {
   void* address;
   int file_descriptor;
-} *smpi_privatisation_region_t;
+} s_smpi_privatisation_region_t, *smpi_privatisation_region_t;
 
 extern smpi_privatisation_region_t smpi_privatisation_regions;
 extern int smpi_loaded_page;
