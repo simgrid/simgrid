@@ -350,8 +350,8 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t comm,
   void* tmpbuff=buff;
 
   if((smpi_privatize_global_variables)
-      && ((char*)buff >= start_data_exe)
-      && ((char*)buff < start_data_exe + size_data_exe )
+      && ((char*)buff >= smpi_start_data_exe)
+      && ((char*)buff < smpi_start_data_exe + smpi_size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
        smpi_switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.src_proc))->index);
@@ -361,8 +361,8 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t comm,
 
 
   if((smpi_privatize_global_variables)
-      && ((char*)comm->comm.dst_buff >= start_data_exe)
-      && ((char*)comm->comm.dst_buff < start_data_exe + size_data_exe )
+      && ((char*)comm->comm.dst_buff >= smpi_start_data_exe)
+      && ((char*)comm->comm.dst_buff < smpi_start_data_exe + smpi_size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
        smpi_switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.dst_proc))->index);

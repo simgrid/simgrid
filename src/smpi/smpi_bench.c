@@ -75,12 +75,10 @@ double smpi_cpu_threshold;
 double smpi_running_power;
 
 int smpi_loaded_page = -1;
-char* start_data_exe = NULL;
-int size_data_exe = 0;
+char* smpi_start_data_exe = NULL;
+int smpi_size_data_exe = 0;
 int smpi_privatize_global_variables;
 double smpi_total_benched_time = 0;
-
-
 smpi_privatisation_region_t smpi_privatisation_regions;
 
 typedef struct {
@@ -627,24 +625,26 @@ void smpi_switch_data_segment(int dest){
  */
 void smpi_really_switch_data_segment(int dest) {
 
-  if(size_data_exe == 0)//no need to switch
+  if(smpi_size_data_exe == 0)//no need to switch
     return;
 
 #ifdef HAVE_MMAP
   int i;
   if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
     for (i=0; i< SIMIX_process_count(); i++){
-      memcpy(smpi_privatisation_regions[i].address,TOPAGE(start_data_exe),size_data_exe);
+      memcpy(smpi_privatisation_regions[i].address,
+        TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
     }
   }
 
   // FIXME, cross-process support (mmap across process when necessary)
   int current = smpi_privatisation_regions[dest].file_descriptor;
   XBT_DEBUG("Switching data frame to the one of process %d", dest);
-  void* tmp = mmap (TOPAGE(start_data_exe), size_data_exe, PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
-  if (tmp != TOPAGE(start_data_exe))
+  void* tmp = mmap (TOPAGE(smpi_start_data_exe), smpi_size_data_exe,
+    PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, current, 0);
+  if (tmp != TOPAGE(smpi_start_data_exe))
     xbt_die("Couldn't map the new region");
-  smpi_loaded_page=dest;
+  smpi_loaded_page = dest;
 #endif
 }
 
@@ -706,12 +706,12 @@ void smpi_get_executable_global_size(){
     if(i>=6){
       if(strcmp(lfields[1], ".data") == 0){
         size_data_binary = strtoul(lfields[2], NULL, 16);
-        start_data_exe = (char*) strtoul(lfields[4], NULL, 16);
+        smpi_start_data_exe = (char*) strtoul(lfields[4], NULL, 16);
         found++;
       }else if(strcmp(lfields[1], ".bss") == 0){
         //the beginning of bss is not exactly the end of data if not aligned, grow bss reported size accordingly
         //TODO : check if this is OK, as some segments may be inserted between them..
-        size_bss_binary = ((char*) strtoul(lfields[4], NULL, 16) - (start_data_exe + size_data_binary))
+        size_bss_binary = ((char*) strtoul(lfields[4], NULL, 16) - (smpi_start_data_exe + size_data_binary))
                           + strtoul(lfields[2], NULL, 16);
         found++;
        }
@@ -720,7 +720,9 @@ void smpi_get_executable_global_size(){
 
   }
 
-  size_data_exe =(unsigned long)start_data_exe - (unsigned long)TOPAGE(start_data_exe)+ size_data_binary+size_bss_binary;
+  smpi_size_data_exe = (unsigned long) smpi_start_data_exe
+    - (unsigned long) TOPAGE(smpi_start_data_exe)
+    + size_data_binary+size_bss_binary;
   xbt_free(command);
   xbt_free(line);
   pclose(fp);
@@ -737,9 +739,10 @@ void smpi_initialize_global_memory_segments(){
   unsigned int i = 0;
   smpi_get_executable_global_size();
 
-  XBT_DEBUG ("bss+data segment found : size %d starting at %p",size_data_exe, start_data_exe );
+  XBT_DEBUG ("bss+data segment found : size %d starting at %p",
+    smpi_size_data_exe, smpi_start_data_exe );
 
-  if(size_data_exe == 0){//no need to switch
+  if (smpi_size_data_exe == 0){//no need to switch
     smpi_privatize_global_variables=0;
     return;
   }
@@ -778,17 +781,17 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
       if (status)
         xbt_die("Impossible to unlink temporary file for memory mapping");
 
-      status = ftruncate(file_descriptor, size_data_exe);
+      status = ftruncate(file_descriptor, smpi_size_data_exe);
       if(status)
         xbt_die("Impossible to set the size of the temporary file for memory mapping");
 
       /* Ask for a free region */
-      address = mmap (NULL, size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
+      address = mmap (NULL, smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
       if (address == MAP_FAILED)
         xbt_die("Couldn't find a free region for memory mapping");
 
       //initialize the values
-      memcpy(address,TOPAGE(start_data_exe),size_data_exe);
+      memcpy(address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
 
       //store the address of the mapping for further switches
       smpi_privatisation_regions[i].file_descriptor = file_descriptor;
@@ -800,12 +803,12 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
 }
 
 void smpi_destroy_global_memory_segments(){
-  if(size_data_exe == 0)//no need to switch
+  if (smpi_size_data_exe == 0)//no need to switch
     return;
 #ifdef HAVE_MMAP
   int i;
   for (i=0; i< smpi_process_count(); i++){
-    if(munmap(smpi_privatisation_regions[i].address,size_data_exe) < 0) {
+    if(munmap(smpi_privatisation_regions[i].address, smpi_size_data_exe) < 0) {
       XBT_WARN("Unmapping of fd %d failed: %s",
         smpi_privatisation_regions[i].file_descriptor, strerror(errno));
     }
