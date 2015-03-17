@@ -1373,18 +1373,27 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
   dw_type_t type = NULL;
   xbt_dict_foreach(info->types, cursor, key, type) {
 
+    dw_type_t subtype = type;
+    while (subtype->type == DW_TAG_typedef || subtype->type == DW_TAG_volatile_type
+      || subtype->type == DW_TAG_const_type) {
+      if (subtype->subtype)
+        subtype = subtype->subtype;
+      else
+        break;
+    }
+
     // Resolve full_type:
-    if (type->name && type->byte_size == 0) {
+    if (subtype->name && subtype->byte_size == 0) {
       for (size_t i = 0; i != process->object_infos_size; ++i) {
         dw_type_t same_type =
             xbt_dict_get_or_null(process->object_infos[i]->full_types_by_name,
-                                 type->name);
+                                 subtype->name);
         if (same_type && same_type->name && same_type->byte_size) {
           type->full_type = same_type;
           break;
         }
       }
-    }
+    } else type->full_type = subtype;
 
   }
 }

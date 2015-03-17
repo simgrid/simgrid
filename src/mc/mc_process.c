@@ -405,6 +405,11 @@ void MC_process_read_variable(mc_process_t process, const char* name, void* targ
   dw_variable_t var = MC_process_find_variable_by_name(process, name);
   if (!var->address)
     xbt_die("No simple location for this variable");
+  if (!var->type->full_type)
+    xbt_die("Partial type for %s, cannot check size", name);
+  if (var->type->full_type->byte_size != size)
+    xbt_die("Unexpected size for %s (expected %zi, was %zi)",
+      name, size, (size_t) var->type->full_type->byte_size);
   MC_process_read(process, MC_PROCESS_NO_FLAG, target, var->address, size,
     MC_PROCESS_INDEX_ANY);
 }
