@@ -406,6 +406,7 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int h
 }
 
 void smpi_datatype_free(MPI_Datatype* type){
+  xbt_assert((*type)->in_use >= 0);
   if((*type)->attributes !=NULL){
       xbt_dict_cursor_t cursor = NULL;
       int* key;
