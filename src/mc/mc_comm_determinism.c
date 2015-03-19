@@ -181,14 +181,20 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     pattern->rdv = (synchro.comm.rdv != NULL) ? strdup(synchro.comm.rdv->name) : strdup(synchro.comm.rdv_cpy->name);
     pattern->src_proc = MC_smx_resolve_process(synchro.comm.src_proc)->pid;
     pattern->src_host = MC_smx_process_get_host_name(issuer);
-    pattern->tag = ((MPI_Request)simcall_comm_isend__get__data(request))->tag;
+
+    struct s_smpi_mpi_request mpi_request;
+    MC_process_read_simple(&mc_model_checker->process,
+      &mpi_request, (MPI_Request) simcall_comm_isend__get__data(request),
+      sizeof(mpi_request));
+    pattern->tag = mpi_request.tag;
+
     if(synchro.comm.src_buff != NULL){
       pattern->data_size = synchro.comm.src_buff_size;
       pattern->data = xbt_malloc0(pattern->data_size);
       MC_process_read_simple(&mc_model_checker->process,
         pattern->data, synchro.comm.src_buff, pattern->data_size);
     }
-    if(((MPI_Request)simcall_comm_isend__get__data(request))->detached){
+    if(mpi_request.detached){
       if (!initial_global_state->initial_communications_pattern_done) {
         /* Store comm pattern */
         xbt_dynar_push(((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, pattern->src_proc, mc_list_comm_pattern_t))->list, &pattern);
@@ -202,8 +208,12 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
   } else if (call_type == MC_CALL_TYPE_RECV) {                      
     pattern->type = SIMIX_COMM_RECEIVE;
     pattern->comm = simcall_comm_irecv__get__result(request);
-    // TODO, remote access
-    pattern->tag = ((MPI_Request)simcall_comm_irecv__get__data(request))->tag;
+
+    struct s_smpi_mpi_request mpi_request;
+    MC_process_read_simple(&mc_model_checker->process,
+      &mpi_request, (MPI_Request) simcall_comm_irecv__get__data(request),
+      sizeof(mpi_request));
+    pattern->tag = mpi_request.tag;
 
     s_smx_synchro_t synchro;
     MC_process_read_simple(&mc_model_checker->process,
