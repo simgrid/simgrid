@@ -85,27 +85,19 @@ static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int p
   return res;
 }
 
-// FIXME, remote comm
 static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t comm)
 {
-  mc_process_t process = &mc_model_checker->process;
-  void *addr_pointed;
   smx_process_t src_proc = MC_smx_resolve_process(comm->comm.src_proc);
   smx_process_t dst_proc = MC_smx_resolve_process(comm->comm.dst_proc);
   comm_pattern->src_proc = src_proc->pid;
   comm_pattern->dst_proc = dst_proc->pid;
-  // TODO, resolve host name
   comm_pattern->src_host = MC_smx_process_get_host_name(src_proc);
   comm_pattern->dst_host = MC_smx_process_get_host_name(dst_proc);
   if (comm_pattern->data_size == -1 && comm->comm.src_buff != NULL) {
     comm_pattern->data_size = *(comm->comm.dst_buff_size);
     comm_pattern->data = xbt_malloc0(comm_pattern->data_size);
-    addr_pointed = *(void **) comm->comm.src_buff;
-    if (addr_pointed > (void*) process->heap_address
-        && addr_pointed < MC_process_get_heap(process)->breakval)
-      memcpy(comm_pattern->data, addr_pointed, comm_pattern->data_size);
-    else
-      memcpy(comm_pattern->data, comm->comm.src_buff, comm_pattern->data_size);
+    MC_process_read_simple(&mc_model_checker->process,
+      comm_pattern->data, comm->comm.src_buff, comm_pattern->data_size);
   }
 }
 
@@ -162,8 +154,6 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
 
 void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking)
 {
-  mc_process_t process = &mc_model_checker->process;
-
   mc_comm_pattern_t pattern = xbt_new0(s_mc_comm_pattern_t, 1);
   pattern->data_size = -1;
   pattern->data = NULL;
@@ -176,13 +166,13 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     (xbt_dynar_t) xbt_dynar_get_as(incomplete_communications_pattern, issuer->pid, xbt_dynar_t);
   pattern->index =
     initial_pattern->index_comm + xbt_dynar_length(incomplete_pattern);
-  
-  void *addr_pointed;
+
   
   if (call_type == MC_CALL_TYPE_SEND) {
     /* Create comm pattern */
     pattern->type = SIMIX_COMM_SEND;
     pattern->comm = simcall_comm_isend__get__result(request);
+    // TODO, resolve comm
     // FIXME, remote access to rdv->name
     pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
     pattern->src_proc = MC_smx_resolve_process(pattern->comm->comm.src_proc)->pid;
@@ -191,12 +181,8 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     if(pattern->comm->comm.src_buff != NULL){
       pattern->data_size = pattern->comm->comm.src_buff_size;
       pattern->data = xbt_malloc0(pattern->data_size);
-      addr_pointed = *(void **) pattern->comm->comm.src_buff;
-      if (addr_pointed > (void*) process->heap_address
-          && addr_pointed < MC_process_get_heap(process)->breakval)
-        memcpy(pattern->data, addr_pointed, pattern->data_size);
-      else
-        memcpy(pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
+      MC_process_read_simple(&mc_model_checker->process,
+        pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
     }
     if(((MPI_Request)simcall_comm_isend__get__data(request))->detached){
       if (!initial_global_state->initial_communications_pattern_done) {
