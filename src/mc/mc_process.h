@@ -186,6 +186,7 @@ mc_object_info_t MC_process_find_object_info_rw(mc_process_t process, const void
 dw_frame_t MC_process_find_function(mc_process_t process, const void* ip);
 
 void MC_process_read_variable(mc_process_t process, const char* name, void* target, size_t size);
+char* MC_process_read_string(mc_process_t, void* address);
 
 static inline xbt_mheap_t MC_process_get_heap(mc_process_t process)
 {

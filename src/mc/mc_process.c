@@ -414,6 +414,40 @@ void MC_process_read_variable(mc_process_t process, const char* name, void* targ
     MC_PROCESS_INDEX_ANY);
 }
 
+char* MC_process_read_string(mc_process_t process, void* address)
+{
+  if (!address)
+    return NULL;
+  if (MC_process_is_self(process))
+    return strdup((char*) address);
+
+  size_t len = 128;
+  char* res = malloc(len);
+  off_t off = 0;
+
+  while (1) {
+    ssize_t c = pread(process->memory_file, res + off, len - off, (off_t) address + off);
+    if (c == -1) {
+      if (errno == EINTR)
+        continue;
+      else
+        xbt_die("Could not read from from remote process");
+    }
+    if (c==0)
+      xbt_die("Could not read string from remote process");
+
+    void* p = memchr(res + off, '\0', c);
+    if (p)
+      return res;
+
+    off += c;
+    if (off == len) {
+      len *= 2;
+      res = realloc(res, len);
+    }
+  }
+}
+
 // ***** Memory access
 
 int MC_process_vm_open(pid_t pid, int flags)

@@ -177,8 +177,12 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     MC_process_read_simple(&mc_model_checker->process,
       &synchro, pattern->comm, sizeof(synchro));
 
-    // TODO, remote access to rdv->name and rdv_copy->name
-    pattern->rdv = (synchro.comm.rdv != NULL) ? strdup(synchro.comm.rdv->name) : strdup(synchro.comm.rdv_cpy->name);
+    char* remote_name;
+    MC_process_read_simple(&mc_model_checker->process, &remote_name,
+      synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name,
+      sizeof(remote_name));
+    pattern->rdv =
+      MC_process_read_string(&mc_model_checker->process, remote_name);
     pattern->src_proc = MC_smx_resolve_process(synchro.comm.src_proc)->pid;
     pattern->src_host = MC_smx_process_get_host_name(issuer);
 
@@ -219,9 +223,13 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     MC_process_read_simple(&mc_model_checker->process,
       &synchro, pattern->comm, sizeof(synchro));
 
-    pattern->rdv = (synchro.comm.rdv != NULL) ? strdup(synchro.comm.rdv->name) : strdup(synchro.comm.rdv_cpy->name);
+    char* remote_name;
+    MC_process_read_simple(&mc_model_checker->process, &remote_name,
+      synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name,
+      sizeof(remote_name));
+    pattern->rdv =
+      MC_process_read_string(&mc_model_checker->process, remote_name);
     pattern->dst_proc = MC_smx_resolve_process(synchro.comm.dst_proc)->pid;
-    // FIXME, remote process access
     pattern->dst_host = MC_smx_process_get_host_name(issuer);
   } else {
     xbt_die("Unexpected call_type %i", (int) call_type);
