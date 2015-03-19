@@ -172,17 +172,21 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     /* Create comm pattern */
     pattern->type = SIMIX_COMM_SEND;
     pattern->comm = simcall_comm_isend__get__result(request);
-    // TODO, resolve comm
-    // FIXME, remote access to rdv->name
-    pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
-    pattern->src_proc = MC_smx_resolve_process(pattern->comm->comm.src_proc)->pid;
+
+    s_smx_synchro_t synchro;
+    MC_process_read_simple(&mc_model_checker->process,
+      &synchro, pattern->comm, sizeof(synchro));
+
+    // TODO, remote access to rdv->name and rdv_copy->name
+    pattern->rdv = (synchro.comm.rdv != NULL) ? strdup(synchro.comm.rdv->name) : strdup(synchro.comm.rdv_cpy->name);
+    pattern->src_proc = MC_smx_resolve_process(synchro.comm.src_proc)->pid;
     pattern->src_host = MC_smx_process_get_host_name(issuer);
     pattern->tag = ((MPI_Request)simcall_comm_isend__get__data(request))->tag;
-    if(pattern->comm->comm.src_buff != NULL){
-      pattern->data_size = pattern->comm->comm.src_buff_size;
+    if(synchro.comm.src_buff != NULL){
+      pattern->data_size = synchro.comm.src_buff_size;
       pattern->data = xbt_malloc0(pattern->data_size);
       MC_process_read_simple(&mc_model_checker->process,
-        pattern->data, pattern->comm->comm.src_buff, pattern->data_size);
+        pattern->data, synchro.comm.src_buff, pattern->data_size);
     }
     if(((MPI_Request)simcall_comm_isend__get__data(request))->detached){
       if (!initial_global_state->initial_communications_pattern_done) {
@@ -200,8 +204,13 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     pattern->comm = simcall_comm_irecv__get__result(request);
     // TODO, remote access
     pattern->tag = ((MPI_Request)simcall_comm_irecv__get__data(request))->tag;
-    pattern->rdv = (pattern->comm->comm.rdv != NULL) ? strdup(pattern->comm->comm.rdv->name) : strdup(pattern->comm->comm.rdv_cpy->name);
-    pattern->dst_proc = MC_smx_resolve_process(pattern->comm->comm.dst_proc)->pid;
+
+    s_smx_synchro_t synchro;
+    MC_process_read_simple(&mc_model_checker->process,
+      &synchro, pattern->comm, sizeof(synchro));
+
+    pattern->rdv = (synchro.comm.rdv != NULL) ? strdup(synchro.comm.rdv->name) : strdup(synchro.comm.rdv_cpy->name);
+    pattern->dst_proc = MC_smx_resolve_process(synchro.comm.dst_proc)->pid;
     // FIXME, remote process access
     pattern->dst_host = MC_smx_process_get_host_name(issuer);
   } else {
