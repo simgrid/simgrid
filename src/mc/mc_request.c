@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <assert.h>
+
 #include "mc_request.h"
 #include "mc_safety.h"
 #include "mc_private.h"
@@ -430,12 +432,35 @@ char *MC_request_to_string(smx_simcall_t req, int value)
 
 unsigned int MC_request_testany_fail(smx_simcall_t req)
 {
-  unsigned int cursor;
-  smx_synchro_t action;
+  // Remote xbt_dynar_foreach on simcall_comm_testany__get__comms(req).
 
-  xbt_dynar_foreach(simcall_comm_testany__get__comms(req), cursor, action) {
-    // FIXME, remote access to comm object
-    if (action->comm.src_proc && action->comm.dst_proc)
+  // Read the dynar:
+  s_xbt_dynar_t comms;
+  MC_process_read_simple(&mc_model_checker->process,
+    &comms, simcall_comm_testany__get__comms(req), sizeof(comms));
+
+  // Read ther dynar buffer:
+  size_t buffer_size = comms.elmsize * comms.used;
+  char buffer[buffer_size];
+  MC_process_read_simple(&mc_model_checker->process,
+    buffer, comms.data, buffer_size);
+
+  // Iterate over the elements:
+  assert(comms.elmsize == sizeof(smx_synchro_t));
+  unsigned cursor;
+  for (cursor=0; cursor != comms.used; ++cursor) {
+
+    // Get the element:
+    smx_synchro_t remote_action;
+    memcpy(buffer + comms.elmsize * cursor, &remote_action, sizeof(remote_action));
+
+    // Dereference the pointer:
+    s_smx_synchro_t action;
+    MC_process_read_simple(&mc_model_checker->process,
+      &action, remote_action, sizeof(action));
+
+    // Finally so something useful about it:
+    if (action.comm.src_proc && action.comm.dst_proc)
       return FALSE;
   }
 

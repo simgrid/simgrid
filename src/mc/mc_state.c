@@ -111,7 +111,6 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     state->internal_req.issuer = req->issuer;
 
     if (value > 0)
-      // FIXME, read from remote process
         MC_process_read_dynar_element(&mc_model_checker->process,
           &state->internal_comm, simcall_comm_testany__get__comms(req),
           sizeof(state->internal_comm));
