@@ -399,19 +399,12 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       {
         // Computed address:
         uintptr_t address = (uintptr_t) state->stack[state->stack_size - 1];
-        uintptr_t value;
-        if (state->address_space) {
-          uintptr_t temp;
-          const uintptr_t* res = (uintptr_t*) MC_address_space_read(
-            state->address_space, MC_ADDRESS_SPACE_READ_FLAGS_LAZY,
-            &temp, (const void*) address, sizeof(uintptr_t), state->process_index);
-          value = *res;
-        }
-        else {
-          // TODO, use a mc_process representing the current process instead of this
-          value = *(const uintptr_t*) address;
-        }
-        state->stack[state->stack_size - 1] = value;
+        if (!state->address_space)
+          xbt_die("Missing address space");
+        MC_address_space_read(
+          state->address_space, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+          &state->stack[state->stack_size - 1], (const void*) address,
+          sizeof(uintptr_t), state->process_index);
       }
       break;
 

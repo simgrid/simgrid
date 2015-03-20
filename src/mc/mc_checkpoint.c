@@ -404,12 +404,12 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
       new_var->address = current_variable->address;
     } else if (current_variable->locations.size != 0) {
       s_mc_location_t location;
-      // FIXME, cross-process support
-      mc_dwarf_resolve_locations(&location, &current_variable->locations,
-                                              current_variable->object_info,
-                                              &(stack_frame->unw_cursor),
-                                              (void *) stack_frame->frame_base,
-                                              NULL, process_index);
+      mc_dwarf_resolve_locations(
+        &location, &current_variable->locations,
+        current_variable->object_info,
+        &(stack_frame->unw_cursor),
+        (void *) stack_frame->frame_base,
+        (mc_address_space_t) &mc_model_checker->process, process_index);
 
       switch(mc_get_location_type(&location)) {
       case MC_LOCATION_TYPE_ADDRESS:
