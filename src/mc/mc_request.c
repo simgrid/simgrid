@@ -62,8 +62,6 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
         SIMCALL_COMM_ISEND ? simcall_comm_isend__get__rdv(r1) :
         simcall_comm_irecv__get__rdv(r1);
 
-    // FIXME, remote access to comm object
-
     if (rdv != synchro2.comm.rdv_cpy
         && simcall_comm_wait__get__timeout(r2) <= 0)
       return FALSE;
@@ -420,7 +418,6 @@ char *MC_request_to_string(smx_simcall_t req, int value)
                 MC_smx_process_get_name(issuer),
                 type, args);
   } else {
-    // FIXME, get process name
     str =
         bprintf("[(%lu)%s (%s)] %s ", issuer->pid,
                 MC_smx_process_get_host_name(issuer),
