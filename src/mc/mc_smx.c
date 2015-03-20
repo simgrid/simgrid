@@ -221,31 +221,8 @@ const char* MC_smx_process_get_name(smx_process_t p)
 
   mc_smx_process_info_t info = MC_smx_process_get_info(p);
   if (!info->name) {
-    size_t size = 128;
-    char buffer[size];
-
-    size_t off = 0;
-    while (1) {
-      ssize_t n = pread(process->memory_file, buffer+off, size-off, (off_t)p->name + off);
-      if (n==-1) {
-        if (errno == EINTR)
-          continue;
-        else {
-          perror("MC_smx_process_get_name");
-          xbt_die("Could not read memory");
-        }
-      }
-      if (n==0)
-        return "?";
-      void* end = memchr(buffer+off, '\0', n);
-      if (end)
-        break;
-      off += n;
-      if (off == size)
-        return "?";
-    }
     xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-    info->name = strdup(buffer);
+    info->name = MC_process_read_string(process, p->name);
     mmalloc_set_current_heap(heap);
   }
   return info->name;
