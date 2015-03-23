@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <assert.h>
+
 #include <simgrid/simix.h>
 
 #include "mc_base.h"
@@ -73,9 +75,26 @@ int MC_request_is_enabled(smx_simcall_t req)
     }
     return (act->comm.src_proc && act->comm.dst_proc);
 
-  case SIMCALL_COMM_WAITANY:
-    /* Check if it has at least one communication ready */
+  case SIMCALL_COMM_WAITANY: {
+#ifdef HAVE_MC
+    // Read dynar:
+    s_xbt_dynar_t comms;
+    MC_process_read_simple(&mc_model_checker->process,
+      &comms, simcall_comm_waitany__get__comms(req), sizeof(comms));
+    // Read dynar buffer:
+    assert(comms.elmsize == sizeof(act));
+    size_t buffer_size = comms.elmsize * comms.used;
+    char buffer[buffer_size];
+    MC_process_read_simple(&mc_model_checker->process,
+      buffer, comms.data, sizeof(buffer));
+#endif
+
+#ifdef HAVE_MC
+    for (index = 0; index < comms.used; ++index) {
+      memcpy(&act, buffer + comms.elmsize * index, sizeof(act));
+#else
     xbt_dynar_foreach(simcall_comm_waitany__get__comms(req), index, act) {
+#endif
 
 #ifdef HAVE_MC
       // Fetch from MCed memory:
@@ -91,6 +110,7 @@ int MC_request_is_enabled(smx_simcall_t req)
         return TRUE;
     }
     return FALSE;
+  }
 
   case SIMCALL_MUTEX_LOCK: {
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
