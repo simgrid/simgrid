@@ -16,6 +16,7 @@
 #include "mc_process.h"
 #include "mc_model_checker.h"
 #include "mc_protocol.h"
+#include "mc_smx.h"
 #endif
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
@@ -126,7 +127,11 @@ int MC_request_is_enabled(smx_simcall_t req)
     if(mutex->owner == NULL)
       return TRUE;
     else
+#ifdef HAVE_MC
+      return (mutex->owner->pid == MC_smx_resolve_process(req->issuer)->pid);
+#else
       return (mutex->owner->pid == req->issuer->pid);
+#endif
     }
 
   default:
