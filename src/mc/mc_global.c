@@ -123,7 +123,7 @@ void MC_init_pid(pid_t pid, int socket)
 
   mc_model_checker = MC_model_checker_new(pid, socket);
   if (mc_mode == MC_MODE_SERVER) {
-    int maxpid;
+    unsigned long maxpid;
     MC_process_read_variable(&mc_model_checker->process, "simix_process_maxpid",
       &maxpid, sizeof(maxpid));
     simix_process_maxpid = maxpid;
