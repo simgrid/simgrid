@@ -248,7 +248,7 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
 
         case SIMCALL_MC_RANDOM:
           if (procstate->state == MC_INTERLEAVE)
-            *value = 0;
+            *value = simcall_mc_random__get__min(&process->simcall);
           else {
             if (state->req_num < simcall_mc_random__get__max(&process->simcall))
               *value = state->req_num + 1;
