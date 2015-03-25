@@ -232,6 +232,10 @@ void sglua_copy_value(lua_State* src, lua_State* dst) {
     case LUA_TTHREAD:
       sglua_copy_thread(src, dst);
       break;
+
+    case LUA_TNONE:
+        XBT_ERROR("This index is acceptable but non-valid");
+      break;
   }
 
   XBT_DEBUG("%sData copied", sglua_get_spaces(indent));
