@@ -164,7 +164,8 @@ void MC_process_refresh_malloc_info(mc_process_t process)
   if (!process->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP)
     MC_process_refresh_heap(process);
   // Refresh process->heapinfo:
-  size_t malloc_info_bytesize = process->heap->heaplimit * sizeof(malloc_info);
+  size_t malloc_info_bytesize =
+    (process->heap->heaplimit + 1) * sizeof(malloc_info);
 
   xbt_mheap_t heap  = mmalloc_set_current_heap(mc_heap);
   process->heap_info = (malloc_info*) realloc(process->heap_info,
