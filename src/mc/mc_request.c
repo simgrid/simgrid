@@ -352,7 +352,8 @@ char *MC_request_to_string(smx_simcall_t req, int value)
     if (!xbt_dynar_is_empty(&comms)) {
       smx_synchro_t remote_sync;
       MC_process_read_dynar_element(&mc_model_checker->process,
-        &remote_sync, simcall_comm_waitany__get__comms(req), value);
+        &remote_sync, simcall_comm_waitany__get__comms(req), value,
+        sizeof(remote_sync));
       char* p = pointer_to_string(remote_sync);
       args = bprintf("comm=%s (%d of %lu)",
         p, value + 1, xbt_dynar_length(&comms));
@@ -481,7 +482,7 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
     smx_synchro_t act;
     MC_process_read_dynar_element(
       &mc_model_checker->process, &act, simcall_comm_waitany__get__comms(req),
-      idx);
+      idx, sizeof(act));
     }
     break;
 
@@ -489,7 +490,7 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
     s_smx_synchro_t act;
     MC_process_read_dynar_element(
       &mc_model_checker->process, &act, simcall_comm_testany__get__comms(req),
-      idx);
+      idx, sizeof(act));
     }
     break;
 

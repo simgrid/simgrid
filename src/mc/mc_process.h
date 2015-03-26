@@ -163,7 +163,7 @@ const void* MC_process_read(mc_process_t process,
 const void* MC_process_read_simple(mc_process_t process,
   void* local, const void* remote, size_t len);
 const void* MC_process_read_dynar_element(mc_process_t process,
-  void* local, const void* remote_dynar, size_t i);
+  void* local, const void* remote_dynar, size_t i, size_t len);
 unsigned long MC_process_read_dynar_length(mc_process_t process, const void* remote_dynar);
 
 /** Write data to a process memory

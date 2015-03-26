@@ -101,7 +101,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     state->internal_req.issuer = req->issuer;
     MC_process_read_dynar_element(&mc_model_checker->process,
       &state->internal_comm, simcall_comm_waitany__get__comms(req),
-      sizeof(state->internal_comm));
+      value, sizeof(state->internal_comm));
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_wait__set__timeout(&state->internal_req, 0);
     break;
@@ -113,7 +113,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     if (value > 0)
         MC_process_read_dynar_element(&mc_model_checker->process,
           &state->internal_comm, simcall_comm_testany__get__comms(req),
-          sizeof(state->internal_comm));
+          value, sizeof(state->internal_comm));
 
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_test__set__result(&state->internal_req, value);
