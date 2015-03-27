@@ -134,9 +134,11 @@ int MC_request_is_enabled(smx_simcall_t req)
       return TRUE;
     else
 #ifdef HAVE_MC
-      return (mutex->owner->pid == MC_smx_resolve_process(req->issuer)->pid);
+      // TODO, *(mutex->owner) :/
+      return MC_smx_resolve_process(mutex->owner)->pid ==
+        MC_smx_resolve_process(req->issuer)->pid;
 #else
-      return (mutex->owner->pid == req->issuer->pid);
+      return mutex->owner->pid == req->issuer->pid;
 #endif
     }
 
