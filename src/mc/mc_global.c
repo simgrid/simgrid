@@ -766,6 +766,7 @@ void MC_automaton_new_propositional_symbol_callback(const char* id,
   mmalloc_set_current_heap(heap);
 }
 
+// TODO, fix cross-process access (this function is not used)
 void MC_dump_stacks(FILE* file)
 {
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);

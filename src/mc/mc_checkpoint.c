@@ -536,11 +536,14 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
   xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
     mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
 
-    unw_context_t* original_context = (unw_context_t*) current_stack->context;
+    // Read the context from remote process:
+    unw_context_t context;
+    MC_process_read_simple(&mc_model_checker->process,
+      &context, (unw_context_t*) current_stack->context, sizeof(context));
 
     st->context = xbt_new0(s_mc_unw_context_t, 1);
     if (mc_unw_init_context(st->context, &mc_model_checker->process,
-      original_context) < 0) {
+      &context) < 0) {
       xbt_die("Could not initialise the libunwind context.");
     }
 
