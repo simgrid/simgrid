@@ -11,6 +11,8 @@
 #include "mc_safety.h"
 #include "mc_liveness.h"
 #include "mc_private.h"
+#include "mc_process.h"
+#include "mc_smx.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_visited, mc,
                                 "Logging specific to state equaity detection mechanisms");
@@ -57,7 +59,14 @@ static mc_visited_state_t visited_state_new()
   new_state->heap_bytes_used = mmalloc_get_bytes_used_remote(
     MC_process_get_heap(process)->heaplimit,
     MC_process_get_malloc_info(process));
-  new_state->nb_processes = xbt_swag_size(simix_global->process_list);
+
+  if (MC_process_is_self(&mc_model_checker->process)) {
+    new_state->nb_processes = xbt_swag_size(simix_global->process_list);
+  } else {
+    MC_process_smx_refresh(&mc_model_checker->process);
+    new_state->nb_processes = xbt_dynar_length(mc_model_checker->process.smx_process_infos);
+  }
+
   new_state->system_state = MC_take_snapshot(mc_stats->expanded_states);
   new_state->num = mc_stats->expanded_states;
   new_state->other_num = -1;
