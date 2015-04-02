@@ -292,7 +292,8 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
          return new_state->other_num;
          } */
 
-      if(!partial_comm && initial_global_state->initial_communications_pattern_done){
+      if (_sg_mc_safety || (!partial_comm
+        && initial_global_state->initial_communications_pattern_done)) {
 
         cursor = min;
         while (cursor <= max) {
