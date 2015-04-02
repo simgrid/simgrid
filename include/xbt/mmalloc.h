@@ -32,6 +32,7 @@ SG_BEGIN_DECL()
  *
  * The heap structure itself is an opaque object that shouldnt be messed with.
  */
+typedef struct mdesc s_xbt_mheap_t;
 typedef struct mdesc *xbt_mheap_t;
 
 /* Allocate SIZE bytes of memory (and memset it to 0).  */

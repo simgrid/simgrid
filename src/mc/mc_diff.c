@@ -142,8 +142,7 @@ static int compare_backtrace(int b1, int f1, int b2, int f2)
 typedef char *type_name;
 
 struct s_mc_diff {
-  /** \brief Base address of the real heap */
-  void *s_heap;
+  s_xbt_mheap_t std_heap_copy;
   size_t heaplimit;
   // Number of blocks in the heaps:
   size_t heapsize1, heapsize2;
@@ -366,10 +365,8 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
     return -1;
 
   state->heaplimit = ((struct mdesc *) heap1)->heaplimit;
-
-  // Mamailloute in order to find the base address of the main heap:
-  state->s_heap =
-      (char *) mmalloc_get_current_heap() - STD_HEAP_SIZE - xbt_pagesize;
+  
+  state->std_heap_copy = *MC_process_get_heap(&mc_model_checker->process);
 
   state->heapsize1 = heap1->heapsize;
   state->heapsize2 = heap2->heapsize;
@@ -474,7 +471,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
     addr_block1 =
         ((void *) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE +
-                   (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
+                   (char *) state->std_heap_copy.heapbase));
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {       /* Large block */
 
@@ -501,9 +498,8 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
         if (state->equals_to2_(i1, 0).valid == 0) {
 
-          addr_block2 =
-              ((void *) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE +
-                         (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
+          addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE +
+                         (char *) state->std_heap_copy.heapbase;
 
           res_compare =
               compare_heap_area(MC_PROCESS_INDEX_MISSING, addr_block1, addr_block2, snapshot1, snapshot2,
@@ -524,9 +520,8 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
       while (i2 <= state->heaplimit && !equal) {
 
-        addr_block2 =
-            ((void *) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE +
-                       (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
+        addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE +
+                       (char *) state->std_heap_copy.heapbase;
 
         if (i2 == i1) {
           i2++;
@@ -591,9 +586,8 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
           if (state->equals_to2_(i1, j1).valid == 0) {
 
-            addr_block2 =
-                ((void *) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE +
-                           (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
+            addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE +
+                           (char *) state->std_heap_copy.heapbase;
             addr_frag2 =
                 (void *) ((char *) addr_block2 +
                           (j1 << heapinfo2->type));
@@ -638,9 +632,8 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
             if (state->equals_to2_(i2, j2).valid)
               continue;
 
-            addr_block2 =
-                ((void *) (((ADDR2UINT(i2)) - 1) * BLOCKSIZE +
-                           (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
+            addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE +
+                           (char *) state->std_heap_copy.heapbase;
             addr_frag2 =
                 (void *) ((char *) addr_block2 +
                           (j2 << heapinfo2b->type));
@@ -828,9 +821,9 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
           && addr_pointed2 < process->maestro_stack_end) {
         i = pointer_align + sizeof(void *);
         continue;
-      } else if (addr_pointed1 > state->s_heap
+      } else if (addr_pointed1 > state->std_heap_copy.heapbase
                  && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
-                 && addr_pointed2 > state->s_heap
+                 && addr_pointed2 > state->std_heap_copy.heapbase
                  && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)) {
         // Both addreses are in the heap:
         res_compare =
@@ -988,9 +981,9 @@ top:
         for (i = 0; i < (area_size / sizeof(void *)); i++) {
           addr_pointed1 = MC_snapshot_read_pointer(snapshot1, (char*) real_area1 + i * sizeof(void *), process_index);
           addr_pointed2 = MC_snapshot_read_pointer(snapshot2, (char*) real_area2 + i * sizeof(void *), process_index);
-          if (addr_pointed1 > state->s_heap
+          if (addr_pointed1 > state->std_heap_copy.heapbase
               && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
-              && addr_pointed2 > state->s_heap
+              && addr_pointed2 > state->std_heap_copy.heapbase
               && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
             res =
                 compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
@@ -1004,9 +997,9 @@ top:
       } else {
         addr_pointed1 = MC_snapshot_read_pointer(snapshot1, real_area1, process_index);
         addr_pointed2 = MC_snapshot_read_pointer(snapshot2, real_area2, process_index);
-        if (addr_pointed1 > state->s_heap
+        if (addr_pointed1 > state->std_heap_copy.heapbase
             && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
-            && addr_pointed2 > state->s_heap
+            && addr_pointed2 > state->std_heap_copy.heapbase
             && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
           return compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
                                    snapshot2, previous, type->subtype,
@@ -1172,10 +1165,10 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
   // Get block number:
   block1 =
       ((char *) area1 -
-       (char *) ((xbt_mheap_t) state->s_heap)->heapbase) / BLOCKSIZE + 1;
+       (char *) state->std_heap_copy.heapbase) / BLOCKSIZE + 1;
   block2 =
       ((char *) area2 -
-       (char *) ((xbt_mheap_t) state->s_heap)->heapbase) / BLOCKSIZE + 1;
+       (char *) state->std_heap_copy.heapbase) / BLOCKSIZE + 1;
 
   // If either block is a stack block:
   if (is_block_stack((int) block1) && is_block_stack((int) block2)) {
@@ -1187,9 +1180,9 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
     return 0;
   }
   // If either block is not in the expected area of memory:
-  if (((char *) area1 < (char *) ((xbt_mheap_t) state->s_heap)->heapbase)
+  if (((char *) area1 < (char *) state->std_heap_copy.heapbase)
       || (block1 > state->heapsize1) || (block1 < 1)
-      || ((char *) area2 < (char *) ((xbt_mheap_t) state->s_heap)->heapbase)
+      || ((char *) area2 < (char *) state->std_heap_copy.heapbase)
       || (block2 > state->heapsize2) || (block2 < 1)) {
     if (match_pairs) {
       xbt_dynar_free(&previous);
@@ -1198,12 +1191,10 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
   }
 
   // Process address of the block:
-  real_addr_block1 =
-      ((void *) (((ADDR2UINT(block1)) - 1) * BLOCKSIZE +
-                 (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
-  real_addr_block2 =
-      ((void *) (((ADDR2UINT(block2)) - 1) * BLOCKSIZE +
-                 (char *) ((xbt_mheap_t) state->s_heap)->heapbase));
+  real_addr_block1 = (ADDR2UINT(block1) - 1) * BLOCKSIZE +
+                 (char *) state->std_heap_copy.heapbase;
+  real_addr_block2 = (ADDR2UINT(block2) - 1) * BLOCKSIZE +
+                 (char *) state->std_heap_copy.heapbase;
 
   if (type) {
 
@@ -1547,9 +1538,9 @@ static int get_pointed_area_size(void *area, int heap)
 
   block =
       ((char *) area -
-       (char *) ((xbt_mheap_t) state->s_heap)->heapbase) / BLOCKSIZE + 1;
+       (char *) state->std_heap_copy.heapbase) / BLOCKSIZE + 1;
 
-  if (((char *) area < (char *) ((xbt_mheap_t) state->s_heap)->heapbase)
+  if (((char *) area < (char *) state->std_heap_copy.heapbase)
       || (block > state->heapsize1) || (block < 1))
     return -1;
 
@@ -1608,10 +1599,7 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2)
   /* Heap information */
   state->heaplimit = ((struct mdesc *) heap1)->heaplimit;
 
-
-  // Mamailloute in order to find the base address of the main heap:
-  state->s_heap =
-      (char *) mmalloc_get_current_heap() - STD_HEAP_SIZE - xbt_pagesize;
+  state->std_heap_copy = *MC_process_get_heap(&mc_model_checker->process);
 
   state->heapbase1 = (char *) heap1 + BLOCKSIZE;
   state->heapbase2 = (char *) heap2 + BLOCKSIZE;
