@@ -303,10 +303,7 @@ const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot)
 {
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");
-  // This is &std_heap->breakval in the target process:
-  void** addr = &MC_process_get_heap(&mc_model_checker->process)->breakval;
-  // Read (std_heap->breakval) in the target process (*addr i.e. std_heap->breakval):
-  return MC_snapshot_read_pointer(snapshot, addr, MC_PROCESS_INDEX_ANY);
+  return MC_process_get_heap(&mc_model_checker->process)->breakval;
 }
 
 /** @brief Read memory from a snapshot region
