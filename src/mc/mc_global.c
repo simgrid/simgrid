@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <string.h>
+#include <stdint.h>
 
 #include "mc_base.h"
 
@@ -785,7 +786,16 @@ void MC_dump_stacks(FILE* file)
     unw_word_t off;
     do {
       const char * name = !unw_get_proc_name(&c, buffer, 100, &off) ? buffer : "?";
+#if defined(__x86_64__)
+      unw_word_t rip = 0;
+      unw_word_t rsp = 0;
+      unw_get_reg(&c, UNW_X86_64_RIP, &rip);
+      unw_get_reg(&c, UNW_X86_64_RSP, &rsp);
+      fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n",
+        nframe, name, rip, rsp);
+#else
       fprintf(file, "  %i: %s\n", nframe, name);
+#endif
       ++nframe;
     } while(unw_step(&c));
 
