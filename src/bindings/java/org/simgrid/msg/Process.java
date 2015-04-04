@@ -304,7 +304,7 @@ public abstract class Process implements Runnable {
 	 * @return				The current process.
 	 *
 	 */ 
-	public static native Process currentProcess();
+	public static native Process getCurrentProcess();
 	/**
 	 * Migrates a process to another host.
 	 *

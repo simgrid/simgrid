@@ -7,6 +7,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
  jMSG:
  * Interface improvement:
    - Rename Host.isAvail() to Host.isOn()
+   - Rename Process.currentProcess() to Process.getCurrentProcess()
    
  SIMIX:
  * New functions

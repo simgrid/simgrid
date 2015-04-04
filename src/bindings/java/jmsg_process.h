@@ -184,7 +184,7 @@ Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, jobject jprocess, jobject 
  * Method		currentProcess
  * Signature	()Lorg/simgrid/msg/Process;
  */
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_currentProcess
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getCurrentProcess
     (JNIEnv *, jclass);
 /*
  * Class		org_simgrid_msg_Process
