@@ -34,7 +34,6 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_dotload.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_dotload_notrace.tesh
   PARENT_SCOPE
   )
 set(xml_files

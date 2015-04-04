@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 #include "xbt/log.h"
 #include "xbt/ex.h"
 #include <string.h>

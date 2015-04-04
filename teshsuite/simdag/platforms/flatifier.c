@@ -15,7 +15,7 @@
 #include <math.h>
 
 
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
 #include "xbt/ex.h"

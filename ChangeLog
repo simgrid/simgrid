@@ -72,6 +72,8 @@ SimGrid (3.12) NOT RELEASED; urgency=low
   * Move headers around to sort them out on installed systems:
     - instr/instr.h  -> simgrid/instr.h
     - instr/jedule/* -> simgrid/jedule
+    - simdag/datatypes.h was removed
+    - simdag/simdag.h -> simgrid/simdag.h
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

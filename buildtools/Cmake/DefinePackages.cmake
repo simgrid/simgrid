@@ -568,10 +568,10 @@ set(TRACING_SRC
   )
 
 set(JEDULE_SRC
-  include/instr/jedule/jedule_events.h
-  include/instr/jedule/jedule_output.h
-  include/instr/jedule/jedule_platform.h
-  include/instr/jedule/jedule_sd_binding.h
+  include/simgrid/jedule/jedule_events.h
+  include/simgrid/jedule/jedule_output.h
+  include/simgrid/jedule/jedule_platform.h
+  include/simgrid/jedule/jedule_sd_binding.h
   src/instr/jedule/jedule_events.c
   src/instr/jedule/jedule_output.c
   src/instr/jedule/jedule_platform.c
@@ -630,11 +630,10 @@ set(MC_SRC
   )
 
 set(headers_to_install
-  include/instr/instr.h
+  include/simgrid/instr.h
   include/msg/datatypes.h
   include/msg/msg.h
-  include/simdag/datatypes.h
-  include/simdag/simdag.h
+  include/simgrid/simdag.h
   include/simgrid.h
   include/simgrid/datatypes.h
   include/simgrid/modelchecker.h

@@ -12,7 +12,7 @@
 #include "xbt.h"
 #include "xbt/graph.h"
 #include "msg/msg.h"
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 
 /*
  * Functions to manage tracing categories

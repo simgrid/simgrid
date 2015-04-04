@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 #include "surf/surf.h"

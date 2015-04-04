@@ -6,8 +6,7 @@
 
 #include "instr/instr_private.h"
 #include "private.h"
-#include "simdag/datatypes.h"
-
+#include "simgrid/simdag.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_sd, instr, "SD");
 
