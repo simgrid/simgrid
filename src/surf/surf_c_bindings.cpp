@@ -198,9 +198,7 @@ double surf_solve(double max_date)
     surf_update_actions_state(model);
   }
 
-#ifdef HAVE_TRACING
   TRACE_paje_dump_buffer (0);
-#endif
 
   return surf_min;
 }
@@ -557,11 +555,9 @@ void surf_action_set_priority(surf_action_t action, double priority){
   action->setPriority(priority);
 }
 
-#ifdef HAVE_TRACING
 void surf_action_set_category(surf_action_t action, const char *category){
   action->setCategory(category);
 }
-#endif
 
 void *surf_action_get_data(surf_action_t action){
   return action->getData();

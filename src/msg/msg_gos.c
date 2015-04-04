@@ -52,9 +52,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
-#ifdef HAVE_TRACING
   TRACE_msg_task_execute_start(task);
-#endif
 
   xbt_assert((!simdata->compute) && (task->simdata->isused == 0),
              "This task is executed somewhere else. Go fix your code! %d",
@@ -63,9 +61,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
   if (simdata->flops_amount == 0 && !simdata->host_nb) {
-#ifdef HAVE_TRACING
     TRACE_msg_task_execute_end(task);
-#endif
     return MSG_OK;
   }
 
@@ -97,9 +93,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
                                               );
 
     }
-#ifdef HAVE_TRACING
     simcall_set_category(simdata->compute, task->category);
-#endif
     p_simdata->waiting_action = simdata->compute;
     comp_state = simcall_host_execution_wait(simdata->compute);
 
@@ -130,9 +124,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
   simdata->flops_amount = 0.0;
   simdata->comm = NULL;
   simdata->compute = NULL;
-#ifdef HAVE_TRACING
   TRACE_msg_task_execute_end(task);
-#endif
 
   MSG_RETURN(status);
 }
@@ -151,17 +143,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
   msg_error_t status = MSG_OK;
   /*msg_process_t proc = MSG_process_self();*/
 
-#ifdef HAVE_TRACING
   TRACE_msg_process_sleep_in(MSG_process_self());
-#endif
-
-  /* create action to sleep */
-
-  /*proc->simdata->waiting_action = act_sleep;
-
-  FIXME: check if not setting the waiting_action breaks something on msg
-
-  proc->simdata->waiting_action = NULL;*/
 
   TRY {
     simcall_process_sleep(nb_sec);
@@ -184,9 +166,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
     xbt_ex_free(e);
   }
 
-  #ifdef HAVE_TRACING
-    TRACE_msg_process_sleep_out(MSG_process_self());
-  #endif
+  TRACE_msg_process_sleep_out(MSG_process_self());
   MSG_RETURN(status);
 }
 
@@ -406,10 +386,7 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   simdata_task_t t_simdata = NULL;
   msg_process_t process = MSG_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
-
-#ifdef HAVE_TRACING
   int call_end = TRACE_msg_task_put_start(task);
-#endif
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
@@ -452,14 +429,10 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
     comm->s_comm = act;
   }
 
-#ifdef HAVE_TRACING
-  if (TRACE_is_enabled()) {
+  if (TRACE_is_enabled())
     simcall_set_category(act, task->category);
-  }
-
   if (call_end)
     TRACE_msg_task_put_end();
-#endif
 
   return comm;
 }
@@ -1043,9 +1016,7 @@ int MSG_task_listen_from(const char *alias)
  */
 void MSG_task_set_category (msg_task_t task, const char *category)
 {
-#ifdef HAVE_TRACING
   TRACE_msg_set_task_category (task, category);
-#endif
 }
 
 /** \ingroup msg_task_usage
@@ -1060,11 +1031,7 @@ void MSG_task_set_category (msg_task_t task, const char *category)
  */
 const char *MSG_task_get_category (msg_task_t task)
 {
-#ifdef HAVE_TRACING
   return task->category;
-#else
-  return NULL;
-#endif
 }
 
 /**

@@ -141,12 +141,10 @@ void NetworkConstantAction::cancel()
   return;
 }
 
-#ifdef HAVE_TRACING
 void NetworkConstantAction::setCategory(const char */*category*/)
 {
   //ignore completely the categories in constant model, they are not traced
 }
-#endif
 
 void NetworkConstantAction::suspend()
 {

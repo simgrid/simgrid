@@ -6,8 +6,6 @@
 
 #include "instr/instr_private.h"
 
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_header, instr, "Paje tracing event system (header)");
 
 extern FILE *tracing_file;
@@ -253,6 +251,3 @@ void TRACE_header(int basic, int size)
   TRACE_header_PajeEndLink (basic, size);
   TRACE_header_PajeNewEvent (basic, size);
 }
-
-#endif
-

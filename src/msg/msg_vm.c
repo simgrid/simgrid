@@ -221,9 +221,7 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
 
   XBT_DEBUG("A new VM (%s) has been created", name);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_create(name, ind_pm);
-  #endif
 
   return ind_vm;
 }
@@ -250,9 +248,7 @@ void MSG_vm_destroy(msg_vm_t vm)
 
   __MSG_host_destroy(vm);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_end(vm);
-  #endif
 }
 
 
@@ -266,9 +262,7 @@ void MSG_vm_start(msg_vm_t vm)
 {
   simcall_vm_start(vm);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_start(vm);
-  #endif
 }
 
 
@@ -284,9 +278,7 @@ void MSG_vm_shutdown(msg_vm_t vm)
   /* msg_vm_t equals to msg_host_t */
   simcall_vm_shutdown(vm);
 
-  // #ifdef HAVE_TRACING
   // TRACE_msg_vm_(vm);
-  // #endif
 }
 
 
@@ -425,10 +417,7 @@ static int migration_rx_fun(int argc, char *argv[])
    msg_host_priv_t priv = msg_host_resource_priv(vm);
    priv->is_migrating = 0;
    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", ms->vm->key, ms->src_pm->key, ms->dst_pm->key);
-   #ifdef HAVE_TRACING
-    TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
-   #endif
-
+   TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
   }
   // Inform the SRC that the migration has been correctly performed
   {
@@ -1000,9 +989,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   // This part is done in the RX code, to handle the corner case where SRC can crash just at the end of the migration process
   // In that case, the VM has been already assigned to the DST node.
   //XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm->key, old_pm->key, new_pm->key);
-  //#ifdef HAVE_TRACING
   //TRACE_msg_vm_change_host(vm, old_pm, new_pm);
-  //#endif
 }
 
 
@@ -1023,9 +1010,7 @@ void MSG_vm_suspend(msg_vm_t vm)
 
   XBT_DEBUG("vm_suspend done");
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_suspend(vm);
-  #endif
 }
 
 
@@ -1038,9 +1023,7 @@ void MSG_vm_resume(msg_vm_t vm)
 {
   simcall_vm_resume(vm);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_resume(vm);
-  #endif
 }
 
 
@@ -1060,9 +1043,7 @@ void MSG_vm_save(msg_vm_t vm)
     THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_name(vm));
 
   simcall_vm_save(vm);
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_save(vm);
-  #endif
 }
 
 /** @brief Restore the execution of the VM. All processes on the VM run again.
@@ -1076,9 +1057,7 @@ void MSG_vm_restore(msg_vm_t vm)
 {
   simcall_vm_restore(vm);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_restore(vm);
-  #endif
 }
 
 

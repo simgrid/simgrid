@@ -72,18 +72,15 @@ XBT_PUBLIC(void) gpu_register_callbacks(void){
 static int after_config_done;
 void parse_after_config() {
   if (!after_config_done) {
-    //
-    #ifdef HAVE_TRACING
-      TRACE_start();
-    #endif
+	  TRACE_start();
 
     /* Register classical callbacks */
     storage_register_callbacks();
     routing_register_callbacks();
+    gpu_register_callbacks();
 
     /* ***************************************** */
     /* TUTORIAL: New TAG                         */
-    gpu_register_callbacks();
     /* ***************************************** */
     after_config_done = 1;
   }

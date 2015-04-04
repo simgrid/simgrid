@@ -230,11 +230,9 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
                                 m_core * m_powerScale *
                                 m_powerPeak);
-#ifdef HAVE_TRACING
     TRACE_surf_host_set_power(date, getName(),
                               m_core * m_powerScale *
                               m_powerPeak);
-#endif
     while ((var = lmm_get_var_from_cnst
             (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
       CpuCas01ActionPtr action = static_cast<CpuCas01ActionPtr>(lmm_variable_id(var));

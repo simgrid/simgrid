@@ -10,9 +10,7 @@ add_executable(sd_typed_tasks_test sd_typed_tasks_test.c)
 add_executable(sd_comm_throttling sd_comm_throttling.c)
 add_executable(sd_seq_access sd_seq_access.c)
 
-if (HAVE_TRACING)
-  add_executable(simdag_tracing simdag_trace.c)
-endif()
+add_executable(simdag_tracing simdag_trace.c)
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -23,9 +21,7 @@ if(NOT WIN32)
   target_link_libraries(sd_typed_tasks_test simgrid pthread )
   target_link_libraries(sd_comm_throttling simgrid pthread )
   target_link_libraries(sd_seq_access simgrid pthread )
-  if (HAVE_TRACING)
   target_link_libraries(simdag_tracing simgrid pthread )
-  endif()
 
   add_custom_command(TARGET ex_sd_test
     POST_BUILD
@@ -45,9 +41,7 @@ else()
   target_link_libraries(sd_typed_tasks_test simgrid)
   target_link_libraries(sd_comm_throttling simgrid)
   target_link_libraries(sd_seq_access simgrid)
-  if (HAVE_TRACING)
-    target_link_libraries(simdag_tracing simgrid)
-  endif()
+  target_link_libraries(simdag_tracing simgrid)
   
   add_custom_command(TARGET ex_sd_test
     POST_BUILD

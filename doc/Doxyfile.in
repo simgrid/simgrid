@@ -1560,7 +1560,6 @@ PREDEFINED             = DOXYGEN \
                          XBT_PUBLIC_DATA(type)="extern type" \
                          XBT_PUBLIC_CLASS=class \
                          XBT_INLINE= \
-                         HAVE_TRACING \
                          MSG_USE_DEPRECATED
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then

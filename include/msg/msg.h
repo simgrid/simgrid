@@ -501,7 +501,7 @@ xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_host(msg_host_t)
 xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
 + des fonctions de filtrage sur les dynar
 */
-#include "instr/instr.h"
+#include "simgrid/instr.h"
 
 
 

@@ -6,8 +6,6 @@
 
 #include "instr/instr_private.h"
 
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event system (values)");
 
 val_t PJ_value_new (const char *name, const char *color, type_t father)
@@ -71,6 +69,3 @@ void PJ_value_free (val_t value)
   xbt_free(((val_t)value)->id);
   xbt_free(value);
 }
-
-
-#endif

@@ -6,7 +6,6 @@
 
 #include "simgrid_config.h"
 
-#ifdef HAVE_TRACING
 #include "instr/instr_private.h"
 #include "surf/surf.h"
 #include "surf/surf_private.h"
@@ -1164,5 +1163,3 @@ void TRACE_resume (void)
 {
   instr_resume_tracing();
 }
-
-#endif /* HAVE_TRACING */

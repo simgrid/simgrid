@@ -258,9 +258,7 @@ smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type)
   synchro->latency_limited = -1;
 #endif
 
-#ifdef HAVE_TRACING
   synchro->category = NULL;
-#endif
 
   XBT_DEBUG("Create communicate synchro %p", synchro);
   ++smx_total_comms;

@@ -72,9 +72,8 @@ void SIMIX_host_execution_suspend(smx_synchro_t synchro);
 void SIMIX_host_execution_resume(smx_synchro_t synchro);
 
 void SIMIX_post_host_execute(smx_synchro_t synchro);
-#ifdef HAVE_TRACING
 void SIMIX_set_category(smx_synchro_t synchro, const char *category);
-#endif
+
 /* vm related stuff */
 smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host);
 

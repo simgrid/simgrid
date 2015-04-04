@@ -72,9 +72,7 @@ msg_task_t MSG_task_create(const char *name, double flop_amount,
   simdata->host_list = NULL;
   simdata->flops_parallel_amount = NULL;
   simdata->bytes_parallel_amount = NULL;
-#ifdef HAVE_TRACING
   TRACE_msg_task_create(task);
-#endif
 
   return task;
 }
@@ -155,10 +153,7 @@ msg_gpu_task_t MSG_gpu_task_create(const char *name, double flops_amount,
   simdata->dispatch_latency   = dispatch_latency;
   simdata->collect_latency    = collect_latency;
 
-#ifdef HAVE_TRACING
-  //FIXME
-  /* TRACE_msg_gpu_task_create(task); */
-#endif
+  /* TRACE_msg_gpu_task_create(task); FIXME*/
 
   return task;
 }
@@ -272,9 +267,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
     /* the task is being sent or executed: cancel it first */
     MSG_task_cancel(task);
   }
-#ifdef HAVE_TRACING
   TRACE_msg_task_destroy(task);
-#endif
 
   xbt_free(task->name);
 
@@ -321,7 +314,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
  * \brief Returns the computation amount needed to process a task #msg_task_t.
  *
  * Once a task has been processed, this amount is set to 0. If you want, you
- * can reset this value with #MSG_task_set_compute_duration before restarting the task.
+ * can reset this value with #MSG_task_set_flops_amount before restarting the task.
  */
 double MSG_task_get_compute_duration(msg_task_t task)
 {

@@ -9,8 +9,6 @@
 
 #include "simgrid_config.h"
 
-#ifdef HAVE_TRACING
-
 #include "xbt.h"
 #include "xbt/graph.h"
 #include "msg/msg.h"
@@ -97,61 +95,5 @@ XBT_PUBLIC(xbt_dynar_t) TRACE_get_node_types (void);
 XBT_PUBLIC(xbt_dynar_t) TRACE_get_edge_types (void);
 XBT_PUBLIC(void) TRACE_pause (void);
 XBT_PUBLIC(void) TRACE_resume (void);
-
-
-#else                           /* HAVE_TRACING */
-
-#define TRACE_category(category)
-#define TRACE_category_with_color(category,color)
-#define TRACE_get_categories()
-#define TRACE_smpi_set_category(category)
-
-#define TRACE_declare_mark(mark_type)
-#define TRACE_mark(mark_type,mark_value)
-#define TRACE_get_marks()
-
-#define TRACE_platform_graph_export_graphviz(filename)
-
-#define TRACE_vm_variable_declare(var)
-#define TRACE_vm_variable_declare_with_color(var,color)
-#define TRACE_vm_variable_set(vm,var,value)
-#define TRACE_vm_variable_add(vm,var,value)
-#define TRACE_vm_variable_sub(vm,var,value)
-#define TRACE_vm_variable_set_with_time(time,vm,var,value)
-#define TRACE_vm_variable_add_with_time(time,vm,var,value)
-#define TRACE_vm_variable_sub_with_time(time,vm,var,value)
-#define TRACE_get_vm_variables()
-
-#define TRACE_host_variable_declare(var)
-#define TRACE_host_variable_declare_with_color(var,color)
-#define TRACE_host_variable_set(host,var,value)
-#define TRACE_host_variable_add(host,var,value)
-#define TRACE_host_variable_sub(host,var,value)
-#define TRACE_host_variable_set_with_time(time,host,var,value)
-#define TRACE_host_variable_add_with_time(time,host,var,value)
-#define TRACE_host_variable_sub_with_time(time,host,var,value)
-#define TRACE_get_host_variables()
-
-#define TRACE_link_variable_declare(var)
-#define TRACE_link_variable_declare_with_color(var,color)
-#define TRACE_link_variable_set(link,var,value)
-#define TRACE_link_variable_add(link,var,value)
-#define TRACE_link_variable_sub(link,var,value)
-#define TRACE_link_variable_set_with_time(time,link,var,value)
-#define TRACE_link_variable_add_with_time(time,link,var,value)
-#define TRACE_link_variable_sub_with_time(time,link,var,value)
-
-#define TRACE_link_srcdst_variable_set(src,dst,var,value)
-#define TRACE_link_srcdst_variable_add(src,dst,var,value)
-#define TRACE_link_srcdst_variable_sub(src,dst,var,value)
-#define TRACE_link_srcdst_variable_set_with_time(time,src,dst,var,value)
-#define TRACE_link_srcdst_variable_add_with_time(time,src,dst,var,value)
-#define TRACE_link_srcdst_variable_sub_with_time(time,src,dst,var,value)
-#define TRACE_get_host_variables()
-
-#define TRACE_get_node_types()
-#define TRACE_get_edge_types()
-
-#endif                          /* HAVE_TRACING */
 
 #endif                          /* INSTR_H_ */

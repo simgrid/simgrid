@@ -90,9 +90,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
 
   sd_global->task_number++;
 
-#ifdef HAVE_TRACING
   TRACE_sd_task_create(task);
-#endif
 
   return task;
 }
@@ -126,10 +124,8 @@ SD_task_t SD_task_create_comm_e2e(const char *name, void *data,
   res->bytes_amount[2] = amount;
   res->kind = SD_TASK_COMM_E2E;
 
-#ifdef HAVE_TRACING
   TRACE_category("COMM_E2E");
   TRACE_sd_set_task_category(res, "COMM_E2E");
-#endif
 
   return res;
 }
@@ -156,12 +152,10 @@ SD_task_t SD_task_create_comp_seq(const char *name, void *data,
   res->flops_amount[0] = flops_amount;
   res->kind = SD_TASK_COMP_SEQ;
 
-#ifdef HAVE_TRACING
   TRACE_category("COMP_SEQ");
   TRACE_sd_set_task_category(res, "COMP_SEQ");
-#endif
 
-return res;
+  return res;
 }
 
 /** @brief create a parallel computation task that can then be auto-scheduled
@@ -191,10 +185,8 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data,
   res->alpha = alpha;
   res->kind = SD_TASK_COMP_PAR_AMDAHL;
 
-#ifdef HAVE_TRACING
   TRACE_category("COMP_PAR_AMDAHL");
   TRACE_sd_set_task_category(res, "COMP_PAR_AMDAHL");
-#endif
 
   return res;
 }
@@ -225,10 +217,8 @@ SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data,
   res->workstation_list=NULL;
   res->kind = SD_TASK_COMM_PAR_MXN_1D_BLOCK;
 
-#ifdef HAVE_TRACING
   TRACE_category("COMM_PAR_MXN_1D_BLOCK");
   TRACE_sd_set_task_category(res, "COMM_PAR_MXN_1D_BLOCK");
-#endif
 
   return res;
 }
@@ -263,9 +253,7 @@ void SD_task_destroy(SD_task_t task)
   xbt_free(task->bytes_amount);
   xbt_free(task->flops_amount);
 
-#ifdef HAVE_TRACING
   TRACE_sd_task_destroy(task);
-#endif
 
   xbt_mallocator_release(sd_global->task_mallocator,task);
   sd_global->task_number--;
@@ -568,10 +556,8 @@ void SD_task_dump(SD_task_t task)
     }
   }
 
-#ifdef HAVE_TRACING
   if (task->category)
     XBT_INFO("  - tracing category: %s", task->category);
-#endif
 
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
@@ -1156,10 +1142,8 @@ void __SD_task_really_run(SD_task_t task)
 
   XBT_DEBUG("surf_action = %p", task->surf_action);
 
-#ifdef HAVE_TRACING
   if (task->category)
     TRACE_surf_action(task->surf_action, task->category);
-#endif
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   __SD_task_set_state(task, SD_RUNNING);

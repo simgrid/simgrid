@@ -528,9 +528,7 @@ static void smpi_init_logs(){
                                    function: xbt_log_appender_file.c depends on it
                                    DO NOT connect this in XBT or so, or it will be
                                    useless to xbt_log_appender_file.c */
-#ifdef HAVE_TRACING
   XBT_LOG_CONNECT(instr_smpi);
-#endif
   XBT_LOG_CONNECT(smpi_base);
   XBT_LOG_CONNECT(smpi_bench);
   XBT_LOG_CONNECT(smpi_coll);
@@ -641,12 +639,10 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
 
   smpi_init_logs();
 
-#ifdef HAVE_TRACING
   TRACE_global_init(&argc, argv);
 
   TRACE_add_start_function(TRACE_smpi_alloc);
   TRACE_add_end_function(TRACE_smpi_release);
-#endif
 
   SIMIX_global_init(&argc, argv);
 
@@ -691,9 +687,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
 
   smpi_global_destroy();
 
-#ifdef HAVE_TRACING
   TRACE_end();
-#endif
 
   return 0;
 }
@@ -705,11 +699,8 @@ void SMPI_init(){
   smpi_init_options();
   smpi_global_init();
   smpi_check_options();
-#ifdef HAVE_TRACING
-  if (TRACE_is_enabled() && TRACE_is_configured()) {
+  if (TRACE_is_enabled() && TRACE_is_configured())
     TRACE_smpi_alloc();
-  }
-#endif
   if(smpi_privatize_global_variables)
     smpi_initialize_global_memory_segments();
 }

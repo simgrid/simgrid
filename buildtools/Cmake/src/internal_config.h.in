@@ -296,9 +296,6 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #cmakedefine TIME_WITH_SYS_TIME @TIME_WITH_SYS_TIME@
 
-/* Tracing SimGrid */
-#cmakedefine HAVE_TRACING @HAVE_TRACING@
-
 /* Tracking of latency bound */
 #cmakedefine HAVE_LATENCY_BOUND_TRACKING @HAVE_LATENCY_BOUND_TRACKING@
 

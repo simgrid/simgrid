@@ -44,7 +44,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "instr/instr.h" //TRACE_
+#include "simgrid/instr.h" //TRACE_
 
 /******************/
 /* default values */

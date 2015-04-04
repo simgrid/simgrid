@@ -502,9 +502,7 @@ int StorageN11Action::unref()
 	  p_stateSet->erase(p_stateSet->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
-#ifdef HAVE_TRACING
     xbt_free(getCategory());
-#endif
     delete this;
     return 1;
   }

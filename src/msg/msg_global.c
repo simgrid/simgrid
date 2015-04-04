@@ -37,9 +37,7 @@ static void _sg_cfg_cb_msg_debug_multiple_use(const char *name, int pos)
  */
 void MSG_init_nocheck(int *argc, char **argv) {
 
-#ifdef HAVE_TRACING
   TRACE_global_init(argc, argv);
-#endif
 
   xbt_getpid = MSG_process_self_PID;
   if (!msg_global) {
@@ -167,11 +165,8 @@ static void MSG_exit(void) {
   if (msg_global==NULL)
     return;
 
-#ifdef HAVE_TRACING
   TRACE_surf_resource_utilization_release();
   TRACE_end();
-#endif
-
   free(msg_global);
   msg_global = NULL;
 }

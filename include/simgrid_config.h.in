@@ -124,9 +124,6 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /* Define if xbt contexts are based on our threads implementation or not */
 #cmakedefine CONTEXT_THREADS @CONTEXT_THREADS@
 
-/* Tracing SimGrid */
-#cmakedefine HAVE_TRACING @HAVE_TRACING@
-
 /* Jedule output  */
 #cmakedefine HAVE_JEDULE @HAVE_JEDULE@
 

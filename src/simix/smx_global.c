@@ -456,9 +456,7 @@ void SIMIX_run(void)
 
   if (xbt_swag_size(simix_global->process_list) != 0) {
 
-#ifdef HAVE_TRACING
-    TRACE_end();
-#endif
+	TRACE_end();
 
     XBT_CRITICAL("Oops ! Deadlock or code not perfectly clean.");
     SIMIX_display_process_status();

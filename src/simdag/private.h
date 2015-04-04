@@ -114,10 +114,8 @@ typedef struct SD_task {
   double *bytes_amount;
   double rate;
 
-#ifdef HAVE_TRACING
   long long int counter;        /* task unique identifier for instrumentation */
   char *category;               /* sd task category for instrumentation */
-#endif
 } s_SD_task_t;
 
 /* Task dependencies */

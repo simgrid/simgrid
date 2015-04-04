@@ -2609,31 +2609,6 @@ inline static int simcall_BODY_mc_random(int min, int max) {
     }    
     return self->simcall.result.i;
   }
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  
-inline static int simcall_BODY_comm_is_latency_bounded(smx_synchro_t comm) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_comm_is_latency_bounded(comm);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_COMM_IS_LATENCY_BOUNDED;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) comm;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.i;
-  }
-#endif
-
-#ifdef HAVE_TRACING
   
 inline static void simcall_BODY_set_category(smx_synchro_t synchro, const char* category) {
     smx_process_t self = SIMIX_process_self();
@@ -2655,6 +2630,28 @@ inline static void simcall_BODY_set_category(smx_synchro_t synchro, const char* 
       SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
+  }
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+  
+inline static int simcall_BODY_comm_is_latency_bounded(smx_synchro_t comm) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_comm_is_latency_bounded(comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_COMM_IS_LATENCY_BOUNDED;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) comm;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    return self->simcall.result.i;
   }
 #endif
 

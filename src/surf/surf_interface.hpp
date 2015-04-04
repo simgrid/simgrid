@@ -594,14 +594,12 @@ public:
    */
   virtual void setPriority(double priority);
 
-#ifdef HAVE_TRACING
   /**
    * @brief Set the category of the current Action
    *
    * @param category The new category of the current Action
    */
   void setCategory(const char *category);
-#endif
 
   /**
    * @brief Get the remaining time of the current action after updating the resource

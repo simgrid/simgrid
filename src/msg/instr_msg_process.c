@@ -9,8 +9,6 @@
 #include "msg/datatypes.h"
 #include "simix/smx_process_private.h"
 
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
 char *instr_process_id (msg_process_t proc, char *str, int len)
@@ -147,5 +145,3 @@ void TRACE_msg_process_end(msg_process_t process)
     PJ_container_free (container);
   }
 }
-
-#endif /* HAVE_TRACING */

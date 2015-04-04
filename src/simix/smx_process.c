@@ -739,9 +739,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_SLEEP;
   synchro->name = NULL;
-#ifdef HAVE_TRACING
   synchro->category = NULL;
-#endif
 
   synchro->sleep.host = host;
   synchro->sleep.surf_sleep =

@@ -43,9 +43,7 @@ SD_global_t sd_global = NULL;
  */
 void SD_init(int *argc, char **argv)
 {
-#ifdef HAVE_TRACING
   TRACE_global_init(argc, argv);
-#endif
 
   s_SD_task_t task;
 
@@ -432,9 +430,7 @@ double SD_get_clock(void) {
  */
 void SD_exit(void)
 {
-#ifdef HAVE_TRACING
   TRACE_surf_resource_utilization_release();
-#endif
 
   xbt_mallocator_free(sd_global->task_mallocator);
 
@@ -454,9 +450,7 @@ void SD_exit(void)
   xbt_swag_free(sd_global->failed_task_set);
   xbt_swag_free(sd_global->return_set);
 
-#ifdef HAVE_TRACING
   TRACE_end();
-#endif
 
   xbt_free(sd_global);
   sd_global = NULL;

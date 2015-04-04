@@ -8,7 +8,6 @@
 #include "private.h"
 #include "simdag/datatypes.h"
 
-#ifdef HAVE_TRACING
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_sd, instr, "SD");
 
@@ -78,4 +77,3 @@ void TRACE_sd_task_destroy(SD_task_t task)
   return;
 }
 
-#endif /* HAVE_TRACING */

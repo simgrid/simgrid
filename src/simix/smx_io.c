@@ -70,9 +70,7 @@ smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, smx_host_t host)
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_IO;
   synchro->name = NULL;
-#ifdef HAVE_TRACING
   synchro->category = NULL;
-#endif
 
   synchro->io.host = host;
   synchro->io.surf_io = surf_workstation_read(host, fd->surf_file, size);
@@ -104,9 +102,7 @@ smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, smx_host_t host)
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_IO;
   synchro->name = NULL;
-#ifdef HAVE_TRACING
   synchro->category = NULL;
-#endif
 
   synchro->io.host = host;
   synchro->io.surf_io = surf_workstation_write(host, fd->surf_file, size);
@@ -138,9 +134,7 @@ smx_synchro_t SIMIX_file_open(const char* fullpath, smx_host_t host)
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_IO;
   synchro->name = NULL;
-#ifdef HAVE_TRACING
   synchro->category = NULL;
-#endif
 
   synchro->io.host = host;
   synchro->io.surf_io = surf_workstation_open(host, fullpath);
@@ -172,9 +166,7 @@ smx_synchro_t SIMIX_file_close(smx_file_t fd, smx_host_t host)
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_IO;
   synchro->name = NULL;
-#ifdef HAVE_TRACING
   synchro->category = NULL;
-#endif
 
   synchro->io.host = host;
   synchro->io.surf_io = surf_workstation_close(host, fd->surf_file);

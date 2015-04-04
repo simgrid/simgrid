@@ -6,7 +6,6 @@
 
 #include "instr/instr_private.h"
 
-#ifdef HAVE_TRACING
 #include "surf/surf_private.h"
 #include "xbt/graph.h"
 
@@ -509,6 +508,3 @@ void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *fi
   fclose(file);
 
 }
-
-#endif /* HAVE_TRACING */
-

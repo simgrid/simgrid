@@ -1307,9 +1307,7 @@ void routing_register_callbacks()
   sg_platf_trace_add_cb(routing_parse_trace);
   sg_platf_trace_connect_add_cb(routing_parse_trace_connect);
 
-#ifdef HAVE_TRACING
   instr_routing_define_callbacks();
-#endif
 }
 
 /**

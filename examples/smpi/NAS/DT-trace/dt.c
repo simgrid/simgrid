@@ -44,7 +44,7 @@
 #include "mpi.h"
 #include "npbparams.h"
 
-#include "instr/instr.h" //TRACE_
+#include "simgrid/instr.h" //TRACE_
 
 #ifndef CLASS
 #define CLASS 'S'

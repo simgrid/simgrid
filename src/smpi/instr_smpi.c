@@ -10,9 +10,6 @@
 #include <stdarg.h>
 #include <simgrid/sg_config.h>
 
-
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
 static xbt_dict_t keys;
@@ -420,4 +417,3 @@ void TRACE_smpi_recv(int rank, int src, int dst)
 
   new_pajeEndLink (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key);
 }
-#endif /* HAVE_TRACING */

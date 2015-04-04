@@ -6,8 +6,6 @@
 
 #include "instr/instr_private.h"
 
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
 
 //to check if variables were previously set to 0, otherwise paje won't simulate them
@@ -133,4 +131,3 @@ void TRACE_surf_resource_utilization_release()
 {
   xbt_dict_free(&platform_variables);
 }
-#endif /* HAVE_TRACING */

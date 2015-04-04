@@ -1048,7 +1048,6 @@ void simcall_comm_wait(smx_synchro_t comm, double timeout)
   simcall_BODY_comm_wait(comm, timeout);
 }
 
-#ifdef HAVE_TRACING
 /**
  * \brief Set the category of an synchro.
  *
@@ -1063,7 +1062,6 @@ void simcall_set_category(smx_synchro_t synchro, const char *category)
   }
   simcall_BODY_set_category(synchro, category);
 }
-#endif
 
 /**
  * \ingroup simix_comm_management

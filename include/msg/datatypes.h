@@ -9,7 +9,6 @@
 #include "xbt/misc.h"
 #include "xbt/lib.h"
 #include "simgrid/simix.h"
-#include "simgrid_config.h"     // for HAVE_TRACING
 
 SG_BEGIN_DECL()
 
@@ -74,10 +73,8 @@ typedef struct msg_task {
   char *name;                   /**< @brief task name if any */
   simdata_task_t simdata;       /**< @brief simulator data */
   void *data;                   /**< @brief user data */
-#ifdef HAVE_TRACING
   long long int counter;        /* task unique identifier for instrumentation */
   char *category;               /* task category for instrumentation */
-#endif
 } s_msg_task_t;
 
 /** @brief Task datatype.
@@ -153,10 +150,8 @@ typedef struct simdata_gpu_task *simdata_gpu_task_t;
 typedef struct msg_gpu_task {
   char *name;                   /**< @brief task name if any */
   simdata_gpu_task_t simdata;       /**< @brief simulator data */
-#ifdef HAVE_TRACING
   long long int counter;        /* task unique identifier for instrumentation */
   char *category;               /* task category for instrumentation */
-#endif
 } s_msg_gpu_task_t;
 
 /** @brief GPU task datatype.

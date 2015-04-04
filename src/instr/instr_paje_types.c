@@ -6,8 +6,6 @@
 
 #include "instr/instr_private.h"
 
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
 static type_t rootType = NULL;        /* the root type */
@@ -196,5 +194,3 @@ type_t PJ_type_state_new (const char *name, type_t father)
   new_pajeDefineStateType(ret);
   return ret;
 }
-
-#endif
