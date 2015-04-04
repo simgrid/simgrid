@@ -6,7 +6,6 @@
 
 #include "cpu_cas01.hpp"
 #include "cpu_ti.hpp"
-#include "plugins/energy.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
 
