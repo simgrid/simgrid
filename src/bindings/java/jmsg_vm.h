@@ -10,7 +10,7 @@
 #define MSG_VM_H
 
 #include <jni.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm);
 msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm);

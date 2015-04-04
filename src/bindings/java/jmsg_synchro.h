@@ -10,7 +10,7 @@
 #define MSG_JSYNCHRO_H
 
 #include <jni.h>
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <simgrid/simix.h>
 
 JNIEXPORT void JNICALL

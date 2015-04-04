@@ -6,7 +6,7 @@
 
 #include "routing_table.h"
 #include "node.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia_routing_table,

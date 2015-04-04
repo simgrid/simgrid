@@ -10,7 +10,7 @@
 #define MSG_JHOST_H
 
 #include <jni.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 
 /**
  * This function returns a new java host instance.

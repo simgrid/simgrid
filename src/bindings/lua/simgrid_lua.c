@@ -10,7 +10,7 @@
 #include "lua_state_cloner.h"
 #include "lua_utils.h"
 #include "xbt.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "simgrid/simdag.h"
 #include "surf/surfxml_parse.h"
 #include <lauxlib.h>

@@ -74,6 +74,8 @@ SimGrid (3.12) NOT RELEASED; urgency=low
     - instr/jedule/* -> simgrid/jedule
     - simdag/datatypes.h was removed
     - simdag/simdag.h -> simgrid/simdag.h
+    - msg/datatypes.h was removed
+    - msg/msg.h -> simgrid/msg.h
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

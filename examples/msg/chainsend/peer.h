@@ -7,7 +7,7 @@
 #ifndef KADEPLOY_PEER_H
 #define KADEPLOY_PEER_H
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/sysdep.h"
 
 #include "messages.h"

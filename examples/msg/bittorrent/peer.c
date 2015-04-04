@@ -8,7 +8,7 @@
 #include "tracker.h"
 #include "connection.h"
 #include "messages.h"
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <xbt/RngStream.h>
 #include <limits.h>
 

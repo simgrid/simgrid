@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 

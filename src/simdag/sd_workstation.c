@@ -11,7 +11,7 @@
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
 #include "surf/surf_resource.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h" //FIXME: why?
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_workstation, sd,
                                 "Logging specific to SimDag (workstation)");

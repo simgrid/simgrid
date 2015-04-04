@@ -11,7 +11,7 @@
 #include "jmsg_host.h"
 #include "jmsg_process.h"
 #include "jxbt_utilities.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 static jfieldID jvm_field_bind;

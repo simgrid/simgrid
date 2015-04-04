@@ -21,7 +21,7 @@
  */
 
 #include <stdio.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */

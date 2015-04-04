@@ -6,7 +6,6 @@
 
 #include "instr/instr_private.h"
 #include "msg_private.h"
-#include "msg/datatypes.h"
 #include "mc/mc.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");

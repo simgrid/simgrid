@@ -9,7 +9,7 @@
 #ifndef MSG_JSTORAGE_H
 #define MSG_JSTORAGE_H
 #include <jni.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 
 /**
  * This function returns a new java storage instance.

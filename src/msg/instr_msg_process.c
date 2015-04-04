@@ -5,8 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
-
-#include "msg/datatypes.h"
 #include "simix/smx_process_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");

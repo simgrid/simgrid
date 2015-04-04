@@ -7,7 +7,7 @@
 #ifndef _MSG_EXAMPLES_ROUTING_H
 #define _MSG_EXAMPLES_ROUTING_H
 #include "xbt/dynar.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 
 #include "common.h"
 

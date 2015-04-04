@@ -8,7 +8,7 @@
 #include <unistd.h>
 #endif
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator,

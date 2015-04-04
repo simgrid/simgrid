@@ -7,7 +7,7 @@
 /* SimGrid Lua bindings                                                     */
 
 #include "simgrid_lua.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 
 void sglua_register_task_functions(lua_State* L);
 msg_task_t sglua_check_task(lua_State* L, int index);

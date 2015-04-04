@@ -10,7 +10,7 @@
 #define MSG_JTASK_H
 
 #include <jni.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 
 /**
  * This function returns a global reference to the  java task instance 

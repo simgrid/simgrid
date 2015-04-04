@@ -11,7 +11,7 @@
 
 #include "xbt.h"
 #include "xbt/graph.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "simgrid/simdag.h"
 
 /*

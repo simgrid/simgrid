@@ -16,7 +16,7 @@
 #include <unistd.h>
 #endif
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "mc/mc.h"
 #include "xbt/automaton.h"
 #include "bugged1_liveness.h"

@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <simgrid/modelchecker.h>
 
 /** An (fake) application with a bug occuring for some random values

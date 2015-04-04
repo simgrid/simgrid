@@ -7,7 +7,7 @@
 #ifndef KADEPLOY_BROADCASTER_H
 #define KADEPLOY_BROADCASTER_H
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/sysdep.h"
 
 /* Create a log channel to have nice outputs. */

@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "surf/surf_private.h"
 
 #define INMEGA (1024*1024)
