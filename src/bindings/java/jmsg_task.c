@@ -353,7 +353,7 @@ Java_org_simgrid_msg_Task_setComputeDuration
     jxbt_throw_notbound(env, "task", jtask);
     return;
 	}
-	MSG_task_set_compute_duration(task, (double) computationAmount);
+	MSG_task_set_flops_amount(task, (double) computationAmount);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_setDataSize
@@ -365,7 +365,7 @@ Java_org_simgrid_msg_Task_setDataSize
     return;
 	}
         (*env)->SetDoubleField(env, jtask, jtask_field_Task_messageSize, dataSize);
-	MSG_task_set_data_size(task, (double) dataSize);
+	MSG_task_set_bytes_amount(task, (double) dataSize);
 }
 
 JNIEXPORT void JNICALL

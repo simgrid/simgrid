@@ -51,8 +51,8 @@ public:
   WorkstationPtr createWorkstation(const char *name);
   ActionPtr executeParallelTask(int workstation_nb,
                                         void **workstation_list,
-                                        double *computation_amount,
-                                        double *communication_amount,
+                                        double *flops_amount,
+                                        double *bytes_amount,
                                         double rate);
   xbt_dynar_t getRoute(WorkstationPtr src, WorkstationPtr dst);
   ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);
@@ -170,9 +170,8 @@ class WorkstationL07Action : public WorkstationAction {
   friend ActionPtr WorkstationL07::sleep(double duration);
   friend ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
                                                      void **workstation_list,
-                                                   double
-                                                   *computation_amount, double
-                                                   *communication_amount,
+                                                   double *flops_amount,
+												   double *bytes_amount,
                                                    double rate);
 public:
   WorkstationL07Action(ModelPtr model, double cost, bool failed)

@@ -62,7 +62,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
-  if (simdata->computation_amount == 0 && !simdata->host_nb) {
+  if (simdata->flops_amount == 0 && !simdata->host_nb) {
 #ifdef HAVE_TRACING
     TRACE_msg_task_execute_end(task);
 #endif
@@ -80,8 +80,8 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       simdata->compute = simcall_host_parallel_execute(task->name,
                                                        simdata->host_nb,
                                                        simdata->host_list,
-                                                       simdata->comp_amount,
-                                                       simdata->comm_amount,
+                                                       simdata->flops_parallel_amount,
+                                                       simdata->bytes_parallel_amount,
                                                        1.0, -1.0);
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
@@ -90,7 +90,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
       simdata->compute = simcall_host_execute(task->name,
                                               p_simdata->m_host,
-                                              simdata->computation_amount,
+                                              simdata->flops_amount,
                                               simdata->priority,
                                               simdata->bound,
                                               affinity_mask
@@ -127,7 +127,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
   }
   /* action ended, set comm and compute = NULL, the actions is already destroyed
    * in the main function */
-  simdata->computation_amount = 0.0;
+  simdata->flops_amount = 0.0;
   simdata->comm = NULL;
   simdata->compute = NULL;
 #ifdef HAVE_TRACING
@@ -436,7 +436,7 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_synchro_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->message_size,
+  smx_synchro_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->bytes_amount,
                                         t_simdata->rate, task, sizeof(void *),
                                         match_fun, cleanup, NULL, match_data,detached);
   t_simdata->comm = act; /* FIXME: is the field t_simdata->comm still useful? */

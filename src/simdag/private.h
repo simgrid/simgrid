@@ -110,8 +110,8 @@ typedef struct SD_task {
   /* scheduling parameters (only exist in state SD_SCHEDULED) */
   int workstation_nb;
   SD_workstation_t *workstation_list;   /* surf workstations */
-  double *computation_amount;
-  double *communication_amount;
+  double *flops_amount;
+  double *bytes_amount;
   double rate;
 
 #ifdef HAVE_TRACING

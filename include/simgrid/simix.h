@@ -321,13 +321,13 @@ XBT_PUBLIC(void) simcall_host_set_power_peak_at(smx_host_t host, int pstate_inde
 XBT_PUBLIC(double) simcall_host_get_consumed_energy(smx_host_t host);
 
 XBT_PUBLIC(smx_synchro_t) simcall_host_execute(const char *name, smx_host_t host,
-                                                double computation_amount,
+                                                double flops_amount,
                                                 double priority, double bound, unsigned long affinity_mask);
 XBT_PUBLIC(smx_synchro_t) simcall_host_parallel_execute(const char *name,
                                                      int host_nb,
                                                      smx_host_t *host_list,
-                                                     double *computation_amount,
-                                                     double *communication_amount,
+                                                     double *flops_amount,
+                                                     double *bytes_amount,
                                                      double amount,
                                                      double rate);
 XBT_PUBLIC(void) simcall_host_execution_destroy(smx_synchro_t execution);

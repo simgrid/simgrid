@@ -187,7 +187,7 @@ int server(int argc, char *argv[])
     else if(!strcmp(task_name,"hsm_put")){// Receive file to save
       // Write file on local disk
       char *dest = MSG_task_get_data(to_execute);
-      sg_size_t size_to_write = (sg_size_t)MSG_task_get_data_size(to_execute);
+      sg_size_t size_to_write = (sg_size_t)MSG_task_get_bytes_amount(to_execute);
       write_local_file(dest, size_to_write);
     }
 

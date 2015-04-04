@@ -218,17 +218,17 @@ XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process);
 
 /************************** Task handling ************************************/
 XBT_PUBLIC(msg_task_t) MSG_task_create(const char *name,
-                                     double compute_duration,
-                                     double message_size, void *data);
+                                     double flops_amount,
+                                     double bytes_amount, void *data);
 XBT_PUBLIC(msg_gpu_task_t) MSG_gpu_task_create(const char *name,
-                                     double compute_duration,
+                                     double flops_amount,
                                      double dispatch_latency,
                                      double collect_latency);
 XBT_PUBLIC(msg_task_t) MSG_parallel_task_create(const char *name,
                                               int host_nb,
                                               const msg_host_t * host_list,
-                                              double *computation_amount,
-                                              double *communication_amount,
+                                              double *flops_amount,
+                                              double *bytes_amount,
                                               void *data);
 XBT_PUBLIC(void *) MSG_task_get_data(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_data(msg_task_t task, void *data);
@@ -256,15 +256,15 @@ XBT_PUBLIC(msg_error_t) MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
 XBT_PUBLIC(double) MSG_task_get_compute_duration(msg_task_t task);
-XBT_PUBLIC(void) MSG_task_set_compute_duration(msg_task_t task,
-                                               double compute_duration);
-XBT_PUBLIC(void) MSG_task_set_data_size(msg_task_t task,
-                                        double data_size);
+XBT_PUBLIC(void) MSG_task_set_flops_amount(msg_task_t task,
+                                               double flops_amount);
+XBT_PUBLIC(void) MSG_task_set_bytes_amount(msg_task_t task,
+                                        double bytes_amount);
 
 XBT_PUBLIC(double) MSG_task_get_remaining_computation(msg_task_t task);
 XBT_PUBLIC(double) MSG_task_get_remaining_communication(msg_task_t task);
 XBT_PUBLIC(int) MSG_task_is_latency_bounded(msg_task_t task);
-XBT_PUBLIC(double) MSG_task_get_data_size(msg_task_t task);
+XBT_PUBLIC(double) MSG_task_get_bytes_amount(msg_task_t task);
 
 
 XBT_PUBLIC(msg_error_t)

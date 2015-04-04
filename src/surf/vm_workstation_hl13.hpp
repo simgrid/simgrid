@@ -37,8 +37,8 @@ public:
   ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);
   ActionPtr executeParallelTask(int workstation_nb,
                                           void **workstation_list,
-                                          double *computation_amount,
-                                          double *communication_amount,
+                                          double *flops_amount,
+                                          double *bytes_amount,
                                           double rate);
   void updateActionsState(double /*now*/, double /*delta*/);
 };

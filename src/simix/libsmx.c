@@ -223,21 +223,21 @@ double simcall_host_get_consumed_energy(smx_host_t host)
  *
  * \param name Name of the execution synchro to create
  * \param host SIMIX host where the synchro will be executed
- * \param computation_amount amount Computation amount (in bytes)
+ * \param flops_amount amount Computation amount (in flops)
  * \param priority computation priority
  * \param bound
  * \param affinity_mask
  * \return A new SIMIX execution synchronization
  */
 smx_synchro_t simcall_host_execute(const char *name, smx_host_t host,
-                                    double computation_amount,
+                                    double flops_amount,
                                     double priority, double bound, unsigned long affinity_mask)
 {
   /* checking for infinite values */
-  xbt_assert(isfinite(computation_amount), "computation_amount is not finite!");
+  xbt_assert(isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
 
-  return simcall_BODY_host_execute(name, host, computation_amount, priority, bound, affinity_mask);
+  return simcall_BODY_host_execute(name, host, flops_amount, priority, bound, affinity_mask);
 }
 
 /**
@@ -248,8 +248,8 @@ smx_synchro_t simcall_host_execute(const char *name, smx_host_t host,
  * \param name Name of the execution synchro to create
  * \param host_nb Number of hosts where the synchro will be executed
  * \param host_list Array (of size host_nb) of hosts where the synchro will be executed
- * \param computation_amount Array (of size host_nb) of computation amount of hosts (in bytes)
- * \param communication_amount Array (of size host_nb * host_nb) representing the communication
+ * \param flops_amount Array (of size host_nb) of computation amount of hosts (in bytes)
+ * \param bytes_amount Array (of size host_nb * host_nb) representing the communication
  * amount between each pair of hosts
  * \param amount the SURF action amount
  * \param rate the SURF action rate
@@ -258,18 +258,18 @@ smx_synchro_t simcall_host_execute(const char *name, smx_host_t host,
 smx_synchro_t simcall_host_parallel_execute(const char *name,
                                          int host_nb,
                                          smx_host_t *host_list,
-                                         double *computation_amount,
-                                         double *communication_amount,
+                                         double *flops_amount,
+                                         double *bytes_amount,
                                          double amount,
                                          double rate)
 {
   int i,j;
   /* checking for infinite values */
   for (i = 0 ; i < host_nb ; ++i) {
-     xbt_assert(isfinite(computation_amount[i]), "computation_amount[%d] is not finite!", i);
+     xbt_assert(isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
      for (j = 0 ; j < host_nb ; ++j) {
-        xbt_assert(isfinite(communication_amount[i + host_nb * j]),
-             "communication_amount[%d+%d*%d] is not finite!", i, host_nb, j);
+        xbt_assert(isfinite(bytes_amount[i + host_nb * j]),
+             "bytes_amount[%d+%d*%d] is not finite!", i, host_nb, j);
      }
   }
 
@@ -277,8 +277,8 @@ smx_synchro_t simcall_host_parallel_execute(const char *name,
   xbt_assert(isfinite(rate), "rate is not finite!");
 
   return simcall_BODY_host_parallel_execute(name, host_nb, host_list,
-                                            computation_amount,
-                                            communication_amount,
+                                            flops_amount,
+                                            bytes_amount,
                                             amount, rate);
 
 }

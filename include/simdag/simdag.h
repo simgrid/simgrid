@@ -91,21 +91,17 @@ XBT_PUBLIC(void) SD_workstation_set_access_mode(SD_workstation_t
                                                 e_SD_workstation_access_mode_t
                                                 access_mode);
 
-XBT_PUBLIC(double) SD_workstation_get_computation_time(SD_workstation_t
-                                                       workstation,
-                                                       double
-                                                       computation_amount);
+XBT_PUBLIC(double) SD_workstation_get_computation_time(SD_workstation_t workstation,
+                                                       double flops_amount);
 XBT_PUBLIC(double) SD_route_get_current_latency(SD_workstation_t src,
                                                 SD_workstation_t dst);
 XBT_PUBLIC(double) SD_route_get_current_bandwidth(SD_workstation_t src,
                                                   SD_workstation_t dst);
 XBT_PUBLIC(double) SD_route_get_communication_time(SD_workstation_t src,
                                                    SD_workstation_t dst,
-                                                   double
-                                                   communication_amount);
+                                                   double bytes_amount);
 
-XBT_PUBLIC(SD_task_t) SD_workstation_get_current_task(SD_workstation_t
-                                                      workstation);
+XBT_PUBLIC(SD_task_t) SD_workstation_get_current_task(SD_workstation_t workstation);
 XBT_PUBLIC(xbt_dict_t)
     SD_workstation_get_mounted_storage_list(SD_workstation_t workstation);
 XBT_PUBLIC(xbt_dynar_t)
@@ -148,15 +144,14 @@ XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task,
                                               int workstation_nb,
                                               const SD_workstation_t *
                                               workstation_list,
-                                              const double
-                                              *computation_amount, const double
-                                              *communication_amount);
+                                              const double *flops_amount,
+											  const double *bytes_amount);
 XBT_PUBLIC(int) SD_task_get_kind(SD_task_t task);
 XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb,
                                   const SD_workstation_t *
                                   workstation_list,
-                                  const double *computation_amount,
-                                  const double *communication_amount,
+                                  const double *flops_amount,
+                                  const double *bytes_amount,
                                   double rate);
 XBT_PUBLIC(void) SD_task_unschedule(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_start_time(SD_task_t task);
@@ -194,7 +189,7 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
  *
  *  SD_task_schedule(task, my_workstation_nb,
  *                   my_workstation_list,
- *                   my_computation_amount,
+ *                   my_flops_amount,
  *                   SD_TASK_SCHED_NO_COST,
  *                   my_rate);
  */

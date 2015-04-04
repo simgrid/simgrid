@@ -308,15 +308,15 @@ double SD_workstation_get_available_power(SD_workstation_t workstation)
  * \brief Returns an approximative estimated time for the given computation amount on a workstation
  *
  * \param workstation a workstation
- * \param computation_amount the computation amount you want to evaluate (in flops)
+ * \param flops_amount the computation amount you want to evaluate (in flops)
  * \return an approximative estimated computation time for the given computation amount on this workstation (in seconds)
  */
 double SD_workstation_get_computation_time(SD_workstation_t workstation,
-                                           double computation_amount)
+                                           double flops_amount)
 {
-  xbt_assert(computation_amount >= 0,
-              "computation_amount must be greater than or equal to zero");
-  return computation_amount / SD_workstation_get_power(workstation);
+  xbt_assert(flops_amount >= 0,
+              "flops_amount must be greater than or equal to zero");
+  return flops_amount / SD_workstation_get_power(workstation);
 }
 
 /**
@@ -386,13 +386,13 @@ double SD_route_get_current_bandwidth(SD_workstation_t src,
  *
  * \param src the first workstation
  * \param dst the second workstation
- * \param communication_amount the communication amount you want to evaluate (in bytes)
- * \return an approximative estimated computation time for the given communication amount
+ * \param bytes_amount the communication amount you want to evaluate (in bytes)
+ * \return an approximative estimated communication time for the given bytes amount
  * between the workstations (in seconds)
  */
 double SD_route_get_communication_time(SD_workstation_t src,
                                        SD_workstation_t dst,
-                                       double communication_amount)
+                                       double bytes_amount)
 {
 
 
@@ -405,12 +405,10 @@ double SD_route_get_communication_time(SD_workstation_t src,
   double latency;
   int i;
 
-  xbt_assert(communication_amount >= 0,
-              "communication_amount must be greater than or equal to zero");
+  xbt_assert(bytes_amount >= 0, "bytes_amount must be greater than or equal to zero");
 
 
-
-  if (communication_amount == 0.0)
+  if (bytes_amount == 0.0)
     return 0.0;
 
   links = SD_route_get_list(src, dst);
@@ -425,7 +423,7 @@ double SD_route_get_communication_time(SD_workstation_t src,
       min_bandwidth = bandwidth;
   }
 
-  return latency + (communication_amount / min_bandwidth);
+  return latency + (bytes_amount / min_bandwidth);
 }
 
 /**

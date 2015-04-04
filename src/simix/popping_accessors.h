@@ -215,10 +215,10 @@ static inline smx_host_t simcall_host_execute__get__host(smx_simcall_t simcall) 
 static inline void simcall_host_execute__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
-static inline double simcall_host_execute__get__computation_amount(smx_simcall_t simcall) {
+static inline double simcall_host_execute__get__flops_amount(smx_simcall_t simcall) {
   return  simcall->args[2].d;
 }
-static inline void simcall_host_execute__set__computation_amount(smx_simcall_t simcall, double arg) {
+static inline void simcall_host_execute__set__flops_amount(smx_simcall_t simcall, double arg) {
     simcall->args[2].d = arg;
 }
 static inline double simcall_host_execute__get__priority(smx_simcall_t simcall) {
@@ -264,16 +264,16 @@ static inline smx_host_t* simcall_host_parallel_execute__get__host_list(smx_simc
 static inline void simcall_host_parallel_execute__set__host_list(smx_simcall_t simcall, void* arg) {
     simcall->args[2].dp = arg;
 }
-static inline double* simcall_host_parallel_execute__get__computation_amount(smx_simcall_t simcall) {
+static inline double* simcall_host_parallel_execute__get__flops_amount(smx_simcall_t simcall) {
   return (double*) simcall->args[3].dp;
 }
-static inline void simcall_host_parallel_execute__set__computation_amount(smx_simcall_t simcall, void* arg) {
+static inline void simcall_host_parallel_execute__set__flops_amount(smx_simcall_t simcall, void* arg) {
     simcall->args[3].dp = arg;
 }
-static inline double* simcall_host_parallel_execute__get__communication_amount(smx_simcall_t simcall) {
+static inline double* simcall_host_parallel_execute__get__bytes_amount(smx_simcall_t simcall) {
   return (double*) simcall->args[4].dp;
 }
-static inline void simcall_host_parallel_execute__set__communication_amount(smx_simcall_t simcall, void* arg) {
+static inline void simcall_host_parallel_execute__set__bytes_amount(smx_simcall_t simcall, void* arg) {
     simcall->args[4].dp = arg;
 }
 static inline double simcall_host_parallel_execute__get__amount(smx_simcall_t simcall) {

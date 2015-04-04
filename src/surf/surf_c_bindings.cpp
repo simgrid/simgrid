@@ -272,10 +272,10 @@ int surf_model_running_action_set_size(surf_model_t model){
 surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
 		                                    int workstation_nb,
                                             void **workstation_list,
-                                            double *computation_amount,
-                                            double *communication_amount,
+                                            double *flops_amount,
+                                            double *bytes_amount,
                                             double rate){
-  return static_cast<ActionPtr>(model->executeParallelTask(workstation_nb, workstation_list, computation_amount, communication_amount, rate));
+  return static_cast<ActionPtr>(model->executeParallelTask(workstation_nb, workstation_list, flops_amount, bytes_amount, rate));
 }
 
 surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate){

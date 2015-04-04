@@ -41,8 +41,8 @@ SG_BEGIN_DECL()
 typedef struct simdata_task {
   smx_synchro_t compute;         /* SIMIX modeling of computation */
   smx_synchro_t comm;            /* SIMIX modeling of communication */
-  double message_size;          /* Data size */
-  double computation_amount;    /* Computation size */
+  double bytes_amount;    /* Data size */
+  double flops_amount;    /* Computation size */
   msg_process_t sender;
   msg_process_t receiver;
   msg_host_t source;
@@ -57,8 +57,8 @@ typedef struct simdata_task {
   int host_nb;                  /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
   smx_host_t *host_list;
-  double *comp_amount;
-  double *comm_amount;
+  double *flops_parallel_amount;
+  double *bytes_parallel_amount;
 } s_simdata_task_t;
 
 /********************************* File **************************************/
@@ -68,7 +68,7 @@ typedef struct simdata_file {
 
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task {
-  double computation_amount;    /* Computation size */
+  double flops_amount;    /* Computation size */
   double dispatch_latency;
   double collect_latency;
   int isused;  /* Indicates whether the task is used in SIMIX currently */

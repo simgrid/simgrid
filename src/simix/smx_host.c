@@ -363,7 +363,7 @@ void SIMIX_host_autorestart(smx_host_t host)
 }
 
 smx_synchro_t SIMIX_host_execute(const char *name,
-    smx_host_t host, double computation_amount, double priority, double bound, unsigned long affinity_mask){
+    smx_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
   smx_synchro_t synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
@@ -379,7 +379,7 @@ smx_synchro_t SIMIX_host_execute(const char *name,
   /* set surf's action */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
 
-    synchro->execution.surf_exec = surf_workstation_execute(host, computation_amount);
+    synchro->execution.surf_exec = surf_workstation_execute(host, flops_amount);
     surf_action_set_data(synchro->execution.surf_exec, synchro);
     surf_action_set_priority(synchro->execution.surf_exec, priority);
 
@@ -405,7 +405,7 @@ smx_synchro_t SIMIX_host_execute(const char *name,
 
 smx_synchro_t SIMIX_host_parallel_execute(const char *name,
     int host_nb, smx_host_t *host_list,
-    double *computation_amount, double *communication_amount,
+    double *flops_amount, double *bytes_amount,
     double amount, double rate){
 
   void **workstation_list = NULL;
@@ -444,7 +444,7 @@ smx_synchro_t SIMIX_host_parallel_execute(const char *name,
   if (!MC_is_active() && !MC_record_replay_is_active()) {
     synchro->execution.surf_exec =
       surf_workstation_model_execute_parallel_task((surf_workstation_model_t)surf_workstation_model,
-    		  host_nb, workstation_list, computation_amount, communication_amount, rate);
+    		  host_nb, workstation_list, flops_amount, bytes_amount, rate);
 
     surf_action_set_data(synchro->execution.surf_exec, synchro);
   }
