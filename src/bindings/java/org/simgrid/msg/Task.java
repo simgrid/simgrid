@@ -25,16 +25,10 @@ public class Task {
 
 	private double messageSize;
 
-	static private Long idCpt = 0L;
-
-	private Long id;
-
 	/** Default constructor (all fields to 0 or null) */
 	public Task() {
 		create(null, 0, 0);
 		this.messageSize = 0;
-		setId(idCpt);
-		idCpt++;
 	}
 
 	/* *              * *
@@ -57,8 +51,6 @@ public class Task {
 	public Task(String name, double flopsAmount, double bytesAmount) {
 		create(name, flopsAmount, bytesAmount);
 		this.messageSize = bytesAmount;
-		setId(idCpt);
-		idCpt++;
 	}
 	/**
 	 * Construct an new parallel task with the specified processing amount and amount for each host
@@ -375,13 +367,5 @@ public class Task {
 
 	public double getMessageSize() {
 		return this.messageSize;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 }
