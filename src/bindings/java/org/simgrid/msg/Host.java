@@ -58,17 +58,17 @@ public class Host {
 	 * User data.
 	 */ 
 	private Object data;
-    /**
-     *
-     */
-    protected Host() {
+	/**
+	 *
+	 */
+	protected Host() {
 		this.bind = 0;
 		this.data = null;
 	};
-	
+
 	public String toString (){
 		return this.name; 
-		
+
 	}
 
 	/**
@@ -78,11 +78,11 @@ public class Host {
 	 * @param name		The name of the host to get.
 	 *
 	 * @return		The host object with the given name.
-     * @exception		HostNotFoundException if the name of the host is not valid.
+	 * @exception		HostNotFoundException if the name of the host is not valid.
 	 *					NativeException if the native version of this method failed.
 	 */ 
 	public native static Host getByName(String name) 
-	throws HostNotFoundException, NullPointerException;
+			throws HostNotFoundException, NullPointerException;
 	/**
 	 * This static method returns the count of the installed hosts.
 	 *
@@ -105,18 +105,18 @@ public class Host {
 	 */ 
 	public native static Host[] all();
 
-    /** 
-     * This static method sets a mailbox to receive in asynchronous mode.
-     * 
-     * All messages sent to this mailbox will be transferred to 
-     * the receiver without waiting for the receive call. 
-     * The receive call will still be necessary to use the received data.
-     * If there is a need to receive some messages asynchronously, and some not, 
-     * two different mailboxes should be used.
-     *
-     * @param mailboxName The name of the mailbox
-     */
-    public static native void setAsyncMailbox(String mailboxName);
+	/** 
+	 * This static method sets a mailbox to receive in asynchronous mode.
+	 * 
+	 * All messages sent to this mailbox will be transferred to 
+	 * the receiver without waiting for the receive call. 
+	 * The receive call will still be necessary to use the received data.
+	 * If there is a need to receive some messages asynchronously, and some not, 
+	 * two different mailboxes should be used.
+	 *
+	 * @param mailboxName The name of the mailbox
+	 */
+	public static native void setAsyncMailbox(String mailboxName);
 
 
 	/**
@@ -130,25 +130,25 @@ public class Host {
 
 	/**
 	 * Sets the data of the host.
-     * @param data
-     */
+	 * @param data
+	 */
 	public void setData(Object data) {
 		this.data = data;
 	} 
 	/**
 	 * Gets the data of the host.
-     *
-     * @return The data object associated with the host.
-     */
+	 *
+	 * @return The data object associated with the host.
+	 */
 	public Object getData() {
 		return this.data;
 	}
 
 	/**
 	 * Checks whether a host has data.
-     *
-     * @return True if the host has an associated data object.
-     */
+	 *
+	 * @return True if the host has an associated data object.
+	 */
 	public boolean hasData() {
 		return null != this.data;
 	}
@@ -193,28 +193,28 @@ public class Host {
 	 * Returns the value of a given host property. 
 	 */
 	public native String getProperty(String name);
-	
+
 	/**
 	 * Change the value of a given host property. 
 	 */
 	public native void setProperty(String name, String value);
-    
+
 	/** This method tests if a host is up and running.
 	 * @return True if the host is available.
 	 */
 	public native boolean isOn();
 
 	/** This methods returns the list of mount point names on an host
-     * @return An array containing all mounted storages on the host
-     */
+	 * @return An array containing all mounted storages on the host
+	 */
 	public native Storage[] getMountedStorage();
 
 	/** This methods returns the list of storages attached to an host
-     * @return An array containing all storages (name) attached to the host
-     */
+	 * @return An array containing all storages (name) attached to the host
+	 */
 	public native String[] getAttachedStorage();
-	
-	
+
+
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */

@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
- 
+
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -56,14 +56,14 @@ public abstract class Process implements Runnable {
 	 * It is used to compute the id of an MSG process.
 	 */
 	public static long nextProcessId = 0;
-	
+
 	/**
 	 * Even if this attribute is public you must never access to it.
 	 * It is compute automatically during the creation of the object. 
 	 * The native functions use this identifier to synchronize the process.
 	 */
 	public long id;
-	
+
 	/**
 	 * Start time of the process
 	 */
@@ -72,14 +72,14 @@ public abstract class Process implements Runnable {
 	 * Kill time of the process
 	 */
 	public double killTime = -1;
-	
+
 	/**
 	 * The name of the process.							
 	 */
 	protected String name;
 	/**
-	  * The PID of the process
-	  */
+	 * The PID of the process
+	 */
 	protected int pid = -1;
 	/**
 	 * The PPID of the process 
@@ -93,7 +93,7 @@ public abstract class Process implements Runnable {
 	/** The arguments of the method function of the process. */     
 	public Vector<String> args;
 
-	
+
 	/**
 	 * Default constructor
 	 */
@@ -128,8 +128,8 @@ public abstract class Process implements Runnable {
 	 * @param args			The arguments of the main function of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
-     *                      NativeException
-     * @throws NativeException
+	 *                      NativeException
+	 * @throws NativeException
 	 *
 	 */ 
 	public Process(String hostname, String name, String args[]) throws HostNotFoundException, NativeException {
@@ -186,7 +186,7 @@ public abstract class Process implements Runnable {
 		this.args = new Vector<String>();
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
-				
+
 		this.startTime = startTime;
 		this.killTime = killTime;		
 	}
@@ -291,13 +291,13 @@ public abstract class Process implements Runnable {
 	 * Returns the value of a given process property. 
 	 */
 	public native String getProperty(String name);
-	
+
 	/**
 	 * Set the kill time of the process
 	 * @param killTime the time when the process is killed
 	 */
 	public native void setKillTime(double killTime);
-	
+
 	/**
 	 * This static method returns the currently running process.
 	 *
@@ -336,27 +336,27 @@ public abstract class Process implements Runnable {
 	 */ 
 	public native void waitFor(double seconds) throws HostFailureException;    
 	/**
-     *
-     */
-    public void showArgs() {
+	 *
+	 */
+	public void showArgs() {
 		Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
 				this.args.size());
 		for (int i = 0; i < this.args.size(); i++)
 			Msg.info("[" + this.msgName() + "/" + this.getHost().getName() +
 					"] args[" + i + "]=" + this.args.get(i));
 	}
-    /**
-     * This method actually creates and run the process.
-     * It is a noop if the process is already launched.
-     * @throws HostNotFoundException
-     */
-    public final void start() throws HostNotFoundException {
-    	if (!started) {
-    		started = true;
-    		create(host.getName());
-    	}
-    }
-    
+	/**
+	 * This method actually creates and run the process.
+	 * It is a noop if the process is already launched.
+	 * @throws HostNotFoundException
+	 */
+	public final void start() throws HostNotFoundException {
+		if (!started) {
+			started = true;
+			create(host.getName());
+		}
+	}
+
 	/**
 	 * This method runs the process. Il calls the method function that you must overwrite.
 	 */
@@ -377,17 +377,17 @@ public abstract class Process implements Runnable {
 			Msg.info("Unexpected behavior. Stopping now");
 			System.exit(1);
 		}
-		 catch(ProcessKilledError pk) {
+		catch(ProcessKilledError pk) {
 		}	
 		exit();
 	}
 
 	/**
 	 * The main function of the process (to implement).
-     *
-     * @param args
-     * @throws MsgException
-     */
+	 *
+	 * @param args
+	 * @throws MsgException
+	 */
 	public abstract void main(String[]args) throws MsgException;
 
 	public native void exit();    
