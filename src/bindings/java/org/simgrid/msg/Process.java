@@ -62,33 +62,22 @@ public abstract class Process implements Runnable {
 	 * It is compute automatically during the creation of the object. 
 	 * The native functions use this identifier to synchronize the process.
 	 */
-	public long id;
+	private long id;
 
-	/**
-	 * Start time of the process
-	 */
-	public double startTime = 0;
-	/**
+	/** Time at which the process should be created  */
+	protected double startTime = 0;
+	/** Time at which th
 	 * Kill time of the process
+	 * 
+	 * Set at creation, and used internally by SimGrid
 	 */
-	public double killTime = -1;
+	private double killTime = -1;
 
-	/**
-	 * The name of the process.							
-	 */
-	protected String name;
-	/**
-	 * The PID of the process
-	 */
-	protected int pid = -1;
-	/**
-	 * The PPID of the process 
-	 */
-	protected int ppid = -1;
-	/**
-	 * The host of the process
-	 */
-	protected Host host = null;
+	private String name;
+	
+	private int pid = -1;
+	private int ppid = -1;
+	private Host host = null;
 
 	/** The arguments of the method function of the process. */     
 	public Vector<String> args;
@@ -207,49 +196,35 @@ public abstract class Process implements Runnable {
 	 */ 
 	public static native int killAll(int resetPID);
 
-	/**
-	 * This method kill a process.
+	/** Simply kills the receiving process.
 	 *
+	 * SimGrid sometimes have issues when you kill processes that are currently communicating and such. We are working on it to fix the issues.
 	 */
 	public native void kill();
-	/**
-	 * Suspends the process by suspending the task on which it was
-	 * waiting for the completion.
-	 */
+	
+	/** Suspends the process. See {@link #resume()} to resume it afterward */
 	public native void suspend();
-	/**
-	 * Suspends the process by suspending the task on which it was
-	 * waiting for the completion.
-	 * DEPRECATED: use suspend instead.
-	 */
-	@Deprecated
-	public void pause() {
-		suspend();
-	}
-	/**
-	 * Sets the "auto-restart" flag of the process.
-	 */
-	public native void setAutoRestart(boolean autoRestart);
-	/**
-	 * Restarts the process from the beginning
-	 */
-	public native void restart();
-	/**
-	 * Resumes a suspended process by resuming the task on which it was
-	 * waiting for the completion.
-	 */
+	/** Resume a process that was suspended by {@link #suspend()}. */
 	public native void resume();	
-	/**
-	 * Tests if a process is suspended.
+	/** Tests if a process is suspended.
 	 *
-	 * @return				The method returns true if the process is suspended.
-	 *						Otherwise the method returns false.
+	 * @see {@link #suspend()} and {@link #resume()}
 	 */ 
 	public native boolean isSuspended();
+	
+	/**
+	 * Specify whether the process should restart when its host restarts after a failure
+	 * 
+	 * A process naturally stops when its host stops. It starts again only if autoRestart is set to true.
+	 * Otherwise, it just disappears when the host stops.
+	 */
+	public native void setAutoRestart(boolean autoRestart);
+	/** Restarts the process from the beginning */
+	public native void restart();
 	/**
 	 * Returns the name of the process
 	 */
-	public String msgName() {
+	public String getName() {
 		return this.name;
 	}
 	/**
@@ -336,16 +311,6 @@ public abstract class Process implements Runnable {
 	 */ 
 	public native void waitFor(double seconds) throws HostFailureException;    
 	/**
-	 *
-	 */
-	public void showArgs() {
-		Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
-				this.args.size());
-		for (int i = 0; i < this.args.size(); i++)
-			Msg.info("[" + this.msgName() + "/" + this.getHost().getName() +
-					"] args[" + i + "]=" + this.args.get(i));
-	}
-	/**
 	 * This method actually creates and run the process.
 	 * It is a noop if the process is already launched.
 	 * @throws HostNotFoundException
@@ -394,7 +359,7 @@ public abstract class Process implements Runnable {
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */
-	public static native void nativeInit();
+	private static native void nativeInit();
 	static {
 		Msg.nativeInit();
 		nativeInit();

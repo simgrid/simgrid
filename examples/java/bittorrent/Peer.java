@@ -201,7 +201,7 @@ public class Peer extends Process {
 				}
 			}			
 		}
-		this.hostname = host.getName();
+		this.hostname = getHost().getName();
 	}
 	/**
 	 * Retrieves the peer list from the tracker

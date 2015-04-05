@@ -34,7 +34,7 @@ public class Master extends Process {
 			vm.start();
 			vms.add(vm);
 			Slave slave = new Slave(vm,i);
-			Msg.info("Put Worker "+slave.msgName()+ " on "+vm.getName());
+			Msg.info("Put Worker "+slave.getName()+ " on "+vm.getName());
 			slave.start();
 	
 		}
