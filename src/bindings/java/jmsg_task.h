@@ -163,7 +163,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority
  * Signature	(D)V
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Task_setComputeDuration
+Java_org_simgrid_msg_Task_setFlopsAmount
 		(JNIEnv *env, jobject jtask, jdouble computationAmount);
 		
 		/**
@@ -172,7 +172,7 @@ Java_org_simgrid_msg_Task_setComputeDuration
  * Signature	(D)V
  */
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Task_setDataSize
+Java_org_simgrid_msg_Task_setBytesAmount
 		(JNIEnv *env, jobject jtask, jdouble dataSize);
 		
 /**

@@ -14,6 +14,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
  * Interface improvement:
    - Rename Host.isAvail() to Host.isOn()
    - Rename Process.currentProcess() to Process.getCurrentProcess()
+   - Rename Task.setDataSize() to Task.setBytesAmount()
    - Merge Task.getRemainingDuration() and Task.getComputeDuration() into Task.getFlopsAmount()
    
  SIMIX:

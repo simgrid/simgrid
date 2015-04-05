@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
+/* Copyright (c) 2006-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -108,20 +108,15 @@ public class Task {
 	/* *                   * *
 	 * * Getters / Setters * *
 	 * *                   * */
-    /** 
-     * Gets the name of a task
-     */
+    /** Gets the name of a task */
 	public String getName() {
 		return name;
 	}
-	/**
-	 * Gets the sender of the task 
-	 * Returns null if the task hasn't been sent yet
-	 */
+	
+	/** Gets the sender of the task (or null if not sent yet) */
 	public native Process getSender();
-	/** Gets the source of the task.
-	 * Returns null if the task hasn't been sent yet.
-     */
+	
+	/** Gets the source of the task (or null if not sent yet). */
 	public native Host getSource();   
 	
 	/** Gets the remaining amount of flops to execute in this task
@@ -131,7 +126,7 @@ public class Task {
 	public native double getFlopsAmount();
 	/**
 	 * Sets the name of the task
-	 * @param name the new task name.c
+	 * @param name the new task name
 	 */
 	public native void setName(String name);
 	/**
@@ -143,37 +138,37 @@ public class Task {
 	 * @param priority	The new priority of the task.
 	 */ 
 	public native void setPriority(double priority);
-	/**
-	 * Set the computation amount needed to process the task
-	 * @param computationAmount the amount of computation needed to process the task
+	
+	/** Set the computation amount needed to process the task
+	 * 
+	 * Warning if the execution is already started and ongoing, this call does nothing.
+	 * @param flopsAmount the amount of computation needed to process the task
 	 */
-	public native void setComputeDuration(double computationAmount);
+	public native void setFlopsAmount(double flopsAmount);
 	/**
-	 * Set the data size of the task
-	 * @param dataSize the size of the task
+	 * Set the amount of bytes to exchange the task
+	 * 
+	 * Warning if the communication is already started and ongoing, this call does nothing.
+	 * @param bytesAmount the size of the task
 	 */
-	public native void setDataSize(double dataSize);
+	public native void setBytesAmount(double bytesAmount);
 	/* *                     * *
 	 * * Computation-related * *
 	 * *                     * */
 	/**
-	 * Executes a task on the location on which the process is running.
-	 *
+	 * Executes a task on the location on which the current process is running.
      *
      * @throws HostFailureException
      * @throws TaskCancelledException
      */
 	public native void execute() throws HostFailureException,TaskCancelledException;
-	/**
-	 * Bound a computation to a certain load
-	 *
-	 */
+	
+	/** Bound a computation to a certain load */
 	public native void setBound(double load); 
-	/**
-	 * Cancels a task.
-	 *
-	 */ 
+
+	/** Cancels a task. */ 
 	public native void cancel();
+
 	/** Deletes a task.
 	 *
 	 * @exception			NativeException if the destruction failed.
