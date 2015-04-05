@@ -294,8 +294,7 @@ Java_org_simgrid_msg_Task_getSource(JNIEnv * env,
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_Task_getComputeDuration(JNIEnv * env,
-                                                  jobject jtask)
+Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env, jobject jtask)
 {
   msg_task_t ptask = jtask_to_native_task(jtask, env);
 
@@ -303,20 +302,9 @@ Java_org_simgrid_msg_Task_getComputeDuration(JNIEnv * env,
     jxbt_throw_notbound(env, "task", jtask);
     return -1;
   }
-  return (jdouble) MSG_task_get_compute_duration(ptask);
+  return (jdouble) MSG_task_get_flops_amount(ptask);
 }
 
-JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_Task_getRemainingDuration(JNIEnv * env, jobject jtask)
-{
-  msg_task_t ptask = jtask_to_native_task(jtask, env);
-
-  if (!ptask) {
-    jxbt_throw_notbound(env, "task", jtask);
-    return -1;
-  }
-  return (jdouble) MSG_task_get_remaining_computation(ptask);
-}
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jtask, jobject jname) {
 	msg_task_t task = jtask_to_native_task(jtask, env);

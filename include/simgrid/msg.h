@@ -444,13 +444,12 @@ XBT_PUBLIC(void) MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigne
 XBT_PUBLIC(msg_error_t) MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
 
-XBT_PUBLIC(double) MSG_task_get_compute_duration(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_flops_amount(msg_task_t task,
                                                double flops_amount);
+XBT_PUBLIC(double) MSG_task_get_flops_amount(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_bytes_amount(msg_task_t task,
                                         double bytes_amount);
 
-XBT_PUBLIC(double) MSG_task_get_remaining_computation(msg_task_t task);
 XBT_PUBLIC(double) MSG_task_get_remaining_communication(msg_task_t task);
 XBT_PUBLIC(int) MSG_task_is_latency_bounded(msg_task_t task);
 XBT_PUBLIC(double) MSG_task_get_bytes_amount(msg_task_t task);

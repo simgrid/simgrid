@@ -453,7 +453,7 @@ static void reset_dirty_pages(msg_vm_t vm)
   xbt_dict_cursor_t cursor = NULL;
   dirty_page_t dp = NULL;
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
-    double remaining = MSG_task_get_remaining_computation(dp->task);
+    double remaining = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
 
@@ -514,7 +514,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
   xbt_dict_cursor_t cursor = NULL;
   dirty_page_t dp = NULL;
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
-    double remaining = MSG_task_get_remaining_computation(dp->task);
+    double remaining = MSG_task_get_flops_amount(dp->task);
 
     double clock = MSG_get_clock();
 
@@ -545,7 +545,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
 void MSG_host_add_task(msg_host_t host, msg_task_t task)
 {
   msg_host_priv_t priv = msg_host_resource_priv(host);
-  double remaining = MSG_task_get_remaining_computation(task);
+  double remaining = MSG_task_get_flops_amount(task);
   char *key = bprintf("%s-%p", task->name, task);
 
   dirty_page_t dp = xbt_new0(s_dirty_page, 1);
@@ -577,7 +577,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
    * computation has been done until now, and keep the information for the
    * lookup_() function that will called soon. */
   if (priv->dp_enabled) {
-    double remaining = MSG_task_get_remaining_computation(task);
+    double remaining = MSG_task_get_flops_amount(task);
     double clock = MSG_get_clock();
     // double updated = calc_updated_pages(key, host, dp, remaining, clock);
     double updated = get_computed(key, host, dp, remaining, clock);

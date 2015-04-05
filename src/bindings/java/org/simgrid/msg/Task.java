@@ -123,13 +123,12 @@ public class Task {
 	 * Returns null if the task hasn't been sent yet.
      */
 	public native Host getSource();   
-	/** Gets the computing amount of the task
-     * FIXME: Cache it !
-     */
-	public native double getComputeDuration();
-	/** Gets the remaining computation of the task
-     */
-	public native double getRemainingDuration();
+	
+	/** Gets the remaining amount of flops to execute in this task
+	 * 
+	 * If it's ongoing, you get the exact amount at the present time. If it's already done, it's 0.
+	 */
+	public native double getFlopsAmount();
 	/**
 	 * Sets the name of the task
 	 * @param name the new task name.c

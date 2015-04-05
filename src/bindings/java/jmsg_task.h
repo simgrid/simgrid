@@ -12,25 +12,6 @@
 #include <jni.h>
 #include "simgrid/msg.h"
 
-/**
- * This function returns a global reference to the  java task instance 
- * specified by the parameter jtask.
- *
- * @param jtask			The original java task instance.
- * @param env			The environment of the current thread.
- *
- * @return				The global reference to the original java task 
- *						instance.
- */
-/* jobject jtask_new_global_ref(jobject jtask, JNIEnv * env); */
-
-/**
- * This function delete a global reference to a java task instance.
- *
- * @param				The global refernce to delete.
- * @param env			The environment of the current thread.
- */
-/* void jtask_delete_global_ref(jobject jtask, JNIEnv * env); */
 
 /**
  * This function associated a native task to a java task instance.
@@ -156,19 +137,12 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_getSource
     (JNIEnv *, jobject);
 /*
  * Class		org_simgrid_msg_Task
- * Method		getComputeDuration
+ * Method		getFlopsAmount
  * Signature	()D
  */
-JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getComputeDuration
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Task_getFlopsAmount
     (JNIEnv *, jobject);
 
-/*
- * Class		org_simgrid_msg_Task
- * Method		getRemainingDuration
- * Signature	()D
- */
-JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_Task_getRemainingDuration(JNIEnv *, jobject);
 /**
  * Class		org_simgrid_msg_Task
  * Method		setName

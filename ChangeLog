@@ -3,14 +3,18 @@ SimGrid (3.12) NOT RELEASED; urgency=low
  cMSG:
  * Interface improvement:
    - Rename MSG_host_is_avail(h) to MSG_host_is_on(h)
-   - Rename MSG_task_set_compute_duration(t) to MSG_task_set_flops_amount(t)
-   - Rename MSG_task_set_data_size(t) to MSG_task_set_bytes_amount(t)
-     Rename MSG_task_get_data_size(t) to MSG_task_get_bytes_amount(t)
+   - Sanitize the interface in MSG_task_ module:
+     - Merge two functions that were close enough but misleading:
+       set_compute_duration(t)      -> set_flops_amount(t)
+       get_remaining_computation(t) -> set_flops_amount(t)
+     - set_data_size(t) -> set_bytes_amount(t)
+       get_data_size(t) -> get_bytes_amount(t)
    - Massive cleanups in the functions related to the energy
  jMSG:
  * Interface improvement:
    - Rename Host.isAvail() to Host.isOn()
    - Rename Process.currentProcess() to Process.getCurrentProcess()
+   - Merge Task.getRemainingDuration() and Task.getComputeDuration() into Task.getFlopsAmount()
    
  SIMIX:
  * New functions

@@ -71,7 +71,7 @@ static int master_main(int argc, char *argv[])
 
   while(MSG_get_clock()<100) {
 	if (atask != NULL)
-	  XBT_INFO("aTask remaining duration: %g", MSG_task_get_remaining_computation(atask));
+	  XBT_INFO("aTask remaining duration: %g", MSG_task_get_flops_amount(atask));
 	MSG_process_sleep(1);
   }
 

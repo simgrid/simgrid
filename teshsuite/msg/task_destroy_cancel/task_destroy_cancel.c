@@ -126,7 +126,7 @@ int slave(int argc, char *argv[])
     XBT_INFO("Task \"%s\" done in %f (amount %f)"
     		, MSG_task_get_name(task)
     		, end - start
-    		, MSG_task_get_remaining_computation(task));
+    		, MSG_task_get_flops_amount(task));
 
     MSG_task_destroy(task);
     task = NULL;

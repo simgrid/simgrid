@@ -311,17 +311,18 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 }
 
 /** \ingroup m_task_management
- * \brief Returns the computation amount needed to process a task #msg_task_t.
+ * \brief Returns the remaining amount of flops needed to execute a task #msg_task_t.
  *
  * Once a task has been processed, this amount is set to 0. If you want, you
  * can reset this value with #MSG_task_set_flops_amount before restarting the task.
  */
-double MSG_task_get_compute_duration(msg_task_t task)
-{
-  xbt_assert((task != NULL)
-              && (task->simdata != NULL), "Invalid parameter");
+double MSG_task_get_flops_amount(msg_task_t task) {
 
-  return task->simdata->flops_amount;
+	if (task->simdata->compute) {
+		return simcall_host_execution_get_remains(task->simdata->compute);
+	} else {
+		return task->simdata->flops_amount;
+	}
 }
 
 
@@ -351,26 +352,6 @@ void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
   task->simdata->bytes_amount = data_size;
 }
 
-
-
-/** \ingroup m_task_management
- * \brief Returns the remaining computation amount of a task #msg_task_t.
- *
- * If the task is ongoing, this call retrieves the remaining amount of work.
- * If it is not ongoing, it returns the total amount of work that will be
- * executed when the task starts.
- */
-double MSG_task_get_remaining_computation(msg_task_t task)
-{
-  xbt_assert((task != NULL)
-              && (task->simdata != NULL), "Invalid parameter");
-
-  if (task->simdata->compute) {
-    return simcall_host_execution_get_remains(task->simdata->compute);
-  } else {
-    return task->simdata->flops_amount;
-  }
-}
 
 /** \ingroup m_task_management
  * \brief Returns the total amount received by a task #msg_task_t.
