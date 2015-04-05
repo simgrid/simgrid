@@ -46,17 +46,17 @@ public class Task {
 	 *
 	 * @param name	Task's name
 	 *
-	 * @param computeDuration 	A value of the processing amount (in flop) needed to process the task. 
+	 * @param flopsAmount 	A value of the processing amount (in flop) needed to process the task. 
 	 *				If 0, then it cannot be executed with the execute() method.
 	 *				This value has to be >= 0.
 	 *
-	 * @param messageSize		A value of amount of data (in bytes) needed to transfert this task.
+	 * @param bytesAmount		A value of amount of data (in bytes) needed to transfert this task.
 	 *				If 0, then it cannot be transfered with the get() and put() methods.
 	 *				This value has to be >= 0.
 	 */ 
-	public Task(String name, double computeDuration, double messageSize) {
-		create(name, computeDuration, messageSize);
-		this.messageSize = messageSize;
+	public Task(String name, double flopsAmount, double bytesAmount) {
+		create(name, flopsAmount, bytesAmount);
+		this.messageSize = bytesAmount;
 		setId(idCpt);
 		idCpt++;
 	}
@@ -66,44 +66,44 @@ public class Task {
 	 *
 	 * @param name		The name of the parallel task.
 	 * @param hosts		The list of hosts implied by the parallel task.
-	 * @param computeDurations	The amount of operations to be performed by each host of \a hosts.
-	 * @param messageSizes	A matrix describing the amount of data to exchange between hosts.
+	 * @param flopsAmount	The amount of operations to be performed by each host of \a hosts.
+	 * @param bytesAmount	A matrix describing the amount of data to exchange between hosts.
 	 */ 
-	public Task(String name, Host[]hosts, double[]computeDurations, double[]messageSizes) {
-		parallelCreate(name, hosts, computeDurations, messageSizes);
+	public Task(String name, Host[]hosts, double[]flopsAmount, double[]bytesAmount) {
+		parallelCreate(name, hosts, flopsAmount, bytesAmount);
 	}
 	
 	/**
 	 * The natively implemented method to create a MSG task.
 	 *
 	 * @param name            The name of th task.
-	 * @param computeDuration    A value of the processing amount (in flop) needed 
+	 * @param flopsAmount    A value of the processing amount (in flop) needed 
 	 *                        to process the task. If 0, then it cannot be executed
 	 *                        with the execute() method. This value has to be >= 0.
-	 * @param messageSize        A value of amount of data (in bytes) needed to transfert 
+	 * @param bytesAmount        A value of amount of data (in bytes) needed to transfert 
 	 *                        this task. If 0, then it cannot be transfered this task. 
 	 *                        If 0, then it cannot be transfered with the get() and put() 
 	 *                        methods. This value has to be >= 0.
 	 * @exception             IllegalArgumentException if compute duration <0 or message size <0
 	 */
 	private final native void create(String name,
-			double computeDuration,
-			double messageSize)
+			double flopsAmount,
+			double bytesAmount)
 	throws IllegalArgumentException;		
 	/**
 	 * The natively implemented method to create a MSG parallel task.
 	 *
 	 * @param name                The name of the parallel task.
 	 * @param hosts                The list of hosts implied by the parallel task.
-	 * @param computeDurations    The total number of operations that have to be performed
+	 * @param flopsAmount         The total number of operations that have to be performed
 	 *                            on the hosts.
-	 * @param messageSizes        An array of doubles
+	 * @param bytesAmount        An array of doubles
 	 *
 	 */
 	private final native void parallelCreate(String name,
 			Host[]hosts,
-			double[]computeDurations,
-			double[]messageSizes)
+			double[]flopsAmount,
+			double[]bytesAmount)
 	throws NullPointerException, IllegalArgumentException;
 	/* *                   * *
 	 * * Getters / Setters * *

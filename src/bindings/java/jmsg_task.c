@@ -64,24 +64,24 @@ Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_create(JNIEnv * env,
                                       jobject jtask, jstring jname,
-                                      jdouble jcomputeDuration,
-                                      jdouble jmessageSize)
+                                      jdouble jflopsAmount,
+                                      jdouble jbytesAmount)
 {
   msg_task_t task;                /* the native task to create                            */
   const char *name = NULL;      /* the name of the task                                 */
 
-  if (jcomputeDuration < 0) {
+  if (jflopsAmount < 0) {
     jxbt_throw_illegal(env,
                        bprintf
-                       ("Task ComputeDuration (%f) cannot be negative",
-                        (double) jcomputeDuration));
+                       ("Task flopsAmount (%f) cannot be negative",
+                        (double) jflopsAmount));
     return;
   }
 
-  if (jmessageSize < 0) {
+  if (jbytesAmount < 0) {
     jxbt_throw_illegal(env,
-                       bprintf("Task MessageSize (%f) cannot be negative",
-                       (double) jmessageSize));
+                       bprintf("Task bytesAmount (%f) cannot be negative",
+                       (double) jbytesAmount));
     return;
   }
 
@@ -92,8 +92,8 @@ Java_org_simgrid_msg_Task_create(JNIEnv * env,
 
   /* create the task */
   task =
-      MSG_task_create(name, (double) jcomputeDuration,
-                     (double) jmessageSize, NULL);
+      MSG_task_create(name, (double) jflopsAmount,
+                     (double) jbytesAmount, NULL);
   if (jname)
     (*env)->ReleaseStringUTFChars(env, jname, name);
   /* sets the task name */
@@ -128,14 +128,14 @@ Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env,
   if (!jcomputeDurations_arg) {
     jxbt_throw_null(env,
                     xbt_strdup
-                    ("Parallel task compute durations cannot be null"));
+                    ("Parallel task flops amounts cannot be null"));
     return;
   }
 
   if (!jmessageSizes_arg) {
     jxbt_throw_null(env,
                     xbt_strdup
-                    ("Parallel task message sizes cannot be null"));
+                    ("Parallel task bytes amounts cannot be null"));
     return;
   }
 
