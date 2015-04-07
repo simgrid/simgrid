@@ -21,6 +21,7 @@
 #include "xbt/fifo.h"
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
+#include "mc_server.h"
 
 #ifdef HAVE_MC
 #include <libunwind.h>
@@ -151,7 +152,7 @@ void MC_init_pid(pid_t pid, int socket)
 
   MC_SET_STD_HEAP;
 
-  if (_sg_mc_visited > 0 || _sg_mc_liveness  || _sg_mc_termination) {
+  if (_sg_mc_visited > 0 || _sg_mc_liveness  || _sg_mc_termination || mc_mode == MC_MODE_SERVER) {
     /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
     MC_ignore_local_variable("e", "*");
     MC_ignore_local_variable("__ex_cleanup", "*");
@@ -243,44 +244,19 @@ static void MC_modelcheck_comm_determinism_init(void)
   mmalloc_set_current_heap(heap);
 }
 
-static void MC_modelcheck_liveness_init()
-{
-  _sg_mc_liveness = 1;
-
-  MC_init();
-  if (mc_mode == MC_MODE_CLIENT) {
-    // This will move somehwere else:
-    MC_client_handle_messages();
-  }
-
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
-  /* Create exploration stack */
-  mc_stack = xbt_fifo_new();
-
-  /* Create the initial state */
-  initial_global_state = xbt_new0(s_mc_global_t, 1);
-
-  MC_SET_STD_HEAP;
-
-  MC_pre_modelcheck_liveness();
-
-  /* We're done */
-  MC_print_statistics(mc_stats);
-  xbt_free(mc_time);
-
-  mmalloc_set_current_heap(heap);
-
-}
-
 void MC_do_the_modelcheck_for_real()
 {
   MC_init_mode();
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    XBT_INFO("Check communication determinism");
-    mc_reduce_kind = e_mc_reduce_none;
-    MC_modelcheck_comm_determinism_init();
+    // TODO, move this part in the MCer process
+    if (mc_mode == MC_MODE_SERVER)
+      MC_server_loop(mc_server);
+    else {
+      XBT_INFO("Check communication determinism");
+      mc_reduce_kind = e_mc_reduce_none;
+      MC_modelcheck_comm_determinism_init();
+    }
   }
 
   else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
@@ -308,9 +284,14 @@ void MC_do_the_modelcheck_for_real()
   else {
     if (mc_reduce_kind == e_mc_reduce_unset)
       mc_reduce_kind = e_mc_reduce_none;
-    XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
-    MC_automaton_load(_sg_mc_property_file);
-    MC_modelcheck_liveness_init();
+    if (mc_mode == MC_MODE_SERVER || mc_mode == MC_MODE_STANDALONE) {
+      XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
+      MC_automaton_load(_sg_mc_property_file);
+      MC_modelcheck_liveness();
+    } else {
+      MC_init();
+      MC_client_main_loop();
+    }
   }
 }
 

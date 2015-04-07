@@ -355,3 +355,8 @@ void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value
       return;
   }
 }
+
+void MC_server_loop(mc_server_t server)
+{
+  server->loop();
+}

@@ -54,8 +54,7 @@ void visited_state_free_voidp(void *s)
 static mc_visited_state_t visited_state_new()
 {
   mc_process_t process = &(mc_model_checker->process);
-  mc_visited_state_t new_state = NULL;
-  new_state = xbt_new0(s_mc_visited_state_t, 1);
+  mc_visited_state_t new_state = xbt_new0(s_mc_visited_state_t, 1);
   new_state->heap_bytes_used = mmalloc_get_bytes_used_remote(
     MC_process_get_heap(process)->heaplimit,
     MC_process_get_malloc_info(process));

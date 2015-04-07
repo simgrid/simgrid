@@ -77,21 +77,7 @@ static int do_parent(int socket, pid_t child)
     mc_server = new s_mc_server(child, socket);
     mc_server->start();
     MC_init_pid(child, socket);
-
-    if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-      mc_server->loop();
-    }
-
-    else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
-      if (mc_reduce_kind == e_mc_reduce_unset)
-        mc_reduce_kind = e_mc_reduce_dpor;
-      MC_do_the_modelcheck_for_real();
-    }
-
-    else {
-      mc_server->loop();
-    }
-
+    MC_do_the_modelcheck_for_real();
     mc_server->shutdown();
     mc_server->exit();
   }

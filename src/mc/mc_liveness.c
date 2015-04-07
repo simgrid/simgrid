@@ -15,6 +15,7 @@
 #include "mc_private.h"
 #include "mc_record.h"
 #include "mc_smx.h"
+#include "mc_client.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");
@@ -171,13 +172,17 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
   }
 }
 
-void MC_pre_modelcheck_liveness(void) {
+static void MC_modelcheck_liveness_main(void);
 
+static void MC_pre_modelcheck_liveness(void)
+{
   initial_global_state->raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
 
   mc_pair_t initial_pair = NULL;
   smx_process_t process;
 
+  // TODO, fix this
+  MC_wait_for_requests();
   MC_wait_for_requests();
 
   MC_SET_MC_HEAP;
@@ -217,13 +222,13 @@ void MC_pre_modelcheck_liveness(void) {
 
   MC_SET_STD_HEAP;
   
-  MC_modelcheck_liveness();
+  MC_modelcheck_liveness_main();
 
   if (initial_global_state->raw_mem_set)
     MC_SET_MC_HEAP;
 }
 
-void MC_modelcheck_liveness()
+static void MC_modelcheck_liveness_main(void)
 {
   smx_process_t process = NULL;
   mc_pair_t current_pair = NULL;
@@ -243,9 +248,10 @@ void MC_modelcheck_liveness()
     /* Update current state in buchi automaton */
     _mc_property_automaton->current_state = current_pair->automaton_state;
 
-    XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d, interleave size %d, pair_num %d)",
+    XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d, interleave size = %d, pair_num = %d, requests = %d)",
        current_pair->depth, current_pair->search_cycle,
-       MC_state_interleave_size(current_pair->graph_state), current_pair->num);
+       MC_state_interleave_size(current_pair->graph_state), current_pair->num,
+       current_pair->requests);
 
     if (current_pair->requests > 0) {
 
@@ -395,4 +401,30 @@ void MC_modelcheck_liveness()
     
   } /* End of while(xbt_fifo_size(mc_stack) > 0) */
   
+}
+
+void MC_modelcheck_liveness(void)
+{
+  XBT_DEBUG("Starting the liveness algorithm");
+  xbt_assert(mc_mode == MC_MODE_SERVER);
+  _sg_mc_liveness = 1;
+
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
+
+  /* Create exploration stack */
+  mc_stack = xbt_fifo_new();
+
+  /* Create the initial state */
+  initial_global_state = xbt_new0(s_mc_global_t, 1);
+
+  MC_SET_STD_HEAP;
+
+  MC_pre_modelcheck_liveness();
+
+  /* We're done */
+  MC_print_statistics(mc_stats);
+  xbt_free(mc_time);
+
+  mmalloc_set_current_heap(heap);
+
 }

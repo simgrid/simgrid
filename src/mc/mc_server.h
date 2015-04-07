@@ -28,6 +28,8 @@ extern mc_server_t mc_server;
 void MC_server_wait_client(mc_process_t process);
 void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value);
 
+void MC_server_loop(mc_server_t server);
+
 SG_END_DECL()
 
 #ifdef __cplusplus

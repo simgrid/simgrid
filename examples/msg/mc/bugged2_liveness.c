@@ -97,7 +97,6 @@ int main(int argc, char *argv[])
   
   MSG_init(&argc, argv);
 
-  MSG_config("model-check/property","promela_bugged2_liveness");
   MC_automaton_new_propositional_symbol_pointer("cs", &cs);
   
   MSG_create_environment("../msg_platform.xml");

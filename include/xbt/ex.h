@@ -323,9 +323,8 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
     { \
         xbt_running_ctx_t *__xbt_ex_ctx_ptr = __xbt_running_ctx_fetch(); \
         int __ex_cleanup = 0; \
-        __ex_mctx_t *__ex_mctx_en; \
         __ex_mctx_t __ex_mctx_me; \
-        __ex_mctx_en = __xbt_ex_ctx_ptr->ctx_mctx; \
+        __ex_mctx_t * __ex_mctx_en = __xbt_ex_ctx_ptr->ctx_mctx; \
         __xbt_ex_ctx_ptr->ctx_mctx = &__ex_mctx_me; \
         if (__ex_mctx_save(&__ex_mctx_me)) { \
             if (1)

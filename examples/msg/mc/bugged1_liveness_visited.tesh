@@ -2,7 +2,7 @@
 
 ! expect signal SIGABRT
 ! timeout 90
-$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/deploy_bugged1_liveness_visited.xml --log=xbt_cfg.thresh:warning --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=model-check/visited:100 --cfg=contexts/stack_size:256
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/deploy_bugged1_liveness_visited.xml --log=xbt_cfg.thresh:warning --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=model-check/visited:100 --cfg=contexts/stack_size:256  --cfg=model-check/property:promela_bugged1_liveness
 > [  0.000000] (0:@) Check the liveness property promela_bugged1_liveness
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (3:client@Fafard) Ask the request
@@ -128,4 +128,3 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${srcdir:=.
 > [  0.000000] (0:@) Visited pairs = 201
 > [  0.000000] (0:@) Executed transitions = 207
 > [  0.000000] (0:@) Counter-example depth : 51
-
