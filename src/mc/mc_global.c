@@ -284,26 +284,23 @@ void MC_do_the_modelcheck_for_real()
   }
 
   else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
-    if(_sg_mc_termination){
-      XBT_INFO("Check non progressive cycles");
+    if(_sg_mc_termination)
       mc_reduce_kind = e_mc_reduce_none;
-    } else {
-      if (mc_reduce_kind == e_mc_reduce_unset)
-        mc_reduce_kind = e_mc_reduce_dpor;
-      else {
-        _sg_mc_safety = 1;
-        mc_reduce_kind = e_mc_reduce_dpor;
-        if (mc_mode == MC_MODE_SERVER || mc_mode == MC_MODE_STANDALONE) {
-          XBT_INFO("Check a safety property");
-          MC_modelcheck_safety();
-        }
-        else {
-          // Most of this is not needed:
-          MC_init();
-          // Main event loop:
-          MC_client_main_loop();
-        }
-      }
+    else if (mc_reduce_kind == e_mc_reduce_unset)
+      mc_reduce_kind = e_mc_reduce_dpor;
+    _sg_mc_safety = 1;
+    if (mc_mode == MC_MODE_SERVER || mc_mode == MC_MODE_STANDALONE) {
+      if (_sg_mc_termination)
+        XBT_INFO("Check non progressive cycles");
+      else
+        XBT_INFO("Check a safety property");
+      MC_modelcheck_safety();
+    }
+    else {
+      // Most of this is not needed:
+      MC_init();
+      // Main event loop:
+      MC_client_main_loop();
     }
   }
 
