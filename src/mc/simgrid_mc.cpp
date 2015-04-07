@@ -85,9 +85,7 @@ static int do_parent(int socket, pid_t child)
     else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
       if (mc_reduce_kind == e_mc_reduce_unset)
         mc_reduce_kind = e_mc_reduce_dpor;
-      XBT_INFO("Check a safety property");
-      MC_wait_for_requests();
-      MC_modelcheck_safety();
+      MC_do_the_modelcheck_for_real();
     }
 
     else {

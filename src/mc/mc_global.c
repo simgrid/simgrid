@@ -294,6 +294,7 @@ void MC_do_the_modelcheck_for_real()
         XBT_INFO("Check non progressive cycles");
       else
         XBT_INFO("Check a safety property");
+      MC_wait_for_requests();
       MC_modelcheck_safety();
     }
     else {
