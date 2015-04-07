@@ -100,7 +100,7 @@ Within each AS, the following types of resources exist:
 \li <b>link</b>: a link that defines a connection between two (or
     more) resources. Every link has a bandwidth and a latency.
 \li <b>cluster</b>: like a real cluster, contains many hosts
-    interconnected by some dedicated network.
+    interconnected by some dedicated network. Each cluster is itself an AS.
 
 Between these elements, a routing has to be defined. The AS is
 supposed to be Autonomous, hence this has to be done at the AS level. The AS
@@ -282,14 +282,14 @@ so on.
 
 \subsubsection pf_cluster <cluster>
 
-``<cluster />`` represents a machine-cluster. Most of the time it is used
-when you want to define many machines quickly. Technically,
+``<cluster />`` represents a machine-cluster. It is most commonly used
+when one wants to define many hosts and a network quickly. Technically,
 ``cluster`` is a meta-tag: <b>from the inner SimGrid point of
 view, a cluster is an AS where some optimized routing is defined</b>.
 The default inner organization of the cluster is as follow:
 
 \verbatim
-                 _________
+                 __________
                 |          |
                 |  router  |
     ____________|__________|_____________ backbone
@@ -300,17 +300,17 @@ The default inner organization of the cluster is as follow:
     c-0.me                             c-99.me
 \endverbatim
 
-You have a set of <b>host</b> defined. Each of them has a <b>link</b>
-to a central backbone (backbone is a <b>link</b> itself, as a link can
-be used to represent a switch, see the switch or <b>link</b> section
-below for more details about it). A <b>router</b> gives a way to the
-<b>cluster</b> to be connected to the outside world. Internally,
-cluster is then an AS containing all hosts : the router is the default
+Here, a set of <b>host</b>s is defined. Each of them has a <b>link</b>
+to a central backbone (backbone is a link itself, as a link can
+be used to represent a switch, see the switch / link section
+below for more details about it). A <b>router</b> allows to connect a
+<b>cluster</b> to the outside world. Internally,
+SimGrid treats a cluster as an AS containing all hosts: the router is the default
 gateway for the cluster.
 
-There is an alternative organization, which is as follow :
+There is an alternative organization, which is as follows:
 \verbatim
-                 _________
+                 __________
                 |          |
                 |  router  |
                 |__________|
@@ -322,9 +322,8 @@ There is an alternative organization, which is as follow :
             host0   host1   host2
 \endverbatim
 
-The principle is the same, except we don't have the backbone. The way
-to obtain it is simple : you just have to let bb_* attributes
-unset.
+The principle is the same, except that there is no backbone. This representation
+can be obtained easily: just do not set the bb_* attributes.
 
 
 Attribute name  | Mandatory | Values | Description
