@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 #include "surf/surf_private.h"
 
 int main(int argc, char **argv)

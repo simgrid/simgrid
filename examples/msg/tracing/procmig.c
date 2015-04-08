@@ -16,7 +16,7 @@
  * (See \ref tracing_tracing_options for details)
  */
 
-#include "msg/msg.h"            /* core library */
+#include "simgrid/msg.h"            /* core library */
 #include "xbt/sysdep.h"         /* calloc */
 
 /* Create a log channel to have nice outputs. */

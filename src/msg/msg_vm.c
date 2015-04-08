@@ -221,9 +221,7 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
 
   XBT_DEBUG("A new VM (%s) has been created", name);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_create(name, ind_pm);
-  #endif
 
   return ind_vm;
 }
@@ -250,9 +248,7 @@ void MSG_vm_destroy(msg_vm_t vm)
 
   __MSG_host_destroy(vm);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_end(vm);
-  #endif
 }
 
 
@@ -266,9 +262,7 @@ void MSG_vm_start(msg_vm_t vm)
 {
   simcall_vm_start(vm);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_start(vm);
-  #endif
 }
 
 
@@ -284,9 +278,7 @@ void MSG_vm_shutdown(msg_vm_t vm)
   /* msg_vm_t equals to msg_host_t */
   simcall_vm_shutdown(vm);
 
-  // #ifdef HAVE_TRACING
   // TRACE_msg_vm_(vm);
-  // #endif
 }
 
 
@@ -425,10 +417,7 @@ static int migration_rx_fun(int argc, char *argv[])
    msg_host_priv_t priv = msg_host_resource_priv(vm);
    priv->is_migrating = 0;
    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", ms->vm->key, ms->src_pm->key, ms->dst_pm->key);
-   #ifdef HAVE_TRACING
-    TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
-   #endif
-
+   TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
   }
   // Inform the SRC that the migration has been correctly performed
   {
@@ -464,7 +453,7 @@ static void reset_dirty_pages(msg_vm_t vm)
   xbt_dict_cursor_t cursor = NULL;
   dirty_page_t dp = NULL;
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
-    double remaining = MSG_task_get_remaining_computation(dp->task);
+    double remaining = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
 
@@ -525,7 +514,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
   xbt_dict_cursor_t cursor = NULL;
   dirty_page_t dp = NULL;
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
-    double remaining = MSG_task_get_remaining_computation(dp->task);
+    double remaining = MSG_task_get_flops_amount(dp->task);
 
     double clock = MSG_get_clock();
 
@@ -556,7 +545,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
 void MSG_host_add_task(msg_host_t host, msg_task_t task)
 {
   msg_host_priv_t priv = msg_host_resource_priv(host);
-  double remaining = MSG_task_get_remaining_computation(task);
+  double remaining = MSG_task_get_flops_amount(task);
   char *key = bprintf("%s-%p", task->name, task);
 
   dirty_page_t dp = xbt_new0(s_dirty_page, 1);
@@ -588,7 +577,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
    * computation has been done until now, and keep the information for the
    * lookup_() function that will called soon. */
   if (priv->dp_enabled) {
-    double remaining = MSG_task_get_remaining_computation(task);
+    double remaining = MSG_task_get_flops_amount(task);
     double clock = MSG_get_clock();
     // double updated = calc_updated_pages(key, host, dp, remaining, clock);
     double updated = get_computed(key, host, dp, remaining, clock);
@@ -814,7 +803,7 @@ static int migration_tx_fun(int argc, char *argv[])
     sg_size_t sent = 0;
     double clock_prev_send = MSG_get_clock();
     TRY {
-      XBT_INFO("Stage 2, gonna send %llu", updated_size);
+      XBT_DEBUG("Stage 2, gonna send %llu", updated_size);
       sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, mig_timeout);
     } CATCH_ANONYMOUS {
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
@@ -858,7 +847,7 @@ stage3:
   stop_dirty_page_tracking(ms->vm);
 
   TRY {
-    XBT_INFO("Stage 3: Gonna send %f", remaining_size);
+    XBT_DEBUG("Stage 3: Gonna send %f", remaining_size);
     send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, -1);
   } CATCH_ANONYMOUS {
     //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
@@ -868,7 +857,7 @@ stage3:
   }
 
   // At that point the Migration is considered valid for the SRC node but remind that the DST side should relocate effectively the VM on the DST node.
-  XBT_INFO("mig: tx_done");
+  XBT_DEBUG("mig: tx_done");
 
   return 0;
 }
@@ -975,10 +964,10 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
 
   msg_host_t old_pm = simcall_vm_get_pm(vm);
 
-  if(!MSG_host_is_off(old_pm))
+  if(MSG_host_is_off(old_pm))
     THROWF(vm_error, 0, "SRC host(%s) seems off, cannot start a migration", sg_host_name(old_pm));
  
-  if(!MSG_host_is_off(new_pm))
+  if(MSG_host_is_off(new_pm))
     THROWF(vm_error, 0, "DST host(%s) seems off, cannot start a migration", sg_host_name(new_pm));
   
   if (!MSG_vm_is_running(vm))
@@ -1006,9 +995,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   // This part is done in the RX code, to handle the corner case where SRC can crash just at the end of the migration process
   // In that case, the VM has been already assigned to the DST node.
   //XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm->key, old_pm->key, new_pm->key);
-  //#ifdef HAVE_TRACING
   //TRACE_msg_vm_change_host(vm, old_pm, new_pm);
-  //#endif
 }
 
 
@@ -1029,9 +1016,7 @@ void MSG_vm_suspend(msg_vm_t vm)
 
   XBT_DEBUG("vm_suspend done");
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_suspend(vm);
-  #endif
 }
 
 
@@ -1044,9 +1029,7 @@ void MSG_vm_resume(msg_vm_t vm)
 {
   simcall_vm_resume(vm);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_resume(vm);
-  #endif
 }
 
 
@@ -1066,9 +1049,7 @@ void MSG_vm_save(msg_vm_t vm)
     THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_name(vm));
 
   simcall_vm_save(vm);
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_save(vm);
-  #endif
 }
 
 /** @brief Restore the execution of the VM. All processes on the VM run again.
@@ -1082,9 +1063,7 @@ void MSG_vm_restore(msg_vm_t vm)
 {
   simcall_vm_restore(vm);
 
-  #ifdef HAVE_TRACING
   TRACE_msg_vm_restore(vm);
-  #endif
 }
 
 

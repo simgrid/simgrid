@@ -10,7 +10,7 @@
 #include "jxbt_utilities.h"
 #include "jmsg.h"
 
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 static jfieldID jcomm_field_Comm_bind;

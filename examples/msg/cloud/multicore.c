@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */
@@ -37,14 +37,14 @@ struct task_data {
 
 static void task_data_init_clock(struct task_data *t)
 {
-  t->prev_computation_amount = MSG_task_get_remaining_computation(t->task);
+  t->prev_computation_amount = MSG_task_get_flops_amount(t->task);
   t->prev_clock = MSG_get_clock();
 }
 
 
 static void task_data_get_clock(struct task_data *t)
 {
-  double now_computation_amount = MSG_task_get_remaining_computation(t->task);
+  double now_computation_amount = MSG_task_get_flops_amount(t->task);
   double now_clock = MSG_get_clock();
 
   double done = t->prev_computation_amount - now_computation_amount;

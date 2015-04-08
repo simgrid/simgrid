@@ -112,7 +112,7 @@ static int l_task_get_name(lua_State* L)
 static int l_task_get_computation_duration(lua_State* L)
 {
   msg_task_t task = sglua_check_task(L, 1);
-  lua_pushnumber(L, MSG_task_get_compute_duration(task));
+  lua_pushnumber(L, MSG_task_get_flops_amount(task));
   return 1;
 }
 

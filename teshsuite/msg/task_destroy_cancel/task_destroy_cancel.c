@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
+#include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
 #include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */
@@ -126,7 +126,7 @@ int slave(int argc, char *argv[])
     XBT_INFO("Task \"%s\" done in %f (amount %f)"
     		, MSG_task_get_name(task)
     		, end - start
-    		, MSG_task_get_remaining_computation(task));
+    		, MSG_task_get_flops_amount(task));
 
     MSG_task_destroy(task);
     task = NULL;

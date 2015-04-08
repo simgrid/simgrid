@@ -7,8 +7,6 @@
 #include "instr/instr_private.h"
 #include "surf/surf_private.h"
 
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_surf, instr, "Tracing Surf");
 
 void TRACE_surf_alloc(void)
@@ -58,4 +56,3 @@ void TRACE_surf_action(surf_action_t surf_action, const char *category)
 
   surf_action_set_category(surf_action, category);
 }
-#endif /* HAVE_TRACING */

@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg/msg.h"            /* core library */
+#include "simgrid/msg.h"        /* core library */
 #include "xbt/sysdep.h"         /* calloc */
 #include "xbt/synchro_core.h"
 

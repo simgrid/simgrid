@@ -8,8 +8,6 @@
 #include "simgrid/sg_config.h"
 #include "surf/surf.h"
 
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used for Visualization/Analysis of simulations)");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
@@ -820,5 +818,3 @@ void instr_resume_tracing (void)
 #undef OPT_TRACING_COMMENT_FILE
 #undef OPT_VIVA_UNCAT_CONF
 #undef OPT_VIVA_CAT_CONF
-
-#endif /* HAVE_TRACING */

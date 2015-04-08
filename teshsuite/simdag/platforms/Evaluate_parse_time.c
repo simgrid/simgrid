@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 #include "surf/surf_private.h"
 #include "xbt/xbt_os_time.h"
 

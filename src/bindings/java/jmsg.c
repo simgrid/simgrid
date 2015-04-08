@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <simgrid/simix.h>
 #include <surf/surfxml_parse.h>
 #include <locale.h>
@@ -104,9 +104,7 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   const char *tmp;
 
   XBT_LOG_CONNECT(jmsg);
-#ifdef HAVE_TRACING
   XBT_LOG_CONNECT(jtrace);
-#endif
 
   (*env)->GetJavaVM(env, &__java_vm);
 

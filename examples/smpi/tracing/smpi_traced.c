@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include "mpi.h"
-#include "instr/instr.h"
+#include "simgrid/instr.h"
 
 #define DATATOSENT 100000
 

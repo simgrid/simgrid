@@ -10,7 +10,7 @@
 /* LTL property checked : !(GFcs)                                             */
 /******************************************************************************/
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "mc/mc.h"
 #include "xbt/automaton.h"
 #include "bugged2_liveness.h"

@@ -43,9 +43,7 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
     simcall_process_set_data(smx_proc, NULL);
   }
 
-#ifdef HAVE_TRACING
   TRACE_msg_process_end(smx_proc);
-#endif
   // free the data if a function was provided
   if (msg_proc && msg_proc->data && msg_global->process_data_cleanup) {
     msg_global->process_data_cleanup(msg_proc->data);
@@ -173,9 +171,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
  simcall_process_create(&process, name, code, simdata, sg_host_name(host), -1,
                            argc, argv, properties,0);
 
-#ifdef HAVE_TRACING
   TRACE_msg_process_create(name, SIMIX_process_get_PID(process), host);
-#endif
 
   if (!process) {
     /* Undo everything we have just changed */
@@ -183,9 +179,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
     return NULL;
   }
   else {
-    #ifdef HAVE_TRACING
     simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
-    #endif
   }
   return process;
 }
@@ -229,10 +223,8 @@ msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
   simdata_process_t simdata = simcall_process_get_data(process);
   simdata->m_host = host;
-#ifdef HAVE_TRACING
   msg_host_t now = simdata->m_host;
   TRACE_msg_process_change_host(process, now, host);
-#endif
   simcall_process_change_host(process, host);
   return MSG_OK;
 }
@@ -443,10 +435,7 @@ msg_error_t MSG_process_suspend(msg_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
 
-#ifdef HAVE_TRACING
   TRACE_msg_process_suspend(process);
-#endif
-
   simcall_process_suspend(process);
   MSG_RETURN(MSG_OK);
 }
@@ -461,10 +450,7 @@ msg_error_t MSG_process_resume(msg_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter");
 
-#ifdef HAVE_TRACING
   TRACE_msg_process_resume(process);
-#endif
-
   simcall_process_resume(process);
   MSG_RETURN(MSG_OK);
 }

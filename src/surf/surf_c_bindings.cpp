@@ -198,9 +198,7 @@ double surf_solve(double max_date)
     surf_update_actions_state(model);
   }
 
-#ifdef HAVE_TRACING
   TRACE_paje_dump_buffer (0);
-#endif
 
   return surf_min;
 }
@@ -272,10 +270,10 @@ int surf_model_running_action_set_size(surf_model_t model){
 surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
 		                                    int workstation_nb,
                                             void **workstation_list,
-                                            double *computation_amount,
-                                            double *communication_amount,
+                                            double *flops_amount,
+                                            double *bytes_amount,
                                             double rate){
-  return static_cast<ActionPtr>(model->executeParallelTask(workstation_nb, workstation_list, computation_amount, communication_amount, rate));
+  return static_cast<ActionPtr>(model->executeParallelTask(workstation_nb, workstation_list, flops_amount, bytes_amount, rate));
 }
 
 surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate){
@@ -557,11 +555,9 @@ void surf_action_set_priority(surf_action_t action, double priority){
   action->setPriority(priority);
 }
 
-#ifdef HAVE_TRACING
 void surf_action_set_category(surf_action_t action, const char *category){
   action->setCategory(category);
 }
-#endif
 
 void *surf_action_get_data(surf_action_t action){
   return action->getData();

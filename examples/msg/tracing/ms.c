@@ -20,7 +20,7 @@
  */
 
 #include <stdio.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */
@@ -88,7 +88,7 @@ int slave(int argc, char *argv[])
     //to the variable "task_computation"
     TRACE_host_variable_add(MSG_host_get_name(MSG_host_self()),
                             "task_computation",
-                            MSG_task_get_compute_duration(task));
+                            MSG_task_get_flops_amount(task));
     MSG_task_execute(task);
     MSG_task_destroy(task);
     task = NULL;

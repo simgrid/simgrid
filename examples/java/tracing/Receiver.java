@@ -24,7 +24,7 @@ public class Receiver extends Process {
    public void main(String[] args) throws MsgException {
         
       Msg.info("hello!");
-      Trace.hostPushState (host.getName(), "PM_STATE", "waitingPing");
+      Trace.hostPushState (getHost().getName(), "PM_STATE", "waitingPing");
 			double communicationTime=0;
 
       double time = Msg.getClock();
@@ -46,15 +46,15 @@ public class Receiver extends Process {
       Msg.info(" --- bw "+ commSizeBw/communicationTime + " ----");
       
 			/* Send the pong */
-     		Trace.hostPushState (host.getName(), "PM_STATE", "sendingPong");
+     		Trace.hostPushState (getHost().getName(), "PM_STATE", "sendingPong");
 			double computeDuration = 0;
 			PingPongTask pong = new PingPongTask("no name",computeDuration,commSizeLat);
 			pong.setTime(time);
 			pong.send(ping.getSource().getName());
 
 		/* Pop the two states */
-      Trace.hostPopState (host.getName(), "PM_STATE");
-      Trace.hostPopState (host.getName(), "PM_STATE");
+      Trace.hostPopState (getHost().getName(), "PM_STATE");
+      Trace.hostPopState (getHost().getName(), "PM_STATE");
   
   		Msg.info("goodbye!");
     }

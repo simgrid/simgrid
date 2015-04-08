@@ -140,12 +140,9 @@ const char* simcall_names[] = {
   [SIMCALL_STORAGE_GET_CONTENT] = "SIMCALL_STORAGE_GET_CONTENT",
   [SIMCALL_ASR_GET_PROPERTIES] = "SIMCALL_ASR_GET_PROPERTIES",
   [SIMCALL_MC_RANDOM] = "SIMCALL_MC_RANDOM",
+  [SIMCALL_SET_CATEGORY] = "SIMCALL_SET_CATEGORY",
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   [SIMCALL_COMM_IS_LATENCY_BOUNDED] = "SIMCALL_COMM_IS_LATENCY_BOUNDED",
-#endif
-
-#ifdef HAVE_TRACING
-  [SIMCALL_SET_CATEGORY] = "SIMCALL_SET_CATEGORY",
 #endif
 
 #ifdef HAVE_MC
@@ -742,17 +739,14 @@ case SIMCALL_MC_RANDOM:
       SIMIX_simcall_answer(simcall);
       break;  
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-case SIMCALL_COMM_IS_LATENCY_BOUNDED:
-      simcall->result.i = SIMIX_comm_is_latency_bounded((smx_synchro_t) simcall->args[0].dp);
+case SIMCALL_SET_CATEGORY:
+       SIMIX_set_category((smx_synchro_t) simcall->args[0].dp, simcall->args[1].cc);
       SIMIX_simcall_answer(simcall);
       break;  
 
-#endif
-
-#ifdef HAVE_TRACING
-case SIMCALL_SET_CATEGORY:
-       SIMIX_set_category((smx_synchro_t) simcall->args[0].dp, simcall->args[1].cc);
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+case SIMCALL_COMM_IS_LATENCY_BOUNDED:
+      simcall->result.i = SIMIX_comm_is_latency_bounded((smx_synchro_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

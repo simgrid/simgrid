@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 
 /*
  * This test checks if the reinitialization of

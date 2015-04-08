@@ -6,7 +6,7 @@
 
 #include<stdio.h>
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/sysdep.h"         /* calloc */
 #include "simgrid/plugins.h"
 

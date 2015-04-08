@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 
@@ -169,7 +169,7 @@ int slave(int argc, char *argv[])
   
   XBT_INFO("FLOW[%d] : Receive %.0f bytes from %s to %s",
       id,
-      MSG_task_get_data_size(task),
+      MSG_task_get_bytes_amount(task),
        masternames[id],
        slavenames[id]);
 //  MSG_task_execute(task);

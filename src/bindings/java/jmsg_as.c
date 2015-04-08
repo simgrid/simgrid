@@ -8,9 +8,12 @@
 
 #include "xbt/str.h"
 #include "xbt/dict.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "jmsg_as.h"
+#include "jmsg_host.h"
 #include "jxbt_utilities.h"
+#include "jmsg.h"
+
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 

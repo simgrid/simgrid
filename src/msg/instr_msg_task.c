@@ -6,11 +6,7 @@
 
 #include "instr/instr_private.h"
 #include "msg_private.h"
-#include "msg/datatypes.h"
 #include "mc/mc.h"
-
-
-#ifdef HAVE_TRACING
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
 
@@ -157,5 +153,3 @@ void TRACE_msg_task_put_end(void)
     new_pajePopState (MSG_get_clock(), process_container, type);
   }
 }
-
-#endif /* HAVE_TRACING */

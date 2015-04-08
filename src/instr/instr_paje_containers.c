@@ -9,8 +9,6 @@
 #include "surf/surf.h"
 #include "surf/surf_routing.h"
 
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 
 static container_t rootContainer = NULL;    /* the root container */
@@ -233,5 +231,3 @@ void PJ_container_free_all ()
     THROWF(tracing_error, 0, "some containers still present even after destroying all of them");
   }
 }
-
-#endif /* HAVE_TRACING */

@@ -7,7 +7,7 @@
 #include "bittorrent.h"
 #include "peer.h"
 #include "tracker.h"
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <simgrid/platf_generator.h>
 /**
  * Bittorrent example launcher, using a generated platform

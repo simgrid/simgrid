@@ -15,7 +15,7 @@
 
 #include "jxbt_utilities.h"
 
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -64,24 +64,24 @@ Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_create(JNIEnv * env,
                                       jobject jtask, jstring jname,
-                                      jdouble jcomputeDuration,
-                                      jdouble jmessageSize)
+                                      jdouble jflopsAmount,
+                                      jdouble jbytesAmount)
 {
   msg_task_t task;                /* the native task to create                            */
   const char *name = NULL;      /* the name of the task                                 */
 
-  if (jcomputeDuration < 0) {
+  if (jflopsAmount < 0) {
     jxbt_throw_illegal(env,
                        bprintf
-                       ("Task ComputeDuration (%f) cannot be negative",
-                        (double) jcomputeDuration));
+                       ("Task flopsAmount (%f) cannot be negative",
+                        (double) jflopsAmount));
     return;
   }
 
-  if (jmessageSize < 0) {
+  if (jbytesAmount < 0) {
     jxbt_throw_illegal(env,
-                       bprintf("Task MessageSize (%f) cannot be negative",
-                       (double) jmessageSize));
+                       bprintf("Task bytesAmount (%f) cannot be negative",
+                       (double) jbytesAmount));
     return;
   }
 
@@ -92,8 +92,8 @@ Java_org_simgrid_msg_Task_create(JNIEnv * env,
 
   /* create the task */
   task =
-      MSG_task_create(name, (double) jcomputeDuration,
-                     (double) jmessageSize, NULL);
+      MSG_task_create(name, (double) jflopsAmount,
+                     (double) jbytesAmount, NULL);
   if (jname)
     (*env)->ReleaseStringUTFChars(env, jname, name);
   /* sets the task name */
@@ -128,14 +128,14 @@ Java_org_simgrid_msg_Task_parallelCreate(JNIEnv * env,
   if (!jcomputeDurations_arg) {
     jxbt_throw_null(env,
                     xbt_strdup
-                    ("Parallel task compute durations cannot be null"));
+                    ("Parallel task flops amounts cannot be null"));
     return;
   }
 
   if (!jmessageSizes_arg) {
     jxbt_throw_null(env,
                     xbt_strdup
-                    ("Parallel task message sizes cannot be null"));
+                    ("Parallel task bytes amounts cannot be null"));
     return;
   }
 
@@ -294,8 +294,7 @@ Java_org_simgrid_msg_Task_getSource(JNIEnv * env,
 }
 
 JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_Task_getComputeDuration(JNIEnv * env,
-                                                  jobject jtask)
+Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env, jobject jtask)
 {
   msg_task_t ptask = jtask_to_native_task(jtask, env);
 
@@ -303,20 +302,9 @@ Java_org_simgrid_msg_Task_getComputeDuration(JNIEnv * env,
     jxbt_throw_notbound(env, "task", jtask);
     return -1;
   }
-  return (jdouble) MSG_task_get_compute_duration(ptask);
+  return (jdouble) MSG_task_get_flops_amount(ptask);
 }
 
-JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_Task_getRemainingDuration(JNIEnv * env, jobject jtask)
-{
-  msg_task_t ptask = jtask_to_native_task(jtask, env);
-
-  if (!ptask) {
-    jxbt_throw_notbound(env, "task", jtask);
-    return -1;
-  }
-  return (jdouble) MSG_task_get_remaining_computation(ptask);
-}
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jtask, jobject jname) {
 	msg_task_t task = jtask_to_native_task(jtask, env);
@@ -345,7 +333,7 @@ Java_org_simgrid_msg_Task_setPriority(JNIEnv * env,
   MSG_task_set_priority(task, (double) priority);
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Task_setComputeDuration
+Java_org_simgrid_msg_Task_setFlopsAmount
 		(JNIEnv *env, jobject jtask, jdouble computationAmount) {
 	msg_task_t task = jtask_to_native_task(jtask, env);
 
@@ -353,10 +341,10 @@ Java_org_simgrid_msg_Task_setComputeDuration
     jxbt_throw_notbound(env, "task", jtask);
     return;
 	}
-	MSG_task_set_compute_duration(task, (double) computationAmount);
+	MSG_task_set_flops_amount(task, (double) computationAmount);
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Task_setDataSize
+Java_org_simgrid_msg_Task_setBytesAmount
 		(JNIEnv *env, jobject jtask, jdouble dataSize) {
 	msg_task_t task = jtask_to_native_task(jtask, env);
 
@@ -365,7 +353,7 @@ Java_org_simgrid_msg_Task_setDataSize
     return;
 	}
         (*env)->SetDoubleField(env, jtask, jtask_field_Task_messageSize, dataSize);
-	MSG_task_set_data_size(task, (double) dataSize);
+	MSG_task_set_bytes_amount(task, (double) dataSize);
 }
 
 JNIEXPORT void JNICALL

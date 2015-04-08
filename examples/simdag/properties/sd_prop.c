@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"

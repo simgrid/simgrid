@@ -31,7 +31,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg,
    corresponding object.
  * \param name a name for the object. It is for user-level information
    and can be NULL.
- * \param compute_duration a value of the processing amount (in flop)
+ * \param flop_amount a value of the processing amount (in flop)
    needed to process this new task. If 0, then it cannot be executed with
    MSG_task_execute(). This value has to be >=0.
  * \param message_size a value of the amount of data (in bytes) needed to
@@ -43,7 +43,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg,
  * \see msg_task_t
  * \return The new corresponding object.
  */
-msg_task_t MSG_task_create(const char *name, double compute_duration,
+msg_task_t MSG_task_create(const char *name, double flop_amount,
                          double message_size, void *data)
 {
   msg_task_t task = xbt_new(s_msg_task_t, 1);
@@ -57,8 +57,8 @@ msg_task_t MSG_task_create(const char *name, double compute_duration,
   /* Simulator Data */
   simdata->compute = NULL;
   simdata->comm = NULL;
-  simdata->message_size = message_size;
-  simdata->computation_amount = compute_duration;
+  simdata->bytes_amount = message_size;
+  simdata->flops_amount = flop_amount;
   simdata->sender = NULL;
   simdata->receiver = NULL;
   simdata->source = NULL;
@@ -70,11 +70,9 @@ msg_task_t MSG_task_create(const char *name, double compute_duration,
 
   simdata->host_nb = 0;
   simdata->host_list = NULL;
-  simdata->comp_amount = NULL;
-  simdata->comm_amount = NULL;
-#ifdef HAVE_TRACING
+  simdata->flops_parallel_amount = NULL;
+  simdata->bytes_parallel_amount = NULL;
   TRACE_msg_task_create(task);
-#endif
 
   return task;
 }
@@ -88,21 +86,20 @@ msg_task_t MSG_task_create(const char *name, double compute_duration,
  and can be NULL.
  * \param host_nb the number of hosts implied in the parallel task.
  * \param host_list an array of \p host_nb msg_host_t.
- * \param computation_amount an array of \p host_nb
- doubles. computation_amount[i] is the total number of operations
- that have to be performed on host_list[i].
- * \param communication_amount an array of \p host_nb* \p host_nb doubles.
- * \param data a pointer to any data may want to attach to the new
- object.  It is for user-level information and can be NULL. It can
- be retrieved with the function \ref MSG_task_get_data.
+ * \param flops_amount an array of \p host_nb doubles.
+ *                     flops_amount[i] is the total number of operations that have to be performed on host_list[i].
+ * \param bytes_amount an array of \p host_nb* \p host_nb doubles.
+ * \param data a pointer to any data may want to attach to the new object.
+ *             It is for user-level information and can be NULL.
+ *             It can be retrieved with the function \ref MSG_task_get_data.
  * \see msg_task_t
  * \return The new corresponding object.
  */
 msg_task_t
 MSG_parallel_task_create(const char *name, int host_nb,
                          const msg_host_t * host_list,
-                         double *computation_amount,
-                         double *communication_amount, void *data)
+                         double *flops_amount,
+                         double *bytes_amount, void *data)
 {
   msg_task_t task = MSG_task_create(name, 0, 0, data);
   simdata_task_t simdata = task->simdata;
@@ -111,8 +108,8 @@ MSG_parallel_task_create(const char *name, int host_nb,
   /* Simulator Data specific to parallel tasks */
   simdata->host_nb = host_nb;
   simdata->host_list = xbt_new0(smx_host_t, host_nb);
-  simdata->comp_amount = computation_amount;
-  simdata->comm_amount = communication_amount;
+  simdata->flops_parallel_amount = flops_amount;
+  simdata->bytes_parallel_amount = bytes_amount;
 
   for (i = 0; i < host_nb; i++)
     simdata->host_list[i] = host_list[i];
@@ -130,7 +127,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
  * \param name a name for the object. It is for user-level information
    and can be NULL.
 
- * \param compute_duration a value of the processing amount (in flop)
+ * \param flops_amount a value of the processing amount (in flop)
    needed to process this new task. If 0, then it cannot be executed with
    MSG_gpu_task_execute(). This value has to be >=0.
 
@@ -142,7 +139,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
  * \see msg_gpu_task_t
  * \return The new corresponding object.
  */
-msg_gpu_task_t MSG_gpu_task_create(const char *name, double compute_duration,
+msg_gpu_task_t MSG_gpu_task_create(const char *name, double flops_amount,
                          double dispatch_latency, double collect_latency)
 {
   msg_gpu_task_t task = xbt_new(s_msg_gpu_task_t, 1);
@@ -152,14 +149,11 @@ msg_gpu_task_t MSG_gpu_task_create(const char *name, double compute_duration,
   task->name = xbt_strdup(name);
 
   /* Simulator Data */
-  simdata->computation_amount = compute_duration;
+  simdata->flops_amount = flops_amount;
   simdata->dispatch_latency   = dispatch_latency;
   simdata->collect_latency    = collect_latency;
 
-#ifdef HAVE_TRACING
-  //FIXME
-  /* TRACE_msg_gpu_task_create(task); */
-#endif
+  /* TRACE_msg_gpu_task_create(task); FIXME*/
 
   return task;
 }
@@ -273,9 +267,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
     /* the task is being sent or executed: cancel it first */
     MSG_task_cancel(task);
   }
-#ifdef HAVE_TRACING
   TRACE_msg_task_destroy(task);
-#endif
 
   xbt_free(task->name);
 
@@ -319,17 +311,18 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 }
 
 /** \ingroup m_task_management
- * \brief Returns the computation amount needed to process a task #msg_task_t.
+ * \brief Returns the remaining amount of flops needed to execute a task #msg_task_t.
  *
  * Once a task has been processed, this amount is set to 0. If you want, you
- * can reset this value with #MSG_task_set_compute_duration before restarting the task.
+ * can reset this value with #MSG_task_set_flops_amount before restarting the task.
  */
-double MSG_task_get_compute_duration(msg_task_t task)
-{
-  xbt_assert((task != NULL)
-              && (task->simdata != NULL), "Invalid parameter");
+double MSG_task_get_flops_amount(msg_task_t task) {
 
-  return task->simdata->computation_amount;
+	if (task->simdata->compute) {
+		return simcall_host_execution_get_remains(task->simdata->compute);
+	} else {
+		return task->simdata->flops_amount;
+	}
 }
 
 
@@ -337,17 +330,14 @@ double MSG_task_get_compute_duration(msg_task_t task)
  * \brief set the computation amount needed to process a task #msg_task_t.
  *
  * \warning If the computation is ongoing (already started and not finished),
- * it is not modified by this call. And the termination of the ongoing task with
- * set the computation_amount to zero, overriding any value set during the
- * execution.
+ * it is not modified by this call. Moreover, after its completion, the ongoing
+ * execution with set the flops_amount to zero, overriding any value set during
+ * the execution.
  */
 
-void MSG_task_set_compute_duration(msg_task_t task,
-                                   double computation_amount)
+void MSG_task_set_flops_amount(msg_task_t task, double flops_amount)
 {
-  xbt_assert(task, "Invalid parameter");
-  task->simdata->computation_amount = computation_amount;
-
+  task->simdata->flops_amount = flops_amount;
 }
 
 /** \ingroup m_task_management
@@ -357,34 +347,11 @@ void MSG_task_set_compute_duration(msg_task_t task,
  * it is not modified by this call.
  */
 
-void MSG_task_set_data_size(msg_task_t task,
-                                   double data_size)
+void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
 {
-  xbt_assert(task, "Invalid parameter");
-  task->simdata->message_size = data_size;
-
+  task->simdata->bytes_amount = data_size;
 }
 
-
-
-/** \ingroup m_task_management
- * \brief Returns the remaining computation amount of a task #msg_task_t.
- *
- * If the task is ongoing, this call retrieves the remaining amount of work.
- * If it is not ongoing, it returns the total amount of work that will be
- * executed when the task starts.
- */
-double MSG_task_get_remaining_computation(msg_task_t task)
-{
-  xbt_assert((task != NULL)
-              && (task->simdata != NULL), "Invalid parameter");
-
-  if (task->simdata->compute) {
-    return simcall_host_execution_get_remains(task->simdata->compute);
-  } else {
-    return task->simdata->computation_amount;
-  }
-}
 
 /** \ingroup m_task_management
  * \brief Returns the total amount received by a task #msg_task_t.
@@ -420,12 +387,12 @@ int MSG_task_is_latency_bounded(msg_task_t task)
  * \brief Returns the size of the data attached to a task #msg_task_t.
  *
  */
-double MSG_task_get_data_size(msg_task_t task)
+double MSG_task_get_bytes_amount(msg_task_t task)
 {
   xbt_assert((task != NULL)
               && (task->simdata != NULL), "Invalid parameter");
 
-  return task->simdata->message_size;
+  return task->simdata->bytes_amount;
 }
 
 

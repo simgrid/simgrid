@@ -151,7 +151,7 @@ public class Node extends Process {
 			// is my successor the successor?
 			if (isInInterval(fTask.requestId, this.id + 1, fingers[0])) {
 				//Msg.info("Send the request to " + fTask.answerTo + " with answer " + fingers[0]);
-				FindSuccessorAnswerTask answer = new FindSuccessorAnswerTask(host.getName(), mailbox, fingers[0]);
+				FindSuccessorAnswerTask answer = new FindSuccessorAnswerTask(getHost().getName(), mailbox, fingers[0]);
 				answer.dsend(fTask.answerTo);
 			}
 			else {
@@ -164,7 +164,7 @@ public class Node extends Process {
 		else if (task instanceof GetPredecessorTask) {
 			GetPredecessorTask gTask = (GetPredecessorTask)(task);
 			Msg.debug("Receiving a 'Get Predecessor' request from " + gTask.issuerHostName);
-			GetPredecessorAnswerTask answer = new GetPredecessorAnswerTask(host.getName(), mailbox, predId);
+			GetPredecessorAnswerTask answer = new GetPredecessorAnswerTask(getHost().getName(), mailbox, predId);
 			answer.dsend(gTask.answerTo);
 		}
 		else if (task instanceof NotifyTask) {
@@ -240,7 +240,7 @@ public class Node extends Process {
 		boolean stop = false;
 		Msg.debug("Sending a 'Get Predecessor' request to " + askTo);
 		String mailboxTo = Integer.toString(askTo);
-		GetPredecessorTask sendTask = new GetPredecessorTask(host.getName(), this.mailbox);
+		GetPredecessorTask sendTask = new GetPredecessorTask(getHost().getName(), this.mailbox);
 		try {
 			sendTask.send(mailboxTo, Common.TIMEOUT);			
 			try {
@@ -294,7 +294,7 @@ public class Node extends Process {
 		int successor = -1;
 		boolean stop = false;
 		String mailbox = Integer.toString(askTo);
-		Task sendTask = new FindSuccessorTask(host.getName(), this.mailbox, id);
+		Task sendTask = new FindSuccessorTask(getHost().getName(), this.mailbox, id);
 		Msg.debug("Sending a 'Find Successor' request to " + mailbox + " for id " + id);
 		try {
 			sendTask.send(mailbox, Common.TIMEOUT);
@@ -374,7 +374,7 @@ public class Node extends Process {
 	 */	
 	void remoteNotify(int notifyId, int predecessorCandidateId) {
 		Msg.debug("Sending a 'Notify' request to " + notifyId);
-		Task sentTask = new NotifyTask(host.getName(), this.mailbox, predecessorCandidateId);
+		Task sentTask = new NotifyTask(getHost().getName(), this.mailbox, predecessorCandidateId);
 		sentTask.dsend(Integer.toString(notifyId));
 	}
 	/**

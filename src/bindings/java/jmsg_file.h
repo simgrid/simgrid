@@ -9,7 +9,7 @@
 #ifndef MSG_JFILE_H
 #define MSG_JFILE_H
 #include <jni.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 
 jfieldID jfile_field_bind;
 

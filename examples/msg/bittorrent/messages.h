@@ -6,7 +6,7 @@
 
 #ifndef BITTORRENT_MESSAGES_H_
 #define BITTORRENT_MESSAGES_H_
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 
 /**
  * Message sizes

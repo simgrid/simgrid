@@ -250,10 +250,8 @@ static MPI_Request build_request(void *buf, int count,
   else
     request->refcount = 0;
   request->op = MPI_REPLACE;
-#ifdef HAVE_TRACING
   request->send = 0;
   request->recv = 0;
-#endif
   if (flags & SEND) smpi_datatype_unuse(datatype);
 
   return request;
@@ -402,12 +400,10 @@ void smpi_mpi_start(MPI_Request request)
 
     int receiver = request->dst;
 
-    #ifdef HAVE_TRACING
-      int rank = request->src;
-      if (TRACE_smpi_view_internals()) {
-        TRACE_smpi_send(rank, rank, receiver,request->size);
-      }
-    #endif
+    int rank = request->src;
+    if (TRACE_smpi_view_internals()) {
+    	TRACE_smpi_send(rank, rank, receiver,request->size);
+    }
     print_request("New send", request);
     
         //if we are giving back the control to the user without waiting for completion, we have to inject timings
@@ -490,12 +486,10 @@ void smpi_mpi_start(MPI_Request request)
 
 
 
-#ifdef HAVE_TRACING
     /* FIXME: detached sends are not traceable (request->action == NULL) */
     if (request->action)
-      simcall_set_category(request->action, TRACE_internal_smpi_get_category());
+    	simcall_set_category(request->action, TRACE_internal_smpi_get_category());
 
-#endif
     xbt_mutex_release(mut);
   }
 
@@ -725,7 +719,6 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
 
   }
 
-#ifdef HAVE_TRACING
   if (TRACE_smpi_view_internals()) {
     if(req->flags & RECV){
       int rank = smpi_process_index();
@@ -733,7 +726,6 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
       TRACE_smpi_recv(rank, src_traced, rank);
     }
   }
-#endif
 
   if(req->detached_sender!=NULL){
     smpi_mpi_request_free(&(req->detached_sender));

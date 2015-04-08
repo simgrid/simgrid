@@ -8,7 +8,7 @@
 #include <unistd.h>
 #endif
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator,
@@ -17,7 +17,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator,
 int main(int argc, char **argv)
 {
   XBT_LOG_CONNECT(graphicator);
-#ifdef HAVE_TRACING
   MSG_init(&argc, argv);
 
   if (argc < 3){
@@ -33,8 +32,5 @@ int main(int argc, char **argv)
   if (status == 0){
     XBT_INFO ("%s expects --cfg=tracing:yes --cfg=tracing/platform:yes", argv[0]);
   }
-#else
-  XBT_INFO ("works only if simgrid was compiled with tracing enabled.");
-#endif
   return 0;
 }

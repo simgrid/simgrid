@@ -12,7 +12,7 @@ package org.simgrid.msg;
  */
 public class Mutex {
 	private long bind; // The C object -- don't touch it
-	
+
 	public Mutex() {
 		init();
 	}
@@ -23,7 +23,7 @@ public class Mutex {
 	private native void init();
 	public native void acquire();
 	public native void release();
-	
+
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */

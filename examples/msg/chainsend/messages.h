@@ -7,7 +7,7 @@
 #ifndef KADEPLOY_MESSAGES_H
 #define KADEPLOY_MESSAGES_H
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/sysdep.h"
 
 #define MESSAGE_BUILD_CHAIN_SIZE 40

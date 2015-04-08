@@ -17,7 +17,7 @@ public final class Trace {
 	}
 
 	// TODO complete the binding of the tracing API 
-	
+
 
 	/**
 	 * Declare a new user variable associated to hosts with a color. 
@@ -26,8 +26,8 @@ public final class Trace {
 	 * @param color
 	 */
 	public final static native	void hostVariableDeclareWithColor (String variable, String color);
-	
-	
+
+
 	/**
 	 *  Add a value to a variable of a host. 
 	 *  
@@ -47,8 +47,8 @@ public final class Trace {
 	public final static native	void hostVariableSub (String host, String variable, double value);
 
 	/**
- 	 * Set the value of a variable of a host at a given timestamp. 
- 	 * 
+	 * Set the value of a variable of a host at a given timestamp. 
+	 * 
 	 * @param time
 	 * @param host
 	 * @param variable
@@ -64,178 +64,178 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
- 	public final static native	void hostVariableAddWithTime (double time, String host, String variable, double value);
- 
- 	/**
- 	 * Subtract a value from a variable of a host at a given timestamp.  
- 	 * 
- 	 * @param time
- 	 * @param host
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void hostVariableSubWithTime (double time, String host, String variable, double value);
+	public final static native	void hostVariableAddWithTime (double time, String host, String variable, double value);
 
- 	/**
- 	 *  Get declared user host variables. 
- 	 * 
- 	 */
- 	public final static native String[]  getHostVariablesName ();
-
- 	/**
- 	 *  Declare a new user variable associated to links. 
- 	 *  
- 	 * @param variable
- 	 */
- 	public final static native	void linkVariableDeclare (String variable);
-
- 	/**
- 	 * Declare a new user variable associated to links with a color. 
- 	 * @param variable
- 	 * @param color
- 	 */
- 	public final static native	void linkVariableDeclareWithColor (String variable, String color);
-
- 	/**
- 	 *  Set the value of a variable of a link. 
- 	 *   
- 	 * @param link
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkVariableSet (String link, String variable, double value);
-
- 	/**
- 	 * Add a value to a variable of a link. 
- 	 * 
- 	 * @param link
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkVariableAdd (String link, String variable, double value);
- 
- 	/**
- 	 * Subtract a value from a variable of a link. 
- 	 * 
- 	 * @param link
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkVariableSub (String link, String variable, double value);
-
- 	/**
- 	 *  Set the value of a variable of a link at a given timestamp. 
- 	 *  
- 	 * @param time
- 	 * @param link
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkVariableSetWithTime (double time, String link, String variable, double value);
-
- 	/**
- 	 * Add a value to a variable of a link at a given timestamp.
- 	 * 
+	/**
+	 * Subtract a value from a variable of a host at a given timestamp.  
+	 * 
 	 * @param time
- 	 * @param link
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkVariableAddWithTime (double time, String link, String variable, double value);
- 
+	 * @param host
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void hostVariableSubWithTime (double time, String host, String variable, double value);
 
- 	/**
- 	 * Subtract a value from a variable of a link at a given timestamp. 
- 	 *   
- 	 * @param time
- 	 * @param link
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkVariableSubWithTime (double time, String link, String variable, double value);
+	/**
+	 *  Get declared user host variables. 
+	 * 
+	 */
+	public final static native String[]  getHostVariablesName ();
 
- 	/**
- 	 * Set the value of the variable present in the links connecting source and destination. 
- 	 * 
- 	 * @param src
- 	 * @param dst
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkSrcDstVariableSet (String src, String dst, String variable, double value);
- 
- 	/**
- 	 * Add a value to the variable present in the links connecting source and destination. 
- 	 *  
- 	 * @param src
- 	 * @param dst
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkSrcDstVariableAdd (String src, String dst, String variable, double value);
+	/**
+	 *  Declare a new user variable associated to links. 
+	 *  
+	 * @param variable
+	 */
+	public final static native	void linkVariableDeclare (String variable);
 
- 	/**
- 	 * Subtract a value from the variable present in the links connecting source and destination. 
- 	 *   
- 	 * @param src
- 	 * @param dst
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkSrcDstVariableSub (String src, String dst, String variable, double value);
+	/**
+	 * Declare a new user variable associated to links with a color. 
+	 * @param variable
+	 * @param color
+	 */
+	public final static native	void linkVariableDeclareWithColor (String variable, String color);
 
- 	/**
- 	 *  Set the value of the variable present in the links connecting source and destination at a given timestamp. 
- 	 *   
- 	 * @param time
- 	 * @param src
- 	 * @param dst
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkSrcDstVariableSetWithTime (double time, String src, String dst, String variable, double value);
+	/**
+	 *  Set the value of a variable of a link. 
+	 *   
+	 * @param link
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkVariableSet (String link, String variable, double value);
 
- 	/**
- 	 * Add a value to the variable present in the links connecting source and destination at a given timestamp. 
- 	 * 
- 	 * @param time
- 	 * @param src
- 	 * @param dst
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkSrcdstVariableAddWithTime (double time, String src, String dst, String variable, double value);
- 
- 	/**
- 	 * Subtract a value from the variable present in the links connecting source and destination at a given timestamp. 
- 	 *  
- 	 * @param time
- 	 * @param src
- 	 * @param dst
- 	 * @param variable
- 	 * @param value
- 	 */
- 	public final static native	void linkSrcDstVariableSubWithTime (double time, String src, String dst, String variable, double value);
+	/**
+	 * Add a value to a variable of a link. 
+	 * 
+	 * @param link
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkVariableAdd (String link, String variable, double value);
 
- 	/**
- 	 *  Get declared user link variables.  
- 	 */
+	/**
+	 * Subtract a value from a variable of a link. 
+	 * 
+	 * @param link
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkVariableSub (String link, String variable, double value);
+
+	/**
+	 *  Set the value of a variable of a link at a given timestamp. 
+	 *  
+	 * @param time
+	 * @param link
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkVariableSetWithTime (double time, String link, String variable, double value);
+
+	/**
+	 * Add a value to a variable of a link at a given timestamp.
+	 * 
+	 * @param time
+	 * @param link
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkVariableAddWithTime (double time, String link, String variable, double value);
+
+
+	/**
+	 * Subtract a value from a variable of a link at a given timestamp. 
+	 *   
+	 * @param time
+	 * @param link
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkVariableSubWithTime (double time, String link, String variable, double value);
+
+	/**
+	 * Set the value of the variable present in the links connecting source and destination. 
+	 * 
+	 * @param src
+	 * @param dst
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkSrcDstVariableSet (String src, String dst, String variable, double value);
+
+	/**
+	 * Add a value to the variable present in the links connecting source and destination. 
+	 *  
+	 * @param src
+	 * @param dst
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkSrcDstVariableAdd (String src, String dst, String variable, double value);
+
+	/**
+	 * Subtract a value from the variable present in the links connecting source and destination. 
+	 *   
+	 * @param src
+	 * @param dst
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkSrcDstVariableSub (String src, String dst, String variable, double value);
+
+	/**
+	 *  Set the value of the variable present in the links connecting source and destination at a given timestamp. 
+	 *   
+	 * @param time
+	 * @param src
+	 * @param dst
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkSrcDstVariableSetWithTime (double time, String src, String dst, String variable, double value);
+
+	/**
+	 * Add a value to the variable present in the links connecting source and destination at a given timestamp. 
+	 * 
+	 * @param time
+	 * @param src
+	 * @param dst
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkSrcdstVariableAddWithTime (double time, String src, String dst, String variable, double value);
+
+	/**
+	 * Subtract a value from the variable present in the links connecting source and destination at a given timestamp. 
+	 *  
+	 * @param time
+	 * @param src
+	 * @param dst
+	 * @param variable
+	 * @param value
+	 */
+	public final static native	void linkSrcDstVariableSubWithTime (double time, String src, String dst, String variable, double value);
+
+	/**
+	 *  Get declared user link variables.  
+	 */
 	public final static native String[] getLinkVariablesName ();
 
- 	
- 			/* **** ******** WARNINGS ************** ***** */	
- 			/* Only the following routines have been       */
- 			/* JNI implemented - Adrien May, 22nd          */
- 			/* **** ******************************** ***** */	
- 	 	
-    /**
-     * Declare a user state that will be associated to hosts. 
-     * A user host state can be used to trace application states.
-     * 
-     * @param name The name of the new state to be declared.
-     */
+
+	/* **** ******** WARNINGS ************** ***** */	
+	/* Only the following routines have been       */
+	/* JNI implemented - Adrien May, 22nd          */
+	/* **** ******************************** ***** */	
+
+	/**
+	 * Declare a user state that will be associated to hosts. 
+	 * A user host state can be used to trace application states.
+	 * 
+	 * @param name The name of the new state to be declared.
+	 */
 	public final static native void hostStateDeclare(String name);
-	
+
 	/**
 	 * Declare a new value for a user state associated to hosts.
 	 * The color needs to be a string with three numbers separated by spaces in the range [0,1]. 
@@ -255,24 +255,24 @@ public final class Trace {
 	 * @param state The name of the state previously declared.
 	 * @param value The new value of the state.
 	 */
- 	public final static native void hostSetState (String host, String state, String value);
- 
- 	/**
- 	 * Push a new value for a state of a given host. 
- 	 * 
- 	 * @param host The name of the host to be considered.
- 	 * @param state The name of the state previously declared.
- 	 * @param value The value to be pushed.
- 	 */
- 	public final static native void hostPushState (String host, String state, String value);
- 	
- 	/**
- 	 *  Pop the last value of a state of a given host. 
- 	 *   
- 	 * @param host The name of the host to be considered.
- 	 * @param state The name of the state to be popped.
- 	 */
- 	public final static native void hostPopState (String host, String state);
+	public final static native void hostSetState (String host, String state, String value);
+
+	/**
+	 * Push a new value for a state of a given host. 
+	 * 
+	 * @param host The name of the host to be considered.
+	 * @param state The name of the state previously declared.
+	 * @param value The value to be pushed.
+	 */
+	public final static native void hostPushState (String host, String state, String value);
+
+	/**
+	 *  Pop the last value of a state of a given host. 
+	 *   
+	 * @param host The name of the host to be considered.
+	 * @param state The name of the state to be popped.
+	 */
+	public final static native void hostPopState (String host, String state);
 
 	/**
 	 * Declare a new user variable associated to hosts. 
@@ -280,7 +280,7 @@ public final class Trace {
 	 * @param variable
 	 */
 	public final static native	void hostVariableDeclare (String variable);
- 
+
 
 	/**
 	 * Set the value of a variable of a host. 
@@ -297,7 +297,7 @@ public final class Trace {
 	 * @param variable
 	 */
 	public final static native	void vmVariableDeclare (String variable);
- 
+
 
 	/**
 	 * Set the value of a variable of a VM. 

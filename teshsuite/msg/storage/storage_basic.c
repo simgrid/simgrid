@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
@@ -187,7 +187,7 @@ int server(int argc, char *argv[])
     else if(!strcmp(task_name,"hsm_put")){// Receive file to save
       // Write file on local disk
       char *dest = MSG_task_get_data(to_execute);
-      sg_size_t size_to_write = (sg_size_t)MSG_task_get_data_size(to_execute);
+      sg_size_t size_to_write = (sg_size_t)MSG_task_get_bytes_amount(to_execute);
       write_local_file(dest, size_to_write);
     }
 

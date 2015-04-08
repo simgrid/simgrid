@@ -10,7 +10,7 @@
 /* reduction of DPOR.                                                         */
 /******************************************************************************/
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 
 #define AMOUNT_OF_CLIENTS 4
 #define CS_PER_PROCESS 2

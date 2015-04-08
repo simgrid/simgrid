@@ -94,28 +94,28 @@ void WorkstationCLM03Model::updateActionsState(double /*now*/, double /*delta*/)
 
 ActionPtr WorkstationCLM03Model::executeParallelTask(int workstation_nb,
                                         void **workstation_list,
-                                        double *computation_amount,
-                                        double *communication_amount,
+                                        double *flops_amount,
+                                        double *bytes_amount,
                                         double rate){
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
   ActionPtr action =NULL;
   if ((workstation_nb == 1)
-      && (cost_or_zero(communication_amount, 0) == 0.0)){
-    action = ((WorkstationCLM03Ptr)workstation_list[0])->execute(computation_amount[0]);
+      && (cost_or_zero(bytes_amount, 0) == 0.0)){
+    action = ((WorkstationCLM03Ptr)workstation_list[0])->execute(flops_amount[0]);
   } else if ((workstation_nb == 1)
-           && (cost_or_zero(computation_amount, 0) == 0.0)) {
+           && (cost_or_zero(flops_amount, 0) == 0.0)) {
     action = communicate((WorkstationCLM03Ptr)workstation_list[0],
-        (WorkstationCLM03Ptr)workstation_list[0],communication_amount[0], rate);
+        (WorkstationCLM03Ptr)workstation_list[0],bytes_amount[0], rate);
   } else if ((workstation_nb == 2)
-             && (cost_or_zero(computation_amount, 0) == 0.0)
-             && (cost_or_zero(computation_amount, 1) == 0.0)) {
+             && (cost_or_zero(flops_amount, 0) == 0.0)
+             && (cost_or_zero(flops_amount, 1) == 0.0)) {
     int i,nb = 0;
     double value = 0.0;
 
     for (i = 0; i < workstation_nb * workstation_nb; i++) {
-      if (cost_or_zero(communication_amount, i) > 0.0) {
+      if (cost_or_zero(bytes_amount, i) > 0.0) {
         nb++;
-        value = cost_or_zero(communication_amount, i);
+        value = cost_or_zero(bytes_amount, i);
       }
     }
     if (nb == 1){

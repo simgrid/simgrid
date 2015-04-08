@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
+/* Copyright (c) 2006-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -25,16 +25,10 @@ public class Task {
 
 	private double messageSize;
 
-	static private Long idCpt = 0L;
-
-	private Long id;
-
 	/** Default constructor (all fields to 0 or null) */
 	public Task() {
 		create(null, 0, 0);
 		this.messageSize = 0;
-		setId(idCpt);
-		idCpt++;
 	}
 
 	/* *              * *
@@ -46,19 +40,17 @@ public class Task {
 	 *
 	 * @param name	Task's name
 	 *
-	 * @param computeDuration 	A value of the processing amount (in flop) needed to process the task. 
+	 * @param flopsAmount 	A value of the processing amount (in flop) needed to process the task. 
 	 *				If 0, then it cannot be executed with the execute() method.
 	 *				This value has to be >= 0.
 	 *
-	 * @param messageSize		A value of amount of data (in bytes) needed to transfert this task.
+	 * @param bytesAmount		A value of amount of data (in bytes) needed to transfert this task.
 	 *				If 0, then it cannot be transfered with the get() and put() methods.
 	 *				This value has to be >= 0.
 	 */ 
-	public Task(String name, double computeDuration, double messageSize) {
-		create(name, computeDuration, messageSize);
-		this.messageSize = messageSize;
-		setId(idCpt);
-		idCpt++;
+	public Task(String name, double flopsAmount, double bytesAmount) {
+		create(name, flopsAmount, bytesAmount);
+		this.messageSize = bytesAmount;
 	}
 	/**
 	 * Construct an new parallel task with the specified processing amount and amount for each host
@@ -66,73 +58,67 @@ public class Task {
 	 *
 	 * @param name		The name of the parallel task.
 	 * @param hosts		The list of hosts implied by the parallel task.
-	 * @param computeDurations	The amount of operations to be performed by each host of \a hosts.
-	 * @param messageSizes	A matrix describing the amount of data to exchange between hosts.
+	 * @param flopsAmount	The amount of operations to be performed by each host of \a hosts.
+	 * @param bytesAmount	A matrix describing the amount of data to exchange between hosts.
 	 */ 
-	public Task(String name, Host[]hosts, double[]computeDurations, double[]messageSizes) {
-		parallelCreate(name, hosts, computeDurations, messageSizes);
+	public Task(String name, Host[]hosts, double[]flopsAmount, double[]bytesAmount) {
+		parallelCreate(name, hosts, flopsAmount, bytesAmount);
 	}
-	
+
 	/**
 	 * The natively implemented method to create a MSG task.
 	 *
 	 * @param name            The name of th task.
-	 * @param computeDuration    A value of the processing amount (in flop) needed 
+	 * @param flopsAmount    A value of the processing amount (in flop) needed 
 	 *                        to process the task. If 0, then it cannot be executed
 	 *                        with the execute() method. This value has to be >= 0.
-	 * @param messageSize        A value of amount of data (in bytes) needed to transfert 
+	 * @param bytesAmount        A value of amount of data (in bytes) needed to transfert 
 	 *                        this task. If 0, then it cannot be transfered this task. 
 	 *                        If 0, then it cannot be transfered with the get() and put() 
 	 *                        methods. This value has to be >= 0.
 	 * @exception             IllegalArgumentException if compute duration <0 or message size <0
 	 */
 	private final native void create(String name,
-			double computeDuration,
-			double messageSize)
-	throws IllegalArgumentException;		
+			double flopsAmount,
+			double bytesAmount)
+					throws IllegalArgumentException;		
 	/**
 	 * The natively implemented method to create a MSG parallel task.
 	 *
 	 * @param name                The name of the parallel task.
 	 * @param hosts                The list of hosts implied by the parallel task.
-	 * @param computeDurations    The total number of operations that have to be performed
+	 * @param flopsAmount         The total number of operations that have to be performed
 	 *                            on the hosts.
-	 * @param messageSizes        An array of doubles
+	 * @param bytesAmount        An array of doubles
 	 *
 	 */
 	private final native void parallelCreate(String name,
 			Host[]hosts,
-			double[]computeDurations,
-			double[]messageSizes)
-	throws NullPointerException, IllegalArgumentException;
+			double[]flopsAmount,
+			double[]bytesAmount)
+					throws NullPointerException, IllegalArgumentException;
 	/* *                   * *
 	 * * Getters / Setters * *
 	 * *                   * */
-    /** 
-     * Gets the name of a task
-     */
+	/** Gets the name of a task */
 	public String getName() {
 		return name;
 	}
-	/**
-	 * Gets the sender of the task 
-	 * Returns null if the task hasn't been sent yet
-	 */
+
+	/** Gets the sender of the task (or null if not sent yet) */
 	public native Process getSender();
-	/** Gets the source of the task.
-	 * Returns null if the task hasn't been sent yet.
-     */
+
+	/** Gets the source of the task (or null if not sent yet). */
 	public native Host getSource();   
-	/** Gets the computing amount of the task
-     * FIXME: Cache it !
-     */
-	public native double getComputeDuration();
-	/** Gets the remaining computation of the task
-     */
-	public native double getRemainingDuration();
+
+	/** Gets the remaining amount of flops to execute in this task
+	 * 
+	 * If it's ongoing, you get the exact amount at the present time. If it's already done, it's 0.
+	 */
+	public native double getFlopsAmount();
 	/**
 	 * Sets the name of the task
-	 * @param name the new task name.c
+	 * @param name the new task name
 	 */
 	public native void setName(String name);
 	/**
@@ -144,37 +130,37 @@ public class Task {
 	 * @param priority	The new priority of the task.
 	 */ 
 	public native void setPriority(double priority);
-	/**
-	 * Set the computation amount needed to process the task
-	 * @param computationAmount the amount of computation needed to process the task
+
+	/** Set the computation amount needed to process the task
+	 * 
+	 * Warning if the execution is already started and ongoing, this call does nothing.
+	 * @param flopsAmount the amount of computation needed to process the task
 	 */
-	public native void setComputeDuration(double computationAmount);
+	public native void setFlopsAmount(double flopsAmount);
 	/**
-	 * Set the data size of the task
-	 * @param dataSize the size of the task
+	 * Set the amount of bytes to exchange the task
+	 * 
+	 * Warning if the communication is already started and ongoing, this call does nothing.
+	 * @param bytesAmount the size of the task
 	 */
-	public native void setDataSize(double dataSize);
+	public native void setBytesAmount(double bytesAmount);
 	/* *                     * *
 	 * * Computation-related * *
 	 * *                     * */
 	/**
-	 * Executes a task on the location on which the process is running.
+	 * Executes a task on the location on which the current process is running.
 	 *
-     *
-     * @throws HostFailureException
-     * @throws TaskCancelledException
-     */
-	public native void execute() throws HostFailureException,TaskCancelledException;
-	/**
-	 * Bound a computation to a certain load
-	 *
+	 * @throws HostFailureException
+	 * @throws TaskCancelledException
 	 */
+	public native void execute() throws HostFailureException,TaskCancelledException;
+
+	/** Bound a computation to a certain load */
 	public native void setBound(double load); 
-	/**
-	 * Cancels a task.
-	 *
-	 */ 
+
+	/** Cancels a task. */ 
 	public native void cancel();
+
 	/** Deletes a task.
 	 *
 	 * @exception			NativeException if the destruction failed.
@@ -190,24 +176,24 @@ public class Task {
 	 * * Communication-related * *
 	 * *                       * */
 
-	/** Send the task asynchronously on the mailbox identified by the specified name, 
+	/** Send the task asynchronously on the specified mailbox, 
 	 *  with no way to retrieve whether the communication succeeded or not
 	 * 
 	 */
 	public native void dsendBounded(String mailbox, double maxrate);
 
 
-	/** Send the task asynchronously on the mailbox identified by the specified name, 
+	/** Send the task asynchronously on the specified mailbox, 
 	 *  with no way to retrieve whether the communication succeeded or not
 	 * 
 	 */
 	public native void dsend(String mailbox);
-	
+
 	/**
-	 * Sends the task on the mailbox identified by the specified name 
+	 * Sends the task on the specified mailbox 
 	 *
-     * @param mailbox
-     * @throws TimeoutException
+	 * @param mailbox where to send the message
+	 * @throws TimeoutException
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
@@ -216,41 +202,40 @@ public class Task {
 	} 
 
 	/**
-	 * Sends the task on the mailbox identified by the specified name (wait at most \a timeout seconds)
+	 * Sends the task on the specified mailbox (wait at most \a timeout seconds)
 	 *
-     * @param mailbox
-     * @param timeout
-     * @exception  NativeException if the retrieval fails.
+	 * @param mailbox where to send the message
+	 * @param timeout
+	 * @exception  NativeException if the retrieval fails.
 	 * @throws TimeoutException 
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
 	public native void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
-	/**
-	 * Sends the task on the mailbox identified by the specified alias  (capping the sending rate to \a maxrate) 
+
+	/** Sends the task on the specified mailbox (capping the sending rate to \a maxrate) 
 	 *
-     * @param alias
-     * @param maxrate 
-     * @throws TransferFailureException
-     * @throws HostFailureException
-     * @throws TimeoutException
+	 * @param mailbox where to send the message
+	 * @param maxrate 
+	 * @throws TransferFailureException
+	 * @throws HostFailureException
+	 * @throws TimeoutException
 	 */
-	public void sendBounded(String alias, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
-              sendBounded(alias,-1,maxrate);
-        }
+	public void sendBounded(String mailbox, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException {
+		sendBounded(mailbox,-1,maxrate);
+	}
 
 
-/**
-	 * Sends the task on the mailbox identified by the specified alias  (capping the sending rate to \a maxrate) with a timeout
+	/** Sends the task on the specified mailbox (capping the sending rate to \a maxrate) with a timeout
 	 *
-     * @param alias
-     * @param timeout
-     * @param maxrate 
-     * @throws TransferFailureException
-     * @throws HostFailureException
-     * @throws TimeoutException
+	 * @param mailbox where to send the message
+	 * @param timeout
+	 * @param maxrate 
+	 * @throws TransferFailureException
+	 * @throws HostFailureException
+	 * @throws TimeoutException
 	 */
-	public native void sendBounded(String alias, double timeout, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException;
+	public native void sendBounded(String mailbox, double timeout, double maxrate) throws TransferFailureException, HostFailureException, TimeoutException;
 
 
 	/**
@@ -262,7 +247,7 @@ public class Task {
 	 * Sends the task on the mailbox asynchronously (capping the sending rate to \a maxrate)
 	 */
 	public native Comm isendBounded(String mailbox, double maxrate);
-	
+
 
 	/**
 	 * Starts listening for receiving a task from an asynchronous communication
@@ -272,7 +257,7 @@ public class Task {
 	/**
 	 * Retrieves next task from the mailbox identified by the specified name
 	 *
-     * @param mailbox
+	 * @param mailbox
 	 */
 
 	public static Task receive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
@@ -282,8 +267,8 @@ public class Task {
 	/**
 	 * Retrieves next task on the mailbox identified by the specified name (wait at most \a timeout seconds)
 	 *
-     * @param mailbox
-     * @param timeout
+	 * @param mailbox
+	 * @param timeout
 	 */
 	public static Task receive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return receive(mailbox, timeout, null);
@@ -292,8 +277,8 @@ public class Task {
 	/**
 	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias 
 	 *
-     * @param mailbox
-     * @param host
+	 * @param mailbox
+	 * @param host
 	 */
 
 	public static Task receive(String mailbox, Host host) throws TransferFailureException, HostFailureException, TimeoutException {
@@ -303,9 +288,9 @@ public class Task {
 	/**
 	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias (wait at most \a timeout seconds)
 	 *
-     * @param mailbox
-     * @param timeout 
-     * @param host
+	 * @param mailbox
+	 * @param timeout 
+	 * @param host
 	 */
 	public native static Task receive(String mailbox, double timeout, Host host) throws TransferFailureException, HostFailureException, TimeoutException;
 
@@ -317,7 +302,7 @@ public class Task {
 	/**
 	 * Retrieves next task from the mailbox identified by the specified name with a capped rate
 	 *
-     * @param mailbox
+	 * @param mailbox
 	 */
 
 	public static Task receiveBounded(String mailbox, double rate) throws TransferFailureException, HostFailureException, TimeoutException {
@@ -327,8 +312,8 @@ public class Task {
 	/**
 	 * Retrieves next task on the mailbox identified by the specified name (wait at most \a timeout seconds) with a capped rate
 	 *
-     * @param mailbox
-     * @param timeout
+	 * @param mailbox
+	 * @param timeout
 	 */
 	public static Task receiveBounded(String mailbox, double timeout, double rate) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return receiveBounded(mailbox, timeout, null, rate);
@@ -337,8 +322,8 @@ public class Task {
 	/**
 	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias with a capped rate
 	 *
-     * @param mailbox
-     * @param host
+	 * @param mailbox
+	 * @param host
 	 */
 
 	public static Task receiveBounded(String mailbox, Host host, double rate) throws TransferFailureException, HostFailureException, TimeoutException {
@@ -349,28 +334,28 @@ public class Task {
 	 * Retrieves next task sent by a given host on the mailbox identified by the specified alias (wait at most \a timeout seconds)
 	 * with a capped rate
 	 *
-     * @param mailbox
-     * @param timeout 
-     * @param host
+	 * @param mailbox
+	 * @param timeout 
+	 * @param host
 	 */
 	public native static Task receiveBounded(String mailbox, double timeout, Host host, double rate) throws TransferFailureException, HostFailureException, TimeoutException;
 
-	
-	
+
+
 	/**
 	 * Tests whether there is a pending communication on the mailbox identified by the specified alias, and who sent it
-     */
+	 */
 	public native static int listenFrom(String mailbox);
 	/**
 	 * Listen whether there is a waiting task on the mailbox identified by the specified alias
-     */
+	 */
 	public native static boolean listen(String mailbox);
 
 	/**
 	 * Counts the number of tasks waiting to be received on the \a mailbox identified by the specified alia and sended by the specified \a host.
-     */
+	 */
 	public native static int listenFromHost(String alias, Host host);
-	
+
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */
@@ -382,13 +367,5 @@ public class Task {
 
 	public double getMessageSize() {
 		return this.messageSize;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 }

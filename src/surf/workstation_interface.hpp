@@ -101,15 +101,15 @@ public:
    *
    * @param workstation_nb [description]
    * @param workstation_list [description]
-   * @param computation_amount [description]
-   * @param communication_amount [description]
+   * @param flops_amount [description]
+   * @param bytes_amount [description]
    * @param rate [description]
    * @return [description]
    */
   virtual ActionPtr executeParallelTask(int workstation_nb,
                                         void **workstation_list,
-                                        double *computation_amount,
-                                        double *communication_amount,
+                                        double *flops_amount,
+                                        double *bytes_amount,
                                         double rate)=0;
 
  /**
@@ -186,11 +186,11 @@ public:
   /**
    * @brief Execute some quantity of computation
    *
-   * @param size The value of the processing amount (in flop) needed to process
+   * @param flops_amount The value of the processing amount (in flop) needed to process
    * @return The CpuAction corresponding to the processing
    * @see Cpu
    */
-  virtual ActionPtr execute(double size)=0;
+  virtual ActionPtr execute(double flops_amount)=0;
 
   /**
    * @brief Make a process sleep for duration seconds
