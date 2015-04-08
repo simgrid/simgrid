@@ -188,6 +188,7 @@ static void smx_ctx_thread_runall_serial(void)
   unsigned int cursor;
 
   xbt_dynar_foreach(simix_global->process_to_run, cursor, process) {
+    XBT_DEBUG("Handling %p",process);
     xbt_os_sem_release(((smx_ctx_thread_t) process->context)->begin);
     xbt_os_sem_acquire(((smx_ctx_thread_t) process->context)->end);
   }
