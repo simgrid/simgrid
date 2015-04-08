@@ -404,6 +404,22 @@ void SIMIX_run(void)
           SIMIX_simcall_handle(&process->simcall, 0);
         }
       }
+      /* Wake up all processes waiting for a Surf action to finish */
+      xbt_dynar_foreach(model_list, iter, model) {
+        XBT_DEBUG("Handling process whose action failed");
+        while ((action = surf_model_extract_failed_action_set(model))) {
+          XBT_DEBUG("   Handling Action %p",action);
+          SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+        }
+        XBT_DEBUG("Handling process whose action terminated normally");
+        while ((action = surf_model_extract_done_action_set(model))) {
+          XBT_DEBUG("   Handling Action %p",action);
+          if (surf_action_get_data(action) == NULL)
+            XBT_DEBUG("probably vcpu's action %p, skip", action);
+          else
+            SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+        }
+      }
     }
 
     time = SIMIX_timer_next();
