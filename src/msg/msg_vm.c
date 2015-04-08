@@ -975,6 +975,12 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
 
   msg_host_t old_pm = simcall_vm_get_pm(vm);
 
+  if(!MSG_host_is_off(old_pm))
+    THROWF(vm_error, 0, "SRC host(%s) seems off, cannot start a migration", sg_host_name(old_pm));
+ 
+  if(!MSG_host_is_off(new_pm))
+    THROWF(vm_error, 0, "DST host(%s) seems off, cannot start a migration", sg_host_name(new_pm));
+  
   if (!MSG_vm_is_running(vm))
     THROWF(vm_error, 0, "VM(%s) is not running", sg_host_name(vm));
 
