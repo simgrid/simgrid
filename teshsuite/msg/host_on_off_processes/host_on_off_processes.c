@@ -116,7 +116,7 @@ int test_launcher(int argc, char *argv[])
     MSG_process_sleep(10);
     XBT_INFO("  Turn Jupiter off");
     MSG_host_off(jupiter);
-    XBT_INFO("Test 4 seems ok, cool !(number of Process : %d, it should be 2", MSG_process_get_number());
+    XBT_INFO("Test 5 seems ok, cool !(number of Process : %d, it should be 2", MSG_process_get_number());
   }
 
   test =6;
