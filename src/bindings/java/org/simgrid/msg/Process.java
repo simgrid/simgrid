@@ -299,7 +299,8 @@ public abstract class Process implements Runnable {
 	/**
 	 * Makes the current process sleep until millis milliseconds and nanos nanoseconds 
 	 * have elapsed.
-	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds and nanoseconds.
+	 * Unlike {@link #waitFor(double)} which takes seconds, this method takes 
+	 * milliseconds and nanoseconds.
 	 * Overloads Thread.sleep.
 	 * @param millis the length of time to sleep in milliseconds.
 	 * @param nanos additionnal nanoseconds to sleep.
