@@ -10,7 +10,7 @@ $ ./task_destroy_cancel ${srcdir:=.}/../../../examples/platforms/small_platform.
 > [Jupiter:slave:(2) 0.993652] [msg_test/INFO] Handling task "cancel"
 > [Jupiter:worker1:(3) 0.993652] [msg_test/INFO] Start cancel
 > [Jupiter:slave:(2) 1.093652] [msg_test/INFO] Canceling task "cancel"
-> [Jupiter:worker1:(3) 1.112666] [msg_test/INFO] Task failed
+> [Jupiter:worker1:(3) 1.093652] [msg_test/INFO] Task failed
 > [Tremblay:master:(1) 1.262806] [msg_test/INFO] Goodbye now!
 > [Jupiter:slave:(2) 1.262806] [msg_test/INFO] Handling task "finalize"
 > [Jupiter:slave:(2) 1.262806] [msg_test/INFO] Destroying task "finalize"

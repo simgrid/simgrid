@@ -156,8 +156,8 @@ public class VM extends Host{
 		try {
 			this.internalmig(destination);
 		} catch (Exception e){
-			Msg.info("an exception occurs during the migration of VM "+this.getName());
-			throw new HostFailureException();
+		  Msg.info("Migration of VM "+this.getName()+" to "+destination.getName()+" is impossible ("+e.getMessage()+")");
+		  throw new HostFailureException();
 		}
 		// If the migration correcly returned, then we should change the currentHost value. 
 		this.currentHost = destination; 

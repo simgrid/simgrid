@@ -385,7 +385,7 @@ void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
      /* keep the bound value of the cpu action of the VM. */
      double old_bound = p_action->getBound();
      if (old_bound != 0) {
-       XBT_INFO("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
+       XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
        new_cpu_action->setBound(old_bound);
      }
 

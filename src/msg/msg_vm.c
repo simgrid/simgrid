@@ -803,7 +803,7 @@ static int migration_tx_fun(int argc, char *argv[])
     sg_size_t sent = 0;
     double clock_prev_send = MSG_get_clock();
     TRY {
-      XBT_INFO("Stage 2, gonna send %llu", updated_size);
+      XBT_DEBUG("Stage 2, gonna send %llu", updated_size);
       sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed, mig_timeout);
     } CATCH_ANONYMOUS {
       //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
@@ -847,7 +847,7 @@ stage3:
   stop_dirty_page_tracking(ms->vm);
 
   TRY {
-    XBT_INFO("Stage 3: Gonna send %f", remaining_size);
+    XBT_DEBUG("Stage 3: Gonna send %f", remaining_size);
     send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, -1);
   } CATCH_ANONYMOUS {
     //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
@@ -857,7 +857,7 @@ stage3:
   }
 
   // At that point the Migration is considered valid for the SRC node but remind that the DST side should relocate effectively the VM on the DST node.
-  XBT_INFO("mig: tx_done");
+  XBT_DEBUG("mig: tx_done");
 
   return 0;
 }
@@ -964,6 +964,12 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
 
   msg_host_t old_pm = simcall_vm_get_pm(vm);
 
+  if(MSG_host_is_off(old_pm))
+    THROWF(vm_error, 0, "SRC host(%s) seems off, cannot start a migration", sg_host_name(old_pm));
+ 
+  if(MSG_host_is_off(new_pm))
+    THROWF(vm_error, 0, "DST host(%s) seems off, cannot start a migration", sg_host_name(new_pm));
+  
   if (!MSG_vm_is_running(vm))
     THROWF(vm_error, 0, "VM(%s) is not running", sg_host_name(vm));
 
