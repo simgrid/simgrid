@@ -629,6 +629,20 @@ documentation (Section \ref pf_host) for an example.
 
 TODO
 
+\subsubsection pf_backbone <backbone/>
+
+\note
+  This tag is <b>only available</b> when the containing AS uses the "Cluster" mode!
+
+TODO: Is default=shared correct?
+
+Attribute name  | Mandatory | Values | Description
+--------------- | --------- | ------ | -----------
+id              | yes       | string | The identifier of the link to be used when referring to it.
+bandwidth       | yes       | int    | Maximum bandwidth for this link, given in bytes/s
+latency         | no        | double (default: 0.0) | Latency for this link.
+sharing_policy  | no        | SHARED\|FATPIPE\|FULLDUPLEX (default: SHARED) | Sharing policy for the link.
+
 \subsection pf_storage Storage
 
 \note
