@@ -456,7 +456,6 @@ several other tags that are available only in certain contexts.
 \remark
     If you want to represent an entity like a switch, you must use ``<link>`` (see section). Routers are used
     to run some routing algorithm and determine routes (see Section \ref pf_routing for details).
-\endremark
 
 \subsubsection pf_router <router/>
 
@@ -543,19 +542,17 @@ suffix _DOWN) for each ``<link>`` tag. This models situations when the direction
 of traffic is important.
 
 \remark
-Transfers from one side to the other will interact similarly as
-TCP when ACK returning packets circulate on the other direction. More
-discussion about it is available in the description of link_ctn description.
-\endremark
+  Transfers from one side to the other will interact similarly as
+  TCP when ACK returning packets circulate on the other direction. More
+  discussion about it is available in the description of link_ctn description.
 
 In other words: The SHARED policy defines a physical limit for the bandwidth.
 The FATPIPE mode defines a limit for each application,
 with no upper total limit.
 
 \remark
-Tip: By using the FATPIPE mode, you can model big backbones that
-won't affect performance (except latency).
-\endremark
+  Tip: By using the FATPIPE mode, you can model big backbones that
+  won't affect performance (except latency).
 
 #### Example ####
 
@@ -578,14 +575,13 @@ file. The structure of the files "link1.bw" and "link1.lat" is shown below.
 \endverbatim
 
 \note
-Even if the syntax is the same, the semantic of bandwidth and latency
-trace files differs from that of host availability files. For bandwidth and
-latency, the corresponding files do not
-express availability as a fraction of the available capacity but directly in
-    bytes per seconds for the bandwidth and in seconds for the latency. This is
-because most tools allowing to capture traces on real platforms (such as NWS)
-    express their results this way.
-    \endnote
+  Even if the syntax is the same, the semantic of bandwidth and latency
+  trace files differs from that of host availability files. For bandwidth and
+  latency, the corresponding files do not
+  express availability as a fraction of the available capacity but directly in
+  bytes per seconds for the bandwidth and in seconds for the latency. This is
+  because most tools allowing to capture traces on real platforms (such as NWS)
+  express their results this way.
 
 ##### Example of "link1.bw" file #####
 
@@ -636,14 +632,13 @@ TODO
 \subsection pf_storage Storage
 
 \note
-This is a prototype version that should evolve quickly, this
-is just some doc valuable only at the time of writing this doc</b>
-This section describes the storage management under SimGrid ; nowadays
-it's only usable with MSG. It relies basically on linux-like concepts.
-You also may want to have a look to its corresponding section in \ref
-msg_file_management ; functions access are organized as a POSIX-like
-interface.
-\endnote
+  This is a prototype version that should evolve quickly, this
+  is just some doc valuable only at the time of writing this doc
+  This section describes the storage management under SimGrid ; nowadays
+  it's only usable with MSG. It relies basically on linux-like concepts.
+  You also may want to have a look to its corresponding section in \ref
+  msg_file_management ; functions access are organized as a POSIX-like
+  interface.
 
 \subsubsection pf_sto_conc Storage Main concepts
 Basically there is 3 different entities to know :
