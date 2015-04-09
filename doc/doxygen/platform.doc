@@ -433,22 +433,25 @@ is completely equivalent to the following declaration:
 
 \subsection pf_ne Network equipments: links and routers
 
-There are two tags available to represent network entities:
+There are two tags at all times available to represent network entities and
+several other tags that are available only in certain contexts.
 1. ``<link>``: Represents a entity that has a limited bandwidth, a
     latency, and that can be shared according to TCP way to share this
     bandwidth.
 \remark
-The concept of links in SimGrid may not be intuitive, as links are not limited
-to connecting (exactly) two entities; in fact, you can have more than two equipments
-connected to it. (In graph theoretical terms: A link in SimGrid is not an edge,
-but a hyperedge)
-\endremark
+  The concept of links in SimGrid may not be intuitive, as links are not limited
+  to connecting (exactly) two entities; in fact, you can have more than two equipments
+  connected to it. (In graph theoretical terms: A link in SimGrid is not an edge,
+  but a hyperedge)
 
 2. ``<router/>``: Represents an entity that a message can be routed
     to, but that is unable to execute any code. In SimGrid, routers have also
     no impact on the performance: Routers do not limit any bandwidth nor
     do they increase latency. As a matter of fact, routers are (almost) ignored
     by the simulator when the simulation has begun.
+
+3. ``<backbone/>``: This tag is only available when the containing AS is
+                    used as a cluster (i.e., mode="Cluster")
 
 \remark
     If you want to represent an entity like a switch, you must use ``<link>`` (see section). Routers are used
