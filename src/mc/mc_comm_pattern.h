@@ -83,7 +83,6 @@ void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t request, i
 void MC_comm_pattern_free_voidp(void *p);
 void MC_list_comm_pattern_free_voidp(void *p);
 void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, unsigned int issuer, int backtracking);
-void MC_pre_modelcheck_comm_determinism(void);
 void MC_modelcheck_comm_determinism(void);
 
 void MC_restore_communications_pattern(mc_state_t state);

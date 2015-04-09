@@ -11,6 +11,7 @@
 #include "mc_private.h"
 #include "mc_record.h"
 #include "mc_smx.h"
+#include "mc_client.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc,
                                 "Logging specific to MC communication determinism detection");
@@ -272,7 +273,9 @@ void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm, unsigned int
 
 /************************ Main algorithm ************************/
 
-void MC_pre_modelcheck_comm_determinism(void)
+static void MC_modelcheck_comm_determinism_main(void);
+
+static void MC_pre_modelcheck_comm_determinism(void)
 {
   MC_SET_MC_HEAP;
 
@@ -319,7 +322,7 @@ void MC_pre_modelcheck_comm_determinism(void)
 
 }
 
-void MC_modelcheck_comm_determinism(void)
+static void MC_modelcheck_comm_determinism_main(void)
 {
 
   char *req_str = NULL;
@@ -467,4 +470,37 @@ void MC_modelcheck_comm_determinism(void)
   MC_SET_STD_HEAP;
 
   return;
+}
+
+void MC_modelcheck_comm_determinism(void)
+{
+  MC_init();
+  if (mc_mode == MC_MODE_CLIENT) {
+    // This will move somehwere else:
+    MC_client_handle_messages();
+  }
+
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
+
+  /* Create exploration stack */
+  mc_stack = xbt_fifo_new();
+
+  MC_SET_STD_HEAP;
+
+  MC_pre_modelcheck_comm_determinism();
+
+  MC_SET_MC_HEAP;
+  initial_global_state = xbt_new0(s_mc_global_t, 1);
+  initial_global_state->snapshot = MC_take_snapshot(0);
+  initial_global_state->initial_communications_pattern_done = 0;
+  initial_global_state->recv_deterministic = 1;
+  initial_global_state->send_deterministic = 1;
+  initial_global_state->recv_diff = NULL;
+  initial_global_state->send_diff = NULL;
+
+  MC_SET_STD_HEAP;
+
+  MC_modelcheck_comm_determinism_main();
+
+  mmalloc_set_current_heap(heap);
 }

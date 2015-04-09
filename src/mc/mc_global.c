@@ -211,39 +211,6 @@ void MC_init_pid(pid_t pid, int socket)
 /*******************************  Core of MC *******************************/
 /**************************************************************************/
 
-static void MC_modelcheck_comm_determinism_init(void)
-{
-  MC_init();
-  if (mc_mode == MC_MODE_CLIENT) {
-    // This will move somehwere else:
-    MC_client_handle_messages();
-  }
-
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
-  /* Create exploration stack */
-  mc_stack = xbt_fifo_new();
-
-  MC_SET_STD_HEAP;
-
-  MC_pre_modelcheck_comm_determinism();
-
-  MC_SET_MC_HEAP;
-  initial_global_state = xbt_new0(s_mc_global_t, 1);
-  initial_global_state->snapshot = MC_take_snapshot(0);
-  initial_global_state->initial_communications_pattern_done = 0;
-  initial_global_state->recv_deterministic = 1;
-  initial_global_state->send_deterministic = 1;
-  initial_global_state->recv_diff = NULL;
-  initial_global_state->send_diff = NULL;
-
-  MC_SET_STD_HEAP;
-
-  MC_modelcheck_comm_determinism();
-
-  mmalloc_set_current_heap(heap);
-}
-
 void MC_do_the_modelcheck_for_real()
 {
   MC_init_mode();
@@ -255,7 +222,7 @@ void MC_do_the_modelcheck_for_real()
     else {
       XBT_INFO("Check communication determinism");
       mc_reduce_kind = e_mc_reduce_none;
-      MC_modelcheck_comm_determinism_init();
+      MC_modelcheck_comm_determinism();
     }
   }
 
