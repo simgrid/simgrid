@@ -630,6 +630,11 @@ set(MC_SRC
   )
 
 set(headers_to_install
+  include/msg/msg.h
+  include/msg/datatypes.h
+  include/simdag/simdag.h
+  include/simdag/datatypes.h
+  
   include/simgrid/instr.h
   include/simgrid/msg.h
   include/simgrid/simdag.h

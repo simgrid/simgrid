@@ -676,7 +676,6 @@ INPUT                  = doxygen/index.doc \
                          @top_srcdir@/src/instr/ \
                          @bindir@/include \
                          @top_srcdir@/include/ \
-                         @top_srcdir@/include/msg \
                          @top_srcdir@/include/xbt \
                          @top_srcdir@/include/simgrid \
                          @top_srcdir@/src/include/surf \
