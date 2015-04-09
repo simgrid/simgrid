@@ -474,7 +474,6 @@ static void MC_modelcheck_comm_determinism_main(void)
 
 void MC_modelcheck_comm_determinism(void)
 {
-  MC_init();
   if (mc_mode == MC_MODE_CLIENT) {
     // This will move somehwere else:
     MC_client_handle_messages();

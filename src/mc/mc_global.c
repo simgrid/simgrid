@@ -215,15 +215,24 @@ void MC_do_the_modelcheck_for_real()
 {
   MC_init_mode();
 
+  switch(mc_mode) {
+  default:
+    xbt_die("Unexpected mc mode");
+    break;
+  case MC_MODE_CLIENT:
+    MC_init();
+    MC_client_main_loop();
+    return;
+  case MC_MODE_SERVER:
+  case MC_MODE_STANDALONE:
+    break;
+  }
+
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    // TODO, move this part in the MCer process
-    if (mc_mode == MC_MODE_SERVER)
-      MC_server_loop(mc_server);
-    else {
-      XBT_INFO("Check communication determinism");
-      mc_reduce_kind = e_mc_reduce_none;
-      MC_modelcheck_comm_determinism();
-    }
+    XBT_INFO("Check communication determinism");
+    mc_reduce_kind = e_mc_reduce_none;
+    MC_wait_for_requests();
+    MC_modelcheck_comm_determinism();
   }
 
   else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
@@ -232,34 +241,23 @@ void MC_do_the_modelcheck_for_real()
     else if (mc_reduce_kind == e_mc_reduce_unset)
       mc_reduce_kind = e_mc_reduce_dpor;
     _sg_mc_safety = 1;
-    if (mc_mode == MC_MODE_SERVER || mc_mode == MC_MODE_STANDALONE) {
-      if (_sg_mc_termination)
-        XBT_INFO("Check non progressive cycles");
-      else
-        XBT_INFO("Check a safety property");
-      MC_wait_for_requests();
-      MC_modelcheck_safety();
-    }
-    else {
-      // Most of this is not needed:
-      MC_init();
-      // Main event loop:
-      MC_client_main_loop();
-    }
+    if (_sg_mc_termination)
+      XBT_INFO("Check non progressive cycles");
+    else
+      XBT_INFO("Check a safety property");
+    MC_wait_for_requests();
+    MC_modelcheck_safety();
   }
 
   else {
     if (mc_reduce_kind == e_mc_reduce_unset)
       mc_reduce_kind = e_mc_reduce_none;
-    if (mc_mode == MC_MODE_SERVER || mc_mode == MC_MODE_STANDALONE) {
-      XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
-      MC_automaton_load(_sg_mc_property_file);
-      MC_modelcheck_liveness();
-    } else {
-      MC_init();
-      MC_client_main_loop();
-    }
+    XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
+    MC_automaton_load(_sg_mc_property_file);
+    MC_wait_for_requests();
+    MC_modelcheck_liveness();
   }
+
 }
 
 

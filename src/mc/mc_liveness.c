@@ -181,8 +181,6 @@ static void MC_pre_modelcheck_liveness(void)
   mc_pair_t initial_pair = NULL;
   smx_process_t process;
 
-  // TODO, fix this
-  MC_wait_for_requests();
   MC_wait_for_requests();
 
   MC_SET_MC_HEAP;
