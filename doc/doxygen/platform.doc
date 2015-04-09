@@ -523,14 +523,17 @@ Picosecond  | ps | 0.000000000001 = 10^(-12)
 #### Sharing policy ####
 
 By default a network link is SHARED, i.e., if two or more data flows go
-through a link, the bandwidth is shared fairly among the data flows. This
+through a link, the bandwidth is shared fairly among all data flows. This
 is similar to the sharing policy TCP uses.
 
 On the other hand, if a link is defined as a FATPIPE,
-each flow going through this link will be allocated the complete bandwidth,
-i.e., no sharing occurs and the bandwidth is only limiting single flows:
+each flow going through this link will be provided with the complete bandwidth,
+i.e., no sharing occurs and the bandwidth is only limiting each flow individually.
 The complete bandwidth provided by this link in this mode
-is ``#flows*bandwidth``.
+is ``#flows*bandwidth``, with at most ``bandwidth`` being available per flow.
+
+Using the FATPIPE mode allows to model backbones that won't affect performance
+(except latency).
 
 The last mode available is FULLDUPLEX. This means that SimGrid will
 automatically generate two links (one carrying the suffix _UP and the other the
