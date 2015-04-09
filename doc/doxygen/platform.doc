@@ -76,9 +76,8 @@ selected by specifying the routing attribute in the AS tag:
 \endverbatim
 
 \remark
-Other supported values for the routing attribute can be found below, Section
-\ref pf_raf.
-\endremark
+  Other supported values for the routing attribute can be found below, Section
+  \ref pf_raf.
 
 There is also the ``<route>`` tag; this tag takes two attributes, ``src`` (source)
 and ``dst`` (destination). Both source and destination must be valid identifiers
@@ -88,29 +87,29 @@ to the destination specified in the tag. Hence, a route merely describes
 how to reach a router from another router.
 
 \remark
-More information and (code-)examples can be found in the Section \ref pf_rm.
-\endremark
+  More information and (code-)examples can be found in Section \ref pf_rm.
 
-An AS can also contain one or more AS; this allows you to
-define the hierarchy of your platform.
+An AS can also contain itself one or more AS; this allows you to
+model the hierarchy of your platform.
 
-Within each AS, the following types of resources exist:
-\li <b>host</b>: a hostmachine; contains processors/cores etc.
-\li <b>router</b>: a router or a gateway.
-\li <b>link</b>: a link that defines a connection between two (or
-    more) resources. Every link has a bandwidth and a latency.
-\li <b>cluster</b>: like a real cluster, contains many hosts
-    interconnected by some dedicated network. Each cluster is itself an AS.
+### Within each AS, the following types of resources exist:
 
-Between these elements, a routing has to be defined. The AS is
-supposed to be Autonomous, hence this has to be done at the AS level. The AS
-handles two different types of entities (<b>host/router</b> and
-<b>AS</b>); you are responsible to define routes between those elements,
+%Resource        | Documented in Section | Description
+--------------- | --------------------- | -----------
+AS              |                       | Every Autonomous System (AS) may contain one or more AS.
+host            | \ref pf_host          | This entity carries out the actual computation. For this reason, it contains processors (with potentially multiple cores).
+router          | \ref pf_router        | In SimGrid, routers are used to provide helpful information to routing algorithms.  Routers may also act as gateways, connecting several autonomous systems with each other.
+link            | \ref pf_link          | In SimGrid, (network)links define a connection between two or potentially even more resources. Every link has a bandwidth and a latency and may potentially experience congestion.
+cluster         | \ref pf_cluster       | In SimGrid, clusters were introduced to model large and homogenous environments. They are not really a resource by themselves - technically, they are only a shortcut, as they will internally set up all the hosts, network and routing for you, i.e., using this resource, one can easily setup thousands of hosts and links in a few lines of code. Each cluster is itself an AS.
+
+%As it is desirable to interconnect these resources, a routing has to be
+defined. The AS is supposed to be Autonomous, hence this has to be done at the
+AS level. The AS handles two different types of entities (<b>host/router</b>
+and <b>AS</b>). However, the user is responsible to define routes between those resources,
 otherwise entities will be unconnected and therefore unreachable from other
-entities. Although several algorithms for routing are built into SimGrid (see
-\ref pf_rm), you might encounter a case where you want to define
-routes manually (for instance, due to specific requirements of your
-platform).
+entities. Although several routing algorithms are built into SimGrid (see
+\ref pf_rm), you might encounter a case where you want to define routes
+manually (for instance, due to specific requirements of your platform).
 
 There are three tags to use:
 \li <b>ASroute</b>: to define routes between two  <b>AS</b>
