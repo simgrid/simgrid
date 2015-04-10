@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <sys/prctl.h>
 
 #include <xbt/log.h>
 
@@ -38,6 +39,10 @@ static const bool trace = true;
 static int do_child(int socket, char** argv)
 {
   XBT_DEBUG("Inside the child process PID=%i", (int) getpid());
+  if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0) {
+    std::perror("simgrid-mc");
+    return MC_SERVER_ERROR;
+  }
   int res;
 
   // Remove CLOEXEC in order to pass the socket to the exec-ed program:
