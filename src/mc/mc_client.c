@@ -114,8 +114,9 @@ void MC_client_handle_messages(void)
         if (!process)
           xbt_die("Invalid pid %lu", (unsigned long) message.pid);
         SIMIX_simcall_handle(&process->simcall, message.value);
+        MC_protocol_send_simple_message(mc_client->fd, MC_MESSAGE_WAITING);
       }
-      return;
+      break;
 
     default:
       xbt_die("%s received unexpected message %s (%i)",
