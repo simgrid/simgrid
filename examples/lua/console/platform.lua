@@ -16,7 +16,7 @@ simgrid.platf.host_new{id="Bourassa",power=48492000};
 
 -- create Links
 for i=10,0,-1 do
-    simgrid.platf.link_new{id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};
+    simgrid.platf.link_new{id=i,bandwidth=252750+ i*768,lat=0.000270544+i*0.087};
 end
 
 simgrid.platf.route_new{src="Tremblay",dest="Jupiter",links="1"};

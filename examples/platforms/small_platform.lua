@@ -19,17 +19,17 @@
   simgrid.platf.host_new{AS="AS0",id="Bourassa",power=48492000};
 
   -- create Links
-  simgrid.platf.link_new{AS="AS0",id=0,bandwidth=41279125,latency=0.000059904};
-  simgrid.platf.link_new{AS="AS0",id=1,bandwidth=34285625,latency=0.000514433};
-  simgrid.platf.link_new{AS="AS0",id=2,bandwidth=118682500,latency=0.000136931};
-  simgrid.platf.link_new{AS="AS0",id=3,bandwidth=34285625,latency=0.000514433};
-  simgrid.platf.link_new{AS="AS0",id=4,bandwidth=10099625,latency=0.00047978};
-  simgrid.platf.link_new{AS="AS0",id=5,bandwidth=27946250,latency=0.000278066};
-  simgrid.platf.link_new{AS="AS0",id=6,bandwidth=41279125,latency=0.000059904};
-  simgrid.platf.link_new{AS="AS0",id=7,bandwidth=11618875,latency=0.00018998};
-  simgrid.platf.link_new{AS="AS0",id=8,bandwidth=8158000,latency=0.000270544};
-  simgrid.platf.link_new{AS="AS0",id=9,bandwidth=7209750,latency=0.001461517};
-  simgrid.platf.link_new{AS="AS0",id="loopback",bandwidth=498000000,latency=0.000015,sharing_policy="FATPIPE"};
+  simgrid.platf.link_new{AS="AS0",id=0,bandwidth=41279125,lat=0.000059904};
+  simgrid.platf.link_new{AS="AS0",id=1,bandwidth=34285625,lat=0.000514433};
+  simgrid.platf.link_new{AS="AS0",id=2,bandwidth=118682500,lat=0.000136931};
+  simgrid.platf.link_new{AS="AS0",id=3,bandwidth=34285625,lat=0.000514433};
+  simgrid.platf.link_new{AS="AS0",id=4,bandwidth=10099625,lat=0.00047978};
+  simgrid.platf.link_new{AS="AS0",id=5,bandwidth=27946250,lat=0.000278066};
+  simgrid.platf.link_new{AS="AS0",id=6,bandwidth=41279125,lat=0.000059904};
+  simgrid.platf.link_new{AS="AS0",id=7,bandwidth=11618875,lat=0.00018998};
+  simgrid.platf.link_new{AS="AS0",id=8,bandwidth=8158000,lat=0.000270544};
+  simgrid.platf.link_new{AS="AS0",id=9,bandwidth=7209750,lat=0.001461517};
+  simgrid.platf.link_new{AS="AS0",id="loopback",bandwidth=498000000,lat=0.000015,sharing_policy="FATPIPE"};
 
   -- Register loopback links
   for i=1,5,1 do

@@ -92,7 +92,7 @@ int console_add_backbone(lua_State *L) {
   link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1));
   lua_pop(L, 1);
 
-  lua_pushstring(L, "latency");
+  lua_pushstring(L, "lat");
   lua_gettable(L, -2);
   link.latency = surf_parse_get_time(lua_tostring(L, -1));
   lua_pop(L, 1);
@@ -183,20 +183,20 @@ int console_add_host(lua_State *L) {
   lua_pop(L, 1);
 
   //get power_scale
-  lua_pushstring(L, "power_scale");
+  lua_pushstring(L, "availability");
   lua_gettable(L, -2);
   if(!lua_isnumber(L,-1)) host.power_scale = 1;// Default value
   else host.power_scale = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
   //get power_trace
-  lua_pushstring(L, "power_trace");
+  lua_pushstring(L, "availability_file");
   lua_gettable(L, -2);
   host.power_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get state initial
-  lua_pushstring(L, "state_initial");
+  lua_pushstring(L, "state");
   lua_gettable(L, -2);
   if(!lua_isnumber(L,-1)) state = 1;// Default value
   else state = lua_tonumber(L, -1);
@@ -208,7 +208,7 @@ int console_add_host(lua_State *L) {
     host.initial_state = SURF_RESOURCE_OFF;
 
   //get trace state
-  lua_pushstring(L, "state_trace");
+  lua_pushstring(L, "state_file");
   lua_gettable(L, -2);
   host.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
@@ -242,7 +242,7 @@ int  console_add_link(lua_State *L) {
   lua_pop(L, 1);
 
   //get latency value
-  lua_pushstring(L, "latency");
+  lua_pushstring(L, "lat");
   lua_gettable(L, -2);
   link.latency = surf_parse_get_time(lua_tostring(L, -1));
   lua_pop(L, 1);
@@ -250,25 +250,25 @@ int  console_add_link(lua_State *L) {
   /*Optional Arguments  */
 
   //get bandwidth_trace value
-  lua_pushstring(L, "bandwidth_trace");
+  lua_pushstring(L, "bandwidth_file");
   lua_gettable(L, -2);
   link.bandwidth_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get latency_trace value
-  lua_pushstring(L, "latency_trace");
+  lua_pushstring(L, "latency_file");
   lua_gettable(L, -2);
   link.latency_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get state_trace value
-  lua_pushstring(L, "state_trace");
+  lua_pushstring(L, "state_file");
   lua_gettable(L, -2);
   link.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get state_initial value
-  lua_pushstring(L, "state_initial");
+  lua_pushstring(L, "state");
   lua_gettable(L, -2);
   if (!lua_isnumber(L,-1) || lua_tonumber(L, -1))
     link.state = SURF_RESOURCE_ON;
