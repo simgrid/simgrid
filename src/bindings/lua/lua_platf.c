@@ -98,7 +98,17 @@ int console_add_backbone(lua_State *L) {
   lua_pop(L, 1);
 
   link.state = SURF_RESOURCE_ON;
-  link.policy = SURF_LINK_SHARED;
+
+  lua_pushstring(L, "sharing_policy");
+  type = lua_gettable(L, -2);
+  char* policy = lua_tostring(L, -1);
+  if (policy && !strcmp(policy,"FULLDUPLEX")) {
+    link.policy = SURF_LINK_FULLDUPLEX;
+  } else if (policy && !strcmp(policy,"FATPIPE")) {
+    link.policy = SURF_LINK_FATPIPE;
+  } else {
+    link.policy = SURF_LINK_SHARED;
+  }
 
   sg_platf_new_link(&link);
   routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, link.id, SURF_LINK_LEVEL));
@@ -267,7 +277,7 @@ int  console_add_link(lua_State *L) {
   lua_pop(L, 1);
 
   //get policy value
-  lua_pushstring(L, "policy");
+  lua_pushstring(L, "sharing_policy");
   lua_gettable(L, -2);
   policy = lua_tostring(L, -1);
   lua_pop(L, 1);

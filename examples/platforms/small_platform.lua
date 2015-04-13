@@ -29,7 +29,7 @@
   simgrid.platf.link_new{AS="AS0",id=7,bandwidth=11618875,latency=0.00018998};
   simgrid.platf.link_new{AS="AS0",id=8,bandwidth=8158000,latency=0.000270544};
   simgrid.platf.link_new{AS="AS0",id=9,bandwidth=7209750,latency=0.001461517};
-  simgrid.platf.link_new{AS="AS0",id="loopback",bandwidth=498000000,latency=0.000015,policy="FATPIPE"};
+  simgrid.platf.link_new{AS="AS0",id="loopback",bandwidth=498000000,latency=0.000015,sharing_policy="FATPIPE"};
 
   -- Register loopback links
   for i=1,5,1 do

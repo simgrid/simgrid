@@ -13,7 +13,7 @@ simgrid.platf.AS_open{id="AS0",mode="Full"}
     simgrid.platf.host_link_new{id="host1",up="l1_UP",down="l1_DOWN"};
 
     simgrid.platf.host_new{id="host2",power="1Gf"};
-    simgrid.platf.link_new{id="l2",bandwidth="125MBps",latency="100us",policy="FULLDUPLEX"};
+    simgrid.platf.link_new{id="l2",bandwidth="125MBps",latency="100us",sharing_policy="FULLDUPLEX"};
     simgrid.platf.host_link_new{id="host2",up="l2_UP",down="l2_DOWN"};
 
     simgrid.platf.host_new{id="host3",power="1Gf"};
@@ -32,7 +32,7 @@ simgrid.platf.AS_open{id="AS0",mode="Full"}
     simgrid.platf.host_link_new{id="host4",up="l4_UP",down="l4_DOWN"};
 
     simgrid.platf.host_new{id="host5",power="1Gf"};
-    simgrid.platf.link_new{id="l5",bandwidth="125MBps",latency="100us",policy="FULLDUPLEX"};
+    simgrid.platf.link_new{id="l5",bandwidth="125MBps",latency="100us",sharing_policy="FULLDUPLEX"};
     simgrid.platf.host_link_new{id="host5",up="l5_UP",down="l5_DOWN"};
 
     simgrid.platf.host_new{id="host6",power="1Gf"};
