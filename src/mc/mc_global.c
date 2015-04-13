@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <assert.h>
 #include <string.h>
 #include <stdint.h>
 
@@ -125,9 +126,10 @@ void MC_init_pid(pid_t pid, int socket)
      iteration of the model-checker (in RAW memory) */
 
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   mc_model_checker = MC_model_checker_new(pid, socket);
-  if (mc_mode == MC_MODE_SERVER) {
+
+  // It's not useful anymore:
+  if (0 && mc_mode == MC_MODE_SERVER) {
     unsigned long maxpid;
     MC_process_read_variable(&mc_model_checker->process, "simix_process_maxpid",
       &maxpid, sizeof(maxpid));
@@ -224,7 +226,9 @@ void MC_do_the_modelcheck_for_real()
     MC_client_main_loop();
     return;
   case MC_MODE_SERVER:
+    break;
   case MC_MODE_STANDALONE:
+    MC_init();
     break;
   }
 
@@ -306,32 +310,6 @@ int MC_deadlock_check()
   return deadlock;
 }
 
-void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t req, int value, xbt_dynar_t pattern, int backtracking) {
-
-  switch(call_type) {
-  case MC_CALL_TYPE_NONE:
-    break;
-  case MC_CALL_TYPE_SEND:
-  case MC_CALL_TYPE_RECV:
-    MC_get_comm_pattern(pattern, req, call_type, backtracking);
-    break;
-  case MC_CALL_TYPE_WAIT:
-  case MC_CALL_TYPE_WAITANY:
-    {
-      smx_synchro_t current_comm = NULL;
-      if (call_type == MC_CALL_TYPE_WAIT)
-        current_comm = simcall_comm_wait__get__comm(req);
-      else
-        current_comm = xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t);
-      MC_complete_comm_pattern(pattern, current_comm, req->issuer->pid, backtracking);
-    }
-    break;
-  default:
-    xbt_die("Unexpected call type %i", (int)call_type);
-  }
-  
-}
-
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
@@ -375,9 +353,13 @@ void MC_replay(xbt_fifo_t stack)
   MC_SET_MC_HEAP;
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    for (j=0; j < simix_process_maxpid; j++) {
+    // int n = xbt_dynar_length(incomplete_communications_pattern);
+    int n = MC_smx_get_maxpid();
+    assert(n == xbt_dynar_length(incomplete_communications_pattern));
+    assert(n == xbt_dynar_length(initial_communications_pattern));
+    for (j=0; j < n ; j++) {
       xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, j, xbt_dynar_t));
-      ((mc_list_comm_pattern_t)xbt_dynar_get_as(initial_communications_pattern, j, mc_list_comm_pattern_t))->index_comm = 0;
+      xbt_dynar_get_as(initial_communications_pattern, j, mc_list_comm_pattern_t)->index_comm = 0;
     }
   }
 
@@ -416,7 +398,7 @@ void MC_replay(xbt_fifo_t stack)
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         MC_handle_comm_pattern(call, req, value, NULL, 1);
       MC_SET_STD_HEAP;
-      
+
       MC_wait_for_requests();
 
       count++;

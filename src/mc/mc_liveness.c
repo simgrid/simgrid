@@ -404,7 +404,6 @@ static void MC_modelcheck_liveness_main(void)
 void MC_modelcheck_liveness(void)
 {
   XBT_DEBUG("Starting the liveness algorithm");
-  xbt_assert(mc_mode == MC_MODE_SERVER);
   _sg_mc_liveness = 1;
 
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);

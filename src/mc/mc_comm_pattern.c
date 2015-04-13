@@ -10,13 +10,17 @@
 #include <xbt/dynar.h>
 
 #include "mc_comm_pattern.h"
+#include "mc_smx.h"
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_pattern, mc,
+                                "Logging specific to MC communication patterns");
 
 mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm)
 {
   mc_comm_pattern_t res = xbt_new0(s_mc_comm_pattern_t, 1);
   res->index = comm->index;
   res->type = comm->type;
-  res->comm = comm->comm;
+  res->comm_addr = comm->comm_addr;
   res->rdv = strdup(comm->rdv);
   res->data_size = -1;
   res->data = NULL;
@@ -49,6 +53,18 @@ xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t patterns)
   return res;
 }
 
+static void MC_patterns_copy(xbt_dynar_t dest, xbt_dynar_t source)
+{
+  xbt_dynar_reset(dest);
+
+  unsigned int cursor;
+  mc_comm_pattern_t comm;
+  xbt_dynar_foreach(source, cursor, comm) {
+    mc_comm_pattern_t copy_comm = MC_comm_pattern_dup(comm);
+    xbt_dynar_push(dest, &copy_comm);
+  }
+}
+
 void MC_restore_communications_pattern(mc_state_t state)
 {
   mc_list_comm_pattern_t list_process_comm;
@@ -59,16 +75,10 @@ void MC_restore_communications_pattern(mc_state_t state)
   }
 
   for (int i = 0; i < MC_smx_get_maxpid(); i++) {
-    xbt_dynar_t initial_incomplete_process_comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
-    xbt_dynar_reset(initial_incomplete_process_comms);
-    xbt_dynar_t incomplete_process_comms = xbt_dynar_get_as(state->incomplete_comm_pattern, i, xbt_dynar_t);
-
-    mc_comm_pattern_t comm;
-    xbt_dynar_foreach(incomplete_process_comms, cursor, comm) {
-      mc_comm_pattern_t copy_comm = MC_comm_pattern_dup(comm);
-      xbt_dynar_push(initial_incomplete_process_comms, &copy_comm);
-    }
-
+    MC_patterns_copy(
+      xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t),
+      xbt_dynar_get_as(state->incomplete_comm_pattern, i, xbt_dynar_t)
+    );
   }
 }
 
@@ -92,6 +102,38 @@ void MC_state_copy_index_communications_pattern(mc_state_t state)
   xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm){
     xbt_dynar_push_as(state->index_comm, unsigned int, list_process_comm->index_comm);
   }
+}
+
+void MC_handle_comm_pattern(
+  e_mc_call_type_t call_type, smx_simcall_t req,
+  int value, xbt_dynar_t pattern, int backtracking)
+{
+
+  switch(call_type) {
+  case MC_CALL_TYPE_NONE:
+    break;
+  case MC_CALL_TYPE_SEND:
+  case MC_CALL_TYPE_RECV:
+    MC_get_comm_pattern(pattern, req, call_type, backtracking);
+    break;
+  case MC_CALL_TYPE_WAIT:
+  case MC_CALL_TYPE_WAITANY:
+    {
+      smx_synchro_t comm_addr = NULL;
+      if (call_type == MC_CALL_TYPE_WAIT)
+        comm_addr = simcall_comm_wait__get__comm(req);
+      else
+        // comm_addr = REMOTE(xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t)):
+        MC_process_read_dynar_element(&mc_model_checker->process, &comm_addr,
+          simcall_comm_waitany__get__comms(req), value, sizeof(comm_addr));
+      MC_complete_comm_pattern(pattern, comm_addr,
+        MC_smx_simcall_get_issuer(req)->pid, backtracking);
+    }
+    break;
+  default:
+    xbt_die("Unexpected call type %i", (int)call_type);
+  }
+
 }
 
 void MC_comm_pattern_free(mc_comm_pattern_t p)

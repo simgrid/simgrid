@@ -271,7 +271,6 @@ static void MC_modelcheck_safety_main(void)
 void MC_modelcheck_safety(void)
 {
   XBT_DEBUG("Starting the safety algorithm");
-  xbt_assert(mc_mode == MC_MODE_SERVER);
 
   _sg_mc_safety = 1;
 
