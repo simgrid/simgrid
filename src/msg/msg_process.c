@@ -153,7 +153,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
                                                 int argc, char **argv,
                                                 xbt_dict_t properties)
 {
-  xbt_assert(code != NULL && host != NULL, "Invalid parameters");
+  xbt_assert(code != NULL && host != NULL, "Invalid parameters: host and code params must not be NULL");
   simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
   msg_process_t process;
 
@@ -237,7 +237,7 @@ msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
  */
 void* MSG_process_get_data(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter: first parameter must not be NULL!");
 
   /* get from SIMIX the MSG process data, and then the user data */
   simdata_process_t simdata = simcall_process_get_data(process);
@@ -252,7 +252,7 @@ void* MSG_process_get_data(msg_process_t process)
  */
 msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
-  xbt_assert(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter: first parameter must not be NULL!");
 
   simdata_process_t simdata = simcall_process_get_data(process);
   simdata->data = data;
@@ -350,7 +350,7 @@ int MSG_process_get_PID(msg_process_t process)
  */
 int MSG_process_get_PPID(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
 
   return simcall_process_get_PPID(process);
 }
@@ -363,7 +363,7 @@ int MSG_process_get_PPID(msg_process_t process)
  */
 const char *MSG_process_get_name(msg_process_t process)
 {
-  xbt_assert(process, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
 
   return simcall_process_get_name(process);
 }
@@ -388,7 +388,7 @@ const char *MSG_process_get_property_value(msg_process_t process,
  */
 xbt_dict_t MSG_process_get_properties(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
 
   return simcall_process_get_properties(process);
 
@@ -433,7 +433,7 @@ msg_process_t MSG_process_self(void)
  */
 msg_error_t MSG_process_suspend(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
 
   TRACE_msg_process_suspend(process);
   simcall_process_suspend(process);
@@ -448,7 +448,7 @@ msg_error_t MSG_process_suspend(msg_process_t process)
  */
 msg_error_t MSG_process_resume(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
 
   TRACE_msg_process_resume(process);
   simcall_process_resume(process);
@@ -463,7 +463,7 @@ msg_error_t MSG_process_resume(msg_process_t process)
  */
 int MSG_process_is_suspended(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter");
+  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
   return simcall_process_is_suspended(process);
 }
 
