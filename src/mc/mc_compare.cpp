@@ -8,6 +8,8 @@
 #include <inttypes.h>
 #include <boost/unordered_set.hpp>
 
+#include <xbt/sysdep.h>
+
 #include "internal_config.h"
 #include "mc_object_info.h"
 #include "mc_safety.h"
@@ -23,9 +25,6 @@
 #include "xbt/mmalloc/mmprivate.h"
 
 #include <xbt/probes.h>
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, mc,
-                                "Logging specific to mc_compare");
 
 typedef struct s_pointers_pair {
   void *p1;
@@ -54,6 +53,9 @@ struct mc_compare_state {
 };
 
 extern "C" {
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt,
+                                "Logging specific to mc_compare in mc");
 
 /************************** Free functions ****************************/
 /********************************************************************/

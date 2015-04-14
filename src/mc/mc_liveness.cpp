@@ -17,6 +17,8 @@
 #include "mc_smx.h"
 #include "mc_client.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");
 
@@ -376,7 +378,7 @@ static void MC_modelcheck_liveness_main(void)
     
       /* Traverse the stack backwards until a pair with a non empty interleave
          set is found, deleting all the pairs that have it empty in the way. */
-      while ((current_pair = xbt_fifo_shift(mc_stack)) != NULL) {
+      while ((current_pair = (mc_pair_t) xbt_fifo_shift(mc_stack)) != NULL) {
         if (current_pair->requests > 0) {
           /* We found a backtracking point */
           XBT_DEBUG("Backtracking to depth %d", current_pair->depth);
@@ -423,5 +425,7 @@ void MC_modelcheck_liveness(void)
   xbt_free(mc_time);
 
   mmalloc_set_current_heap(heap);
+
+}
 
 }

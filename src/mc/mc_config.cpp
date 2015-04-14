@@ -20,6 +20,8 @@
 
 #include "mc_record.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc,
                                 "Configuration of MC");
 
@@ -183,3 +185,5 @@ void _mc_cfg_cb_termination(const char *name, int pos)
 }
 
 #endif
+
+}

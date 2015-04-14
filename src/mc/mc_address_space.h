@@ -7,22 +7,25 @@
 #ifndef MC_ADDRESS_SPACE_H
 #define MC_ADDRESS_SPACE_H
 
+#include <xbt/misc.h>
+
 #include <stdint.h>
 
 #include "mc_forward.h"
 
+SG_BEGIN_DECL()
+
 // ***** Data types
 
-typedef enum e_adress_space_read_flags {
-  MC_ADDRESS_SPACE_READ_FLAGS_NONE = 0,
-
-  /** Avoid a copy for when the data is available in the current process.
-   *
-   *  In this case, the return value of a MC_address_space_read might
-   *  be different from the provided buffer.
-   */
-  MC_ADDRESS_SPACE_READ_FLAGS_LAZY = 1
-} e_adress_space_read_flags_t;
+/** Options for the read() operation
+ *
+ *  - MC_ADDRESS_SPACE_READ_FLAGS_LAZY, avoid a copy when the data is
+ *    available in the current process. In this case, the return value
+ *    of MC_address_space_read might be different from the provided one.
+ */
+typedef int adress_space_read_flags_t;
+#define MC_ADDRESS_SPACE_READ_FLAGS_NONE 0
+#define MC_ADDRESS_SPACE_READ_FLAGS_LAZY 1
 
 /** Process index used when no process is available
  *
@@ -56,21 +59,27 @@ struct s_mc_address_space {
  */
 struct s_mc_address_space_class {
   const void* (*read)(
-    mc_address_space_t address_space, e_adress_space_read_flags_t flags,
+    mc_address_space_t address_space, adress_space_read_flags_t flags,
     void* target, const void* addr, size_t size,
     int process_index);
   mc_process_t (*get_process)(mc_address_space_t address_space);
 };
 
+typedef const void* (*mc_address_space_class_read_callback_t)(
+  mc_address_space_t address_space, adress_space_read_flags_t flags,
+  void* target, const void* addr, size_t size,
+  int process_index);
+typedef mc_process_t (*mc_address_space_class_get_process_callback_t)(mc_address_space_t address_space);
+
 // ***** Virtual/non-final methods
 
 /** Read data from the given address space
  *
- *  Dynamic dispatch.
+ *  Dysnamic dispatch.
  */
 static inline __attribute__((always_inline))
 const void* MC_address_space_read(
-  mc_address_space_t address_space, e_adress_space_read_flags_t flags,
+  mc_address_space_t address_space, adress_space_read_flags_t flags,
   void* target, const void* addr, size_t size,
   int process_index)
 {
@@ -82,8 +91,12 @@ const void* MC_address_space_read(
 static inline __attribute__((always_inline))
 const void* MC_address_space_get_process(mc_address_space_t address_space)
 {
-  return address_space->address_space_class->get_process(address_space);
+  if (address_space->address_space_class->get_process)
+    return address_space->address_space_class->get_process(address_space);
+  else
+    return NULL;
 }
 
+SG_END_DECL()
 
 #endif

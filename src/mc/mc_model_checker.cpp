@@ -7,6 +7,8 @@
 #include "mc_model_checker.h"
 #include "mc_page_store.h"
 
+extern "C" {
+
 mc_model_checker_t mc_model_checker = NULL;
 
 mc_model_checker_t MC_model_checker_new(pid_t pid, int socket)
@@ -38,4 +40,6 @@ unsigned long MC_smx_get_maxpid(void)
   MC_process_read_variable(&mc_model_checker->process, "simix_process_maxpid",
     &maxpid, sizeof(maxpid));
   return maxpid;
+}
+
 }

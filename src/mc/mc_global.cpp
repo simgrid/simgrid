@@ -44,6 +44,8 @@
 #include "mc_protocol.h"
 #include "mc_client.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 
@@ -104,11 +106,6 @@ static void MC_init_dot_output()
 
 }
 
-void MC_init()
-{
-  MC_init_pid(getpid(), -1);
-}
-
 static void MC_init_mode(void)
 {
   if (mc_mode == MC_MODE_NONE) {
@@ -118,6 +115,12 @@ static void MC_init_mode(void)
       mc_mode = MC_MODE_STANDALONE;
     }
   }
+}
+
+#ifdef HAVE_MC
+void MC_init()
+{
+  MC_init_pid(getpid(), -1);
 }
 
 void MC_init_pid(pid_t pid, int socket)
@@ -209,6 +212,7 @@ void MC_init_pid(pid_t pid, int socket)
 
   mmalloc_set_current_heap(heap);
 }
+#endif
 
 /*******************************  Core of MC *******************************/
 /**************************************************************************/
@@ -273,6 +277,7 @@ void MC_exit(void)
   //xbt_abort();
 }
 
+#ifdef HAVE_MC
 int MC_deadlock_check()
 {
   if (mc_mode == MC_MODE_SERVER) {
@@ -309,6 +314,7 @@ int MC_deadlock_check()
   }
   return deadlock;
 }
+#endif
 
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
@@ -320,7 +326,7 @@ void MC_replay(xbt_fifo_t stack)
 {
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
-  int value, count = 1, j;
+  int value, count = 1;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
@@ -354,10 +360,10 @@ void MC_replay(xbt_fifo_t stack)
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     // int n = xbt_dynar_length(incomplete_communications_pattern);
-    int n = MC_smx_get_maxpid();
+    unsigned n = MC_smx_get_maxpid();
     assert(n == xbt_dynar_length(incomplete_communications_pattern));
     assert(n == xbt_dynar_length(initial_communications_pattern));
-    for (j=0; j < n ; j++) {
+    for (unsigned j=0; j < n ; j++) {
       xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, j, xbt_dynar_t));
       xbt_dynar_get_as(initial_communications_pattern, j, mc_list_comm_pattern_t)->index_comm = 0;
     }
@@ -760,3 +766,5 @@ void MC_report_assertion_error(void)
   MC_print_statistics(mc_stats);
 }
 #endif
+
+}

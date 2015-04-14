@@ -21,6 +21,8 @@
 #include "mc_private.h"
 #include "mc_ignore.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_server, mc, "MC server logic");
 
 // HArdcoded index for now:
@@ -124,7 +126,7 @@ void s_mc_server::resume(mc_process_t process)
   int res = MC_protocol_send_simple_message(socket, MC_MESSAGE_CONTINUE);
   if (res)
     throw std::system_error(res, std::system_category());
-  process->cache_flags = (e_mc_process_cache_flags_t) 0;
+  process->cache_flags = (mc_process_cache_flags_t) 0;
 }
 
 static
@@ -349,7 +351,7 @@ void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value
   m.pid   = pid;
   m.value = value;
   MC_protocol_send(mc_model_checker->process.socket, &m, sizeof(m));
-  process->cache_flags = (e_mc_process_cache_flags_t) 0;
+  process->cache_flags = (mc_process_cache_flags_t) 0;
   while (mc_model_checker->process.running) {
     if (!mc_server->handle_events())
       return;
@@ -359,4 +361,6 @@ void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value
 void MC_server_loop(mc_server_t server)
 {
   server->loop();
+}
+
 }

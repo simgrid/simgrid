@@ -7,6 +7,7 @@
 #ifndef MC_BASE_H
 #define MC_BASE_H
 
+#include <xbt/misc.h>
 #include <simgrid/simix.h>
 #include "simgrid_config.h"
 #include "internal_config.h"

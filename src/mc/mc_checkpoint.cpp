@@ -4,8 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#define _GNU_SOURCE
-
 #include <unistd.h>
 
 #include <string.h>
@@ -36,6 +34,8 @@
 #include "mc_unw.h"
 #include "mc_protocol.h"
 #include "mc_smx.h"
+
+extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
@@ -295,7 +295,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
  * */
 void MC_find_object_address(memory_map_t maps, mc_object_info_t result)
 {
-  unsigned int i = 0;
+  ssize_t i = 0;
   s_map_region_t reg;
   const char *name = basename(result->file_name);
   while (i < maps->mapsize) {
@@ -307,26 +307,26 @@ void MC_find_object_address(memory_map_t maps, mc_object_info_t result)
       xbt_assert(!result->start_rw,
                  "Multiple read-write segments for %s, not supported",
                  maps->regions[i].pathname);
-      result->start_rw = reg.start_addr;
-      result->end_rw = reg.end_addr;
+      result->start_rw = (char*) reg.start_addr;
+      result->end_rw = (char*) reg.end_addr;
       // .bss is usually after the .data:
       s_map_region_t *next = &(maps->regions[i + 1]);
       if (next->pathname == NULL && (next->prot & PROT_WRITE)
           && next->start_addr == reg.end_addr) {
-        result->end_rw = maps->regions[i + 1].end_addr;
+        result->end_rw = (char*) maps->regions[i + 1].end_addr;
       }
     } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)) {
       xbt_assert(!result->start_exec,
                  "Multiple executable segments for %s, not supported",
                  maps->regions[i].pathname);
-      result->start_exec = reg.start_addr;
-      result->end_exec = reg.end_addr;
+      result->start_exec = (char*) reg.start_addr;
+      result->end_exec = (char*) reg.end_addr;
     } else if ((reg.prot & PROT_READ) && !(reg.prot & PROT_EXEC)) {
       xbt_assert(!result->start_ro,
                  "Multiple read only segments for %s, not supported",
                  maps->regions[i].pathname);
-      result->start_ro = reg.start_addr;
-      result->end_ro = reg.end_addr;
+      result->start_ro = (char*) reg.start_addr;
+      result->end_ro = (char*) reg.end_addr;
     }
     i++;
   }
@@ -554,7 +554,7 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
     unw_word_t sp = xbt_dynar_get_as(st->stack_frames, 0, mc_stack_frame_t)->sp;
 
     xbt_dynar_push(res, &st);
-    (*snapshot)->stack_sizes =
+    (*snapshot)->stack_sizes = (size_t*)
         xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
     (*snapshot)->stack_sizes[cursor] =
       (char*) current_stack->address + current_stack->size - (char*) sp;
@@ -659,8 +659,10 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
 
   const size_t fd_dir_path_size = 20;
   char fd_dir_path[fd_dir_path_size];
-  if (snprintf(fd_dir_path, fd_dir_path_size,
-    "/proc/%lli/fd", (long long int) snapshot->process->pid) > fd_dir_path_size)
+  int res = snprintf(fd_dir_path, fd_dir_path_size,
+    "/proc/%lli/fd", (long long int) snapshot->process->pid);
+  xbt_assert(res >= 0);
+  if ((size_t) res > fd_dir_path_size)
     xbt_die("Unexpected buffer is too small for fd_dir_path");
 
   DIR* fd_dir = opendir(fd_dir_path);
@@ -678,13 +680,15 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
 
     const size_t source_size = 25;
     char source[25];
-    if (snprintf(source, source_size, "/proc/%lli/fd/%s",
-        (long long int) snapshot->process->pid, fd_number->d_name) > source_size)
+    int res = snprintf(source, source_size, "/proc/%lli/fd/%s",
+        (long long int) snapshot->process->pid, fd_number->d_name);
+    xbt_assert(res >= 0);
+    if ((size_t) res > source_size)
       xbt_die("Unexpected buffer is too small for fd %s", fd_number->d_name);
 
     const size_t link_size = 200;
     char link[200];
-    int res = readlink(source, link, link_size);
+    res = readlink(source, link, link_size);
     if (res<0) {
       xbt_die("Could not read link for %s", source);
     }
@@ -720,7 +724,7 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
     fd->number = fd_value;
     fd->flags = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD) ;
     fd->current_position = lseek(fd_value, 0, SEEK_CUR);
-    snapshot->current_fd = xbt_realloc(snapshot->current_fd, (total_fd + 1) * sizeof(fd_infos_t));
+    snapshot->current_fd = (fd_infos_t*) xbt_realloc(snapshot->current_fd, (total_fd + 1) * sizeof(fd_infos_t));
     snapshot->current_fd[total_fd] = fd;
     total_fd++;
   }
@@ -730,7 +734,8 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
 }
 
 static s_mc_address_space_class_t mc_snapshot_class = {
-  .read = (void*) &MC_snapshot_read
+  .read = (mc_address_space_class_read_callback_t) &MC_snapshot_read,
+  .get_process = NULL
 };
 
 mc_snapshot_t MC_take_snapshot(int num_state)
@@ -817,8 +822,7 @@ void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
     xbt_die("FD snapshot not implemented in client/server mode.");
 
   int new_fd;
-  size_t i;
-  for(i=0; i < snapshot->total_fd; i++){
+  for (int i=0; i < snapshot->total_fd; i++) {
     
     new_fd = open(snapshot->current_fd[i]->filename, snapshot->current_fd[i]->flags);
     if (new_fd <0) {
@@ -859,4 +863,6 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
 mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)
 {
   return MC_take_snapshot(1);
+}
+
 }

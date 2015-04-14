@@ -105,7 +105,7 @@ typedef struct s_mc_register_symbol_message {
 } s_mc_register_symbol_message_t, * mc_register_symbol_message_t;
 
 int MC_protocol_send(int socket, void* message, size_t size);
-int MC_protocol_send_simple_message(int socket, int type);
+int MC_protocol_send_simple_message(int socket, e_mc_message_type type);
 int MC_protocol_hello(int socket);
 ssize_t MC_receive_message(int socket, void* message, size_t size, int options);
 

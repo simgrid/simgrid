@@ -13,6 +13,8 @@
 #include "mc_smx.h"
 #include "mc_client.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc,
                                 "Logging specific to MC communication determinism detection");
 
@@ -37,15 +39,15 @@ static e_mc_comm_pattern_difference_t compare_comm_pattern(mc_comm_pattern_t com
   if (comm1->data_size != comm2->data_size)
     return DATA_SIZE_DIFF;
   if(comm1->data == NULL && comm2->data == NULL)
-    return 0;
+    return NONE_DIFF;
   if(comm1->data != NULL && comm2->data !=NULL) {
     if (!memcmp(comm1->data, comm2->data, comm1->data_size))
-      return 0;
+      return NONE_DIFF;
     return DATA_DIFF;
   }else{
     return DATA_DIFF;
   }
-  return 0;
+  return NONE_DIFF;
 }
 
 static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int process, mc_comm_pattern_t comm, unsigned int cursor) {
@@ -469,7 +471,7 @@ static void MC_modelcheck_comm_determinism_main(void)
 
       MC_SET_MC_HEAP;
 
-      while ((state = xbt_fifo_shift(mc_stack)) != NULL) {
+      while ((state = (mc_state_t) xbt_fifo_shift(mc_stack)) != NULL) {
         if (MC_state_interleave_size(state) && xbt_fifo_size(mc_stack) < _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
@@ -527,4 +529,6 @@ void MC_modelcheck_comm_determinism(void)
   MC_modelcheck_comm_determinism_main();
 
   mmalloc_set_current_heap(heap);
+}
+
 }

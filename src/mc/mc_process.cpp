@@ -28,6 +28,8 @@
 #include "mc_smx.h"
 #include "mc_server.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
                                 "MC process information");
 
@@ -43,8 +45,8 @@ static mc_process_t MC_process_get_process(mc_process_t p) {
 }
 
 static const s_mc_address_space_class_t mc_process_class = {
-  .read = (void*) &MC_process_read,
-  .get_process = (void*) MC_process_get_process
+  .read = (mc_address_space_class_read_callback_t) &MC_process_read,
+  .get_process = (mc_address_space_class_get_process_callback_t) MC_process_get_process
 };
 
 bool MC_is_process(mc_address_space_t p)
@@ -66,7 +68,7 @@ void MC_process_init(mc_process_t process, pid_t pid, int sockfd)
   process->status = 0;
   process->memory_map = MC_get_memory_map(pid);
   process->memory_file = -1;
-  process->cache_flags = 0;
+  process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
   process->heap = NULL;
   process->heap_info = NULL;
   MC_process_init_memory_map_info(process);
@@ -135,7 +137,7 @@ void MC_process_clear(mc_process_t process)
   unw_destroy_addr_space(process->unw_addr_space);
   process->unw_addr_space = NULL;
 
-  process->cache_flags = 0;
+  process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
 
   free(process->heap);
   process->heap = NULL;
@@ -150,7 +152,7 @@ void MC_process_refresh_heap(mc_process_t process)
   // Read/dereference/refresh the std_heap pointer:
   if (!process->heap) {
     xbt_mheap_t oldheap  = mmalloc_set_current_heap(mc_heap);
-    process->heap = malloc(sizeof(struct mdesc));
+    process->heap = (struct mdesc*) malloc(sizeof(struct mdesc));
     mmalloc_set_current_heap(oldheap);
   }
   MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
@@ -169,7 +171,7 @@ void MC_process_refresh_malloc_info(mc_process_t process)
     (process->heap->heaplimit + 1) * sizeof(malloc_info);
 
   xbt_mheap_t heap  = mmalloc_set_current_heap(mc_heap);
-  process->heap_info = realloc(process->heap_info, malloc_info_bytesize);
+  process->heap_info = (malloc_info*) realloc(process->heap_info, malloc_info_bytesize);
   mmalloc_set_current_heap(heap);
 
   MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
@@ -262,8 +264,7 @@ static void MC_process_init_memory_map_info(mc_process_t process)
 
   const char* current_name = NULL;
 
-  size_t i = 0;
-  for (i=0; i < maps->mapsize; i++) {
+  for (ssize_t i=0; i < maps->mapsize; i++) {
     map_region_t reg = &(maps->regions[i]);
     const char* pathname = maps->regions[i].pathname;
 
@@ -319,7 +320,7 @@ static void MC_process_init_memory_map_info(mc_process_t process)
   regfree(&res.version_re);
 
   // Resolve time (including accress differents objects):
-  for (i=0; i!=process->object_infos_size; ++i)
+  for (size_t i=0; i!=process->object_infos_size; ++i)
     MC_post_process_object_info(process, process->object_infos[i]);
 
   xbt_assert(process->maestro_stack_start, "Did not find maestro_stack_start");
@@ -408,10 +409,10 @@ void MC_process_read_variable(mc_process_t process, const char* name, void* targ
     xbt_die("No simple location for this variable");
   if (!var->type->full_type)
     xbt_die("Partial type for %s, cannot check size", name);
-  if (var->type->full_type->byte_size != size)
+  if ((size_t) var->type->full_type->byte_size != size)
     xbt_die("Unexpected size for %s (expected %zi, was %zi)",
       name, size, (size_t) var->type->full_type->byte_size);
-  MC_process_read(process, MC_PROCESS_NO_FLAG, target, var->address, size,
+  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE, target, var->address, size,
     MC_PROCESS_INDEX_ANY);
 }
 
@@ -422,8 +423,8 @@ char* MC_process_read_string(mc_process_t process, void* address)
   if (MC_process_is_self(process))
     return strdup((char*) address);
 
-  size_t len = 128;
-  char* res = malloc(len);
+  off_t len = 128;
+  char* res = (char*) malloc(len);
   off_t off = 0;
 
   while (1) {
@@ -444,7 +445,7 @@ char* MC_process_read_string(mc_process_t process, void* address)
     off += c;
     if (off == len) {
       len *= 2;
-      res = realloc(res, len);
+      res = (char*) realloc(res, len);
     }
   }
 }
@@ -456,7 +457,7 @@ int MC_process_vm_open(pid_t pid, int flags)
   const size_t buffer_size = 30;
   char buffer[buffer_size];
   int res = snprintf(buffer, buffer_size, "/proc/%lli/mem", (long long) pid);
-  if (res < 0 || res >= buffer_size) {
+  if (res < 0 || (size_t) res >= buffer_size) {
     errno = ENAMETOOLONG;
     return -1;
   }
@@ -512,7 +513,7 @@ static ssize_t pwrite_whole(int fd, const void *buf, size_t count, off_t offset)
   return real_count;
 }
 
-const void* MC_process_read(mc_process_t process, e_adress_space_read_flags_t flags,
+const void* MC_process_read(mc_process_t process, adress_space_read_flags_t flags,
   void* local, const void* remote, size_t len,
   int process_index)
 {
@@ -545,7 +546,7 @@ const void* MC_process_read(mc_process_t process, e_adress_space_read_flags_t fl
 const void* MC_process_read_simple(mc_process_t process,
   void* local, const void* remote, size_t len)
 {
-  e_adress_space_read_flags_t flags = MC_PROCESS_NO_FLAG;
+  adress_space_read_flags_t flags = MC_ADDRESS_SPACE_READ_FLAGS_NONE;
   int index = MC_PROCESS_INDEX_ANY;
    MC_process_read(process, flags, local, remote, len, index);
    return local;
@@ -614,22 +615,4 @@ void MC_process_clear_memory(mc_process_t process, void* remote, size_t len)
   }
 }
 
-void MC_simcall_handle(smx_simcall_t req, int value)
-{
-  if (MC_process_is_self(&mc_model_checker->process)) {
-    SIMIX_simcall_handle(req, value);
-    return;
-  }
-
-  unsigned i;
-  mc_smx_process_info_t pi = NULL;
-
-  xbt_dynar_foreach_ptr(mc_model_checker->process.smx_process_infos, i, pi) {
-    if (req == &pi->copy.simcall) {
-      MC_server_simcall_handle(&mc_model_checker->process, pi->copy.pid, value);
-      return;
-    }
-  }
-
-  xbt_die("Could not find the request");
 }

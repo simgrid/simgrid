@@ -16,6 +16,8 @@
 
 #include "xbt/mmalloc/mmprivate.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
                                 "Logging specific to MC safety verification ");
 
@@ -204,7 +206,7 @@ static void MC_modelcheck_safety_main(void)
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous request. */
 
-      while ((state = xbt_fifo_shift(mc_stack)) != NULL) {
+      while ((state = (mc_state_t) xbt_fifo_shift(mc_stack))) {
         if (mc_reduce_kind == e_mc_reduce_dpor) {
           req = MC_state_get_internal_request(state);
           const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
@@ -295,4 +297,6 @@ void MC_modelcheck_safety(void)
 
   xbt_abort();
   //MC_exit();
+}
+
 }

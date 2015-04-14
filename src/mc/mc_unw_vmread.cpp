@@ -1,5 +1,3 @@
-#define _GNU_SOURCE
-
 #include <sys/types.h>
 #include <sys/uio.h>
 
@@ -7,6 +5,8 @@
 #include <libunwind-ptrace.h>
 
 #include "mc_unw.h"
+
+extern "C" {
 
 /** \file
  *  Libunwind namespace implementation using process_vm_readv.
@@ -30,7 +30,7 @@ struct _UPT_info {
 static inline
 pid_t _UPT_getpid(void* arg)
 {
-  struct _UPT_info* info = arg;
+  struct _UPT_info* info = (_UPT_info*) arg;
   return info->pid;
 }
 
@@ -54,7 +54,7 @@ static int access_mem(const unw_addr_space_t as,
   struct iovec remote = { (void*) addr, size };
   s = process_vm_readv(pid, &local, 1, &remote, 1, 0);
   if (s >= 0) {
-    if (s != size)
+    if ((size_t) s != size)
       return - UNW_EINVAL;
     else
       return 0;
@@ -106,3 +106,5 @@ unw_accessors_t mc_unw_vmread_accessors =
     .resume                     = &_UPT_resume,
     .get_proc_name              = &_UPT_get_proc_name
   };
+
+}

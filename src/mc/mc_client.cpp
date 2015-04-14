@@ -25,6 +25,8 @@
 #include "mc_private.h" // MC_deadlock_check()
 #include "mc_smx.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 
 mc_client_t mc_client;
@@ -68,7 +70,7 @@ void MC_client_send_message(void* message, size_t size)
     xbt_die("Could not send message %i", (int) ((mc_message_t)message)->type);
 }
 
-void MC_client_send_simple_message(int type)
+void MC_client_send_simple_message(e_mc_message_type type)
 {
   if (MC_protocol_send_simple_message(mc_client->fd, type))
     xbt_die("Could not send message %i", type);
@@ -80,12 +82,12 @@ void MC_client_handle_messages(void)
     XBT_DEBUG("Waiting messages from model-checker");
 
     char message_buffer[MC_MESSAGE_LENGTH];
-    size_t s;
-    if ((s = MC_receive_message(mc_client->fd, &message_buffer, sizeof(message_buffer), 0)) == -1)
+    ssize_t s;
+    if ((s = MC_receive_message(mc_client->fd, &message_buffer, sizeof(message_buffer), 0)) < 0)
       xbt_die("Could not receive commands from the model-checker");
 
     s_mc_message_t message;
-    if (s < sizeof(message))
+    if ((size_t) s < sizeof(message))
       xbt_die("Received message is too small");
     memcpy(&message, message_buffer, sizeof(message));
     switch (message.type) {
@@ -135,4 +137,6 @@ void MC_client_main_loop(void)
     MC_client_handle_messages();
     MC_wait_for_requests();
   }
+}
+
 }

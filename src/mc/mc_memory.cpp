@@ -15,6 +15,8 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
                                 "Logging specific to MC (memory)");
 
@@ -48,4 +50,6 @@ void MC_memory_exit(void)
 {
   if (mc_heap && mc_heap != std_heap)
     xbt_mheap_destroy(mc_heap);
+}
+
 }

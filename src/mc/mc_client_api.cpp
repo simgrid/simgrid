@@ -17,6 +17,8 @@
 #include "mc_protocol.h"
 #include "mc_client.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
   "Public API for the model-checked application");
 
@@ -69,4 +71,6 @@ void MC_ignore(void* addr, size_t size)
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   MC_process_ignore_memory(&mc_model_checker->process, addr, size);
   mmalloc_set_current_heap(heap);
+}
+
 }

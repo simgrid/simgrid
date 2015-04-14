@@ -7,8 +7,11 @@
 #ifndef MC_FORWARD_H
 #define MC_FORWARD_H
 
+#include <xbt/misc.h>
 #include <mc/datatypes.h>
 #include "mc_interface.h"
+
+SG_BEGIN_DECL()
 
 typedef struct s_mc_object_info s_mc_object_info_t, *mc_object_info_t;
 typedef struct s_dw_type s_dw_type_t, *dw_type_t;
@@ -22,5 +25,7 @@ typedef struct s_mc_snapshot s_mc_snapshot_t, *mc_snapshot_t;
 typedef struct s_mc_process s_mc_process_t, * mc_process_t;
 typedef struct s_mc_model_checker s_mc_model_checker_t, *mc_model_checker_t;
 extern mc_model_checker_t mc_model_checker;
+
+SG_END_DECL()
 
 #endif

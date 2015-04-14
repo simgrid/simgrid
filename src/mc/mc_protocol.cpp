@@ -15,6 +15,8 @@
 #include "mc_protocol.h"
 #include "mc_client.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_protocol, mc, "Generic MC protocol logic");
 
 int MC_protocol_send(int socket, void* message, size_t size)
@@ -32,7 +34,7 @@ int MC_protocol_send(int socket, void* message, size_t size)
   return 0;
 }
 
-int MC_protocol_send_simple_message(int socket, int type)
+int MC_protocol_send_simple_message(int socket, e_mc_message_type type)
 {
   s_mc_message_t message;
   message.type = type;
@@ -50,7 +52,7 @@ int MC_protocol_hello(int socket)
   s_mc_message_t message;
   message.type = MC_MESSAGE_NONE;
 
-  size_t s;
+  ssize_t s;
   while ((s = MC_receive_message(socket, &message, sizeof(message), 0)) == -1) {
     if (errno == EINTR)
       continue;
@@ -59,7 +61,7 @@ int MC_protocol_hello(int socket)
       return 2;
     }
   }
-  if (s < sizeof(message) || message.type != MC_MESSAGE_HELLO) {
+  if ((size_t) s < sizeof(message) || message.type != MC_MESSAGE_HELLO) {
     XBT_ERROR("Did not receive suitable HELLO message. Who are you?");
     return 3;
   }
@@ -126,4 +128,6 @@ const char* MC_mode_name(e_mc_mode_t mode)
   default:
     return "?";
   }
+}
+
 }

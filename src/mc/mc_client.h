@@ -8,6 +8,7 @@
 #define MC_CLIENT_H
 
 #include <xbt/misc.h>
+#include "mc_protocol.h"
 
 SG_BEGIN_DECL()
 
@@ -22,7 +23,7 @@ void MC_client_init(void);
 void MC_client_hello(void);
 void MC_client_handle_messages(void);
 void MC_client_send_message(void* message, size_t size);
-void MC_client_send_simple_message(int type);
+void MC_client_send_simple_message(e_mc_message_type type);
 
 #ifdef HAVE_MC
 void MC_ignore(void* addr, size_t size);

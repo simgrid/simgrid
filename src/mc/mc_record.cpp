@@ -20,6 +20,8 @@
 #include "mc_smx.h"
 #endif
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
   " Logging specific to MC record/replay facility");
 
@@ -73,7 +75,7 @@ xbt_dynar_t MC_record_from_string(const char* data)
     xbt_dynar_push(dynar, &item);
 
     // Find next chunk:
-    char* end = strchr(current, ';');
+    const char* end = strchr(current, ';');
     if(end==NULL)
       break;
     else
@@ -145,4 +147,6 @@ void MC_record_replay_from_string(const char* path_string)
 void MC_record_replay_init()
 {
   mc_time = xbt_new0(double, simix_process_maxpid);
+}
+
 }

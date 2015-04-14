@@ -13,6 +13,8 @@
 #include "mc_smx.h"
 #include "mc_model_checker.h"
 
+extern "C" {
+
 static
 void MC_smx_process_info_clear(mc_smx_process_info_t p)
 {
@@ -70,7 +72,7 @@ static void MC_process_refresh_simix_process_list(
 
   // Load each element of the dynar from the MCed process:
   int i = 0;
-  for (p = swag.head; p; ++i) {
+  for (p = (smx_process_t) swag.head; p; ++i) {
 
     s_mc_smx_process_info_t info;
     info.address = p;
@@ -81,7 +83,7 @@ static void MC_process_refresh_simix_process_list(
     xbt_dynar_push(target, &info);
 
     // Lookup next process address:
-    p = xbt_swag_getNext(&info.copy, swag.offset);
+    p = (smx_process_t) xbt_swag_getNext(&info.copy, swag.offset);
   }
   assert(i == swag.count);
 }
@@ -238,4 +240,6 @@ int MC_smpi_process_count(void)
       &res, sizeof(res));
     return res;
   }
+}
+
 }

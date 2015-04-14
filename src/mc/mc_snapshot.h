@@ -281,7 +281,7 @@ void mc_restore_page_snapshot_region(
 
 const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, const void* addr, size_t size);
 
-const void* MC_snapshot_read(mc_snapshot_t snapshot, e_adress_space_read_flags_t flags,
+const void* MC_snapshot_read(mc_snapshot_t snapshot, adress_space_read_flags_t flags,
   void* target, const void* addr, size_t size, int process_index);
 int MC_snapshot_region_memcmp(
   const void* addr1, mc_mem_region_t region1,

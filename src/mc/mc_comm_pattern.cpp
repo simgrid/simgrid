@@ -12,6 +12,8 @@
 #include "mc_comm_pattern.h"
 #include "mc_smx.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_pattern, mc,
                                 "Logging specific to MC communication patterns");
 
@@ -74,7 +76,7 @@ void MC_restore_communications_pattern(mc_state_t state)
     list_process_comm->index_comm = (int)xbt_dynar_get_as(state->index_comm, cursor, int);
   }
 
-  for (int i = 0; i < MC_smx_get_maxpid(); i++) {
+  for (unsigned i = 0; i < MC_smx_get_maxpid(); i++) {
     MC_patterns_copy(
       xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t),
       xbt_dynar_get_as(state->incomplete_comm_pattern, i, xbt_dynar_t)
@@ -86,8 +88,7 @@ void MC_state_copy_incomplete_communications_pattern(mc_state_t state)
 {
   state->incomplete_comm_pattern = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
 
-  int i;
-  for (i=0; i < MC_smx_get_maxpid(); i++) {
+  for (unsigned i=0; i < MC_smx_get_maxpid(); i++) {
     xbt_dynar_t comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
     xbt_dynar_t copy = MC_comm_patterns_dup(comms);
     xbt_dynar_insert_at(state->incomplete_comm_pattern, i, &copy);
@@ -159,4 +160,6 @@ void MC_comm_pattern_free_voidp(void *p)
 void MC_list_comm_pattern_free_voidp(void *p)
 {
   MC_list_comm_pattern_free((mc_list_comm_pattern_t) * (void **) p);
+}
+
 }

@@ -11,6 +11,8 @@
 #include "mc/datatypes.h"
 #include <mc/mc.h>
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_hash, mc, "Logging specific to mc_hash");
 
 // This is djb2:
@@ -20,7 +22,7 @@ typedef uint64_t mc_hash_t;
 // #define MC_HASH(hash, value) hash = (((hash << 5) + hash) + (uint64_t) value)
 #define MC_HASH(hash, value) \
   { hash = (((hash << 5) + hash) + (uint64_t) value);\
-  XBT_DEBUG("%s:%i: %"PRIx64" -> %"PRIx64, __FILE__, __LINE__, (uint64_t) value, hash); }
+  XBT_DEBUG("%s:%i: %" PRIx64 " -> %" PRIx64, __FILE__, __LINE__, (uint64_t) value, hash); }
 
 // ***** Hash state
 
@@ -62,9 +64,8 @@ static bool mc_ignored(const void *address, size_t size)
 
 static void mc_hash_binary(mc_hash_t * hash, const void *s, size_t len)
 {
-  const char *p = (const void *) s;
-  int i;
-  for (i = 0; i != len; ++i) {
+  const char *p = (const char*) s;
+  for (size_t i = 0; i != len; ++i) {
     MC_HASH(*hash, p[i]);
   }
 }
@@ -337,4 +338,6 @@ uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks)
 
   XBT_DEBUG("END hash %i", num_state);
   return hash;
+}
+
 }

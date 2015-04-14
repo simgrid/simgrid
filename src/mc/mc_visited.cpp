@@ -14,6 +14,8 @@
 #include "mc_process.h"
 #include "mc_smx.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_visited, mc,
                                 "Logging specific to state equaity detection mechanisms");
 
@@ -148,7 +150,7 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
 
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
-  int cursor = 0, previous_cursor, next_cursor;
+  int cursor = 0, previous_cursor;
   int nb_processes, heap_bytes_used, nb_processes_test, heap_bytes_used_test;
   void *ref_test;
 
@@ -201,7 +203,7 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
           *min = previous_cursor;
           previous_cursor--;
         }
-        next_cursor = cursor + 1;
+        size_t next_cursor = cursor + 1;
         while (next_cursor < xbt_dynar_length(list)) {
           if (_sg_mc_liveness) {
             ref_test = (mc_visited_pair_t) xbt_dynar_get_as(list, next_cursor, mc_visited_pair_t);
@@ -244,7 +246,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
      communications are not finished (at least, data are transfered). These communications 
      are incomplete and they cannot be analyzed and compared with the initial pattern. */
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    int current_process = 1;
+    size_t current_process = 1;
     while (current_process < MC_smx_get_maxpid()) {
       if (!xbt_dynar_is_empty((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t))){
         XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
@@ -351,7 +353,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
     }
 
     // We have reached the maximum number of stored states;
-    if (xbt_dynar_length(visited_states) > _sg_mc_visited) {
+    if ((ssize_t) xbt_dynar_length(visited_states) > _sg_mc_visited) {
 
       XBT_DEBUG("Try to remove visited state (maximum number of stored states reached)");
 
@@ -478,7 +480,7 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
       }
     }
 
-    if (xbt_dynar_length(visited_pairs) > _sg_mc_visited) {
+    if ((ssize_t) xbt_dynar_length(visited_pairs) > _sg_mc_visited) {
       int min2 = mc_stats->expanded_pairs;
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
@@ -502,4 +504,6 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
 
   mmalloc_set_current_heap(heap);
   return -1;
+}
+
 }

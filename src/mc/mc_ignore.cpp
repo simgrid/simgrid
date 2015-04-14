@@ -13,6 +13,8 @@
 #include "mc_protocol.h"
 #include "mc_client.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ignore, mc,
                                 "Logging specific to MC ignore mechanism");
 
@@ -426,4 +428,6 @@ void MC_process_ignore_memory(mc_process_t process, void *addr, size_t size)
       xbt_dynar_insert_at(checkpoint_ignore, cursor, &region);
     }
   }
+}
+
 }

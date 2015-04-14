@@ -579,73 +579,73 @@ set(JEDULE_SRC
   )
 
 set(MC_SRC_BASE
-  src/mc/mc_base.c
+  src/mc/mc_base.cpp
   src/mc/mc_base.h
   src/mc/mc_record.h
-  src/mc/mc_record.c
-  src/mc/mc_config.c
-  src/mc/mc_global.c
+  src/mc/mc_record.cpp
+  src/mc/mc_config.cpp
+  src/mc/mc_global.cpp
   )
 
 set(MC_SRC
   src/mc/mc_address_space.h
-  src/mc/mc_address_space.c
+  src/mc/mc_address_space.cpp
   src/mc/mc_forward.h
   src/mc/mc_process.h
-  src/mc/mc_process.c
+  src/mc/mc_process.cpp
   src/mc/mc_unw.h
-  src/mc/mc_unw.c
-  src/mc/mc_unw_vmread.c
+  src/mc/mc_unw.cpp
+  src/mc/mc_unw_vmread.cpp
   src/mc/mc_mmalloc.h
   src/mc/mc_model_checker.h
-  src/mc/mc_model_checker.c
+  src/mc/mc_model_checker.cpp
   src/mc/mc_object_info.h
-  src/mc/mc_object_info.c
-  src/mc/mc_checkpoint.c
+  src/mc/mc_object_info.cpp
+  src/mc/mc_checkpoint.cpp
   src/mc/mc_snapshot.h
-  src/mc/mc_snapshot.c
+  src/mc/mc_snapshot.cpp
   src/mc/mc_page_store.h
   src/mc/mc_page_store.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
-  src/mc/mc_comm_pattern.c
-  src/mc/mc_comm_determinism.c
+  src/mc/mc_comm_pattern.cpp
+  src/mc/mc_comm_determinism.cpp
   src/mc/mc_compare.cpp
-  src/mc/mc_diff.c
-  src/mc/mc_dwarf.c
+  src/mc/mc_diff.cpp
+  src/mc/mc_dwarf.cpp
   src/mc/mc_dwarf_attrnames.h
-  src/mc/mc_dwarf_expression.c
+  src/mc/mc_dwarf_expression.cpp
   src/mc/mc_dwarf_tagnames.h
-  src/mc/mc_hash.c
-  src/mc/mc_ignore.c
+  src/mc/mc_hash.cpp
+  src/mc/mc_ignore.cpp
   src/mc/mc_interface.h
   src/mc/mc_liveness.h
   src/mc/mc_location.h
-  src/mc/mc_liveness.c
-  src/mc/mc_record.c
-  src/mc/mc_member.c
-  src/mc/mc_memory.c
-  src/mc/mc_pair.c
+  src/mc/mc_liveness.cpp
+  src/mc/mc_record.cpp
+  src/mc/mc_member.cpp
+  src/mc/mc_memory.cpp
+  src/mc/mc_pair.cpp
   src/mc/mc_private.h
   src/mc/mc_request.h
-  src/mc/mc_request.c
+  src/mc/mc_request.cpp
   src/mc/mc_safety.h
-  src/mc/mc_safety.c
+  src/mc/mc_safety.cpp
   src/mc/mc_set.cpp
   src/mc/mc_state.h
-  src/mc/mc_state.c
-  src/mc/mc_visited.c
+  src/mc/mc_state.cpp
+  src/mc/mc_visited.cpp
   src/mc/mc_memory_map.h
-  src/mc/memory_map.c
-  src/mc/mc_client.c
-  src/mc/mc_client_api.c
+  src/mc/memory_map.cpp
+  src/mc/mc_client.cpp
+  src/mc/mc_client_api.cpp
   src/mc/mc_client.h
   src/mc/mc_protocol.h
-  src/mc/mc_protocol.c
+  src/mc/mc_protocol.cpp
   src/mc/mc_server.cpp
   src/mc/mc_server.h
   src/mc/mc_smx.h
-  src/mc/mc_smx.c
+  src/mc/mc_smx.cpp
   )
 
 set(MC_SIMGRID_MC_SRC

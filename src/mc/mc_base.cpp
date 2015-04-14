@@ -20,6 +20,8 @@
 #include "mc_server.h"
 #endif
 
+extern "C" {
+
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 
 void MC_wait_for_requests(void)
@@ -64,7 +66,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
     // Fetch from MCed memory:
     if (!MC_process_is_self(&mc_model_checker->process)) {
-      MC_process_read(&mc_model_checker->process, MC_PROCESS_NO_FLAG,
+      MC_process_read(&mc_model_checker->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
         &temp_synchro, act, sizeof(temp_synchro),
         MC_PROCESS_INDEX_ANY);
       act = &temp_synchro;
@@ -108,7 +110,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
       // Fetch from MCed memory:
       if (!MC_process_is_self(&mc_model_checker->process)) {
-        MC_process_read(&mc_model_checker->process, MC_PROCESS_NO_FLAG,
+        MC_process_read(&mc_model_checker->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
           &temp_synchro, act, sizeof(temp_synchro),
           MC_PROCESS_INDEX_ANY);
         act = &temp_synchro;
@@ -126,7 +128,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
     s_smx_mutex_t temp_mutex;
     if (!MC_process_is_self(&mc_model_checker->process)) {
-      MC_process_read(&mc_model_checker->process, MC_PROCESS_NO_FLAG,
+      MC_process_read(&mc_model_checker->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
         &temp_mutex, mutex, sizeof(temp_mutex),
         MC_PROCESS_INDEX_ANY);
       mutex = &temp_mutex;
@@ -181,12 +183,12 @@ static int prng_random(int min, int max)
   unsigned long accept_size = input_size - reject_size; // module*accept_size
 
   // Use rejection in order to avoid skew
-  long x;
+  unsigned long x;
   do {
 #ifndef _XBT_WIN32
-    x = random();
+    x = (unsigned long) random();
 #else
-    x = rand();
+    x = (unsigned long) rand();
 #endif
   } while( x >= accept_size );
   return min + (x % output_size);
@@ -199,4 +201,30 @@ int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
   }
 
   return simcall->mc_value;
+}
+
+void MC_simcall_handle(smx_simcall_t req, int value)
+{
+#ifndef HAVE_MC
+  SIMIX_simcall_handle(req, value);
+#else
+  if (MC_process_is_self(&mc_model_checker->process)) {
+    SIMIX_simcall_handle(req, value);
+    return;
+  }
+
+  unsigned i;
+  mc_smx_process_info_t pi = NULL;
+
+  xbt_dynar_foreach_ptr(mc_model_checker->process.smx_process_infos, i, pi) {
+    if (req == &pi->copy.simcall) {
+      MC_server_simcall_handle(&mc_model_checker->process, pi->copy.pid, value);
+      return;
+    }
+  }
+
+  xbt_die("Could not find the request");
+#endif
+}
+
 }

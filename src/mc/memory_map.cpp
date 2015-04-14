@@ -11,6 +11,8 @@
 #include "mc_memory_map.h"
 #include "mc_private.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory_map, mc,
                                 "Logging specific to algorithms for memory_map");
 
@@ -143,7 +145,7 @@ memory_map_t MC_get_memory_map(pid_t pid)
     /* parsed stuff from the temporal memreg variable */
     XBT_DEBUG("Found region for %s",
       memreg.pathname ? memreg.pathname : "(null)");
-    ret->regions =
+    ret->regions = (map_region_t)
         xbt_realloc(ret->regions, sizeof(memreg) * (ret->mapsize + 1));
     memcpy(ret->regions + ret->mapsize, &memreg, sizeof(memreg));
     ret->mapsize++;
@@ -163,4 +165,6 @@ void MC_free_memory_map(memory_map_t map){
   }
   xbt_free(map->regions);
   xbt_free(map);
+}
+
 }

@@ -8,6 +8,8 @@
 #include "mc_liveness.h"
 #include "mc_private.h"
 
+extern "C" {
+
 mc_pair_t MC_pair_new()
 {
   mc_pair_t p = NULL;
@@ -32,4 +34,6 @@ void MC_pair_delete(mc_pair_t p)
 void mc_pair_free_voidp(void *p)
 {
   MC_pair_delete((mc_pair_t) * (void **) p);
+}
+
 }

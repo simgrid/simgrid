@@ -11,6 +11,8 @@
 #include "mc_private.h"
 #include "mc_smx.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
                                 "Logging specific to MC (request)");
 
@@ -40,7 +42,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
 
   // Those are internal requests, we do not need indirection
   // because those objects are copies:
-  smx_synchro_t synchro1, synchro2;
+  smx_synchro_t synchro1 = NULL, synchro2 = NULL;
   if (r1->call == SIMCALL_COMM_WAIT) {
     synchro1 = simcall_comm_wait__get__comm(r1);
   }
@@ -230,7 +232,7 @@ static char *buff_size_to_string(size_t buff_size)
 
 char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t request_type)
 {
-  bool use_remote_comm;
+  bool use_remote_comm = false;
   switch(request_type) {
   case MC_REQUEST_SIMIX:
     use_remote_comm = true;
@@ -472,7 +474,7 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
 
     // Get the element:
     smx_synchro_t remote_action;
-    memcpy(buffer + comms.elmsize * cursor, &remote_action, sizeof(remote_action));
+    memcpy(&remote_action, buffer + comms.elmsize * cursor, sizeof(remote_action));
 
     // Dereference the pointer:
     s_smx_synchro_t action;
@@ -682,5 +684,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
               colors[issuer->pid - 1], colors[issuer->pid - 1]);
   xbt_free(label);
   return str;
+
+}
 
 }

@@ -7,6 +7,8 @@
 #ifndef MC_SERVER_H
 #define MC_SERVER_H
 
+#include <poll.h>
+
 #include <stdint.h>
 #include <stdbool.h>
 

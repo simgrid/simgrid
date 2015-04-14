@@ -14,6 +14,8 @@
 #include "mc_mmu.h"
 #include "mc_page_store.h"
 
+extern "C" {
+
 /** @brief Find the snapshoted region from a pointer
  *
  *  @param addr     Pointer
@@ -38,7 +40,7 @@ mc_mem_region_t mc_get_snapshot_region(const void* addr, mc_snapshot_t snapshot,
       if (process_index < 0) {
         xbt_die("Missing process index");
       }
-      if (process_index >= region->privatized.regions_count) {
+      if (process_index >= (int) region->privatized.regions_count) {
         xbt_die("Invalid process index");
       }
       mc_mem_region_t priv_region = region->privatized.regions[process_index];
@@ -104,7 +106,7 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
  *  @return Pointer where the data is located (target buffer or original location)
  */
 const void* MC_snapshot_read(
-  mc_snapshot_t snapshot, e_adress_space_read_flags_t flags,
+  mc_snapshot_t snapshot, adress_space_read_flags_t flags,
   void* target, const void* addr, size_t size, int process_index)
 {
   mc_mem_region_t region = mc_get_snapshot_region(addr, snapshot, process_index);
@@ -177,12 +179,14 @@ int MC_snapshot_memcmp(
 #include "mc/mc_snapshot.h"
 #include "mc/mc_mmu.h"
 
+extern "C" {
+
 XBT_TEST_SUITE("mc_snapshot", "Snapshots");
 
 static inline void init_memory(void* mem, size_t size)
 {
   char* dest = (char*) mem;
-  for (int i=0; i!=size; ++i) {
+  for (size_t i = 0; i < size; ++i) {
     dest[i] = rand() & 255;
   }
 }
@@ -284,4 +288,8 @@ static void test_snapshot(bool sparse_checkpoint) {
   mc_model_checker = NULL;
 }
 
+}
+
 #endif /* SIMGRID_TEST */
+
+}

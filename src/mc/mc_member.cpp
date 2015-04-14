@@ -4,8 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/misc.h>
+
 #include "mc_object_info.h"
 #include "mc_private.h"
+
+extern "C" {
 
 /** Resolve snapshot in the process address space
  *
@@ -38,4 +42,6 @@ void *mc_member_resolve(const void *base, dw_type_t type, dw_type_t member,
     xbt_die("No value on the stack");
   else
     return (void *) state.stack[state.stack_size - 1];
+}
+
 }

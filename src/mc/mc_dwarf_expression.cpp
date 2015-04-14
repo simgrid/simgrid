@@ -13,6 +13,8 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
+extern "C" {
+
 static int mc_dwarf_push_value(mc_expression_state_t state, Dwarf_Off value)
 {
   if (state->stack_size >= MC_EXPRESSION_STACK_SIZE)
@@ -96,7 +98,7 @@ static int mc_dwarf_register_to_libunwind(int dwarf_register)
 int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
                                 mc_expression_state_t state)
 {
-  for (int i = 0; i != n; ++i) {
+  for (size_t i = 0; i != n; ++i) {
     int error = 0;
     const Dwarf_Op *op = ops + i;
     uint8_t atom = op->atom;
@@ -220,7 +222,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
 
       // Address from the base address of this ELF object.
       // Push the address on the stack (base_address + argument).
-    case DW_OP_addr:
+    case DW_OP_addr: {
       if (!state->object_info)
         return MC_EXPRESSION_E_NO_BASE_ADDRESS;
       if (state->stack_size == MC_EXPRESSION_STACK_SIZE)
@@ -229,6 +231,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         MC_object_base_address(state->object_info) + op->number;
       error = mc_dwarf_push_value(state, addr);
       break;
+    }
 
       // General constants:
       // Push the constant argument on the stack.
@@ -555,7 +558,7 @@ void mc_dwarf_expression_init(mc_expression_t expression, size_t len,
   expression->lowpc = NULL;
   expression->highpc = NULL;
   expression->size = len;
-  expression->ops = xbt_malloc(len * sizeof(Dwarf_Op));
+  expression->ops = (Dwarf_Op*) xbt_malloc(len * sizeof(Dwarf_Op));
   memcpy(expression->ops, ops, len * sizeof(Dwarf_Op));
 }
 
@@ -604,5 +607,7 @@ void mc_dwarf_location_list_init(mc_location_list_t list, mc_object_info_t info,
     expression->lowpc = start == 0 ? NULL : (char *) base + start;
     expression->highpc = start == 0 ? NULL : (char *) base + end;
   }
+
+}
 
 }

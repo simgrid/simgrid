@@ -149,11 +149,17 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
   *  @param swag what to iterate over
   *  @warning you cannot modify the \a swag while using this loop
   *  @hideinitializer */
+#ifndef __cplusplus
 #define xbt_swag_foreach(obj,swag)                            \
    for((obj)=xbt_swag_getFirst((swag));                       \
        (obj)!=NULL;                                           \
        (obj)=xbt_swag_getNext((obj),(swag)->offset))
-
+#else
+#define xbt_swag_foreach(obj,swag)                            \
+   for((obj)=(decltype(obj)) xbt_swag_getFirst((swag));         \
+       (obj)!=NULL;                                           \
+       (obj)=(decltype(obj)) xbt_swag_getNext((obj),(swag)->offset))
+#endif
 /**
  * @brief A safe swag iterator 
  * @param obj the indice of the loop

@@ -14,6 +14,8 @@
 #include "mc_comm_pattern.h"
 #include "mc_smx.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc,
                                 "Logging specific to MC (state)");
 
@@ -139,7 +141,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
     break;
 
-  case SIMCALL_MC_RANDOM:
+  case SIMCALL_MC_RANDOM: {
     state->internal_req = *req;
     int random_max = simcall_mc_random__get__max(req);
     if (value != random_max) {
@@ -153,6 +155,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
       );
     }
     break;
+  }
 
   default:
     state->internal_req = *req;
@@ -276,4 +279,6 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
   );
 
   return NULL;
+}
+
 }

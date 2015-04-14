@@ -9,7 +9,7 @@
  */
 
 // We need this for the register indices:
-#define _GNU_SOURCE
+// #define _GNU_SOURCE
 
 #include <string.h>
 
@@ -21,6 +21,8 @@
 #include "mc_object_info.h"
 #include "mc_process.h"
 #include "mc_unw.h"
+
+extern "C" {
 
 // ***** Implementation
 
@@ -78,9 +80,9 @@ static int access_mem(unw_addr_space_t as,
 {
   mc_unw_context_t context = (mc_unw_context_t) arg;
   if (write)
-    return -UNW_EREADONLYREG;
+    return - UNW_EREADONLYREG;
   MC_address_space_read(context->address_space,
-    0, valp, (void*) addr, sizeof(unw_word_t), MC_PROCESS_INDEX_ANY);
+    MC_ADDRESS_SPACE_READ_FLAGS_NONE, valp, (void*) addr, sizeof(unw_word_t), MC_PROCESS_INDEX_ANY);
   // We don't handle failure gracefully.
   return 0;
 }
@@ -124,7 +126,7 @@ static int access_reg(unw_addr_space_t as,
   unw_context_t* context = &as_context->context;
   if (write)
     return -UNW_EREADONLYREG;
-  greg_t* preg = get_reg(context, regnum);
+  greg_t* preg = (greg_t*) get_reg(context, regnum);
   if (!preg)
     return -UNW_EBADREG;
   *valp = *preg;
@@ -235,4 +237,6 @@ int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context)
     return unw_init_local(cursor, &context->context);
 
   return unw_init_remote(cursor, context->process->unw_addr_space, context);
+}
+
 }

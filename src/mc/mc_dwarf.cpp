@@ -17,6 +17,8 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
+extern "C" {
+
 static void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
 static void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 static void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
@@ -61,13 +63,13 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit);
  */
 static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
                                 Dwarf_Die * unit, dw_frame_t frame,
-                                const char *namespace);
+                                const char *ns);
 
 /** \brief Process a type DIE
  */
 static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
                                      Dwarf_Die * unit, dw_frame_t frame,
-                                     const char *namespace);
+                                     const char *ns);
 
 /** \brief Calls MC_dwarf_handle_die on all childrend of the given die
  *
@@ -78,7 +80,7 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
  */
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
                                      Dwarf_Die * unit, dw_frame_t frame,
-                                     const char *namespace);
+                                     const char *ns);
 
 /** \brief Handle a variable (DW_TAG_variable or other)
  *
@@ -89,7 +91,7 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
  */
 static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
                                          Dwarf_Die * unit, dw_frame_t frame,
-                                         const char *namespace);
+                                         const char *ns);
 
 /** \brief Get the DW_TAG_type of the DIE
  *
@@ -632,7 +634,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
  */
 static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
                                       Dwarf_Die * unit, dw_frame_t frame,
-                                      const char *namespace)
+                                      const char *ns)
 {
 
   dw_type_t type = xbt_new0(s_dw_type_t, 1);
@@ -669,7 +671,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (name != NULL) {
     type->name =
-        namespace ? bprintf("%s%s::%s", prefix, namespace,
+        ns ? bprintf("%s%s::%s", prefix, ns,
                             name) : bprintf("%s%s", prefix, name);
   }
 
@@ -703,10 +705,10 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
   case DW_TAG_union_type:
   case DW_TAG_class_type:
     MC_dwarf_add_members(info, die, unit, type);
-    char *new_namespace = namespace == NULL ? xbt_strdup(type->name)
-        : bprintf("%s::%s", namespace, name);
-    MC_dwarf_handle_children(info, die, unit, frame, new_namespace);
-    free(new_namespace);
+    char *new_ns = ns == NULL ? xbt_strdup(type->name)
+        : bprintf("%s::%s", ns, name);
+    MC_dwarf_handle_children(info, die, unit, frame, new_ns);
+    free(new_ns);
     break;
   }
 
@@ -715,9 +717,9 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
 
 static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
                                      Dwarf_Die * unit, dw_frame_t frame,
-                                     const char *namespace)
+                                     const char *ns)
 {
-  dw_type_t type = MC_dwarf_die_to_type(info, die, unit, frame, namespace);
+  dw_type_t type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
 
   char *key = bprintf("%" PRIx64, (uint64_t) type->id);
   xbt_dict_set(info->types, key, type, NULL);
@@ -732,7 +734,7 @@ static int mc_anonymous_variable_index = 0;
 
 static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
                                         Dwarf_Die * unit, dw_frame_t frame,
-                                        const char *namespace)
+                                        const char *ns)
 {
   // Skip declarations:
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
@@ -821,9 +823,9 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
     }
   }
 
-  if (namespace && variable->global) {
+  if (ns && variable->global) {
     char *old_name = variable->name;
-    variable->name = bprintf("%s::%s", namespace, old_name);
+    variable->name = bprintf("%s::%s", ns, old_name);
     free(old_name);
   }
   // The current code needs a variable name,
@@ -837,10 +839,10 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
 
 static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
                                          Dwarf_Die * unit, dw_frame_t frame,
-                                         const char *namespace)
+                                         const char *ns)
 {
   dw_variable_t variable =
-      MC_die_to_variable(info, die, unit, frame, namespace);
+      MC_die_to_variable(info, die, unit, frame, ns);
   if (variable == NULL)
     return;
   MC_dwarf_register_variable(info, frame, variable);
@@ -854,7 +856,7 @@ static void mc_frame_free_voipd(dw_frame_t * p)
 
 static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
                                       Dwarf_Die * unit, dw_frame_t parent_frame,
-                                      const char *namespace)
+                                      const char *ns)
 {
   // TODO, handle DW_TAG_type/DW_TAG_location for DW_TAG_with_stmt
   int tag = dwarf_tag(die);
@@ -877,7 +879,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
   if (klass == mc_tag_subprogram) {
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
     frame->name =
-        namespace ? bprintf("%s::%s", namespace, name) : xbt_strdup(name);
+        ns ? bprintf("%s::%s", ns, name) : xbt_strdup(name);
   }
 
   frame->abstract_origin_id =
@@ -947,39 +949,39 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
     xbt_dynar_push(parent_frame->scopes, &frame);
   }
   // Handle children:
-  MC_dwarf_handle_children(info, die, unit, frame, namespace);
+  MC_dwarf_handle_children(info, die, unit, frame, ns);
 }
 
 static void mc_dwarf_handle_namespace_die(mc_object_info_t info,
                                           Dwarf_Die * die, Dwarf_Die * unit,
                                           dw_frame_t frame,
-                                          const char *namespace)
+                                          const char *ns)
 {
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (frame)
     xbt_die("Unexpected namespace in a subprogram");
-  char *new_namespace = namespace == NULL ? xbt_strdup(name)
-      : bprintf("%s::%s", namespace, name);
-  MC_dwarf_handle_children(info, die, unit, frame, new_namespace);
-  xbt_free(new_namespace);
+  char *new_ns = ns == NULL ? xbt_strdup(name)
+      : bprintf("%s::%s", ns, name);
+  MC_dwarf_handle_children(info, die, unit, frame, new_ns);
+  xbt_free(new_ns);
 }
 
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
                                      Dwarf_Die * unit, dw_frame_t frame,
-                                     const char *namespace)
+                                     const char *ns)
 {
   // For each child DIE:
   Dwarf_Die child;
   int res;
   for (res = dwarf_child(die, &child); res == 0;
        res = dwarf_siblingof(&child, &child)) {
-    MC_dwarf_handle_die(info, &child, unit, frame, namespace);
+    MC_dwarf_handle_die(info, &child, unit, frame, ns);
   }
 }
 
 static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
                                 Dwarf_Die * unit, dw_frame_t frame,
-                                const char *namespace)
+                                const char *ns)
 {
   int tag = dwarf_tag(die);
   mc_tag_class klass = MC_dwarf_tag_classify(tag);
@@ -987,22 +989,22 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
 
     // Type:
   case mc_tag_type:
-    MC_dwarf_handle_type_die(info, die, unit, frame, namespace);
+    MC_dwarf_handle_type_die(info, die, unit, frame, ns);
     break;
 
     // Subprogram or scope:
   case mc_tag_subprogram:
   case mc_tag_scope:
-    MC_dwarf_handle_scope_die(info, die, unit, frame, namespace);
+    MC_dwarf_handle_scope_die(info, die, unit, frame, ns);
     return;
 
     // Variable:
   case mc_tag_variable:
-    MC_dwarf_handle_variable_die(info, die, unit, frame, namespace);
+    MC_dwarf_handle_variable_die(info, die, unit, frame, ns);
     break;
 
   case mc_tag_namespace:
-    mc_dwarf_handle_namespace_die(info, die, unit, frame, namespace);
+    mc_dwarf_handle_namespace_die(info, die, unit, frame, ns);
     break;
 
   default:
@@ -1178,7 +1180,7 @@ static void MC_post_process_variables(mc_object_info_t info)
   dw_variable_t variable = NULL;
   xbt_dynar_foreach(info->global_variables, cursor, variable) {
     if (variable->type_origin) {
-      variable->type = xbt_dict_get_or_null(info->types, variable->type_origin);
+      variable->type = (dw_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
     }
   }
 }
@@ -1190,7 +1192,7 @@ static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope)
 
     // Attach correct namespaced name in inlined subroutine:
     char *key = bprintf("%" PRIx64, (uint64_t) scope->abstract_origin_id);
-    dw_frame_t abstract_origin = xbt_dict_get_or_null(info->subprograms, key);
+    dw_frame_t abstract_origin = (dw_frame_t) xbt_dict_get_or_null(info->subprograms, key);
     xbt_assert(abstract_origin, "Could not lookup abstract origin %s", key);
     xbt_free(key);
     scope->name = xbt_strdup(abstract_origin->name);
@@ -1201,7 +1203,7 @@ static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope)
   dw_variable_t variable = NULL;
   xbt_dynar_foreach(scope->variables, cursor, variable) {
     if (variable->type_origin) {
-      variable->type = xbt_dict_get_or_null(info->types, variable->type_origin);
+      variable->type = (dw_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
     }
   }
 
@@ -1230,7 +1232,7 @@ static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type)
 
   if (type->dw_type_id == NULL)
     return;
-  type->subtype = xbt_dict_get_or_null(info->types, type->dw_type_id);
+  type->subtype = (dw_type_t) xbt_dict_get_or_null(info->types, type->dw_type_id);
   if (type->subtype == NULL)
     return;
   if (type->subtype->byte_size != 0)
@@ -1241,7 +1243,7 @@ static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type)
   // We need to fix in order to support C++.
 
   dw_type_t subtype =
-      xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
+    (dw_type_t) xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
   if (subtype != NULL) {
     type->subtype = subtype;
   }
@@ -1385,7 +1387,7 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
     // Resolve full_type:
     if (subtype->name && subtype->byte_size == 0) {
       for (size_t i = 0; i != process->object_infos_size; ++i) {
-        dw_type_t same_type =
+        dw_type_t same_type = (dw_type_t)
             xbt_dict_get_or_null(process->object_infos[i]->full_types_by_name,
                                  subtype->name);
         if (same_type && same_type->name && same_type->byte_size) {
@@ -1396,4 +1398,6 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
     } else type->full_type = subtype;
 
   }
+}
+
 }

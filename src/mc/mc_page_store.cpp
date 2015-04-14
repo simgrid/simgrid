@@ -21,6 +21,8 @@
 
 #include "mc_mmu.h"
 
+extern "C" {
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
                                 "Logging specific to mc_page_snapshot");
 
@@ -280,3 +282,5 @@ XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the sto
 }
 
 #endif /* SIMGRID_TEST */
+
+}

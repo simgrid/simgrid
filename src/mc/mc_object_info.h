@@ -53,13 +53,13 @@ void dw_variable_free_voidp(void *t);
 
 // ***** Object info
 
-enum mc_object_info_flags {
-  MC_OBJECT_INFO_NONE = 0,
-  MC_OBJECT_INFO_EXECUTABLE = 1
-};
+/** Bit field of options */
+typedef int mc_object_info_flags;
+#define MC_OBJECT_INFO_NONE 0
+#define MC_OBJECT_INFO_EXECUTABLE 1
 
 struct s_mc_object_info {
-  enum mc_object_info_flags flags;
+  mc_object_info_flags flags;
   char* file_name;
   const void* start, *end;
   char *start_exec, *end_exec; // Executable segment

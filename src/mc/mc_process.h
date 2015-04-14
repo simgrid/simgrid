@@ -33,18 +33,17 @@ SG_BEGIN_DECL()
 
 int MC_process_vm_open(pid_t pid, int flags);
 
-typedef enum {
-  MC_PROCESS_NO_FLAG = 0,
-  MC_PROCESS_SELF_FLAG = 1,
-} e_mc_process_flags_t;
+typedef int mc_process_flags_t;
+#define MC_PROCESS_NO_FLAG 0
+#define MC_PROCESS_SELF_FLAG 1
 
 // Those flags are used to track down which cached information
 // is still up to date and which information needs to be updated.
-typedef enum {
-  MC_PROCESS_CACHE_FLAG_HEAP = 1,
-  MC_PROCESS_CACHE_FLAG_MALLOC_INFO = 2,
-  MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES = 4,
-} e_mc_process_cache_flags_t ;
+typedef int mc_process_cache_flags_t;
+#define MC_PROCESS_CACHE_FLAG_NONE 0
+#define MC_PROCESS_CACHE_FLAG_HEAP 1
+#define MC_PROCESS_CACHE_FLAG_MALLOC_INFO 2
+#define MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES 4
 
 typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
 
@@ -52,7 +51,7 @@ typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_in
  */
 struct s_mc_process {
   s_mc_address_space_t address_space;
-  e_mc_process_flags_t process_flags;
+  mc_process_flags_t process_flags;
   pid_t pid;
   int socket;
   int status;
@@ -78,7 +77,7 @@ struct s_mc_process {
   xbt_dynar_t smx_old_process_infos;
 
   /** State of the cache (which variables are up to date) */
-  e_mc_process_cache_flags_t cache_flags;
+  mc_process_cache_flags_t cache_flags;
 
   /** Address of the heap structure in the MCed process. */
   void* heap_address;
@@ -158,7 +157,7 @@ bool MC_process_is_self(mc_process_t process)
  *  @param len     data size
  */
 const void* MC_process_read(mc_process_t process,
-  e_adress_space_read_flags_t flags,
+  adress_space_read_flags_t flags,
   void* local, const void* remote, size_t len,
   int process_index);
 
