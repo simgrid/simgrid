@@ -8,9 +8,7 @@
 #define JEDULE_SD_BINDING_H_
 
 #include "simgrid_config.h"
-
-#include "simdag/datatypes.h"
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 
 #ifdef HAVE_JEDULE
 

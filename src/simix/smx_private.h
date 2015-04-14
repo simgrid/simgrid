@@ -193,9 +193,7 @@ typedef struct s_smx_synchro {
   int latency_limited;
 #endif
 
-#ifdef HAVE_TRACING
   char *category;                     /* simix action category for instrumentation */
-#endif
 } s_smx_synchro_t;
 
 void SIMIX_context_mod_init(void);

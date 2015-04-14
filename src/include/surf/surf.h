@@ -271,16 +271,16 @@ XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
  * @param model The model which handle the parallelisation
  * @param workstation_nb The number of workstations
  * @param workstation_list The list of workstations on which the task is executed
- * @param computation_amount The processing amount (in flop) needed to process
- * @param communication_amount The amount of data (in bytes) needed to transfer
+ * @param flops_amount The processing amount (in flop) needed to process
+ * @param bytes_amount The amount of data (in bytes) needed to transfer
  * @param rate [description]
  * @return The action corresponding to the parallele execution task
  */
 XBT_PUBLIC(surf_action_t) surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
 		                                    int workstation_nb,
                                             void **workstation_list,
-                                            double *computation_amount,
-                                            double *communication_amount,
+                                            double *flops_amount,
+                                            double *bytes_amount,
                                             double rate);
 
 /**

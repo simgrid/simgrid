@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/sysdep.h"         /* calloc */
 
 /* Create a log channel to have nice outputs. */

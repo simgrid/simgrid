@@ -15,7 +15,6 @@ set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/simple_dax_with_cycle.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/smalldax.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/smalldax_notrace.tesh
   PARENT_SCOPE
   )
 set(xml_files

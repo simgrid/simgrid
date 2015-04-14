@@ -6,7 +6,6 @@
 
 #include "msg_private.h"
 
-#ifdef HAVE_TRACING
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_vm, instr, "MSG VM");
 
@@ -154,5 +153,3 @@ void TRACE_msg_vm_end(msg_vm_t vm)
     PJ_container_free (container);
   }
 }
-
-#endif /* HAVE_TRACING */

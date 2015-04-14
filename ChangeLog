@@ -3,10 +3,19 @@ SimGrid (3.12) NOT RELEASED; urgency=low
  cMSG:
  * Interface improvement:
    - Rename MSG_host_is_avail(h) to MSG_host_is_on(h)
+   - Sanitize the interface in MSG_task_ module:
+     - Merge two functions that were close enough but misleading:
+       set_compute_duration(t)      -> set_flops_amount(t)
+       get_remaining_computation(t) -> set_flops_amount(t)
+     - set_data_size(t) -> set_bytes_amount(t)
+       get_data_size(t) -> get_bytes_amount(t)
    - Massive cleanups in the functions related to the energy
  jMSG:
  * Interface improvement:
    - Rename Host.isAvail() to Host.isOn()
+   - Rename Process.currentProcess() to Process.getCurrentProcess()
+   - Rename Task.setDataSize() to Task.setBytesAmount()
+   - Merge Task.getRemainingDuration() and Task.getComputeDuration() into Task.getFlopsAmount()
    
  SIMIX:
  * New functions
@@ -63,7 +72,15 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    - Add a xbt_heap_update function, to avoid costly xbt_heap_remove+xbt_heap_insert use 
    - Add a xbt wrapper for simcall_mutex_trylock (asked in [#17878])
    - Add two new log appenders : rollfile and splitfile. Patch by Fabien Chaix.
-
+ Build System
+  * Tracing is now always enabled (no way to turn it out)
+  * Move headers around to sort them out on installed systems:
+    - instr/instr.h  -> simgrid/instr.h
+    - instr/jedule/* -> simgrid/jedule
+    - simdag/datatypes.h was removed
+    - simdag/simdag.h -> simgrid/simdag.h
+    - msg/datatypes.h was removed
+    - msg/msg.h -> simgrid/msg.h
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

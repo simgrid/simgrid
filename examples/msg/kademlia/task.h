@@ -8,7 +8,7 @@
 #define _MSG_KADEMLIA_EXAMPLES_TASK
 #include "common.h"
 #include "node.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 /**
   * Types of tasks exchanged
   */

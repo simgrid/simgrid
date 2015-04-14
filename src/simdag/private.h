@@ -10,8 +10,7 @@
 #include "xbt/dict.h"
 #include "xbt/dynar.h"
 #include "xbt/fifo.h"
-#include "simdag/simdag.h"
-#include "simdag/datatypes.h"
+#include "simgrid/simdag.h"
 #include "surf/surf.h"
 #include "xbt/swag.h"
 #include "xbt/mallocator.h"
@@ -110,14 +109,12 @@ typedef struct SD_task {
   /* scheduling parameters (only exist in state SD_SCHEDULED) */
   int workstation_nb;
   SD_workstation_t *workstation_list;   /* surf workstations */
-  double *computation_amount;
-  double *communication_amount;
+  double *flops_amount;
+  double *bytes_amount;
   double rate;
 
-#ifdef HAVE_TRACING
   long long int counter;        /* task unique identifier for instrumentation */
   char *category;               /* sd task category for instrumentation */
-#endif
 } s_SD_task_t;
 
 /* Task dependencies */

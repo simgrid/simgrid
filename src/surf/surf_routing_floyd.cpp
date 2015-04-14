@@ -33,16 +33,19 @@ AsFloyd::~AsFloyd(){
   int i, j;
   int table_size;
   table_size = (int)xbt_dynar_length(p_indexNetworkElm);
-    /* Delete link_table */
-    for (i = 0; i < table_size; i++)
-      for (j = 0; j < table_size; j++)
-        generic_free_route(TO_FLOYD_LINK(i, j));
-    xbt_free(p_linkTable);
-    /* Delete bypass dict */
-    xbt_dict_free(&p_bypassRoutes);
-    /* Delete predecessor and cost table */
-    xbt_free(p_predecessorTable);
-    xbt_free(p_costTable);
+  if (p_linkTable == NULL) // Dealing with a parse error in the file?
+	  return;
+  /* Delete link_table */
+  for (i = 0; i < table_size; i++)
+	  for (j = 0; j < table_size; j++) {
+		  generic_free_route(TO_FLOYD_LINK(i, j));
+	  }
+  xbt_free(p_linkTable);
+  /* Delete bypass dict */
+  xbt_dict_free(&p_bypassRoutes);
+  /* Delete predecessor and cost table */
+  xbt_free(p_predecessorTable);
+  xbt_free(p_costTable);
 }
 
 /* Business methods */

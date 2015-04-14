@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
+#include "simgrid/msg.h"        /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
 #include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */
@@ -92,8 +92,8 @@ static void test_dynamic_change(void)
   msg_process_t pr1 = MSG_process_create("worker1", worker_busy_loop_main, &task1, vm1);
 
 
-  double task0_remain_prev = MSG_task_get_remaining_computation(task0);
-  double task1_remain_prev = MSG_task_get_remaining_computation(task1);
+  double task0_remain_prev = MSG_task_get_flops_amount(task0);
+  double task1_remain_prev = MSG_task_get_flops_amount(task1);
 
   {
     const double cpu_speed = MSG_get_host_speed(pm0);
@@ -104,8 +104,8 @@ static void test_dynamic_change(void)
       MSG_vm_set_bound(vm1, new_bound);
       MSG_process_sleep(100);
 
-      double task0_remain_now = MSG_task_get_remaining_computation(task0);
-      double task1_remain_now = MSG_task_get_remaining_computation(task1);
+      double task0_remain_now = MSG_task_get_flops_amount(task0);
+      double task1_remain_now = MSG_task_get_flops_amount(task1);
 
       double task0_flops_per_sec = task0_remain_prev - task0_remain_now;
       double task1_flops_per_sec = task1_remain_prev - task1_remain_now;

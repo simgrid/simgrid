@@ -24,10 +24,12 @@ XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 
 void MC_wait_for_requests(void)
 {
+#ifdef HAVE_MC
   if (mc_mode == MC_MODE_SERVER) {
     MC_server_wait_client(&mc_model_checker->process);
     return;
   }
+#endif
 
   smx_process_t process;
   smx_simcall_t req;

@@ -606,7 +606,6 @@ static void xbt_log_connect_categories(void)
 #endif
 
   /* instr */
-#ifdef HAVE_TRACING
   XBT_LOG_CONNECT(instr);
   XBT_LOG_CONNECT(instr_api);
   XBT_LOG_CONNECT(instr_config);
@@ -624,7 +623,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_surf);
   XBT_LOG_CONNECT(instr_trace);
   XBT_LOG_CONNECT(instr_TI_trace);
-#endif
 
   /* jedule */
 #ifdef HAVE_JEDULE

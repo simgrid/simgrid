@@ -19,21 +19,21 @@ package org.simgrid.msg;
  *  -->
  */
 public abstract class MsgException extends Exception {
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  /**
-   * Constructs an <code>MsgException</code> without a 
-   * detail message. 
-   */
-  public MsgException() {
-    super();
-  }
-  /**
-   * Constructs an <code>MsgException</code> with a detail message. 
-   *
-   * @param   s   the detail message.
-   */ 
-  public MsgException(String s) {
-    super(s);
-  }
+	/**
+	 * Constructs an <code>MsgException</code> without a 
+	 * detail message. 
+	 */
+	public MsgException() {
+		super();
+	}
+	/**
+	 * Constructs an <code>MsgException</code> with a detail message. 
+	 *
+	 * @param   s   the detail message.
+	 */ 
+	public MsgException(String s) {
+		super(s);
+	}
 }

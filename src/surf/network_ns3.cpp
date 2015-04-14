@@ -328,11 +328,9 @@ ActionPtr NetworkNS3Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 
   ns3_create_flow(src->getName(), dst->getName(), surf_get_clock(), size, action);
 
-#ifdef HAVE_TRACING
   action->m_lastSent = 0;
   action->p_srcElm = src;
   action->p_dstElm = dst;
-#endif
   surf_callback_emit(networkCommunicateCallbacks, action, src, dst, size, rate);
 
   return (surf_action_t) action;
@@ -382,27 +380,25 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     XBT_DEBUG("Processing socket %p (action %p)",data,action);
     action->setRemains(action->getCost() - ns3_get_socket_sent(data));
 
-    #ifdef HAVE_TRACING
-      if (TRACE_is_enabled() &&
-          action->getState() == SURF_ACTION_RUNNING){
-        double data_sent = ns3_get_socket_sent(data);
-        double data_delta_sent = data_sent - action->m_lastSent;
+    if (TRACE_is_enabled() &&
+    		action->getState() == SURF_ACTION_RUNNING){
+    	double data_sent = ns3_get_socket_sent(data);
+    	double data_delta_sent = data_sent - action->m_lastSent;
 
-        xbt_dynar_t route = NULL;
+    	xbt_dynar_t route = NULL;
 
-        routing_get_route_and_latency (action->p_srcElm, action->p_dstElm, &route, NULL);
-        unsigned int i;
-        for (i = 0; i < xbt_dynar_length (route); i++){
-        	NetworkNS3LinkPtr link = ((NetworkNS3LinkPtr)xbt_dynar_get_ptr (route, i));
-          TRACE_surf_link_set_utilization (link->getName(),
-                                           action->getCategory(),
-                                           (data_delta_sent)/delta,
-                                           now-delta,
-                                           delta);
-        }
-        action->m_lastSent = data_sent;
-      }
-    #endif
+    	routing_get_route_and_latency (action->p_srcElm, action->p_dstElm, &route, NULL);
+    	unsigned int i;
+    	for (i = 0; i < xbt_dynar_length (route); i++){
+    		NetworkNS3LinkPtr link = ((NetworkNS3LinkPtr)xbt_dynar_get_ptr (route, i));
+    		TRACE_surf_link_set_utilization (link->getName(),
+    				action->getCategory(),
+					(data_delta_sent)/delta,
+					now-delta,
+					delta);
+    	}
+    	action->m_lastSent = data_sent;
+    }
 
     if(ns3_get_socket_is_finished(data) == 1){
       xbt_dynar_push(socket_to_destroy,&key);

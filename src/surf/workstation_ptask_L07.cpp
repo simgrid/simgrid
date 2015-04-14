@@ -169,10 +169,9 @@ void WorkstationL07Model::updateActionsState(double /*now*/, double delta)
 
 ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
                                                    void **workstation_list,
-                                                 double
-                                                 *computation_amount, double
-                                                 *communication_amount,
-                                                 double rate)
+                                                   double *flops_amount,
+												   double *bytes_amount,
+                                                   double rate)
 {
   WorkstationL07ActionPtr action;
   int i, j;
@@ -191,7 +190,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
     for (j = 0; j < workstation_nb; j++) {
       xbt_dynar_t route=NULL;
 
-      if (communication_amount[i * workstation_nb + j] > 0) {
+      if (bytes_amount[i * workstation_nb + j] > 0) {
         double lat=0.0;
         unsigned int cpt;
         void *_link;
@@ -215,7 +214,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
   xbt_dict_reset(ptask_parallel_task_link_set);
 
   for (i = 0; i < workstation_nb; i++)
-    if (computation_amount[i] > 0)
+    if (flops_amount[i] > 0)
       nb_host++;
 
   action = new WorkstationL07Action(this, 1, 0);
@@ -225,8 +224,8 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
                                    calloc but it seems to help valgrind... */
   action->m_workstationNb = workstation_nb;
   action->p_workstationList = (WorkstationPtr *) workstation_list;
-  action->p_computationAmount = computation_amount;
-  action->p_communicationAmount = communication_amount;
+  action->p_computationAmount = flops_amount;
+  action->p_communicationAmount = bytes_amount;
   action->m_latency = latency;
   action->m_rate = rate;
 
@@ -240,7 +239,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
   for (i = 0; i < workstation_nb; i++)
     lmm_expand(ptask_maxmin_system,
     	         static_cast<WorkstationL07Ptr>(workstation_list[i])->p_cpu->getConstraint(),
-               action->getVariable(), computation_amount[i]);
+               action->getVariable(), flops_amount[i]);
 
   for (i = 0; i < workstation_nb; i++) {
     for (j = 0; j < workstation_nb; j++) {
@@ -248,7 +247,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
       LinkL07Ptr link;
 
       xbt_dynar_t route=NULL;
-      if (communication_amount[i * workstation_nb + j] == 0.0)
+      if (bytes_amount[i * workstation_nb + j] == 0.0)
         continue;
 
       routing_platf->getRouteAndLatency(static_cast<WorkstationL07Ptr>(workstation_list[i])->p_netElm,
@@ -259,7 +258,7 @@ ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
         link = static_cast<LinkL07Ptr>(_link);
         lmm_expand_add(ptask_maxmin_system, link->getConstraint(),
                        action->getVariable(),
-                       communication_amount[i * workstation_nb + j]);
+                       bytes_amount[i * workstation_nb + j]);
       }
     }
   }
@@ -292,17 +291,17 @@ ActionPtr WorkstationL07Model::communicate(WorkstationPtr src, WorkstationPtr ds
                                        double size, double rate)
 {
   void **workstation_list = xbt_new0(void *, 2);
-  double *computation_amount = xbt_new0(double, 2);
-  double *communication_amount = xbt_new0(double, 4);
+  double *flops_amount = xbt_new0(double, 2);
+  double *bytes_amount = xbt_new0(double, 4);
   ActionPtr res = NULL;
 
   workstation_list[0] = src;
   workstation_list[1] = dst;
-  communication_amount[1] = size;
+  bytes_amount[1] = size;
 
   res = executeParallelTask(2, workstation_list,
-                                    computation_amount,
-                                    communication_amount, rate);
+                                    flops_amount,
+                                    bytes_amount, rate);
 
   return res;
 }
@@ -558,16 +557,16 @@ e_surf_resource_state_t WorkstationL07::getState()
 ActionPtr WorkstationL07::execute(double size)
 {
   void **workstation_list = xbt_new0(void *, 1);
-  double *computation_amount = xbt_new0(double, 1);
-  double *communication_amount = xbt_new0(double, 1);
+  double *flops_amount = xbt_new0(double, 1);
+  double *bytes_amount = xbt_new0(double, 1);
 
   workstation_list[0] = this;
-  communication_amount[0] = 0.0;
-  computation_amount[0] = size;
+  bytes_amount[0] = 0.0;
+  flops_amount[0] = size;
 
   return static_cast<WorkstationL07ModelPtr>(getModel())->executeParallelTask(1, workstation_list,
-		                              computation_amount,
-                                     communication_amount, -1);
+		                              flops_amount,
+                                     bytes_amount, -1);
 }
 
 ActionPtr WorkstationL07::sleep(double duration)

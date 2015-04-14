@@ -9,7 +9,7 @@
 
 #include "xbt/fifo.h"
 #include "simgrid/simix.h"
-#include "msg/datatypes.h"
+#include "simgrid/msg.h"
 
 
 SG_BEGIN_DECL()

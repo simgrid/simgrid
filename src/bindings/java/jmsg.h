@@ -8,7 +8,7 @@
 
 #ifndef MSG4JAVA_H
 #define MSG4JAVA_H
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <jni.h>
 
 extern int JAVA_HOST_LEVEL;

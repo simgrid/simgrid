@@ -9,11 +9,6 @@
 package org.simgrid.msg;
 import org.simgrid.NativeLib;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.File;
-
 
 public final class Msg {
 	/* Statically load the library which contains all native functions used in here */

@@ -44,7 +44,7 @@ public class File {
 	 * Close the file. 	
 	 */
 	public native void close();
-	
+
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */

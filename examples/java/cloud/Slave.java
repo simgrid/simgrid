@@ -19,7 +19,7 @@ public class Slave extends Process {
 		this.number = number;
 	}
 	public void main(String[] args) throws MsgException {
-		Msg.info(this.msgName() +" is listenning on MBOX:WRK0"+ number);
+		Msg.info(this.getName() +" is listenning on MBOX:WRK0"+ number);
 		while(true) {  			
 			Task task;
                         try {
@@ -38,7 +38,7 @@ public class Slave extends Process {
 			} catch (MsgException e) {
 
 			}
-			Msg.info(this.msgName() +" executed task (" + task.getName()+")");
+			Msg.info(this.getName() +" executed task (" + task.getName()+")");
 		}
 
 		

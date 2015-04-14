@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
+#include "simgrid/msg.h"        /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
 #include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
 
 /* Create a log channel to have nice outputs. */

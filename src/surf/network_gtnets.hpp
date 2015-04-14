@@ -115,16 +115,12 @@ public:
 
   double m_latency;
   double m_latCurrent;
-#ifdef HAVE_TRACING
   int m_lastRemains;
-#endif
   lmm_variable_t p_variable;
   double m_rate;
   int m_suspended;
-#ifdef HAVE_TRACING
   RoutingEdgePtr src;
   RoutingEdgePtr dst;
-#endif //HAVE_TRACING
 };
 
 #endif /* NETWORK_GTNETS_HPP_ */

@@ -334,11 +334,11 @@ inline static double simcall_BODY_host_get_consumed_energy(smx_host_t host) {
     return self->simcall.result.d;
   }
   
-inline static smx_synchro_t simcall_BODY_host_execute(const char* name, smx_host_t host, double computation_amount, double priority, double bound, unsigned long affinity_mask) {
+inline static smx_synchro_t simcall_BODY_host_execute(const char* name, smx_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execute(name, host, computation_amount, priority, bound, affinity_mask);
+    if (0) SIMIX_host_execute(name, host, flops_amount, priority, bound, affinity_mask);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_HOST_EXECUTE;
@@ -346,7 +346,7 @@ inline static smx_synchro_t simcall_BODY_host_execute(const char* name, smx_host
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].cc = (const char*) name;
     self->simcall.args[1].dp = (void*) host;
-    self->simcall.args[2].d = (double) computation_amount;
+    self->simcall.args[2].d = (double) flops_amount;
     self->simcall.args[3].d = (double) priority;
     self->simcall.args[4].d = (double) bound;
     self->simcall.args[5].ul = (unsigned long) affinity_mask;
@@ -360,11 +360,11 @@ inline static smx_synchro_t simcall_BODY_host_execute(const char* name, smx_host
     return self->simcall.result.dp;
   }
   
-inline static smx_synchro_t simcall_BODY_host_parallel_execute(const char* name, int host_nb, smx_host_t* host_list, double* computation_amount, double* communication_amount, double amount, double rate) {
+inline static smx_synchro_t simcall_BODY_host_parallel_execute(const char* name, int host_nb, smx_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_parallel_execute(name, host_nb, host_list, computation_amount, communication_amount, amount, rate);
+    if (0) SIMIX_host_parallel_execute(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_HOST_PARALLEL_EXECUTE;
@@ -373,8 +373,8 @@ inline static smx_synchro_t simcall_BODY_host_parallel_execute(const char* name,
     self->simcall.args[0].cc = (const char*) name;
     self->simcall.args[1].i = (int) host_nb;
     self->simcall.args[2].dp = (void*) host_list;
-    self->simcall.args[3].dp = (void*) computation_amount;
-    self->simcall.args[4].dp = (void*) communication_amount;
+    self->simcall.args[3].dp = (void*) flops_amount;
+    self->simcall.args[4].dp = (void*) bytes_amount;
     self->simcall.args[5].d = (double) amount;
     self->simcall.args[6].d = (double) rate;
     if (self != simix_global->maestro_process) {
@@ -2609,31 +2609,6 @@ inline static int simcall_BODY_mc_random(int min, int max) {
     }    
     return self->simcall.result.i;
   }
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  
-inline static int simcall_BODY_comm_is_latency_bounded(smx_synchro_t comm) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_comm_is_latency_bounded(comm);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_COMM_IS_LATENCY_BOUNDED;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) comm;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.i;
-  }
-#endif
-
-#ifdef HAVE_TRACING
   
 inline static void simcall_BODY_set_category(smx_synchro_t synchro, const char* category) {
     smx_process_t self = SIMIX_process_self();
@@ -2655,6 +2630,28 @@ inline static void simcall_BODY_set_category(smx_synchro_t synchro, const char* 
       SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
+  }
+#ifdef HAVE_LATENCY_BOUND_TRACKING
+  
+inline static int simcall_BODY_comm_is_latency_bounded(smx_synchro_t comm) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_comm_is_latency_bounded(comm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_COMM_IS_LATENCY_BOUNDED;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) comm;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    return self->simcall.result.i;
   }
 #endif
 

@@ -233,7 +233,6 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
          && (double_equals(xbt_heap_maxkey(p_actionHeap), now, sg_surf_precision))) {
     action = (NetworkCm02ActionPtr) xbt_heap_pop(p_actionHeap);
     XBT_DEBUG("Something happened to action %p", action);
-#ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       int n = lmm_get_number_of_cnst_from_var(p_maxminSystem, action->getVariable());
       int i;
@@ -252,7 +251,6 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
                                         now - action->getLastUpdate());
       }
     }
-#endif
 
     // if I am wearing a latency hat
     if (action->getHat() == LATENCY) {
@@ -303,7 +301,6 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
           lmm_update_variable_weight(p_maxminSystem, action->getVariable(),
               action->m_weight);
       }
-  #ifdef HAVE_TRACING
       if (TRACE_is_enabled()) {
         int n = lmm_get_number_of_cnst_from_var(p_maxminSystem, action->getVariable());
         int i;
@@ -322,7 +319,6 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
                                         now - action->getLastUpdate());
         }
       }
-  #endif
       if (!lmm_get_number_of_cnst_from_var
           (p_maxminSystem, action->getVariable())) {
         /* There is actually no link used, hence an infinite bandwidth.
@@ -624,9 +620,7 @@ void NetworkCm02Link::updateBandwidth(double value, double date){
                               getConstraint(),
                               sg_bandwidth_factor *
                               (p_power.peak * p_power.scale));
-#ifdef HAVE_TRACING
   TRACE_surf_link_set_bandwidth(date, getName(), sg_bandwidth_factor * p_power.peak * p_power.scale);
-#endif
   if (sg_weight_S_parameter > 0) {
     while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
       action = (NetworkCm02ActionPtr) lmm_variable_id(var);

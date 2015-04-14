@@ -51,7 +51,7 @@ public class RngStream {
 	 * Release the C RngStream object
 	 */
 	private native void destroy();
-	
+
 	/**
 	 * Sets the initial seed of the package RngStreams to the six integers in the vector seed. This will
 	 * be the seed (initial state) of the first stream. If this procedure is not called, the default initial
@@ -79,21 +79,21 @@ public class RngStream {
 	 */
 	public native void setAntithetic(boolean a);
 	/**
-	  * Sets the initial seed Ig of stream g to the vector seed. This vector must satisfy the same
-	  * conditions as in setPackageSeed. The stream is then reset to this initial seed. The
-	  * states and seeds of the other streams are not modified. As a result, after calling this procedure,
-	  * the initial seeds of the streams are no longer spaced Z values apart. We discourage the use of
-	  * this procedure. Returns false for invalid seeds, and true otherwise.
+	 * Sets the initial seed Ig of stream g to the vector seed. This vector must satisfy the same
+	 * conditions as in setPackageSeed. The stream is then reset to this initial seed. The
+	 * states and seeds of the other streams are not modified. As a result, after calling this procedure,
+	 * the initial seeds of the streams are no longer spaced Z values apart. We discourage the use of
+	 * this procedure. Returns false for invalid seeds, and true otherwise.
 	 */
 	public native boolean setSeed(int seed[]);
 	/**
-	  * Advances the state of the stream by k values, without modifying the states of other streams (as
-	  * in RngStream_SetSeed), nor the values of Bg and Ig associated with this stream. If e > 0, then
-	  * k = 2e + c; if e < 0, then k = -2-e + c; and if e = 0, then k = c. Note: c is allowed to take
-	  * negative values. We discourage the use of this procedure.	 
-	  */
+	 * Advances the state of the stream by k values, without modifying the states of other streams (as
+	 * in RngStream_SetSeed), nor the values of Bg and Ig associated with this stream. If e > 0, then
+	 * k = 2e + c; if e < 0, then k = -2-e + c; and if e = 0, then k = c. Note: c is allowed to take
+	 * negative values. We discourage the use of this procedure.	 
+	 */
 	public native void advanceState(int e, int g);
-	
+
 	/**
 	 * Returns a (pseudo)random number from the uniform distribution over the interval (0, 1), after advancing the state by one step. The returned number has 32 bits of precision
 	 * in the sense that it is always a multiple of 1/(232 - 208), unless RngStream_IncreasedPrecis
@@ -105,7 +105,7 @@ public class RngStream {
 	 * {i, i + 1, . . . , j}
 	 */
 	public native int randInt(int i, int j);
-	
+
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */

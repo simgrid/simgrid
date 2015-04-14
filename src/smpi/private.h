@@ -108,10 +108,8 @@ typedef struct s_smpi_mpi_request {
   MPI_Request detached_sender;
   int refcount;
   MPI_Op op;
-#ifdef HAVE_TRACING
   int send;
   int recv;
-#endif
 } s_smpi_mpi_request_t;
 
 typedef struct s_smpi_mpi_comm_key_elem {
@@ -738,7 +736,6 @@ void mpi_comm_spawn_multiple_ ( int* count, char *array_of_commands, char** arra
 void mpi_comm_get_parent_ ( int*parent, int* ierr);
 
 
-#ifdef HAVE_TRACING
 /********** Tracing **********/
 /* from smpi_instr.c */
 void TRACE_internal_smpi_set_category (const char *category);
@@ -761,7 +758,6 @@ void TRACE_smpi_send(int rank, int src, int dst, int size);
 void TRACE_smpi_recv(int rank, int src, int dst);
 void TRACE_smpi_init(int rank);
 void TRACE_smpi_finalize(int rank);
-#endif
 
 const char* encode_datatype(MPI_Datatype datatype, int* known);
 

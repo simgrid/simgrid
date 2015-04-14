@@ -9,19 +9,7 @@
 #ifndef MSG_JAS_H
 #define MSG_JAS_H
 #include <jni.h>
-#include "msg/msg.h"
-
-/* Functions related to the java host instances.                            */
-
-/* Copyright (c) 2007-2013. The SimGrid Team.
- * All rights reserved.                                                     */
-
-/* This program is free software; you can redistribute it and/or modify it
-  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-#include "msg/msg.h"
-#include "jmsg.h"
-#include "jmsg_host.h"
+#include "simgrid/msg.h"
 
 jobject jas_new_instance(JNIEnv * env);
 jobject jas_ref(JNIEnv * env, jobject jas);

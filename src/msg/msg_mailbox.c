@@ -116,10 +116,8 @@ MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
   if (host)
     THROW_UNIMPLEMENTED;
 
-#ifdef HAVE_TRACING
   TRACE_msg_task_get_start();
   double start_time = MSG_get_clock();
-#endif
 
   /* Sanity check */
   xbt_assert(task, "Null pointer for the task storage");
@@ -153,13 +151,11 @@ MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
     xbt_ex_free(e);
   }
 
-#ifdef HAVE_TRACING
   if (ret != MSG_HOST_FAILURE &&
       ret != MSG_TRANSFER_FAILURE &&
       ret != MSG_TIMEOUT) {
     TRACE_msg_task_get_end(start_time, *task);
   }
-#endif
   MSG_RETURN(ret);
 }
 
@@ -172,9 +168,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
   msg_process_t process = MSG_process_self();
   simdata_process_t p_simdata = SIMIX_process_self_get_data(process);
 
-#ifdef HAVE_TRACING
   int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
-#endif
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
@@ -207,14 +201,11 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
   /* Try to send it by calling SIMIX network layer */
   TRY {
     smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simix call  */
-    comm = simcall_comm_isend(SIMIX_process_self(), mailbox,t_simdata->message_size,
+    comm = simcall_comm_isend(SIMIX_process_self(), mailbox,t_simdata->bytes_amount,
                                   t_simdata->rate, task, sizeof(void *),
                                   NULL, NULL, NULL, task, 0);
-#ifdef HAVE_TRACING
-    if (TRACE_is_enabled()) {
+    if (TRACE_is_enabled())
       simcall_set_category(comm, task->category);
-    }
-#endif
      t_simdata->comm = comm;
      simcall_comm_wait(comm, timeout);
   }
@@ -243,10 +234,8 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
 
 
   p_simdata->waiting_task = NULL;
-#ifdef HAVE_TRACING
   if (call_end)
     TRACE_msg_task_put_end();
-#endif
   MSG_RETURN(ret);
 }
 

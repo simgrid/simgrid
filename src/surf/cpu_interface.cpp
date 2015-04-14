@@ -57,7 +57,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
          && (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
     action = static_cast<CpuActionPtr>(xbt_heap_pop(getActionHeap()));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
-#ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       CpuPtr cpu = static_cast<CpuPtr>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
       TRACE_surf_host_set_utilization(cpu->getName(), action->getCategory(),
@@ -65,7 +64,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
                                       action->getLastUpdate(),
                                       now - action->getLastUpdate());
     }
-#endif
 
     action->finish();
     XBT_CDEBUG(surf_kernel, "Action %p finished", action);
@@ -75,7 +73,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     action->setState(SURF_ACTION_DONE);
     action->heapRemove(getActionHeap()); //FIXME: strange call since action was already popped
   }
-#ifdef HAVE_TRACING
   if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
@@ -96,7 +93,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
       TRACE_last_timestamp_to_dump = smaller;
     }
   }
-#endif
   return;
 }
 
@@ -109,7 +105,6 @@ void CpuModel::updateActionsStateFull(double now, double delta)
      ; it != itend ; it=itNext) {
 	++itNext;
     action = static_cast<CpuActionPtr>(&*it);
-#ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       CpuPtr x = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var
                               (getMaxminSystem(), action->getVariable(), 0));
@@ -121,7 +116,6 @@ void CpuModel::updateActionsStateFull(double now, double delta)
                                       delta);
       TRACE_last_timestamp_to_dump = now - delta;
     }
-#endif
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
 
@@ -251,12 +245,10 @@ void CpuAction::updateRemainingLazy(double now)
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
     double_update(&(m_remains), m_lastValue * delta, sg_maxmin_precision*sg_surf_precision);
 
-#ifdef HAVE_TRACING
     if (TRACE_is_enabled()) {
       CpuPtr cpu = static_cast<CpuPtr>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
       TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
-#endif
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, m_remains);
   }
 

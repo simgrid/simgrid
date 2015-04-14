@@ -9,7 +9,7 @@
 /* which is incorrect because the message ordering is non-deterministic       */
 /******************************************************************************/
 
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <simgrid/modelchecker.h>
 
 #define N 3

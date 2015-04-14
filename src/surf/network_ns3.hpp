@@ -93,11 +93,9 @@ void suspend();
 void resume();
 
 //private:
-#ifdef HAVE_TRACING
   double m_lastSent;
   RoutingEdgePtr p_srcElm;
   RoutingEdgePtr p_dstElm;
-#endif //HAVE_TRACING
 };
 
 

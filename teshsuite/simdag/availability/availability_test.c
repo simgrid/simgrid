@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stddef.h>
 #include <unistd.h>
-#include <simdag/simdag.h>
+#include <simgrid/simdag.h>
 #include <xbt/log.h>
 #include <xbt/ex.h>
 #include <signal.h>

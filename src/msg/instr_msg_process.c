@@ -5,11 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
-
-#include "msg/datatypes.h"
 #include "simix/smx_process_private.h"
-
-#ifdef HAVE_TRACING
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 
@@ -147,5 +143,3 @@ void TRACE_msg_process_end(msg_process_t process)
     PJ_container_free (container);
   }
 }
-
-#endif /* HAVE_TRACING */

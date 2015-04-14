@@ -208,13 +208,6 @@ endif()
 
 set(CONTEXT_UCONTEXT 0)
 SET(CONTEXT_THREADS 0)
-SET(HAVE_TRACING 1)
-
-if(enable_tracing)
-  SET(HAVE_TRACING 1)
-else()
-  SET(HAVE_TRACING 0)
-endif()
 
 if(enable_jedule)
   SET(HAVE_JEDULE 1)

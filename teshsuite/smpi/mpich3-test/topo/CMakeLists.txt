@@ -14,7 +14,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 
 
 add_executable(cartcreates cartcreates.c)
- #add_executable(cartmap1 cartmap1.c)
+#add_executable(cartmap1 cartmap1.c)
 add_executable(cartshift1 cartshift1.c)
 add_executable(cartsuball cartsuball.c)
 add_executable(cartzero cartzero.c)

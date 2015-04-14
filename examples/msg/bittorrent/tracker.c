@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "tracker.h"
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <xbt/RngStream.h>
 
 static void task_free(void *data);

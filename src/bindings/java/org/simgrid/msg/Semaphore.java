@@ -12,73 +12,73 @@ package org.simgrid.msg;
  */
 
 public class Semaphore {
-    private long bind; // The C object -- don't touch it
-    /**
-     * Semaphore capacity, defined when the semaphore is created. At most capacity 
-     * process can acquire this semaphore at the same time.
-     */
-    protected final int capacity;
-    /**
-     * Creates a new semaphore with the given capacity. At most capacity 
-     * process can acquire this semaphore at the same time.
-     */
-    public Semaphore(int capacity) {
-	init(capacity);
-	this.capacity = capacity;
-    }
-    /** The native implementation of semaphore initialization
-     */
-    private native void init(int capacity);
-
-
-    /** Locks on the semaphore object until the provided timeout expires
-     * @exception TimeoutException if the timeout expired before 
-     *            the semaphore could be acquired.
-     */
-    public native void acquire(double timeout) throws TimeoutException;
-    /** Locks on the semaphore object with no timeout
-     */
-    public void acquire() {
-	try {
-	    acquire(-1);
-	} catch (TimeoutException e) {
-	    // This should not happen.
-	    assert(false);
+	private long bind; // The C object -- don't touch it
+	/**
+	 * Semaphore capacity, defined when the semaphore is created. At most capacity 
+	 * process can acquire this semaphore at the same time.
+	 */
+	protected final int capacity;
+	/**
+	 * Creates a new semaphore with the given capacity. At most capacity 
+	 * process can acquire this semaphore at the same time.
+	 */
+	public Semaphore(int capacity) {
+		init(capacity);
+		this.capacity = capacity;
 	}
-    }
-    /** Releases the semaphore object
-     */
-    public native void release();
-    /** returns a boolean indicating it this semaphore would block at this very specific time
-     *
-     * Note that the returned value may be wrong right after the
-     * function call, when you try to use it...  But that's a
-     * classical semaphore issue, and SimGrid's semaphores are not
-     * different to usual ones here.
-     */
-    public native boolean wouldBlock();
-
-    /** Returns the semaphore capacity
-     */
-    public int getCapacity(){
-	return this.capacity;
-    }
+	/** The native implementation of semaphore initialization
+	 */
+	private native void init(int capacity);
 
 
-    /** Deletes this semaphore 
-     */
-    protected void finalize() {
-	destroy();
-    }
-    /** The native implementation for destroying a semaphore
-     */
-    private native void destroy();
-    /**
-     * Class initializer, to initialize various JNI stuff
-     */
-    public static native void nativeInit();
-    static {
-	Msg.nativeInit();
-	nativeInit();
-    }
+	/** Locks on the semaphore object until the provided timeout expires
+	 * @exception TimeoutException if the timeout expired before 
+	 *            the semaphore could be acquired.
+	 */
+	public native void acquire(double timeout) throws TimeoutException;
+	/** Locks on the semaphore object with no timeout
+	 */
+	public void acquire() {
+		try {
+			acquire(-1);
+		} catch (TimeoutException e) {
+			// This should not happen.
+			assert(false);
+		}
+	}
+	/** Releases the semaphore object
+	 */
+	public native void release();
+	/** returns a boolean indicating it this semaphore would block at this very specific time
+	 *
+	 * Note that the returned value may be wrong right after the
+	 * function call, when you try to use it...  But that's a
+	 * classical semaphore issue, and SimGrid's semaphores are not
+	 * different to usual ones here.
+	 */
+	public native boolean wouldBlock();
+
+	/** Returns the semaphore capacity
+	 */
+	public int getCapacity(){
+		return this.capacity;
+	}
+
+
+	/** Deletes this semaphore 
+	 */
+	protected void finalize() {
+		destroy();
+	}
+	/** The native implementation for destroying a semaphore
+	 */
+	private native void destroy();
+	/**
+	 * Class initializer, to initialize various JNI stuff
+	 */
+	public static native void nativeInit();
+	static {
+		Msg.nativeInit();
+		nativeInit();
+	}
 }

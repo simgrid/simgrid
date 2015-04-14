@@ -10,7 +10,7 @@
 // It will be great that a JNI expert gives a look to validate it - Adrien ;)
 
 #include "jtrace.h"
-#include <instr/instr.h>
+#include <simgrid/instr.h>
 
 /* Shut up some errors in eclipse online compiler. I wish such a pimple wouldn't be needed */
 #ifndef JNIEXPORT

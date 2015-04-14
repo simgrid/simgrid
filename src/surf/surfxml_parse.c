@@ -38,8 +38,9 @@ void surf_parse_error(const char *fmt, ...) {
   char *msg = bvprintf(fmt,va);
   va_end(va);
   cleanup();
+  XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg);
   surf_exit();
-  xbt_die("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg);
+  xbt_die("Exiting now");
 }
 void surf_parse_warn(const char *fmt, ...) {
   va_list va;

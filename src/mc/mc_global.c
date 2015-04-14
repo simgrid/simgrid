@@ -22,12 +22,12 @@
 #include "xbt/fifo.h"
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
-#include "mc_server.h"
+#include "mc_record.h"
 
 #ifdef HAVE_MC
+#include "mc_server.h"
 #include <libunwind.h>
 #include <xbt/mmalloc.h>
-
 #include "../xbt/mmalloc/mmprivate.h"
 #include "mc_object_info.h"
 #include "mc_comm_pattern.h"
@@ -748,6 +748,7 @@ void MC_process_clock_add(smx_process_t process, double amount)
   mc_time[process->pid] += amount;
 }
 
+#ifdef HAVE_MC
 void MC_report_assertion_error(void)
 {
   XBT_INFO("**************************");
@@ -758,3 +759,4 @@ void MC_report_assertion_error(void)
   MC_dump_stack_safety(mc_stack);
   MC_print_statistics(mc_stats);
 }
+#endif

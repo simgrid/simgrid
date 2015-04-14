@@ -4,3 +4,34 @@ p Testing the remote exception raising feature
 
 ! output sort
 $ $SG_TEST_EXENV exception/exception ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/exception/deployment_exception.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:terrorist@Jacquelin) Let's create a victim.
+> [  0.000000] (2:victim@Jacquelin) Let's work.
+> [  0.000000] (1:terrorist@Jacquelin) Going to sleep for 1 second
+> [  1.000000] (1:terrorist@Jacquelin) Send a first exception (host failure)
+> [  1.000000] (1:terrorist@Jacquelin) Sweet, let's prepare a second trick!
+> [  1.000000] (1:terrorist@Jacquelin) Going to sleep for 2 seconds
+> [  1.000000] (2:victim@Jacquelin) The MSG_task_execute caught the exception for me and returned 8)
+> [  1.000000] (2:victim@Jacquelin) Let's get suspended.
+> [  3.000000] (1:terrorist@Jacquelin) Send a second exception (host failure)
+> [  3.000000] (1:terrorist@Jacquelin) Sweet, let's prepare a third trick!
+> [  3.000000] (1:terrorist@Jacquelin) Going to sleep for 3 seconds
+> [  3.000000] (2:victim@Jacquelin) The received exception resumed my suspension. Good. Here is it:  ----------------------->8----
+> ** SimGrid: UNCAUGHT EXCEPTION received on exception/exception(2): category: action canceled; value: 0
+> ** Canceled
+> ** Thrown by () on process 0
+> [  3.000000] (2:victim@Jacquelin) Canceled
+> 
+> **   In SIMIX_execution_finish() at /home/alegrand/Work/SimGrid/simgrid-git/src/simix/smx_host.c:557
+> **   In SIMIX_post_host_execute() at /home/alegrand/Work/SimGrid/simgrid-git/src/simix/smx_host.c:604
+> **   In SIMIX_simcall_exit() at /home/alegrand/Work/SimGrid/simgrid-git/src/simix/popping.c:39
+> **   In SIMIX_run() at /home/alegrand/Work/SimGrid/simgrid-git/src/simix/smx_global.c:410
+> **   In MSG_main() at /home/alegrand/Work/SimGrid/simgrid-git/src/msg/msg_global.c:129
+> **   In main() at /home/alegrand/Work/SimGrid/simgrid-git/examples/msg/exception/exception.c:156
+> [  3.000000] (2:victim@Jacquelin) (end of the second exception) ----8<------------------------
+> [  3.000000] (2:victim@Jacquelin) Let's sleep for 10 seconds.
+> [  6.000000] (1:terrorist@Jacquelin) Send a third exception (cancellation)
+> [  6.000000] (1:terrorist@Jacquelin) OK, goodbye now.
+> [  6.000000] (2:victim@Jacquelin) The MSG_process_sleep caught the exception for me and returned 8)
+> [  6.000000] (2:victim@Jacquelin) Let's try a last time to do something on something
+> [ 16.000000] (2:victim@Jacquelin) That's enough now. I quit.
+> [ 16.000000] (0:@) Simulation time 16

@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include "msg/msg.h"            /* Yeah! If you want to use msg, you need to include msg/msg.h */
+#include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
 #include "xbt/sysdep.h"         /* calloc, printf */
 
 /* Create a log channel to have nice outputs. */
@@ -104,6 +104,8 @@ int test_launcher(int argc, char *argv[])
   test = 5;
   if (xbt_dynar_search_or_negative(tests, &test)!=-1){
     XBT_INFO("Test 5 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication");
+    XBT_INFO("Warning! I think this test is completely broken and it was revealed by exception/exception test.");
+    XBT_INFO("At time 20, Jupiter should wake up with a HOST_FAILURE and it gets a TRANSFERT_FAILURE. This is because when turning off Jupiter, its processes are killed, which cancels/destroys the corresponding surf communication instead of canceling a src_ or dst_timeout.");
     MSG_host_on(jupiter);
     MSG_process_sleep(10);
     argvF = xbt_new(char*, 2);
@@ -116,7 +118,7 @@ int test_launcher(int argc, char *argv[])
     MSG_process_sleep(10);
     XBT_INFO("  Turn Jupiter off");
     MSG_host_off(jupiter);
-    XBT_INFO("Test 4 seems ok, cool !(number of Process : %d, it should be 2", MSG_process_get_number());
+    XBT_INFO("Test 5 seems ok, cool !(number of Process : %d, it should be 2", MSG_process_get_number());
   }
 
   test =6;

@@ -11,7 +11,7 @@
 #include "jmsg_host.h"
 #include "jmsg_process.h"
 #include "jxbt_utilities.h"
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 static jfieldID jvm_field_bind;
@@ -125,11 +125,13 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject jvm, jobject jhost) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   msg_host_t host = jhost_get_native(env, jhost);
+  xbt_ex_t e;
   TRY{
   MSG_vm_migrate(vm,host);
-  } CATCH_ANONYMOUS{
-      XBT_INFO("CATCH EXCEPTION MIGRATION");
-      jxbt_throw_host_failure(env, (char*)"during migration");
+  } CATCH(e){
+     XBT_INFO("CATCH EXCEPTION MIGRATION %s",e.msg);
+     xbt_ex_free(e);
+     jxbt_throw_host_failure(env, (char*)"during migration");
   } 
 }
 

@@ -422,10 +422,8 @@ void surf_init(int *argc, char **argv)
   if (!history)
     history = tmgr_history_new();
 
-#ifdef HAVE_TRACING
   TRACE_add_start_function(TRACE_surf_alloc);
   TRACE_add_end_function(TRACE_surf_release);
-#endif
 
   sg_config_init(argc, argv);
 
@@ -438,10 +436,8 @@ void surf_exit(void)
   unsigned int iter;
   ModelPtr model = NULL;
 
-#ifdef HAVE_TRACING
   TRACE_end();                  /* Just in case it was not called by the upper
                                  * layer (or there is no upper layer) */
-#endif
 
   sg_config_finalize();
 
@@ -791,9 +787,7 @@ void Action::initialize(ModelPtr model, double cost, bool failed,
 Action::Action(ModelPtr model, double cost, bool failed)
 {
   initialize(model, cost, failed);
-  #ifdef HAVE_TRACING
-    p_category = NULL;
-  #endif
+  p_category = NULL;
   p_stateHookup.prev = 0;
   p_stateHookup.next = 0;
   if (failed)
@@ -807,9 +801,7 @@ Action::Action(ModelPtr model, double cost, bool failed)
 Action::Action(ModelPtr model, double cost, bool failed, lmm_variable_t var)
 {
   initialize(model, cost, failed, var);
-  #ifdef HAVE_TRACING
-    p_category = NULL;
-  #endif
+  p_category = NULL;
   p_stateHookup.prev = 0;
   p_stateHookup.next = 0;
   if (failed)
@@ -821,9 +813,7 @@ Action::Action(ModelPtr model, double cost, bool failed, lmm_variable_t var)
 }
 
 Action::~Action() {
-#ifdef HAVE_TRACING
   xbt_free(p_category);
-#endif
 }
 
 void Action::finish() {
@@ -896,14 +886,12 @@ void Action::setData(void* data)
   p_data = data;
 }
 
-#ifdef HAVE_TRACING
 void Action::setCategory(const char *category)
 {
   XBT_IN("(%p,%s)", this, category);
   p_category = xbt_strdup(category);
   XBT_OUT();
 }
-#endif
 
 void Action::ref(){
   m_refcount++;
@@ -1068,12 +1056,10 @@ void Action::updateRemainingLazy(double now)
     XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
     double_update(&m_remains, m_lastValue * delta, sg_surf_precision*sg_maxmin_precision);
 
-#ifdef HAVE_TRACING
     if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
       ResourcePtr cpu = static_cast<ResourcePtr>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
       TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
-#endif
     XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);
   }
 

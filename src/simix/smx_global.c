@@ -424,12 +424,30 @@ void SIMIX_run(void)
           SIMIX_simcall_handle(&process->simcall, 0);
         }
       }
+      /* Wake up all processes waiting for a Surf action to finish */
+      xbt_dynar_foreach(model_list, iter, model) {
+        XBT_DEBUG("Handling process whose action failed");
+        while ((action = surf_model_extract_failed_action_set(model))) {
+          XBT_DEBUG("   Handling Action %p",action);
+          SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+        }
+        XBT_DEBUG("Handling process whose action terminated normally");
+        while ((action = surf_model_extract_done_action_set(model))) {
+          XBT_DEBUG("   Handling Action %p",action);
+          if (surf_action_get_data(action) == NULL)
+            XBT_DEBUG("probably vcpu's action %p, skip", action);
+          else
+            SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+        }
+      }
     }
 
     time = SIMIX_timer_next();
-    if (time != -1.0 || xbt_swag_size(simix_global->process_list) != 0)
+    if (time != -1.0 || xbt_swag_size(simix_global->process_list) != 0) {
+      XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
-
+      XBT_DEBUG("Moving time ahead : %g", time);
+    }
     /* Notify all the hosts that have failed */
     /* FIXME: iterate through the list of failed host and mark each of them */
     /* as failed. On each host, signal all the running processes with host_fail */
@@ -446,14 +464,19 @@ void SIMIX_run(void)
 
     /* Wake up all processes waiting for a Surf action to finish */
     xbt_dynar_foreach(model_list, iter, model) {
-      while ((action = surf_model_extract_failed_action_set(model)))
+      XBT_DEBUG("Handling process whose action failed");
+      while ((action = surf_model_extract_failed_action_set(model))) {
+        XBT_DEBUG("   Handling Action %p",action);
         SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
-
-      while ((action = surf_model_extract_done_action_set(model)))
+      }
+      XBT_DEBUG("Handling process whose action terminated normally");
+      while ((action = surf_model_extract_done_action_set(model))) {
+        XBT_DEBUG("   Handling Action %p",action);
         if (surf_action_get_data(action) == NULL)
           XBT_DEBUG("probably vcpu's action %p, skip", action);
         else
           SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+      }
     }
 
     /* Autorestart all process */
@@ -476,9 +499,7 @@ void SIMIX_run(void)
 
   if (xbt_swag_size(simix_global->process_list) != 0) {
 
-#ifdef HAVE_TRACING
-    TRACE_end();
-#endif
+	TRACE_end();
 
     XBT_CRITICAL("Oops ! Deadlock or code not perfectly clean.");
     SIMIX_display_process_status();

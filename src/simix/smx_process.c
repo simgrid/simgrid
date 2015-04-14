@@ -87,6 +87,7 @@ void SIMIX_process_cleanup(smx_process_t process)
     }
   }
 
+  XBT_DEBUG("%p should not be run anymore",process);
   xbt_swag_remove(process, simix_global->process_list);
   xbt_swag_remove(process, SIMIX_host_priv(process->smx_host)->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
@@ -104,6 +105,8 @@ void SIMIX_process_empty_trash(void)
   smx_process_t process = NULL;
 
   while ((process = xbt_swag_extract(simix_global->process_to_destroy))) {
+    XBT_DEBUG("Getting rid of %p",process);
+
     SIMIX_context_free(process->context);
 
     /* Free the exception allocated at creation time */
@@ -368,6 +371,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
     }
   }
   if(!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != issuer) {
+    XBT_DEBUG("Inserting %s in the to_run list", process->name);
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
   }
 
@@ -401,11 +405,12 @@ void SIMIX_process_throw(smx_process_t process, xbt_errcat_t cat, int value, con
       break;
 
     case SIMIX_SYNC_SLEEP:
-      SIMIX_process_sleep_destroy(process->waiting_synchro);
-      break;
-
     case SIMIX_SYNC_JOIN:
       SIMIX_process_sleep_destroy(process->waiting_synchro);
+      if (!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != SIMIX_process_self()) {
+        XBT_DEBUG("Inserting %s in the to_run list", process->name);
+        xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
+      }
       break;
 
     case SIMIX_SYNC_SYNCHRO:
@@ -420,8 +425,6 @@ void SIMIX_process_throw(smx_process_t process, xbt_errcat_t cat, int value, con
   }
   process->waiting_synchro = NULL;
 
-  if (!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != SIMIX_process_self())
-    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
 }
 
 void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid) {
@@ -740,9 +743,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_SLEEP;
   synchro->name = NULL;
-#ifdef HAVE_TRACING
   synchro->category = NULL;
-#endif
 
   synchro->sleep.host = host;
   synchro->sleep.surf_sleep =

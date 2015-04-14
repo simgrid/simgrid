@@ -30,8 +30,7 @@
 #include "../xbt/mmalloc/mmprivate.h"
 #include "xbt/automaton.h"
 #include "xbt/hash.h"
-#include "msg/msg.h"
-#include "msg/datatypes.h"
+#include <simgrid/msg.h>
 #include "xbt/strbuff.h"
 #include "xbt/parmap.h"
 

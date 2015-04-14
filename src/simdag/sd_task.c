@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
 #include "instr/instr_private.h"
@@ -55,8 +55,8 @@ void SD_task_recycle_f(void *t)
   /* scheduling parameters */
   task->workstation_nb = 0;
   task->workstation_list = NULL;
-  task->computation_amount = NULL;
-  task->communication_amount = NULL;
+  task->flops_amount = NULL;
+  task->bytes_amount = NULL;
   task->rate = -1;
 }
 
@@ -90,9 +90,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
 
   sd_global->task_number++;
 
-#ifdef HAVE_TRACING
   TRACE_sd_task_create(task);
-#endif
 
   return task;
 }
@@ -102,8 +100,8 @@ static XBT_INLINE SD_task_t SD_task_create_sized(const char *name,
                                                  int ws_count)
 {
   SD_task_t task = SD_task_create(name, data, amount);
-  task->communication_amount = xbt_new0(double, ws_count * ws_count);
-  task->computation_amount = xbt_new0(double, ws_count);
+  task->bytes_amount = xbt_new0(double, ws_count * ws_count);
+  task->flops_amount = xbt_new0(double, ws_count);
   task->workstation_nb = ws_count;
   task->workstation_list = xbt_new0(SD_workstation_t, ws_count);
   return task;
@@ -123,13 +121,11 @@ SD_task_t SD_task_create_comm_e2e(const char *name, void *data,
                                   double amount)
 {
   SD_task_t res = SD_task_create_sized(name, data, amount, 2);
-  res->communication_amount[2] = amount;
+  res->bytes_amount[2] = amount;
   res->kind = SD_TASK_COMM_E2E;
 
-#ifdef HAVE_TRACING
   TRACE_category("COMM_E2E");
   TRACE_sd_set_task_category(res, "COMM_E2E");
-#endif
 
   return res;
 }
@@ -146,22 +142,20 @@ SD_task_t SD_task_create_comm_e2e(const char *name, void *data,
  *
  * \param name the name of the task (can be \c NULL)
  * \param data the user data you want to associate with the task (can be \c NULL)
- * \param amount amount of compute work to be done by the task
+ * \param flops_amount amount of compute work to be done by the task
  * \return the new SD_TASK_COMP_SEQ typed task
  */
 SD_task_t SD_task_create_comp_seq(const char *name, void *data,
-                                  double amount)
+                                  double flops_amount)
 {
-  SD_task_t res = SD_task_create_sized(name, data, amount, 1);
-  res->computation_amount[0] = amount;
+  SD_task_t res = SD_task_create_sized(name, data, flops_amount, 1);
+  res->flops_amount[0] = flops_amount;
   res->kind = SD_TASK_COMP_SEQ;
 
-#ifdef HAVE_TRACING
   TRACE_category("COMP_SEQ");
   TRACE_sd_set_task_category(res, "COMP_SEQ");
-#endif
 
-return res;
+  return res;
 }
 
 /** @brief create a parallel computation task that can then be auto-scheduled
@@ -177,24 +171,22 @@ return res;
  * first.
  * \param name the name of the task (can be \c NULL)
  * \param data the user data you want to associate with the task (can be \c NULL)
- * \param amount amount of compute work to be done by the task
+ * \param flops_amount amount of compute work to be done by the task
  * \param alpha purely serial fraction of the work to be done (in [0.;1.[)
  * \return the new task
  */
 SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data,
-                                  double amount, double alpha)
+                                  double flops_amount, double alpha)
 {
   xbt_assert(alpha < 1. && alpha >= 0.,
               "Invalid parameter: alpha must be in [0.;1.[");
   
-  SD_task_t res = SD_task_create(name, data, amount);
+  SD_task_t res = SD_task_create(name, data, flops_amount);
   res->alpha = alpha;
   res->kind = SD_TASK_COMP_PAR_AMDAHL;
 
-#ifdef HAVE_TRACING
   TRACE_category("COMP_PAR_AMDAHL");
   TRACE_sd_set_task_category(res, "COMP_PAR_AMDAHL");
-#endif
 
   return res;
 }
@@ -225,10 +217,8 @@ SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data,
   res->workstation_list=NULL;
   res->kind = SD_TASK_COMM_PAR_MXN_1D_BLOCK;
 
-#ifdef HAVE_TRACING
   TRACE_category("COMM_PAR_MXN_1D_BLOCK");
   TRACE_sd_set_task_category(res, "COMM_PAR_MXN_1D_BLOCK");
-#endif
 
   return res;
 }
@@ -260,12 +250,10 @@ void SD_task_destroy(SD_task_t task)
 	surf_action_unref(task->surf_action);
 
   xbt_free(task->workstation_list);
-  xbt_free(task->communication_amount);
-  xbt_free(task->computation_amount);
+  xbt_free(task->bytes_amount);
+  xbt_free(task->flops_amount);
 
-#ifdef HAVE_TRACING
   TRACE_sd_task_destroy(task);
-#endif
 
   xbt_mallocator_release(sd_global->task_mallocator,task);
   sd_global->task_number--;
@@ -476,7 +464,7 @@ double SD_task_get_amount(SD_task_t task)
 /**
  * \brief Sets the total amount of work of a task
  * For sequential typed tasks (COMP_SEQ and COMM_E2E), it also sets the
- * appropriate values in the computation_amount and communication_amount arrays
+ * appropriate values in the flops_amount and bytes_amount arrays
  * respectively. Nothing more than modifying task->amount is done for paralle
  * typed tasks (COMP_PAR_AMDAHL and COMM_PAR_MXN_1D_BLOCK) as the distribution
  * of the amount of work is done at scheduling time.
@@ -488,9 +476,9 @@ void SD_task_set_amount(SD_task_t task, double amount)
 {
   task->amount = amount;
   if (task->kind == SD_TASK_COMP_SEQ)
-    task->computation_amount[0] = amount;
+    task->flops_amount[0] = amount;
   if (task->kind == SD_TASK_COMM_E2E)
-    task->communication_amount[2] = amount;
+    task->bytes_amount[2] = amount;
 }
 
 /**
@@ -568,10 +556,8 @@ void SD_task_dump(SD_task_t task)
     }
   }
 
-#ifdef HAVE_TRACING
   if (task->category)
     XBT_INFO("  - tracing category: %s", task->category);
-#endif
 
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
@@ -923,16 +909,16 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
  * \param task the task to evaluate
  * \param workstation_nb number of workstations on which the task would be executed
  * \param workstation_list the workstations on which the task would be executed
- * \param computation_amount computation amount for each workstation
- * \param communication_amount communication amount between each pair of workstations
+ * \param flops_amount computation amount for each workstation
+ * \param bytes_amount communication amount between each pair of workstations
  * \see SD_schedule()
  */
 double SD_task_get_execution_time(SD_task_t task,
                                   int workstation_nb,
                                   const SD_workstation_t *
                                   workstation_list,
-                                  const double *computation_amount,
-                                  const double *communication_amount)
+                                  const double *flops_amount,
+                                  const double *bytes_amount)
 {
   double time, max_time = 0.0;
   int i, j;
@@ -942,17 +928,17 @@ double SD_task_get_execution_time(SD_task_t task,
 
   for (i = 0; i < workstation_nb; i++) {
     time = 0.0;
-    if (computation_amount != NULL)
+    if (flops_amount != NULL)
       time =
           SD_workstation_get_computation_time(workstation_list[i],
-                                              computation_amount[i]);
+                                              flops_amount[i]);
 
-    if (communication_amount != NULL)
+    if (bytes_amount != NULL)
       for (j = 0; j < workstation_nb; j++) {
         time +=
             SD_route_get_communication_time(workstation_list[i],
                                             workstation_list[j],
-                                            communication_amount[i *
+                                            bytes_amount[i *
                                                                  workstation_nb
                                                                  + j]);
       }
@@ -987,15 +973,15 @@ static XBT_INLINE void SD_task_do_schedule(SD_task_t task)
  * \param task the task you want to schedule
  * \param workstation_count number of workstations on which the task will be executed
  * \param workstation_list the workstations on which the task will be executed
- * \param computation_amount computation amount for each workstation
- * \param communication_amount communication amount between each pair of workstations
+ * \param flops_amount computation amount for each workstation
+ * \param bytes_amount communication amount between each pair of workstations
  * \param rate task execution speed rate
  * \see SD_task_unschedule()
  */
 void SD_task_schedule(SD_task_t task, int workstation_count,
                       const SD_workstation_t * workstation_list,
-                      const double *computation_amount,
-                      const double *communication_amount, double rate)
+                      const double *flops_amount,
+                      const double *bytes_amount, double rate)
 {
   int communication_nb;
   task->workstation_nb = 0;
@@ -1005,25 +991,25 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
   task->workstation_nb = workstation_count;
   task->rate = rate;
 
-  if (computation_amount) {
-    task->computation_amount = xbt_realloc(task->computation_amount,
+  if (flops_amount) {
+    task->flops_amount = xbt_realloc(task->flops_amount,
                                            sizeof(double) * workstation_count);
-    memcpy(task->computation_amount, computation_amount,
+    memcpy(task->flops_amount, flops_amount,
            sizeof(double) * workstation_count);
   } else {
-    xbt_free(task->computation_amount);
-    task->computation_amount = NULL;
+    xbt_free(task->flops_amount);
+    task->flops_amount = NULL;
   }
 
   communication_nb = workstation_count * workstation_count;
-  if (communication_amount) {
-    task->communication_amount = xbt_realloc(task->communication_amount,
+  if (bytes_amount) {
+    task->bytes_amount = xbt_realloc(task->bytes_amount,
                                              sizeof(double) * communication_nb);
-    memcpy(task->communication_amount, communication_amount,
+    memcpy(task->bytes_amount, bytes_amount,
            sizeof(double) * communication_nb);
   } else {
-    xbt_free(task->communication_amount);
-    task->communication_amount = NULL;
+    xbt_free(task->bytes_amount);
+    task->bytes_amount = NULL;
   }
 
   task->workstation_list =
@@ -1087,9 +1073,9 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
            "Task '%s' must be SD_SCHEDULED, SD_RUNNABLE or SD_IN_FIFO",
            SD_task_get_name(task));
 
-  xbt_free(task->computation_amount);
-  xbt_free(task->communication_amount);
-  task->computation_amount = task->communication_amount = NULL;
+  xbt_free(task->flops_amount);
+  xbt_free(task->bytes_amount);
+  task->flops_amount = task->bytes_amount = NULL;
 }
 
 /* Runs a task. This function is directly called by __SD_task_try_to_run if
@@ -1134,32 +1120,30 @@ void __SD_task_really_run(SD_task_t task)
   for (i = 0; i < workstation_nb; i++)
     surf_workstations[i] =  surf_workstation_resource_priv(task->workstation_list[i]);
 
-  double *computation_amount = xbt_new0(double, workstation_nb);
-  double *communication_amount = xbt_new0(double, workstation_nb * workstation_nb);
+  double *flops_amount = xbt_new0(double, workstation_nb);
+  double *bytes_amount = xbt_new0(double, workstation_nb * workstation_nb);
 
 
-  if(task->computation_amount)
-    memcpy(computation_amount, task->computation_amount, sizeof(double) *
+  if(task->flops_amount)
+    memcpy(flops_amount, task->flops_amount, sizeof(double) *
            workstation_nb);
-  if(task->communication_amount)
-    memcpy(communication_amount, task->communication_amount,
+  if(task->bytes_amount)
+    memcpy(bytes_amount, task->bytes_amount,
            sizeof(double) * workstation_nb * workstation_nb);
 
   task->surf_action = surf_workstation_model_execute_parallel_task((surf_workstation_model_t)surf_workstation_model,
 		                                                     workstation_nb,
 		                                                     surf_workstations,
-		                                                     computation_amount,
-		                                                     communication_amount,
+		                                                     flops_amount,
+		                                                     bytes_amount,
 		                                                     task->rate);
 
   surf_action_set_data(task->surf_action, task);
 
   XBT_DEBUG("surf_action = %p", task->surf_action);
 
-#ifdef HAVE_TRACING
   if (task->category)
     TRACE_surf_action(task->surf_action, task->category);
-#endif
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   __SD_task_set_state(task, SD_RUNNING);
@@ -1432,14 +1416,14 @@ void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
               "Task %s is not a SD_TASK_COMP_PAR_AMDAHL typed task."
               "Cannot use this function.",
               SD_task_get_name(task));  
-  task->computation_amount = xbt_new0(double, ws_count);
-  task->communication_amount = xbt_new0(double, ws_count * ws_count);
+  task->flops_amount = xbt_new0(double, ws_count);
+  task->bytes_amount = xbt_new0(double, ws_count * ws_count);
   xbt_free(task->workstation_list);
   task->workstation_nb = ws_count;
   task->workstation_list = xbt_new0(SD_workstation_t, ws_count);
   
   for(i=0;i<ws_count;i++){
-    task->computation_amount[i] = 
+    task->flops_amount[i] = 
       (task->alpha + (1 - task->alpha)/ws_count) * task->amount;
   }
 } 
@@ -1485,10 +1469,10 @@ void SD_task_schedulev(SD_task_t task, int count,
                count,task->workstation_nb);
     for (i = 0; i < count; i++)
       task->workstation_list[i] = list[i];
-    if (SD_task_get_kind(task)== SD_TASK_COMP_SEQ && !task->computation_amount){
-      /*This task has failed and is rescheduled. Reset the computation amount*/
-      task->computation_amount = xbt_new0(double, 1);
-      task->computation_amount[0] = task->remains;
+    if (SD_task_get_kind(task)== SD_TASK_COMP_SEQ && !task->flops_amount){
+      /*This task has failed and is rescheduled. Reset the flops_amount*/
+      task->flops_amount = xbt_new0(double, 1);
+      task->flops_amount[0] = task->remains;
     }
     SD_task_do_schedule(task);
     break;
@@ -1501,7 +1485,7 @@ void SD_task_schedulev(SD_task_t task, int count,
           SD_task_get_name(task),
           SD_workstation_get_name(task->workstation_list[0]),
           SD_workstation_get_name(task->workstation_list[1]),
-          task->communication_amount[2]);
+          task->bytes_amount[2]);
 
   }
 
@@ -1511,7 +1495,7 @@ void SD_task_schedulev(SD_task_t task, int count,
     XBT_VERB("Schedule computation task %s on %s. It costs %.f flops",
           SD_task_get_name(task),
           SD_workstation_get_name(task->workstation_list[0]),
-          task->computation_amount[0]);
+          task->flops_amount[0]);
 
     xbt_dynar_foreach(task->tasks_before, cpt, dep) {
       SD_task_t before = dep->src;
@@ -1527,7 +1511,7 @@ void SD_task_schedulev(SD_task_t task, int count,
                SD_task_get_name(before),
                SD_workstation_get_name(before->workstation_list[0]),
                SD_workstation_get_name(before->workstation_list[1]),
-               before->communication_amount[2]);
+               before->bytes_amount[2]);
         }
       }
     }
@@ -1544,7 +1528,7 @@ void SD_task_schedulev(SD_task_t task, int count,
                SD_task_get_name(after),
                SD_workstation_get_name(after->workstation_list[0]),
                SD_workstation_get_name(after->workstation_list[1]),
-               after->communication_amount[2]);
+               after->bytes_amount[2]);
 
         }
       }
@@ -1556,7 +1540,7 @@ void SD_task_schedulev(SD_task_t task, int count,
     XBT_VERB("Schedule computation task %s on %d workstations. %.f flops"
              " will be distributed following Amdahl's Law",
           SD_task_get_name(task), task->workstation_nb,
-          task->computation_amount[0]);
+          task->flops_amount[0]);
     xbt_dynar_foreach(task->tasks_before, cpt, dep) {
       SD_task_t before = dep->src;
       if (before->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
@@ -1584,11 +1568,11 @@ void SD_task_schedulev(SD_task_t task, int count,
                task->workstation_list[i];
 
           before->workstation_nb += count;
-          xbt_free(before->computation_amount);
-          xbt_free(before->communication_amount);
-          before->computation_amount = xbt_new0(double,
+          xbt_free(before->flops_amount);
+          xbt_free(before->bytes_amount);
+          before->flops_amount = xbt_new0(double,
                                                 before->workstation_nb);
-          before->communication_amount = xbt_new0(double,
+          before->bytes_amount = xbt_new0(double,
                                                   before->workstation_nb*
                                                   before->workstation_nb);
 
@@ -1603,13 +1587,13 @@ void SD_task_schedulev(SD_task_t task, int count,
                   SD_workstation_get_name(before->workstation_list[src_nb+j]),
                   src_start, src_end, dst_start, dst_end);
               if ((src_end <= dst_start) || (dst_end <= src_start)) {
-                before->communication_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
+                before->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
               } else {
-                before->communication_amount[i*(src_nb+dst_nb)+src_nb+j] =
+                before->bytes_amount[i*(src_nb+dst_nb)+src_nb+j] =
                   MIN(src_end, dst_end) - MAX(src_start, dst_start);
               }
               XBT_VERB("==> %.2f",
-                 before->communication_amount[i*(src_nb+dst_nb)+src_nb+j]);
+                 before->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
             }
           }
 
@@ -1650,11 +1634,11 @@ void SD_task_schedulev(SD_task_t task, int count,
 
           after->workstation_nb += count;
 
-          xbt_free(after->computation_amount);
-          xbt_free(after->communication_amount);
+          xbt_free(after->flops_amount);
+          xbt_free(after->bytes_amount);
 
-          after->computation_amount = xbt_new0(double, after->workstation_nb);
-          after->communication_amount = xbt_new0(double,
+          after->flops_amount = xbt_new0(double, after->workstation_nb);
+          after->bytes_amount = xbt_new0(double,
                                                  after->workstation_nb*
                                                  after->workstation_nb);
 
@@ -1667,13 +1651,13 @@ void SD_task_schedulev(SD_task_t task, int count,
               XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)",
                   i, j, src_start, src_end, dst_start, dst_end);
               if ((src_end <= dst_start) || (dst_end <= src_start)) {
-                after->communication_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
+                after->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
               } else {
-                after->communication_amount[i*(src_nb+dst_nb)+src_nb+j] =
+                after->bytes_amount[i*(src_nb+dst_nb)+src_nb+j] =
                    MIN(src_end, dst_end)- MAX(src_start, dst_start);
               }
               XBT_VERB("==> %.2f",
-                 after->communication_amount[i*(src_nb+dst_nb)+src_nb+j]);
+                 after->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
             }
           }
 

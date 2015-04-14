@@ -144,5 +144,5 @@ void MC_record_replay_from_string(const char* path_string)
 
 void MC_record_replay_init()
 {
-  mc_time = xbt_new0(double, MC_smx_get_maxpid());
+  mc_time = xbt_new0(double, simix_process_maxpid);
 }

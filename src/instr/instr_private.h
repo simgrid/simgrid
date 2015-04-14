@@ -7,12 +7,10 @@
 #ifndef INSTR_PRIVATE_H_
 #define INSTR_PRIVATE_H_
 
-#include "instr/instr.h"
+#include "simgrid/instr.h"
 #include "instr/instr_interface.h"
 #include "internal_config.h"
 #include "simgrid_config.h"
-
-#ifdef HAVE_TRACING
 
 SG_BEGIN_DECL()
 
@@ -465,8 +463,6 @@ typedef struct s_instr_extra_data {
 } s_instr_extra_data_t;
 
 SG_END_DECL()
-
-#endif /* HAVE_TRACING */
 
 #ifdef HAVE_JEDULE
 #include "instr/jedule/jedule_sd_binding.h"

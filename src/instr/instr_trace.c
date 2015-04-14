@@ -7,8 +7,6 @@
 #include "instr/instr_private.h"
 #include "xbt/virtu.h" /* sg_cmdline */
 
-#ifdef HAVE_TRACING
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_trace, instr, "tracing event system");
 
 
@@ -494,5 +492,3 @@ void new_pajeNewEvent (double timestamp, container_t container, type_t type, val
 
   insert_into_buffer (event);
 }
-
-#endif /* HAVE_TRACING */

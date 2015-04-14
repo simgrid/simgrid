@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "simdag/simdag.h"
+#include "simgrid/simdag.h"
 
 int main(int argc, char **argv)
 {

@@ -21,7 +21,7 @@
 #include "smpi/smpi_interface.h"
 #include "mc/mc.h"
 #include "mc/mc_record.h"
-#include "instr/instr.h"
+#include "simgrid/instr.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of simgrid");
@@ -70,10 +70,8 @@ static void sg_config_cmd_line(int *argc, char **argv)
 "to the command line.\n"
 "\n"
 "You can also use --help-models to see the details of all models known by this simulator.\n"
-#ifdef HAVE_TRACING
 "\n"
 "You can also use --help-tracing to see the details of all tracing options known by this simulator.\n"
-#endif
 "\n"
 "You can also use --help-logs and --help-log-categories to see the details of logging output.\n"
 "\n"
@@ -96,11 +94,9 @@ static void sg_config_cmd_line(int *argc, char **argv)
                surf_optimization_mode_description[k].description);
       printf("Both network and CPU models have 'Lazy' as default optimization level\n\n");
       shall_exit = 1;
-#ifdef HAVE_TRACING
     } else if (!strcmp(argv[i], "--help-tracing")) {
       TRACE_help (1);
       shall_exit = 1;
-#endif
     } else {
       argv[j++] = argv[i];
     }

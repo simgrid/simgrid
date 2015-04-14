@@ -17,11 +17,11 @@ public class Node extends Process {
 		super(host,name,args);
     } 
 	public void request(double CStime) throws MsgException {
-		RequestTask req = new RequestTask(this.name);
+		RequestTask req = new RequestTask(getName());
 	   Msg.info("Send a request to the coordinator");
 		req.send("coordinator");
 	   Msg.info("Wait for a grant from the coordinator");
-		Task.receive(this.name); // FIXME: ensure that this is a grant
+		Task.receive(getName()); // FIXME: ensure that this is a grant
 		Task compute = new Task("CS", CStime, 0);
 		compute.execute();
 		ReleaseTask release = new ReleaseTask();

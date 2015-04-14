@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 #include "simgrid/modelchecker.h"

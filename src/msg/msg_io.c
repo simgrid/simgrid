@@ -111,10 +111,10 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 
     m_host_list[0] = MSG_host_self();
     m_host_list[1] = attached_host;
-    double computation_amount[] = { 0, 0 };
-    double communication_amount[] = { 0, 0, (double)read_size, 0 };
+    double flops_amount[] = { 0, 0 };
+    double bytes_amount[] = { 0, 0, (double)read_size, 0 };
 
-    msg_task_t task = MSG_parallel_task_create("file transfer for read", 2, m_host_list, computation_amount, communication_amount, NULL);
+    msg_task_t task = MSG_parallel_task_create("file transfer for read", 2, m_host_list, flops_amount, bytes_amount, NULL);
     msg_error_t transfer = MSG_parallel_task_execute(task);
     MSG_task_destroy(task);
     free(m_host_list);
@@ -155,10 +155,10 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 
     m_host_list[0] = MSG_host_self();
     m_host_list[1] = attached_host;
-    double computation_amount[] = { 0, 0 };
-    double communication_amount[] = { 0, (double)size, 0, 0 };
+    double flops_amount[] = { 0, 0 };
+    double bytes_amount[] = { 0, (double)size, 0, 0 };
 
-    msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, computation_amount, communication_amount, NULL);
+    msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, NULL);
     msg_error_t transfer = MSG_parallel_task_execute(task);
     MSG_task_destroy(task);
     free(m_host_list);
@@ -366,10 +366,10 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 
   m_host_list[0] = attached_host;
   m_host_list[1] = host_dest;
-  double computation_amount[] = { 0, 0 };
-  double communication_amount[] = { 0, (double)read_size, 0, 0 };
+  double flops_amount[] = { 0, 0 };
+  double bytes_amount[] = { 0, (double)read_size, 0, 0 };
 
-  msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, computation_amount, communication_amount, NULL);
+  msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, NULL);
   msg_error_t transfer = MSG_parallel_task_execute(task);
   MSG_task_destroy(task);
   free(m_host_list);

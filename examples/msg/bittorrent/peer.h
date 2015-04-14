@@ -6,7 +6,7 @@
 
 #ifndef BITTORRENT_PEER_H
 #define BITTORRENT_PEER_H
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
 #include <xbt/RngStream.h>

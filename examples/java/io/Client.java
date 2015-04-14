@@ -36,7 +36,7 @@ public class Client extends Process {
   public void main(String[] args) throws MsgException {
     
 	// Retrieve all mount points of current host
-    Storage[] storages = host.getMountedStorage();
+    Storage[] storages = getHost().getMountedStorage();
     
 	for (int i = 0; i < storages.length; i++) {
 		// For each disk mounted on host

@@ -9,7 +9,7 @@
 #ifndef MSG_JCOMM_H
 #define MSG_JCOMM_H
 #include <jni.h>
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 /**
  * This function binds the task associated with the communication to
  * the java communication object.

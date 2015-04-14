@@ -15,7 +15,10 @@
 #include <sys/types.h>
 
 #include <xbt/mmalloc.h>
+
+#ifdef HAVE_MC
 #include "xbt/mmalloc/mmprivate.h"
+#endif
 
 #include "simix/popping_private.h"
 #include "simix/smx_private.h"

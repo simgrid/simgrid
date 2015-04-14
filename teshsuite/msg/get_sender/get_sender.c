@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include <float.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific to this example");
