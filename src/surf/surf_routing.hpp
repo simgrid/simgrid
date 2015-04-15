@@ -67,7 +67,7 @@ public:
   };
 
   /**
-   * @brief Get the route and latency between two RoutingEdgs
+   * @brief Get the route and latency between two RoutingEdges
    * @details [long description]
    * 
    * @param src [description]
