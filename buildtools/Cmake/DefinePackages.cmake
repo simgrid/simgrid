@@ -631,7 +631,6 @@ set(MC_SRC
   src/mc/mc_request.cpp
   src/mc/mc_safety.h
   src/mc/mc_safety.cpp
-  src/mc/mc_set.cpp
   src/mc/mc_state.h
   src/mc/mc_state.cpp
   src/mc/mc_visited.cpp

@@ -124,15 +124,6 @@ typedef struct s_local_variable{
   int region;
 }s_local_variable_t, *local_variable_t;
 
-/* *********** Sets *********** */
-
-typedef struct s_mc_address_set *mc_address_set_t;
-
-mc_address_set_t mc_address_set_new(void);
-void mc_address_set_free(mc_address_set_t* p);
-void mc_address_add(mc_address_set_t p, const void* value);
-bool mc_address_test(mc_address_set_t p, const void* value);
-
 /* *********** Hash *********** */
 
 /** \brief Hash the current state
