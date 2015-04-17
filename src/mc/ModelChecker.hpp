@@ -14,7 +14,7 @@
 
 #include "mc_forward.h"
 #include "mc_process.h"
-#include "mc_page_store.h"
+#include "PageStore.hpp"
 #include "mc_protocol.h"
 
 namespace simgrid {
@@ -29,9 +29,7 @@ namespace mc {
  */
 class ModelChecker {
   // This is the parent snapshot of the current state:
-  mc_pages_store_t page_store_;
-  int fd_clear_refs_;
-  xbt_dynar_t record_;
+  s_mc_pages_store_t page_store_;
   s_mc_process_t process_;
   /** String pool for host names */
   // TODO, use std::unordered_set with heterogeneous comparison lookup (C++14)
@@ -45,9 +43,9 @@ public:
   {
     return process_;
   }
-  s_mc_pages_store_t& page_store()
+  PageStore& page_store()
   {
-    return *page_store_;
+    return page_store_;
   }
   const char* get_host_name(const char* name);
 };

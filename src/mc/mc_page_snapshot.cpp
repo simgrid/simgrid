@@ -7,7 +7,7 @@
 
 #include <unistd.h> // pread, pwrite
 
-#include "mc_page_store.h"
+#include "PageStore.hpp"
 #include "mc_mmu.h"
 #include "mc_private.h"
 #include "mc_snapshot.h"

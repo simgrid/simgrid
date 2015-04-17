@@ -13,7 +13,7 @@
 
 #include <xbt.h>
 
-#include "mc_page_store.h"
+#include "PageStore.hpp"
 
 #ifdef MC_PAGE_STORE_MD4
 #include <nettle/md4.h>
@@ -26,7 +26,8 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
                                 "Logging specific to mc_page_snapshot");
 
-// ***** Utility:
+namespace simgrid {
+namespace mc {
 
 /** @brief Compte a hash for the given memory page
  *
@@ -37,7 +38,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
  *  @return hash off the page
  */
 static inline  __attribute__ ((always_inline))
-s_mc_pages_store::hash_type mc_hash_page(const void* data)
+PageStore::hash_type mc_hash_page(const void* data)
 {
 #ifdef MC_PAGE_STORE_MD4
    boost::array<uint64_t,2> result;
@@ -61,7 +62,7 @@ s_mc_pages_store::hash_type mc_hash_page(const void* data)
 
 // ***** snapshot_page_manager
 
-s_mc_pages_store::s_mc_pages_store(size_t size) :
+PageStore::PageStore(size_t size) :
   memory_(NULL), capacity_(0), top_index_(0)
 {
   // Using mmap in order to be able to expand the region
@@ -78,12 +79,12 @@ s_mc_pages_store::s_mc_pages_store(size_t size) :
   this->page_counts_.resize(size);
 }
 
-s_mc_pages_store::~s_mc_pages_store()
+PageStore::~PageStore()
 {
   ::munmap(this->memory_, this->capacity_ << xbt_pagebits);
 }
 
-void s_mc_pages_store::resize(size_t size)
+void PageStore::resize(size_t size)
 {
   size_t old_bytesize = this->capacity_ << xbt_pagebits;
   size_t new_bytesize = size << xbt_pagebits;
@@ -104,7 +105,7 @@ void s_mc_pages_store::resize(size_t size)
  *
  *  @return index of the free page
  */
-size_t s_mc_pages_store::alloc_page()
+size_t PageStore::alloc_page()
 {
   if (this->free_pages_.empty()) {
 
@@ -127,7 +128,7 @@ size_t s_mc_pages_store::alloc_page()
   }
 }
 
-void s_mc_pages_store::remove_page(size_t pageno)
+void PageStore::remove_page(size_t pageno)
 {
   this->free_pages_.push_back(pageno);
   const void* page = this->get_page(pageno);
@@ -140,7 +141,7 @@ void s_mc_pages_store::remove_page(size_t pageno)
 }
 
 /** Store a page in memory */
-size_t s_mc_pages_store::store_page(void* page)
+size_t PageStore::store_page(void* page)
 {
   xbt_assert(top_index_ <= this->capacity_, "top_index is not consistent");
 
@@ -192,20 +193,7 @@ size_t s_mc_pages_store::store_page(void* page)
   return pageno;
 }
 
-// ***** Main C API
-
-extern "C" {
-
-mc_pages_store_t mc_pages_store_new()
-{
-  return new s_mc_pages_store_t(500);
 }
-
-void mc_pages_store_delete(mc_pages_store_t store)
-{
-  delete store;
-}
-
 }
 
 #ifdef SIMGRID_TEST
@@ -218,7 +206,7 @@ void mc_pages_store_delete(mc_pages_store_t store)
 
 #include <memory>
 
-#include "mc/mc_page_store.h"
+#include "mc/PageStore.hpp"
 
 static int value = 0;
 
@@ -240,7 +228,8 @@ XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the sto
 {
   xbt_test_add("Init");
   size_t pagesize = (size_t) getpagesize();
-  std::unique_ptr<s_mc_pages_store_t> store = std::unique_ptr<s_mc_pages_store_t>(new s_mc_pages_store(500));
+  std::unique_ptr<simgrid::mc::PageStore> store
+    = std::unique_ptr<simgrid::mc::PageStore>(new simgrid::mc::PageStore(500));
   void* data = getpage();
   xbt_test_assert(store->size()==0, "Bad size");
 

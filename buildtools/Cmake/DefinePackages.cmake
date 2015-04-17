@@ -6,7 +6,7 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/mc/mc_mmu.h
-  src/mc/mc_page_store.h
+  src/mc/PageStore.hpp
   src/mc/mc_record.h
   src/include/simgrid/platf_interface.h
   src/include/simgrid/sg_config.h
@@ -605,8 +605,8 @@ set(MC_SRC
   src/mc/mc_checkpoint.cpp
   src/mc/mc_snapshot.h
   src/mc/mc_snapshot.cpp
-  src/mc/mc_page_store.h
-  src/mc/mc_page_store.cpp
+  src/mc/PageStore.hpp
+  src/mc/PageStore.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
   src/mc/mc_comm_pattern.cpp

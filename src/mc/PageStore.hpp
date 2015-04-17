@@ -23,9 +23,8 @@
 #ifndef MC_PAGE_STORE_H
 #define MC_PAGE_STORE_H
 
-struct s_mc_pages_store;
-
-#ifdef __cplusplus
+namespace simgrid {
+namespace mc {
 
 /** @brief Storage for snapshot memory pages
  *
@@ -79,7 +78,7 @@ struct s_mc_pages_store;
  *    we must be able to store multiple indices for the same hash.
  *
  */
-struct s_mc_pages_store {
+class PageStore {
 public: // Types
 #ifdef MC_PAGE_STORE_MD4
   typedef boost::array<uint64_t,2> hash_type;
@@ -123,8 +122,10 @@ private: // Methods
   void remove_page(size_t pageno);
 
 public: // Constructors
-  explicit s_mc_pages_store(size_t size);
-  ~s_mc_pages_store();
+  PageStore(PageStore const&) = delete;
+  PageStore& operator=(PageStore const&) = delete;
+  explicit PageStore(size_t size);
+  ~PageStore();
 
 public: // Methods
 
@@ -178,54 +179,38 @@ public: // Debug/test methods
 };
 
 inline __attribute__((always_inline))
-void s_mc_pages_store::unref_page(size_t pageno) {
+void PageStore::unref_page(size_t pageno) {
   if ((--this->page_counts_[pageno]) == 0) {
     this->remove_page(pageno);
   }
 }
 
 inline __attribute__((always_inline))
-void s_mc_pages_store::ref_page(size_t pageno) {
+void PageStore::ref_page(size_t pageno) {
   ++this->page_counts_[pageno];
 }
 
 inline __attribute__((always_inline))
-const void* s_mc_pages_store::get_page(size_t pageno) const {
+const void* PageStore::get_page(size_t pageno) const {
   return mc_page_from_number(this->memory_, pageno);
 }
 
 inline __attribute__((always_inline))
-size_t s_mc_pages_store::get_ref(size_t pageno)  {
+size_t PageStore::get_ref(size_t pageno)  {
   return this->page_counts_[pageno];
 }
 
 inline __attribute__((always_inline))
-size_t s_mc_pages_store::size() {
+size_t PageStore::size() {
   return this->top_index_ - this->free_pages_.size();
 }
 
 inline __attribute__((always_inline))
-size_t s_mc_pages_store::capacity() {
+size_t PageStore::capacity() {
   return this->capacity_;
 }
 
-#endif
-
-SG_BEGIN_DECL()
-
-mc_pages_store_t mc_pages_store_new(void);
-void mc_pages_store_delete(mc_pages_store_t store);
-
-/**
- */
-static inline __attribute__((always_inline))
-const void* mc_page_store_get_page(mc_pages_store_t page_store, size_t pageno)
-{
-  // This is page_store->memory_:
-  void* memory = *(void**)page_store;
-  return mc_page_from_number(memory, pageno);
 }
-
-SG_END_DECL()
+}
 
 #endif

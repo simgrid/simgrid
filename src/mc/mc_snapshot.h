@@ -17,7 +17,7 @@
 
 #include "mc_forward.h"
 #include "ModelChecker.hpp"
-#include "mc_page_store.h"
+#include "PageStore.hpp"
 #include "mc_mmalloc.h"
 #include "mc_address_space.h"
 #include "mc_unw.h"
@@ -114,8 +114,8 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
 {
   size_t pageno = mc_page_number(region->start_addr, (void*) addr);
   size_t snapshot_pageno = region->chunked.page_numbers[pageno];
-  const void* snapshot_page = mc_page_store_get_page(
-    &mc_model_checker->page_store(), snapshot_pageno);
+  const void* snapshot_page =
+    mc_model_checker->page_store().get_page(snapshot_pageno);
   return (char*) snapshot_page + mc_page_offset((void*) addr);
 }
 

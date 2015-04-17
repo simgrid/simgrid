@@ -12,7 +12,7 @@
 #include "mc_snapshot.h"
 #include "mc_private.h"
 #include "mc_mmu.h"
-#include "mc_page_store.h"
+#include "PageStore.hpp"
 
 extern "C" {
 
