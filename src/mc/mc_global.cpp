@@ -144,7 +144,7 @@ void MC_init_pid(pid_t pid, int socket)
   /* Init parmap */
   //parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
 
-  MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(std_heap);
 
   if (_sg_mc_visited > 0 || _sg_mc_liveness  || _sg_mc_termination || mc_mode == MC_MODE_SERVER) {
     /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
@@ -286,7 +286,7 @@ void MC_replay(xbt_fifo_t stack)
       MC_restore_snapshot(state->system_state);
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
         MC_restore_communications_pattern(state);
-      MC_SET_STD_HEAP;
+      mmalloc_set_current_heap(std_heap);
       return;
     }
   }
@@ -296,11 +296,11 @@ void MC_replay(xbt_fifo_t stack)
   MC_restore_snapshot(initial_global_state->snapshot);
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
-  MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(std_heap);
 
   start_item = xbt_fifo_get_last_item(stack);
   
-  MC_SET_MC_HEAP;
+  mmalloc_set_current_heap(mc_heap);
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     // int n = xbt_dynar_length(incomplete_communications_pattern);
@@ -313,7 +313,7 @@ void MC_replay(xbt_fifo_t stack)
     }
   }
 
-  MC_SET_STD_HEAP;
+  mmalloc_set_current_heap(std_heap);
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (item = start_item;
@@ -344,10 +344,10 @@ void MC_replay(xbt_fifo_t stack)
 
       MC_simcall_handle(req, value);
 
-      MC_SET_MC_HEAP;
+      mmalloc_set_current_heap(mc_heap);
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         MC_handle_comm_pattern(call, req, value, NULL, 1);
-      MC_SET_STD_HEAP;
+      mmalloc_set_current_heap(std_heap);
 
       MC_wait_for_requests();
 
@@ -384,7 +384,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
     pair = (mc_pair_t) xbt_fifo_get_item_content(item);
     if(pair->graph_state->system_state){
       MC_restore_snapshot(pair->graph_state->system_state);
-      MC_SET_STD_HEAP;
+      mmalloc_set_current_heap(std_heap);
       return;
     }
   }
@@ -395,7 +395,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
   if (!initial_global_state->raw_mem_set)
-    MC_SET_STD_HEAP;
+    mmalloc_set_current_heap(std_heap);
 
     /* Traverse the stack from the initial state and re-execute the transitions */
     for (item = xbt_fifo_get_last_item(stack);
@@ -440,9 +440,9 @@ void MC_replay_liveness(xbt_fifo_t stack)
   XBT_DEBUG("**** End Replay ****");
 
   if (initial_global_state->raw_mem_set)
-    MC_SET_MC_HEAP;
+    mmalloc_set_current_heap(mc_heap);
   else
-    MC_SET_STD_HEAP;
+    mmalloc_set_current_heap(std_heap);
 
 }
 
@@ -459,7 +459,7 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
   
   mc_state_t state;
   
-  MC_SET_MC_HEAP;
+  mmalloc_set_current_heap(mc_heap);
   while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
     MC_state_delete(state, !state->in_visited_states ? 1 : 0);
   mmalloc_set_current_heap(heap);

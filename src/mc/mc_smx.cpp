@@ -19,11 +19,7 @@ static
 void MC_smx_process_info_clear(mc_smx_process_info_t p)
 {
   p->hostname = NULL;
-
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   free(p->name);
-  mmalloc_set_current_heap(heap);
-
   p->name = NULL;
 }
 
@@ -93,8 +89,6 @@ void MC_process_smx_refresh(mc_process_t process)
   if (process->cache_flags & MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES)
     return;
 
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
 
   // simix_global_p = REMOTE(simix_global);
@@ -112,7 +106,6 @@ void MC_process_smx_refresh(mc_process_t process)
     process, process->smx_old_process_infos, simix_global.process_to_destroy);
 
   process->cache_flags |= MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES;
-  mmalloc_set_current_heap(heap);
 }
 
 /** Get the issuer of a simcall (`req->issuer`)
@@ -212,9 +205,7 @@ const char* MC_smx_process_get_name(smx_process_t p)
 
   mc_smx_process_info_t info = MC_smx_process_get_info(p);
   if (!info->name) {
-    xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
     info->name = MC_process_read_string(process, p->name);
-    mmalloc_set_current_heap(heap);
   }
   return info->name;
 }

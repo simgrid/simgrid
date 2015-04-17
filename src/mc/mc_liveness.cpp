@@ -44,9 +44,8 @@ static xbt_dynar_t get_atomic_propositions_values()
   return values;
 }
 
-static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair) {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
+static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair)
+{
   mc_visited_pair_t new_pair = NULL;
   new_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
   new_pair->acceptance_pair = 1;
@@ -69,8 +68,6 @@ static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair) {
       // Parallell implementation
       /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(acceptance_pairs, min), (max-min)+1, pair);
          if(res != -1){
-         if(!raw_mem_set)
-         MC_SET_STD_HEAP;
          return ((mc_pair_t)xbt_dynar_get_as(acceptance_pairs, (min+res)-1, mc_pair_t))->num;
          } */
 
@@ -85,7 +82,6 @@ static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair) {
                 xbt_fifo_shift(mc_stack);
                 if (dot_output != NULL)
                   fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, pair_test->num, initial_global_state->prev_req);
-                mmalloc_set_current_heap(heap);
                 return NULL;
               }
             }
@@ -105,16 +101,12 @@ static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair) {
           xbt_dynar_insert_at(acceptance_pairs, index, &new_pair);
       }
     }
-
   }
-  mmalloc_set_current_heap(heap);
   return new_pair;
 }
 
 static void remove_acceptance_pair(int pair_num)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   unsigned int cursor = 0;
   mc_visited_pair_t pair_test = NULL;
   int pair_found = 0;
@@ -135,8 +127,6 @@ static void remove_acceptance_pair(int pair_num)
       MC_visited_pair_delete(pair_test);
 
   }
-
-  mmalloc_set_current_heap(heap);
 }
 
 
@@ -187,8 +177,6 @@ static void MC_pre_modelcheck_liveness(void)
 
   MC_wait_for_requests();
 
-  MC_SET_MC_HEAP;
-
   acceptance_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
   if(_sg_mc_visited > 0)
     visited_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
@@ -222,12 +210,7 @@ static void MC_pre_modelcheck_liveness(void)
     }
   }
 
-  MC_SET_STD_HEAP;
-  
   MC_modelcheck_liveness_main();
-
-  if (initial_global_state->raw_mem_set)
-    MC_SET_MC_HEAP;
 }
 
 static void MC_modelcheck_liveness_main(void)
@@ -277,16 +260,12 @@ static void MC_modelcheck_liveness_main(void)
       if ((current_pair->exploration_started == 0) && (visited_num = is_visited_pair(reached_pair, current_pair)) != -1) {
 
         if (dot_output != NULL){
-          MC_SET_MC_HEAP;
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, visited_num, initial_global_state->prev_req);
           fflush(dot_output);
-          MC_SET_STD_HEAP;
         }
 
         XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
-        MC_SET_MC_HEAP;
         current_pair->requests = 0;
-        MC_SET_STD_HEAP;
         goto backtracking;
         
       }else{
@@ -294,7 +273,6 @@ static void MC_modelcheck_liveness_main(void)
         req = MC_state_get_request(current_pair->graph_state, &value);
 
          if (dot_output != NULL) {
-           MC_SET_MC_HEAP;
            if (initial_global_state->prev_pair != 0 && initial_global_state->prev_pair != current_pair->num) {
              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, current_pair->num, initial_global_state->prev_req);
              xbt_free(initial_global_state->prev_req);
@@ -304,7 +282,6 @@ static void MC_modelcheck_liveness_main(void)
            if (current_pair->search_cycle)
              fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
            fflush(dot_output);
-           MC_SET_STD_HEAP;
          }
 
          char* req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX); 
@@ -324,8 +301,6 @@ static void MC_modelcheck_liveness_main(void)
          
          /* Wait for requests (schedules processes) */
          MC_wait_for_requests();
-
-         MC_SET_MC_HEAP;
 
          current_pair->requests--;
          current_pair->exploration_started = 1;
@@ -363,9 +338,7 @@ static void MC_modelcheck_liveness_main(void)
            }
            cursor--;
          }
-         
-         MC_SET_STD_HEAP;
-        
+
       } /* End of visited_pair test */
       
     } else {
@@ -373,8 +346,6 @@ static void MC_modelcheck_liveness_main(void)
     backtracking:
       if(visited_num == -1)
         XBT_DEBUG("No more request to execute. Looking for backtracking point.");
-    
-      MC_SET_MC_HEAP;
     
       xbt_dynar_free(&prop_values);
     
@@ -385,7 +356,6 @@ static void MC_modelcheck_liveness_main(void)
           /* We found a backtracking point */
           XBT_DEBUG("Backtracking to depth %d", current_pair->depth);
           xbt_fifo_unshift(mc_stack, current_pair);
-          MC_SET_STD_HEAP;
           MC_replay_liveness(mc_stack);
           XBT_DEBUG("Backtracking done");
           break;
@@ -397,8 +367,7 @@ static void MC_modelcheck_liveness_main(void)
           MC_pair_delete(current_pair);
         }
       }
-    
-      MC_SET_STD_HEAP;
+
     } /* End of if (current_pair->requests > 0) else ... */
     
   } /* End of while(xbt_fifo_size(mc_stack) > 0) */
@@ -416,24 +385,17 @@ void MC_modelcheck_liveness(void)
   XBT_DEBUG("Starting the liveness algorithm");
   _sg_mc_liveness = 1;
 
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
 
   /* Create the initial state */
   initial_global_state = xbt_new0(s_mc_global_t, 1);
 
-  MC_SET_STD_HEAP;
-
   MC_pre_modelcheck_liveness();
 
   /* We're done */
   MC_print_statistics(mc_stats);
   xbt_free(mc_time);
-
-  mmalloc_set_current_heap(heap);
-
 }
 
 }

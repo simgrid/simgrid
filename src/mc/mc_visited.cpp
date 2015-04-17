@@ -147,9 +147,6 @@ void MC_visited_pair_delete(mc_visited_pair_t p)
  */
 int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
 {
-
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   int cursor = 0, previous_cursor;
   int nb_processes, heap_bytes_used, nb_processes_test, heap_bytes_used_test;
   void *ref_test;
@@ -219,13 +216,10 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
           *max = next_cursor;
           next_cursor++;
         }
-        mmalloc_set_current_heap(heap);
         return -1;
       }
     }
   }
-
-  mmalloc_set_current_heap(heap);
   return cursor;
 }
 
@@ -257,8 +251,6 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
     }
   }
 
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   mc_visited_state_t new_state = visited_state_new();
   graph_state->system_state = new_state->system_state;
   graph_state->in_visited_states = 1;
@@ -267,7 +259,6 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
   if (xbt_dynar_is_empty(visited_states)) {
 
     xbt_dynar_push(visited_states, &new_state);
-    mmalloc_set_current_heap(heap);
     return NULL;
 
   } else {
@@ -295,8 +286,6 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
          XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
          xbt_dynar_remove_at(visited_states, (min + res) - 1, NULL);
          xbt_dynar_insert_at(visited_states, (min+res) - 1, &new_state);
-         if(!raw_mem_set)
-         MC_SET_STD_HEAP;
          return new_state->other_num;
          } */
 
@@ -325,7 +314,6 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
             xbt_dynar_insert_at(visited_states, cursor, &new_state);
             XBT_DEBUG("Replace visited state %d with the new visited state %d", state_test->num, new_state->num);
 
-            mmalloc_set_current_heap(heap);
             return state_test;
           }
           cursor++;
@@ -373,7 +361,6 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
       XBT_DEBUG("Remove visited state (maximum number of stored states reached)");
     }
 
-    mmalloc_set_current_heap(heap);
     return NULL;
   }
 }
@@ -385,8 +372,6 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
 
   if (_sg_mc_visited == 0)
     return -1;
-
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
 
   mc_visited_pair_t new_visited_pair = NULL;
 
@@ -433,8 +418,6 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
          MC_pair_delete(pair_test);
          }
          }
-         if(!raw_mem_set)
-         MC_SET_STD_HEAP;
          return pair->other_num;
          } */
       cursor = min;
@@ -460,7 +443,6 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
               } else {
                 MC_visited_pair_delete(pair_test);
               }
-              mmalloc_set_current_heap(heap);
               return new_visited_pair->other_num;
             }
           }
@@ -501,8 +483,6 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
     }
 
   }
-
-  mmalloc_set_current_heap(heap);
   return -1;
 }
 

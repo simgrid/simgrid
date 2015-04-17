@@ -32,11 +32,9 @@ const char* ModelChecker::get_host_name(const char* hostname)
   // Lookup the host name in the dictionary (or create it):
   xbt_dictelm_t elt = xbt_dict_get_elm_or_null(this->hostnames_, hostname);
   if (!elt) {
-    xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
     xbt_dict_set(this->hostnames_, hostname, NULL, NULL);
     elt = xbt_dict_get_elm_or_null(this->hostnames_, hostname);
     assert(elt);
-    mmalloc_set_current_heap(heap);
   }
   return elt->key;
 }

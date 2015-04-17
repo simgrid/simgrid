@@ -300,8 +300,6 @@ static void MC_modelcheck_comm_determinism_main(void);
 
 static void MC_pre_modelcheck_comm_determinism(void)
 {
-  MC_SET_MC_HEAP;
-
   mc_state_t initial_state = NULL;
   smx_process_t process;
   int i;
@@ -327,14 +325,11 @@ static void MC_pre_modelcheck_comm_determinism(void)
   }
 
   initial_state = MC_state_new();
-  MC_SET_STD_HEAP;
   
   XBT_DEBUG("********* Start communication determinism verification *********");
 
   /* Wait for requests (schedules processes) */
   MC_wait_for_requests();
-
-  MC_SET_MC_HEAP;
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   MC_EACH_SIMIX_PROCESS(process,
@@ -344,9 +339,6 @@ static void MC_pre_modelcheck_comm_determinism(void)
   );
 
   xbt_fifo_unshift(mc_stack, initial_state);
-
-  MC_SET_STD_HEAP;
-
 }
 
 static void MC_modelcheck_comm_determinism_main(void)
@@ -381,9 +373,7 @@ static void MC_modelcheck_comm_determinism_main(void)
       xbt_free(req_str);
       
       if (dot_output != NULL) {
-        MC_SET_MC_HEAP;
         req_str = MC_request_get_dot_output(req, value);
-        MC_SET_STD_HEAP;
       }
 
       MC_state_set_executed_request(state, req, value);
@@ -398,19 +388,15 @@ static void MC_modelcheck_comm_determinism_main(void)
       /* Answer the request */
       MC_simcall_handle(req, value);    /* After this call req is no longer useful */
 
-      MC_SET_MC_HEAP;
       if(!initial_global_state->initial_communications_pattern_done)
         MC_handle_comm_pattern(call, req, value, initial_communications_pattern, 0);
       else
         MC_handle_comm_pattern(call, req, value, NULL, 0);
-      MC_SET_STD_HEAP;
 
       /* Wait for requests (schedules processes) */
       MC_wait_for_requests();
 
       /* Create the new expanded state */
-      MC_SET_MC_HEAP;
-
       next_state = MC_state_new();
 
       if ((visited_state = is_visited_state(next_state)) == NULL) {
@@ -437,8 +423,6 @@ static void MC_modelcheck_comm_determinism_main(void)
       if (dot_output != NULL)
         xbt_free(req_str);
 
-      MC_SET_STD_HEAP;
-
     } else {
 
       if (xbt_fifo_size(mc_stack) > _sg_mc_max_depth) {
@@ -449,8 +433,6 @@ static void MC_modelcheck_comm_determinism_main(void)
         XBT_DEBUG("There are no more processes to interleave. (depth %d)", xbt_fifo_size(mc_stack));
       }
 
-      MC_SET_MC_HEAP;
-
       if (!initial_global_state->initial_communications_pattern_done) 
         initial_global_state->initial_communications_pattern_done = 1;
 
@@ -458,8 +440,6 @@ static void MC_modelcheck_comm_determinism_main(void)
       xbt_fifo_shift(mc_stack);
       MC_state_delete(state, !state->in_visited_states ? 1 : 0);
       XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
-
-      MC_SET_STD_HEAP;
 
       visited_state = NULL;
 
@@ -469,14 +449,11 @@ static void MC_modelcheck_comm_determinism_main(void)
         return;
       }
 
-      MC_SET_MC_HEAP;
-
       while ((state = (mc_state_t) xbt_fifo_shift(mc_stack)) != NULL) {
         if (MC_state_interleave_size(state) && xbt_fifo_size(mc_stack) < _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
           xbt_fifo_unshift(mc_stack, state);
-          MC_SET_STD_HEAP;
 
           MC_replay(mc_stack);
 
@@ -488,14 +465,10 @@ static void MC_modelcheck_comm_determinism_main(void)
           MC_state_delete(state, !state->in_visited_states ? 1 : 0);
         }
       }
-
-      MC_SET_STD_HEAP;
     }
   }
 
   MC_print_statistics(mc_stats);
-  MC_SET_STD_HEAP;
-
   exit(0);
 }
 
@@ -510,16 +483,11 @@ void MC_modelcheck_comm_determinism(void)
     MC_client_handle_messages();
   }
 
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
 
-  MC_SET_STD_HEAP;
-
   MC_pre_modelcheck_comm_determinism();
 
-  MC_SET_MC_HEAP;
   initial_global_state = xbt_new0(s_mc_global_t, 1);
   initial_global_state->snapshot = MC_take_snapshot(0);
   initial_global_state->initial_communications_pattern_done = 0;
@@ -528,11 +496,7 @@ void MC_modelcheck_comm_determinism(void)
   initial_global_state->recv_diff = NULL;
   initial_global_state->send_diff = NULL;
 
-  MC_SET_STD_HEAP;
-
   MC_modelcheck_comm_determinism_main();
-
-  mmalloc_set_current_heap(heap);
 }
 
 }

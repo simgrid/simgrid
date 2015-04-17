@@ -157,9 +157,7 @@ void MC_process_refresh_heap(mc_process_t process)
   assert(!MC_process_is_self(process));
   // Read/dereference/refresh the std_heap pointer:
   if (!process->heap) {
-    xbt_mheap_t oldheap  = mmalloc_set_current_heap(mc_heap);
     process->heap = (struct mdesc*) malloc(sizeof(struct mdesc));
-    mmalloc_set_current_heap(oldheap);
   }
   MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
     process->heap, process->heap_address, sizeof(struct mdesc),
@@ -175,11 +173,7 @@ void MC_process_refresh_malloc_info(mc_process_t process)
   // Refresh process->heapinfo:
   size_t malloc_info_bytesize =
     (process->heap->heaplimit + 1) * sizeof(malloc_info);
-
-  xbt_mheap_t heap  = mmalloc_set_current_heap(mc_heap);
   process->heap_info = (malloc_info*) realloc(process->heap_info, malloc_info_bytesize);
-  mmalloc_set_current_heap(heap);
-
   MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
     process->heap_info,
     process->heap->heapinfo, malloc_info_bytesize,

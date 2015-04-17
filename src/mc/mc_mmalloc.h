@@ -35,9 +35,6 @@ extern xbt_mheap_t mc_heap;
 /*   size_t bytes_free;            /\* Byte total of chunks in the free list. *\/ */
 /* }; */
 
-#define MC_SET_MC_HEAP    mmalloc_set_current_heap(mc_heap)
-#define MC_SET_STD_HEAP  mmalloc_set_current_heap(std_heap)
-
 SG_END_DECL()
 
 #endif

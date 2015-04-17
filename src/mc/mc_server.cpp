@@ -20,6 +20,7 @@
 #include "mc_server.h"
 #include "mc_private.h"
 #include "mc_ignore.h"
+#include "mcer_ignore.h"
 
 extern "C" {
 
@@ -186,7 +187,7 @@ bool s_mc_server::handle_events()
           if (size != sizeof(message))
             xbt_die("Broken messsage");
           memcpy(&message, buffer, sizeof(message));
-          MC_remove_ignore_heap(message.addr, message.size);
+          MC_heap_region_ignore_remove(message.addr, message.size);
           break;
         }
 

@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ignore, mc,
 // structure but they are currently used before the MC initialisation
 // (in standalone mode).
 
-extern xbt_dynar_t mc_heap_comparison_ignore;
+
 extern xbt_dynar_t stacks_areas;
 
 /**************************** Structures ******************************/
@@ -75,136 +75,51 @@ xbt_dynar_t MC_checkpoint_ignore_new(void)
 
 /***********************************************************************/
 
-// Mcer
-void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
+// ***** Model-checked
+
+void MC_ignore_heap(void *address, size_t size)
 {
-  if (mc_heap_comparison_ignore == NULL) {
-    mc_heap_comparison_ignore =
-        xbt_dynar_new(sizeof(mc_heap_ignore_region_t),
-                      heap_ignore_region_free_voidp);
-    xbt_dynar_push(mc_heap_comparison_ignore, &region);
+  if (mc_mode != MC_MODE_CLIENT)
     return;
+
+  s_mc_heap_ignore_region_t region;
+  memset(&region, 0, sizeof(region));
+  region.address = address;
+  region.size = size;
+  region.block =
+   ((char *) address -
+    (char *) std_heap->heapbase) / BLOCKSIZE + 1;
+  if (std_heap->heapinfo[region.block].type == 0) {
+    region.fragment = -1;
+    std_heap->heapinfo[region.block].busy_block.ignore++;
+  } else {
+    region.fragment =
+        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >> std_heap->
+        heapinfo[region.block].type;
+    std_heap->heapinfo[region.block].busy_frag.ignore[region.fragment]++;
   }
 
-  unsigned int cursor = 0;
-  mc_heap_ignore_region_t current_region = NULL;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-
-  // Find the position where we want to insert the mc_heap_ignore_region_t:
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    current_region =
-        (mc_heap_ignore_region_t) xbt_dynar_get_as(mc_heap_comparison_ignore,
-                                                   cursor,
-                                                   mc_heap_ignore_region_t);
-    if (current_region->address == region->address) {
-      heap_ignore_region_free(region);
-      return;
-    } else if (current_region->address < region->address) {
-      start = cursor + 1;
-    } else {
-      end = cursor - 1;
-    }
-  }
-
-  // Insert it mc_heap_ignore_region_t:
-  if (current_region->address < region->address)
-    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor + 1, &region);
-  else
-    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
-}
-
-// MCed:
-static void MC_heap_region_ignore_send(mc_heap_ignore_region_t region)
-{
   s_mc_ignore_heap_message_t message;
   message.type = MC_MESSAGE_IGNORE_HEAP;
-  message.region = *region;
+  message.region = region;
   if (MC_protocol_send(mc_client->fd, &message, sizeof(message)))
     xbt_die("Could not send ignored region to MCer");
 }
 
-// MCed:
-void MC_ignore_heap(void *address, size_t size)
-{
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
-  mc_heap_ignore_region_t region = xbt_new0(s_mc_heap_ignore_region_t, 1);
-  region->address = address;
-  region->size = size;
-
-  region->block =
-      ((char *) address -
-       (char *) std_heap->heapbase) / BLOCKSIZE + 1;
-
-  if (std_heap->heapinfo[region->block].type == 0) {
-    region->fragment = -1;
-    std_heap->heapinfo[region->block].busy_block.ignore++;
-  } else {
-    region->fragment =
-        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >> std_heap->
-        heapinfo[region->block].type;
-    std_heap->heapinfo[region->block].busy_frag.ignore[region->fragment]++;
-  }
-
-  MC_heap_region_ignore_insert(region);
-
-#if 1
-  if (mc_mode == MC_MODE_CLIENT)
-    MC_heap_region_ignore_send(region);
-#endif
-  mmalloc_set_current_heap(heap);
-}
-
 void MC_remove_ignore_heap(void *address, size_t size)
 {
-  if (mc_mode == MC_MODE_CLIENT) {
-    s_mc_ignore_memory_message_t message;
-    message.type = MC_MESSAGE_UNIGNORE_HEAP;
-    message.addr = address;
-    message.size = size;
-    MC_client_send_message(&message, sizeof(message));
+  if (mc_mode != MC_MODE_CLIENT)
     return;
-  }
 
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-  mc_heap_ignore_region_t region;
-  int ignore_found = 0;
-
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    region =
-        (mc_heap_ignore_region_t) xbt_dynar_get_as(mc_heap_comparison_ignore,
-                                                   cursor,
-                                                   mc_heap_ignore_region_t);
-    if (region->address == address) {
-      ignore_found = 1;
-      break;
-    } else if (region->address < address) {
-      start = cursor + 1;
-    } else {
-      if ((char *) region->address <= ((char *) address + size)) {
-        ignore_found = 1;
-        break;
-      } else {
-        end = cursor - 1;
-      }
-    }
-  }
-
-  if (ignore_found == 1) {
-    xbt_dynar_remove_at(mc_heap_comparison_ignore, cursor, NULL);
-    MC_remove_ignore_heap(address, size);
-  }
-  mmalloc_set_current_heap(heap);
+  s_mc_ignore_memory_message_t message;
+  message.type = MC_MESSAGE_UNIGNORE_HEAP;
+  message.addr = address;
+  message.size = size;
+  MC_client_send_message(&message, sizeof(message));
 }
 
-// MCer
+// ***** Model-checker:
+
 void MC_ignore_global_variable(const char *name)
 {
   mc_process_t process = &mc_model_checker->process();

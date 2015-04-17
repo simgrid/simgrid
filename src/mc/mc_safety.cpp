@@ -40,21 +40,16 @@ static int is_exploration_stack_state(mc_state_t current_state){
  */
 static void MC_pre_modelcheck_safety()
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   if (_sg_mc_visited > 0)
     visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
 
   mc_state_t initial_state = MC_state_new();
-  MC_SET_STD_HEAP;
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");
 
   /* Wait for requests (schedules processes) */
   MC_wait_for_requests();
-
-  MC_SET_MC_HEAP;
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   smx_process_t process;
@@ -67,7 +62,6 @@ static void MC_pre_modelcheck_safety()
   );
 
   xbt_fifo_unshift(mc_stack, initial_state);
-  mmalloc_set_current_heap(heap);
 }
 
 
@@ -107,9 +101,7 @@ static void MC_modelcheck_safety_main(void)
       xbt_free(req_str);
 
       if (dot_output != NULL) {
-        MC_SET_MC_HEAP;
         req_str = MC_request_get_dot_output(req, value);
-        MC_SET_STD_HEAP;
       }
 
       MC_state_set_executed_request(state, req, value);
@@ -123,8 +115,6 @@ static void MC_modelcheck_safety_main(void)
       MC_wait_for_requests();
 
       /* Create the new expanded state */
-      MC_SET_MC_HEAP;
-
       next_state = MC_state_new();
 
       if(_sg_mc_termination && is_exploration_stack_state(next_state)){
@@ -159,8 +149,6 @@ static void MC_modelcheck_safety_main(void)
       if (dot_output != NULL)
         xbt_free(req_str);
 
-      MC_SET_STD_HEAP;
-
       /* Let's loop again */
 
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
@@ -181,14 +169,10 @@ static void MC_modelcheck_safety_main(void)
 
       }
 
-      MC_SET_MC_HEAP;
-
       /* Trash the current state, no longer needed */
       xbt_fifo_shift(mc_stack);
       XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
       MC_state_delete(state, !state->in_visited_states ? 1 : 0);
-
-      MC_SET_STD_HEAP;
 
       visited_state = NULL;
 
@@ -198,7 +182,6 @@ static void MC_modelcheck_safety_main(void)
         return;
       }
 
-      MC_SET_MC_HEAP;
       /* Traverse the stack backwards until a state with a non empty interleave
          set is found, deleting all the states that have it empty in the way.
          For each deleted state, check if the request that has generated it 
@@ -261,12 +244,9 @@ static void MC_modelcheck_safety_main(void)
           MC_state_delete(state, !state->in_visited_states ? 1 : 0);
         }
       }
-      MC_SET_STD_HEAP;
     }
   }
   MC_print_statistics(mc_stats);
-  MC_SET_STD_HEAP;
-
   return;
 }
 
@@ -287,24 +267,16 @@ void MC_modelcheck_safety(void)
 
   _sg_mc_safety = 1;
 
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
 
-  MC_SET_STD_HEAP;
-
   MC_pre_modelcheck_safety();
 
-  MC_SET_MC_HEAP;
   /* Save the initial state */
   initial_global_state = xbt_new0(s_mc_global_t, 1);
   initial_global_state->snapshot = MC_take_snapshot(0);
-  MC_SET_STD_HEAP;
 
   MC_modelcheck_safety_main();
-
-  mmalloc_set_current_heap(heap);
 
   xbt_abort();
   //MC_exit();
