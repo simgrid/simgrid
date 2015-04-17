@@ -212,6 +212,8 @@ static inline malloc_info* MC_process_get_malloc_info(mc_process_t process)
  */
 dw_variable_t MC_process_find_variable_by_name(mc_process_t process, const char* name);
 
+void MC_invalidate_cache(void);
+
 SG_END_DECL()
 
 #endif

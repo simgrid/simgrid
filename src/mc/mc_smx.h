@@ -45,7 +45,7 @@ struct s_mc_smx_process_info {
   /** (Flat) Copy of the process data structure */
   struct s_smx_process copy;
   /** Hostname (owned by `mc_modelchecker->hostnames`) */
-  char* hostname;
+  const char* hostname;
   char* name;
 };
 
@@ -68,15 +68,15 @@ const char* MC_smx_process_get_name(smx_process_t p);
 const char* MC_smx_process_get_host_name(smx_process_t p);
 
 #define MC_EACH_SIMIX_PROCESS(process, code) \
-  if (MC_process_is_self(&mc_model_checker->process)) { \
+  if (MC_process_is_self(&mc_model_checker->process())) { \
     xbt_swag_foreach(process, simix_global->process_list) { \
       code; \
     } \
   } else { \
-    MC_process_smx_refresh(&mc_model_checker->process); \
+    MC_process_smx_refresh(&mc_model_checker->process()); \
     unsigned int _smx_process_index; \
     mc_smx_process_info_t _smx_process_info; \
-    xbt_dynar_foreach_ptr(mc_model_checker->process.smx_process_infos, _smx_process_index, _smx_process_info) { \
+    xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, _smx_process_index, _smx_process_info) { \
       smx_process_t process = &_smx_process_info->copy; \
       code; \
     } \
@@ -95,6 +95,8 @@ smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address);
 
 /** Get the process info structure from the process remote address */
 mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address);
+
+unsigned long MC_smx_get_maxpid(void);
 
 SG_END_DECL()
 

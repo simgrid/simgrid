@@ -368,7 +368,7 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
 
   state->heaplimit = ((struct mdesc *) heap1)->heaplimit;
   
-  state->std_heap_copy = *MC_process_get_heap(&mc_model_checker->process);
+  state->std_heap_copy = *MC_process_get_heap(&mc_model_checker->process());
 
   state->heapsize1 = heap1->heapsize;
   state->heapsize2 = heap2->heapsize;
@@ -429,7 +429,7 @@ mc_mem_region_t MC_get_heap_region(mc_snapshot_t snapshot)
 
 int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
   struct s_mc_diff *state = mc_diff_info;
 
   /* Start comparison */
@@ -784,7 +784,7 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
                                           xbt_dynar_t previous, int size,
                                           int check_ignore)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
 
   int i = 0;
   const void *addr_pointed1, *addr_pointed2;
@@ -1139,7 +1139,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
                       mc_snapshot_t snapshot2, xbt_dynar_t previous,
                       dw_type_t type, int pointer_level)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
 
   struct s_mc_diff *state = mc_diff_info;
 
@@ -1610,7 +1610,7 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2)
   /* Heap information */
   state->heaplimit = ((struct mdesc *) heap1)->heaplimit;
 
-  state->std_heap_copy = *MC_process_get_heap(&mc_model_checker->process);
+  state->std_heap_copy = *MC_process_get_heap(&mc_model_checker->process());
 
   state->heapbase1 = (char *) heap1 + BLOCKSIZE;
   state->heapbase2 = (char *) heap2 + BLOCKSIZE;

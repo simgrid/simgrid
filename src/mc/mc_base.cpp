@@ -16,7 +16,7 @@
 
 #ifdef HAVE_MC
 #include "mc_process.h"
-#include "mc_model_checker.h"
+#include "ModelChecker.hpp"
 #include "mc_protocol.h"
 #include "mc_smx.h"
 #include "mc_server.h"
@@ -30,7 +30,7 @@ void MC_wait_for_requests(void)
 {
 #ifdef HAVE_MC
   if (mc_mode == MC_MODE_SERVER) {
-    MC_server_wait_client(&mc_model_checker->process);
+    MC_server_wait_client(&mc_model_checker->process());
     return;
   }
 #endif
@@ -67,8 +67,8 @@ int MC_request_is_enabled(smx_simcall_t req)
 
 #ifdef HAVE_MC
     // Fetch from MCed memory:
-    if (!MC_process_is_self(&mc_model_checker->process)) {
-      MC_process_read(&mc_model_checker->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+    if (!MC_process_is_self(&mc_model_checker->process())) {
+      MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
         &temp_synchro, act, sizeof(temp_synchro),
         MC_PROCESS_INDEX_ANY);
       act = &temp_synchro;
@@ -92,13 +92,13 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
     // Read dynar:
     s_xbt_dynar_t comms;
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       &comms, simcall_comm_waitany__get__comms(req), sizeof(comms));
     // Read dynar buffer:
     assert(comms.elmsize == sizeof(act));
     size_t buffer_size = comms.elmsize * comms.used;
     char buffer[buffer_size];
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       buffer, comms.data, sizeof(buffer));
 #endif
 
@@ -111,8 +111,8 @@ int MC_request_is_enabled(smx_simcall_t req)
 
 #ifdef HAVE_MC
       // Fetch from MCed memory:
-      if (!MC_process_is_self(&mc_model_checker->process)) {
-        MC_process_read(&mc_model_checker->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+      if (!MC_process_is_self(&mc_model_checker->process())) {
+        MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
           &temp_synchro, act, sizeof(temp_synchro),
           MC_PROCESS_INDEX_ANY);
         act = &temp_synchro;
@@ -129,8 +129,8 @@ int MC_request_is_enabled(smx_simcall_t req)
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
 #ifdef HAVE_MC
     s_smx_mutex_t temp_mutex;
-    if (!MC_process_is_self(&mc_model_checker->process)) {
-      MC_process_read(&mc_model_checker->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+    if (!MC_process_is_self(&mc_model_checker->process())) {
+      MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
         &temp_mutex, mutex, sizeof(temp_mutex),
         MC_PROCESS_INDEX_ANY);
       mutex = &temp_mutex;
@@ -210,7 +210,7 @@ void MC_simcall_handle(smx_simcall_t req, int value)
 #ifndef HAVE_MC
   SIMIX_simcall_handle(req, value);
 #else
-  if (MC_process_is_self(&mc_model_checker->process)) {
+  if (MC_process_is_self(&mc_model_checker->process())) {
     SIMIX_simcall_handle(req, value);
     return;
   }
@@ -218,9 +218,9 @@ void MC_simcall_handle(smx_simcall_t req, int value)
   unsigned i;
   mc_smx_process_info_t pi = NULL;
 
-  xbt_dynar_foreach_ptr(mc_model_checker->process.smx_process_infos, i, pi) {
+  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, i, pi) {
     if (req == &pi->copy.simcall) {
-      MC_server_simcall_handle(&mc_model_checker->process, pi->copy.pid, value);
+      MC_server_simcall_handle(&mc_model_checker->process(), pi->copy.pid, value);
       return;
     }
   }

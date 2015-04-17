@@ -144,6 +144,8 @@ void MC_dump_stacks(FILE* file);
 
 void MC_report_assertion_error(void);
 
+void MC_invalidate_cache(void);
+
 SG_END_DECL()
 
 #endif

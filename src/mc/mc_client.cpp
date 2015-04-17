@@ -21,7 +21,6 @@
 // We won't need those once the separation MCer/MCed is complete:
 #include "mc_mmalloc.h"
 #include "mc_ignore.h"
-#include "mc_model_checker.h"
 #include "mc_private.h" // MC_deadlock_check()
 #include "mc_smx.h"
 

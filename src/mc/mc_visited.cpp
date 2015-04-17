@@ -55,18 +55,18 @@ void visited_state_free_voidp(void *s)
  */
 static mc_visited_state_t visited_state_new()
 {
-  mc_process_t process = &(mc_model_checker->process);
+  mc_process_t process = &(mc_model_checker->process());
   mc_visited_state_t new_state = xbt_new0(s_mc_visited_state_t, 1);
   new_state->heap_bytes_used = mmalloc_get_bytes_used_remote(
     MC_process_get_heap(process)->heaplimit,
     MC_process_get_malloc_info(process));
 
-  if (MC_process_is_self(&mc_model_checker->process)) {
+  if (MC_process_is_self(&mc_model_checker->process())) {
     new_state->nb_processes = xbt_swag_size(simix_global->process_list);
   } else {
-    MC_process_smx_refresh(&mc_model_checker->process);
+    MC_process_smx_refresh(&mc_model_checker->process());
     new_state->nb_processes = xbt_dynar_length(
-      mc_model_checker->process.smx_process_infos);
+      mc_model_checker->process().smx_process_infos);
   }
 
   new_state->system_state = MC_take_snapshot(mc_stats->expanded_states);
@@ -77,7 +77,7 @@ static mc_visited_state_t visited_state_new()
 
 mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
 {
-  mc_process_t process = &(mc_model_checker->process);
+  mc_process_t process = &(mc_model_checker->process());
   mc_visited_pair_t pair = NULL;
   pair = xbt_new0(s_mc_visited_pair_t, 1);
   pair->graph_state = graph_state;
@@ -86,12 +86,12 @@ mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automa
   pair->heap_bytes_used = mmalloc_get_bytes_used_remote(
     MC_process_get_heap(process)->heaplimit,
     MC_process_get_malloc_info(process));
-  if (MC_process_is_self(&mc_model_checker->process)) {
+  if (MC_process_is_self(&mc_model_checker->process())) {
     pair->nb_processes = xbt_swag_size(simix_global->process_list);
   } else {
-    MC_process_smx_refresh(&mc_model_checker->process);
+    MC_process_smx_refresh(&mc_model_checker->process());
     pair->nb_processes = xbt_dynar_length(
-      mc_model_checker->process.smx_process_infos);
+      mc_model_checker->process().smx_process_infos);
   }
   pair->automaton_state = automaton_state;
   pair->num = pair_num;
@@ -362,7 +362,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
       xbt_dynar_foreach(visited_states, cursor2, state_test){
-        if (!mc_important_snapshot(state_test->system_state) && state_test->num < min2) {
+        if (state_test->num < min2) {
           index2 = cursor2;
           min2 = state_test->num;
         }
@@ -485,7 +485,7 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
       xbt_dynar_foreach(visited_pairs, cursor2, pair_test) {
-        if (!mc_important_snapshot(pair_test->graph_state->system_state) && pair_test->num < min2) {
+        if (pair_test->num < min2) {
           index2 = cursor2;
           min2 = pair_test->num;
         }

@@ -91,7 +91,7 @@ static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int p
 static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t comm_addr)
 {
   s_smx_synchro_t comm;
-  MC_process_read_simple(&mc_model_checker->process,
+  MC_process_read_simple(&mc_model_checker->process(),
     &comm, comm_addr, sizeof(comm));
 
   smx_process_t src_proc = MC_smx_resolve_process(comm.comm.src_proc);
@@ -102,11 +102,11 @@ static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t co
   comm_pattern->dst_host = MC_smx_process_get_host_name(dst_proc);
   if (comm_pattern->data_size == -1 && comm.comm.src_buff != NULL) {
     size_t buff_size;
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       &buff_size, comm.comm.dst_buff_size, sizeof(buff_size));
     comm_pattern->data_size = buff_size;
     comm_pattern->data = xbt_malloc0(comm_pattern->data_size);
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       comm_pattern->data, comm.comm.src_buff, comm_pattern->data_size);
   }
 }
@@ -185,20 +185,20 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     pattern->comm_addr = simcall_comm_isend__get__result(request);
 
     s_smx_synchro_t synchro;
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       &synchro, pattern->comm_addr, sizeof(synchro));
 
     char* remote_name;
-    MC_process_read_simple(&mc_model_checker->process, &remote_name,
+    MC_process_read_simple(&mc_model_checker->process(), &remote_name,
       synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name,
       sizeof(remote_name));
     pattern->rdv =
-      MC_process_read_string(&mc_model_checker->process, remote_name);
+      MC_process_read_string(&mc_model_checker->process(), remote_name);
     pattern->src_proc = MC_smx_resolve_process(synchro.comm.src_proc)->pid;
     pattern->src_host = MC_smx_process_get_host_name(issuer);
 
     struct s_smpi_mpi_request mpi_request;
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       &mpi_request, (MPI_Request) simcall_comm_isend__get__data(request),
       sizeof(mpi_request));
     pattern->tag = mpi_request.tag;
@@ -206,7 +206,7 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     if(synchro.comm.src_buff != NULL){
       pattern->data_size = synchro.comm.src_buff_size;
       pattern->data = xbt_malloc0(pattern->data_size);
-      MC_process_read_simple(&mc_model_checker->process,
+      MC_process_read_simple(&mc_model_checker->process(),
         pattern->data, synchro.comm.src_buff, pattern->data_size);
     }
     if(mpi_request.detached){
@@ -231,21 +231,21 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     pattern->comm_addr = simcall_comm_irecv__get__result(request);
 
     struct s_smpi_mpi_request mpi_request;
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       &mpi_request, (MPI_Request) simcall_comm_irecv__get__data(request),
       sizeof(mpi_request));
     pattern->tag = mpi_request.tag;
 
     s_smx_synchro_t synchro;
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       &synchro, pattern->comm_addr, sizeof(synchro));
 
     char* remote_name;
-    MC_process_read_simple(&mc_model_checker->process, &remote_name,
+    MC_process_read_simple(&mc_model_checker->process(), &remote_name,
       synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name,
       sizeof(remote_name));
     pattern->rdv =
-      MC_process_read_string(&mc_model_checker->process, remote_name);
+      MC_process_read_string(&mc_model_checker->process(), remote_name);
     pattern->dst_proc = MC_smx_resolve_process(synchro.comm.dst_proc)->pid;
     pattern->dst_host = MC_smx_process_get_host_name(issuer);
   } else {

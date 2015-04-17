@@ -206,7 +206,7 @@ void MC_remove_ignore_heap(void *address, size_t size)
 // MCer
 void MC_ignore_global_variable(const char *name)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   xbt_assert(process->object_infos, "MC subsystem not initialized");
 
@@ -315,7 +315,7 @@ static void MC_ignore_local_variable_in_object(const char *var_name,
 // MCer
 void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
   if (strcmp(frame_name, "*") == 0)
     frame_name = NULL;
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);

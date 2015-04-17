@@ -10,21 +10,34 @@
 #include <xbt/misc.h>
 #include <mc/datatypes.h>
 
-SG_BEGIN_DECL()
+#ifdef __cplusplus
+
+namespace simgrid {
+namespace mc {
+  class ModelChecker;
+}
+}
+
+typedef ::simgrid::mc::ModelChecker s_mc_model_checker_t;
+
+#else
+
+typedef struct _s_mc_model_checker s_mc_model_checker_t;
+
+#endif
 
 typedef struct s_mc_object_info s_mc_object_info_t, *mc_object_info_t;
 typedef struct s_dw_type s_dw_type_t, *dw_type_t;
 typedef struct s_memory_map s_memory_map_t, *memory_map_t;
 typedef struct s_dw_variable s_dw_variable_t, *dw_variable_t;
 typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
-
 typedef struct s_mc_pages_store s_mc_pages_store_t, *mc_pages_store_t;
 typedef struct s_mc_snapshot s_mc_snapshot_t, *mc_snapshot_t;
-
 typedef struct s_mc_process s_mc_process_t, * mc_process_t;
-typedef struct s_mc_model_checker s_mc_model_checker_t, *mc_model_checker_t;
-extern mc_model_checker_t mc_model_checker;
+typedef s_mc_model_checker_t *mc_model_checker_t;
 
+SG_BEGIN_DECL()
+extern mc_model_checker_t mc_model_checker;
 SG_END_DECL()
 
 #endif

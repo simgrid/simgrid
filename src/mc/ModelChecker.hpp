@@ -17,30 +17,42 @@
 #include "mc_page_store.h"
 #include "mc_protocol.h"
 
-SG_BEGIN_DECL()
+namespace simgrid {
+namespace mc {
 
-/** @brief State of the model-checker (global variables for the model checker)
+/** State of the model-checker (global variables for the model checker)
  *
  *  Each part of the state of the model chercker represented as a global
  *  variable prevents some sharing between snapshots and must be ignored.
  *  By moving as much state as possible in this structure allocated
- *  on the model-chercker heap, we avoid those issues.
+ *  on the model-checker heap, we avoid those issues.
  */
-struct s_mc_model_checker {
+class ModelChecker {
   // This is the parent snapshot of the current state:
-  mc_snapshot_t parent_snapshot;
-  mc_pages_store_t pages;
-  int fd_clear_refs;
-  xbt_dynar_t record;
-  s_mc_process_t process;
+  mc_pages_store_t page_store_;
+  int fd_clear_refs_;
+  xbt_dynar_t record_;
+  s_mc_process_t process_;
   /** String pool for host names */
-  xbt_dict_t /* <hostname, NULL> */ hosts;
+  // TODO, use std::unordered_set with heterogeneous comparison lookup (C++14)
+  xbt_dict_t /* <hostname, NULL> */ hostnames_;
+public:
+  ModelChecker(ModelChecker const&) = delete;
+  ModelChecker& operator=(ModelChecker const&) = delete;
+  ModelChecker(pid_t pid, int socket);
+  ~ModelChecker();
+  s_mc_process_t& process()
+  {
+    return process_;
+  }
+  s_mc_pages_store_t& page_store()
+  {
+    return *page_store_;
+  }
+  const char* get_host_name(const char* name);
 };
 
-mc_model_checker_t MC_model_checker_new(pid_t pid, int socket);
-void MC_model_checker_delete(mc_model_checker_t mc);
-unsigned long MC_smx_get_maxpid(void);
-
-SG_END_DECL()
+}
+}
 
 #endif

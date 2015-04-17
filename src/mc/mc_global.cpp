@@ -118,12 +118,12 @@ void MC_init_pid(pid_t pid, int socket)
      iteration of the model-checker (in RAW memory) */
 
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-  mc_model_checker = MC_model_checker_new(pid, socket);
+  mc_model_checker = new simgrid::mc::ModelChecker(pid, socket);
 
   // It's not useful anymore:
   if (0 && mc_mode == MC_MODE_SERVER) {
     unsigned long maxpid;
-    MC_process_read_variable(&mc_model_checker->process, "simix_process_maxpid",
+    MC_process_read_variable(&mc_model_checker->process(), "simix_process_maxpid",
       &maxpid, sizeof(maxpid));
     simix_process_maxpid = maxpid;
   }
@@ -226,11 +226,11 @@ int MC_deadlock_check()
 {
   if (mc_mode == MC_MODE_SERVER) {
     int res;
-    if ((res = MC_protocol_send_simple_message(mc_model_checker->process.socket,
+    if ((res = MC_protocol_send_simple_message(mc_model_checker->process().socket,
       MC_MESSAGE_DEADLOCK_CHECK)))
       xbt_die("Could not check deadlock state");
     s_mc_int_message_t message;
-    ssize_t s = MC_receive_message(mc_model_checker->process.socket, &message, sizeof(message), 0);
+    ssize_t s = MC_receive_message(mc_model_checker->process().socket, &message, sizeof(message), 0);
     if (s == -1)
       xbt_die("Could not receive message");
     else if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY) {
@@ -708,6 +708,12 @@ void MC_report_assertion_error(void)
   MC_record_dump_path(mc_stack);
   MC_dump_stack_safety(mc_stack);
   MC_print_statistics(mc_stats);
+}
+
+void MC_invalidate_cache(void)
+{
+  if (mc_model_checker)
+    mc_model_checker->process().cache_flags = 0;
 }
 #endif
 

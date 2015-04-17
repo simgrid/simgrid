@@ -125,7 +125,7 @@ void MC_handle_comm_pattern(
         comm_addr = simcall_comm_wait__get__comm(req);
       else
         // comm_addr = REMOTE(xbt_dynar_get_as(simcall_comm_waitany__get__comms(req), value, smx_synchro_t)):
-        MC_process_read_dynar_element(&mc_model_checker->process, &comm_addr,
+        MC_process_read_dynar_element(&mc_model_checker->process(), &comm_addr,
           simcall_comm_waitany__get__comms(req), value, sizeof(comm_addr));
       MC_complete_comm_pattern(pattern, comm_addr,
         MC_smx_simcall_get_issuer(req)->pid, backtracking);

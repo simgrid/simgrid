@@ -11,7 +11,7 @@
 #include "simix/smx_private.h"
 
 #include "mc_smx.h"
-#include "mc_model_checker.h"
+#include "ModelChecker.hpp"
 
 extern "C" {
 
@@ -44,8 +44,8 @@ bool is_in_dynar(smx_process_t p, xbt_dynar_t dynar)
 static inline
 mc_smx_process_info_t MC_smx_process_get_info(smx_process_t p)
 {
-  assert(is_in_dynar(p, mc_model_checker->process.smx_process_infos)
-    || is_in_dynar(p, mc_model_checker->process.smx_old_process_infos));
+  assert(is_in_dynar(p, mc_model_checker->process().smx_process_infos)
+    || is_in_dynar(p, mc_model_checker->process().smx_old_process_infos));
   mc_smx_process_info_t process_info =
     (mc_smx_process_info_t)
       ((char*) p - offsetof(s_mc_smx_process_info_t, copy));
@@ -126,10 +126,10 @@ void MC_process_smx_refresh(mc_process_t process)
  */
 smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
 {
-  if (MC_process_is_self(&mc_model_checker->process))
+  if (MC_process_is_self(&mc_model_checker->process()))
     return req->issuer;
 
-  MC_process_smx_refresh(&mc_model_checker->process);
+  MC_process_smx_refresh(&mc_model_checker->process());
 
   // This is the address of the smx_process in the MCed process:
   void* address = req->issuer;
@@ -138,10 +138,10 @@ smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
   mc_smx_process_info_t p;
 
   // Lookup by address:
-  xbt_dynar_foreach_ptr(mc_model_checker->process.smx_process_infos, i, p)
+  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, i, p)
     if (p->address == address)
       return &p->copy;
-  xbt_dynar_foreach_ptr(mc_model_checker->process.smx_old_process_infos, i, p)
+  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_old_process_infos, i, p)
     if (p->address == address)
       return &p->copy;
 
@@ -152,7 +152,7 @@ smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address)
 {
   if (!process_remote_address)
     return NULL;
-  if (MC_process_is_self(&mc_model_checker->process))
+  if (MC_process_is_self(&mc_model_checker->process()))
     return process_remote_address;
 
   mc_smx_process_info_t process_info = MC_smx_resolve_process_info(process_remote_address);
@@ -164,15 +164,15 @@ smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address)
 
 mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address)
 {
-  if (MC_process_is_self(&mc_model_checker->process))
+  if (MC_process_is_self(&mc_model_checker->process()))
     xbt_die("No process_info for local process is not enabled.");
 
   unsigned index;
   mc_smx_process_info_t process_info;
-  xbt_dynar_foreach_ptr(mc_model_checker->process.smx_process_infos, index, process_info)
+  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, index, process_info)
     if (process_info->address == process_remote_address)
       return process_info;
-  xbt_dynar_foreach_ptr(mc_model_checker->process.smx_old_process_infos, index, process_info)
+  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_old_process_infos, index, process_info)
     if (process_info->address == process_remote_address)
       return process_info;
   xbt_die("Process info not found");
@@ -180,10 +180,10 @@ mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_a
 
 const char* MC_smx_process_get_host_name(smx_process_t p)
 {
-  if (MC_process_is_self(&mc_model_checker->process))
+  if (MC_process_is_self(&mc_model_checker->process()))
     return SIMIX_host_get_name(p->smx_host);
 
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
 
   // Currently, smx_host_t = xbt_dictelm_t.
   // TODO, add an static_assert on this if switching to C++
@@ -197,25 +197,14 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
     int len = host_copy.key_len + 1;
     char hostname[len];
     MC_process_read_simple(process, hostname, host_copy.key, len);
-
-    // Lookup the host name in the dictionary (or create it):
-    xbt_dictelm_t elt = xbt_dict_get_elm_or_null(mc_model_checker->hosts, hostname);
-    if (!elt) {
-      xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-      xbt_dict_set(mc_model_checker->hosts, hostname, NULL, NULL);
-      elt = xbt_dict_get_elm_or_null(mc_model_checker->hosts, hostname);
-      assert(elt);
-      mmalloc_set_current_heap(heap);
-    }
-
-    info->hostname = elt->key;
+    info->hostname = mc_model_checker->get_host_name(hostname);
   }
   return info->hostname;
 }
 
 const char* MC_smx_process_get_name(smx_process_t p)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
   if (MC_process_is_self(process))
     return p->name;
   if (!p->name)
@@ -232,14 +221,22 @@ const char* MC_smx_process_get_name(smx_process_t p)
 
 int MC_smpi_process_count(void)
 {
-  if (MC_process_is_self(&mc_model_checker->process))
+  if (MC_process_is_self(&mc_model_checker->process()))
     return smpi_process_count();
   else {
     int res;
-    MC_process_read_variable(&mc_model_checker->process, "process_count",
+    MC_process_read_variable(&mc_model_checker->process(), "process_count",
       &res, sizeof(res));
     return res;
   }
+}
+
+unsigned long MC_smx_get_maxpid(void)
+{
+  unsigned long maxpid;
+  MC_process_read_variable(&mc_model_checker->process(), "simix_process_maxpid",
+    &maxpid, sizeof(maxpid));
+  return maxpid;
 }
 
 }

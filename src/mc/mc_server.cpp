@@ -15,7 +15,7 @@
 
 #include <xbt/log.h>
 
-#include "mc_model_checker.h"
+#include "ModelChecker.hpp"
 #include "mc_protocol.h"
 #include "mc_server.h"
 #include "mc_private.h"
@@ -92,7 +92,7 @@ void s_mc_server::shutdown()
 {
   XBT_DEBUG("Shuting down model-checker");
 
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
   int status = process->status;
   if (process->running) {
     XBT_DEBUG("Killing process");
@@ -107,13 +107,13 @@ void s_mc_server::shutdown()
 void s_mc_server::exit()
 {
   // Finished:
-  int status = mc_model_checker->process.status;
+  int status = mc_model_checker->process().status;
   if (WIFEXITED(status))
     ::exit(WEXITSTATUS(status));
   else if (WIFSIGNALED(status)) {
     // Try to uplicate the signal of the model-checked process.
     // This is a temporary hack so we don't try too hard.
-    kill(mc_model_checker->process.pid, WTERMSIG(status));
+    kill(mc_model_checker->process().pid, WTERMSIG(status));
     abort();
   } else {
     xbt_die("Unexpected status from model-checked process");
@@ -196,7 +196,7 @@ bool s_mc_server::handle_events()
           if (size != sizeof(message))
             xbt_die("Broken messsage");
           memcpy(&message, buffer, sizeof(message));
-          MC_process_ignore_memory(&mc_model_checker->process,
+          MC_process_ignore_memory(&mc_model_checker->process(),
             message.addr, message.size);
           break;
         }
@@ -224,7 +224,7 @@ bool s_mc_server::handle_events()
           XBT_DEBUG("Received symbol: %s", message.name);
 
           struct mc_symbol_pointer_callback* callback = xbt_new(struct mc_symbol_pointer_callback, 1);
-          callback->process = &mc_model_checker->process;
+          callback->process = &mc_model_checker->process();
           callback->value   = message.data;
 
           MC_automaton_new_propositional_symbol_callback(message.name,
@@ -270,7 +270,7 @@ bool s_mc_server::handle_events()
 
 void s_mc_server::loop()
 {
-  while (mc_model_checker->process.running)
+  while (mc_model_checker->process().running)
     this->handle_events();
 }
 
@@ -303,7 +303,7 @@ void s_mc_server::handle_waitpid()
     if (pid == -1) {
       if (errno == ECHILD) {
         // No more children:
-        if (mc_model_checker->process.running)
+        if (mc_model_checker->process().running)
           xbt_die("Inconsistent state");
         else
           break;
@@ -313,11 +313,11 @@ void s_mc_server::handle_waitpid()
       }
     }
 
-    if (pid == mc_model_checker->process.pid) {
+    if (pid == mc_model_checker->process().pid) {
       if (WIFEXITED(status) || WIFSIGNALED(status)) {
         XBT_DEBUG("Child process is over");
-        mc_model_checker->process.status = status;
-        mc_model_checker->process.running = false;
+        mc_model_checker->process().status = status;
+        mc_model_checker->process().running = false;
       }
     }
   }
@@ -337,7 +337,7 @@ void s_mc_server::on_signal(const struct signalfd_siginfo* info)
 void MC_server_wait_client(mc_process_t process)
 {
   mc_server->resume(process);
-  while (mc_model_checker->process.running) {
+  while (mc_model_checker->process().running) {
     if (!mc_server->handle_events())
       return;
   }
@@ -350,9 +350,9 @@ void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = pid;
   m.value = value;
-  MC_protocol_send(mc_model_checker->process.socket, &m, sizeof(m));
+  MC_protocol_send(mc_model_checker->process().socket, &m, sizeof(m));
   process->cache_flags = (mc_process_cache_flags_t) 0;
-  while (mc_model_checker->process.running) {
+  while (mc_model_checker->process().running) {
     if (!mc_server->handle_events())
       return;
   }

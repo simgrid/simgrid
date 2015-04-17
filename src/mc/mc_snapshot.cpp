@@ -211,8 +211,7 @@ static void test_snapshot(bool sparse_checkpoint) {
   _sg_mc_sparse_checkpoint = sparse_checkpoint;
   xbt_assert(xbt_pagesize == getpagesize());
   xbt_assert(1 << xbt_pagebits == xbt_pagesize);
-  mc_model_checker = xbt_new0(s_mc_model_checker_t, 1);
-  mc_model_checker->pages = mc_pages_store_new();
+  mc_model_checker = new ::simgrid::mc::ModelChecker(getpid(), -1);
 
   for(int n=1; n!=256; ++n) {
 
@@ -285,8 +284,7 @@ static void test_snapshot(bool sparse_checkpoint) {
     munmap(source, byte_size);
   }
 
-  mc_pages_store_delete(mc_model_checker->pages);
-  xbt_free(mc_model_checker);
+  delete mc_model_checker;
   mc_model_checker = NULL;
 }
 

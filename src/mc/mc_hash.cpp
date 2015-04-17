@@ -82,7 +82,7 @@ static void mc_hash_value(mc_hash_t * hash, mc_hashing_state * state,
                           mc_object_info_t info, const void *address,
                           dw_type_t type)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
 top:
 
   switch (type->type) {

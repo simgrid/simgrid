@@ -16,7 +16,7 @@
 #include <xbt/dynar.h>
 
 #include "mc_forward.h"
-#include "mc_model_checker.h"
+#include "ModelChecker.hpp"
 #include "mc_page_store.h"
 #include "mc_mmalloc.h"
 #include "mc_address_space.h"
@@ -112,10 +112,11 @@ bool mc_region_contain(mc_mem_region_t region, const void* p)
 static inline __attribute__((always_inline))
 void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
 {
-    size_t pageno = mc_page_number(region->start_addr, (void*) addr);
-    size_t snapshot_pageno = region->chunked.page_numbers[pageno];
-    const void* snapshot_page = mc_page_store_get_page(mc_model_checker->pages, snapshot_pageno);
-    return (char*) snapshot_page + mc_page_offset((void*) addr);
+  size_t pageno = mc_page_number(region->start_addr, (void*) addr);
+  size_t snapshot_pageno = region->chunked.page_numbers[pageno];
+  const void* snapshot_page = mc_page_store_get_page(
+    &mc_model_checker->page_store(), snapshot_pageno);
+  return (char*) snapshot_page + mc_page_offset((void*) addr);
 }
 
 mc_mem_region_t mc_get_snapshot_region(const void* addr, mc_snapshot_t snapshot, int process_index);
@@ -268,8 +269,6 @@ mc_snapshot_t MC_take_snapshot(int num_state);
 void MC_restore_snapshot(mc_snapshot_t);
 void MC_free_snapshot(mc_snapshot_t);
 
-int mc_important_snapshot(mc_snapshot_t snapshot);
-
 size_t* mc_take_page_snapshot_region(mc_process_t process,
   void* data, size_t page_count);
 void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
@@ -301,7 +300,7 @@ const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot)
 {
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");
-  return MC_process_get_heap(&mc_model_checker->process)->breakval;
+  return MC_process_get_heap(&mc_model_checker->process())->breakval;
 }
 
 /** @brief Read memory from a snapshot region

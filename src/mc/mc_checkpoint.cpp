@@ -125,7 +125,7 @@ static mc_mem_region_t mc_region_new_dense(
   region->permanent_addr = permanent_addr;
   region->size = size;
   region->flat.data = xbt_malloc(size);
-  MC_process_read(&mc_model_checker->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+  MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
     region->flat.data, permanent_addr, size,
     MC_PROCESS_INDEX_DISABLED);
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
@@ -163,12 +163,12 @@ static void MC_region_restore(mc_mem_region_t region)
     break;
 
   case MC_REGION_STORAGE_TYPE_FLAT:
-    MC_process_write(&mc_model_checker->process, region->flat.data,
+    MC_process_write(&mc_model_checker->process(), region->flat.data,
       region->permanent_addr, region->size);
     break;
 
   case MC_REGION_STORAGE_TYPE_CHUNKED:
-    mc_region_restore_sparse(&mc_model_checker->process, region);
+    mc_region_restore_sparse(&mc_model_checker->process(), region);
     break;
 
   case MC_REGION_STORAGE_TYPE_PRIVATIZED:
@@ -198,11 +198,11 @@ static mc_mem_region_t MC_region_new_privatized(
 
   // Read smpi_privatisation_regions from MCed:
   smpi_privatisation_region_t remote_smpi_privatisation_regions;
-  MC_process_read_variable(&mc_model_checker->process,
+  MC_process_read_variable(&mc_model_checker->process(),
     "smpi_privatisation_regions",
     &remote_smpi_privatisation_regions, sizeof(remote_smpi_privatisation_regions));
   s_smpi_privatisation_region_t privatisation_regions[process_count];
-  MC_process_read_simple(&mc_model_checker->process, &privatisation_regions,
+  MC_process_read_simple(&mc_model_checker->process(), &privatisation_regions,
     remote_smpi_privatisation_regions, sizeof(privatisation_regions));
 
   for (size_t i = 0; i < process_count; i++) {
@@ -262,7 +262,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 #ifdef HAVE_SMPI
   if (smpi_privatize_global_variables && MC_smpi_process_count()) {
     // snapshot->privatization_index = smpi_loaded_page
-    MC_process_read_variable(&mc_model_checker->process,
+    MC_process_read_variable(&mc_model_checker->process(),
       "smpi_loaded_page", &snapshot->privatization_index,
       sizeof(snapshot->privatization_index));
   } else
@@ -356,7 +356,7 @@ static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope,
 static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
                                            dw_frame_t scope, int process_index, xbt_dynar_t result)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
 
   void *ip = (void *) stack_frame->ip;
   if (ip < scope->low_pc || ip >= scope->high_pc)
@@ -392,7 +392,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
         current_variable->object_info,
         &(stack_frame->unw_cursor),
         (void *) stack_frame->frame_base,
-        (mc_address_space_t) &mc_model_checker->process, process_index);
+        (mc_address_space_t) &mc_model_checker->process(), process_index);
 
       switch(mc_get_location_type(&location)) {
       case MC_LOCATION_TYPE_ADDRESS:
@@ -443,7 +443,7 @@ static void MC_stack_frame_free_voipd(void *s)
 
 static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
   xbt_dynar_t result =
       xbt_dynar_new(sizeof(mc_stack_frame_t), MC_stack_frame_free_voipd);
 
@@ -521,11 +521,11 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
 
     // Read the context from remote process:
     unw_context_t context;
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       &context, (unw_context_t*) current_stack->context, sizeof(context));
 
     st->context = xbt_new0(s_mc_unw_context_t, 1);
-    if (mc_unw_init_context(st->context, &mc_model_checker->process,
+    if (mc_unw_init_context(st->context, &mc_model_checker->process(),
       &context) < 0) {
       xbt_die("Could not initialise the libunwind context.");
     }
@@ -587,7 +587,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
   // Copy the memory:
   unsigned int cursor = 0;
   mc_checkpoint_ignore_region_t region;
-  xbt_dynar_foreach (mc_model_checker->process.checkpoint_ignore, cursor, region) {
+  xbt_dynar_foreach (mc_model_checker->process().checkpoint_ignore, cursor, region) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = region->addr;
     ignored_data.size = region->size;
@@ -600,7 +600,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
   }
 
   // Zero the memory:
-  xbt_dynar_foreach (mc_model_checker->process.checkpoint_ignore, cursor, region) {
+  xbt_dynar_foreach (mc_model_checker->process().checkpoint_ignore, cursor, region) {
     MC_process_clear_memory(snapshot->process, region->addr, region->size);
   }
 
@@ -614,25 +614,6 @@ static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
     MC_process_write(snapshot->process,
       ignored_data.data, ignored_data.start, ignored_data.size);
   }
-}
-
-/** @brief Can we remove this snapshot?
- *
- * Some snapshots cannot be removed (yet) because we need them
- * at this point.
- *
- * @param snapshot
- */
-int mc_important_snapshot(mc_snapshot_t snapshot)
-{
-  // We need this snapshot in order to know which
-  // pages needs to be stored in the next snapshot.
-  // This field is only non-NULL when using soft-dirty
-  // page tracking.
-  if (snapshot == mc_model_checker->parent_snapshot)
-    return true;
-
-  return false;
 }
 
 static void MC_get_current_fd(mc_snapshot_t snapshot)
@@ -725,7 +706,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
-  mc_process_t mc_process = &mc_model_checker->process;
+  mc_process_t mc_process = &mc_model_checker->process();
   mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
   snapshot->process = mc_process;
   snapshot->num_state = num_state;
@@ -817,7 +798,7 @@ void MC_restore_snapshot(mc_snapshot_t snapshot)
   if (_sg_mc_snapshot_fds)
     MC_restore_snapshot_fds(snapshot);
   MC_snapshot_ignore_restore(snapshot);
-  mc_model_checker->process.cache_flags = 0;
+  mc_model_checker->process().cache_flags = 0;
 }
 
 mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)

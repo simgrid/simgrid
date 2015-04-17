@@ -56,7 +56,7 @@ size_t* mc_take_page_snapshot_region(mc_process_t process,
         MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
           temp, page, xbt_pagesize, MC_PROCESS_INDEX_DISABLED);
       }
-      pagenos[i] = mc_model_checker->pages->store_page(page_data);
+      pagenos[i] = mc_model_checker->page_store().store_page(page_data);
 
   }
 
@@ -67,7 +67,7 @@ size_t* mc_take_page_snapshot_region(mc_process_t process,
 void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count)
 {
   for (size_t i=0; i!=page_count; ++i) {
-    mc_model_checker->pages->unref_page(pagenos[i]);
+    mc_model_checker->page_store().unref_page(pagenos[i]);
   }
 }
 
@@ -86,7 +86,7 @@ void mc_restore_page_snapshot_region(mc_process_t process,
   for (size_t i=0; i!=page_count; ++i) {
     // Otherwise, copy the page:
     void* target_page = mc_page_from_number(start_addr, i);
-    const void* source_page = mc_model_checker->pages->get_page(pagenos[i]);
+    const void* source_page = mc_model_checker->page_store().get_page(pagenos[i]);
     MC_process_write(process, source_page, target_page, xbt_pagesize);
   }
 }
@@ -96,7 +96,7 @@ void mc_restore_page_snapshot_region(mc_process_t process,
 mc_mem_region_t mc_region_new_sparse(mc_region_type_t region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
 
   mc_mem_region_t region = xbt_new(s_mc_mem_region_t, 1);
   region->region_type = region_type;

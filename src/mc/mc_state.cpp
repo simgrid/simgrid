@@ -105,7 +105,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
   case SIMCALL_COMM_WAITANY:
     state->internal_req.call = SIMCALL_COMM_WAIT;
     state->internal_req.issuer = req->issuer;
-    MC_process_read_dynar_element(&mc_model_checker->process,
+    MC_process_read_dynar_element(&mc_model_checker->process(),
       &state->internal_comm, simcall_comm_waitany__get__comms(req),
       value, sizeof(state->internal_comm));
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
@@ -117,7 +117,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     state->internal_req.issuer = req->issuer;
 
     if (value > 0)
-        MC_process_read_dynar_element(&mc_model_checker->process,
+        MC_process_read_dynar_element(&mc_model_checker->process(),
           &state->internal_comm, simcall_comm_testany__get__comms(req),
           value, sizeof(state->internal_comm));
 
@@ -127,7 +127,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
 
   case SIMCALL_COMM_WAIT:
     state->internal_req = *req;
-    MC_process_read_simple(&mc_model_checker->process, &state->internal_comm ,
+    MC_process_read_simple(&mc_model_checker->process(), &state->internal_comm ,
       simcall_comm_wait__get__comm(req), sizeof(state->internal_comm));
     simcall_comm_wait__set__comm(&state->executed_req, &state->internal_comm);
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
@@ -135,7 +135,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
 
   case SIMCALL_COMM_TEST:
     state->internal_req = *req;
-    MC_process_read_simple(&mc_model_checker->process, &state->internal_comm,
+    MC_process_read_simple(&mc_model_checker->process(), &state->internal_comm,
       simcall_comm_test__get__comm(req), sizeof(state->internal_comm));
     simcall_comm_test__set__comm(&state->executed_req, &state->internal_comm);
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
@@ -190,7 +190,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
       case SIMCALL_COMM_WAITANY:
         *value = -1;
         while (procstate->interleave_count <
-              MC_process_read_dynar_length(&mc_model_checker->process,
+              MC_process_read_dynar_length(&mc_model_checker->process(),
                 simcall_comm_waitany__get__comms(&process->simcall))) {
           if (MC_request_is_enabled_by_idx
               (&process->simcall, procstate->interleave_count++)) {
@@ -200,7 +200,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         }
 
         if (procstate->interleave_count >=
-            MC_process_read_dynar_length(&mc_model_checker->process,
+            MC_process_read_dynar_length(&mc_model_checker->process(),
               simcall_comm_waitany__get__comms(&process->simcall)))
           procstate->state = MC_DONE;
 
@@ -213,7 +213,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         unsigned start_count = procstate->interleave_count;
         *value = -1;
         while (procstate->interleave_count <
-                MC_process_read_dynar_length(&mc_model_checker->process,
+                MC_process_read_dynar_length(&mc_model_checker->process(),
                   simcall_comm_testany__get__comms(&process->simcall))) {
           if (MC_request_is_enabled_by_idx
               (&process->simcall, procstate->interleave_count++)) {
@@ -223,7 +223,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         }
 
         if (procstate->interleave_count >=
-            MC_process_read_dynar_length(&mc_model_checker->process,
+            MC_process_read_dynar_length(&mc_model_checker->process(),
               simcall_comm_testany__get__comms(&process->simcall)))
           procstate->state = MC_DONE;
 
@@ -236,7 +236,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
       case SIMCALL_COMM_WAIT: {
         smx_synchro_t remote_act = simcall_comm_wait__get__comm(&process->simcall);
         s_smx_synchro_t act;
-        MC_process_read_simple(&mc_model_checker->process,
+        MC_process_read_simple(&mc_model_checker->process(),
           &act, remote_act, sizeof(act));
         if (act.comm.src_proc && act.comm.dst_proc) {
           *value = 0;

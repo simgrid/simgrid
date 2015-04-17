@@ -104,7 +104,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
                                    void* real_area2, mc_snapshot_t snapshot2, mc_mem_region_t region2,
                                    dw_type_t type, int pointer_level)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
 
   unsigned int cursor = 0;
   dw_type_t member, subtype, subsubtype;
@@ -387,7 +387,7 @@ static int compare_local_variables(int process_index,
 
 int snapshot_compare(void *state1, void *state2)
 {
-  mc_process_t process = &mc_model_checker->process;
+  mc_process_t process = &mc_model_checker->process();
 
   mc_snapshot_t s1, s2;
   int num1, num2;

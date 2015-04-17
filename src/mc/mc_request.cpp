@@ -275,7 +275,7 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
     // size_t size = size_pointer ? *size_pointer : 0;
     size_t size = 0;
     if (remote_size)
-      MC_process_read_simple(&mc_model_checker->process, &size,
+      MC_process_read_simple(&mc_model_checker->process(), &size,
         remote_size, sizeof(size));
 
     type = "iRecv";
@@ -311,7 +311,7 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
       s_smx_synchro_t synchro;
       smx_synchro_t act;
       if (use_remote_comm) {
-        MC_process_read_simple(&mc_model_checker->process, &synchro,
+        MC_process_read_simple(&mc_model_checker->process(), &synchro,
           remote_act, sizeof(synchro));
         act = &synchro;
       } else
@@ -336,7 +336,7 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
     s_smx_synchro_t synchro;
       smx_synchro_t act;
       if (use_remote_comm) {
-        MC_process_read_simple(&mc_model_checker->process, &synchro,
+        MC_process_read_simple(&mc_model_checker->process(), &synchro,
           remote_act, sizeof(synchro));
         act = &synchro;
       } else
@@ -368,11 +368,11 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
   case SIMCALL_COMM_WAITANY: {
     type = "WaitAny";
     s_xbt_dynar_t comms;
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       &comms,  simcall_comm_waitany__get__comms(req), sizeof(comms));
     if (!xbt_dynar_is_empty(&comms)) {
       smx_synchro_t remote_sync;
-      MC_process_read_dynar_element(&mc_model_checker->process,
+      MC_process_read_dynar_element(&mc_model_checker->process(),
         &remote_sync, simcall_comm_waitany__get__comms(req), value,
         sizeof(remote_sync));
       char* p = pointer_to_string(remote_sync);
@@ -393,7 +393,7 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
       type = "TestAny";
       args =
           bprintf("(%d of %lu)", value + 1,
-                  MC_process_read_dynar_length(&mc_model_checker->process,
+                  MC_process_read_dynar_length(&mc_model_checker->process(),
                     simcall_comm_testany__get__comms(req)));
     }
     break;
@@ -402,10 +402,10 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
     type = "Mutex LOCK";
 
     s_smx_mutex_t mutex;
-    MC_process_read_simple(&mc_model_checker->process, &mutex,
+    MC_process_read_simple(&mc_model_checker->process(), &mutex,
       simcall_mutex_lock__get__mutex(req), sizeof(mutex));
     s_xbt_swag_t mutex_sleeping;
-    MC_process_read_simple(&mc_model_checker->process, &mutex_sleeping,
+    MC_process_read_simple(&mc_model_checker->process(), &mutex_sleeping,
       mutex.sleeping, sizeof(mutex_sleeping));
 
     args = bprintf("locked = %d, owner = %d, sleeping = %d",
@@ -458,13 +458,13 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
 
   // Read the dynar:
   s_xbt_dynar_t comms;
-  MC_process_read_simple(&mc_model_checker->process,
+  MC_process_read_simple(&mc_model_checker->process(),
     &comms, simcall_comm_testany__get__comms(req), sizeof(comms));
 
   // Read ther dynar buffer:
   size_t buffer_size = comms.elmsize * comms.used;
   char buffer[buffer_size];
-  MC_process_read_simple(&mc_model_checker->process,
+  MC_process_read_simple(&mc_model_checker->process(),
     buffer, comms.data, buffer_size);
 
   // Iterate over the elements:
@@ -478,7 +478,7 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
 
     // Dereference the pointer:
     s_smx_synchro_t action;
-    MC_process_read_simple(&mc_model_checker->process,
+    MC_process_read_simple(&mc_model_checker->process(),
       &action, remote_action, sizeof(action));
 
     // Finally so something useful about it:
@@ -501,14 +501,14 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 
   case SIMCALL_COMM_WAITANY: {
     MC_process_read_dynar_element(
-      &mc_model_checker->process, &remote_act, simcall_comm_waitany__get__comms(req),
+      &mc_model_checker->process(), &remote_act, simcall_comm_waitany__get__comms(req),
       idx, sizeof(remote_act));
     }
     break;
 
   case SIMCALL_COMM_TESTANY: {
     MC_process_read_dynar_element(
-      &mc_model_checker->process, &remote_act, simcall_comm_testany__get__comms(req),
+      &mc_model_checker->process(), &remote_act, simcall_comm_testany__get__comms(req),
       idx, sizeof(remote_act));
     }
     break;
@@ -518,7 +518,7 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   }
 
   s_smx_synchro_t synchro;
-  MC_process_read_simple(&mc_model_checker->process,
+  MC_process_read_simple(&mc_model_checker->process(),
     &synchro, remote_act, sizeof(synchro));
   return synchro.comm.src_proc && synchro.comm.dst_proc;
 }
@@ -564,7 +564,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
     } else {
       smx_synchro_t remote_act = simcall_comm_wait__get__comm(req);
       s_smx_synchro_t synchro;
-      MC_process_read_simple(&mc_model_checker->process, &synchro,
+      MC_process_read_simple(&mc_model_checker->process(), &synchro,
         remote_act, sizeof(synchro));
 
       smx_process_t src_proc = MC_smx_resolve_process(synchro.comm.src_proc);
@@ -587,7 +587,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
   case SIMCALL_COMM_TEST: {
     smx_synchro_t remote_act = simcall_comm_test__get__comm(req);
     s_smx_synchro_t synchro;
-    MC_process_read_simple(&mc_model_checker->process, &synchro,
+    MC_process_read_simple(&mc_model_checker->process(), &synchro,
       remote_act, sizeof(synchro));
     if (synchro.comm.src_proc == NULL || synchro.comm.dst_proc == NULL) {
       if (issuer->smx_host)
@@ -609,7 +609,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
 
   case SIMCALL_COMM_WAITANY: {
     unsigned long comms_size = MC_process_read_dynar_length(
-      &mc_model_checker->process, simcall_comm_waitany__get__comms(req));
+      &mc_model_checker->process(), simcall_comm_waitany__get__comms(req));
     if (issuer->smx_host)
       label =
           bprintf("[(%lu)%s] WaitAny [%d of %lu]", issuer->pid,

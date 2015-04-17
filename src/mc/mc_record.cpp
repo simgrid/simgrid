@@ -15,7 +15,6 @@
 
 #ifdef HAVE_MC
 #include "mc_private.h"
-#include "mc_model_checker.h"
 #include "mc_state.h"
 #include "mc_smx.h"
 #endif

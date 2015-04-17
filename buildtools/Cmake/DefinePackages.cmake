@@ -598,8 +598,8 @@ set(MC_SRC
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
   src/mc/mc_mmalloc.h
-  src/mc/mc_model_checker.h
-  src/mc/mc_model_checker.cpp
+  src/mc/ModelChecker.hpp
+  src/mc/ModelChecker.cpp
   src/mc/mc_object_info.h
   src/mc/mc_object_info.cpp
   src/mc/mc_checkpoint.cpp

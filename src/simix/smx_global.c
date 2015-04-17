@@ -18,7 +18,6 @@
 
 #ifdef HAVE_MC
 #include "mc/mc_private.h"
-#include "mc/mc_model_checker.h"
 #include "mc/mc_protocol.h"
 #include "mc/mc_client.h"
 #endif

@@ -29,7 +29,6 @@
 #include "mc_private.h"
 #include "mc_protocol.h"
 #include "mc_server.h"
-#include "mc_model_checker.h"
 #include "mc_safety.h"
 #include "mc_comm_pattern.h"
 #include "mc_liveness.h"

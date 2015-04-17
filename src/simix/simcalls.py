@@ -282,7 +282,6 @@ if __name__=='__main__':
   fd.write('#include "smx_private.h"\n');
   fd.write('#ifdef HAVE_MC\n');
   fd.write('#include "mc/mc_process.h"\n');
-  fd.write('#include "mc/mc_model_checker.h"\n');
   fd.write('#endif\n');
   fd.write('\n');
   fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n');
@@ -305,7 +304,7 @@ if __name__=='__main__':
   fd.write('  XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));\n');
   fd.write('  #ifdef HAVE_MC\n');
   fd.write('  if (mc_model_checker) {\n');
-  fd.write('    mc_model_checker->process.cache_flags = 0;\n');
+  fd.write('    MC_invalidate_cache();\n');
   fd.write('  }\n');
   fd.write('  #endif\n');
   fd.write('  SIMCALL_SET_MC_VALUE(simcall, value);\n');
