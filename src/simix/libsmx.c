@@ -12,9 +12,10 @@
 
 #include "mc/mc_replay.h"
 #include "smx_private.h"
-#include "mc/mc_interface.h"
+#include "mc/mc_forward.h"
 #include "xbt/ex.h"
 #include <math.h>         /* isfinite() */
+#include "mc/mc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 

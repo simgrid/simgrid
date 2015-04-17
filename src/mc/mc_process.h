@@ -11,7 +11,6 @@
 #include <sys/types.h>
 
 #include "simgrid_config.h"
-
 #include <sys/types.h>
 
 #include <xbt/mmalloc.h>
@@ -20,6 +19,7 @@
 #include "xbt/mmalloc/mmprivate.h"
 #endif
 
+#include <simgrid/simix.h>
 #include "simix/popping_private.h"
 #include "simix/smx_private.h"
 

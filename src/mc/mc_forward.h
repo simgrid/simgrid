@@ -9,7 +9,6 @@
 
 #include <xbt/misc.h>
 #include <mc/datatypes.h>
-#include "mc_interface.h"
 
 SG_BEGIN_DECL()
 

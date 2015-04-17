@@ -334,7 +334,7 @@ if __name__=='__main__':
   ###
   fd = header('popping_bodies.c')
   fd.write('#include "smx_private.h"\n')
-  fd.write('#include "mc/mc_interface.h"\n')
+  fd.write('#include "mc/mc_forward.h"\n')
   fd.write('#include "xbt/ex.h"\n')
   handle(fd, Simcall.body, simcalls, simcalls_dict)
   fd.close()

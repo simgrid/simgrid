@@ -13,7 +13,7 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(const char*) simcall_names[]; /* Name of each simcall */
 
 #include "popping_enum.h" /* Definition of e_smx_simcall_t, with one value per simcall */
-#include "mc/mc_interface.h" /* Definition of mc_snapshot_t, used by one simcall */
+#include "mc/mc_forward.h" /* Definition of mc_snapshot_t, used by one simcall */
 
 typedef int (*simix_match_func_t)(void *, void *, smx_synchro_t);
 typedef void (*simix_copy_data_func_t)(smx_synchro_t, void*, size_t);
