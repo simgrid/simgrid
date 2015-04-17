@@ -165,6 +165,7 @@ void MC_remove_ignore_heap(void *address, size_t size)
     message.addr = address;
     message.size = size;
     MC_client_send_message(&message, sizeof(message));
+    return;
   }
 
   xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
