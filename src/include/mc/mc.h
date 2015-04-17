@@ -73,7 +73,7 @@ void _mc_cfg_cb_comms_determinism(const char *name, int pos);
 void _mc_cfg_cb_send_determinism(const char *name, int pos);
 void _mc_cfg_cb_termination(const char *name, int pos);
 
-XBT_PUBLIC(void) MC_do_the_modelcheck_for_real(void);
+XBT_PUBLIC(void) MC_run(void);
 XBT_PUBLIC(void) MC_init(void);
 XBT_PUBLIC(void) MC_exit(void);
 XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);

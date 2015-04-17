@@ -25,12 +25,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
 void MC_assert(int prop)
 {
   if (MC_is_active() && !prop) {
-    if (mc_mode == MC_MODE_STANDALONE) {
-      MC_report_assertion_error();
-    } else {
-      MC_client_send_simple_message(MC_MESSAGE_ASSERTION_FAILED);
-      MC_client_handle_messages();
-    }
+    MC_client_send_simple_message(MC_MESSAGE_ASSERTION_FAILED);
+    MC_client_handle_messages();
   }
 }
 

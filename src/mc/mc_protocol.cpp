@@ -119,8 +119,6 @@ const char* MC_mode_name(e_mc_mode_t mode)
   switch(mode) {
   case MC_MODE_NONE:
     return "NONE";
-  case MC_MODE_STANDALONE:
-    return "STANDALONE";
   case MC_MODE_CLIENT:
     return "CLIENT";
   case MC_MODE_SERVER:

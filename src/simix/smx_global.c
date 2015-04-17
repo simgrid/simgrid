@@ -13,6 +13,7 @@
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
+#include "mc/mc_replay.h"
 #include "simgrid/sg_config.h"
 
 #ifdef HAVE_MC
@@ -220,8 +221,6 @@ void SIMIX_global_init(int *argc, char **argv)
       MC_client_init();
       MC_client_hello();
       MC_client_handle_messages();
-    } else {
-      mc_mode = MC_MODE_STANDALONE;
     }
   }
 #endif

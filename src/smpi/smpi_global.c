@@ -12,6 +12,7 @@
 #include "surf/surf.h"
 #include "simix/smx_private.h"
 #include "simgrid/sg_config.h"
+#include "mc/mc_replay.h"
 
 #include <float.h>              /* DBL_MAX */
 #include <stdint.h>
@@ -666,7 +667,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
   fflush(stderr);
 
   if (MC_is_active()) {
-    MC_do_the_modelcheck_for_real();
+    MC_run();
   } else {
   
     SIMIX_run();

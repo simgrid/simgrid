@@ -7,6 +7,7 @@
 #include "private.h"
 #include "xbt/virtu.h"
 #include "mc/mc.h"
+#include "mc/mc_replay.h"
 #include "xbt/replay.h"
 #include <errno.h>
 #include "simix/smx_private.h"

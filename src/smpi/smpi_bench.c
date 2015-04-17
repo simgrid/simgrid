@@ -13,6 +13,7 @@
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
 #include "simgrid/modelchecker.h"
+#include "mc/mc_replay.h"
 
 #ifndef WIN32
 #include <sys/mman.h>

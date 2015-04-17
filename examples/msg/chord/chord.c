@@ -10,6 +10,7 @@
 #include "xbt/asserts.h"
 #include "simgrid/modelchecker.h"
 #include <xbt/RngStream.h>
+#include "mc/mc_replay.h"
 
 /** @addtogroup MSG_examples
  *

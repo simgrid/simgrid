@@ -27,7 +27,6 @@ SG_BEGIN_DECL()
 
 typedef enum {
   MC_MODE_NONE = 0,
-  MC_MODE_STANDALONE,
   MC_MODE_CLIENT,
   MC_MODE_SERVER
 } e_mc_mode_t;

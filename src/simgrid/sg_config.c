@@ -22,6 +22,7 @@
 #include "mc/mc.h"
 #include "mc/mc_record.h"
 #include "simgrid/instr.h"
+#include "mc/mc_replay.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of simgrid");

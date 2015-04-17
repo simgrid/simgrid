@@ -122,7 +122,7 @@ msg_error_t MSG_main(void)
   fflush(stderr);
 
   if (MC_is_active()) {
-    MC_do_the_modelcheck_for_real();
+    MC_run();
   } else {
     SIMIX_run();
   }

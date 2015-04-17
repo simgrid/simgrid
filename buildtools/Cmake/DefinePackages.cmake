@@ -582,6 +582,7 @@ set(MC_SRC_BASE
   src/mc/mc_base.cpp
   src/mc/mc_base.h
   src/mc/mc_record.h
+  src/mc/mc_replay.h
   src/mc/mc_record.cpp
   src/mc/mc_config.cpp
   src/mc/mc_global.cpp

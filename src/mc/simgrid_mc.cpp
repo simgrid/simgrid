@@ -31,6 +31,8 @@
 #include "mc_server.h"
 #include "mc_model_checker.h"
 #include "mc_safety.h"
+#include "mc_comm_pattern.h"
+#include "mc_liveness.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 
@@ -82,7 +84,12 @@ static int do_parent(int socket, pid_t child)
     mc_server = new s_mc_server(child, socket);
     mc_server->start();
     MC_init_pid(child, socket);
-    MC_do_the_modelcheck_for_real();
+    if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
+      MC_modelcheck_comm_determinism();
+    else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0')
+      MC_modelcheck_safety();
+    else
+      MC_modelcheck_liveness();
     mc_server->shutdown();
     mc_server->exit();
   }

@@ -16,6 +16,8 @@
 #include "mc_record.h"
 #include "mc_smx.h"
 #include "mc_client.h"
+#include "mc_replay.h"
+#include "mc_safety.h"
 
 extern "C" {
 
@@ -405,6 +407,12 @@ static void MC_modelcheck_liveness_main(void)
 
 void MC_modelcheck_liveness(void)
 {
+  if (mc_reduce_kind == e_mc_reduce_unset)
+    mc_reduce_kind = e_mc_reduce_none;
+  XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
+  MC_automaton_load(_sg_mc_property_file);
+  MC_wait_for_requests();
+
   XBT_DEBUG("Starting the liveness algorithm");
   _sg_mc_liveness = 1;
 

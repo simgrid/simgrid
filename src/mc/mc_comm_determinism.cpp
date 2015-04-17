@@ -501,6 +501,10 @@ static void MC_modelcheck_comm_determinism_main(void)
 
 void MC_modelcheck_comm_determinism(void)
 {
+  XBT_INFO("Check communication determinism");
+  mc_reduce_kind = e_mc_reduce_none;
+  MC_wait_for_requests();
+
   if (mc_mode == MC_MODE_CLIENT) {
     // This will move somehwere else:
     MC_client_handle_messages();

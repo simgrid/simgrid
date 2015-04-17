@@ -106,17 +106,6 @@ static void MC_init_dot_output()
 
 }
 
-static void MC_init_mode(void)
-{
-  if (mc_mode == MC_MODE_NONE) {
-    if (getenv(MC_ENV_SOCKET_FD)) {
-      mc_mode = MC_MODE_CLIENT;
-    } else {
-      mc_mode = MC_MODE_STANDALONE;
-    }
-  }
-}
-
 #ifdef HAVE_MC
 void MC_init()
 {
@@ -196,7 +185,7 @@ void MC_init_pid(pid_t pid, int socket)
     /* SIMIX */
     MC_ignore_global_variable("smx_total_comms");
 
-    if (mc_mode == MC_MODE_STANDALONE || mc_mode == MC_MODE_CLIENT) {
+    if (mc_mode == MC_MODE_CLIENT) {
       /* Those requests are handled on the client side and propagated by message
        * to the server: */
 
@@ -217,57 +206,12 @@ void MC_init_pid(pid_t pid, int socket)
 /*******************************  Core of MC *******************************/
 /**************************************************************************/
 
-void MC_do_the_modelcheck_for_real()
+void MC_run()
 {
-  MC_init_mode();
-
-  switch(mc_mode) {
-  default:
-    xbt_die("Unexpected mc mode");
-    break;
-  case MC_MODE_CLIENT:
-    MC_init();
-    MC_client_main_loop();
-    return;
-  case MC_MODE_SERVER:
-    break;
-  case MC_MODE_STANDALONE:
-    MC_init();
-    break;
-  }
-
-  if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    XBT_INFO("Check communication determinism");
-    mc_reduce_kind = e_mc_reduce_none;
-    MC_wait_for_requests();
-    MC_modelcheck_comm_determinism();
-  }
-
-  else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0') {
-    if(_sg_mc_termination)
-      mc_reduce_kind = e_mc_reduce_none;
-    else if (mc_reduce_kind == e_mc_reduce_unset)
-      mc_reduce_kind = e_mc_reduce_dpor;
-    _sg_mc_safety = 1;
-    if (_sg_mc_termination)
-      XBT_INFO("Check non progressive cycles");
-    else
-      XBT_INFO("Check a safety property");
-    MC_wait_for_requests();
-    MC_modelcheck_safety();
-  }
-
-  else {
-    if (mc_reduce_kind == e_mc_reduce_unset)
-      mc_reduce_kind = e_mc_reduce_none;
-    XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
-    MC_automaton_load(_sg_mc_property_file);
-    MC_wait_for_requests();
-    MC_modelcheck_liveness();
-  }
-
+  mc_mode = MC_MODE_CLIENT;
+  MC_init();
+  MC_client_main_loop();
 }
-
 
 void MC_exit(void)
 {

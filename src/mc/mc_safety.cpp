@@ -272,6 +272,17 @@ static void MC_modelcheck_safety_main(void)
 
 void MC_modelcheck_safety(void)
 {
+  if(_sg_mc_termination)
+    mc_reduce_kind = e_mc_reduce_none;
+  else if (mc_reduce_kind == e_mc_reduce_unset)
+    mc_reduce_kind = e_mc_reduce_dpor;
+  _sg_mc_safety = 1;
+  if (_sg_mc_termination)
+    XBT_INFO("Check non progressive cycles");
+  else
+    XBT_INFO("Check a safety property");
+  MC_wait_for_requests();
+
   XBT_DEBUG("Starting the safety algorithm");
 
   _sg_mc_safety = 1;

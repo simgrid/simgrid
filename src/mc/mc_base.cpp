@@ -10,7 +10,8 @@
 
 #include "mc_base.h"
 #include "../simix/smx_private.h"
-#include "mc_record.h"
+#include "mc/mc_record.h"
+#include "mc/mc_replay.h"
 
 #ifdef HAVE_MC
 #include "mc_process.h"
