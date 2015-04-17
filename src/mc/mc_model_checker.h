@@ -31,7 +31,6 @@ struct s_mc_model_checker {
   mc_snapshot_t parent_snapshot;
   mc_pages_store_t pages;
   int fd_clear_refs;
-  int fd_pagemap;
   xbt_dynar_t record;
   s_mc_process_t process;
   /** String pool for host names */

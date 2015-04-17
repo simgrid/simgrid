@@ -208,7 +208,6 @@ XBT_TEST_UNIT("flat_snapshot", test_flat_snapshots, "Test flat snapshots")
 static void test_snapshot(bool sparse_checkpoint) {
 
   xbt_test_add("Initialisation");
-  _sg_mc_soft_dirty = 0;
   _sg_mc_sparse_checkpoint = sparse_checkpoint;
   xbt_assert(xbt_pagesize == getpagesize());
   xbt_assert(1 << xbt_pagebits == xbt_pagesize);
@@ -224,11 +223,13 @@ static void test_snapshot(bool sparse_checkpoint) {
 
     // Init memory and take snapshots:
     init_memory(source, byte_size);
-    mc_mem_region_t region0 = mc_region_new_sparse(MC_REGION_TYPE_UNKNOWN, source, source, byte_size, NULL);
+    mc_mem_region_t region0 = mc_region_new_sparse(
+      MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
     for(int i=0; i<n; i+=2) {
       init_memory((char*) source + i*xbt_pagesize, xbt_pagesize);
     }
-    mc_mem_region_t region = mc_region_new_sparse(MC_REGION_TYPE_UNKNOWN, source, source, byte_size, NULL);
+    mc_mem_region_t region = mc_region_new_sparse(
+      MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
 
     void* destination = mmap(NULL, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     xbt_assert(source!=MAP_FAILED, "Could not allocate destination memory");
@@ -271,7 +272,8 @@ static void test_snapshot(bool sparse_checkpoint) {
     if (n==1) {
       xbt_test_add("Read pointer for %i page(s)", n);
       memcpy(source, &mc_model_checker, sizeof(void*));
-      mc_mem_region_t region2 = mc_region_new_sparse(MC_REGION_TYPE_UNKNOWN, source, source, byte_size, NULL);
+      mc_mem_region_t region2 = mc_region_new_sparse(
+        MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
       xbt_test_assert(MC_region_read_pointer(region2, source) == mc_model_checker,
         "Mismtach in MC_region_read_pointer()");
       MC_region_destroy(region2);
