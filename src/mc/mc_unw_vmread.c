@@ -42,7 +42,6 @@ static int access_mem(const unw_addr_space_t as,
 {
   if (write)
     return - UNW_EINVAL;
-  ssize_t s;
   pid_t pid = _UPT_getpid(arg);
   size_t size = sizeof(unw_word_t);
 
