@@ -40,7 +40,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
 
   // Those are internal requests, we do not need indirection
   // because those objects are copies:
-  smx_synchro_t synchro1, synchro2;
+  smx_synchro_t synchro1= NULL, synchro2=NULL;
   if (r1->call == SIMCALL_COMM_WAIT) {
     synchro1 = simcall_comm_wait__get__comm(r1);
   }
@@ -230,7 +230,7 @@ static char *buff_size_to_string(size_t buff_size)
 
 char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t request_type)
 {
-  bool use_remote_comm;
+  bool use_remote_comm = true;
   switch(request_type) {
   case MC_REQUEST_SIMIX:
     use_remote_comm = true;
@@ -471,7 +471,7 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
   for (cursor=0; cursor != comms.used; ++cursor) {
 
     // Get the element:
-    smx_synchro_t remote_action;
+    smx_synchro_t remote_action = NULL;
     memcpy(buffer + comms.elmsize * cursor, &remote_action, sizeof(remote_action));
 
     // Dereference the pointer:
