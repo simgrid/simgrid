@@ -11,6 +11,11 @@
 #include "xbt/swag.h"
 #include "xbt/fifo.h"
 
+#if HAVE_MC
+#include <libunwind.h>
+#include <dwarf.h>
+#endif 
+
 SG_BEGIN_DECL()
 
 /******************************* Transitions **********************************/

@@ -23,8 +23,6 @@
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
 #include "xbt/config.h"
-#include <libunwind.h>
-#include <dwarf.h>
 
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
