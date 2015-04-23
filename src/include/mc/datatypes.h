@@ -11,9 +11,6 @@
 #include "xbt/swag.h"
 #include "xbt/fifo.h"
 
-#include <libunwind.h>
-#include <dwarf.h>
-
 SG_BEGIN_DECL()
 
 /******************************* Transitions **********************************/
