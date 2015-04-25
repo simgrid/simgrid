@@ -161,17 +161,19 @@ public class Task {
 	/** Cancels a task. */ 
 	public native void cancel();
 
-	/** Deletes a task.
-	 *
-	 * @exception			NativeException if the destruction failed.
-	 */ 
-	protected void finalize() throws NativeException {
-		destroy();
+	/** Deletes a task once the garbage collector reclaims it */
+	@Override
+	protected void finalize() {
+		try {
+			// Exceptions in finalizers lead to bad situations:
+			// http://stackoverflow.com/questions/7644556/troubleshooting-a-java-memory-leak-finalization
+			doFinalize();
+			bind=0; // to avoid segfaults if the impossible happens yet again making this task surviving its finalize()
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	/**
-	 * The natively implemented method to destroy a MSG task.
-	 */
-	protected native void destroy();
+	protected native void doFinalize();
 	/* *                       * *
 	 * * Communication-related * *
 	 * *                       * */

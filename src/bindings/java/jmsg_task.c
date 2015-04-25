@@ -651,7 +651,17 @@ MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
   return jcomm;
 }
 
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_doFinalize(JNIEnv * env, jobject jtask) {
+	  msg_task_t task = jtask_to_native_task(jtask, env);
 
+	  if (!task) {
+	    jxbt_throw_notbound(env, "task", jtask);
+	    return;
+	  }
+
+	  MSG_task_destroy(task);
+}
 
 static void msg_task_cancel_on_failed_dsend(void*t) {
   msg_task_t task = t;
