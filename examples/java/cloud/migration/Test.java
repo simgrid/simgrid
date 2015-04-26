@@ -144,6 +144,9 @@ public class Test extends Process{
         Msg.info("     - End of Migration from host 1 to host 0 (duration:"+(endTime-startTime)+")");
 
         Main.setEndOfTest();
-        // no need to destroy the VMs: the garbage collector will get them all
+        Msg.info("Forcefully destroy VMs");
+        for (VM vm: vms)
+	  vm.finalize();
+       
     }
 }
