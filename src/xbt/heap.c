@@ -108,7 +108,6 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
   return;
 }
 
-
 /**
  * @brief Extracts from the heap and returns the element with the smallest key.
  * \param H the heap we're working on
@@ -168,6 +167,19 @@ void *xbt_heap_remove(xbt_heap_t H, int i)
   }
 
   return xbt_heap_pop(H);
+}
+/** @brief Remove an arbitrary element from the heap
+ *  @param H the heap we're working on
+ *  @param content the object you want to add to the heap
+ *  @param key the key associated to this object
+ */
+void xbt_heap_rm_elm(xbt_heap_t H, void *content, double key) {
+	int i=0;
+	while (i < H->count && (KEY(H, i) != key || CONTENT(H, i) != content))
+		i++;
+	if (i == H->count)
+		return;
+	xbt_heap_remove(H,i);
 }
 
 /**

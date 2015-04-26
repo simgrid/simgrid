@@ -27,6 +27,7 @@ XBT_PUBLIC(int) xbt_heap_size(xbt_heap_t H);
 
 XBT_PUBLIC(void) xbt_heap_push(xbt_heap_t H, void *content, double key);
 XBT_PUBLIC(void *) xbt_heap_pop(xbt_heap_t H);
+XBT_PUBLIC(void) xbt_heap_rm_elm(xbt_heap_t H, void *content, double key);
 
 XBT_PUBLIC(double) xbt_heap_maxkey(xbt_heap_t H);
 XBT_PUBLIC(void *) xbt_heap_maxcontent(xbt_heap_t H);
