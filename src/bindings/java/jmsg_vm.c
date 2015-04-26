@@ -104,7 +104,7 @@ Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring 
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_VM_destroy(JNIEnv *env, jobject jvm) {
+Java_org_simgrid_msg_VM_nativeFinalize(JNIEnv *env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   MSG_vm_destroy(vm);
 }

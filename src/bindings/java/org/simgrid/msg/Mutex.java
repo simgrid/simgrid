@@ -16,10 +16,15 @@ public class Mutex {
 	public Mutex() {
 		init();
 	}
+	@Override
 	protected void finalize() {
-		exit();
+		try {
+			nativeFinalize();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
-	private native void exit();
+	private native void nativeFinalize();
 	private native void init();
 	public native void acquire();
 	public native void release();

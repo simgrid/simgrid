@@ -652,7 +652,7 @@ MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Task_doFinalize(JNIEnv * env, jobject jtask) {
+Java_org_simgrid_msg_Task_nativeFinalize(JNIEnv * env, jobject jtask) {
 	  msg_task_t task = jtask_to_native_task(jtask, env);
 
 	  if (!task) {

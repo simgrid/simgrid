@@ -65,14 +65,16 @@ public class Semaphore {
 	}
 
 
-	/** Deletes this semaphore 
-	 */
+	/** Deletes this semaphore when the GC reclaims it */
+	@Override
 	protected void finalize() {
-		destroy();
+		try {
+			nativeFinalize();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
-	/** The native implementation for destroying a semaphore
-	 */
-	private native void destroy();
+	private native void nativeFinalize();
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */

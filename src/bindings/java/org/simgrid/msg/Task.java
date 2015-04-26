@@ -167,13 +167,13 @@ public class Task {
 		try {
 			// Exceptions in finalizers lead to bad situations:
 			// http://stackoverflow.com/questions/7644556/troubleshooting-a-java-memory-leak-finalization
-			doFinalize();
+			nativeFinalize();
 			bind=0; // to avoid segfaults if the impossible happens yet again making this task surviving its finalize()
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 	}
-	protected native void doFinalize();
+	protected native void nativeFinalize();
 	/* *                       * *
 	 * * Communication-related * *
 	 * *                       * */

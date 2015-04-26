@@ -73,8 +73,13 @@ public class VM extends Host{
 		}
 		return null; 
 	}
+	@Override
 	protected void finalize() {
-		destroy();
+		try {
+			nativeFinalize();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -199,10 +204,7 @@ public class VM extends Host{
 	public native void restore();
 
 
-	/**
-	 * Destroy the VM
-	 */
-	public native void destroy();
+	private native void nativeFinalize();
 
 
 

@@ -38,7 +38,7 @@ Java_org_simgrid_msg_RngStream_create(JNIEnv *env, jobject jrngstream, jstring j
   (*env)->ReleaseStringUTFChars(env, jname, name);
 }
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_destroy(JNIEnv *env, jobject jrngstream) {
+Java_org_simgrid_msg_RngStream_nativeFinalize(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
   RngStream_DeleteStream(&rngstream);
   (*env)->SetLongField(env, jrngstream, jrngstream_bind, (intptr_t)NULL);

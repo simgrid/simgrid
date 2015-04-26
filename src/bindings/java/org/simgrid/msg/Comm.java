@@ -40,32 +40,30 @@ public class Comm {
 	protected Comm() {
 
 	}
-	/**
-	 * Finalize the communication object, destroying it.
-	 */
-	protected void finalize() throws Throwable {
-		destroy();
+	/** Destroy the C communication object, when the GC reclaims the java part. */
+	@Override
+	protected void finalize() {
+		try {
+			nativeFinalize();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
-	/**
-	 * Unbind the communication object
-	 */
-	protected native void destroy() throws NativeException;
+	protected native void nativeFinalize();
 	/**
 	 * Returns if the communication is finished or not.
 	 * If the communication has finished and there was an error,
 	 * raise an exception.
 	 */
 	public native boolean test() throws TransferFailureException, HostFailureException, TimeoutException ;
-	/**
-	 * Wait for the complemetion of the communication for an indefinite time
-	 */
+	/** Wait infinitely for the completion of the communication (infinite timeout) */
 	public void waitCompletion() throws TransferFailureException, HostFailureException, TimeoutException {
 		waitCompletion(-1);
 	}
 	/**
 	 * Wait for the completion of the communication.
 	 * Throws an exception if there were an error in the communication.
-	 * @param timeout Time before giving up
+	 * @param timeout Time before giving up (infinite time if negative)
 	 */
 	public native void waitCompletion(double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
 
