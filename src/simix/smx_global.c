@@ -516,7 +516,7 @@ void SIMIX_run(void)
  *   \param arg Parameters of the function
  *
  */
-XBT_INLINE void SIMIX_timer_set(double date, void *function, void *arg)
+XBT_INLINE smx_timer_t SIMIX_timer_set(double date, void *function, void *arg)
 {
   smx_timer_t timer = xbt_new0(s_smx_timer_t, 1);
 
@@ -524,6 +524,16 @@ XBT_INLINE void SIMIX_timer_set(double date, void *function, void *arg)
   timer->func = function;
   timer->args = arg;
   xbt_heap_push(simix_timers, timer, date);
+  return timer;
+}
+/** @brief cancels a timer that was added earlier */
+XBT_INLINE void SIMIX_timer_remove(smx_timer_t timer) {
+	xbt_heap_rm_elm(simix_timers, timer, timer->date);
+}
+
+/** @brief Returns the date at which the timer will trigger (or 0 if NULL timer) */
+XBT_INLINE double SIMIX_timer_get_date(smx_timer_t timer) {
+	return timer?timer->date:0;
 }
 
 /**

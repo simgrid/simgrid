@@ -32,6 +32,8 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    For example, a communication is a sort of synchronization involving
    the communicating processes (that may block until the exchange) and
    the platform. The same can be said from computations, etc.
+ * Bug fixes:
+   - #18888: segfault when a process ends before its kill_time
    
  SMPI: 
  * New functions

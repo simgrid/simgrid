@@ -49,6 +49,10 @@ void SIMIX_process_cleanup(smx_process_t process)
 
   SIMIX_process_on_exit_runall(process);
 
+  /* Unregister from the kill timer if any */
+  if (process->kill_timer != NULL)
+	  SIMIX_timer_remove(process->kill_timer);
+
   /* cancel non-blocking communications */
   smx_synchro_t synchro;
   while ((synchro = xbt_fifo_pop(process->comms))) {
@@ -157,7 +161,7 @@ void SIMIX_process_stop(smx_process_t arg) {
   if (arg->auto_restart && !SIMIX_host_get_state(arg->smx_host)) {
     SIMIX_host_add_auto_restart_process(arg->smx_host,arg->name,arg->code, arg->data,
                                         sg_host_name(arg->smx_host),
-                                        arg->kill_time,
+                                        SIMIX_timer_get_date(arg->kill_timer),
                                         arg->argc,arg->argv,arg->properties,
                                         arg->auto_restart);
   }
@@ -260,7 +264,6 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->code = code;
     (*process)->argc = argc;
     (*process)->argv = argv;
-    (*process)->kill_time = kill_time;
 
 
     XBT_VERB("Create context %s", (*process)->name);
@@ -290,7 +293,7 @@ void SIMIX_process_create(smx_process_t *process,
     if (kill_time > SIMIX_get_clock() && simix_global->kill_process_function) {
       XBT_DEBUG("Process %s(%s) will be kill at time %f", (*process)->name,
           sg_host_name((*process)->smx_host), kill_time);
-      SIMIX_timer_set(kill_time, simix_global->kill_process_function, *process);
+      (*process)->kill_timer = SIMIX_timer_set(kill_time, simix_global->kill_process_function, *process);
     }
   }
 }
@@ -952,18 +955,15 @@ void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart) {
 smx_process_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_process_t process) {
   return SIMIX_process_restart(process, simcall->issuer);
 }
-/**
- * \brief Restart a process.
- * Restart a process, starting it again from the beginning.
- */
+/** @brief Restart a process, starting it again from the beginning. */
 smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer) {
   XBT_DEBUG("Restarting process %s on %s", process->name, sg_host_name(process->smx_host));
   //retrieve the arguments of the old process
-  //FIXME: Factorise this with SIMIX_host_add_auto_restart_process ?
+  //FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
   s_smx_process_arg_t arg;
   arg.code = process->code;
   arg.hostname = sg_host_name(process->smx_host);
-  arg.kill_time = process->kill_time;
+  arg.kill_time = SIMIX_timer_get_date(process->kill_timer);
   arg.argc = process->argc;
   arg.data = process->data;
   int i;
