@@ -67,17 +67,6 @@ void MC_ignore_global_variable(const char *name)
   xbt_die("Unimplemented");
 }
 
-// *****
-
-extern xbt_dynar_t stacks_areas;
-
-void MC_stack_area_add(stack_region_t stack_area)
-{
-  if (stacks_areas == NULL)
-    stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
-  xbt_dynar_push(stacks_areas, &stack_area);
-}
-
 /** @brief Register a stack in the model checker
  *
  *  The stacks are allocated in the heap. The MC handle them especially
@@ -89,34 +78,30 @@ void MC_stack_area_add(stack_region_t stack_area)
  *  @param context
  *  @param size    Size of the stack
  */
-void MC_new_stack_area(void *stack, smx_process_t process, void *context, size_t size)
+void MC_register_stack_area(void *stack, smx_process_t process, void *context, size_t size)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
 
-  stack_region_t region = xbt_new0(s_stack_region_t, 1);
-  region->address = stack;
-  region->context = context;
-  region->size = size;
-  region->block =
+  s_stack_region_t region;
+  memset(&region, 0, sizeof(region));
+  region.address = stack;
+  region.context = context;
+  region.size = size;
+  region.block =
       ((char *) stack -
        (char *) std_heap->heapbase) / BLOCKSIZE + 1;
 #ifdef HAVE_SMPI
   if (smpi_privatize_global_variables && process) {
-    region->process_index = smpi_process_index_of_smx_process(process);
+    region.process_index = smpi_process_index_of_smx_process(process);
   } else
 #endif
-  region->process_index = -1;
+  region.process_index = -1;
 
-  if (mc_mode == MC_MODE_CLIENT) {
-    s_mc_stack_region_message_t message;
-    message.type = MC_MESSAGE_STACK_REGION;
-    message.stack_region = *region;
-    MC_client_send_message(&message, sizeof(message));
-  }
-
-  MC_stack_area_add(region);
-
-  mmalloc_set_current_heap(heap);
+  s_mc_stack_region_message_t message;
+  message.type = MC_MESSAGE_STACK_REGION;
+  message.stack_region = region;
+  MC_client_send_message(&message, sizeof(message));
 }
 
 }

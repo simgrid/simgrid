@@ -316,4 +316,13 @@ void MC_process_ignore_memory(mc_process_t process, void *addr, size_t size)
   }
 }
 
+extern xbt_dynar_t stacks_areas;
+
+void MC_stack_area_add(stack_region_t stack_area)
+{
+  if (stacks_areas == NULL)
+    stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
+  xbt_dynar_push(stacks_areas, &stack_area);
+}
+
 }
