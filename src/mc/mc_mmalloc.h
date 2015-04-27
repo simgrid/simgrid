@@ -20,9 +20,6 @@
 
 SG_BEGIN_DECL()
 
-extern xbt_mheap_t std_heap;
-extern xbt_mheap_t mc_heap;
-
 /* FIXME: Horrible hack! because the mmalloc library doesn't provide yet of */
 /* an API to query about the status of a heap, we simply call mmstats and */
 /* because I now how does structure looks like, then I redefine it here */

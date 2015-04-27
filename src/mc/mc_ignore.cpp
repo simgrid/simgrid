@@ -25,21 +25,23 @@ void MC_ignore_heap(void *address, size_t size)
   if (mc_mode != MC_MODE_CLIENT)
     return;
 
+  xbt_mheap_t heap = mmalloc_get_current_heap();
+
   s_mc_heap_ignore_region_t region;
   memset(&region, 0, sizeof(region));
   region.address = address;
   region.size = size;
   region.block =
    ((char *) address -
-    (char *) std_heap->heapbase) / BLOCKSIZE + 1;
-  if (std_heap->heapinfo[region.block].type == 0) {
+    (char *) heap->heapbase) / BLOCKSIZE + 1;
+  if (heap->heapinfo[region.block].type == 0) {
     region.fragment = -1;
-    std_heap->heapinfo[region.block].busy_block.ignore++;
+    heap->heapinfo[region.block].busy_block.ignore++;
   } else {
     region.fragment =
-        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >> std_heap->
-        heapinfo[region.block].type;
-    std_heap->heapinfo[region.block].busy_frag.ignore[region.fragment]++;
+        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >>
+        heap->heapinfo[region.block].type;
+    heap->heapinfo[region.block].busy_frag.ignore[region.fragment]++;
   }
 
   s_mc_ignore_heap_message_t message;
@@ -83,6 +85,8 @@ void MC_register_stack_area(void *stack, smx_process_t process, void *context, s
   if (mc_mode != MC_MODE_CLIENT)
     return;
 
+  xbt_mheap_t heap = mmalloc_get_current_heap();
+
   s_stack_region_t region;
   memset(&region, 0, sizeof(region));
   region.address = stack;
@@ -90,7 +94,7 @@ void MC_register_stack_area(void *stack, smx_process_t process, void *context, s
   region.size = size;
   region.block =
       ((char *) stack -
-       (char *) std_heap->heapbase) / BLOCKSIZE + 1;
+       (char *) heap->heapbase) / BLOCKSIZE + 1;
 #ifdef HAVE_SMPI
   if (smpi_privatize_global_variables && process) {
     region.process_index = smpi_process_index_of_smx_process(process);

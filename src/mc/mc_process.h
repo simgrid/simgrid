@@ -192,8 +192,6 @@ char* MC_process_read_string(mc_process_t, void* address);
 
 static inline xbt_mheap_t MC_process_get_heap(mc_process_t process)
 {
-  if (MC_process_is_self(process))
-    return std_heap;
   if (!(process->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
     MC_process_refresh_heap(process);
   return process->heap;
@@ -201,8 +199,6 @@ static inline xbt_mheap_t MC_process_get_heap(mc_process_t process)
 
 static inline malloc_info* MC_process_get_malloc_info(mc_process_t process)
 {
-  if (MC_process_is_self(process))
-    return std_heap->heapinfo;
   if (!(process->cache_flags & MC_PROCESS_CACHE_FLAG_MALLOC_INFO))
     MC_process_refresh_malloc_info(process);
   return process->heap_info;

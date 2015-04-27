@@ -232,8 +232,6 @@ int MC_deadlock_check()
  */
 void MC_replay(xbt_fifo_t stack)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   int value, count = 1;
   char *req_str;
   smx_simcall_t req = NULL, saved_req = NULL;
@@ -250,7 +248,6 @@ void MC_replay(xbt_fifo_t stack)
       MC_restore_snapshot(state->system_state);
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
         MC_restore_communications_pattern(state);
-      mmalloc_set_current_heap(std_heap);
       return;
     }
   }
@@ -260,11 +257,8 @@ void MC_replay(xbt_fifo_t stack)
   MC_restore_snapshot(initial_global_state->snapshot);
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
-  mmalloc_set_current_heap(std_heap);
 
   start_item = xbt_fifo_get_last_item(stack);
-  
-  mmalloc_set_current_heap(mc_heap);
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     // int n = xbt_dynar_length(incomplete_communications_pattern);
@@ -276,8 +270,6 @@ void MC_replay(xbt_fifo_t stack)
       xbt_dynar_get_as(initial_communications_pattern, j, mc_list_comm_pattern_t)->index_comm = 0;
     }
   }
-
-  mmalloc_set_current_heap(std_heap);
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (item = start_item;
@@ -308,10 +300,8 @@ void MC_replay(xbt_fifo_t stack)
 
       MC_simcall_handle(req, value);
 
-      mmalloc_set_current_heap(mc_heap);
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         MC_handle_comm_pattern(call, req, value, NULL, 1);
-      mmalloc_set_current_heap(std_heap);
 
       MC_wait_for_requests();
 
@@ -325,14 +315,10 @@ void MC_replay(xbt_fifo_t stack)
   }
 
   XBT_DEBUG("**** End Replay ****");
-  mmalloc_set_current_heap(heap);
 }
 
 void MC_replay_liveness(xbt_fifo_t stack)
 {
-
-  initial_global_state->raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   xbt_fifo_item_t item;
   mc_pair_t pair = NULL;
   mc_state_t state = NULL;
@@ -348,18 +334,12 @@ void MC_replay_liveness(xbt_fifo_t stack)
     pair = (mc_pair_t) xbt_fifo_get_item_content(item);
     if(pair->graph_state->system_state){
       MC_restore_snapshot(pair->graph_state->system_state);
-      mmalloc_set_current_heap(std_heap);
       return;
     }
   }
 
   /* Restore the initial state */
   MC_restore_snapshot(initial_global_state->snapshot);
-
-  /* At the moment of taking the snapshot the raw heap was set, so restoring
-   * it will set it back again, we have to unset it to continue  */
-  if (!initial_global_state->raw_mem_set)
-    mmalloc_set_current_heap(std_heap);
 
     /* Traverse the stack from the initial state and re-execute the transitions */
     for (item = xbt_fifo_get_last_item(stack);
@@ -402,12 +382,6 @@ void MC_replay_liveness(xbt_fifo_t stack)
     }
 
   XBT_DEBUG("**** End Replay ****");
-
-  if (initial_global_state->raw_mem_set)
-    mmalloc_set_current_heap(mc_heap);
-  else
-    mmalloc_set_current_heap(std_heap);
-
 }
 
 /**
@@ -417,23 +391,17 @@ void MC_replay_liveness(xbt_fifo_t stack)
  */
 void MC_dump_stack_safety(xbt_fifo_t stack)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   MC_show_stack_safety(stack);
   
   mc_state_t state;
-  
-  mmalloc_set_current_heap(mc_heap);
+
   while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
     MC_state_delete(state, !state->in_visited_states ? 1 : 0);
-  mmalloc_set_current_heap(heap);
 }
 
 
 void MC_show_stack_safety(xbt_fifo_t stack)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   int value;
   mc_state_t state;
   xbt_fifo_item_t item;
@@ -450,8 +418,6 @@ void MC_show_stack_safety(xbt_fifo_t stack)
       xbt_free(req_str);
     }
   }
-
-  mmalloc_set_current_heap(heap);
 }
 
 void MC_show_deadlock(smx_simcall_t req)
@@ -502,11 +468,9 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
 
 void MC_dump_stack_liveness(xbt_fifo_t stack)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   mc_pair_t pair;
   while ((pair = (mc_pair_t) xbt_fifo_pop(stack)) != NULL)
     MC_pair_delete(pair);
-  mmalloc_set_current_heap(heap);
 }
 
 void MC_print_statistics(mc_stats_t stats)
@@ -533,7 +497,6 @@ void MC_print_statistics(mc_stats_t stats)
     XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
   }
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   if ((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0] != '\0')) {
     fprintf(dot_output, "}\n");
     fclose(dot_output);
@@ -543,18 +506,14 @@ void MC_print_statistics(mc_stats_t stats)
     if (_sg_mc_comms_determinism)
       XBT_INFO("Recv-deterministic : %s", !initial_global_state->recv_deterministic ? "No" : "Yes");
   }
-  mmalloc_set_current_heap(heap);
 }
 
 void MC_automaton_load(const char *file)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
 
   xbt_automaton_load(_mc_property_automaton, file);
-  mmalloc_set_current_heap(heap);
 }
 
 static void register_symbol(xbt_automaton_propositional_symbol_t symbol)
@@ -574,44 +533,35 @@ static void register_symbol(xbt_automaton_propositional_symbol_t symbol)
 
 void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
 
   xbt_automaton_propositional_symbol_t symbol = xbt_automaton_propositional_symbol_new(_mc_property_automaton, id, fct);
   register_symbol(symbol);
-  mmalloc_set_current_heap(heap);
 }
 
 void MC_automaton_new_propositional_symbol_pointer(const char *id, int* value)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
   xbt_automaton_propositional_symbol_t symbol = xbt_automaton_propositional_symbol_new_pointer(_mc_property_automaton, id, value);
   register_symbol(symbol);
-  mmalloc_set_current_heap(heap);
 }
 
 void MC_automaton_new_propositional_symbol_callback(const char* id,
   xbt_automaton_propositional_symbol_callback_type callback,
   void* data, xbt_automaton_propositional_symbol_free_function_type free_function)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   if (_mc_property_automaton == NULL)
     _mc_property_automaton = xbt_automaton_new();
   xbt_automaton_propositional_symbol_t symbol = xbt_automaton_propositional_symbol_new_callback(
     _mc_property_automaton, id, callback, data, free_function);
   register_symbol(symbol);
-  mmalloc_set_current_heap(heap);
 }
 
 // TODO, fix cross-process access (this function is not used)
 void MC_dump_stacks(FILE* file)
 {
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
-
   int nstack = 0;
   stack_region_t current_stack;
   unsigned cursor;
@@ -641,7 +591,6 @@ void MC_dump_stacks(FILE* file)
 
     ++nstack;
   }
-  mmalloc_set_current_heap(heap);
 }
 #endif
 

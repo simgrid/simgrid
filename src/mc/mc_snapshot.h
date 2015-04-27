@@ -248,7 +248,6 @@ typedef struct s_mc_snapshot_stack{
 
 typedef struct s_mc_global_t {
   mc_snapshot_t snapshot;
-  int raw_mem_set;
   int prev_pair;
   char *prev_req;
   int initial_communications_pattern_done;

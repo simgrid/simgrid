@@ -81,7 +81,8 @@ void MC_process_init(mc_process_t process, pid_t pid, int sockfd)
   MC_process_open_memory_file(process);
 
   // Read std_heap (is a struct mdesc*):
-  dw_variable_t std_heap_var = MC_process_find_variable_by_name(process, "std_heap");
+  dw_variable_t std_heap_var = MC_process_find_variable_by_name(process,
+    "__mmalloc_default_mdp");
   if (!std_heap_var)
     xbt_die("No heap information in the target process");
   if(!std_heap_var->address)

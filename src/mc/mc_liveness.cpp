@@ -170,8 +170,6 @@ static void MC_modelcheck_liveness_main(void);
 
 static void MC_pre_modelcheck_liveness(void)
 {
-  initial_global_state->raw_mem_set = (mmalloc_get_current_heap() == mc_heap);
-
   mc_pair_t initial_pair = NULL;
   smx_process_t process;
 

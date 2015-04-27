@@ -87,8 +87,6 @@ static void mmalloc_backtrace_display(void *addr)
   /* size_t block, frag_nb; */
   /* int type; */
 
-  /* xbt_mheap_t heap = __mmalloc_current_heap ?: (xbt_mheap_t) mmalloc_preinit(); */
-
   /* block = (((char*) (addr) - (char*) heap -> heapbase) / BLOCKSIZE + 1); */
 
   /* type = heap->heapinfo[block].type; */

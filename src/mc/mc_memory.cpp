@@ -20,10 +20,6 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
                                 "Logging specific to MC (memory)");
 
-/* Pointers to each of the heap regions to use */
-xbt_mheap_t std_heap = NULL;          /* memory erased each time the MC stuff rollbacks to the beginning. Almost everything goes here */
-xbt_mheap_t mc_heap = NULL;           /* memory persistent over the MC rollbacks. Only MC stuff should go there */
-
 /* Initialize the model-checker memory subsystem */
 /* It creates the two heap regions: std_heap and mc_heap */
 void MC_memory_init()
@@ -31,25 +27,12 @@ void MC_memory_init()
   if (!malloc_use_mmalloc()) {
     xbt_die("Model-checking support is not enabled: run with simgrid-mc.");
   }
-
-  /* Create the first region HEAP_OFFSET bytes after the heap break address */
-  std_heap = mmalloc_get_default_md();
-  xbt_assert(std_heap != NULL);
-
-  /* Create the second region a page after the first one ends + safety gap */
-  mc_heap =
-      xbt_mheap_new_options(-1,
-                            (char *) (std_heap) + STD_HEAP_SIZE + xbt_pagesize,
-                            0);
-  xbt_assert(mc_heap != NULL);
 }
 
 /* Finalize the memory subsystem */
 #include "xbt_modinter.h"
 void MC_memory_exit(void)
 {
-  if (mc_heap && mc_heap != std_heap)
-    xbt_mheap_destroy(mc_heap);
 }
 
 }
