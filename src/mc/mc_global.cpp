@@ -39,6 +39,7 @@
 #include "mc_private.h"
 #include "mc_unw.h"
 #include "mc_smx.h"
+#include "mcer_ignore.h"
 #endif
 #include "mc_record.h"
 #include "mc_protocol.h"
@@ -166,24 +167,24 @@ void MC_init_pid(pid_t pid, int socket)
     MC_ignore_local_variable("start_time", "*");
 
     /* Main MC state: */
-    MC_ignore_global_variable("mc_model_checker");
-    MC_ignore_global_variable("initial_communications_pattern");
-    MC_ignore_global_variable("incomplete_communications_pattern");
-    MC_ignore_global_variable("nb_comm_pattern");
+    MCer_ignore_global_variable("mc_model_checker");
+    MCer_ignore_global_variable("initial_communications_pattern");
+    MCer_ignore_global_variable("incomplete_communications_pattern");
+    MCer_ignore_global_variable("nb_comm_pattern");
 
     /* MC __thread variables: */
-    MC_ignore_global_variable("mc_diff_info");
-    MC_ignore_global_variable("mc_comp_times");
-    MC_ignore_global_variable("mc_snapshot_comparison_time");
+    MCer_ignore_global_variable("mc_diff_info");
+    MCer_ignore_global_variable("mc_comp_times");
+    MCer_ignore_global_variable("mc_snapshot_comparison_time");
 
     /* This MC state is used in MC replay as well: */
-    MC_ignore_global_variable("mc_time");
+    MCer_ignore_global_variable("mc_time");
 
     /* Static variable used for tracing */
-    MC_ignore_global_variable("counter");
+    MCer_ignore_global_variable("counter");
 
     /* SIMIX */
-    MC_ignore_global_variable("smx_total_comms");
+    MCer_ignore_global_variable("smx_total_comms");
 
     if (mc_mode == MC_MODE_CLIENT) {
       /* Those requests are handled on the client side and propagated by message

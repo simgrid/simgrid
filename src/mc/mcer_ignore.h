@@ -12,6 +12,7 @@
 
 SG_BEGIN_DECL();
 
+void MCer_ignore_global_variable(const char *var_name);
 void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region);
 void MC_heap_region_ignore_remove(void *address, size_t size);
 

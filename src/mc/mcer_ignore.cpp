@@ -18,7 +18,20 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mcer_ignore, mc,
                                 "Logging specific to MC ignore mechanism");
 
+// ***** Ignore heap chunks
+
 extern xbt_dynar_t mc_heap_comparison_ignore;
+
+void heap_ignore_region_free(mc_heap_ignore_region_t r)
+{
+  xbt_free(r);
+}
+
+void heap_ignore_region_free_voidp(void *r)
+{
+  heap_ignore_region_free((mc_heap_ignore_region_t) * (void **) r);
+}
+
 
 void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
 {
@@ -91,6 +104,142 @@ void MC_heap_region_ignore_remove(void *address, size_t size)
   if (ignore_found == 1) {
     xbt_dynar_remove_at(mc_heap_comparison_ignore, cursor, NULL);
     MC_remove_ignore_heap(address, size);
+  }
+}
+
+// ***** Ignore global variables
+
+void MCer_ignore_global_variable(const char *name)
+{
+  mc_process_t process = &mc_model_checker->process();
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
+  xbt_assert(process->object_infos, "MC subsystem not initialized");
+
+  size_t n = process->object_infos_size;
+  for (size_t i=0; i!=n; ++i) {
+    mc_object_info_t info = process->object_infos[i];
+
+    // Binary search:
+    int start = 0;
+    int end = xbt_dynar_length(info->global_variables) - 1;
+    while (start <= end) {
+      unsigned int cursor = (start + end) / 2;
+      dw_variable_t current_var =
+          (dw_variable_t) xbt_dynar_get_as(info->global_variables,
+                                           cursor, dw_variable_t);
+      if (strcmp(current_var->name, name) == 0) {
+        xbt_dynar_remove_at(info->global_variables, cursor, NULL);
+        start = 0;
+        end = xbt_dynar_length(info->global_variables) - 1;
+      } else if (strcmp(current_var->name, name) < 0) {
+        start = cursor + 1;
+      } else {
+        end = cursor - 1;
+      }
+    }
+  }
+  mmalloc_set_current_heap(heap);
+}
+
+// ***** Ignore local variables
+
+static void mc_ignore_local_variable_in_scope(const char *var_name,
+                                              const char *subprogram_name,
+                                              dw_frame_t subprogram,
+                                              dw_frame_t scope);
+static void MC_ignore_local_variable_in_object(const char *var_name,
+                                               const char *subprogram_name,
+                                               mc_object_info_t info);
+
+void MC_ignore_local_variable(const char *var_name, const char *frame_name)
+{
+  mc_process_t process = &mc_model_checker->process();
+  if (strcmp(frame_name, "*") == 0)
+    frame_name = NULL;
+  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
+
+  size_t n = process->object_infos_size;
+  size_t i;
+  for (i=0; i!=n; ++i) {
+    MC_ignore_local_variable_in_object(var_name, frame_name, process->object_infos[i]);
+  }
+
+  mmalloc_set_current_heap(heap);
+}
+
+static void MC_ignore_local_variable_in_object(const char *var_name,
+                                               const char *subprogram_name,
+                                               mc_object_info_t info)
+{
+  xbt_dict_cursor_t cursor2;
+  dw_frame_t frame;
+  char *key;
+  xbt_dict_foreach(info->subprograms, cursor2, key, frame) {
+    mc_ignore_local_variable_in_scope(var_name, subprogram_name, frame, frame);
+  }
+}
+
+/** \brief Ignore a local variable in a scope
+ *
+ *  Ignore all instances of variables with a given name in
+ *  any (possibly inlined) subprogram with a given namespaced
+ *  name.
+ *
+ *  \param var_name        Name of the local variable (or parameter to ignore)
+ *  \param subprogram_name Name of the subprogram fo ignore (NULL for any)
+ *  \param subprogram      (possibly inlined) Subprogram of the scope
+ *  \param scope           Current scope
+ */
+static void mc_ignore_local_variable_in_scope(const char *var_name,
+                                              const char *subprogram_name,
+                                              dw_frame_t subprogram,
+                                              dw_frame_t scope)
+{
+  // Processing of direct variables:
+
+  // If the current subprogram matches the given name:
+  if (!subprogram_name ||
+      (subprogram->name && strcmp(subprogram_name, subprogram->name) == 0)) {
+
+    // Try to find the variable and remove it:
+    int start = 0;
+    int end = xbt_dynar_length(scope->variables) - 1;
+
+    // Dichotomic search:
+    while (start <= end) {
+      int cursor = (start + end) / 2;
+      dw_variable_t current_var =
+          (dw_variable_t) xbt_dynar_get_as(scope->variables, cursor,
+                                           dw_variable_t);
+
+      int compare = strcmp(current_var->name, var_name);
+      if (compare == 0) {
+        // Variable found, remove it:
+        xbt_dynar_remove_at(scope->variables, cursor, NULL);
+
+        // and start again:
+        start = 0;
+        end = xbt_dynar_length(scope->variables) - 1;
+      } else if (compare < 0) {
+        start = cursor + 1;
+      } else {
+        end = cursor - 1;
+      }
+    }
+
+  }
+  // And recursive processing in nested scopes:
+  unsigned cursor = 0;
+  dw_frame_t nested_scope = NULL;
+  xbt_dynar_foreach(scope->scopes, cursor, nested_scope) {
+    // The new scope may be an inlined subroutine, in this case we want to use its
+    // namespaced name in recursive calls:
+    dw_frame_t nested_subprogram =
+        nested_scope->tag ==
+        DW_TAG_inlined_subroutine ? nested_scope : subprogram;
+
+    mc_ignore_local_variable_in_scope(var_name, subprogram_name,
+                                      nested_subprogram, nested_scope);
   }
 }
 
