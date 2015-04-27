@@ -110,28 +110,24 @@ static void MC_init_dot_output()
 #ifdef HAVE_MC
 void MC_init()
 {
-  MC_init_pid(getpid(), -1);
+  mc_time = xbt_new0(double, simix_process_maxpid);
+
+  if (_sg_mc_visited > 0 || _sg_mc_liveness  || _sg_mc_termination || mc_mode == MC_MODE_SERVER) {
+    /* Those requests are handled on the client side and propagated by message
+     * to the server: */
+
+    MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
+
+    smx_process_t process;
+    xbt_swag_foreach(process, simix_global->process_list) {
+      MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
+    }
+  }
 }
 
-void MC_init_pid(pid_t pid, int socket)
+void MC_init_model_checker(pid_t pid, int socket)
 {
-  /* Initialize the data structures that must be persistent across every
-     iteration of the model-checker (in RAW memory) */
-
-  xbt_mheap_t heap = mmalloc_set_current_heap(mc_heap);
   mc_model_checker = new simgrid::mc::ModelChecker(pid, socket);
-
-  // It's not useful anymore:
-  if (0 && mc_mode == MC_MODE_SERVER) {
-    unsigned long maxpid;
-    MC_process_read_variable(&mc_model_checker->process(), "simix_process_maxpid",
-      &maxpid, sizeof(maxpid));
-    simix_process_maxpid = maxpid;
-  }
-
-  mmalloc_set_current_heap(std_heap);
-  mc_time = xbt_new0(double, MC_smx_get_maxpid());
-  mmalloc_set_current_heap(mc_heap);
 
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
 
@@ -145,62 +141,29 @@ void MC_init_pid(pid_t pid, int socket)
   /* Init parmap */
   //parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
 
-  mmalloc_set_current_heap(std_heap);
+  /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
+  MC_ignore_local_variable("e", "*");
+  MC_ignore_local_variable("__ex_cleanup", "*");
+  MC_ignore_local_variable("__ex_mctx_en", "*");
+  MC_ignore_local_variable("__ex_mctx_me", "*");
+  MC_ignore_local_variable("__xbt_ex_ctx_ptr", "*");
+  MC_ignore_local_variable("_log_ev", "*");
+  MC_ignore_local_variable("_throw_ctx", "*");
+  MC_ignore_local_variable("ctx", "*");
 
-  if (_sg_mc_visited > 0 || _sg_mc_liveness  || _sg_mc_termination || mc_mode == MC_MODE_SERVER) {
-    /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
-    MC_ignore_local_variable("e", "*");
-    MC_ignore_local_variable("__ex_cleanup", "*");
-    MC_ignore_local_variable("__ex_mctx_en", "*");
-    MC_ignore_local_variable("__ex_mctx_me", "*");
-    MC_ignore_local_variable("__xbt_ex_ctx_ptr", "*");
-    MC_ignore_local_variable("_log_ev", "*");
-    MC_ignore_local_variable("_throw_ctx", "*");
-    MC_ignore_local_variable("ctx", "*");
+  MC_ignore_local_variable("self", "simcall_BODY_mc_snapshot");
+  MC_ignore_local_variable("next_cont"
+    "ext", "smx_ctx_sysv_suspend_serial");
+  MC_ignore_local_variable("i", "smx_ctx_sysv_suspend_serial");
 
-    MC_ignore_local_variable("self", "simcall_BODY_mc_snapshot");
-    MC_ignore_local_variable("next_cont"
-      "ext", "smx_ctx_sysv_suspend_serial");
-    MC_ignore_local_variable("i", "smx_ctx_sysv_suspend_serial");
+  /* Ignore local variable about time used for tracing */
+  MC_ignore_local_variable("start_time", "*");
 
-    /* Ignore local variable about time used for tracing */
-    MC_ignore_local_variable("start_time", "*");
+  /* Static variable used for tracing */
+  MCer_ignore_global_variable("counter");
 
-    /* Main MC state: */
-    MCer_ignore_global_variable("mc_model_checker");
-    MCer_ignore_global_variable("initial_communications_pattern");
-    MCer_ignore_global_variable("incomplete_communications_pattern");
-    MCer_ignore_global_variable("nb_comm_pattern");
-
-    /* MC __thread variables: */
-    MCer_ignore_global_variable("mc_diff_info");
-    MCer_ignore_global_variable("mc_comp_times");
-    MCer_ignore_global_variable("mc_snapshot_comparison_time");
-
-    /* This MC state is used in MC replay as well: */
-    MCer_ignore_global_variable("mc_time");
-
-    /* Static variable used for tracing */
-    MCer_ignore_global_variable("counter");
-
-    /* SIMIX */
-    MCer_ignore_global_variable("smx_total_comms");
-
-    if (mc_mode == MC_MODE_CLIENT) {
-      /* Those requests are handled on the client side and propagated by message
-       * to the server: */
-
-      MC_ignore_heap(mc_time, MC_smx_get_maxpid() * sizeof(double));
-
-      smx_process_t process;
-      xbt_swag_foreach(process, simix_global->process_list) {
-        MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
-      }
-    }
-
-  }
-
-  mmalloc_set_current_heap(heap);
+  /* SIMIX */
+  MCer_ignore_global_variable("smx_total_comms");
 }
 #endif
 
@@ -250,12 +213,12 @@ int MC_deadlock_check()
   smx_process_t process;
   if (xbt_swag_size(simix_global->process_list)) {
     deadlock = TRUE;
-    MC_EACH_SIMIX_PROCESS(process,
+    xbt_swag_foreach(process, simix_global->process_list) {
       if (MC_process_is_enabled(process)) {
         deadlock = FALSE;
         break;
       }
-    );
+    }
   }
   return deadlock;
 }

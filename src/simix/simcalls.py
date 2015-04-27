@@ -302,11 +302,6 @@ if __name__=='__main__':
   fd.write(' */\n');
   fd.write('void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {\n');
   fd.write('  XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));\n');
-  fd.write('  #ifdef HAVE_MC\n');
-  fd.write('  if (mc_model_checker) {\n');
-  fd.write('    MC_invalidate_cache();\n');
-  fd.write('  }\n');
-  fd.write('  #endif\n');
   fd.write('  SIMCALL_SET_MC_VALUE(simcall, value);\n');
   fd.write('  if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)\n');
   fd.write('    return;\n');

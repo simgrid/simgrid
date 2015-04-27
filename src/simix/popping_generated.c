@@ -160,11 +160,6 @@ const char* simcall_names[] = {
  */
 void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   XBT_DEBUG("Handling simcall %p: %s", simcall, SIMIX_simcall_name(simcall->call));
-  #ifdef HAVE_MC
-  if (mc_model_checker) {
-    MC_invalidate_cache();
-  }
-  #endif
   SIMCALL_SET_MC_VALUE(simcall, value);
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
     return;

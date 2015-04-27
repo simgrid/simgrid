@@ -154,7 +154,8 @@ void MC_process_clear(mc_process_t process)
 
 void MC_process_refresh_heap(mc_process_t process)
 {
-  assert(!MC_process_is_self(process));
+  xbt_assert(mc_mode == MC_MODE_SERVER);
+  xbt_assert(!MC_process_is_self(process));
   // Read/dereference/refresh the std_heap pointer:
   if (!process->heap) {
     process->heap = (struct mdesc*) malloc(sizeof(struct mdesc));
@@ -163,11 +164,13 @@ void MC_process_refresh_heap(mc_process_t process)
     process->heap, process->heap_address, sizeof(struct mdesc),
     MC_PROCESS_INDEX_DISABLED
     );
+  process->cache_flags |= MC_PROCESS_CACHE_FLAG_HEAP;
 }
 
 void MC_process_refresh_malloc_info(mc_process_t process)
 {
-  assert(!MC_process_is_self(process));
+  xbt_assert(mc_mode == MC_MODE_SERVER);
+  xbt_assert(!MC_process_is_self(process));
   if (!(process->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
     MC_process_refresh_heap(process);
   // Refresh process->heapinfo:
@@ -178,6 +181,7 @@ void MC_process_refresh_malloc_info(mc_process_t process)
     process->heap_info,
     process->heap->heapinfo, malloc_info_bytesize,
     MC_PROCESS_INDEX_DISABLED);
+  process->cache_flags |= MC_PROCESS_CACHE_FLAG_MALLOC_INFO;
 }
 
 #define SO_RE "\\.so[\\.0-9]*$"

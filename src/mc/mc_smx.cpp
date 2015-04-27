@@ -86,6 +86,8 @@ static void MC_process_refresh_simix_process_list(
 
 void MC_process_smx_refresh(mc_process_t process)
 {
+  xbt_assert(mc_mode == MC_MODE_SERVER);
+  xbt_assert(!MC_process_is_self(process));
   if (process->cache_flags & MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES)
     return;
 
@@ -119,7 +121,7 @@ void MC_process_smx_refresh(mc_process_t process)
  */
 smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
 {
-  if (MC_process_is_self(&mc_model_checker->process()))
+  if (mc_mode == MC_MODE_CLIENT)
     return req->issuer;
 
   MC_process_smx_refresh(&mc_model_checker->process());
@@ -145,7 +147,7 @@ smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address)
 {
   if (!process_remote_address)
     return NULL;
-  if (MC_process_is_self(&mc_model_checker->process()))
+  if (mc_mode == MC_MODE_CLIENT)
     return process_remote_address;
 
   mc_smx_process_info_t process_info = MC_smx_resolve_process_info(process_remote_address);
@@ -157,7 +159,7 @@ smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address)
 
 mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address)
 {
-  if (MC_process_is_self(&mc_model_checker->process()))
+  if (mc_mode == MC_MODE_CLIENT)
     xbt_die("No process_info for local process is not enabled.");
 
   unsigned index;
@@ -173,7 +175,7 @@ mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_a
 
 const char* MC_smx_process_get_host_name(smx_process_t p)
 {
-  if (MC_process_is_self(&mc_model_checker->process()))
+  if (mc_mode == MC_MODE_CLIENT)
     return SIMIX_host_get_name(p->smx_host);
 
   mc_process_t process = &mc_model_checker->process();
@@ -198,7 +200,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
 const char* MC_smx_process_get_name(smx_process_t p)
 {
   mc_process_t process = &mc_model_checker->process();
-  if (MC_process_is_self(process))
+  if (mc_mode == MC_MODE_CLIENT)
     return p->name;
   if (!p->name)
     return NULL;
@@ -212,7 +214,7 @@ const char* MC_smx_process_get_name(smx_process_t p)
 
 int MC_smpi_process_count(void)
 {
-  if (MC_process_is_self(&mc_model_checker->process()))
+  if (mc_mode == MC_MODE_CLIENT)
     return smpi_process_count();
   else {
     int res;

@@ -82,7 +82,7 @@ static int do_parent(int socket, pid_t child)
     mc_mode = MC_MODE_SERVER;
     mc_server = new s_mc_server(child, socket);
     mc_server->start();
-    MC_init_pid(child, socket);
+    MC_init_model_checker(child, socket);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
       MC_modelcheck_comm_determinism();
     else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0')

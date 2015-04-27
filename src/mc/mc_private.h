@@ -48,7 +48,7 @@ typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function
  * @param pid     PID of the target process
  * @param socket  FD for the communication socket **in server mode** (or -1 otherwise)
  */
-void MC_init_pid(pid_t pid, int socket);
+void MC_init_model_checker(pid_t pid, int socket);
 
 extern FILE *dot_output;
 extern const char* colors[13];

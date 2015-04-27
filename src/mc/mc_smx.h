@@ -68,7 +68,7 @@ const char* MC_smx_process_get_name(smx_process_t p);
 const char* MC_smx_process_get_host_name(smx_process_t p);
 
 #define MC_EACH_SIMIX_PROCESS(process, code) \
-  if (MC_process_is_self(&mc_model_checker->process())) { \
+  if (mc_mode == MC_MODE_CLIENT) { \
     xbt_swag_foreach(process, simix_global->process_list) { \
       code; \
     } \

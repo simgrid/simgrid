@@ -67,7 +67,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 
 #ifdef HAVE_MC
     // Fetch from MCed memory:
-    if (!MC_process_is_self(&mc_model_checker->process())) {
+    if (mc_mode == MC_MODE_SERVER) {
       MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
         &temp_synchro, act, sizeof(temp_synchro),
         MC_PROCESS_INDEX_ANY);
@@ -111,7 +111,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 
 #ifdef HAVE_MC
       // Fetch from MCed memory:
-      if (!MC_process_is_self(&mc_model_checker->process())) {
+      if (mc_mode == MC_MODE_SERVER) {
         MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
           &temp_synchro, act, sizeof(temp_synchro),
           MC_PROCESS_INDEX_ANY);
@@ -129,7 +129,7 @@ int MC_request_is_enabled(smx_simcall_t req)
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
 #ifdef HAVE_MC
     s_smx_mutex_t temp_mutex;
-    if (!MC_process_is_self(&mc_model_checker->process())) {
+    if (mc_mode == MC_MODE_SERVER) {
       MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
         &temp_mutex, mutex, sizeof(temp_mutex),
         MC_PROCESS_INDEX_ANY);
@@ -210,7 +210,7 @@ void MC_simcall_handle(smx_simcall_t req, int value)
 #ifndef HAVE_MC
   SIMIX_simcall_handle(req, value);
 #else
-  if (MC_process_is_self(&mc_model_checker->process())) {
+  if (mc_mode == MC_MODE_CLIENT) {
     SIMIX_simcall_handle(req, value);
     return;
   }
