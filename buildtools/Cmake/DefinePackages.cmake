@@ -130,6 +130,7 @@ set(EXTRA_DIST
   tools/tesh/tesh.h
   tools/tesh/generate_tesh
   examples/smpi/mc/only_send_deterministic.tesh
+  examples/smpi/mc/non_deterministic.tesh
   )
 
 set(SMPI_SRC
