@@ -651,7 +651,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mc_client);
   XBT_LOG_CONNECT(mc_client_api);
   XBT_LOG_CONNECT(mc_comm_pattern);
-  XBT_LOG_CONNECT(mc_main);
   XBT_LOG_CONNECT(mc_process);
   XBT_LOG_CONNECT(mc_protocol);
   XBT_LOG_CONNECT(mc_server);
