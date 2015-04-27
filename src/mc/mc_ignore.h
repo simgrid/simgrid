@@ -12,7 +12,6 @@
 
 SG_BEGIN_DECL();
 
-void MC_process_ignore_memory(mc_process_t process, void *addr, size_t size);
 void MC_stack_area_add(stack_region_t stack_area);
 
 xbt_dynar_t MC_checkpoint_ignore_new(void);
