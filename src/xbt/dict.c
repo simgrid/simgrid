@@ -107,12 +107,12 @@ XBT_INLINE unsigned int xbt_dict_size(xbt_dict_t dict)
 static void xbt_dict_rehash(xbt_dict_t dict)
 {
   const int oldsize = dict->table_size + 1;
-  register int newsize = oldsize * 2;
-  register int i;
-  register xbt_dictelm_t *currcell;
-  register xbt_dictelm_t *twincell;
-  register xbt_dictelm_t bucklet;
-  register xbt_dictelm_t *pprev;
+  int newsize = oldsize * 2;
+  int i;
+  xbt_dictelm_t *currcell;
+  xbt_dictelm_t *twincell;
+  xbt_dictelm_t bucklet;
+  xbt_dictelm_t *pprev;
 
   currcell =
       (xbt_dictelm_t *) xbt_realloc((char *) dict->table,

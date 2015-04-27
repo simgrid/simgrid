@@ -177,8 +177,8 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
 {
   void *result;
   size_t block, blocks, lastblocks, start;
-  register size_t i;
-  register size_t log;
+  size_t i;
+  size_t log;
   int it;
 
   size_t requested_size = size; // The amount of memory requested by user, for real
@@ -266,7 +266,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       mdp->heapinfo[block].busy_frag.ignore[0] = 0;
       //xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_frag.bt[0],XBT_BACKTRACE_SIZE);
       //xbt_libunwind_backtrace(mdp->heapinfo[block].busy_frag.bt[0],XBT_BACKTRACE_SIZE);
-      
+
       /* update stats */
       mdp -> heapstats.chunks_free += (BLOCKSIZE >> log) - 1;
       mdp -> heapstats.bytes_free += BLOCKSIZE - (1 << log);
@@ -359,7 +359,7 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
     mdp->heapinfo[block].busy_block.busy_size = requested_size;
     //mdp->heapinfo[block].busy_block.bt_size = xbt_backtrace_no_malloc(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
     //mdp->heapinfo[block].busy_block.bt_size = xbt_libunwind_backtrace(mdp->heapinfo[block].busy_block.bt,XBT_BACKTRACE_SIZE);
-    
+
     mdp -> heapstats.chunks_used++;
     mdp -> heapstats.bytes_used += blocks * BLOCKSIZE;
     mdp -> heapstats.bytes_free -= blocks * BLOCKSIZE;

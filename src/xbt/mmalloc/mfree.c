@@ -23,7 +23,7 @@ void mfree(struct mdesc *mdp, void *ptr)
 {
   int type;
   size_t block, frag_nb;
-  register size_t i;
+  size_t i;
   int it;
 
   mmalloc_paranoia(mdp);
@@ -51,7 +51,7 @@ void mfree(struct mdesc *mdp, void *ptr)
     UNLOCK(mdp);
     THROWF(system_error, 0, "Asked to free a fragment in a block that is already free. I'm puzzled.\n");
     break;
-    
+
   case MMALLOC_TYPE_UNFRAGMENTED:
     /* Get as many statistics as early as we can.  */
     mdp -> heapstats.chunks_used--;
@@ -147,8 +147,8 @@ void mfree(struct mdesc *mdp, void *ptr)
           mdp -> heapstats.bytes_free -= bytes;
           } */
 
-    /* Set the next search to begin at this block.  
-       This is probably important to the trick where realloc returns the block to 
+    /* Set the next search to begin at this block.
+       This is probably important to the trick where realloc returns the block to
        the system before reasking for the same block with a bigger size.  */
     mdp->heapindex = block;
     break;
@@ -191,13 +191,13 @@ void mfree(struct mdesc *mdp, void *ptr)
       mdp->heapinfo[block].type = MMALLOC_TYPE_UNFRAGMENTED;
       mdp->heapinfo[block].busy_block.size = 1;
       mdp->heapinfo[block].busy_block.busy_size = 0;
-            
+
       /* Keep the statistics accurate.  */
       mdp -> heapstats.chunks_used++;
       mdp -> heapstats.bytes_used += BLOCKSIZE;
       mdp -> heapstats.chunks_free -= BLOCKSIZE >> type;
       mdp -> heapstats.bytes_free -= BLOCKSIZE;
-      
+
       mfree((void *) mdp, (void *) ADDRESS(block));
     } else if (mdp->heapinfo[block].busy_frag.nfree != 0) {
       /* If some fragments of this block are free, you know what? I'm already happy. */
