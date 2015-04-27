@@ -81,7 +81,6 @@ public class Master extends Process {
 		
 		for (int i = 0; i < vms.size(); i++) {
 			vms.get(i).shutdown();
-			vms.get(i).destroy();
 		}				
 		Msg.info("Master done.");
 	}

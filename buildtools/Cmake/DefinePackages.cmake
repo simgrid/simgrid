@@ -619,6 +619,7 @@ set(MC_SRC
   src/mc/mc_dwarf_tagnames.h
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.cpp
+  src/mc/mc_ignore.h
   src/mc/mc_liveness.h
   src/mc/mc_location.h
   src/mc/mc_liveness.cpp

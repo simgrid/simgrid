@@ -1,10 +1,10 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
-    <process host="node-0.acme.org" function="master"/>
-  	<process host="node-1.acme.org" function="slave" start_time="1" kill_time="5"/>
-	<process host="node-2.acme.org" function="slave" start_time="2" kill_time="6"/>
-	<process host="node-3.acme.org" function="slave" start_time="3" kill_time="7"/>
-	<process host="node-4.acme.org" function="slave" start_time="4" kill_time="8"/>
-	<process host="node-5.acme.org" function="slave" start_time="5" kill_time="9"/>
+    <process host="node-0.acme.org" function="sleeper" start_time="0" kill_time="5">  <argument value="10"/></process>
+    <process host="node-1.acme.org" function="sleeper" start_time="1" kill_time="6">  <argument value="10"/></process>
+    <process host="node-2.acme.org" function="sleeper" start_time="2" kill_time="7">  <argument value="4" /></process>
+    <process host="node-3.acme.org" function="sleeper" start_time="3" kill_time="8">  <argument value="4" /></process>
+    <process host="node-4.acme.org" function="sleeper" start_time="4" kill_time="9">  <argument value="5" /></process>
+    <process host="node-5.acme.org" function="sleeper" start_time="5" kill_time="10"> <argument value="5"/></process>
 </platform>

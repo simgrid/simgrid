@@ -16,6 +16,8 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    - Rename Process.currentProcess() to Process.getCurrentProcess()
    - Rename Task.setDataSize() to Task.setBytesAmount()
    - Merge Task.getRemainingDuration() and Task.getComputeDuration() into Task.getFlopsAmount()
+ * Bug fixes:
+   - #18874: Actually allows the GC to reclaim tasks
    
  SIMIX:
  * New functions
@@ -30,6 +32,8 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    For example, a communication is a sort of synchronization involving
    the communicating processes (that may block until the exchange) and
    the platform. The same can be said from computations, etc.
+ * Bug fixes:
+   - #18888: segfault when a process ends before its kill_time
    
  SMPI: 
  * New functions

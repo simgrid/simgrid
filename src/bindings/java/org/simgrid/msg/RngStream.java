@@ -41,16 +41,18 @@ public class RngStream {
 	 * The natively implemented method to create a C RngStream object.
 	 */
 	private native void create(String name);
-	/**
-	 * Destructor
-	 */
+	@Override
 	protected void finalize() {
-		destroy();
+		try {
+			nativeFinalize();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 	/**
 	 * Release the C RngStream object
 	 */
-	private native void destroy();
+	private native void nativeFinalize();
 
 	/**
 	 * Sets the initial seed of the package RngStreams to the six integers in the vector seed. This will

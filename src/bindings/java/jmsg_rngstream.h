@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_create(JNIEnv *env, jobject jrngstream, jstring name);
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_destroy(JNIEnv *env, jobject jrngstream);
+Java_org_simgrid_msg_RngStream_nativeFinalize(JNIEnv *env, jobject jrngstream);
 
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_RngStream_setPackageSeed(JNIEnv *env, jobject jrngstream, jintArray seed);

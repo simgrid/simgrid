@@ -232,7 +232,7 @@ static char *buff_size_to_string(size_t buff_size)
 
 char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t request_type)
 {
-  bool use_remote_comm = false;
+  bool use_remote_comm = true;
   switch(request_type) {
   case MC_REQUEST_SIMIX:
     use_remote_comm = true;
@@ -473,7 +473,7 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
   for (cursor=0; cursor != comms.used; ++cursor) {
 
     // Get the element:
-    smx_synchro_t remote_action;
+    smx_synchro_t remote_action = NULL;
     memcpy(&remote_action, buffer + comms.elmsize * cursor, sizeof(remote_action));
 
     // Dereference the pointer:
