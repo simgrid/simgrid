@@ -965,7 +965,7 @@ void sg_config_init(int *argc, char **argv)
       /* retrieves the current directory of the current process */
       const char *initial_path = __surf_get_initial_path();
       xbt_assert((initial_path),
-                  "__surf_get_initial_path() failed! Can't resolves current Windows directory");
+                  "__surf_get_initial_path() failed! Can't resolve current Windows directory");
 
       surf_path = xbt_dynar_new(sizeof(char *), NULL);
       xbt_cfg_setdefault_string(_sg_cfg_set, "path", initial_path);
