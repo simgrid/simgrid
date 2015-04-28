@@ -956,6 +956,11 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_reduce, NULL);
 #endif // HAVE_SMPI
 
+    xbt_cfg_register(&_sg_cfg_set, "exception/cutpath",
+                     "\"yes\" or \"no\". \"yes\" will cut all path information from call traces, used e.g. in exceptions.",
+                     xbt_cfgelm_boolean, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "exception/cutpath", "no");
+
     xbt_cfg_register(&_sg_cfg_set, "clean_atexit",
                      "\"yes\" or \"no\". \"yes\" enables all the cleanups of SimGrid (XBT,SIMIX,MSG) to be registered with atexit. \"no\" may be useful if your code segfaults when calling the exit function.",
                      xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_clean_atexit, NULL);
