@@ -1172,4 +1172,27 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_dict_free(&head);
 }
 
+XBT_TEST_UNIT("ext", test_dict_int, "Test dictionnary with int keys")
+{
+  xbt_dict_t dict = xbt_dict_new();
+  int count = 500;
+
+  xbt_test_add("Insert elements");
+  int i;
+  for (i = 0; i < count; ++i)
+    xbt_dict_set_ext(dict, (char*) &i, sizeof(i), (void*) (intptr_t) i, NULL);
+  xbt_test_assert(xbt_dict_size(dict) == count,
+    "Bad number of elements in the dictionnary");
+
+  xbt_test_add("Check elements");
+  for (i = 0; i < count; ++i) {
+    int res = (int) (intptr_t) xbt_dict_get_ext(dict, (char*) &i, sizeof(i));
+    xbt_test_assert(xbt_dict_size(dict) == count,
+      "Unexpected value at index %i, expected %i but was %i", i, i, res);
+  }
+
+  xbt_test_add("Free the array");
+  xbt_dict_free(&dict);
+}
+
 #endif                          /* SIMGRID_TEST */
