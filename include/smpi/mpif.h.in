@@ -69,7 +69,7 @@
       parameter(MPI_ERR_OTHER=12)
       parameter(MPI_ERR_UNKNOWN=13)
       parameter(MPI_LASTUSEDCODE=0)
-      parameter(MPI_ERR_LASTCODE=0)
+      parameter(MPI_ERR_LASTCODE=74)
       parameter(MPI_IDENT=0)
       parameter(MPI_SIMILAR=1)
       parameter(MPI_UNEQUAL=2)
