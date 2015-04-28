@@ -26,7 +26,7 @@ endif()
 
 if(enable_compile_warnings)
   set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
-  if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+  if(CMAKE_COMPILER_IS_GNUCC)
     set(warnCFLAGS "${warnCFLAGS}-Wclobbered -Wno-error=clobbered ")
     if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
       set(warnCFLAGS "${warnCFLAGS}-Wno-error=unused-but-set-variable ")
