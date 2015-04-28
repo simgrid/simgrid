@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
                                 "Logging specific to SMPI (comm)");
 
 xbt_dict_t smpi_comm_keyvals = NULL;
-int comm_keyval_id=MPI_TAG_UB+1;//avoid collisions
+int comm_keyval_id = 0;//avoid collisions
 
 /* Support for cartesian topology was added, but there are 2 other types of
  * topology, graph et dist graph. In order to support them, we have to add a
@@ -617,4 +617,3 @@ int smpi_comm_keyval_free(int* keyval){
   xbt_free(elem);
   return MPI_SUCCESS;
 }
-

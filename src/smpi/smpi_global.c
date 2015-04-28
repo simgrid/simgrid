@@ -44,11 +44,11 @@ typedef struct s_smpi_process_data {
 
 static smpi_process_data_t *process_data = NULL;
 int process_count = 0;
+int smpi_universe_size = 0;
 int* index_to_process_data = NULL;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
-int MPI_UNIVERSE_SIZE;
 
 MPI_Errhandler *MPI_ERRORS_RETURN = NULL;
 MPI_Errhandler *MPI_ERRORS_ARE_FATAL = NULL;
@@ -426,6 +426,7 @@ void smpi_global_init(void)
     process_count = SIMIX_process_count();
     smpirun=1;
   }
+  smpi_universe_size = process_count;
   process_data = xbt_new0(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {
     process_data[i] = xbt_new(s_smpi_process_data_t, 1);
@@ -453,9 +454,9 @@ void smpi_global_init(void)
   if(smpirun){
     group = smpi_group_new(process_count);
     MPI_COMM_WORLD = smpi_comm_new(group, NULL);
+    MPI_Attr_put(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE, (void *)(MPI_Aint)process_count);
     xbt_bar_t bar=xbt_barrier_init(process_count);
 
-    MPI_UNIVERSE_SIZE = smpi_comm_size(MPI_COMM_WORLD);
     for (i = 0; i < process_count; i++) {
       smpi_group_set_mapping(group, i, i);
       process_data[i]->finalization_barrier = bar;

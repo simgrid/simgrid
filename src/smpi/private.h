@@ -770,6 +770,7 @@ typedef struct s_smpi_privatisation_region {
 
 extern smpi_privatisation_region_t smpi_privatisation_regions;
 extern int smpi_loaded_page;
+extern int smpi_universe_size;
 
 int SIMIX_process_get_PID(smx_process_t self);
 

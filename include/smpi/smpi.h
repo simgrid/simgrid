@@ -129,12 +129,19 @@ SG_BEGIN_DECL()
 #define MPI_SIMILAR   1
 #define MPI_UNEQUAL   2
 #define MPI_CONGRUENT 3
-#define MPI_WTIME_IS_GLOBAL 1
-#define MPI_TAG_UB           1000000
-#define MPI_HOST             0
-#define MPI_IO               0
+
+
 #define MPI_BSEND_OVERHEAD   0
 
+/* Attribute keys */
+#define MPI_IO               -1
+#define MPI_HOST             -2
+#define MPI_WTIME_IS_GLOBAL  -3
+#define MPI_APPNUM           -4
+#define MPI_TAG_UB           -5
+#define MPI_TAG_LB           -6
+#define MPI_UNIVERSE_SIZE    -7
+#define MPI_LASTUSEDCODE     -8
 
 #define MPI_MODE_NOSTORE 0x1
 #define MPI_MODE_NOPUT 0x2
@@ -142,12 +149,9 @@ SG_BEGIN_DECL()
 #define MPI_MODE_NOSUCCEED 0x8
 #define MPI_MODE_NOCHECK 0x10
 
-
 #define MPI_KEYVAL_INVALID 0
 #define MPI_NULL_COPY_FN NULL
 #define MPI_NULL_DELETE_FN NULL
-#define MPI_APPNUM 0
-#define MPI_LASTUSEDCODE MPI_SUCCESS
 #define MPI_ERR_LASTCODE 74
 
 #define MPI_CXX_BOOL MPI_DATATYPE_NULL
@@ -356,7 +360,6 @@ typedef struct s_smpi_mpi_communicator *MPI_Comm;
 
 #define MPI_COMM_NULL ((MPI_Comm)NULL)
 XBT_PUBLIC_DATA( MPI_Comm ) MPI_COMM_WORLD;
-XBT_PUBLIC_DATA( int ) MPI_UNIVERSE_SIZE;
 #define MPI_COMM_SELF smpi_process_comm_self()
 
 struct s_smpi_mpi_request;

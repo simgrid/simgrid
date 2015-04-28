@@ -3094,20 +3094,47 @@ int PMPI_Attr_delete(MPI_Comm comm, int keyval) {
 }
 
 int PMPI_Attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag) {
+  static int one = 1;
+  static int zero = 0;
+  static int tag_ub = 1000000;
+  static int last_used_code = MPI_ERR_LASTCODE;
+
   if (comm==MPI_COMM_NULL){
-    *flag=0;
+    *flag = 0;
     return MPI_ERR_COMM;
-  } else if(keyval == MPI_TAG_UB||keyval == MPI_HOST||keyval == MPI_IO
-       ||keyval == MPI_WTIME_IS_GLOBAL||keyval == MPI_APPNUM
-       ||keyval == MPI_UNIVERSE_SIZE||keyval == MPI_LASTUSEDCODE){
-    *flag=1;
-    //FIXME : not ideal and leaky, but should not be called too much
-    int* res = xbt_new(int, 1);
-    *res=keyval;
-    *(int**)attr_value=res;
+  }
+
+  switch (keyval) {
+  case MPI_HOST:
+  case MPI_IO:
+  case MPI_APPNUM:
+    *flag = 1;
+    *(int**)attr_value = &zero;
     return MPI_SUCCESS;
-  } else
-  return smpi_comm_attr_get(comm, keyval, attr_value, flag);
+
+  case MPI_UNIVERSE_SIZE:
+    *flag = 1;
+    *(int**)attr_value = &smpi_universe_size;
+    return MPI_SUCCESS;
+
+  case MPI_LASTUSEDCODE:
+    *flag = 1;
+    *(int**)attr_value = &last_used_code;
+    return MPI_SUCCESS;
+
+  case MPI_TAG_UB:
+    *flag=1;
+    *(int**)attr_value = &tag_ub;
+    return MPI_SUCCESS;
+
+  case MPI_WTIME_IS_GLOBAL:
+    *flag = 1;
+    *(int**)attr_value = &one;
+    return MPI_SUCCESS;
+
+  default:
+    return smpi_comm_attr_get(comm, keyval, attr_value, flag);
+  }
 }
 
 int PMPI_Attr_put(MPI_Comm comm, int keyval, void* attr_value) {
@@ -3635,4 +3662,3 @@ int PMPI_Win_test(MPI_Win win, int *flag){
 int PMPI_Win_unlock(int rank, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
-
