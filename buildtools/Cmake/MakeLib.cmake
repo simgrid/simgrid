@@ -38,6 +38,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
     AND NOT ${CMAKE_SYSTEM_VERSION} VERSION_LESS 10.0
     AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
   # FreeBSD from 10.0 provide a internal C++ stack (unused by gcc)
+  # see https://wiki.freebsd.org/NewC%2B%2BStack
   set(SIMGRID_DEP "${SIMGRID_DEP} -lc++")
 else()
   set(SIMGRID_DEP "${SIMGRID_DEP} -lstdc++")
