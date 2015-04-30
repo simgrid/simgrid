@@ -40,6 +40,17 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
   # FreeBSD from 10.0 provide a internal C++ stack (unused by gcc)
   # see https://wiki.freebsd.org/NewC%2B%2BStack
   set(SIMGRID_DEP "${SIMGRID_DEP} -lc++")
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
+    AND ${CMAKE_SYSTEM_VERSION} VERSION_LESS 10.0
+    AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+  # FreeBSD prior to 10.0 does not necessarily have a compiler
+  # installed that is capable of c++11! Hence, we just assume
+  # here that libc++ was compiled.
+  # FIXME: We should change this behavior; we may want to include
+  # an option of whether libc++ (clang++) or libstdc++ (g++)
+  # should be used.
+  include_directories( "/usr/local/include/c++/v1")
+  set(SIMGRID_DEP "${SIMGRID_DEP} -lc++ -L/usr/local/lib ")
 else()
   set(SIMGRID_DEP "${SIMGRID_DEP} -lstdc++")
 endif()
@@ -87,7 +98,7 @@ if(HAVE_GRAPHVIZ)
 endif()
 
 if(HAVE_LIBSIGC++)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")	  
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")
 endif()
 
 if(HAVE_GTNETS)
@@ -101,7 +112,7 @@ endif()
 if(HAVE_MC)
   # The availability of libunwind was checked in CompleteInFiles.cmake
   #   (that includes FindLibunwind.cmake), so simply load it now.
-  
+
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind -lunwind-ptrace")
 
   # Same for libdw
@@ -110,7 +121,7 @@ if(HAVE_MC)
   # This is deeply wrong, and should be fixed by manually loading -lunwind-PLAT (FIXME)
   if(PROCESSOR_x86_64)
     SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86_64")
-  else()    
+  else()
     SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86")
   endif()
 endif()
