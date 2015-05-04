@@ -90,8 +90,9 @@ int MC_request_is_enabled(smx_simcall_t req)
     return (act->comm.src_proc && act->comm.dst_proc);
 
   case SIMCALL_COMM_WAITANY: {
-#ifdef HAVE_MC
     xbt_dynar_t comms;
+#ifdef HAVE_MC
+
     s_xbt_dynar_t comms_buffer;
     size_t buffer_size;
     if (mc_mode == MC_MODE_SERVER) {
@@ -109,6 +110,8 @@ int MC_request_is_enabled(smx_simcall_t req)
     if (mc_mode == MC_MODE_SERVER)
       MC_process_read_simple(&mc_model_checker->process(),
         buffer, comms->data, sizeof(buffer));
+#else
+    comms = simcall_comm_waitany__get__comms(req);
 #endif
 
     for (index = 0; index < comms->used; ++index) {
