@@ -1,7 +1,7 @@
 #! ./tesh
 
 ! expect return 134
-$ ${bindir:=.}/../../../../bin/smpirun -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=model-check:1 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich ${bindir:=.}/any_src-wait-deadlock
+$ ${bindir:=.}/../../../../bin/smpirun -wrapper "${bindir:=.}/../../../../bin/simgrid-mc" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=model-check:1 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich ${bindir:=.}/any_src-wait-deadlock
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [0.000000] [mc_global/INFO] Check a safety property
 > (0) is alive on Tremblay
