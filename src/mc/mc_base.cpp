@@ -49,6 +49,7 @@ void MC_wait_for_requests(void)
   }
 }
 
+// Called from both MCer and MCed:
 int MC_request_is_enabled(smx_simcall_t req)
 {
   unsigned int index = 0;
@@ -90,35 +91,39 @@ int MC_request_is_enabled(smx_simcall_t req)
 
   case SIMCALL_COMM_WAITANY: {
 #ifdef HAVE_MC
-    // Read dynar:
-    s_xbt_dynar_t comms;
-    MC_process_read_simple(&mc_model_checker->process(),
-      &comms, simcall_comm_waitany__get__comms(req), sizeof(comms));
-    // Read dynar buffer:
-    assert(comms.elmsize == sizeof(act));
-    size_t buffer_size = comms.elmsize * comms.used;
+    xbt_dynar_t comms;
+    s_xbt_dynar_t comms_buffer;
+    size_t buffer_size;
+    if (mc_mode == MC_MODE_SERVER) {
+      // Read dynar:
+      MC_process_read_simple(&mc_model_checker->process(),
+        &comms_buffer, simcall_comm_waitany__get__comms(req), sizeof(comms_buffer));
+      assert(comms_buffer.elmsize == sizeof(act));
+      buffer_size = comms_buffer.elmsize * comms_buffer.used;
+      comms = &comms_buffer;
+    } else {
+      comms = simcall_comm_waitany__get__comms(req);
+    }
+    // Read all the dynar buffer:
     char buffer[buffer_size];
-    MC_process_read_simple(&mc_model_checker->process(),
-      buffer, comms.data, sizeof(buffer));
+    if (mc_mode == MC_MODE_SERVER)
+      MC_process_read_simple(&mc_model_checker->process(),
+        buffer, comms->data, sizeof(buffer));
 #endif
 
+    for (index = 0; index < comms->used; ++index) {
 #ifdef HAVE_MC
-    for (index = 0; index < comms.used; ++index) {
-      memcpy(&act, buffer + comms.elmsize * index, sizeof(act));
-#else
-    xbt_dynar_foreach(simcall_comm_waitany__get__comms(req), index, act) {
-#endif
-
-#ifdef HAVE_MC
-      // Fetch from MCed memory:
+      // Fetch act from MCed memory:
       if (mc_mode == MC_MODE_SERVER) {
+        memcpy(&act, buffer + comms->elmsize * index, sizeof(act));
         MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
           &temp_synchro, act, sizeof(temp_synchro),
           MC_PROCESS_INDEX_ANY);
         act = &temp_synchro;
       }
+      else
 #endif
-
+        act = xbt_dynar_get_as(comms, index, smx_synchro_t);
       if (act->comm.src_proc && act->comm.dst_proc)
         return TRUE;
     }
