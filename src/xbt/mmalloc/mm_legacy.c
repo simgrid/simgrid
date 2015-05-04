@@ -18,13 +18,7 @@
 #include <math.h>
 #include "../mc/mc_protocol.h"
 
-//#define MM_LEGACY_VERBOSE 1 /* define this to see which version of malloc gets used */
-
-/* The mmalloc() package can use a single implicit malloc descriptor
-   for mmalloc/mrealloc/mfree operations which do not supply an explicit
-   descriptor.  This allows mmalloc() to provide
-   backwards compatibility with the non-mmap'd version. */
-xbt_mheap_t __mmalloc_default_mdp = NULL;
+/* ***** Whether to use `mmalloc` of the undrlying malloc ***** */
 
 static int __malloc_use_mmalloc;
 
@@ -33,7 +27,16 @@ int malloc_use_mmalloc(void)
   return __malloc_use_mmalloc;
 }
 
-static xbt_mheap_t __mmalloc_current_heap = NULL;     /* The heap we are currently using. */
+/* ***** Current heap ***** */
+
+/* The mmalloc() package can use a single implicit malloc descriptor
+   for mmalloc/mrealloc/mfree operations which do not supply an explicit
+   descriptor.  This allows mmalloc() to provide
+   backwards compatibility with the non-mmap'd version. */
+xbt_mheap_t __mmalloc_default_mdp = NULL;
+
+/* The heap we are currently using. */
+static xbt_mheap_t __mmalloc_current_heap = NULL;
 
 xbt_mheap_t mmalloc_get_current_heap(void)
 {
@@ -49,13 +52,47 @@ xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap)
 
 #ifdef MMALLOC_WANT_OVERRIDE_LEGACY
 
+/* ***** Temporary allocator
+ *
+ * This is used before we have found the real malloc implementation with dlsym.
+ */
+
+#define BUFFER_SIZE 32
+static size_t fake_alloc_index;
+static uint64_t buffer[BUFFER_SIZE];
+
 /* Fake implementations, they are used to fool dlsym:
  * dlsym used calloc and falls back to some other mechanism
  * if this fails.
  */
-static void* mm_fake_calloc(size_t nmemb, size_t size) { return NULL; }
-static void* mm_fake_malloc(size_t n)                  { return NULL; }
-static void* mm_fake_realloc(void *p, size_t s)        { return NULL; }
+static void* mm_fake_malloc(size_t n)
+{
+  size_t count = n / sizeof(uint64_t);
+  if (n && 0xff)
+    count ++;
+  if (fake_alloc_index + count < BUFFER_SIZE) {
+    uint64_t* res = buffer + fake_alloc_index;
+    fake_alloc_index += count;
+    return res;
+  }
+  exit(127);
+}
+
+static void* mm_fake_calloc(size_t nmemb, size_t size)
+{
+  // This is fresh .bss data, we don't need to clear it:
+  size_t n = nmemb * size;
+  return mm_fake_malloc(n);
+}
+
+static void* mm_fake_realloc(void *p, size_t s)
+{
+  return mm_fake_malloc(s);
+}
+
+static void mm_fake_free(void *p)
+{
+}
 
 /* Function signatures for the main malloc functions: */
 typedef void* (*mm_malloc_t)(size_t size);
@@ -64,30 +101,53 @@ typedef void* (*mm_calloc_t)(size_t nmemb, size_t size);
 typedef void* (*mm_realloc_t)(void *ptr, size_t size);
 
 /* Function pointers to the real/next implementations: */
-static mm_malloc_t mm_real_malloc   = mm_fake_malloc;
+static mm_malloc_t mm_real_malloc;
 static mm_free_t mm_real_free;
-static mm_calloc_t mm_real_calloc   = mm_fake_calloc;
-static mm_realloc_t mm_real_realloc = mm_fake_realloc;
+static mm_calloc_t mm_real_calloc;
+static mm_realloc_t mm_real_realloc;
 
-#define GET_HEAP() __mmalloc_current_heap
+static int mm_initializing;
+static int mm_initialized;
 
 /** Constructor functions used to initialize the malloc implementation
  */
 static void __attribute__((constructor(101))) mm_legacy_constructor()
 {
+  if (mm_initialized)
+    return;
+  mm_initializing = 1;
   __malloc_use_mmalloc = getenv(MC_ENV_VARIABLE) ? 1 : 0;
   if (__malloc_use_mmalloc) {
     __mmalloc_current_heap = mmalloc_preinit();
   } else {
-    mm_real_realloc  = (mm_realloc_t) dlsym(RTLD_NEXT, "realloc");
-    mm_real_malloc   = (mm_malloc_t)  dlsym(RTLD_NEXT, "malloc");
-    mm_real_free     = (mm_free_t)    dlsym(RTLD_NEXT, "free");
-    mm_real_calloc   = (mm_calloc_t)  dlsym(RTLD_NEXT, "calloc");
+    mm_real_realloc  = dlsym(RTLD_NEXT, "realloc");
+    mm_real_malloc   = dlsym(RTLD_NEXT, "malloc");
+    mm_real_free     = dlsym(RTLD_NEXT, "free");
+    mm_real_calloc   = dlsym(RTLD_NEXT, "calloc");
   }
+  mm_initializing = 0;
+  mm_initialized = 1;
 }
+
+/* ***** malloc/free implementation
+ *
+ * They call either the underlying/native/RTLD_NEXT implementation (non MC mode)
+ * or the mm implementation (MC mode).
+ *
+ * If we are initializing the malloc subsystem, we call the fake/dummy `malloc`
+ * implementation. This is necessary because `dlsym` calls `malloc` and friends.
+ */
+
+#define GET_HEAP() __mmalloc_current_heap
 
 void* malloc_no_memset(size_t n)
 {
+  if (!mm_initialized) {
+    if (mm_initializing)
+      return mm_fake_malloc(n);
+    mm_legacy_constructor();
+  }
+
   if (!__malloc_use_mmalloc) {
     return mm_real_malloc(n);
   }
@@ -104,6 +164,12 @@ void* malloc_no_memset(size_t n)
 
 void *malloc(size_t n)
 {
+  if (!mm_initialized) {
+    if (mm_initializing)
+      return mm_fake_malloc(n);
+    mm_legacy_constructor();
+  }
+
   if (!__malloc_use_mmalloc) {
     return mm_real_malloc(n);
   }
@@ -120,6 +186,12 @@ void *malloc(size_t n)
 
 void *calloc(size_t nmemb, size_t size)
 {
+  if (!mm_initialized) {
+    if (mm_initializing)
+      return mm_fake_calloc(nmemb, size);
+    mm_legacy_constructor();
+  }
+
   if (!__malloc_use_mmalloc) {
     return mm_real_calloc(nmemb, size);
   }
@@ -140,6 +212,12 @@ void *calloc(size_t nmemb, size_t size)
 
 void *realloc(void *p, size_t s)
 {
+  if (!mm_initialized) {
+    if (mm_initializing)
+      return mm_fake_realloc(p, s);
+    mm_legacy_constructor();
+  }
+
   if (!__malloc_use_mmalloc) {
     return mm_real_realloc(p, s);
   }
@@ -156,6 +234,12 @@ void *realloc(void *p, size_t s)
 
 void free(void *p)
 {
+  if (!mm_initialized) {
+    if (mm_initializing)
+      return mm_fake_free(p);
+    mm_legacy_constructor();
+  }
+
   if (!__malloc_use_mmalloc) {
     mm_real_free(p);
     return;
