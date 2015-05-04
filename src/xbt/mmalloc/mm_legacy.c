@@ -67,15 +67,17 @@ static uint64_t buffer[BUFFER_SIZE];
  */
 static void* mm_fake_malloc(size_t n)
 {
+  // How many uint64_t do w need?
   size_t count = n / sizeof(uint64_t);
-  if (n && 0xff)
-    count ++;
-  if (fake_alloc_index + count < BUFFER_SIZE) {
-    uint64_t* res = buffer + fake_alloc_index;
-    fake_alloc_index += count;
-    return res;
-  }
-  exit(127);
+  if (n % sizeof(uint64_t))
+    count++;
+  // Check that we have enough availabel memory:
+  if (fake_alloc_index + count >= BUFFER_SIZE)
+    exit(127);
+  // Allocate it:
+  uint64_t* res = buffer + fake_alloc_index;
+  fake_alloc_index += count;
+  return res;
 }
 
 static void* mm_fake_calloc(size_t nmemb, size_t size)
