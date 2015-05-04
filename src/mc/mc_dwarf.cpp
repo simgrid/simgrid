@@ -4,11 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cinttypes>
+
 #include <stdlib.h>
 #define DW_LANG_Objc DW_LANG_ObjC       /* fix spelling error in older dwarf.h */
 #include <dwarf.h>
 #include <elfutils/libdw.h>
-#include <inttypes.h>
 
 #include <simgrid_config.h>
 #include <xbt/log.h>
