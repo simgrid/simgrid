@@ -592,7 +592,7 @@ unsigned long MC_process_read_dynar_length(mc_process_t process, const void* rem
 
 static pthread_once_t zero_buffer_flag = PTHREAD_ONCE_INIT;
 static const void* zero_buffer;
-static const int zero_buffer_size = 10 * 4096;
+static const size_t zero_buffer_size = 10 * 4096;
 
 static void MC_zero_buffer_init(void)
 {
