@@ -51,8 +51,8 @@ static mc_process_t MC_process_get_process(mc_process_t p) {
 }
 
 static const s_mc_address_space_class_t mc_process_class = {
-  .read = (mc_address_space_class_read_callback_t) &MC_process_read,
-  .get_process = (mc_address_space_class_get_process_callback_t) MC_process_get_process
+  (mc_address_space_class_read_callback_t) &MC_process_read,
+  (mc_address_space_class_get_process_callback_t) MC_process_get_process
 };
 
 bool MC_is_process(mc_address_space_t p)

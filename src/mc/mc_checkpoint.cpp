@@ -698,8 +698,8 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
 }
 
 static s_mc_address_space_class_t mc_snapshot_class = {
-  .read = (mc_address_space_class_read_callback_t) &MC_snapshot_read,
-  .get_process = NULL
+  (mc_address_space_class_read_callback_t) &MC_snapshot_read,
+  NULL
 };
 
 mc_snapshot_t MC_take_snapshot(int num_state)
