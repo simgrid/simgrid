@@ -35,8 +35,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 
-static const bool trace = true;
-
 static int do_child(int socket, char** argv)
 {
   XBT_DEBUG("Inside the child process PID=%i", (int) getpid());
