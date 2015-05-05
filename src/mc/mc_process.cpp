@@ -563,7 +563,7 @@ const void* MC_process_read_dynar_element(mc_process_t process,
   s_xbt_dynar_t d;
   MC_process_read_simple(process, &d, remote_dynar, sizeof(d));
   if (i >= d.used)
-    xbt_die("Out of bound index %zi/%zi", i, d.used);
+    xbt_die("Out of bound index %zi/%lu", i, d.used);
   if (len != d.elmsize)
     xbt_die("Bad size in MC_process_read_dynar_element");
   MC_process_read_simple(process, local, xbt_dynar_get_ptr(&d, i), len);
