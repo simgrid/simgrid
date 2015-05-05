@@ -456,8 +456,8 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
   char *req_str = NULL;
 
   for (item = xbt_fifo_get_last_item(stack);
-       (item ? (pair = (mc_pair_t) (xbt_fifo_get_item_content(item))) : (NULL));
-       item = xbt_fifo_get_prev_item(item)) {
+       item; item = xbt_fifo_get_prev_item(item)) {
+    pair = (mc_pair_t) xbt_fifo_get_item_content(item);
     req = MC_state_get_executed_request(pair->graph_state, &value);
     if (req && req->call != SIMCALL_NONE) {
       req_str = MC_request_to_string(req, value, MC_REQUEST_EXECUTED);
