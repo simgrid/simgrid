@@ -87,7 +87,7 @@ XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_prev_item(xbt_fifo_item_t i);
  */
 #define xbt_fifo_foreach(f,i,n,type)                  \
    for(i=xbt_fifo_get_first_item(f);                    \
-     ((i)?(n=(type)(xbt_fifo_get_item_content(i))):(NULL));             \
+     ((i)?(n=(type)(xbt_fifo_get_item_content(i)),1):(0));             \
        i=xbt_fifo_get_next_item(i))
 
 /** @} */
