@@ -678,7 +678,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
 
   type->dw_type_id = MC_dwarf_at_type(die);
 
-  // Some compiler do not emit DW_AT_byte_size for pointer_type,
+  // Some compilers do not emit DW_AT_byte_size for pointer_type,
   // so we fill this. We currently assume that the model-checked process is in
   // the same architecture..
   if (type->type == DW_TAG_pointer_type)
