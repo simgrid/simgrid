@@ -294,17 +294,29 @@ static void action_comm_dup(const char *const *action)
 
 static void action_compute(const char *const *action)
 {
-  CHECK_ACTION_PARAMS(action, 1, 0);
+  CHECK_ACTION_PARAMS(action, 1, 1);
   double clock = smpi_process_simulated_elapsed();
   double flops= parse_double(action[2]);
+  double time_comp;
+  if (action[3]){
+    time_comp = parse_double(action[3]);
+  }
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type=TRACING_COMPUTING;
-  extra->comp_size=flops;
+  if(action[3]){
+   extra->comp_size = time_comp; 
+  }else{
+    extra->comp_size=flops;
+  }
   TRACE_smpi_computing_in(rank, extra);
 #endif
-  smpi_execute_flops(flops);
+  if(action[3]){
+    smpi_execute_flops(time_comp);
+  }else{
+    smpi_execute_flops(flops);
+  }
 #ifdef HAVE_TRACING
   TRACE_smpi_computing_out(rank);
 #endif
