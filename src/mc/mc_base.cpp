@@ -94,7 +94,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
 
     s_xbt_dynar_t comms_buffer;
-    size_t buffer_size;
+    size_t buffer_size = 0;
     if (mc_mode == MC_MODE_SERVER) {
       // Read dynar:
       MC_process_read_simple(&mc_model_checker->process(),
