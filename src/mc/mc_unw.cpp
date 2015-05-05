@@ -182,14 +182,14 @@ static int get_proc_name(unw_addr_space_t as,
 
 unw_accessors_t mc_unw_accessors =
   {
-    .find_proc_info             = &find_proc_info,
-    .put_unwind_info            = &put_unwind_info,
-    .get_dyn_info_list_addr     = &get_dyn_info_list_addr,
-    .access_mem                 = &access_mem,
-    .access_reg                 = &access_reg,
-    .access_fpreg               = &access_fpreg,
-    .resume                     = &resume,
-    .get_proc_name              = &get_proc_name
+    &find_proc_info,
+    &put_unwind_info,
+    &get_dyn_info_list_addr,
+    &access_mem,
+    &access_reg,
+    &access_fpreg,
+    &resume,
+    &get_proc_name
   };
 
 // ***** Context management
