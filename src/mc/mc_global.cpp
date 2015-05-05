@@ -411,8 +411,8 @@ void MC_show_stack_safety(xbt_fifo_t stack)
   char *req_str = NULL;
 
   for (item = xbt_fifo_get_last_item(stack);
-       (item ? (state = (mc_state_t) (xbt_fifo_get_item_content(item)))
-        : (NULL)); item = xbt_fifo_get_prev_item(item)) {
+       item; item = xbt_fifo_get_prev_item(item)) {
+    state = (mc_state_t)xbt_fifo_get_item_content(item);
     req = MC_state_get_executed_request(state, &value);
     if (req) {
       req_str = MC_request_to_string(req, value, MC_REQUEST_EXECUTED);
