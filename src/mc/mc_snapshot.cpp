@@ -234,7 +234,7 @@ static void test_snapshot(bool sparse_checkpoint) {
     xbt_assert(source!=MAP_FAILED, "Could not allocate destination memory");
 
     xbt_test_add("Reading whole region data for %i page(s)", n);
-    const void* read = MC_region_read(region, source, destination, byte_size);
+    const void* read = MC_region_read(region, destination, source, byte_size);
     xbt_test_assert(!memcmp(source, read, byte_size), "Mismatch in MC_region_read()");
 
     xbt_test_add("Reading parts of region data for %i page(s)", n);
