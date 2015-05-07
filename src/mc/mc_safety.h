@@ -22,7 +22,7 @@ typedef enum {
   e_mc_reduce_dpor
 } e_mc_reduce_t;
 
-extern e_mc_reduce_t mc_reduce_kind;
+extern XBT_INTERNAL e_mc_reduce_t mc_reduce_kind;
 
 void MC_modelcheck_safety(void);
 
@@ -34,10 +34,10 @@ typedef struct s_mc_visited_state{
   int other_num; // dot_output for
 }s_mc_visited_state_t, *mc_visited_state_t;
 
-extern xbt_dynar_t visited_states;
-mc_visited_state_t is_visited_state(mc_state_t graph_state);
-void visited_state_free(mc_visited_state_t state);
-void visited_state_free_voidp(void *s);
+extern XBT_INTERNAL xbt_dynar_t visited_states;
+XBT_INTERNAL mc_visited_state_t is_visited_state(mc_state_t graph_state);
+XBT_INTERNAL void visited_state_free(mc_visited_state_t state);
+XBT_INTERNAL void visited_state_free_voidp(void *s);
 
 SG_END_DECL()
 

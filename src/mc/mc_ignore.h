@@ -12,8 +12,8 @@
 
 SG_BEGIN_DECL();
 
-void MC_stack_area_add(stack_region_t stack_area);
+XBT_INTERNAL void MC_stack_area_add(stack_region_t stack_area);
 
-xbt_dynar_t MC_checkpoint_ignore_new(void);
+XBT_INTERNAL xbt_dynar_t MC_checkpoint_ignore_new(void);
 
 SG_END_DECL();

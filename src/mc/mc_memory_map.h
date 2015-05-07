@@ -41,8 +41,8 @@ struct s_memory_map {
 
 };
 
-memory_map_t MC_get_memory_map(pid_t pid);
-void MC_free_memory_map(memory_map_t map);
+XBT_INTERNAL memory_map_t MC_get_memory_map(pid_t pid);
+XBT_INTERNAL void MC_free_memory_map(memory_map_t map);
 
 SG_END_DECL()
 

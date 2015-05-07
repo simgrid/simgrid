@@ -53,7 +53,7 @@ extern unw_accessors_t mc_unw_vmread_accessors;
  *
  *  It works with the `s_mc_unw_context_t` context.
  */
-extern unw_accessors_t mc_unw_accessors;
+extern XBT_INTERNAL unw_accessors_t mc_unw_accessors;
 
 // ***** Libunwind context
 
@@ -66,16 +66,16 @@ typedef struct s_mc_unw_context {
 } s_mc_unw_context_t, *mc_unw_context_t;
 
 /** Initialises an already allocated context */
-int mc_unw_init_context(
+XBT_INTERNAL int mc_unw_init_context(
   mc_unw_context_t context, mc_process_t process, unw_context_t* c);
 
 /** Destroys (but not not `free`) a context */
-int mc_unw_destroy_context(mc_unw_context_t context);
+XBT_INTERNAL int mc_unw_destroy_context(mc_unw_context_t context);
 
 // ***** Libunwind cursor
 
 /** Initialises a `libunwind` cursor */
-int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context);
+XBT_INTERNAL int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context);
 
 SG_END_DECL()
 

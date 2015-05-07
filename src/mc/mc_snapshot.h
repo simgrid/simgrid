@@ -97,10 +97,10 @@ struct s_mc_mem_region {
 
 };
 
-mc_mem_region_t mc_region_new_sparse(
+MC_SHOULD_BE_INTERNAL mc_mem_region_t mc_region_new_sparse(
   mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
-void MC_region_destroy(mc_mem_region_t reg);
-void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg);
+MC_SHOULD_BE_INTERNAL void MC_region_destroy(mc_mem_region_t reg);
+XBT_INTERNAL void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg);
 
 static inline  __attribute__ ((always_inline))
 bool mc_region_contain(mc_mem_region_t region, const void* p)
@@ -119,7 +119,8 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
   return (char*) snapshot_page + mc_page_offset((void*) addr);
 }
 
-mc_mem_region_t mc_get_snapshot_region(const void* addr, mc_snapshot_t snapshot, int process_index);
+XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
+  const void* addr, mc_snapshot_t snapshot, int process_index);
 
 /** \brief Translate a pointer from process address space to snapshot address space
  *
@@ -264,25 +265,27 @@ typedef struct s_mc_checkpoint_ignore_region{
 
 static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
-mc_snapshot_t MC_take_snapshot(int num_state);
-void MC_restore_snapshot(mc_snapshot_t);
-void MC_free_snapshot(mc_snapshot_t);
+XBT_INTERNAL mc_snapshot_t MC_take_snapshot(int num_state);
+XBT_INTERNAL void MC_restore_snapshot(mc_snapshot_t);
+XBT_INTERNAL void MC_free_snapshot(mc_snapshot_t);
 
-size_t* mc_take_page_snapshot_region(mc_process_t process,
+XBT_INTERNAL size_t* mc_take_page_snapshot_region(mc_process_t process,
   void* data, size_t page_count);
-void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
-void mc_restore_page_snapshot_region(
+XBT_INTERNAL void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
+XBT_INTERNAL void mc_restore_page_snapshot_region(
   mc_process_t process,
   void* start_addr, size_t page_count, size_t* pagenos);
 
-const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, const void* addr, size_t size);
+MC_SHOULD_BE_INTERNAL const void* MC_region_read_fragmented(
+  mc_mem_region_t region, void* target, const void* addr, size_t size);
 
-const void* MC_snapshot_read(mc_snapshot_t snapshot, adress_space_read_flags_t flags,
+XBT_INTERNAL const void* MC_snapshot_read(mc_snapshot_t snapshot,
+  adress_space_read_flags_t flags,
   void* target, const void* addr, size_t size, int process_index);
-int MC_snapshot_region_memcmp(
+MC_SHOULD_BE_INTERNAL int MC_snapshot_region_memcmp(
   const void* addr1, mc_mem_region_t region1,
   const void* addr2, mc_mem_region_t region2, size_t size);
-int MC_snapshot_memcmp(
+XBT_INTERNAL int MC_snapshot_memcmp(
   const void* addr1, mc_snapshot_t snapshot1,
   const void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size);
 

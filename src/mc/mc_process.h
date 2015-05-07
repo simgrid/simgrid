@@ -24,6 +24,7 @@
 #include "simix/smx_private.h"
 
 #include "mc_forward.h"
+#include "mc_base.h"
 #include "mc_mmalloc.h" // std_heap
 #include "mc_memory_map.h"
 #include "mc_address_space.h"
@@ -122,24 +123,24 @@ struct s_mc_process {
   xbt_dynar_t checkpoint_ignore;
 };
 
-bool MC_is_process(mc_address_space_t p);
+XBT_INTERNAL bool MC_is_process(mc_address_space_t p);
 
-void MC_process_init(mc_process_t process, pid_t pid, int sockfd);
-void MC_process_clear(mc_process_t process);
+MC_SHOULD_BE_INTERNAL void MC_process_init(mc_process_t process, pid_t pid, int sockfd);
+XBT_INTERNAL void MC_process_clear(mc_process_t process);
 
 /** Refresh the information about the process
  *
  *  Do not use direclty, this is used by the getters when appropriate
  *  in order to have fresh data.
  */
-void MC_process_refresh_heap(mc_process_t process);
+XBT_INTERNAL void MC_process_refresh_heap(mc_process_t process);
 
 /** Refresh the information about the process
  *
  *  Do not use direclty, this is used by the getters when appropriate
  *  in order to have fresh data.
  * */
-void MC_process_refresh_malloc_info(mc_process_t process);
+XBT_INTERNAL void MC_process_refresh_malloc_info(mc_process_t process);
 
 static inline
 bool MC_process_is_self(mc_process_t process)
@@ -156,17 +157,18 @@ bool MC_process_is_self(mc_process_t process)
  *  @param remote  target process memory address (source)
  *  @param len     data size
  */
-const void* MC_process_read(mc_process_t process,
+XBT_INTERNAL const void* MC_process_read(mc_process_t process,
   adress_space_read_flags_t flags,
   void* local, const void* remote, size_t len,
   int process_index);
 
 // Simplified versions/wrappers (whould be moved in mc_address_space):
-const void* MC_process_read_simple(mc_process_t process,
+XBT_INTERNAL const void* MC_process_read_simple(mc_process_t process,
   void* local, const void* remote, size_t len);
-const void* MC_process_read_dynar_element(mc_process_t process,
+XBT_INTERNAL const void* MC_process_read_dynar_element(mc_process_t process,
   void* local, const void* remote_dynar, size_t i, size_t len);
-unsigned long MC_process_read_dynar_length(mc_process_t process, const void* remote_dynar);
+XBT_INTERNAL unsigned long MC_process_read_dynar_length(mc_process_t process,
+  const void* remote_dynar);
 
 /** Write data to a process memory
  *
@@ -175,20 +177,22 @@ unsigned long MC_process_read_dynar_length(mc_process_t process, const void* rem
  *  @param remote  target process memory address (target)
  *  @param len     data size
  */
-void MC_process_write(mc_process_t process, const void* local, void* remote, size_t len);
+XBT_INTERNAL void MC_process_write(mc_process_t process,
+  const void* local, void* remote, size_t len);
 
-void MC_process_clear_memory(mc_process_t process, void* remote, size_t len);
+XBT_INTERNAL void MC_process_clear_memory(mc_process_t process,
+  void* remote, size_t len);
 
 /* Functions, variables of the process: */
 
-mc_object_info_t MC_process_find_object_info(mc_process_t process, const void* addr);
-mc_object_info_t MC_process_find_object_info_exec(mc_process_t process, const void* addr);
-mc_object_info_t MC_process_find_object_info_rw(mc_process_t process, const void* addr);
+XBT_INTERNAL mc_object_info_t MC_process_find_object_info(mc_process_t process, const void* addr);
+XBT_INTERNAL mc_object_info_t MC_process_find_object_info_exec(mc_process_t process, const void* addr);
+XBT_INTERNAL mc_object_info_t MC_process_find_object_info_rw(mc_process_t process, const void* addr);
 
-dw_frame_t MC_process_find_function(mc_process_t process, const void* ip);
+XBT_INTERNAL dw_frame_t MC_process_find_function(mc_process_t process, const void* ip);
 
-void MC_process_read_variable(mc_process_t process, const char* name, void* target, size_t size);
-char* MC_process_read_string(mc_process_t, void* address);
+XBT_INTERNAL void MC_process_read_variable(mc_process_t process, const char* name, void* target, size_t size);
+XBT_INTERNAL char* MC_process_read_string(mc_process_t, void* address);
 
 static inline xbt_mheap_t MC_process_get_heap(mc_process_t process)
 {
@@ -206,9 +210,9 @@ static inline malloc_info* MC_process_get_malloc_info(mc_process_t process)
 
 /** Find (one occurence of) the named variable definition
  */
-dw_variable_t MC_process_find_variable_by_name(mc_process_t process, const char* name);
+XBT_INTERNAL dw_variable_t MC_process_find_variable_by_name(mc_process_t process, const char* name);
 
-void MC_invalidate_cache(void);
+XBT_INTERNAL void MC_invalidate_cache(void);
 
 SG_END_DECL()
 

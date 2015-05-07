@@ -12,9 +12,9 @@
 
 SG_BEGIN_DECL();
 
-void MCer_ignore_global_variable(const char *var_name);
-void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region);
-void MC_heap_region_ignore_remove(void *address, size_t size);
-void MC_process_ignore_memory(mc_process_t process, void *addr, size_t size);
+XBT_INTERNAL void MCer_ignore_global_variable(const char *var_name);
+XBT_INTERNAL void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region);
+XBT_INTERNAL void MC_heap_region_ignore_remove(void *address, size_t size);
+XBT_INTERNAL void MC_process_ignore_memory(mc_process_t process, void *addr, size_t size);
 
 SG_END_DECL();

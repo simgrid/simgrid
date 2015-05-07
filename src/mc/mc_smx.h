@@ -49,9 +49,9 @@ struct s_mc_smx_process_info {
   char* name;
 };
 
-xbt_dynar_t MC_smx_process_info_list_new(void);
+XBT_INTERNAL xbt_dynar_t MC_smx_process_info_list_new(void);
 
-void MC_process_smx_refresh(mc_process_t process);
+XBT_INTERNAL void MC_process_smx_refresh(mc_process_t process);
 
 /** Get the issuer of  a simcall (`req->issuer`)
  *
@@ -62,10 +62,10 @@ void MC_process_smx_refresh(mc_process_t process);
  *  @param process the MCed process
  *  @param req     the simcall (copied in the local process)
  */
-smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req);
+XBT_INTERNAL smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req);
 
-const char* MC_smx_process_get_name(smx_process_t p);
-const char* MC_smx_process_get_host_name(smx_process_t p);
+XBT_INTERNAL const char* MC_smx_process_get_name(smx_process_t p);
+XBT_INTERNAL const char* MC_smx_process_get_host_name(smx_process_t p);
 
 #define MC_EACH_SIMIX_PROCESS(process, code) \
   if (mc_mode == MC_MODE_CLIENT) { \
@@ -83,20 +83,20 @@ const char* MC_smx_process_get_host_name(smx_process_t p);
   }
 
 /** Execute a given simcall */
-void MC_simcall_handle(smx_simcall_t req, int value);
+XBT_INTERNAL void MC_simcall_handle(smx_simcall_t req, int value);
 
-int MC_smpi_process_count(void);
+XBT_INTERNAL int MC_smpi_process_count(void);
 
 
 /* ***** Resolve (local/MCer structure from remote/MCed addresses) ***** */
 
 /** Get a local copy of the process from the process remote address */
-smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address);
+XBT_INTERNAL smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address);
 
 /** Get the process info structure from the process remote address */
-mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address);
+XBT_INTERNAL mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address);
 
-unsigned long MC_smx_get_maxpid(void);
+XBT_INTERNAL unsigned long MC_smx_get_maxpid(void);
 
 SG_END_DECL()
 

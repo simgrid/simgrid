@@ -10,12 +10,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <xbt/misc.h>
+
 #include <simgrid_config.h>
 
 SG_BEGIN_DECL()
-
-extern int xbt_pagesize;
-extern int xbt_pagebits;
 
 /** @brief How many memory pages are necessary to store size bytes?
  *

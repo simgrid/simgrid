@@ -17,13 +17,13 @@ typedef struct s_mc_client {
   int fd;
 } s_mc_client_t, *mc_client_t;
 
-extern mc_client_t mc_client;
+extern XBT_INTERNAL mc_client_t mc_client;
 
-void MC_client_init(void);
-void MC_client_hello(void);
-void MC_client_handle_messages(void);
-void MC_client_send_message(void* message, size_t size);
-void MC_client_send_simple_message(e_mc_message_type type);
+XBT_INTERNAL void MC_client_init(void);
+XBT_INTERNAL void MC_client_hello(void);
+XBT_INTERNAL void MC_client_handle_messages(void);
+XBT_INTERNAL void MC_client_send_message(void* message, size_t size);
+XBT_INTERNAL void MC_client_send_simple_message(e_mc_message_type type);
 
 #ifdef HAVE_MC
 void MC_ignore(void* addr, size_t size);

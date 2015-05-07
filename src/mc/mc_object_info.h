@@ -47,9 +47,9 @@ struct s_dw_type {
   dw_type_t full_type; // The same (but more complete) type
 };
 
-void dw_type_free(dw_type_t t);
-void dw_variable_free(dw_variable_t v);
-void dw_variable_free_voidp(void *t);
+XBT_INTERNAL void dw_type_free(dw_type_t t);
+XBT_INTERNAL void dw_variable_free(dw_variable_t v);
+XBT_INTERNAL void dw_variable_free_voidp(void *t);
 
 // ***** Object info
 
@@ -102,26 +102,26 @@ bool MC_object_info_is_privatized(mc_object_info_t info)
  *             + \text{dwarf address}\f$.</li>
  *
  */
-void* MC_object_base_address(mc_object_info_t info);
+XBT_INTERNAL void* MC_object_base_address(mc_object_info_t info);
 
-mc_object_info_t MC_new_object_info(void);
-mc_object_info_t MC_find_object_info(memory_map_t maps, const char* name, int executable);
-void MC_free_object_info(mc_object_info_t* p);
+XBT_INTERNAL mc_object_info_t MC_new_object_info(void);
+XBT_INTERNAL mc_object_info_t MC_find_object_info(memory_map_t maps, const char* name, int executable);
+XBT_INTERNAL void MC_free_object_info(mc_object_info_t* p);
 
-dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, const void *ip);
-dw_variable_t MC_file_object_info_find_variable_by_name(mc_object_info_t info, const char* name);
+XBT_INTERNAL dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, const void *ip);
+MC_SHOULD_BE_INTERNAL dw_variable_t MC_file_object_info_find_variable_by_name(mc_object_info_t info, const char* name);
 
-void MC_post_process_object_info(mc_process_t process, mc_object_info_t info);
+XBT_INTERNAL void MC_post_process_object_info(mc_process_t process, mc_object_info_t info);
 
-void MC_dwarf_get_variables(mc_object_info_t info);
-void MC_dwarf_get_variables_libdw(mc_object_info_t info);
-const char* MC_dwarf_attrname(int attr);
-const char* MC_dwarf_tagname(int tag);
+XBT_INTERNAL void MC_dwarf_get_variables(mc_object_info_t info);
+XBT_INTERNAL void MC_dwarf_get_variables_libdw(mc_object_info_t info);
+XBT_INTERNAL const char* MC_dwarf_attrname(int attr);
+XBT_INTERNAL const char* MC_dwarf_tagname(int tag);
 
 // Not used:
-char* get_type_description(mc_object_info_t info, char *type_name);
+XBT_INTERNAL char* get_type_description(mc_object_info_t info, char *type_name);
 
-void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_address_space_t snapshot, int process_index);
+XBT_INTERNAL void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_address_space_t snapshot, int process_index);
 
 struct s_dw_variable{
   Dwarf_Off dwarf_offset; /* Global offset of the field. */
@@ -157,7 +157,7 @@ struct s_mc_function_index_item {
   dw_frame_t function;
 };
 
-void mc_frame_free(dw_frame_t freme);
+XBT_INTERNAL void mc_frame_free(dw_frame_t freme);
 
 SG_END_DECL()
 

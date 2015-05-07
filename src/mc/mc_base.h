@@ -13,6 +13,10 @@
 #include "internal_config.h"
 #include "../simix/smx_private.h"
 
+// Marker for symbols which should be defined as XBT_PRIVATE but are used in
+// unit tests:
+#define MC_SHOULD_BE_INTERNAL
+
 SG_BEGIN_DECL()
 
 /** Check if the given simcall can be resolved
@@ -35,7 +39,7 @@ int MC_request_is_visible(smx_simcall_t req);
  */
 void MC_wait_for_requests(void);
 
-extern double *mc_time;
+XBT_INTERNAL extern double *mc_time;
 
 SG_END_DECL()
 

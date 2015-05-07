@@ -19,11 +19,11 @@ typedef enum e_mc_request_type {
   MC_REQUEST_INTERNAL,
 } e_mc_request_type_t;
 
-int MC_request_depend(smx_simcall_t req1, smx_simcall_t req2);
-char* MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t type);
-unsigned int MC_request_testany_fail(smx_simcall_t req);
+XBT_INTERNAL int MC_request_depend(smx_simcall_t req1, smx_simcall_t req2);
+XBT_INTERNAL char* MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t type);
+XBT_INTERNAL unsigned int MC_request_testany_fail(smx_simcall_t req);
 /*int MC_waitany_is_enabled_by_comm(smx_req_t req, unsigned int comm);*/
-int MC_request_is_visible(smx_simcall_t req);
+XBT_INTERNAL int MC_request_is_visible(smx_simcall_t req);
 
 /** Can this requests can be executed.
  *
@@ -32,16 +32,16 @@ int MC_request_is_visible(smx_simcall_t req);
  *  have both a source and a destination yet is not enabled
  *  (unless timeout is enabled in the wait and enabeld in SimGridMC).
  */
-int MC_request_is_enabled(smx_simcall_t req);
-int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
+XBT_INTERNAL int MC_request_is_enabled(smx_simcall_t req);
+XBT_INTERNAL int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
 
 /** Is the process ready to execute its simcall?
  *
  *  This is true if the request associated with the process is ready.
  */
-int MC_process_is_enabled(smx_process_t process);
+XBT_INTERNAL int MC_process_is_enabled(smx_process_t process);
 
-char *MC_request_get_dot_output(smx_simcall_t req, int value);
+XBT_INTERNAL char *MC_request_get_dot_output(smx_simcall_t req, int value);
 
 SG_END_DECL()
 
