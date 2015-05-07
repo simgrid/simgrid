@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 2.6)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(actions actions.c)
+add_executable(storage_actions storage_actions.c)
 
 ### Add definitions for compile
 target_link_libraries(actions simgrid)
+target_link_libraries(storage_actions simgrid)
 
 set(tesh_files
   ${tesh_files}
@@ -20,6 +22,7 @@ set(xml_files
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/actions.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/storage_actions.c
   PARENT_SCOPE
   )
 set(bin_files
