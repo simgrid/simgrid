@@ -18,7 +18,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+
+#ifdef __linux__
 #include <sys/prctl.h>
+#endif
 
 #include <xbt/log.h>
 
@@ -38,10 +41,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 static int do_child(int socket, char** argv)
 {
   XBT_DEBUG("Inside the child process PID=%i", (int) getpid());
+
+#ifdef __linux__
+  // Make sure we do not outlive our parent:
   if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0) {
     std::perror("simgrid-mc");
     return MC_SERVER_ERROR;
   }
+#endif
+
   int res;
 
   // Remove CLOEXEC in order to pass the socket to the exec-ed program:
