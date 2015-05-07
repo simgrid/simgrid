@@ -193,17 +193,15 @@ static inline void init_memory(void* mem, size_t size)
 
 static void test_snapshot(bool sparse_checkpoint);
 
-XBT_TEST_UNIT("page_snapshots", test_per_snpashots, "Test per-page snapshots")
-{
-  test_snapshot(1);
-}
-
-
 XBT_TEST_UNIT("flat_snapshot", test_flat_snapshots, "Test flat snapshots")
 {
   test_snapshot(0);
 }
 
+XBT_TEST_UNIT("page_snapshots", test_per_snpashots, "Test per-page snapshots")
+{
+  test_snapshot(1);
+}
 
 static void test_snapshot(bool sparse_checkpoint) {
 

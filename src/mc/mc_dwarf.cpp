@@ -1114,12 +1114,12 @@ mc_object_info_t MC_new_object_info(void)
 
 void MC_free_object_info(mc_object_info_t * info)
 {
-  xbt_free(&(*info)->file_name);
+  xbt_free((*info)->file_name);
   xbt_dict_free(&(*info)->subprograms);
   xbt_dynar_free(&(*info)->global_variables);
   xbt_dict_free(&(*info)->types);
   xbt_dict_free(&(*info)->full_types_by_name);
-  xbt_free(info);
+  xbt_free(*info);
   xbt_dynar_free(&(*info)->functions_index);
   *info = NULL;
 }
