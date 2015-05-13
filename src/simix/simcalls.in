@@ -39,7 +39,9 @@
 # Please note that in addition to completing this file with your new simcall,
 # you should complete the libsmx.c file by adding the corresponding function
 # (aka. stub). Anyway, if you omit to do it, the invocation of ./simcalls.py will notify you ;)
-
+# Finally, if you want to remove an handler, it is important to remove although
+# the corresponding code (simcall_HANDLER_name_of_simcall(xxx) (note that comment the code 
+# is not sufficient, the python script does not check whether the code is commented or not).
 
 Func - host_get_by_name (void*, smx_host_t) (name, const char*)
 Func - host_get_name (const char*) (host, void*, smx_host_t)

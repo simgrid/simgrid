@@ -138,7 +138,8 @@ void SIMIX_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t 
   SIMIX_vm_migrate(vm, dst_pm);
  
   /* Resume the VM */
-  SIMIX_vm_resume(vm);
+  smx_process_t self = SIMIX_process_self(); 
+  SIMIX_vm_resume(vm, self->simcall.issuer);
 } 
 
 /**
