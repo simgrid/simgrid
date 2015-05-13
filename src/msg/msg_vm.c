@@ -392,16 +392,18 @@ static int migration_rx_fun(int argc, char *argv[])
    msg_host_t dst_pm = ms-> dst_pm;
    msg_host_priv_t priv = msg_host_resource_priv(vm);
 
-// TODO: we have an issue, if the DST node is turning off during the three next calls, then the VM is in an inconsistent state
-// I should check with Takahiro in order to make this portion of code atomic
-  /* deinstall the current affinity setting for the CPU */
-  simcall_vm_set_affinity(vm, src_pm, 0);
-
-  /* Update the vm location */
-  simcall_vm_migrate(vm, dst_pm);
- 
-  /* Resume the VM */
-  simcall_vm_resume(vm);
+// // TODO: we have an issue, if the DST node is turning off during the three next calls, then the VM is in an inconsistent state
+// // I should check with Takahiro in order to make this portion of code atomic
+//  /* deinstall the current affinity setting for the CPU */
+//  simcall_vm_set_affinity(vm, src_pm, 0);
+//
+//  /* Update the vm location */
+//  simcall_vm_migrate(vm, dst_pm);
+// 
+//  /* Resume the VM */
+//  simcall_vm_resume(vm);
+//
+   simcall_vm_migratefrom_resumeto(vm, src_pm, dst_pm); 
 
   /* install the affinity setting of the VM on the destination pm */
   {

@@ -532,7 +532,6 @@ void simcall_vm_destroy(smx_host_t vm)
   simcall_BODY_vm_destroy(vm);
 }
 
-Proc - vm_migratefrom_resumeto (void) (ind_vm, void*, smx_host_t)(ind_src_pm, void*, smx_host_t) (ind_dst_pm, void*, smx_host_t)
 /**
  * \ingroup simix_vm_management
  * \brief Encompassing simcall to prevent the removal of the src or the dst node at the end of a VM migration
@@ -546,14 +545,11 @@ Proc - vm_migratefrom_resumeto (void) (ind_vm, void*, smx_host_t)(ind_src_pm, vo
  * \param vm VM to migrate
  * \param src_pm  Source physical host
  * \param dst_pmt Destination physical host
- 
  */
 void simcall_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t dst_pm)
 {
   simcall_BODY_vm_migratefrom_resumeto(vm, src_pm, dst_pm);
 }
-
-
 
 /**
  * \ingroup simix_process_management

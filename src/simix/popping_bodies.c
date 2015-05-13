@@ -923,19 +923,19 @@ inline static void simcall_BODY_vm_restore(smx_host_t ind_vm) {
     
   }
   
-inline static void simcall_BODY_vm_migratefrom_resumeto(smx_host_t ind_vm, smx_host_t ind_src_pm, smx_host_t ind_dst_pm) {
+inline static void simcall_BODY_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t dst_pm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_vm_migratefrom_resumeto(ind_vm, ind_src_pm, ind_dst_pm);
+    if (0) SIMIX_vm_migratefrom_resumeto(vm, src_pm, dst_pm);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_VM_MIGRATEFROM_RESUMETO;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) ind_vm;
-    self->simcall.args[1].dp = (void*) ind_src_pm;
-    self->simcall.args[2].dp = (void*) ind_dst_pm;
+    self->simcall.args[0].dp = (void*) vm;
+    self->simcall.args[1].dp = (void*) src_pm;
+    self->simcall.args[2].dp = (void*) dst_pm;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
