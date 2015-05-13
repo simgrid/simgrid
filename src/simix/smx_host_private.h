@@ -102,6 +102,8 @@ void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound);
 
 void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask);
 
+void SIMIX_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t dst_pm);
+
 void SIMIX_host_get_params(smx_host_t ind_vm, ws_params_t params);
 
 void SIMIX_host_set_params(smx_host_t ind_vm, ws_params_t params);
