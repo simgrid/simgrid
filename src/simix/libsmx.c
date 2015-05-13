@@ -532,6 +532,28 @@ void simcall_vm_destroy(smx_host_t vm)
   simcall_BODY_vm_destroy(vm);
 }
 
+Proc - vm_migratefrom_resumeto (void) (ind_vm, void*, smx_host_t)(ind_src_pm, void*, smx_host_t) (ind_dst_pm, void*, smx_host_t)
+/**
+ * \ingroup simix_vm_management
+ * \brief Encompassing simcall to prevent the removal of the src or the dst node at the end of a VM migration
+ *  The simcall actually invokes the following calls: 
+ *     simcall_vm_set_affinity(vm, src_pm, 0); 
+ *     simcall_vm_migrate(vm, dst_pm); 
+ *     simcall_vm_resume(vm);
+ *
+ * It is called at the end of the migration_rx_fun function from msg/msg_vm.c
+ *
+ * \param vm VM to migrate
+ * \param src_pm  Source physical host
+ * \param dst_pmt Destination physical host
+ 
+ */
+void simcall_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t dst_pm)
+{
+  simcall_BODY_vm_migratefrom_resumeto(vm, src_pm, dst_pm);
+}
+
+
 
 /**
  * \ingroup simix_process_management

@@ -923,6 +923,29 @@ inline static void simcall_BODY_vm_restore(smx_host_t ind_vm) {
     
   }
   
+inline static void simcall_BODY_vm_migratefrom_resumeto(smx_host_t ind_vm, smx_host_t ind_src_pm, smx_host_t ind_dst_pm) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_vm_migratefrom_resumeto(ind_vm, ind_src_pm, ind_dst_pm);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_VM_MIGRATEFROM_RESUMETO;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) ind_vm;
+    self->simcall.args[1].dp = (void*) ind_src_pm;
+    self->simcall.args[2].dp = (void*) ind_dst_pm;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    
+  }
+  
 inline static void simcall_BODY_process_create(smx_process_t* process, const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart) {
     smx_process_t self = SIMIX_process_self();
 

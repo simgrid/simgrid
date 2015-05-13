@@ -63,6 +63,7 @@ const char* simcall_names[] = {
   [SIMCALL_VM_SHUTDOWN] = "SIMCALL_VM_SHUTDOWN",
   [SIMCALL_VM_SAVE] = "SIMCALL_VM_SAVE",
   [SIMCALL_VM_RESTORE] = "SIMCALL_VM_RESTORE",
+  [SIMCALL_VM_MIGRATEFROM_RESUMETO] = "SIMCALL_VM_MIGRATEFROM_RESUMETO",
   [SIMCALL_PROCESS_CREATE] = "SIMCALL_PROCESS_CREATE",
   [SIMCALL_PROCESS_KILL] = "SIMCALL_PROCESS_KILL",
   [SIMCALL_PROCESS_KILLALL] = "SIMCALL_PROCESS_KILLALL",
@@ -369,6 +370,11 @@ case SIMCALL_VM_SAVE:
 
 case SIMCALL_VM_RESTORE:
        simcall_HANDLER_vm_restore(simcall , (smx_host_t) simcall->args[0].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_VM_MIGRATEFROM_RESUMETO:
+       SIMIX_vm_migratefrom_resumeto((smx_host_t) simcall->args[0].dp,(smx_host_t) simcall->args[1].dp,(smx_host_t) simcall->args[2].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

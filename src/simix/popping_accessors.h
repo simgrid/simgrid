@@ -584,6 +584,25 @@ static inline void simcall_vm_restore__set__ind_vm(smx_simcall_t simcall, void* 
     simcall->args[0].dp = arg;
 }
 
+static inline smx_host_t simcall_vm_migratefrom_resumeto__get__ind_vm(smx_simcall_t simcall) {
+  return (smx_host_t) simcall->args[0].dp;
+}
+static inline void simcall_vm_migratefrom_resumeto__set__ind_vm(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline smx_host_t simcall_vm_migratefrom_resumeto__get__ind_src_pm(smx_simcall_t simcall) {
+  return (smx_host_t) simcall->args[1].dp;
+}
+static inline void simcall_vm_migratefrom_resumeto__set__ind_src_pm(smx_simcall_t simcall, void* arg) {
+    simcall->args[1].dp = arg;
+}
+static inline smx_host_t simcall_vm_migratefrom_resumeto__get__ind_dst_pm(smx_simcall_t simcall) {
+  return (smx_host_t) simcall->args[2].dp;
+}
+static inline void simcall_vm_migratefrom_resumeto__set__ind_dst_pm(smx_simcall_t simcall, void* arg) {
+    simcall->args[2].dp = arg;
+}
+
 static inline smx_process_t* simcall_process_create__get__process(smx_simcall_t simcall) {
   return (smx_process_t*) simcall->args[0].dp;
 }
