@@ -132,7 +132,7 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
 void SIMIX_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t dst_pm)
 {
   /* deinstall the current affinity setting for the CPU */
-  SIMIX _vm_set_affinity(vm, src_pm, 0);
+  SIMIX_vm_set_affinity(vm, src_pm, 0);
 
   /* Update the vm location */
   SIMIX_vm_migrate(vm, dst_pm);
