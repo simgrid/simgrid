@@ -15,7 +15,7 @@
 #include "../src/mc/mc_private.h"
 #include "../src/mc/mc_object_info.h"
 
-static s_mc_process_t process;
+static mc_process_t process;
 
 static
 uintptr_t eval_binary_operation(mc_expression_state_t state, int op, uintptr_t a, uintptr_t b) {
@@ -115,11 +115,11 @@ void test_deref(mc_expression_state_t state) {
 }
 
 int main(int argc, char** argv) {
-  MC_process_init(&process, getpid(), -1);
+  process = new simgrid::mc::Process(getpid(), -1);
 
   s_mc_expression_state_t state;
   memset(&state, 0, sizeof(s_mc_expression_state_t));
-  state.address_space = (mc_address_space_t) &process;
+  state.address_space = (mc_address_space_t) process;
 
   basic_test(&state);
 

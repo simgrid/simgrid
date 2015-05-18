@@ -14,16 +14,15 @@
 namespace simgrid {
 namespace mc {
 
-ModelChecker::ModelChecker(pid_t pid, int socket)
-  : page_store_(500)
+ModelChecker::ModelChecker(pid_t pid, int socket) :
+  hostnames_(xbt_dict_new()),
+  page_store_(500),
+  process_(pid, socket)
 {
-  this->hostnames_ = xbt_dict_new();
-  MC_process_init(&this->process(), pid, socket);
 }
 
 ModelChecker::~ModelChecker()
 {
-  MC_process_clear(&this->process_);
   xbt_dict_free(&this->hostnames_);
 }
 

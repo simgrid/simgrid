@@ -37,9 +37,8 @@ static int is_exploration_stack_state(mc_visited_state_t state){
 void visited_state_free(mc_visited_state_t state)
 {
   if (state) {
-    if(!is_exploration_stack_state(state)){
-      MC_free_snapshot(state->system_state);
-    }
+    if(!is_exploration_stack_state(state))
+      delete state->system_state;
     xbt_free(state);
   }
 }

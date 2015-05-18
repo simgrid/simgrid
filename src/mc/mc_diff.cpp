@@ -1106,7 +1106,7 @@ static dw_type_t get_offset_type(void *real_base_address, dw_type_t type,
         } else {
           void *real_member =
             mc_member_resolve(real_base_address, type, member,
-              (mc_address_space_t) snapshot, process_index);
+              snapshot, process_index);
           if ((char*) real_member - (char *) real_base_address == offset)
             return member->subtype;
         }

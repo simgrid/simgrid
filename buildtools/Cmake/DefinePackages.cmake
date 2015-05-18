@@ -590,8 +590,8 @@ set(MC_SRC_BASE
   )
 
 set(MC_SRC
-  src/mc/mc_address_space.h
-  src/mc/mc_address_space.cpp
+  src/mc/AddressSpace.hpp
+  src/mc/AddressSpace.cpp
   src/mc/mc_forward.h
   src/mc/mc_process.h
   src/mc/mc_process.cpp

@@ -97,25 +97,6 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
   return target;
 }
 
-/** @brief Read memory from a snapshot
- *
- *  @param addr     Process (non-snapshot) address of the data
- *  @param snapshot Snapshot (or NULL is no snapshot)
- *  @param target   Buffer to store the value
- *  @param size     Size of the data to read in bytes
- *  @return Pointer where the data is located (target buffer or original location)
- */
-const void* MC_snapshot_read(
-  mc_snapshot_t snapshot, adress_space_read_flags_t flags,
-  void* target, const void* addr, size_t size, int process_index)
-{
-  mc_mem_region_t region = mc_get_snapshot_region(addr, snapshot, process_index);
-  if (region)
-    return MC_region_read(region, target, addr, size);
-  else
-    return MC_process_read(snapshot->process, flags, target, addr, size, process_index);
-}
-
 /** Compare memory between snapshots (with known regions)
  *
  * @param addr1 Address in the first snapshot
@@ -166,6 +147,53 @@ int MC_snapshot_memcmp(
   mc_mem_region_t region1 = mc_get_snapshot_region(addr1, snapshot1, process_index);
   mc_mem_region_t region2 = mc_get_snapshot_region(addr2, snapshot2, process_index);
   return MC_snapshot_region_memcmp(addr1, region1, addr2, region2, size);
+}
+
+namespace simgrid {
+namespace mc {
+
+Snapshot::Snapshot() :
+  process(nullptr),
+  num_state(0),
+  heap_bytes_used(0),
+  snapshot_regions(nullptr),
+  snapshot_regions_count(0),
+  enabled_processes(0),
+  privatization_index(0),
+  stack_sizes(nullptr),
+  stacks(nullptr),
+  to_ignore(nullptr),
+  hash(0),
+  ignored_data(nullptr),
+  total_fd(0),
+  current_fd(nullptr)
+{
+
+}
+Snapshot::~Snapshot()
+{
+  for (size_t i = 0; i < this->snapshot_regions_count; i++) {
+    MC_region_destroy(this->snapshot_regions[i]);
+  }
+  xbt_free(this->snapshot_regions);
+  xbt_free(this->stack_sizes);
+  xbt_dynar_free(&(this->stacks));
+  xbt_dynar_free(&(this->to_ignore));
+  xbt_dynar_free(&this->ignored_data);
+}
+
+const void* Snapshot::read_bytes(void* buffer, std::size_t size,
+  std::uint64_t address, int process_index,
+  AddressSpace::ReadMode mode)
+{
+  mc_mem_region_t region = mc_get_snapshot_region((void*)address, this, process_index);
+  if (region)
+    return MC_region_read(region, buffer, (void*)address, size);
+  else
+    return MC_process_read(this->process, mode, buffer, (void*)address, size, process_index);
+}
+
+}
 }
 
 #ifdef SIMGRID_TEST

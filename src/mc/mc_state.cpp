@@ -49,7 +49,7 @@ mc_state_t MC_state_new()
  */
 void MC_state_delete(mc_state_t state, int free_snapshot){
   if (state->system_state && free_snapshot){
-    MC_free_snapshot(state->system_state);
+    delete state->system_state;
   }
   if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
     xbt_free(state->index_comm);

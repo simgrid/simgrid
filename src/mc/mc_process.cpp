@@ -27,7 +27,7 @@
 
 #include "mc_process.h"
 #include "mc_object_info.h"
-#include "mc_address_space.h"
+#include "AddressSpace.hpp"
 #include "mc_unw.h"
 #include "mc_snapshot.h"
 #include "mc_ignore.h"
@@ -50,21 +50,17 @@ static mc_process_t MC_process_get_process(mc_process_t p) {
   return p;
 }
 
-static const s_mc_address_space_class_t mc_process_class = {
-  (mc_address_space_class_read_callback_t) &MC_process_read,
-  (mc_address_space_class_get_process_callback_t) MC_process_get_process
-};
-
-bool MC_is_process(mc_address_space_t p)
-{
-  return p->address_space_class == &mc_process_class;
 }
 
 // ***** mc_process
 
-void MC_process_init(mc_process_t process, pid_t pid, int sockfd)
+namespace simgrid {
+namespace mc {
+
+Process::Process(pid_t pid, int sockfd)
 {
-  process->address_space.address_space_class = &mc_process_class;
+  Process* process = this;
+
   process->process_flags = MC_PROCESS_NO_FLAG;
   process->socket = sockfd;
   process->pid = pid;
@@ -106,9 +102,10 @@ void MC_process_init(mc_process_t process, pid_t pid, int sockfd)
   }
 }
 
-void MC_process_clear(mc_process_t process)
+Process::~Process()
 {
-  process->address_space.address_space_class = NULL;
+  Process* process = this;
+
   process->process_flags = MC_PROCESS_NO_FLAG;
   process->pid = 0;
 
@@ -152,6 +149,11 @@ void MC_process_clear(mc_process_t process)
   free(process->heap_info);
   process->heap_info = NULL;
 }
+
+}
+}
+
+extern "C" {
 
 void MC_process_refresh_heap(mc_process_t process)
 {
@@ -518,42 +520,53 @@ static ssize_t pwrite_whole(int fd, const void *buf, size_t count, off_t offset)
   return real_count;
 }
 
-const void* MC_process_read(mc_process_t process, adress_space_read_flags_t flags,
-  void* local, const void* remote, size_t len,
-  int process_index)
+}
+
+namespace simgrid {
+namespace mc {
+
+const void *Process::read_bytes(void* buffer, std::size_t size,
+  std::uint64_t address, int process_index,
+  AddressSpace::ReadMode mode)
 {
   if (process_index != MC_PROCESS_INDEX_DISABLED) {
-    mc_object_info_t info = MC_process_find_object_info_rw(process, remote);
+    mc_object_info_t info = MC_process_find_object_info_rw(this, (void*)address);
     // Segment overlap is not handled.
     if (MC_object_info_is_privatized(info)) {
       if (process_index < 0)
         xbt_die("Missing process index");
       // Address translation in the privaization segment:
-      size_t offset = (const char*) remote - info->start_rw;
-      remote = (const char*) remote - offset;
+      // TODO, fix me (broken)
+      size_t offset = address - (std::uint64_t)info->start_rw;
+      address = address - offset;
     }
   }
 
-  if (MC_process_is_self(process)) {
-    if (flags & MC_ADDRESS_SPACE_READ_FLAGS_LAZY)
-      return remote;
+  if (MC_process_is_self(this)) {
+    if (mode == MC_ADDRESS_SPACE_READ_FLAGS_LAZY)
+      return (void*)address;
     else {
-      memcpy(local, remote, len);
-      return local;
+      memcpy(buffer, (void*)address, size);
+      return buffer;
     }
   } else {
-    if (pread_whole(process->memory_file, local, len, (off_t) remote) < 0)
-      xbt_die("Read from process %lli failed", (long long) process->pid);
-    return local;
+    if (pread_whole(this->memory_file, buffer, size, (off_t) address) < 0)
+      xbt_die("Read from process %lli failed", (long long) this->pid);
+    return buffer;
   }
 }
+
+}
+}
+
+extern "C" {
 
 const void* MC_process_read_simple(mc_process_t process,
   void* local, const void* remote, size_t len)
 {
-  adress_space_read_flags_t flags = MC_ADDRESS_SPACE_READ_FLAGS_NONE;
+  simgrid::mc::AddressSpace::ReadMode mode = MC_ADDRESS_SPACE_READ_FLAGS_NONE;
   int index = MC_PROCESS_INDEX_ANY;
-   MC_process_read(process, flags, local, remote, len, index);
+   MC_process_read(process, mode, local, remote, len, index);
    return local;
 }
 

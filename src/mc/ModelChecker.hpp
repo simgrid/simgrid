@@ -28,12 +28,12 @@ namespace mc {
  *  on the model-checker heap, we avoid those issues.
  */
 class ModelChecker {
-  // This is the parent snapshot of the current state:
-  s_mc_pages_store_t page_store_;
-  s_mc_process_t process_;
   /** String pool for host names */
   // TODO, use std::unordered_set with heterogeneous comparison lookup (C++14)
   xbt_dict_t /* <hostname, NULL> */ hostnames_;
+  // This is the parent snapshot of the current state:
+  s_mc_pages_store_t page_store_;
+  s_mc_process_t process_;
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;

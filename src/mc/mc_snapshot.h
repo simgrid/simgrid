@@ -19,7 +19,7 @@
 #include "ModelChecker.hpp"
 #include "PageStore.hpp"
 #include "mc_mmalloc.h"
-#include "mc_address_space.h"
+#include "mc/AddressSpace.hpp"
 #include "mc_unw.h"
 
 SG_BEGIN_DECL()
@@ -199,10 +199,21 @@ typedef struct s_fd_infos{
   int flags;
 }s_fd_infos_t, *fd_infos_t;
 
-struct s_mc_snapshot {
+}
+
+namespace simgrid {
+namespace mc {
+
+class Snapshot : public AddressSpace {
+public:
+  Snapshot();
+  ~Snapshot();
+  const void* read_bytes(void* buffer, std::size_t size,
+    std::uint64_t address, int process_index = ProcessIndexAny,
+    ReadMode mode = Normal) override;
+public: // To be private
   mc_process_t process;
   int num_state;
-  s_mc_address_space_t address_space;
   size_t heap_bytes_used;
   mc_mem_region_t* snapshot_regions;
   size_t snapshot_regions_count;
@@ -216,6 +227,11 @@ struct s_mc_snapshot {
   int total_fd;
   fd_infos_t *current_fd;
 };
+
+}
+}
+
+extern "C" {
 
 static inline __attribute__ ((always_inline))
 mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int process_index, mc_mem_region_t region)
@@ -267,7 +283,6 @@ static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
 XBT_INTERNAL mc_snapshot_t MC_take_snapshot(int num_state);
 XBT_INTERNAL void MC_restore_snapshot(mc_snapshot_t);
-XBT_INTERNAL void MC_free_snapshot(mc_snapshot_t);
 
 XBT_INTERNAL size_t* mc_take_page_snapshot_region(mc_process_t process,
   void* data, size_t page_count);
@@ -279,9 +294,14 @@ XBT_INTERNAL void mc_restore_page_snapshot_region(
 MC_SHOULD_BE_INTERNAL const void* MC_region_read_fragmented(
   mc_mem_region_t region, void* target, const void* addr, size_t size);
 
-XBT_INTERNAL const void* MC_snapshot_read(mc_snapshot_t snapshot,
-  adress_space_read_flags_t flags,
-  void* target, const void* addr, size_t size, int process_index);
+// Deprecated compatibility wrapper
+static inline
+const void* MC_snapshot_read(mc_snapshot_t snapshot,
+  simgrid::mc::AddressSpace::ReadMode mode,
+  void* target, const void* addr, size_t size, int process_index)
+{
+  return snapshot->read_bytes(target, size, (uint64_t)addr, process_index, mode);
+}
 MC_SHOULD_BE_INTERNAL int MC_snapshot_region_memcmp(
   const void* addr1, mc_mem_region_t region1,
   const void* addr2, mc_mem_region_t region2, size_t size);

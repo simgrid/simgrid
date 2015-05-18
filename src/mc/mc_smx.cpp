@@ -60,7 +60,7 @@ static void MC_process_refresh_simix_process_list(
 {
   // swag = REMOTE(*simix_global->process_list)
   s_xbt_swag_t swag;
-  MC_process_read(process, MC_PROCESS_NO_FLAG, &swag, remote_swag, sizeof(swag),
+  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE, &swag, remote_swag, sizeof(swag),
     MC_PROCESS_INDEX_ANY);
 
   smx_process_t p;
@@ -74,7 +74,7 @@ static void MC_process_refresh_simix_process_list(
     info.address = p;
     info.name = NULL;
     info.hostname = NULL;
-    MC_process_read(process, MC_PROCESS_NO_FLAG,
+    MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
       &info.copy, p, sizeof(info.copy), MC_PROCESS_INDEX_ANY);
     xbt_dynar_push(target, &info);
 
@@ -99,7 +99,8 @@ void MC_process_smx_refresh(mc_process_t process)
 
   // simix_global = REMOTE(*simix_global)
   s_smx_global_t simix_global;
-  MC_process_read(process, MC_PROCESS_NO_FLAG, &simix_global, simix_global_p, sizeof(simix_global),
+  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE, &simix_global,
+    simix_global_p, sizeof(simix_global),
     MC_PROCESS_INDEX_ANY);
 
   MC_process_refresh_simix_process_list(

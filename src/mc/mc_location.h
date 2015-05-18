@@ -18,7 +18,7 @@
 #include "mc_forward.h"
 #include "mc_object_info.h"
 #include "mc_forward.h"
-#include "mc_address_space.h"
+#include "AddressSpace.hpp"
 
 SG_BEGIN_DECL()
 

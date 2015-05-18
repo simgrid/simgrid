@@ -98,19 +98,6 @@ void MC_region_destroy(mc_mem_region_t region)
   xbt_free(region);
 }
 
-void MC_free_snapshot(mc_snapshot_t snapshot)
-{
-  for (size_t i = 0; i < snapshot->snapshot_regions_count; i++) {
-    MC_region_destroy(snapshot->snapshot_regions[i]);
-  }
-  xbt_free(snapshot->snapshot_regions);
-  xbt_free(snapshot->stack_sizes);
-  xbt_dynar_free(&(snapshot->stacks));
-  xbt_dynar_free(&(snapshot->to_ignore));
-  xbt_dynar_free(&snapshot->ignored_data);
-  xbt_free(snapshot);
-}
-
 /*******************************  Snapshot regions ********************************/
 /*********************************************************************************/
 
@@ -392,7 +379,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
         current_variable->object_info,
         &(stack_frame->unw_cursor),
         (void *) stack_frame->frame_base,
-        (mc_address_space_t) &mc_model_checker->process(), process_index);
+        &mc_model_checker->process(), process_index);
 
       switch(mc_get_location_type(&location)) {
       case MC_LOCATION_TYPE_ADDRESS:
@@ -697,20 +684,16 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
   closedir (fd_dir);
 }
 
-static s_mc_address_space_class_t mc_snapshot_class = {
-  (mc_address_space_class_read_callback_t) &MC_snapshot_read,
-  NULL
-};
-
 mc_snapshot_t MC_take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
   mc_process_t mc_process = &mc_model_checker->process();
-  mc_snapshot_t snapshot = xbt_new0(s_mc_snapshot_t, 1);
+
+  mc_snapshot_t snapshot = new simgrid::mc::Snapshot();
+
   snapshot->process = mc_process;
   snapshot->num_state = num_state;
-  snapshot->address_space.address_space_class = &mc_snapshot_class;
 
   snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
 

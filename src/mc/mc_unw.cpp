@@ -197,7 +197,7 @@ unw_accessors_t mc_unw_accessors =
 int mc_unw_init_context(
   mc_unw_context_t context, mc_process_t process, unw_context_t* c)
 {
-  context->address_space = (mc_address_space_t) process;
+  context->address_space = process;
   context->process = process;
 
   // Take a copy of the context for our own purpose:
@@ -232,8 +232,8 @@ int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context)
     return -UNW_EUNSPEC;
   mc_address_space_t as = context->address_space;
 
-  // Use local unwinding for current process:
-  if (MC_is_process(as) && MC_process_is_self((mc_process_t) as))
+  mc_process_t process = dynamic_cast<mc_process_t>(as);
+  if (process && MC_process_is_self(process))
     return unw_init_local(cursor, &context->context);
 
   return unw_init_remote(cursor, context->process->unw_addr_space, context);

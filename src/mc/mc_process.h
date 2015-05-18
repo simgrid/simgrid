@@ -27,12 +27,8 @@
 #include "mc_base.h"
 #include "mc_mmalloc.h" // std_heap
 #include "mc_memory_map.h"
-#include "mc_address_space.h"
+#include "AddressSpace.hpp"
 #include "mc_protocol.h"
-
-SG_BEGIN_DECL()
-
-int MC_process_vm_open(pid_t pid, int flags);
 
 typedef int mc_process_flags_t;
 #define MC_PROCESS_NO_FLAG 0
@@ -48,10 +44,19 @@ typedef int mc_process_cache_flags_t;
 
 typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
 
+namespace simgrid {
+namespace mc {
+
 /** Representation of a process
  */
-struct s_mc_process {
-  s_mc_address_space_t address_space;
+class Process : public AddressSpace {
+public:
+  Process(pid_t pid, int sockfd);
+  ~Process();
+  const void* read_bytes(void* buffer, std::size_t size,
+    std::uint64_t address, int process_index = ProcessIndexAny,
+    ReadMode mode = Normal) override;
+public: // to be private
   mc_process_flags_t process_flags;
   pid_t pid;
   int socket;
@@ -123,10 +128,12 @@ struct s_mc_process {
   xbt_dynar_t checkpoint_ignore;
 };
 
-XBT_INTERNAL bool MC_is_process(mc_address_space_t p);
+}
+}
 
-MC_SHOULD_BE_INTERNAL void MC_process_init(mc_process_t process, pid_t pid, int sockfd);
-XBT_INTERNAL void MC_process_clear(mc_process_t process);
+SG_BEGIN_DECL()
+
+int MC_process_vm_open(pid_t pid, int flags);
 
 /** Refresh the information about the process
  *
@@ -150,17 +157,14 @@ bool MC_process_is_self(mc_process_t process)
 
 /* Process memory access: */
 
-/** Read data from a process memory
- *
- *  @param process the process
- *  @param local   local memory address (destination)
- *  @param remote  target process memory address (source)
- *  @param len     data size
- */
-XBT_INTERNAL const void* MC_process_read(mc_process_t process,
-  adress_space_read_flags_t flags,
+static inline
+const void* MC_process_read(mc_process_t process,
+  simgrid::mc::AddressSpace::ReadMode mode,
   void* local, const void* remote, size_t len,
-  int process_index);
+  int process_index)
+{
+  return process->read_bytes(local, len, (std::uint64_t)remote, process_index, mode);
+}
 
 // Simplified versions/wrappers (whould be moved in mc_address_space):
 XBT_INTERNAL const void* MC_process_read_simple(mc_process_t process,
