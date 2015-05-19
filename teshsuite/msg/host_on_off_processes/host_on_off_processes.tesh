@@ -54,6 +54,7 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
 > [20.000000] [msg_test/INFO] Simulation time 20
 
+# This test is broken:
 $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 5 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 5 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication
 > [Jupiter:commRX:(2) 10.000000] [msg_test/INFO]   Start RX
