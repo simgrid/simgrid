@@ -87,7 +87,7 @@ static void MC_process_refresh_simix_process_list(
 void MC_process_smx_refresh(mc_process_t process)
 {
   xbt_assert(mc_mode == MC_MODE_SERVER);
-  xbt_assert(!MC_process_is_self(process));
+  xbt_assert(!process->is_self());
   if (process->cache_flags & MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES)
     return;
 

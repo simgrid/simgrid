@@ -14,6 +14,8 @@
 
 #include <xbt/mmalloc.h>
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 // ***** Region management:
@@ -29,7 +31,7 @@ size_t* mc_take_page_snapshot_region(mc_process_t process,
 {
   size_t* pagenos = (size_t*) malloc(page_count * sizeof(size_t));
 
-  const bool is_self = MC_process_is_self(process);
+  const bool is_self = process->is_self();
 
   void* temp = NULL;
   if (!is_self)
@@ -54,7 +56,7 @@ size_t* mc_take_page_snapshot_region(mc_process_t process,
         */
         page_data = temp;
         process->read_bytes(
-          temp, xbt_pagesize, (std::uint64_t) page,
+          temp, xbt_pagesize, remote(page),
           simgrid::mc::ProcessIndexDisabled);
       }
       pagenos[i] = mc_model_checker->page_store().store_page(page_data);

@@ -54,8 +54,27 @@ public:
   Process(pid_t pid, int sockfd);
   ~Process();
   const void* read_bytes(void* buffer, std::size_t size,
-    std::uint64_t address, int process_index = ProcessIndexAny,
+    remote_ptr<void> address, int process_index = ProcessIndexAny,
     ReadMode mode = Normal) override;
+  xbt_mheap_t get_heap()
+  {
+    if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
+      this->refresh_heap();
+    return this->heap;
+  }
+  malloc_info* get_malloc_info()
+  {
+    if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_MALLOC_INFO))
+      this->refresh_malloc_info();
+    return this->heap_info;
+  }
+  bool is_self()
+  {
+    return this->process_flags & MC_PROCESS_SELF_FLAG;
+  }
+private:
+  void refresh_heap();
+  void refresh_malloc_info();
 public: // to be private
   mc_process_flags_t process_flags;
   pid_t pid;
@@ -92,7 +111,7 @@ public: // to be private
    *
    *  This is refreshed with the `MC_process_refresh` call.
    *  This is not used if the process is the current one:
-   *  use `MC_process_get_heap_info` in order to use it.
+   *  use `get_heap_info()` in order to use it.
    */
    xbt_mheap_t heap;
 
@@ -100,7 +119,7 @@ public: // to be private
    *
    *  This is refreshed with the `MC_process_refresh` call.
    *  This is not used if the process is the current one:
-   *  use `MC_process_get_malloc_info` in order to use it.
+   *  use `get_malloc_info()` in order to use it.
    */
   malloc_info* heap_info;
 
@@ -133,27 +152,9 @@ public: // to be private
 
 SG_BEGIN_DECL()
 
-int MC_process_vm_open(pid_t pid, int flags);
-
-/** Refresh the information about the process
- *
- *  Do not use direclty, this is used by the getters when appropriate
- *  in order to have fresh data.
+/** Open a FD to a remote process memory (`/dev/$pid/mem`)
  */
-XBT_INTERNAL void MC_process_refresh_heap(mc_process_t process);
-
-/** Refresh the information about the process
- *
- *  Do not use direclty, this is used by the getters when appropriate
- *  in order to have fresh data.
- * */
-XBT_INTERNAL void MC_process_refresh_malloc_info(mc_process_t process);
-
-static inline
-bool MC_process_is_self(mc_process_t process)
-{
-  return process->process_flags & MC_PROCESS_SELF_FLAG;
-}
+int MC_process_vm_open(pid_t pid, int flags);
 
 /* Process memory access: */
 
@@ -201,20 +202,6 @@ XBT_INTERNAL dw_frame_t MC_process_find_function(mc_process_t process, const voi
 
 XBT_INTERNAL void MC_process_read_variable(mc_process_t process, const char* name, void* target, size_t size);
 XBT_INTERNAL char* MC_process_read_string(mc_process_t, void* address);
-
-static inline xbt_mheap_t MC_process_get_heap(mc_process_t process)
-{
-  if (!(process->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
-    MC_process_refresh_heap(process);
-  return process->heap;
-}
-
-static inline malloc_info* MC_process_get_malloc_info(mc_process_t process)
-{
-  if (!(process->cache_flags & MC_PROCESS_CACHE_FLAG_MALLOC_INFO))
-    MC_process_refresh_malloc_info(process);
-  return process->heap_info;
-}
 
 /** Find (one occurence of) the named variable definition
  */

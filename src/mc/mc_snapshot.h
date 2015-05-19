@@ -209,7 +209,7 @@ public:
   Snapshot();
   ~Snapshot();
   const void* read_bytes(void* buffer, std::size_t size,
-    std::uint64_t address, int process_index = ProcessIndexAny,
+    remote_ptr<void> address, int process_index = ProcessIndexAny,
     ReadMode mode = Normal) override;
 public: // To be private
   mc_process_t process;
@@ -300,7 +300,8 @@ const void* MC_snapshot_read(mc_snapshot_t snapshot,
   simgrid::mc::AddressSpace::ReadMode mode,
   void* target, const void* addr, size_t size, int process_index)
 {
-  return snapshot->read_bytes(target, size, (uint64_t)addr, process_index, mode);
+  return snapshot->read_bytes(target, size, simgrid::mc::remote(addr),
+    process_index, mode);
 }
 
 MC_SHOULD_BE_INTERNAL int MC_snapshot_region_memcmp(
@@ -323,7 +324,7 @@ const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot)
 {
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");
-  return MC_process_get_heap(&mc_model_checker->process())->breakval;
+  return mc_model_checker->process().get_heap()->breakval;
 }
 
 /** @brief Read memory from a snapshot region

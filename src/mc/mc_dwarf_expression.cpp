@@ -13,6 +13,8 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 static int mc_dwarf_push_value(mc_expression_state_t state, Dwarf_Off value)
@@ -406,7 +408,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
           xbt_die("Missing address space");
         state->address_space->read_bytes(
           &state->stack[state->stack_size - 1], sizeof(uintptr_t),
-          address, state->process_index);
+          remote(address), state->process_index);
       }
       break;
 

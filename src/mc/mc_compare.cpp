@@ -26,6 +26,8 @@
 
 #include <xbt/probes.h>
 
+using simgrid::mc::remote;
+
 typedef struct s_pointers_pair {
   void *p1;
   void *p2;
@@ -494,11 +496,11 @@ int snapshot_compare(void *state1, void *state2)
   /* Init heap information used in heap comparison algorithm */
   xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
-    (std::uint64_t)process->heap_address,
+    remote(process->heap_address),
     simgrid::mc::ProcessIndexMissing, simgrid::mc::AddressSpace::Lazy);
   xbt_mheap_t heap2 = (xbt_mheap_t)s2->read_bytes(
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
-    (std::uint64_t)process->heap_address,
+    remote(process->heap_address),
     simgrid::mc::ProcessIndexMissing, simgrid::mc::AddressSpace::Lazy);
   res_init = init_heap_information(heap1, heap2, s1->to_ignore, s2->to_ignore);
   if (res_init == -1) {

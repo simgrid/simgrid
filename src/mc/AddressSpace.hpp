@@ -19,6 +19,58 @@
 namespace simgrid {
 namespace mc {
 
+/** Pointer to a remote address-space (process, snapshot)
+ *
+ *  With this we can clearly identify the expected type of an address in the
+ *  remote process whild avoiding to use native local pointers.
+ */
+template<class T> class remote_ptr {
+  std::uint64_t address_;
+public:
+  remote_ptr() : address_(nullptr) {}
+  remote_ptr(std::uint64_t address) : address_(address) {}
+  remote_ptr(T* address) : address_((std::uint64_t)address) {}
+  std::uint64_t address() const { return address_; }
+  operator bool() const
+  {
+    return address_;
+  }
+  operator remote_ptr<void>() const
+  {
+    return remote_ptr<void>(address_);
+  }
+  remote_ptr<T> operator+(std::uint64_t n) const
+  {
+    return remote_ptr<T>(address_ + n * sizeof(T));
+  }
+  remote_ptr<T> operator-(std::uint64_t n) const
+  {
+    return remote_ptr<T>(address_ - n * sizeof(T));
+  }
+  remote_ptr<T>& operator+=(std::uint64_t n) const
+  {
+    address_ += n * sizeof(T);
+    return *this;
+  }
+  remote_ptr<T>& operator-=(std::uint64_t n) const
+  {
+    address_ -= n * sizeof(T);
+    return *this;
+  }
+};
+
+template<class T> inline
+remote_ptr<T> remote(T *p)
+{
+  return remote_ptr<T>(p);
+}
+
+template<class T=void> inline
+remote_ptr<T> remote(uint64_t p)
+{
+  return remote_ptr<T>(p);
+}
+
 /** Process index used when no process is available
  *
  *  The expected behaviour is that if a process index is needed it will fail.
@@ -46,14 +98,21 @@ public:
   };
   virtual ~AddressSpace();
   virtual const void* read_bytes(void* buffer, std::size_t size,
-    std::uint64_t address, int process_index = ProcessIndexAny,
+    remote_ptr<void> address, int process_index = ProcessIndexAny,
     ReadMode mode = Normal) = 0;
-  template<class T>
-  T read(uint64_t address, int process_index = ProcessIndexMissing)
+
+  template<class T> inline
+  void read(T *buffer, remote_ptr<T> ptr, int process_index = ProcessIndexAny)
+  {
+    this->read_bytes(buffer, sizeof(T), ptr, process_index);
+  }
+
+  template<class T> inline
+  T read(remote_ptr<T> ptr, int process_index = ProcessIndexMissing)
   {
     static_assert(std::is_trivial<T>::value, "Cannot read a non-trivial type");
     T res;
-    return *(T*)this->read_bytes(&res, sizeof(T), address, process_index);
+    return *(T*)this->read_bytes(&res, sizeof(T), ptr, process_index);
   }
 };
 

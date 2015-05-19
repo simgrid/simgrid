@@ -150,42 +150,52 @@ Process::~Process()
   process->heap_info = NULL;
 }
 
+/** Refresh the information about the process
+ *
+ *  Do not use direclty, this is used by the getters when appropriate
+ *  in order to have fresh data.
+ */
+void Process::refresh_heap()
+{
+  xbt_assert(mc_mode == MC_MODE_SERVER);
+  xbt_assert(!this->is_self());
+  // Read/dereference/refresh the std_heap pointer:
+  if (!this->heap) {
+    this->heap = (struct mdesc*) malloc(sizeof(struct mdesc));
+  }
+  MC_process_read(this, simgrid::mc::AddressSpace::Normal,
+    this->heap, this->heap_address, sizeof(struct mdesc),
+    simgrid::mc::ProcessIndexDisabled
+    );
+  this->cache_flags |= MC_PROCESS_CACHE_FLAG_HEAP;
+}
+
+/** Refresh the information about the process
+ *
+ *  Do not use direclty, this is used by the getters when appropriate
+ *  in order to have fresh data.
+ * */
+void Process::refresh_malloc_info()
+{
+  xbt_assert(mc_mode == MC_MODE_SERVER);
+  xbt_assert(!this->is_self());
+  if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
+    this->refresh_heap();
+  // Refresh process->heapinfo:
+  size_t malloc_info_bytesize =
+    (this->heap->heaplimit + 1) * sizeof(malloc_info);
+  this->heap_info = (malloc_info*) realloc(this->heap_info, malloc_info_bytesize);
+  MC_process_read(this, simgrid::mc::AddressSpace::Normal,
+    this->heap_info,
+    this->heap->heapinfo, malloc_info_bytesize,
+    simgrid::mc::ProcessIndexDisabled);
+  this->cache_flags |= MC_PROCESS_CACHE_FLAG_MALLOC_INFO;
+}
+
 }
 }
 
 extern "C" {
-
-void MC_process_refresh_heap(mc_process_t process)
-{
-  xbt_assert(mc_mode == MC_MODE_SERVER);
-  xbt_assert(!MC_process_is_self(process));
-  // Read/dereference/refresh the std_heap pointer:
-  if (!process->heap) {
-    process->heap = (struct mdesc*) malloc(sizeof(struct mdesc));
-  }
-  MC_process_read(process, simgrid::mc::AddressSpace::Normal,
-    process->heap, process->heap_address, sizeof(struct mdesc),
-    simgrid::mc::ProcessIndexDisabled
-    );
-  process->cache_flags |= MC_PROCESS_CACHE_FLAG_HEAP;
-}
-
-void MC_process_refresh_malloc_info(mc_process_t process)
-{
-  xbt_assert(mc_mode == MC_MODE_SERVER);
-  xbt_assert(!MC_process_is_self(process));
-  if (!(process->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
-    MC_process_refresh_heap(process);
-  // Refresh process->heapinfo:
-  size_t malloc_info_bytesize =
-    (process->heap->heaplimit + 1) * sizeof(malloc_info);
-  process->heap_info = (malloc_info*) realloc(process->heap_info, malloc_info_bytesize);
-  MC_process_read(process, simgrid::mc::AddressSpace::Normal,
-    process->heap_info,
-    process->heap->heapinfo, malloc_info_bytesize,
-    simgrid::mc::ProcessIndexDisabled);
-  process->cache_flags |= MC_PROCESS_CACHE_FLAG_MALLOC_INFO;
-}
 
 #define SO_RE "\\.so[\\.0-9]*$"
 #define VERSION_RE "-[\\.0-9]*$"
@@ -427,7 +437,7 @@ char* MC_process_read_string(mc_process_t process, void* address)
 {
   if (!address)
     return NULL;
-  if (MC_process_is_self(process))
+  if (process->is_self())
     return strdup((char*) address);
 
   off_t len = 128;
@@ -473,7 +483,7 @@ int MC_process_vm_open(pid_t pid, int flags)
 
 static void MC_process_open_memory_file(mc_process_t process)
 {
-  if (MC_process_is_self(process) || process->memory_file >= 0)
+  if (process->is_self() || process->memory_file >= 0)
     return;
 
   int fd = MC_process_vm_open(process->pid, O_RDWR);
@@ -526,31 +536,31 @@ namespace simgrid {
 namespace mc {
 
 const void *Process::read_bytes(void* buffer, std::size_t size,
-  std::uint64_t address, int process_index,
+  remote_ptr<void> address, int process_index,
   AddressSpace::ReadMode mode)
 {
   if (process_index != simgrid::mc::ProcessIndexDisabled) {
-    mc_object_info_t info = MC_process_find_object_info_rw(this, (void*)address);
+    mc_object_info_t info = MC_process_find_object_info_rw(this, (void*)address.address());
     // Segment overlap is not handled.
     if (MC_object_info_is_privatized(info)) {
       if (process_index < 0)
         xbt_die("Missing process index");
       // Address translation in the privaization segment:
       // TODO, fix me (broken)
-      size_t offset = address - (std::uint64_t)info->start_rw;
-      address = address - offset;
+      size_t offset = address.address() - (std::uint64_t)info->start_rw;
+      address = remote(address.address() - offset);
     }
   }
 
-  if (MC_process_is_self(this)) {
+  if (this->is_self()) {
     if (mode == simgrid::mc::AddressSpace::Lazy)
-      return (void*)address;
+      return (void*)address.address();
     else {
-      memcpy(buffer, (void*)address, size);
+      memcpy(buffer, (void*)address.address(), size);
       return buffer;
     }
   } else {
-    if (pread_whole(this->memory_file, buffer, size, (off_t) address) < 0)
+    if (pread_whole(this->memory_file, buffer, size, (off_t) address.address()) < 0)
       xbt_die("Read from process %lli failed", (long long) this->pid);
     return buffer;
   }
@@ -576,7 +586,7 @@ const void* MC_process_read_dynar_element(mc_process_t process,
 
 void MC_process_write(mc_process_t process, const void* local, void* remote, size_t len)
 {
-  if (MC_process_is_self(process)) {
+  if (process->is_self()) {
     memcpy(remote, local, len);
   } else {
     if (pwrite_whole(process->memory_file, local, len, (off_t) remote) < 0)
@@ -611,7 +621,7 @@ static void MC_zero_buffer_init(void)
 
 void MC_process_clear_memory(mc_process_t process, void* remote, size_t len)
 {
-  if (MC_process_is_self(process)) {
+  if (process->is_self()) {
     memset(remote, 0, len);
   } else {
     pthread_once(&zero_buffer_flag, MC_zero_buffer_init);

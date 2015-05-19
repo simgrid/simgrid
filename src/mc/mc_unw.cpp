@@ -22,6 +22,8 @@
 #include "mc_process.h"
 #include "mc_unw.h"
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 // ***** Implementation
@@ -81,7 +83,7 @@ static int access_mem(unw_addr_space_t as,
   mc_unw_context_t context = (mc_unw_context_t) arg;
   if (write)
     return - UNW_EREADONLYREG;
-  context->address_space->read_bytes(valp, sizeof(unw_word_t), addr);
+  context->address_space->read_bytes(valp, sizeof(unw_word_t), remote(addr));
   return 0;
 }
 
@@ -231,7 +233,7 @@ int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context)
   mc_address_space_t as = context->address_space;
 
   mc_process_t process = dynamic_cast<mc_process_t>(as);
-  if (process && MC_process_is_self(process))
+  if (process && process->is_self())
     return unw_init_local(cursor, &context->context);
 
   return unw_init_remote(cursor, context->process->unw_addr_space, context);

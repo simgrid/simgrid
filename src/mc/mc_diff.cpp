@@ -366,7 +366,7 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
 
   state->heaplimit = ((struct mdesc *) heap1)->heaplimit;
   
-  state->std_heap_copy = *MC_process_get_heap(&mc_model_checker->process());
+  state->std_heap_copy = *mc_model_checker->process().get_heap();
 
   state->heapsize1 = heap1->heapsize;
   state->heapsize2 = heap2->heapsize;
@@ -1610,7 +1610,7 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2)
   /* Heap information */
   state->heaplimit = ((struct mdesc *) heap1)->heaplimit;
 
-  state->std_heap_copy = *MC_process_get_heap(&mc_model_checker->process());
+  state->std_heap_copy = *mc_model_checker->process().get_heap();
 
   state->heapbase1 = (char *) heap1 + BLOCKSIZE;
   state->heapbase2 = (char *) heap2 + BLOCKSIZE;

@@ -35,6 +35,8 @@
 #include "mc_protocol.h"
 #include "mc_smx.h"
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
@@ -113,7 +115,7 @@ static mc_mem_region_t mc_region_new_dense(
   region->size = size;
   region->flat.data = xbt_malloc(size);
   mc_model_checker->process().read_bytes(region->flat.data, size,
-    (std::uint64_t)permanent_addr,
+    remote(permanent_addr),
     simgrid::mc::ProcessIndexDisabled);
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
             region_type, region->flat.data, permanent_addr, size);
@@ -191,7 +193,7 @@ static mc_mem_region_t MC_region_new_privatized(
   s_smpi_privatisation_region_t privatisation_regions[process_count];
   mc_model_checker->process().read_bytes(
     &privatisation_regions, sizeof(privatisation_regions),
-    (std::uint64_t)remote_smpi_privatisation_regions);
+    remote(remote_smpi_privatisation_regions));
 
   for (size_t i = 0; i < process_count; i++) {
     region->privatized.regions[i] =
@@ -236,7 +238,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
       object_info->end_rw - object_info->start_rw);
   }
 
-  xbt_mheap_t heap = MC_process_get_heap(process);
+  xbt_mheap_t heap = process->get_heap();
   void *start_heap = heap->base;
   void *end_heap = heap->breakval;
 
@@ -245,7 +247,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
                         (char *) end_heap - (char *) start_heap);
   snapshot->heap_bytes_used = mmalloc_get_bytes_used_remote(
     heap->heaplimit,
-    MC_process_get_malloc_info(process));
+    process->get_malloc_info());
 
 #ifdef HAVE_SMPI
   if (smpi_privatize_global_variables && MC_smpi_process_count()) {
@@ -510,7 +512,7 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
     // Read the context from remote process:
     unw_context_t context;
     mc_model_checker->process().read_bytes(
-      &context, sizeof(context), (std::uint64_t) current_stack->context);
+      &context, sizeof(context), remote(current_stack->context));
 
     st->context = xbt_new0(s_mc_unw_context_t, 1);
     if (mc_unw_init_context(st->context, &mc_model_checker->process(),
@@ -582,7 +584,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
     ignored_data.data = malloc(region->size);
     // TODO, we should do this once per privatization segment:
     snapshot->process->read_bytes(
-      ignored_data.data, region->size, (std::uint64_t) region->addr,
+      ignored_data.data, region->size, remote(region->addr),
       simgrid::mc::ProcessIndexDisabled);
     xbt_dynar_push(snapshot->ignored_data, &ignored_data);
   }

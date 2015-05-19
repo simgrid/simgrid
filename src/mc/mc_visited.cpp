@@ -57,10 +57,10 @@ static mc_visited_state_t visited_state_new()
   mc_process_t process = &(mc_model_checker->process());
   mc_visited_state_t new_state = xbt_new0(s_mc_visited_state_t, 1);
   new_state->heap_bytes_used = mmalloc_get_bytes_used_remote(
-    MC_process_get_heap(process)->heaplimit,
-    MC_process_get_malloc_info(process));
+    process->get_heap()->heaplimit,
+    process->get_malloc_info());
 
-  if (MC_process_is_self(&mc_model_checker->process())) {
+  if (mc_model_checker->process().is_self()) {
     new_state->nb_processes = xbt_swag_size(simix_global->process_list);
   } else {
     MC_process_smx_refresh(&mc_model_checker->process());
@@ -83,9 +83,9 @@ mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automa
   if(pair->graph_state->system_state == NULL)
     pair->graph_state->system_state = MC_take_snapshot(pair_num);
   pair->heap_bytes_used = mmalloc_get_bytes_used_remote(
-    MC_process_get_heap(process)->heaplimit,
-    MC_process_get_malloc_info(process));
-  if (MC_process_is_self(&mc_model_checker->process())) {
+    process->get_heap()->heaplimit,
+    process->get_malloc_info());
+  if (mc_model_checker->process().is_self()) {
     pair->nb_processes = xbt_swag_size(simix_global->process_list);
   } else {
     MC_process_smx_refresh(&mc_model_checker->process());

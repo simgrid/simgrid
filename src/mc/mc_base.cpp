@@ -22,6 +22,8 @@
 #include "mc_server.h"
 #endif
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
@@ -69,8 +71,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
     // Fetch from MCed memory:
     if (mc_mode == MC_MODE_SERVER) {
-      mc_model_checker->process().read_bytes(
-        &temp_synchro, sizeof(temp_synchro), (std::uint64_t)act);
+      mc_model_checker->process().read(&temp_synchro, remote(act));
       act = &temp_synchro;
     }
 #endif
@@ -96,9 +97,8 @@ int MC_request_is_enabled(smx_simcall_t req)
     size_t buffer_size = 0;
     if (mc_mode == MC_MODE_SERVER) {
       // Read dynar:
-      mc_model_checker->process().read_bytes(
-        &comms_buffer, sizeof(comms_buffer),
-        (std::uint64_t)simcall_comm_waitany__get__comms(req));
+      mc_model_checker->process().read(
+        &comms_buffer, remote(simcall_comm_waitany__get__comms(req)));
       assert(comms_buffer.elmsize == sizeof(act));
       buffer_size = comms_buffer.elmsize * comms_buffer.used;
       comms = &comms_buffer;
@@ -109,7 +109,7 @@ int MC_request_is_enabled(smx_simcall_t req)
     char buffer[buffer_size];
     if (mc_mode == MC_MODE_SERVER)
       mc_model_checker->process().read_bytes(buffer, sizeof(buffer),
-        (std::uint64_t)comms->data);
+        remote(comms->data));
 #else
     comms = simcall_comm_waitany__get__comms(req);
 #endif
@@ -119,8 +119,7 @@ int MC_request_is_enabled(smx_simcall_t req)
       // Fetch act from MCed memory:
       if (mc_mode == MC_MODE_SERVER) {
         memcpy(&act, buffer + comms->elmsize * index, sizeof(act));
-        mc_model_checker->process().read_bytes(
-          &temp_synchro, sizeof(temp_synchro), (std::uint64_t)act);
+        mc_model_checker->process().read(&temp_synchro, remote(act));
         act = &temp_synchro;
       }
       else
@@ -137,8 +136,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
     s_smx_mutex_t temp_mutex;
     if (mc_mode == MC_MODE_SERVER) {
-      mc_model_checker->process().read_bytes(
-        &temp_mutex, sizeof(temp_mutex), (std::uint64_t)mutex);
+      mc_model_checker->process().read(&temp_mutex, remote(mutex));
       mutex = &temp_mutex;
     }
 #endif
