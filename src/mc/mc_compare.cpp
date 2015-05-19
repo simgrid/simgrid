@@ -492,14 +492,14 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
   /* Init heap information used in heap comparison algorithm */
-  xbt_mheap_t heap1 = (xbt_mheap_t) MC_snapshot_read(
-    s1, MC_ADDRESS_SPACE_READ_FLAGS_LAZY,
-    alloca(sizeof(struct mdesc)), process->heap_address, sizeof(struct mdesc),
-    MC_PROCESS_INDEX_MISSING);
-  xbt_mheap_t heap2 = (xbt_mheap_t) MC_snapshot_read(
-    s2, MC_ADDRESS_SPACE_READ_FLAGS_LAZY,
-    alloca(sizeof(struct mdesc)), process->heap_address, sizeof(struct mdesc),
-    MC_PROCESS_INDEX_MISSING);
+  xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(
+    alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
+    (std::uint64_t)process->heap_address,
+    simgrid::mc::ProcessIndexMissing, simgrid::mc::AddressSpace::Lazy);
+  xbt_mheap_t heap2 = (xbt_mheap_t)s2->read_bytes(
+    alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
+    (std::uint64_t)process->heap_address,
+    simgrid::mc::ProcessIndexMissing, simgrid::mc::AddressSpace::Lazy);
   res_init = init_heap_information(heap1, heap2, s1->to_ignore, s2->to_ignore);
   if (res_init == -1) {
 #ifdef MC_DEBUG
@@ -604,7 +604,7 @@ int snapshot_compare(void *state1, void *state2)
 
     /* Compare global variables */
     is_diff =
-      compare_global_variables(region1->object_info, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+      compare_global_variables(region1->object_info, simgrid::mc::AddressSpace::Normal,
         region1, region2,
         s1, s2);
 

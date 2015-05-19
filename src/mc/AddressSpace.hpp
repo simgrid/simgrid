@@ -16,15 +16,6 @@
 
 #include "mc_forward.h"
 
-// Compatibility stuff, will be removed:
-#define MC_ADDRESS_SPACE_READ_FLAGS_NONE ::simgrid::mc::AddressSpace::Normal
-#define MC_ADDRESS_SPACE_READ_FLAGS_LAZY ::simgrid::mc::AddressSpace::Lazy
-
-// Compatibility stuff, will be removed:
-#define MC_PROCESS_INDEX_MISSING ::simgrid::mc::ProcessIndexMissing
-#define MC_PROCESS_INDEX_DISABLED ::simgrid::mc::ProcessIndexDisabled
-#define MC_PROCESS_INDEX_ANY ::simgrid::mc::ProcessIndexAny
-
 namespace simgrid {
 namespace mc {
 
@@ -62,23 +53,11 @@ public:
   {
     static_assert(std::is_trivial<T>::value, "Cannot read a non-trivial type");
     T res;
-    this->read_bytes(&res, sizeof(T), address, process_index);
-    return res;
+    return *(T*)this->read_bytes(&res, sizeof(T), address, process_index);
   }
 };
 
 }
-}
-
-// Deprecated compatibility wrapper:
-static inline
-const void* MC_address_space_read(
-  mc_address_space_t address_space, simgrid::mc::AddressSpace::ReadMode mode,
-  void* target, const void* addr, size_t size,
-  int process_index)
-{
-  return address_space->read_bytes(target, size, (std::uint64_t) addr,
-    process_index, mode);
 }
 
 #endif

@@ -404,10 +404,9 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         uintptr_t address = (uintptr_t) state->stack[state->stack_size - 1];
         if (!state->address_space)
           xbt_die("Missing address space");
-        MC_address_space_read(
-          state->address_space, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
-          &state->stack[state->stack_size - 1], (const void*) address,
-          sizeof(uintptr_t), state->process_index);
+        state->address_space->read_bytes(
+          &state->stack[state->stack_size - 1], sizeof(uintptr_t),
+          address, state->process_index);
       }
       break;
 

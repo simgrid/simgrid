@@ -167,8 +167,12 @@ const void* MC_process_read(mc_process_t process,
 }
 
 // Simplified versions/wrappers (whould be moved in mc_address_space):
-XBT_INTERNAL const void* MC_process_read_simple(mc_process_t process,
-  void* local, const void* remote, size_t len);
+static inline const void* MC_process_read_simple(mc_process_t process,
+  void* local, const void* remote, size_t len)
+{
+  return process->read_bytes(local, len, (std::uint64_t)remote);
+}
+
 XBT_INTERNAL const void* MC_process_read_dynar_element(mc_process_t process,
   void* local, const void* remote_dynar, size_t i, size_t len);
 XBT_INTERNAL unsigned long MC_process_read_dynar_length(mc_process_t process,

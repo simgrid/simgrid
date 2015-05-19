@@ -60,8 +60,8 @@ static void MC_process_refresh_simix_process_list(
 {
   // swag = REMOTE(*simix_global->process_list)
   s_xbt_swag_t swag;
-  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE, &swag, remote_swag, sizeof(swag),
-    MC_PROCESS_INDEX_ANY);
+  MC_process_read(process, simgrid::mc::AddressSpace::Normal, &swag, remote_swag, sizeof(swag),
+    simgrid::mc::ProcessIndexAny);
 
   smx_process_t p;
   xbt_dynar_reset(target);
@@ -74,8 +74,8 @@ static void MC_process_refresh_simix_process_list(
     info.address = p;
     info.name = NULL;
     info.hostname = NULL;
-    MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
-      &info.copy, p, sizeof(info.copy), MC_PROCESS_INDEX_ANY);
+    MC_process_read(process, simgrid::mc::AddressSpace::Normal,
+      &info.copy, p, sizeof(info.copy), simgrid::mc::ProcessIndexAny);
     xbt_dynar_push(target, &info);
 
     // Lookup next process address:
@@ -99,9 +99,9 @@ void MC_process_smx_refresh(mc_process_t process)
 
   // simix_global = REMOTE(*simix_global)
   s_smx_global_t simix_global;
-  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE, &simix_global,
+  MC_process_read(process, simgrid::mc::AddressSpace::Normal, &simix_global,
     simix_global_p, sizeof(simix_global),
-    MC_PROCESS_INDEX_ANY);
+    simgrid::mc::ProcessIndexAny);
 
   MC_process_refresh_simix_process_list(
     process, process->smx_process_infos, simix_global.process_list);

@@ -69,9 +69,8 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
     // Fetch from MCed memory:
     if (mc_mode == MC_MODE_SERVER) {
-      MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
-        &temp_synchro, act, sizeof(temp_synchro),
-        MC_PROCESS_INDEX_ANY);
+      mc_model_checker->process().read_bytes(
+        &temp_synchro, sizeof(temp_synchro), (std::uint64_t)act);
       act = &temp_synchro;
     }
 #endif
@@ -97,8 +96,9 @@ int MC_request_is_enabled(smx_simcall_t req)
     size_t buffer_size = 0;
     if (mc_mode == MC_MODE_SERVER) {
       // Read dynar:
-      MC_process_read_simple(&mc_model_checker->process(),
-        &comms_buffer, simcall_comm_waitany__get__comms(req), sizeof(comms_buffer));
+      mc_model_checker->process().read_bytes(
+        &comms_buffer, sizeof(comms_buffer),
+        (std::uint64_t)simcall_comm_waitany__get__comms(req));
       assert(comms_buffer.elmsize == sizeof(act));
       buffer_size = comms_buffer.elmsize * comms_buffer.used;
       comms = &comms_buffer;
@@ -108,8 +108,8 @@ int MC_request_is_enabled(smx_simcall_t req)
     // Read all the dynar buffer:
     char buffer[buffer_size];
     if (mc_mode == MC_MODE_SERVER)
-      MC_process_read_simple(&mc_model_checker->process(),
-        buffer, comms->data, sizeof(buffer));
+      mc_model_checker->process().read_bytes(buffer, sizeof(buffer),
+        (std::uint64_t)comms->data);
 #else
     comms = simcall_comm_waitany__get__comms(req);
 #endif
@@ -119,9 +119,8 @@ int MC_request_is_enabled(smx_simcall_t req)
       // Fetch act from MCed memory:
       if (mc_mode == MC_MODE_SERVER) {
         memcpy(&act, buffer + comms->elmsize * index, sizeof(act));
-        MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
-          &temp_synchro, act, sizeof(temp_synchro),
-          MC_PROCESS_INDEX_ANY);
+        mc_model_checker->process().read_bytes(
+          &temp_synchro, sizeof(temp_synchro), (std::uint64_t)act);
         act = &temp_synchro;
       }
       else
@@ -138,9 +137,8 @@ int MC_request_is_enabled(smx_simcall_t req)
 #ifdef HAVE_MC
     s_smx_mutex_t temp_mutex;
     if (mc_mode == MC_MODE_SERVER) {
-      MC_process_read(&mc_model_checker->process(), MC_ADDRESS_SPACE_READ_FLAGS_NONE,
-        &temp_mutex, mutex, sizeof(temp_mutex),
-        MC_PROCESS_INDEX_ANY);
+      mc_model_checker->process().read_bytes(
+        &temp_mutex, sizeof(temp_mutex), (std::uint64_t)mutex);
       mutex = &temp_mutex;
     }
 #endif

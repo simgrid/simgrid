@@ -83,9 +83,9 @@ Process::Process(pid_t pid, int sockfd)
     xbt_die("No heap information in the target process");
   if(!std_heap_var->address)
     xbt_die("No constant address for this variable");
-  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+  MC_process_read(process, simgrid::mc::AddressSpace::Normal,
     &process->heap_address, std_heap_var->address, sizeof(struct mdesc*),
-    MC_PROCESS_INDEX_DISABLED);
+    simgrid::mc::ProcessIndexDisabled);
 
   process->smx_process_infos = MC_smx_process_info_list_new();
   process->smx_old_process_infos = MC_smx_process_info_list_new();
@@ -163,9 +163,9 @@ void MC_process_refresh_heap(mc_process_t process)
   if (!process->heap) {
     process->heap = (struct mdesc*) malloc(sizeof(struct mdesc));
   }
-  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+  MC_process_read(process, simgrid::mc::AddressSpace::Normal,
     process->heap, process->heap_address, sizeof(struct mdesc),
-    MC_PROCESS_INDEX_DISABLED
+    simgrid::mc::ProcessIndexDisabled
     );
   process->cache_flags |= MC_PROCESS_CACHE_FLAG_HEAP;
 }
@@ -180,10 +180,10 @@ void MC_process_refresh_malloc_info(mc_process_t process)
   size_t malloc_info_bytesize =
     (process->heap->heaplimit + 1) * sizeof(malloc_info);
   process->heap_info = (malloc_info*) realloc(process->heap_info, malloc_info_bytesize);
-  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
+  MC_process_read(process, simgrid::mc::AddressSpace::Normal,
     process->heap_info,
     process->heap->heapinfo, malloc_info_bytesize,
-    MC_PROCESS_INDEX_DISABLED);
+    simgrid::mc::ProcessIndexDisabled);
   process->cache_flags |= MC_PROCESS_CACHE_FLAG_MALLOC_INFO;
 }
 
@@ -419,8 +419,8 @@ void MC_process_read_variable(mc_process_t process, const char* name, void* targ
   if ((size_t) var->type->full_type->byte_size != size)
     xbt_die("Unexpected size for %s (expected %zi, was %zi)",
       name, size, (size_t) var->type->full_type->byte_size);
-  MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE, target, var->address, size,
-    MC_PROCESS_INDEX_ANY);
+  MC_process_read(process, simgrid::mc::AddressSpace::Normal, target, var->address, size,
+    simgrid::mc::ProcessIndexAny);
 }
 
 char* MC_process_read_string(mc_process_t process, void* address)
@@ -529,7 +529,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
   std::uint64_t address, int process_index,
   AddressSpace::ReadMode mode)
 {
-  if (process_index != MC_PROCESS_INDEX_DISABLED) {
+  if (process_index != simgrid::mc::ProcessIndexDisabled) {
     mc_object_info_t info = MC_process_find_object_info_rw(this, (void*)address);
     // Segment overlap is not handled.
     if (MC_object_info_is_privatized(info)) {
@@ -543,7 +543,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
   }
 
   if (MC_process_is_self(this)) {
-    if (mode == MC_ADDRESS_SPACE_READ_FLAGS_LAZY)
+    if (mode == simgrid::mc::AddressSpace::Lazy)
       return (void*)address;
     else {
       memcpy(buffer, (void*)address, size);
@@ -560,15 +560,6 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
 }
 
 extern "C" {
-
-const void* MC_process_read_simple(mc_process_t process,
-  void* local, const void* remote, size_t len)
-{
-  simgrid::mc::AddressSpace::ReadMode mode = MC_ADDRESS_SPACE_READ_FLAGS_NONE;
-  int index = MC_PROCESS_INDEX_ANY;
-   MC_process_read(process, mode, local, remote, len, index);
-   return local;
-}
 
 const void* MC_process_read_dynar_element(mc_process_t process,
   void* local, const void* remote_dynar, size_t i, size_t len)

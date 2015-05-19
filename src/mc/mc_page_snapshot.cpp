@@ -53,8 +53,9 @@ size_t* mc_take_page_snapshot_region(mc_process_t process,
             - move the segments in shared memory (this will break `fork` however).
         */
         page_data = temp;
-        MC_process_read(process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
-          temp, page, xbt_pagesize, MC_PROCESS_INDEX_DISABLED);
+        process->read_bytes(
+          temp, xbt_pagesize, (std::uint64_t) page,
+          simgrid::mc::ProcessIndexDisabled);
       }
       pagenos[i] = mc_model_checker->page_store().store_page(page_data);
 

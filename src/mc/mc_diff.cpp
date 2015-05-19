@@ -451,8 +451,10 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
 
   // This is in snapshot do not use them directly:
-  const malloc_info* heapinfos1 = (const malloc_info*) MC_snapshot_read_pointer(snapshot1, heapinfo_address, MC_PROCESS_INDEX_MISSING);
-  const malloc_info* heapinfos2 = (const malloc_info*) MC_snapshot_read_pointer(snapshot2, heapinfo_address, MC_PROCESS_INDEX_MISSING);
+  const malloc_info* heapinfos1 = snapshot1->read<malloc_info*>(
+    (std::uint64_t)heapinfo_address, simgrid::mc::ProcessIndexMissing);
+  const malloc_info* heapinfos2 = snapshot2->read<malloc_info*>(
+    (std::uint64_t)heapinfo_address, simgrid::mc::ProcessIndexMissing);
 
   while (i1 <= state->heaplimit) {
 
@@ -502,7 +504,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                          (char *) state->std_heap_copy.heapbase;
 
           res_compare =
-              compare_heap_area(MC_PROCESS_INDEX_MISSING, addr_block1, addr_block2, snapshot1, snapshot2,
+              compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_block1, addr_block2, snapshot1, snapshot2,
                                 NULL, NULL, 0);
 
           if (res_compare != 1) {
@@ -541,7 +543,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
         }
 
         res_compare =
-            compare_heap_area(MC_PROCESS_INDEX_MISSING, addr_block1, addr_block2, snapshot1, snapshot2,
+            compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_block1, addr_block2, snapshot1, snapshot2,
                               NULL, NULL, 0);
 
         if (res_compare != 1) {
@@ -593,7 +595,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                           (j1 << heapinfo2->type));
 
             res_compare =
-                compare_heap_area(MC_PROCESS_INDEX_MISSING, addr_frag1, addr_frag2, snapshot1, snapshot2,
+                compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2, snapshot1, snapshot2,
                                   NULL, NULL, 0);
 
             if (res_compare != 1)
@@ -641,7 +643,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
                           (j2 << heapinfo2b->type));
 
             res_compare =
-                compare_heap_area(MC_PROCESS_INDEX_MISSING, addr_frag1, addr_frag2, snapshot2, snapshot2,
+                compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2, snapshot2, snapshot2,
                                   NULL, NULL, 0);
 
             if (res_compare != 1) {

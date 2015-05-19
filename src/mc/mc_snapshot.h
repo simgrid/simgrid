@@ -302,6 +302,7 @@ const void* MC_snapshot_read(mc_snapshot_t snapshot,
 {
   return snapshot->read_bytes(target, size, (uint64_t)addr, process_index, mode);
 }
+
 MC_SHOULD_BE_INTERNAL int MC_snapshot_region_memcmp(
   const void* addr1, mc_mem_region_t region1,
   const void* addr2, mc_mem_region_t region2, size_t size);
@@ -313,7 +314,7 @@ static inline __attribute__ ((always_inline))
 const void* MC_snapshot_read_pointer(mc_snapshot_t snapshot, const void* addr, int process_index)
 {
   void* res;
-  return *(const void**) MC_snapshot_read(snapshot, MC_ADDRESS_SPACE_READ_FLAGS_LAZY,
+  return *(const void**) MC_snapshot_read(snapshot, simgrid::mc::AddressSpace::Lazy,
     &res, addr, sizeof(void*), process_index);
 }
 
@@ -336,9 +337,7 @@ const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot)
 static inline __attribute__((always_inline))
 const void* MC_region_read(mc_mem_region_t region, void* target, const void* addr, size_t size)
 {
-  if (region==NULL)
-    // Should be deprecated:
-    return addr;
+  xbt_assert(region);
 
   uintptr_t offset = (char*) addr - (char*) region->start_addr;
 

@@ -42,8 +42,8 @@ static int mc_symbol_pointer_callback_evaluate(void* p)
 {
   struct mc_symbol_pointer_callback* callback = (struct mc_symbol_pointer_callback*) p;
   int value;
-  MC_process_read(callback->process, MC_ADDRESS_SPACE_READ_FLAGS_NONE,
-    &value, callback->value, sizeof(value), MC_PROCESS_INDEX_ANY);
+  MC_process_read(callback->process, simgrid::mc::AddressSpace::Normal,
+    &value, callback->value, sizeof(value), simgrid::mc::ProcessIndexAny);
   return value;
 }
 

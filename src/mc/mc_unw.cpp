@@ -81,9 +81,7 @@ static int access_mem(unw_addr_space_t as,
   mc_unw_context_t context = (mc_unw_context_t) arg;
   if (write)
     return - UNW_EREADONLYREG;
-  MC_address_space_read(context->address_space,
-    MC_ADDRESS_SPACE_READ_FLAGS_NONE, valp, (void*) addr, sizeof(unw_word_t), MC_PROCESS_INDEX_ANY);
-  // We don't handle failure gracefully.
+  context->address_space->read_bytes(valp, sizeof(unw_word_t), addr);
   return 0;
 }
 
