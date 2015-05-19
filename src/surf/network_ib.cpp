@@ -51,7 +51,7 @@ static void IB_action_init_callback(NetworkActionPtr action,RoutingEdgePtr src, 
     xbt_die("could not find dst node active comms !");  
  // act_dst->rate=rate;
   
-  ((NetworkIBModel*)surf_network_model)->active_comms[action]=make_pair<IBNode*,IBNode*>(act_src, act_dst);
+  ((NetworkIBModel*)surf_network_model)->active_comms[action]=make_pair(act_src, act_dst);
   //post the action in the second dist, to retrieve in the other callback
   XBT_DEBUG("IB callback - action %p init", action);
 

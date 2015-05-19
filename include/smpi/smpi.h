@@ -48,41 +48,100 @@ SG_BEGIN_DECL()
 #define MPI_IN_PLACE (void *)-222
 
 // errorcodes
-#define MPI_SUCCESS       0
-#define MPI_ERR_COMM      1
-#define MPI_ERR_ARG       2
-#define MPI_ERR_TYPE      3
-#define MPI_ERR_REQUEST   4
-#define MPI_ERR_INTERN    5
-#define MPI_ERR_COUNT     6
-#define MPI_ERR_RANK      7
-#define MPI_ERR_TAG       8
-#define MPI_ERR_TRUNCATE  9
-#define MPI_ERR_GROUP     10
-#define MPI_ERR_OP        11
-#define MPI_ERR_OTHER     12
-#define MPI_ERR_IN_STATUS 13
-#define MPI_ERR_PENDING   14
-#define MPI_ERR_BUFFER    15
-#define MPI_ERR_NAME      16
-#define MPI_ERR_DIMS      17
-#define MPI_ERR_TOPOLOGY  18
-#define MPI_ERR_NO_MEM    19
-#define MPI_ERR_WIN       20
-#define MPI_ERR_INFO_VALUE 21
-#define MPI_ERR_INFO_KEY   22
-#define MPI_ERR_INFO_NOKEY 23
+#define MPI_SUCCESS                    0
+#define MPI_ERR_COMM                   1
+#define MPI_ERR_ARG                    2
+#define MPI_ERR_TYPE                   3
+#define MPI_ERR_REQUEST                4
+#define MPI_ERR_INTERN                 5
+#define MPI_ERR_COUNT                  6
+#define MPI_ERR_RANK                   7
+#define MPI_ERR_TAG                    8
+#define MPI_ERR_TRUNCATE               9
+#define MPI_ERR_GROUP                 10
+#define MPI_ERR_OP                    11
+#define MPI_ERR_OTHER                 12
+#define MPI_ERR_IN_STATUS             13
+#define MPI_ERR_PENDING               14
+#define MPI_ERR_BUFFER                15
+#define MPI_ERR_NAME                  16
+#define MPI_ERR_DIMS                  17
+#define MPI_ERR_TOPOLOGY              18
+#define MPI_ERR_NO_MEM                19
+#define MPI_ERR_WIN                   20
+#define MPI_ERR_INFO_VALUE            21
+#define MPI_ERR_INFO_KEY              22
+#define MPI_ERR_INFO_NOKEY            23
+#define MPI_ERR_ROOT                  24
+#define MPI_ERR_UNKNOWN               25
+#define MPI_ERR_KEYVAL                26
+#define MPI_ERR_BASE                  27
+#define MPI_ERR_SPAWN                 28
+#define MPI_ERR_PORT                  29
+#define MPI_ERR_SERVICE               30
+#define MPI_ERR_SIZE                  31
+#define MPI_ERR_DISP                  32
+#define MPI_ERR_INFO                  33
+#define MPI_ERR_LOCKTYPE              34
+#define MPI_ERR_ASSERT                35
+#define MPI_RMA_CONFLICT              36
+#define MPI_RMA_SYNC                  37
+#define MPI_ERR_FILE                  38
+#define MPI_ERR_NOT_SAME              39
+#define MPI_ERR_AMODE                 40
+#define MPI_ERR_UNSUPPORTED_DATAREP   41
+#define MPI_ERR_UNSUPPORTED_OPERATION 42
+#define MPI_ERR_NO_SUCH_FILE          43
+#define MPI_ERR_FILE_EXISTS           44
+#define MPI_ERR_BAD_FILE              45
+#define MPI_ERR_ACCESS                46
+#define MPI_ERR_NO_SPACE              47
+#define MPI_ERR_QUOTA                 48
+#define MPI_ERR_READ_ONLY             49
+#define MPI_ERR_FILE_IN_USE           50
+#define MPI_ERR_DUP_DATAREP           51
+#define MPI_ERR_CONVERSION            52
+#define MPI_ERR_IO                    53
+#define MPI_ERR_RMA_ATTACH            54
+#define MPI_ERR_RMA_CONFLICT          55
+#define MPI_ERR_RMA_RANGE             56
+#define MPI_ERR_RMA_SHARED            57
+#define MPI_ERR_RMA_SYNC              58
+#define MPI_ERR_RMA_FLAVOR            59
+#define MPI_T_ERR_CANNOT_INIT         60
+#define MPI_T_ERR_NOT_INITIALIZED     61
+#define MPI_T_ERR_MEMORY              62
+#define MPI_T_ERR_INVALID_INDEX       63
+#define MPI_T_ERR_INVALID_ITEM        64
+#define MPI_T_ERR_INVALID_SESSION     65
+#define MPI_T_ERR_INVALID_HANDLE      66
+#define MPI_T_ERR_OUT_OF_HANDLES      67
+#define MPI_T_ERR_OUT_OF_SESSIONS     68
+#define MPI_T_ERR_CVAR_SET_NOT_NOW    69
+#define MPI_T_ERR_CVAR_SET_NEVER      70
+#define MPI_T_ERR_PVAR_NO_WRITE       71
+#define MPI_T_ERR_PVAR_NO_STARTSTOP   72
+#define MPI_T_ERR_PVAR_NO_ATOMIC      73
+
+
 #define MPI_ERRCODES_IGNORE (int *)0
 #define MPI_IDENT     0
 #define MPI_SIMILAR   1
 #define MPI_UNEQUAL   2
 #define MPI_CONGRUENT 3
-#define MPI_WTIME_IS_GLOBAL 1
-#define MPI_TAG_UB           1000000
-#define MPI_HOST             0
-#define MPI_IO               0
+
+
 #define MPI_BSEND_OVERHEAD   0
 
+/* Attribute keys */
+#define MPI_IO               -1
+#define MPI_HOST             -2
+#define MPI_WTIME_IS_GLOBAL  -3
+#define MPI_APPNUM           -4
+#define MPI_TAG_UB           -5
+#define MPI_TAG_LB           -6
+#define MPI_UNIVERSE_SIZE    -7
+#define MPI_LASTUSEDCODE     -8
 
 #define MPI_MODE_NOSTORE 0x1
 #define MPI_MODE_NOPUT 0x2
@@ -90,13 +149,10 @@ SG_BEGIN_DECL()
 #define MPI_MODE_NOSUCCEED 0x8
 #define MPI_MODE_NOCHECK 0x10
 
-
 #define MPI_KEYVAL_INVALID 0
 #define MPI_NULL_COPY_FN NULL
 #define MPI_NULL_DELETE_FN NULL
-#define MPI_APPNUM 0
-#define MPI_LASTUSEDCODE MPI_SUCCESS
-#define MPI_ERR_LASTCODE MPI_SUCCESS
+#define MPI_ERR_LASTCODE 74
 
 #define MPI_CXX_BOOL MPI_DATATYPE_NULL
 #define MPI_CXX_FLOAT_COMPLEX MPI_DATATYPE_NULL
@@ -304,7 +360,6 @@ typedef struct s_smpi_mpi_communicator *MPI_Comm;
 
 #define MPI_COMM_NULL ((MPI_Comm)NULL)
 XBT_PUBLIC_DATA( MPI_Comm ) MPI_COMM_WORLD;
-XBT_PUBLIC_DATA( int ) MPI_UNIVERSE_SIZE;
 #define MPI_COMM_SELF smpi_process_comm_self()
 
 struct s_smpi_mpi_request;

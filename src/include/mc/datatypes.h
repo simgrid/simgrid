@@ -7,14 +7,14 @@
 #ifndef MC_DATATYPE_H
 #define MC_DATATYPE_H
 
-#define UNW_LOCAL_ONLY
-
 #include "xbt/misc.h"
 #include "xbt/swag.h"
 #include "xbt/fifo.h"
 
+#if HAVE_MC
 #include <libunwind.h>
 #include <dwarf.h>
+#endif 
 
 SG_BEGIN_DECL()
 
@@ -33,7 +33,6 @@ typedef struct s_mc_heap_ignore_region{
 
 typedef struct s_stack_region{
   void *address;
-  char *process_name;
   void *context;
   size_t size;
   int block;

@@ -13,7 +13,7 @@
 
 SG_BEGIN_DECL()
 
-extern mc_global_t initial_global_state;
+extern XBT_INTERNAL mc_global_t initial_global_state;
 
 /* Possible exploration status of a process in a state */
 typedef enum {
@@ -47,20 +47,21 @@ typedef struct mc_state {
   mc_snapshot_t system_state;      /* Snapshot of system state */
   int num;
   int in_visited_states;
-  xbt_dynar_t incomplete_comm_pattern; // comm determinism verification
+  // comm determinism verification (xbt_dynar_t<xbt_dynar_t<mc_comm_pattern_t>):
+  xbt_dynar_t incomplete_comm_pattern;
   xbt_dynar_t index_comm; // comm determinism verification
 } s_mc_state_t, *mc_state_t;
 
-mc_state_t MC_state_new(void);
-void MC_state_delete(mc_state_t state, int free_snapshot);
-void MC_state_interleave_process(mc_state_t state, smx_process_t process);
-unsigned int MC_state_interleave_size(mc_state_t state);
-int MC_state_process_is_done(mc_state_t state, smx_process_t process);
-void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int value);
-smx_simcall_t MC_state_get_executed_request(mc_state_t state, int *value);
-smx_simcall_t MC_state_get_internal_request(mc_state_t state);
-smx_simcall_t MC_state_get_request(mc_state_t state, int *value);
-void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process);
+XBT_INTERNAL mc_state_t MC_state_new(void);
+XBT_INTERNAL void MC_state_delete(mc_state_t state, int free_snapshot);
+XBT_INTERNAL void MC_state_interleave_process(mc_state_t state, smx_process_t process);
+XBT_INTERNAL unsigned int MC_state_interleave_size(mc_state_t state);
+XBT_INTERNAL int MC_state_process_is_done(mc_state_t state, smx_process_t process);
+XBT_INTERNAL void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int value);
+XBT_INTERNAL smx_simcall_t MC_state_get_executed_request(mc_state_t state, int *value);
+XBT_INTERNAL smx_simcall_t MC_state_get_internal_request(mc_state_t state);
+XBT_INTERNAL smx_simcall_t MC_state_get_request(mc_state_t state, int *value);
+XBT_INTERNAL void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process);
 
 SG_END_DECL()
 

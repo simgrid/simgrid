@@ -11,7 +11,7 @@
 /* --cfg=model-check/max_depth:) is reached.                                  */
 /******************************************************************************/
 
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <simgrid/modelchecker.h>
 
 #define N 2

@@ -639,9 +639,9 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mc_compare);
   XBT_LOG_CONNECT(mc_diff);
   XBT_LOG_CONNECT(mc_dwarf);
-  XBT_LOG_CONNECT(mc_global);
   XBT_LOG_CONNECT(mc_hash);
   XBT_LOG_CONNECT(mc_ignore);
+  XBT_LOG_CONNECT(mcer_ignore);
   XBT_LOG_CONNECT(mc_liveness);
   XBT_LOG_CONNECT(mc_memory);
   XBT_LOG_CONNECT(mc_memory_map);
@@ -649,7 +649,17 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mc_request);
   XBT_LOG_CONNECT(mc_safety);
   XBT_LOG_CONNECT(mc_visited);
+  XBT_LOG_CONNECT(mc_client);
+  XBT_LOG_CONNECT(mc_client_api);
+  XBT_LOG_CONNECT(mc_comm_pattern);
+  XBT_LOG_CONNECT(mc_process);
+  XBT_LOG_CONNECT(mc_protocol);
+  XBT_LOG_CONNECT(mc_server);
+  XBT_LOG_CONNECT(mc_state);
 #endif
+  XBT_LOG_CONNECT(mc_global);
+  XBT_LOG_CONNECT(mc_config);
+  XBT_LOG_CONNECT(mc_record);
 
   /* msg */
   XBT_LOG_CONNECT(msg);

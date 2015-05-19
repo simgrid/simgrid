@@ -15,6 +15,7 @@
 
 #include "smx_private.h"
 #ifdef HAVE_MC
+#include "mc/mc_process.h"
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);

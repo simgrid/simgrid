@@ -10,12 +10,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <xbt/misc.h>
+
 #include <simgrid_config.h>
 
 SG_BEGIN_DECL()
-
-extern int xbt_pagesize;
-extern int xbt_pagebits;
 
 /** @brief How many memory pages are necessary to store size bytes?
  *
@@ -38,7 +37,7 @@ size_t mc_page_count(size_t size)
  *  @return Virtual memory page number of the given address
  */
 static inline __attribute__ ((always_inline))
-size_t mc_page_number(void* base, void* address)
+size_t mc_page_number(const void* base, const void* address)
 {
   xbt_assert(address>=base, "The address is not in the range");
   return ((uintptr_t) address - (uintptr_t) base) >> xbt_pagebits;
@@ -50,7 +49,7 @@ size_t mc_page_number(void* base, void* address)
  *  @return Offset within the memory page
  */
 static inline __attribute__ ((always_inline))
-size_t mc_page_offset(void* address)
+size_t mc_page_offset(const void* address)
 {
   return ((uintptr_t) address) & (xbt_pagesize-1);
 }
@@ -61,13 +60,13 @@ size_t mc_page_offset(void* address)
  *  @param page Index of the page
  */
 static inline __attribute__ ((always_inline))
-void* mc_page_from_number(void* base, size_t page)
+void* mc_page_from_number(const void* base, size_t page)
 {
   return (void*) ((char*)base + (page << xbt_pagebits));
 }
 
 static inline __attribute__ ((always_inline))
-bool mc_same_page(void* a, void* b)
+bool mc_same_page(const void* a, const void* b)
 {
   return ((uintptr_t) a >> xbt_pagebits) == ((uintptr_t) b >> xbt_pagebits);
 }

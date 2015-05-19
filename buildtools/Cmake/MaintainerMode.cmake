@@ -2,6 +2,11 @@
 set(FLEXML_MIN_MAJOR 1)
 set(FLEXML_MIN_MINOR 9)
 set(FLEXML_MIN_PATCH 6)
+# Change the following when we need a recent enough version of flex to get the maintainer mode working.
+# Maintainer mode does NOT work with version 2.5.35!
+set(FLEX_MIN_MAJOR 2)
+set(FLEX_MIN_MINOR 5)
+set(FLEX_MIN_PATCH 39)
 
 # the rest should only be changed if you understand what you're doing
 if(enable_maintainer_mode AND NOT WIN32)
@@ -14,7 +19,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.c
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.h
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.h
-      
+
       DEPENDS
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls.py
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls.in
@@ -95,7 +100,7 @@ if(enable_maintainer_mode AND NOT WIN32)
     if (FLEXML_VERSION MATCHES "version Id:")
       message(FATAL_ERROR "You have an ancient flexml version (${FLEXML_VERSION}). You need at least v${FLEXML_MIN_MAJOR}.${FLEXML_MIN_MINOR}.${FLEXML_MIN_PATCH} to compile in maintainer mode. Upgrade your flexml, or disable the Maintainer mode option in cmake.")
     endif()
- 
+
     string(REGEX MATCH "[0-9]+[.]+[0-9]+[.]+[0-9]+" FLEXML_VERSION "${FLEXML_VERSION}")
     string(REGEX MATCH "^[0-9]*" FLEXML_MAJOR_VERSION "${FLEXML_VERSION}")
     string(REGEX MATCH "[0-9]+[.]+[0-9]+$" FLEXML_VERSION "${FLEXML_VERSION}")
@@ -107,17 +112,27 @@ if(enable_maintainer_mode AND NOT WIN32)
 
   if(HAVE_FLEXML AND HAVE_FLEX AND SED_EXE)
 
-    message(STATUS "Flex version: ${FLEX_MAJOR_VERSION}.${FLEX_MINOR_VERSION}.${FLEX_PATCH_VERSION}")
+    message(STATUS "Flex version: ${FLEX_MAJOR_VERSION}.${FLEX_MINOR_VERSION}.${FLEX_PATCH_VERSION} (need at least version ${FLEX_MIN_MAJOR}.${FLEX_MIN_MINOR}.${FLEX_MIN_PATCH})")
     message(STATUS "Flexml version: ${FLEXML_MAJOR_VERSION}.${FLEXML_MINOR_VERSION}.${FLEXML_PATCH_VERSION} (need at least version ${FLEXML_MIN_MAJOR}.${FLEXML_MIN_MINOR}.${FLEXML_MIN_PATCH})")
 
-    IF(     (${FLEXML_MAJOR_VERSION} LESS ${FLEXML_MIN_MAJOR}) 
+    IF(     (${FLEXML_MAJOR_VERSION} LESS ${FLEXML_MIN_MAJOR})
         OR ((${FLEXML_MAJOR_VERSION} EQUAL ${FLEXML_MIN_MAJOR}) AND (${FLEXML_MINOR_VERSION} LESS ${FLEXML_MIN_MINOR}) )
-        OR (    (${FLEXML_MAJOR_VERSION} EQUAL ${FLEXML_MIN_MAJOR}) 
-	    AND (${FLEXML_MINOR_VERSION} EQUAL ${FLEXML_MIN_MINOR}) 
+        OR (    (${FLEXML_MAJOR_VERSION} EQUAL ${FLEXML_MIN_MAJOR})
+	    AND (${FLEXML_MINOR_VERSION} EQUAL ${FLEXML_MIN_MINOR})
 	    AND (${FLEXML_PATCH_VERSION} LESS ${FLEXML_MIN_PATCH}) ))
 
       message(FATAL_ERROR "Your flexml version is too old to compile in maintainer mode (need at least v${FLEXML_MIN_MAJOR}.${FLEXML_MIN_MINOR}.${FLEXML_MIN_PATCH}). Upgrade your flexml, or disable the Maintainer mode option in cmake.")
-      
+
+    ENDIF()
+
+    IF(     (${FLEX_MAJOR_VERSION} LESS ${FLEX_MIN_MAJOR})
+        OR ((${FLEX_MAJOR_VERSION} EQUAL ${FLEX_MIN_MAJOR}) AND (${FLEX_MINOR_VERSION} LESS ${FLEX_MIN_MINOR}) )
+        OR (    (${FLEX_MAJOR_VERSION} EQUAL ${FLEX_MIN_MAJOR})
+	    AND (${FLEX_MINOR_VERSION} EQUAL ${FLEX_MIN_MINOR})
+	    AND (${FLEX_PATCH_VERSION} LESS ${FLEX_MIN_PATCH}) ))
+
+        message(FATAL_ERROR "Your flex version is too old to compile in maintainer mode (need at least v${FLEX_MIN_MAJOR}.${FLEX_MIN_MINOR}.${FLEX_MIN_PATCH}). Upgrade your flex, or disable the Maintainer mode option in cmake (run 'ccmake').")
+
     ENDIF()
 
     set(string1  "'s/extern *\\([^(]*\\)\\( \\|\\( \\*\\)\\)/XBT_PUBLIC_DATA(\\1\\3) /'")

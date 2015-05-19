@@ -3,57 +3,61 @@
 p Test0 Process without time
 
 $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:master@node-0.acme.org) Hello!
-> [  0.000000] (2:slave@node-1.acme.org) Hello!
-> [  0.000000] (3:slave@node-2.acme.org) Hello!
-> [  0.000000] (4:slave@node-3.acme.org) Hello!
-> [  0.000000] (5:slave@node-4.acme.org) Hello!
-> [  0.000000] (6:slave@node-5.acme.org) Hello!
-> [ 10.000000] (6:slave@node-5.acme.org) OK, goodbye now.
-> [ 10.000000] (1:master@node-0.acme.org) OK, goodbye now.
-> [ 10.000000] (2:slave@node-1.acme.org) OK, goodbye now.
-> [ 10.000000] (3:slave@node-2.acme.org) OK, goodbye now.
-> [ 10.000000] (4:slave@node-3.acme.org) OK, goodbye now.
-> [ 10.000000] (5:slave@node-4.acme.org) OK, goodbye now.
+> [  0.000000] (1:sleeper@node-0.acme.org) Hello! I go to sleep.
+> [ 10.000000] (1:sleeper@node-0.acme.org) Done sleeping.
+> [ 10.000000] (1:sleeper@node-0.acme.org) Exiting now (done sleeping or got killed).
 > [ 10.000000] (0:@) Simulation time 10
 
 p Test1 Process with start time
 
 $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_start.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:master@node-0.acme.org) Hello!
-> [  1.000000] (2:slave@node-1.acme.org) Hello!
-> [  2.000000] (3:slave@node-2.acme.org) Hello!
-> [  3.000000] (4:slave@node-3.acme.org) Hello!
-> [  4.000000] (5:slave@node-4.acme.org) Hello!
-> [  5.000000] (6:slave@node-5.acme.org) Hello!
-> [ 10.000000] (1:master@node-0.acme.org) OK, goodbye now.
-> [ 11.000000] (2:slave@node-1.acme.org) OK, goodbye now.
-> [ 12.000000] (3:slave@node-2.acme.org) OK, goodbye now.
-> [ 13.000000] (4:slave@node-3.acme.org) OK, goodbye now.
-> [ 14.000000] (5:slave@node-4.acme.org) OK, goodbye now.
-> [ 15.000000] (6:slave@node-5.acme.org) OK, goodbye now.
+> [  0.000000] (1:sleeper@node-0.acme.org) Hello! I go to sleep.
+> [  1.000000] (2:sleeper@node-1.acme.org) Hello! I go to sleep.
+> [  2.000000] (3:sleeper@node-2.acme.org) Hello! I go to sleep.
+> [  3.000000] (4:sleeper@node-3.acme.org) Hello! I go to sleep.
+> [  4.000000] (5:sleeper@node-4.acme.org) Hello! I go to sleep.
+> [  5.000000] (6:sleeper@node-5.acme.org) Hello! I go to sleep.
+> [ 10.000000] (1:sleeper@node-0.acme.org) Done sleeping.
+> [ 10.000000] (1:sleeper@node-0.acme.org) Exiting now (done sleeping or got killed).
+> [ 11.000000] (2:sleeper@node-1.acme.org) Done sleeping.
+> [ 11.000000] (2:sleeper@node-1.acme.org) Exiting now (done sleeping or got killed).
+> [ 12.000000] (3:sleeper@node-2.acme.org) Done sleeping.
+> [ 12.000000] (3:sleeper@node-2.acme.org) Exiting now (done sleeping or got killed).
+> [ 13.000000] (4:sleeper@node-3.acme.org) Done sleeping.
+> [ 13.000000] (4:sleeper@node-3.acme.org) Exiting now (done sleeping or got killed).
+> [ 14.000000] (5:sleeper@node-4.acme.org) Done sleeping.
+> [ 14.000000] (5:sleeper@node-4.acme.org) Exiting now (done sleeping or got killed).
+> [ 15.000000] (6:sleeper@node-5.acme.org) Done sleeping.
+> [ 15.000000] (6:sleeper@node-5.acme.org) Exiting now (done sleeping or got killed).
 > [ 15.000000] (0:@) Simulation time 15
 
 p Test1 Process with kill time
 
 $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_kill.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:master@node-0.acme.org) Hello!
-> [  0.000000] (2:slave@node-1.acme.org) Hello!
-> [  0.000000] (3:slave@node-2.acme.org) Hello!
-> [  0.000000] (4:slave@node-3.acme.org) Hello!
-> [  0.000000] (5:slave@node-4.acme.org) Hello!
-> [  0.000000] (6:slave@node-5.acme.org) Hello!
-> [ 10.000000] (1:master@node-0.acme.org) OK, goodbye now.
-> [ 10.000000] (0:@) Simulation time 10
+> [  0.000000] (1:sleeper@node-1.acme.org) Hello! I go to sleep.
+> [  0.000000] (2:sleeper@node-2.acme.org) Hello! I go to sleep.
+> [  0.000000] (3:sleeper@node-3.acme.org) Hello! I go to sleep.
+> [  6.000000] (1:sleeper@node-1.acme.org) Exiting now (done sleeping or got killed).
+> [  6.000000] (2:sleeper@node-2.acme.org) Exiting now (done sleeping or got killed).
+> [  6.000000] (3:sleeper@node-3.acme.org) Done sleeping.
+> [  6.000000] (3:sleeper@node-3.acme.org) Exiting now (done sleeping or got killed).
+> [  6.000000] (0:@) Simulation time 6
 
 p Test2 Process with start and kill times
 
 $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_start_kill.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:master@node-0.acme.org) Hello!
-> [  1.000000] (2:slave@node-1.acme.org) Hello!
-> [  2.000000] (3:slave@node-2.acme.org) Hello!
-> [  3.000000] (4:slave@node-3.acme.org) Hello!
-> [  4.000000] (5:slave@node-4.acme.org) Hello!
-> [  5.000000] (6:slave@node-5.acme.org) Hello!
-> [ 10.000000] (1:master@node-0.acme.org) OK, goodbye now.
+> [  0.000000] (1:sleeper@node-0.acme.org) Hello! I go to sleep.
+> [  1.000000] (2:sleeper@node-1.acme.org) Hello! I go to sleep.
+> [  2.000000] (3:sleeper@node-2.acme.org) Hello! I go to sleep.
+> [  3.000000] (4:sleeper@node-3.acme.org) Hello! I go to sleep.
+> [  4.000000] (5:sleeper@node-4.acme.org) Hello! I go to sleep.
+> [  5.000000] (1:sleeper@node-0.acme.org) Exiting now (done sleeping or got killed).
+> [  5.000000] (6:sleeper@node-5.acme.org) Hello! I go to sleep.
+> [  6.000000] (2:sleeper@node-1.acme.org) Exiting now (done sleeping or got killed).
+> [  6.000000] (3:sleeper@node-2.acme.org) Done sleeping.
+> [  6.000000] (3:sleeper@node-2.acme.org) Exiting now (done sleeping or got killed).
+> [  7.000000] (4:sleeper@node-3.acme.org) Done sleeping.
+> [  7.000000] (4:sleeper@node-3.acme.org) Exiting now (done sleeping or got killed).
+> [  9.000000] (5:sleeper@node-4.acme.org) Exiting now (done sleeping or got killed).
+> [ 10.000000] (6:sleeper@node-5.acme.org) Exiting now (done sleeping or got killed).
 > [ 10.000000] (0:@) Simulation time 10

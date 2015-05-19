@@ -52,7 +52,7 @@ Java_org_simgrid_msg_Mutex_release(JNIEnv * env, jobject obj) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Mutex_exit(JNIEnv * env, jobject obj) {
+Java_org_simgrid_msg_Mutex_nativeFinalize(JNIEnv * env, jobject obj) {
   xbt_mutex_t mutex;
 
   mutex = (xbt_mutex_t) (long) (*env)->GetLongField(env, obj, jsyncro_field_Mutex_bind);
@@ -104,7 +104,7 @@ Java_org_simgrid_msg_Semaphore_wouldBlock(JNIEnv * env, jobject obj) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Mutex_destroy(JNIEnv * env, jobject obj) {
+Java_org_simgrid_msg_Semaphore_nativeFinalize(JNIEnv * env, jobject obj) {
   msg_sem_t sem;
 
   sem = (msg_sem_t) (long) (*env)->GetLongField(env, obj, jsyncro_field_Semaphore_bind);

@@ -7,6 +7,7 @@
 #ifndef MC_MMALLOC_H
 #define MC_MMALLOC_H
 
+#include <xbt/misc.h>
 #include <xbt/mmalloc.h>
 
 /** file
@@ -16,9 +17,8 @@
  *  Normally the system should operate in std, for switching to raw mode
  *  you must wrap the code between MC_SET_RAW_MODE and MC_UNSET_RAW_MODE.
  */
- 
-extern xbt_mheap_t std_heap;
-extern xbt_mheap_t mc_heap;
+
+SG_BEGIN_DECL()
 
 /* FIXME: Horrible hack! because the mmalloc library doesn't provide yet of */
 /* an API to query about the status of a heap, we simply call mmstats and */
@@ -32,7 +32,6 @@ extern xbt_mheap_t mc_heap;
 /*   size_t bytes_free;            /\* Byte total of chunks in the free list. *\/ */
 /* }; */
 
-#define MC_SET_MC_HEAP    mmalloc_set_current_heap(mc_heap)
-#define MC_SET_STD_HEAP  mmalloc_set_current_heap(std_heap)
+SG_END_DECL()
 
 #endif

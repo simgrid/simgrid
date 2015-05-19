@@ -19,11 +19,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(bugged3, "my log messages");
  
 int cs = 0;
 
-int predCS(){
-  return cs;
-}
-
-
 int coordinator(int argc, char **argv);
 int client(int argc, char **argv);
 
@@ -102,8 +97,7 @@ int main(int argc, char *argv[])
   
   MSG_init(&argc, argv);
 
-  MSG_config("model-check/property","promela_bugged2_liveness");
-  MC_automaton_new_propositional_symbol("cs", &predCS);
+  MC_automaton_new_propositional_symbol_pointer("cs", &cs);
   
   MSG_create_environment("../msg_platform.xml");
   MSG_function_register("coordinator", coordinator);

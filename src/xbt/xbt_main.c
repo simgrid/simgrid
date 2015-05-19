@@ -103,9 +103,6 @@ static void xbt_preinit(void) {
     ++xbt_pagebits;
   }
 
-#ifdef MMALLOC_WANT_OVERRIDE_LEGACY
-  mmalloc_preinit();
-#endif
 #ifdef _TWO_DIGIT_EXPONENT
   /* Even printf behaves differently on Windows... */
   _set_output_format(_TWO_DIGIT_EXPONENT);

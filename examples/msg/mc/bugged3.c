@@ -13,7 +13,7 @@
 /* same buffer for reception (task1).                                         */
 /******************************************************************************/
 
-#include <msg/msg.h>
+#include <simgrid/msg.h>
 #include <simgrid/modelchecker.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged3, "this example");

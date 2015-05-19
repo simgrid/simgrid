@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <stdlib.h>
+
 #include "smx_private.h"
 #include "xbt/heap.h"
 #include "xbt/sysdep.h"
@@ -11,10 +13,13 @@
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
+#include "mc/mc_replay.h"
 #include "simgrid/sg_config.h"
 
 #ifdef HAVE_MC
 #include "mc/mc_private.h"
+#include "mc/mc_protocol.h"
+#include "mc/mc_client.h"
 #endif
 #include "mc/mc_record.h"
 
@@ -205,6 +210,19 @@ void SIMIX_global_init(int *argc, char **argv)
 
   if (sg_cfg_get_boolean("clean_atexit"))
     atexit(SIMIX_clean);
+
+#ifdef HAVE_MC
+  // The communication initialisation is done ASAP.
+  // We need to commuicate  initialisation of the different layers to the model-checker.
+  if (mc_mode == MC_MODE_NONE) {
+    if (getenv(MC_ENV_SOCKET_FD)) {
+      mc_mode = MC_MODE_CLIENT;
+      MC_client_init();
+      MC_client_hello();
+      MC_client_handle_messages();
+    }
+  }
+#endif
 
   if (_sg_cfg_exit_asap)
     exit(0);
@@ -404,12 +422,30 @@ void SIMIX_run(void)
           SIMIX_simcall_handle(&process->simcall, 0);
         }
       }
+      /* Wake up all processes waiting for a Surf action to finish */
+      xbt_dynar_foreach(model_list, iter, model) {
+        XBT_DEBUG("Handling process whose action failed");
+        while ((action = surf_model_extract_failed_action_set(model))) {
+          XBT_DEBUG("   Handling Action %p",action);
+          SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+        }
+        XBT_DEBUG("Handling process whose action terminated normally");
+        while ((action = surf_model_extract_done_action_set(model))) {
+          XBT_DEBUG("   Handling Action %p",action);
+          if (surf_action_get_data(action) == NULL)
+            XBT_DEBUG("probably vcpu's action %p, skip", action);
+          else
+            SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+        }
+      }
     }
 
     time = SIMIX_timer_next();
-    if (time != -1.0 || xbt_swag_size(simix_global->process_list) != 0)
+    if (time != -1.0 || xbt_swag_size(simix_global->process_list) != 0) {
+      XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
-
+      XBT_DEBUG("Moving time ahead : %g", time);
+    }
     /* Notify all the hosts that have failed */
     /* FIXME: iterate through the list of failed host and mark each of them */
     /* as failed. On each host, signal all the running processes with host_fail */
@@ -426,14 +462,19 @@ void SIMIX_run(void)
 
     /* Wake up all processes waiting for a Surf action to finish */
     xbt_dynar_foreach(model_list, iter, model) {
-      while ((action = surf_model_extract_failed_action_set(model)))
+      XBT_DEBUG("Handling process whose action failed");
+      while ((action = surf_model_extract_failed_action_set(model))) {
+        XBT_DEBUG("   Handling Action %p",action);
         SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
-
-      while ((action = surf_model_extract_done_action_set(model)))
+      }
+      XBT_DEBUG("Handling process whose action terminated normally");
+      while ((action = surf_model_extract_done_action_set(model))) {
+        XBT_DEBUG("   Handling Action %p",action);
         if (surf_action_get_data(action) == NULL)
           XBT_DEBUG("probably vcpu's action %p, skip", action);
         else
           SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+      }
     }
 
     /* Autorestart all process */
@@ -473,7 +514,7 @@ void SIMIX_run(void)
  *   \param arg Parameters of the function
  *
  */
-XBT_INLINE void SIMIX_timer_set(double date, void *function, void *arg)
+XBT_INLINE smx_timer_t SIMIX_timer_set(double date, void *function, void *arg)
 {
   smx_timer_t timer = xbt_new0(s_smx_timer_t, 1);
 
@@ -481,6 +522,16 @@ XBT_INLINE void SIMIX_timer_set(double date, void *function, void *arg)
   timer->func = function;
   timer->args = arg;
   xbt_heap_push(simix_timers, timer, date);
+  return timer;
+}
+/** @brief cancels a timer that was added earlier */
+XBT_INLINE void SIMIX_timer_remove(smx_timer_t timer) {
+	xbt_heap_rm_elm(simix_timers, timer, timer->date);
+}
+
+/** @brief Returns the date at which the timer will trigger (or 0 if NULL timer) */
+XBT_INLINE double SIMIX_timer_get_date(smx_timer_t timer) {
+	return timer?timer->date:0;
 }
 
 /**

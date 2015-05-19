@@ -68,14 +68,14 @@ static XBT_INLINE unsigned int xbt_str_hash_ext(const char *str, int str_len)
 #ifdef DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */
   int c;
-  register unsigned int hash = 5381;
+  unsigned int hash = 5381;
 
   while (str_len--) {
     c = *str++;
     hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
   }
 # elif defined(FNV_HASH_FUNCTION)
-  register unsigned int hash = 0x811c9dc5;
+  unsigned int hash = 0x811c9dc5;
   unsigned char *bp = (unsigned char *) str;    /* start of buffer */
   unsigned char *be = bp + str_len;     /* beyond end of buffer */
 
@@ -90,7 +90,7 @@ static XBT_INLINE unsigned int xbt_str_hash_ext(const char *str, int str_len)
   }
 
 # else
-  register unsigned int hash = 0;
+  unsigned int hash = 0;
 
   while (str_len--) {
     hash += (*str) * (*str);
@@ -109,14 +109,14 @@ static XBT_INLINE unsigned int xbt_str_hash(const char *str)
 #ifdef DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */
   int c;
-  register unsigned int hash = 5381;
+  unsigned int hash = 5381;
 
   while ((c = *str++)) {
     hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
   }
 
 # elif defined(FNV_HASH_FUNCTION)
-  register unsigned int hash = 0x811c9dc5;
+  unsigned int hash = 0x811c9dc5;
 
   while (*str) {
     /* multiply by the 32 bit FNV magic prime mod 2^32 */
@@ -129,7 +129,7 @@ static XBT_INLINE unsigned int xbt_str_hash(const char *str)
   }
 
 # else
-  register unsigned int hash = 0;
+  unsigned int hash = 0;
 
   while (*str) {
     hash += (*str) * (*str);
@@ -138,7 +138,7 @@ static XBT_INLINE unsigned int xbt_str_hash(const char *str)
 #endif
   return hash;
 }
-                                                      
+
 /**@}*/
 
 SG_END_DECL()

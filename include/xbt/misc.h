@@ -202,6 +202,12 @@
 
 #endif
 
+#ifdef _XBT_WIN32
+#define XBT_INTERNAL
+#else
+#define XBT_INTERNAL __attribute__((visibility ("hidden")))
+#endif
+
 #if !defined (max) && !defined(__cplusplus)
 #  define max(a,b)  (((a) > (b)) ? (a) : (b))
 #endif
@@ -236,7 +242,7 @@ SG_BEGIN_DECL()
 XBT_PUBLIC_DATA(int) xbt_pagesize;
 
 /** Cache the number of bits of addresses inside a given page, log2(xbt_pagesize). */
- XBT_PUBLIC_DATA(int) xbt_pagebits;
+XBT_PUBLIC_DATA(int) xbt_pagebits;
 
 XBT_PUBLIC(const char *) xbt_procname(void);
 

@@ -71,6 +71,8 @@ Java_org_simgrid_msg_Task_nativeInit(JNIEnv *env, jclass cls);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_create
 		(JNIEnv * env, jobject jtask, jstring jname, jdouble jcomputeDuration, jdouble jmessageSize);
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Task_nativeFinalize(JNIEnv * env, jobject jtask);
 /*
  * Class		org_simgrid_msg_Task
  * Method		parallelCreate

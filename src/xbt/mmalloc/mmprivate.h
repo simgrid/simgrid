@@ -14,6 +14,8 @@
 #ifndef __MMPRIVATE_H
 #define __MMPRIVATE_H 1
 
+#include <xbt/misc.h>
+
 #include "portable.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
@@ -93,6 +95,8 @@
 #define BLOCK(A) (((char*) (A) - (char*) mdp -> heapbase) / BLOCKSIZE + 1)
 
 #define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
+
+SG_BEGIN_DECL()
 
 /* Doubly linked lists of free fragments.  */
 struct list {
@@ -320,5 +324,14 @@ static inline int mmalloc_get_increment(malloc_info* heapinfo) {
 }
 
 void mmcheck(xbt_mheap_t heap);
+
+int malloc_use_mmalloc(void);
+
+int mmalloc_exec_using_mm(int argc, const char** argv);
+void mmalloc_ensure_using_mm(int argc, const char** argv);
+
+size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo);
+
+SG_END_DECL()
 
 #endif                          /* __MMPRIVATE_H */

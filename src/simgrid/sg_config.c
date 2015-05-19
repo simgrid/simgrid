@@ -22,6 +22,7 @@
 #include "mc/mc.h"
 #include "mc/mc_record.h"
 #include "simgrid/instr.h"
+#include "mc/mc_replay.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of simgrid");
@@ -649,12 +650,6 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_sparse_checkpoint, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/sparse-checkpoint", "no");
 
-    /* do stateful model-checking */
-    xbt_cfg_register(&_sg_cfg_set, "model-check/soft-dirty",
-                     "Use sparse per-page snapshots.",
-                     xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_soft_dirty, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/soft-dirty", "no");
-
     /* do liveness model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/property",
                      "Specify the name of the file containing the property. It must be the result of the ltl2ba program.",
@@ -690,6 +685,12 @@ void sg_config_init(int *argc, char **argv)
                      "Enable/Disable state hash for state comparison (exprimental)",
                      xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_hash, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/hash", "no");
+
+    /* Set max depth exploration */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/snapshot_fds",
+                     "Whether file descriptors must be snapshoted",
+                     xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_snapshot_fds, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/snapshot_fds", "no");
 
     /* Set max depth exploration */
     xbt_cfg_register(&_sg_cfg_set, "model-check/max_depth",
@@ -955,6 +956,11 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_reduce, NULL);
 #endif // HAVE_SMPI
 
+    xbt_cfg_register(&_sg_cfg_set, "exception/cutpath",
+                     "\"yes\" or \"no\". \"yes\" will cut all path information from call traces, used e.g. in exceptions.",
+                     xbt_cfgelm_boolean, 1, 1, NULL, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "exception/cutpath", "no");
+
     xbt_cfg_register(&_sg_cfg_set, "clean_atexit",
                      "\"yes\" or \"no\". \"yes\" enables all the cleanups of SimGrid (XBT,SIMIX,MSG) to be registered with atexit. \"no\" may be useful if your code segfaults when calling the exit function.",
                      xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_clean_atexit, NULL);
@@ -964,7 +970,7 @@ void sg_config_init(int *argc, char **argv)
       /* retrieves the current directory of the current process */
       const char *initial_path = __surf_get_initial_path();
       xbt_assert((initial_path),
-                  "__surf_get_initial_path() failed! Can't resolves current Windows directory");
+                  "__surf_get_initial_path() failed! Can't resolve current Windows directory");
 
       surf_path = xbt_dynar_new(sizeof(char *), NULL);
       xbt_cfg_setdefault_string(_sg_cfg_set, "path", initial_path);

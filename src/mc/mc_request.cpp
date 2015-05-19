@@ -1,0 +1,690 @@
+/* Copyright (c) 2008-2014. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include <assert.h>
+
+#include "mc_request.h"
+#include "mc_safety.h"
+#include "mc_private.h"
+#include "mc_smx.h"
+
+extern "C" {
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
+                                "Logging specific to MC (request)");
+
+static char *pointer_to_string(void *pointer);
+static char *buff_size_to_string(size_t size);
+
+// Those are MC_state_get_internal_request(state)
+int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
+{
+  if (mc_reduce_kind == e_mc_reduce_none)
+    return TRUE;
+
+  if (r1->issuer == r2->issuer)
+    return FALSE;
+
+  /* Wait with timeout transitions are not considered by the independance theorem, thus we consider them as dependant with all other transitions */
+  if ((r1->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r1) > 0)
+      || (r2->call == SIMCALL_COMM_WAIT
+          && simcall_comm_wait__get__timeout(r2) > 0))
+    return TRUE;
+
+  if (r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_IRECV)
+    return FALSE;
+
+  if (r1->call == SIMCALL_COMM_IRECV && r2->call == SIMCALL_COMM_ISEND)
+    return FALSE;
+
+  // Those are internal requests, we do not need indirection
+  // because those objects are copies:
+  smx_synchro_t synchro1 = NULL, synchro2 = NULL;
+  if (r1->call == SIMCALL_COMM_WAIT) {
+    synchro1 = simcall_comm_wait__get__comm(r1);
+  }
+  if (r2->call == SIMCALL_COMM_WAIT) {
+    synchro2 = simcall_comm_wait__get__comm(r2);
+  }
+  if (r1->call == SIMCALL_COMM_TEST) {
+    synchro1 = simcall_comm_test__get__comm(r1);
+  }
+  if (r2->call == SIMCALL_COMM_TEST) {
+    synchro2 = simcall_comm_test__get__comm(r2);
+  }
+
+  if ((r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
+      && r2->call == SIMCALL_COMM_WAIT) {
+
+    smx_rdv_t rdv =
+        r1->call ==
+        SIMCALL_COMM_ISEND ? simcall_comm_isend__get__rdv(r1) :
+        simcall_comm_irecv__get__rdv(r1);
+
+    if (rdv != synchro2->comm.rdv_cpy
+        && simcall_comm_wait__get__timeout(r2) <= 0)
+      return FALSE;
+
+    if ((r1->issuer != synchro2->comm.src_proc)
+        && (r1->issuer != synchro2->comm.dst_proc)
+        && simcall_comm_wait__get__timeout(r2) <= 0)
+      return FALSE;
+
+    if ((r1->call == SIMCALL_COMM_ISEND)
+        && (synchro2->comm.type == SIMIX_COMM_SEND)
+        && (synchro2->comm.src_buff !=
+            simcall_comm_isend__get__src_buff(r1))
+        && simcall_comm_wait__get__timeout(r2) <= 0)
+      return FALSE;
+
+    if ((r1->call == SIMCALL_COMM_IRECV)
+        && (synchro2->comm.type == SIMIX_COMM_RECEIVE)
+        && (synchro2->comm.dst_buff != simcall_comm_irecv__get__dst_buff(r1))
+        && simcall_comm_wait__get__timeout(r2) <= 0)
+      return FALSE;
+  }
+
+  if ((r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
+      && r1->call == SIMCALL_COMM_WAIT) {
+
+    smx_rdv_t rdv =
+        r2->call ==
+        SIMCALL_COMM_ISEND ? simcall_comm_isend__get__rdv(r2) :
+        simcall_comm_irecv__get__rdv(r2);
+
+    if (rdv != synchro1->comm.rdv_cpy
+        && simcall_comm_wait__get__timeout(r1) <= 0)
+      return FALSE;
+
+    if ((r2->issuer != synchro1->comm.src_proc)
+        && (r2->issuer != synchro1->comm.dst_proc)
+        && simcall_comm_wait__get__timeout(r1) <= 0)
+      return FALSE;
+
+    if ((r2->call == SIMCALL_COMM_ISEND)
+        && (synchro1->comm.type == SIMIX_COMM_SEND)
+        && (synchro1->comm.src_buff !=
+            simcall_comm_isend__get__src_buff(r2))
+        && simcall_comm_wait__get__timeout(r1) <= 0)
+      return FALSE;
+
+    if ((r2->call == SIMCALL_COMM_IRECV)
+        && (synchro1->comm.type == SIMIX_COMM_RECEIVE)
+        && (synchro1->comm.dst_buff !=
+            simcall_comm_irecv__get__dst_buff(r2))
+        && simcall_comm_wait__get__timeout(r1) <= 0)
+      return FALSE;
+  }
+
+  /* FIXME: the following rule assumes that the result of the
+   * isend/irecv call is not stored in a buffer used in the
+   * test call. */
+  /*if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
+     &&  r2->call == SIMCALL_COMM_TEST)
+     return FALSE; */
+
+  /* FIXME: the following rule assumes that the result of the
+   * isend/irecv call is not stored in a buffer used in the
+   * test call.*/
+  /*if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
+     && r1->call == SIMCALL_COMM_TEST)
+     return FALSE; */
+
+  if (r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_ISEND
+      && simcall_comm_isend__get__rdv(r1) != simcall_comm_isend__get__rdv(r2))
+    return FALSE;
+
+  if (r1->call == SIMCALL_COMM_IRECV && r2->call == SIMCALL_COMM_IRECV
+      && simcall_comm_irecv__get__rdv(r1) != simcall_comm_irecv__get__rdv(r2))
+    return FALSE;
+
+  if (r1->call == SIMCALL_COMM_WAIT
+      && (r2->call == SIMCALL_COMM_WAIT || r2->call == SIMCALL_COMM_TEST)
+      && (synchro1->comm.src_proc == NULL || synchro1->comm.dst_proc == NULL))
+    return FALSE;
+
+  if (r2->call == SIMCALL_COMM_WAIT
+      && (r1->call == SIMCALL_COMM_WAIT || r1->call == SIMCALL_COMM_TEST)
+      && (synchro2->comm.src_proc == NULL || synchro2->comm.dst_proc == NULL))
+      return FALSE;
+
+  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_WAIT
+      && synchro1->comm.src_buff == synchro2->comm.src_buff
+      && synchro2->comm.dst_buff == synchro2->comm.dst_buff)
+    return FALSE;
+
+  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_WAIT
+      && synchro1->comm.src_buff != NULL
+      && synchro1->comm.dst_buff != NULL
+      && synchro2->comm.src_buff != NULL
+      && synchro2->comm.dst_buff != NULL
+      && synchro1->comm.dst_buff != synchro2->comm.src_buff
+      && synchro1->comm.dst_buff != synchro2->comm.dst_buff
+      && synchro2->comm.dst_buff != synchro1->comm.src_buff)
+    return FALSE;
+
+  if (r1->call == SIMCALL_COMM_TEST &&
+      (simcall_comm_test__get__comm(r1) == NULL
+       || synchro1->comm.src_buff == NULL
+       || synchro1->comm.dst_buff == NULL))
+    return FALSE;
+
+  if (r2->call == SIMCALL_COMM_TEST &&
+      (simcall_comm_test__get__comm(r2) == NULL
+       || synchro2->comm.src_buff == NULL
+       || synchro2->comm.dst_buff == NULL))
+    return FALSE;
+
+  if (r1->call == SIMCALL_COMM_TEST && r2->call == SIMCALL_COMM_WAIT
+      && synchro1->comm.src_buff == synchro2->comm.src_buff
+      && synchro1->comm.dst_buff == synchro2->comm.dst_buff)
+    return FALSE;
+
+  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_TEST
+      && synchro1->comm.src_buff == synchro2->comm.src_buff
+      && synchro1->comm.dst_buff == synchro2->comm.dst_buff)
+    return FALSE;
+
+  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_TEST
+      && synchro1->comm.src_buff != NULL
+      && synchro1->comm.dst_buff != NULL
+      && synchro2->comm.src_buff != NULL
+      && synchro2->comm.dst_buff != NULL
+      && synchro1->comm.dst_buff != synchro2->comm.src_buff
+      && synchro1->comm.dst_buff != synchro2->comm.dst_buff
+      && synchro2->comm.dst_buff != synchro1->comm.src_buff)
+    return FALSE;
+
+  if (r1->call == SIMCALL_COMM_TEST && r2->call == SIMCALL_COMM_WAIT
+      && synchro1->comm.src_buff != NULL
+      && synchro1->comm.dst_buff != NULL
+      && synchro2->comm.src_buff != NULL
+      && synchro2->comm.dst_buff != NULL
+      && synchro1->comm.dst_buff != synchro2->comm.src_buff
+      && synchro1->comm.dst_buff != synchro2->comm.dst_buff
+      && synchro2->comm.dst_buff != synchro1->comm.src_buff)
+    return FALSE;
+
+  return TRUE;
+}
+
+static char *pointer_to_string(void *pointer)
+{
+
+  if (XBT_LOG_ISENABLED(mc_request, xbt_log_priority_verbose))
+    return bprintf("%p", pointer);
+
+  return xbt_strdup("(verbose only)");
+}
+
+static char *buff_size_to_string(size_t buff_size)
+{
+
+  if (XBT_LOG_ISENABLED(mc_request, xbt_log_priority_verbose))
+    return bprintf("%zu", buff_size);
+
+  return xbt_strdup("(verbose only)");
+}
+
+
+char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t request_type)
+{
+  bool use_remote_comm = true;
+  switch(request_type) {
+  case MC_REQUEST_SIMIX:
+    use_remote_comm = true;
+    break;
+  case MC_REQUEST_EXECUTED:
+  case MC_REQUEST_INTERNAL:
+    use_remote_comm = false;
+    break;
+  }
+
+  const char* type = NULL;
+  char *args = NULL;
+
+  smx_process_t issuer = MC_smx_simcall_get_issuer(req);
+
+  switch (req->call) {
+
+  case SIMCALL_COMM_ISEND: {
+    type = "iSend";
+    char* p = pointer_to_string(simcall_comm_isend__get__src_buff(req));
+    char* bs = buff_size_to_string(simcall_comm_isend__get__src_buff_size(req));
+    if (issuer->smx_host)
+      args =
+          bprintf("src=(%lu)%s (%s), buff=%s, size=%s", issuer->pid,
+                  MC_smx_process_get_host_name(issuer),
+                  MC_smx_process_get_name(issuer),
+                  p, bs);
+    else
+      args =
+          bprintf("src=(%lu)%s, buff=%s, size=%s", issuer->pid,
+                  MC_smx_process_get_name(issuer), p, bs);
+    xbt_free(bs);
+    xbt_free(p);
+    break;
+  }
+
+  case SIMCALL_COMM_IRECV: {
+    size_t* remote_size = simcall_comm_irecv__get__dst_buff_size(req);
+
+    // size_t size = size_pointer ? *size_pointer : 0;
+    size_t size = 0;
+    if (remote_size)
+      MC_process_read_simple(&mc_model_checker->process(), &size,
+        remote_size, sizeof(size));
+
+    type = "iRecv";
+    char* p = pointer_to_string(simcall_comm_irecv__get__dst_buff(req));
+    char* bs = buff_size_to_string(size);
+    if (issuer->smx_host)
+      args =
+          bprintf("dst=(%lu)%s (%s), buff=%s, size=%s", issuer->pid,
+                  MC_smx_process_get_host_name(issuer),
+                  MC_smx_process_get_name(issuer),
+                  p, bs);
+    else
+      args =
+          bprintf("dst=(%lu)%s, buff=%s, size=%s", issuer->pid,
+                  MC_smx_process_get_name(issuer),
+                  p, bs);
+    xbt_free(bs);
+    xbt_free(p);
+    break;
+  }
+
+  case SIMCALL_COMM_WAIT: {
+    smx_synchro_t remote_act = simcall_comm_wait__get__comm(req);
+    char* p;
+    if (value == -1) {
+      type = "WaitTimeout";
+      p = pointer_to_string(remote_act);
+      args = bprintf("comm=%s", p);
+    } else {
+      type = "Wait";
+      p = pointer_to_string(remote_act);
+
+      s_smx_synchro_t synchro;
+      smx_synchro_t act;
+      if (use_remote_comm) {
+        MC_process_read_simple(&mc_model_checker->process(), &synchro,
+          remote_act, sizeof(synchro));
+        act = &synchro;
+      } else
+        act = remote_act;
+
+      smx_process_t src_proc = MC_smx_resolve_process(act->comm.src_proc);
+      smx_process_t dst_proc = MC_smx_resolve_process(act->comm.dst_proc);
+      args = bprintf("comm=%s [(%lu)%s (%s)-> (%lu)%s (%s)]", p,
+                     src_proc ? src_proc->pid : 0,
+                     src_proc ? MC_smx_process_get_host_name(src_proc) : "",
+                     src_proc ? MC_smx_process_get_name(src_proc) : "",
+                     dst_proc ? dst_proc->pid : 0,
+                     dst_proc ? MC_smx_process_get_host_name(dst_proc) : "",
+                     dst_proc ? MC_smx_process_get_name(dst_proc) : "");
+    }
+    xbt_free(p);
+    break;
+  }
+
+  case SIMCALL_COMM_TEST: {
+    smx_synchro_t remote_act = simcall_comm_test__get__comm(req);
+    s_smx_synchro_t synchro;
+      smx_synchro_t act;
+      if (use_remote_comm) {
+        MC_process_read_simple(&mc_model_checker->process(), &synchro,
+          remote_act, sizeof(synchro));
+        act = &synchro;
+      } else
+        act = remote_act;
+
+    char* p;
+    if (act->comm.src_proc == NULL || act->comm.dst_proc == NULL) {
+      type = "Test FALSE";
+      p = pointer_to_string(remote_act);
+      args = bprintf("comm=%s", p);
+    } else {
+      type = "Test TRUE";
+      p = pointer_to_string(remote_act);
+
+      smx_process_t src_proc = MC_smx_resolve_process(act->comm.src_proc);
+      smx_process_t dst_proc = MC_smx_resolve_process(act->comm.dst_proc);
+      args = bprintf("comm=%s [(%lu)%s (%s) -> (%lu)%s (%s)]", p,
+                     src_proc->pid,
+                     MC_smx_process_get_name(src_proc),
+                     MC_smx_process_get_host_name(src_proc),
+                     dst_proc->pid,
+                     MC_smx_process_get_name(dst_proc),
+                     MC_smx_process_get_host_name(dst_proc));
+    }
+    xbt_free(p);
+    break;
+  }
+
+  case SIMCALL_COMM_WAITANY: {
+    type = "WaitAny";
+    s_xbt_dynar_t comms;
+    MC_process_read_simple(&mc_model_checker->process(),
+      &comms,  simcall_comm_waitany__get__comms(req), sizeof(comms));
+    if (!xbt_dynar_is_empty(&comms)) {
+      smx_synchro_t remote_sync;
+      MC_process_read_dynar_element(&mc_model_checker->process(),
+        &remote_sync, simcall_comm_waitany__get__comms(req), value,
+        sizeof(remote_sync));
+      char* p = pointer_to_string(remote_sync);
+      args = bprintf("comm=%s (%d of %lu)",
+        p, value + 1, xbt_dynar_length(&comms));
+      xbt_free(p);
+    } else {
+      args = bprintf("comm at idx %d", value);
+    }
+    break;
+  }
+
+  case SIMCALL_COMM_TESTANY:
+    if (value == -1) {
+      type = "TestAny FALSE";
+      args = xbt_strdup("-");
+    } else {
+      type = "TestAny";
+      args =
+          bprintf("(%d of %lu)", value + 1,
+                  MC_process_read_dynar_length(&mc_model_checker->process(),
+                    simcall_comm_testany__get__comms(req)));
+    }
+    break;
+
+  case SIMCALL_MUTEX_LOCK: {
+    type = "Mutex LOCK";
+
+    s_smx_mutex_t mutex;
+    MC_process_read_simple(&mc_model_checker->process(), &mutex,
+      simcall_mutex_lock__get__mutex(req), sizeof(mutex));
+    s_xbt_swag_t mutex_sleeping;
+    MC_process_read_simple(&mc_model_checker->process(), &mutex_sleeping,
+      mutex.sleeping, sizeof(mutex_sleeping));
+
+    args = bprintf("locked = %d, owner = %d, sleeping = %d",
+      mutex.locked,
+      mutex.owner != NULL ? (int) MC_smx_resolve_process(mutex.owner)->pid : -1,
+      mutex_sleeping.count);
+    break;
+  }
+
+  case SIMCALL_MC_SNAPSHOT:
+    type = "MC_SNAPSHOT";
+    args = NULL;
+    break;
+
+  case SIMCALL_MC_COMPARE_SNAPSHOTS:
+    type = "MC_COMPARE_SNAPSHOTS";
+    args = NULL;
+    break;
+
+  case SIMCALL_MC_RANDOM:
+    type = "MC_RANDOM";
+    args = bprintf("%d", value);
+    break;
+
+  default:
+    THROW_UNIMPLEMENTED;
+  }
+
+  char* str;
+  if (args != NULL) {
+    str =
+        bprintf("[(%lu)%s (%s)] %s(%s)", issuer->pid,
+                MC_smx_process_get_host_name(issuer),
+                MC_smx_process_get_name(issuer),
+                type, args);
+  } else {
+    str =
+        bprintf("[(%lu)%s (%s)] %s ", issuer->pid,
+                MC_smx_process_get_host_name(issuer),
+                MC_smx_process_get_name(issuer),
+                type);
+  }
+  xbt_free(args);
+  return str;
+}
+
+unsigned int MC_request_testany_fail(smx_simcall_t req)
+{
+  // Remote xbt_dynar_foreach on simcall_comm_testany__get__comms(req).
+
+  // Read the dynar:
+  s_xbt_dynar_t comms;
+  MC_process_read_simple(&mc_model_checker->process(),
+    &comms, simcall_comm_testany__get__comms(req), sizeof(comms));
+
+  // Read ther dynar buffer:
+  size_t buffer_size = comms.elmsize * comms.used;
+  char buffer[buffer_size];
+  MC_process_read_simple(&mc_model_checker->process(),
+    buffer, comms.data, buffer_size);
+
+  // Iterate over the elements:
+  assert(comms.elmsize == sizeof(smx_synchro_t));
+  unsigned cursor;
+  for (cursor=0; cursor != comms.used; ++cursor) {
+
+    // Get the element:
+    smx_synchro_t remote_action = NULL;
+    memcpy(&remote_action, buffer + comms.elmsize * cursor, sizeof(remote_action));
+
+    // Dereference the pointer:
+    s_smx_synchro_t action;
+    MC_process_read_simple(&mc_model_checker->process(),
+      &action, remote_action, sizeof(action));
+
+    // Finally so something useful about it:
+    if (action.comm.src_proc && action.comm.dst_proc)
+      return FALSE;
+  }
+
+  return TRUE;
+}
+
+int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
+{
+  smx_synchro_t remote_act = NULL;
+  switch (req->call) {
+
+  case SIMCALL_COMM_WAIT:
+    /* FIXME: check also that src and dst processes are not suspended */
+    remote_act = simcall_comm_wait__get__comm(req);
+    break;
+
+  case SIMCALL_COMM_WAITANY: {
+    MC_process_read_dynar_element(
+      &mc_model_checker->process(), &remote_act, simcall_comm_waitany__get__comms(req),
+      idx, sizeof(remote_act));
+    }
+    break;
+
+  case SIMCALL_COMM_TESTANY: {
+    MC_process_read_dynar_element(
+      &mc_model_checker->process(), &remote_act, simcall_comm_testany__get__comms(req),
+      idx, sizeof(remote_act));
+    }
+    break;
+
+  default:
+    return TRUE;
+  }
+
+  s_smx_synchro_t synchro;
+  MC_process_read_simple(&mc_model_checker->process(),
+    &synchro, remote_act, sizeof(synchro));
+  return synchro.comm.src_proc && synchro.comm.dst_proc;
+}
+
+int MC_process_is_enabled(smx_process_t process)
+{
+  return MC_request_is_enabled(&process->simcall);
+}
+
+char *MC_request_get_dot_output(smx_simcall_t req, int value)
+{
+  char *label = NULL;
+
+  const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
+
+  switch (req->call) {
+  case SIMCALL_COMM_ISEND:
+    if (issuer->smx_host)
+      label =
+          bprintf("[(%lu)%s] iSend", issuer->pid,
+                  MC_smx_process_get_host_name(issuer));
+    else
+      label = bprintf("[(%lu)] iSend", issuer->pid);
+    break;
+
+  case SIMCALL_COMM_IRECV:
+    if (issuer->smx_host)
+      label =
+          bprintf("[(%lu)%s] iRecv", issuer->pid,
+                  MC_smx_process_get_host_name(issuer));
+    else
+      label = bprintf("[(%lu)] iRecv", issuer->pid);
+    break;
+
+  case SIMCALL_COMM_WAIT: {
+    if (value == -1) {
+      if (issuer->smx_host)
+        label =
+            bprintf("[(%lu)%s] WaitTimeout", issuer->pid,
+                    MC_smx_process_get_host_name(issuer));
+      else
+        label = bprintf("[(%lu)] WaitTimeout", issuer->pid);
+    } else {
+      smx_synchro_t remote_act = simcall_comm_wait__get__comm(req);
+      s_smx_synchro_t synchro;
+      MC_process_read_simple(&mc_model_checker->process(), &synchro,
+        remote_act, sizeof(synchro));
+
+      smx_process_t src_proc = MC_smx_resolve_process(synchro.comm.src_proc);
+      smx_process_t dst_proc = MC_smx_resolve_process(synchro.comm.dst_proc);
+      if (issuer->smx_host)
+        label =
+            bprintf("[(%lu)%s] Wait [(%lu)->(%lu)]", issuer->pid,
+                    MC_smx_process_get_host_name(issuer),
+                    src_proc ? src_proc->pid : 0,
+                    dst_proc ? dst_proc->pid : 0);
+      else
+        label =
+            bprintf("[(%lu)] Wait [(%lu)->(%lu)]", issuer->pid,
+                    src_proc ? src_proc->pid : 0,
+                    dst_proc ? dst_proc->pid : 0);
+    }
+    break;
+  }
+
+  case SIMCALL_COMM_TEST: {
+    smx_synchro_t remote_act = simcall_comm_test__get__comm(req);
+    s_smx_synchro_t synchro;
+    MC_process_read_simple(&mc_model_checker->process(), &synchro,
+      remote_act, sizeof(synchro));
+    if (synchro.comm.src_proc == NULL || synchro.comm.dst_proc == NULL) {
+      if (issuer->smx_host)
+        label =
+            bprintf("[(%lu)%s] Test FALSE", issuer->pid,
+                    MC_smx_process_get_host_name(issuer));
+      else
+        label = bprintf("[(%lu)] Test FALSE", issuer->pid);
+    } else {
+      if (issuer->smx_host)
+        label =
+            bprintf("[(%lu)%s] Test TRUE", issuer->pid,
+                    MC_smx_process_get_host_name(issuer));
+      else
+        label = bprintf("[(%lu)] Test TRUE", issuer->pid);
+    }
+    break;
+  }
+
+  case SIMCALL_COMM_WAITANY: {
+    unsigned long comms_size = MC_process_read_dynar_length(
+      &mc_model_checker->process(), simcall_comm_waitany__get__comms(req));
+    if (issuer->smx_host)
+      label =
+          bprintf("[(%lu)%s] WaitAny [%d of %lu]", issuer->pid,
+                  MC_smx_process_get_host_name(issuer), value + 1,
+                  comms_size);
+    else
+      label =
+          bprintf("[(%lu)] WaitAny [%d of %lu]", issuer->pid, value + 1,
+                  comms_size);
+    break;
+  }
+
+  case SIMCALL_COMM_TESTANY:
+    if (value == -1) {
+      if (issuer->smx_host)
+        label =
+            bprintf("[(%lu)%s] TestAny FALSE", issuer->pid,
+                    MC_smx_process_get_host_name(issuer));
+      else
+        label = bprintf("[(%lu)] TestAny FALSE", issuer->pid);
+    } else {
+      if (issuer->smx_host)
+        label =
+            bprintf("[(%lu)%s] TestAny TRUE [%d of %lu]", issuer->pid,
+                    MC_smx_process_get_host_name(issuer), value + 1,
+                    xbt_dynar_length(simcall_comm_testany__get__comms(req)));
+      else
+        label =
+            bprintf("[(%lu)] TestAny TRUE [%d of %lu]", issuer->pid,
+                    value + 1,
+                    xbt_dynar_length(simcall_comm_testany__get__comms(req)));
+    }
+    break;
+
+  case SIMCALL_MUTEX_LOCK:
+    label = bprintf("[(%lu)] Mutex LOCK", req->issuer->pid);
+    break;
+
+  case SIMCALL_MC_RANDOM:
+    if (issuer->smx_host)
+      label =
+          bprintf("[(%lu)%s] MC_RANDOM (%d)", issuer->pid,
+                  MC_smx_process_get_host_name(issuer), value);
+    else
+      label = bprintf("[(%lu)] MC_RANDOM (%d)", issuer->pid, value);
+    break;
+
+  case SIMCALL_MC_SNAPSHOT:
+    if (issuer->smx_host)
+      label =
+          bprintf("[(%lu)%s] MC_SNAPSHOT", issuer->pid,
+                  MC_smx_process_get_host_name(issuer));
+    else
+      label = bprintf("[(%lu)] MC_SNAPSHOT", issuer->pid);
+    break;
+
+  case SIMCALL_MC_COMPARE_SNAPSHOTS:
+    if (issuer->smx_host)
+      label =
+          bprintf("[(%lu)%s] MC_COMPARE_SNAPSHOTS", issuer->pid,
+                  MC_smx_process_get_host_name(issuer));
+    else
+      label = bprintf("[(%lu)] MC_COMPARE_SNAPSHOTS", issuer->pid);
+    break;
+
+  default:
+    THROW_UNIMPLEMENTED;
+  }
+
+  char* str =
+      bprintf("label = \"%s\", color = %s, fontcolor = %s", label,
+              colors[issuer->pid - 1], colors[issuer->pid - 1]);
+  xbt_free(label);
+  return str;
+
+}
+
+}

@@ -14,7 +14,7 @@
  */
 
 #include "smx_private.h"
-#include "mc/mc_interface.h"
+#include "mc/mc_forward.h"
 #include "xbt/ex.h"
   
 inline static smx_host_t simcall_BODY_host_get_by_name(const char* name) {

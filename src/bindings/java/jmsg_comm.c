@@ -62,7 +62,7 @@ Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_destroy(JNIEnv *env, jobject jcomm) {
+Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
   msg_comm_t comm;
   msg_task_t *task_received;
 

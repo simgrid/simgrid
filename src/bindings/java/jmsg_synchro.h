@@ -26,7 +26,8 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_release(JNIEnv * env, jobject obj);
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Mutex_exit(JNIEnv * env, jobject obj);
+Java_org_simgrid_msg_Mutex_nativeFinalize(JNIEnv * env, jobject obj);
+
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Semaphore_nativeInit(JNIEnv *env, jclass cls);
@@ -39,5 +40,5 @@ Java_org_simgrid_msg_Semaphore_release(JNIEnv * env, jobject obj);
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Semaphore_wouldBlock(JNIEnv * env, jobject obj);
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Mutex_destroy(JNIEnv * env, jobject obj);
+Java_org_simgrid_msg_Semaphore_nativeFinalize(JNIEnv * env, jobject obj);
 #endif                          /* !MSG_JPROCESS_H */

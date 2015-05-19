@@ -7,16 +7,40 @@
 #ifndef MC_FORWARD_H
 #define MC_FORWARD_H
 
+#include <xbt/misc.h>
 #include <mc/datatypes.h>
-#include "mc_interface.h"
+
+#ifdef __cplusplus
+
+namespace simgrid {
+namespace mc {
+  class PageStore;
+  class ModelChecker;
+}
+}
+
+typedef ::simgrid::mc::ModelChecker s_mc_model_checker_t;
+typedef ::simgrid::mc::PageStore s_mc_pages_store_t;
+
+#else
+
+typedef struct _s_mc_model_checker s_mc_model_checker_t;
+typedef struct _s_mc_pages_store s_mc_pages_store_t;
+
+#endif
 
 typedef struct s_mc_object_info s_mc_object_info_t, *mc_object_info_t;
 typedef struct s_dw_type s_dw_type_t, *dw_type_t;
 typedef struct s_memory_map s_memory_map_t, *memory_map_t;
 typedef struct s_dw_variable s_dw_variable_t, *dw_variable_t;
 typedef struct s_dw_frame s_dw_frame_t, *dw_frame_t;
-typedef struct s_mc_pages_store s_mc_pages_store_t, *mc_pages_store_t;
-typedef struct s_mc_model_checker s_mc_model_checker_t, *mc_model_checker_t;
+typedef s_mc_pages_store_t *mc_pages_store_t;
+typedef struct s_mc_snapshot s_mc_snapshot_t, *mc_snapshot_t;
+typedef struct s_mc_process s_mc_process_t, * mc_process_t;
+typedef s_mc_model_checker_t *mc_model_checker_t;
+
+SG_BEGIN_DECL()
 extern mc_model_checker_t mc_model_checker;
+SG_END_DECL()
 
 #endif

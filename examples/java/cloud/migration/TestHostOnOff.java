@@ -121,16 +121,15 @@ public class TestHostOnOff extends Process{
         Process.sleep(50000);
         Msg.info("Destroy VMs");
         vm0.shutdown();
-        vm0.destroy();
         Process.sleep(20000);
     }
 
 
     public static void test_vm_shutdown_destroy () throws HostFailureException {
 
-        Msg.info("**** **** **** ***** ***** Test shutdown /destroy a VM ***** ***** **** **** ****");
+        Msg.info("**** **** **** ***** ***** Test shutdown a VM ***** ***** **** **** ****");
         Msg.info("Turn on host1, assign a VM on host1, launch a process inside the VM, and turn off the vm, " +
-                "destroy it and check whether you can reallocate the same VM");
+                "and check whether you can reallocate the same VM");
 
 
         // Create VM0
@@ -156,10 +155,7 @@ public class TestHostOnOff extends Process{
         Msg.info("Shutdown VM0");
         vm0.shutdown();
         Process.sleep(5000);
-        Msg.info("Destroy VM0");
-        vm0.destroy();
 
-        Process.sleep(5000);
         Msg.info("Restart VM0");
         vm0 = new XVM(
                 host1,
@@ -179,8 +175,6 @@ public class TestHostOnOff extends Process{
 		
         Process.sleep(5000);
         vm0.shutdown();
-        Process.sleep(5000);
-        vm0.destroy();
     }
 
 }

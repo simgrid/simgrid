@@ -1057,7 +1057,7 @@ examples/smpi/mc/smpi_non_deterministic
 examples/smpi/mc/smpi_send_deterministic
 simgrid.jar_finalized
 simgrid_full.jar
-src/mc_page_store_unit.cpp
+src/PageStore_unit.cpp
 src/bindings/java/MANIFEST.MF
 NATIVE/
 VERSION

@@ -23,15 +23,6 @@
 
 int r, cs;
 
-static int predR(){
-  return r;
-}
-
-static int predCS(){
-  return cs;
-}
-
-
 int main(int argc, char **argv){
 
   int err, size, rank;
@@ -47,8 +38,8 @@ int main(int argc, char **argv){
     exit(1);
   }
 
-  MC_automaton_new_propositional_symbol("r", &predR);
-  MC_automaton_new_propositional_symbol("cs", &predCS);
+  MC_automaton_new_propositional_symbol_pointer("r", &r);
+  MC_automaton_new_propositional_symbol_pointer("cs", &cs);
 
   MC_ignore(&(status.count), sizeof(status.count));
 

@@ -10,10 +10,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package.   */
 
+#include "mc/mc_replay.h"
 #include "smx_private.h"
-#include "mc/mc_interface.h"
+#include "mc/mc_forward.h"
 #include "xbt/ex.h"
 #include <math.h>         /* isfinite() */
+#include "mc/mc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
@@ -755,7 +757,7 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
     if (simix_global->kill_process_function) {
       XBT_DEBUG("Set kill time %f for process %s(%s)",kill_time, process->name,
           sg_host_name(process->smx_host));
-      SIMIX_timer_set(kill_time, simix_global->kill_process_function, process);
+      process->kill_timer = SIMIX_timer_set(kill_time, simix_global->kill_process_function, process);
     }
   }
 }

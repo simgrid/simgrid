@@ -26,14 +26,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(bugged1_liveness, "my log messages");
 int r=0; 
 int cs=0;
 
-int predR(){
-  return r;
-}
-
-int predCS(){
-  return cs;
-}
-
 #ifdef GARBAGE_STACK
 /** Do not use a clean stack */
 static void garbage_stack(void) {
@@ -47,7 +39,6 @@ static void garbage_stack(void) {
 
 int coordinator(int argc, char *argv[])
 {
-
   int CS_used = 0;   
   msg_task_t task = NULL, answer = NULL; 
   xbt_dynar_t requests = xbt_dynar_new(sizeof(char *), NULL);
@@ -159,22 +150,21 @@ static int raw_client(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-
   MSG_init(&argc, argv);
-
   char **options = &argv[1];
 
-  MSG_config("model-check/property","promela_bugged1_liveness");
-  MC_automaton_new_propositional_symbol("r", &predR);
-  MC_automaton_new_propositional_symbol("cs", &predCS);
+  MC_automaton_new_propositional_symbol_pointer("r", &r);
+  MC_automaton_new_propositional_symbol_pointer("cs", &cs);
 
   const char* platform_file = options[0];
   const char* application_file = options[1];
-  
+
   MSG_create_environment(platform_file);
+
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", raw_client);
   MSG_launch_application(application_file);
+
   MSG_main();
 
   return 0;

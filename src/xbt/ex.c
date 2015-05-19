@@ -52,6 +52,8 @@
 #include "xbt_modinter.h"       /* backtrace initialization headers */
 
 #include "xbt/ex_interface.h"
+#include "simgrid/sg_config.h"  /* Configuration mechanism of SimGrid */
+
 
 #undef HAVE_BACKTRACE
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
@@ -155,8 +157,27 @@ void xbt_ex_display(xbt_ex_t * e)
     int i;
 
     fprintf(stderr, "\n");
-    for (i = 0; i < e->used; i++)
-      fprintf(stderr, "%s\n", e->bt_strings[i]);
+    for (i = 0; i < e->used; i++) {
+      if (sg_cfg_get_boolean("exception/cutpath")) {
+        char* p = e->bt_strings[i];
+        xbt_str_rtrim(p, ":0123456789");
+        char* filename = strrchr(p, '/')+1;
+        char* end_of_message  = strrchr(p, ' ');
+
+        int length = strlen(p)-strlen(end_of_message);
+        char* dest = malloc(length);
+
+        memcpy(dest, &p[0], length);
+        dest[length] = 0;
+
+        fprintf(stderr, "%s %s\n", dest, filename);
+
+        free(dest);
+      }
+      else {
+        fprintf(stderr, "%s\n", e->bt_strings[i]);
+      }
+    }
 
   } else
 #endif

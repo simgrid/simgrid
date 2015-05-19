@@ -7,6 +7,8 @@
 #ifndef MC_MEMORY_MAP_H
 #define MC_MEMORY_MAP_H
 
+#include <sys/types.h>
+
 #include <simgrid_config.h>
 #include "mc_forward.h"
 
@@ -39,9 +41,8 @@ struct s_memory_map {
 
 };
 
-void MC_init_memory_map_info(void);
-memory_map_t MC_get_memory_map(void);
-void MC_free_memory_map(memory_map_t map);
+XBT_INTERNAL memory_map_t MC_get_memory_map(pid_t pid);
+XBT_INTERNAL void MC_free_memory_map(memory_map_t map);
 
 SG_END_DECL()
 

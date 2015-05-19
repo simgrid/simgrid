@@ -107,12 +107,12 @@ XBT_INLINE unsigned int xbt_dict_size(xbt_dict_t dict)
 static void xbt_dict_rehash(xbt_dict_t dict)
 {
   const int oldsize = dict->table_size + 1;
-  register int newsize = oldsize * 2;
-  register int i;
-  register xbt_dictelm_t *currcell;
-  register xbt_dictelm_t *twincell;
-  register xbt_dictelm_t bucklet;
-  register xbt_dictelm_t *pprev;
+  int newsize = oldsize * 2;
+  int i;
+  xbt_dictelm_t *currcell;
+  xbt_dictelm_t *twincell;
+  xbt_dictelm_t bucklet;
+  xbt_dictelm_t *pprev;
 
   currcell =
       (xbt_dictelm_t *) xbt_realloc((char *) dict->table,
@@ -1170,6 +1170,29 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_test_add("Free the structure (twice)");
   xbt_dict_free(&head);
   xbt_dict_free(&head);
+}
+
+XBT_TEST_UNIT("ext", test_dict_int, "Test dictionnary with int keys")
+{
+  xbt_dict_t dict = xbt_dict_new();
+  int count = 500;
+
+  xbt_test_add("Insert elements");
+  int i;
+  for (i = 0; i < count; ++i)
+    xbt_dict_set_ext(dict, (char*) &i, sizeof(i), (void*) (intptr_t) i, NULL);
+  xbt_test_assert(xbt_dict_size(dict) == count,
+    "Bad number of elements in the dictionnary");
+
+  xbt_test_add("Check elements");
+  for (i = 0; i < count; ++i) {
+    int res = (int) (intptr_t) xbt_dict_get_ext(dict, (char*) &i, sizeof(i));
+    xbt_test_assert(xbt_dict_size(dict) == count,
+      "Unexpected value at index %i, expected %i but was %i", i, i, res);
+  }
+
+  xbt_test_add("Free the array");
+  xbt_dict_free(&dict);
 }
 
 #endif                          /* SIMGRID_TEST */

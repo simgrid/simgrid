@@ -1,9 +1,23 @@
 set(warnCFLAGS "")
 set(optCFLAGS "")
 
+include(CheckCXXCompilerFlag)
+
 if(NOT __VISUALC__ AND NOT __BORLANDC__)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}-std=gnu99 -g3")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-g3")
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" HAVE_CXX11)
+  CHECK_CXX_COMPILER_FLAG("-std=c++0x" HAVE_CXX0X)
+  if(HAVE_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  elseif(HAVE_CXX0X)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  else()
+    message(STATUS "Missing support for C++11.")
+  endif()
+endif()
+
+if(NOT __VISUALC__ AND NOT __BORLANDC__)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -g3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 else()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}/Zi")
@@ -12,7 +26,7 @@ endif()
 
 if(enable_compile_warnings)
   set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
-  if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+  if(CMAKE_COMPILER_IS_GNUCC)
     set(warnCFLAGS "${warnCFLAGS}-Wclobbered -Wno-error=clobbered ")
     if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.5")
       set(warnCFLAGS "${warnCFLAGS}-Wno-error=unused-but-set-variable ")
@@ -23,7 +37,10 @@ if(enable_compile_warnings)
     endif()
   endif()
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra  -Wunused -Wpointer-arith -Wchar-subscripts -Wcomment -Wno-unknown-warning-option -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wclobbered -Wno-error=clobbered -Wno-format-nonliteral -Werror")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra  -Wunused -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wclobbered -Wno-error=clobbered")
+  endif()
 
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall") # FIXME: Q&D hack
 
@@ -63,16 +80,19 @@ if(enable_model-checking AND enable_compile_optimizations)
   set(optCFLAGS "-O0 ")
   # But you can still optimize this:
   foreach(s
-      # src/xbt/mmalloc/mm.c
-      # src/xbt/snprintf.c src/xbt/log.c
-      # src/xbt/dynar.c
-      # src/xbt/set.c src/xbt/setset.c
-      # src/xbt/backtrace_linux.c
-      src/mc/mc_dwarf_expression.c src/mc/mc_dwarf.c src/mc/mc_member.c
-      src/mc/mc_snapshot.c src/mc/mc_page_store.cpp src/mc/mc_page_snapshot.cpp
-      src/mc/mc_compare.cpp src/mc/mc_diff.c
-      src/mc/mc_dwarf.c src/mc/mc_dwarf_attrnames.h src/mc/mc_dwarf_expression.c src/mc/mc_dwarf_tagnames.h
-      src/mc/mc_set.cpp)
+      src/xbt/mmalloc/mm.c
+      src/xbt/log.c src/xbt/xbt_log_appender_file.c
+      src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
+      src/xbt/dict.c src/xbt/dict_elm.c src/xbt/dict_multi.c src/xbt/dict_cursor.c
+      src/xbt/set.c src/xbt/setset.c
+      src/xbt/dynar.c src/xbt/fifo.c src/xbt/heap.c src/xbt/swag.c
+      src/xbt/str.c src/xbt/strbuff.c src/xbt/snprintf.c
+      src/xbt/queue.c
+      src/xbt/xbt_os_time.c src/xbt/xbt_os_thread.c
+      src/xbt/sha.c
+      src/xbt/matrix.c
+      src/xbt/backtrace_linux.c
+      ${MC_SRC_BASE} ${MC_SRC})
       set (mcCFLAGS "-O3  -funroll-loops -fno-strict-aliasing")
        if(CMAKE_COMPILER_IS_GNUCC)
          set (mcCFLAGS "${mcCFLAGS} -finline-functions")

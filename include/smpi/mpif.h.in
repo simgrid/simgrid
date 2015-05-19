@@ -18,7 +18,6 @@
       integer MPI_MAX_DATAREP_STRIN, MPI_MAX_INFO_KEY
       integer MPI_MAX_INFO_VAL, MPI_MAX_OBJECT_NAME, MPI_MAX_PORT_NAME
       integer MPI_ANY_SOURCE, MPI_PROC_NULL, MPI_ANY_TAG, MPI_UNDEFINED
-      integer MPI_TAG_UB, MPI_TAG_LB
       integer MPI_SOURCE, MPI_TAG, MPI_ERROR
       integer MPI_VERSION, MPI_SUBVERSION
       parameter(MPI_MAX_PROCESSOR_NAME=100)
@@ -35,8 +34,6 @@
       parameter(MPI_SOURCE=1)
       parameter(MPI_TAG=2)
       parameter(MPI_ERROR=3)
-      parameter(MPI_TAG_UB=0)
-      parameter(MPI_TAG_LB=0)
       parameter(MPI_VERSION=1)
       parameter(MPI_SUBVERSION=1)
       integer MPI_MODE_NOSTORE, MPI_MODE_NOPUT, MPI_MODE_NOPRECEDE
@@ -51,9 +48,8 @@
       integer MPI_ERR_REQUEST, MPI_ERR_INTERN, MPI_ERR_COUNT
       integer MPI_ERR_RANK, MPI_ERR_OTHER, MPI_ERR_UNKNOWN
       integer MPI_ERR_TAG, MPI_ERR_TRUNCATE, MPI_ERR_GROUP, MPI_ERR_OP
-      integer MPI_LASTUSEDCODE, MPI_ERR_LASTCODE
+      integer MPI_ERR_LASTCODE
       integer MPI_IDENT, MPI_SIMILAR, MPI_UNEQUAL, MPI_CONGRUENT
-      integer MPI_WTIME_IS_GLOBAL
       parameter(MPI_SUCCESS=0)
       parameter(MPI_ERR_COMM=1)
       parameter(MPI_ERR_ARG=2)
@@ -68,13 +64,12 @@
       parameter(MPI_ERR_OP=11)
       parameter(MPI_ERR_OTHER=12)
       parameter(MPI_ERR_UNKNOWN=13)
-      parameter(MPI_LASTUSEDCODE=0)
-      parameter(MPI_ERR_LASTCODE=0)
+      parameter(MPI_ERR_LASTCODE=74)
       parameter(MPI_IDENT=0)
       parameter(MPI_SIMILAR=1)
       parameter(MPI_UNEQUAL=2)
       parameter(MPI_CONGRUENT=3)
-      parameter(MPI_WTIME_IS_GLOBAL=1)
+
 
       integer MPI_NULL_COPY_FN, MPI_NULL_DELETE_FN
       parameter(MPI_NULL_COPY_FN =0)
@@ -85,23 +80,32 @@
       integer MPI_COMM_NULL_DUP_FN, MPI_COMM_DUP_FN
       parameter(MPI_COMM_NULL_DUP_FN =0)
       parameter(MPI_COMM_DUP_FN =0)
-      integer MPI_APPNUM, MPI_HOST, MPI_IO
-      parameter(MPI_APPNUM=0)
-      parameter(MPI_HOST=0)
-      parameter(MPI_IO=0)
+
+
+
       integer MPI_ROOT, MPI_INFO_NULL,MPI_COMM_TYPE_SHARED
       parameter(MPI_ROOT=0)
       parameter(MPI_INFO_NULL=0)
       parameter(MPI_COMM_TYPE_SHARED=1)
 
+! Attribute keys
+      integer MPI_IO, MPI_HOST, MPI_WTIME_IS_GLOBAL, MPI_APPNUM
+      integer MPI_TAG_UB, MPI_TAG_LB
+      integer MPI_UNIVERSE_SIZE, MPI_LASTUSEDCODE
+      parameter(MPI_IO=-1)
+      parameter(MPI_HOST=-2)
+      parameter(MPI_WTIME_IS_GLOBAL=-3)
+      parameter(MPI_APPNUM=-4)
+      parameter(MPI_TAG_UB=-5)
+      parameter(MPI_TAG_LB=-6)
+      parameter(MPI_UNIVERSE_SIZE=-7)
+      parameter(MPI_LASTUSEDCODE=-8)
+
 ! These should be ordered as in smpi_f77.c
       integer MPI_COMM_NULL, MPI_COMM_WORLD, MPI_COMM_SELF
-      integer MPI_UNIVERSE_SIZE
       parameter(MPI_COMM_NULL=-1)
       parameter(MPI_COMM_SELF=-2)
       parameter(MPI_COMM_WORLD=0)
-      parameter(MPI_UNIVERSE_SIZE=0)
-
 
       integer MPI_GROUP_NULL, MPI_GROUP_EMPTY
       parameter(MPI_GROUP_NULL=-1)

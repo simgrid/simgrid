@@ -58,8 +58,7 @@ typedef struct s_smx_process {
   xbt_main_func_t code;
   int argc;
   char **argv;
-  double kill_time;
-
+  smx_timer_t kill_timer;
 } s_smx_process_t;
 
 

@@ -2,11 +2,8 @@
 
 ! expect signal SIGABRT
 ! timeout 20
-$ ${bindir:=.}/bugged1_liveness ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/deploy_bugged1_liveness.xml --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=contexts/stack_size:256
-> [  0.000000] (0:@) Configuration change: Set 'model-check' to '1'
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/deploy_bugged1_liveness.xml --log=xbt_cfg.thresh:warning --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=contexts/stack_size:256 --cfg=model-check/property:promela_bugged1_liveness
 > [  0.000000] (0:@) Check the liveness property promela_bugged1_liveness
-> [  0.000000] (0:@) Get debug information ...
-> [  0.000000] (0:@) Get debug information done !
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (3:client@Fafard) Ask the request
 > [  0.000000] (2:client@Boivin) Propositions changed : r=1, cs=0
@@ -15,7 +12,7 @@ $ ${bindir:=.}/bugged1_liveness ${srcdir:=.}/../../platforms/platform.xml ${srcd
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (3:client@Fafard) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (0:@) Pair 22 already reached (equal to pair 10) !
+> [  0.000000] (0:@) Pair 23 already reached (equal to pair 11) !
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
 > [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -40,8 +37,8 @@ $ ${bindir:=.}/bugged1_liveness ${srcdir:=.}/../../platforms/platform.xml ${srcd
 > [  0.000000] (0:@) [(3)Fafard (client)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
 > [  0.000000] (0:@) [(3)Fafard (client)] iSend(src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
 > [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) Expanded pairs = 22
-> [  0.000000] (0:@) Visited pairs = 20
-> [  0.000000] (0:@) Executed transitions = 20
-> [  0.000000] (0:@) Counter-example depth : 21
-
+> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:@) Expanded pairs = 23
+> [  0.000000] (0:@) Visited pairs = 21
+> [  0.000000] (0:@) Executed transitions = 21
+> [  0.000000] (0:@) Counter-example depth : 22

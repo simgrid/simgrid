@@ -6,7 +6,7 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/mc/mc_mmu.h
-  src/mc/mc_page_store.h
+  src/mc/PageStore.hpp
   src/mc/mc_record.h
   src/include/simgrid/platf_interface.h
   src/include/simgrid/sg_config.h
@@ -130,6 +130,7 @@ set(EXTRA_DIST
   tools/tesh/tesh.h
   tools/tesh/generate_tesh
   examples/smpi/mc/only_send_deterministic.tesh
+  examples/smpi/mc/non_deterministic.tesh
   )
 
 set(SMPI_SRC
@@ -579,57 +580,86 @@ set(JEDULE_SRC
   )
 
 set(MC_SRC_BASE
-  src/mc/mc_base.c
+  src/mc/mc_base.cpp
   src/mc/mc_base.h
   src/mc/mc_record.h
-  src/mc/mc_record.c
-  src/mc/mc_config.c
-  src/mc/mc_global.c
+  src/mc/mc_replay.h
+  src/mc/mc_record.cpp
+  src/mc/mc_config.cpp
+  src/mc/mc_global.cpp
   )
 
 set(MC_SRC
+  src/mc/mc_address_space.h
+  src/mc/mc_address_space.cpp
   src/mc/mc_forward.h
+  src/mc/mc_process.h
+  src/mc/mc_process.cpp
+  src/mc/mc_unw.h
+  src/mc/mc_unw.cpp
+  src/mc/mc_unw_vmread.cpp
   src/mc/mc_mmalloc.h
-  src/mc/mc_model_checker.h
+  src/mc/ModelChecker.hpp
+  src/mc/ModelChecker.cpp
   src/mc/mc_object_info.h
-  src/mc/mc_checkpoint.c
+  src/mc/mc_object_info.cpp
+  src/mc/mc_checkpoint.cpp
   src/mc/mc_snapshot.h
-  src/mc/mc_snapshot.c
-  src/mc/mc_page_store.h
-  src/mc/mc_page_store.cpp
+  src/mc/mc_snapshot.cpp
+  src/mc/PageStore.hpp
+  src/mc/PageStore.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
-  src/mc/mc_comm_determinism.c
+  src/mc/mc_comm_pattern.cpp
+  src/mc/mc_comm_determinism.cpp
   src/mc/mc_compare.cpp
-  src/mc/mc_diff.c
-  src/mc/mc_dwarf.c
+  src/mc/mc_diff.cpp
+  src/mc/mc_dwarf.cpp
   src/mc/mc_dwarf_attrnames.h
-  src/mc/mc_dwarf_expression.c
+  src/mc/mc_dwarf_expression.cpp
   src/mc/mc_dwarf_tagnames.h
-  src/mc/mc_hash.c
-  src/mc/mc_ignore.c
-  src/mc/mc_interface.h
+  src/mc/mc_hash.cpp
+  src/mc/mc_ignore.cpp
+  src/mc/mcer_ignore.cpp
+  src/mc/mcer_ignore.h
+  src/mc/mc_ignore.h
   src/mc/mc_liveness.h
   src/mc/mc_location.h
-  src/mc/mc_liveness.c
-  src/mc/mc_record.c
-  src/mc/mc_member.c
-  src/mc/mc_memory.c
-  src/mc/mc_pair.c
+  src/mc/mc_liveness.cpp
+  src/mc/mc_record.cpp
+  src/mc/mc_member.cpp
+  src/mc/mc_memory.cpp
+  src/mc/mc_pair.cpp
   src/mc/mc_private.h
   src/mc/mc_request.h
-  src/mc/mc_request.c
+  src/mc/mc_request.cpp
   src/mc/mc_safety.h
-  src/mc/mc_safety.c
-  src/mc/mc_set.cpp
+  src/mc/mc_safety.cpp
   src/mc/mc_state.h
-  src/mc/mc_state.c
-  src/mc/mc_visited.c
+  src/mc/mc_state.cpp
+  src/mc/mc_visited.cpp
   src/mc/mc_memory_map.h
-  src/mc/memory_map.c
+  src/mc/memory_map.cpp
+  src/mc/mc_client.cpp
+  src/mc/mc_client_api.cpp
+  src/mc/mc_client.h
+  src/mc/mc_protocol.h
+  src/mc/mc_protocol.cpp
+  src/mc/mc_server.cpp
+  src/mc/mc_server.h
+  src/mc/mc_smx.h
+  src/mc/mc_smx.cpp
   )
 
+set(MC_SIMGRID_MC_SRC
+  src/mc/simgrid_mc.cpp)
+
 set(headers_to_install
+  include/msg/msg.h
+  include/msg/datatypes.h
+  include/simdag/simdag.h
+  include/simdag/datatypes.h
+  
   include/simgrid/instr.h
   include/simgrid/msg.h
   include/simgrid/simdag.h

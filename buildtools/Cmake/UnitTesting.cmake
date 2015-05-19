@@ -30,12 +30,12 @@ set(TEST_UNITS
 
 if(HAVE_MC)
   set(TEST_CFILES ${TEST_CFILES}
-      src/mc/mc_page_store.cpp
-      src/mc/mc_snapshot.c
+      src/mc/PageStore.cpp
+      src/mc/mc_snapshot.cpp
       )
   set(TEST_UNITS ${TEST_UNITS}
-     ${CMAKE_CURRENT_BINARY_DIR}/src/mc_page_store_unit.cpp
-     ${CMAKE_CURRENT_BINARY_DIR}/src/mc_snapshot_unit.c
+     ${CMAKE_CURRENT_BINARY_DIR}/src/PageStore_unit.cpp
+     ${CMAKE_CURRENT_BINARY_DIR}/src/mc_snapshot_unit.cpp
      )
 endif()
 

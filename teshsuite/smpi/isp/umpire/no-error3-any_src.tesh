@@ -1,17 +1,9 @@
 #! ./tesh
 
 ! expect return 134
-$ ${bindir:=.}/../../../../bin/smpirun -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml -np 3 --cfg=model-check:1 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich ${bindir:=.}/no-error3-any_src
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check' to '1'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/running_power' to '1e9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/coll_selector' to 'mpich'
+$ ${bindir:=.}/../../../../bin/smpirun -wrapper "${bindir:=.}/../../../../bin/simgrid-mc" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=model-check:1 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich ${bindir:=.}/no-error3-any_src --log=smpi_coll.thresh:error
+> [0.000000] [mc_safety/INFO] Check a safety property
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
-> [0.000000] [mc_global/INFO] Check a safety property
-> [0.000000] [mc_global/INFO] Get debug information ...
-> [0.000000] [mc_global/INFO] Get debug information done !
 > (0) is alive on Tremblay
 > (1) is alive on Jupiter
 > (2) is alive on Fafard
@@ -27,4 +19,3 @@ $ ${bindir:=.}/../../../../bin/smpirun -hostfile ../../hostfile -platform ../../
 > (2) Finished normally
 > (0) Finished normally
 > Aborted
-

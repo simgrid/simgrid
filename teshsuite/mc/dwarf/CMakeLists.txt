@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 if(HAVE_MC)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-  add_executable(dwarf dwarf.c)
+  add_executable(dwarf dwarf.cpp)
   target_link_libraries(dwarf simgrid)
 endif()
 
@@ -14,6 +14,6 @@ set(tesh_files
   )
 set(testsuite_src
   ${testsuite_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/dwarf.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/dwarf.cpp
   PARENT_SCOPE
   )

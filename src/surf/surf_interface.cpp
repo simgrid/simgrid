@@ -1085,4 +1085,3 @@ void Action::updateRemainingLazy(double now)
   m_lastUpdate = now;
   m_lastValue = lmm_variable_getvalue(getVariable());
 }
-

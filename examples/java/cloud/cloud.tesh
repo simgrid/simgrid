@@ -30,14 +30,8 @@ $ java -classpath ${classpath:=.} cloud/Cloud ${srcdir:=.}/../platforms/platform
 > [1000.000000] (1:Master@Jacquelin) Migrate everyone to Fernand
 > [1000.000000] (1:Master@Jacquelin) Migrate VM00fromIntelto Fernand
 > [1000.000000] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) Stage 1: Gonna send 1073741824
-> [3463.797594] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) Stage 3: Gonna send 0.000000
-> [3465.751712] (0:@) migrate VM(VM00): set bound (137333000.000000) at Fernand
-> [3465.751712] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) mig: tx_done
 > [3467.577368] (1:Master@Jacquelin) Migrate VM01fromProvostto Fernand
 > [3467.577368] (7:__pr_mig_tx:VM01(Provost-Fernand)@Provost) Stage 1: Gonna send 1073741824
-> [5929.514531] (7:__pr_mig_tx:VM01(Provost-Fernand)@Provost) Stage 3: Gonna send 0.000000
-> [5929.608220] (0:@) migrate VM(VM01): set bound (137333000.000000) at Fernand
-> [5929.608220] (7:__pr_mig_tx:VM01(Provost-Fernand)@Provost) mig: tx_done
 > [5931.433875] (0:@) MSG_main finished; Cleaning up the simulation...
 > [5931.433875] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
 > [5931.433875] (1:Master@Jacquelin) Master done.

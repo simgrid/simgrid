@@ -447,8 +447,8 @@ int smpi_type_keyval_free(int* keyval);
 extern double smpi_cpu_threshold;
 extern double smpi_running_power;
 extern int smpi_privatize_global_variables;
-extern char* start_data_exe; //start of the data+bss segment of the executable
-extern int size_data_exe; //size of the data+bss segment of the executable
+extern char* smpi_start_data_exe; //start of the data+bss segment of the executable
+extern int smpi_size_data_exe; //size of the data+bss segment of the executable
 
 
 void smpi_switch_data_segment(int dest);
@@ -766,11 +766,11 @@ const char* encode_datatype(MPI_Datatype datatype, int* known);
 typedef struct s_smpi_privatisation_region {
   void* address;
   int file_descriptor;
-} *smpi_privatisation_region_t;
+} s_smpi_privatisation_region_t, *smpi_privatisation_region_t;
 
 extern smpi_privatisation_region_t smpi_privatisation_regions;
-
 extern int smpi_loaded_page;
+extern int smpi_universe_size;
 
 int SIMIX_process_get_PID(smx_process_t self);
 

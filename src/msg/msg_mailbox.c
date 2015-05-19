@@ -163,7 +163,6 @@ msg_error_t
 MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
                              double timeout)
 {
-  xbt_ex_t e;
   msg_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
   msg_process_t process = MSG_process_self();
@@ -198,6 +197,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
 
   p_simdata->waiting_task = task;
 
+  xbt_ex_t e;
   /* Try to send it by calling SIMIX network layer */
   TRY {
     smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simix call  */
