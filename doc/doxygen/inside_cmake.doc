@@ -246,11 +246,10 @@ ADD_TEST(NAME my-test-name
 As usual, you must run "make distcheck" after modifying the cmake files,
 to ensure that you did not forget any files in the distributed archive.
 
-\subsection inside_cmake_addtest_perf Performance testing in SimGrid
+\subsection inside_cmake_ci Continous Integration
 
-We are currently in the process of adding an infrastructure for
-performance regression testing, but this is not related to cmake
-anyhow. They are thus documented elsewhere, in Section \ref
-inside_autotests_perf
+We are using Continous Integration to help us provide a stable build
+across as many platforms as possible. %As this is not related to cmake,
+you have to head over to Section \ref inside_ci.
 
 */

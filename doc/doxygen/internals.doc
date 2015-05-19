@@ -17,7 +17,7 @@ several pages, as follows:
  - @subpage inside_extending
  - @subpage inside_cmake
  - @subpage inside_release
- - @subpage inside_autotests
+ - @subpage inside_ci
 
 
 \htmlonly
