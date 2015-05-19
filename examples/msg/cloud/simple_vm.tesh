@@ -67,14 +67,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/../../p
 > [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 49.010000] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 49.010000] [msg_vm/INFO] Stage 1: Gonna send 1073741824
 > [Bourassa:comm_rx:(36) 49.204993] [msg_test/INFO] VM0:comm_tx to Bourassa:comm_rx => 0.204993 sec
-> [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 191.612841] [msg_vm/INFO] Stage 3: Gonna send 0.000000
-> [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 191.638550] [msg_vm/INFO] mig: tx_done
-> [191.638550] [surf_vm_workstation/INFO] migrate VM(VM0): set bound (76296000.000000) at Tremblay
 > [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(40) 191.674258] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(40) 191.674258] [msg_vm/INFO] Stage 1: Gonna send 1073741824
-> [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(40) 334.173348] [msg_vm/INFO] Stage 3: Gonna send 0.000000
-> [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(40) 334.199056] [msg_vm/INFO] mig: tx_done
 > [334.199056] [surf_vm_workstation/CRITICAL] FIXME: may need a proper handling, 1
-> [334.199056] [surf_vm_workstation/INFO] migrate VM(VM0): set bound (76296000.000000) at Fafard
 > [Fafard:master_:(1) 339.199251] [msg_test/INFO] ## Test 6 (ended)
 > [339.199251] [msg_test/INFO] Bye (simulation time 339.199)

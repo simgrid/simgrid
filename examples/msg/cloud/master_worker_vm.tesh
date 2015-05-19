@@ -46,25 +46,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/master_worker_vm$EXEEXT --log=no_loc ${srcdir:=.}/
 > [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1097.307521] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1097.307521] [msg_vm/INFO] Stage 1: Gonna send 1073741824
 > [VM01:WRK03:(5) 1097.380336] [msg_test/INFO] WRK03 executed task(Task03)
-> [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1099.463824] [msg_vm/INFO] Stage 3: Gonna send 0.000000
-> [Intel:__pr_mig_tx:VM00(Intel-Intel):(7) 1099.464019] [msg_vm/INFO] mig: tx_done
-> [1099.464019] [surf_vm_workstation/INFO] migrate VM(VM00): set bound (137333000.000000) at Intel
 > [Provost:__pr_mig_tx:VM01(Provost-Intel):(9) 1100.382717] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [Provost:__pr_mig_tx:VM01(Provost-Intel):(9) 1100.382717] [msg_vm/INFO] Stage 1: Gonna send 1073741824
-> [Provost:__pr_mig_tx:VM01(Provost-Intel):(9) 3564.234309] [msg_vm/INFO] Stage 3: Gonna send 0.000000
-> [Provost:__pr_mig_tx:VM01(Provost-Intel):(9) 3566.242426] [msg_vm/INFO] mig: tx_done
-> [3566.242426] [surf_vm_workstation/INFO] migrate VM(VM01): set bound (137333000.000000) at Intel
 > [Jacquelin:master:(1) 3567.161124] [msg_test/INFO] # Migrate all VMs to PM(Provost)
 > [Intel:__pr_mig_tx:VM00(Intel-Provost):(11) 3567.161124] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [Intel:__pr_mig_tx:VM00(Intel-Provost):(11) 3567.161124] [msg_vm/INFO] Stage 1: Gonna send 1073741824
-> [Intel:__pr_mig_tx:VM00(Intel-Provost):(11) 6031.012716] [msg_vm/INFO] Stage 3: Gonna send 0.000000
-> [Intel:__pr_mig_tx:VM00(Intel-Provost):(11) 6033.020833] [msg_vm/INFO] mig: tx_done
-> [6033.020833] [surf_vm_workstation/INFO] migrate VM(VM00): set bound (137333000.000000) at Provost
 > [Intel:__pr_mig_tx:VM01(Intel-Provost):(13) 6034.900487] [msg_vm/WARNING] use the default max_downtime value 30ms
 > [Intel:__pr_mig_tx:VM01(Intel-Provost):(13) 6034.900487] [msg_vm/INFO] Stage 1: Gonna send 1073741824
-> [Intel:__pr_mig_tx:VM01(Intel-Provost):(13) 8498.752079] [msg_vm/INFO] Stage 3: Gonna send 0.000000
-> [Intel:__pr_mig_tx:VM01(Intel-Provost):(13) 8500.760196] [msg_vm/INFO] mig: tx_done
-> [8500.760196] [surf_vm_workstation/INFO] migrate VM(VM01): set bound (137333000.000000) at Provost
 > [Jacquelin:master:(1) 8502.639850] [msg_test/INFO] # Shutdown the half of worker processes gracefuly. The remaining half will be forcibly killed.
 > [VM00:WRK00:(2) 8504.519504] [msg_test/INFO] WRK00 received task(finalize) from mailbox(MBOX:WRK00)
 > [VM01:WRK01:(3) 8506.399157] [msg_test/INFO] WRK01 received task(finalize) from mailbox(MBOX:WRK01)
