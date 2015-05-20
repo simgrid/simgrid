@@ -532,6 +532,7 @@ is similar to the sharing policy TCP uses.
 On the other hand, if a link is defined as a \b FATPIPE,
 each flow going through this link will be provided with the complete bandwidth,
 i.e., no sharing occurs and the bandwidth is only limiting each flow individually.
+Please note that this is really on a per-flow basis, not only on a per-host basis!
 The complete bandwidth provided by this link in this mode
 is ``#flows*bandwidth``, with at most ``bandwidth`` being available per flow.
 
