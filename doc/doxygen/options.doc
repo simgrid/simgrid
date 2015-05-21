@@ -676,6 +676,8 @@ silently overflow on other parts of the memory.
 
 \section options_index Index of all existing configuration options
 
+- \c clean_atexit: \ref options_clean_atexit
+
 - \c contexts/factory: \ref options_virt_factory
 - \c contexts/guard_size: \ref options_virt_parallel
 - \c contexts/nthreads: \ref options_virt_parallel
@@ -686,6 +688,8 @@ silently overflow on other parts of the memory.
 - \c cpu/maxmin_selective_update: \ref options_model_optim
 - \c cpu/model: \ref options_model_select
 - \c cpu/optim: \ref options_model_optim
+
+- \c exception/cutpath: \ref options_exception_cutpath
 
 - \c gtnets/jitter: \ref options_pls
 - \c gtnets/jitter_seed: \ref options_pls
@@ -719,23 +723,54 @@ silently overflow on other parts of the memory.
 - \c network/sender_gap: \ref options_model_network_sendergap
 - \c network/TCP_gamma: \ref options_model_network_gamma
 - \c network/weight_S: \ref options_model_network_coefs
+- \c network/weight_S_parameter: \ref options_model_network_coefs_param
 
 - \c ns3/TcpModel: \ref options_pls
 
 - \c surf/nthreads: \ref options_model_nthreads
+- \c surf/precision: \ref options_surf_precision
 
+- \c <b>For collective operations of SMPI, please refer to Section \ref options_index_smpi_coll</b>
 - \c smpi/async_small_thres: \ref options_model_network_asyncsend
+- \c smpi/bw_factor: \ref options_model_smpi_bw_factor
 - \c smpi/coll_selector: \ref options_model_smpi_collectives
 - \c smpi/cpu_threshold: \ref options_smpi_bench
 - \c smpi/display_timing: \ref options_smpi_timing
+- \c smpi/lat_factor: \ref options_model_smpi_lat_factor
+- \c smpi/IB_penalty_factor: \ref options_model_smpi_IB_penalty_factor
+- \c smpi/iprobe: \ref options_model_smpi_iprobe
+- \c smpi/ois: \ref options_model_smpi_ois
+- \c smpi/or: \ref options_model_smpi_or
+- \c smpi/os: \ref options_model_smpi_os
 - \c smpi/privatize_global_variables: \ref options_smpi_global
 - \c smpi/running_power: \ref options_smpi_bench
-- \c smpi/send_is_detached: \ref options_model_smpi_detached
+- \c smpi/send_is_detached_thresh: \ref options_model_smpi_detached
 - \c smpi/simulation_computation: \ref options_smpi_bench
+- \c smpi/test: \ref options_model_smpi_test
+- \c smpi/use_shared_malloc: \ref options_model_smpi_use_shared_malloc
+- \c smpi/test: \ref options_model_smpi_test
 
+- \c tracing/smpi/format/ti_one_file: \ref options_tracing_smpi_format_ti_one_file
+
+- \c storage/model: \ref options_storage_model
 - \c path: \ref options_generic_path
+- \c plugin: \ref options_generic_plugin
 - \c verbose-exit: \ref options_generic_exit
 
+- \c vm_workstation/model: \ref options_vm_workstation_model
 - \c workstation/model: \ref options_model_select
+
+\subsection options_index_smpi_coll Index of SMPI collective algorithms options
+- \c smpi/allgather: \ref options_model_smpi_coll_allgather
+- \c smpi/allgatherv: \ref options_model_smpi_coll_allgatherv
+- \c smpi/allreduce: \ref options_model_smpi_coll_allreduce
+- \c smpi/alltoall: \ref options_model_smpi_coll_alltoall
+- \c smpi/alltoallv: \ref options_model_smpi_coll_alltoallv
+- \c smpi/barrier: \ref options_model_smpi_coll_barrier
+- \c smpi/bcast: \ref options_model_smpi_coll_bcast
+- \c smpi/gather: \ref options_model_smpi_coll_gather
+- \c smpi/reduce: \ref options_model_smpi_coll_reduce
+- \c smpi/reduce_scatter: \ref options_model_smpi_coll_reduce_scatter
+- \c smpi/scatter: \ref options_model_smpi_coll_scatter
 
 */
