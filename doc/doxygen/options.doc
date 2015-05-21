@@ -76,7 +76,7 @@ should provide information about all models for all existing resources.
    - \b cpu/model: specify the used CPU model
    - \b workstation/model: specify the used workstation model
 
-As of writting, the accepted network models are the following. Over
+%As of writing, the following network models are accepted. Over
 the time new models can be added, and some experimental models can be
 removed; check the values on your simulators for an uptodate
 information. Note that the CM02 model is described in the research report
