@@ -74,7 +74,7 @@ static int access_mem(const unw_addr_space_t as,
   size_t count = size;
   off_t off = (off_t) addr;
   char* buf = (char*) valp;
-  int fd = MC_process_vm_open(pid, O_RDONLY);
+  int fd = simgrid::mc::open_vm(pid, O_RDONLY);
   if (fd < 0)
     return - UNW_EINVAL;
   while (1) {

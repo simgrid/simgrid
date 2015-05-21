@@ -11,6 +11,8 @@
 #include "mc_private.h"
 #include "mc_smx.h"
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
@@ -275,8 +277,8 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
     // size_t size = size_pointer ? *size_pointer : 0;
     size_t size = 0;
     if (remote_size)
-      MC_process_read_simple(&mc_model_checker->process(), &size,
-        remote_size, sizeof(size));
+      mc_model_checker->process().read_bytes(&size, sizeof(size),
+        remote(remote_size));
 
     type = "iRecv";
     char* p = pointer_to_string(simcall_comm_irecv__get__dst_buff(req));
@@ -311,8 +313,8 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
       s_smx_synchro_t synchro;
       smx_synchro_t act;
       if (use_remote_comm) {
-        MC_process_read_simple(&mc_model_checker->process(), &synchro,
-          remote_act, sizeof(synchro));
+        mc_model_checker->process().read_bytes(&synchro,
+          sizeof(synchro), remote(remote_act));
         act = &synchro;
       } else
         act = remote_act;
@@ -336,8 +338,8 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
     s_smx_synchro_t synchro;
       smx_synchro_t act;
       if (use_remote_comm) {
-        MC_process_read_simple(&mc_model_checker->process(), &synchro,
-          remote_act, sizeof(synchro));
+        mc_model_checker->process().read_bytes(&synchro,
+          sizeof(synchro), remote(remote_act));
         act = &synchro;
       } else
         act = remote_act;
@@ -368,8 +370,8 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
   case SIMCALL_COMM_WAITANY: {
     type = "WaitAny";
     s_xbt_dynar_t comms;
-    MC_process_read_simple(&mc_model_checker->process(),
-      &comms,  simcall_comm_waitany__get__comms(req), sizeof(comms));
+    mc_model_checker->process().read_bytes(
+      &comms, sizeof(comms), remote(simcall_comm_waitany__get__comms(req)));
     if (!xbt_dynar_is_empty(&comms)) {
       smx_synchro_t remote_sync;
       MC_process_read_dynar_element(&mc_model_checker->process(),
@@ -402,11 +404,11 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
     type = "Mutex LOCK";
 
     s_smx_mutex_t mutex;
-    MC_process_read_simple(&mc_model_checker->process(), &mutex,
-      simcall_mutex_lock__get__mutex(req), sizeof(mutex));
+    mc_model_checker->process().read_bytes(&mutex, sizeof(mutex),
+      remote(simcall_mutex_lock__get__mutex(req)));
     s_xbt_swag_t mutex_sleeping;
-    MC_process_read_simple(&mc_model_checker->process(), &mutex_sleeping,
-      mutex.sleeping, sizeof(mutex_sleeping));
+    mc_model_checker->process().read_bytes(&mutex_sleeping, sizeof(mutex_sleeping),
+      remote(mutex.sleeping));
 
     args = bprintf("locked = %d, owner = %d, sleeping = %d",
       mutex.locked,
@@ -458,14 +460,14 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
 
   // Read the dynar:
   s_xbt_dynar_t comms;
-  MC_process_read_simple(&mc_model_checker->process(),
-    &comms, simcall_comm_testany__get__comms(req), sizeof(comms));
+  mc_model_checker->process().read_bytes(
+    &comms, sizeof(comms), remote(simcall_comm_testany__get__comms(req)));
 
   // Read ther dynar buffer:
   size_t buffer_size = comms.elmsize * comms.used;
   char buffer[buffer_size];
-  MC_process_read_simple(&mc_model_checker->process(),
-    buffer, comms.data, buffer_size);
+  mc_model_checker->process().read_bytes(
+    buffer, buffer_size, remote(comms.data));
 
   // Iterate over the elements:
   assert(comms.elmsize == sizeof(smx_synchro_t));
@@ -478,8 +480,8 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
 
     // Dereference the pointer:
     s_smx_synchro_t action;
-    MC_process_read_simple(&mc_model_checker->process(),
-      &action, remote_action, sizeof(action));
+    mc_model_checker->process().read_bytes(
+      &action, sizeof(action), remote(remote_action));
 
     // Finally so something useful about it:
     if (action.comm.src_proc && action.comm.dst_proc)
@@ -518,8 +520,8 @@ int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   }
 
   s_smx_synchro_t synchro;
-  MC_process_read_simple(&mc_model_checker->process(),
-    &synchro, remote_act, sizeof(synchro));
+  mc_model_checker->process().read_bytes(
+    &synchro, sizeof(synchro), remote(remote_act));
   return synchro.comm.src_proc && synchro.comm.dst_proc;
 }
 
@@ -564,8 +566,8 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
     } else {
       smx_synchro_t remote_act = simcall_comm_wait__get__comm(req);
       s_smx_synchro_t synchro;
-      MC_process_read_simple(&mc_model_checker->process(), &synchro,
-        remote_act, sizeof(synchro));
+      mc_model_checker->process().read_bytes(&synchro,
+        sizeof(synchro), remote(remote_act));
 
       smx_process_t src_proc = MC_smx_resolve_process(synchro.comm.src_proc);
       smx_process_t dst_proc = MC_smx_resolve_process(synchro.comm.dst_proc);
@@ -587,8 +589,8 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
   case SIMCALL_COMM_TEST: {
     smx_synchro_t remote_act = simcall_comm_test__get__comm(req);
     s_smx_synchro_t synchro;
-    MC_process_read_simple(&mc_model_checker->process(), &synchro,
-      remote_act, sizeof(synchro));
+    mc_model_checker->process().read_bytes(&synchro,
+      sizeof(synchro), remote(remote_act));
     if (synchro.comm.src_proc == NULL || synchro.comm.dst_proc == NULL) {
       if (issuer->smx_host)
         label =

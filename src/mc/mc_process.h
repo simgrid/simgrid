@@ -53,9 +53,31 @@ class Process : public AddressSpace {
 public:
   Process(pid_t pid, int sockfd);
   ~Process();
+
+  bool is_self() const
+  {
+    return this->process_flags & MC_PROCESS_SELF_FLAG;
+  }
+
+  // Read memory:
   const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
-    ReadMode mode = Normal) override;
+    ReadMode mode = Normal) const override;
+  void read_variable(const char* name, void* target, size_t size) const;
+  char* read_string(remote_ptr<void> address) const;
+
+  // Write memory:
+  void write_bytes(const void* buffer, size_t len, remote_ptr<void> address);
+  void clear_bytes(remote_ptr<void> address, size_t len);
+
+  // Debug information:
+  mc_object_info_t find_object_info(remote_ptr<void> addr) const;
+  mc_object_info_t find_object_info_exec(remote_ptr<void> addr) const;
+  mc_object_info_t find_object_info_rw(remote_ptr<void> addr) const;
+  dw_frame_t find_function(remote_ptr<void> ip) const;
+  dw_variable_t find_variable(const char* name) const;
+
+  // Heap access:
   xbt_mheap_t get_heap()
   {
     if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
@@ -68,11 +90,9 @@ public:
       this->refresh_malloc_info();
     return this->heap_info;
   }
-  bool is_self()
-  {
-    return this->process_flags & MC_PROCESS_SELF_FLAG;
-  }
+
 private:
+  void init_memory_map_info();
   void refresh_heap();
   void refresh_malloc_info();
 public: // to be private
@@ -147,65 +167,19 @@ public: // to be private
   xbt_dynar_t checkpoint_ignore;
 };
 
+/** Open a FD to a remote process memory (`/dev/$pid/mem`)
+ */
+int open_vm(pid_t pid, int flags);
+
 }
 }
 
 SG_BEGIN_DECL()
 
-/** Open a FD to a remote process memory (`/dev/$pid/mem`)
- */
-int MC_process_vm_open(pid_t pid, int flags);
-
-/* Process memory access: */
-
-static inline
-const void* MC_process_read(mc_process_t process,
-  simgrid::mc::AddressSpace::ReadMode mode,
-  void* local, const void* remote, size_t len,
-  int process_index)
-{
-  return process->read_bytes(local, len, (std::uint64_t)remote, process_index, mode);
-}
-
-// Simplified versions/wrappers (whould be moved in mc_address_space):
-static inline const void* MC_process_read_simple(mc_process_t process,
-  void* local, const void* remote, size_t len)
-{
-  return process->read_bytes(local, len, (std::uint64_t)remote);
-}
-
 XBT_INTERNAL const void* MC_process_read_dynar_element(mc_process_t process,
   void* local, const void* remote_dynar, size_t i, size_t len);
 XBT_INTERNAL unsigned long MC_process_read_dynar_length(mc_process_t process,
   const void* remote_dynar);
-
-/** Write data to a process memory
- *
- *  @param process the process
- *  @param local   local memory address (source)
- *  @param remote  target process memory address (target)
- *  @param len     data size
- */
-XBT_INTERNAL void MC_process_write(mc_process_t process,
-  const void* local, void* remote, size_t len);
-
-XBT_INTERNAL void MC_process_clear_memory(mc_process_t process,
-  void* remote, size_t len);
-
-/* Functions, variables of the process: */
-
-XBT_INTERNAL mc_object_info_t MC_process_find_object_info(mc_process_t process, const void* addr);
-XBT_INTERNAL mc_object_info_t MC_process_find_object_info_exec(mc_process_t process, const void* addr);
-XBT_INTERNAL mc_object_info_t MC_process_find_object_info_rw(mc_process_t process, const void* addr);
-
-XBT_INTERNAL dw_frame_t MC_process_find_function(mc_process_t process, const void* ip);
-
-XBT_INTERNAL void MC_process_read_variable(mc_process_t process, const char* name, void* target, size_t size);
-XBT_INTERNAL char* MC_process_read_string(mc_process_t, void* address);
-
-/** Find (one occurence of) the named variable definition
- */
-XBT_INTERNAL dw_variable_t MC_process_find_variable_by_name(mc_process_t process, const char* name);
 
 XBT_INTERNAL void MC_invalidate_cache(void);
 

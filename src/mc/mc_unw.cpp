@@ -164,7 +164,7 @@ static int get_proc_name(unw_addr_space_t as,
               void* arg)
 {
   mc_unw_context_t context = (mc_unw_context_t) arg;
-  dw_frame_t frame = MC_process_find_function(context->process, (void*) addr);
+  dw_frame_t frame = context->process->find_function(remote(addr));
   if (!frame)
     return - UNW_ENOINFO;
   *offp = (unw_word_t) frame->low_pc - addr;

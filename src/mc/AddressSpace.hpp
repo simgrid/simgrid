@@ -99,7 +99,7 @@ public:
   virtual ~AddressSpace();
   virtual const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
-    ReadMode mode = Normal) = 0;
+    ReadMode mode = Normal) const = 0;
 
   template<class T> inline
   void read(T *buffer, remote_ptr<T> ptr, int process_index = ProcessIndexAny)

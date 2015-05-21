@@ -22,6 +22,8 @@
 #include "mc_ignore.h"
 #include "mcer_ignore.h"
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_server, mc, "MC server logic");
@@ -42,8 +44,7 @@ static int mc_symbol_pointer_callback_evaluate(void* p)
 {
   struct mc_symbol_pointer_callback* callback = (struct mc_symbol_pointer_callback*) p;
   int value;
-  MC_process_read(callback->process, simgrid::mc::AddressSpace::Normal,
-    &value, callback->value, sizeof(value), simgrid::mc::ProcessIndexAny);
+  callback->process->read_bytes(&value, sizeof(value), remote(callback->value));
   return value;
 }
 

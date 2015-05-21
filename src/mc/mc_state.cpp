@@ -14,6 +14,8 @@
 #include "mc_comm_pattern.h"
 #include "mc_smx.h"
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc,
@@ -127,16 +129,16 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
 
   case SIMCALL_COMM_WAIT:
     state->internal_req = *req;
-    MC_process_read_simple(&mc_model_checker->process(), &state->internal_comm ,
-      simcall_comm_wait__get__comm(req), sizeof(state->internal_comm));
+    mc_model_checker->process().read_bytes(&state->internal_comm ,
+      sizeof(state->internal_comm), remote(simcall_comm_wait__get__comm(req)));
     simcall_comm_wait__set__comm(&state->executed_req, &state->internal_comm);
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
     break;
 
   case SIMCALL_COMM_TEST:
     state->internal_req = *req;
-    MC_process_read_simple(&mc_model_checker->process(), &state->internal_comm,
-      simcall_comm_test__get__comm(req), sizeof(state->internal_comm));
+    mc_model_checker->process().read_bytes(&state->internal_comm,
+      sizeof(state->internal_comm), remote(simcall_comm_test__get__comm(req)));
     simcall_comm_test__set__comm(&state->executed_req, &state->internal_comm);
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
     break;
@@ -236,8 +238,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
       case SIMCALL_COMM_WAIT: {
         smx_synchro_t remote_act = simcall_comm_wait__get__comm(&process->simcall);
         s_smx_synchro_t act;
-        MC_process_read_simple(&mc_model_checker->process(),
-          &act, remote_act, sizeof(act));
+        mc_model_checker->process().read_bytes(
+          &act, sizeof(act), remote(remote_act));
         if (act.comm.src_proc && act.comm.dst_proc) {
           *value = 0;
         } else {

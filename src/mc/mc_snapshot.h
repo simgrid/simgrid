@@ -120,7 +120,7 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
 }
 
 XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
-  const void* addr, mc_snapshot_t snapshot, int process_index);
+  const void* addr, const s_mc_snapshot_t *snapshot, int process_index);
 
 /** \brief Translate a pointer from process address space to snapshot address space
  *
@@ -210,7 +210,7 @@ public:
   ~Snapshot();
   const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
-    ReadMode mode = Normal) override;
+    ReadMode mode = Normal) const override;
 public: // To be private
   mc_process_t process;
   int num_state;

@@ -90,7 +90,7 @@ void mc_restore_page_snapshot_region(mc_process_t process,
     // Otherwise, copy the page:
     void* target_page = mc_page_from_number(start_addr, i);
     const void* source_page = mc_model_checker->page_store().get_page(pagenos[i]);
-    MC_process_write(process, source_page, target_page, xbt_pagesize);
+    process->write_bytes(source_page, xbt_pagesize, remote(target_page));
   }
 }
 

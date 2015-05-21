@@ -152,8 +152,8 @@ static void MC_region_restore(mc_mem_region_t region)
     break;
 
   case MC_REGION_STORAGE_TYPE_FLAT:
-    MC_process_write(&mc_model_checker->process(), region->flat.data,
-      region->permanent_addr, region->size);
+    mc_model_checker->process().write_bytes(region->flat.data, region->size,
+      remote(region->permanent_addr));
     break;
 
   case MC_REGION_STORAGE_TYPE_CHUNKED:
@@ -187,7 +187,7 @@ static mc_mem_region_t MC_region_new_privatized(
 
   // Read smpi_privatisation_regions from MCed:
   smpi_privatisation_region_t remote_smpi_privatisation_regions;
-  MC_process_read_variable(&mc_model_checker->process(),
+  mc_model_checker->process().read_variable(
     "smpi_privatisation_regions",
     &remote_smpi_privatisation_regions, sizeof(remote_smpi_privatisation_regions));
   s_smpi_privatisation_region_t privatisation_regions[process_count];
@@ -252,7 +252,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 #ifdef HAVE_SMPI
   if (smpi_privatize_global_variables && MC_smpi_process_count()) {
     // snapshot->privatization_index = smpi_loaded_page
-    MC_process_read_variable(&mc_model_checker->process(),
+    mc_model_checker->process().read_variable(
       "smpi_loaded_page", &snapshot->privatization_index,
       sizeof(snapshot->privatization_index));
   } else
@@ -462,7 +462,7 @@ static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
 
       // TODO, use real addresses in frame_t instead of fixing it here
 
-      dw_frame_t frame = MC_process_find_function(process, (void *) ip);
+      dw_frame_t frame = process->find_function(remote(ip));
       stack_frame->frame = frame;
 
       if (frame) {
@@ -591,7 +591,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 
   // Zero the memory:
   xbt_dynar_foreach (mc_model_checker->process().checkpoint_ignore, cursor, region) {
-    MC_process_clear_memory(snapshot->process, region->addr, region->size);
+    snapshot->process->clear_bytes(remote(region->addr), region->size);
   }
 
 }
@@ -601,8 +601,8 @@ static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
   unsigned int cursor = 0;
   s_mc_snapshot_ignored_data_t ignored_data;
   xbt_dynar_foreach (snapshot->ignored_data, cursor, ignored_data) {
-    MC_process_write(snapshot->process,
-      ignored_data.data, ignored_data.start, ignored_data.size);
+    snapshot->process->write_bytes(ignored_data.data, ignored_data.size,
+      remote(ignored_data.start));
   }
 }
 

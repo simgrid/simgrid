@@ -191,8 +191,7 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
 
     char* remote_name = mc_model_checker->process().read<char*>(
       (std::uint64_t)(synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name));
-    pattern->rdv =
-      MC_process_read_string(&mc_model_checker->process(), remote_name);
+    pattern->rdv = mc_model_checker->process().read_string(remote_name);
     pattern->src_proc = MC_smx_resolve_process(synchro.comm.src_proc)->pid;
     pattern->src_host = MC_smx_process_get_host_name(issuer);
 
@@ -239,8 +238,7 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     char* remote_name;
     mc_model_checker->process().read(&remote_name,
       remote(synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name));
-    pattern->rdv =
-      MC_process_read_string(&mc_model_checker->process(), remote_name);
+    pattern->rdv = mc_model_checker->process().read_string(remote_name);
     pattern->dst_proc = MC_smx_resolve_process(synchro.comm.dst_proc)->pid;
     pattern->dst_host = MC_smx_process_get_host_name(issuer);
   } else {

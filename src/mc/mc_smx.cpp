@@ -13,6 +13,8 @@
 #include "mc_smx.h"
 #include "ModelChecker.hpp"
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 static
@@ -60,8 +62,7 @@ static void MC_process_refresh_simix_process_list(
 {
   // swag = REMOTE(*simix_global->process_list)
   s_xbt_swag_t swag;
-  MC_process_read(process, simgrid::mc::AddressSpace::Normal, &swag, remote_swag, sizeof(swag),
-    simgrid::mc::ProcessIndexAny);
+  process->read_bytes(&swag, sizeof(swag), remote(remote_swag));
 
   smx_process_t p;
   xbt_dynar_reset(target);
@@ -74,8 +75,7 @@ static void MC_process_refresh_simix_process_list(
     info.address = p;
     info.name = NULL;
     info.hostname = NULL;
-    MC_process_read(process, simgrid::mc::AddressSpace::Normal,
-      &info.copy, p, sizeof(info.copy), simgrid::mc::ProcessIndexAny);
+    process->read_bytes(&info.copy, sizeof(info.copy), remote(p));
     xbt_dynar_push(target, &info);
 
     // Lookup next process address:
@@ -95,13 +95,12 @@ void MC_process_smx_refresh(mc_process_t process)
 
   // simix_global_p = REMOTE(simix_global);
   smx_global_t simix_global_p;
-  MC_process_read_variable(process, "simix_global", &simix_global_p, sizeof(simix_global_p));
+  process->read_variable("simix_global", &simix_global_p, sizeof(simix_global_p));
 
   // simix_global = REMOTE(*simix_global)
   s_smx_global_t simix_global;
-  MC_process_read(process, simgrid::mc::AddressSpace::Normal, &simix_global,
-    simix_global_p, sizeof(simix_global),
-    simgrid::mc::ProcessIndexAny);
+  process->read_bytes(&simix_global, sizeof(simix_global),
+    remote(simix_global_p));
 
   MC_process_refresh_simix_process_list(
     process, process->smx_process_infos, simix_global.process_list);
@@ -189,10 +188,10 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
   if (!info->hostname) {
 
     // Read the hostname from the MCed process:
-    MC_process_read_simple(process, &host_copy, p->smx_host, sizeof(host_copy));
+    process->read_bytes(&host_copy, sizeof(host_copy), remote(p->smx_host));
     int len = host_copy.key_len + 1;
     char hostname[len];
-    MC_process_read_simple(process, hostname, host_copy.key, len);
+    process->read_bytes(hostname, len, remote(host_copy.key));
     info->hostname = mc_model_checker->get_host_name(hostname);
   }
   return info->hostname;
@@ -208,7 +207,7 @@ const char* MC_smx_process_get_name(smx_process_t p)
 
   mc_smx_process_info_t info = MC_smx_process_get_info(p);
   if (!info->name) {
-    info->name = MC_process_read_string(process, p->name);
+    info->name = process->read_string(p->name);
   }
   return info->name;
 }
@@ -219,7 +218,7 @@ int MC_smpi_process_count(void)
     return smpi_process_count();
   else {
     int res;
-    MC_process_read_variable(&mc_model_checker->process(), "process_count",
+    mc_model_checker->process().read_variable("process_count",
       &res, sizeof(res));
     return res;
   }
@@ -228,7 +227,7 @@ int MC_smpi_process_count(void)
 unsigned long MC_smx_get_maxpid(void)
 {
   unsigned long maxpid;
-  MC_process_read_variable(&mc_model_checker->process(), "simix_process_maxpid",
+  mc_model_checker->process().read_variable("simix_process_maxpid",
     &maxpid, sizeof(maxpid));
   return maxpid;
 }

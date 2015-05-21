@@ -23,7 +23,8 @@ extern "C" {
  *  @param Snapshot region in the snapshot this pointer belongs to
  *         (or NULL if it does not belong to any snapshot region)
  * */
-mc_mem_region_t mc_get_snapshot_region(const void* addr, mc_snapshot_t snapshot, int process_index)
+mc_mem_region_t mc_get_snapshot_region(
+  const void* addr, const s_mc_snapshot_t* snapshot, int process_index)
 {
   size_t n = snapshot->snapshot_regions_count;
   for (size_t i = 0; i != n; ++i) {
@@ -184,7 +185,7 @@ Snapshot::~Snapshot()
 
 const void* Snapshot::read_bytes(void* buffer, std::size_t size,
   remote_ptr<void> address, int process_index,
-  AddressSpace::ReadMode mode)
+  AddressSpace::ReadMode mode) const
 {
   mc_mem_region_t region = mc_get_snapshot_region((void*)address.address(), this, process_index);
   if (region) {
@@ -197,7 +198,7 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
     }
   }
   else
-    return MC_process_read(this->process, mode, buffer, (void*)address.address(), size, process_index);
+    return this->read_bytes(buffer, size, address, process_index, mode);
 }
 
 }
