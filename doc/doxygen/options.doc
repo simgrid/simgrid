@@ -674,7 +674,7 @@ used. By setting it to 0, no guard pages will be used: in this case,
 you should avoid using small stacks (\b stack_size) as the stack will
 silently overflow on other parts of the memory.
 
-\section options_index Index of all existing configuration items
+\section options_index Index of all existing configuration options
 
 - \c contexts/factory: \ref options_virt_factory
 - \c contexts/guard_size: \ref options_virt_parallel
