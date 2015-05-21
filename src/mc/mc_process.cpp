@@ -593,30 +593,3 @@ void Process::clear_bytes(remote_ptr<void> address, size_t len)
 
 }
 }
-
-extern "C" {
-
-const void* MC_process_read_dynar_element(mc_process_t process,
-  void* local, const void* remote_dynar, size_t i, size_t len)
-{
-  s_xbt_dynar_t d;
-  process->read_bytes(&d, sizeof(d), remote(remote_dynar));
-  if (i >= d.used)
-    xbt_die("Out of bound index %zi/%lu", i, d.used);
-  if (len != d.elmsize)
-    xbt_die("Bad size in MC_process_read_dynar_element");
-  process->read_bytes(local, len, remote(xbt_dynar_get_ptr(&d, i)));
-  return local;
-}
-
-unsigned long MC_process_read_dynar_length(mc_process_t process, const void* remote_dynar)
-{
-  if (!remote_dynar)
-    return 0;
-  unsigned long res;
-  process->read_bytes(&res, sizeof(res),
-    remote(&((xbt_dynar_t)remote_dynar)->used));
-  return res;
-}
-
-}

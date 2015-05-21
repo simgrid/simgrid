@@ -176,11 +176,6 @@ int open_vm(pid_t pid, int flags);
 
 SG_BEGIN_DECL()
 
-XBT_INTERNAL const void* MC_process_read_dynar_element(mc_process_t process,
-  void* local, const void* remote_dynar, size_t i, size_t len);
-XBT_INTERNAL unsigned long MC_process_read_dynar_length(mc_process_t process,
-  const void* remote_dynar);
-
 XBT_INTERNAL void MC_invalidate_cache(void);
 
 SG_END_DECL()

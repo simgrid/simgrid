@@ -22,7 +22,9 @@
 #include "mc_server.h"
 #endif
 
+#ifdef HAVE_MC
 using simgrid::mc::remote;
+#endif
 
 extern "C" {
 

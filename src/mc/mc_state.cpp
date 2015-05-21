@@ -13,6 +13,7 @@
 #include "mc_private.h"
 #include "mc_comm_pattern.h"
 #include "mc_smx.h"
+#include "mc_xbt.hpp"
 
 using simgrid::mc::remote;
 
@@ -107,8 +108,8 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
   case SIMCALL_COMM_WAITANY:
     state->internal_req.call = SIMCALL_COMM_WAIT;
     state->internal_req.issuer = req->issuer;
-    MC_process_read_dynar_element(&mc_model_checker->process(),
-      &state->internal_comm, simcall_comm_waitany__get__comms(req),
+    read_element(mc_model_checker->process(),
+      &state->internal_comm, remote(simcall_comm_waitany__get__comms(req)),
       value, sizeof(state->internal_comm));
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_wait__set__timeout(&state->internal_req, 0);
@@ -119,8 +120,8 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     state->internal_req.issuer = req->issuer;
 
     if (value > 0)
-        MC_process_read_dynar_element(&mc_model_checker->process(),
-          &state->internal_comm, simcall_comm_testany__get__comms(req),
+        read_element(mc_model_checker->process(),
+          &state->internal_comm, remote(simcall_comm_testany__get__comms(req)),
           value, sizeof(state->internal_comm));
 
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
@@ -192,8 +193,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
       case SIMCALL_COMM_WAITANY:
         *value = -1;
         while (procstate->interleave_count <
-              MC_process_read_dynar_length(&mc_model_checker->process(),
-                simcall_comm_waitany__get__comms(&process->simcall))) {
+              read_length(mc_model_checker->process(),
+                remote(simcall_comm_waitany__get__comms(&process->simcall)))) {
           if (MC_request_is_enabled_by_idx
               (&process->simcall, procstate->interleave_count++)) {
             *value = procstate->interleave_count - 1;
@@ -202,8 +203,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         }
 
         if (procstate->interleave_count >=
-            MC_process_read_dynar_length(&mc_model_checker->process(),
-              simcall_comm_waitany__get__comms(&process->simcall)))
+            simgrid::mc::read_length(mc_model_checker->process(),
+              simgrid::mc::remote(simcall_comm_waitany__get__comms(&process->simcall))))
           procstate->state = MC_DONE;
 
         if (*value != -1)
@@ -215,8 +216,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         unsigned start_count = procstate->interleave_count;
         *value = -1;
         while (procstate->interleave_count <
-                MC_process_read_dynar_length(&mc_model_checker->process(),
-                  simcall_comm_testany__get__comms(&process->simcall))) {
+                read_length(mc_model_checker->process(),
+                  remote(simcall_comm_testany__get__comms(&process->simcall)))) {
           if (MC_request_is_enabled_by_idx
               (&process->simcall, procstate->interleave_count++)) {
             *value = procstate->interleave_count - 1;
@@ -225,8 +226,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         }
 
         if (procstate->interleave_count >=
-            MC_process_read_dynar_length(&mc_model_checker->process(),
-              simcall_comm_testany__get__comms(&process->simcall)))
+            read_length(mc_model_checker->process(),
+              remote(simcall_comm_testany__get__comms(&process->simcall))))
           procstate->state = MC_DONE;
 
         if (*value != -1 || start_count == 0)
