@@ -750,7 +750,7 @@ silently overflow on other parts of the memory.
 - \c smpi/use_shared_malloc: \ref options_model_smpi_use_shared_malloc
 - \c smpi/test: \ref options_model_smpi_test
 
-- \c tracing/smpi/format/ti_one_file: \ref options_tracing_smpi_format_ti_one_file
+- \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.
 
 - \c storage/model: \ref options_storage_model
 - \c path: \ref options_generic_path
