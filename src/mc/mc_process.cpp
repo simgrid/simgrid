@@ -534,10 +534,21 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
     if (MC_object_info_is_privatized(info)) {
       if (process_index < 0)
         xbt_die("Missing process index");
+      if (process_index >= (int) MC_smpi_process_count())
+        xbt_die("Invalid process index");
+
+      // Read smpi_privatisation_regions from MCed:
+      smpi_privatisation_region_t remote_smpi_privatisation_regions =
+        mc_model_checker->process().read_variable<smpi_privatisation_region_t>(
+          "smpi_privatisation_regions");
+
+      s_smpi_privatisation_region_t privatisation_region =
+        mc_model_checker->process().read<s_smpi_privatisation_region_t>(
+          remote(remote_smpi_privatisation_regions + process_index));
+
       // Address translation in the privaization segment:
-      // TODO, fix me (broken)
       size_t offset = address.address() - (std::uint64_t)info->start_rw;
-      address = remote(address.address() - offset);
+      address = remote((char*)privatisation_region.address + offset);
     }
   }
 

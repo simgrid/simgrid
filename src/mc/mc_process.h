@@ -71,6 +71,14 @@ public:
     remote_ptr<void> address, int process_index = ProcessIndexAny,
     ReadMode mode = Normal) const override;
   void read_variable(const char* name, void* target, size_t size) const;
+  template<class T>
+  T read_variable(const char *name) const
+  {
+    static_assert(std::is_trivial<T>::value, "Cannot read a non-trivial type");
+    T res;
+    read_variable(name, &res, sizeof(T));
+    return res;
+  }
   char* read_string(remote_ptr<void> address) const;
 
   // Write memory:
