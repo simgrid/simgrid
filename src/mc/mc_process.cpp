@@ -225,8 +225,6 @@ Process::Process(pid_t pid, int sockfd)
   process->smx_process_infos = MC_smx_process_info_list_new();
   process->smx_old_process_infos = MC_smx_process_info_list_new();
 
-  process->checkpoint_ignore = MC_checkpoint_ignore_new();
-
   process->unw_addr_space = unw_create_addr_space(&mc_unw_accessors  , __BYTE_ORDER);
   if (process->process_flags & MC_PROCESS_SELF_FLAG) {
     process->unw_underlying_addr_space = unw_local_addr_space;
@@ -249,8 +247,6 @@ Process::~Process()
 
   process->maestro_stack_start = NULL;
   process->maestro_stack_end = NULL;
-
-  xbt_dynar_free(&process->checkpoint_ignore);
 
   xbt_dynar_free(&process->smx_process_infos);
   xbt_dynar_free(&process->smx_old_process_infos);
@@ -589,6 +585,54 @@ void Process::clear_bytes(remote_ptr<void> address, size_t len)
       len -= s;
     }
   }
+}
+
+void Process::ignore_region(std::uint64_t addr, std::size_t size)
+{
+  IgnoredRegion region;
+  region.addr = addr;
+  region.size = size;
+
+  if (ignored_regions_.empty()) {
+    ignored_regions_.push_back(region);
+    return;
+  }
+
+  unsigned int cursor = 0;
+  IgnoredRegion* current_region = nullptr;
+
+  int start = 0;
+  int end = ignored_regions_.size() - 1;
+  while (start <= end) {
+    cursor = (start + end) / 2;
+    current_region = &ignored_regions_[cursor];
+    if (current_region->addr == addr) {
+      if (current_region->size == size)
+        return;
+      else if (current_region->size < size)
+        start = cursor + 1;
+      else
+        end = cursor - 1;
+    } else if (current_region->addr < addr)
+      start = cursor + 1;
+    else
+      end = cursor - 1;
+  }
+
+  std::size_t position;
+  if (current_region->addr == addr) {
+    if (current_region->size < size) {
+      position = cursor + 1;
+    } else {
+      position = cursor;
+    }
+  } else if (current_region->addr < addr) {
+    position = cursor + 1;
+  } else {
+    position = cursor;
+  }
+  ignored_regions_.insert(
+    ignored_regions_.begin() + position, region);
 }
 
 }

@@ -274,11 +274,6 @@ typedef struct s_mc_global_t {
   char *recv_diff;
 }s_mc_global_t, *mc_global_t;
 
-typedef struct s_mc_checkpoint_ignore_region{
-  void *addr;
-  size_t size;
-}s_mc_checkpoint_ignore_region_t, *mc_checkpoint_ignore_region_t;
-
 static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
 XBT_INTERNAL mc_snapshot_t MC_take_snapshot(int num_state);

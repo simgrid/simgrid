@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
+#include <vector>
+
 #include "simgrid_config.h"
 #include <sys/types.h>
 
@@ -46,6 +48,11 @@ typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_in
 
 namespace simgrid {
 namespace mc {
+
+struct IgnoredRegion {
+  std::uint64_t addr;
+  size_t size;
+};
 
 /** Representation of a process
  */
@@ -90,6 +97,12 @@ public:
       this->refresh_malloc_info();
     return this->heap_info;
   }
+
+  std::vector<IgnoredRegion> const& ignored_regions() const
+  {
+    return ignored_regions_;
+  }
+  void ignore_region(std::uint64_t address, std::size_t size);
 
 private:
   void init_memory_map_info();
@@ -164,7 +177,8 @@ public: // to be private
    */
   void* unw_underlying_context;
 
-  xbt_dynar_t checkpoint_ignore;
+private:
+  std::vector<IgnoredRegion> ignored_regions_;
 };
 
 /** Open a FD to a remote process memory (`/dev/$pid/mem`)
