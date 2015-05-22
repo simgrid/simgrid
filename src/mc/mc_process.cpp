@@ -191,7 +191,7 @@ Process::Process(pid_t pid, int sockfd)
 
   process->process_flags = MC_PROCESS_NO_FLAG;
   process->socket = sockfd;
-  process->pid = pid;
+  process->pid_ = pid;
   if (pid==getpid())
     process->process_flags |= MC_PROCESS_SELF_FLAG;
   process->running = true;
@@ -206,7 +206,7 @@ Process::Process(pid_t pid, int sockfd)
   if (process->is_self())
     process->memory_file = -1;
   else {
-    int fd = open_vm(process->pid, O_RDWR);
+    int fd = open_vm(process->pid_, O_RDWR);
     if (fd<0)
       xbt_die("Could not open file for process virtual address space");
     process->memory_file = fd;
@@ -240,7 +240,7 @@ Process::~Process()
   Process* process = this;
 
   process->process_flags = MC_PROCESS_NO_FLAG;
-  process->pid = 0;
+  process->pid_ = 0;
 
   MC_free_memory_map(process->memory_map);
   process->memory_map = NULL;
@@ -550,7 +550,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
     }
   } else {
     if (pread_whole(this->memory_file, buffer, size, (off_t) address.address()) < 0)
-      xbt_die("Read from process %lli failed", (long long) this->pid);
+      xbt_die("Read from process %lli failed", (long long) this->pid_);
     return buffer;
   }
 }
@@ -568,7 +568,7 @@ void Process::write_bytes(const void* buffer, size_t len, remote_ptr<void> addre
     memcpy((void*)address.address(), buffer, len);
   } else {
     if (pwrite_whole(this->memory_file, buffer, len, address.address()) < 0)
-      xbt_die("Write to process %lli failed", (long long) this->pid);
+      xbt_die("Write to process %lli failed", (long long) this->pid_);
   }
 }
 

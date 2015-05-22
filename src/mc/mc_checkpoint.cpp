@@ -606,13 +606,12 @@ static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
 
 static void MC_get_current_fd(mc_snapshot_t snapshot)
 {
-
   snapshot->total_fd = 0;
 
   const size_t fd_dir_path_size = 20;
   char fd_dir_path[fd_dir_path_size];
   int res = snprintf(fd_dir_path, fd_dir_path_size,
-    "/proc/%lli/fd", (long long int) snapshot->process->pid);
+    "/proc/%lli/fd", (long long int) snapshot->process->pid());
   xbt_assert(res >= 0);
   if ((size_t) res > fd_dir_path_size)
     xbt_die("Unexpected buffer is too small for fd_dir_path");
@@ -633,7 +632,7 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
     const size_t source_size = 25;
     char source[25];
     int res = snprintf(source, source_size, "/proc/%lli/fd/%s",
-        (long long int) snapshot->process->pid, fd_number->d_name);
+        (long long int) snapshot->process->pid(), fd_number->d_name);
     xbt_assert(res >= 0);
     if ((size_t) res > source_size)
       xbt_die("Unexpected buffer is too small for fd %s", fd_number->d_name);

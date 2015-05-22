@@ -98,8 +98,8 @@ void s_mc_server::shutdown()
   int status = process->status;
   if (process->running) {
     XBT_DEBUG("Killing process");
-    kill(process->pid, SIGTERM);
-    if (waitpid(process->pid, &status, 0) == -1)
+    kill(process->pid(), SIGTERM);
+    if (waitpid(process->pid(), &status, 0) == -1)
       throw std::system_error(errno, std::system_category());
     // TODO, handle the case when the process does not want to die with a timeout
     process->status = status;
@@ -115,7 +115,7 @@ void s_mc_server::exit()
   else if (WIFSIGNALED(status)) {
     // Try to uplicate the signal of the model-checked process.
     // This is a temporary hack so we don't try too hard.
-    kill(mc_model_checker->process().pid, WTERMSIG(status));
+    kill(mc_model_checker->process().pid(), WTERMSIG(status));
     abort();
   } else {
     xbt_die("Unexpected status from model-checked process");
@@ -315,7 +315,7 @@ void s_mc_server::handle_waitpid()
       }
     }
 
-    if (pid == mc_model_checker->process().pid) {
+    if (pid == mc_model_checker->process().pid()) {
       if (WIFEXITED(status) || WIFSIGNALED(status)) {
         XBT_DEBUG("Child process is over");
         mc_model_checker->process().status = status;

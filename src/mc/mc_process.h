@@ -104,13 +104,16 @@ public:
   }
   void ignore_region(std::uint64_t address, std::size_t size);
 
+  pid_t pid() const { return pid_; }
+
 private:
   void init_memory_map_info();
   void refresh_heap();
   void refresh_malloc_info();
-public: // to be private
+private:
   mc_process_flags_t process_flags;
-  pid_t pid;
+  pid_t pid_;
+public: // to be private
   int socket;
   int status;
   bool running;
