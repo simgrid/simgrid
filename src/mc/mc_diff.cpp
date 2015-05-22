@@ -15,6 +15,8 @@
 #include "mc/mc_private.h"
 #include "mc/mc_snapshot.h"
 
+using simgrid::mc::remote;
+
 extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
@@ -818,8 +820,10 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
     if (MC_snapshot_region_memcmp(((char *) real_area1) + i, heap_region1, ((char *) real_area2) + i, heap_region2, 1) != 0) {
 
       pointer_align = (i / sizeof(void *)) * sizeof(void *);
-      addr_pointed1 = MC_snapshot_read_pointer(snapshot1, (char *) real_area1 + pointer_align, process_index);
-      addr_pointed2 = MC_snapshot_read_pointer(snapshot2, (char *) real_area2 + pointer_align, process_index);
+      addr_pointed1 = snapshot1->read(
+        remote((void**)((char *) real_area1 + pointer_align)), process_index);
+      addr_pointed2 = snapshot2->read(
+        remote((void**)((char *) real_area2 + pointer_align)), process_index);
 
       if (addr_pointed1 > process->maestro_stack_start
           && addr_pointed1 < process->maestro_stack_end
@@ -978,15 +982,19 @@ top:
   case DW_TAG_rvalue_reference_type:
   case DW_TAG_pointer_type:
     if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
-      addr_pointed1 = MC_snapshot_read_pointer(snapshot1, real_area1, process_index);
-      addr_pointed2 = MC_snapshot_read_pointer(snapshot2, real_area2, process_index);
+      addr_pointed1 = snapshot1->read(remote((void**)real_area1), process_index);
+      addr_pointed2 = snapshot2->read(remote((void**)real_area2), process_index);
       return (addr_pointed1 != addr_pointed2);;
     } else {
       pointer_level++;
       if (pointer_level > 1) {  /* Array of pointers */
         for (size_t i = 0; i < (area_size / sizeof(void *)); i++) {
-          addr_pointed1 = MC_snapshot_read_pointer(snapshot1, (char*) real_area1 + i * sizeof(void *), process_index);
-          addr_pointed2 = MC_snapshot_read_pointer(snapshot2, (char*) real_area2 + i * sizeof(void *), process_index);
+          addr_pointed1 = snapshot1->read(
+            remote((void**)((char*) real_area1 + i * sizeof(void *))),
+            process_index);
+          addr_pointed2 = snapshot2->read(
+            remote((void**)((char*) real_area2 + i * sizeof(void *))),
+            process_index);
           if (addr_pointed1 > state->std_heap_copy.heapbase
               && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
               && addr_pointed2 > state->std_heap_copy.heapbase
@@ -1001,8 +1009,8 @@ top:
             return res;
         }
       } else {
-        addr_pointed1 = MC_snapshot_read_pointer(snapshot1, real_area1, process_index);
-        addr_pointed2 = MC_snapshot_read_pointer(snapshot2, real_area2, process_index);
+        addr_pointed1 = snapshot1->read(remote((void**)real_area1), process_index);
+        addr_pointed2 = snapshot2->read(remote((void**)real_area2), process_index);
         if (addr_pointed1 > state->std_heap_copy.heapbase
             && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
             && addr_pointed2 > state->std_heap_copy.heapbase
@@ -1159,10 +1167,10 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
   // This is the address of std_heap->heapinfo in the application process:
   void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
 
-  const malloc_info* heapinfos1 = (const malloc_info*) MC_snapshot_read_pointer(
-    snapshot1, heapinfo_address, process_index);
-  const malloc_info* heapinfos2 = (const malloc_info*) MC_snapshot_read_pointer(
-    snapshot2, heapinfo_address, process_index);
+  const malloc_info* heapinfos1 = snapshot1->read(
+    remote((const malloc_info**)heapinfo_address), process_index);
+  const malloc_info* heapinfos2 = snapshot2->read(
+    remote((const malloc_info**)heapinfo_address), process_index);
 
   malloc_info heapinfo_temp1, heapinfo_temp2;
 

@@ -307,14 +307,6 @@ XBT_INTERNAL int MC_snapshot_memcmp(
   const void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size);
 
 static inline __attribute__ ((always_inline))
-const void* MC_snapshot_read_pointer(mc_snapshot_t snapshot, const void* addr, int process_index)
-{
-  void* res;
-  return *(const void**) MC_snapshot_read(snapshot, simgrid::mc::AddressSpace::Lazy,
-    &res, addr, sizeof(void*), process_index);
-}
-
-static inline __attribute__ ((always_inline))
 const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot)
 {
   if(snapshot==NULL)
