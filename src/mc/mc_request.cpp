@@ -397,7 +397,7 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
       args =
           bprintf("(%d of %lu)", value + 1,
                   read_length(mc_model_checker->process(),
-                    remote(simcall_comm_testany__get__comms(req))));
+                    simcall_comm_testany__get__comms(req)));
     }
     break;
 
