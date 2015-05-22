@@ -210,7 +210,7 @@ public:
   ~Snapshot();
   const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
-    ReadMode mode = Normal) const override;
+    ReadMode mode = Normal) const MC_OVERRIDE;
 public: // To be private
   mc_process_t process;
   int num_state;

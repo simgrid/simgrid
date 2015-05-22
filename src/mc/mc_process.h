@@ -69,7 +69,7 @@ public:
   // Read memory:
   const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
-    ReadMode mode = Normal) const override;
+    ReadMode mode = Normal) const MC_OVERRIDE;
   void read_variable(const char* name, void* target, size_t size) const;
   template<class T>
   T read_variable(const char *name) const

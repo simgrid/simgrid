@@ -12,6 +12,8 @@
 
 #ifdef __cplusplus
 
+#define MC_OVERRIDE
+
 namespace simgrid {
 namespace mc {
 
