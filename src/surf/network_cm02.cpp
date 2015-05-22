@@ -138,7 +138,7 @@ void surf_network_model_init_Reno2(void)
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 10.4);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
                             0.92);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S_parameter",
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S",
                             8775);
 }
 
