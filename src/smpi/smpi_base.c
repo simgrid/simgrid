@@ -135,12 +135,19 @@ static double smpi_os(double size)
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   double current=0.0;
+  // Iterate over all the sections that were specified and find the right
+  // value. (fact.factor represents the interval sizes; we want to find the
+  // section that has fact.factor <= size and no other such fact.factor <= size)
+  // Note: parse_factor() (used before) already sorts the dynar we iterate over!
   xbt_dynar_foreach(smpi_os_values, iter, fact) {
-    if (size <= fact.factor) {
+    if (size <= fact.factor) { // Values already too large, use the previously
+                               // computed value of current!
         XBT_DEBUG("os : %f <= %ld return %f", size, fact.factor, current);
       return current;
     }else{
-      current=fact.values[0]+fact.values[1]*size;
+      // If the next section is too large, the current section must be used.
+      // Hence, save the cost, as we might have to use it.
+      current = fact.values[0]+fact.values[1]*size;
     }
   }
   XBT_DEBUG("os : %f > %ld return %f", size, fact.factor, current);
@@ -157,12 +164,19 @@ static double smpi_ois(double size)
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   double current=0.0;
+  // Iterate over all the sections that were specified and find the right
+  // value. (fact.factor represents the interval sizes; we want to find the
+  // section that has fact.factor <= size and no other such fact.factor <= size)
+  // Note: parse_factor() (used before) already sorts the dynar we iterate over!
   xbt_dynar_foreach(smpi_ois_values, iter, fact) {
-    if (size <= fact.factor) {
+    if (size <= fact.factor) { // Values already too large, use the previously
+                               // computed value of current!
         XBT_DEBUG("ois : %f <= %ld return %f", size, fact.factor, current);
       return current;
     }else{
-      current=fact.values[0]+fact.values[1]*size;
+      // If the next section is too large, the current section must be used.
+      // Hence, save the cost, as we might have to use it.
+      current = fact.values[0]+fact.values[1]*size;
     }
   }
   XBT_DEBUG("ois : %f > %ld return %f", size, fact.factor, current);
@@ -179,12 +193,20 @@ static double smpi_or(double size)
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   double current=0.0;
+  // Iterate over all the sections that were specified and find the right
+  // value. (fact.factor represents the interval sizes; we want to find the
+  // section that has fact.factor <= size and no other such fact.factor <= size)
+  // Note: parse_factor() (used before) already sorts the dynar we iterate over!
   xbt_dynar_foreach(smpi_or_values, iter, fact) {
-    if (size <= fact.factor) {
+    if (size <= fact.factor) { // Values already too large, use the previously
+                               // computed value of current!
         XBT_DEBUG("or : %f <= %ld return %f", size, fact.factor, current);
       return current;
-    }else
+    } else {
+      // If the next section is too large, the current section must be used.
+      // Hence, save the cost, as we might have to use it.
       current=fact.values[0]+fact.values[1]*size;
+    }
   }
   XBT_DEBUG("or : %f > %ld return %f", size, fact.factor, current);
 
