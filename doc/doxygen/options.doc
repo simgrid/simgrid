@@ -582,7 +582,7 @@ To disable the benchmarking/simulation of computation in the simulated
 application, the variable \b
 smpi/simulation_computation should be set to no
 
-\subsection options_smpi_bw_factor smpi/bw_factor: Bandwidth factors
+\subsection options_model_smpi_bw_factor smpi/bw_factor: Bandwidth factors
 
 The possible throughput of network links is often dependent on the
 message sizes, as protocols may adapt to different message sizes. With
