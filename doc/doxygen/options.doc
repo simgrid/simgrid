@@ -909,6 +909,15 @@ Here is an example:
     to sleep increases linearly with the number of previously failed testk.
 
 
+\subsection options_model_smpi_shared_malloc smpi/use_shared_malloc: Use shared memory
+
+\b Default: 1
+
+SMPI can use shared memory by calling shm_* functions; this might speed up the simulation.
+This opens or creates a new POSIX shared memory object, kept in RAM, in /dev/shm.
+
+If you want to disable this behavior, set the value to 0.
+
 \subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime
 
 \b Default value: 0
