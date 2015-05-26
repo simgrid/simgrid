@@ -460,7 +460,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
   void* mem;
   if (sg_cfg_get_boolean("smpi/use_shared_malloc")){
-    char *loc = bprintf("%zu_%s_%d", (size_t)getpid(), file, line);
+    char *loc = bprintf("/%zu_%s_%d", (size_t)getpid(), file, line);
     int fd;
     shared_data_t *data;
     loc = smpi_shared_alloc_hash(loc); /* hash loc, in order to have something
