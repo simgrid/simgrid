@@ -826,6 +826,63 @@ uses naive version of collective operations). Each collective operation can be m
 The behavior and motivation for this configuration option is identical with \a smpi/test, see
 Section \ref options_model_smpi_test for details.
 
+\subsection options_model_smpi_ois smpi/ois: Inject constant times for asynchronous send operations
+
+This configuration option works exactly as \a smpi/os, see Section \ref options_model_smpi_os.
+Of course, \a smpi/ois is used to account for MPI_Isend instead of MPI_Send.
+
+\subsection options_model_smpi_os smpi/os: Inject constant times for send operations
+
+In several network models such as LogP, send (MPI_Send, MPI_Isend) and receive (MPI_Recv)
+operations incur costs (i.e., they consume CPU time). SMPI can factor these costs in as well, but the
+user has to configure SMPI accordingly as these values may vary by machine.
+This can be done by using smpi/os for MPI_Send operations; for MPI_Isend and
+MPI_Recv, use \a smpi/ois and \a smpi/or, respectively. These work exactly as
+\a smpi/ois.
+
+\a smpi/os can consist of multiple sections; each section takes three values, for example:
+
+\verbatim
+    1:3:2;10:5:1
+\endverbatim
+
+Here, the sections are divided by ";" (that is, this example contains two sections).
+Furthermore, each section consists of three values.
+
+1. The first value denotes the minimum size for this section to take effect;
+   read it as "if message size is greater than this value (and other section has a larger
+   first value that is also smaller than the message size), use this".
+   In the first section above, this value is "1".
+
+2. The second value is the startup time; this is a constant value that will always
+   be charged, no matter what the size of the message. In the first section above,
+   this value is "3".
+
+3. The third value is the \a per-byte cost. That is, it is charged for every
+   byte of the message (incurring cost messageSize*cost_per_byte)
+   and hence accounts also for larger messages. In the first
+   section of the example above, this value is "2".
+
+Now, SMPI always checks which section it should take for a given message; that is,
+if a message of size 11 is sent with the configuration of the example above, only
+the second section will be used, not the first, as the first value of the second
+section is closer to the message size. Hence, a message of size 11 incurs the
+following cost inside MPI_Send:
+
+\verbatim
+    5+11*1
+\endverbatim
+
+%As 5 is the startup cost and 1 is the cost per byte.
+
+\note
+    The order of sections can be arbitrary; they will be ordered internally.
+
+\subsection options_model_smpi_or smpi/or: Inject constant times for receive operations
+
+This configuration option works exactly as \a smpi/os, see Section \ref options_model_smpi_os.
+Of course, \a smpi/or is used to account for MPI_Recv instead of MPI_Send.
+
 \subsection options_model_smpi_test smpi/test: Inject constant times for calls to MPI_Test
 
 \b Default value: 0.0001
