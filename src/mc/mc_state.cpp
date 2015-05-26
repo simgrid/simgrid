@@ -105,24 +105,30 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
    * corresponding communication action so it can be treated later by the dependence
    * function. */
   switch (req->call) {
-  case SIMCALL_COMM_WAITANY:
+  case SIMCALL_COMM_WAITANY: {
     state->internal_req.call = SIMCALL_COMM_WAIT;
     state->internal_req.issuer = req->issuer;
+    smx_synchro_t remote_comm;
     read_element(mc_model_checker->process(),
-      &state->internal_comm, remote(simcall_comm_waitany__get__comms(req)),
-      value, sizeof(state->internal_comm));
+      &remote_comm, remote(simcall_comm_waitany__get__comms(req)),
+      value, sizeof(remote_comm));
+    mc_model_checker->process().read(&state->internal_comm, remote(remote_comm));
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_wait__set__timeout(&state->internal_req, 0);
     break;
+  }
 
   case SIMCALL_COMM_TESTANY:
     state->internal_req.call = SIMCALL_COMM_TEST;
     state->internal_req.issuer = req->issuer;
 
-    if (value > 0)
-        read_element(mc_model_checker->process(),
-          &state->internal_comm, remote(simcall_comm_testany__get__comms(req)),
-          value, sizeof(state->internal_comm));
+    if (value > 0) {
+      smx_synchro_t remote_comm;
+      read_element(mc_model_checker->process(),
+        &remote_comm, remote(simcall_comm_testany__get__comms(req)),
+        value, sizeof(remote_comm));
+      mc_model_checker->process().read(&state->internal_comm, remote(remote_comm));
+    }
 
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_test__set__result(&state->internal_req, value);
