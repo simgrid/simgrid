@@ -609,7 +609,22 @@ to 1, \c smpirun will display this information when the simulation ends. \verbat
 Simulation time: 1e3 seconds.
 \endverbatim
 
-\subsection options_smpi_global Automatic privatization of global variables
+\subsection options_model_smpi_lat_factor smpi/lat_factor: Latency factors
+
+The motivation and syntax for this option is identical to the motivation/syntax
+of smpi/bw_factor, see \ref options_model_smpi_bw_factor for details.
+
+There is an important difference, though: While smpi/bw_factor \a reduces the
+actual bandwidth (i.e., values between 0 and 1 are valid), latency factors
+increase the latency, i.e., values larger than or equal to 1 are valid here.
+
+This is the default value:
+
+\verbatim
+65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467
+\endverbatim
+
+\subsection options_smpi_global smpi/privatize_global_variables: Automatic privatization of global variables
 
 MPI executables are meant to be executed in separated processes, but SMPI is
 executed in only one process. Global variables from executables will be placed
@@ -655,6 +670,61 @@ simulate the behavior of most of the existing MPI libraries. The \b smpi/coll_se
  to use the decision logic of either OpenMPI or MPICH libraries (values: ompi or mpich, by default SMPI
 uses naive version of collective operations). Each collective operation can be manually selected with a
 \b smpi/collective_name:algo_name. Available algorithms are listed in \ref SMPI_collective_algorithms .
+
+\subsection options_model_smpi_iprobe smpi/iprobe: Inject constant times for calls to MPI_Iprobe
+
+\b Default value: 0.0001
+
+The behavior and motivation for this configuration option is identical with \a smpi/test, see
+Section \ref options_model_smpi_test for details.
+
+\subsection options_model_smpi_test smpi/test: Inject constant times for calls to MPI_Test
+
+\b Default value: 0.0001
+
+By setting this option, you can control the amount of time a process sleeps
+when MPI_Test() is called; this is important, because SimGrid normally only
+advances the time while communication is happening and thus,
+MPI_Test will not add to the time, resulting in a deadlock if used as a
+break-condition.
+
+Here is an example:
+
+\code{.unparsed}
+    while(!flag) {
+        MPI_Test(request, flag, status);
+        ...
+    }
+\endcode
+
+\note
+    Internally, in order to speed up execution, we use a counter to keep track
+    on how often we already checked if the handle is now valid or not. Hence, we
+    actually use counter*SLEEP_TIME, that is, the time MPI_Test() causes the process
+    to sleep increases linearly with the number of previously failed testk.
+
+
+\subsection options_model_smpi_wtime smpi/wtime: Inject constant times for calls to MPI_Wtime
+
+\b Default value: 0
+
+By setting this option, you can control the amount of time a process sleeps
+when MPI_Wtime() is called; this is important, because SimGrid normally only
+advances the time while communication is happening and thus,
+MPI_Wtime will not add to the time, resulting in a deadlock if used as a
+break-condition.
+
+Here is an example:
+
+\code{.unparsed}
+    while(MPI_Wtime() < some_time_bound) {
+        ...
+    }
+\endcode
+
+If the time is never advanced, this loop will clearly never end as MPI_Wtime()
+always returns the same value. Hence, pass a (small) value to the smpi/wtime
+option to force a call to MPI_Wtime to advance the time as well.
 
 
 \section options_generic Configuring other aspects of SimGrid
@@ -726,7 +796,7 @@ silently overflow on other parts of the memory.
   for the moment (May 2015).
 
 \note
-  \b Please \b note: You can also pass the command-line option "\b--help" and
+  \b Please \b note: You can also pass the command-line option "\b --help" and
      "--help-cfg" to an executable that uses simgrid.
 
 - \c clean_atexit: \ref options_generic_clean_atexit
