@@ -687,6 +687,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/hash", "no");
 
     /* Set max depth exploration */
+    /* Currently, this option cannot be used. */
     xbt_cfg_register(&_sg_cfg_set, "model-check/snapshot_fds",
                      "Whether file descriptors must be snapshoted",
                      xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_snapshot_fds, NULL);

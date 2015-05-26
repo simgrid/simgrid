@@ -933,7 +933,6 @@ silently overflow on other parts of the memory.
 - \c model-check/reduction: \ref options_modelchecking_reduction
 - \c model-check/replay: \ref options_modelchecking_recordreplay
 - \c model-check/send_determinism: \ref options_modelchecking_sparse_checkpoint
-- \c model-check/snapshot_fds: \ref options_modelchecking_snapshot_fds
 - \c model-check/sparse-checkpoint: \ref options_modelchecking_sparse_checkpoint
 - \c model-check/termination: \ref options_modelchecking_termination
 - \c model-check/timeout: \ref options_modelchecking_timeout
