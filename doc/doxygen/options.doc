@@ -371,6 +371,14 @@ Of course, specifying a reduction technique enables the model-checking
 so that you don't have to give <tt>--cfg=model-check:1</tt> in
 addition.
 
+\subsection options_modelchecking_max_depth model-checker/max_depth, Depth limit
+
+The \b model-checker/max_depth can set the maximum depth of the exploration
+graph of the model-checker. If this limit is reached, a logging message is
+sent and the results might not be exact.
+
+By default, there is not depth limit.
+
 \subsection options_modelchecking_timeout Handling of timeout
 
 By default, the model-checker does not handle timeout conditions: the `wait`
