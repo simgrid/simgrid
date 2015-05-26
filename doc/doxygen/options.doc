@@ -701,10 +701,17 @@ to update it to get accurate simulation results.
 When the code is constituted of numerous consecutive MPI calls, the
 previous mechanism feeds the simulation kernel with numerous tiny
 computations. The \b smpi/cpu_threshold item becomes handy when this
-impacts badly the simulation performance. It specify a threshold (in
-second) under which the execution chunks are not reported to the
-simulation kernel (default value: 1e-6). Please note that in some
-circonstances, this optimization can hinder the simulation accuracy.
+impacts badly the simulation performance. It specifies a threshold (in
+seconds) below which the execution chunks are not reported to the
+simulation kernel (default value: 1e-6).
+
+
+\note
+    The option smpi/cpu_threshold ignores any computation time spent
+    below this threshold. SMPI does not consider the \a amount of these
+    computations; there is no offset for this. Hence, by using a
+    value that is too low, you may end up with unreliable simulation
+    results.
 
  In some cases, however, one may wish to disable simulation of
 application computation. This is the case when SMPI is used not to
