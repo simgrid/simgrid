@@ -394,6 +394,14 @@ This only works in safety mode.
 
 This options is disabled by default.
 
+\subsection options_modelchecking_dot_output model-check/dot_output, Dot output
+
+If set, the \b model-check/dot_output configuration item is the name of a file
+in which to write a dot file of the path leading the found property (safety or
+liveness violation) as well as the cycle for liveness properties. This dot file
+can then fed to the graphviz dot tool to generate an corresponding graphical
+representation.
+
 \subsection options_modelchecking_max_depth model-check/max_depth, Depth limit
 
 The \b model-checker/max_depth can set the maximum depth of the exploration
