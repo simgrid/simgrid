@@ -196,7 +196,12 @@ double smpi_mpi_wtime(){
   if (smpi_process_initialized() && !smpi_process_finalized() && !smpi_process_get_sampling()) {
     smpi_bench_end();
     time = SIMIX_get_clock();
-    //to avoid deadlocks if called too many times
+    // to avoid deadlocks if used as a break condition, such as
+    //     while (MPI_Wtime(...) < time_limit) {
+    //       ....
+    //     }
+    // because the time will not normally advance when only calls to MPI_Wtime
+    // are made -> deadlock (MPI_Wtime never reaches the time limit)
     if(smpi_wtime_sleep > 0) simcall_process_sleep(smpi_wtime_sleep);
     smpi_bench_begin();
   } else {
@@ -744,8 +749,12 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
 
   //assume that request is not MPI_REQUEST_NULL (filtered in PMPI_Test or smpi_mpi_testall before)
 
-  //to avoid deadlocks
-  //multiplier to the sleeptime, to increase speed of execution, each failed test will increase it
+  // to avoid deadlocks if used as a break condition, such as
+  //     while (MPI_Test(request, flag, status) && flag) {
+  //     }
+  // because the time will not normally advance when only calls to MPI_Test
+  // are made -> deadlock
+  // multiplier to the sleeptime, to increase speed of execution, each failed test will increase it
   static int nsleeps = 1;
   if(smpi_test_sleep > 0)  simcall_process_sleep(nsleeps*smpi_test_sleep);
 
@@ -854,8 +863,9 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   MPI_Request request =build_request(NULL, 0, MPI_CHAR, source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE : smpi_group_index(smpi_comm_group(comm), source), smpi_comm_rank(comm), tag,
             comm, PERSISTENT | RECV);
 
-  //to avoid deadlock, we have to sleep some time here, or the timer won't advance and we will only do iprobe simcalls
-  //multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
+  // to avoid deadlock, we have to sleep some time here, or the timer won't advance and we will only do iprobe simcalls
+  // (especially when used as a break condition, such as while(MPI_Iprobe(...)) ... )
+  // multiplier to the sleeptime, to increase speed of execution, each failed iprobe will increase it
   static int nsleeps = 1;
   if(smpi_iprobe_sleep > 0)  simcall_process_sleep(nsleeps*smpi_iprobe_sleep);
   // behave like a receive, but don't do it
