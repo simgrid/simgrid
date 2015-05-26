@@ -371,6 +371,12 @@ Of course, specifying a reduction technique enables the model-checking
 so that you don't have to give <tt>--cfg=model-check:1</tt> in
 addition.
 
+\subsection options_modelchecking_timeout Handling of timeout
+
+By default, the model-checker does not handle timeout conditions: the `wait`
+operations never time out. With the \b model-check/timeout configuration item
+set to \b yes, the model-checker will explore timeouts of `wait` operations.
+
 \subsection options_modelchecking_comm_determinism Communication determinism
 
 The \b model-check/communications_determinism and
