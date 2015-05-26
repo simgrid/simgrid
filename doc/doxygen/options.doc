@@ -479,7 +479,7 @@ Currently most of the state is not included in the hash because the
 implementation was found to be buggy and this options is not as useful as
 it could be. For this reason, it is currently disabled by default.
 
-\subsection options_recordreplay Record/replay (experimental)
+\subsection options_modelchecking_recordreplay Record/replay (experimental)
 
 As the model-checker keeps jumping at different places in the execution graph,
 it is difficult to understand what happens when trying to debug an application
@@ -963,7 +963,7 @@ silently overflow on other parts of the memory.
 - \c model-check: \ref options_modelchecking
 - \c model-check/checkpoint: \ref options_modelchecking_steps
 - \c model-check/communications_determinism: \ref options_modelchecking_comm_determinism
-- \c model-check/communications_determinism: \ref options_modelchecking_send_determinism
+- \c model-check/send_determinism: \ref options_modelchecking_comm_determinism
 - \c model-check/dot_output: \ref options_modelchecking_dot_output
 - \c model-check/hash: \ref options_modelchecking_hash
 - \c model-check/property: \ref options_modelchecking_liveness
