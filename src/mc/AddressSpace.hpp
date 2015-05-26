@@ -27,7 +27,7 @@ namespace mc {
 template<class T> class remote_ptr {
   std::uint64_t address_;
 public:
-  remote_ptr() : address_(nullptr) {}
+  remote_ptr() : address_(0) {}
   remote_ptr(std::uint64_t address) : address_(address) {}
   remote_ptr(T* address) : address_((std::uint64_t)address) {}
   std::uint64_t address() const { return address_; }
