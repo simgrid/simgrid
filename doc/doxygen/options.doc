@@ -426,7 +426,21 @@ protected with guards: if the stack size is too small for your
 application, the stack will silently overflow on other parts of the
 memory.
 
-\subsection options_recordreplay Record/replay
+\subsection options_modelchecking_hash Hashing of the state (experimental)
+
+Usually most of the time of the model-checker is spent comparing states. This
+process is complicated and consumes a lot of bandwidth and cache.
+In order to speedup the state comparison, the experimental \b model-checker/hash
+configuration item enables the computation of a hash summarizing as much
+information of the state as possible into a single value. This hash can be used
+to avoid most of the comparisons: the costly comparison is then only used when
+the hashes are identical.
+
+Currently most of the state is not included in the hash because the
+implementation was found to be buggy and this options is not as useful as
+it could be. For this reason, it is currently disabled by default.
+
+\subsection options_recordreplay Record/replay (experimental)
 
 As the model-checker keeps jumping at different places in the execution graph,
 it is difficult to understand what happens when trying to debug an application
