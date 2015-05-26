@@ -384,6 +384,16 @@ be removed from the memory and some cycles might be missed.
 
 By default, no state is snapshotted and cycles cannot be detected.
 
+\subsection options_modelchecking_termination, model-check/termination, Non termination detection
+
+The \b model-check/termination configuration item can be used to report if a
+non-termination execution path has been found. This is a path with a cycle
+which means that the program might never terminate.
+
+This only works in safety mode.
+
+This options is disabled by default.
+
 \subsection options_modelchecking_max_depth model-check/max_depth, Depth limit
 
 The \b model-checker/max_depth can set the maximum depth of the exploration
