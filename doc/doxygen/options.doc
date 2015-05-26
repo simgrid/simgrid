@@ -1001,7 +1001,7 @@ silently overflow on other parts of the memory.
   for the moment (May 2015).
 
 \note
-  \b Please \b note: You can also pass the command-line option "\b --help" and
+  \b Please \b note: You can also pass the command-line option "--help" and
      "--help-cfg" to an executable that uses simgrid.
 
 - \c clean_atexit: \ref options_generic_clean_atexit
