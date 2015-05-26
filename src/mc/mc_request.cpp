@@ -395,7 +395,7 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
     } else {
       type = "TestAny";
       args =
-          bprintf("(%d of %lu)", value + 1,
+          bprintf("(%d of %zu)", value + 1,
                   read_length(mc_model_checker->process(),
                     simcall_comm_testany__get__comms(req)));
     }
