@@ -746,6 +746,8 @@ Here, MAX_BANDWIDTH denotes the bandwidth of the link.
 
 \subsection options_smpi_timing smpi/display_timing: Reporting simulation time
 
+\b Default: 0 (false)
+
 Most of the time, you run MPI code through SMPI to compute the time it
 would take to run it on a platform that you don't have. But since the
 code is run through the \c smpirun script, you don't have any control
