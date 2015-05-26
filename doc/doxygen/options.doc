@@ -6,7 +6,7 @@ accepted by the SimGrid version used in your simulator, simply pass
 the --help configuration flag to your program. If some of the options
 are not documented on this page, this is a bug that you should please
 report so that we can fix it. Note that some of the options presented
-here may not be available in your simulators, depending on the 
+here may not be available in your simulators, depending on the
 @ref install_src_config "compile-time options" that you used.
 
 \section options_using Passing configuration options to the simulators
@@ -31,7 +31,7 @@ ignored so you don't really need to pass it. The important par is that
 within that tag, you can pass one or several \c \<prop\> tags to specify
 the configuration to use. For example, setting \c Item to \c Value
 can be done by adding the following to the beginning of your platform
-file: 
+file:
 \verbatim
 <config>
   <prop id="Item" value="Value"/>
@@ -45,7 +45,7 @@ more complex, as you have to mess with the internal configuration set
 directly as follows. Check the \ref XBT_config "relevant page" for
 details on all the functions you can use in this context, \c
 _sg_cfg_set being the only configuration set currently used in
-SimGrid. 
+SimGrid.
 
 @code
 #include <xbt/config.h>
@@ -96,9 +96,9 @@ described in
     three intervals: < 1KiB, < 64 KiB, >= 64 KiB). See also \ref
     options_model_network_coefs "this section" for more info.
   - \b IB: Realistic network model specifically tailored for HPC
-    settings with InfiniBand networks (accurate modeling contention 
-    behavior, based on the model explained in 
-    http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf). 
+    settings with InfiniBand networks (accurate modeling contention
+    behavior, based on the model explained in
+    http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf).
     See also \ref options_model_network_coefs "this section" for more info.
   - \b CM02: Legacy network analytic model (Very similar to LV08, but
     without corrective factors. The timings of small messages are thus
@@ -200,28 +200,37 @@ cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
 cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
 \endverbatim
 
-\subsubsection options_model_network_coefs Corrective simulation factors
+\subsubsection options_model_network_coefs Correcting important network parameters
 
-These factors allow to betterly take the slow start into account.
+SimGrid can take network irregularities such as a slow startup or
+changing behavior depending on the message size into account.
+You should not change these values unless you really know what you're doing.
+
 The corresponding values were computed through data fitting one the
-timings of packet-level simulators. You should not change these values
-unless you are really certain of what you are doing. See
-<a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>
-for more informations about these coeficients.
+timings of packet-level simulators.
 
-If you are using the SMPI model, these correction coeficients are
+See
+<a href="http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf">Accuracy Study and Improvement of Network Simulation in the SimGrid Framework</a>
+for more information about these parameters.
+
+If you are using the SMPI model, these correction coefficients are
 themselves corrected by constant values depending on the size of the
 exchange. Again, only hardcore experts should bother about this fact.
 
 InfiniBand network behavior can be modeled through 3 parameters, as explained in
-http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf . These
-factors can be changed through option smpi/IB_penalty_factors:"βe;βs;γs". By 
-default SMPI uses factors computed one Stampede cluster from TACC, with optimal
+<a href="http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf">this PhD thesis</a>.
+These factors can be changed through the following option:
+
+\verbatim
+smpi/IB_penalty_factors:"βe;βs;γs"
+\endverbatim
+
+By default SMPI uses factors computed on the Stampede Supercomputer at TACC, with optimal
 deployment of processes on nodes.
 
 \subsubsection options_model_network_crosstraffic Simulating cross-traffic
 
-As of SimGrid v3.7, cross-traffic effects can be taken into account in
+%As of SimGrid v3.7, cross-traffic effects can be taken into account in
 analytical simulations. It means that ongoing and incoming
 communication flows are treated independently. In addition, the LV08
 model adds 0.05 of usage on the opposite direction for each new
@@ -257,16 +266,16 @@ to wait 10 microseconds (1e-5 seconds) between emissions.
 
 (this configuration item is experimental and may change or disapear)
 
-It is possible to specify that messages below a certain size will be sent 
-as soon as the call to MPI_Send is issued, without waiting for the 
-correspondant receive. This threshold can be configured through the 
-\b smpi/async_small_thres item. The default value is 0. This behavior can also be 
-manually set for MSG mailboxes, by setting the receiving mode of the mailbox 
-with a call to \ref MSG_mailbox_set_async . For MSG, all messages sent to this 
-mailbox will have this behavior, so consider using two mailboxes if needed. 
+It is possible to specify that messages below a certain size will be sent
+as soon as the call to MPI_Send is issued, without waiting for the
+correspondant receive. This threshold can be configured through the
+\b smpi/async_small_thres item. The default value is 0. This behavior can also be
+manually set for MSG mailboxes, by setting the receiving mode of the mailbox
+with a call to \ref MSG_mailbox_set_async . For MSG, all messages sent to this
+mailbox will have this behavior, so consider using two mailboxes if needed.
 
-This value needs to be smaller than or equals to the threshold set at 
-\ref options_model_smpi_detached , because asynchronous messages are 
+This value needs to be smaller than or equals to the threshold set at
+\ref options_model_smpi_detached , because asynchronous messages are
 meant to be detached as well.
 
 \subsubsection options_pls Configuring packet-level pseudo-models
@@ -419,8 +428,8 @@ stacks), leading to segfaults with corrupted stack traces.
 If you want to push the scalability limits of your code, you might
 want to reduce the \b contexts/stack_size item. Its default value
 is 8192 (in KiB), while our Chord simulation works with stacks as small
-as 16 KiB, for example. For the thread factory, the default value 
-is the one of the system, if it is too large/small, it has to be set 
+as 16 KiB, for example. For the thread factory, the default value
+is the one of the system, if it is too large/small, it has to be set
 with this parameter.
 
 The operating system should only allocate memory for the pages of the
@@ -446,7 +455,7 @@ If you are using the \c ucontext or \c raw context factories, you can
 request to execute the user code in parallel. Several threads are
 launched, each of them handling as much user contexts at each run. To
 actiave this, set the \b contexts/nthreads item to the amount of
-cores that you have in your computer (or lower than 1 to have 
+cores that you have in your computer (or lower than 1 to have
 the amount of cores auto-detected).
 
 Even if you asked several worker threads using the previous option,
@@ -536,7 +545,7 @@ The SMPI interface provides several specific configuration items.
 These are uneasy to see since the code is usually launched through the
 \c smiprun script directly.
 
-\subsection options_smpi_bench Automatic benchmarking of SMPI code
+\subsection options_smpi_bench smpi/bench: Automatic benchmarking of SMPI code
 
 In SMPI, the sequential code is automatically benchmarked, and these
 computations are automatically reported to the simulator. That is to
@@ -573,7 +582,23 @@ To disable the benchmarking/simulation of computation in the simulated
 application, the variable \b
 smpi/simulation_computation should be set to no
 
-\subsection options_smpi_timing Reporting simulation time
+\subsection options_smpi_bw_factor smpi/bw_factor: Bandwidth factors
+
+The possible throughput of network links is often dependent on the
+message sizes, as protocols may adapt to different message sizes. With
+this option, a series of message sizes and factors are given, helping
+the simulation to be more realistic. For instance, the current
+default value is
+
+\verbatim
+65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084
+\endverbatim
+
+So, messages with size 65472 and more will get a total of MAX_BANDWIDTH*0.940694,
+messages of size 15424 to 65471 will get MAX_BANDWIDTH*0.697866 and so on.
+Here, MAX_BANDWIDTH denotes the bandwidth of the link.
+
+\subsection options_smpi_timing smpi/display_timing: Reporting simulation time
 
 Most of the time, you run MPI code through SMPI to compute the time it
 would take to run it on a platform that you don't have. But since the
@@ -586,29 +611,29 @@ Simulation time: 1e3 seconds.
 
 \subsection options_smpi_global Automatic privatization of global variables
 
-MPI executables are meant to be executed in separated processes, but SMPI is 
-executed in only one process. Global variables from executables will be placed 
+MPI executables are meant to be executed in separated processes, but SMPI is
+executed in only one process. Global variables from executables will be placed
 in the same memory zone and shared between processes, causing hard to find bugs.
 To avoid this, several options are possible :
   - Manual edition of the code, for example to add __thread keyword before data
-  declaration, which allows the resulting code to work with SMPI, but only 
-  if the thread factory (see \ref options_virt_factory) is used, as global 
-  variables are then placed in the TLS (thread local storage) segment. 
-  - Source-to-source transformation, to add a level of indirection 
-  to the global variables. SMPI does this for F77 codes compiled with smpiff, 
+  declaration, which allows the resulting code to work with SMPI, but only
+  if the thread factory (see \ref options_virt_factory) is used, as global
+  variables are then placed in the TLS (thread local storage) segment.
+  - Source-to-source transformation, to add a level of indirection
+  to the global variables. SMPI does this for F77 codes compiled with smpiff,
   and used to provide coccinelle scripts for C codes, which are not functional anymore.
-  - Compilation pass, to have the compiler automatically put the data in 
-  an adapted zone. 
-  - Runtime automatic switching of the data segments. SMPI stores a copy of 
-  each global data segment for each process, and at each context switch replaces 
+  - Compilation pass, to have the compiler automatically put the data in
+  an adapted zone.
+  - Runtime automatic switching of the data segments. SMPI stores a copy of
+  each global data segment for each process, and at each context switch replaces
   the actual data with its copy from the right process. This mechanism uses mmap,
-  and is for now limited to systems supporting this functionnality (all Linux 
+  and is for now limited to systems supporting this functionnality (all Linux
   and some BSD should be compatible).
   Another limitation is that SMPI only accounts for global variables defined in
-  the executable. If the processes use external global variables from dynamic 
-  libraries, they won't be switched correctly. To avoid this, using static 
-  linking is advised (but not with the simgrid library, to avoid replicating 
-  its own global variables). 
+  the executable. If the processes use external global variables from dynamic
+  libraries, they won't be switched correctly. To avoid this, using static
+  linking is advised (but not with the simgrid library, to avoid replicating
+  its own global variables).
 
   To use this runtime automatic switching, the variable \b smpi/privatize_global_variables
   should be set to yes
@@ -617,15 +642,15 @@ To avoid this, several options are possible :
 
 \subsection options_model_smpi_detached Simulating MPI detached send
 
-This threshold specifies the size in bytes under which the send will return 
+This threshold specifies the size in bytes under which the send will return
 immediately. This is different from the threshold detailed in  \ref options_model_network_asyncsend
 because the message is not effectively sent when the send is posted. SMPI still waits for the
-correspondant receive to be posted to perform the communication operation. This threshold can be set 
+correspondant receive to be posted to perform the communication operation. This threshold can be set
 by changing the \b smpi/send_is_detached item. The default value is 65536.
 
 \subsection options_model_smpi_collectives Simulating MPI collective algorithms
 
-SMPI implements more than 100 different algorithms for MPI collective communication, to accurately 
+SMPI implements more than 100 different algorithms for MPI collective communication, to accurately
 simulate the behavior of most of the existing MPI libraries. The \b smpi/coll_selector item can be used
  to use the decision logic of either OpenMPI or MPICH libraries (values: ompi or mpich, by default SMPI
 uses naive version of collective operations). Each collective operation can be manually selected with a
@@ -633,6 +658,16 @@ uses naive version of collective operations). Each collective operation can be m
 
 
 \section options_generic Configuring other aspects of SimGrid
+
+\subsection options_generic_clean_atexit Cleanup before termination
+
+The C / C++ standard contains a function called \b [atexit](http://www.cplusplus.com/reference/cstdlib/atexit/).
+atexit registers callbacks, which are called just before the program terminates.
+
+By setting the configuration option clean_atexit to 1 (true), a callback
+is registered and will clean up some variables and terminate/cleanup the tracing.
+
+TODO: Add when this should be used.
 
 \subsection options_generic_path XML file inclusion path
 
@@ -651,6 +686,15 @@ code, but it can reveal troublesome in some cases (such as when the
 amount of processes becomes really big). This behavior is disabled
 when \b verbose-exit is set to 0 (it is to 1 by default).
 
+\subsection options_exception_cutpath Truncate local path from exception backtrace
+
+<b>This configuration option is an internal option and should normally not be used
+by the user.</b> It is used to remove the path from the backtrace
+shown when an exception is thrown; if we didn't remove this part, the tests
+testing the exception parts of simgrid would fail on most machines, as we are
+currently comparing output. Clearly, the path used on different machines are almost
+guaranteed to be different and hence, the output would
+mismatch, causing the test to fail.
 
 \section options_log Logging Configuration
 
@@ -676,7 +720,16 @@ silently overflow on other parts of the memory.
 
 \section options_index Index of all existing configuration options
 
-- \c clean_atexit: \ref options_clean_atexit
+\note
+  Almost all options are defined in <i>src/simgrid/sg_config.c</i>. You may
+  want to check this file, too, but this index should be somewhat complete
+  for the moment (May 2015).
+
+\note
+  \b Please \b note: You can also pass the command-line option "\b--help" and
+     "--help-cfg" to an executable that uses simgrid.
+
+- \c clean_atexit: \ref options_generic_clean_atexit
 
 - \c contexts/factory: \ref options_virt_factory
 - \c contexts/guard_size: \ref options_virt_parallel
@@ -695,6 +748,8 @@ silently overflow on other parts of the memory.
 - \c gtnets/jitter_seed: \ref options_pls
 
 - \c maxmin/precision: \ref options_model_precision
+
+- \c msg/debug_multiple_use: \ref options_msg_debug_multiple_use
 
 - \c model-check: \ref options_modelchecking
 - \c model-check/checkpoint: \ref options_modelchecking_steps
@@ -723,12 +778,11 @@ silently overflow on other parts of the memory.
 - \c network/sender_gap: \ref options_model_network_sendergap
 - \c network/TCP_gamma: \ref options_model_network_gamma
 - \c network/weight_S: \ref options_model_network_coefs
-- \c network/weight_S_parameter: \ref options_model_network_coefs_param
 
 - \c ns3/TcpModel: \ref options_pls
 
 - \c surf/nthreads: \ref options_model_nthreads
-- \c surf/precision: \ref options_surf_precision
+- \c surf/precision: \ref options_model_precision
 
 - \c <b>For collective operations of SMPI, please refer to Section \ref options_index_smpi_coll</b>
 - \c smpi/async_small_thres: \ref options_model_network_asyncsend
@@ -737,7 +791,7 @@ silently overflow on other parts of the memory.
 - \c smpi/cpu_threshold: \ref options_smpi_bench
 - \c smpi/display_timing: \ref options_smpi_timing
 - \c smpi/lat_factor: \ref options_model_smpi_lat_factor
-- \c smpi/IB_penalty_factor: \ref options_model_smpi_IB_penalty_factor
+- \c smpi/IB_penalty_factors: \ref options_model_network_coefs
 - \c smpi/iprobe: \ref options_model_smpi_iprobe
 - \c smpi/ois: \ref options_model_smpi_ois
 - \c smpi/or: \ref options_model_smpi_or
@@ -748,7 +802,7 @@ silently overflow on other parts of the memory.
 - \c smpi/simulation_computation: \ref options_smpi_bench
 - \c smpi/test: \ref options_model_smpi_test
 - \c smpi/use_shared_malloc: \ref options_model_smpi_use_shared_malloc
-- \c smpi/test: \ref options_model_smpi_test
+- \c smpi/wtime: \ref options_model_smpi_wtime
 
 - \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.
 
