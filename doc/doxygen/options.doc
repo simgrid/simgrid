@@ -909,7 +909,7 @@ Here is an example:
     to sleep increases linearly with the number of previously failed testk.
 
 
-\subsection options_model_smpi_shared_malloc smpi/use_shared_malloc: Use shared memory
+\subsection options_model_smpi_use_shared_malloc smpi/use_shared_malloc: Use shared memory
 
 \b Default: 1
 
