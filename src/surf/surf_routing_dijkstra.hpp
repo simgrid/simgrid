@@ -37,6 +37,18 @@ public:
 	xbt_node_t routeGraphNewNode(int id, int graph_id);
 	graph_node_map_element_t nodeMapSearch(int id);
 	void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);
+    /**
+     * For each vertex (node) already in the graph,
+     * make sure it also has a loopback link; this loopback
+     * can potentially already be in the graph, and in that
+     * case nothing will be done.
+     *
+     * If no loopback is specified for a node, we will use
+     * the loopback that is provided by the routing platform.
+     *
+     * After this function returns, any node in the graph
+     * will have a loopback attached to it.
+     */
 	void addLoopback();
 	void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat);
 	xbt_dynar_t getOnelinkRoutes();
