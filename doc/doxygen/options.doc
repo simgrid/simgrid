@@ -744,6 +744,12 @@ So, messages with size 65472 and more will get a total of MAX_BANDWIDTH*0.940694
 messages of size 15424 to 65471 will get MAX_BANDWIDTH*0.697866 and so on.
 Here, MAX_BANDWIDTH denotes the bandwidth of the link.
 
+\note
+    The SimGrid-Team has developed a script to help you determine these
+    values. You can find more information and the download here:
+    1. http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
+    2. http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
+
 \subsection options_smpi_timing smpi/display_timing: Reporting simulation time
 
 \b Default: 0 (false)
@@ -771,6 +777,12 @@ This is the default value:
 \verbatim
 65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467
 \endverbatim
+
+\note
+    The SimGrid-Team has developed a script to help you determine these
+    values. You can find more information and the download here:
+    1. http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
+    2. http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
 
 \subsection options_smpi_global smpi/privatize_global_variables: Automatic privatization of global variables
 
