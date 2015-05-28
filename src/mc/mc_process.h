@@ -114,6 +114,27 @@ public:
 
   pid_t pid() const { return pid_; }
 
+  bool in_maestro_stack(remote_ptr<void> p) const
+  {
+    return p >= this->maestro_stack_start_ && p < this->maestro_stack_end_;
+  }
+
+  bool running() const
+  {
+    return running_;
+  }
+
+  void terminate(int status)
+  {
+    status_ = status;
+    running_ = false;
+  }
+
+  int status() const
+  {
+    return status_;
+  }
+
 private:
   void init_memory_map_info();
   void refresh_heap();
@@ -123,16 +144,22 @@ private:
   pid_t pid_;
 public: // to be private
   int socket;
-  int status;
-  bool running;
+private:
+  int status_;
+  bool running_;
   memory_map_t memory_map;
-  void *maestro_stack_start, *maestro_stack_end;
+  remote_ptr<void> maestro_stack_start_, maestro_stack_end_;
+  int memory_file;
+  std::vector<IgnoredRegion> ignored_regions_;
+
+public: // object info
+  // TODO, make private (first, objectify mc_object_info_t)
   mc_object_info_t libsimgrid_info;
   mc_object_info_t binary_info;
   mc_object_info_t* object_infos;
   size_t object_infos_size;
-  int memory_file;
 
+public: // Copies of MCed SMX data structures
   /** Copy of `simix_global->process_list`
    *
    *  See mc_smx.c.
@@ -167,7 +194,7 @@ public: // to be private
    */
   malloc_info* heap_info;
 
-  // ***** Libunwind-data
+public: // Libunwind-data
 
   /** Full-featured MC-aware libunwind address space for the process
    *
@@ -187,9 +214,6 @@ public: // to be private
   /** The corresponding context
    */
   void* unw_underlying_context;
-
-private:
-  std::vector<IgnoredRegion> ignored_regions_;
 };
 
 /** Open a FD to a remote process memory (`/dev/$pid/mem`)

@@ -825,10 +825,8 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
       addr_pointed2 = snapshot2->read(
         remote((void**)((char *) real_area2 + pointer_align)), process_index);
 
-      if (addr_pointed1 > process->maestro_stack_start
-          && addr_pointed1 < process->maestro_stack_end
-          && addr_pointed2 > process->maestro_stack_start
-          && addr_pointed2 < process->maestro_stack_end) {
+      if (process->in_maestro_stack(remote(addr_pointed1))
+        && process->in_maestro_stack(remote(addr_pointed2))) {
         i = pointer_align + sizeof(void *);
         continue;
       } else if (addr_pointed1 > state->std_heap_copy.heapbase

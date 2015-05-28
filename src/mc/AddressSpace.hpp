@@ -35,6 +35,10 @@ public:
   {
     return address_;
   }
+  bool operator!() const
+  {
+    return !address_;
+  }
   operator remote_ptr<void>() const
   {
     return remote_ptr<void>(address_);
@@ -58,6 +62,42 @@ public:
     return *this;
   }
 };
+
+template<class X, class Y>
+bool operator<(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+{
+  return x.address() < y.address();
+}
+
+template<class X, class Y>
+bool operator>(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+{
+  return x.address() > y.address();
+}
+
+template<class X, class Y>
+bool operator>=(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+{
+  return x.address() >= y.address();
+}
+
+template<class X, class Y>
+bool operator<=(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+{
+  return x.address() <= y.address();
+}
+
+template<class X, class Y>
+bool operator==(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+{
+  return x.address() == y.address();
+}
+
+template<class X, class Y>
+bool operator!=(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+{
+  return x.address() != y.address();
+}
 
 template<class T> inline
 remote_ptr<T> remote(T *p)

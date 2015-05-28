@@ -194,8 +194,8 @@ Process::Process(pid_t pid, int sockfd)
   process->pid_ = pid;
   if (pid==getpid())
     process->process_flags |= MC_PROCESS_SELF_FLAG;
-  process->running = true;
-  process->status = 0;
+  process->running_ = true;
+  process->status_ = 0;
   process->memory_map = MC_get_memory_map(pid);
   process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
   process->heap = NULL;
@@ -245,8 +245,8 @@ Process::~Process()
   MC_free_memory_map(process->memory_map);
   process->memory_map = NULL;
 
-  process->maestro_stack_start = NULL;
-  process->maestro_stack_end = NULL;
+  process->maestro_stack_start_ = nullptr;
+  process->maestro_stack_end_ = nullptr;
 
   xbt_dynar_free(&process->smx_process_infos);
   xbt_dynar_free(&process->smx_old_process_infos);
@@ -323,8 +323,8 @@ void Process::refresh_malloc_info()
 void Process::init_memory_map_info()
 {
   XBT_DEBUG("Get debug information ...");
-  this->maestro_stack_start = NULL;
-  this->maestro_stack_end = NULL;
+  this->maestro_stack_start_ = nullptr;
+  this->maestro_stack_end_ = nullptr;
   this->object_infos = NULL;
   this->object_infos_size = 0;
   this->binary_info = NULL;
@@ -352,8 +352,8 @@ void Process::init_memory_map_info()
     // [stack], [vvar], [vsyscall], [vdso] ...
     if (pathname[0] == '[') {
       if ((reg->prot & PROT_WRITE) && !memcmp(pathname, "[stack]", 7)) {
-        this->maestro_stack_start = reg->start_addr;
-        this->maestro_stack_end = reg->end_addr;
+        this->maestro_stack_start_ = remote(reg->start_addr);
+        this->maestro_stack_end_ = remote(reg->end_addr);
       }
       current_name = NULL;
       continue;
@@ -398,8 +398,8 @@ void Process::init_memory_map_info()
   for (size_t i=0; i!=this->object_infos_size; ++i)
     MC_post_process_object_info(this, this->object_infos[i]);
 
-  xbt_assert(this->maestro_stack_start, "Did not find maestro_stack_start");
-  xbt_assert(this->maestro_stack_end, "Did not find maestro_stack_end");
+  xbt_assert(this->maestro_stack_start_, "Did not find maestro_stack_start");
+  xbt_assert(this->maestro_stack_end_, "Did not find maestro_stack_end");
 
   XBT_DEBUG("Get debug information done !");
 }
