@@ -82,7 +82,7 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
 
   // Read each page:
   while (mc_page_number(NULL, addr) != page_end) {
-    void* snapshot_addr = mc_translate_address_region((uintptr_t) addr, region);
+    void* snapshot_addr = mc_translate_address_region_chunked((uintptr_t) addr, region);
     void* next_page = mc_page_from_number(NULL, mc_page_number(NULL, addr) + 1);
     size_t readable = (char*) next_page - (char*) addr;
     memcpy(dest, snapshot_addr, readable);
@@ -92,7 +92,7 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
   }
 
   // Read the end:
-  void* snapshot_addr = mc_translate_address_region((uintptr_t)addr, region);
+  void* snapshot_addr = mc_translate_address_region_chunked((uintptr_t)addr, region);
   memcpy(dest, snapshot_addr, size);
 
   return target;

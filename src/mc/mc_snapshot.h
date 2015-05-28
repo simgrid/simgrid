@@ -110,13 +110,43 @@ bool mc_region_contain(mc_mem_region_t region, const void* p)
 }
 
 static inline __attribute__((always_inline))
-void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region)
+void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
 {
   size_t pageno = mc_page_number(region->start_addr, (void*) addr);
   size_t snapshot_pageno = region->chunked.page_numbers[pageno];
   const void* snapshot_page =
     mc_model_checker->page_store().get_page(snapshot_pageno);
   return (char*) snapshot_page + mc_page_offset((void*) addr);
+}
+
+static inline __attribute__((always_inline))
+void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int process_index)
+{
+  switch (region->storage_type) {
+  case MC_REGION_STORAGE_TYPE_NONE:
+  default:
+    xbt_die("Storage type not supported");
+
+  case MC_REGION_STORAGE_TYPE_FLAT:
+    {
+      uintptr_t offset = addr - (uintptr_t) region->start_addr;
+      return (void *) ((uintptr_t) region->flat.data + offset);
+    }
+
+  case MC_REGION_STORAGE_TYPE_CHUNKED:
+    return mc_translate_address_region_chunked(addr, region);
+
+  case MC_REGION_STORAGE_TYPE_PRIVATIZED:
+    {
+      xbt_assert(process_index >=0,
+        "Missing process index for privatized region");
+      xbt_assert((size_t) process_index < region->privatized.regions_count,
+        "Out of range process index");
+      mc_mem_region_t subregion = region->privatized.regions[process_index];
+      xbt_assert(subregion, "Missing memory region for process %i", process_index);
+      return mc_translate_address_region(addr, subregion, process_index);
+    }
+  }
 }
 
 XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
@@ -148,35 +178,11 @@ void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot, int process_i
 
   xbt_assert(mc_region_contain(region, (void*) addr), "Trying to read out of the region boundary.");
 
-  if (!region) {
+  if (!region)
+    // TODO, This is not correct anymore in the cross process model?
     return (void *) addr;
-  }
-
-  switch (region->storage_type) {
-  case MC_REGION_STORAGE_TYPE_NONE:
-  default:
-    xbt_die("Storage type not supported");
-
-  case MC_REGION_STORAGE_TYPE_FLAT:
-    {
-      uintptr_t offset = addr - (uintptr_t) region->start_addr;
-      return (void *) ((uintptr_t) region->flat.data + offset);
-    }
-
-  case MC_REGION_STORAGE_TYPE_CHUNKED:
-    return mc_translate_address_region(addr, region);
-
-  case MC_REGION_STORAGE_TYPE_PRIVATIZED:
-    {
-      xbt_assert(process_index >=0,
-        "Missing process index for privatized region");
-      xbt_assert((size_t) process_index < region->privatized.regions_count,
-        "Out of range process index");
-      mc_mem_region_t subregion = region->privatized.regions[process_index];
-      xbt_assert(subregion, "Missing memory region for process %i", process_index);
-      return mc_translate_address(addr, snapshot, process_index);
-    }
-  }
+  else
+    return mc_translate_address_region(addr, region, process_index);
 }
 
 // ***** MC Snapshot
@@ -346,7 +352,7 @@ const void* MC_region_read(mc_mem_region_t region, void* target, const void* add
       void* end = (char*) addr + size - 1;
       if (mc_same_page(addr, end) ) {
         // The memory is contained in a single page:
-        return mc_translate_address_region((uintptr_t) addr, region);
+        return mc_translate_address_region_chunked((uintptr_t) addr, region);
       } else {
         // The memory spans several pages:
         return MC_region_read_fragmented(region, target, addr, size);
