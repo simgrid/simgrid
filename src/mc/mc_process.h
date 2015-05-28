@@ -147,7 +147,7 @@ public: // to be private
 private:
   int status_;
   bool running_;
-  memory_map_t memory_map;
+  std::vector<VmMap> memory_map_;
   remote_ptr<void> maestro_stack_start_, maestro_stack_end_;
   int memory_file;
   std::vector<IgnoredRegion> ignored_regions_;

@@ -109,10 +109,6 @@ XBT_INTERNAL void print_comparison_times(void);
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
 
-/********************************** Variables with DWARF **********************************/
-
-XBT_INTERNAL void MC_find_object_address(memory_map_t maps, mc_object_info_t result);
-
 /********************************** Miscellaneous **********************************/
 
 typedef struct s_local_variable{

@@ -1278,8 +1278,8 @@ static void MC_post_process_types(mc_object_info_t info)
 }
 
 /** \brief Finds informations about a given shared object/executable */
-mc_object_info_t MC_find_object_info(memory_map_t maps, const char *name,
-                                     int executable)
+mc_object_info_t MC_find_object_info(
+  std::vector<simgrid::mc::VmMap> const& maps, const char *name, int executable)
 {
   mc_object_info_t result = MC_new_object_info();
   if (executable)

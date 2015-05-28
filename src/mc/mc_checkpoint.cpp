@@ -266,42 +266,39 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
  *
  *  `dl_iterate_phdr` would be more robust but would not work in cross-process.
  * */
-void MC_find_object_address(memory_map_t maps, mc_object_info_t result)
+void MC_find_object_address(std::vector<simgrid::mc::VmMap> const& maps, mc_object_info_t result)
 {
-  ssize_t i = 0;
-  s_map_region_t reg;
   const char *name = basename(result->file_name);
-  while (i < maps->mapsize) {
-    reg = maps->regions[i];
-    if (maps->regions[i].pathname == NULL
-        || strcmp(basename(maps->regions[i].pathname), name)) {
+  for (size_t i = 0; i < maps.size(); ++i) {
+    simgrid::mc::VmMap const& reg = maps[i];
+    if (maps[i].pathname.empty()
+        || strcmp(basename(maps[i].pathname.c_str()), name)) {
       // Nothing to do
     } else if ((reg.prot & PROT_WRITE)) {
       xbt_assert(!result->start_rw,
                  "Multiple read-write segments for %s, not supported",
-                 maps->regions[i].pathname);
+                 maps[i].pathname.c_str());
       result->start_rw = (char*) reg.start_addr;
       result->end_rw = (char*) reg.end_addr;
       // .bss is usually after the .data:
-      s_map_region_t *next = &(maps->regions[i + 1]);
-      if (next->pathname == NULL && (next->prot & PROT_WRITE)
-          && next->start_addr == reg.end_addr) {
-        result->end_rw = (char*) maps->regions[i + 1].end_addr;
+      simgrid::mc::VmMap const& next = maps[i + 1];
+      if (next.pathname.empty() && (next.prot & PROT_WRITE)
+          && next.start_addr == reg.end_addr) {
+        result->end_rw = (char*) maps[i + 1].end_addr;
       }
     } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)) {
       xbt_assert(!result->start_exec,
                  "Multiple executable segments for %s, not supported",
-                 maps->regions[i].pathname);
+                 maps[i].pathname.c_str());
       result->start_exec = (char*) reg.start_addr;
       result->end_exec = (char*) reg.end_addr;
     } else if ((reg.prot & PROT_READ) && !(reg.prot & PROT_EXEC)) {
       xbt_assert(!result->start_ro,
                  "Multiple read only segments for %s, not supported",
-                 maps->regions[i].pathname);
+                 maps[i].pathname.c_str());
       result->start_ro = (char*) reg.start_addr;
       result->end_ro = (char*) reg.end_addr;
     }
-    i++;
   }
 
   result->start = result->start_rw;

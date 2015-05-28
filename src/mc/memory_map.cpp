@@ -16,7 +16,12 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory_map, mc,
                                 "Logging specific to algorithms for memory_map");
 
-memory_map_t MC_get_memory_map(pid_t pid)
+}
+
+namespace simgrid {
+namespace mc {
+
+std::vector<VmMap> get_memory_map(pid_t pid)
 {
   /* Open the actual process's proc maps file and create the memory_map_t */
   /* to be returned. */
@@ -29,7 +34,7 @@ memory_map_t MC_get_memory_map(pid_t pid)
     "Cannot open %s to investigate the memory map of the process.", path);
   setbuf(fp, NULL);
 
-  memory_map_t ret = xbt_new0(s_memory_map_t, 1);
+  std::vector<VmMap> ret;
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
   ssize_t read; /* Number of bytes readed */
@@ -62,9 +67,9 @@ memory_map_t MC_get_memory_map(pid_t pid)
     if (tok == NULL)
       xbt_abort();
 
-    s_map_region_t memreg;          /* temporal map region used for creating the map */
+    VmMap memreg;
     char *endptr;
-    memreg.start_addr = (void *) strtoul(tok, &endptr, 16);
+    memreg.start_addr = strtoull(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
       xbt_abort();
@@ -73,7 +78,7 @@ memory_map_t MC_get_memory_map(pid_t pid)
     if (tok == NULL)
       xbt_abort();
 
-    memreg.end_addr = (void *) strtoul(tok, &endptr, 16);
+    memreg.end_addr = strtoull(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
       xbt_abort();
@@ -109,7 +114,7 @@ memory_map_t MC_get_memory_map(pid_t pid)
       memreg.flags |= MAP_SHARED;
 
     /* Get the offset value */
-    memreg.offset = (void *) strtoul(lfields[2], &endptr, 16);
+    memreg.offset = strtoull(lfields[2], &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
       xbt_abort();
@@ -139,32 +144,21 @@ memory_map_t MC_get_memory_map(pid_t pid)
       xbt_abort();
 
     /* And finally get the pathname */
-    memreg.pathname = xbt_strdup(lfields[5]);
+    if (lfields[5])
+      memreg.pathname = lfields[5];
 
     /* Create space for a new map region in the region's array and copy the */
     /* parsed stuff from the temporal memreg variable */
     XBT_DEBUG("Found region for %s",
-      memreg.pathname ? memreg.pathname : "(null)");
-    ret->regions = (map_region_t)
-        xbt_realloc(ret->regions, sizeof(memreg) * (ret->mapsize + 1));
-    memcpy(ret->regions + ret->mapsize, &memreg, sizeof(memreg));
-    ret->mapsize++;
+      !memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
 
+    ret.push_back(std::move(memreg));
   }
 
   free(line);
   fclose(fp);
-  return ret;
+  return std::move(ret);
 }
 
-void MC_free_memory_map(memory_map_t map){
-
-  int i;
-  for(i=0; i< map->mapsize; i++){
-    xbt_free(map->regions[i].pathname);
-  }
-  xbt_free(map->regions);
-  xbt_free(map);
 }
-
 }

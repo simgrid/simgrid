@@ -196,7 +196,7 @@ Process::Process(pid_t pid, int sockfd)
     process->process_flags |= MC_PROCESS_SELF_FLAG;
   process->running_ = true;
   process->status_ = 0;
-  process->memory_map = MC_get_memory_map(pid);
+  process->memory_map_ = get_memory_map(pid);
   process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
   process->heap = NULL;
   process->heap_info = NULL;
@@ -241,9 +241,6 @@ Process::~Process()
 
   process->process_flags = MC_PROCESS_NO_FLAG;
   process->pid_ = 0;
-
-  MC_free_memory_map(process->memory_map);
-  process->memory_map = NULL;
 
   process->maestro_stack_start_ = nullptr;
   process->maestro_stack_end_ = nullptr;
@@ -335,25 +332,25 @@ void Process::init_memory_map_info()
   if(regcomp(&res.so_re, SO_RE, 0) || regcomp(&res.version_re, VERSION_RE, 0))
     xbt_die(".so regexp did not compile");
 
-  memory_map_t maps = this->memory_map;
+  std::vector<simgrid::mc::VmMap> const& maps = this->memory_map_;
 
   const char* current_name = NULL;
 
-  for (ssize_t i=0; i < maps->mapsize; i++) {
-    map_region_t reg = &(maps->regions[i]);
-    const char* pathname = maps->regions[i].pathname;
+  for (size_t i=0; i < maps.size(); i++) {
+    simgrid::mc::VmMap const& reg = maps[i];
+    const char* pathname = maps[i].pathname.c_str();
 
     // Nothing to do
-    if (maps->regions[i].pathname == NULL) {
+    if (maps[i].pathname.empty()) {
       current_name = NULL;
       continue;
     }
 
     // [stack], [vvar], [vsyscall], [vdso] ...
     if (pathname[0] == '[') {
-      if ((reg->prot & PROT_WRITE) && !memcmp(pathname, "[stack]", 7)) {
-        this->maestro_stack_start_ = remote(reg->start_addr);
-        this->maestro_stack_end_ = remote(reg->end_addr);
+      if ((reg.prot & PROT_WRITE) && !memcmp(pathname, "[stack]", 7)) {
+        this->maestro_stack_start_ = remote(reg.start_addr);
+        this->maestro_stack_end_ = remote(reg.end_addr);
       }
       current_name = NULL;
       continue;
@@ -363,7 +360,7 @@ void Process::init_memory_map_info()
       continue;
 
     current_name = pathname;
-    if (!(reg->prot & PROT_READ) && (reg->prot & PROT_EXEC))
+    if (!(reg.prot & PROT_READ) && (reg.prot & PROT_EXEC))
       continue;
 
     const bool is_executable = !i;
@@ -379,7 +376,7 @@ void Process::init_memory_map_info()
     }
 
     mc_object_info_t info =
-      MC_find_object_info(this->memory_map, pathname, is_executable);
+      MC_find_object_info(this->memory_map_, pathname, is_executable);
     this->object_infos = (mc_object_info_t*) realloc(this->object_infos,
       (this->object_infos_size+1) * sizeof(mc_object_info_t*));
     this->object_infos[this->object_infos_size] = info;

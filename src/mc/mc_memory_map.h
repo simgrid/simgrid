@@ -7,43 +7,41 @@
 #ifndef MC_MEMORY_MAP_H
 #define MC_MEMORY_MAP_H
 
+#include <cstdint>
+
+#include <string>
+#include <vector>
+
 #include <sys/types.h>
 
 #include <simgrid_config.h>
 #include "mc_forward.h"
 
-SG_BEGIN_DECL()
+namespace simgrid {
+namespace mc {
 
-/** \file
- *   These functions and data structures implements a binary interface for
- *   the proc maps ascii interface                                           */
-
-/* Each field is defined as documented in proc's manual page  */
-struct s_map_region {
-
-  void *start_addr;             /* Start address of the map */
-  void *end_addr;               /* End address of the map */
+/** An virtual memory map entry from /proc/$pid/maps */
+struct VmMap {
+  std::uint64_t start_addr, end_addr;
   int prot;                     /* Memory protection */
   int flags;                    /* Additional memory flags */
-  void *offset;                 /* Offset in the file/whatever */
+  std::uint64_t offset;         /* Offset in the file/whatever */
   char dev_major;               /* Major of the device */
   char dev_minor;               /* Minor of the device */
   unsigned long inode;          /* Inode in the device */
-  char *pathname;               /* Path name of the mapped file */
-
-};
-typedef struct s_map_region s_map_region_t, *map_region_t;
-
-struct s_memory_map {
-
-  s_map_region_t *regions;      /* Pointer to an array of regions */
-  int mapsize;                  /* Number of regions in the memory */
-
+  std::string pathname;         /* Path name of the mapped file */
 };
 
-XBT_INTERNAL memory_map_t MC_get_memory_map(pid_t pid);
-XBT_INTERNAL void MC_free_memory_map(memory_map_t map);
+std::vector<VmMap> get_memory_map(pid_t pid);
 
-SG_END_DECL()
+}
+}
+
+extern "C" {
+
+XBT_INTERNAL void MC_find_object_address(
+  std::vector<simgrid::mc::VmMap> const& maps, mc_object_info_t result);
+
+}
 
 #endif
