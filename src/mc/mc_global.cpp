@@ -192,11 +192,10 @@ int MC_deadlock_check()
 {
   if (mc_mode == MC_MODE_SERVER) {
     int res;
-    if ((res = MC_protocol_send_simple_message(mc_model_checker->process().socket,
-      MC_MESSAGE_DEADLOCK_CHECK)))
+    if ((res = mc_model_checker->process().send_message(MC_MESSAGE_DEADLOCK_CHECK)))
       xbt_die("Could not check deadlock state");
     s_mc_int_message_t message;
-    ssize_t s = MC_receive_message(mc_model_checker->process().socket, &message, sizeof(message), 0);
+    ssize_t s = mc_model_checker->process().receive_message(message);
     if (s == -1)
       xbt_die("Could not receive message");
     else if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY) {

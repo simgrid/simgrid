@@ -7,7 +7,8 @@
 #ifndef MC_PROCESS_H
 #define MC_PROCESS_H
 
-#include <stdbool.h>
+#include <type_traits>
+
 #include <sys/types.h>
 
 #include <vector>
@@ -135,6 +136,25 @@ public:
     return status_;
   }
 
+  template<class M>
+  typename std::enable_if< std::is_class<M>::value && std::is_trivial<M>::value, int >::type
+  send_message(M const& m)
+  {
+    return MC_protocol_send(this->socket_, &m, sizeof(M));
+  }
+
+  int send_message(e_mc_message_type message_id)
+  {
+    return MC_protocol_send_simple_message(this->socket_, message_id);
+  }
+
+  template<class M>
+  typename std::enable_if< std::is_class<M>::value && std::is_trivial<M>::value, ssize_t >::type
+  receive_message(M& m)
+  {
+    return MC_receive_message(this->socket_, &m, sizeof(M), 0);
+  }
+
 private:
   void init_memory_map_info();
   void refresh_heap();
@@ -142,9 +162,7 @@ private:
 private:
   mc_process_flags_t process_flags;
   pid_t pid_;
-public: // to be private
-  int socket;
-private:
+  int socket_;
   int status_;
   bool running_;
   std::vector<VmMap> memory_map_;

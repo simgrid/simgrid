@@ -103,7 +103,7 @@ typedef struct s_mc_register_symbol_message {
   void* data;
 } s_mc_register_symbol_message_t, * mc_register_symbol_message_t;
 
-XBT_INTERNAL int MC_protocol_send(int socket, void* message, size_t size);
+XBT_INTERNAL int MC_protocol_send(int socket, const void* message, size_t size);
 XBT_INTERNAL int MC_protocol_send_simple_message(int socket, e_mc_message_type type);
 XBT_INTERNAL int MC_protocol_hello(int socket);
 XBT_INTERNAL ssize_t MC_receive_message(int socket, void* message, size_t size, int options);

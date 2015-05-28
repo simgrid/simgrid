@@ -190,7 +190,7 @@ Process::Process(pid_t pid, int sockfd)
   Process* process = this;
 
   process->process_flags = MC_PROCESS_NO_FLAG;
-  process->socket = sockfd;
+  process->socket_ = sockfd;
   process->pid_ = pid;
   if (pid==getpid())
     process->process_flags |= MC_PROCESS_SELF_FLAG;
@@ -238,6 +238,9 @@ Process::Process(pid_t pid, int sockfd)
 Process::~Process()
 {
   Process* process = this;
+
+  if (this->socket_ >= 0 && close(this->socket_) < 0)
+    xbt_die("Could not close communication socket");
 
   process->process_flags = MC_PROCESS_NO_FLAG;
   process->pid_ = 0;

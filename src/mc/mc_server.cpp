@@ -124,8 +124,7 @@ void s_mc_server::exit()
 
 void s_mc_server::resume(mc_process_t process)
 {
-  int socket = process->socket;
-  int res = MC_protocol_send_simple_message(socket, MC_MESSAGE_CONTINUE);
+  int res = process->send_message(MC_MESSAGE_CONTINUE);
   if (res)
     throw std::system_error(res, std::system_category());
   process->cache_flags = (mc_process_cache_flags_t) 0;
@@ -351,7 +350,7 @@ void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = pid;
   m.value = value;
-  MC_protocol_send(mc_model_checker->process().socket, &m, sizeof(m));
+  mc_model_checker->process().send_message(m);
   process->cache_flags = (mc_process_cache_flags_t) 0;
   while (mc_model_checker->process().running()) {
     if (!mc_server->handle_events())
