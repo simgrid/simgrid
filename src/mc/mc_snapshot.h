@@ -127,16 +127,16 @@ public:
  *      each type.
  */
 class RegionSnapshot {
-public:
-  mc_region_type_t region_type;
-  mc_region_storage_type_t storage_type;
-  mc_object_info_t object_info;
+private:
+  mc_region_type_t region_type_;
+  mc_region_storage_type_t storage_type_;
+  mc_object_info_t object_info_;
 
   /** @brief  Virtual address of the region in the simulated process */
-  void *start_addr;
+  void *start_addr_;
 
   /** @brief Size of the data region in bytes */
-  size_t size;
+  size_t size_;
 
   /** @brief Permanent virtual address of the region
    *
@@ -147,36 +147,37 @@ public:
    * on the region of the global variables.
    *
    * */
-  void *permanent_addr;
+  void *permanent_addr_;
 
-private:
   std::vector<char> flat_data_;
   PerPageCopy page_numbers_;
   std::vector<std::unique_ptr<RegionSnapshot>> privatized_regions_;
 public:
   RegionSnapshot() :
-    region_type(MC_REGION_TYPE_UNKNOWN),
-    storage_type(MC_REGION_STORAGE_TYPE_NONE),
-    object_info(nullptr),
-    start_addr(nullptr),
-    size(0),
-    permanent_addr(nullptr)
+    region_type_(MC_REGION_TYPE_UNKNOWN),
+    storage_type_(MC_REGION_STORAGE_TYPE_NONE),
+    object_info_(nullptr),
+    start_addr_(nullptr),
+    size_(0),
+    permanent_addr_(nullptr)
   {}
   RegionSnapshot(mc_region_type_t type, void *start_addr, void* permanent_addr, size_t size) :
-    region_type(type),
-    storage_type(MC_REGION_STORAGE_TYPE_NONE),
-    object_info(nullptr),
-    start_addr(start_addr),
-    size(size),
-    permanent_addr(permanent_addr)
+    region_type_(type),
+    storage_type_(MC_REGION_STORAGE_TYPE_NONE),
+    object_info_(nullptr),
+    start_addr_(start_addr),
+    size_(size),
+    permanent_addr_(permanent_addr)
   {}
   ~RegionSnapshot();
   RegionSnapshot(RegionSnapshot const&) = delete;
   RegionSnapshot& operator=(RegionSnapshot const&) = delete;
 
+  // Data
+
   void clear_data()
   {
-    storage_type = MC_REGION_STORAGE_TYPE_NONE;
+    storage_type_ = MC_REGION_STORAGE_TYPE_NONE;
     flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_.clear();
@@ -184,7 +185,7 @@ public:
   
   void flat_data(std::vector<char> data)
   {
-    storage_type = MC_REGION_STORAGE_TYPE_FLAT;
+    storage_type_ = MC_REGION_STORAGE_TYPE_FLAT;
     flat_data_ = std::move(data);
     page_numbers_.clear();
     privatized_regions_.clear();
@@ -193,7 +194,7 @@ public:
 
   void page_data(PerPageCopy page_data)
   {
-    storage_type = MC_REGION_STORAGE_TYPE_CHUNKED;
+    storage_type_ = MC_REGION_STORAGE_TYPE_CHUNKED;
     flat_data_.clear();
     page_numbers_ = std::move(page_data);
     privatized_regions_.clear();
@@ -202,7 +203,7 @@ public:
 
   void privatized_data(std::vector<std::unique_ptr<RegionSnapshot>> data)
   {
-    storage_type = MC_REGION_STORAGE_TYPE_PRIVATIZED;
+    storage_type_ = MC_REGION_STORAGE_TYPE_PRIVATIZED;
     flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_ = std::move(data);
@@ -210,6 +211,23 @@ public:
   std::vector<std::unique_ptr<RegionSnapshot>> const& privatized_data() const
   {
     return privatized_regions_;
+  }
+
+  mc_object_info_t object_info() const { return object_info_; }
+  void object_info(mc_object_info_t info) { object_info_ = info; }
+
+  // Other getters
+
+  remote_ptr<void> start() const { return remote(start_addr_); }
+  remote_ptr<void> end() const { return remote((char*)start_addr_ + size_); }
+  remote_ptr<void> permanent_address() const { return remote(permanent_addr_); }
+  std::size_t size() const { return size_; }
+  mc_region_storage_type_t storage_type() const { return storage_type_; }
+  mc_region_type_t region_type() const { return region_type_; }
+
+  bool contain(remote_ptr<void> p) const
+  {
+    return p >= start() && p < end();
   }
 };
 
@@ -225,14 +243,13 @@ XBT_INTERNAL void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t
 static inline  __attribute__ ((always_inline))
 bool mc_region_contain(mc_mem_region_t region, const void* p)
 {
-  return p >= region->start_addr &&
-    p < (void*)((char*) region->start_addr + region->size);
+  return region->contain(simgrid::mc::remote(p));
 }
 
 static inline __attribute__((always_inline))
 void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
 {
-  size_t pageno = mc_page_number(region->start_addr, (void*) addr);
+  size_t pageno = mc_page_number((void*)region->start().address(), (void*) addr);
   const void* snapshot_page =
     region->page_data().page(pageno);
   return (char*) snapshot_page + mc_page_offset((void*) addr);
@@ -241,14 +258,14 @@ void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region
 static inline __attribute__((always_inline))
 void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int process_index)
 {
-  switch (region->storage_type) {
+  switch (region->storage_type()) {
   case MC_REGION_STORAGE_TYPE_NONE:
   default:
     xbt_die("Storage type not supported");
 
   case MC_REGION_STORAGE_TYPE_FLAT:
     {
-      uintptr_t offset = addr - (uintptr_t) region->start_addr;
+      uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start().address();
       return (void *) ((uintptr_t) region->flat_data().data() + offset);
     }
 
@@ -416,12 +433,12 @@ const void* MC_region_read(mc_mem_region_t region, void* target, const void* add
 {
   xbt_assert(region);
 
-  uintptr_t offset = (char*) addr - (char*) region->start_addr;
+  uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start().address();
 
   xbt_assert(mc_region_contain(region, addr),
     "Trying to read out of the region boundary.");
 
-  switch (region->storage_type) {
+  switch (region->storage_type()) {
   case MC_REGION_STORAGE_TYPE_NONE:
   default:
     xbt_die("Storage type not supported");

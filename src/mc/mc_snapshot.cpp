@@ -32,7 +32,7 @@ mc_mem_region_t mc_get_snapshot_region(
     if (!(region && mc_region_contain(region, addr)))
       continue;
 
-    if (region->storage_type == MC_REGION_STORAGE_TYPE_PRIVATIZED) {
+    if (region->storage_type() == MC_REGION_STORAGE_TYPE_PRIVATIZED) {
 #ifdef HAVE_SMPI
       // Use the current process index of the snapshot:
       if (process_index == simgrid::mc::ProcessIndexDisabled) {
@@ -114,8 +114,8 @@ int MC_snapshot_region_memcmp(
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
   bool stack_alloc = size < 64;
-  const bool region1_need_buffer = region1==NULL || region1->storage_type==MC_REGION_STORAGE_TYPE_FLAT;
-  const bool region2_need_buffer = region2==NULL || region2->storage_type==MC_REGION_STORAGE_TYPE_FLAT;
+  const bool region1_need_buffer = region1==NULL || region1->storage_type()==MC_REGION_STORAGE_TYPE_FLAT;
+  const bool region2_need_buffer = region2==NULL || region2->storage_type()==MC_REGION_STORAGE_TYPE_FLAT;
   void* buffer1a = region1_need_buffer ? NULL : stack_alloc ? alloca(size) : malloc(size);
   void* buffer2a = region2_need_buffer ? NULL : stack_alloc ? alloca(size) : malloc(size);
   const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);

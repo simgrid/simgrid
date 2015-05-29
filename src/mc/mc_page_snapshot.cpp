@@ -106,11 +106,11 @@ mc_mem_region_t mc_region_new_sparse(mc_region_type_t region_type,
 
 void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg)
 {
-  xbt_assert((((uintptr_t)reg->permanent_addr) & (xbt_pagesize-1)) == 0,
+  xbt_assert(((reg->permanent_address().address()) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
-  xbt_assert(mc_page_count(reg->size) == reg->page_data().page_count());
+  xbt_assert(mc_page_count(reg->size()) == reg->page_data().page_count());
   mc_restore_page_snapshot_region(process,
-    reg->permanent_addr, reg->page_data());
+    (void*) reg->permanent_address().address(), reg->page_data());
 }
 
 }

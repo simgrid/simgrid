@@ -129,15 +129,15 @@ static mc_mem_region_t MC_region_new(
  */
 static void MC_region_restore(mc_mem_region_t region)
 {
-  switch(region->storage_type) {
+  switch(region->storage_type()) {
   case MC_REGION_STORAGE_TYPE_NONE:
   default:
     xbt_die("Storage type not supported");
     break;
 
   case MC_REGION_STORAGE_TYPE_FLAT:
-    mc_model_checker->process().write_bytes(region->flat_data().data(), region->size,
-      remote(region->permanent_addr));
+    mc_model_checker->process().write_bytes(region->flat_data().data(),
+      region->size(), region->permanent_address());
     break;
 
   case MC_REGION_STORAGE_TYPE_CHUNKED:
@@ -197,7 +197,7 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot, mc_region_
   else
     region = MC_region_new(type, start_addr, permanent_addr, size);
 
-  region->object_info = object_info;
+  region->object_info(object_info);
   snapshot->snapshot_regions[index] = region;
   return;
 }
