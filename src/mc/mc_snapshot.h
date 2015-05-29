@@ -152,39 +152,6 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
 XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
   const void* addr, const s_mc_snapshot_t *snapshot, int process_index);
 
-/** \brief Translate a pointer from process address space to snapshot address space
- *
- *  The address space contains snapshot of the main/application memory:
- *  this function finds the address in a given snaphot for a given
- *  real/application address.
- *
- *  For read only memory regions and other regions which are not int the
- *  snapshot, the address is not changed.
- *
- *  \param addr     Application address
- *  \param snapshot The snapshot of interest (if NULL no translation is done)
- *  \return         Translated address in the snapshot address space
- * */
-static inline __attribute__((always_inline))
-void* mc_translate_address(uintptr_t addr, mc_snapshot_t snapshot, int process_index)
-{
-
-  // If not in a process state/clone:
-  if (!snapshot) {
-    return (uintptr_t *) addr;
-  }
-
-  mc_mem_region_t region = mc_get_snapshot_region((void*) addr, snapshot, process_index);
-
-  xbt_assert(mc_region_contain(region, (void*) addr), "Trying to read out of the region boundary.");
-
-  if (!region)
-    // TODO, This is not correct anymore in the cross process model?
-    return (void *) addr;
-  else
-    return mc_translate_address_region(addr, region, process_index);
-}
-
 // ***** MC Snapshot
 
 /** Ignored data
