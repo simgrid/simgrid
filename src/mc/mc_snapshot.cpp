@@ -281,18 +281,9 @@ static void test_snapshot(bool sparse_checkpoint) {
     }
 
     xbt_test_add("Compare whole region data for %i page(s)", n);
-    xbt_test_assert(!MC_snapshot_region_memcmp(source, NULL, source, region, byte_size),
-      "Mismatch in MC_snapshot_region_memcmp() for the whole region");
+
     xbt_test_assert(MC_snapshot_region_memcmp(source, region0, source, region, byte_size),
       "Unexpected match in MC_snapshot_region_memcmp() with previous snapshot");
-
-    xbt_test_add("Compare parts of region data for %i page(s) with current value", n);
-    for(int j=0; j!=100; ++j) {
-      size_t offset = rand() % byte_size;
-      size_t size = rand() % (byte_size - offset);
-      xbt_test_assert(!MC_snapshot_region_memcmp((char*) source+offset, NULL, (char*) source+offset, region, size),
-        "Mismatch in MC_snapshot_region_memcmp()");
-    }
 
     xbt_test_add("Compare parts of region data for %i page(s) with itself", n);
     for(int j=0; j!=100; ++j) {
