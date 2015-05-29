@@ -151,7 +151,7 @@ private:
 
   std::vector<char> flat_data_;
   PerPageCopy page_numbers_;
-  std::vector<std::unique_ptr<RegionSnapshot>> privatized_regions_;
+  std::vector<RegionSnapshot> privatized_regions_;
 public:
   RegionSnapshot() :
     region_type_(MC_REGION_TYPE_UNKNOWN),
@@ -170,10 +170,50 @@ public:
     permanent_addr_(permanent_addr)
   {}
   ~RegionSnapshot();
-  RegionSnapshot(RegionSnapshot const&) = delete;
-  RegionSnapshot& operator=(RegionSnapshot const&) = delete;
+  RegionSnapshot(RegionSnapshot const&) = default;
+  RegionSnapshot& operator=(RegionSnapshot const&) = default;
+  RegionSnapshot(RegionSnapshot&& that)
+  {
+    region_type_ = that.region_type_;
+    storage_type_ = that.storage_type_;
+    object_info_ = that.object_info_;
+    start_addr_ = that.start_addr_;
+    size_ = that.size_;
+    permanent_addr_ = that.permanent_addr_;
+    flat_data_ = std::move(that.flat_data_);
+    page_numbers_ = std::move(that.page_numbers_);
+    privatized_regions_ = std::move(that.privatized_regions_);
+    that.clear();
+  }
+  RegionSnapshot& operator=(RegionSnapshot&& that)
+  {
+    region_type_ = that.region_type_;
+    storage_type_ = that.storage_type_;
+    object_info_ = that.object_info_;
+    start_addr_ = that.start_addr_;
+    size_ = that.size_;
+    permanent_addr_ = that.permanent_addr_;
+    flat_data_ = std::move(that.flat_data_);
+    page_numbers_ = std::move(that.page_numbers_);
+    privatized_regions_ = std::move(that.privatized_regions_);
+    that.clear();
+    return *this;
+  }
 
   // Data
+
+  void clear()
+  {
+    region_type_ = MC_REGION_TYPE_UNKNOWN;
+    storage_type_ = MC_REGION_STORAGE_TYPE_NONE;
+    privatized_regions_.clear();
+    page_numbers_.clear();
+    flat_data_.clear();
+    object_info_ = nullptr;
+    start_addr_ = nullptr;
+    size_ = 0;
+    permanent_addr_ = nullptr;
+  }
 
   void clear_data()
   {
@@ -201,14 +241,18 @@ public:
   }
   PerPageCopy const& page_data() const { return page_numbers_; }
 
-  void privatized_data(std::vector<std::unique_ptr<RegionSnapshot>> data)
+  void privatized_data(std::vector<RegionSnapshot> data)
   {
     storage_type_ = MC_REGION_STORAGE_TYPE_PRIVATIZED;
     flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_ = std::move(data);
   }
-  std::vector<std::unique_ptr<RegionSnapshot>> const& privatized_data() const
+  std::vector<RegionSnapshot> const& privatized_data() const
+  {
+    return privatized_regions_;
+  }
+  std::vector<RegionSnapshot>& privatized_data()
   {
     return privatized_regions_;
   }
@@ -236,7 +280,7 @@ public:
 
 typedef class simgrid::mc::RegionSnapshot s_mc_mem_region_t, *mc_mem_region_t;
 
-MC_SHOULD_BE_INTERNAL mc_mem_region_t mc_region_new_sparse(
+MC_SHOULD_BE_INTERNAL simgrid::mc::RegionSnapshot MC_region_sparse(
   mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
 XBT_INTERNAL void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg);
 
@@ -278,9 +322,8 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
         "Missing process index for privatized region");
       xbt_assert((size_t) process_index < region->privatized_data().size(),
         "Out of range process index");
-      mc_mem_region_t subregion = region->privatized_data()[process_index].get();
-      xbt_assert(subregion, "Missing memory region for process %i", process_index);
-      return mc_translate_address_region(addr, subregion, process_index);
+      simgrid::mc::RegionSnapshot& subregion= region->privatized_data()[process_index];
+      return mc_translate_address_region(addr, &subregion, process_index);
     }
   }
 }

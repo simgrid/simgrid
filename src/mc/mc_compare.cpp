@@ -281,8 +281,8 @@ static int compare_global_variables(mc_object_info_t object_info,
     // Compare the global variables separately for each simulates process:
     for (size_t process_index = 0; process_index < process_count; process_index++) {
       int is_diff = compare_global_variables(object_info, process_index,
-        r1->privatized_data()[process_index].get(),
-        r2->privatized_data()[process_index].get(),
+        &r1->privatized_data()[process_index],
+        &r2->privatized_data()[process_index],
         snapshot1, snapshot2);
       if (is_diff) return 1;
     }

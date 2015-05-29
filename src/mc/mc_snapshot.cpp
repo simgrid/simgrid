@@ -44,9 +44,9 @@ mc_mem_region_t mc_get_snapshot_region(
       if (process_index >= (int) region->privatized_data().size()) {
         xbt_die("Invalid process index");
       }
-      mc_mem_region_t priv_region = region->privatized_data()[process_index].get();
-      xbt_assert(mc_region_contain(priv_region, addr));
-      return priv_region;
+      simgrid::mc::RegionSnapshot& priv_region = region->privatized_data()[process_index];
+      xbt_assert(mc_region_contain(&priv_region, addr));
+      return &priv_region;
 #else
       xbt_die("Privatized region in a non SMPI build (this should not happen)");
 #endif
@@ -256,55 +256,52 @@ static void test_snapshot(bool sparse_checkpoint) {
 
     // Init memory and take snapshots:
     init_memory(source, byte_size);
-    mc_mem_region_t region0 = mc_region_new_sparse(
+    simgrid::mc::RegionSnapshot region0 = MC_region_sparse(
       MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
     for(int i=0; i<n; i+=2) {
       init_memory((char*) source + i*xbt_pagesize, xbt_pagesize);
     }
-    mc_mem_region_t region = mc_region_new_sparse(
+    simgrid::mc::RegionSnapshot region = MC_region_sparse(
       MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
 
     void* destination = mmap(NULL, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     xbt_assert(source!=MAP_FAILED, "Could not allocate destination memory");
 
     xbt_test_add("Reading whole region data for %i page(s)", n);
-    const void* read = MC_region_read(region, destination, source, byte_size);
+    const void* read = MC_region_read(&region, destination, source, byte_size);
     xbt_test_assert(!memcmp(source, read, byte_size), "Mismatch in MC_region_read()");
 
     xbt_test_add("Reading parts of region data for %i page(s)", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
-      const void* read = MC_region_read(region, destination, (const char*) source+offset, size);
+      const void* read = MC_region_read(&region, destination, (const char*) source+offset, size);
       xbt_test_assert(!memcmp((char*) source+offset, read, size),
         "Mismatch in MC_region_read()");
     }
 
     xbt_test_add("Compare whole region data for %i page(s)", n);
 
-    xbt_test_assert(MC_snapshot_region_memcmp(source, region0, source, region, byte_size),
+    xbt_test_assert(MC_snapshot_region_memcmp(source, &region0, source, &region, byte_size),
       "Unexpected match in MC_snapshot_region_memcmp() with previous snapshot");
 
     xbt_test_add("Compare parts of region data for %i page(s) with itself", n);
     for(int j=0; j!=100; ++j) {
       size_t offset = rand() % byte_size;
       size_t size = rand() % (byte_size - offset);
-      xbt_test_assert(!MC_snapshot_region_memcmp((char*) source+offset, region, (char*) source+offset, region, size),
+      xbt_test_assert(!MC_snapshot_region_memcmp((char*) source+offset, &region, (char*) source+offset, &region, size),
         "Mismatch in MC_snapshot_region_memcmp()");
     }
 
     if (n==1) {
       xbt_test_add("Read pointer for %i page(s)", n);
       memcpy(source, &mc_model_checker, sizeof(void*));
-      mc_mem_region_t region2 = mc_region_new_sparse(
+      simgrid::mc::RegionSnapshot region2 = MC_region_sparse(
         MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
-      xbt_test_assert(MC_region_read_pointer(region2, source) == mc_model_checker,
+      xbt_test_assert(MC_region_read_pointer(&region2, source) == mc_model_checker,
         "Mismtach in MC_region_read_pointer()");
-      delete region2;
     }
 
-    delete region;
-    delete region0;
     munmap(destination, byte_size);
     munmap(source, byte_size);
   }

@@ -88,7 +88,7 @@ RegionSnapshot::~RegionSnapshot() {}
 
 extern "C" {
 
-static mc_mem_region_t mc_region_new_dense(
+static simgrid::mc::RegionSnapshot MC_region_dense(
   mc_region_type_t region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
@@ -97,13 +97,13 @@ static mc_mem_region_t mc_region_new_dense(
     remote(permanent_addr),
     simgrid::mc::ProcessIndexDisabled);
 
-  mc_mem_region_t region = new simgrid::mc::RegionSnapshot(
+  simgrid::mc::RegionSnapshot region(
     region_type, start_addr, permanent_addr, size);
-  region->flat_data(std::move(data));
+  region.flat_data(std::move(data));
 
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
-            region_type, region->flat_data().data(), permanent_addr, size);
-  return region;
+            region_type, region.flat_data().data(), permanent_addr, size);
+  return std::move(region);
 }
 
 /** @brief Take a snapshot of a given region
@@ -113,13 +113,13 @@ static mc_mem_region_t mc_region_new_dense(
  * @param permanent_addr Permanent address of this data (for privatized variables, this is the virtual address of the privatized mapping)
  * @param size         Size of the data*
  */
-static mc_mem_region_t MC_region_new(
+static simgrid::mc::RegionSnapshot MC_region(
   mc_region_type_t type, void *start_addr, void* permanent_addr, size_t size)
 {
   if (_sg_mc_sparse_checkpoint) {
-    return mc_region_new_sparse(type, start_addr, permanent_addr, size);
+    return MC_region_sparse(type, start_addr, permanent_addr, size);
   } else  {
-    return mc_region_new_dense(type, start_addr, permanent_addr, size);
+    return MC_region_dense(type, start_addr, permanent_addr, size);
   }
 }
 
@@ -145,13 +145,13 @@ static void MC_region_restore(mc_mem_region_t region)
     break;
 
   case MC_REGION_STORAGE_TYPE_PRIVATIZED:
-    for (auto const& p : region->privatized_data())
-      MC_region_restore(p.get());
+    for (auto& p : region->privatized_data())
+      MC_region_restore(&p);
     break;
   }
 }
 
-static mc_mem_region_t MC_region_new_privatized(
+static simgrid::mc::RegionSnapshot MC_region_privatized(
     mc_region_type_t region_type, void *start_addr, void* permanent_addr, size_t size
     )
 {
@@ -167,18 +167,18 @@ static mc_mem_region_t MC_region_new_privatized(
     &privatisation_regions, sizeof(privatisation_regions),
     remote(remote_smpi_privatisation_regions));
 
-  std::vector<std::unique_ptr<simgrid::mc::RegionSnapshot>> data;
+  std::vector<simgrid::mc::RegionSnapshot> data;
   data.reserve(process_count);
   for (size_t i = 0; i < process_count; i++)
-    data.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(
-      MC_region_new(region_type, start_addr,
+    data.push_back(
+      MC_region(region_type, start_addr,
         privatisation_regions[i].address, size)
-      ));
+      );
 
-  mc_mem_region_t region = new simgrid::mc::RegionSnapshot(
+  simgrid::mc::RegionSnapshot region = simgrid::mc::RegionSnapshot(
     region_type, start_addr, permanent_addr, size);
-  region->privatized_data(std::move(data));
-  return region;
+  region.privatized_data(std::move(data));
+  return std::move(region);
 }
 
 static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot, mc_region_type_t type,
@@ -190,15 +190,17 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot, mc_region_
   else if (type == MC_REGION_TYPE_HEAP)
     xbt_assert(!object_info, "Unexpected object info for heap region.");
 
-  mc_mem_region_t region;
   const bool privatization_aware = MC_object_info_is_privatized(object_info);
-  if (privatization_aware && MC_smpi_process_count())
-    region = MC_region_new_privatized(type, start_addr, permanent_addr, size);
-  else
-    region = MC_region_new(type, start_addr, permanent_addr, size);
 
-  region->object_info(object_info);
-  snapshot->snapshot_regions[index] = region;
+  simgrid::mc::RegionSnapshot region;
+  if (privatization_aware && MC_smpi_process_count())
+    region = MC_region_privatized(type, start_addr, permanent_addr, size);
+  else
+    region = MC_region(type, start_addr, permanent_addr, size);
+
+  region.object_info(object_info);
+  snapshot->snapshot_regions[index]
+    = new simgrid::mc::RegionSnapshot(std::move(region));
   return;
 }
 
