@@ -33,7 +33,7 @@ typedef enum e_mc_region_type_t {
 } mc_region_type_t;
 
 // TODO, use OO instead of this
-typedef enum e_mc_region_storeage_type_t {
+typedef enum e_mc_region_storage_type_t {
   MC_REGION_STORAGE_TYPE_NONE = 0,
   MC_REGION_STORAGE_TYPE_FLAT = 1,
   MC_REGION_STORAGE_TYPE_CHUNKED = 2,
