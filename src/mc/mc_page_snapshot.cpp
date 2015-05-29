@@ -16,9 +16,8 @@
 
 using simgrid::mc::remote;
 
-extern "C" {
-
-// ***** Region management:
+namespace simgrid {
+namespace mc {
 
 /** @brief Take a per-page snapshot of a region
  *
@@ -26,27 +25,19 @@ extern "C" {
  *  @param pag_count       Number of pages of the region
  *  @return                Snapshot page numbers of this new snapshot
  */
-size_t* mc_take_page_snapshot_region(mc_process_t process,
-  void* data, size_t page_count)
+PerPageCopy::PerPageCopy(PageStore& store, AddressSpace& as,
+    remote_ptr<void> addr, std::size_t page_count)
 {
-  size_t* pagenos = (size_t*) malloc(page_count * sizeof(size_t));
+  store_ = &store;
+  this->pagenos_.resize(page_count);
+  std::vector<char> buffer(xbt_pagesize);
 
-  const bool is_self = process->is_self();
+  for (size_t i = 0; i != page_count; ++i) {
 
-  void* temp = NULL;
-  if (!is_self)
-    temp = malloc(xbt_pagesize);
+      remote_ptr<void> page = remote(addr.address() + (i << xbt_pagebits));
+      xbt_assert(mc_page_offset((void*)page.address())==0,
+        "Not at the beginning of a page");
 
-  for (size_t i=0; i!=page_count; ++i) {
-
-      // Otherwise, we need to store the page the hard way
-      // (by reading its content):
-      void* page = (char*) data + (i << xbt_pagebits);
-      xbt_assert(mc_page_offset(page)==0, "Not at the beginning of a page");
-      void* page_data;
-      if (is_self) {
-        page_data = page;
-      } else {
         /* Adding another copy (and a syscall) will probably slow things a lot.
            TODO, optimize this somehow (at least by grouping the syscalls)
            if needed. Either:
@@ -54,25 +45,20 @@ size_t* mc_take_page_snapshot_region(mc_process_t process,
             - let the application snapshot itself;
             - move the segments in shared memory (this will break `fork` however).
         */
-        page_data = temp;
-        process->read_bytes(
-          temp, xbt_pagesize, remote(page),
+
+        as.read_bytes(
+          buffer.data(), xbt_pagesize, page,
           simgrid::mc::ProcessIndexDisabled);
-      }
-      pagenos[i] = mc_model_checker->page_store().store_page(page_data);
+
+      pagenos_[i] = store_->store_page(buffer.data());
 
   }
-
-  free(temp);
-  return pagenos;
 }
 
-void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count)
-{
-  for (size_t i=0; i!=page_count; ++i) {
-    mc_model_checker->page_store().unref_page(pagenos[i]);
-  }
 }
+}
+
+extern "C" {
 
 /** @brief Restore a snapshot of a region
  *
@@ -84,12 +70,12 @@ void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count)
  *  @param pagenos
  */
 void mc_restore_page_snapshot_region(mc_process_t process,
-  void* start_addr, size_t page_count, size_t* pagenos)
+  void* start_addr, simgrid::mc::PerPageCopy const& pages_copy)
 {
-  for (size_t i=0; i!=page_count; ++i) {
+  for (size_t i = 0; i != pages_copy.page_count(); ++i) {
     // Otherwise, copy the page:
     void* target_page = mc_page_from_number(start_addr, i);
-    const void* source_page = mc_model_checker->page_store().get_page(pagenos[i]);
+    const void* source_page = pages_copy.page(i);
     process->write_bytes(source_page, xbt_pagesize, remote(target_page));
   }
 }
@@ -101,7 +87,7 @@ mc_mem_region_t mc_region_new_sparse(mc_region_type_t region_type,
 {
   mc_process_t process = &mc_model_checker->process();
 
-  mc_mem_region_t region = xbt_new(s_mc_mem_region_t, 1);
+  mc_mem_region_t region = new simgrid::mc::RegionSnapshot();
   region->region_type = region_type;
   region->storage_type = MC_REGION_STORAGE_TYPE_CHUNKED;
   region->start_addr = start_addr;
@@ -115,7 +101,7 @@ mc_mem_region_t mc_region_new_sparse(mc_region_type_t region_type,
   size_t page_count = mc_page_count(size);
 
   // Take incremental snapshot:
-  region->chunked.page_numbers = mc_take_page_snapshot_region(process,
+  region->page_numbers_ = simgrid::mc::PerPageCopy(mc_model_checker->page_store(), *process,
     permanent_addr, page_count);
 
   return region;
@@ -125,10 +111,9 @@ void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg)
 {
   xbt_assert((((uintptr_t)reg->permanent_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
-  size_t page_count = mc_page_count(reg->size);
-
+  xbt_assert(mc_page_count(reg->size) == reg->page_numbers_.page_count());
   mc_restore_page_snapshot_region(process,
-    reg->permanent_addr, page_count, reg->chunked.page_numbers);
+    reg->permanent_addr, reg->page_numbers_);
 }
 
 }

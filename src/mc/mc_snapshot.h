@@ -40,6 +40,76 @@ typedef enum e_mc_region_storeage_type_t {
   MC_REGION_STORAGE_TYPE_PRIVATIZED = 3
 } mc_region_storage_type_t;
 
+namespace simgrid {
+namespace mc {
+
+class PerPageCopy {
+  PageStore* store_;
+  std::vector<std::size_t> pagenos_;
+public:
+  PerPageCopy() : store_(nullptr) {}
+  PerPageCopy(PerPageCopy const& that)
+  {
+    store_ = that.store_;
+    pagenos_ = that.pagenos_;
+    for (std::size_t pageno : pagenos_)
+      store_->ref_page(pageno);
+  }
+  void clear()
+  {
+    for (std::size_t pageno : pagenos_)
+      store_->unref_page(pageno);
+    pagenos_.clear();
+  }
+  ~PerPageCopy() {
+    clear();
+  }
+
+  PerPageCopy(PerPageCopy&& that)
+  {
+    store_ = that.store_;
+    that.store_ = nullptr;
+    pagenos_ = std::move(that.pagenos_);
+    that.pagenos_.clear();
+  }
+  PerPageCopy& operator=(PerPageCopy const& that)
+  {
+    this->clear();
+    store_ = that.store_;
+    pagenos_ = that.pagenos_;
+    for (std::size_t pageno : pagenos_)
+      store_->ref_page(pageno);
+    return *this;
+  }
+  PerPageCopy& operator=(PerPageCopy && that)
+  {
+    this->clear();
+    store_ = that.store_;
+    that.store_ = nullptr;
+    pagenos_ = std::move(that.pagenos_);
+    that.pagenos_.clear();
+    return *this;
+  }
+
+  std::size_t page_count() const
+  {
+    return pagenos_.size();
+  }
+
+  std::size_t pageno(std::size_t i) const
+  {
+    return pagenos_[i];
+  }
+
+  const void* page(std::size_t i) const
+  {
+    return store_->get_page(pagenos_[i]);
+  }
+
+  PerPageCopy(PageStore& store, AddressSpace& as,
+    remote_ptr<void> addr, std::size_t page_count);
+};
+
 /** @brief Copy/snapshot of a given memory region
  *
  *  Different types of region snapshot storage types exist:
@@ -56,9 +126,8 @@ typedef enum e_mc_region_storeage_type_t {
  *    * an anonymous enum is used to distinguish the relevant types for
  *      each type.
  */
-typedef struct s_mc_mem_region s_mc_mem_region_t, *mc_mem_region_t;
-
-struct s_mc_mem_region {
+class RegionSnapshot {
+public:
   mc_region_type_t region_type;
   mc_region_storage_type_t storage_type;
   mc_object_info_t object_info;
@@ -80,26 +149,30 @@ struct s_mc_mem_region {
    * */
   void *permanent_addr;
 
-  union {
-    struct {
-      /** @brief Copy of the snapshot for flat snapshots regions (NULL otherwise) */
-      void *data;
-    } flat;
-    struct {
-      /** @brief Pages indices in the page store for per-page snapshots (NULL otherwise) */
-      size_t* page_numbers;
-    } chunked;
-    struct {
-      size_t regions_count;
-      mc_mem_region_t* regions;
-    } privatized;
-  };
-
+  std::vector<char> flat_data_;
+  PerPageCopy page_numbers_;
+  std::vector<std::unique_ptr<RegionSnapshot>> privatized_regions_;
+public:
+  RegionSnapshot() :
+    region_type(MC_REGION_TYPE_UNKNOWN),
+    storage_type(MC_REGION_STORAGE_TYPE_NONE),
+    object_info(nullptr),
+    start_addr(nullptr),
+    size(0),
+    permanent_addr(nullptr)
+  {}
+  ~RegionSnapshot();
+  RegionSnapshot(RegionSnapshot const&) = delete;
+  RegionSnapshot& operator=(RegionSnapshot const&) = delete;
 };
+
+}
+}
+
+typedef class simgrid::mc::RegionSnapshot s_mc_mem_region_t, *mc_mem_region_t;
 
 MC_SHOULD_BE_INTERNAL mc_mem_region_t mc_region_new_sparse(
   mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
-MC_SHOULD_BE_INTERNAL void MC_region_destroy(mc_mem_region_t reg);
 XBT_INTERNAL void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg);
 
 static inline  __attribute__ ((always_inline))
@@ -113,9 +186,8 @@ static inline __attribute__((always_inline))
 void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
 {
   size_t pageno = mc_page_number(region->start_addr, (void*) addr);
-  size_t snapshot_pageno = region->chunked.page_numbers[pageno];
   const void* snapshot_page =
-    mc_model_checker->page_store().get_page(snapshot_pageno);
+    region->page_numbers_.page(pageno);
   return (char*) snapshot_page + mc_page_offset((void*) addr);
 }
 
@@ -130,7 +202,7 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
   case MC_REGION_STORAGE_TYPE_FLAT:
     {
       uintptr_t offset = addr - (uintptr_t) region->start_addr;
-      return (void *) ((uintptr_t) region->flat.data + offset);
+      return (void *) ((uintptr_t) region->flat_data_.data() + offset);
     }
 
   case MC_REGION_STORAGE_TYPE_CHUNKED:
@@ -140,9 +212,9 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
     {
       xbt_assert(process_index >=0,
         "Missing process index for privatized region");
-      xbt_assert((size_t) process_index < region->privatized.regions_count,
+      xbt_assert((size_t) process_index < region->privatized_regions_.size(),
         "Out of range process index");
-      mc_mem_region_t subregion = region->privatized.regions[process_index];
+      mc_mem_region_t subregion = region->privatized_regions_[process_index].get();
       xbt_assert(subregion, "Missing memory region for process %i", process_index);
       return mc_translate_address_region(addr, subregion, process_index);
     }
@@ -252,12 +324,9 @@ static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 XBT_INTERNAL mc_snapshot_t MC_take_snapshot(int num_state);
 XBT_INTERNAL void MC_restore_snapshot(mc_snapshot_t);
 
-XBT_INTERNAL size_t* mc_take_page_snapshot_region(mc_process_t process,
-  void* data, size_t page_count);
-XBT_INTERNAL void mc_free_page_snapshot_region(size_t* pagenos, size_t page_count);
 XBT_INTERNAL void mc_restore_page_snapshot_region(
   mc_process_t process,
-  void* start_addr, size_t page_count, size_t* pagenos);
+  void* start_addr, simgrid::mc::PerPageCopy const& pagenos);
 
 MC_SHOULD_BE_INTERNAL const void* MC_region_read_fragmented(
   mc_mem_region_t region, void* target, const void* addr, size_t size);
@@ -311,7 +380,7 @@ const void* MC_region_read(mc_mem_region_t region, void* target, const void* add
     xbt_die("Storage type not supported");
 
   case MC_REGION_STORAGE_TYPE_FLAT:
-    return (char*) region->flat.data + offset;
+    return (char*) region->flat_data_.data() + offset;
 
   case MC_REGION_STORAGE_TYPE_CHUNKED:
     {

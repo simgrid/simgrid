@@ -73,52 +73,37 @@ static void local_variable_free_voidp(void *v)
   local_variable_free((local_variable_t) * (void **) v);
 }
 
-void MC_region_destroy(mc_mem_region_t region)
-{
-  if (!region)
-    return;
-  switch(region->storage_type) {
-    case MC_REGION_STORAGE_TYPE_NONE:
-      break;
-    case MC_REGION_STORAGE_TYPE_FLAT:
-      xbt_free(region->flat.data);
-      break;
-    case MC_REGION_STORAGE_TYPE_CHUNKED:
-      mc_free_page_snapshot_region(region->chunked.page_numbers, mc_page_count(region->size));
-      xbt_free(region->chunked.page_numbers);
-      break;
-    case MC_REGION_STORAGE_TYPE_PRIVATIZED:
-      {
-        size_t regions_count = region->privatized.regions_count;
-        for (size_t i=0; i!=regions_count; ++i) {
-          MC_region_destroy(region->privatized.regions[i]);
-        }
-        free(region->privatized.regions);
-        break;
-      }
-  }
-  xbt_free(region);
+}
+
+namespace simgrid {
+namespace mc {
+
+RegionSnapshot::~RegionSnapshot() {}
+
+}
 }
 
 /*******************************  Snapshot regions ********************************/
 /*********************************************************************************/
 
+extern "C" {
+
 static mc_mem_region_t mc_region_new_dense(
   mc_region_type_t region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  mc_mem_region_t region = xbt_new(s_mc_mem_region_t, 1);
+  mc_mem_region_t region = new simgrid::mc::RegionSnapshot();
   region->region_type = region_type;
   region->storage_type = MC_REGION_STORAGE_TYPE_FLAT;
   region->start_addr = start_addr;
   region->permanent_addr = permanent_addr;
   region->size = size;
-  region->flat.data = xbt_malloc(size);
-  mc_model_checker->process().read_bytes(region->flat.data, size,
+  region->flat_data_.resize(size);
+  mc_model_checker->process().read_bytes(region->flat_data_.data(), size,
     remote(permanent_addr),
     simgrid::mc::ProcessIndexDisabled);
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
-            region_type, region->flat.data, permanent_addr, size);
+            region_type, region->flat_data_.data(), permanent_addr, size);
   return region;
 }
 
@@ -152,7 +137,7 @@ static void MC_region_restore(mc_mem_region_t region)
     break;
 
   case MC_REGION_STORAGE_TYPE_FLAT:
-    mc_model_checker->process().write_bytes(region->flat.data, region->size,
+    mc_model_checker->process().write_bytes(region->flat_data_.data(), region->size,
       remote(region->permanent_addr));
     break;
 
@@ -161,13 +146,9 @@ static void MC_region_restore(mc_mem_region_t region)
     break;
 
   case MC_REGION_STORAGE_TYPE_PRIVATIZED:
-    {
-      size_t process_count = region->privatized.regions_count;
-      for (size_t i = 0; i < process_count; i++) {
-        MC_region_restore(region->privatized.regions[i]);
-      }
-      break;
-    }
+    for (auto const& p : region->privatized_regions_)
+      MC_region_restore(p.get());
+    break;
   }
 }
 
@@ -176,14 +157,13 @@ static mc_mem_region_t MC_region_new_privatized(
     )
 {
   size_t process_count = MC_smpi_process_count();
-  mc_mem_region_t region = xbt_new(s_mc_mem_region_t, 1);
+  mc_mem_region_t region = new simgrid::mc::RegionSnapshot();
   region->region_type = region_type;
   region->storage_type = MC_REGION_STORAGE_TYPE_PRIVATIZED;
   region->start_addr = start_addr;
   region->permanent_addr = permanent_addr;
   region->size = size;
-  region->privatized.regions_count = process_count;
-  region->privatized.regions = xbt_new(mc_mem_region_t, process_count);
+  region->privatized_regions_.resize(process_count);
 
   // Read smpi_privatisation_regions from MCed:
   smpi_privatisation_region_t remote_smpi_privatisation_regions;
@@ -196,9 +176,10 @@ static mc_mem_region_t MC_region_new_privatized(
     remote(remote_smpi_privatisation_regions));
 
   for (size_t i = 0; i < process_count; i++) {
-    region->privatized.regions[i] =
+    region->privatized_regions_[i] = std::unique_ptr<simgrid::mc::RegionSnapshot>(
       MC_region_new(region_type, start_addr,
-        privatisation_regions[i].address, size);
+        privatisation_regions[i].address, size)
+      );
   }
 
   return region;

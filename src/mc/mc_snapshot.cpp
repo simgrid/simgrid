@@ -41,10 +41,10 @@ mc_mem_region_t mc_get_snapshot_region(
       if (process_index < 0) {
         xbt_die("Missing process index");
       }
-      if (process_index >= (int) region->privatized.regions_count) {
+      if (process_index >= (int) region->privatized_regions_.size()) {
         xbt_die("Invalid process index");
       }
-      mc_mem_region_t priv_region = region->privatized.regions[process_index];
+      mc_mem_region_t priv_region = region->privatized_regions_[process_index].get();
       xbt_assert(mc_region_contain(priv_region, addr));
       return priv_region;
 #else
@@ -174,7 +174,7 @@ Snapshot::Snapshot() :
 Snapshot::~Snapshot()
 {
   for (size_t i = 0; i < this->snapshot_regions_count; i++) {
-    MC_region_destroy(this->snapshot_regions[i]);
+    delete this->snapshot_regions[i];
   }
   xbt_free(this->snapshot_regions);
   xbt_free(this->stack_sizes);
@@ -300,11 +300,11 @@ static void test_snapshot(bool sparse_checkpoint) {
         MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
       xbt_test_assert(MC_region_read_pointer(region2, source) == mc_model_checker,
         "Mismtach in MC_region_read_pointer()");
-      MC_region_destroy(region2);
+      delete region2;
     }
 
-    MC_region_destroy(region);
-    MC_region_destroy(region0);
+    delete region;
+    delete region0;
     munmap(destination, byte_size);
     munmap(source, byte_size);
   }
