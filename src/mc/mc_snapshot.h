@@ -149,6 +149,7 @@ public:
    * */
   void *permanent_addr;
 
+private:
   std::vector<char> flat_data_;
   PerPageCopy page_numbers_;
   std::vector<std::unique_ptr<RegionSnapshot>> privatized_regions_;
@@ -161,9 +162,55 @@ public:
     size(0),
     permanent_addr(nullptr)
   {}
+  RegionSnapshot(mc_region_type_t type, void *start_addr, void* permanent_addr, size_t size) :
+    region_type(type),
+    storage_type(MC_REGION_STORAGE_TYPE_NONE),
+    object_info(nullptr),
+    start_addr(start_addr),
+    size(size),
+    permanent_addr(permanent_addr)
+  {}
   ~RegionSnapshot();
   RegionSnapshot(RegionSnapshot const&) = delete;
   RegionSnapshot& operator=(RegionSnapshot const&) = delete;
+
+  void clear_data()
+  {
+    storage_type = MC_REGION_STORAGE_TYPE_NONE;
+    flat_data_.clear();
+    page_numbers_.clear();
+    privatized_regions_.clear();
+  }
+  
+  void flat_data(std::vector<char> data)
+  {
+    storage_type = MC_REGION_STORAGE_TYPE_FLAT;
+    flat_data_ = std::move(data);
+    page_numbers_.clear();
+    privatized_regions_.clear();
+  }
+  std::vector<char> const& flat_data() const { return flat_data_; }
+
+  void page_data(PerPageCopy page_data)
+  {
+    storage_type = MC_REGION_STORAGE_TYPE_CHUNKED;
+    flat_data_.clear();
+    page_numbers_ = std::move(page_data);
+    privatized_regions_.clear();
+  }
+  PerPageCopy const& page_data() const { return page_numbers_; }
+
+  void privatized_data(std::vector<std::unique_ptr<RegionSnapshot>> data)
+  {
+    storage_type = MC_REGION_STORAGE_TYPE_PRIVATIZED;
+    flat_data_.clear();
+    page_numbers_.clear();
+    privatized_regions_ = std::move(data);
+  }
+  std::vector<std::unique_ptr<RegionSnapshot>> const& privatized_data() const
+  {
+    return privatized_regions_;
+  }
 };
 
 }
@@ -187,7 +234,7 @@ void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region
 {
   size_t pageno = mc_page_number(region->start_addr, (void*) addr);
   const void* snapshot_page =
-    region->page_numbers_.page(pageno);
+    region->page_data().page(pageno);
   return (char*) snapshot_page + mc_page_offset((void*) addr);
 }
 
@@ -202,7 +249,7 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
   case MC_REGION_STORAGE_TYPE_FLAT:
     {
       uintptr_t offset = addr - (uintptr_t) region->start_addr;
-      return (void *) ((uintptr_t) region->flat_data_.data() + offset);
+      return (void *) ((uintptr_t) region->flat_data().data() + offset);
     }
 
   case MC_REGION_STORAGE_TYPE_CHUNKED:
@@ -212,9 +259,9 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
     {
       xbt_assert(process_index >=0,
         "Missing process index for privatized region");
-      xbt_assert((size_t) process_index < region->privatized_regions_.size(),
+      xbt_assert((size_t) process_index < region->privatized_data().size(),
         "Out of range process index");
-      mc_mem_region_t subregion = region->privatized_regions_[process_index].get();
+      mc_mem_region_t subregion = region->privatized_data()[process_index].get();
       xbt_assert(subregion, "Missing memory region for process %i", process_index);
       return mc_translate_address_region(addr, subregion, process_index);
     }
@@ -380,7 +427,7 @@ const void* MC_region_read(mc_mem_region_t region, void* target, const void* add
     xbt_die("Storage type not supported");
 
   case MC_REGION_STORAGE_TYPE_FLAT:
-    return (char*) region->flat_data_.data() + offset;
+    return (char*) region->flat_data().data() + offset;
 
   case MC_REGION_STORAGE_TYPE_CHUNKED:
     {

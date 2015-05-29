@@ -275,14 +275,14 @@ static int compare_global_variables(mc_object_info_t object_info,
     }
 
     size_t process_count = MC_smpi_process_count();
-    xbt_assert(process_count == r1->privatized_regions_.size()
-      && process_count == r2->privatized_regions_.size());
+    xbt_assert(process_count == r1->privatized_data().size()
+      && process_count == r2->privatized_data().size());
 
     // Compare the global variables separately for each simulates process:
     for (size_t process_index = 0; process_index < process_count; process_index++) {
       int is_diff = compare_global_variables(object_info, process_index,
-        r1->privatized_regions_[process_index].get(),
-        r2->privatized_regions_[process_index].get(),
+        r1->privatized_data()[process_index].get(),
+        r2->privatized_data()[process_index].get(),
         snapshot1, snapshot2);
       if (is_diff) return 1;
     }

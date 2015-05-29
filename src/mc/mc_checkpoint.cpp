@@ -92,18 +92,17 @@ static mc_mem_region_t mc_region_new_dense(
   mc_region_type_t region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  mc_mem_region_t region = new simgrid::mc::RegionSnapshot();
-  region->region_type = region_type;
-  region->storage_type = MC_REGION_STORAGE_TYPE_FLAT;
-  region->start_addr = start_addr;
-  region->permanent_addr = permanent_addr;
-  region->size = size;
-  region->flat_data_.resize(size);
-  mc_model_checker->process().read_bytes(region->flat_data_.data(), size,
+  std::vector<char> data(size);
+  mc_model_checker->process().read_bytes(data.data(), size,
     remote(permanent_addr),
     simgrid::mc::ProcessIndexDisabled);
+
+  mc_mem_region_t region = new simgrid::mc::RegionSnapshot(
+    region_type, start_addr, permanent_addr, size);
+  region->flat_data(std::move(data));
+
   XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
-            region_type, region->flat_data_.data(), permanent_addr, size);
+            region_type, region->flat_data().data(), permanent_addr, size);
   return region;
 }
 
@@ -137,7 +136,7 @@ static void MC_region_restore(mc_mem_region_t region)
     break;
 
   case MC_REGION_STORAGE_TYPE_FLAT:
-    mc_model_checker->process().write_bytes(region->flat_data_.data(), region->size,
+    mc_model_checker->process().write_bytes(region->flat_data().data(), region->size,
       remote(region->permanent_addr));
     break;
 
@@ -146,7 +145,7 @@ static void MC_region_restore(mc_mem_region_t region)
     break;
 
   case MC_REGION_STORAGE_TYPE_PRIVATIZED:
-    for (auto const& p : region->privatized_regions_)
+    for (auto const& p : region->privatized_data())
       MC_region_restore(p.get());
     break;
   }
@@ -157,13 +156,6 @@ static mc_mem_region_t MC_region_new_privatized(
     )
 {
   size_t process_count = MC_smpi_process_count();
-  mc_mem_region_t region = new simgrid::mc::RegionSnapshot();
-  region->region_type = region_type;
-  region->storage_type = MC_REGION_STORAGE_TYPE_PRIVATIZED;
-  region->start_addr = start_addr;
-  region->permanent_addr = permanent_addr;
-  region->size = size;
-  region->privatized_regions_.resize(process_count);
 
   // Read smpi_privatisation_regions from MCed:
   smpi_privatisation_region_t remote_smpi_privatisation_regions;
@@ -175,13 +167,17 @@ static mc_mem_region_t MC_region_new_privatized(
     &privatisation_regions, sizeof(privatisation_regions),
     remote(remote_smpi_privatisation_regions));
 
-  for (size_t i = 0; i < process_count; i++) {
-    region->privatized_regions_[i] = std::unique_ptr<simgrid::mc::RegionSnapshot>(
+  std::vector<std::unique_ptr<simgrid::mc::RegionSnapshot>> data;
+  data.reserve(process_count);
+  for (size_t i = 0; i < process_count; i++)
+    data.push_back(std::unique_ptr<simgrid::mc::RegionSnapshot>(
       MC_region_new(region_type, start_addr,
         privatisation_regions[i].address, size)
-      );
-  }
+      ));
 
+  mc_mem_region_t region = new simgrid::mc::RegionSnapshot(
+    region_type, start_addr, permanent_addr, size);
+  region->privatized_data(std::move(data));
   return region;
 }
 

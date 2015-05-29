@@ -87,22 +87,19 @@ mc_mem_region_t mc_region_new_sparse(mc_region_type_t region_type,
 {
   mc_process_t process = &mc_model_checker->process();
 
-  mc_mem_region_t region = new simgrid::mc::RegionSnapshot();
-  region->region_type = region_type;
-  region->storage_type = MC_REGION_STORAGE_TYPE_CHUNKED;
-  region->start_addr = start_addr;
-  region->permanent_addr = permanent_addr;
-  region->size = size;
-
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
   xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
   size_t page_count = mc_page_count(size);
 
-  // Take incremental snapshot:
-  region->page_numbers_ = simgrid::mc::PerPageCopy(mc_model_checker->page_store(), *process,
-    permanent_addr, page_count);
+  simgrid::mc::PerPageCopy page_data =
+    simgrid::mc::PerPageCopy(mc_model_checker->page_store(), *process,
+      permanent_addr, page_count);
+
+  mc_mem_region_t region = new simgrid::mc::RegionSnapshot(
+    region_type, start_addr, permanent_addr, size);
+  region->page_data(std::move(page_data));
 
   return region;
 }
@@ -111,9 +108,9 @@ void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg)
 {
   xbt_assert((((uintptr_t)reg->permanent_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
-  xbt_assert(mc_page_count(reg->size) == reg->page_numbers_.page_count());
+  xbt_assert(mc_page_count(reg->size) == reg->page_data().page_count());
   mc_restore_page_snapshot_region(process,
-    reg->permanent_addr, reg->page_numbers_);
+    reg->permanent_addr, reg->page_data());
 }
 
 }

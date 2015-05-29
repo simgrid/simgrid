@@ -41,10 +41,10 @@ mc_mem_region_t mc_get_snapshot_region(
       if (process_index < 0) {
         xbt_die("Missing process index");
       }
-      if (process_index >= (int) region->privatized_regions_.size()) {
+      if (process_index >= (int) region->privatized_data().size()) {
         xbt_die("Invalid process index");
       }
-      mc_mem_region_t priv_region = region->privatized_regions_[process_index].get();
+      mc_mem_region_t priv_region = region->privatized_data()[process_index].get();
       xbt_assert(mc_region_contain(priv_region, addr));
       return priv_region;
 #else
