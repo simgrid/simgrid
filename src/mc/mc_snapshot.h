@@ -395,16 +395,6 @@ XBT_INTERNAL void mc_restore_page_snapshot_region(
 MC_SHOULD_BE_INTERNAL const void* MC_region_read_fragmented(
   mc_mem_region_t region, void* target, const void* addr, size_t size);
 
-// Deprecated compatibility wrapper
-static inline
-const void* MC_snapshot_read(mc_snapshot_t snapshot,
-  simgrid::mc::AddressSpace::ReadMode mode,
-  void* target, const void* addr, size_t size, int process_index)
-{
-  return snapshot->read_bytes(target, size, simgrid::mc::remote(addr),
-    process_index, mode);
-}
-
 MC_SHOULD_BE_INTERNAL int MC_snapshot_region_memcmp(
   const void* addr1, mc_mem_region_t region1,
   const void* addr2, mc_mem_region_t region2, size_t size);
