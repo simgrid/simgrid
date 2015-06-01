@@ -11,7 +11,7 @@ else()
   set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE PATH "Path where to install project")
 endif()
 
-set(pipol_user ${pipol_user} CACHE TYPE INTERNAL FORCE)
+set(pipol_user ${pipol_user} CACHE INTERNAL "pipol_user" FORCE)
 mark_as_advanced(pipol_user)
 
 option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
