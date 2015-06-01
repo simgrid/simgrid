@@ -39,12 +39,6 @@ if (NOT DEFINED enable_smpi OR enable_smpi) # smpi is enabled by default
   enable_language(Fortran OPTIONAL)
 endif()
 
-set(CMAKE_C_FLAGS "" CACHE TYPE INTERNAL FORCE)
-set(CMAKE_CXX_FLAGS "" CACHE TYPE INTERNAL FORCE)
-set(CMAKE_EXE_LINKER_FLAGS "" CACHE TYPE INTERNAL FORCE)
-set(CMAKE_C_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
-set(CMAKE_Fortran_FLAGS "" CACHE TYPE INTERNAL FORCE)
-set(CMAKE_Fortran_LINK_FLAGS "" CACHE TYPE INTERNAL FORCE)
 ## Mapping version number -> version name
 # 3.5.99 -> alpha1 (oops)
 # 3.5.9{1,2} -> beta{1,2}
