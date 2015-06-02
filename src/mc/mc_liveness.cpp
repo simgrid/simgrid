@@ -393,6 +393,7 @@ void MC_modelcheck_liveness(void)
   MC_pre_modelcheck_liveness();
 
   /* We're done */
+  XBT_INFO("No property violation found.");
   MC_print_statistics(mc_stats);
   xbt_free(mc_time);
 }

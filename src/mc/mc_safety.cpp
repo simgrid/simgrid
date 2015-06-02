@@ -246,6 +246,7 @@ static void MC_modelcheck_safety_main(void)
       }
     }
   }
+  XBT_INFO("No property violation found.");
   MC_print_statistics(mc_stats);
   return;
 }
