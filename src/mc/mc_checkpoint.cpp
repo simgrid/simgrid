@@ -75,69 +75,6 @@ static void local_variable_free_voidp(void *v)
 
 }
 
-namespace simgrid {
-namespace mc {
-
-RegionSnapshot::~RegionSnapshot() {}
-
-simgrid::mc::RegionSnapshot dense_region(
-  mc_region_type_t region_type,
-  void *start_addr, void* permanent_addr, size_t size)
-{
-  std::vector<char> data(size);
-  mc_model_checker->process().read_bytes(data.data(), size,
-    remote(permanent_addr),
-    simgrid::mc::ProcessIndexDisabled);
-
-  simgrid::mc::RegionSnapshot region(
-    region_type, start_addr, permanent_addr, size);
-  region.flat_data(std::move(data));
-
-  XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
-            region_type, region.flat_data().data(), permanent_addr, size);
-  return std::move(region);
-}
-
-/** @brief Take a snapshot of a given region
- *
- * @param type
- * @param start_addr   Address of the region in the simulated process
- * @param permanent_addr Permanent address of this data (for privatized variables, this is the virtual address of the privatized mapping)
- * @param size         Size of the data*
- */
-static simgrid::mc::RegionSnapshot region(
-  mc_region_type_t type, void *start_addr, void* permanent_addr, size_t size)
-{
-  if (_sg_mc_sparse_checkpoint) {
-    return sparse_region(type, start_addr, permanent_addr, size);
-  } else  {
-    return dense_region(type, start_addr, permanent_addr, size);
-  }
-}
-
-simgrid::mc::RegionSnapshot sparse_region(mc_region_type_t region_type,
-  void *start_addr, void* permanent_addr, size_t size)
-{
-  mc_process_t process = &mc_model_checker->process();
-
-  xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize-1)) == 0,
-    "Not at the beginning of a page");
-  xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize-1)) == 0,
-    "Not at the beginning of a page");
-  size_t page_count = mc_page_count(size);
-
-  simgrid::mc::PerPageCopy page_data(mc_model_checker->page_store(), *process,
-      permanent_addr, page_count);
-
-  simgrid::mc::RegionSnapshot region(
-    region_type, start_addr, permanent_addr, size);
-  region.page_data(std::move(page_data));
-  return std::move(region);
-}
-
-}
-}
-
 extern "C" {
 
 /** @brief Restore a region from a snapshot
@@ -221,7 +158,7 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot, mc_region_
 
   simgrid::mc::RegionSnapshot region;
   if (privatization_aware && MC_smpi_process_count())
-    region = MC_region_privatized(type, start_addr, permanent_addr, size);
+    region = simgrid::mc::privatized_region(type, start_addr, permanent_addr, size);
   else
     region = simgrid::mc::region(type, start_addr, permanent_addr, size);
 

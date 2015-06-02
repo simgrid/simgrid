@@ -606,6 +606,8 @@ set(MC_SRC
   src/mc/mc_checkpoint.cpp
   src/mc/mc_snapshot.h
   src/mc/mc_snapshot.cpp
+  src/mc/RegionSnapshot.cpp
+  src/mc/RegionSnapshot.hpp
   src/mc/PageStore.hpp
   src/mc/PageStore.cpp
   src/mc/mc_page_snapshot.cpp
