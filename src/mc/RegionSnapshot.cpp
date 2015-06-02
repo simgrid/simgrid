@@ -19,7 +19,7 @@ namespace simgrid {
 namespace mc {
 
 RegionSnapshot dense_region(
-  mc_region_type_t region_type,
+  RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
   std::vector<char> data(size);
@@ -44,7 +44,7 @@ RegionSnapshot dense_region(
  * @param size         Size of the data*
  */
 RegionSnapshot region(
-  mc_region_type_t type, void *start_addr, void* permanent_addr, size_t size)
+  RegionType type, void *start_addr, void* permanent_addr, size_t size)
 {
   if (_sg_mc_sparse_checkpoint) {
     return sparse_region(type, start_addr, permanent_addr, size);
@@ -53,7 +53,7 @@ RegionSnapshot region(
   }
 }
 
-RegionSnapshot sparse_region(mc_region_type_t region_type,
+RegionSnapshot sparse_region(RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
   mc_process_t process = &mc_model_checker->process();

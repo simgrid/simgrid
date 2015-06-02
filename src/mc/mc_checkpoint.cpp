@@ -84,21 +84,21 @@ extern "C" {
 static void MC_region_restore(mc_mem_region_t region)
 {
   switch(region->storage_type()) {
-  case MC_REGION_STORAGE_TYPE_NONE:
+  case simgrid::mc::StorageType::NoData:
   default:
     xbt_die("Storage type not supported");
     break;
 
-  case MC_REGION_STORAGE_TYPE_FLAT:
+  case simgrid::mc::StorageType::Flat:
     mc_model_checker->process().write_bytes(region->flat_data().data(),
       region->size(), region->permanent_address());
     break;
 
-  case MC_REGION_STORAGE_TYPE_CHUNKED:
+  case simgrid::mc::StorageType::Chunked:
     mc_region_restore_sparse(&mc_model_checker->process(), region);
     break;
 
-  case MC_REGION_STORAGE_TYPE_PRIVATIZED:
+  case simgrid::mc::StorageType::Privatized:
     for (auto& p : region->privatized_data())
       MC_region_restore(&p);
     break;
@@ -111,7 +111,7 @@ namespace simgrid {
 namespace mc {
 
 simgrid::mc::RegionSnapshot privatized_region(
-    mc_region_type_t region_type, void *start_addr, void* permanent_addr, size_t size
+    RegionType region_type, void *start_addr, void* permanent_addr, size_t size
     )
 {
   size_t process_count = MC_smpi_process_count();
@@ -145,13 +145,14 @@ simgrid::mc::RegionSnapshot privatized_region(
 
 extern "C" {
 
-static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot, mc_region_type_t type,
+static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
+                                  simgrid::mc::RegionType type,
                                   mc_object_info_t object_info,
                                   void *start_addr, void* permanent_addr, size_t size)
 {
-  if (type == MC_REGION_TYPE_DATA)
+  if (type == simgrid::mc::RegionType::Data)
     xbt_assert(object_info, "Missing object info for object.");
-  else if (type == MC_REGION_TYPE_HEAP)
+  else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(!object_info, "Unexpected object info for heap region.");
 
   const bool privatization_aware = MC_object_info_is_privatized(object_info);
@@ -176,7 +177,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 
   for (size_t i = 0; i!=n; ++i) {
     mc_object_info_t object_info = process->object_infos[i];
-    MC_snapshot_add_region(i, snapshot, MC_REGION_TYPE_DATA, object_info,
+    MC_snapshot_add_region(i, snapshot, simgrid::mc::RegionType::Data, object_info,
       object_info->start_rw, object_info->start_rw,
       object_info->end_rw - object_info->start_rw);
   }
@@ -185,7 +186,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
   void *start_heap = heap->base;
   void *end_heap = heap->breakval;
 
-  MC_snapshot_add_region(n, snapshot, MC_REGION_TYPE_HEAP, NULL,
+  MC_snapshot_add_region(n, snapshot, simgrid::mc::RegionType::Heap, NULL,
                         start_heap, start_heap,
                         (char *) end_heap - (char *) start_heap);
   snapshot->heap_bytes_used = mmalloc_get_bytes_used_remote(

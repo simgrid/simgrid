@@ -268,9 +268,9 @@ static int compare_global_variables(mc_object_info_t object_info,
   xbt_assert(r1 && r2, "Missing region.");
 
 #ifdef HAVE_SMPI
-  if (r1->storage_type() == MC_REGION_STORAGE_TYPE_PRIVATIZED) {
+  if (r1->storage_type() == simgrid::mc::StorageType::Privatized) {
     xbt_assert(process_index >= 0);
-    if (r2->storage_type() != MC_REGION_STORAGE_TYPE_PRIVATIZED) {
+    if (r2->storage_type() != simgrid::mc::StorageType::Privatized) {
       return 1;
     }
 
@@ -289,9 +289,9 @@ static int compare_global_variables(mc_object_info_t object_info,
     return 0;
   }
 #else
-  xbt_assert(r1->storage_type() != MC_REGION_STORAGE_TYPE_PRIVATIZED);
+  xbt_assert(r1->storage_type() != simgrid::mc::StorageType::Privatized);
 #endif
-  xbt_assert(r2->storage_type() != MC_REGION_STORAGE_TYPE_PRIVATIZED);
+  xbt_assert(r2->storage_type() != simgrid::mc::StorageType::Privatized);
 
   struct mc_compare_state state;
 
@@ -589,7 +589,7 @@ int snapshot_compare(void *state1, void *state2)
     mc_mem_region_t region2 = s2->snapshot_regions[k];
 
     // Preconditions:
-    if (region1->region_type() != MC_REGION_TYPE_DATA)
+    if (region1->region_type() != simgrid::mc::RegionType::Data)
       continue;
 
     xbt_assert(region1->region_type() == region2->region_type());

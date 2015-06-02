@@ -32,7 +32,7 @@ mc_mem_region_t mc_get_snapshot_region(
     if (!(region && mc_region_contain(region, addr)))
       continue;
 
-    if (region->storage_type() == MC_REGION_STORAGE_TYPE_PRIVATIZED) {
+    if (region->storage_type() == simgrid::mc::StorageType::Privatized) {
 #ifdef HAVE_SMPI
       // Use the current process index of the snapshot:
       if (process_index == simgrid::mc::ProcessIndexDisabled) {
@@ -114,8 +114,8 @@ int MC_snapshot_region_memcmp(
   // Using alloca() for large allocations may trigger stack overflow:
   // use malloc if the buffer is too big.
   bool stack_alloc = size < 64;
-  const bool region1_need_buffer = region1==NULL || region1->storage_type()==MC_REGION_STORAGE_TYPE_FLAT;
-  const bool region2_need_buffer = region2==NULL || region2->storage_type()==MC_REGION_STORAGE_TYPE_FLAT;
+  const bool region1_need_buffer = region1==NULL || region1->storage_type()==simgrid::mc::StorageType::Flat;
+  const bool region2_need_buffer = region2==NULL || region2->storage_type()==simgrid::mc::StorageType::Flat;
   void* buffer1a = region1_need_buffer ? NULL : stack_alloc ? alloca(size) : malloc(size);
   void* buffer2a = region2_need_buffer ? NULL : stack_alloc ? alloca(size) : malloc(size);
   const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
@@ -257,12 +257,12 @@ static void test_snapshot(bool sparse_checkpoint) {
     // Init memory and take snapshots:
     init_memory(source, byte_size);
     simgrid::mc::RegionSnapshot region0 = simgrid::mc::sparse_region(
-      MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
+      simgrid::mc::RegionType::Unknown, source, source, byte_size);
     for(int i=0; i<n; i+=2) {
       init_memory((char*) source + i*xbt_pagesize, xbt_pagesize);
     }
     simgrid::mc::RegionSnapshot region = simgrid::mc::sparse_region(
-      MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
+      simgrid::mc::RegionType::Unknown, source, source, byte_size);
 
     void* destination = mmap(NULL, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     xbt_assert(source!=MAP_FAILED, "Could not allocate destination memory");
@@ -297,7 +297,7 @@ static void test_snapshot(bool sparse_checkpoint) {
       xbt_test_add("Read pointer for %i page(s)", n);
       memcpy(source, &mc_model_checker, sizeof(void*));
       simgrid::mc::RegionSnapshot region2 = simgrid::mc::sparse_region(
-        MC_REGION_TYPE_UNKNOWN, source, source, byte_size);
+        simgrid::mc::RegionType::Unknown, source, source, byte_size);
       xbt_test_assert(MC_region_read_pointer(&region2, source) == mc_model_checker,
         "Mismtach in MC_region_read_pointer()");
     }

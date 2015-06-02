@@ -13,20 +13,6 @@
 #ifndef SIMGRID_MC_REGION_SNAPSHOT_HPP
 #define SIMGRID_MC_REGION_SNAPSHOT_HPP
 
-typedef enum e_mc_region_type_t {
-  MC_REGION_TYPE_UNKNOWN = 0,
-  MC_REGION_TYPE_HEAP = 1,
-  MC_REGION_TYPE_DATA = 2
-} mc_region_type_t;
-
-// TODO, use OO instead of this
-typedef enum e_mc_region_storage_type_t {
-  MC_REGION_STORAGE_TYPE_NONE = 0,
-  MC_REGION_STORAGE_TYPE_FLAT = 1,
-  MC_REGION_STORAGE_TYPE_CHUNKED = 2,
-  MC_REGION_STORAGE_TYPE_PRIVATIZED = 3
-} mc_region_storage_type_t;
-
 namespace simgrid {
 namespace mc {
 
@@ -97,6 +83,20 @@ public:
     remote_ptr<void> addr, std::size_t page_count);
 };
 
+enum class RegionType {
+  Unknown = 0,
+  Heap = 1,
+  Data = 2
+};
+
+// TODO, use Boost.Variant instead of this
+enum class StorageType {
+  NoData = 0,
+  Flat = 1,
+  Chunked = 2,
+  Privatized = 3
+};
+
 /** @brief Copy/snapshot of a given memory region
  *
  *  Different types of region snapshot storage types exist:
@@ -114,9 +114,16 @@ public:
  *      each type.
  */
 class RegionSnapshot {
+  static const RegionType UnknownRegion = RegionType::Unknown;
+  static const RegionType HeapRegion = RegionType::Heap;
+  static const RegionType DataRegion = RegionType::Data;
+  static const StorageType NoData = StorageType::NoData;
+  static const StorageType FlatData = StorageType::Flat;
+  static const StorageType ChunkedData = StorageType::Chunked;
+  static const StorageType PrivatizedData = StorageType::Privatized;
 private:
-  mc_region_type_t region_type_;
-  mc_region_storage_type_t storage_type_;
+  RegionType region_type_;
+  StorageType storage_type_;
   mc_object_info_t object_info_;
 
   /** @brief  Virtual address of the region in the simulated process */
@@ -141,16 +148,16 @@ private:
   std::vector<RegionSnapshot> privatized_regions_;
 public:
   RegionSnapshot() :
-    region_type_(MC_REGION_TYPE_UNKNOWN),
-    storage_type_(MC_REGION_STORAGE_TYPE_NONE),
+    region_type_(UnknownRegion),
+    storage_type_(NoData),
     object_info_(nullptr),
     start_addr_(nullptr),
     size_(0),
     permanent_addr_(nullptr)
   {}
-  RegionSnapshot(mc_region_type_t type, void *start_addr, void* permanent_addr, size_t size) :
+  RegionSnapshot(RegionType type, void *start_addr, void* permanent_addr, size_t size) :
     region_type_(type),
-    storage_type_(MC_REGION_STORAGE_TYPE_NONE),
+    storage_type_(NoData),
     object_info_(nullptr),
     start_addr_(start_addr),
     size_(size),
@@ -191,8 +198,8 @@ public:
 
   void clear()
   {
-    region_type_ = MC_REGION_TYPE_UNKNOWN;
-    storage_type_ = MC_REGION_STORAGE_TYPE_NONE;
+    region_type_ = UnknownRegion;
+    storage_type_ = NoData;
     privatized_regions_.clear();
     page_numbers_.clear();
     flat_data_.clear();
@@ -204,7 +211,7 @@ public:
 
   void clear_data()
   {
-    storage_type_ = MC_REGION_STORAGE_TYPE_NONE;
+    storage_type_ = NoData;
     flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_.clear();
@@ -212,7 +219,7 @@ public:
   
   void flat_data(std::vector<char> data)
   {
-    storage_type_ = MC_REGION_STORAGE_TYPE_FLAT;
+    storage_type_ = FlatData;
     flat_data_ = std::move(data);
     page_numbers_.clear();
     privatized_regions_.clear();
@@ -221,7 +228,7 @@ public:
 
   void page_data(PerPageCopy page_data)
   {
-    storage_type_ = MC_REGION_STORAGE_TYPE_CHUNKED;
+    storage_type_ = ChunkedData;
     flat_data_.clear();
     page_numbers_ = std::move(page_data);
     privatized_regions_.clear();
@@ -230,7 +237,7 @@ public:
 
   void privatized_data(std::vector<RegionSnapshot> data)
   {
-    storage_type_ = MC_REGION_STORAGE_TYPE_PRIVATIZED;
+    storage_type_ = PrivatizedData;
     flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_ = std::move(data);
@@ -253,8 +260,8 @@ public:
   remote_ptr<void> end() const { return remote((char*)start_addr_ + size_); }
   remote_ptr<void> permanent_address() const { return remote(permanent_addr_); }
   std::size_t size() const { return size_; }
-  mc_region_storage_type_t storage_type() const { return storage_type_; }
-  mc_region_type_t region_type() const { return region_type_; }
+  StorageType storage_type() const { return storage_type_; }
+  RegionType region_type() const { return region_type_; }
 
   bool contain(remote_ptr<void> p) const
   {
@@ -262,14 +269,14 @@ public:
   }
 };
 
-simgrid::mc::RegionSnapshot privatized_region(
-  mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
-simgrid::mc::RegionSnapshot dense_region(
-  mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
+RegionSnapshot privatized_region(
+  RegionType type, void *start_addr, void* data_addr, size_t size);
+RegionSnapshot dense_region(
+  RegionType type, void *start_addr, void* data_addr, size_t size);
 simgrid::mc::RegionSnapshot sparse_region(
-  mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
+  RegionType type, void *start_addr, void* data_addr, size_t size);
 simgrid::mc::RegionSnapshot region(
-  mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
+  RegionType type, void *start_addr, void* data_addr, size_t size);
   
 }
 }

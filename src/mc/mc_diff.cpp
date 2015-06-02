@@ -421,7 +421,7 @@ mc_mem_region_t MC_get_heap_region(mc_snapshot_t snapshot)
   size_t n = snapshot->snapshot_regions_count;
   for (size_t i=0; i!=n; ++i) {
     mc_mem_region_t region = snapshot->snapshot_regions[i];
-    if (region->region_type() == MC_REGION_TYPE_HEAP)
+    if (region->region_type() == simgrid::mc::RegionType::Heap)
       return region;
   }
   xbt_die("No heap region");

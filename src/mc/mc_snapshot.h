@@ -48,20 +48,20 @@ static inline __attribute__((always_inline))
 void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int process_index)
 {
   switch (region->storage_type()) {
-  case MC_REGION_STORAGE_TYPE_NONE:
+  case simgrid::mc::StorageType::NoData:
   default:
     xbt_die("Storage type not supported");
 
-  case MC_REGION_STORAGE_TYPE_FLAT:
+  case simgrid::mc::StorageType::Flat:
     {
       uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start().address();
       return (void *) ((uintptr_t) region->flat_data().data() + offset);
     }
 
-  case MC_REGION_STORAGE_TYPE_CHUNKED:
+  case simgrid::mc::StorageType::Chunked:
     return mc_translate_address_region_chunked(addr, region);
 
-  case MC_REGION_STORAGE_TYPE_PRIVATIZED:
+  case simgrid::mc::StorageType::Privatized:
     {
       xbt_assert(process_index >=0,
         "Missing process index for privatized region");
@@ -217,14 +217,14 @@ const void* MC_region_read(mc_mem_region_t region, void* target, const void* add
     "Trying to read out of the region boundary.");
 
   switch (region->storage_type()) {
-  case MC_REGION_STORAGE_TYPE_NONE:
+  case simgrid::mc::StorageType::NoData:
   default:
     xbt_die("Storage type not supported");
 
-  case MC_REGION_STORAGE_TYPE_FLAT:
+  case simgrid::mc::StorageType::Flat:
     return (char*) region->flat_data().data() + offset;
 
-  case MC_REGION_STORAGE_TYPE_CHUNKED:
+  case simgrid::mc::StorageType::Chunked:
     {
       // Last byte of the region:
       void* end = (char*) addr + size - 1;
@@ -239,7 +239,7 @@ const void* MC_region_read(mc_mem_region_t region, void* target, const void* add
 
   // We currently do not pass the process_index to this function so we assume
   // that the privatized region has been resolved in the callers:
-  case MC_REGION_STORAGE_TYPE_PRIVATIZED:
+  case simgrid::mc::StorageType::Privatized:
     xbt_die("Storage type not supported");
   }
 }
