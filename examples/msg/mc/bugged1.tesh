@@ -1,6 +1,6 @@
 #! ./tesh
 
-! expect signal SIGABRT
+! expect return 1
 ! timeout 20
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1 --cfg=model-check:1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning --cfg=contexts/stack_size:256
 > [  0.000000] (0:@) Check a safety property

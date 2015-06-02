@@ -18,10 +18,11 @@
 #include <xbt/misc.h>
  
 #include "mc_process.h"
+#include "mc_exit.h"
 
 SG_BEGIN_DECL()
 
-#define MC_SERVER_ERROR 127
+#define MC_SERVER_ERROR SIMGRID_ERROR
 
 typedef struct s_mc_server s_mc_server_t, *mc_server_t;
 

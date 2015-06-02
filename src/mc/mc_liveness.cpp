@@ -18,6 +18,7 @@
 #include "mc_client.h"
 #include "mc_replay.h"
 #include "mc_safety.h"
+#include "mc_exit.h"
 
 extern "C" {
 
@@ -251,7 +252,7 @@ static void MC_modelcheck_liveness_main(void)
           MC_dump_stack_liveness(mc_stack);
           MC_print_statistics(mc_stats);
           XBT_INFO("Counter-example depth : %d", counter_example_depth);
-          xbt_abort();
+          exit(SIMGRID_EXIT_LIVENESS);
         }
       }
 

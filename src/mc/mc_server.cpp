@@ -21,6 +21,7 @@
 #include "mc_private.h"
 #include "mc_ignore.h"
 #include "mcer_ignore.h"
+#include "mc_exit.h"
 
 using simgrid::mc::remote;
 
@@ -238,7 +239,7 @@ bool s_mc_server::handle_events()
 
       case MC_MESSAGE_ASSERTION_FAILED:
         MC_report_assertion_error();
-        xbt_abort();
+        ::exit(SIMGRID_EXIT_SAFETY);
         break;
 
       default:

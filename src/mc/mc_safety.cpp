@@ -13,6 +13,7 @@
 #include "mc_record.h"
 #include "mc_smx.h"
 #include "mc_client.h"
+#include "mc_exit.h"
 
 #include "xbt/mmalloc/mmprivate.h"
 
@@ -20,6 +21,8 @@ extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
                                 "Logging specific to MC safety verification ");
+
+}
 
 static int is_exploration_stack_state(mc_state_t current_state){
 
@@ -34,6 +37,8 @@ static int is_exploration_stack_state(mc_state_t current_state){
   }
   return 0;
 }
+
+static void MC_modelcheck_safety_init(void);
 
 /**
  *  \brief Initialize the DPOR exploration algorithm
@@ -68,8 +73,10 @@ static void MC_pre_modelcheck_safety()
 /** \brief Model-check the application using a DFS exploration
  *         with DPOR (Dynamic Partial Order Reductions)
  */
-static void MC_modelcheck_safety_main(void)
+void MC_modelcheck_safety(void)
 {
+  MC_modelcheck_safety_init();
+
   char *req_str = NULL;
   int value;
   smx_simcall_t req = NULL;
@@ -119,7 +126,7 @@ static void MC_modelcheck_safety_main(void)
 
       if(_sg_mc_termination && is_exploration_stack_state(next_state)){
           MC_show_non_termination();
-          return;
+          exit(SIMGRID_EXIT_NON_TERMINATION);
       }
 
       if ((visited_state = is_visited_state(next_state)) == NULL) {
@@ -179,7 +186,7 @@ static void MC_modelcheck_safety_main(void)
       /* Check for deadlocks */
       if (MC_deadlock_check()) {
         MC_show_deadlock(NULL);
-        return;
+        exit(SIMGRID_EXIT_DEADLOCK);
       }
 
       /* Traverse the stack backwards until a state with a non empty interleave
@@ -246,12 +253,13 @@ static void MC_modelcheck_safety_main(void)
       }
     }
   }
+
   XBT_INFO("No property violation found.");
   MC_print_statistics(mc_stats);
-  return;
+  exit(SIMGRID_EXIT_SUCCESS);
 }
 
-void MC_modelcheck_safety(void)
+static void MC_modelcheck_safety_init(void)
 {
   if(_sg_mc_termination)
     mc_reduce_kind = e_mc_reduce_none;
@@ -276,11 +284,4 @@ void MC_modelcheck_safety(void)
   /* Save the initial state */
   initial_global_state = xbt_new0(s_mc_global_t, 1);
   initial_global_state->snapshot = MC_take_snapshot(0);
-
-  MC_modelcheck_safety_main();
-
-  xbt_abort();
-  //MC_exit();
-}
-
 }
