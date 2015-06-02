@@ -275,13 +275,26 @@ public:
   }
 };
 
+simgrid::mc::RegionSnapshot privatized_region(
+  mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
+simgrid::mc::RegionSnapshot dense_region(
+  mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
+simgrid::mc::RegionSnapshot sparse_region(
+  mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
+simgrid::mc::RegionSnapshot region(
+  mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
+
 }
 }
 
 typedef class simgrid::mc::RegionSnapshot s_mc_mem_region_t, *mc_mem_region_t;
 
-MC_SHOULD_BE_INTERNAL simgrid::mc::RegionSnapshot MC_region_sparse(
-  mc_region_type_t type, void *start_addr, void* data_addr, size_t size);
+namespace simgrid {
+namespace mc {
+
+}
+}
+
 XBT_INTERNAL void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg);
 
 static inline  __attribute__ ((always_inline))

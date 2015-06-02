@@ -82,26 +82,6 @@ void mc_restore_page_snapshot_region(mc_process_t process,
 
 // ***** High level API
 
-simgrid::mc::RegionSnapshot MC_region_sparse(mc_region_type_t region_type,
-  void *start_addr, void* permanent_addr, size_t size)
-{
-  mc_process_t process = &mc_model_checker->process();
-
-  xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize-1)) == 0,
-    "Not at the beginning of a page");
-  xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize-1)) == 0,
-    "Not at the beginning of a page");
-  size_t page_count = mc_page_count(size);
-
-  simgrid::mc::PerPageCopy page_data(mc_model_checker->page_store(), *process,
-      permanent_addr, page_count);
-
-  simgrid::mc::RegionSnapshot region(
-    region_type, start_addr, permanent_addr, size);
-  region.page_data(std::move(page_data));
-  return std::move(region);
-}
-
 void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg)
 {
   xbt_assert(((reg->permanent_address().address()) & (xbt_pagesize-1)) == 0,
