@@ -246,6 +246,7 @@ static void MC_modelcheck_liveness_main(void)
           XBT_INFO("|             ACCEPTANCE CYCLE            |");
           XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
           XBT_INFO("Counter-example that violates formula :");
+          MC_record_dump_path(mc_stack);
           MC_show_stack_liveness(mc_stack);
           MC_dump_stack_liveness(mc_stack);
           MC_print_statistics(mc_stats);

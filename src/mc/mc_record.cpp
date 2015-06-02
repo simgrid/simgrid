@@ -17,6 +17,7 @@
 #include "mc_private.h"
 #include "mc_state.h"
 #include "mc_smx.h"
+#include "mc_liveness.h"
 #endif
 
 extern "C" {
@@ -89,8 +90,40 @@ fail:
 }
 
 #ifdef HAVE_MC
+static char* MC_record_stack_to_string_liveness(xbt_fifo_t stack)
+{
+  char* buffer;
+  size_t size;
+  FILE* file = open_memstream(&buffer, &size);
+
+  xbt_fifo_item_t item;
+  xbt_fifo_item_t start = xbt_fifo_get_last_item(stack);
+  for (item = start; item; item = xbt_fifo_get_prev_item(item)) {
+    mc_pair_t pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+    int value;
+    smx_simcall_t req = MC_state_get_executed_request(pair->graph_state, &value);
+    if (req && req->call != SIMCALL_NONE) {
+      smx_process_t issuer = MC_smx_simcall_get_issuer(req);
+      const int pid = issuer->pid;
+
+      // Serialization the (pid, value) pair:
+      const char* sep = (item!=start) ? ";" : "";
+      if (value)
+        fprintf(file, "%s%u/%u", sep, pid, value);
+      else
+        fprintf(file, "%s%u", sep, pid);
+    }
+  }
+
+  fclose(file);
+  return buffer;
+}
+
 char* MC_record_stack_to_string(xbt_fifo_t stack)
 {
+  if (_sg_mc_liveness)
+    return MC_record_stack_to_string_liveness(stack);
+
   xbt_fifo_item_t start = xbt_fifo_get_last_item(stack);
 
   if (!start) {
