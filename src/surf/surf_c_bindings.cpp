@@ -74,6 +74,18 @@ void surf_presolve(void)
       model->updateActionsState(NOW, 0.0);
 }
 
+/**
+ * Computes when the next action executed in a
+ * specific model terminates; this is important,
+ * because we can safely skip the amount of time
+ * in which no model (read: not even a single one)
+ * changes its state; so, if for instance network,
+ * cpu, storage don't change (and if we assume they're
+ * the only models we use... simple example here :) )
+ * for 2s, 1s, 3s then we can skip 1s as after this
+ * amount of time the new state needs to be considered.
+ *
+ */
 static void surf_share_resources(surf_model_t model)
 {
   double next_action_end = -1.0;
