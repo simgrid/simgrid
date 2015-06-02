@@ -29,12 +29,6 @@ SG_BEGIN_DECL()
 
 XBT_INTERNAL void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg);
 
-static inline  __attribute__ ((always_inline))
-bool mc_region_contain(mc_mem_region_t region, const void* p)
-{
-  return region->contain(simgrid::mc::remote(p));
-}
-
 static inline __attribute__((always_inline))
 void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
 {
@@ -133,7 +127,7 @@ extern "C" {
 static inline __attribute__ ((always_inline))
 mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int process_index, mc_mem_region_t region)
 {
-  if (mc_region_contain(region, addr))
+  if (region->contain(simgrid::mc::remote(addr)))
     return region;
   else
     return mc_get_snapshot_region(addr, snapshot, process_index);
@@ -213,7 +207,7 @@ const void* MC_region_read(mc_mem_region_t region, void* target, const void* add
 
   uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start().address();
 
-  xbt_assert(mc_region_contain(region, addr),
+  xbt_assert(region->contain(simgrid::mc::remote(addr)),
     "Trying to read out of the region boundary.");
 
   switch (region->storage_type()) {

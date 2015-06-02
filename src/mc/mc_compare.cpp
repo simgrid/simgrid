@@ -208,8 +208,8 @@ static int compare_areas_with_type(struct mc_compare_state& state,
       }
 
       // The pointers are both in the current object R/W segment:
-      else if (mc_region_contain(region1, addr_pointed1)) {
-        if (!mc_region_contain(region2, addr_pointed2))
+      else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
+        if (!region2->contain(simgrid::mc::remote(addr_pointed2)))
           return 1;
         if (type->dw_type_id == NULL)
           return (addr_pointed1 != addr_pointed2);

@@ -29,7 +29,7 @@ mc_mem_region_t mc_get_snapshot_region(
   size_t n = snapshot->snapshot_regions_count;
   for (size_t i = 0; i != n; ++i) {
     mc_mem_region_t region = snapshot->snapshot_regions[i];
-    if (!(region && mc_region_contain(region, addr)))
+    if (!(region && region->contain(simgrid::mc::remote(addr))))
       continue;
 
     if (region->storage_type() == simgrid::mc::StorageType::Privatized) {
@@ -45,7 +45,7 @@ mc_mem_region_t mc_get_snapshot_region(
         xbt_die("Invalid process index");
       }
       simgrid::mc::RegionSnapshot& priv_region = region->privatized_data()[process_index];
-      xbt_assert(mc_region_contain(&priv_region, addr));
+      xbt_assert(priv_region.contain(simgrid::mc::remote(addr)));
       return &priv_region;
 #else
       xbt_die("Privatized region in a non SMPI build (this should not happen)");
