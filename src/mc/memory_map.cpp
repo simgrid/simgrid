@@ -27,11 +27,11 @@ std::vector<VmMap> get_memory_map(pid_t pid)
   /* to be returned. */
   char* path = bprintf("/proc/%i/maps", (int) pid);
   FILE *fp = fopen(path, "r");
-  free(path);
   if(fp == NULL)
     perror("fopen failed");
   xbt_assert(fp,
     "Cannot open %s to investigate the memory map of the process.", path);
+  free(path);
   setbuf(fp, NULL);
 
   std::vector<VmMap> ret;
