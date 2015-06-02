@@ -381,7 +381,7 @@ void Process::init_memory_map_info()
     mc_object_info_t info =
       MC_find_object_info(this->memory_map_, pathname, is_executable);
     this->object_infos = (mc_object_info_t*) realloc(this->object_infos,
-      (this->object_infos_size+1) * sizeof(mc_object_info_t*));
+      (this->object_infos_size+1) * sizeof(mc_object_info_t));
     this->object_infos[this->object_infos_size] = info;
     this->object_infos_size++;
     if (is_executable)
