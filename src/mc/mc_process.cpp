@@ -48,6 +48,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
 
 static const char *const FILTERED_LIBS[] = {
   "libstdc++",
+  "libboost_context",
   "libc++",
   "libm",
   "libgcc_s",

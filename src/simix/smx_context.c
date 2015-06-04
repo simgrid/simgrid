@@ -1,6 +1,6 @@
 /* a fast and simple context switching library                              */
 
-/* Copyright (c) 2009-2014. The SimGrid Team.
+/* Copyright (c) 2009-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -84,6 +84,12 @@ void SIMIX_context_mod_init(void)
       else if (!strcmp(smx_context_factory_name, "raw")) {
         /* use raw contexts */
         SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
+      }
+#endif
+#ifdef HAVE_BOOST_CONTEXT
+      else if (!strcmp(smx_context_factory_name, "boost")) {
+        /* use Boost.Context */
+        SIMIX_ctx_boost_factory_init(&simix_global->context_factory);
       }
 #endif
       else {

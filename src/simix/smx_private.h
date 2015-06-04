@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2012-2014. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -24,6 +24,8 @@
 #include "smx_network_private.h"
 #include "popping_private.h"
 #include "smx_synchro_private.h"
+
+SG_BEGIN_DECL()
 
 /* Define only for SimGrid benchmarking purposes */
 //#define TIME_BENCH_PER_SR     /* this aims at measuring the time spent in each scheduling round per each thread. The code is thus run in sequential to bench separately each SSR */
@@ -60,13 +62,7 @@ extern unsigned long simix_process_maxpid;
 
 extern xbt_dict_t watched_hosts_lib;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 XBT_PUBLIC(void) SIMIX_clean(void);
-#ifdef __cplusplus
-}
-#endif
 
 /******************************** Exceptions *********************************/
 /** @brief Ask to the provided simix process to raise the provided exception */
@@ -224,6 +220,7 @@ smx_context_t SIMIX_context_get_current(void);
 void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
 void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
 void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
+void SIMIX_ctx_boost_factory_init(smx_context_factory_t *factory);
 
 /* ****************************** */
 /* context manipulation functions */
@@ -330,5 +327,7 @@ static XBT_INLINE smx_process_t SIMIX_context_get_process(smx_context_t context)
 XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
 
 void SIMIX_post_create_environment(void);
+
+SG_END_DECL()
 
 #endif

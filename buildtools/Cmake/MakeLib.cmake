@@ -33,6 +33,7 @@ endif()
 # Compute the dependencies of SimGrid
 #####################################
 set(SIMGRID_DEP "-lm")
+set(SIMGRID_DEP "${SIMGRID_DEP} ${Boost_CONTEXT_LIBRARY}")
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
     AND NOT ${CMAKE_SYSTEM_VERSION} VERSION_LESS 10.0

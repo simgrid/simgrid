@@ -379,8 +379,19 @@ set(SIMIX_SRC
   src/simix/smx_synchro.c
   src/simix/smx_vm.c
   src/simix/popping.c
+
   ${SIMIX_GENERATED_SRC}
   )
+
+if (HAVE_BOOST_CONTEXT)
+  set(SIMIX_SRC
+      ${SIMIX_SRC}
+      src/simix/smx_context_boost.cpp)
+else()
+  set(EXTRA_DIST
+      ${EXTRA_DIST}
+      src/simix/smx_context_boost.cpp)
+endif()
 
 set(SIMGRID_SRC
   src/simgrid/sg_config.c
