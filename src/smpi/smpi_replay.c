@@ -1055,7 +1055,12 @@ void smpi_replay_init(int *argc, char***argv){
       THROWF(unknown_error, 0, "%s is not a double", (*argv)[2]);
     XBT_VERB("Delayed start for instance - Sleeping for %f flops ",value );
     smpi_execute_flops(value);
+  } else {
+    //UGLY done to force context switch to be sure that all MSG_process begin initialization
+    XBT_VERB("Force context switch by smpi_execute_flops  - Sleeping for 0.0 flops ");
+    smpi_execute_flops(0.0);
   }
+  
   xbt_replay_action_runner(*argc, *argv);
 }
 
