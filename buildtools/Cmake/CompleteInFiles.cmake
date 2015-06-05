@@ -130,6 +130,10 @@ CHECK_LIBRARY_EXISTS(pthread sem_timedwait           "" HAVE_SEM_TIMEDWAIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock "" HAVE_MUTEX_TIMEDLOCK_LIB)
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+  set(CMAKE_REQUIRED_DEFINITIONS -D_XOPEN_SOURCE")
+endif()
+
 CHECK_INCLUDE_FILES("time.h;sys/time.h" TIME_WITH_SYS_TIME)
 CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
 CHECK_INCLUDE_FILE("pthread.h" HAVE_PTHREAD_H)
