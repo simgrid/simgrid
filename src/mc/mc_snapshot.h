@@ -10,6 +10,8 @@
 #include <sys/types.h> // off_t
 #include <stdint.h> // size_t
 
+#include <set>
+
 #include <simgrid_config.h>
 #include "../xbt/mmalloc/mmprivate.h"
 #include <xbt/asserts.h>
@@ -108,7 +110,7 @@ public: // To be private
   size_t heap_bytes_used;
   mc_mem_region_t* snapshot_regions;
   size_t snapshot_regions_count;
-  xbt_dynar_t enabled_processes;
+  std::set<pid_t> enabled_processes;
   int privatization_index;
   size_t *stack_sizes;
   xbt_dynar_t stacks;

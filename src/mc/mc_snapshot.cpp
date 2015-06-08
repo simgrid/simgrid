@@ -159,7 +159,7 @@ Snapshot::Snapshot() :
   heap_bytes_used(0),
   snapshot_regions(nullptr),
   snapshot_regions_count(0),
-  enabled_processes(0),
+  enabled_processes(),
   privatization_index(0),
   stack_sizes(nullptr),
   stacks(nullptr),

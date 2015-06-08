@@ -636,11 +636,9 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   snapshot->process = mc_process;
   snapshot->num_state = num_state;
 
-  snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
-
   smx_process_t process;
   MC_EACH_SIMIX_PROCESS(process,
-    xbt_dynar_push_as(snapshot->enabled_processes, int, (int)process->pid));
+    snapshot->enabled_processes.insert(process->pid));
 
   MC_snapshot_handle_ignore(snapshot);
 
