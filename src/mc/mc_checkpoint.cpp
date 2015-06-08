@@ -46,13 +46,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
-s_mc_snapshot_stack::~s_mc_snapshot_stack()
-{
-  if (this->context)
-    mc_unw_destroy_context(this->context);
-  xbt_free(this->context);
-}
-
 static void MC_snapshot_stack_free_voidp(void *s)
 {
   mc_snapshot_stack_t stack = (mc_snapshot_stack_t) * (void **) s;
@@ -436,12 +429,11 @@ static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t 
     mc_model_checker->process().read_bytes(
       &context, sizeof(context), remote(current_stack->context));
 
-    st.context = xbt_new0(s_mc_unw_context_t, 1);
-    if (mc_unw_init_context(st.context, &mc_model_checker->process(),
+    if (mc_unw_init_context(&st.context, &mc_model_checker->process(),
       &context) < 0) {
       xbt_die("Could not initialise the libunwind context.");
     }
-    st.stack_frames = MC_unwind_stack_frames(st.context);
+    st.stack_frames = MC_unwind_stack_frames(&st.context);
     st.local_variables = MC_get_local_variables_values(st.stack_frames, current_stack->process_index);
     st.process_index = current_stack->process_index;
 
