@@ -477,31 +477,26 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
 
 }
 
-static xbt_dynar_t MC_take_snapshot_ignore()
+static std::vector<s_mc_heap_ignore_region_t> MC_take_snapshot_ignore()
 {
+  std::vector<s_mc_heap_ignore_region_t> res;
 
   if (mc_heap_comparison_ignore == NULL)
-    return NULL;
-
-  xbt_dynar_t cpy =
-      xbt_dynar_new(sizeof(mc_heap_ignore_region_t),
-                    heap_ignore_region_free_voidp);
+    return std::move(res);
 
   unsigned int cursor = 0;
   mc_heap_ignore_region_t current_region;
 
   xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region) {
-    mc_heap_ignore_region_t new_region = NULL;
-    new_region = xbt_new0(s_mc_heap_ignore_region_t, 1);
-    new_region->address = current_region->address;
-    new_region->size = current_region->size;
-    new_region->block = current_region->block;
-    new_region->fragment = current_region->fragment;
-    xbt_dynar_push(cpy, &new_region);
+    s_mc_heap_ignore_region_t new_region;
+    new_region.address = current_region->address;
+    new_region.size = current_region->size;
+    new_region.block = current_region->block;
+    new_region.fragment = current_region->fragment;
+    res.push_back(std::move(new_region));
   }
 
-  return cpy;
-
+  return std::move(res);
 }
 
 static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)

@@ -163,7 +163,6 @@ Snapshot::Snapshot() :
   privatization_index(0),
   stack_sizes(),
   stacks(nullptr),
-  to_ignore(nullptr),
   hash(0)
 {
 
@@ -176,7 +175,6 @@ Snapshot::~Snapshot()
   }
   xbt_free(this->snapshot_regions);
   xbt_dynar_free(&(this->stacks));
-  xbt_dynar_free(&(this->to_ignore));
 }
 
 const void* Snapshot::read_bytes(void* buffer, std::size_t size,

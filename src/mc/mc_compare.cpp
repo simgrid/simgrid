@@ -499,7 +499,7 @@ int snapshot_compare(void *state1, void *state2)
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
     remote(process->heap_address),
     simgrid::mc::ProcessIndexMissing, simgrid::mc::AddressSpace::Lazy);
-  res_init = init_heap_information(heap1, heap2, s1->to_ignore, s2->to_ignore);
+  res_init = init_heap_information(heap1, heap2, &s1->to_ignore, &s2->to_ignore);
   if (res_init == -1) {
 #ifdef MC_DEBUG
     XBT_DEBUG("(%d - %d) Different heap information", num1, num2);
