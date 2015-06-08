@@ -19,6 +19,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_task, bindings, "Lua bindings (task module)"
 
 /**
  * \brief Ensures that a value in the stack is a valid task and returns it.
+ *        A task is "valid" if the value in the stack at the given index is
+ *          (a) a table
+ *          (b) has a field called "__simgrid_task" which
+ *          (c) contains the ctask itself (which can be typecast to msg_task_t*)
  * \param L a Lua state
  * \param index an index in the Lua stack
  * \return the C task corresponding to this Lua task
@@ -42,7 +46,7 @@ msg_task_t sglua_check_task(lua_State* L, int index)
 }
 
 /**
- * \brief Creates a new task and leaves it onto the stack.
+ * \brief Creates a new task and places it onto the stack.
  * \param L a Lua state
  * \return number of values returned to Lua
  *
@@ -53,7 +57,7 @@ msg_task_t sglua_check_task(lua_State* L, int index)
  *
  * A Lua task is a regular table with a full userdata inside, and both share
  * the same metatable. For the regular table, the metatable allows OO-style
- * writing such as your_task:send(someone).
+ * writing such as your_task:send(someone) instead of your_task.send(your_task, someone)
  * For the userdata, the metatable is used to check its type.
  * TODO: make the task name an optional last parameter
  */
@@ -128,6 +132,7 @@ static int l_task_get_computation_duration(lua_State* L)
  */
 static int l_task_execute(lua_State* L)
 {
+  XBT_DEBUG("Called task_execute");
   msg_task_t task = sglua_check_task(L, 1);
   msg_error_t res = MSG_task_execute(task);
 
@@ -179,7 +184,8 @@ void sglua_task_unregister(lua_State* L, msg_task_t task) {
  * \brief This function is called when a C task has just been copied.
  *
  * This callback is used to move the corresponding Lua task from the sender
- * process to the receiver process.
+ * process to the receiver process (so that the receiver can access and deal
+ * with it).
  * It is executed in SIMIX kernel mode when the communication finishes,
  * before both processes are awaken. Thus, this function is thread-safe when
  * user processes are executed in parallel, though it modifies the Lua
@@ -267,7 +273,7 @@ static int l_task_send(lua_State* L)
 }
 
 /**
- * \brief Sends a task on a mailbox.
+ * \brief Sends a task to a mailbox.
  * \param L a Lua state
  * \return number of values returned to Lua
  *
