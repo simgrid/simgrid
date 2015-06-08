@@ -52,16 +52,10 @@ s_mc_snapshot_stack::~s_mc_snapshot_stack()
   xbt_free(this->context);
 }
 
-static void MC_snapshot_stack_free(mc_snapshot_stack_t s)
-{
-  if (s)
-    delete(s);
-}
-
 static void MC_snapshot_stack_free_voidp(void *s)
 {
   mc_snapshot_stack_t stack = (mc_snapshot_stack_t) * (void **) s;
-  MC_snapshot_stack_free(stack);
+  delete stack;
 }
 
 static void local_variable_free_voidp(void *v)
@@ -362,10 +356,7 @@ static std::vector<s_local_variable> MC_get_local_variables_values(xbt_dynar_t s
 static void MC_stack_frame_free_voipd(void *s)
 {
   mc_stack_frame_t stack_frame = *(mc_stack_frame_t *) s;
-  if (stack_frame) {
-    xbt_free(stack_frame->frame_name);
-    xbt_free(stack_frame);
-  }
+  delete(stack_frame);
 }
 
 static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
@@ -384,7 +375,7 @@ static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
   } else
     while (1) {
 
-      mc_stack_frame_t stack_frame = xbt_new(s_mc_stack_frame_t, 1);
+      mc_stack_frame_t stack_frame = new s_mc_stack_frame_t();
       xbt_dynar_push(result, &stack_frame);
 
       stack_frame->unw_cursor = c;
@@ -403,12 +394,12 @@ static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
       stack_frame->frame = frame;
 
       if (frame) {
-        stack_frame->frame_name = xbt_strdup(frame->name);
+        stack_frame->frame_name = frame->name;
         stack_frame->frame_base =
             (unw_word_t) mc_find_frame_base(frame, frame->object_info, &c);
       } else {
         stack_frame->frame_base = 0;
-        stack_frame->frame_name = NULL;
+        stack_frame->frame_name = std::string();
       }
 
       /* Stop before context switch with maestro */

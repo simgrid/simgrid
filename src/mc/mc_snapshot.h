@@ -105,7 +105,7 @@ typedef struct s_mc_stack_frame {
   unw_word_t sp;
   unw_word_t frame_base;
   dw_frame_t frame;
-  char* frame_name;
+  std::string frame_name;
   unw_cursor_t unw_cursor;
 } s_mc_stack_frame_t, *mc_stack_frame_t;
 
