@@ -111,15 +111,6 @@ XBT_INTERNAL void print_comparison_times(void);
 
 /********************************** Miscellaneous **********************************/
 
-typedef struct s_local_variable{
-  dw_frame_t subprogram;
-  unsigned long ip;
-  char *name;
-  dw_type_t type;
-  void *address;
-  int region;
-} s_local_variable_t, *local_variable_t;
-
 /* *********** Hash *********** */
 
 /** \brief Hash the current state

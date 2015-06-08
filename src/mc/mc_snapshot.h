@@ -109,6 +109,15 @@ typedef struct s_mc_stack_frame {
   unw_cursor_t unw_cursor;
 } s_mc_stack_frame_t, *mc_stack_frame_t;
 
+typedef struct s_local_variable{
+  dw_frame_t subprogram;
+  unsigned long ip;
+  char *name;
+  dw_type_t type;
+  void *address;
+  int region;
+} s_local_variable_t, *local_variable_t;
+
 typedef struct s_mc_snapshot_stack{
   xbt_dynar_t local_variables;
   mc_unw_context_t context;
