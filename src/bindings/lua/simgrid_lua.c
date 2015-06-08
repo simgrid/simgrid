@@ -87,6 +87,20 @@ static int info(lua_State* L) {
   return 0;
 }
 
+static int error(lua_State* L) {
+
+  const char* str = luaL_checkstring(L, 1);
+  XBT_ERROR("%s", str);
+  return 0;
+}
+
+static int critical(lua_State* L) {
+
+  const char* str = luaL_checkstring(L, 1);
+  XBT_CRITICAL("%s", str);
+  return 0;
+}
+
 /**
  * \brief Runs your application.
  * \param L a Lua state
@@ -172,6 +186,8 @@ static const luaL_Reg simgrid_functions[] = {
   {"launch_application", launch_application},
   {"debug", debug},
   {"info", info},
+  {"critical", critical},
+  {"error", error},
   {"run", run},
   {"get_clock", get_clock},
   /* short names */
