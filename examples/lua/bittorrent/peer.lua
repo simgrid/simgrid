@@ -183,16 +183,26 @@ function get_peers_data()
 				if v ~= data.id then
 					--Add the peer to our list and build its data
 					local peer_data = {}
-					peer_data.id = v;
+					peer_data.id = math.tointeger(v);
 					peer_data.bitfield = nil
-					peer_data.mailbox = tostring(v);
+					peer_data.mailbox = math.tointeger(v);
 					peer_data.am_interested = false
 					peer_data.interested = false
 					peer_data.choked_upload = true
 					peer_data.choked_download = true
-					data.peers[v] = peer_data
+                    data.peers[v] = peer_data
+                    simgrid.info("Added " .. v)
 				end
 			end
+            mt = {}
+            mt.__len = function(obj)
+                local len = 0;
+                for j,k in pairs(obj) do
+                    len = len+1
+                end
+                return len
+            end
+            setmetatable(data.peers, mt)
 		else
 			success = false
 		end
@@ -276,6 +286,7 @@ function handle_message(task)
 			end
 		end
 	elseif task.type == "PIECE" then
+        task.piece = math.tointeger(task.piece)
 		if task.stalled == true then
 			simgrid.debug("The received piece is stalled")
 		else
@@ -481,7 +492,7 @@ function send_piece(mailbox, piece, stalled)
 	task:dsend(mailbox)	
 end
 function new_task(type)
-	local task = simgrid.task.new("", 0, common.MESSAGE_SIZE)
+	local task = simgrid.task.new(type, 0, common.MESSAGE_SIZE)
 	task.type = type
 	task.mailbox = data.mailbox
 	task.peer_id = data.id	

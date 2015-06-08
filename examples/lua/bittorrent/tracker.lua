@@ -47,8 +47,8 @@ function tracker(...)
 			i = math.random(1,#tracker_data.peers_list)
 		end
 		while #peers < #tracker_data.peers_list and #peers < common_tracker.MAXIMUM_PEERS do
-			table.insert(peers,tracker_data.peers_list[i])	
-			i = (i + 1) % #tracker_data.peers_list
+			table.insert(peers,tracker_data.peers_list[i])
+			i = (i % #tracker_data.peers_list) +1
 		end
 		task.type = "ANSWER"
 		task.peers = peers

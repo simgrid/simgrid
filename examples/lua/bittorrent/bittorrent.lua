@@ -11,6 +11,9 @@ require("simgrid")
 require("peer")
 require("tracker")
 
-simgrid.platform(arg[1] or  "../../platforms/platform.xml")
-simgrid.application(arg[2] or "bittorrent.xml")
+-- Initialization of the random generator
+table.sort(math)
+math.randomseed(42)
+simgrid.platform("../../platforms/platform.xml")
+simgrid.application("bittorrent.xml")
 simgrid.run()
