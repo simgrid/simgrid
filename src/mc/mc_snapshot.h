@@ -73,6 +73,8 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
 XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
   const void* addr, const s_mc_snapshot_t *snapshot, int process_index);
 
+}
+
 // ***** MC Snapshot
 
 /** Ignored data
@@ -87,54 +89,11 @@ typedef struct s_mc_snapshot_ignored_data {
 } s_mc_snapshot_ignored_data_t, *mc_snapshot_ignored_data_t;
 
 typedef struct s_fd_infos{
-  char *filename;
+  std::string filename;
   int number;
   off_t current_position;
   int flags;
 }s_fd_infos_t, *fd_infos_t;
-
-}
-
-namespace simgrid {
-namespace mc {
-
-class Snapshot : public AddressSpace {
-public:
-  Snapshot();
-  ~Snapshot();
-  const void* read_bytes(void* buffer, std::size_t size,
-    remote_ptr<void> address, int process_index = ProcessIndexAny,
-    ReadMode mode = Normal) const MC_OVERRIDE;
-public: // To be private
-  mc_process_t process;
-  int num_state;
-  size_t heap_bytes_used;
-  mc_mem_region_t* snapshot_regions;
-  size_t snapshot_regions_count;
-  std::set<pid_t> enabled_processes;
-  int privatization_index;
-  std::vector<size_t> stack_sizes;
-  xbt_dynar_t stacks;
-  xbt_dynar_t to_ignore;
-  uint64_t hash;
-  xbt_dynar_t ignored_data;
-  int total_fd;
-  fd_infos_t *current_fd;
-};
-
-}
-}
-
-extern "C" {
-
-static inline __attribute__ ((always_inline))
-mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int process_index, mc_mem_region_t region)
-{
-  if (region->contain(simgrid::mc::remote(addr)))
-    return region;
-  else
-    return mc_get_snapshot_region(addr, snapshot, process_index);
-}
 
 /** Information about a given stack frame
  *
@@ -167,6 +126,46 @@ typedef struct s_mc_global_t {
   char *send_diff;
   char *recv_diff;
 }s_mc_global_t, *mc_global_t;
+
+namespace simgrid {
+namespace mc {
+
+class Snapshot : public AddressSpace {
+public:
+  Snapshot();
+  ~Snapshot();
+  const void* read_bytes(void* buffer, std::size_t size,
+    remote_ptr<void> address, int process_index = ProcessIndexAny,
+    ReadMode mode = Normal) const MC_OVERRIDE;
+public: // To be private
+  mc_process_t process;
+  int num_state;
+  size_t heap_bytes_used;
+  mc_mem_region_t* snapshot_regions;
+  size_t snapshot_regions_count;
+  std::set<pid_t> enabled_processes;
+  int privatization_index;
+  std::vector<size_t> stack_sizes;
+  xbt_dynar_t stacks;
+  xbt_dynar_t to_ignore;
+  uint64_t hash;
+  xbt_dynar_t ignored_data;
+  std::vector<s_fd_infos_t> current_fds;
+};
+
+}
+}
+
+extern "C" {
+
+static inline __attribute__ ((always_inline))
+mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int process_index, mc_mem_region_t region)
+{
+  if (region->contain(simgrid::mc::remote(addr)))
+    return region;
+  else
+    return mc_get_snapshot_region(addr, snapshot, process_index);
+}
 
 static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 

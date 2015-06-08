@@ -544,14 +544,12 @@ static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
   }
 }
 
-static void MC_get_current_fd(mc_snapshot_t snapshot)
+static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)
 {
-  snapshot->total_fd = 0;
-
   const size_t fd_dir_path_size = 20;
   char fd_dir_path[fd_dir_path_size];
   int res = snprintf(fd_dir_path, fd_dir_path_size,
-    "/proc/%lli/fd", (long long int) snapshot->process->pid());
+    "/proc/%lli/fd", (long long int) pid);
   xbt_assert(res >= 0);
   if ((size_t) res > fd_dir_path_size)
     xbt_die("Unexpected buffer is too small for fd_dir_path");
@@ -560,7 +558,8 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
   if (fd_dir == NULL)
     xbt_die("Cannot open directory '/proc/self/fd'\n");
 
-  size_t total_fd = 0;
+  std::vector<s_fd_infos_t> fds;
+
   struct dirent* fd_number;
   while ((fd_number = readdir(fd_dir))) {
 
@@ -572,7 +571,7 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
     const size_t source_size = 25;
     char source[25];
     int res = snprintf(source, source_size, "/proc/%lli/fd/%s",
-        (long long int) snapshot->process->pid(), fd_number->d_name);
+        (long long int) pid, fd_number->d_name);
     xbt_assert(res >= 0);
     if ((size_t) res > source_size)
       xbt_die("Unexpected buffer is too small for fd %s", fd_number->d_name);
@@ -610,18 +609,16 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
       continue;
 
     // Add an entry for this FD in the snapshot:
-    fd_infos_t fd = xbt_new0(s_fd_infos_t, 1);
-    fd->filename = strdup(link);
-    fd->number = fd_value;
-    fd->flags = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD) ;
-    fd->current_position = lseek(fd_value, 0, SEEK_CUR);
-    snapshot->current_fd = (fd_infos_t*) xbt_realloc(snapshot->current_fd, (total_fd + 1) * sizeof(fd_infos_t));
-    snapshot->current_fd[total_fd] = fd;
-    total_fd++;
+    s_fd_infos_t fd;
+    fd.filename = std::string(link);
+    fd.number = fd_value;
+    fd.flags = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD) ;
+    fd.current_position = lseek(fd_value, 0, SEEK_CUR);
+    fds.push_back(std::move(fd));
   }
 
-  snapshot->total_fd = total_fd;
   closedir (fd_dir);
+  return std::move(fds);
 }
 
 mc_snapshot_t MC_take_snapshot(int num_state)
@@ -642,7 +639,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   MC_snapshot_handle_ignore(snapshot);
 
   if (_sg_mc_snapshot_fds)
-    MC_get_current_fd(snapshot);
+    snapshot->current_fds = MC_get_current_fds(process->pid);
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(mc_process, snapshot);
@@ -695,20 +692,18 @@ void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
   if (mc_mode == MC_MODE_SERVER)
     xbt_die("FD snapshot not implemented in client/server mode.");
 
-  int new_fd;
-  for (int i=0; i < snapshot->total_fd; i++) {
+  for (auto const& fd : snapshot->current_fds) {
     
-    new_fd = open(snapshot->current_fd[i]->filename, snapshot->current_fd[i]->flags);
-    if (new_fd <0) {
+    int new_fd = open(fd.filename.c_str(), fd.flags);
+    if (new_fd < 0) {
       xbt_die("Could not reopen the file %s fo restoring the file descriptor",
-        snapshot->current_fd[i]->filename);
+        fd.filename.c_str());
     }
-    if(new_fd != -1 && new_fd != snapshot->current_fd[i]->number){
-      dup2(new_fd, snapshot->current_fd[i]->number);
-      //fprintf(stderr, "%p\n", fdopen(snapshot->current_fd[i]->number, "rw"));
+    if (new_fd != fd.number) {
+      dup2(new_fd, fd.number);
       close(new_fd);
     };
-    lseek(snapshot->current_fd[i]->number, snapshot->current_fd[i]->current_position, SEEK_SET);
+    lseek(fd.number, fd.current_position, SEEK_SET);
   }
 }
 

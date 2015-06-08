@@ -165,9 +165,7 @@ Snapshot::Snapshot() :
   stacks(nullptr),
   to_ignore(nullptr),
   hash(0),
-  ignored_data(nullptr),
-  total_fd(0),
-  current_fd(nullptr)
+  ignored_data(nullptr)
 {
 
 }
