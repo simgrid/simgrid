@@ -1100,29 +1100,24 @@ void dw_variable_free_voidp(void *t)
 
 // ***** object_info
 
-
-
-mc_object_info_t MC_new_object_info(void)
+s_mc_object_info::s_mc_object_info()
 {
-  mc_object_info_t res = xbt_new0(s_mc_object_info_t, 1);
-  res->subprograms = xbt_dict_new_homogeneous((void (*)(void *)) mc_frame_free);
-  res->global_variables =
+  this->types = xbt_dict_new_homogeneous((void (*)(void *)) dw_type_free);
+  this->subprograms = xbt_dict_new_homogeneous((void (*)(void *)) mc_frame_free);
+  this->global_variables =
       xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  res->types = xbt_dict_new_homogeneous((void (*)(void *)) dw_type_free);
-  res->full_types_by_name = xbt_dict_new_homogeneous(NULL);
-  return res;
+
+  this->full_types_by_name = xbt_dict_new_homogeneous(NULL);
 }
 
-void MC_free_object_info(mc_object_info_t * info)
+s_mc_object_info::~s_mc_object_info()
 {
-  xbt_free((*info)->file_name);
-  xbt_dict_free(&(*info)->subprograms);
-  xbt_dynar_free(&(*info)->global_variables);
-  xbt_dict_free(&(*info)->types);
-  xbt_dict_free(&(*info)->full_types_by_name);
-  xbt_free(*info);
-  xbt_dynar_free(&(*info)->functions_index);
-  *info = NULL;
+  xbt_free(this->file_name);
+  xbt_dict_free(&this->subprograms);
+  xbt_dynar_free(&this->global_variables);
+  xbt_dict_free(&this->types);
+  xbt_dict_free(&this->full_types_by_name);
+  xbt_dynar_free(&this->functions_index);
 }
 
 // ***** Helpers
@@ -1281,7 +1276,7 @@ static void MC_post_process_types(mc_object_info_t info)
 mc_object_info_t MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char *name, int executable)
 {
-  mc_object_info_t result = MC_new_object_info();
+  mc_object_info_t result = new s_mc_object_info_t();
   if (executable)
     result->flags |= MC_OBJECT_INFO_EXECUTABLE;
   result->file_name = xbt_strdup(name);

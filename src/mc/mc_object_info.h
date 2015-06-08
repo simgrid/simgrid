@@ -59,21 +59,30 @@ typedef int mc_object_info_flags;
 #define MC_OBJECT_INFO_EXECUTABLE 1
 
 struct s_mc_object_info {
-  mc_object_info_flags flags;
-  char* file_name;
-  const void* start, *end;
-  char *start_exec, *end_exec; // Executable segment
-  char *start_rw, *end_rw; // Read-write segment
-  char *start_ro, *end_ro; // read-only segment
-  xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, dw_frame_t>
-  xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
-  xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
-  xbt_dict_t full_types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
+  s_mc_object_info();
+  ~s_mc_object_info();
+  s_mc_object_info(s_mc_object_info const&) = delete;
+  s_mc_object_info& operator=(s_mc_object_info const&) = delete;
+
+  mc_object_info_flags flags = 0;
+  char* file_name = nullptr;
+  const void* start = nullptr;
+  const void *end = nullptr;
+  char *start_exec = nullptr;
+  char *end_exec = nullptr; // Executable segment
+  char *start_rw = nullptr;
+  char *end_rw = nullptr; // Read-write segment
+  char *start_ro = nullptr;
+  char *end_ro = nullptr; // read-only segment
+  xbt_dict_t subprograms = nullptr; // xbt_dict_t<origin as hexadecimal string, dw_frame_t>
+  xbt_dynar_t global_variables = nullptr; // xbt_dynar_t<dw_variable_t>
+  xbt_dict_t types = nullptr; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
+  xbt_dict_t full_types_by_name = nullptr; // xbt_dict_t<name, dw_type_t> (full defined type only)
 
   // Here we sort the minimal information for an efficient (and cache-efficient)
   // lookup of a function given an instruction pointer.
   // The entries are sorted by low_pc and a binary search can be used to look them up.
-  xbt_dynar_t functions_index;
+  xbt_dynar_t functions_index = nullptr;
 };
 
 static inline __attribute__ ((always_inline))
@@ -104,7 +113,6 @@ bool MC_object_info_is_privatized(mc_object_info_t info)
  */
 XBT_INTERNAL void* MC_object_base_address(mc_object_info_t info);
 
-XBT_INTERNAL mc_object_info_t MC_new_object_info(void);
 XBT_INTERNAL mc_object_info_t MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char* name, int executable);
 XBT_INTERNAL void MC_free_object_info(mc_object_info_t* p);

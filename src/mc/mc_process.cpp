@@ -254,7 +254,8 @@ Process::~Process()
 
   size_t i;
   for (i=0; i!=process->object_infos_size; ++i) {
-    MC_free_object_info(&process->object_infos[i]);
+    delete process->object_infos[i];
+    process->object_infos[i] = nullptr;
   }
   free(process->object_infos);
   process->object_infos = NULL;
