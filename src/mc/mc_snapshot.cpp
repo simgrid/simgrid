@@ -159,8 +159,6 @@ Snapshot::Snapshot() :
   heap_bytes_used(0),
   enabled_processes(),
   privatization_index(0),
-  stack_sizes(),
-  stacks(nullptr),
   hash(0)
 {
 
@@ -168,7 +166,7 @@ Snapshot::Snapshot() :
 
 Snapshot::~Snapshot()
 {
-  xbt_dynar_free(&(this->stacks));
+
 }
 
 const void* Snapshot::read_bytes(void* buffer, std::size_t size,

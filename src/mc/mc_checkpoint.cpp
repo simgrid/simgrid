@@ -34,6 +34,7 @@
 #include "mc_unw.h"
 #include "mc_protocol.h"
 #include "mc_smx.h"
+#include "mc_hash.hpp"
 
 using simgrid::mc::remote;
 
@@ -48,7 +49,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 s_mc_snapshot_stack::~s_mc_snapshot_stack()
 {
   xbt_dynar_free(&(this->stack_frames));
-  mc_unw_destroy_context(this->context);
+  if (this->context)
+    mc_unw_destroy_context(this->context);
   xbt_free(this->context);
 }
 
@@ -423,44 +425,41 @@ static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
   return result;
 };
 
-static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
+static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
 {
-
-  xbt_dynar_t res =
-      xbt_dynar_new(sizeof(s_mc_snapshot_stack_t),
-                    MC_snapshot_stack_free_voidp);
+  std::vector<s_mc_snapshot_stack_t> res;
 
   unsigned int cursor = 0;
   stack_region_t current_stack;
 
   // FIXME, cross-process support (stack_areas)
   xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
-    mc_snapshot_stack_t st = new s_mc_snapshot_stack();
+    s_mc_snapshot_stack_t st;
 
     // Read the context from remote process:
     unw_context_t context;
     mc_model_checker->process().read_bytes(
       &context, sizeof(context), remote(current_stack->context));
 
-    st->context = xbt_new0(s_mc_unw_context_t, 1);
-    if (mc_unw_init_context(st->context, &mc_model_checker->process(),
+    st.context = xbt_new0(s_mc_unw_context_t, 1);
+    if (mc_unw_init_context(st.context, &mc_model_checker->process(),
       &context) < 0) {
       xbt_die("Could not initialise the libunwind context.");
     }
+    st.stack_frames = MC_unwind_stack_frames(st.context);
+    st.local_variables = MC_get_local_variables_values(st.stack_frames, current_stack->process_index);
+    st.process_index = current_stack->process_index;
 
-    st->stack_frames = MC_unwind_stack_frames(st->context);
-    st->local_variables = MC_get_local_variables_values(st->stack_frames, current_stack->process_index);
-    st->process_index = current_stack->process_index;
+    unw_word_t sp = xbt_dynar_get_as(st.stack_frames, 0, mc_stack_frame_t)->sp;
 
-    unw_word_t sp = xbt_dynar_get_as(st->stack_frames, 0, mc_stack_frame_t)->sp;
+    res.push_back(std::move(st));
 
-    xbt_dynar_push(res, &st);
     size_t stack_size =
       (char*) current_stack->address + current_stack->size - (char*) sp;
     (*snapshot)->stack_sizes.push_back(stack_size);
   }
 
-  return res;
+  return std::move(res);
 
 }
 
@@ -622,7 +621,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks =
         MC_take_snapshot_stacks(&snapshot);
-    if (_sg_mc_hash && snapshot->stacks != NULL) {
+    if (_sg_mc_hash && !snapshot->stacks.empty()) {
       snapshot->hash = mc_hash_processes_state(num_state, snapshot->stacks);
     } else {
       snapshot->hash = 0;

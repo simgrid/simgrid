@@ -124,7 +124,29 @@ typedef struct s_mc_snapshot_stack{
   xbt_dynar_t stack_frames; // mc_stack_frame_t
   int process_index;
 
+  s_mc_snapshot_stack()
+    : context(nullptr), stack_frames(nullptr), process_index(0)
+  {}
   ~s_mc_snapshot_stack();
+  s_mc_snapshot_stack(s_mc_snapshot_stack& p) = delete;
+  s_mc_snapshot_stack& operator=(s_mc_snapshot_stack&) = delete;
+
+  s_mc_snapshot_stack(s_mc_snapshot_stack&& that)
+  {
+    *this = std::move(that);
+  }
+  s_mc_snapshot_stack& operator=(s_mc_snapshot_stack&& that)
+  {
+    this->local_variables = std::move(that.local_variables);
+    this->context = std::move(that.context);
+    that.context = nullptr;
+    this->stack_frames = std::move(that.stack_frames);
+    that.stack_frames = nullptr;
+    this->process_index = that.process_index;
+    that.process_index = 0;
+    return *this;
+  }
+
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t {
@@ -156,7 +178,7 @@ public: // To be private
   std::set<pid_t> enabled_processes;
   int privatization_index;
   std::vector<size_t> stack_sizes;
-  xbt_dynar_t stacks;
+  std::vector<s_mc_snapshot_stack_t> stacks;
   std::vector<s_mc_heap_ignore_region_t> to_ignore;
   uint64_t hash;
   std::vector<s_mc_snapshot_ignored_data> ignored_data;

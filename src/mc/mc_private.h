@@ -111,22 +111,6 @@ XBT_INTERNAL void print_comparison_times(void);
 
 /********************************** Miscellaneous **********************************/
 
-/* *********** Hash *********** */
-
-/** \brief Hash the current state
- *  \param num_state number of states
- *  \param stacks stacks (mc_snapshot_stak_t) used fot the stack unwinding informations
- *  \result resulting hash
- * */
-XBT_INTERNAL uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks);
-
-/** @brief Dump the stacks of the application processes
- *
- *   This functions is currently not used but it is quite convenient
- *   to call from the debugger.
- *
- *   Does not work when an application thread is running.
- */
 XBT_INTERNAL void MC_dump_stacks(FILE* file);
 
 XBT_INTERNAL void MC_report_assertion_error(void);

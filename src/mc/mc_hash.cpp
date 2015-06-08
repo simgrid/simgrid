@@ -12,8 +12,7 @@
 #include "mc_private.h"
 #include "mc/datatypes.h"
 #include <mc/mc.h>
-
-extern "C" {
+#include "mc_hash.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_hash, mc, "Logging specific to mc_hash");
 
@@ -322,7 +321,7 @@ static void mc_hash_stacks(mc_hash_t * hash, mc_hashing_state * state,
 }
 #endif
 
-uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks)
+uint64_t mc_hash_processes_state(int num_state, std::vector<s_mc_snapshot_stack_t> const& stacks)
 {
   XBT_DEBUG("START hash %i", num_state);
 
@@ -343,6 +342,4 @@ uint64_t mc_hash_processes_state(int num_state, xbt_dynar_t stacks)
 
   XBT_DEBUG("END hash %i", num_state);
   return hash;
-}
-
 }

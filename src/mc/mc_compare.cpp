@@ -446,7 +446,7 @@ int snapshot_compare(void *state1, void *state2)
   int is_diff = 0;
 
   /* Compare size of stacks */
-  while (i < xbt_dynar_length(s1->stacks)) {
+  while (i < s1->stacks.size()) {
     size_used1 = s1->stack_sizes[i];
     size_used2 = s2->stack_sizes[i];
     if (size_used1 != size_used2) {
@@ -523,13 +523,9 @@ int snapshot_compare(void *state1, void *state2)
   is_diff = 0;
 #endif
   mc_snapshot_stack_t stack1, stack2;
-  while (cursor < xbt_dynar_length(s1->stacks)) {
-    stack1 =
-        (mc_snapshot_stack_t) xbt_dynar_get_as(s1->stacks, cursor,
-                                               mc_snapshot_stack_t);
-    stack2 =
-        (mc_snapshot_stack_t) xbt_dynar_get_as(s2->stacks, cursor,
-                                               mc_snapshot_stack_t);
+  while (cursor < s1->stacks.size()) {
+    stack1 = &s1->stacks[cursor];
+    stack2 = &s1->stacks[cursor];
 
     if (stack1->process_index != stack2->process_index) {
       diff_local = 1;
