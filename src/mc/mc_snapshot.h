@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <set>
+#include <memory>
 
 #include <simgrid_config.h>
 #include "../xbt/mmalloc/mmprivate.h"
@@ -140,8 +141,7 @@ public: // To be private
   mc_process_t process;
   int num_state;
   size_t heap_bytes_used;
-  mc_mem_region_t* snapshot_regions;
-  size_t snapshot_regions_count;
+  std::vector<std::unique_ptr<s_mc_mem_region_t>> snapshot_regions;
   std::set<pid_t> enabled_processes;
   int privatization_index;
   std::vector<size_t> stack_sizes;

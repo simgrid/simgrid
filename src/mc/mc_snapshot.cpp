@@ -26,9 +26,9 @@ extern "C" {
 mc_mem_region_t mc_get_snapshot_region(
   const void* addr, const s_mc_snapshot_t* snapshot, int process_index)
 {
-  size_t n = snapshot->snapshot_regions_count;
+  size_t n = snapshot->snapshot_regions.size();
   for (size_t i = 0; i != n; ++i) {
-    mc_mem_region_t region = snapshot->snapshot_regions[i];
+    mc_mem_region_t region = snapshot->snapshot_regions[i].get();
     if (!(region && region->contain(simgrid::mc::remote(addr))))
       continue;
 
@@ -157,8 +157,6 @@ Snapshot::Snapshot() :
   process(nullptr),
   num_state(0),
   heap_bytes_used(0),
-  snapshot_regions(nullptr),
-  snapshot_regions_count(0),
   enabled_processes(),
   privatization_index(0),
   stack_sizes(),
@@ -170,10 +168,6 @@ Snapshot::Snapshot() :
 
 Snapshot::~Snapshot()
 {
-  for (size_t i = 0; i < this->snapshot_regions_count; i++) {
-    delete this->snapshot_regions[i];
-  }
-  xbt_free(this->snapshot_regions);
   xbt_dynar_free(&(this->stacks));
 }
 

@@ -419,9 +419,9 @@ void reset_heap_information()
 static inline
 mc_mem_region_t MC_get_heap_region(mc_snapshot_t snapshot)
 {
-  size_t n = snapshot->snapshot_regions_count;
+  size_t n = snapshot->snapshot_regions.size();
   for (size_t i=0; i!=n; ++i) {
-    mc_mem_region_t region = snapshot->snapshot_regions[i];
+    mc_mem_region_t region = snapshot->snapshot_regions[i].get();
     if (region->region_type() == simgrid::mc::RegionType::Heap)
       return region;
   }

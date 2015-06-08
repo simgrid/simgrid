@@ -574,15 +574,15 @@ int snapshot_compare(void *state1, void *state2)
     cursor++;
   }
 
-  size_t regions_count = s1->snapshot_regions_count;
+  size_t regions_count = s1->snapshot_regions.size();
   // TODO, raise a difference instead?
-  xbt_assert(regions_count == s2->snapshot_regions_count);
+  xbt_assert(regions_count == s2->snapshot_regions.size());
 
   mc_comp_times->global_variables_comparison_time = 0;
 
   for (size_t k = 0; k != regions_count; ++k) {
-    mc_mem_region_t region1 = s1->snapshot_regions[k];
-    mc_mem_region_t region2 = s2->snapshot_regions[k];
+    mc_mem_region_t region1 = s1->snapshot_regions[k].get();
+    mc_mem_region_t region2 = s2->snapshot_regions[k].get();
 
     // Preconditions:
     if (region1->region_type() != simgrid::mc::RegionType::Data)

@@ -165,17 +165,16 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
 
   region.object_info(object_info);
   snapshot->snapshot_regions[index]
-    = new simgrid::mc::RegionSnapshot(std::move(region));
+    = std::unique_ptr<simgrid::mc::RegionSnapshot>(
+      new simgrid::mc::RegionSnapshot(std::move(region)));
   return;
 }
 
 static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 {
   const size_t n = process->object_infos_size;
-  snapshot->snapshot_regions_count = n + 1;
-  snapshot->snapshot_regions = xbt_new0(mc_mem_region_t, n + 1);
-
-  for (size_t i = 0; i!=n; ++i) {
+  snapshot->snapshot_regions.resize(n + 1);
+  for (size_t i = 0; i != n; ++i) {
     mc_object_info_t object_info = process->object_infos[i];
     MC_snapshot_add_region(i, snapshot, simgrid::mc::RegionType::Data, object_info,
       object_info->start_rw, object_info->start_rw,
@@ -651,11 +650,10 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 static inline
 void MC_restore_snapshot_regions(mc_snapshot_t snapshot)
 {
-  const size_t n = snapshot->snapshot_regions_count;
-  for (size_t i = 0; i < n; i++) {
+  for(std::unique_ptr<s_mc_mem_region_t> const& region : snapshot->snapshot_regions) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
-    if (snapshot->snapshot_regions[i])
-      MC_region_restore(snapshot->snapshot_regions[i]);
+    if (region)
+      MC_region_restore(region.get());
   }
 
 #ifdef HAVE_SMPI
