@@ -338,21 +338,16 @@ static int compare_local_variables(int process_index,
 {
   struct mc_compare_state state;
 
-  if (xbt_dynar_length(stack1->local_variables) !=
-      xbt_dynar_length(stack2->local_variables)) {
+  if (stack1->local_variables.size() != stack2->local_variables.size()) {
     XBT_VERB("Different number of local variables");
     return 1;
   } else {
     unsigned int cursor = 0;
     local_variable_t current_var1, current_var2;
     int res;
-    while (cursor < xbt_dynar_length(stack1->local_variables)) {
-      current_var1 =
-          (local_variable_t) xbt_dynar_get_as(stack1->local_variables, cursor,
-                                              local_variable_t);
-      current_var2 =
-          (local_variable_t) xbt_dynar_get_as(stack2->local_variables, cursor,
-                                              local_variable_t);
+    while (cursor < stack1->local_variables.size()) {
+      current_var1 = &stack1->local_variables[cursor];
+      current_var2 = &stack1->local_variables[cursor];
       if (current_var1->name != current_var2->name
           || current_var1->subprogram != current_var1->subprogram
           || current_var1->ip != current_var2->ip) {

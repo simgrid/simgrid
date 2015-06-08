@@ -45,15 +45,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
+s_mc_snapshot_stack::~s_mc_snapshot_stack()
+{
+  xbt_dynar_free(&(this->stack_frames));
+  mc_unw_destroy_context(this->context);
+  xbt_free(this->context);
+}
+
 static void MC_snapshot_stack_free(mc_snapshot_stack_t s)
 {
-  if (s) {
-    xbt_dynar_free(&(s->local_variables));
-    xbt_dynar_free(&(s->stack_frames));
-    mc_unw_destroy_context(s->context);
-    xbt_free(s->context);
-    xbt_free(s);
-  }
+  if (s)
+    delete(s);
 }
 
 static void MC_snapshot_stack_free_voidp(void *s)
@@ -62,14 +64,10 @@ static void MC_snapshot_stack_free_voidp(void *s)
   MC_snapshot_stack_free(stack);
 }
 
-static void local_variable_free(local_variable_t v)
-{
-  delete(v);
-}
-
 static void local_variable_free_voidp(void *v)
 {
-  local_variable_free((local_variable_t) * (void **) v);
+  local_variable_t var = *(local_variable_t*)v;
+  delete var;
 }
 
 }
@@ -283,7 +281,8 @@ static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope,
 }
 
 static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
-                                           dw_frame_t scope, int process_index, xbt_dynar_t result)
+                                           dw_frame_t scope, int process_index,
+                                           std::vector<s_local_variable>& result)
 {
   mc_process_t process = &mc_model_checker->process();
 
@@ -305,15 +304,16 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     else
       region_type = 2;
 
-    local_variable_t new_var = new s_local_variable_t();
-    new_var->subprogram = stack_frame->frame;
-    new_var->ip = stack_frame->ip;
-    new_var->name = current_variable->name;
-    new_var->type = current_variable->type;
-    new_var->region = region_type;
+    s_local_variable_t new_var;
+    new_var.subprogram = stack_frame->frame;
+    new_var.ip = stack_frame->ip;
+    new_var.name = current_variable->name;
+    new_var.type = current_variable->type;
+    new_var.region = region_type;
+    new_var.address = nullptr;
 
     if (current_variable->address != NULL) {
-      new_var->address = current_variable->address;
+      new_var.address = current_variable->address;
     } else if (current_variable->locations.size != 0) {
       s_mc_location_t location;
       mc_dwarf_resolve_locations(
@@ -325,7 +325,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
 
       switch(mc_get_location_type(&location)) {
       case MC_LOCATION_TYPE_ADDRESS:
-        new_var->address = location.memory_location;
+        new_var.address = location.memory_location;
         break;
       case MC_LOCATION_TYPE_REGISTER:
       default:
@@ -336,7 +336,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
       xbt_die("No address");
     }
 
-    xbt_dynar_push(result, &new_var);
+    result.push_back(std::move(new_var));
   }
 
   // Recursive processing of nested scopes:
@@ -346,19 +346,17 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
   }
 }
 
-static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames, int process_index)
+static std::vector<s_local_variable> MC_get_local_variables_values(xbt_dynar_t stack_frames, int process_index)
 {
 
   unsigned cursor1 = 0;
   mc_stack_frame_t stack_frame;
-  xbt_dynar_t variables =
-      xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
 
+  std::vector<s_local_variable> variables;
   xbt_dynar_foreach(stack_frames, cursor1, stack_frame) {
     mc_fill_local_variables_values(stack_frame, stack_frame->frame, process_index, variables);
   }
-
-  return variables;
+  return std::move(variables);
 }
 
 static void MC_stack_frame_free_voipd(void *s)
@@ -446,7 +444,7 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
 
   // FIXME, cross-process support (stack_areas)
   xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
-    mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
+    mc_snapshot_stack_t st = new s_mc_snapshot_stack();
 
     // Read the context from remote process:
     unw_context_t context;

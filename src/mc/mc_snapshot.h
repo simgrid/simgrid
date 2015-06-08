@@ -119,10 +119,12 @@ typedef struct s_local_variable{
 } s_local_variable_t, *local_variable_t;
 
 typedef struct s_mc_snapshot_stack{
-  xbt_dynar_t local_variables;
+  std::vector<s_local_variable> local_variables;
   mc_unw_context_t context;
   xbt_dynar_t stack_frames; // mc_stack_frame_t
   int process_index;
+
+  ~s_mc_snapshot_stack();
 }s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t {
