@@ -112,11 +112,9 @@ void MC_heap_region_ignore_remove(void *address, size_t size)
 void MCer_ignore_global_variable(const char *name)
 {
   mc_process_t process = &mc_model_checker->process();
-  xbt_assert(process->object_infos, "MC subsystem not initialized");
+  xbt_assert(!process->object_infos.empty(), "MC subsystem not initialized");
 
-  size_t n = process->object_infos_size;
-  for (size_t i=0; i!=n; ++i) {
-    mc_object_info_t info = process->object_infos[i];
+  for (std::shared_ptr<s_mc_object_info_t> const& info : process->object_infos) {
 
     // Binary search:
     int start = 0;
@@ -155,11 +153,8 @@ void MC_ignore_local_variable(const char *var_name, const char *frame_name)
   if (strcmp(frame_name, "*") == 0)
     frame_name = NULL;
 
-  size_t n = process->object_infos_size;
-  size_t i;
-  for (i=0; i!=n; ++i) {
-    MC_ignore_local_variable_in_object(var_name, frame_name, process->object_infos[i]);
-  }
+  for (std::shared_ptr<s_mc_object_info_t> const& info : process->object_infos)
+    MC_ignore_local_variable_in_object(var_name, frame_name, info.get());
 }
 
 static void MC_ignore_local_variable_in_object(const char *var_name,

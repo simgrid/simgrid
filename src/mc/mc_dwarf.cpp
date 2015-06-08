@@ -1281,20 +1281,21 @@ static void MC_post_process_types(mc_object_info_t info)
 }
 
 /** \brief Finds informations about a given shared object/executable */
-mc_object_info_t MC_find_object_info(
+std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char *name, int executable)
 {
-  mc_object_info_t result = new s_mc_object_info_t();
+  std::shared_ptr<s_mc_object_info_t> result =
+    std::make_shared<s_mc_object_info_t>();
   if (executable)
     result->flags |= MC_OBJECT_INFO_EXECUTABLE;
   result->file_name = xbt_strdup(name);
-  MC_find_object_address(maps, result);
-  MC_dwarf_get_variables(result);
-  MC_post_process_types(result);
-  MC_post_process_variables(result);
-  MC_post_process_functions(result);
-  MC_make_functions_index(result);
-  return result;
+  MC_find_object_address(maps, result.get());
+  MC_dwarf_get_variables(result.get());
+  MC_post_process_types(result.get());
+  MC_post_process_variables(result.get());
+  MC_post_process_functions(result.get());
+  MC_make_functions_index(result.get());
+  return std::move(result);
 }
 
 /*************************************************************************/
@@ -1397,9 +1398,9 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
 
     // Resolve full_type:
     if (subtype->name && subtype->byte_size == 0) {
-      for (size_t i = 0; i != process->object_infos_size; ++i) {
+      for (auto const& object_info : process->object_infos) {
         dw_type_t same_type = (dw_type_t)
-            xbt_dict_get_or_null(process->object_infos[i]->full_types_by_name,
+            xbt_dict_get_or_null(object_info->full_types_by_name,
                                  subtype->name);
         if (same_type && same_type->name && same_type->byte_size) {
           type->full_type = same_type;

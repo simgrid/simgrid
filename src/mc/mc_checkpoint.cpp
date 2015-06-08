@@ -157,13 +157,15 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
 
 static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 {
-  const size_t n = process->object_infos_size;
+  const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
-  for (size_t i = 0; i != n; ++i) {
-    mc_object_info_t object_info = process->object_infos[i];
-    MC_snapshot_add_region(i, snapshot, simgrid::mc::RegionType::Data, object_info,
+  int i = 0;
+  for (auto const& object_info : process->object_infos) {
+    MC_snapshot_add_region(i, snapshot, simgrid::mc::RegionType::Data,
+      object_info.get(),
       object_info->start_rw, object_info->start_rw,
       object_info->end_rw - object_info->start_rw);
+    ++i;
   }
 
   xbt_mheap_t heap = process->get_heap();

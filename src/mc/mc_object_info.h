@@ -115,7 +115,7 @@ bool MC_object_info_is_privatized(mc_object_info_t info)
  */
 XBT_INTERNAL void* MC_object_base_address(mc_object_info_t info);
 
-XBT_INTERNAL mc_object_info_t MC_find_object_info(
+XBT_INTERNAL std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char* name, int executable);
 XBT_INTERNAL void MC_free_object_info(mc_object_info_t* p);
 
