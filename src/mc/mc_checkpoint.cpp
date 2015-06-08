@@ -48,7 +48,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 
 s_mc_snapshot_stack::~s_mc_snapshot_stack()
 {
-  xbt_dynar_free(&(this->stack_frames));
   if (this->context)
     mc_unw_destroy_context(this->context);
   xbt_free(this->context);
@@ -342,16 +341,12 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
   }
 }
 
-static std::vector<s_local_variable> MC_get_local_variables_values(xbt_dynar_t stack_frames, int process_index)
+static std::vector<s_local_variable> MC_get_local_variables_values(
+  std::vector<s_mc_stack_frame_t>& stack_frames, int process_index)
 {
-
-  unsigned cursor1 = 0;
-  mc_stack_frame_t stack_frame;
-
   std::vector<s_local_variable> variables;
-  xbt_dynar_foreach(stack_frames, cursor1, stack_frame) {
-    mc_fill_local_variables_values(stack_frame, stack_frame->frame, process_index, variables);
-  }
+  for (s_mc_stack_frame_t& stack_frame : stack_frames)
+    mc_fill_local_variables_values(&stack_frame, stack_frame.frame, process_index, variables);
   return std::move(variables);
 }
 
@@ -361,11 +356,10 @@ static void MC_stack_frame_free_voipd(void *s)
   delete(stack_frame);
 }
 
-static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
+static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t stack_context)
 {
   mc_process_t process = &mc_model_checker->process();
-  xbt_dynar_t result =
-      xbt_dynar_new(sizeof(mc_stack_frame_t), MC_stack_frame_free_voipd);
+  std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c;
 
@@ -377,32 +371,33 @@ static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
   } else
     while (1) {
 
-      mc_stack_frame_t stack_frame = new s_mc_stack_frame_t();
-      xbt_dynar_push(result, &stack_frame);
+      s_mc_stack_frame_t stack_frame;
 
-      stack_frame->unw_cursor = c;
+      stack_frame.unw_cursor = c;
 
       unw_word_t ip, sp;
 
       unw_get_reg(&c, UNW_REG_IP, &ip);
       unw_get_reg(&c, UNW_REG_SP, &sp);
 
-      stack_frame->ip = ip;
-      stack_frame->sp = sp;
+      stack_frame.ip = ip;
+      stack_frame.sp = sp;
 
       // TODO, use real addresses in frame_t instead of fixing it here
 
       dw_frame_t frame = process->find_function(remote(ip));
-      stack_frame->frame = frame;
+      stack_frame.frame = frame;
 
       if (frame) {
-        stack_frame->frame_name = frame->name;
-        stack_frame->frame_base =
+        stack_frame.frame_name = frame->name;
+        stack_frame.frame_base =
             (unw_word_t) mc_find_frame_base(frame, frame->object_info, &c);
       } else {
-        stack_frame->frame_base = 0;
-        stack_frame->frame_name = std::string();
+        stack_frame.frame_base = 0;
+        stack_frame.frame_name = std::string();
       }
+
+      result.push_back(std::move(stack_frame));
 
       /* Stop before context switch with maestro */
       if (frame != NULL && frame->name != NULL
@@ -417,12 +412,12 @@ static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
       }
     }
 
-  if (xbt_dynar_length(result) == 0) {
+  if (result.empty()) {
     XBT_INFO("unw_init_local failed");
     xbt_abort();
   }
 
-  return result;
+  return std::move(result);
 };
 
 static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
@@ -450,7 +445,7 @@ static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t 
     st.local_variables = MC_get_local_variables_values(st.stack_frames, current_stack->process_index);
     st.process_index = current_stack->process_index;
 
-    unw_word_t sp = xbt_dynar_get_as(st.stack_frames, 0, mc_stack_frame_t)->sp;
+    unw_word_t sp = st.stack_frames[0].sp;
 
     res.push_back(std::move(st));
 

@@ -121,11 +121,11 @@ typedef struct s_local_variable{
 typedef struct s_mc_snapshot_stack{
   std::vector<s_local_variable> local_variables;
   mc_unw_context_t context;
-  xbt_dynar_t stack_frames; // mc_stack_frame_t
+  std::vector<s_mc_stack_frame_t> stack_frames;
   int process_index;
 
   s_mc_snapshot_stack()
-    : context(nullptr), stack_frames(nullptr), process_index(0)
+    : context(nullptr), process_index(0)
   {}
   ~s_mc_snapshot_stack();
   s_mc_snapshot_stack(s_mc_snapshot_stack& p) = delete;
@@ -140,8 +140,6 @@ typedef struct s_mc_snapshot_stack{
     this->local_variables = std::move(that.local_variables);
     this->context = std::move(that.context);
     that.context = nullptr;
-    this->stack_frames = std::move(that.stack_frames);
-    that.stack_frames = nullptr;
     this->process_index = that.process_index;
     that.process_index = 0;
     return *this;

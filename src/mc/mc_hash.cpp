@@ -283,22 +283,22 @@ static void mc_hash_stack(mc_hash_t * hash, mc_snapshot_stack_t stack,
   unsigned cursor = 0;
   mc_stack_frame_t stack_frame;
 
-  xbt_dynar_foreach(stack->stack_frames, cursor, stack_frame) {
+  for(s_mc_stack_frame_t const& stack_frame : stack->stack_frames) {
 
-    MC_HASH(*hash, stack_frame->ip);
+    MC_HASH(*hash, stack_frame.ip);
 
     mc_object_info_t info;
-    if (stack_frame->ip >= (unw_word_t) libsimgrid_info->start_exec
-        && stack_frame->ip < (unw_word_t) libsimgrid_info->end_exec)
+    if (stack_frame.ip >= (unw_word_t) libsimgrid_info->start_exec
+        && stack_frame.ip < (unw_word_t) libsimgrid_info->end_exec)
       info = libsimgrid_info;
-    else if (stack_frame->ip >= (unw_word_t) binary_info->start_exec
-             && stack_frame->ip < (unw_word_t) binary_info->end_exec)
+    else if (stack_frame.ip >= (unw_word_t) binary_info->start_exec
+             && stack_frame.ip < (unw_word_t) binary_info->end_exec)
       info = binary_info;
     else
       continue;
 
-    mc_hash_stack_frame(hash, info, &(stack_frame->unw_cursor),
-                        stack_frame->frame, (void *) stack_frame->frame_base,
+    mc_hash_stack_frame(hash, info, &(stack_frame.unw_cursor),
+                        stack_frame.frame, (void *) stack_frame.frame_base,
                         state);
 
   }
