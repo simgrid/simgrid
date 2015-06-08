@@ -30,24 +30,26 @@ SG_BEGIN_DECL();
 typedef int e_dw_type_type;
 
 struct s_dw_type {
-  e_dw_type_type type;
-  Dwarf_Off id; /* Offset in the section (in hexadecimal form) */
-  char *name; /* Name of the type */
-  int byte_size; /* Size in bytes */
-  int element_count; /* Number of elements for array type */
-  char *dw_type_id; /* DW_AT_type id */
-  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
-  int is_pointer_type;
+  s_dw_type();
+  ~s_dw_type();
+
+  e_dw_type_type type = 0;
+  Dwarf_Off id = 0; /* Offset in the section (in hexadecimal form) */
+  char *name = nullptr; /* Name of the type */
+  int byte_size = 0; /* Size in bytes */
+  int element_count = 0; /* Number of elements for array type */
+  char *dw_type_id = nullptr; /* DW_AT_type id */
+  xbt_dynar_t members = nullptr; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
+  int is_pointer_type = 0;
 
   // Location (for members) is either of:
-  struct s_mc_expression location;
-  int offset;
+  struct s_mc_expression location = { 0, 0, 0, 0 };
+  int offset = 0;
 
-  dw_type_t subtype; // DW_AT_type
-  dw_type_t full_type; // The same (but more complete) type
+  dw_type_t subtype = nullptr; // DW_AT_type
+  dw_type_t full_type = nullptr; // The same (but more complete) type
 };
 
-XBT_INTERNAL void dw_type_free(dw_type_t t);
 XBT_INTERNAL void dw_variable_free(dw_variable_t v);
 XBT_INTERNAL void dw_variable_free_voidp(void *t);
 

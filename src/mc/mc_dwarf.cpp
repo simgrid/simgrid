@@ -559,7 +559,7 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
 
 static void dw_type_free_voidp(void *t)
 {
-  dw_type_free((dw_type_t) * (void **) t);
+  delete *(dw_type_t*)t;
 }
 
 /** \brief Populate the list of members of a type
@@ -639,7 +639,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
                                       const char *ns)
 {
 
-  dw_type_t type = xbt_new0(s_dw_type_t, 1);
+  dw_type_t type = new s_dw_type();
   type->type = -1;
   type->id = 0;
   type->name = NULL;
@@ -1072,13 +1072,21 @@ void mc_frame_free(dw_frame_t frame)
   xbt_free(frame);
 }
 
-void dw_type_free(dw_type_t t)
+s_dw_type::s_dw_type()
 {
-  xbt_free(t->name);
-  xbt_free(t->dw_type_id);
-  xbt_dynar_free(&(t->members));
-  mc_dwarf_expression_clear(&t->location);
-  xbt_free(t);
+}
+
+s_dw_type::~s_dw_type()
+{
+  xbt_free(this->name);
+  xbt_free(this->dw_type_id);
+  xbt_dynar_free(&this->members);
+  mc_dwarf_expression_clear(&this->location);
+}
+
+static void dw_type_free(dw_type_t t)
+{
+  delete t;
 }
 
 void dw_variable_free(dw_variable_t v)
