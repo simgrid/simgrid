@@ -468,10 +468,9 @@ static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
     unw_word_t sp = xbt_dynar_get_as(st->stack_frames, 0, mc_stack_frame_t)->sp;
 
     xbt_dynar_push(res, &st);
-    (*snapshot)->stack_sizes = (size_t*)
-        xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
-    (*snapshot)->stack_sizes[cursor] =
+    size_t stack_size =
       (char*) current_stack->address + current_stack->size - (char*) sp;
+    (*snapshot)->stack_sizes.push_back(stack_size);
   }
 
   return res;

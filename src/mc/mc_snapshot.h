@@ -10,6 +10,7 @@
 #include <sys/types.h> // off_t
 #include <stdint.h> // size_t
 
+#include <vector>
 #include <set>
 
 #include <simgrid_config.h>
@@ -112,7 +113,7 @@ public: // To be private
   size_t snapshot_regions_count;
   std::set<pid_t> enabled_processes;
   int privatization_index;
-  size_t *stack_sizes;
+  std::vector<size_t> stack_sizes;
   xbt_dynar_t stacks;
   xbt_dynar_t to_ignore;
   uint64_t hash;

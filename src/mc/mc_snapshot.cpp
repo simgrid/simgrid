@@ -161,7 +161,7 @@ Snapshot::Snapshot() :
   snapshot_regions_count(0),
   enabled_processes(),
   privatization_index(0),
-  stack_sizes(nullptr),
+  stack_sizes(),
   stacks(nullptr),
   to_ignore(nullptr),
   hash(0),
@@ -177,7 +177,6 @@ Snapshot::~Snapshot()
     delete this->snapshot_regions[i];
   }
   xbt_free(this->snapshot_regions);
-  xbt_free(this->stack_sizes);
   xbt_dynar_free(&(this->stacks));
   xbt_dynar_free(&(this->to_ignore));
   xbt_dynar_free(&this->ignored_data);
