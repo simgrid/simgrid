@@ -582,27 +582,23 @@ static int l_get_from_maestro(lua_State *L) {
                                   /* L:      table key */
   XBT_DEBUG("__index of '%s' begins", key);
 
-  /* want a global or a registry value? */
-  int pseudo_index;
+  /* get the father */
+  lua_State* maestro = sglua_get_maestro(); /* maestro: */
+
+  /* want a global or a registry value?
+     get the value from maestro         */
   if (lua_compare(L, 1, LUA_REGISTRYINDEX, LUA_OPEQ)) {
-    /* registry */
-    pseudo_index = LUA_REGISTRYINDEX;
+    /* case: registry */
+    lua_getfield(maestro, LUA_REGISTRYINDEX, key); /* maestro: ... value */
     XBT_DEBUG("Will get the value from the registry of maestro");
   }
-  else {
-    /* global */
-    pseudo_index = lua_getfield(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
+  else { /* case: global */
+    lua_getglobal(maestro, key);                   /* maestro: ... value */
     XBT_DEBUG("Will get the value from the globals of maestro");
   }
 
-  /* get the father */
-  lua_State* maestro = sglua_get_maestro();
+  /* L:      table key */
 
-                                  /* L:      table key */
-
-  /* get the value from maestro */
-  lua_getfield(maestro, pseudo_index, key);
-                                  /* maestro: ... value */
 
   /* push the value onto the stack of L */
   sglua_move_value(maestro, L);
@@ -663,9 +659,10 @@ lua_State* sglua_clone_maestro(void) {
   lua_setmetatable(L, -2);                  /* thread newenv mt reg */
   lua_pop(L, 1);                            /* thread newenv mt */
   lua_setmetatable(L, -2);                  /* thread newenv */
-  // TODO c.heinrich This needs to be re-implemented
-  /*lua_setfenv(L, -2);                       [> thread <]*/
-  lua_pop(L, 1);                            /* -- */
+  lua_pushvalue(L, LUA_REGISTRYINDEX);      /* thread newenv reg */
+  lua_insert(L, -2);                        /* thread reg newenv */
+  lua_seti(L, -2, LUA_RIDX_GLOBALS);        /* thread reg */
+  lua_pop(L, 2);                            /* -- */
 
   /* create the table of known tables from maestro */
   lua_pushstring(L, "simgrid.maestro_tables");
