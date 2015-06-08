@@ -112,7 +112,7 @@ typedef struct s_mc_stack_frame {
 typedef struct s_local_variable{
   dw_frame_t subprogram;
   unsigned long ip;
-  char *name;
+  std::string name;
   dw_type_t type;
   void *address;
   int region;
