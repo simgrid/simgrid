@@ -201,8 +201,8 @@ void sglua_task_unregister(lua_State* L, msg_task_t task) {
 static void task_copy_callback(msg_task_t task, msg_process_t src_process,
     msg_process_t dst_process) {
 
-  lua_State* src = MSG_process_get_data(src_process);
-  lua_State* dst = MSG_process_get_data(dst_process);
+  lua_State* src = (lua_State*) MSG_process_get_data(src_process);
+  lua_State* dst = (lua_State*) MSG_process_get_data(dst_process);
 
                                   /* src: ...
                                      dst: ... */
@@ -239,8 +239,8 @@ static void task_copy_callback(msg_task_t task, msg_process_t src_process,
  */
 static int l_task_send(lua_State* L)
 {
-  msg_task_t task = sglua_check_task(L, 1);
   const char* mailbox = luaL_checkstring(L, 2);
+  msg_task_t task = sglua_check_task(L, 1);
   double timeout;
   if (lua_gettop(L) >= 3) {
     timeout = luaL_checknumber(L, 3);
@@ -287,8 +287,8 @@ static int l_task_send(lua_State* L)
  */
 static int l_task_isend(lua_State* L)
 {
-  msg_task_t task = sglua_check_task(L, 1);
   const char* mailbox = luaL_checkstring(L, 2);
+  msg_task_t task = sglua_check_task(L, 1);
                                   /* task mailbox ... */
   lua_settop(L, 1);
                                   /* task */
@@ -318,8 +318,8 @@ static int l_task_isend(lua_State* L)
  */
 static int l_task_dsend(lua_State* L)
 {
-  msg_task_t task = sglua_check_task(L, 1);
   const char* mailbox = luaL_checkstring(L, 2);
+  msg_task_t task = sglua_check_task(L, 1);
                                   /* task mailbox ... */
   lua_settop(L, 1);
                                   /* task */
@@ -419,12 +419,12 @@ static const luaL_Reg task_functions[] = {
  */
 static int l_task_gc(lua_State* L)
 {
-                                  /* ctask */
   msg_task_t task = *((msg_task_t*) luaL_checkudata(L, 1, TASK_MODULE_NAME));
   /* the task is NULL if I sent it to someone else */
   if (task != NULL) {
     MSG_task_destroy(task);
   }
+  lua_settop(L, 0);
   return 0;
 }
 
@@ -464,15 +464,13 @@ void sglua_register_task_functions(lua_State* L)
   /* create a table simgrid.task and fill it with task functions */
   lua_getglobal(L, "simgrid");    /* simgrid */
   luaL_newlib(L, task_functions); /* simgrid simgrid.task */
-  lua_setfield(L, -2, "task");    /* simgrid */
-  lua_getfield(L, -1, "task");    /* simgrid simgrid.task */
 
   /* create the metatable for tasks, add it to the Lua registry */
   luaL_newmetatable(L, TASK_MODULE_NAME); /* simgrid simgrid.task mt */
 
   /* fill the metatable */
   luaL_setfuncs(L, task_meta, 0); /* simgrid simgrid.task mt */
-  lua_getfield(L, -3, "task");    /* simgrid simgrid.task mt simgrid.task */
+  lua_pushvalue(L, -2);    /* simgrid simgrid.task mt simgrid.task */
 
   /* metatable.__index = simgrid.task
    * we put the task functions inside the task itself:
@@ -481,7 +479,8 @@ void sglua_register_task_functions(lua_State* L)
   lua_setfield(L, -2, "__index"); /* simgrid simgrid.task mt */
 
   lua_setmetatable(L, -2);        /* simgrid simgrid.task */
-  lua_pop(L, 2);                  /* -- */
+  lua_setfield(L, -2, "task");    /* simgrid */
+  lua_pop(L, 1);                  /* -- */
 
   /* set up MSG to copy Lua tasks between states */
   MSG_task_set_copy_callback(task_copy_callback);
