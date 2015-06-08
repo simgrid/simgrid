@@ -504,27 +504,20 @@ static xbt_dynar_t MC_take_snapshot_ignore()
 
 }
 
-static void mc_free_snapshot_ignored_data_pvoid(void* data) {
-  mc_snapshot_ignored_data_t ignored_data = (mc_snapshot_ignored_data_t) data;
-  free(ignored_data->data);
-}
-
 static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 {
   xbt_assert(snapshot->process);
-  snapshot->ignored_data = xbt_dynar_new(sizeof(s_mc_snapshot_ignored_data_t), mc_free_snapshot_ignored_data_pvoid);
-
+  
   // Copy the memory:
   for (auto const& region : mc_model_checker->process().ignored_regions()) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = (void*)region.addr;
-    ignored_data.size = region.size;
-    ignored_data.data = malloc(region.size);
+    ignored_data.data.resize(region.size);
     // TODO, we should do this once per privatization segment:
     snapshot->process->read_bytes(
-      ignored_data.data, region.size, remote(region.addr),
+      ignored_data.data.data(), region.size, remote(region.addr),
       simgrid::mc::ProcessIndexDisabled);
-    xbt_dynar_push(snapshot->ignored_data, &ignored_data);
+    snapshot->ignored_data.push_back(std::move(ignored_data));
   }
 
   // Zero the memory:
@@ -536,12 +529,10 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 
 static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
 {
-  unsigned int cursor = 0;
-  s_mc_snapshot_ignored_data_t ignored_data;
-  xbt_dynar_foreach (snapshot->ignored_data, cursor, ignored_data) {
-    snapshot->process->write_bytes(ignored_data.data, ignored_data.size,
+  for (auto const& ignored_data : snapshot->ignored_data)
+    snapshot->process->write_bytes(
+      ignored_data.data.data(), ignored_data.data.size(),
       remote(ignored_data.start));
-  }
 }
 
 static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)

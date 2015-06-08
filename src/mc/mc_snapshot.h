@@ -84,8 +84,7 @@ XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
  * */
 typedef struct s_mc_snapshot_ignored_data {
   void* start;
-  size_t size;
-  void* data;
+  std::vector<char> data;
 } s_mc_snapshot_ignored_data_t, *mc_snapshot_ignored_data_t;
 
 typedef struct s_fd_infos{
@@ -149,7 +148,7 @@ public: // To be private
   xbt_dynar_t stacks;
   xbt_dynar_t to_ignore;
   uint64_t hash;
-  xbt_dynar_t ignored_data;
+  std::vector<s_mc_snapshot_ignored_data> ignored_data;
   std::vector<s_fd_infos_t> current_fds;
 };
 

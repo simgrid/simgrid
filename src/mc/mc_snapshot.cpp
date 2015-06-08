@@ -164,11 +164,11 @@ Snapshot::Snapshot() :
   stack_sizes(),
   stacks(nullptr),
   to_ignore(nullptr),
-  hash(0),
-  ignored_data(nullptr)
+  hash(0)
 {
 
 }
+
 Snapshot::~Snapshot()
 {
   for (size_t i = 0; i < this->snapshot_regions_count; i++) {
@@ -177,7 +177,6 @@ Snapshot::~Snapshot()
   xbt_free(this->snapshot_regions);
   xbt_dynar_free(&(this->stacks));
   xbt_dynar_free(&(this->to_ignore));
-  xbt_dynar_free(&this->ignored_data);
 }
 
 const void* Snapshot::read_bytes(void* buffer, std::size_t size,
