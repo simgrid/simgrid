@@ -10,7 +10,7 @@
 static int iterate = 10;
 static int growsdown(int *x)
 {
-  auto int y;
+  int y;
   y = (x > &y);
   if (--iterate > 0)
     y = growsdown(&y);
@@ -21,7 +21,7 @@ static int growsdown(int *x)
 
 int main(int argc, char *argv[])
 {
-  auto int x;
+  int x;
   printf("%s", growsdown(&x) ? "down" : "up");
   exit(0);
   return 1;
