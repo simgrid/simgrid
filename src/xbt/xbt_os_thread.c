@@ -31,13 +31,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
 #include <sched.h>
 #endif
 
-#ifdef HAVE_MUTEX_TIMEDLOCK
-/* redefine the function header since we fail to get this from system headers on amd (at least) */
-int pthread_mutex_timedlock(pthread_mutex_t * mutex,
-                            const struct timespec *abs_timeout);
-#endif
-
-
 /* use named sempahore when sem_init() does not work */
 #ifndef HAVE_SEM_INIT
 static int next_sem_ID = 0;
