@@ -680,6 +680,21 @@ Please, use these two parameters (for comments) to make reproducible
 simulations. For additional details about this and all tracing
 options, check See the \ref tracing_tracing_options.
 
+\section options_msg Configuring MSG
+
+\subsection options_msg_debug_multiple_use Debugging MSG
+
+Sometimes your application may try to send a task that is still being
+executed somewhere else, making it impossible to send this task. However,
+for debugging purposes, one may want to know what the other host is/was
+doing. This option shows a backtrace of the other process.
+
+Enable this option by adding
+
+\verbatim
+--cfg=msg/debug_multiple_use:on
+\endverbatim
+
 \section options_smpi Configuring SMPI
 
 The SMPI interface provides several specific configuration items.
