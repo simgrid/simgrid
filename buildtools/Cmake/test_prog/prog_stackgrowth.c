@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 static int iterate = 10;
 static int growsdown(int *x)
 {
@@ -20,12 +21,8 @@ static int growsdown(int *x)
 
 int main(int argc, char *argv[])
 {
-  FILE *f;
   auto int x;
-  if ((f = fopen("conftestval", "w")) == NULL)
-    exit(1);
-  fprintf(f, "%s\n", growsdown(&x) ? "down" : "up");;
-  fclose(f);
+  printf("%s", growsdown(&x) ? "down" : "up");
   exit(0);
   return 1;
 }
