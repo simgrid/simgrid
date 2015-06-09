@@ -1031,6 +1031,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/energy/pstate/CMakeLists.txt
   examples/msg/energy/e2/CMakeLists.txt
   examples/msg/energy/e3/CMakeLists.txt
+  examples/msg/energy/onoff/CMakeLists.txt
   examples/msg/exception/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
   examples/msg/gtnets/CMakeLists.txt
@@ -1231,6 +1232,7 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/test_prog/prog_stacksetup.c
   buildtools/Cmake/test_prog/prog_thread_storage.c
   buildtools/Cmake/test_prog/prog_vsnprintf.c
+  buildtools/Cross/Mingw.cmake
   tools/stack-cleaner/as
   tools/stack-cleaner/cc
   tools/stack-cleaner/c++
