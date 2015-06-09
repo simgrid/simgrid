@@ -9,6 +9,7 @@
 #ifndef XBT_STR_H
 #define XBT_STR_H
 
+#include <stdint.h> /* ssize_t */
 #include <stdarg.h>             /* va_* */
 #include "xbt/misc.h"
 #include "xbt/dynar.h"

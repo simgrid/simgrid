@@ -27,7 +27,9 @@
 #define _aligned_free  __mingw_aligned_free 
 #endif //MINGW
 
-
+#if defined(_XBT_WIN32)
+#include <malloc.h>
+#endif
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 # include <valgrind/valgrind.h>
