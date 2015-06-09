@@ -208,8 +208,9 @@ public abstract class Process implements Runnable {
 	public native void resume();	
 	/** Tests if a process is suspended.
 	 *
-	 * @see {@link #suspend()} and {@link #resume()}
-	 */ 
+	 * @see #suspend()
+	 * @see #resume()
+	 */
 	public native boolean isSuspended();
 	
 	/**
