@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
 \section options_model Configuring the platform models
 
 \anchor options_storage_model
+\anchor options_vm_workstation_model
 \subsection options_model_select Selecting the platform models
 
 SimGrid comes with several network, CPU and storage models built in, and you
@@ -77,6 +78,7 @@ should provide information about all models for all existing resources.
    - \b cpu/model: specify the used CPU model
    - \b workstation/model: specify the used workstation model
    - \b storage/model: specify the used storage model (there is currently only one such model - this option is hence only useful for future releases)
+   - \b vm_workstation/model: specify the workstation model for virtual machines (there is currently only one such model - this option is hence only useful for future releases)
 
 %As of writing, the following network models are accepted. Over
 the time new models can be added, and some experimental models can be
