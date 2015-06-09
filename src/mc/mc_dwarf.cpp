@@ -559,7 +559,7 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
 
 static void dw_type_free_voidp(void *t)
 {
-  dw_type_free((dw_type_t) * (void **) t);
+  delete *(dw_type_t*)t;
 }
 
 /** \brief Populate the list of members of a type
@@ -639,7 +639,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
                                       const char *ns)
 {
 
-  dw_type_t type = xbt_new0(s_dw_type_t, 1);
+  dw_type_t type = new s_dw_type();
   type->type = -1;
   type->id = 0;
   type->name = NULL;
@@ -1072,13 +1072,21 @@ void mc_frame_free(dw_frame_t frame)
   xbt_free(frame);
 }
 
-void dw_type_free(dw_type_t t)
+s_dw_type::s_dw_type()
 {
-  xbt_free(t->name);
-  xbt_free(t->dw_type_id);
-  xbt_dynar_free(&(t->members));
-  mc_dwarf_expression_clear(&t->location);
-  xbt_free(t);
+}
+
+s_dw_type::~s_dw_type()
+{
+  xbt_free(this->name);
+  xbt_free(this->dw_type_id);
+  xbt_dynar_free(&this->members);
+  mc_dwarf_expression_clear(&this->location);
+}
+
+static void dw_type_free(dw_type_t t)
+{
+  delete t;
 }
 
 void dw_variable_free(dw_variable_t v)
@@ -1100,29 +1108,24 @@ void dw_variable_free_voidp(void *t)
 
 // ***** object_info
 
-
-
-mc_object_info_t MC_new_object_info(void)
+s_mc_object_info::s_mc_object_info()
 {
-  mc_object_info_t res = xbt_new0(s_mc_object_info_t, 1);
-  res->subprograms = xbt_dict_new_homogeneous((void (*)(void *)) mc_frame_free);
-  res->global_variables =
+  this->types = xbt_dict_new_homogeneous((void (*)(void *)) dw_type_free);
+  this->subprograms = xbt_dict_new_homogeneous((void (*)(void *)) mc_frame_free);
+  this->global_variables =
       xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  res->types = xbt_dict_new_homogeneous((void (*)(void *)) dw_type_free);
-  res->full_types_by_name = xbt_dict_new_homogeneous(NULL);
-  return res;
+
+  this->full_types_by_name = xbt_dict_new_homogeneous(NULL);
 }
 
-void MC_free_object_info(mc_object_info_t * info)
+s_mc_object_info::~s_mc_object_info()
 {
-  xbt_free((*info)->file_name);
-  xbt_dict_free(&(*info)->subprograms);
-  xbt_dynar_free(&(*info)->global_variables);
-  xbt_dict_free(&(*info)->types);
-  xbt_dict_free(&(*info)->full_types_by_name);
-  xbt_free(*info);
-  xbt_dynar_free(&(*info)->functions_index);
-  *info = NULL;
+  xbt_free(this->file_name);
+  xbt_dict_free(&this->subprograms);
+  xbt_dynar_free(&this->global_variables);
+  xbt_dict_free(&this->types);
+  xbt_dict_free(&this->full_types_by_name);
+  xbt_dynar_free(&this->functions_index);
 }
 
 // ***** Helpers
@@ -1278,20 +1281,21 @@ static void MC_post_process_types(mc_object_info_t info)
 }
 
 /** \brief Finds informations about a given shared object/executable */
-mc_object_info_t MC_find_object_info(
+std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char *name, int executable)
 {
-  mc_object_info_t result = MC_new_object_info();
+  std::shared_ptr<s_mc_object_info_t> result =
+    std::make_shared<s_mc_object_info_t>();
   if (executable)
     result->flags |= MC_OBJECT_INFO_EXECUTABLE;
   result->file_name = xbt_strdup(name);
-  MC_find_object_address(maps, result);
-  MC_dwarf_get_variables(result);
-  MC_post_process_types(result);
-  MC_post_process_variables(result);
-  MC_post_process_functions(result);
-  MC_make_functions_index(result);
-  return result;
+  MC_find_object_address(maps, result.get());
+  MC_dwarf_get_variables(result.get());
+  MC_post_process_types(result.get());
+  MC_post_process_variables(result.get());
+  MC_post_process_functions(result.get());
+  MC_make_functions_index(result.get());
+  return std::move(result);
 }
 
 /*************************************************************************/
@@ -1394,9 +1398,9 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
 
     // Resolve full_type:
     if (subtype->name && subtype->byte_size == 0) {
-      for (size_t i = 0; i != process->object_infos_size; ++i) {
+      for (auto const& object_info : process->object_infos) {
         dw_type_t same_type = (dw_type_t)
-            xbt_dict_get_or_null(process->object_infos[i]->full_types_by_name,
+            xbt_dict_get_or_null(object_info->full_types_by_name,
                                  subtype->name);
         if (same_type && same_type->name && same_type->byte_size) {
           type->full_type = same_type;

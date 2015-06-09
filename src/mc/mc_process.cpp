@@ -252,13 +252,6 @@ Process::~Process()
   xbt_dynar_free(&process->smx_process_infos);
   xbt_dynar_free(&process->smx_old_process_infos);
 
-  size_t i;
-  for (i=0; i!=process->object_infos_size; ++i) {
-    MC_free_object_info(&process->object_infos[i]);
-  }
-  free(process->object_infos);
-  process->object_infos = NULL;
-  process->object_infos_size = 0;
   if (process->memory_file >= 0) {
     close(process->memory_file);
   }
@@ -326,8 +319,7 @@ void Process::init_memory_map_info()
   XBT_DEBUG("Get debug information ...");
   this->maestro_stack_start_ = nullptr;
   this->maestro_stack_end_ = nullptr;
-  this->object_infos = NULL;
-  this->object_infos_size = 0;
+  this->object_infos.resize(0);
   this->binary_info = NULL;
   this->libsimgrid_info = NULL;
 
@@ -339,6 +331,8 @@ void Process::init_memory_map_info()
   std::vector<simgrid::mc::VmMap> const& maps = this->memory_map_;
 
   const char* current_name = NULL;
+
+  this->object_infos.resize(0);
 
   for (size_t i=0; i < maps.size(); i++) {
     simgrid::mc::VmMap const& reg = maps[i];
@@ -379,12 +373,9 @@ void Process::init_memory_map_info()
       }
     }
 
-    mc_object_info_t info =
+    std::shared_ptr<s_mc_object_info_t> info =
       MC_find_object_info(this->memory_map_, pathname, is_executable);
-    this->object_infos = (mc_object_info_t*) realloc(this->object_infos,
-      (this->object_infos_size+1) * sizeof(mc_object_info_t));
-    this->object_infos[this->object_infos_size] = info;
-    this->object_infos_size++;
+    this->object_infos.push_back(info);
     if (is_executable)
       this->binary_info = info;
     else if (libname && MC_is_simgrid_lib(libname))
@@ -396,8 +387,8 @@ void Process::init_memory_map_info()
   regfree(&res.version_re);
 
   // Resolve time (including accross differents objects):
-  for (size_t i=0; i!=this->object_infos_size; ++i)
-    MC_post_process_object_info(this, this->object_infos[i]);
+  for (auto const& object_info : this->object_infos)
+    MC_post_process_object_info(this, object_info.get());
 
   xbt_assert(this->maestro_stack_start_, "Did not find maestro_stack_start");
   xbt_assert(this->maestro_stack_end_, "Did not find maestro_stack_end");
@@ -405,72 +396,65 @@ void Process::init_memory_map_info()
   XBT_DEBUG("Get debug information done !");
 }
 
-mc_object_info_t Process::find_object_info(remote_ptr<void> addr) const
+std::shared_ptr<s_mc_object_info_t> Process::find_object_info(remote_ptr<void> addr) const
 {
-  size_t i;
-  for (i = 0; i != this->object_infos_size; ++i) {
-    if (addr.address() >= (std::uint64_t)this->object_infos[i]->start
-        && addr.address() <= (std::uint64_t)this->object_infos[i]->end) {
-      return this->object_infos[i];
+  for (auto const& object_info : this->object_infos) {
+    if (addr.address() >= (std::uint64_t)object_info->start
+        && addr.address() <= (std::uint64_t)object_info->end) {
+      return object_info;
     }
   }
   return NULL;
 }
 
-mc_object_info_t Process::find_object_info_exec(remote_ptr<void> addr) const
+std::shared_ptr<s_mc_object_info_t> Process::find_object_info_exec(remote_ptr<void> addr) const
 {
-  size_t i;
-  for (i = 0; i != this->object_infos_size; ++i) {
-    if (addr.address() >= (std::uint64_t)this->object_infos[i]->start_exec
-        && addr.address() <= (std::uint64_t)this->object_infos[i]->end_exec) {
-      return this->object_infos[i];
+  for (std::shared_ptr<s_mc_object_info> const& info : this->object_infos) {
+    if (addr.address() >= (std::uint64_t) info->start_exec
+        && addr.address() <= (std::uint64_t) info->end_exec) {
+      return info;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
-mc_object_info_t Process::find_object_info_rw(remote_ptr<void> addr) const
+std::shared_ptr<s_mc_object_info_t> Process::find_object_info_rw(remote_ptr<void> addr) const
 {
-  size_t i;
-  for (i = 0; i != this->object_infos_size; ++i) {
-    if (addr.address() >= (std::uint64_t)this->object_infos[i]->start_rw
-        && addr.address() <= (std::uint64_t)this->object_infos[i]->end_rw) {
-      return this->object_infos[i];
+  for (std::shared_ptr<s_mc_object_info> const& info : this->object_infos) {
+    if (addr.address() >= (std::uint64_t)info->start_rw
+        && addr.address() <= (std::uint64_t)info->end_rw) {
+      return info;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 dw_frame_t Process::find_function(remote_ptr<void> ip) const
 {
-  mc_object_info_t info = this->find_object_info_exec(ip);
-  if (info == NULL)
-    return NULL;
+  std::shared_ptr<s_mc_object_info_t> info = this->find_object_info_exec(ip);
+  if (!info)
+    return nullptr;
   else
-    return MC_file_object_info_find_function(info, (void*) ip.address());
+    return MC_file_object_info_find_function(info.get(), (void*) ip.address());
 }
 
 /** Find (one occurence of) the named variable definition
  */
 dw_variable_t Process::find_variable(const char* name) const
 {
-  const size_t n = this->object_infos_size;
-  size_t i;
-
   // First lookup the variable in the executable shared object.
   // A global variable used directly by the executable code from a library
   // is reinstanciated in the executable memory .data/.bss.
   // We need to look up the variable in the execvutable first.
   if (this->binary_info) {
-    mc_object_info_t info = this->binary_info;
-    dw_variable_t var = MC_file_object_info_find_variable_by_name(info, name);
+    std::shared_ptr<s_mc_object_info_t> const& info = this->binary_info;
+    dw_variable_t var = MC_file_object_info_find_variable_by_name(info.get(), name);
     if (var)
       return var;
   }
 
-  for (i=0; i!=n; ++i) {
-    mc_object_info_t info = this->object_infos[i];
-    dw_variable_t var = MC_file_object_info_find_variable_by_name(info, name);
+  for (std::shared_ptr<s_mc_object_info_t> const& info : this->object_infos) {
+    dw_variable_t var = MC_file_object_info_find_variable_by_name(info.get(), name);
     if (var)
       return var;
   }
@@ -530,9 +514,10 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
   AddressSpace::ReadMode mode) const
 {
   if (process_index != simgrid::mc::ProcessIndexDisabled) {
-    mc_object_info_t info = this->find_object_info_rw((void*)address.address());
+    std::shared_ptr<s_mc_object_info_t> const& info =
+      this->find_object_info_rw((void*)address.address());
     // Segment overlap is not handled.
-    if (MC_object_info_is_privatized(info)) {
+    if (MC_object_info_is_privatized(info.get())) {
       if (process_index < 0)
         xbt_die("Missing process index");
       if (process_index >= (int) MC_smpi_process_count())

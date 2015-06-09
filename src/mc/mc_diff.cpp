@@ -148,7 +148,8 @@ struct s_mc_diff {
   size_t heaplimit;
   // Number of blocks in the heaps:
   size_t heapsize1, heapsize2;
-  xbt_dynar_t to_ignore1, to_ignore2;
+  std::vector<s_mc_heap_ignore_region_t>* to_ignore1;
+  std::vector<s_mc_heap_ignore_region_t>* to_ignore2;
   s_heap_area_t *equals_to1, *equals_to2;
   dw_type_t *types1, *types2;
   size_t available;
@@ -229,25 +230,20 @@ static int add_heap_area_pair(xbt_dynar_t list, int block1, int fragment1,
   return 0;
 }
 
-static ssize_t heap_comparison_ignore_size(xbt_dynar_t ignore_list,
+static ssize_t heap_comparison_ignore_size(std::vector<s_mc_heap_ignore_region_t>* ignore_list,
                                            const void *address)
 {
-
-  unsigned int cursor = 0;
   int start = 0;
-  int end = xbt_dynar_length(ignore_list) - 1;
-  mc_heap_ignore_region_t region;
+  int end = ignore_list->size() - 1;
 
   while (start <= end) {
-    cursor = (start + end) / 2;
-    region =
-        (mc_heap_ignore_region_t) xbt_dynar_get_as(ignore_list, cursor,
-                                                   mc_heap_ignore_region_t);
-    if (region->address == address)
-      return region->size;
-    if (region->address < address)
+    unsigned int cursor = (start + end) / 2;
+    s_mc_heap_ignore_region_t region = (*ignore_list)[cursor];
+    if (region.address == address)
+      return region.size;
+    if (region.address < address)
       start = cursor + 1;
-    if (region->address > address)
+    if (region.address > address)
       end = cursor - 1;
   }
 
@@ -347,8 +343,11 @@ static int equal_fragments(struct s_mc_diff *state, int b1, int f1, int b2,
   return 0;
 }
 
-int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
-                          xbt_dynar_t i2)
+}
+
+int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
+                          std::vector<s_mc_heap_ignore_region_t>* i1,
+                          std::vector<s_mc_heap_ignore_region_t>* i2)
 {
   if (mc_diff_info == NULL) {
     mc_diff_info = xbt_new0(struct s_mc_diff, 1);
@@ -409,6 +408,8 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t i1,
 
 }
 
+extern "C" {
+
 void reset_heap_information()
 {
 
@@ -418,9 +419,9 @@ void reset_heap_information()
 static inline
 mc_mem_region_t MC_get_heap_region(mc_snapshot_t snapshot)
 {
-  size_t n = snapshot->snapshot_regions_count;
+  size_t n = snapshot->snapshot_regions.size();
   for (size_t i=0; i!=n; ++i) {
-    mc_mem_region_t region = snapshot->snapshot_regions[i];
+    mc_mem_region_t region = snapshot->snapshot_regions[i].get();
     if (region->region_type() == simgrid::mc::RegionType::Heap)
       return region;
   }

@@ -69,9 +69,6 @@ typedef struct s_mc_unw_context {
 XBT_INTERNAL int mc_unw_init_context(
   mc_unw_context_t context, mc_process_t process, unw_context_t* c);
 
-/** Destroys (but not not `free`) a context */
-XBT_INTERNAL int mc_unw_destroy_context(mc_unw_context_t context);
-
 // ***** Libunwind cursor
 
 /** Initialises a `libunwind` cursor */

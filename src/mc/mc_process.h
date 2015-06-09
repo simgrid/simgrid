@@ -12,6 +12,7 @@
 #include <sys/types.h>
 
 #include <vector>
+#include <memory>
 
 #include "simgrid_config.h"
 #include <sys/types.h>
@@ -87,9 +88,9 @@ public:
   void clear_bytes(remote_ptr<void> address, size_t len);
 
   // Debug information:
-  mc_object_info_t find_object_info(remote_ptr<void> addr) const;
-  mc_object_info_t find_object_info_exec(remote_ptr<void> addr) const;
-  mc_object_info_t find_object_info_rw(remote_ptr<void> addr) const;
+  std::shared_ptr<s_mc_object_info_t> find_object_info(remote_ptr<void> addr) const;
+  std::shared_ptr<s_mc_object_info_t> find_object_info_exec(remote_ptr<void> addr) const;
+  std::shared_ptr<s_mc_object_info_t> find_object_info_rw(remote_ptr<void> addr) const;
   dw_frame_t find_function(remote_ptr<void> ip) const;
   dw_variable_t find_variable(const char* name) const;
 
@@ -172,10 +173,9 @@ private:
 
 public: // object info
   // TODO, make private (first, objectify mc_object_info_t)
-  mc_object_info_t libsimgrid_info;
-  mc_object_info_t binary_info;
-  mc_object_info_t* object_infos;
-  size_t object_infos_size;
+  std::vector<std::shared_ptr<s_mc_object_info_t>> object_infos;
+  std::shared_ptr<s_mc_object_info_t> libsimgrid_info;
+  std::shared_ptr<s_mc_object_info_t> binary_info;
 
 public: // Copies of MCed SMX data structures
   /** Copy of `simix_global->process_list`

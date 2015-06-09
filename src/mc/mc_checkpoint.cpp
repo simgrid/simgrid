@@ -34,6 +34,7 @@
 #include "mc_unw.h"
 #include "mc_protocol.h"
 #include "mc_smx.h"
+#include "mc_hash.hpp"
 
 using simgrid::mc::remote;
 
@@ -45,32 +46,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
-static void MC_snapshot_stack_free(mc_snapshot_stack_t s)
-{
-  if (s) {
-    xbt_dynar_free(&(s->local_variables));
-    xbt_dynar_free(&(s->stack_frames));
-    mc_unw_destroy_context(s->context);
-    xbt_free(s->context);
-    xbt_free(s);
-  }
-}
-
 static void MC_snapshot_stack_free_voidp(void *s)
 {
   mc_snapshot_stack_t stack = (mc_snapshot_stack_t) * (void **) s;
-  MC_snapshot_stack_free(stack);
-}
-
-static void local_variable_free(local_variable_t v)
-{
-  xbt_free(v->name);
-  xbt_free(v);
+  delete stack;
 }
 
 static void local_variable_free_voidp(void *v)
 {
-  local_variable_free((local_variable_t) * (void **) v);
+  local_variable_t var = *(local_variable_t*)v;
+  delete var;
 }
 
 }
@@ -165,21 +150,22 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
 
   region.object_info(object_info);
   snapshot->snapshot_regions[index]
-    = new simgrid::mc::RegionSnapshot(std::move(region));
+    = std::unique_ptr<simgrid::mc::RegionSnapshot>(
+      new simgrid::mc::RegionSnapshot(std::move(region)));
   return;
 }
 
 static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
 {
-  const size_t n = process->object_infos_size;
-  snapshot->snapshot_regions_count = n + 1;
-  snapshot->snapshot_regions = xbt_new0(mc_mem_region_t, n + 1);
-
-  for (size_t i = 0; i!=n; ++i) {
-    mc_object_info_t object_info = process->object_infos[i];
-    MC_snapshot_add_region(i, snapshot, simgrid::mc::RegionType::Data, object_info,
+  const size_t n = process->object_infos.size();
+  snapshot->snapshot_regions.resize(n + 1);
+  int i = 0;
+  for (auto const& object_info : process->object_infos) {
+    MC_snapshot_add_region(i, snapshot, simgrid::mc::RegionType::Data,
+      object_info.get(),
       object_info->start_rw, object_info->start_rw,
       object_info->end_rw - object_info->start_rw);
+    ++i;
   }
 
   xbt_mheap_t heap = process->get_heap();
@@ -285,7 +271,8 @@ static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope,
 }
 
 static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
-                                           dw_frame_t scope, int process_index, xbt_dynar_t result)
+                                           dw_frame_t scope, int process_index,
+                                           std::vector<s_local_variable>& result)
 {
   mc_process_t process = &mc_model_checker->process();
 
@@ -307,15 +294,16 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     else
       region_type = 2;
 
-    local_variable_t new_var = xbt_new0(s_local_variable_t, 1);
-    new_var->subprogram = stack_frame->frame;
-    new_var->ip = stack_frame->ip;
-    new_var->name = xbt_strdup(current_variable->name);
-    new_var->type = current_variable->type;
-    new_var->region = region_type;
+    s_local_variable_t new_var;
+    new_var.subprogram = stack_frame->frame;
+    new_var.ip = stack_frame->ip;
+    new_var.name = current_variable->name;
+    new_var.type = current_variable->type;
+    new_var.region = region_type;
+    new_var.address = nullptr;
 
     if (current_variable->address != NULL) {
-      new_var->address = current_variable->address;
+      new_var.address = current_variable->address;
     } else if (current_variable->locations.size != 0) {
       s_mc_location_t location;
       mc_dwarf_resolve_locations(
@@ -327,7 +315,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
 
       switch(mc_get_location_type(&location)) {
       case MC_LOCATION_TYPE_ADDRESS:
-        new_var->address = location.memory_location;
+        new_var.address = location.memory_location;
         break;
       case MC_LOCATION_TYPE_REGISTER:
       default:
@@ -338,7 +326,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
       xbt_die("No address");
     }
 
-    xbt_dynar_push(result, &new_var);
+    result.push_back(std::move(new_var));
   }
 
   // Recursive processing of nested scopes:
@@ -348,35 +336,25 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
   }
 }
 
-static xbt_dynar_t MC_get_local_variables_values(xbt_dynar_t stack_frames, int process_index)
+static std::vector<s_local_variable> MC_get_local_variables_values(
+  std::vector<s_mc_stack_frame_t>& stack_frames, int process_index)
 {
-
-  unsigned cursor1 = 0;
-  mc_stack_frame_t stack_frame;
-  xbt_dynar_t variables =
-      xbt_dynar_new(sizeof(local_variable_t), local_variable_free_voidp);
-
-  xbt_dynar_foreach(stack_frames, cursor1, stack_frame) {
-    mc_fill_local_variables_values(stack_frame, stack_frame->frame, process_index, variables);
-  }
-
-  return variables;
+  std::vector<s_local_variable> variables;
+  for (s_mc_stack_frame_t& stack_frame : stack_frames)
+    mc_fill_local_variables_values(&stack_frame, stack_frame.frame, process_index, variables);
+  return std::move(variables);
 }
 
 static void MC_stack_frame_free_voipd(void *s)
 {
   mc_stack_frame_t stack_frame = *(mc_stack_frame_t *) s;
-  if (stack_frame) {
-    xbt_free(stack_frame->frame_name);
-    xbt_free(stack_frame);
-  }
+  delete(stack_frame);
 }
 
-static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
+static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t stack_context)
 {
   mc_process_t process = &mc_model_checker->process();
-  xbt_dynar_t result =
-      xbt_dynar_new(sizeof(mc_stack_frame_t), MC_stack_frame_free_voipd);
+  std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c;
 
@@ -388,32 +366,33 @@ static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
   } else
     while (1) {
 
-      mc_stack_frame_t stack_frame = xbt_new(s_mc_stack_frame_t, 1);
-      xbt_dynar_push(result, &stack_frame);
+      s_mc_stack_frame_t stack_frame;
 
-      stack_frame->unw_cursor = c;
+      stack_frame.unw_cursor = c;
 
       unw_word_t ip, sp;
 
       unw_get_reg(&c, UNW_REG_IP, &ip);
       unw_get_reg(&c, UNW_REG_SP, &sp);
 
-      stack_frame->ip = ip;
-      stack_frame->sp = sp;
+      stack_frame.ip = ip;
+      stack_frame.sp = sp;
 
       // TODO, use real addresses in frame_t instead of fixing it here
 
       dw_frame_t frame = process->find_function(remote(ip));
-      stack_frame->frame = frame;
+      stack_frame.frame = frame;
 
       if (frame) {
-        stack_frame->frame_name = xbt_strdup(frame->name);
-        stack_frame->frame_base =
+        stack_frame.frame_name = frame->name;
+        stack_frame.frame_base =
             (unw_word_t) mc_find_frame_base(frame, frame->object_info, &c);
       } else {
-        stack_frame->frame_base = 0;
-        stack_frame->frame_name = NULL;
+        stack_frame.frame_base = 0;
+        stack_frame.frame_name = std::string();
       }
+
+      result.push_back(std::move(stack_frame));
 
       /* Stop before context switch with maestro */
       if (frame != NULL && frame->name != NULL
@@ -428,104 +407,87 @@ static xbt_dynar_t MC_unwind_stack_frames(mc_unw_context_t stack_context)
       }
     }
 
-  if (xbt_dynar_length(result) == 0) {
+  if (result.empty()) {
     XBT_INFO("unw_init_local failed");
     xbt_abort();
   }
 
-  return result;
+  return std::move(result);
 };
 
-static xbt_dynar_t MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
+static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
 {
-
-  xbt_dynar_t res =
-      xbt_dynar_new(sizeof(s_mc_snapshot_stack_t),
-                    MC_snapshot_stack_free_voidp);
+  std::vector<s_mc_snapshot_stack_t> res;
 
   unsigned int cursor = 0;
   stack_region_t current_stack;
 
   // FIXME, cross-process support (stack_areas)
   xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
-    mc_snapshot_stack_t st = xbt_new(s_mc_snapshot_stack_t, 1);
+    s_mc_snapshot_stack_t st;
 
     // Read the context from remote process:
     unw_context_t context;
     mc_model_checker->process().read_bytes(
       &context, sizeof(context), remote(current_stack->context));
 
-    st->context = xbt_new0(s_mc_unw_context_t, 1);
-    if (mc_unw_init_context(st->context, &mc_model_checker->process(),
+    if (mc_unw_init_context(&st.context, &mc_model_checker->process(),
       &context) < 0) {
       xbt_die("Could not initialise the libunwind context.");
     }
+    st.stack_frames = MC_unwind_stack_frames(&st.context);
+    st.local_variables = MC_get_local_variables_values(st.stack_frames, current_stack->process_index);
+    st.process_index = current_stack->process_index;
 
-    st->stack_frames = MC_unwind_stack_frames(st->context);
-    st->local_variables = MC_get_local_variables_values(st->stack_frames, current_stack->process_index);
-    st->process_index = current_stack->process_index;
+    unw_word_t sp = st.stack_frames[0].sp;
 
-    unw_word_t sp = xbt_dynar_get_as(st->stack_frames, 0, mc_stack_frame_t)->sp;
+    res.push_back(std::move(st));
 
-    xbt_dynar_push(res, &st);
-    (*snapshot)->stack_sizes = (size_t*)
-        xbt_realloc((*snapshot)->stack_sizes, (cursor + 1) * sizeof(size_t));
-    (*snapshot)->stack_sizes[cursor] =
+    size_t stack_size =
       (char*) current_stack->address + current_stack->size - (char*) sp;
+    (*snapshot)->stack_sizes.push_back(stack_size);
   }
 
-  return res;
+  return std::move(res);
 
 }
 
-static xbt_dynar_t MC_take_snapshot_ignore()
+static std::vector<s_mc_heap_ignore_region_t> MC_take_snapshot_ignore()
 {
+  std::vector<s_mc_heap_ignore_region_t> res;
 
   if (mc_heap_comparison_ignore == NULL)
-    return NULL;
-
-  xbt_dynar_t cpy =
-      xbt_dynar_new(sizeof(mc_heap_ignore_region_t),
-                    heap_ignore_region_free_voidp);
+    return std::move(res);
 
   unsigned int cursor = 0;
   mc_heap_ignore_region_t current_region;
 
   xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region) {
-    mc_heap_ignore_region_t new_region = NULL;
-    new_region = xbt_new0(s_mc_heap_ignore_region_t, 1);
-    new_region->address = current_region->address;
-    new_region->size = current_region->size;
-    new_region->block = current_region->block;
-    new_region->fragment = current_region->fragment;
-    xbt_dynar_push(cpy, &new_region);
+    s_mc_heap_ignore_region_t new_region;
+    new_region.address = current_region->address;
+    new_region.size = current_region->size;
+    new_region.block = current_region->block;
+    new_region.fragment = current_region->fragment;
+    res.push_back(std::move(new_region));
   }
 
-  return cpy;
-
-}
-
-static void mc_free_snapshot_ignored_data_pvoid(void* data) {
-  mc_snapshot_ignored_data_t ignored_data = (mc_snapshot_ignored_data_t) data;
-  free(ignored_data->data);
+  return std::move(res);
 }
 
 static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 {
   xbt_assert(snapshot->process);
-  snapshot->ignored_data = xbt_dynar_new(sizeof(s_mc_snapshot_ignored_data_t), mc_free_snapshot_ignored_data_pvoid);
-
+  
   // Copy the memory:
   for (auto const& region : mc_model_checker->process().ignored_regions()) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = (void*)region.addr;
-    ignored_data.size = region.size;
-    ignored_data.data = malloc(region.size);
+    ignored_data.data.resize(region.size);
     // TODO, we should do this once per privatization segment:
     snapshot->process->read_bytes(
-      ignored_data.data, region.size, remote(region.addr),
+      ignored_data.data.data(), region.size, remote(region.addr),
       simgrid::mc::ProcessIndexDisabled);
-    xbt_dynar_push(snapshot->ignored_data, &ignored_data);
+    snapshot->ignored_data.push_back(std::move(ignored_data));
   }
 
   // Zero the memory:
@@ -537,22 +499,18 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 
 static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
 {
-  unsigned int cursor = 0;
-  s_mc_snapshot_ignored_data_t ignored_data;
-  xbt_dynar_foreach (snapshot->ignored_data, cursor, ignored_data) {
-    snapshot->process->write_bytes(ignored_data.data, ignored_data.size,
+  for (auto const& ignored_data : snapshot->ignored_data)
+    snapshot->process->write_bytes(
+      ignored_data.data.data(), ignored_data.data.size(),
       remote(ignored_data.start));
-  }
 }
 
-static void MC_get_current_fd(mc_snapshot_t snapshot)
+static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)
 {
-  snapshot->total_fd = 0;
-
   const size_t fd_dir_path_size = 20;
   char fd_dir_path[fd_dir_path_size];
   int res = snprintf(fd_dir_path, fd_dir_path_size,
-    "/proc/%lli/fd", (long long int) snapshot->process->pid());
+    "/proc/%lli/fd", (long long int) pid);
   xbt_assert(res >= 0);
   if ((size_t) res > fd_dir_path_size)
     xbt_die("Unexpected buffer is too small for fd_dir_path");
@@ -561,7 +519,8 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
   if (fd_dir == NULL)
     xbt_die("Cannot open directory '/proc/self/fd'\n");
 
-  size_t total_fd = 0;
+  std::vector<s_fd_infos_t> fds;
+
   struct dirent* fd_number;
   while ((fd_number = readdir(fd_dir))) {
 
@@ -573,7 +532,7 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
     const size_t source_size = 25;
     char source[25];
     int res = snprintf(source, source_size, "/proc/%lli/fd/%s",
-        (long long int) snapshot->process->pid(), fd_number->d_name);
+        (long long int) pid, fd_number->d_name);
     xbt_assert(res >= 0);
     if ((size_t) res > source_size)
       xbt_die("Unexpected buffer is too small for fd %s", fd_number->d_name);
@@ -611,18 +570,16 @@ static void MC_get_current_fd(mc_snapshot_t snapshot)
       continue;
 
     // Add an entry for this FD in the snapshot:
-    fd_infos_t fd = xbt_new0(s_fd_infos_t, 1);
-    fd->filename = strdup(link);
-    fd->number = fd_value;
-    fd->flags = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD) ;
-    fd->current_position = lseek(fd_value, 0, SEEK_CUR);
-    snapshot->current_fd = (fd_infos_t*) xbt_realloc(snapshot->current_fd, (total_fd + 1) * sizeof(fd_infos_t));
-    snapshot->current_fd[total_fd] = fd;
-    total_fd++;
+    s_fd_infos_t fd;
+    fd.filename = std::string(link);
+    fd.number = fd_value;
+    fd.flags = fcntl(fd_value, F_GETFL) | fcntl(fd_value, F_GETFD) ;
+    fd.current_position = lseek(fd_value, 0, SEEK_CUR);
+    fds.push_back(std::move(fd));
   }
 
-  snapshot->total_fd = total_fd;
   closedir (fd_dir);
+  return std::move(fds);
 }
 
 mc_snapshot_t MC_take_snapshot(int num_state)
@@ -636,16 +593,14 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   snapshot->process = mc_process;
   snapshot->num_state = num_state;
 
-  snapshot->enabled_processes = xbt_dynar_new(sizeof(int), NULL);
-
   smx_process_t process;
   MC_EACH_SIMIX_PROCESS(process,
-    xbt_dynar_push_as(snapshot->enabled_processes, int, (int)process->pid));
+    snapshot->enabled_processes.insert(process->pid));
 
   MC_snapshot_handle_ignore(snapshot);
 
   if (_sg_mc_snapshot_fds)
-    MC_get_current_fd(snapshot);
+    snapshot->current_fds = MC_get_current_fds(process->pid);
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(mc_process, snapshot);
@@ -655,7 +610,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks =
         MC_take_snapshot_stacks(&snapshot);
-    if (_sg_mc_hash && snapshot->stacks != NULL) {
+    if (_sg_mc_hash && !snapshot->stacks.empty()) {
       snapshot->hash = mc_hash_processes_state(num_state, snapshot->stacks);
     } else {
       snapshot->hash = 0;
@@ -671,11 +626,10 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 static inline
 void MC_restore_snapshot_regions(mc_snapshot_t snapshot)
 {
-  const size_t n = snapshot->snapshot_regions_count;
-  for (size_t i = 0; i < n; i++) {
+  for(std::unique_ptr<s_mc_mem_region_t> const& region : snapshot->snapshot_regions) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
-    if (snapshot->snapshot_regions[i])
-      MC_region_restore(snapshot->snapshot_regions[i]);
+    if (region)
+      MC_region_restore(region.get());
   }
 
 #ifdef HAVE_SMPI
@@ -698,20 +652,18 @@ void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
   if (mc_mode == MC_MODE_SERVER)
     xbt_die("FD snapshot not implemented in client/server mode.");
 
-  int new_fd;
-  for (int i=0; i < snapshot->total_fd; i++) {
+  for (auto const& fd : snapshot->current_fds) {
     
-    new_fd = open(snapshot->current_fd[i]->filename, snapshot->current_fd[i]->flags);
-    if (new_fd <0) {
+    int new_fd = open(fd.filename.c_str(), fd.flags);
+    if (new_fd < 0) {
       xbt_die("Could not reopen the file %s fo restoring the file descriptor",
-        snapshot->current_fd[i]->filename);
+        fd.filename.c_str());
     }
-    if(new_fd != -1 && new_fd != snapshot->current_fd[i]->number){
-      dup2(new_fd, snapshot->current_fd[i]->number);
-      //fprintf(stderr, "%p\n", fdopen(snapshot->current_fd[i]->number, "rw"));
+    if (new_fd != fd.number) {
+      dup2(new_fd, fd.number);
       close(new_fd);
     };
-    lseek(snapshot->current_fd[i]->number, snapshot->current_fd[i]->current_position, SEEK_SET);
+    lseek(fd.number, fd.current_position, SEEK_SET);
   }
 }
 

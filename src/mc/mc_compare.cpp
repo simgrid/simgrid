@@ -338,28 +338,23 @@ static int compare_local_variables(int process_index,
 {
   struct mc_compare_state state;
 
-  if (xbt_dynar_length(stack1->local_variables) !=
-      xbt_dynar_length(stack2->local_variables)) {
+  if (stack1->local_variables.size() != stack2->local_variables.size()) {
     XBT_VERB("Different number of local variables");
     return 1;
   } else {
     unsigned int cursor = 0;
     local_variable_t current_var1, current_var2;
     int res;
-    while (cursor < xbt_dynar_length(stack1->local_variables)) {
-      current_var1 =
-          (local_variable_t) xbt_dynar_get_as(stack1->local_variables, cursor,
-                                              local_variable_t);
-      current_var2 =
-          (local_variable_t) xbt_dynar_get_as(stack2->local_variables, cursor,
-                                              local_variable_t);
-      if (strcmp(current_var1->name, current_var2->name) != 0
+    while (cursor < stack1->local_variables.size()) {
+      current_var1 = &stack1->local_variables[cursor];
+      current_var2 = &stack1->local_variables[cursor];
+      if (current_var1->name != current_var2->name
           || current_var1->subprogram != current_var1->subprogram
           || current_var1->ip != current_var2->ip) {
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
         XBT_VERB
             ("Different name of variable (%s - %s) or frame (%s - %s) or ip (%lu - %lu)",
-             current_var1->name, current_var2->name,
+             current_var1->name.c_str(), current_var2->name.c_str(),
              current_var1->subprogram->name, current_var2->subprogram->name,
              current_var1->ip, current_var2->ip);
         return 1;
@@ -378,7 +373,7 @@ static int compare_local_variables(int process_index,
         XBT_TRACE3(mc, local_diff, -1, -1, current_var1->name);
         XBT_VERB
             ("Local variable %s (%p - %p) in frame %s  is different between snapshots",
-             current_var1->name, current_var1->address, current_var2->address,
+             current_var1->name.c_str(), current_var1->address, current_var2->address,
              current_var1->subprogram->name);
         return res;
       }
@@ -440,14 +435,10 @@ int snapshot_compare(void *state1, void *state2)
   }
 
   /* Compare enabled processes */
-  unsigned int cursor;
-  int pid;
-  xbt_dynar_foreach(s1->enabled_processes, cursor, pid){
-    if(!xbt_dynar_member(s2->enabled_processes, &pid)) {
+  if (s1->enabled_processes != s2->enabled_processes) {
       //XBT_TRACE3(mc, state_diff, num1, num2, "Different enabled processes");
       XBT_VERB("(%d - %d) Different enabled processes", num1, num2);
       // return 1; ??
-    }
   }
 
   unsigned long i = 0;
@@ -455,7 +446,7 @@ int snapshot_compare(void *state1, void *state2)
   int is_diff = 0;
 
   /* Compare size of stacks */
-  while (i < xbt_dynar_length(s1->stacks)) {
+  while (i < s1->stacks.size()) {
     size_used1 = s1->stack_sizes[i];
     size_used2 = s2->stack_sizes[i];
     if (size_used1 != size_used2) {
@@ -503,7 +494,7 @@ int snapshot_compare(void *state1, void *state2)
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
     remote(process->heap_address),
     simgrid::mc::ProcessIndexMissing, simgrid::mc::AddressSpace::Lazy);
-  res_init = init_heap_information(heap1, heap2, s1->to_ignore, s2->to_ignore);
+  res_init = init_heap_information(heap1, heap2, &s1->to_ignore, &s2->to_ignore);
   if (res_init == -1) {
 #ifdef MC_DEBUG
     XBT_DEBUG("(%d - %d) Different heap information", num1, num2);
@@ -526,19 +517,15 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
   /* Stacks comparison */
-  cursor = 0;
+  unsigned cursor = 0;
   int diff_local = 0;
 #ifdef MC_DEBUG
   is_diff = 0;
 #endif
   mc_snapshot_stack_t stack1, stack2;
-  while (cursor < xbt_dynar_length(s1->stacks)) {
-    stack1 =
-        (mc_snapshot_stack_t) xbt_dynar_get_as(s1->stacks, cursor,
-                                               mc_snapshot_stack_t);
-    stack2 =
-        (mc_snapshot_stack_t) xbt_dynar_get_as(s2->stacks, cursor,
-                                               mc_snapshot_stack_t);
+  while (cursor < s1->stacks.size()) {
+    stack1 = &s1->stacks[cursor];
+    stack2 = &s1->stacks[cursor];
 
     if (stack1->process_index != stack2->process_index) {
       diff_local = 1;
@@ -578,15 +565,15 @@ int snapshot_compare(void *state1, void *state2)
     cursor++;
   }
 
-  size_t regions_count = s1->snapshot_regions_count;
+  size_t regions_count = s1->snapshot_regions.size();
   // TODO, raise a difference instead?
-  xbt_assert(regions_count == s2->snapshot_regions_count);
+  xbt_assert(regions_count == s2->snapshot_regions.size());
 
   mc_comp_times->global_variables_comparison_time = 0;
 
   for (size_t k = 0; k != regions_count; ++k) {
-    mc_mem_region_t region1 = s1->snapshot_regions[k];
-    mc_mem_region_t region2 = s2->snapshot_regions[k];
+    mc_mem_region_t region1 = s1->snapshot_regions[k].get();
+    mc_mem_region_t region2 = s2->snapshot_regions[k].get();
 
     // Preconditions:
     if (region1->region_type() != simgrid::mc::RegionType::Data)

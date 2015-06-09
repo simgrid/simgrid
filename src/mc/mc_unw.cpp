@@ -217,13 +217,6 @@ int mc_unw_init_context(
   return 0;
 }
 
-int mc_unw_destroy_context(mc_unw_context_t context)
-{
-  context->address_space = NULL;
-  context->process = NULL;
-  return 0;
-}
-
 // ***** Cursor management
 
 int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context)

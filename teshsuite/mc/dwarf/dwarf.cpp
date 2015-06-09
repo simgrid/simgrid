@@ -128,16 +128,19 @@ int main(int argc, char** argv)
   s_mc_process_t p(getpid(), -1);
   mc_process_t process = &p;
 
-  test_global_variable(process, process->binary_info, "some_local_variable", &some_local_variable, sizeof(int));
+  test_global_variable(process, process->binary_info.get(),
+    "some_local_variable", &some_local_variable, sizeof(int));
 
-  var = test_global_variable(process, process->binary_info, "test_some_array", &test_some_array, sizeof(test_some_array));
+  var = test_global_variable(process, process->binary_info.get(),
+    "test_some_array", &test_some_array, sizeof(test_some_array));
   type = (dw_type_t) xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
   xbt_assert(type->element_count == 6*5*4, "element_count mismatch in test_some_array : %i / %i", type->element_count, 6*5*4);
 
-  var = test_global_variable(process, process->binary_info, "test_some_struct", &test_some_struct, sizeof(test_some_struct));
+  var = test_global_variable(process, process->binary_info.get(),
+    "test_some_struct", &test_some_struct, sizeof(test_some_struct));
   type = (dw_type_t) xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
-  assert(find_member(process->binary_info, "first", type)->offset == 0);
-  assert(find_member(process->binary_info, "second", type)->offset
+  assert(find_member(process->binary_info.get(), "first", type)->offset == 0);
+  assert(find_member(process->binary_info.get(), "second", type)->offset
       == ((const char*)&test_some_struct.second) - (const char*)&test_some_struct);
 
   unw_context_t context;
@@ -145,11 +148,12 @@ int main(int argc, char** argv)
   unw_getcontext(&context);
   unw_init_local(&cursor, &context);
 
-  test_local_variable(process->binary_info, "main", "argc", &argc, &cursor);
+  test_local_variable(process->binary_info.get(), "main", "argc", &argc, &cursor);
 
   {
     int lexical_block_variable = 50;
-    test_local_variable(process->binary_info, "main", "lexical_block_variable", &lexical_block_variable, &cursor);
+    test_local_variable(process->binary_info.get(), "main",
+      "lexical_block_variable", &lexical_block_variable, &cursor);
   }
 
   s_foo my_foo;

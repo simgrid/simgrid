@@ -10,6 +10,10 @@
 #include <sys/types.h> // off_t
 #include <stdint.h> // size_t
 
+#include <vector>
+#include <set>
+#include <memory>
+
 #include <simgrid_config.h>
 #include "../xbt/mmalloc/mmprivate.h"
 #include <xbt/asserts.h>
@@ -70,6 +74,8 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
 XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
   const void* addr, const s_mc_snapshot_t *snapshot, int process_index);
 
+}
+
 // ***** MC Snapshot
 
 /** Ignored data
@@ -79,18 +85,56 @@ XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
  * */
 typedef struct s_mc_snapshot_ignored_data {
   void* start;
-  size_t size;
-  void* data;
+  std::vector<char> data;
 } s_mc_snapshot_ignored_data_t, *mc_snapshot_ignored_data_t;
 
 typedef struct s_fd_infos{
-  char *filename;
+  std::string filename;
   int number;
   off_t current_position;
   int flags;
 }s_fd_infos_t, *fd_infos_t;
 
-}
+/** Information about a given stack frame
+ *
+ */
+typedef struct s_mc_stack_frame {
+  /** Instruction pointer */
+  unw_word_t ip;
+  /** Stack pointer */
+  unw_word_t sp;
+  unw_word_t frame_base;
+  dw_frame_t frame;
+  std::string frame_name;
+  unw_cursor_t unw_cursor;
+} s_mc_stack_frame_t, *mc_stack_frame_t;
+
+typedef struct s_local_variable{
+  dw_frame_t subprogram;
+  unsigned long ip;
+  std::string name;
+  dw_type_t type;
+  void *address;
+  int region;
+} s_local_variable_t, *local_variable_t;
+
+typedef struct s_mc_snapshot_stack {
+  std::vector<s_local_variable> local_variables;
+  s_mc_unw_context_t context;
+  std::vector<s_mc_stack_frame_t> stack_frames;
+  int process_index;
+} s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
+
+typedef struct s_mc_global_t {
+  mc_snapshot_t snapshot;
+  int prev_pair;
+  char *prev_req;
+  int initial_communications_pattern_done;
+  int recv_deterministic;
+  int send_deterministic;
+  char *send_diff;
+  char *recv_diff;
+}s_mc_global_t, *mc_global_t;
 
 namespace simgrid {
 namespace mc {
@@ -106,17 +150,15 @@ public: // To be private
   mc_process_t process;
   int num_state;
   size_t heap_bytes_used;
-  mc_mem_region_t* snapshot_regions;
-  size_t snapshot_regions_count;
-  xbt_dynar_t enabled_processes;
+  std::vector<std::unique_ptr<s_mc_mem_region_t>> snapshot_regions;
+  std::set<pid_t> enabled_processes;
   int privatization_index;
-  size_t *stack_sizes;
-  xbt_dynar_t stacks;
-  xbt_dynar_t to_ignore;
+  std::vector<size_t> stack_sizes;
+  std::vector<s_mc_snapshot_stack_t> stacks;
+  std::vector<s_mc_heap_ignore_region_t> to_ignore;
   uint64_t hash;
-  xbt_dynar_t ignored_data;
-  int total_fd;
-  fd_infos_t *current_fd;
+  std::vector<s_mc_snapshot_ignored_data> ignored_data;
+  std::vector<s_fd_infos_t> current_fds;
 };
 
 }
@@ -132,38 +174,6 @@ mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int pro
   else
     return mc_get_snapshot_region(addr, snapshot, process_index);
 }
-
-/** Information about a given stack frame
- *
- */
-typedef struct s_mc_stack_frame {
-  /** Instruction pointer */
-  unw_word_t ip;
-  /** Stack pointer */
-  unw_word_t sp;
-  unw_word_t frame_base;
-  dw_frame_t frame;
-  char* frame_name;
-  unw_cursor_t unw_cursor;
-} s_mc_stack_frame_t, *mc_stack_frame_t;
-
-typedef struct s_mc_snapshot_stack{
-  xbt_dynar_t local_variables;
-  mc_unw_context_t context;
-  xbt_dynar_t stack_frames; // mc_stack_frame_t
-  int process_index;
-}s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
-
-typedef struct s_mc_global_t {
-  mc_snapshot_t snapshot;
-  int prev_pair;
-  char *prev_req;
-  int initial_communications_pattern_done;
-  int recv_deterministic;
-  int send_deterministic;
-  char *send_diff;
-  char *recv_diff;
-}s_mc_global_t, *mc_global_t;
 
 static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
@@ -246,5 +256,9 @@ void* MC_region_read_pointer(mc_mem_region_t region, const void* addr)
 }
 
 SG_END_DECL()
+
+XBT_INTERNAL int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
+                          std::vector<s_mc_heap_ignore_region_t>* i1,
+                          std::vector<s_mc_heap_ignore_region_t>* i2);
 
 #endif
