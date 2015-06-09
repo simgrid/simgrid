@@ -139,6 +139,7 @@ examples/msg/cloud/scale
 examples/msg/cloud/simple_vm
 examples/msg/cloud/two_tasks_vm
 examples/msg/energy/pstate/pstate
+examples/msg/energy/onoff/onoff
 examples/msg/energy/e2/e2
 examples/msg/energy/e3/e3
 examples/msg/pastry/pastry
