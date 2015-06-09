@@ -1115,6 +1115,7 @@ silently overflow on other parts of the memory.
 - \c network/weight_S: \ref options_model_network_coefs
 
 - \c ns3/TcpModel: \ref options_pls
+- \c path: \ref options_generic_path
 - \c plugin: \ref options_generic_plugin
 
 - \c surf/nthreads: \ref options_model_nthreads
@@ -1143,7 +1144,6 @@ silently overflow on other parts of the memory.
 - \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.
 
 - \c storage/model: \ref options_storage_model
-- \c path: \ref options_generic_path
 - \c verbose-exit: \ref options_generic_exit
 
 - \c vm_workstation/model: \ref options_vm_workstation_model
