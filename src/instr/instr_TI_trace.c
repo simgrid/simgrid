@@ -13,6 +13,10 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#ifdef WIN32
+#include <direct.h> // _mkdir
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_TI_trace, instr_trace, "tracing event system");
 
 extern FILE *tracing_file;
@@ -73,7 +77,7 @@ void print_TICreateContainer(paje_event_t event)
     char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix,
                              ((createContainer_t) event->data)->container->name);
 #ifdef WIN32
-    mkdir(folder_name);
+    _mkdir(folder_name);
 #else
     mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
 #endif
