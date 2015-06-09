@@ -1130,16 +1130,7 @@ silently overflow on other parts of the memory.
 - \c workstation/model: \ref options_model_select
 
 \subsection options_index_smpi_coll Index of SMPI collective algorithms options
-- \c smpi/allgather: \ref options_model_smpi_coll_allgather
-- \c smpi/allgatherv: \ref options_model_smpi_coll_allgatherv
-- \c smpi/allreduce: \ref options_model_smpi_coll_allreduce
-- \c smpi/alltoall: \ref options_model_smpi_coll_alltoall
-- \c smpi/alltoallv: \ref options_model_smpi_coll_alltoallv
-- \c smpi/barrier: \ref options_model_smpi_coll_barrier
-- \c smpi/bcast: \ref options_model_smpi_coll_bcast
-- \c smpi/gather: \ref options_model_smpi_coll_gather
-- \c smpi/reduce: \ref options_model_smpi_coll_reduce
-- \c smpi/reduce_scatter: \ref options_model_smpi_coll_reduce_scatter
-- \c smpi/scatter: \ref options_model_smpi_coll_scatter
+
+TODO: All available collective algorithms will be made available via the ``smpirun --help-coll`` command.
 
 */
