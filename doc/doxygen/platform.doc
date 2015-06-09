@@ -567,7 +567,7 @@ with no upper total limit.
 #### Expressing dynamism and failures ####
 
 Similar to hosts, it is possible to declare links whose state, bandwidth
-or latency changes over time (see Section \ref pf_hosts_dynamism for details).
+or latency changes over time (see Section \ref pf_host_dynamism for details).
 
 In the case of network links, the ``bandwidth`` and ``latency`` attributes are
 replaced by the ``bandwidth_file`` and ``latency_file`` attributes.
