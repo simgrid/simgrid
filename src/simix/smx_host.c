@@ -237,6 +237,9 @@ void SIMIX_host_set_pstate(smx_host_t host, int pstate_index) {
 
 	  surf_workstation_set_pstate(host, pstate_index);
 }
+int SIMIX_host_get_pstate(smx_host_t host) {
+	  return surf_workstation_get_pstate(host);
+}
 
 double SIMIX_host_get_consumed_energy(smx_host_t host) {
 	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");

@@ -159,6 +159,10 @@ void Workstation::setPstate(int pstate_index)
 {
 	p_cpu->setPstate(pstate_index);
 }
+int Workstation::getPstate()
+{
+	return p_cpu->getPstate();
+}
 
 xbt_dict_t Workstation::getProperties()
 {

@@ -140,6 +140,7 @@ public:
   double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   int getNbPstates() {THROW_UNIMPLEMENTED;};
   void setPstate(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
+  int  getPstate() { THROW_UNIMPLEMENTED;}
   void modified(bool modified);
 
   CpuTiTgmrPtr p_availTrace;       /*< Structure with data needed to integrate trace file */

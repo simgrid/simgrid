@@ -433,25 +433,27 @@ WorkstationL07::WorkstationL07(WorkstationModelPtr model, const char* name, xbt_
 
 double WorkstationL07::getPowerPeakAt(int /*pstate_index*/)
 {
-	XBT_DEBUG("[ws_get_power_peak_at] Not implemented for workstation_ptask_L07");
-	return 0.0;
+	THROW_UNIMPLEMENTED;
 }
 
 int WorkstationL07::getNbPstates()
 {
-	XBT_DEBUG("[ws_get_nb_pstates] Not implemented for workstation_ptask_L07");
-	return 0.0;
+	THROW_UNIMPLEMENTED;
 }
 
 void WorkstationL07::setPstate(int /*pstate_index*/)
 {
-	XBT_DEBUG("[ws_set_power_peak_at] Not implemented for workstation_ptask_L07");
+	THROW_UNIMPLEMENTED;
+}
+
+int WorkstationL07::getPstate()
+{
+	THROW_UNIMPLEMENTED;
 }
 
 double WorkstationL07::getConsumedEnergy()
 {
-	XBT_DEBUG("[ws_get_consumed_energy] Not implemented for workstation_ptask_L07");
-	return 0.0;
+	THROW_UNIMPLEMENTED;
 }
 
 CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props,

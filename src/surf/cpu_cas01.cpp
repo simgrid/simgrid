@@ -351,6 +351,11 @@ void CpuCas01::setPstate(int pstate_index)
   m_powerPeak = new_pstate;
 }
 
+int CpuCas01::getPstate()
+{
+  return m_pstate;
+}
+
 /**********
  * Action *
  **********/

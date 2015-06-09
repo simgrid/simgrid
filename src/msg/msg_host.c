@@ -394,6 +394,14 @@ void MSG_host_set_pstate(msg_host_t host, int pstate_index) {
 
 	  simcall_host_set_pstate(host, pstate_index);
 }
+/** \ingroup m_host_management
+ * \brief Gets the pstate at which the given host is currently running. See also @ref SURF_plugin_energy.
+ *
+ * \param  host host to test
+ */
+int MSG_host_get_pstate(msg_host_t host) {
+	  return simcall_host_get_pstate(host);
+}
 
 /** \ingroup m_host_management
  * \brief Return the total energy consumed by a host (in Joules). See also @ref SURF_plugin_energy.

@@ -190,6 +190,19 @@ static inline void simcall_host_set_pstate__set__pstate_index(smx_simcall_t simc
     simcall->args[1].i = arg;
 }
 
+static inline smx_host_t simcall_host_get_pstate__get__host(smx_simcall_t simcall) {
+  return (smx_host_t) simcall->args[0].dp;
+}
+static inline void simcall_host_get_pstate__set__host(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline int simcall_host_get_pstate__get__result(smx_simcall_t simcall){
+    return  simcall->result.i;
+}
+static inline void simcall_host_get_pstate__set__result(smx_simcall_t simcall, int result){
+    simcall->result.i = result;
+}
+
 static inline smx_host_t simcall_host_get_consumed_energy__get__host(smx_simcall_t simcall) {
   return (smx_host_t) simcall->args[0].dp;
 }

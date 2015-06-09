@@ -193,7 +193,7 @@ int simcall_host_get_nb_pstates(smx_host_t host)
 
 /**
  * \ingroup simix_host_management
- * \brief Sets a new power peak for a host.
+ * \brief Sets the pstate at which the host should run
  *
  * \param host A SIMIX host
  * \param pstate_index The pstate to which the CPU power will be set
@@ -201,6 +201,16 @@ int simcall_host_get_nb_pstates(smx_host_t host)
 void simcall_host_set_pstate(smx_host_t host, int pstate_index)
 {
 	simcall_BODY_host_set_pstate(host, pstate_index);
+}
+/**
+ * \ingroup simix_host_management
+ * \brief Gets the pstate at which that host currently runs.
+ *
+ * \param host A SIMIX host
+ */
+int simcall_host_get_pstate(smx_host_t host)
+{
+	return simcall_BODY_host_get_pstate(host);
 }
 
 /**

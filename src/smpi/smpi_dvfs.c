@@ -42,13 +42,22 @@ int smpi_get_host_nb_pstates(void)
 }
 
 /**
- * \brief Sets the speed of the processor (in flop/s) at a given pstate
+ * \brief Sets the pstate at which the processor should run
  *
  * \param pstate_index pstate to switch to
  */
 void smpi_set_host_pstate(int pstate_index)
 {
   simcall_host_set_pstate(SIMIX_host_self(), pstate_index);
+}
+/**
+ * \brief Gets the pstate at which the processor currently running
+ *
+ * \param pstate_index pstate to switch to
+ */
+int smpi_get_host_pstate()
+{
+  return simcall_host_get_pstate(SIMIX_host_self());
 }
 
 /**

@@ -59,6 +59,7 @@ public:
   double getPowerPeakAt(int pstate_index);
   int getNbPstates();
   void setPstate(int pstate_index);
+  int  getPstate();
   bool isUsed();
   void setStateEvent(tmgr_trace_event_t stateEvent);
   void setPowerEvent(tmgr_trace_event_t stateEvent);

@@ -162,6 +162,10 @@ public class Cpu extends Resource {
     SurfJNI.Cpu_setPstate(swigCPtr, this, pstate_index);
   }
 
+  public int getPstate() {
+    return SurfJNI.Cpu_getPstate(swigCPtr, this);
+  }
+
   
   /**
     * @param state The new state of the cpu

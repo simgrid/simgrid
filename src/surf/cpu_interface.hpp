@@ -200,6 +200,7 @@ public:
   virtual int getNbPstates()=0;
 
   virtual void setPstate(int pstate_index)=0;
+  virtual int  getPstate()=0;
 
   void setState(e_surf_resource_state_t state);
 

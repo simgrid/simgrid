@@ -111,6 +111,7 @@ public:
   double getPowerPeakAt(int pstate_index);
   int getNbPstates();
   void setPstate(int pstate_index);
+  int  getPstate();
   double getConsumedEnergy();
 };
 
@@ -132,6 +133,7 @@ public:
   double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   int getNbPstates() {THROW_UNIMPLEMENTED;};
   void setPstate(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
+  int  getPstate() {THROW_UNIMPLEMENTED;};
   double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
 };
 
