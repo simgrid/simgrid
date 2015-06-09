@@ -85,7 +85,7 @@ void smpi_process_init(int *argc, char ***argv)
     index = smpi_process_index_of_smx_process(proc);
 
     if(!index_to_process_data){
-        index_to_process_data=(int*)xbt_malloc(SIMIX_process_count()*sizeof(int));
+        index_to_process_data=(int*)xbt_malloc(process_count*sizeof(int));
     }
     MPI_Comm* temp_comm_world;
     xbt_bar_t temp_bar;
