@@ -40,7 +40,7 @@ It starts at pstate 0 (ie, at 100 Mflop/s). In this case, you have to specify on
 In this example, the idle consumption is 95 Watts, 93 Watts and 90 Watts in each pstate while the CPU burn consumption are at 200 Watts,
 170 Watts and 150 Watts respectively.
 
-To change the pstate of a given CPU, use the following functions: #MSG_host_get_pstate_number, #MSG_host_set_pstate(), #MSG_host_get_power_peak_at().
+To change the pstate of a given CPU, use the following functions: #MSG_host_get_nb_pstates(), #MSG_host_set_pstate(), #MSG_host_get_power_peak_at().
 
 To simulate the energy-related elements, first call the #sg_energy_plugin_init() before your #MSG_init(),
 and then use the following function to retrieve the consumption of a given host: #MSG_host_get_consumed_energy().
