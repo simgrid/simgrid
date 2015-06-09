@@ -384,7 +384,7 @@ be removed from the memory and some cycles might be missed.
 
 By default, no state is snapshotted and cycles cannot be detected.
 
-\subsection options_modelchecking_termination, model-check/termination, Non termination detection
+\subsection options_modelchecking_termination model-check/termination, Non termination detection
 
 The \b model-check/termination configuration item can be used to report if a
 non-termination execution path has been found. This is a path with a cycle
