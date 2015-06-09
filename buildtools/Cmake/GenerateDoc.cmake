@@ -75,18 +75,6 @@ if(DOXYGEN_FOUND)
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
 
-  ADD_CUSTOM_TARGET(pdf
-    COMMAND ${CMAKE_COMMAND} -E echo "XX First pass simgrid_documentation.pdf"
-    COMMAND make clean
-    COMMAND make pdf || true
-    COMMAND ${CMAKE_COMMAND} -E echo "XX Second pass simgrid_documentation.pdf"
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/doc/latex/refman.pdf
-    COMMAND make pdf || true
-    COMMAND ${CMAKE_COMMAND} -E echo "XX Write Simgrid_documentation.pdf"
-    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_HOME_DIRECTORY}/doc/latex/refman.pdf ${CMAKE_HOME_DIRECTORY}/doc/latex/simgrid_documentation.pdf
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/latex/
-    )
-  add_dependencies(pdf doc)
 
 
 
