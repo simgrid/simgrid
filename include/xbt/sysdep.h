@@ -74,7 +74,16 @@ char *xbt_strdup(const char *s)
 {
   char *res = NULL;
   if (s) {
+# if defined(SIMGRID_HAVE_STRDUP)
     res = strdup(s);
+# elif defined(SIMGRID_HAVE__STRDUP)
+    res = _strdup(s);
+# else
+    size_t len  = strlen(s);
+    res = malloc(len + 1);
+    if (res)
+      memcpy(res, s, len + 1);
+#  endif
     if (!res)
       xbt_die("memory allocation error (strdup returned NULL)");
   }
@@ -134,7 +143,13 @@ void *xbt_realloc(void *p, size_t s)
   return res;
 }
 #else                           /* non __GNUC__  */
-#  define xbt_strdup(s)    strdup(s)
+#  if defined(SIMGRID_HAVE_STRDUP)
+#    define xbt_strdup(s)    strdup(s)
+#  elif defined(SIMGRID_HAVE__STRDUP
+#    define xbt_strdup(s)    _strdup(s)
+#  else
+#    error Missing strdup
+#  endif
 #  define xbt_malloc(n)    malloc(n)
 #  define xbt_malloc0(n)   calloc(n,1)
 #  define xbt_realloc(p,s) realloc(p,s)
