@@ -38,8 +38,8 @@ int dvfs(int argc, char *argv[])
   int new_peak_index=2;
   host = MSG_host_self();; //MSG_get_host_by_name("MyHost1");
 
-  int nb = MSG_host_get_pstate_number(host);
-  XBT_INFO("Number of Processor states=%d", nb);
+  int nb = MSG_host_get_pstate_count(host);
+  XBT_INFO("Count of Processor states=%d", nb);
 
   double current_peak = MSG_host_get_current_power_peak(host);
   XBT_INFO("Current power peak=%f", current_peak);
@@ -78,8 +78,8 @@ int dvfs(int argc, char *argv[])
 
   // Verify the default pstate is set to 0
   host = MSG_get_host_by_name("MyHost2");
-  int nb2 = MSG_host_get_pstate_number(host);
-  XBT_INFO("Number of Processor states=%d", nb2);
+  int nb2 = MSG_host_get_pstate_count(host);
+  XBT_INFO("Count of Processor states=%d", nb2);
 
   double current_peak2 = MSG_host_get_current_power_peak(host);
   XBT_INFO("Current power peak=%f", current_peak2);

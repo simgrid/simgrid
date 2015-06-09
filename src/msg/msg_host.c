@@ -373,11 +373,11 @@ double MSG_host_get_current_power_peak(msg_host_t host) {
 }
 
 /** \ingroup m_host_management
- * \brief Return the number of pstates defined for a host. See also @ref SURF_plugin_energy.
+ * \brief Return the total count of pstates defined for a host. See also @ref SURF_plugin_energy.
  *
  * \param  host host to test
  */
-int MSG_host_get_pstate_number(msg_host_t host) {
+int MSG_host_get_pstate_count(msg_host_t host) {
 
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 	  return (simcall_host_get_nb_pstates(host));
