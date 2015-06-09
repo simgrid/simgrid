@@ -142,6 +142,26 @@ when using SimDag.
   - \b ptask_L07: Workstation model somehow similar to Cas01+CM02 but
     allowing parallel tasks
 
+\subsection options_generic_plugin Plugins
+
+SimGrid supports the use of plugins; currently, no known plugins
+can be activated but there are use-cases where you may want to write
+your own plugin (for instance, for logging).
+
+Plugins can for instance define own classes that inherit from
+existing classes (for instance, a class "CpuEnergy" inherits from
+"Cpu" to assess energy consumption).
+
+The plugin connects to the code by registering callbacks using
+``surf_callback_register`` (see file ``src/surf/plugins/energy.cpp`` for details).
+
+\verbatim
+    --cfg=plugin:Energy
+\endverbatim
+
+\note
+    This option is case-sensitive: Energy and energy are not the same!
+
 \subsection options_model_optim Optimization level of the platform models
 
 The network and CPU models that are based on lmm_solve (that
@@ -1095,6 +1115,7 @@ silently overflow on other parts of the memory.
 - \c network/weight_S: \ref options_model_network_coefs
 
 - \c ns3/TcpModel: \ref options_pls
+- \c plugin: \ref options_generic_plugin
 
 - \c surf/nthreads: \ref options_model_nthreads
 - \c surf/precision: \ref options_model_precision
@@ -1123,7 +1144,6 @@ silently overflow on other parts of the memory.
 
 - \c storage/model: \ref options_storage_model
 - \c path: \ref options_generic_path
-- \c plugin: \ref options_generic_plugin
 - \c verbose-exit: \ref options_generic_exit
 
 - \c vm_workstation/model: \ref options_vm_workstation_model
