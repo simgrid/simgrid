@@ -129,7 +129,7 @@ Here is an illustration of these concepts:
 
 \section pf_pftags Resource description
 
-\subsection  pf_As Platform: The \<AS\> tag
+\subsection  pf_As Platform: The &lt;AS&gt; tag
 
 The concept of an AS was already outlined above (Section \ref pf_basics);
 recall that the AS is so important because it groups other resources (such
@@ -159,7 +159,7 @@ between the hosts goes through link1.
 
 \subsection pf_Cr Computing resources: hosts, clusters and peers.
 
-\subsubsection pf_host The tag <host/>
+\subsubsection pf_host &lt;host/&gt;
 
 A <b>host</b> represents a computer/node card. Every host is able to execute
 code and it can send and receive data to/from other hosts. Most importantly,
@@ -182,8 +182,8 @@ coordinates     | no        | string | Must be provided when choosing the Vivald
 
 Tag name        | Description | Documentation
 ------------    | ----------- | -------------
-<mount/>        | Defines mounting points between some storage resource and the host. | \ref pf_sto_mo
-<prop/>         | The prop tag allows you to define additional information on this host following the attribute/value schema. You may want to use it to give information to the tool you use for rendering your simulation, for example. | N/A
+\<mount/\>        | Defines mounting points between some storage resource and the host. | \ref pf_sto_mo
+\<prop/\>         | The prop tag allows you to define additional information on this host following the attribute/value schema. You may want to use it to give information to the tool you use for rendering your simulation, for example. | N/A
 
 ### Example ###
 
@@ -200,7 +200,7 @@ Tag name        | Description | Documentation
 ### Expressing dynamism ###
 
 SimGrid provides mechanisms to change a hosts' availability over
-time, using the ``availability_file`` attribute to the ``<host>`` tag
+time, using the ``availability_file`` attribute to the ``\<host\>`` tag
 and a separate text file whose syntax is exemplified below.
 
 #### Adding a trace file ####
@@ -223,7 +223,7 @@ PERIODICITY 1.0
 Let us begin to explain this example by looking at line 2. (Line 1 will become clear soon).
 The first column describes points in time, in this case, time 0. The second column
 describes the relative amount of power this host is able to deliver (relative
-to the maximum performance specified in the ``<host>`` tag). (Clearly, the
+to the maximum performance specified in the ``\<host\>`` tag). (Clearly, the
 second column needs to contain values that are not smaller than 0 and not larger than 1).
 In this example, our host will deliver 500 Mflop/s at time 0, as 500 Mflop/s is the
 maximum performance of this host. At time 11.0, it will
@@ -279,7 +279,7 @@ so on.
 
 
 
-\subsubsection pf_cluster <cluster>
+\subsubsection pf_cluster &lt;cluster&gt;
 
 ``<cluster />`` represents a machine-cluster. It is most commonly used
 when one wants to define many hosts and a network quickly. Technically,
@@ -331,8 +331,8 @@ id              | yes       | string | The identifier of the cluster. Facilitate
 prefix          | yes       | string | Each node of the cluster has to have a name. This name will be prefixed with this prefix.
 suffix          | yes       | string | Each node of the cluster will be suffixed with this suffix
 radical         | yes       | string | Regexp used to generate cluster nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
-power           | yes       | int    | Same as the ``power`` attribute of the ``<host>`` tag.
-core            | no        | int (default: 1) | Same as the ``core`` attribute of the ``<host>`` tag.
+power           | yes       | int    | Same as the ``power`` attribute of the ``\<host\>`` tag.
+core            | no        | int (default: 1) | Same as the ``core`` attribute of the ``\<host\>`` tag.
 bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). <b>See <b>link</b> section for syntax/details.</b>
 lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
 sharing_policy  | no        | string | Sharing policy for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
@@ -379,7 +379,7 @@ c-2.me
 c-99.me
 \endverbatim
 
-\subsubsection pf_peer <peer/>
+\subsubsection pf_peer The &lt;peer&gt; tag
 
 This tag represents a peer, as in Peer-to-Peer (P2P) networks. However, internally,
 SimGrid transforms a peer into an AS (similar to Cluster). Hence, this tag
@@ -408,7 +408,7 @@ sharing_policy  | no        | SHARED\|FULLDUPLEX (default: FULLDUPLEX) | Sharing
 availability_file| no       | string | Availability file for the peer. Same as host availability file. See <b>host</b> description for details.
 state_file      | no        | string | State file for the peer. Same as host state file. See <b>host</b> description for details.
 
-Internally, SimGrid transforms any ``<peer/>`` construct such as
+Internally, SimGrid transforms any ``\<peer/\>`` construct such as
 \verbatim
 <peer id="FOO"
   coordinates="12.8 14.4 6.4"
@@ -417,7 +417,7 @@ Internally, SimGrid transforms any ``<peer/>`` construct such as
   bw_out="2.25GBps"
   lat="500us" />
 \endverbatim
-into an ``<AS>`` (see Sections \ref pf_basics and \ref pf_As). In fact, this example of the ``<peer/>`` tag
+into an ``\<AS\>`` (see Sections \ref pf_basics and \ref pf_As). In fact, this example of the ``\<peer/\>`` tag
 is completely equivalent to the following declaration:
 
 \verbatim
@@ -457,7 +457,7 @@ several other tags that are available only in certain contexts.
     If you want to represent an entity like a switch, you must use ``<link>`` (see section). Routers are used
     to run some routing algorithm and determine routes (see Section \ref pf_routing for details).
 
-\subsubsection pf_router <router/>
+\subsubsection pf_router &lt;router/&gt;
 
 %As said before, <b>router</b> is used only to give some information
 for routing algorithms. So, it does not have any attributes except :
@@ -475,7 +475,7 @@ coordinates     | yes       | string | Must be provided when choosing the Vivald
  <router id="gw_dc1_horizdist"/>
 \endverbatim
 
-\subsubsection pf_link <link>
+\subsubsection pf_link &lt;link/&gt;
 
 Network links can represent one-hop network connections. They are
 characterized by their id and their bandwidth; links can (but may not) be subject
@@ -627,7 +627,7 @@ kicks in. It then loops back, starting at 100µs (the initial value) for one sec
 
 #### The ``<prop/>`` tag ####
 
-Similar to ``<host>``, the link may also contain the ``<prop/>`` tag; see the host
+Similar to ``\<host\>``, the link may also contain the ``<prop/>`` tag; see the host
 documentation (Section \ref pf_host) for an example.
 
 
