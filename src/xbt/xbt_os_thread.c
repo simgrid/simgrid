@@ -21,8 +21,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
                                 "Synchronization mechanism (OS-level)");
 
 /* ********************************* PTHREAD IMPLEMENTATION ************************************ */
-#ifdef HAVE_PTHREAD_H
+#ifndef _XBT_WIN32
 
+#include <pthread.h>
 #include <limits.h>
 #include <semaphore.h>
 
