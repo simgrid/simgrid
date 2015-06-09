@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi,
 typedef struct s_smpi_mpi_group {
   int size;
   int *rank_to_index_map;
-  int *index_to_rank_map;
+  xbt_dict_t index_to_rank_map;
   int refcount;
 } s_smpi_mpi_group_t;
 
@@ -28,19 +28,15 @@ MPI_Group MPI_GROUP_EMPTY = &mpi_MPI_GROUP_EMPTY;
 MPI_Group smpi_group_new(int size)
 {
   MPI_Group group;
-  int i, count;
+  int i;
 
-  count = SIMIX_process_count();
   group = xbt_new(s_smpi_mpi_group_t, 1);
   group->size = size;
   group->rank_to_index_map = xbt_new(int, size);
-  group->index_to_rank_map = xbt_new(int, count);
+  group->index_to_rank_map = xbt_dict_new_homogeneous(xbt_free_f);
   group->refcount = 1;
   for (i = 0; i < size; i++) {
     group->rank_to_index_map[i] = MPI_UNDEFINED;
-  }
-  for (i = 0; i < count; i++) {
-    group->index_to_rank_map[i] = MPI_UNDEFINED;
   }
 
   return group;
@@ -49,23 +45,27 @@ MPI_Group smpi_group_new(int size)
 MPI_Group smpi_group_copy(MPI_Group origin)
 {
   MPI_Group group=origin;
-  int i, count;
+  char *key;
+  char *ptr_rank;
+  xbt_dict_cursor_t cursor = NULL;
+  
+  int i;
   if(origin!= smpi_comm_group(MPI_COMM_WORLD)
             && origin != MPI_GROUP_NULL
             && origin != smpi_comm_group(MPI_COMM_SELF)
             && origin != MPI_GROUP_EMPTY)
     {
-      count = smpi_process_count();
       group = xbt_new(s_smpi_mpi_group_t, 1);
       group->size = origin->size;
       group->rank_to_index_map = xbt_new(int, group->size);
-      group->index_to_rank_map = xbt_new(int, count);
+      group->index_to_rank_map = xbt_dict_new_homogeneous(xbt_free_f);
       group->refcount = 1;
       for (i = 0; i < group->size; i++) {
         group->rank_to_index_map[i] = origin->rank_to_index_map[i];
       }
-      for (i = 0; i < count; i++) {
-        group->index_to_rank_map[i] = origin->index_to_rank_map[i];
+
+      xbt_dict_foreach(origin->index_to_rank_map, cursor, key, ptr_rank) {
+        xbt_dict_set(group->index_to_rank_map, key, ptr_rank, NULL);
       }
     }
 
@@ -84,9 +84,18 @@ void smpi_group_destroy(MPI_Group group)
 
 void smpi_group_set_mapping(MPI_Group group, int index, int rank)
 {
-  if (rank < group->size && index < SIMIX_process_count()) {
+  char * key;
+  int * val_rank;
+
+  if (rank < group->size) {
     group->rank_to_index_map[rank] = index;
-    if(index!=MPI_UNDEFINED)group->index_to_rank_map[index] = rank;
+    if (index!=MPI_UNDEFINED ) {
+      val_rank = (int *) malloc(sizeof(int));
+      *val_rank = rank; 
+      asprintf(&key, "%d", index);
+      xbt_dict_set(group->index_to_rank_map, key, val_rank, NULL);
+      free(key);
+    }
   }
 }
 
@@ -102,9 +111,13 @@ int smpi_group_index(MPI_Group group, int rank)
 
 int smpi_group_rank(MPI_Group group, int index)
 {
-  int rank = MPI_UNDEFINED;
-  rank = group->index_to_rank_map[index];
-  return rank;
+  int * ptr_rank;
+  char * key;
+  asprintf(&key, "%d", index);
+  ptr_rank = xbt_dict_get_or_null(group->index_to_rank_map, key);
+  if (!ptr_rank)
+    return MPI_UNDEFINED;
+  return *ptr_rank;
 }
 
 int smpi_group_use(MPI_Group group)
@@ -118,7 +131,7 @@ int smpi_group_unuse(MPI_Group group)
   group->refcount--;
   if (group->refcount <= 0) {
     xbt_free(group->rank_to_index_map);
-    xbt_free(group->index_to_rank_map);
+    xbt_dict_free(&group->index_to_rank_map);
     xbt_free(group);
     return 0;
   }
