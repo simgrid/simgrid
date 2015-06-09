@@ -115,13 +115,14 @@ add_custom_command(
   )
 add_custom_target(simgrid-java_jar ALL DEPENDS ${SIMGRID_JAR}_finalized)
 
+include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
 
 if(enable_maintainer_mode)
   set(CMAKE_SWIG_FLAGS "-package" "org.simgrid.surf")
   set(CMAKE_SWIG_OUTDIR "${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/surf")
 
   set_source_files_properties(${JSURF_SWIG_SRC} PROPERTIES CPLUSPLUS 1)
-  include_directories(${JNI_INCLUDE_DIRS})
+
   swig_add_module(surf-java java ${JSURF_SWIG_SRC} ${JSURF_JAVA_C_SRC})
 
   add_custom_command(TARGET surf-java POST_BUILD
@@ -131,13 +132,10 @@ if(enable_maintainer_mode)
 
   swig_link_libraries(surf-java simgrid)
 else()
-  add_library(surf-java SHARED
-    ${JSURF_C_SRC})
+  add_library(surf-java SHARED ${JSURF_C_SRC})
   target_link_libraries(surf-java simgrid)
-  set_source_files_properties("${CMAKE_HOME_DIRECTORY}/src/bindings/java/surfJAVA_wrap.cxx"
-    PROPERTIES COMPILE_FLAGS "-fPIC -I\"${JAVA_INCLUDE_PATH}\" -I\"${JAVA_INCLUDE_PATH2}\""
-  )
 endif()
+
 set_target_properties(surf-java PROPERTIES SKIP_BUILD_RPATH ON)
 set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
 
