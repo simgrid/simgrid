@@ -187,7 +187,7 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
     memcpy((*new_t)->substruct, datatype->substruct, sizeof(s_smpi_mpi_struct_t));
   }
   if(datatype->name)
-    (*new_t)->name = strdup(datatype->name);
+    (*new_t)->name = xbt_strdup(datatype->name);
   if(datatype->attributes !=NULL){
       (*new_t)->attributes=xbt_dict_new();
       xbt_dict_cursor_t cursor = NULL;
@@ -237,7 +237,7 @@ void smpi_datatype_get_name(MPI_Datatype datatype, char* name, int* length){
 }
 
 void smpi_datatype_set_name(MPI_Datatype datatype, char* name){
-  datatype->name = strdup(name);;
+  datatype->name = xbt_strdup(name);;
 }
 
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -1779,4 +1779,3 @@ int smpi_mpi_unpack(void* inbuf, int insize, int* position, void* outbuf, int ou
   *position += outcount * size;
   return MPI_SUCCESS;
 }
-

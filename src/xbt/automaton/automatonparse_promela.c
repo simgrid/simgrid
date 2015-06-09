@@ -15,7 +15,7 @@ char* state_id_src;
 
 static void new_state(char* id, int src){
 
-  char* id_state = strdup(id);
+  char* id_state = xbt_strdup(id);
   char* first_part = strtok(id,"_");
   int type = 0 ; // -1=initial state; 0=intermediate state; 1=final state
 
@@ -38,13 +38,13 @@ static void new_state(char* id, int src){
     parsed_automaton->current_state = state;
 
   if(src)
-    state_id_src = strdup(id_state);
+    state_id_src = xbt_strdup(id_state);
     
 }
 
 static void new_transition(char* id, xbt_automaton_exp_label_t label){
 
-  char* id_state = strdup(id);
+  char* id_state = xbt_strdup(id);
   xbt_automaton_state_t state_dst = NULL;
   new_state(id, 0);
   state_dst = xbt_automaton_state_exists(parsed_automaton, id_state);

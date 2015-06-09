@@ -480,7 +480,7 @@ char* Process::read_string(remote_ptr<void> address) const
   if (!address)
     return NULL;
   if (this->is_self())
-    return strdup((char*) address.address());
+    return xbt_strdup((char*) address.address());
 
   off_t len = 128;
   char* res = (char*) malloc(len);

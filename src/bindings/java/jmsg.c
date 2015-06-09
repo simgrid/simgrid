@@ -124,12 +124,12 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 
   argc++;
   argv = xbt_new(char *, argc + 1);
-  argv[0] = strdup("java");
+  argv[0] = xbt_strdup("java");
 
   for (index = 0; index < argc - 1; index++) {
     jval = (jstring) (*env)->GetObjectArrayElement(env, jargs, index);
     tmp = (*env)->GetStringUTFChars(env, jval, 0);
-    argv[index + 1] = strdup(tmp);
+    argv[index + 1] = xbt_strdup(tmp);
     (*env)->ReleaseStringUTFChars(env, jval, tmp);
   }
   argv[argc] = NULL;
@@ -320,4 +320,3 @@ static int create_jprocess(int argc, char *argv[]) {
 
   return 0;
 }
-

@@ -892,19 +892,19 @@ static void basic_test(int homogeneous)
   fill(&head, homogeneous);
   count_check_get_key(head, 7);
   xbt_test_add("Change 123 to 'Changed 123'");
-  xbt_dict_set(head, "123", strdup("Changed 123"), free_f);
+  xbt_dict_set(head, "123", xbt_strdup("Changed 123"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 123 back to '123'");
-  xbt_dict_set(head, "123", strdup("123"), free_f);
+  xbt_dict_set(head, "123", xbt_strdup("123"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 12a to 'Dummy 12a'");
-  xbt_dict_set(head, "12a", strdup("Dummy 12a"), free_f);
+  xbt_dict_set(head, "12a", xbt_strdup("Dummy 12a"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Change 12a to '12a'");
-  xbt_dict_set(head, "12a", strdup("12a"), free_f);
+  xbt_dict_set(head, "12a", xbt_strdup("12a"), free_f);
   count_check_get_key(head, 7);
 
   xbt_test_add("Traverse the resulting dictionary");

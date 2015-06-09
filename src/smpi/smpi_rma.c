@@ -111,7 +111,7 @@ void smpi_mpi_win_get_group(MPI_Win win, MPI_Group* group){
 }
 
 void smpi_mpi_win_set_name(MPI_Win win, char* name){
-  win->name = strdup(name);;
+  win->name = xbt_strdup(name);;
 }
 
 
@@ -440,6 +440,3 @@ int smpi_mpi_win_wait(MPI_Win win){
   win->opened--; //we're opened for business !
   return MPI_SUCCESS;
 }
-
-
-

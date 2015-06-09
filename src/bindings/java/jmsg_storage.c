@@ -176,7 +176,7 @@ Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject 
   }
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
   const char *value_java = (*env)->GetStringUTFChars(env, jvalue, 0);
-  char *value = strdup(value_java);
+  char *value = xbt_strdup(value_java);
 
   MSG_storage_set_property_value(storage, name, value, xbt_free_f);
 
@@ -241,4 +241,3 @@ Java_org_simgrid_msg_Storage_all(JNIEnv * env, jclass cls_arg)
   xbt_dynar_free(&table);
   return jtable;
 }
-

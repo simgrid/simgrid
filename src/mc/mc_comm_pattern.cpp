@@ -26,7 +26,7 @@ mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm)
   res->index = comm->index;
   res->type = comm->type;
   res->comm_addr = comm->comm_addr;
-  res->rdv = strdup(comm->rdv);
+  res->rdv = xbt_strdup(comm->rdv);
   res->data_size = -1;
   res->data = NULL;
   if (comm->type == SIMIX_COMM_SEND) {

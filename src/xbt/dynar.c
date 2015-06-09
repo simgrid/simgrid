@@ -1140,22 +1140,22 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   /* 1. Populate the dynar */
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     sprintf(buf, "%d", cpt);
-    s1 = strdup(buf);
+    s1 = xbt_strdup(buf);
     xbt_dynar_push(d, &s1);
   }
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     sprintf(buf, "%d", cpt);
-    s1 = strdup(buf);
+    s1 = xbt_strdup(buf);
     xbt_dynar_replace(d, cpt, &s1);
   }
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     sprintf(buf, "%d", cpt);
-    s1 = strdup(buf);
+    s1 = xbt_strdup(buf);
     xbt_dynar_replace(d, cpt, &s1);
   }
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     sprintf(buf, "%d", cpt);
-    s1 = strdup(buf);
+    s1 = xbt_strdup(buf);
     xbt_dynar_replace(d, cpt, &s1);
   }
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
@@ -1174,7 +1174,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   d = xbt_dynar_new(sizeof(char **), &xbt_free_ref);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     sprintf(buf, "%d", cpt);
-    s1 = strdup(buf);
+    s1 = xbt_strdup(buf);
     xbt_dynar_unshift(d, &s1);
   }
   /* 2. Traverse the dynar with the macro */
@@ -1205,12 +1205,12 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     sprintf(buf, "%d", cpt);
-    s1 = strdup(buf);
+    s1 = xbt_strdup(buf);
     xbt_dynar_push(d, &s1);
   }
   for (cpt = 0; cpt < NB_ELEM / 5; cpt++) {
     sprintf(buf, "%d", cpt);
-    s1 = strdup(buf);
+    s1 = xbt_strdup(buf);
     xbt_dynar_insert_at(d, NB_ELEM / 2, &s1);
   }
 
@@ -1248,7 +1248,7 @@ XBT_TEST_UNIT("string", test_dynar_string, "Dynars of strings")
   d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     sprintf(buf, "%d", cpt);
-    s1 = strdup(buf);
+    s1 = xbt_strdup(buf);
     xbt_dynar_push(d, &s1);
   }
   for (cpt = 2 * (NB_ELEM / 5); cpt < 4 * (NB_ELEM / 5); cpt++) {
