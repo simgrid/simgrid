@@ -145,7 +145,7 @@ CHECK_INCLUDE_FILE("sys/stat.h" HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILE("windows.h" HAVE_WINDOWS_H)
 CHECK_INCLUDE_FILE("winsock.h" HAVE_WINSOCK_H)
 CHECK_INCLUDE_FILE("winsock2.h" HAVE_WINSOCK2_H)
-CHECK_INCLUDE_FILE("WinDef.h" HAVE_WINDEF_H)
+CHECK_INCLUDE_FILE("windef.h" HAVE_WINDEF_H)
 CHECK_INCLUDE_FILE("errno.h" HAVE_ERRNO_H)
 CHECK_INCLUDE_FILE("unistd.h" HAVE_UNISTD_H)
 CHECK_INCLUDE_FILE("execinfo.h" HAVE_EXECINFO_H)
@@ -177,6 +177,8 @@ CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
+CHECK_FUNCTION_EXISTS(strdup SIMGRID_HAVE_STRDUP)
+CHECK_FUNCTION_EXISTS(_strdup SIMGRID_HAVE__STRDUP)
 
 #Check if __thread is defined
 execute_process(
@@ -314,6 +316,7 @@ if(pthread)
     OUTPUT_VARIABLE HAVE_SEM_OPEN_compil
     )
 
+    # Test sem_open by compiling:
     if(HAVE_SEM_OPEN_compil)
       set(HAVE_SEM_OPEN 0)
       message(STATUS "Warning: sem_open not compilable")
@@ -323,27 +326,29 @@ if(pthread)
       message(STATUS "sem_open is compilable")
     endif()
 
-    execute_process(COMMAND ./sem_open
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    RESULT_VARIABLE HAVE_SEM_OPEN_run
-    OUTPUT_VARIABLE var_compil
-    )
-    file(REMOVE sem_open)
-
-    if(NOT HAVE_SEM_OPEN_run)
-      set(HAVE_SEM_OPEN 1)
-      message(STATUS "sem_open is executable")
-    else()
-      set(HAVE_SEM_OPEN 0)
-      if(EXISTS "${CMAKE_BINARY_DIR}/sem_open")
-        message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_open exists!")
+    # If we're not crosscompiling, we check by executing the program:
+    if (HAVE_SEM_OPEN AND NOT CMAKE_CROSSCOMPILING)
+      execute_process(COMMAND ./sem_open
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      RESULT_VARIABLE HAVE_SEM_OPEN_run
+      OUTPUT_VARIABLE var_compil
+      )
+      if (NOT HAVE_SEM_OPEN_run)
+        set(HAVE_SEM_OPEN 1)
+        message(STATUS "sem_open is executable")
       else()
-        message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_open not exists!")
+        set(HAVE_SEM_OPEN 0)
+        if(EXISTS "${CMAKE_BINARY_DIR}/sem_open")
+          message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_open exists!")
+        else()
+          message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_open not exists!")
+        endif()
+        message(STATUS "Warning: sem_open not executable")
+        message(STATUS "Compilation output: '${var_compil}'")
+        message(STATUS "Exit result of sem_open: ${HAVE_SEM_OPEN_run}")
       endif()
-      message(STATUS "Warning: sem_open not executable")
-      message(STATUS "Compilation output: '${var_compil}'")
-      message(STATUS "Exit result of sem_open: ${HAVE_SEM_OPEN_run}")
     endif()
+    file(REMOVE sem_open)
 
   else()
     set(HAVE_SEM_OPEN 0)
@@ -354,6 +359,7 @@ if(pthread)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     RESULT_VARIABLE HAVE_SEM_INIT_run OUTPUT_VARIABLE HAVE_SEM_INIT_compil)
 
+    # Test sem_init by compiling:
     if(HAVE_SEM_INIT_compil)
       set(HAVE_SEM_INIT 0)
       message(STATUS "Warning: sem_init not compilable")
@@ -362,28 +368,30 @@ if(pthread)
       set(HAVE_SEM_INIT 1)
       message(STATUS "sem_init is compilable")
     endif()
-    execute_process(COMMAND ./sem_init
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    RESULT_VARIABLE HAVE_SEM_INIT_run
-    OUTPUT_VARIABLE var_compil
-    )
-    file(REMOVE sem_init)
 
-
-    if(NOT HAVE_SEM_INIT_run)
-      set(HAVE_SEM_INIT 1)
-      message(STATUS "sem_init is executable")
-    else()
-      set(HAVE_SEM_INIT 0)
-      if(EXISTS "${CMAKE_BINARY_DIR}/sem_init")
-        message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_init exists!")
+    # If we're not crosscompiling, we check by executing the program:
+    if (HAVE_SEM_INIT AND NOT CMAKE_CROSSCOMPILING)
+      execute_process(COMMAND ./sem_init
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      RESULT_VARIABLE HAVE_SEM_INIT_run
+      OUTPUT_VARIABLE var_compil
+      )
+      if (NOT HAVE_SEM_INIT_run)
+        set(HAVE_SEM_INIT 1)
+        message(STATUS "sem_init is executable")
       else()
-        message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_init not exists!")
+        set(HAVE_SEM_INIT 0)
+        if(EXISTS "${CMAKE_BINARY_DIR}/sem_init")
+          message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_init exists!")
+        else()
+          message(STATUS "Bin ${CMAKE_BINARY_DIR}/sem_init not exists!")
+        endif()
+        message(STATUS "Warning: sem_init not executable")
+        message(STATUS "Compilation output: '${var_compil}'")
+        message(STATUS "Exit result of sem_init: ${HAVE_SEM_INIT_run}")
       endif()
-      message(STATUS "Warning: sem_init not executable")
-      message(STATUS "Compilation output: '${var_compil}'")
-      message(STATUS "Exit result of sem_init: ${HAVE_SEM_INIT_run}")
     endif()
+    file(REMOVE sem_init)
   endif()
 
   if(NOT HAVE_SEM_OPEN AND NOT HAVE_SEM_INIT)
@@ -592,11 +600,16 @@ if(HAVE_MAKECONTEXT OR WIN32)
 
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
 
-  try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
-    COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
-    )
+  if(CMAKE_CROSSCOMPILING)
+    set(RUN_makecontext_VAR "cross")
+    set(COMPILE_makecontext_VAR "cross")
+  else()
+    try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
+      ${CMAKE_BINARY_DIR}
+      ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
+      COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
+      )
+  endif()
 
   if(EXISTS ${CMAKE_BINARY_DIR}/conftestval)
     file(READ ${CMAKE_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
@@ -621,16 +634,23 @@ if (NOT CMAKE_CROSSCOMPILING)
   try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
     ${CMAKE_BINARY_DIR}
     ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stackgrowth.c
+    RUN_OUTPUT_VARIABLE stack
     )
-  file(READ "${CMAKE_BINARY_DIR}/conftestval" stack)
-  if(stack MATCHES "down")
-    set(PTH_STACKGROWTH "-1")
-  endif()
-  if(stack MATCHES "up")
-    set(PTH_STACKGROWTH "1")
-  endif()
-
 endif()
+if("${stack}" STREQUAL "down")
+  set(PTH_STACKGROWTH "-1")
+elseif("${stack}" STREQUAL "up")
+  set(PTH_STACKGROWTH "1")
+else()
+  if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+    set(PTH_STACKGROWTH "-1")
+  elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
+    set(PTH_STACKGROWTH "-1")
+  else()
+    message(ERROR "Could not figure the stack direction.")
+  endif()
+endif()
+
 ###############
 ## System checks
 ##
@@ -641,11 +661,16 @@ endif()
 
 #AC_PROG_MAKE_SET
 
-#AC_PRINTF_NULL FIXME: this is too ancient to survive!
-try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
-  )
+if(CMAKE_CROSSCOMPILING)
+  set(RUN_PRINTF_NULL_VAR "cross")
+  set(COMPILE_PRINTF_NULL_VAR "cross")
+else()
+  #AC_PRINTF_NULL FIXME: this is too ancient to survive!
+  try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
+    )
+endif()
 
 if(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
   SET(PRINTF_NULL_WORKING "0")

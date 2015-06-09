@@ -258,7 +258,7 @@ void jedule_add_meta_info(jedule_t jedule, char *key, char *value) {
   xbt_assert(key != NULL);
   xbt_assert(value != NULL);
 
-  val_cp = strdup(value);
+  val_cp = xbt_strdup(value);
   xbt_dict_set(jedule->jedule_meta_info, key, val_cp, NULL);
 }
 

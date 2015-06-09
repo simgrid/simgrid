@@ -63,6 +63,7 @@ public:
   Process(pid_t pid, int sockfd);
   ~Process();
 
+
   bool is_self() const
   {
     return this->process_flags & MC_PROCESS_SELF_FLAG;
