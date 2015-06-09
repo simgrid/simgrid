@@ -171,7 +171,7 @@ Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | String | The identifier of the host. facilitates referring to this AS.
 power           | yes       | double (must be > 0.0) | Computational power of every core of this host in FLOPS. Must be larger than 0.0.
-core            | no        | int (Default: 1) | The number of cores of this host. If more than one core is specified, the "power" parameter refers to every core, i.e., the total computational power is #cores*power.<br /> If 6 cores are specified, up to 6 tasks can be executed without sharing the computational power; if more than 6 tasks are executed, computational power will be shared among these tasks. <br /> <b>Warning:</b> Although functional, this model was never scientifically assessed.
+core            | no        | int (Default: 1) | The number of cores of this host. If more than one core is specified, the "power" parameter refers to every core, i.e., the total computational power is no_of_cores*power.<br /> If 6 cores are specified, up to 6 tasks can be executed without sharing the computational power; if more than 6 tasks are executed, computational power will be shared among these tasks. <br /> <b>Warning:</b> Although functional, this model was never scientifically assessed.
 availability    | no        | int    | <b>Specify if the percentage of power available.</b> (What? TODO)
 availability_file| no       | string | (Relative or absolute) filename to use as input; must contain availability traces for this host. The syntax of this file is defined below. <br /> <b>Note:</b> The filename must be specified with your system's format.
 state           | no        | ON\|OFF<br/> (Default: ON) | Is this host running or not?
@@ -534,7 +534,7 @@ each flow going through this link will be provided with the complete bandwidth,
 i.e., no sharing occurs and the bandwidth is only limiting each flow individually.
 Please note that this is really on a per-flow basis, not only on a per-host basis!
 The complete bandwidth provided by this link in this mode
-is ``#flows*bandwidth``, with at most ``bandwidth`` being available per flow.
+is ``number_of_flows*bandwidth``, with at most ``bandwidth`` being available per flow.
 
 Using the FATPIPE mode allows to model backbones that won't affect performance
 (except latency).
