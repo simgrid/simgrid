@@ -136,8 +136,5 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
 /* If Model-Checking support was requested */
 #cmakedefine HAVE_MC @HAVE_MC@
 
-#cmakedefine SIMGRID_HAVE_STRDUP @SIMGRID_HAVE_STRDUP@
-#cmakedefine SIMGRID_HAVE__STRDUP @SIMGRID_HAVE__STRDUP@
-
 SG_END_DECL()
 #endif /* SIMGRID_PUBLIC_CONFIG_H */
