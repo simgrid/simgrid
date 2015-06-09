@@ -327,7 +327,7 @@ XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
 XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
-XBT_PUBLIC(int)    MSG_host_get_pstate_count(msg_host_t h);
+XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
 XBT_PUBLIC(void)   MSG_host_set_pstate(msg_host_t h, int pstate);
 XBT_PUBLIC(double) MSG_host_get_consumed_energy(msg_host_t h);
 

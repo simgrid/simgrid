@@ -232,10 +232,10 @@ int SIMIX_host_get_nb_pstates(smx_host_t host) {
 }
 
 
-void SIMIX_host_set_power_peak_at(smx_host_t host, int pstate_index) {
+void SIMIX_host_set_pstate(smx_host_t host, int pstate_index) {
 	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-	  surf_workstation_set_power_peak_at(host, pstate_index);
+	  surf_workstation_set_pstate(host, pstate_index);
 }
 
 double SIMIX_host_get_consumed_energy(smx_host_t host) {

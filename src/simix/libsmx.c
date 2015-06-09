@@ -198,9 +198,9 @@ int simcall_host_get_nb_pstates(smx_host_t host)
  * \param host A SIMIX host
  * \param pstate_index The pstate to which the CPU power will be set
  */
-void simcall_host_set_power_peak_at(smx_host_t host, int pstate_index)
+void simcall_host_set_pstate(smx_host_t host, int pstate_index)
 {
-	simcall_BODY_host_set_power_peak_at(host, pstate_index);
+	simcall_BODY_host_set_pstate(host, pstate_index);
 }
 
 /**

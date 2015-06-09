@@ -17,7 +17,7 @@
  * - <b>energy/e1/e1.c</b> Shows how a set of pstates can be defined
  * 		for a host and how the current pstate can be accessed/changed
  * 		with @ref MSG_get_host_current_power_peak and @ref
- * 		MSG_set_host_power_peak_at.
+ * 		MSG_set_host_pstate.
  * 		Make sure to read the platform XML file for details on how
  * 		to declare the CPU capacity for each pstate.
  *
@@ -38,7 +38,7 @@ int dvfs(int argc, char *argv[])
   int new_peak_index=2;
   host = MSG_host_self();; //MSG_get_host_by_name("MyHost1");
 
-  int nb = MSG_host_get_pstate_count(host);
+  int nb = MSG_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb);
 
   double current_peak = MSG_host_get_current_power_peak(host);
@@ -78,7 +78,7 @@ int dvfs(int argc, char *argv[])
 
   // Verify the default pstate is set to 0
   host = MSG_get_host_by_name("MyHost2");
-  int nb2 = MSG_host_get_pstate_count(host);
+  int nb2 = MSG_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb2);
 
   double current_peak2 = MSG_host_get_current_power_peak(host);

@@ -356,8 +356,8 @@ int surf_workstation_get_nb_pstates(surf_resource_t resource){
   return get_casted_workstation(resource)->getNbPstates();
 }
 
-void surf_workstation_set_power_peak_at(surf_resource_t resource, int pstate_index){
-  return get_casted_workstation(resource)->setPowerPeakAt(pstate_index);
+void surf_workstation_set_pstate(surf_resource_t resource, int pstate_index){
+  return get_casted_workstation(resource)->setPstate(pstate_index);
 }
 
 double surf_workstation_get_consumed_energy(surf_resource_t resource){

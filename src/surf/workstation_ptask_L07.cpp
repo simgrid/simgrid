@@ -443,7 +443,7 @@ int WorkstationL07::getNbPstates()
 	return 0.0;
 }
 
-void WorkstationL07::setPowerPeakAt(int /*pstate_index*/)
+void WorkstationL07::setPstate(int /*pstate_index*/)
 {
 	XBT_DEBUG("[ws_set_power_peak_at] Not implemented for workstation_ptask_L07");
 }

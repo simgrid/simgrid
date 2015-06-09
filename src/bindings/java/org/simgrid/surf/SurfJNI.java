@@ -110,7 +110,7 @@ public class SurfJNI {
   public final static native double Cpu_getAvailableSpeedSwigExplicitCpu(long jarg1, Cpu jarg1_);
   public final static native double Cpu_getPowerPeakAt(long jarg1, Cpu jarg1_, int jarg2);
   public final static native int Cpu_getNbPstates(long jarg1, Cpu jarg1_);
-  public final static native void Cpu_setPowerPeakAt(long jarg1, Cpu jarg1_, int jarg2);
+  public final static native void Cpu_setPstate(long jarg1, Cpu jarg1_, int jarg2);
   public final static native void Cpu_setState(long jarg1, Cpu jarg1_, int jarg2);
   public final static native void Cpu_director_connect(Cpu obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void Cpu_change_ownership(Cpu obj, long cptr, boolean take_or_release);
@@ -247,8 +247,8 @@ public class SurfJNI {
   public static int SwigDirector_Cpu_getNbPstates(Cpu self) {
     return self.getNbPstates();
   }
-  public static void SwigDirector_Cpu_setPowerPeakAt(Cpu self, int pstate_index) {
-    self.setPowerPeakAt(pstate_index);
+  public static void SwigDirector_Cpu_setPstate(Cpu self, int pstate_index) {
+    self.setPstate(pstate_index);
   }
   public static double SwigDirector_CpuAction_getRemains(CpuAction self) {
     return self.getRemains();

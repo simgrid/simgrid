@@ -35,7 +35,7 @@ program main
   end do
 
   do i = 0, pstates - 1
-     call smpi_set_host_power_peak_at(i)
+     call smpi_set_host_pstate(i)
      t = MPI_Wtime()
      p = smpi_get_host_current_power_peak()
      print *, '[', t, '] [rank ', rank, '] Current pstate: ', i, '; Current power: ', p

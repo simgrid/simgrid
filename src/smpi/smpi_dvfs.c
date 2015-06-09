@@ -46,9 +46,9 @@ int smpi_get_host_nb_pstates(void)
  *
  * \param pstate_index pstate to switch to
  */
-void smpi_set_host_power_peak_at(int pstate_index)
+void smpi_set_host_pstate(int pstate_index)
 {
-  simcall_host_set_power_peak_at(SIMIX_host_self(), pstate_index);
+  simcall_host_set_pstate(SIMIX_host_self(), pstate_index);
 }
 
 /**
@@ -96,10 +96,10 @@ integer smpi_get_host_nb_pstates_(void)
   return (integer)smpi_get_host_nb_pstates();
 }
 
-XBT_PUBLIC(void) smpi_set_host_power_peak_at_(integer *pstate_index);
-void smpi_set_host_power_peak_at_(integer *pstate_index)
+XBT_PUBLIC(void) smpi_set_host_pstate_(integer *pstate_index);
+void smpi_set_host_pstate_(integer *pstate_index)
 {
-  smpi_set_host_power_peak_at((int)*pstate_index);
+  smpi_set_host_pstate((int)*pstate_index);
 }
 
 XBT_PUBLIC(doublereal) smpi_get_host_consumed_energy_(void);

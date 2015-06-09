@@ -253,7 +253,7 @@
       external smpi_get_host_power_peak_at
       external smpi_get_host_current_power_peak
       external smpi_get_host_nb_pstates
-      external smpi_set_host_power_peak_at
+      external smpi_set_host_pstate
       external smpi_get_host_consumed_energy
 
       double precision smpi_get_host_power_peak_at

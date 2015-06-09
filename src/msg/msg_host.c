@@ -377,7 +377,7 @@ double MSG_host_get_current_power_peak(msg_host_t host) {
  *
  * \param  host host to test
  */
-int MSG_host_get_pstate_count(msg_host_t host) {
+int MSG_host_get_nb_pstates(msg_host_t host) {
 
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 	  return (simcall_host_get_nb_pstates(host));
@@ -392,7 +392,7 @@ int MSG_host_get_pstate_count(msg_host_t host) {
 void MSG_host_set_pstate(msg_host_t host, int pstate_index) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 
-	  simcall_host_set_power_peak_at(host, pstate_index);
+	  simcall_host_set_pstate(host, pstate_index);
 }
 
 /** \ingroup m_host_management

@@ -59,7 +59,7 @@ Func - host_get_state (int) (host, void*, smx_host_t)
 Func - host_get_current_power_peak (double) (host, void*, smx_host_t)
 Func - host_get_power_peak_at (double) (host, void*, smx_host_t) (pstate_index, int)
 Func - host_get_nb_pstates (int) (host, void*, smx_host_t)
-Proc - host_set_power_peak_at (void) (host, void*, smx_host_t) (pstate_index, int)
+Proc - host_set_pstate (void) (host, void*, smx_host_t) (pstate_index, int)
 Func - host_get_consumed_energy (double) (host, void*, smx_host_t)
 
 Func - host_execute (void*, smx_synchro_t) (name, const char*) (host, void*, smx_host_t) (flops_amount, double) (priority, double) (bound, double) (affinity_mask, unsigned long)

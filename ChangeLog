@@ -10,7 +10,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
      - set_data_size(t) -> set_bytes_amount(t)
        get_data_size(t) -> get_bytes_amount(t)
    - Massive cleanups in the functions related to the energy
-     - MSG_host_get_pstate_number() -> MSG_host_get_pstate_count()
+     - MSG_host_get_pstate_number() -> MSG_host_get_nb_pstates()
  jMSG:
  * Interface improvement:
    - Rename Host.isAvail() to Host.isOn()
@@ -28,6 +28,8 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    - popping: the strange dance that converts a user request into a kernel handling
    - smx_context_*: the virtualization mechanisms that embeed the user code
    - smx_*: the handling of each simcalls
+ * Interface cleanup:
+   - simcall_host_set_power_peak_at -> simcall_host_set_pstate
  * Rename smx_action_t into smx_synchro_t, making explicit that these
    things are used to synchronize processes with their environment.    
    For example, a communication is a sort of synchronization involving
@@ -59,10 +61,12 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    - Replay can be used with SMP-aware algorithms
    - Memory occupation of replay should now be contained (temporary buffers allocated in collective algorithms should be shared between processes)
    - Replay can now replay several traces at the same time (check examples/smpi/replay_multiple example), to simulate interactions between several applications on a given platform. User can specify the start time of each instance. This should also allow replay + actual applications to run.
-  * Bug fixes 
+ * Bug fixes 
    - [#17799] : have mpi_group_range_incl and mpi_group_range_excl better test some corner cases
    - Correctly use loopback on fat-tree clusters
    - Asynchronous small messages shouldn't trigger deadlocks anymore
+ * Interface cleanup
+   - smpi_set_host_power_peak_at -> smpi_set_host_pstate
  SURF
   * Bug fixes 
    - "Full" network optimization flag was broken since Surf++

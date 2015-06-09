@@ -237,7 +237,7 @@ public:
 
   virtual double getPowerPeakAt(int pstate_index);
   virtual int getNbPstates();
-  virtual void setPowerPeakAt(int pstate_index);
+  virtual void setPstate(int pstate_index);
 
   /**
    * @brief Return the storage of corresponding mount point

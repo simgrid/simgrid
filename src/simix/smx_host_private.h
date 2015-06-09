@@ -51,7 +51,7 @@ double SIMIX_host_get_current_power_peak(smx_host_t host);
 double SIMIX_host_get_power_peak_at(smx_host_t host, int pstate_index);
 int SIMIX_host_get_nb_pstates(smx_host_t host);
 double SIMIX_host_get_consumed_energy(smx_host_t host);
-void SIMIX_host_set_power_peak_at(smx_host_t host, int pstate_index);
+void SIMIX_host_set_pstate(smx_host_t host, int pstate_index);
 smx_synchro_t SIMIX_host_execute(const char *name,
     smx_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask);
 smx_synchro_t SIMIX_host_parallel_execute(const char *name,

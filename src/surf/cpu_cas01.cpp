@@ -341,14 +341,14 @@ int CpuCas01::getNbPstates()
   return xbt_dynar_length(p_powerPeakList);
 }
 
-void CpuCas01::setPowerPeakAt(int pstate_index)
+void CpuCas01::setPstate(int pstate_index)
 {
   xbt_dynar_t plist = p_powerPeakList;
   xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
 
-  double new_power_peak = xbt_dynar_get_as(plist, pstate_index, double);
+  double new_pstate = xbt_dynar_get_as(plist, pstate_index, double);
   m_pstate = pstate_index;
-  m_powerPeak = new_power_peak;
+  m_powerPeak = new_pstate;
 }
 
 /**********

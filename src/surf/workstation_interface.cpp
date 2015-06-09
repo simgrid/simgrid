@@ -155,9 +155,9 @@ int Workstation::getNbPstates()
   return p_cpu->getNbPstates();
 }
 
-void Workstation::setPowerPeakAt(int pstate_index)
+void Workstation::setPstate(int pstate_index)
 {
-	p_cpu->setPowerPeakAt(pstate_index);
+	p_cpu->setPstate(pstate_index);
 }
 
 xbt_dict_t Workstation::getProperties()

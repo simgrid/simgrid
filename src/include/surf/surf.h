@@ -627,7 +627,7 @@ XBT_PUBLIC(int) surf_workstation_get_nb_pstates(surf_resource_t host);
  * @param host [description]
  * @param pstate_index [description]
  */
-XBT_PUBLIC(void) surf_workstation_set_power_peak_at(surf_resource_t host, int pstate_index);
+XBT_PUBLIC(void) surf_workstation_set_pstate(surf_resource_t host, int pstate_index);
 
 /**
  * @brief Get the consumed energy (in joules) of a workstation

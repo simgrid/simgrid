@@ -158,12 +158,8 @@ public class Cpu extends Resource {
     return SurfJNI.Cpu_getNbPstates(swigCPtr, this);
   }
 
-  
-  /**
-    * @param pstate_index index of power peak to set
-    */
-  public void setPowerPeakAt(int pstate_index) {
-    SurfJNI.Cpu_setPowerPeakAt(swigCPtr, this, pstate_index);
+  public void setPstate(int pstate_index) {
+    SurfJNI.Cpu_setPstate(swigCPtr, this, pstate_index);
   }
 
   

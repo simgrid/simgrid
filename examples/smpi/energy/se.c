@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
   fprintf(stderr, "%s%s\n", buf, (sz ? "" : " [...]"));
 
   for (i = 0; i < pstates; i++) {
-    smpi_set_host_power_peak_at(i);
+    smpi_set_host_pstate(i);
     fprintf(stderr, "[%.6f] [rank %d] Current pstate: %d; Current power: %.0f\n",
             MPI_Wtime(), rank, i, smpi_get_host_current_power_peak());
 

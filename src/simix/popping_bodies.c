@@ -291,14 +291,14 @@ inline static int simcall_BODY_host_get_nb_pstates(smx_host_t host) {
     return self->simcall.result.i;
   }
   
-inline static void simcall_BODY_host_set_power_peak_at(smx_host_t host, int pstate_index) {
+inline static void simcall_BODY_host_set_pstate(smx_host_t host, int pstate_index) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_set_power_peak_at(host, pstate_index);
+    if (0) SIMIX_host_set_pstate(host, pstate_index);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_SET_POWER_PEAK_AT;
+    self->simcall.call = SIMCALL_HOST_SET_PSTATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) host;

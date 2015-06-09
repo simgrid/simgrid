@@ -110,7 +110,7 @@ public:
   e_surf_resource_state_t getState();
   double getPowerPeakAt(int pstate_index);
   int getNbPstates();
-  void setPowerPeakAt(int pstate_index);
+  void setPstate(int pstate_index);
   double getConsumedEnergy();
 };
 
@@ -131,7 +131,7 @@ public:
   double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
   double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   int getNbPstates() {THROW_UNIMPLEMENTED;};
-  void setPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
+  void setPstate(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
   double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
 };
 

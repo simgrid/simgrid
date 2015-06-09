@@ -834,7 +834,7 @@ XBT_PUBLIC(void) smpi_execute(double duration);
 XBT_PUBLIC(double) smpi_get_host_power_peak_at(int pstate_index);
 XBT_PUBLIC(double) smpi_get_host_current_power_peak(void);
 XBT_PUBLIC(int) smpi_get_host_nb_pstates(void);
-XBT_PUBLIC(void) smpi_set_host_power_peak_at(int pstate_index);
+XBT_PUBLIC(void) smpi_set_host_pstate(int pstate_index);
 XBT_PUBLIC(double) smpi_get_host_consumed_energy(void);
 
 XBT_PUBLIC(int) smpi_usleep(useconds_t usecs);
