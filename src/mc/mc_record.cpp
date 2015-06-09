@@ -10,6 +10,7 @@
 #include <xbt.h>
 #include <simgrid/simix.h>
 
+#include "mc_replay.h"
 #include "mc_record.h"
 #include "mc_base.h"
 
