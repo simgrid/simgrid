@@ -223,7 +223,7 @@ public:
  * @details A CpuAction represent the execution of code on a Cpu
  */
 XBT_PUBLIC_CLASS CpuAction : public Action {
-friend CpuPtr getActionCpu(CpuActionPtr action);
+friend XBT_PUBLIC(CpuPtr) getActionCpu(CpuActionPtr action);
 public:
   /**
    * @brief CpuAction constructor

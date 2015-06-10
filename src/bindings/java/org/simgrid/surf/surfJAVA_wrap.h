@@ -75,13 +75,14 @@ public:
     virtual double getAvailableSpeed();
     virtual double getPowerPeakAt(int pstate_index);
     virtual int getNbPstates();
-    virtual void setPowerPeakAt(int pstate_index);
+    virtual void setPstate(int pstate_index);
+    virtual int getPstate();
 public:
     bool swig_overrides(int n) {
-      return (n < 12 ? swig_override[n] : false);
+      return (n < 13 ? swig_override[n] : false);
     }
 protected:
-    bool swig_override[12];
+    bool swig_override[13];
 };
 
 class SwigDirector_CpuAction : public CpuAction, public Swig::Director {

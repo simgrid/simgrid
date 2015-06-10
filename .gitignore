@@ -96,6 +96,7 @@ doc/realtoc.sh
 doc/tmp.realtoc
 doc/using_bib.html
 doc/Doxyfile
+doc/doxygen_sqlite3.db
 doc/footer.html
 *.doc.toc
 doc/latex/
@@ -105,6 +106,7 @@ doc/simgrid.tag
 doc/doxygen/logcategories.doc
 doc/index-API.doc
 doc/simgrid_modules.map
+doc/javadoc
 ### Specific of project 
 .settings/
 .csettings/
@@ -1048,8 +1050,6 @@ examples/java/surfPlugin/java_surf_plugin_compiled
 /CMakeCache.txt
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf_expression/dwarf-expression
-src/bindings/java/org/simgrid/surf/surfJAVA_wrap.cxx
-src/bindings/java/org/simgrid/surf/surfJAVA_wrap.h
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
 examples/smpi/mc/smpi_bugged2

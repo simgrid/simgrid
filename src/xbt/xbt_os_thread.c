@@ -21,8 +21,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
                                 "Synchronization mechanism (OS-level)");
 
 /* ********************************* PTHREAD IMPLEMENTATION ************************************ */
-#ifdef HAVE_PTHREAD_H
+#ifndef _XBT_WIN32
 
+#include <pthread.h>
 #include <limits.h>
 #include <semaphore.h>
 
@@ -30,13 +31,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
 #define _GNU_SOURCE
 #include <sched.h>
 #endif
-
-#ifdef HAVE_MUTEX_TIMEDLOCK
-/* redefine the function header since we fail to get this from system headers on amd (at least) */
-int pthread_mutex_timedlock(pthread_mutex_t * mutex,
-                            const struct timespec *abs_timeout);
-#endif
-
 
 /* use named sempahore when sem_init() does not work */
 #ifndef HAVE_SEM_INIT

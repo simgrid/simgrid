@@ -9,6 +9,10 @@
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
 
+#include <stdarg.h>
+
+#include "simgrid_config.h"
+
 /* Define _GNU_SOURCE for getline, isfinite, etc. */
 #ifndef _GNU_SOURCE
 	#define _GNU_SOURCE
@@ -167,7 +171,7 @@
 
 /* Build the DLL */
 #if defined(DLL_EXPORT)
-#  define XBT_PUBLIC(type)            extern __declspec(dllexport) type
+#  define XBT_PUBLIC(type)            __declspec(dllexport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  __declspec(dllexport) type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern __declspec(dllexport) type
@@ -176,7 +180,7 @@
 
 /* Pack everything up statically */
 #elif defined(DLL_STATIC)
-#  define XBT_PUBLIC(type)            extern type
+#  define XBT_PUBLIC(type)            type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
@@ -185,7 +189,7 @@
 
 /* Link against the DLL */
 #elif (defined(_XBT_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
-#  define XBT_PUBLIC(type)            extern __declspec(dllimport) type
+#  define XBT_PUBLIC(type)            __declspec(dllimport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type
 #  define XBT_PUBLIC_DATA(type)       extern __declspec(dllimport) type
@@ -194,7 +198,7 @@
 
 /* UNIX build */
 #else
-#  define XBT_PUBLIC(type)            extern type
+#  define XBT_PUBLIC(type)            type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
@@ -246,7 +250,55 @@ XBT_PUBLIC_DATA(int) xbt_pagebits;
 
 XBT_PUBLIC(const char *) xbt_procname(void);
 
+/** Retrieves the version numbers of the used dynamic library (so, DLL or dynlib) , while
+    SIMGRID_VERSION_MAJOR and friends give the version numbers of the used header files */
+XBT_PUBLIC(void) sg_version(int *major,int *minor,int *patch);
+
+typedef struct xbt_dynar_s s_xbt_dynar_t, *xbt_dynar_t;
+
+/** Contains all the parameters we got from the command line */
+XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
+
 #define XBT_BACKTRACE_SIZE 10   /* FIXME: better place? Do document */
 
+/* snprintf related functions */
+/** @addtogroup XBT_str
+  * @{ */
+/** @brief print to allocated string (reimplemented when not provided by the system)
+ *
+ * The functions asprintf() and vasprintf() are analogues of
+ * sprintf() and vsprintf(), except that they allocate a string large
+ * enough to hold the output including the terminating null byte, and
+ * return a pointer to it via the first parameter.  This pointer
+ * should be passed to free(3) to release the allocated storage when
+ * it is no longer needed.
+ */
+#if defined(SIMGRID_NEED_ASPRINTF)||defined(DOXYGEN)
+XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt,   /*args */
+                         ...) _XBT_GNUC_PRINTF(2, 3);
+#endif
+/** @brief print to allocated string (reimplemented when not provided by the system)
+ *
+ * See asprintf()
+ */
+#if defined(SIMGRID_NEED_VASPRINTF)||defined(DOXYGEN)
+XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
+#endif
+
+/** @brief print to allocated string
+ *
+ * Works just like vasprintf(), but returns a pointer to the newly
+ * created string, or aborts on error.
+ */
+XBT_PUBLIC(char *) bvprintf(const char *fmt, va_list ap);
+/** @brief print to allocated string
+ *
+ * Works just like asprintf(), but returns a pointer to the newly
+ * created string, or aborts on error.
+ */
+XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
+/** @} */
+
 SG_END_DECL()
+
 #endif                          /* XBT_MISC_H */

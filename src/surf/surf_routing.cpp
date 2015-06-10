@@ -1403,4 +1403,3 @@ xbt_dynar_t surf_AS_get_hosts(AsPtr as) {
 void surf_AS_get_graph(AS_t as, xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) {
   as->getGraph(graph, nodes, edges);
 }
-

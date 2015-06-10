@@ -64,9 +64,11 @@ int main(int argc, char *argv[]) {
 
 \section options_model Configuring the platform models
 
+\anchor options_storage_model
+\anchor options_vm_workstation_model
 \subsection options_model_select Selecting the platform models
 
-SimGrid comes with several network and CPU models built in, and you
+SimGrid comes with several network, CPU and storage models built in, and you
 can change the used model at runtime by changing the passed
 configuration. The three main configuration items are given below.
 For each of these items, passing the special \c help value gives
@@ -75,6 +77,8 @@ should provide information about all models for all existing resources.
    - \b network/model: specify the used network model
    - \b cpu/model: specify the used CPU model
    - \b workstation/model: specify the used workstation model
+   - \b storage/model: specify the used storage model (there is currently only one such model - this option is hence only useful for future releases)
+   - \b vm_workstation/model: specify the workstation model for virtual machines (there is currently only one such model - this option is hence only useful for future releases)
 
 %As of writing, the following network models are accepted. Over
 the time new models can be added, and some experimental models can be
@@ -137,6 +141,26 @@ when using SimDag.
     you change the network and CPU models
   - \b ptask_L07: Workstation model somehow similar to Cas01+CM02 but
     allowing parallel tasks
+
+\subsection options_generic_plugin Plugins
+
+SimGrid supports the use of plugins; currently, no known plugins
+can be activated but there are use-cases where you may want to write
+your own plugin (for instance, for logging).
+
+Plugins can for instance define own classes that inherit from
+existing classes (for instance, a class "CpuEnergy" inherits from
+"Cpu" to assess energy consumption).
+
+The plugin connects to the code by registering callbacks using
+``surf_callback_register`` (see file ``src/surf/plugins/energy.cpp`` for details).
+
+\verbatim
+    --cfg=plugin:Energy
+\endverbatim
+
+\note
+    This option is case-sensitive: Energy and energy are not the same!
 
 \subsection options_model_optim Optimization level of the platform models
 
@@ -678,6 +702,21 @@ Please, use these two parameters (for comments) to make reproducible
 simulations. For additional details about this and all tracing
 options, check See the \ref tracing_tracing_options.
 
+\section options_msg Configuring MSG
+
+\subsection options_msg_debug_multiple_use Debugging MSG
+
+Sometimes your application may try to send a task that is still being
+executed somewhere else, making it impossible to send this task. However,
+for debugging purposes, one may want to know what the other host is/was
+doing. This option shows a backtrace of the other process.
+
+Enable this option by adding
+
+\verbatim
+--cfg=msg/debug_multiple_use:on
+\endverbatim
+
 \section options_smpi Configuring SMPI
 
 The SMPI interface provides several specific configuration items.
@@ -1076,6 +1115,8 @@ silently overflow on other parts of the memory.
 - \c network/weight_S: \ref options_model_network_coefs
 
 - \c ns3/TcpModel: \ref options_pls
+- \c path: \ref options_generic_path
+- \c plugin: \ref options_generic_plugin
 
 - \c surf/nthreads: \ref options_model_nthreads
 - \c surf/precision: \ref options_model_precision
@@ -1103,24 +1144,13 @@ silently overflow on other parts of the memory.
 - \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.
 
 - \c storage/model: \ref options_storage_model
-- \c path: \ref options_generic_path
-- \c plugin: \ref options_generic_plugin
 - \c verbose-exit: \ref options_generic_exit
 
 - \c vm_workstation/model: \ref options_vm_workstation_model
 - \c workstation/model: \ref options_model_select
 
 \subsection options_index_smpi_coll Index of SMPI collective algorithms options
-- \c smpi/allgather: \ref options_model_smpi_coll_allgather
-- \c smpi/allgatherv: \ref options_model_smpi_coll_allgatherv
-- \c smpi/allreduce: \ref options_model_smpi_coll_allreduce
-- \c smpi/alltoall: \ref options_model_smpi_coll_alltoall
-- \c smpi/alltoallv: \ref options_model_smpi_coll_alltoallv
-- \c smpi/barrier: \ref options_model_smpi_coll_barrier
-- \c smpi/bcast: \ref options_model_smpi_coll_bcast
-- \c smpi/gather: \ref options_model_smpi_coll_gather
-- \c smpi/reduce: \ref options_model_smpi_coll_reduce
-- \c smpi/reduce_scatter: \ref options_model_smpi_coll_reduce_scatter
-- \c smpi/scatter: \ref options_model_smpi_coll_scatter
+
+TODO: All available collective algorithms will be made available via the ``smpirun --help-coll`` command.
 
 */
