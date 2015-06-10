@@ -354,7 +354,7 @@ static int run_lua_code(int argc, char **argv)
   /* retrieve result */
   int res = 1;
   if (lua_isnumber(L, -1)) {
-    res = lua_tonumber(L, -1);
+    res = lua_tointeger(L, -1);
     lua_pop(L, 1);              /* pop returned value */
   }
 

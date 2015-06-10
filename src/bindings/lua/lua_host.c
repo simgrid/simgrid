@@ -90,7 +90,7 @@ static int l_host_get_name(lua_State * L)
 static int l_host_number(lua_State * L)
 {
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
-  lua_pushnumber(L, xbt_dynar_length(hosts));
+  lua_pushinteger(L, xbt_dynar_length(hosts));
   xbt_dynar_free(&hosts);
   return 1;
 }
@@ -169,7 +169,7 @@ static int l_host_get_property_value(lua_State * L)
  */
 static int l_host_sleep(lua_State *L)
 {
-  int time = luaL_checknumber(L, 1);
+  int time = luaL_checkinteger(L, 1);
   MSG_process_sleep(time);
   return 0;
 }
