@@ -99,8 +99,8 @@ extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
 
 /* prototype of GNU functions  */
 #if (defined(__GNUC__) && !defined(__cplusplus))
-extern int asprintf(char **ptr, const char *fmt, /*args */ ...);
-extern int vasprintf(char **ptr, const char *fmt, va_list ap);
+XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt, /*args */ ...);
+XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
 
 extern int asnprintf(char **ptr, size_t str_m, const char *fmt, /*args */

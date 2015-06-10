@@ -51,6 +51,8 @@ double SIMIX_host_get_current_power_peak(smx_host_t host);
 double SIMIX_host_get_power_peak_at(smx_host_t host, int pstate_index);
 int SIMIX_host_get_nb_pstates(smx_host_t host);
 double SIMIX_host_get_consumed_energy(smx_host_t host);
+double SIMIX_host_get_wattmin_at(smx_host_t host,int pstate);
+double SIMIX_host_get_wattmax_at(smx_host_t host,int pstate);
 void SIMIX_host_set_pstate(smx_host_t host, int pstate_index);
 int SIMIX_host_get_pstate(smx_host_t host);
 smx_synchro_t SIMIX_host_execute(const char *name,

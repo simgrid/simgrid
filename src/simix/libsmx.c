@@ -224,6 +224,19 @@ double simcall_host_get_consumed_energy(smx_host_t host)
 {
   return simcall_BODY_host_get_consumed_energy(host);
 }
+/** \ingroup simix_host_management
+ * \brief Returns the amount of watt dissipated at the given pstate when the host is idling
+ */
+double simcall_host_get_wattmin_at(msg_host_t host, int pstate){
+	return simcall_BODY_host_get_wattmin_at(host, pstate);
+}
+/** \ingroup simix_host_management
+ * \brief Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100%
+ */
+double simcall_host_get_wattmax_at(msg_host_t host, int pstate){
+	return simcall_BODY_host_get_wattmax_at(host, pstate);
+}
+
 
 
 /**

@@ -80,6 +80,8 @@ SimGrid (3.12) NOT RELEASED; urgency=low
   * Improvement of the Energy plugin.
     - Always update the consumption before returning that value
     - New property: watt_off to denote the disipation when the host is off
+    - New functions getWattMinAt and getWattMaxAt to retrieve the
+      dissipation of pstates that we are not currently at.
  XBT
   * New functions
    - Add a xbt_heap_update function, to avoid costly xbt_heap_remove+xbt_heap_insert use 

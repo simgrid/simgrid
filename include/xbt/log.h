@@ -131,7 +131,7 @@ typedef enum {
  * XBT_LOG_NEW_CATEGORY */
 #define XBT_LOG_NEW_SUBCATEGORY_helper(catName, parent, desc)           \
   SG_BEGIN_DECL()                                                       \
-  XBT_PUBLIC(void) _XBT_LOGV_CTOR(catName)(void) _XBT_LOGV_CTOR_ATTRIBUTE; \
+  extern void _XBT_LOGV_CTOR(catName)(void) _XBT_LOGV_CTOR_ATTRIBUTE; \
   void _XBT_LOGV_CTOR(catName)(void)                                    \
   {                                                                     \
     XBT_LOG_EXTERNAL_CATEGORY(catName);                                 \
@@ -354,8 +354,16 @@ XBT_PUBLIC(int) _xbt_log_cat_init(xbt_log_category_t category,
                                   e_xbt_log_priority_t priority);
 
 
+#ifdef DLL_EXPORT
 XBT_PUBLIC_DATA(s_xbt_log_category_t) _XBT_LOGV(XBT_LOG_ROOT_CAT);
-
+#else
+// If we `dllexport` the root log category, MinGW does not want us to
+// take its address with the error:
+// > initializer element is not constant
+// When using auto-import, MinGW is happy.
+// We should handle this for non-root log categories as well.
+extern s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT);
+#endif
 
 extern xbt_log_appender_t xbt_log_default_appender;
 extern xbt_log_layout_t xbt_log_default_layout;

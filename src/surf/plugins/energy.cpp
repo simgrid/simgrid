@@ -168,6 +168,22 @@ CpuEnergy::~CpuEnergy(){
   xbt_dynar_free(&power_range_watts_list);
 }
 
+
+double CpuEnergy::getWattMinAt(int pstate) {
+  xbt_dynar_t power_range_list = power_range_watts_list;
+  xbt_assert(power_range_watts_list, "No power range properties specified for host %s", cpu->getName());
+  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01Ptr>(cpu)->getPState(), xbt_dynar_t);
+  double min_power = xbt_dynar_get_as(current_power_values, 0, double);
+  return min_power;
+}
+double CpuEnergy::getWattMaxAt(int pstate) {
+  xbt_dynar_t power_range_list = power_range_watts_list;
+  xbt_assert(power_range_watts_list, "No power range properties specified for host %s", cpu->getName());
+  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01Ptr>(cpu)->getPState(), xbt_dynar_t);
+  double max_power = xbt_dynar_get_as(current_power_values, 1, double);
+  return max_power;
+}
+
 /**
  * Computes the power consumed by the host according to the current pstate and processor load
  *
@@ -175,15 +191,7 @@ CpuEnergy::~CpuEnergy(){
 double CpuEnergy::getCurrentWattsValue(double cpu_load)
 {
 	xbt_dynar_t power_range_list = power_range_watts_list;
-
-	if (power_range_list == NULL)
-	{
-		XBT_DEBUG("No power range properties specified for host %s", cpu->getName());
-		return 0;
-	}
-	/*xbt_assert(xbt_dynar_length(power_range_list) == xbt_dynar_length(cpu->p_powerPeakList),
-						"The number of power ranges in the properties does not match the number of pstates for host %s",
-						cpu->getName());*/
+	xbt_assert(power_range_watts_list, "No power range properties specified for host %s", cpu->getName());
 
     /* retrieve the power values associated with the current pstate */
     xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01Ptr>(cpu)->getPState(), xbt_dynar_t);

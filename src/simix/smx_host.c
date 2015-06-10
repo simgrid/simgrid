@@ -245,6 +245,12 @@ double SIMIX_host_get_consumed_energy(smx_host_t host) {
 	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 	  return surf_workstation_get_consumed_energy(host);
 }
+double SIMIX_host_get_wattmin_at(smx_host_t host,int pstate) {
+	  return surf_workstation_get_wattmin_at(host,pstate);
+}
+double SIMIX_host_get_wattmax_at(smx_host_t host,int pstate) {
+	  return surf_workstation_get_wattmax_at(host,pstate);
+}
 
 int SIMIX_host_get_state(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");

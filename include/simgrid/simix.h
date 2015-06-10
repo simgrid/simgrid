@@ -322,6 +322,8 @@ XBT_PUBLIC(int) simcall_host_get_nb_pstates(smx_host_t host);
 XBT_PUBLIC(void) simcall_host_set_pstate(smx_host_t host, int pstate_index);
 XBT_PUBLIC(int) simcall_host_get_pstate(smx_host_t host);
 XBT_PUBLIC(double) simcall_host_get_consumed_energy(smx_host_t host);
+XBT_PUBLIC(double) simcall_host_get_wattmin_at(smx_host_t host, int pstate);
+XBT_PUBLIC(double) simcall_host_get_wattmax_at(smx_host_t host, int pstate);
 
 XBT_PUBLIC(smx_synchro_t) simcall_host_execute(const char *name, smx_host_t host,
                                                 double flops_amount,
