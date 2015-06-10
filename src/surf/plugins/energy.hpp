@@ -22,6 +22,8 @@ public:
 
   double getCurrentWattsValue(double cpu_load);
   double getConsumedEnergy();
+  double getWattMinAt(int pstate);
+  double getWattMaxAt(int pstate);
 
   xbt_dynar_t getWattsRangeList();
   xbt_dynar_t power_range_watts_list;   /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */

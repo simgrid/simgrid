@@ -425,6 +425,26 @@ double MSG_host_get_consumed_energy(msg_host_t host) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
 	  return simcall_host_get_consumed_energy(host);
 }
+/** \ingroup m_host_management
+ * \brief Returns the amount of watt dissipated at the given pstate when the host is idling
+ *
+ */
+double MSG_host_get_wattmin_at(msg_host_t host, int pstate){
+	return simcall_host_get_wattmin_at(host, pstate);
+}
+/** \ingroup m_host_management
+ * \brief Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100%
+ *
+ */
+double MSG_host_get_wattmax_at(msg_host_t host, int pstate){
+	return simcall_host_get_wattmax_at(host, pstate);
+}
+/** \ingroup m_host_management
+ * \brief Set the parameters of a given host
+ *
+ * \param host a host
+ * \param params a prameter object
+ */
 
 /** \ingroup m_host_management
  * \brief Return the list of mount point names on an host.

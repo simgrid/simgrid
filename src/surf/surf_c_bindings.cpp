@@ -362,9 +362,19 @@ void surf_workstation_set_pstate(surf_resource_t resource, int pstate_index){
 int surf_workstation_get_pstate(surf_resource_t resource){
   return get_casted_workstation(resource)->getPstate();
 }
+double surf_workstation_get_wattmin_at(surf_resource_t resource, int pstate){
+  xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_workstation(resource)->p_cpu);
+  return cpuIt->second->getWattMinAt(pstate);
+}
+double surf_workstation_get_wattmax_at(surf_resource_t resource, int pstate){
+  xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
+  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_workstation(resource)->p_cpu);
+  return cpuIt->second->getWattMaxAt(pstate);
+}
 
 double surf_workstation_get_consumed_energy(surf_resource_t resource){
-  xbt_assert(surf_energy!=NULL, "The Energy plugin is not active.");
+  xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
   std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_workstation(resource)->p_cpu);
   return cpuIt->second->getConsumedEnergy();
 }

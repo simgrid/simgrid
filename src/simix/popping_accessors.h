@@ -177,6 +177,44 @@ static inline void simcall_host_get_nb_pstates__set__result(smx_simcall_t simcal
     simcall->result.i = result;
 }
 
+static inline smx_host_t simcall_host_get_wattmin_at__get__host(smx_simcall_t simcall) {
+  return (smx_host_t) simcall->args[0].dp;
+}
+static inline void simcall_host_get_wattmin_at__set__host(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline int simcall_host_get_wattmin_at__get__pstate_index(smx_simcall_t simcall) {
+  return  simcall->args[1].i;
+}
+static inline void simcall_host_get_wattmin_at__set__pstate_index(smx_simcall_t simcall, int arg) {
+    simcall->args[1].i = arg;
+}
+static inline double simcall_host_get_wattmin_at__get__result(smx_simcall_t simcall){
+    return  simcall->result.d;
+}
+static inline void simcall_host_get_wattmin_at__set__result(smx_simcall_t simcall, double result){
+    simcall->result.d = result;
+}
+
+static inline smx_host_t simcall_host_get_wattmax_at__get__host(smx_simcall_t simcall) {
+  return (smx_host_t) simcall->args[0].dp;
+}
+static inline void simcall_host_get_wattmax_at__set__host(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline int simcall_host_get_wattmax_at__get__pstate_index(smx_simcall_t simcall) {
+  return  simcall->args[1].i;
+}
+static inline void simcall_host_get_wattmax_at__set__pstate_index(smx_simcall_t simcall, int arg) {
+    simcall->args[1].i = arg;
+}
+static inline double simcall_host_get_wattmax_at__get__result(smx_simcall_t simcall){
+    return  simcall->result.d;
+}
+static inline void simcall_host_get_wattmax_at__set__result(smx_simcall_t simcall, double result){
+    simcall->result.d = result;
+}
+
 static inline smx_host_t simcall_host_set_pstate__get__host(smx_simcall_t simcall) {
   return (smx_host_t) simcall->args[0].dp;
 }

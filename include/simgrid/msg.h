@@ -322,6 +322,9 @@ XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
+XBT_PUBLIC(double) MSG_host_get_wattmin_at(msg_host_t host, int pstate);
+XBT_PUBLIC(double) MSG_host_get_wattmax_at(msg_host_t host, int pstate);
+
 XBT_PUBLIC(void) __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
 
