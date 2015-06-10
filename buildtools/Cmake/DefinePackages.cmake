@@ -509,8 +509,8 @@ set(JMSG_C_SRC
 )
 
 set(JSURF_C_SRC
-  src/bindings/java/surfJAVA_wrap.cxx
-  src/bindings/java/surfJAVA_wrap.h
+  src/bindings/java/org/simgrid/surf/surfJAVA_wrap.cxx
+  src/bindings/java/org/simgrid/surf/surfJAVA_wrap.h
   ${JSURF_JAVA_C_SRC}
 )
 

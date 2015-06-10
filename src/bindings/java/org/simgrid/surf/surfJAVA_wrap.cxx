@@ -412,7 +412,7 @@ namespace Swig {
 namespace Swig {
   namespace {
     jclass jclass_SurfJNI = NULL;
-    jmethodID director_methids[33];
+    jmethodID director_methids[34];
   }
 }
 
@@ -1918,14 +1918,14 @@ int SwigDirector_Cpu::getNbPstates() {
   return c_result;
 }
 
-void SwigDirector_Cpu::setPowerPeakAt(int pstate_index) {
+void SwigDirector_Cpu::setPstate(int pstate_index) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
   jint jpstate_index  ;
   
   if (!swig_override[11]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::setPowerPeakAt.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::setPstate.");
     return;
   }
   swigjobj = swig_get_self(jenv);
@@ -1937,6 +1937,29 @@ void SwigDirector_Cpu::setPowerPeakAt(int pstate_index) {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
   }
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
+}
+
+int SwigDirector_Cpu::getPstate() {
+  int c_result = SwigValueInit< int >() ;
+  jint jresult = 0 ;
+  JNIEnvWrapper swigjnienv(this) ;
+  JNIEnv * jenv = swigjnienv.getJNIEnv() ;
+  jobject swigjobj = (jobject) NULL ;
+  
+  if (!swig_override[12]) {
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::getPstate.");
+    return c_result;
+  }
+  swigjobj = swig_get_self(jenv);
+  if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
+    jresult = (jint) jenv->CallStaticIntMethod(Swig::jclass_SurfJNI, Swig::director_methids[30], swigjobj);
+    if (jenv->ExceptionCheck() == JNI_TRUE) return c_result;
+    c_result = (int)jresult; 
+  } else {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
+  }
+  if (swigjobj) jenv->DeleteLocalRef(swigjobj);
+  return c_result;
 }
 
 void SwigDirector_Cpu::swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global) {
@@ -1979,7 +2002,10 @@ void SwigDirector_Cpu::swig_connect_director(JNIEnv *jenv, jobject jself, jclass
       "getNbPstates", "()I", NULL 
     },
     {
-      "setPowerPeakAt", "(I)V", NULL 
+      "setPstate", "(I)V", NULL 
+    },
+    {
+      "getPstate", "()I", NULL 
     }
   };
   
@@ -1992,7 +2018,7 @@ void SwigDirector_Cpu::swig_connect_director(JNIEnv *jenv, jobject jself, jclass
       baseclass = (jclass) jenv->NewGlobalRef(baseclass);
     }
     bool derived = (jenv->IsSameObject(baseclass, jcls) ? false : true);
-    for (int i = 0; i < 12; ++i) {
+    for (int i = 0; i < 13; ++i) {
       if (!methods[i].base_methid) {
         methods[i].base_methid = jenv->GetMethodID(baseclass, methods[i].mname, methods[i].mdesc);
         if (!methods[i].base_methid) return;
@@ -2028,7 +2054,7 @@ double SwigDirector_CpuAction::getRemains() {
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    jresult = (jdouble) jenv->CallStaticDoubleMethod(Swig::jclass_SurfJNI, Swig::director_methids[30], swigjobj);
+    jresult = (jdouble) jenv->CallStaticDoubleMethod(Swig::jclass_SurfJNI, Swig::director_methids[31], swigjobj);
     if (jenv->ExceptionCheck() == JNI_TRUE) return c_result;
     c_result = (double)jresult; 
   } else {
@@ -2051,7 +2077,7 @@ void SwigDirector_CpuAction::setPriority(double priority) {
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
     jpriority = (jdouble) priority;
-    jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[31], swigjobj, jpriority);
+    jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[32], swigjobj, jpriority);
     if (jenv->ExceptionCheck() == JNI_TRUE) return ;
   } else {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
@@ -2072,7 +2098,7 @@ void SwigDirector_CpuAction::setState(e_surf_action_state_t state) {
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
     jstate = (jint) state;
-    jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[32], swigjobj, jstate);
+    jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[33], swigjobj, jstate);
     if (jenv->ExceptionCheck() == JNI_TRUE) return ;
   } else {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
@@ -3443,7 +3469,7 @@ SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getNbPstates(JNIEnv *
 }
 
 
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1setPowerPeakAt(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1setPstate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   Cpu *arg1 = (Cpu *) 0 ;
   int arg2 ;
   
@@ -3452,7 +3478,22 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1setPowerPeakAt(JNIEnv
   (void)jarg1_;
   arg1 = *(Cpu **)&jarg1; 
   arg2 = (int)jarg2; 
-  (arg1)->setPowerPeakAt(arg2);
+  (arg1)->setPstate(arg2);
+}
+
+
+SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getPstate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  Cpu *arg1 = (Cpu *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(Cpu **)&jarg1; 
+  result = (int)(arg1)->getPstate();
+  jresult = (jint)result; 
+  return jresult;
 }
 
 
@@ -4070,7 +4111,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_swig_1module_1init(JNIEnv 
   static struct {
     const char *method;
     const char *signature;
-  } methods[33] = {
+  } methods[34] = {
     {
       "SwigDirector_Plugin_cpuCreatedCallback", "(Lorg/simgrid/surf/Plugin;J)V" 
     },
@@ -4159,7 +4200,10 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_swig_1module_1init(JNIEnv 
       "SwigDirector_Cpu_getNbPstates", "(Lorg/simgrid/surf/Cpu;)I" 
     },
     {
-      "SwigDirector_Cpu_setPowerPeakAt", "(Lorg/simgrid/surf/Cpu;I)V" 
+      "SwigDirector_Cpu_setPstate", "(Lorg/simgrid/surf/Cpu;I)V" 
+    },
+    {
+      "SwigDirector_Cpu_getPstate", "(Lorg/simgrid/surf/Cpu;)I" 
     },
     {
       "SwigDirector_CpuAction_getRemains", "(Lorg/simgrid/surf/CpuAction;)D" 

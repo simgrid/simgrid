@@ -1048,8 +1048,6 @@ examples/java/surfPlugin/java_surf_plugin_compiled
 /CMakeCache.txt
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf_expression/dwarf-expression
-src/bindings/java/org/simgrid/surf/surfJAVA_wrap.cxx
-src/bindings/java/org/simgrid/surf/surfJAVA_wrap.h
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
 examples/smpi/mc/smpi_bugged2

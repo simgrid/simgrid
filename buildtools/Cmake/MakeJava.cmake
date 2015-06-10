@@ -125,10 +125,12 @@ if(enable_maintainer_mode)
 
   swig_add_module(surf-java java ${JSURF_SWIG_SRC} ${JSURF_JAVA_C_SRC})
 
-  add_custom_command(TARGET surf-java POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/src/bindings/java/surfJAVA_wrap.cxx" "${CMAKE_HOME_DIRECTORY}/src/bindings/java/surfJAVA_wrap.cxx"
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/src/bindings/java/surfJAVA_wrap.h" "${CMAKE_HOME_DIRECTORY}/src/bindings/java/surfJAVA_wrap.h"
-  )
+  if(NOT "${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+    add_custom_command(TARGET surf-java POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/surfJAVA_wrap.cxx" "${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/surf/surfJAVA_wrap.cxx"
+      COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/src/bindings/java/org/simgrid/surf/surfJAVA_wrap.h" "${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/surf/surfJAVA_wrap.h"
+    )
+  endif()
 
   swig_link_libraries(surf-java simgrid)
 else()
