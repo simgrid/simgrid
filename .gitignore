@@ -96,6 +96,7 @@ doc/realtoc.sh
 doc/tmp.realtoc
 doc/using_bib.html
 doc/Doxyfile
+doc/doxygen_sqlite3.db
 doc/footer.html
 *.doc.toc
 doc/latex/
@@ -105,6 +106,7 @@ doc/simgrid.tag
 doc/doxygen/logcategories.doc
 doc/index-API.doc
 doc/simgrid_modules.map
+doc/javadoc
 ### Specific of project 
 .settings/
 .csettings/
