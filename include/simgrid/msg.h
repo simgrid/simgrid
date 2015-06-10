@@ -33,7 +33,7 @@ typedef struct As *msg_as_t;
 
 /* ******************************** Host ************************************ */
 
-extern int MSG_HOST_LEVEL;
+XBT_PUBLIC_DATA(int) MSG_HOST_LEVEL;
 
 /** @brief Host datatype.
     @ingroup m_host_management

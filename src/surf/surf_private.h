@@ -20,7 +20,7 @@
 
 SG_BEGIN_DECL()
 
-extern xbt_dict_t watched_hosts_lib;
+XBT_PUBLIC_DATA(xbt_dict_t) watched_hosts_lib;
 
 extern const char *surf_action_state_names[6];
 

@@ -10,7 +10,7 @@
 #ifndef NETWORK_ROUTING_HPP_
 #define NETWORK_ROUTING_HPP_
 
-void routing_model_create( void *loopback);
+XBT_PUBLIC(void) routing_model_create( void *loopback);
 
 /* ************************************************************************** */
 /* ************************* GRAPH EXPORTING FUNCTIONS ********************** */

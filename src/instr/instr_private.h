@@ -310,7 +310,7 @@ void TRACE_surf_link_set_utilization(const char *resource,
                                      double value,
                                      double now,
                                      double delta);
-void TRACE_surf_resource_utilization_alloc(void);
+XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc(void);
 
 /* instr_paje.c */
 extern xbt_dict_t trivaNodeTypes;

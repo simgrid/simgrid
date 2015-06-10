@@ -10,7 +10,7 @@
 SG_BEGIN_DECL()
 
 /********************************* Simcalls *********************************/
-XBT_PUBLIC(const char*) simcall_names[]; /* Name of each simcall */
+XBT_PUBLIC_DATA(const char*) simcall_names[]; /* Name of each simcall */
 
 #include "popping_enum.h" /* Definition of e_smx_simcall_t, with one value per simcall */
 #include "mc/mc_forward.h" /* Definition of mc_snapshot_t, used by one simcall */
