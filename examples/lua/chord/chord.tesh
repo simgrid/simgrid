@@ -1076,9 +1076,9 @@ $ lua chord.lua ../../platforms/platform.xml ../../msg/chord/chord.xml
 > [iRMX:node:(3) 1000.897985] [lua/INFO] Leaving the ring
 > [McGee:node:(2) 1001.335646] [lua/INFO] Received another request of type get predecessor
 > [Jean_Yves:node:(6) 1003.128801] [lua/INFO] Leaving the ring
+> [McGee:node:(2) 1003.128801] [lua/INFO] Failed to receive the answer to my 'find successor' request
+> [McGee:node:(2) 1003.128801] [lua/INFO] Leaving the ring
 > [TeX:node:(5) 1004.090491] [lua/INFO] Leaving the ring
-> [McGee:node:(2) 1004.090491] [lua/INFO] Failed to receive the answer to my 'find successor' request
-> [McGee:node:(2) 1004.090491] [lua/INFO] Leaving the ring
 > [Geoff:node:(4) 1044.580654] [lua/INFO] Failed to send the 'find successor' request to 38 for id 1337
 > [Geoff:node:(4) 1044.580654] [lua/INFO] Leaving the ring
 > [Gatien:node:(1) 1045.273210] [lua/INFO] Failed to send the 'find successor' request to 32 for id 1337
