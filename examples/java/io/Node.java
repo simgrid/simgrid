@@ -14,10 +14,10 @@ import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
 
 public class Node extends Process {
-	private static String FILENAME1 = "/home/user/Install/simgrid/doc/simgrid/examples/platforms/g5k.xml";
-	private static String FILENAME2 = "/home/user/Install/simgrid/doc/simgrid/examples/platforms/One_cluster_no_backbone.xml";
-	private static String FILENAME3 = "/home/user/Install/simgrid/doc/simgrid/examples/platforms/g5k_cabinets.xml";
-	private static String FILENAME4 = "/home/user/Install/simgrid/doc/simgrid/examples/platforms/nancy.xml";
+	private static String FILENAME1 = "/doc/simgrid/examples/platforms/g5k.xml";
+	private static String FILENAME2 = "\\Windows\\setupact.log";
+	private static String FILENAME3 = "/doc/simgrid/examples/platforms/g5k_cabinets.xml";
+	private static String FILENAME4 = "/doc/simgrid/examples/platforms/nancy.xml";
 			
 	protected int number;
 		
@@ -26,22 +26,27 @@ public class Node extends Process {
 		this.number = number;
 	}	
 	public void main(String[] args) throws MsgException {
-		String mount = "c:";
+		String mount = "";
 		String filename;
 		switch (number) {
 			case 0:
+                mount = "/home";
 				filename = mount + FILENAME1;
 			break;
 			case 1:
+                mount = "c:";
 				filename = mount + FILENAME2;
 			break;
 			case 2:
+                mount = "/home";
 				filename = mount + FILENAME3;
 			break;
 			case 3:
+                mount = "/home";
 				filename = mount + FILENAME4;
 			break;
 			default:
+                mount = "/home";
 				filename = mount + FILENAME1;
 		}
 		Msg.info("Open file " + filename);
