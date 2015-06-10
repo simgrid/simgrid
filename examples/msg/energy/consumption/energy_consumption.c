@@ -45,9 +45,11 @@ int dvfs(int argc, char *argv[])
   task1 = MSG_task_create ("t1", 100E6, 0, NULL);
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
-  XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
+  XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW depending on load; Energy dissipated=%.0f J",
 		  MSG_get_clock()-start,
-		  MSG_host_get_current_power_peak(host), MSG_host_get_consumed_energy(host));
+	          MSG_host_get_current_power_peak(host), MSG_host_get_wattmin_at(host,MSG_host_get_pstate(host)),
+	          MSG_host_get_wattmax_at(host,MSG_host_get_pstate(host)),
+		  MSG_host_get_consumed_energy(host));
 
   // ========= Change power peak =========
   int pstate=2;
