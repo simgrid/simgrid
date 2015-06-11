@@ -177,31 +177,19 @@ const char* SIMIX_host_self_get_name(void)
   return SIMIX_host_get_name(host);
 }
 
-const char* SIMIX_host_get_name(smx_host_t host){
-  xbt_assert((host != NULL), "Invalid parameters");
-
-  return sg_host_name(host);
-}
-
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host){
-  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
   return surf_resource_get_properties(surf_workstation_resource_priv(host));
 }
 
 double SIMIX_host_get_speed(smx_host_t host){
-  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
   return surf_workstation_get_speed(host, 1.0);
 }
 
 int SIMIX_host_get_core(smx_host_t host){
-  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
   return surf_workstation_get_core(host);
 }
 
 xbt_swag_t SIMIX_host_get_process_list(smx_host_t host){
-  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
   smx_host_priv_t host_priv = SIMIX_host_priv(host);
 
   return host_priv->process_list;
@@ -209,32 +197,23 @@ xbt_swag_t SIMIX_host_get_process_list(smx_host_t host){
 
 
 double SIMIX_host_get_available_speed(smx_host_t host){
-  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
   return surf_workstation_get_available_speed(host);
 }
 
 double SIMIX_host_get_current_power_peak(smx_host_t host) {
-	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 	  return surf_workstation_get_current_power_peak(host);
 }
 
 double SIMIX_host_get_power_peak_at(smx_host_t host, int pstate_index) {
-	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
 	  return surf_workstation_get_power_peak_at(host, pstate_index);
 }
 
 int SIMIX_host_get_nb_pstates(smx_host_t host) {
-	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
 	  return surf_workstation_get_nb_pstates(host);
 }
 
 
 void SIMIX_host_set_pstate(smx_host_t host, int pstate_index) {
-	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
 	  surf_workstation_set_pstate(host, pstate_index);
 }
 int SIMIX_host_get_pstate(smx_host_t host) {
@@ -242,7 +221,6 @@ int SIMIX_host_get_pstate(smx_host_t host) {
 }
 
 double SIMIX_host_get_consumed_energy(smx_host_t host) {
-	  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 	  return surf_workstation_get_consumed_energy(host);
 }
 double SIMIX_host_get_wattmin_at(smx_host_t host,int pstate) {
@@ -253,8 +231,6 @@ double SIMIX_host_get_wattmax_at(smx_host_t host,int pstate) {
 }
 
 int SIMIX_host_get_state(smx_host_t host){
-  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
   return surf_resource_get_state(surf_workstation_resource_priv(host));
 }
 

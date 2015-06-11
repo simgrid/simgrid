@@ -264,7 +264,7 @@ XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
 XBT_PUBLIC(smx_host_t) SIMIX_host_get_by_name(const char *name);
 XBT_PUBLIC(smx_host_t) SIMIX_host_self(void);
 XBT_PUBLIC(const char*) SIMIX_host_self_get_name(void);
-XBT_PUBLIC(const char*) SIMIX_host_get_name(smx_host_t host); /* FIXME: make private: only the name of SIMIX_host_self() should be public without request */
+#define SIMIX_host_get_name(h) sg_host_name(h)  /* DEPRECATED: SIMIX_host_get_name */
 XBT_PUBLIC(void) SIMIX_host_on(smx_host_t host);
 XBT_PUBLIC(void) SIMIX_host_off(smx_host_t host, smx_process_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);

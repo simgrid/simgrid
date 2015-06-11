@@ -137,7 +137,7 @@ public:
 class Workstation : public Resource {
 public:
   /**
-   * @brief Workstation consrtuctor
+   * @brief Workstation constructor
    */
   Workstation();
 
