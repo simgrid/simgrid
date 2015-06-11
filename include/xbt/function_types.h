@@ -9,7 +9,7 @@
 #ifndef XBT_FUNCTION_TYPE_H
 #define XBT_FUNCTION_TYPE_H
 
-#include "xbt/misc.h"
+#include "xbt/base.h"
 
 SG_BEGIN_DECL()
 

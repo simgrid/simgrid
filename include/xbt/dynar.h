@@ -11,7 +11,7 @@
 
 #include <string.h>             /* memcpy */
 
-#include "xbt/misc.h"           /* SG_BEGIN_DECL */
+#include "xbt/base.h"           /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"
 
 SG_BEGIN_DECL()
