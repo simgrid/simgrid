@@ -36,15 +36,22 @@ public final class NativeLib {
 	}
 	public static void nativeInit(String name) {
 		try {
-			/* prefer the version on disk, if existing */
-			System.loadLibrary(name);
-		} catch (UnsatisfiedLinkError e) {
-			/* If not found, unpack the one bundled into the jar file and use it */
+			/* Prefer the version of the library bundled into the jar file and use it */
 			loadLib(name);
+		} catch (SimGridLibNotFoundException e) {
+			/* If not found, try to see if we can find a version on disk */
+			try {
+				System.loadLibrary(name);
+			} catch (UnsatisfiedLinkError e2) {
+				System.err.println("Cannot load the bindings to the "+name+" library in path "+getPath());
+				e.printStackTrace();
+				System.err.println("This jar file does not seem to fit your system, and I cannot find an installation of SimGrid.");
+				System.exit(1);
+			}
 		}
 	}
 
-	private static void loadLib (String name) {
+	private static void loadLib (String name) throws SimGridLibNotFoundException {
 		String Path = NativeLib.getPath();
 
 		String filename=name;
@@ -67,7 +74,7 @@ public final class NativeLib {
 			in =  NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
 		}  
 		if (in == null) {
-			throw new RuntimeException("Cannot find library "+name+" in path "+Path+". Sorry, but this jar does not seem to be usable on your machine.");
+			throw new SimGridLibNotFoundException("Cannot find library "+name+" in path "+Path+". Sorry, but this jar does not seem to be usable on your machine.");
 		}
 		try {
 			// We must write the lib onto the disk before loading it -- stupid operating systems
@@ -89,10 +96,7 @@ public final class NativeLib {
 			System.load(fileOut.getAbsolutePath());
 
 		} catch (Exception e) {
-			System.err.println("Cannot load the bindings to the "+name+" library in path "+getPath());
-			e.printStackTrace();
-			System.err.println("This jar file does not seem to fit your system, sorry");
-			System.exit(1);
+			throw new SimGridLibNotFoundException("Cannot load the bindings to the "+name+" library in path "+getPath(),   e);
 		}
 	}
 
@@ -119,5 +123,16 @@ public final class NativeLib {
 			System.out.println(getPath());
 		else 
 			System.out.println("This java library will try to load the native code under the following name:\n" +getPath());
+	}
+}
+
+class SimGridLibNotFoundException extends Exception {
+	private static final long serialVersionUID = 1L;
+	public SimGridLibNotFoundException(String msg) {
+		super(msg);
+	}
+
+	public SimGridLibNotFoundException(String msg, Exception e) {
+		super(msg,e);
 	}
 }
