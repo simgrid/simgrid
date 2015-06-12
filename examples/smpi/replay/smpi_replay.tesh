@@ -167,21 +167,21 @@ $ tail -n +3 ./simgrid.trace
 > 6 0 1 1 0 "rank-0"
 > 5 4 2 computing "0 1 1"
 > 5 5 2 smpi_replay_init "0 1 0"
-> 5 6 2 action_bcast "0 0.78 0.39"
 > 6 0 2 1 0 "rank-1"
 > 6 0 3 1 0 "rank-2"
 > 12 0 2 1 4
 > 12 0 2 1 5
 > 13 0 2 1
-> 12 0 2 1 6
 > 12 0 2 2 4
 > 12 0 2 2 5
 > 13 0 2 2
-> 12 0 2 2 6
 > 12 0 2 3 4
 > 12 0 2 3 5
 > 13 0 2 3
+> 5 6 2 action_bcast "0 0.78 0.39"
+> 12 0 2 1 6
 > 12 0 2 3 6
+> 12 0 2 2 6
 > 13 0 2 1
 > 12 0 2 1 4
 > 13 0.015036 2 2
@@ -339,9 +339,9 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
 > [0.000000] [surf_config/INFO] Switching workstation model to compound since you changed the network and/or cpu model(s)
 > [Tremblay:0:(0) 0.004041] [smpi_replay/VERBOSE] 0 allToAll 500 500 0.004041
-> [Jupiter:1:(0) 0.006920] [smpi_replay/VERBOSE] 1 allToAll 500 500 0.006920
 > [Fafard:2:(0) 0.006920] [smpi_replay/VERBOSE] 2 allToAll 500 500 0.006920
-> [Fafard:2:(0) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
+> [Jupiter:1:(0) 0.006920] [smpi_replay/VERBOSE] 1 allToAll 500 500 0.006920
+> [Jupiter:1:(0) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
 
 $ rm -f replay/one_trace
 
