@@ -1085,7 +1085,7 @@ void smpi_replay_init(int *argc, char***argv){
     smpi_execute_flops(value);
   } else {
     //UGLY done to force context switch to be sure that all MSG_processes begin initialization
-    XBT_VERB("Force context switch by smpi_execute_flops  - Sleeping for 0.0 flops ");
+    XBT_DEBUG("Force context switch by smpi_execute_flops  - Sleeping for 0.0 flops ");
     smpi_execute_flops(0.0);
   }
   
