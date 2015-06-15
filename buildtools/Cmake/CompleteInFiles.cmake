@@ -451,11 +451,7 @@ if(WIN32)
   endif()
 endif()
 
-IF(CMAKE_CROSSCOMPILING)
-  IF(WIN32)
-    set(IS_WINDOWS 1)
-  ENDIF()
-ELSE()
+IF(NOT CMAKE_CROSSCOMPILING)
   file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
   set(MCSC_buildcmd ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog)
@@ -488,14 +484,6 @@ ELSE()
 
   message(STATUS "mcsc: ${mcsc}")
 ENDIF()
-
-if(mcsc MATCHES "no" AND pthread)
-  if(HAVE_WINDOWS_H)
-    set(IS_WINDOWS 1)
-  elseif(HAVE_WINDOWS_H)
-    message(FATAL_ERROR "no appropriate backend found")
-  endif()
-endif()
 
 #Only windows
 
