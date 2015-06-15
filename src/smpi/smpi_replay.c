@@ -167,7 +167,6 @@ const char* encode_datatype(MPI_Datatype datatype, int* known)
 
 static void action_init(const char *const *action)
 {
-  int i;
   XBT_DEBUG("Initialize the counters");
   CHECK_ACTION_PARAMS(action, 0, 1);
   if(action[2]) MPI_DEFAULT_TYPE= MPI_DOUBLE; // default MPE dataype 
