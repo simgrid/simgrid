@@ -15,11 +15,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
 /** @addtogroup m_process_management
  * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Processes" --> \endhtmlonly
  *
- *  We need to simulate many independent scheduling decisions, so
- *  the concept of <em>process</em> is at the heart of the
- *  simulator. A process may be defined as a <em>code</em>, with
- *  some <em>private data</em>, executing in a <em>location</em>.
- *  \see msg_process_t
+ *  Processes (#msg_process_t) are independent agents that can do stuff on their own. They are in charge of executing your code interacting with the simulated world.
+ *  A process may be defined as a <em>code</em> with some <em>private data</em>.
+ *  Processes must be located on <em>hosts</em> (#msg_host_t), and they exchange data by sending tasks (#msg_task_t) that are similar to envelops containing data.
  */
 
 /******************************** Process ************************************/
