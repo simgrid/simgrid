@@ -1,30 +1,42 @@
 #!/bin/sh
-if [ -d $WORKSPACE/build ]
-then
-  rm -rf $WORKSPACE/build
-fi
-if [ -d $WORKSPACE/install ]
-then
-  rm -rf $WORKSPACE/install
-fi
-mkdir $WORKSPACE/build
-mkdir $WORKSPACE/install
 
-if [ -d $WORKSPACE/memcheck ]
-then
-  rm -rf $WORKSPACE/memcheck
-fi
-mkdir $WORKSPACE/memcheck
+set -e
+
+die() {
+    echo "$@"
+    exit 1
+}
+
+do_cleanup() {
+  for d in "$WORKSPACE/build" "$WORKSPACE/install" "$WORKSPACE/memcheck"
+  do
+    if [ -d "$d" ]
+    then
+      rm -rf "$d" || die "Could not remote $d"
+    fi
+  done
+  find $WORKSPACE -name "memcheck_test_*.memcheck" -exec rm {} \;
+}
+
+! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
+[ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
+
+do_cleanup
+
+for d in "$WORKSPACE/build" "$WORKSPACE/install" "$WORKSPACE/memcheck"
+do
+  mkdir "$d" || die "Could not create $d"
+done
 
 cd $WORKSPACE/build
 
 cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON -Denable_smpi=ON  -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck_xml=ON $WORKSPACE
 make
 
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalMemCheck
+ctest -D ExperimentalStart || true
+ctest -D ExperimentalConfigure || true
+ctest -D ExperimentalBuild || true
+ctest -D ExperimentalMemCheck || true
 
 cd $WORKSPACE/build
 if [ -f Testing/TAG ] ; then
@@ -37,11 +49,11 @@ make clean
 cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_coverage=ON $WORKSPACE
 
 make
-ctest -D ExperimentalStart
-ctest -D ExperimentalConfigure
-ctest -D ExperimentalBuild
-ctest -D ExperimentalTest
-ctest -D ExperimentalCoverage
+ctest -D ExperimentalStart || true
+ctest -D ExperimentalConfigure || true
+ctest -D ExperimentalBuild || true
+ctest -D ExperimentalTest || true
+ctest -D ExperimentalCoverage || true
 
 if [ -f Testing/TAG ] ; then
    /usr/local/gcovr-3.1/scripts/gcovr -r .. --xml-pretty -o $WORKSPACE/xml_coverage.xml
@@ -49,3 +61,4 @@ if [ -f Testing/TAG ] ; then
    mv CTestResults_memcheck.xml $WORKSPACE
 fi
 
+do_cleanup
