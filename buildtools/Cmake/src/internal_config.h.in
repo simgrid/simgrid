@@ -285,9 +285,6 @@
 /* "enable replacement (v)snprintf if system (v)snprintf is broken" */
 #cmakedefine PREFER_PORTABLE_SNPRINTF @PREFER_PORTABLE_SNPRINTF@
 
-/* Indicates whether printf("%s",NULL) works */
-#cmakedefine PRINTF_NULL_WORKING @PRINTF_NULL_WORKING@
-
 /* define for stack growth */
 #cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@
 

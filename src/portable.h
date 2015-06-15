@@ -109,17 +109,6 @@ extern int vasnprintf(char **ptr, size_t str_m, const char *fmt,
                       va_list ap);
 
 /*
- * That's needed to protect solaris's printf from ever seing NULL associated to a %s format
- * (without adding an extra check on working platforms :)
- */
-
-#ifdef PRINTF_NULL_WORKING
-#  define PRINTF_STR(a) (a)
-#else
-#  define PRINTF_STR(a) (a)?:"(null)"
-#endif
-
-/*
  * What we need to extract the backtrace in exception handling code
  */
 #ifdef HAVE_EXECINFO_H

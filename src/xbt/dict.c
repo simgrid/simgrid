@@ -678,6 +678,8 @@ void xbt_dict_postexit(void)
 #include "xbt/ex.h"
 #include "portable.h"
 
+#define PRINTF_STR(a) (a)?:"(null)"
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 
 XBT_TEST_SUITE("dict", "Dict data container");

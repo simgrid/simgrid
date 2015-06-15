@@ -661,23 +661,6 @@ endif()
 
 #AC_PROG_MAKE_SET
 
-if(CMAKE_CROSSCOMPILING)
-  set(RUN_PRINTF_NULL_VAR "cross")
-  set(COMPILE_PRINTF_NULL_VAR "cross")
-else()
-  #AC_PRINTF_NULL FIXME: this is too ancient to survive!
-  try_run(RUN_PRINTF_NULL_VAR COMPILE_PRINTF_NULL_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_printf_null.c
-    )
-endif()
-
-if(RUN_PRINTF_NULL_VAR MATCHES "FAILED_TO_RUN")
-  SET(PRINTF_NULL_WORKING "0")
-else()
-  SET(PRINTF_NULL_WORKING "1")
-endif()
-
 #AC_CHECK_VA_COPY
 
 set(diff_va "va_copy((d),(s))"
