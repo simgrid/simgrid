@@ -453,7 +453,6 @@ endif()
 
 IF(CMAKE_CROSSCOMPILING)
   IF(WIN32)
-    set(windows_context "yes")
     set(IS_WINDOWS 1)
   ENDIF()
 ELSE()
@@ -492,7 +491,6 @@ ENDIF()
 
 if(mcsc MATCHES "no" AND pthread)
   if(HAVE_WINDOWS_H)
-    set(windows_context "yes")
     set(IS_WINDOWS 1)
   elseif(HAVE_WINDOWS_H)
     message(FATAL_ERROR "no appropriate backend found")
@@ -505,10 +503,6 @@ if(WIN32)
   if(NOT HAVE_WINDOWS_H)
     message(FATAL_ERROR "no appropriate backend found windows")
   endif()
-endif()
-
-if(windows_context MATCHES "yes")
-  message(STATUS "Context change to windows")
 endif()
 
 #If can have both context
