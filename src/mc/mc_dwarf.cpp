@@ -1074,6 +1074,18 @@ void mc_frame_free(dw_frame_t frame)
 
 s_dw_type::s_dw_type()
 {
+  this->type = 0;
+  this->id = 0;
+  this->name = nullptr;
+  this->byte_size = 0;
+  this->element_count = 0;
+  this->dw_type_id = nullptr;
+  this->members = nullptr;
+  this->is_pointer_type = 0;
+  this->location = { 0, 0, 0, 0};
+  this->offset = 0;
+  this->subtype = nullptr;
+  this->full_type = nullptr;
 }
 
 s_dw_type::~s_dw_type()
@@ -1110,12 +1122,22 @@ void dw_variable_free_voidp(void *t)
 
 s_mc_object_info::s_mc_object_info()
 {
-  this->types = xbt_dict_new_homogeneous((void (*)(void *)) dw_type_free);
+  this->flags = 0;
+  this->file_name = nullptr;
+  this->start = nullptr;
+  this->end = nullptr;
+  this->start_exec = nullptr;
+  this->end_exec = nullptr;
+  this->start_rw = nullptr;
+  this->end_rw = nullptr;
+  this->start_ro = nullptr;
+  this->end_ro = nullptr;
   this->subprograms = xbt_dict_new_homogeneous((void (*)(void *)) mc_frame_free);
   this->global_variables =
       xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-
+  this->types = xbt_dict_new_homogeneous((void (*)(void *)) dw_type_free);
   this->full_types_by_name = xbt_dict_new_homogeneous(NULL);
+  this->functions_index = nullptr;
 }
 
 s_mc_object_info::~s_mc_object_info()

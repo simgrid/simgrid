@@ -33,21 +33,21 @@ struct s_dw_type {
   s_dw_type();
   ~s_dw_type();
 
-  e_dw_type_type type = 0;
-  Dwarf_Off id = 0; /* Offset in the section (in hexadecimal form) */
-  char *name = nullptr; /* Name of the type */
-  int byte_size = 0; /* Size in bytes */
-  int element_count = 0; /* Number of elements for array type */
-  char *dw_type_id = nullptr; /* DW_AT_type id */
-  xbt_dynar_t members = nullptr; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
-  int is_pointer_type = 0;
+  e_dw_type_type type;
+  Dwarf_Off id; /* Offset in the section (in hexadecimal form) */
+  char *name; /* Name of the type */
+  int byte_size; /* Size in bytes */
+  int element_count; /* Number of elements for array type */
+  char *dw_type_id; /* DW_AT_type id */
+  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
+  int is_pointer_type;
 
   // Location (for members) is either of:
-  struct s_mc_expression location = { 0, 0, 0, 0 };
-  int offset = 0;
+  struct s_mc_expression location;
+  int offset;
 
-  dw_type_t subtype = nullptr; // DW_AT_type
-  dw_type_t full_type = nullptr; // The same (but more complete) type
+  dw_type_t subtype; // DW_AT_type
+  dw_type_t full_type; // The same (but more complete) type
 };
 
 XBT_INTERNAL void dw_variable_free(dw_variable_t v);
@@ -66,25 +66,25 @@ struct s_mc_object_info {
   s_mc_object_info(s_mc_object_info const&) = delete;
   s_mc_object_info& operator=(s_mc_object_info const&) = delete;
 
-  mc_object_info_flags flags = 0;
-  char* file_name = nullptr;
-  const void* start = nullptr;
-  const void *end = nullptr;
-  char *start_exec = nullptr;
-  char *end_exec = nullptr; // Executable segment
-  char *start_rw = nullptr;
-  char *end_rw = nullptr; // Read-write segment
-  char *start_ro = nullptr;
-  char *end_ro = nullptr; // read-only segment
-  xbt_dict_t subprograms = nullptr; // xbt_dict_t<origin as hexadecimal string, dw_frame_t>
-  xbt_dynar_t global_variables = nullptr; // xbt_dynar_t<dw_variable_t>
-  xbt_dict_t types = nullptr; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
-  xbt_dict_t full_types_by_name = nullptr; // xbt_dict_t<name, dw_type_t> (full defined type only)
+  mc_object_info_flags flags;
+  char* file_name;
+  const void* start;
+  const void *end;
+  char *start_exec;
+  char *end_exec; // Executable segment
+  char *start_rw;
+  char *end_rw; // Read-write segment
+  char *start_ro;
+  char *end_ro; // read-only segment
+  xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, dw_frame_t>
+  xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
+  xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
+  xbt_dict_t full_types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
 
   // Here we sort the minimal information for an efficient (and cache-efficient)
   // lookup of a function given an instruction pointer.
   // The entries are sorted by low_pc and a binary search can be used to look them up.
-  xbt_dynar_t functions_index = nullptr;
+  xbt_dynar_t functions_index;
 };
 
 static inline __attribute__ ((always_inline))
