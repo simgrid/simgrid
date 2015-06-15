@@ -30,7 +30,7 @@ XBT_PUBLIC(int) xbt_replay_action_runner(int argc, char *argv[]);
 
 XBT_PUBLIC(int) _xbt_replay_is_active(void);
 
-XBT_PUBLIC(void) _xbt_replay_action_init(void);
+XBT_PUBLIC(int) _xbt_replay_action_init(void);
 XBT_PUBLIC(void) _xbt_replay_action_exit(void);
 
 XBT_PUBLIC(void) xbt_replay_action_register(const char *action_name,

@@ -1046,8 +1046,7 @@ void smpi_replay_init(int *argc, char***argv){
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
 
-  if (!action_funs){
-    _xbt_replay_action_init();
+  if (!_xbt_replay_action_init()) {
     xbt_replay_action_register("init",       action_init);
     xbt_replay_action_register("finalize",   action_finalize);
     xbt_replay_action_register("comm_size",  action_comm_size);

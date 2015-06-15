@@ -26,8 +26,8 @@ typedef struct s_replay_reader {
 
 FILE *action_fp;
 
-xbt_dict_t action_funs;
-xbt_dict_t action_queues;
+xbt_dict_t action_funs = NULL;
+xbt_dict_t action_queues = NULL;
 
 static char *action_line = NULL;
 static size_t action_len = 0;
@@ -131,11 +131,18 @@ void xbt_replay_action_unregister(const char *action_name)
   xbt_free(lowername);
 }
 
-void _xbt_replay_action_init(void)
+/** @brief Initializes the replay mechanism, and returns true if (and only if) it was necessary
+ *
+ * It returns false if it was already done by another process.
+ */
+int _xbt_replay_action_init(void)
 {
+  if (action_funs)
+	  return 0;
   is_replay_active = 1;
   action_funs = xbt_dict_new_homogeneous(NULL);
   action_queues = xbt_dict_new_homogeneous(NULL);
+  return 1;
 }
 
 void _xbt_replay_action_exit(void)
@@ -143,6 +150,9 @@ void _xbt_replay_action_exit(void)
   xbt_dict_free(&action_queues);
   xbt_dict_free(&action_funs);
   free(action_line);
+  action_queues = NULL;
+  action_funs = NULL;
+  action_line = NULL;
 }
 
 /**
