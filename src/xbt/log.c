@@ -1137,9 +1137,12 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     }
 
     if(i<XBT_LOG_STATIC_THRESHOLD){
-     THROWF(arg_error, 0,
-             "Priority: %s is above allowed priority : %s (for debug and trace levels, recompile SimGrid with -Denable_debug=ON)",
-             eq + 1, xbt_log_priority_names[XBT_LOG_STATIC_THRESHOLD]);
+     fprintf(stderr,
+    		 "Priority '%s' (in setting '%s') is above allowed priority '%s'.\n\n"
+    		 "Compiling SimGrid with -DNDEBUG forbids the levels 'trace' and 'debug'\n"
+    		 "while -DNLOG forbids any logging, at any level.",
+             eq + 1, name, xbt_log_priority_names[XBT_LOG_STATIC_THRESHOLD]);
+     exit(1);
     }else if (i < xbt_log_priority_infinite) {
       set->thresh = (e_xbt_log_priority_t) i;
     } else {
