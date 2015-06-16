@@ -17,6 +17,7 @@ set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_split.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/storage_deployment.xml
   PARENT_SCOPE
   )
 set(examples_src
@@ -31,6 +32,7 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/actions_io.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/actions_allReduce.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/actions_barrier.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/actions_bcast.txt
