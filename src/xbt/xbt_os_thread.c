@@ -8,6 +8,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#if defined(WIN32)
+#elif defined(__MACH__)
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#else
+#include <unistd.h>
+#endif
+
 #include "internal_config.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
