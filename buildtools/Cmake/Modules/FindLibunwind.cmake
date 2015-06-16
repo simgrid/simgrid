@@ -12,7 +12,9 @@ if(PROCESSOR_x86_64)
     /opt/csw
     /sw
     /usr)
-else()
+end()
+
+if(NOT PATH_LIBUNWIND_LIB)
   find_library(PATH_LIBUNWIND_LIB
     NAMES unwind
     HINTS
