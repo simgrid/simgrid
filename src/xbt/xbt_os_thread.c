@@ -1250,7 +1250,7 @@ int xbt_os_get_numcores(void) {
     SYSTEM_INFO sysinfo;
     GetSystemInfo(&sysinfo);
     return sysinfo.dwNumberOfProcessors;
-#elif MACOS
+#elif defined(__APPLE__) && defined(__MACH__)
     int nm[2];
     size_t len = 4;
     uint32_t count;
