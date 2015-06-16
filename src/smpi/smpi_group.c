@@ -92,9 +92,13 @@ void smpi_group_set_mapping(MPI_Group group, int index, int rank)
     if (index!=MPI_UNDEFINED ) {
       val_rank = (int *) malloc(sizeof(int));
       *val_rank = rank; 
-      asprintf(&key, "%d", index);
-      xbt_dict_set(group->index_to_rank_map, key, val_rank, NULL);
-      free(key);
+      int size = asprintf(&key, "%d", index);
+      if (size!=-1){
+        xbt_dict_set(group->index_to_rank_map, key, val_rank, NULL);
+        free(key);
+      } else {
+        xbt_die("could not allocate memory for asprintf");
+      }
     }
   }
 }
@@ -111,10 +115,13 @@ int smpi_group_index(MPI_Group group, int rank)
 
 int smpi_group_rank(MPI_Group group, int index)
 {
-  int * ptr_rank;
+  int * ptr_rank = NULL;
   char * key;
-  asprintf(&key, "%d", index);
-  ptr_rank = xbt_dict_get_or_null(group->index_to_rank_map, key);
+  int size = asprintf(&key, "%d", index);
+  if (size!=-1)
+    ptr_rank = xbt_dict_get_or_null(group->index_to_rank_map, key);
+  else
+    xbt_die("could not allocate memory for asprintf");
   if (!ptr_rank)
     return MPI_UNDEFINED;
   return *ptr_rank;

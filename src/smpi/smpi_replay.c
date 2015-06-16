@@ -37,7 +37,9 @@ static void log_timed_action (const char *const *action, double clock){
 static xbt_dynar_t get_reqq_self(){
    char * key;
    
-   asprintf(&key, "%d", smpi_process_index());
+   int size = asprintf(&key, "%d", smpi_process_index());
+   if(size==-1)
+     xbt_die("could not allocate memory for asprintf");
    xbt_dynar_t dynar_mpi_request = (xbt_dynar_t) xbt_dict_get(reqq, key);
    free(key);
  
@@ -47,7 +49,9 @@ static xbt_dynar_t get_reqq_self(){
 static void set_reqq_self(xbt_dynar_t mpi_request){
    char * key;
    
-   asprintf(&key, "%d", smpi_process_index());
+   int size = asprintf(&key, "%d", smpi_process_index());
+   if(size==-1)
+     xbt_die("could not allocate memory for asprintf");
    xbt_dict_set(reqq, key, mpi_request, free);
    free(key);
 }
