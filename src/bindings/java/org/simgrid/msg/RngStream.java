@@ -90,8 +90,8 @@ public class RngStream {
 	public native boolean setSeed(int seed[]);
 	/**
 	 * Advances the state of the stream by k values, without modifying the states of other streams (as
-	 * in RngStream_SetSeed), nor the values of Bg and Ig associated with this stream. If e > 0, then
-	 * k = 2e + c; if e < 0, then k = -2-e + c; and if e = 0, then k = c. Note: c is allowed to take
+	 * in RngStream_SetSeed), nor the values of Bg and Ig associated with this stream. If e &gt; 0, then
+	 * k = 2e + c; if e &lt; 0, then k = -2-e + c; and if e = 0, then k = c. Note: c is allowed to take
 	 * negative values. We discourage the use of this procedure.	 
 	 */
 	public native void advanceState(int e, int g);
