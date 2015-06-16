@@ -126,7 +126,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 
 # Try to make Mac a bit more complient to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_XOPEN_SOURCE=700")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE")
 endif()
 
 set(TESH_OPTION "")

@@ -131,7 +131,7 @@ CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock "" HAVE_MUTEX_TIMEDLOCK_LIB
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-  set(CMAKE_REQUIRED_DEFINITIONS "-D_XOPEN_SOURCE=700")
+  set(CMAKE_REQUIRED_DEFINITIONS "-D_XOPEN_SOURCE=700 -D_")
 endif()
 
 CHECK_INCLUDE_FILES("time.h;sys/time.h" TIME_WITH_SYS_TIME)
@@ -439,7 +439,7 @@ endif()
 
 # This is needed for ucontext on MacOS X:
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-  add_definitions(-D_XOPEN_SOURCE=700)
+  add_definitions(-D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE)
 endif()
 
 if(WIN32)
