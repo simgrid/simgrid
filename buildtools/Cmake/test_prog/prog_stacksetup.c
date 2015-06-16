@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #if defined OSX
-#define _XOPEN_SOURCE
+#define _XOPEN_SOURCE 700
 #endif
 
 #ifdef _XBT_WIN32
