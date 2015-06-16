@@ -42,11 +42,11 @@ public class Task {
 	 *
 	 * @param flopsAmount 	A value of the processing amount (in flop) needed to process the task. 
 	 *				If 0, then it cannot be executed with the execute() method.
-	 *				This value has to be >= 0.
+	 *				This value has to be &ge; 0.
 	 *
 	 * @param bytesAmount		A value of amount of data (in bytes) needed to transfert this task.
 	 *				If 0, then it cannot be transfered with the get() and put() methods.
-	 *				This value has to be >= 0.
+	 *				This value has to be &ge; 0.
 	 */ 
 	public Task(String name, double flopsAmount, double bytesAmount) {
 		create(name, flopsAmount, bytesAmount);
@@ -199,7 +199,7 @@ public class Task {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
+	public void send(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException, NativeException {
 		send(mailbox, -1);
 	} 
 
@@ -213,7 +213,7 @@ public class Task {
 	 * @throws HostFailureException 
 	 * @throws TransferFailureException 
 	 */
-	public native void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
+	public native void send(String mailbox, double timeout) throws TransferFailureException, HostFailureException, TimeoutException, NativeException;
 
 	/** Sends the task on the specified mailbox (capping the sending rate to \a maxrate) 
 	 *

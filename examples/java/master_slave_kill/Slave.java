@@ -12,6 +12,7 @@ import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.TimeoutException;
 import org.simgrid.msg.TransferFailureException;
+import org.simgrid.msg.NativeException;
 import org.simgrid.msg.Process;
 
 import master_slave_kill.FinalizeTask;
@@ -20,7 +21,7 @@ public class Slave extends Process {
 	public Slave(String hostname, String name) throws HostNotFoundException {
 		super(hostname, name);
 	}
-	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
+	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException, NativeException {
 	Msg.info("Slave Hello!");
 	
 	FinalizeTask task = new FinalizeTask();
