@@ -437,70 +437,38 @@ if(pthread)
   endif()
 endif()
 
-# AC_CHECK_MCSC(mcsc=yes, mcsc=no)
-set(mcsc_flags "")
+# This is needed for ucontext on MacOS X:
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-  set(mcsc_flags -D_XOPEN_SOURCE)
+  add_definitions(-D_XOPEN_SOURCE)
 endif()
 
 if(WIN32)
-  if(ARCH_32_BITS)
-    set(mcsc_flags -D_XBT_WIN32 -D_I_X86_ -I${CMAKE_HOME_DIRECTORY}/src/include -I${CMAKE_HOME_DIRECTORY}/src/xbt)
-  else()
-    set(mcsc_flags -D_XBT_WIN32 -D_AMD64_ -I${CMAKE_HOME_DIRECTORY}/src/include -I${CMAKE_HOME_DIRECTORY}/src/xbt)
-  endif()
-endif()
-
-IF(NOT CMAKE_CROSSCOMPILING)
-  file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
-  file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
-  set(MCSC_buildcmd ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c ${mcsc_flags} -o testprog)
-  execute_process(COMMAND ${MCSC_buildcmd}
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-  OUTPUT_VARIABLE COMPILE_mcsc_VAR ERROR_VARIABLE COMPILE_mcsc_VAR)
-
-  if(NOT COMPILE_mcsc_VAR)
-    message(STATUS "prog_AC_CHECK_MCSC.c is compilable")
-    execute_process(COMMAND ./testprog
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-    OUTPUT_VARIABLE var_compil)
-  else()
-    message(STATUS "prog_AC_CHECK_MCSC.c is not compilable. \nBuild command: ${MCSC_buildcmd}\nOutput\n${COMPILE_mcsc_VAR}")
-  endif()
-  file(REMOVE "${CMAKE_BINARY_DIR}/testprog*")
-
-  if(EXISTS "${CMAKE_BINARY_DIR}/conftestval")
-    file(READ "${CMAKE_BINARY_DIR}/conftestval" mcsc)
-    STRING(REPLACE "\n" "" mcsc "${mcsc}")
-    if(mcsc)
-      set(mcsc "yes")
-      set(HAVE_UCONTEXT_H 1)
-    else()
-      set(mcsc "no")
-    endif()
-  else()
-    set(mcsc "no")
-  endif()
-
-  message(STATUS "mcsc: ${mcsc}")
-ENDIF()
-
-#Only windows
-
-if(WIN32)
-  if(NOT HAVE_WINDOWS_H)
-    message(FATAL_ERROR "no appropriate backend found windows")
-  endif()
+  # We always provide our own implementation of ucontext on Windows.
+  try_compile(HAVE_UCONTEXT
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
+    COMPILE_DEFINITIONS _XBT_WIN32
+    INCLUDE_DIRECTORIES
+      ${CMAKE_HOME_DIRECTORY}/src/include
+      ${CMAKE_HOME_DIRECTORY}/src/xbt
+  )
+else()
+  # We always provide our own implementation of ucontext on Windows.
+  try_compile(HAVE_UCONTEXT
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c)
 endif()
 
 #If can have both context
 
-if(mcsc)
+if(HAVE_UCONTEXT)
   set(CONTEXT_UCONTEXT 1)
+  message("-- Support for ucontext factory")
 endif()
 
 if(pthread)
   set(CONTEXT_THREADS 1)
+  message("-- Support for thread context factory")
 endif()
 
 ###############

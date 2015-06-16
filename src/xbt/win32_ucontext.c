@@ -65,16 +65,16 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
   }
   
       /* Set the instruction and the stack pointer */
-  #ifdef _I_X86_
+  #if defined(_I_X86_) || defined(__i383) || defined(__i383__)
   ucp->uc_mcontext.Eip = (DWORD) func;
   ucp->uc_mcontext.Esp = (DWORD) sp - sizeof(void*);
-  #elif defined _IA64_
+  #elif defined(_IA64_) || defined(__ia64) || defined(__ia64__)
   #  error "_IA64_"
-  #elif defined _AMD64_
+  #elif defined _AMD64_ || defined(__x86_64) || defined(__x86_64__)
   ucp->uc_mcontext.Rip = (DWORD64) func;
   ucp->uc_mcontext.Rsp = (DWORD64) sp - sizeof(void*);
   #else
-  #error "No architecture defined for Windows build. need either _AMD64_ or _I_X86_"
+  #error "No architecture defined for Windows build.
   #endif
 
       /* Save/Restore the full machine context */ 
@@ -105,4 +105,3 @@ int swapcontext(ucontext_t * oucp, const ucontext_t * ucp)
   }
   return ret;
 }
-
