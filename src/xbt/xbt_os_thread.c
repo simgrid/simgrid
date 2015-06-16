@@ -571,7 +571,7 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
     res->name[13] = '\0';
     res->ps = sem_open(res->name, O_CREAT, 0644, value);
   }
-  if ((res->ps == (sem_t *) SEM_FAILED))
+  if (res->ps == (sem_t *) SEM_FAILED)
     THROWF(system_error, errno, "sem_open() failed: %s", strerror(errno));
 
   /* Remove the name from the semaphore namespace: we never join on it */
