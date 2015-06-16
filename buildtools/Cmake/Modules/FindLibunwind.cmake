@@ -5,14 +5,14 @@ if(PROCESSOR_x86_64)
     $ENV{SIMGRID_LIBUNWIND_LIBRARY_PATH}
     $ENV{LD_LIBRARY_PATH}
     $ENV{LIBUNWIND_LIBRARY_PATH}
-    PATH_SUFFIXES lib/ GnuWin32/lib
+    PATH_SUFFIXES lib/ GnuWin32/lib lib/system
     PATHS
     /opt
     /opt/local
     /opt/csw
     /sw
     /usr)
-end()
+endif()
 
 if(NOT PATH_LIBUNWIND_LIB)
   find_library(PATH_LIBUNWIND_LIB
@@ -21,13 +21,14 @@ if(NOT PATH_LIBUNWIND_LIB)
     $ENV{SIMGRID_LIBUNWIND_LIBRARY_PATH}
     $ENV{LD_LIBRARY_PATH}
     $ENV{LIBUNWIND_LIBRARY_PATH}
-    PATH_SUFFIXES lib/ GnuWin32/lib
+    PATH_SUFFIXES lib/ GnuWin32/lib lib/system
     PATHS
     /opt
     /opt/local
     /opt/csw
     /sw
-    /usr)
+    /usr
+    /usr/lib/)
 endif()
 
 find_path(PATH_LIBUNWIND_H "libunwind.h"
