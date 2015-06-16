@@ -1223,7 +1223,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/test_prog/prog_gnu_dynlinker.c
   buildtools/Cmake/test_prog/prog_gtnets.cpp
   buildtools/Cmake/test_prog/prog_mutex_timedlock.c
-  buildtools/Cmake/test_prog/prog_printf_null.c
   buildtools/Cmake/test_prog/prog_sem_init.c
   buildtools/Cmake/test_prog/prog_sem_open.c
   buildtools/Cmake/test_prog/prog_sem_timedwait.c
