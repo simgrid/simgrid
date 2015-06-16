@@ -8,7 +8,7 @@ die() {
 }
 
 do_cleanup() {
-  for d in "$WORKSPACE/build" "$WORKSPACE/install" "$WORKSPACE/memcheck"
+  for d in "$WORKSPACE/build" "$WORKSPACE/memcheck"
   do
     if [ -d "$d" ]
     then
@@ -23,7 +23,7 @@ do_cleanup() {
 
 do_cleanup
 
-for d in "$WORKSPACE/build" "$WORKSPACE/install" "$WORKSPACE/memcheck"
+for d in "$WORKSPACE/build" "$WORKSPACE/memcheck"
 do
   mkdir "$d" || die "Could not create $d"
 done
