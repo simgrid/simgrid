@@ -360,7 +360,7 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
 #elif defined(HAVE_GETTIMEOFDAY) && defined(__MACH__) && defined(__APPLE__)//attempt for timing of the thread on OSX
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_usec = 0;
-  int count = THREAD_BASIC_INFO_COUNT;
+  mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
   thread_basic_info_data_t thi_data;
   thread_basic_info_t thi = &thi_data;
   thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)thi, &count);
@@ -400,7 +400,7 @@ void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
 #elif defined(HAVE_GETTIMEOFDAY) && defined(__MACH__) && defined(__APPLE__)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
-  int count = THREAD_BASIC_INFO_COUNT;
+  mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
   thread_basic_info_data_t thi_data;
   thread_basic_info_t thi = &thi_data;
   thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)thi, &count);
@@ -437,7 +437,7 @@ void xbt_os_threadtimer_stop(xbt_os_timer_t timer)
 #ifdef HAVE_POSIX_GETTIME
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->stop));
 #elif defined(HAVE_GETTIMEOFDAY) && defined(__MACH__) && defined(__APPLE__)
-  int count = THREAD_BASIC_INFO_COUNT;
+  mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
   thread_basic_info_data_t thi_data;
   thread_basic_info_t thi = &thi_data;
   thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)thi, &count);
