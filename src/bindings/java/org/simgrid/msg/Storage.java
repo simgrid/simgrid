@@ -50,7 +50,7 @@ public class Storage {
 	 *					NativeException if the native version of this method failed.
 	 */ 
 	public native static Storage getByName(String name) 
-			throws HostNotFoundException, NullPointerException;
+			throws HostNotFoundException, NullPointerException, NativeException, StorageNotFoundException;
 
 	/**
 	 * This method returns the name of a storage.
