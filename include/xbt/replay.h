@@ -15,11 +15,11 @@ SG_BEGIN_DECL()
 typedef struct s_replay_reader *xbt_replay_reader_t;
 typedef void (*action_fun) (const char *const *args);
 
-XBT_PUBLIC_DATA(xbt_dict_t) action_funs;
-XBT_PUBLIC_DATA(xbt_dict_t) action_queues;
+XBT_PUBLIC_DATA(xbt_dict_t) xbt_action_funs;
+XBT_PUBLIC_DATA(xbt_dict_t) xbt_action_queues;
 
 /* To split the file if a unique one is given (specific variable for the other case live in runner()) */
-XBT_PUBLIC_DATA(FILE *) action_fp;
+XBT_PUBLIC_DATA(FILE *) xbt_action_fp;
 
 XBT_PUBLIC(xbt_replay_reader_t) xbt_replay_reader_new(const char*filename);
 XBT_PUBLIC(const char **) xbt_replay_reader_get(xbt_replay_reader_t reader);

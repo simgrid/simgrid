@@ -24,10 +24,10 @@ typedef struct s_replay_reader {
   int linenum;
 } s_xbt_replay_reader_t;
 
-FILE *action_fp;
+FILE *xbt_action_fp;
 
-xbt_dict_t action_funs = NULL;
-xbt_dict_t action_queues = NULL;
+xbt_dict_t xbt_action_funs = NULL;
+xbt_dict_t xbt_action_queues = NULL;
 
 static char *action_line = NULL;
 static size_t action_len = 0;
@@ -115,7 +115,7 @@ void xbt_replay_reader_free(xbt_replay_reader_t *reader)
 void xbt_replay_action_register(const char *action_name, action_fun function)
 {
   char* lowername = str_tolower (action_name);
-  xbt_dict_set(action_funs, lowername, function, NULL);
+  xbt_dict_set(xbt_action_funs, lowername, function, NULL);
   xbt_free(lowername);
 }
 
@@ -127,7 +127,7 @@ void xbt_replay_action_register(const char *action_name, action_fun function)
 void xbt_replay_action_unregister(const char *action_name)
 {
   char* lowername = str_tolower (action_name);
-  xbt_dict_remove(action_funs, lowername);
+  xbt_dict_remove(xbt_action_funs, lowername);
   xbt_free(lowername);
 }
 
@@ -137,21 +137,21 @@ void xbt_replay_action_unregister(const char *action_name)
  */
 int _xbt_replay_action_init(void)
 {
-  if (action_funs)
+  if (xbt_action_funs)
 	  return 0;
   is_replay_active = 1;
-  action_funs = xbt_dict_new_homogeneous(NULL);
-  action_queues = xbt_dict_new_homogeneous(NULL);
+  xbt_action_funs = xbt_dict_new_homogeneous(NULL);
+  xbt_action_queues = xbt_dict_new_homogeneous(NULL);
   return 1;
 }
 
 void _xbt_replay_action_exit(void)
 {
-  xbt_dict_free(&action_queues);
-  xbt_dict_free(&action_funs);
+  xbt_dict_free(&xbt_action_queues);
+  xbt_dict_free(&xbt_action_funs);
   free(action_line);
-  action_queues = NULL;
-  action_funs = NULL;
+  xbt_action_queues = NULL;
+  xbt_action_funs = NULL;
   action_line = NULL;
 }
 
@@ -166,12 +166,12 @@ int xbt_replay_action_runner(int argc, char *argv[])
 {
   int i;
   xbt_ex_t e;
-  if (action_fp) {              // A unique trace file
+  if (xbt_action_fp) {              // A unique trace file
     char **evt;
     while ((evt = action_get_action(argv[0]))) {
       char* lowername = str_tolower (evt[1]);
       action_fun function =
-        (action_fun)xbt_dict_get(action_funs, lowername);
+        (action_fun)xbt_dict_get(xbt_action_funs, lowername);
       xbt_free(lowername);
       TRY{
         function((const char **)evt);
@@ -196,7 +196,7 @@ int xbt_replay_action_runner(int argc, char *argv[])
     while ((evt=xbt_replay_reader_get(reader))) {
       if (!strcmp(argv[0],evt[0])) {
         char* lowername = str_tolower (evt[1]);
-        action_fun function = (action_fun)xbt_dict_get(action_funs, lowername);
+        action_fun function = (action_fun)xbt_dict_get(xbt_action_funs, lowername);
         xbt_free(lowername);
         TRY{
           function(evt);
@@ -223,15 +223,15 @@ static char **action_get_action(char *name)
   xbt_dynar_t evt = NULL;
   char *evtname = NULL;
 
-  xbt_dynar_t myqueue = xbt_dict_get_or_null(action_queues, name);
+  xbt_dynar_t myqueue = xbt_dict_get_or_null(xbt_action_queues, name);
   if (myqueue == NULL || xbt_dynar_is_empty(myqueue)) {      // nothing stored for me. Read the file further
 
-    if (action_fp == NULL) {    // File closed now. There's nothing more to read. I'm out of here
+    if (xbt_action_fp == NULL) {    // File closed now. There's nothing more to read. I'm out of here
       goto todo_done;
     }
     // Read lines until I reach something for me (which breaks in loop body)
     // or end of file reached
-    while (xbt_getline(&action_line, &action_len, action_fp) != -1) {
+    while (xbt_getline(&action_line, &action_len, xbt_action_fp) != -1) {
       // cleanup and split the string I just read
       char *comment = strchr(action_line, '#');
       if (comment != NULL)
@@ -250,11 +250,11 @@ static char **action_get_action(char *name)
       } else {
         // Else, I have to store it for the relevant colleague
         xbt_dynar_t otherqueue =
-            xbt_dict_get_or_null(action_queues, evtname);
+            xbt_dict_get_or_null(xbt_action_queues, evtname);
         if (otherqueue == NULL) {       // Damn. Create the queue of that guy
           otherqueue =
               xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
-          xbt_dict_set(action_queues, evtname, otherqueue, NULL);
+          xbt_dict_set(xbt_action_queues, evtname, otherqueue, NULL);
         }
         xbt_dynar_push(otherqueue, &evt);
       }
@@ -272,7 +272,7 @@ static char **action_get_action(char *name)
 todo_done:
   if (myqueue != NULL) {
     xbt_dynar_free(&myqueue);
-    xbt_dict_remove(action_queues, name);
+    xbt_dict_remove(xbt_action_queues, name);
   }
   return NULL;
 }

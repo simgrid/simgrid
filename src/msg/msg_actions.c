@@ -41,28 +41,28 @@ msg_error_t MSG_action_trace_run(char *path)
   xbt_dynar_t todo;
   xbt_dict_cursor_t cursor;
 
-  action_fp=NULL;  
+  xbt_action_fp=NULL;
   if (path) {
-    action_fp = fopen(path, "r");
-    if (action_fp == NULL)
+	  xbt_action_fp = fopen(path, "r");
+    if (xbt_action_fp == NULL)
       xbt_die("Cannot open %s: %s", path, strerror(errno));
   }
   res = MSG_main();
 
-  if (!xbt_dict_is_empty(action_queues)) {
+  if (!xbt_dict_is_empty(xbt_action_queues)) {
     XBT_WARN
         ("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
 
 
-    xbt_dict_foreach(action_queues, cursor, name, todo) {
+    xbt_dict_foreach(xbt_action_queues, cursor, name, todo) {
       XBT_WARN("Still %lu actions for %s", xbt_dynar_length(todo), name);
     }
   }
 
   if (path)
-    fclose(action_fp);
-  xbt_dict_free(&action_queues);
-  action_queues = xbt_dict_new_homogeneous(NULL);
+    fclose(xbt_action_fp);
+  xbt_dict_free(&xbt_action_queues);
+  xbt_action_queues = xbt_dict_new_homogeneous(NULL);
 
   return res;
 }

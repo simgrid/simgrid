@@ -296,35 +296,6 @@ void smpi_empty_status(MPI_Status * status)
   }
 }
 
-void smpi_action_trace_run(char *path)
-{
-  char *name;
-  xbt_dynar_t todo;
-  xbt_dict_cursor_t cursor;
-
-  action_fp=NULL;
-  if (path) {
-    action_fp = fopen(path, "r");
-    if (action_fp == NULL)
-      xbt_die("Cannot open %s: %s", path, strerror(errno));
-  }
-
-  if (!xbt_dict_is_empty(action_queues)) {
-    XBT_WARN
-      ("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
-
-
-    xbt_dict_foreach(action_queues, cursor, name, todo) {
-      XBT_WARN("Still %lu actions for %s", xbt_dynar_length(todo), name);
-    }
-  }
-
-  if (path)
-    fclose(action_fp);
-  xbt_dict_free(&action_queues);
-  action_queues = xbt_dict_new_homogeneous(NULL);
-}
-
 static void smpi_mpi_request_free_voidp(void* request)
 {
   MPI_Request req = request;

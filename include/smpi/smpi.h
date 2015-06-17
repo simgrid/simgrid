@@ -885,7 +885,6 @@ XBT_PUBLIC(void) smpi_process_init(int *argc, char ***argv);
 
 /* Trace replay specific stuff */
 XBT_PUBLIC(void) smpi_replay_init(int *argc, char***argv);
-XBT_PUBLIC(void) smpi_action_trace_run(char *);
 XBT_PUBLIC(int) smpi_replay_finalize(void);
 
 XBT_PUBLIC(void) SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes);
