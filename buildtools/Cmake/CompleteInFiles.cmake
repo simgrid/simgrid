@@ -109,7 +109,7 @@ endif()
 # intrusive 1.35.0
 # lambda 1.28.0
 # signals2 1.39.0
-find_package(Boost 1.42 REQUIRED COMPONENTS context)
+find_package(Boost 1.42 COMPONENTS context)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
