@@ -31,10 +31,10 @@ typedef struct s_smx_process_arg {
 
 /** @brief Process datatype */
 typedef struct s_smx_process {
-  s_xbt_swag_hookup_t process_hookup;
-  s_xbt_swag_hookup_t synchro_hookup;   /* process_to_run or mutex->sleeping and co */
-  s_xbt_swag_hookup_t host_proc_hookup;
-  s_xbt_swag_hookup_t destroy_hookup;
+  s_xbt_swag_hookup_t process_hookup;   /* simix_global->process_list */
+  s_xbt_swag_hookup_t synchro_hookup;   /* {mutex,cond,sem}->sleeping */
+  s_xbt_swag_hookup_t host_proc_hookup; /* smx_host->process_lis */
+  s_xbt_swag_hookup_t destroy_hookup;   /* simix_global->process_to_destroy */
 
   unsigned long pid;
   unsigned long ppid;
