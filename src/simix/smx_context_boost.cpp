@@ -18,7 +18,11 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 typedef struct s_smx_ctx_boost {
   s_smx_ctx_base_t super;       /* Fields of super implementation */
+#if HAVE_BOOST_CONTEXT == 1
   boost::context::fcontext_t* fc;
+#else
+  boost::context::fcontext_t fc;
+#endif
   void* stack;
 } s_smx_ctx_boost_t, *smx_ctx_boost_t;
 
@@ -130,7 +134,9 @@ smx_ctx_boost_create_context(xbt_main_func_t code, int argc, char **argv,
                       smx_ctx_boost_wrapper);
   } else {
     context->stack = nullptr;
+#if HAVE_BOOST_CONTEXT == 1
     context->fc = new boost::context::fcontext_t();
+#endif
     if (boost_maestro_context == nullptr)
       boost_maestro_context = context;
   }
@@ -143,8 +149,10 @@ static void smx_ctx_boost_free(smx_context_t c)
   smx_ctx_boost_t context = (smx_ctx_boost_t) c;
   if (!context)
     return;
+#if HAVE_BOOST_CONTEXT == 1
   if (!context->stack)
     delete context->fc;
+#endif
   if ((smx_ctx_boost_t) c == boost_maestro_context)
     boost_maestro_context = nullptr;
   SIMIX_context_stack_delete(context->stack);
@@ -182,16 +190,26 @@ static void smx_ctx_boost_suspend_serial(smx_context_t context)
     next_context = (smx_ctx_boost_t) boost_maestro_context;
   }
   SIMIX_context_set_current((smx_context_t) next_context);
+#if HAVE_BOOST_CONTEXT == 1
   boost::context::jump_fcontext(
     ((smx_ctx_boost_t)context)->fc, next_context->fc, (intptr_t)next_context);
+#else
+  boost::context::jump_fcontext(
+    &((smx_ctx_boost_t)context)->fc, next_context->fc, (intptr_t)next_context);
+#endif
 }
 
 static void smx_ctx_boost_resume_serial(smx_process_t first_process)
 {
   smx_ctx_boost_t context = (smx_ctx_boost_t) first_process->context;
   SIMIX_context_set_current((smx_context_t) context);
+#if HAVE_BOOST_CONTEXT == 1
   boost::context::jump_fcontext(boost_maestro_context->fc, context->fc,
     (intptr_t)context);
+#else
+  boost::context::jump_fcontext(&boost_maestro_context->fc, context->fc,
+    (intptr_t)context);
+#endif
 }
 
 static void smx_ctx_boost_runall_serial(void)
@@ -231,8 +249,13 @@ static void smx_ctx_boost_suspend_parallel(smx_context_t context)
   }
 
   SIMIX_context_set_current((smx_context_t) next_context);
+#if HAVE_BOOST_CONTEXT == 1
   boost::context::jump_fcontext(
     ((smx_ctx_boost_t)context)->fc, next_context->fc, (intptr_t)next_context);
+#else
+  boost::context::jump_fcontext(
+    &((smx_ctx_boost_t)context)->fc, next_context->fc, (intptr_t)next_context);
+#endif
 }
 
 static void smx_ctx_boost_resume_parallel(smx_process_t process)
@@ -245,8 +268,13 @@ static void smx_ctx_boost_resume_parallel(smx_process_t process)
   smx_ctx_boost_t context = (smx_ctx_boost_t) process->context;
 
   SIMIX_context_set_current((smx_context_t) context);
+#if HAVE_BOOST_CONTEXT == 1
   boost::context::jump_fcontext(worker_context->fc, context->fc,
     (intptr_t)context);
+#else
+  boost::context::jump_fcontext(&worker_context->fc, context->fc,
+    (intptr_t)context);
+#endif
 }
 
 static void smx_ctx_boost_runall_parallel(void)
