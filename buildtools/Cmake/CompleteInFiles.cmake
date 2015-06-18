@@ -109,7 +109,7 @@ endif()
 # intrusive 1.35.0
 # lambda 1.28.0
 # signals2 1.39.0
-find_package(Boost 1.42 REQUIRED)
+find_package(Boost 1.42 REQUIRED COMPONENTS context)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
@@ -118,6 +118,19 @@ else()
   else()
     message(FATAL_ERROR, "Failed to find Boost libraries")
   endif()
+endif()
+
+if(Boost_FOUND AND Boost_CONTEXT_FOUND)
+  # We should use feature detection for this instead:
+  if (Boost_VERSION LESS 105600)
+    message("Found suitable Boost.Context")
+    set(HAVE_BOOST_CONTEXT 1)
+  else()
+    message("Found unsuitable version of Boost.Context (${Boost_VERSION}, up to 1.55 is currenly implemented)")
+    set(HAVE_BOOST_CONTEXT 0)
+  endif()
+else()
+  set(HAVE_BOOST_CONTEXT 0)
 endif()
 
 # Checks for header libraries functions.
