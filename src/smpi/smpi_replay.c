@@ -1037,7 +1037,8 @@ static void action_allToAllv(const char *const *action) {
   xbt_free(recvdisps);
 }
 
-void smpi_replay_init(int *argc, char***argv){
+void smpi_replay_run(int *argc, char***argv){
+  /* First initializes everything */
   smpi_process_init(argc, argv);
   smpi_process_mark_as_initialized();
   smpi_process_set_replaying(1);
@@ -1047,8 +1048,10 @@ void smpi_replay_init(int *argc, char***argv){
   TRACE_smpi_computing_init(rank);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_INIT;
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
-  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  char *operation =bprintf("%s_init",__FUNCTION__);
+  TRACE_smpi_collective_in(rank, -1, operation, extra);
+  TRACE_smpi_collective_out(rank, -1, operation);
+  free(operation);
 
   if (!_xbt_replay_action_init()) {
     xbt_replay_action_register("init",       action_init);
@@ -1091,10 +1094,10 @@ void smpi_replay_init(int *argc, char***argv){
     smpi_execute_flops(0.0);
   }
   
+  /* Actually run the replay */
   xbt_replay_action_runner(*argc, *argv);
-}
 
-int smpi_replay_finalize(){
+  /* and now, finalize everything */
   double sim_time= 1.;
   /* One active process will stop. Decrease the counter*/
   XBT_DEBUG("There are %lu elements in reqq[*]",
@@ -1131,16 +1134,15 @@ int smpi_replay_finalize(){
     reqq = NULL;
   }
   
-
-  int rank = smpi_process_index();
-  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type = TRACING_FINALIZE;
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
+  instr_extra_data extra_fin = xbt_new0(s_instr_extra_data_t,1);
+  extra_fin->type = TRACING_FINALIZE;
+  operation =bprintf("%s_finalize",__FUNCTION__);
+  TRACE_smpi_collective_in(rank, -1, operation, extra_fin);
 
   smpi_process_finalize();
 
-  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+  TRACE_smpi_collective_out(rank, -1, operation);
   TRACE_smpi_finalize(smpi_process_index());
   smpi_process_destroy();
-  return MPI_SUCCESS;
+  free(operation);
 }

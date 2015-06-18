@@ -8,7 +8,6 @@
 #include "smpi/smpi.h"
 
 int main(int argc, char *argv[]) {
-  smpi_replay_init(&argc, &argv);
-  smpi_replay_finalize();
+  smpi_replay_run(&argc, &argv);
   return 0;
 }

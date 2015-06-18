@@ -15,12 +15,8 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 		"Messages specific for this msg example");
 
-int smpi_replay(int argc, char *argv[]);
-
-int smpi_replay(int argc, char *argv[])
-{
-	smpi_replay_init(&argc, &argv);
-	smpi_replay_finalize();
+static int smpi_replay(int argc, char *argv[]) {
+	smpi_replay_run(&argc, &argv);
 	return 0;
 }
 
