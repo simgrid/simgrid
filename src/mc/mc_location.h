@@ -16,8 +16,6 @@
 #include <simgrid_config.h>
 #include "mc_base.h"
 #include "mc_forward.h"
-#include "mc_object_info.h"
-#include "mc_forward.h"
 #include "AddressSpace.hpp"
 
 SG_BEGIN_DECL()

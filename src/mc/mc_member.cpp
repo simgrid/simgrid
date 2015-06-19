@@ -9,8 +9,6 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
-extern "C" {
-
 /** Resolve snapshot in the process address space
  *
  * @param object   Process address of the struct/class
@@ -42,6 +40,4 @@ void *mc_member_resolve(const void *base, dw_type_t type, dw_type_t member,
     xbt_die("No value on the stack");
   else
     return (void *) state.stack[state.stack_size - 1];
-}
-
 }

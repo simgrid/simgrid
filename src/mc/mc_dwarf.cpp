@@ -18,8 +18,6 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
-extern "C" {
-
 static void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
 static void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 static void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
@@ -1432,6 +1430,4 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
     } else type->full_type = subtype;
 
   }
-}
-
 }

@@ -11,8 +11,6 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
-extern "C" {
-
 dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, const void *ip)
 {
   xbt_dynar_t dynar = info->functions_index;
@@ -43,6 +41,4 @@ dw_variable_t MC_file_object_info_find_variable_by_name(mc_object_info_t info, c
   }
 
   return NULL;
-}
-
 }

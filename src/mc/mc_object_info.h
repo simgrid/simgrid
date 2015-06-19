@@ -23,8 +23,6 @@
 #include "mc_process.h"
 #include "../smpi/private.h"
 
-SG_BEGIN_DECL();
-
 // ***** Type
 
 typedef int e_dw_type_type;
@@ -117,6 +115,7 @@ XBT_INTERNAL void* MC_object_base_address(mc_object_info_t info);
 
 XBT_INTERNAL std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char* name, int executable);
+
 XBT_INTERNAL void MC_free_object_info(mc_object_info_t* p);
 
 XBT_INTERNAL dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, const void *ip);
@@ -169,7 +168,5 @@ struct s_mc_function_index_item {
 };
 
 XBT_INTERNAL void mc_frame_free(dw_frame_t freme);
-
-SG_END_DECL()
 
 #endif
