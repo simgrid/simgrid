@@ -54,6 +54,8 @@ void SIMIX_process_cleanup(smx_process_t process)
   if (process->kill_timer != NULL)
 	  SIMIX_timer_remove(process->kill_timer);
 
+  xbt_os_mutex_acquire(simix_global->mutex);
+
   /* cancel non-blocking communications */
   smx_synchro_t synchro;
   while ((synchro = xbt_fifo_pop(process->comms))) {
@@ -97,6 +99,8 @@ void SIMIX_process_cleanup(smx_process_t process)
   xbt_swag_remove(process, SIMIX_host_priv(process->smx_host)->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
   process->context->iwannadie = 0;
+
+  xbt_os_mutex_release(simix_global->mutex);
 }
 
 /**

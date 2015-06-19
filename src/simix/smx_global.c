@@ -178,6 +178,7 @@ void SIMIX_global_init(int *argc, char **argv)
         SIMIX_synchro_mallocator_new_f, SIMIX_synchro_mallocator_free_f,
         SIMIX_synchro_mallocator_reset_f);
     simix_global->autorestart = SIMIX_host_restart_processes;
+    simix_global->mutex = xbt_os_mutex_init();
 
     surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
@@ -258,6 +259,9 @@ void SIMIX_clean(void)
   simix_global->process_list = NULL;
   simix_global->process_to_destroy = NULL;
   xbt_dict_free(&(simix_global->registered_functions));
+
+  xbt_os_mutex_destroy(simix_global->mutex);
+  simix_global->mutex = NULL;
 
   /* Let's free maestro now */
   SIMIX_context_free(simix_global->maestro_process->context);

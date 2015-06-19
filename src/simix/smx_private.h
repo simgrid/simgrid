@@ -56,6 +56,8 @@ typedef struct s_smx_global {
   xbt_os_timer_t timer_seq; /* used to bench the sequential and parallel parts of the simulation, if requested to */
   xbt_os_timer_t timer_par;
 #endif
+
+  xbt_os_mutex_t mutex;
 } s_smx_global_t, *smx_global_t;
 
 XBT_PUBLIC_DATA(smx_global_t) simix_global;
