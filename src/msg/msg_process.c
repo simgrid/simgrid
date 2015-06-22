@@ -239,7 +239,10 @@ void* MSG_process_get_data(msg_process_t process)
 
   /* get from SIMIX the MSG process data, and then the user data */
   simdata_process_t simdata = simcall_process_get_data(process);
-  return simdata->data;
+  if (simdata)
+    return simdata->data;
+  else
+    return NULL;
 }
 
 /** \ingroup m_process_management

@@ -47,6 +47,7 @@ typedef struct s_smx_global {
   xbt_dict_t registered_functions;
   smx_creation_func_t create_process_function;
   void_pfn_smxprocess_t_smxprocess_t kill_process_function;
+  /** Callback used when killing a SMX_process */
   void_pfn_smxprocess_t cleanup_process_function;
   xbt_mallocator_t synchro_mallocator;
   void_pfn_smxhost_t autorestart;
