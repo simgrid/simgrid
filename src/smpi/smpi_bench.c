@@ -621,7 +621,7 @@ void smpi_really_switch_data_segment(int dest) {
   if(smpi_size_data_exe == 0)//no need to switch
     return;
 
-#ifdef HAVE_MMAP
+#ifdef HAVE_PRIVATIZATION
   int i;
   if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
     for (i=0; i< SIMIX_process_count(); i++){
@@ -724,7 +724,7 @@ void smpi_get_executable_global_size(){
 
 void smpi_initialize_global_memory_segments(){
 
-#ifndef HAVE_MMAP
+#ifndef HAVE_PRIVATIZATION
   smpi_privatize_global_variables=0;
   return;
 #else
@@ -798,7 +798,7 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
 void smpi_destroy_global_memory_segments(){
   if (smpi_size_data_exe == 0)//no need to switch
     return;
-#ifdef HAVE_MMAP
+#ifdef HAVE_PRIVATIZATION
   int i;
   for (i=0; i< smpi_process_count(); i++){
     if(munmap(smpi_privatisation_regions[i].address, smpi_size_data_exe) < 0) {

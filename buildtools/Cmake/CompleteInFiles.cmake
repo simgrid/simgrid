@@ -218,6 +218,7 @@ else()
   SET(HAVE_MMALLOC 0)
 endif()
 
+
 if(WIN32) #THOSE FILES ARE FUNCTIONS ARE NOT DETECTED BUT THEY SHOULD...
   set(HAVE_UCONTEXT_H 1)
   set(HAVE_MAKECONTEXT 1)
@@ -266,7 +267,15 @@ endif()
 
 if(enable_smpi)
   include(FindGFortran)
+  #really checks for objdump for privatization
+  find_package(BinUtils QUIET)
   SET(HAVE_SMPI 1)
+
+  if( NOT "${CMAKE_OBJDUMP}" MATCHES "CMAKE_OBJDUMP-NOTFOUND" AND HAVE_MMAP)
+    SET(HAVE_PRIVATIZATION 1)
+  else()
+    SET(HAVE_PRIVATIZATION 0)
+  endif()
 endif()
 
 #--------------------------------------------------------------------------------------------------

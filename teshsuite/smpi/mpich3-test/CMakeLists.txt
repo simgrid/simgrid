@@ -66,7 +66,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
 if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #C version - use automatic privatization if mmap is supported, manual through SMPI macros if not
-  if(HAVE_MMAP)
+  if(HAVE_PRIVATIZATION)
     add_library(mtest_c STATIC util/mtest.c)
   else()
     add_library(mtest_c STATIC util/mtest_manual.c)

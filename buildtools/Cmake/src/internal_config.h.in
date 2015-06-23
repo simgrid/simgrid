@@ -154,6 +154,9 @@
 /* Indicates that we have SMPI FORTRAN support */
 #cmakedefine  SMPI_FORTRAN @SMPI_FORTRAN@
 
+/* We have mmap and objdump to handle privatization */
+#cmakedefine HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@
+
 /* Indicates that we have NS3 support */
 #cmakedefine HAVE_NS3 @HAVE_NS3@
 
