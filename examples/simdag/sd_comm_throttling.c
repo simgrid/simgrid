@@ -74,8 +74,10 @@ int main(int argc, char **argv)
     /* let throttle the communication for taskD if its parent is SD_DONE */
     /* the bandwidth is 1.25e8, the data size is 1e7, and we want to throttle
      * the bandwidth by a factor 2. the rate is then 1.25e8/(2*1e7)=6.25
+     * Changing the rate is possible before the task execution starts (in SD_RUNNING
+     * state).
      */
-    if (SD_task_get_state(taskC) == SD_DONE)
+    if (SD_task_get_state(taskC) == SD_DONE && SD_task_get_state(taskD) < SD_RUNNING)
       SD_task_set_rate(taskD, 6.25);
     xbt_dynar_free_container(&changed_tasks);
   }
