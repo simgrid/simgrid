@@ -20,6 +20,7 @@
       integer MPI_ANY_SOURCE, MPI_PROC_NULL, MPI_ANY_TAG, MPI_UNDEFINED
       integer MPI_SOURCE, MPI_TAG, MPI_ERROR
       integer MPI_VERSION, MPI_SUBVERSION
+      integer MPI_LOCK_EXCLUSIVE, MPI_LOCK_SHARED
       parameter(MPI_MAX_PROCESSOR_NAME=100)
       parameter(MPI_MAX_ERROR_STRING=100)
       parameter(MPI_MAX_DATAREP_STRIN =100)
@@ -36,6 +37,8 @@
       parameter(MPI_ERROR=3)
       parameter(MPI_VERSION=1)
       parameter(MPI_SUBVERSION=1)
+      parameter(MPI_LOCK_EXCLUSIVE=1)
+      parameter(MPI_LOCK_SHARED=2)
       integer MPI_MODE_NOSTORE, MPI_MODE_NOPUT, MPI_MODE_NOPRECEDE
       integer MPI_MODE_NOSUCCEED, MPI_MODE_NOCHECK
       parameter(MPI_MODE_NOSTORE=1)
