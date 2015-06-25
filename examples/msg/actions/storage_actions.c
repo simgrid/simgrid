@@ -30,7 +30,7 @@ static void log_action(const char *const *action, double date)
   }
 }
 
-msg_file_t get_file_descriptor(const char *file_name){
+static msg_file_t get_file_descriptor(const char *file_name){
   char full_name[1024];
   msg_file_t file = NULL;
 
@@ -86,7 +86,6 @@ static void action_read(const char *const *action) {
 
 static void action_close(const char *const *action) {
   const char *file_name = action[2];
-  char full_name[1024];
   msg_file_t file;
   double clock = MSG_get_clock();       /* this "call" is free thanks to inlining */
 
