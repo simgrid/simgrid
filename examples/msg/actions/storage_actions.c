@@ -140,5 +140,5 @@ int main(int argc, char *argv[]) {
   /* Explicit finalization of the action module is required now*/
   MSG_action_exit();
 
-  return !!MSG_OK;
+  return !!res;
 }                               /* end_of_main */
