@@ -15,7 +15,7 @@ if (APPLE) #MAC
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
-if (NOT DEFINED enable_smpi OR enable_smpi) # smpi is enabled by default
+if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by default
   # Call enable_language(Fortran) in order to load the build rules for
   # this language, needed by teshsuite/smpi/mpich-test/.  Use
   # CMAKE_FORCE_Fortran_COMPILER to bypass checks for a working
