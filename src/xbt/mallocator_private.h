@@ -9,6 +9,8 @@
 #ifndef _XBT_MALLOCATOR_PRIVATE_H__
 #define _XBT_MALLOCATOR_PRIVATE_H__
 
+#include <xbt/function_types.h>
+
 typedef struct s_xbt_mallocator {
   void **objects;               /* objects stored by the mallocator and available for the user */
   int current_size;             /* number of objects currently stored */
