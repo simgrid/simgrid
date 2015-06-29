@@ -1,5 +1,6 @@
 #!/bin/sh
 # Generate files from a given dwarf.h
+# Usage: tools/generate-dwarf-functions /usr/include/dwarf.h
 
 cat - > src/mc/mc_dwarf_tagnames.cpp <<EOF
 /* Copyright (c) 2014. The SimGrid Team.
