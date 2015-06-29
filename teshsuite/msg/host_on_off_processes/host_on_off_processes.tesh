@@ -54,7 +54,12 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
 > [20.000000] [msg_test/INFO] Simulation time 20
 
-# This test is broken:
+# This test is broken (refcount error):
+# Warning! I think this test is completely broken and it was revealed by
+# exception/exception test. At time 20, Jupiter should wake up with a
+# HOST_FAILURE and it gets a TRANSFERT_FAILURE. This is because when turning
+# off Jupiter, its processes are killed, which cancels/destroys the
+# corresponding surf communication instead of canceling a src_ or dst_timeout.
 $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 5 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 5 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication
 > [Jupiter:commRX:(2) 10.000000] [msg_test/INFO]   Start RX
@@ -63,6 +68,8 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Turn Jupiter off
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO] Test 5 seems ok, cool !(number of Process : 2, it should be 2
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
+> [Jupiter:commRX:(2) 20.000000] [msg_test/INFO]   Receive message: HOST_FAILURE
+> [Jupiter:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
 > [Tremblay:commTX:(3) 40.000000] [msg_test/INFO]   TX done
 > [40.000000] [msg_test/INFO] Simulation time 40
 

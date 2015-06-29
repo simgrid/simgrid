@@ -145,6 +145,8 @@ MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task,
     case timeout_error:
       ret = MSG_TIMEOUT;
       break;
+    case host_error:
+      ret = MSG_HOST_FAILURE;
     default:
       RETHROW;
     }

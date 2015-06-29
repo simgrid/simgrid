@@ -338,6 +338,8 @@ MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
   }
   CATCH(e) {
     switch (e.category) {
+    case host_error:
+      ret = MSG_HOST_FAILURE;
     case cancel_error:          /* may be thrown by MSG_mailbox_get_by_alias */
       ret = MSG_HOST_FAILURE;
       break;
