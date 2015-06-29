@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/fix-paje-trace.sh
-  ${CMAKE_CURRENT_SOURCE_DIR}/generate.sh
+  ${CMAKE_CURRENT_SOURCE_DIR}/generate-dwarf-functions
   ${CMAKE_CURRENT_SOURCE_DIR}/indent
   ${CMAKE_CURRENT_SOURCE_DIR}/normalize-pointers.py
   ${CMAKE_CURRENT_SOURCE_DIR}/platf_route_rulebased2full.py
