@@ -99,37 +99,6 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
  */
 static char *MC_dwarf_at_type(Dwarf_Die * die);
 
-/** \brief Get the name of an attribute (DW_AT_*) from its code
- *
- *  \param attr attribute code (see the DWARF specification)
- *  \return name of the attribute
- */
-const char *MC_dwarf_attrname(int attr)
-{
-  switch (attr) {
-#include "mc_dwarf_attrnames.h"
-  default:
-    return "DW_AT_unknown";
-  }
-}
-
-/** \brief Get the name of a dwarf tag (DW_TAG_*) from its code
- *
- *  \param tag tag code (see the DWARF specification)
- *  \return name of the tag
- */
-XBT_INTERNAL
-const char *MC_dwarf_tagname(int tag)
-{
-  switch (tag) {
-#include "mc_dwarf_tagnames.h"
-  case DW_TAG_invalid:
-    return "DW_TAG_invalid";
-  default:
-    return "DW_TAG_unknown";
-  }
-}
-
 /** \brief A class of DWARF tags (DW_TAG_*)
  */
 typedef enum mc_tag_class {
