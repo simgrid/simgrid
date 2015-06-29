@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include <xbt/asserts.h>
 #include <xbt/misc.h>
 
 #include <simgrid_config.h>

@@ -7,8 +7,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <execinfo.h>
+#include <sys/stat.h>
+
 /* This file is to be included in ex.c, so the following headers are not mandatory, but it's to make sure that eclipse see them too */
 #include "xbt/ex.h"
+#include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/module.h"         /* xbt_binary_name */
 #include "xbt_modinter.h"       /* backtrace initialization headers */
