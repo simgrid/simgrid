@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
  
-#ifndef MC_MODEL_CHECKER_H
-#define MC_MODEL_CHECKER_H
+#ifndef SIMGRID_MC_MODEL_CHECKER_HPP
+#define SIMGRID_MC_MODEL_CHECKER_HPP
 
 #include <sys/types.h>
 

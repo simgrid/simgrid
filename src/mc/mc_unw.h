@@ -5,8 +5,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef MC_UNW_H
-#define MC_UNW_H
+#ifndef SIMGRID_MC_UNW_H
+#define SIMGRID_MC_UNW_H
 
 /** \file
  *  Libunwind implementation for the model-checker

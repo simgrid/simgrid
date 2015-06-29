@@ -4,6 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SIMGRID_MC_HASH_HPP
+#define SIMGRID_MC_HASH_HPP
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -11,9 +14,6 @@
 
 #include "xbt/misc.h"
 #include "mc_snapshot.h"
-
-#ifndef SIMGRID_MC_HASH_HPP
-#define SIMGRID_MC_HASH_HPP
 
 /** \brief Hash the current state
  *  \param num_state number of states

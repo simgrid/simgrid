@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef MC_ADDRESS_SPACE_H
-#define MC_ADDRESS_SPACE_H
+#ifndef SIMGRID_MC_ADDRESS_SPACE_H
+#define SIMGRID_MC_ADDRESS_SPACE_H
 
 #include <cstdint>
 #include <type_traits>

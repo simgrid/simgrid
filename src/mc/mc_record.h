@@ -14,8 +14,8 @@
  *  passed to the application (without the MC specific arguments).
  */
 
-#ifndef MC_RECORD_H
-#define MC_RECORD_H
+#ifndef SIMGRID_MC_RECORD_H
+#define SIMGRID_MC_RECORD_H
 
 #include <stdbool.h>
 

@@ -8,8 +8,8 @@
  *  Debug information for the MC.
  */
 
-#ifndef MC_OBJECT_INFO_H
-#define MC_OBJECT_INFO_H
+#ifndef SIMGRID_MC_OBJECT_INFO_H
+#define SIMGRID_MC_OBJECT_INFO_H
 
 #include <stdint.h>
 #include <stdbool.h>

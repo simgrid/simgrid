@@ -4,24 +4,22 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SIMGRID_MC_PAGESTORE_HPP
+#define SIMGRID_MC_PAGESTORE_HPP
+
 #include <stdint.h>
 
-#ifdef __cplusplus
 #include <vector>
 
 #include <boost/array.hpp>
 #include <boost/utility.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
-#endif
 
 #include <xbt.h>
 
 #include "mc_mmu.h"
 #include "mc_forward.h"
-
-#ifndef MC_PAGE_STORE_H
-#define MC_PAGE_STORE_H
 
 namespace simgrid {
 namespace mc {

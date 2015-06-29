@@ -4,6 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SIMGRID_MC_COMM_PATTERN_H
+#define SIMGRID_MC_COMM_PATTERN_H
+
 #include <stdint.h>
 
 #include <simgrid_config.h>
@@ -14,9 +17,6 @@
 #include <smpi/smpi.h>
 
 #include "mc_state.h"
-
-#ifndef MC_COMM_PATTERN_H
-#define MC_COMM_PATTERN_H
 
 SG_BEGIN_DECL()
 

@@ -6,10 +6,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/misc.h>
-
 #ifndef SIMGRID_MC_REPLAY_H
 #define SIMGRID_MC_REPLAY_H
+
+#include <xbt/misc.h>
 
 SG_BEGIN_DECL()
 

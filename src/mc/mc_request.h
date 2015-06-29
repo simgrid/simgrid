@@ -4,12 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SIMGRID_MC_REQUEST_H
+#define SIMGRID_MC_REQUEST_H
+
 #include <simgrid_config.h>
 
 #include "../simix/smx_private.h"
-
-#ifndef MC_REQUEST_H
-#define MC_REQUEST_H
 
 SG_BEGIN_DECL()
 
