@@ -377,6 +377,8 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
       break;
 
     }
+
+    process->waiting_synchro = NULL;
   }
   if(!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != issuer) {
     XBT_DEBUG("Inserting %s in the to_run list", process->name);
