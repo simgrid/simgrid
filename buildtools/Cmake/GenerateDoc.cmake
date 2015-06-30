@@ -60,7 +60,6 @@ if(DOXYGEN_FOUND)
   ADD_CUSTOM_COMMAND(TARGET doc
     COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     COMMAND pwd
-    COMMAND ${CMAKE_COMMAND} -E tar czf html/msg-tuto-src.tgz msg-tuto-src/
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     COMMAND ${CMAKE_COMMAND} -E echo "XX Generate the index files"
