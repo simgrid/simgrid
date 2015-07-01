@@ -61,7 +61,7 @@ msg_host_t __MSG_host_create(smx_host_t workstation)
 }
 
 
-/** \ingroup msg_host_management
+/** \ingroup m_host_management
  * \brief Finds a msg_host_t using its name.
  *
  * This is a name directory service
@@ -469,7 +469,7 @@ xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
   return (simcall_host_get_attached_storage_list(host));
 }
 
-/** \ingroup msg_host_management
+/** \ingroup m_host_management
  * \brief Return the content of mounted storages on an host.
  * \param host a host
  * \return a dict containing content (as a dict) of all storages mounted on the host

@@ -548,7 +548,7 @@ msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
   return MSG_OK;
 }
 
-/** \ingroup msg_host_management
+/** \ingroup m_host_management
  *
  * \brief Returns the user data of a #msg_storage_t.
  *
