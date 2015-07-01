@@ -207,6 +207,7 @@ msg_host_t *MSG_get_host_table(void)
 
 /** \ingroup m_host_management
  * \brief Return a dynar containing all the hosts declared at a given point of time
+ * \remark The host order in the returned array is generally different from the host creation/declaration order in the XML platform (we use a hash table internally)
  */
 xbt_dynar_t MSG_hosts_as_dynar(void) {
   xbt_lib_cursor_t cursor;

@@ -79,8 +79,9 @@ SD_workstation_t SD_workstation_get_by_name(const char *name)
  * \brief Returns the workstation list
  *
  * Use SD_workstation_get_number() to know the array size.
- *
+ * 
  * \return an array of \ref SD_workstation_t containing all workstations
+ * \remark The workstation order in the returned array is generally different from the workstation creation/declaration order in the XML platform (we use a hash table internally).
  * \see SD_workstation_get_number()
  */
 const SD_workstation_t *SD_workstation_get_list(void)
