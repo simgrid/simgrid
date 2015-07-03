@@ -14,6 +14,7 @@ $ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_l
 > [  0.000000] (1:master@Tremblay) Got 20 task to process :
 > [  1.000000] (0:@) Restart processes on host: Fafard
 > [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'Jupiter'. Nevermind. Let's keep going!
+> [  1.000000] (3:slave@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
 > [  2.000000] (0:@) Restart processes on host: Jupiter
 > [ 11.000000] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
 > [ 12.030928] (1:master@Tremblay) Send completed

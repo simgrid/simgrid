@@ -777,7 +777,6 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
   unsigned int destroy_count = 0;
   smx_simcall_t simcall;
 
-
   while ((simcall = xbt_fifo_shift(synchro->simcalls))) {
 
     /* If a waitany simcall is waiting for this synchro to finish, then remove
@@ -800,6 +799,12 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
     XBT_DEBUG("SIMIX_comm_finish: synchro state = %d", (int)synchro->state);
 
     /* Check out for errors */
+
+    if (surf_resource_get_state(surf_workstation_resource_priv(
+          simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+      simcall->issuer->context->iwannadie = 1;
+      SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+    } else
 
     switch (synchro->state) {
 
@@ -835,14 +840,6 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
       break;
 
     case SIMIX_LINK_FAILURE:
-
-      // There should be a cleaner way to do this.
-      // We should handle this in SIMIX_post_comm instead.
-      if (surf_resource_get_state(surf_workstation_resource_priv(
-            simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
-        SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
-        break;
-      }
 
       XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
                 synchro,
