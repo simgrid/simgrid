@@ -47,27 +47,28 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
 #define VERSION_RE "-[\\.0-9-]*$"
 
 static const char *const FILTERED_LIBS[] = {
-  "libstdc++",
+  "ld",
+  "libbz2",
   "libboost_context",
+  "libc",
   "libc++",
   "libcdt",
-  "libm",
+  "libcgraph",
+  "libdl",
+  "libdw",
+  "libelf",
   "libgcc_s",
+  "liblua5.1",
+  "liblzma",
+  "libm",
   "libpthread",
+  "librt",
+  "libstdc++",
   "libunwind",
   "libunwind-x86_64",
   "libunwind-x86",
   "libunwind-ptrace",
-  "libdw",
-  "libdl",
-  "librt",
-  "liblzma",
-  "libelf",
-  "libbz2",
-  "libz",
-  "libelf",
-  "libc",
-  "ld"
+  "libz"
 };
 
 static bool MC_is_simgrid_lib(const char* libname)
