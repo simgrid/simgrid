@@ -356,6 +356,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
     case SIMIX_SYNC_COMMUNICATE:
       xbt_fifo_remove(process->comms, process->waiting_synchro);
       SIMIX_comm_cancel(process->waiting_synchro);
+      xbt_fifo_remove(process->waiting_synchro->simcalls, &process->simcall);
       SIMIX_comm_destroy(process->waiting_synchro);
       break;
 
