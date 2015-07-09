@@ -44,12 +44,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
 // ***** Helper stuff
 
 #define SO_RE "\\.so[\\.0-9]*$"
-#define VERSION_RE "-[\\.0-9]*$"
+#define VERSION_RE "-[\\.0-9-]*$"
 
 static const char *const FILTERED_LIBS[] = {
   "libstdc++",
   "libboost_context",
   "libc++",
+  "libcdt",
   "libm",
   "libgcc_s",
   "libpthread",

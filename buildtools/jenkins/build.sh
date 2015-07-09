@@ -4,6 +4,8 @@ set -e
 
 build_mode="$1"
 
+echo "Build mode $build_mode on $(uname -np)" >&2
+
 # usage: die status message...
 die () {
   local status=${1:-1}
