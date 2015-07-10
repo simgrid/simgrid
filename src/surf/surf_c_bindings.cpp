@@ -4,13 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "host_interface.hpp"
 #include "surf_interface.hpp"
-#include "workstation_interface.hpp"
-#include "vm_workstation_interface.hpp"
 #include "network_interface.hpp"
 #include "surf_routing_cluster.hpp"
 #include "instr/instr_private.h"
 #include "plugins/energy.hpp"
+#include "vm_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
@@ -22,16 +22,16 @@ static CpuPtr get_casted_cpu(surf_resource_t resource){
   return static_cast<CpuPtr>(surf_cpu_resource_priv(resource));
 }
 
-static WorkstationPtr get_casted_workstation(surf_resource_t resource){
-  return static_cast<WorkstationPtr>(surf_workstation_resource_priv(resource));
+static HostPtr get_casted_host(surf_resource_t resource){
+  return static_cast<HostPtr>(surf_host_resource_priv(resource));
 }
 
 static RoutingEdgePtr get_casted_routing(surf_resource_t resource){
   return static_cast<RoutingEdgePtr>(surf_routing_resource_priv(resource));
 }
 
-static WorkstationVMPtr get_casted_vm_workstation(surf_resource_t resource){
-  return static_cast<WorkstationVMPtr>(surf_workstation_resource_priv(resource));
+static VMPtr get_casted_vm(surf_resource_t resource){
+  return static_cast<VMPtr>(surf_host_resource_priv(resource));
 }
 
 char *surf_routing_edge_name(sg_routing_edge_t edge){
@@ -225,7 +225,7 @@ void routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
  *********/
 
 surf_model_t surf_resource_model(const void *host, int level) {
-  /* If level is SURF_WKS_LEVEL, ws is a workstation_CLM03 object. It has
+  /* If level is SURF_WKS_LEVEL, ws is a host_CLM03 object. It has
    * surf_resource at the generic_resource field. */
   ResourcePtr ws = static_cast<ResourcePtr>(xbt_lib_get_level((xbt_dictelm_t) host, level));
   return ws->getModel();
@@ -279,29 +279,29 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-surf_action_t surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
-		                                    int workstation_nb,
-                                            void **workstation_list,
+surf_action_t surf_host_model_execute_parallel_task(surf_host_model_t model,
+		                                    int host_nb,
+                                            void **host_list,
                                             double *flops_amount,
                                             double *bytes_amount,
                                             double rate){
-  return static_cast<ActionPtr>(model->executeParallelTask(workstation_nb, workstation_list, flops_amount, bytes_amount, rate));
+  return static_cast<ActionPtr>(model->executeParallelTask(host_nb, host_list, flops_amount, bytes_amount, rate));
 }
 
-surf_action_t surf_workstation_model_communicate(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate){
-  return model->communicate(get_casted_workstation(src), get_casted_workstation(dst), size, rate);
+surf_action_t surf_host_model_communicate(surf_host_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate){
+  return model->communicate(get_casted_host(src), get_casted_host(dst), size, rate);
 }
 
-xbt_dynar_t surf_workstation_model_get_route(surf_workstation_model_t /*model*/,
+xbt_dynar_t surf_host_model_get_route(surf_host_model_t /*model*/,
                                              surf_resource_t src, surf_resource_t dst){
   xbt_dynar_t route = NULL;
-  routing_platf->getRouteAndLatency(get_casted_workstation(src)->p_netElm,
-		                            get_casted_workstation(dst)->p_netElm, &route, NULL);
+  routing_platf->getRouteAndLatency(get_casted_host(src)->p_netElm,
+		                            get_casted_host(dst)->p_netElm, &route, NULL);
   return route;
 }
 
-void surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host){
-  surf_vm_workstation_model->createWorkstationVM(name, ind_phys_host);
+void surf_vm_model_create(const char *name, surf_resource_t ind_phys_host){
+  surf_vm_model->createVM(name, ind_phys_host);
 }
 
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate){
@@ -324,115 +324,115 @@ void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state
   resource->setState(state);
 }
 
-surf_action_t surf_workstation_sleep(surf_resource_t resource, double duration){
-  return get_casted_workstation(resource)->sleep(duration);
+surf_action_t surf_host_sleep(surf_resource_t resource, double duration){
+  return get_casted_host(resource)->sleep(duration);
 }
 
-double surf_workstation_get_speed(surf_resource_t resource, double load){
-  return get_casted_workstation(resource)->getSpeed(load);
+double surf_host_get_speed(surf_resource_t resource, double load){
+  return get_casted_host(resource)->getSpeed(load);
 }
 
-double surf_workstation_get_available_speed(surf_resource_t resource){
-  return get_casted_workstation(resource)->getAvailableSpeed();
+double surf_host_get_available_speed(surf_resource_t resource){
+  return get_casted_host(resource)->getAvailableSpeed();
 }
 
-int surf_workstation_get_core(surf_resource_t resource){
-  return get_casted_workstation(resource)->getCore();
+int surf_host_get_core(surf_resource_t resource){
+  return get_casted_host(resource)->getCore();
 }
 
-surf_action_t surf_workstation_execute(surf_resource_t resource, double size){
-  return get_casted_workstation(resource)->execute(size);
+surf_action_t surf_host_execute(surf_resource_t resource, double size){
+  return get_casted_host(resource)->execute(size);
 }
 
-double surf_workstation_get_current_power_peak(surf_resource_t resource){
-  return get_casted_workstation(resource)->getCurrentPowerPeak();
+double surf_host_get_current_power_peak(surf_resource_t resource){
+  return get_casted_host(resource)->getCurrentPowerPeak();
 }
 
-double surf_workstation_get_power_peak_at(surf_resource_t resource, int pstate_index){
-  return get_casted_workstation(resource)->getPowerPeakAt(pstate_index);
+double surf_host_get_power_peak_at(surf_resource_t resource, int pstate_index){
+  return get_casted_host(resource)->getPowerPeakAt(pstate_index);
 }
 
-int surf_workstation_get_nb_pstates(surf_resource_t resource){
-  return get_casted_workstation(resource)->getNbPstates();
+int surf_host_get_nb_pstates(surf_resource_t resource){
+  return get_casted_host(resource)->getNbPstates();
 }
 
-void surf_workstation_set_pstate(surf_resource_t resource, int pstate_index){
-  get_casted_workstation(resource)->setPstate(pstate_index);
+void surf_host_set_pstate(surf_resource_t resource, int pstate_index){
+  get_casted_host(resource)->setPstate(pstate_index);
 }
-int surf_workstation_get_pstate(surf_resource_t resource){
-  return get_casted_workstation(resource)->getPstate();
+int surf_host_get_pstate(surf_resource_t resource){
+  return get_casted_host(resource)->getPstate();
 }
-double surf_workstation_get_wattmin_at(surf_resource_t resource, int pstate){
+double surf_host_get_wattmin_at(surf_resource_t resource, int pstate){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_workstation(resource)->p_cpu);
+  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
   return cpuIt->second->getWattMinAt(pstate);
 }
-double surf_workstation_get_wattmax_at(surf_resource_t resource, int pstate){
+double surf_host_get_wattmax_at(surf_resource_t resource, int pstate){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_workstation(resource)->p_cpu);
+  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
   return cpuIt->second->getWattMaxAt(pstate);
 }
 
-double surf_workstation_get_consumed_energy(surf_resource_t resource){
+double surf_host_get_consumed_energy(surf_resource_t resource){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_workstation(resource)->p_cpu);
+  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
   return cpuIt->second->getConsumedEnergy();
 }
 
-xbt_dict_t surf_workstation_get_mounted_storage_list(surf_resource_t workstation){
-  return get_casted_workstation(workstation)->getMountedStorageList();
+xbt_dict_t surf_host_get_mounted_storage_list(surf_resource_t host){
+  return get_casted_host(host)->getMountedStorageList();
 }
 
-xbt_dynar_t surf_workstation_get_attached_storage_list(surf_resource_t workstation){
-  return get_casted_workstation(workstation)->getAttachedStorageList();
+xbt_dynar_t surf_host_get_attached_storage_list(surf_resource_t host){
+  return get_casted_host(host)->getAttachedStorageList();
 }
 
-surf_action_t surf_workstation_open(surf_resource_t workstation, const char* fullpath){
-  return get_casted_workstation(workstation)->open(fullpath);
+surf_action_t surf_host_open(surf_resource_t host, const char* fullpath){
+  return get_casted_host(host)->open(fullpath);
 }
 
-surf_action_t surf_workstation_close(surf_resource_t workstation, surf_file_t fd){
-  return get_casted_workstation(workstation)->close(fd);
+surf_action_t surf_host_close(surf_resource_t host, surf_file_t fd){
+  return get_casted_host(host)->close(fd);
 }
 
-int surf_workstation_unlink(surf_resource_t workstation, surf_file_t fd){
-  return get_casted_workstation(workstation)->unlink(fd);
+int surf_host_unlink(surf_resource_t host, surf_file_t fd){
+  return get_casted_host(host)->unlink(fd);
 }
 
-size_t surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd){
-  return get_casted_workstation(workstation)->getSize(fd);
+size_t surf_host_get_size(surf_resource_t host, surf_file_t fd){
+  return get_casted_host(host)->getSize(fd);
 }
 
-surf_action_t surf_workstation_read(surf_resource_t resource, surf_file_t fd, sg_size_t size){
-  return get_casted_workstation(resource)->read(fd, size);
+surf_action_t surf_host_read(surf_resource_t host, surf_file_t fd, sg_size_t size){
+  return get_casted_host(host)->read(fd, size);
 }
 
-surf_action_t surf_workstation_write(surf_resource_t resource, surf_file_t fd, sg_size_t size){
-  return get_casted_workstation(resource)->write(fd, size);
+surf_action_t surf_host_write(surf_resource_t host, surf_file_t fd, sg_size_t size){
+  return get_casted_host(host)->write(fd, size);
 }
 
-xbt_dynar_t surf_workstation_get_info(surf_resource_t resource, surf_file_t fd){
-  return get_casted_workstation(resource)->getInfo(fd);
+xbt_dynar_t surf_host_get_info(surf_resource_t host, surf_file_t fd){
+  return get_casted_host(host)->getInfo(fd);
 }
 
-size_t surf_workstation_file_tell(surf_resource_t workstation, surf_file_t fd){
-  return get_casted_workstation(workstation)->fileTell(fd);
+size_t surf_host_file_tell(surf_resource_t host, surf_file_t fd){
+  return get_casted_host(host)->fileTell(fd);
 }
 
-int surf_workstation_file_seek(surf_resource_t workstation, surf_file_t fd,
+int surf_host_file_seek(surf_resource_t host, surf_file_t fd,
                                sg_offset_t offset, int origin){
-  return get_casted_workstation(workstation)->fileSeek(fd, offset, origin);
+  return get_casted_host(host)->fileSeek(fd, offset, origin);
 }
 
-int surf_workstation_file_move(surf_resource_t workstation, surf_file_t fd, const char* fullpath){
-  return get_casted_workstation(workstation)->fileMove(fd, fullpath);
+int surf_host_file_move(surf_resource_t host, surf_file_t fd, const char* fullpath){
+  return get_casted_host(host)->fileMove(fd, fullpath);
 }
 
-xbt_dynar_t surf_workstation_get_vms(surf_resource_t resource){
-  xbt_dynar_t vms = get_casted_workstation(resource)->getVms();
+xbt_dynar_t surf_host_get_vms(surf_resource_t host){
+  xbt_dynar_t vms = get_casted_host(host)->getVms();
   xbt_dynar_t vms_ = xbt_dynar_new(sizeof(smx_host_t), NULL);
   unsigned int cpt;
-  WorkstationVMPtr vm;
+  VMPtr vm;
   xbt_dynar_foreach(vms, cpt, vm) {
     smx_host_t vm_ = xbt_lib_get_elm_or_null(host_lib, vm->getName());
     xbt_dynar_push(vms_, &vm_);
@@ -441,21 +441,18 @@ xbt_dynar_t surf_workstation_get_vms(surf_resource_t resource){
   return vms_;
 }
 
-void surf_workstation_get_params(surf_resource_t resource, ws_params_t params){
-  get_casted_workstation(resource)->getParams(params);
+void surf_host_get_params(surf_resource_t host, ws_params_t params){
+  get_casted_host(host)->getParams(params);
 }
 
-void surf_workstation_set_params(surf_resource_t resource, ws_params_t params){
-  get_casted_workstation(resource)->setParams(params);
+void surf_host_set_params(surf_resource_t host, ws_params_t params){
+  get_casted_host(host)->setParams(params);
 }
 
-void surf_vm_workstation_destroy(surf_resource_t resource){
-  /* ind_phys_workstation equals to smx_host_t */
-  //surf_resource_t ind_vm_workstation = xbt_lib_get_elm_or_null(host_lib, getName());
-
+void surf_vm_destroy(surf_resource_t resource){
   /* Before clearing the entries in host_lib, we have to pick up resources. */
   CpuPtr cpu = get_casted_cpu(resource);
-  WorkstationVMPtr vm = get_casted_vm_workstation(resource);
+  VMPtr vm = get_casted_vm(resource);
   RoutingEdgePtr routing = get_casted_routing(resource);
   char* name = xbt_dict_get_elm_key(resource);
   /* We deregister objects from host_lib, without invoking the freeing callback
@@ -466,7 +463,7 @@ void surf_vm_workstation_destroy(surf_resource_t resource){
    */
   xbt_lib_unset(host_lib, name, SURF_CPU_LEVEL, 0);
   xbt_lib_unset(host_lib, name, ROUTING_HOST_LEVEL, 0);
-  xbt_lib_unset(host_lib, name, SURF_WKS_LEVEL, 0);
+  xbt_lib_unset(host_lib, name, SURF_HOST_LEVEL, 0);
 
   /* TODO: comment out when VM storage is implemented. */
   // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
@@ -476,36 +473,36 @@ void surf_vm_workstation_destroy(surf_resource_t resource){
   delete routing;
 }
 
-void surf_vm_workstation_suspend(surf_resource_t resource){
-  get_casted_vm_workstation(resource)->suspend();
+void surf_vm_suspend(surf_resource_t vm){
+  get_casted_vm(vm)->suspend();
 }
 
-void surf_vm_workstation_resume(surf_resource_t resource){
-  get_casted_vm_workstation(resource)->resume();
+void surf_vm_resume(surf_resource_t vm){
+  get_casted_vm(vm)->resume();
 }
 
-void surf_vm_workstation_save(surf_resource_t resource){
-  get_casted_vm_workstation(resource)->save();
+void surf_vm_save(surf_resource_t vm){
+  get_casted_vm(vm)->save();
 }
 
-void surf_vm_workstation_restore(surf_resource_t resource){
-  get_casted_vm_workstation(resource)->restore();
+void surf_vm_restore(surf_resource_t vm){
+  get_casted_vm(vm)->restore();
 }
 
-void surf_vm_workstation_migrate(surf_resource_t resource, surf_resource_t ind_vm_ws_dest){
-  get_casted_vm_workstation(resource)->migrate(ind_vm_ws_dest);
+void surf_vm_migrate(surf_resource_t vm, surf_resource_t ind_vm_ws_dest){
+  get_casted_vm(vm)->migrate(ind_vm_ws_dest);
 }
 
-surf_resource_t surf_vm_workstation_get_pm(surf_resource_t resource){
-  return get_casted_vm_workstation(resource)->getPm();
+surf_resource_t surf_vm_get_pm(surf_resource_t vm){
+  return get_casted_vm(vm)->getPm();
 }
 
-void surf_vm_workstation_set_bound(surf_resource_t resource, double bound){
-  return get_casted_vm_workstation(resource)->setBound(bound);
+void surf_vm_set_bound(surf_resource_t vm, double bound){
+  return get_casted_vm(vm)->setBound(bound);
 }
 
-void surf_vm_workstation_set_affinity(surf_resource_t resource, surf_resource_t cpu, unsigned long mask){
-  return get_casted_vm_workstation(resource)->setAffinity(get_casted_cpu(cpu), mask);
+void surf_vm_set_affinity(surf_resource_t vm, surf_resource_t cpu, unsigned long mask){
+  return get_casted_vm(vm)->setAffinity(get_casted_cpu(cpu), mask);
 }
 
 int surf_network_link_is_shared(surf_cpp_resource_t link){

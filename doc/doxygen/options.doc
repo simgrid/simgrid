@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 \section options_model Configuring the platform models
 
 \anchor options_storage_model
-\anchor options_vm_workstation_model
+\anchor options_vm_model
 \subsection options_model_select Selecting the platform models
 
 SimGrid comes with several network, CPU and storage models built in, and you
@@ -76,7 +76,7 @@ you a short description of all possible values. Also, \c --help-models
 should provide information about all models for all existing resources.
    - \b network/model: specify the used network model
    - \b cpu/model: specify the used CPU model
-   - \b workstation/model: specify the used workstation model
+   - \b host/model: specify the used host model
    - \b storage/model: specify the used storage model (there is currently only one such model - this option is hence only useful for future releases)
    - \b vm_workstation/model: specify the workstation model for virtual machines (there is currently only one such model - this option is hence only useful for future releases)
 
@@ -126,20 +126,20 @@ additional configuration flags".
 Concerning the CPU, we have only one model for now:
   - \b Cas01: Simplistic CPU model (time=size/power)
 
-The workstation concept is the aggregation of a CPU with a network
+The host concept is the aggregation of a CPU with a network
 card. Three models exists, but actually, only 2 of them are
 interesting. The "compound" one is simply due to the way our internal
 code is organized, and can easily be ignored. So at the end, you have
-two workstation models: The default one allows to aggregate an
+two host models: The default one allows to aggregate an
 existing CPU model with an existing network model, but does not allow
 parallel tasks because these beasts need some collaboration between
 the network and CPU model. That is why, ptask_07 is used by default
 when using SimDag.
-  - \b default: Default workstation model. Currently, CPU:Cas01 and
+  - \b default: Default host model. Currently, CPU:Cas01 and
     network:LV08 (with cross traffic enabled)
-  - \b compound: Workstation model that is automatically chosen if
+  - \b compound: Host model that is automatically chosen if
     you change the network and CPU models
-  - \b ptask_L07: Workstation model somehow similar to Cas01+CM02 but
+  - \b ptask_L07: Host model somehow similar to Cas01+CM02 but
     allowing parallel tasks
 
 \subsection options_generic_plugin Plugins
@@ -268,7 +268,7 @@ available in <tt>examples/msg/gtnets/crosstraffic-p.xml</tt>.
 This is activated through the \b network/crosstraffic item, that
 can be set to 0 (disable this feature) or 1 (enable it).
 
-Note that with the default workstation model this option is activated by default.
+Note that with the default host model this option is activated by default.
 
 \subsubsection options_model_network_coord Coordinated-based network models
 
@@ -1082,6 +1082,8 @@ silently overflow on other parts of the memory.
 - \c gtnets/jitter: \ref options_pls
 - \c gtnets/jitter_seed: \ref options_pls
 
+- \c host/model: \ref options_model_select
+
 - \c maxmin/precision: \ref options_model_precision
 
 - \c msg/debug_multiple_use: \ref options_msg_debug_multiple_use
@@ -1147,7 +1149,6 @@ silently overflow on other parts of the memory.
 - \c verbose-exit: \ref options_generic_exit
 
 - \c vm_workstation/model: \ref options_vm_workstation_model
-- \c workstation/model: \ref options_model_select
 
 \subsection options_index_smpi_coll Index of SMPI collective algorithms options
 

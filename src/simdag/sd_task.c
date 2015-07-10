@@ -1090,7 +1090,7 @@ void __SD_task_really_run(SD_task_t task)
 {
 
   int i;
-  void **surf_workstations;
+  void **surf_hosts;
 
   xbt_assert(__SD_task_is_runnable_or_in_fifo(task),
               "Task '%s' is not runnable or in a fifo! Task state: %d",
@@ -1100,10 +1100,10 @@ void __SD_task_really_run(SD_task_t task)
               SD_task_get_name(task));
 
   XBT_DEBUG("Really running task '%s'", SD_task_get_name(task));
-  int workstation_nb = task->workstation_nb;
+  int host_nb = task->workstation_nb;
 
   /* set this task as current task for the workstations in sequential mode */
-  for (i = 0; i < workstation_nb; i++) {
+  for (i = 0; i < host_nb; i++) {
     if (SD_workstation_get_access_mode(task->workstation_list[i]) ==
         SD_WORKSTATION_SEQUENTIAL_ACCESS) {
       SD_workstation_priv(task->workstation_list[i])->current_task = task;
@@ -1119,25 +1119,25 @@ void __SD_task_really_run(SD_task_t task)
 
   /* we have to create a Surf workstation array instead of the SimDag
    * workstation array */
-  surf_workstations = xbt_new(void *, workstation_nb);
+  surf_hosts = xbt_new(void *, host_nb);
 
-  for (i = 0; i < workstation_nb; i++)
-    surf_workstations[i] =  surf_workstation_resource_priv(task->workstation_list[i]);
+  for (i = 0; i < host_nb; i++)
+    surf_hosts[i] =  surf_host_resource_priv(task->workstation_list[i]);
 
-  double *flops_amount = xbt_new0(double, workstation_nb);
-  double *bytes_amount = xbt_new0(double, workstation_nb * workstation_nb);
+  double *flops_amount = xbt_new0(double, host_nb);
+  double *bytes_amount = xbt_new0(double, host_nb * host_nb);
 
 
   if(task->flops_amount)
     memcpy(flops_amount, task->flops_amount, sizeof(double) *
-           workstation_nb);
+           host_nb);
   if(task->bytes_amount)
     memcpy(bytes_amount, task->bytes_amount,
-           sizeof(double) * workstation_nb * workstation_nb);
+           sizeof(double) * host_nb * host_nb);
 
-  task->surf_action = surf_workstation_model_execute_parallel_task((surf_workstation_model_t)surf_workstation_model,
-		                                                     workstation_nb,
-		                                                     surf_workstations,
+  task->surf_action = surf_host_model_execute_parallel_task((surf_host_model_t)surf_host_model,
+		                                                     host_nb,
+		                                                     surf_hosts,
 		                                                     flops_amount,
 		                                                     bytes_amount,
 		                                                     task->rate);

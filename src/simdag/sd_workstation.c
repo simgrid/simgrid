@@ -178,7 +178,7 @@ const char *SD_workstation_get_property_value(SD_workstation_t ws,
  */
 xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
 {
-  return surf_resource_get_properties(surf_workstation_resource_priv(workstation));
+  return surf_resource_get_properties(surf_host_resource_priv(workstation));
 }
 
 
@@ -247,7 +247,7 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
   surf_src = src;
   surf_dst = dst;
 
-  surf_route = surf_workstation_model_get_route((surf_workstation_model_t)surf_workstation_model,
+  surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model,
 		                                        surf_src, surf_dst);
 
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
@@ -268,8 +268,8 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
  */
 int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
 {
-  return xbt_dynar_length(surf_workstation_model_get_route(
-		    (surf_workstation_model_t)surf_workstation_model, src, dst));
+  return xbt_dynar_length(surf_host_model_get_route(
+		    (surf_host_model_t)surf_host_model, src, dst));
 }
 
 /**
@@ -281,7 +281,7 @@ int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
  */
 double SD_workstation_get_power(SD_workstation_t workstation)
 {
-  return surf_workstation_get_speed(workstation, 1.0);
+  return surf_host_get_speed(workstation, 1.0);
 }
 /**
  * \brief Returns the amount of cores of a workstation
@@ -290,7 +290,7 @@ double SD_workstation_get_power(SD_workstation_t workstation)
  * \return the amount of cores of this workstation
  */
 int SD_workstation_get_cores(SD_workstation_t workstation) {
-  return surf_workstation_get_core(workstation);
+  return surf_host_get_core(workstation);
 }
 
 /**
@@ -302,7 +302,7 @@ int SD_workstation_get_cores(SD_workstation_t workstation) {
  */
 double SD_workstation_get_available_power(SD_workstation_t workstation)
 {
-  return surf_workstation_get_available_speed(workstation);
+  return surf_host_get_available_speed(workstation);
 }
 
 /**
@@ -486,7 +486,7 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
  * \return a dynar containing all mounted storages on the workstation
  */
 xbt_dict_t SD_workstation_get_mounted_storage_list(SD_workstation_t workstation){
-  return surf_workstation_get_mounted_storage_list(workstation);
+  return surf_host_get_mounted_storage_list(workstation);
 }
 
 /**
@@ -496,7 +496,7 @@ xbt_dict_t SD_workstation_get_mounted_storage_list(SD_workstation_t workstation)
  * \return a dynar containing all mounted storages on the workstation
  */
 xbt_dynar_t SD_workstation_get_attached_storage_list(SD_workstation_t workstation){
-  return surf_workstation_get_attached_storage_list(workstation);
+  return surf_host_get_attached_storage_list(workstation);
 }
 
 /**

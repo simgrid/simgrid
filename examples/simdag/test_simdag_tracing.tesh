@@ -6,7 +6,7 @@ p Simple test of simdag
 $ $SG_TEST_EXENV ./simdag_tracing --cfg=tracing:yes --cfg=tracing/categorized:yes ${srcdir:=.}/2clusters.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [surf_host/INFO] surf_host_model_init_ptask_L07
 > [0.000000] [sd_seq_access/INFO] Access mode of C2-05 is sequential
 > [0.000000] [sd_seq_access/INFO] Access mode of C2-06 is sequential
 > [0.000000] [sd_seq_access/INFO] Task A is currently running on C2-05 (SD_TASK_COMP_SEQ)

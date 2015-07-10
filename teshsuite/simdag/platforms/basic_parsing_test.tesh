@@ -1,102 +1,102 @@
 ! output sort
 
 $ ${bindir:=.}/basic_parsing_test one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 5, link number: 12
 
 $ ${bindir:=.}/basic_parsing_test one_host_availability.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test one_host_properties.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test one_host_state_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test one_host_state_off.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test one_host_state_on.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test one_host_trace_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test one_host_trace_inside.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test one_host.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test one_link_availability.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 2
 
 $ ${bindir:=.}/basic_parsing_test one_link_fatpipe.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 2
 
 $ ${bindir:=.}/basic_parsing_test one_link_shared.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 2
 
 $ ${bindir:=.}/basic_parsing_test one_link_state_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 1, link number: 2
 
 $ ${bindir:=.}/basic_parsing_test three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 3, link number: 4
 
 $ ${bindir:=.}/basic_parsing_test two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 10, link number: 24
 
 $ ${bindir:=.}/basic_parsing_test two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 2, link number: 4
 
 $ ${bindir:=.}/basic_parsing_test two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_workstation_model_init_ptask_L07
+> [  0.000000] (0:@) surf_host_model_init_ptask_L07
 > Workstation number: 2, link number: 2
 
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [surf_host/INFO] surf_host_model_init_ptask_L07
 > Workstation number: 4, link number: 5
 
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd_bis.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [surf_host/INFO] surf_host_model_init_ptask_L07
 > Workstation number: 5, link number: 7
 
 $ ${bindir:=.}/basic_parsing_test ./properties.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/optim' to 'TI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/optim:TI
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/optim' to 'TI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'compound'
 > [0.000000] [surf_parse/INFO] The custom configuration 'cpu/optim' is already defined by user!
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'maxmin/precision' to '0.000010'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'workstation/model' to 'compound'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test ./one_cluster_file.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [surf_host/INFO] surf_host_model_init_ptask_L07
 > Workstation number: 2, link number: 6
 
 $ ${bindir:=.}/is_router_test ./test_of_is_router.xml
-> [0.000000] [surf_workstation/INFO] surf_workstation_model_init_ptask_L07
+> [0.000000] [surf_host/INFO] surf_host_model_init_ptask_L07
 > Workstation number: 10, link number: 1, elmts number: 21
 >    - Seen: "host01" is type : 1
 >    - Seen: "host02" is type : 1

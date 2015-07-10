@@ -43,8 +43,8 @@ const char *string_action(e_surf_action_state_t state)
 void test(char *platform);
 void test(char *platform)
 {
-  void *workstationA = NULL;
-  void *workstationB = NULL;
+  void *hostA = NULL;
+  void *hostB = NULL;
   double now = -1.0;
   int running;
 
@@ -52,22 +52,20 @@ void test(char *platform)
   xbt_cfg_set_parse(_sg_cfg_set, "cpu/model:Cas01");
   parse_platform_file(platform);
 
-  /*********************** WORKSTATION ***********************************/
-  workstationA =
-      surf_workstation_resource_by_name("Cpu A");
-  workstationB =
-      surf_workstation_resource_by_name("Cpu B");
+  /*********************** HOST ***********************************/
+  hostA = surf_host_resource_by_name("Cpu A");
+  hostB = surf_host_resource_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_resource_name(workstationA), workstationA);
-  XBT_DEBUG("%s : %p", surf_resource_name(workstationB), workstationB);
+  XBT_DEBUG("%s : %p", surf_resource_name(hostA), hostA);
+  XBT_DEBUG("%s : %p", surf_resource_name(hostB), hostB);
 
   /* Let's do something on it */
-  surf_workstation_execute(workstationA, 1000.0);
-  surf_workstation_execute(workstationB, 1000.0);
-  surf_workstation_sleep(workstationB, 7.32);
+  surf_host_execute(hostA, 1000.0);
+  surf_host_execute(hostB, 1000.0);
+  surf_host_sleep(hostB, 7.32);
 
-  surf_workstation_model_communicate(surf_workstation_model, workstationA, workstationB, 150.0, -1.0);
+  surf_host_model_communicate(surf_host_model, hostA, hostB, 150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {

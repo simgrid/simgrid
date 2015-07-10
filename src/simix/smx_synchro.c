@@ -28,8 +28,7 @@ static smx_synchro_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout)
   sync = xbt_mallocator_get(simix_global->synchro_mallocator);
   sync->type = SIMIX_SYNC_SYNCHRO;
   sync->name = xbt_strdup("synchro");
-  sync->synchro.sleep = 
-    surf_workstation_sleep(smx_host, timeout);
+  sync->synchro.sleep = surf_host_sleep(smx_host, timeout);
 
   surf_action_set_data(sync->synchro.sleep, sync);
   XBT_OUT();

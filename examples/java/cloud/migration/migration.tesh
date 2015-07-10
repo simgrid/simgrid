@@ -5,19 +5,19 @@ $ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../platforms
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] This example evaluates the migration time of a VM in presence of collocated VMs on the source and the dest nodes
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] The migrated VM has a memory intensity rate of 70% of the network BW and a cpu load of 90% "(see cloudcom 2013 paper "Adding a Live Migration Model Into SimGrid" for further information) 
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] Load of collocated VMs fluctuate between 0 and 90% in order to create a starvation issue and see whether it impacts or not the migration time
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm0)@PM(host0) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm1)@PM(host0) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm2)@PM(host0) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm3)@PM(host0) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm4)@PM(host0) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm5)@PM(host0) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm6)@PM(host0) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm7)@PM(host1) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm8)@PM(host1) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm9)@PM(host1) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm10)@PM(host1) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm11)@PM(host1) with 0 mounted disks
-> [0.000000] [surf_vm_workstation/INFO] Create VM(vm12)@PM(host1) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm0)@PM(host0) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm1)@PM(host0) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm2)@PM(host0) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm3)@PM(host0) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm4)@PM(host0) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm5)@PM(host0) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm6)@PM(host0) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm7)@PM(host1) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm8)@PM(host1) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm9)@PM(host1) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm10)@PM(host1) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm11)@PM(host1) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vm12)@PM(host1) with 0 mounted disks
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] Round trip of VM1 (load 90%)
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO]      - Launch migration from host 0 to host 1
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] Start migration of VM vm0 to host1

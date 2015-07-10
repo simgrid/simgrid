@@ -136,7 +136,7 @@ msg_error_t test_all(const char *platform_file,
   msg_error_t res = MSG_OK;
 
 
-  MSG_config("workstation/model", "ptask_L07");
+  MSG_config("host/model", "ptask_L07");
 
   /*  Simulation setting */
   MSG_create_environment(platform_file);

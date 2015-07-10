@@ -4,55 +4,55 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "workstation_interface.hpp"
 #include "storage_interface.hpp"
 #include "cpu_interface.hpp"
+#include "host_interface.hpp"
 #include "network_interface.hpp"
 
-#ifndef SURF_WORKSTATION_CLM03_HPP_
-#define SURF_WORKSTATION_CLM03_HPP_
+#ifndef SURF_HOST_CLM03_HPP_
+#define SURF_HOST_CLM03_HPP_
 
 /***********
  * Classes *
  ***********/
 
-class WorkstationCLM03Model;
-typedef WorkstationCLM03Model *WorkstationCLM03ModelPtr;
+class HostCLM03Model;
+typedef HostCLM03Model *HostCLM03ModelPtr;
 
-class WorkstationCLM03;
-typedef WorkstationCLM03 *WorkstationCLM03Ptr;
+class HostCLM03;
+typedef HostCLM03 *HostCLM03Ptr;
 
-class WorkstationCLM03Action;
-typedef WorkstationCLM03Action *WorkstationCLM03ActionPtr;
+class HostCLM03Action;
+typedef HostCLM03Action *HostCLM03ActionPtr;
 
 /*********
  * Model *
  *********/
 
-class WorkstationCLM03Model : public WorkstationModel {
+class HostCLM03Model : public HostModel {
 public:
-  WorkstationCLM03Model();
-  ~WorkstationCLM03Model();
-  WorkstationPtr createWorkstation(const char *name);
+  HostCLM03Model();
+  ~HostCLM03Model();
+  HostPtr createHost(const char *name);
   double shareResources(double now);
 
   void updateActionsState(double now, double delta);
 
-  ActionPtr executeParallelTask(int workstation_nb,
-                                        void **workstation_list,
+  ActionPtr executeParallelTask(int host_nb,
+                                        void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate);
- ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);
+ ActionPtr communicate(HostPtr src, HostPtr dst, double size, double rate);
 };
 
 /************
  * Resource *
  ************/
 
-class WorkstationCLM03 : public Workstation {
+class HostCLM03 : public Host {
 public:
-  WorkstationCLM03(WorkstationModelPtr model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
+  HostCLM03(HostModelPtr model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
 
   void updateState(tmgr_trace_event_t event_type, double value, double date);
 
@@ -76,4 +76,4 @@ public:
 
 
 
-#endif /* SURF_WORKSTATION_CLM03_HPP_ */
+#endif /* SURF_HOST_CLM03_HPP_ */

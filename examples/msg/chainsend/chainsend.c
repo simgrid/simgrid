@@ -86,24 +86,6 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
-  /*if (argc <= 3) {
-    XBT_CRITICAL("Usage: %s platform_file deployment_file <model>\n",
-              argv[0]);
-    XBT_CRITICAL
-        ("example: %s msg_platform.xml msg_deployment.xml KCCFLN05_Vegas\n",
-         argv[0]);
-    exit(1);
-  }*/
-
-  /* Options for the workstation/model:
-
-     KCCFLN05              => for maxmin
-     KCCFLN05_proportional => for proportional (Vegas)
-     KCCFLN05_Vegas        => for TCP Vegas
-     KCCFLN05_Reno         => for TCP Reno
-   */
-  //MSG_config("workstation/model", argv[3]);
-
   res = test_all(argv[1], argv[2]);
 
   XBT_INFO("Total simulation time: %e", MSG_get_clock());

@@ -404,7 +404,7 @@ public:
    *
    * @param model The Model associated to this Action
    * @param cost The cost of the Action
-   * @param failed If the action is impossible (e.g.: execute something on a switched off workstation)
+   * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    */
   Action(ModelPtr model, double cost, bool failed);
 
@@ -413,7 +413,7 @@ public:
    *
    * @param model The Model associated to this Action
    * @param cost The cost of the Action
-   * @param failed If the action is impossible (e.g.: execute something on a switched off workstation)
+   * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
   Action(ModelPtr model, double cost, bool failed, lmm_variable_t var);

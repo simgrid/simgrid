@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "vm_workstation_interface.hpp"
-#include "workstation_clm03.hpp"
+#include "host_clm03.hpp"
+#include "vm_interface.hpp"
 
-#ifndef VM_WORKSTATION_HPP_
-#define VM_WORKSTATION_HPP_
+#ifndef SURF_VM_HPP_
+#define SURF_VM_HPP_
 
 #define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
                           // It corresponds to the cost of a VM running no tasks.
@@ -17,26 +17,26 @@
  * Classes *
  ***********/
 
-class WorkstationVMHL13Model;
-typedef WorkstationVMHL13Model *WorkstationVMHL13ModelPtr;
+class VMHL13Model;
+typedef VMHL13Model *VMHL13ModelPtr;
 
-class WorkstationVMHL13;
-typedef WorkstationVMHL13 *WorkstationVMHL13Ptr;
+class VMHL13;
+typedef VMHL13 *VMHL13Ptr;
 
 /*********
  * Model *
  *********/
-class WorkstationVMHL13Model : public WorkstationVMModel {
+class VMHL13Model : public VMModel {
 public:
-  WorkstationVMHL13Model();
-  ~WorkstationVMHL13Model(){};
+  VMHL13Model();
+  ~VMHL13Model(){};
 
-  WorkstationVMPtr createWorkstationVM(const char *name, surf_resource_t ind_phys_workstation);
+  VMPtr createVM(const char *name, surf_resource_t host_PM);
   double shareResources(double now);
   void adjustWeightOfDummyCpuActions() {};
-  ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);
-  ActionPtr executeParallelTask(int workstation_nb,
-                                          void **workstation_list,
+  ActionPtr communicate(HostPtr src, HostPtr dst, double size, double rate);
+  ActionPtr executeParallelTask(int host_nb,
+                                          void **host_list,
                                           double *flops_amount,
                                           double *bytes_amount,
                                           double rate);
@@ -47,10 +47,10 @@ public:
  * Resource *
  ************/
 
-class WorkstationVMHL13 : public WorkstationVM {
+class VMHL13 : public VM {
 public:
-  WorkstationVMHL13(WorkstationVMModelPtr model, const char* name, xbt_dict_t props, surf_resource_t ind_phys_workstation);
-  ~WorkstationVMHL13();
+  VMHL13(VMModelPtr model, const char* name, xbt_dict_t props, surf_resource_t host_PM);
+  ~VMHL13();
 
   void suspend();
   void resume();
@@ -80,4 +80,4 @@ public:
  * Action *
  **********/
 
-#endif /* VM_WORKSTATION_HPP_ */
+#endif /* SURF_VM_HPP_ */

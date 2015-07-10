@@ -82,6 +82,9 @@ SimGrid (3.12) NOT RELEASED; urgency=low
     - New property: watt_off to denote the disipation when the host is off
     - New functions getWattMinAt and getWattMaxAt to retrieve the
       dissipation of pstates that we are not currently at.
+  * Massive rename s/workstation/host/
+    - That's intrusive, but that's good for the project consistency. Sorry. 
+    - Change config option "workstation/model" into "host/model"
  XBT
   * New functions
    - Add a xbt_heap_update function, to avoid costly xbt_heap_remove+xbt_heap_insert use 

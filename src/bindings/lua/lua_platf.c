@@ -61,9 +61,9 @@ int console_close(lua_State *L) {
   /* Initialize MSG and WKS hosts */
   XBT_DEBUG("Initialize MSG and WKS hosts");
   xbt_lib_foreach(host_lib, cursor, name, data) {
-    if(data[SURF_WKS_LEVEL]){
+    if(data[SURF_HOST_LEVEL]){
       XBT_DEBUG("\tSee surf host %s",name);
-      SIMIX_host_create(name, data[SURF_WKS_LEVEL], NULL);
+      SIMIX_host_create(name, NULL);
       __MSG_host_create((smx_host_t)data[SIMIX_HOST_LEVEL]);
     }
   }

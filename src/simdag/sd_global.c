@@ -79,7 +79,7 @@ void SD_init(int *argc, char **argv)
 
   surf_init(argc, argv);
 
-  xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model",
+  xbt_cfg_setdefault_string(_sg_cfg_set, "host/model",
                             "ptask_L07");
 
 #ifdef HAVE_JEDULE
@@ -102,7 +102,7 @@ void SD_init(int *argc, char **argv)
  * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref options.
  *
  * Example:
- * SD_config("workstation/model","default");
+ * SD_config("host/model","default");
  */
 void SD_config(const char *key, const char *value){
   xbt_assert(sd_global,"ERROR: Please call SD_init() before using SD_config()");
@@ -210,8 +210,8 @@ void SD_create_environment(const char *platform_file)
 
   /* now let's create the SD wrappers for workstations, storages and links */
   xbt_lib_foreach(host_lib, cursor, name, surf_workstation){
-    if(surf_workstation[SURF_WKS_LEVEL])
-      __SD_workstation_create(surf_workstation[SURF_WKS_LEVEL], NULL);
+    if(surf_workstation[SURF_HOST_LEVEL])
+      __SD_workstation_create(surf_workstation[SURF_HOST_LEVEL], NULL);
   }
 
   xbt_lib_foreach(link_lib, cursor, name, surf_link) {

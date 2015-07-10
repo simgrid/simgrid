@@ -77,7 +77,7 @@ msg_error_t test_all(const char *platform_file)
   xbt_dynar_t all_hosts;
   msg_host_t first_host;
 
-  MSG_config("workstation/model", "ptask_L07");
+  MSG_config("host/model", "ptask_L07");
   MSG_create_environment(platform_file);
 
   all_hosts = MSG_hosts_as_dynar();

@@ -24,7 +24,7 @@ static inline smx_host_priv_t SIMIX_host_priv(smx_host_t host){
 }
 
 void _SIMIX_host_free_process_arg(void *);
-smx_host_t SIMIX_host_create(const char *name, void *workstation, void *data);
+smx_host_t SIMIX_host_create(const char *name, void *data);
 void SIMIX_host_destroy(void *host);
 
 void SIMIX_host_add_auto_restart_process(smx_host_t host,

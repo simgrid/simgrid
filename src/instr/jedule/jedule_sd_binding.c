@@ -94,7 +94,6 @@ static void create_hierarchy(AS_t current_comp,
 void jedule_setup_platform()
 {
   AS_t root_comp;
-  // e_surf_network_element_type_t type;
 
   jed_simgrid_container_t root_container;
 

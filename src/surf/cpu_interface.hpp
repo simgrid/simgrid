@@ -105,7 +105,7 @@ public:
 
 /** @ingroup SURF_cpu_interface
 * @brief SURF cpu resource interface class
-* @details A Cpu represent a cpu associated to a workstation
+* @details A Cpu represent a cpu associated to a host
 */
 XBT_PUBLIC_CLASS Cpu : public Resource {
 public:

@@ -746,7 +746,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   smx_host_t host = process->smx_host;
 
   /* check if the host is active */
-  if (surf_resource_get_state(surf_workstation_resource_priv(host)) != SURF_RESOURCE_ON) {
+  if (surf_resource_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_name(host));
   }
@@ -757,8 +757,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   synchro->category = NULL;
 
   synchro->sleep.host = host;
-  synchro->sleep.surf_sleep =
-      surf_workstation_sleep(host, duration);
+  synchro->sleep.surf_sleep = surf_host_sleep(host, duration);
 
   surf_action_set_data(synchro->sleep.surf_sleep, synchro);
   XBT_DEBUG("Create sleep synchronization %p", synchro);
@@ -789,7 +788,7 @@ void SIMIX_post_process_sleep(smx_synchro_t synchro)
         THROW_IMPOSSIBLE;
         break;
     }
-    if (surf_resource_get_state(surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+    if (surf_resource_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
     simcall_process_sleep__set__result(simcall, state);

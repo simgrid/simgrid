@@ -19,11 +19,9 @@ static void SIMIX_execution_finish(smx_synchro_t synchro);
 /**
  * \brief Internal function to create a SIMIX host.
  * \param name name of the host to create
- * \param workstation the SURF workstation to encapsulate
  * \param data some user data (may be NULL)
  */
-smx_host_t SIMIX_host_create(const char *name,
-                               void *workstation, void *data)
+smx_host_t SIMIX_host_create(const char *name, void *data)
 {
   smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
   s_smx_process_t proc;
@@ -48,8 +46,8 @@ void SIMIX_host_on(smx_host_t h)
 
   xbt_assert((host != NULL), "Invalid parameters");
 
-  if (surf_resource_get_state(surf_workstation_resource_priv(h))==SURF_RESOURCE_OFF) {
-    surf_resource_set_state(surf_workstation_resource_priv(h), SURF_RESOURCE_ON);
+  if (surf_resource_get_state(surf_host_resource_priv(h))==SURF_RESOURCE_OFF) {
+    surf_resource_set_state(surf_host_resource_priv(h), SURF_RESOURCE_ON);
 
     unsigned int cpt;
     smx_process_arg_t arg;
@@ -104,8 +102,8 @@ void SIMIX_host_off(smx_host_t h, smx_process_t issuer)
 
   xbt_assert((host != NULL), "Invalid parameters");
 
-  if (surf_resource_get_state(surf_workstation_resource_priv(h))==SURF_RESOURCE_ON) {
-	surf_resource_set_state(surf_workstation_resource_priv(h), SURF_RESOURCE_OFF);
+  if (surf_resource_get_state(surf_host_resource_priv(h))==SURF_RESOURCE_ON) {
+	surf_resource_set_state(surf_host_resource_priv(h), SURF_RESOURCE_OFF);
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {
@@ -178,15 +176,15 @@ const char* SIMIX_host_self_get_name(void)
 }
 
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host){
-  return surf_resource_get_properties(surf_workstation_resource_priv(host));
+  return surf_resource_get_properties(surf_host_resource_priv(host));
 }
 
 double SIMIX_host_get_speed(smx_host_t host){
-  return surf_workstation_get_speed(host, 1.0);
+  return surf_host_get_speed(host, 1.0);
 }
 
 int SIMIX_host_get_core(smx_host_t host){
-  return surf_workstation_get_core(host);
+  return surf_host_get_core(host);
 }
 
 xbt_swag_t SIMIX_host_get_process_list(smx_host_t host){
@@ -197,41 +195,41 @@ xbt_swag_t SIMIX_host_get_process_list(smx_host_t host){
 
 
 double SIMIX_host_get_available_speed(smx_host_t host){
-  return surf_workstation_get_available_speed(host);
+  return surf_host_get_available_speed(host);
 }
 
 double SIMIX_host_get_current_power_peak(smx_host_t host) {
-	  return surf_workstation_get_current_power_peak(host);
+	  return surf_host_get_current_power_peak(host);
 }
 
 double SIMIX_host_get_power_peak_at(smx_host_t host, int pstate_index) {
-	  return surf_workstation_get_power_peak_at(host, pstate_index);
+	  return surf_host_get_power_peak_at(host, pstate_index);
 }
 
 int SIMIX_host_get_nb_pstates(smx_host_t host) {
-	  return surf_workstation_get_nb_pstates(host);
+	  return surf_host_get_nb_pstates(host);
 }
 
 
 void SIMIX_host_set_pstate(smx_host_t host, int pstate_index) {
-	  surf_workstation_set_pstate(host, pstate_index);
+	  surf_host_set_pstate(host, pstate_index);
 }
 int SIMIX_host_get_pstate(smx_host_t host) {
-	  return surf_workstation_get_pstate(host);
+	  return surf_host_get_pstate(host);
 }
 
 double SIMIX_host_get_consumed_energy(smx_host_t host) {
-	  return surf_workstation_get_consumed_energy(host);
+	  return surf_host_get_consumed_energy(host);
 }
 double SIMIX_host_get_wattmin_at(smx_host_t host,int pstate) {
-	  return surf_workstation_get_wattmin_at(host,pstate);
+	  return surf_host_get_wattmin_at(host,pstate);
 }
 double SIMIX_host_get_wattmax_at(smx_host_t host,int pstate) {
-	  return surf_workstation_get_wattmax_at(host,pstate);
+	  return surf_host_get_wattmax_at(host,pstate);
 }
 
 int SIMIX_host_get_state(smx_host_t host){
-  return surf_resource_get_state(surf_workstation_resource_priv(host));
+  return surf_resource_get_state(surf_host_resource_priv(host));
 }
 
 void _SIMIX_host_free_process_arg(void *data)
@@ -362,7 +360,7 @@ smx_synchro_t SIMIX_host_execute(const char *name,
   /* set surf's action */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
 
-    synchro->execution.surf_exec = surf_workstation_execute(host, flops_amount);
+    synchro->execution.surf_exec = surf_host_execute(host, flops_amount);
     surf_action_set_data(synchro->execution.surf_exec, synchro);
     surf_action_set_priority(synchro->execution.surf_exec, priority);
 
@@ -391,7 +389,7 @@ smx_synchro_t SIMIX_host_parallel_execute(const char *name,
     double *flops_amount, double *bytes_amount,
     double amount, double rate){
 
-  void **workstation_list = NULL;
+  void **surf_host_list = NULL;
   int i;
 
   /* alloc structures and initialize */
@@ -403,17 +401,17 @@ smx_synchro_t SIMIX_host_parallel_execute(const char *name,
   synchro->category = NULL;
 
   /* set surf's synchro */
-  workstation_list = xbt_new0(void *, host_nb);
+  surf_host_list = xbt_new0(void *, host_nb);
   for (i = 0; i < host_nb; i++)
-    workstation_list[i] = surf_workstation_resource_priv(host_list[i]);
+    surf_host_list[i] = surf_host_resource_priv(host_list[i]);
 
 
   /* FIXME: what happens if host_list contains VMs and PMs. If
    * execute_parallel_task() does not change the state of the model, we can mix
    * them. */
-  surf_model_t ws_model = surf_resource_model(host_list[0], SURF_WKS_LEVEL);
+  surf_model_t ws_model = surf_resource_model(host_list[0], SURF_HOST_LEVEL);
   for (i = 1; i < host_nb; i++) {
-    surf_model_t ws_model_tmp = surf_resource_model(host_list[i], SURF_WKS_LEVEL);
+    surf_model_t ws_model_tmp = surf_resource_model(host_list[i], SURF_HOST_LEVEL);
     if (ws_model_tmp != ws_model) {
       XBT_CRITICAL("mixing VMs and PMs is not supported");
       DIE_IMPOSSIBLE;
@@ -423,8 +421,8 @@ smx_synchro_t SIMIX_host_parallel_execute(const char *name,
   /* set surf's synchro */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
     synchro->execution.surf_exec =
-      surf_workstation_model_execute_parallel_task((surf_workstation_model_t)surf_workstation_model,
-    		  host_nb, workstation_list, flops_amount, bytes_amount, rate);
+      surf_host_model_execute_parallel_task((surf_host_model_t)surf_host_model,
+    		  host_nb, surf_host_list, flops_amount, bytes_amount, rate);
 
     surf_action_set_data(synchro->execution.surf_exec, synchro);
   }
@@ -548,7 +546,7 @@ void SIMIX_execution_finish(smx_synchro_t synchro)
             (int)synchro->state);
     }
     /* check if the host is down */
-    if (surf_resource_get_state(surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+    if (surf_resource_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -566,7 +564,7 @@ void SIMIX_post_host_execute(smx_synchro_t synchro)
 {
   if (synchro->type == SIMIX_SYNC_EXECUTE && /* FIMXE: handle resource failure
                                                * for parallel tasks too */
-      surf_resource_get_state(surf_workstation_resource_priv(synchro->execution.host)) == SURF_RESOURCE_OFF) {
+      surf_resource_get_state(surf_host_resource_priv(synchro->execution.host)) == SURF_RESOURCE_OFF) {
     /* If the host running the synchro failed, notice it so that the asking
      * process can be killed if it runs on that host itself */
     synchro->state = SIMIX_FAILED;
@@ -609,23 +607,23 @@ void SIMIX_set_category(smx_synchro_t synchro, const char *category)
 void SIMIX_host_get_params(smx_host_t ind_vm, ws_params_t params)
 {
   /* jump to ws_get_params(). */
-  surf_workstation_get_params(ind_vm, params);
+  surf_host_get_params(ind_vm, params);
 }
 
 void SIMIX_host_set_params(smx_host_t ind_vm, ws_params_t params)
 {
   /* jump to ws_set_params(). */
-  surf_workstation_set_params(ind_vm, params);
+  surf_host_set_params(ind_vm, params);
 }
 
 xbt_dict_t SIMIX_host_get_mounted_storage_list(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_get_mounted_storage_list(host);
+  return surf_host_get_mounted_storage_list(host);
 }
 
 xbt_dynar_t SIMIX_host_get_attached_storage_list(smx_host_t host){
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
 
-  return surf_workstation_get_attached_storage_list(host);
+  return surf_host_get_attached_storage_list(host);
 }

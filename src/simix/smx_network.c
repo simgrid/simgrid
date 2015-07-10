@@ -616,7 +616,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, dou
   if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
-    sleep = surf_workstation_sleep(simcall->issuer->smx_host, timeout);
+    sleep = surf_host_sleep(simcall->issuer->smx_host, timeout);
     surf_action_set_data(sleep, synchro);
 
     if (simcall->issuer == synchro->comm.src_proc)
@@ -733,7 +733,7 @@ static XBT_INLINE void SIMIX_comm_start(smx_synchro_t synchro)
     XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro,
               SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
 
-    synchro->comm.surf_comm = surf_workstation_model_communicate(surf_workstation_model,
+    synchro->comm.surf_comm = surf_host_model_communicate(surf_host_model,
     		                                                    sender, receiver,
     		                                                    synchro->comm.task_size, synchro->comm.rate);
 
@@ -800,7 +800,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
 
     /* Check out for errors */
 
-    if (surf_resource_get_state(surf_workstation_resource_priv(
+    if (surf_resource_get_state(surf_host_resource_priv(
           simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
       SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
@@ -879,7 +879,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
       }
     }
 
-    if (surf_resource_get_state(surf_workstation_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+    if (surf_resource_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 

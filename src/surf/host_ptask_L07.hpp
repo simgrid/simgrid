@@ -4,17 +4,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "workstation_interface.hpp"
+#include "host_interface.hpp"
 
-#ifndef WORKSTATION_L07_HPP_
-#define WORKSTATION_L07_HPP_
+#ifndef HOST_L07_HPP_
+#define HOST_L07_HPP_
 
 /***********
  * Classes *
  ***********/
 
-class WorkstationL07Model;
-typedef WorkstationL07Model *WorkstationL07ModelPtr;
+class HostL07Model;
+typedef HostL07Model *HostL07ModelPtr;
 
 class CpuL07Model;
 typedef CpuL07Model *CpuL07ModelPtr;
@@ -22,8 +22,8 @@ typedef CpuL07Model *CpuL07ModelPtr;
 class NetworkL07Model;
 typedef NetworkL07Model *NetworkL07ModelPtr;
 
-class WorkstationL07;
-typedef WorkstationL07 *WorkstationL07Ptr;
+class HostL07;
+typedef HostL07 *HostL07Ptr;
 
 class CpuL07;
 typedef CpuL07 *CpuL07Ptr;
@@ -31,8 +31,8 @@ typedef CpuL07 *CpuL07Ptr;
 class LinkL07;
 typedef LinkL07 *LinkL07Ptr;
 
-class WorkstationL07Action;
-typedef WorkstationL07Action *WorkstationL07ActionPtr;
+class HostL07Action;
+typedef HostL07Action *HostL07ActionPtr;
 
 /*********
  * Tools *
@@ -41,21 +41,21 @@ typedef WorkstationL07Action *WorkstationL07ActionPtr;
 /*********
  * Model *
  *********/
-class WorkstationL07Model : public WorkstationModel {
+class HostL07Model : public HostModel {
 public:
-  WorkstationL07Model();
-  ~WorkstationL07Model();
+  HostL07Model();
+  ~HostL07Model();
 
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-  WorkstationPtr createWorkstation(const char *name);
-  ActionPtr executeParallelTask(int workstation_nb,
-                                        void **workstation_list,
+  HostPtr createHost(const char *name);
+  ActionPtr executeParallelTask(int host_nb,
+                                        void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate);
-  xbt_dynar_t getRoute(WorkstationPtr src, WorkstationPtr dst);
-  ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate);
+  xbt_dynar_t getRoute(HostPtr src, HostPtr dst);
+  ActionPtr communicate(HostPtr src, HostPtr dst, double size, double rate);
   void addTraces();
   NetworkModelPtr p_networkModel;
 };
@@ -72,7 +72,7 @@ public:
                           xbt_dict_t cpu_properties);
   void addTraces() {DIE_IMPOSSIBLE;};
 
-  WorkstationL07ModelPtr p_workstationModel;
+  HostL07ModelPtr p_hostModel;
 };
 
 class NetworkL07Model : public NetworkModel {
@@ -92,16 +92,16 @@ public:
 
   ActionPtr communicate(RoutingEdgePtr /*src*/, RoutingEdgePtr /*dst*/, double /*size*/, double /*rate*/) {DIE_IMPOSSIBLE;};
   void addTraces() {DIE_IMPOSSIBLE;};
-  WorkstationL07ModelPtr p_workstationModel;
+  HostL07ModelPtr p_hostModel;
 };
 
 /************
  * Resource *
  ************/
 
-class WorkstationL07 : public Workstation {
+class HostL07 : public Host {
 public:
-  WorkstationL07(WorkstationModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu);
+  HostL07(HostModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu);
   //bool isUsed();
   bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {DIE_IMPOSSIBLE;};
@@ -116,7 +116,7 @@ public:
 };
 
 class CpuL07 : public Cpu {
-  friend void WorkstationL07Model::addTraces();
+  friend void HostL07Model::addTraces();
   tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_powerEvent;
 public:
@@ -167,18 +167,18 @@ public:
 /**********
  * Action *
  **********/
-class WorkstationL07Action : public WorkstationAction {
-  friend ActionPtr WorkstationL07::execute(double size);
-  friend ActionPtr WorkstationL07::sleep(double duration);
-  friend ActionPtr WorkstationL07Model::executeParallelTask(int workstation_nb,
-                                                     void **workstation_list,
+class HostL07Action : public HostAction {
+  friend ActionPtr HostL07::execute(double size);
+  friend ActionPtr HostL07::sleep(double duration);
+  friend ActionPtr HostL07Model::executeParallelTask(int host_nb,
+                                                     void **host_list,
                                                    double *flops_amount,
 												   double *bytes_amount,
                                                    double rate);
 public:
-  WorkstationL07Action(ModelPtr model, double cost, bool failed)
-  : WorkstationAction(model, cost, failed) {};
- ~WorkstationL07Action();
+  HostL07Action(ModelPtr model, double cost, bool failed)
+  : HostAction(model, cost, failed) {};
+ ~HostL07Action();
 
   void updateBound();
 
@@ -191,12 +191,12 @@ public:
   void setPriority(double priority);
   double getRemains();
 
-  int m_workstationNb;
-  WorkstationPtr *p_workstationList;
+  int m_hostNb;
+  HostPtr *p_hostList;
   double *p_computationAmount;
   double *p_communicationAmount;
   double m_latency;
   double m_rate;
 };
 
-#endif /* WORKSTATION_L07_HPP_ */
+#endif /* HOST_L07_HPP_ */

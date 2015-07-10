@@ -6,6 +6,8 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |___ \
 
 (to complete)
 
+ * Surf internal cleanup: rename workstation into host.
+   Option "workstation/model" now reads "host/model"
                     _               _____  _ _
 __   _____ _ __ ___(_) ___  _ __   |___ / / / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | |

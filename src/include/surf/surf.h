@@ -47,13 +47,13 @@ typedef enum {
 #ifdef __cplusplus
 class Model;
 class CpuModel;
-class WorkstationModel;
-class WorkstationVMModel;
+class HostModel;
+class VMModel;
 class NetworkModel;
 class StorageModel;
 class Resource;
 class ResourceLmm;
-class WorkstationCLM03;
+class HostCLM03;
 class NetworkCm02Link;
 class Cpu;
 class Action;
@@ -65,13 +65,13 @@ class RoutingPlatf;
 #else
 typedef struct Model Model;
 typedef struct CpuModel CpuModel;
-typedef struct WorkstationModel WorkstationModel;
-typedef struct WorkstationVMModel WorkstationVMModel;
+typedef struct HostModel HostModel;
+typedef struct VMModel VMModel;
 typedef struct NetworkModel NetworkModel;
 typedef struct StorageModel StorageModel;
 typedef struct Resource Resource;
 typedef struct ResourceLmm ResourceLmm;
-typedef struct WorkstationCLM03 WorkstationCLM03;
+typedef struct HostCLM03 HostCLM03;
 typedef struct NetworkCm02Link NetworkCm02Link;
 typedef struct Cpu Cpu;
 typedef struct Action Action;
@@ -85,20 +85,20 @@ typedef struct RoutingPlatf RoutingPlatf;
 /** @ingroup SURF_c_bindings
  *  \brief Model datatype
  *
- *  Generic data structure for a model. The workstations,
+ *  Generic data structure for a model. The hosts,
  *  the CPUs and the network links are examples of models.
  */
 typedef Model *surf_model_t;
 typedef CpuModel *surf_cpu_model_t;
-typedef WorkstationModel *surf_workstation_model_t;
-typedef WorkstationVMModel *surf_vm_workstation_model_t;
+typedef HostModel *surf_host_model_t;
+typedef VMModel *surf_vm_model_t;
 
 typedef NetworkModel *surf_network_model_t;
 typedef StorageModel *surf_storage_model_t;
 
 typedef xbt_dictelm_t surf_resource_t;
 typedef Resource *surf_cpp_resource_t;
-typedef WorkstationCLM03 *surf_workstation_CLM03_t;
+typedef HostCLM03 *surf_host_CLM03_t;
 typedef NetworkCm02Link *surf_network_link_t;
 typedef Cpu *surf_cpu_t;
 
@@ -189,8 +189,8 @@ XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 static inline void *surf_cpu_resource_priv(const void *host) {
   return xbt_lib_get_level((xbt_dictelm_t)host, SURF_CPU_LEVEL);
 }
-static inline void *surf_workstation_resource_priv(const void *host){
-  return (void*)xbt_lib_get_level((xbt_dictelm_t)host, SURF_WKS_LEVEL);
+static inline void *surf_host_resource_priv(const void *host){
+  return (void*)xbt_lib_get_level((xbt_dictelm_t)host, SURF_HOST_LEVEL);
 }
 static inline void *surf_routing_resource_priv(const void *host){
   return (void*)xbt_lib_get_level((xbt_dictelm_t)host, ROUTING_HOST_LEVEL);
@@ -202,7 +202,7 @@ static inline void *surf_storage_resource_priv(const void *storage){
 static inline void *surf_cpu_resource_by_name(const char *name) {
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
-static inline void *surf_workstation_resource_by_name(const char *name){
+static inline void *surf_host_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 static inline void *surf_storage_resource_by_name(const char *name){
@@ -269,16 +269,16 @@ XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
  * @details [long description]
  *
  * @param model The model which handle the parallelisation
- * @param workstation_nb The number of workstations
- * @param workstation_list The list of workstations on which the task is executed
+ * @param host_nb The number of hosts
+ * @param host_list The list of hosts on which the task is executed
  * @param flops_amount The processing amount (in flop) needed to process
  * @param bytes_amount The amount of data (in bytes) needed to transfer
  * @param rate [description]
  * @return The action corresponding to the parallele execution task
  */
-XBT_PUBLIC(surf_action_t) surf_workstation_model_execute_parallel_task(surf_workstation_model_t model,
-		                                    int workstation_nb,
-                                            void **workstation_list,
+XBT_PUBLIC(surf_action_t) surf_host_model_execute_parallel_task(surf_host_model_t model,
+		                                    int host_nb,
+                                            void **host_list,
                                             double *flops_amount,
                                             double *bytes_amount,
                                             double rate);
@@ -293,7 +293,7 @@ XBT_PUBLIC(surf_action_t) surf_workstation_model_execute_parallel_task(surf_work
  * @param rate [description]
  * @return The action corresponding to the communication
  */
-XBT_PUBLIC(surf_action_t) surf_workstation_model_communicate(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate);
+XBT_PUBLIC(surf_action_t) surf_host_model_communicate(surf_host_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate);
 
 /**
  * @brief Get the route between two hosts
@@ -304,15 +304,15 @@ XBT_PUBLIC(surf_action_t) surf_workstation_model_communicate(surf_workstation_mo
  * @param dst The destination host
  * @return The list of [TODO] from the source to the host
  */
-XBT_PUBLIC(xbt_dynar_t) surf_workstation_model_get_route(surf_workstation_model_t model, surf_resource_t src, surf_resource_t dst);
+XBT_PUBLIC(xbt_dynar_t) surf_host_model_get_route(surf_host_model_t model, surf_resource_t src, surf_resource_t dst);
 
 /**
  * @brief Create a new VM on the specified host
  *
- * @param name The name of the workstation
- * @param ind_phys_host The host on which the VM is created
+ * @param name The name of the VM
+ * @param host_PM The host on which the VM is created
  */
-XBT_PUBLIC(void) surf_vm_workstation_model_create(const char *name, surf_resource_t ind_phys_host);
+XBT_PUBLIC(void) surf_vm_model_create(const char *name, surf_resource_t host_PM);
 
 /**
  * @brief Create a communication between two routing edges [TODO]
@@ -328,7 +328,7 @@ XBT_PUBLIC(void) surf_vm_workstation_model_create(const char *name, surf_resourc
 XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate);
 
 /**
- * @brief Get the name of a surf resource (cpu, workstation, network, …)
+ * @brief Get the name of a surf resource (cpu, host, network, …)
  *
  * @param resource The surf resource
  * @return The name of the surf resource
@@ -336,7 +336,7 @@ XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t mo
 XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
 
 /**
- * @brief Get the properties of a surf resource (cpu, workstation, network, …)
+ * @brief Get the properties of a surf resource (cpu, host, network, …)
  *
  * @param resource The surf resource
  * @return The properties of the surf resource
@@ -344,7 +344,7 @@ XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
 XBT_PUBLIC(xbt_dict_t) surf_resource_get_properties(surf_cpp_resource_t resource);
 
 /**
- * @brief Get the state of a surf resource (cpu, workstation, network, …)
+ * @brief Get the state of a surf resource (cpu, host, network, …)
  *
  * @param resource The surf resource
  * @return The state of the surf resource
@@ -352,7 +352,7 @@ XBT_PUBLIC(xbt_dict_t) surf_resource_get_properties(surf_cpp_resource_t resource
 XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t resource);
 
 /**
- * @brief Set the state of a surf resource (cpu, workstation, network, …)
+ * @brief Set the state of a surf resource (cpu, host, network, …)
  *
  * @param resource The surf resource
  * @param state The new state of the surf resource
@@ -360,88 +360,88 @@ XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t 
 XBT_PUBLIC(void) surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
 
 /**
- * @brief Get the speed of the cpu associtated to a workstation
+ * @brief Get the speed of the cpu associated to a host
  *
- * @param resource The surf workstation
+ * @param resource The surf host
  * @param load [description]
  *
  * @return [description]
  */
-XBT_PUBLIC(double) surf_workstation_get_speed(surf_resource_t resource, double load);
+XBT_PUBLIC(double) surf_host_get_speed(surf_resource_t resource, double load);
 
 /**
- * @brief Get the available speed of cpu associtated to a workstation
+ * @brief Get the available speed of cpu associated to a host
  *
- * @param resource The surf workstation
+ * @param resource The surf host
  * @return [description]
  */
-XBT_PUBLIC(double) surf_workstation_get_available_speed(surf_resource_t resource);
+XBT_PUBLIC(double) surf_host_get_available_speed(surf_resource_t resource);
 
 /**
- * @brief Get the number of cores of the cpu associated to a workstation
+ * @brief Get the number of cores of the cpu associated to a host
  *
- * @param resource The surf workstation
+ * @param resource The surf host
  * @return The number of cores
  */
-XBT_PUBLIC(int) surf_workstation_get_core(surf_resource_t resource);
+XBT_PUBLIC(int) surf_host_get_core(surf_resource_t resource);
 
 /**
  * @brief Execute some quantity of computation
  *
- * @param resource The surf workstation
+ * @param resource The surf host
  * @param size The value of the processing amount (in flop) needed to process
  *
  * @return The surf action corresponding to the processing
  */
-XBT_PUBLIC(surf_action_t) surf_workstation_execute(surf_resource_t resource, double size);
+XBT_PUBLIC(surf_action_t) surf_host_execute(surf_resource_t resource, double size);
 
 /**
- * @brief Make the workstation sleep
+ * @brief Make the host sleep
  *
- * @param resource The surf workstation
+ * @param resource The surf host
  * @param duration The number of seconds to sleep
  * @return The surf action corresponding to the sleep
  */
-XBT_PUBLIC(surf_action_t) surf_workstation_sleep(surf_resource_t resource, double duration);
+XBT_PUBLIC(surf_action_t) surf_host_sleep(surf_resource_t resource, double duration);
 
 /**
- * @brief Open a file on a workstation
+ * @brief Open a file on an host
  *
- * @param workstation The surf workstation
+ * @param host The surf host
  * @param fullpath The path to the file
  * @return The surf action corresponding to the openning
  */
-XBT_PUBLIC(surf_action_t) surf_workstation_open(surf_resource_t workstation, const char* fullpath);
+XBT_PUBLIC(surf_action_t) surf_host_open(surf_resource_t host, const char* fullpath);
 
 /**
- * @brief Close a file descriptor on a workstation
+ * @brief Close a file descriptor on an host
  *
- * @param workstation The surf workstation
+ * @param host The surf host
  * @param fd The file descriptor
  *
  * @return The surf action corresponding to the closing
  */
-XBT_PUBLIC(surf_action_t) surf_workstation_close(surf_resource_t workstation, surf_file_t fd);
+XBT_PUBLIC(surf_action_t) surf_host_close(surf_resource_t host, surf_file_t fd);
 
 /**
  * @brief Read a file
  *
- * @param resource The surf workstation
+ * @param host The surf host
  * @param fd The file descriptor to read
  * @param size The size in bytes to read
  * @return The surf action corresponding to the reading
  */
-XBT_PUBLIC(surf_action_t) surf_workstation_read(surf_resource_t resource, surf_file_t fd, sg_size_t size);
+XBT_PUBLIC(surf_action_t) surf_host_read(surf_resource_t host, surf_file_t fd, sg_size_t size);
 
 /**
  * @brief Write a file
  *
- * @param resource The surf workstation
+ * @param host The surf host
  * @param fd The file descriptor to write
  * @param size The size in bytes to write
  * @return The surf action corresponding to the writing
  */
-XBT_PUBLIC(surf_action_t) surf_workstation_write(surf_resource_t resource, surf_file_t fd, sg_size_t size);
+XBT_PUBLIC(surf_action_t) surf_host_write(surf_resource_t host, surf_file_t fd, sg_size_t size);
 
 /**
  * @brief Get the informations of a file descriptor
@@ -452,46 +452,37 @@ XBT_PUBLIC(surf_action_t) surf_workstation_write(surf_resource_t resource, surf_
  *  - the storage typeId,
  *  - the storage content type
  *
- * @param resource The surf workstation
+ * @param host The surf host
  * @param fd The file descriptor
  * @return An xbt_dynar_t with the file informations
  */
-XBT_PUBLIC(xbt_dynar_t) surf_workstation_get_info(surf_resource_t resource, surf_file_t fd);
+XBT_PUBLIC(xbt_dynar_t) surf_host_get_info(surf_resource_t host, surf_file_t fd);
 
 /**
  * @brief Get the available space of the storage at the mount point
  *
- * @param resource The surf workstation
+ * @param resource The surf host
  * @param name The mount point
- * @return The amount of availble space in bytes
+ * @return The amount of available space in bytes
  */
-XBT_PUBLIC(sg_size_t) surf_workstation_get_free_size(surf_resource_t resource, const char* name);
+XBT_PUBLIC(sg_size_t) surf_host_get_free_size(surf_resource_t resource, const char* name);
 
 /**
  * @brief Get the used space of the storage at the mount point
  *
- * @param resource The surf workstation
+ * @param resource The surf host
  * @param name The mount point
  * @return The amount of used space in bytes
  */
-XBT_PUBLIC(sg_size_t) surf_workstation_get_used_size(surf_resource_t resource, const char* name);
+XBT_PUBLIC(sg_size_t) surf_host_get_used_size(surf_resource_t resource, const char* name);
 
 /**
- * @brief Get the VMs hosted on the workstation
+ * @brief Get the VMs hosted on the host
  *
- * @param resource The surf workstation
- * @return The list of VMs on the workstation
+ * @param resource The surf host
+ * @return The list of VMs on the host
  */
-XBT_PUBLIC(xbt_dynar_t) surf_workstation_get_vms(surf_resource_t resource);
-
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param resource [description]
- * @param params [description]
- */
-XBT_PUBLIC(void) surf_workstation_get_params(surf_resource_t resource, ws_params_t params);
+XBT_PUBLIC(xbt_dynar_t) surf_host_get_vms(surf_resource_t resource);
 
 /**
  * @brief [brief description]
@@ -500,58 +491,67 @@ XBT_PUBLIC(void) surf_workstation_get_params(surf_resource_t resource, ws_params
  * @param resource [description]
  * @param params [description]
  */
-XBT_PUBLIC(void) surf_workstation_set_params(surf_resource_t resource, ws_params_t params);
+XBT_PUBLIC(void) surf_host_get_params(surf_resource_t resource, ws_params_t params);
 
 /**
- * @brief Destroy a Workstation VM
+ * @brief [brief description]
+ * @details [long description]
  *
- * @param resource The surf workstation vm
+ * @param resource [description]
+ * @param params [description]
  */
-XBT_PUBLIC(void) surf_vm_workstation_destroy(surf_resource_t resource);
+XBT_PUBLIC(void) surf_host_set_params(surf_resource_t resource, ws_params_t params);
 
 /**
- * @brief Suspend a Workstation VM
+ * @brief Destroy a VM
  *
- * @param resource The surf workstation vm
+ * @param resource The surf vm
  */
-XBT_PUBLIC(void) surf_vm_workstation_suspend(surf_resource_t resource);
+XBT_PUBLIC(void) surf_vm_destroy(surf_resource_t resource);
 
 /**
- * @brief Resume a Workstation VM
+ * @brief Suspend a VM
  *
- * @param resource The surf workstation vm
+ * @param resource The surf vm
  */
-XBT_PUBLIC(void) surf_vm_workstation_resume(surf_resource_t resource);
+XBT_PUBLIC(void) surf_vm_suspend(surf_resource_t resource);
 
 /**
- * @brief Save the Workstation VM (Not yet implemented)
+ * @brief Resume a VM
  *
- * @param resource The surf workstation vm
+ * @param resource The surf vm
  */
-XBT_PUBLIC(void) surf_vm_workstation_save(surf_resource_t resource);
+XBT_PUBLIC(void) surf_vm_resume(surf_resource_t resource);
 
 /**
- * @brief Restore the Workstation VM (Not yet implemented)
+ * @brief Save the VM (Not yet implemented)
  *
- * @param resource The surf workstation vm
+ * @param resource The surf vm
  */
-XBT_PUBLIC(void) surf_vm_workstation_restore(surf_resource_t resource);
+XBT_PUBLIC(void) surf_vm_save(surf_resource_t resource);
+
+/**
+ * @brief Restore the VM (Not yet implemented)
+ *
+ * @param resource The surf vm
+ */
+XBT_PUBLIC(void) surf_vm_restore(surf_resource_t resource);
 
 /**
  * @brief Migrate the VM to the destination host
  *
- * @param resource The surf workstation vm
+ * @param resource The surf vm
  * @param ind_vm_ws_dest The destination host
  */
-XBT_PUBLIC(void) surf_vm_workstation_migrate(surf_resource_t resource, surf_resource_t ind_vm_ws_dest);
+XBT_PUBLIC(void) surf_vm_migrate(surf_resource_t resource, surf_resource_t ind_vm_ws_dest);
 
 /**
  * @brief Get the physical machine hosting the VM
  *
- * @param resource The surf workstation vm
+ * @param resource The surf vm
  * @return The physical machine hosting the VM
  */
-XBT_PUBLIC(surf_resource_t) surf_vm_workstation_get_pm(surf_resource_t resource);
+XBT_PUBLIC(surf_resource_t) surf_vm_get_pm(surf_resource_t resource);
 
 /**
  * @brief [brief description]
@@ -560,7 +560,7 @@ XBT_PUBLIC(surf_resource_t) surf_vm_workstation_get_pm(surf_resource_t resource)
  * @param resource [description]
  * @param bound [description]
  */
-XBT_PUBLIC(void) surf_vm_workstation_set_bound(surf_resource_t resource, double bound);
+XBT_PUBLIC(void) surf_vm_set_bound(surf_resource_t resource, double bound);
 
 /**
  * @brief [brief description]
@@ -570,7 +570,7 @@ XBT_PUBLIC(void) surf_vm_workstation_set_bound(surf_resource_t resource, double 
  * @param cpu [description]
  * @param mask [description]
  */
-XBT_PUBLIC(void) surf_vm_workstation_set_affinity(surf_resource_t resource, surf_resource_t cpu, unsigned long mask);
+XBT_PUBLIC(void) surf_vm_set_affinity(surf_resource_t resource, surf_resource_t cpu, unsigned long mask);
 
 /**
  * @brief Execute some quantity of computation
@@ -592,13 +592,13 @@ XBT_PUBLIC(surf_action_t) surf_cpu_execute(surf_resource_t cpu, double size);
 XBT_PUBLIC(surf_action_t) surf_cpu_sleep(surf_resource_t cpu, double duration);
 
 /**
- * @brief Get the workstation power peak
+ * @brief Get the host power peak
  * @details [long description]
  *
- * @param host The surf workstation
+ * @param host The surf host
  * @return The power peak
  */
-XBT_PUBLIC(double) surf_workstation_get_current_power_peak(surf_resource_t host);
+XBT_PUBLIC(double) surf_host_get_current_power_peak(surf_resource_t host);
 
 /**
  * @brief [brief description]
@@ -609,7 +609,7 @@ XBT_PUBLIC(double) surf_workstation_get_current_power_peak(surf_resource_t host)
  *
  * @return [description]
  */
-XBT_PUBLIC(double) surf_workstation_get_power_peak_at(surf_resource_t host, int pstate_index);
+XBT_PUBLIC(double) surf_host_get_power_peak_at(surf_resource_t host, int pstate_index);
 
 /**
  * @brief [brief description]
@@ -618,83 +618,83 @@ XBT_PUBLIC(double) surf_workstation_get_power_peak_at(surf_resource_t host, int 
  * @param host [description]
  * @return [description]
  */
-XBT_PUBLIC(int) surf_workstation_get_nb_pstates(surf_resource_t host);
+XBT_PUBLIC(int) surf_host_get_nb_pstates(surf_resource_t host);
 
-XBT_PUBLIC(void) surf_workstation_set_pstate(surf_resource_t host, int pstate_index);
-XBT_PUBLIC(int) surf_workstation_get_pstate(surf_resource_t host);
-XBT_PUBLIC(double) surf_workstation_get_wattmin_at(surf_resource_t resource, int pstate);
-XBT_PUBLIC(double) surf_workstation_get_wattmax_at(surf_resource_t resource, int pstate);
+XBT_PUBLIC(void) surf_host_set_pstate(surf_resource_t host, int pstate_index);
+XBT_PUBLIC(int) surf_host_get_pstate(surf_resource_t host);
+XBT_PUBLIC(double) surf_host_get_wattmin_at(surf_resource_t resource, int pstate);
+XBT_PUBLIC(double) surf_host_get_wattmax_at(surf_resource_t resource, int pstate);
 
 /**
- * @brief Get the consumed energy (in joules) of a workstation
+ * @brief Get the consumed energy (in joules) of an host
  *
- * @param host The surf workstation
+ * @param host The surf host
  * @return The consumed energy
  */
-XBT_PUBLIC(double) surf_workstation_get_consumed_energy(surf_resource_t host);
+XBT_PUBLIC(double) surf_host_get_consumed_energy(surf_resource_t host);
 
 /**
- * @brief Get the list of storages mounted on a workstation
+ * @brief Get the list of storages mounted on an host
  *
- * @param workstation The surf workstation
+ * @param host The surf host
  * @return Dictionary of mount point, Storage
  */
-XBT_PUBLIC(xbt_dict_t) surf_workstation_get_mounted_storage_list(surf_resource_t workstation);
+XBT_PUBLIC(xbt_dict_t) surf_host_get_mounted_storage_list(surf_resource_t host);
 
 /**
- * @brief Get the list of storages attached to a workstation
+ * @brief Get the list of storages attached to an host
  *
- * @param workstation The surf workstation
+ * @param host The surf host
  * @return Dictionary of storage
  */
-XBT_PUBLIC(xbt_dynar_t) surf_workstation_get_attached_storage_list(surf_resource_t workstation);
+XBT_PUBLIC(xbt_dynar_t) surf_host_get_attached_storage_list(surf_resource_t host);
 
 /**
  * @brief Unlink a file descriptor
  *
- * @param workstation The surf workstation
+ * @param host The surf host
  * @param fd The file descriptor
  *
  * @return 0 if failed to unlink, 1 otherwise
  */
-XBT_PUBLIC(int) surf_workstation_unlink(surf_resource_t workstation, surf_file_t fd);
+XBT_PUBLIC(int) surf_host_unlink(surf_resource_t host, surf_file_t fd);
 
 /**
- * @brief Get the size of a file on a workstation
+ * @brief Get the size of a file on a host
  *
- * @param workstation The surf workstation
+ * @param host The surf host
  * @param fd The file descriptor
  *
  * @return The size in bytes of the file
  */
-XBT_PUBLIC(size_t) surf_workstation_get_size(surf_resource_t workstation, surf_file_t fd);
+XBT_PUBLIC(size_t) surf_host_get_size(surf_resource_t host, surf_file_t fd);
 
 /**
  * @brief Get the current position of the file descriptor
  *
- * @param workstation The surf workstation
+ * @param host The surf host
  * @param fd The file descriptor
  * @return The current position of the file descriptor
  */
-XBT_PUBLIC(size_t) surf_workstation_file_tell(surf_resource_t workstation, surf_file_t fd);
+XBT_PUBLIC(size_t) surf_host_file_tell(surf_resource_t host, surf_file_t fd);
 
 /**
  * @brief Move a file to another location on the *same mount point*.
  * @details [long description]
  *
- * @param workstation The surf workstation
+ * @param host The surf host
  * @param fd The file descriptor
  * @param fullpath The new full path
  *
  * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
  */
-XBT_PUBLIC(int) surf_workstation_file_move(surf_resource_t workstation, surf_file_t fd, const char* fullpath);
+XBT_PUBLIC(int) surf_host_file_move(surf_resource_t host, surf_file_t fd, const char* fullpath);
 
 /**
  * @brief Set the position indictator assiociated with the file descriptor to a new position
  * @details [long description]
  *
- * @param workstation The surf workstation
+ * @param host The surf host
  * @param fd The file descriptor
  * @param offset The offset from the origin
  * @param origin Position used as a reference for the offset
@@ -703,7 +703,7 @@ XBT_PUBLIC(int) surf_workstation_file_move(surf_resource_t workstation, surf_fil
  *  - SEEK_END: end of the file
  * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
  */
-XBT_PUBLIC(int) surf_workstation_file_seek(surf_resource_t workstation,
+XBT_PUBLIC(int) surf_host_file_seek(surf_resource_t host,
                                            surf_file_t fd, sg_offset_t offset,
                                            int origin);
 
@@ -986,7 +986,7 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_cpu_model_description[];
  *  \brief The network model
  *
  *  When creating a new API on top on SURF, you shouldn't use the
- *  network model unless you know what you are doing. Only the workstation
+ *  network model unless you know what you are doing. Only the host
  *  model should be accessed because depending on the platform model,
  *  the network model can be NULL.
  */
@@ -1000,7 +1000,7 @@ XBT_PUBLIC_DATA(surf_network_model_t) surf_network_model;
  * size (< 1KiB, < 64KiB, >= 64KiB).
  * See comments in the code for more information.
  *
- *  \see surf_workstation_model_init_SMPI()
+ *  \see surf_host_model_init_SMPI()
  */
 XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
 
@@ -1010,7 +1010,7 @@ XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
  * This model impelments a variant of the contention model on Infinband networks based on
  * the works of Jérôme Vienne : http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf
  *
- *  \see surf_workstation_model_init_IB()
+ *  \see surf_host_model_init_IB()
  */
 XBT_PUBLIC(void) surf_network_model_init_IB(void);
 
@@ -1021,7 +1021,7 @@ XBT_PUBLIC(void) surf_network_model_init_IB(void);
  * the results obtained with the GTNets simulator for onelink and
  * dogbone sharing scenarios. See comments in the code for more information.
  *
- *  \see surf_workstation_model_init_LegrandVelho()
+ *  \see surf_host_model_init_LegrandVelho()
  */
 XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(void);
 
@@ -1032,9 +1032,9 @@ XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(void);
  *  constant, hence no need for a routing table. This is particularly
  *  usefull when simulating huge distributed algorithms where
  *  scalability is really an issue. This function is called in
- *  conjunction with surf_workstation_model_init_compound.
+ *  conjunction with surf_host_model_init_compound.
  *
- *  \see surf_workstation_model_init_compound()
+ *  \see surf_host_model_init_compound()
  */
 XBT_PUBLIC(void) surf_network_model_init_Constant(void);
 
@@ -1042,7 +1042,7 @@ XBT_PUBLIC(void) surf_network_model_init_Constant(void);
  *  \brief Initializes the platform with the network model CM02
  *
  *  You sould call this function by yourself only if you plan using
- *  surf_workstation_model_init_compound.
+ *  surf_host_model_init_compound.
  *  See comments in the code for more information.
  */
 XBT_PUBLIC(void) surf_network_model_init_CM02(void);
@@ -1052,10 +1052,10 @@ XBT_PUBLIC(void) surf_network_model_init_CM02(void);
  *  \brief Initializes the platform with the network model GTNETS
  *  \param filename XML platform file name
  *
- *  This function is called by surf_workstation_model_init_GTNETS
- *  or by yourself only if you plan using surf_workstation_model_init_compound
+ *  This function is called by surf_host_model_init_GTNETS
+ *  or by yourself only if you plan using surf_host_model_init_compound
  *
- *  \see surf_workstation_model_init_GTNETS()
+ *  \see surf_host_model_init_GTNETS()
  */
 XBT_PUBLIC(void) surf_network_model_init_GTNETS(void);
 #endif
@@ -1065,10 +1065,10 @@ XBT_PUBLIC(void) surf_network_model_init_GTNETS(void);
  *  \brief Initializes the platform with the network model NS3
  *  \param filename XML platform file name
  *
- *  This function is called by surf_workstation_model_init_NS3
- *  or by yourself only if you plan using surf_workstation_model_init_compound
+ *  This function is called by surf_host_model_init_NS3
+ *  or by yourself only if you plan using surf_host_model_init_compound
  *
- *  \see surf_workstation_model_init_NS3()
+ *  \see surf_host_model_init_NS3()
  */
 XBT_PUBLIC(void) surf_network_model_init_NS3(void);
 #endif
@@ -1083,7 +1083,7 @@ XBT_PUBLIC(void) surf_network_model_init_NS3(void);
  *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
  *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
  *
- *  Call this function only if you plan using surf_workstation_model_init_compound.
+ *  Call this function only if you plan using surf_host_model_init_compound.
  *
  */
 XBT_PUBLIC(void) surf_network_model_init_Reno(void);
@@ -1098,7 +1098,7 @@ XBT_PUBLIC(void) surf_network_model_init_Reno(void);
  *  [LOW01] S. H. Low. A duality model of TCP and queue management algorithms.
  *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
  *
- *  Call this function only if you plan using surf_workstation_model_init_compound.
+ *  Call this function only if you plan using surf_host_model_init_compound.
  *
  */
 XBT_PUBLIC(void) surf_network_model_init_Reno2(void);
@@ -1114,7 +1114,7 @@ XBT_PUBLIC(void) surf_network_model_init_Reno2(void);
  *  [LOW03] S. H. Low. A duality model of TCP and queue management algorithms.
  *  IEEE/ACM Transaction on Networking, 11(4):525-536, 2003.
  *
- *  Call this function only if you plan using surf_workstation_model_init_compound.
+ *  Call this function only if you plan using surf_host_model_init_compound.
  *
  */
 XBT_PUBLIC(void) surf_network_model_init_Vegas(void);
@@ -1139,79 +1139,79 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_storage_model_description[];
 XBT_PUBLIC_DATA(surf_storage_model_t) surf_storage_model;
 
 /** \ingroup SURF_models
- *  \brief The workstation model
+ *  \brief The host model
  *
  *  Note that when you create an API on top of SURF,
- *  the workstation model should be the only one you use
+ *  the host model should be the only one you use
  *  because depending on the platform model, the network model and the CPU model
  *  may not exist.
  */
-XBT_PUBLIC_DATA(surf_workstation_model_t) surf_workstation_model;
+XBT_PUBLIC_DATA(surf_host_model_t) surf_host_model;
 
 /** \ingroup SURF_models
- *  \brief The vm_workstation model
+ *  \brief The vm model
  *
  *  Note that when you create an API on top of SURF,
- *  the vm_workstation model should be the only one you use
+ *  the vm model should be the only one you use
  *  because depending on the platform model, the network model and the CPU model
  *  may not exist.
  */
-XBT_PUBLIC_DATA(surf_vm_workstation_model_t) surf_vm_workstation_model;
+XBT_PUBLIC_DATA(surf_vm_model_t) surf_vm_model;
 
 /** \ingroup SURF_models
- *  \brief Initializes the platform with a compound workstation model
+ *  \brief Initializes the platform with a compound host model
  *
  *  This function should be called after a cpu_model and a
  *  network_model have been set up.
  *
  */
-XBT_PUBLIC(void) surf_workstation_model_init_compound(void);
+XBT_PUBLIC(void) surf_host_model_init_compound(void);
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the current best network and cpu models at hand
  *
- *  This platform model seperates the workstation model and the network model.
- *  The workstation model will be initialized with the model compound, the network
+ *  This platform model separates the host model and the network model.
+ *  The host model will be initialized with the model compound, the network
  *  model with the model LV08 (with cross traffic support) and the CPU model with
  *  the model Cas01.
  *  Such model is subject to modification with warning in the ChangeLog so monitor it!
  *
  */
-XBT_PUBLIC(void) surf_workstation_model_init_current_default(void);
+XBT_PUBLIC(void) surf_host_model_init_current_default(void);
 
 /** \ingroup SURF_models
- *  \brief Initializes the platform with the model KCCFLN05
+ *  \brief Initializes the platform with the model L07
  *
  *  With this model, only parallel tasks can be used. Resource sharing
  *  is done by identifying bottlenecks and giving an equal share of
  *  the model to each action.
  *
  */
-XBT_PUBLIC(void) surf_workstation_model_init_ptask_L07(void);
+XBT_PUBLIC(void) surf_host_model_init_ptask_L07(void);
 
 /** \ingroup SURF_models
- *  \brief The list of all available workstation model models
+ *  \brief The list of all available host model models
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t)
-    surf_workstation_model_description[];
+    surf_host_model_description[];
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the current best network and cpu models at hand
  *
- *  This platform model seperates the workstation model and the network model.
- *  The workstation model will be initialized with the model compound, the network
+ *  This platform model seperates the host model and the network model.
+ *  The host model will be initialized with the model compound, the network
  *  model with the model LV08 (with cross traffic support) and the CPU model with
  *  the model Cas01.
  *  Such model is subject to modification with warning in the ChangeLog so monitor it!
  *
  */
-XBT_PUBLIC(void) surf_vm_workstation_model_init_HL13(void);
+XBT_PUBLIC(void) surf_vm_model_init_HL13(void);
 
 /** \ingroup SURF_models
- *  \brief The list of all available vm workstation model models
+ *  \brief The list of all available vm model models
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t)
-    surf_vm_workstation_model_description[];
+    surf_vm_model_description[];
 
 /*******************************************/
 
@@ -1256,9 +1256,9 @@ XBT_PUBLIC_DATA(e_surf_network_element_type_t) surf_routing_edge_get_rc_type(sg_
  *  This function has to be called to initialize the common
  *  structures.  Then you will have to create the environment by
  *  calling
- *  e.g. surf_workstation_model_init_CM02()
+ *  e.g. surf_host_model_init_CM02()
  *
- *  \see surf_workstation_model_init_CM02(), surf_workstation_model_init_compound(), surf_exit()
+ *  \see surf_host_model_init_CM02(), surf_host_model_init_compound(), surf_exit()
  */
 XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common structures */
 

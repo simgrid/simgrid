@@ -23,9 +23,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms
 smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
 {
   /* Create surf associated resource */
-  surf_vm_workstation_model_create(name, ind_phys_host);
+  surf_vm_model_create(name, ind_phys_host);
 
-  smx_host_t smx_host = SIMIX_host_create(name, ind_phys_host, NULL);
+  smx_host_t smx_host = SIMIX_host_create(name, NULL);
 
   /* We will be able to register the VM to its physical host, so that we can promptly
    * retrieve the list VMs on the physical host. */
@@ -38,7 +38,7 @@ smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
 static long host_get_ramsize(smx_host_t vm, int *overcommit)
 {
   s_ws_params_t params;
-  surf_workstation_get_params(vm, &params);
+  surf_host_get_params(vm, &params);
 
   if (overcommit)
     *overcommit = params.overcommit;
@@ -49,7 +49,7 @@ static long host_get_ramsize(smx_host_t vm, int *overcommit)
 /* **** start a VM **** */
 static int __can_be_started(smx_host_t vm)
 {
-  smx_host_t pm = surf_vm_workstation_get_pm(vm);
+  smx_host_t pm = surf_vm_get_pm(vm);
 
   int pm_overcommit = 0;
   long pm_ramsize = host_get_ramsize(pm, &pm_overcommit);
@@ -66,7 +66,7 @@ static int __can_be_started(smx_host_t vm)
   }
 
   long total_ramsize_of_vms = 0;
-  xbt_dynar_t dyn_vms = surf_workstation_get_vms(pm);
+  xbt_dynar_t dyn_vms = surf_host_get_vms(pm);
   {
     unsigned int cursor = 0;
     smx_host_t another_vm;
@@ -90,7 +90,7 @@ static int __can_be_started(smx_host_t vm)
 void SIMIX_vm_start(smx_host_t ind_vm)
 {
   if (__can_be_started(ind_vm))
-    surf_resource_set_state(surf_workstation_resource_priv(ind_vm),
+    surf_resource_set_state(surf_host_resource_priv(ind_vm),
                             (int)SURF_VM_STATE_RUNNING);
   else
     THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
@@ -99,7 +99,7 @@ void SIMIX_vm_start(smx_host_t ind_vm)
 
 int SIMIX_vm_get_state(smx_host_t ind_vm)
 {
-  return surf_resource_get_state(surf_workstation_resource_priv(ind_vm));
+  return surf_resource_get_state(surf_host_resource_priv(ind_vm));
 }
 
 /**
@@ -113,7 +113,7 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
   xbt_assert(SIMIX_vm_get_state(ind_vm) == SURF_VM_STATE_SUSPENDED);
 
   /* jump to vm_ws_xigrate(). this will update the vm location. */
-  surf_vm_workstation_migrate(ind_vm, ind_dst_pm);
+  surf_vm_migrate(ind_vm, ind_dst_pm);
 }
 
 /**
@@ -150,7 +150,7 @@ void SIMIX_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t 
 void *SIMIX_vm_get_pm(smx_host_t ind_vm)
 {
   /* jump to vm_ws_get_pm(). this will return the vm name. */
-  return surf_vm_workstation_get_pm(ind_vm);
+  return surf_vm_get_pm(ind_vm);
 }
 
 /**
@@ -162,7 +162,7 @@ void *SIMIX_vm_get_pm(smx_host_t ind_vm)
 void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound)
 {
   /* jump to vm_ws_set_vm_bound(). */
-  surf_vm_workstation_set_bound(ind_vm, bound);
+  surf_vm_set_bound(ind_vm, bound);
 }
 
 /**
@@ -178,7 +178,7 @@ void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long m
   xbt_assert(SIMIX_vm_get_pm(ind_vm) == ind_pm);
 
   /* jump to vm_ws_set_vm_affinity(). */
-  surf_vm_workstation_set_affinity(ind_vm, ind_pm, mask);
+  surf_vm_set_affinity(ind_vm, ind_pm, mask);
 }
 
 
@@ -199,7 +199,7 @@ void SIMIX_vm_suspend(smx_host_t ind_vm, smx_process_t issuer)
   XBT_DEBUG("suspend VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   /* jump to vm_ws_suspend. The state will be set. */
-  surf_vm_workstation_suspend(ind_vm);
+  surf_vm_suspend(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
@@ -239,7 +239,7 @@ void SIMIX_vm_resume(smx_host_t ind_vm, smx_process_t issuer)
   XBT_DEBUG("resume VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   /* jump to vm_ws_resume() */
-  surf_vm_workstation_resume(ind_vm);
+  surf_vm_resume(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
@@ -272,7 +272,7 @@ void SIMIX_vm_save(smx_host_t ind_vm, smx_process_t issuer)
   XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   /* jump to vm_ws_save() */
-  surf_vm_workstation_save(ind_vm);
+  surf_vm_save(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
@@ -303,7 +303,7 @@ void SIMIX_vm_restore(smx_host_t ind_vm, smx_process_t issuer)
   XBT_DEBUG("restore VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
 
   /* jump to vm_ws_restore() */
-  surf_vm_workstation_resume(ind_vm);
+  surf_vm_resume(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
@@ -342,7 +342,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
   }
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
-  surf_resource_set_state(surf_workstation_resource_priv(ind_vm),
+  surf_resource_set_state(surf_host_resource_priv(ind_vm),
                           (int)SURF_VM_STATE_CREATED);
 }
 
@@ -370,5 +370,5 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
   xbt_lib_unset(host_lib, hostname, SIMIX_HOST_LEVEL, 1);
 
   /* jump to vm_ws_destroy(). The surf level resource will be freed. */
-  surf_vm_workstation_destroy(ind_vm);
+  surf_vm_destroy(ind_vm);
 }

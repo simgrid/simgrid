@@ -4,15 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "vm_workstation_hl13.hpp"
 #include "cpu_cas01.hpp"
+#include "vm_hl13.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm_workstation);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm);
 
-void surf_vm_workstation_model_init_HL13(void){
+void surf_vm_model_init_HL13(void){
   if (surf_cpu_model_vm) {
-    surf_vm_workstation_model = new WorkstationVMHL13Model();
-    ModelPtr model = surf_vm_workstation_model;
+    surf_vm_model = new VMHL13Model();
+    ModelPtr model = surf_vm_model;
 
     xbt_dynar_push(model_list, &model);
     xbt_dynar_push(model_list_invoke, &model);
@@ -23,26 +23,26 @@ void surf_vm_workstation_model_init_HL13(void){
  * Model *
  *********/
 
-WorkstationVMHL13Model::WorkstationVMHL13Model() : WorkstationVMModel() {
+VMHL13Model::VMHL13Model() : VMModel() {
   p_cpuModel = surf_cpu_model_vm;
 }
 
-void WorkstationVMHL13Model::updateActionsState(double /*now*/, double /*delta*/){
+void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/){
   return;
 }
 
-ActionPtr WorkstationVMHL13Model::communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate){
+ActionPtr VMHL13Model::communicate(HostPtr src, HostPtr dst, double size, double rate){
   return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
 }
 
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
  * structure (i.e not on the surf_resource_private infos) */
 
-WorkstationVMPtr WorkstationVMHL13Model::createWorkstationVM(const char *name, surf_resource_t ind_phys_workstation)
+VMPtr VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
 {
-  WorkstationVMHL13Ptr ws = new WorkstationVMHL13(this, name, NULL, ind_phys_workstation);
+  VMHL13Ptr ws = new VMHL13(this, name, NULL, host_PM);
 
-  xbt_lib_set(host_lib, name, SURF_WKS_LEVEL, ws);
+  xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, ws);
 
   /* TODO:
    * - check how network requests are scheduled between distinct processes competing for the same card.
@@ -62,7 +62,7 @@ static inline double get_solved_value(CpuActionPtr cpu_action)
 // const double virt_overhead = 0.95;
 const double virt_overhead = 1;
 
-double WorkstationVMHL13Model::shareResources(double now)
+double VMHL13Model::shareResources(double now)
 {
   /* TODO: udpate action's cost with the total cost of processes on the VM. */
 
@@ -70,11 +70,11 @@ double WorkstationVMHL13Model::shareResources(double now)
   /* 0. Make sure that we already calculated the resource share at the physical
    * machine layer. */
   {
-    _XBT_GNUC_UNUSED ModelPtr ws_model = surf_workstation_model;
-    _XBT_GNUC_UNUSED ModelPtr vm_ws_model = surf_vm_workstation_model;
+    _XBT_GNUC_UNUSED ModelPtr ws_model = surf_host_model;
+    _XBT_GNUC_UNUSED ModelPtr vm_ws_model = surf_vm_model;
     _XBT_GNUC_UNUSED unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &ws_model);
     _XBT_GNUC_UNUSED unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &vm_ws_model);
-    xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_workstation_model comes before");
+    xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_host_model comes before");
 
     /* Another option is that we call sub_ws->share_resource() here. The
      * share_resource() function has no side-effect. We can call it here to
@@ -107,13 +107,13 @@ double WorkstationVMHL13Model::shareResources(double now)
    **/
 
   /* iterate for all virtual machines */
-  for (WorkstationVMModel::vm_list_t::iterator iter =
-         WorkstationVMModel::ws_vms.begin();
-       iter !=  WorkstationVMModel::ws_vms.end(); ++iter) {
+  for (VMModel::vm_list_t::iterator iter =
+         VMModel::ws_vms.begin();
+       iter !=  VMModel::ws_vms.end(); ++iter) {
 
-    WorkstationVMPtr ws_vm = &*iter;
+    VMPtr ws_vm = &*iter;
     CpuPtr cpu = ws_vm->p_cpu;
-    xbt_assert(cpu, "cpu-less workstation");
+    xbt_assert(cpu, "cpu-less host");
 
     double solved_value = get_solved_value(ws_vm->p_action);
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
@@ -152,13 +152,13 @@ double WorkstationVMHL13Model::shareResources(double now)
   /* FIXME: 3. do we have to re-initialize our cpu_action object? */
 #if 0
   /* iterate for all virtual machines */
-  for (WorkstationVMModel::vm_list_t::iterator iter =
-         WorkstationVMModel::ws_vms.begin();
-       iter !=  WorkstationVMModel::ws_vms.end(); ++iter) {
+  for (VMModel::vm_list_t::iterator iter =
+         VMModel::ws_vms.begin();
+       iter !=  VMModel::ws_vms.end(); ++iter) {
 
     {
 #if 0
-      WorkstationVM2013Ptr ws_vm2013 = static_cast<WorkstationVM2013Ptr>(&*iter);
+      VM2013Ptr ws_vm2013 = static_cast<VM2013Ptr>(&*iter);
       XBT_INFO("cost %f remains %f start %f finish %f", ws_vm2013->cpu_action->cost,
           ws_vm2013->cpu_action->remains,
           ws_vm2013->cpu_action->start,
@@ -181,32 +181,32 @@ double WorkstationVMHL13Model::shareResources(double now)
   return ret;
 }
 
-ActionPtr WorkstationVMHL13Model::executeParallelTask(int workstation_nb,
-                                        void **workstation_list,
+ActionPtr VMHL13Model::executeParallelTask(int host_nb,
+                                        void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate){
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
-  if ((workstation_nb == 1)
+  if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0))
-    return ((WorkstationCLM03Ptr)workstation_list[0])->execute(flops_amount[0]);
-  else if ((workstation_nb == 1)
+    return ((HostCLM03Ptr)host_list[0])->execute(flops_amount[0]);
+  else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0))
-    return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[0],bytes_amount[0], rate);
-  else if ((workstation_nb == 2)
+    return communicate((HostCLM03Ptr)host_list[0], (HostCLM03Ptr)host_list[0],bytes_amount[0], rate);
+  else if ((host_nb == 2)
              && (cost_or_zero(flops_amount, 0) == 0.0)
              && (cost_or_zero(flops_amount, 1) == 0.0)) {
     int i,nb = 0;
     double value = 0.0;
 
-    for (i = 0; i < workstation_nb * workstation_nb; i++) {
+    for (i = 0; i < host_nb * host_nb; i++) {
       if (cost_or_zero(bytes_amount, i) > 0.0) {
         nb++;
         value = cost_or_zero(bytes_amount, i);
       }
     }
     if (nb == 1)
-      return communicate((WorkstationCLM03Ptr)workstation_list[0], (WorkstationCLM03Ptr)workstation_list[1],value, rate);
+      return communicate((HostCLM03Ptr)host_list[0], (HostCLM03Ptr)host_list[1],value, rate);
   }
 #undef cost_or_zero
 
@@ -218,11 +218,11 @@ ActionPtr WorkstationVMHL13Model::executeParallelTask(int workstation_nb,
  * Resource *
  ************/
 
-WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* name, xbt_dict_t props,
-		                                   surf_resource_t ind_phys_workstation)
- : WorkstationVM(model, name, props, NULL, NULL)
+VMHL13::VMHL13(VMModelPtr model, const char* name, xbt_dict_t props,
+		                                   surf_resource_t host_PM)
+ : VM(model, name, props, NULL, NULL)
 {
-  WorkstationPtr sub_ws = static_cast<WorkstationPtr>(surf_workstation_resource_priv(ind_phys_workstation));
+  HostPtr sub_ws = static_cast<HostPtr>(surf_host_resource_priv(host_PM));
 
   /* Currently, we assume a VM has no storage. */
   p_storage = NULL;
@@ -241,7 +241,7 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01Ptr sub_cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(ind_phys_workstation));
+  CpuCas01Ptr sub_cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(host_PM));
 
   /* We can assume one core and cas01 cpu for the first step.
    * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
@@ -257,17 +257,10 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
       NULL);                       // host->properties,
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
-  /* FIXME: TODO: we have to peridocally input GUESTOS_NOISE to the system? how ? */
-  // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_phys_workstation, GUESTOS_NOISE);
+  /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
+  // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(host_PM, GUESTOS_NOISE);
   p_action = sub_cpu->execute(0);
 
-  /* The SURF_WKS_LEVEL at host_lib saves workstation_CLM03 objects. Please
-   * note workstation_VM2013 objects, inheriting the workstation_CLM03
-   * structure, are also saved there.
-   *
-   * If you want to get a workstation_VM2013 object from host_lib, see
-   * ws->generic_resouce.model->type first. If it is
-   * SURF_MODEL_TYPE_VM_WORKSTATION, you can cast ws to vm_ws. */
   XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, sub_ws->getName(), xbt_dynar_length(p_storage));
 }
 
@@ -275,45 +268,45 @@ WorkstationVMHL13::WorkstationVMHL13(WorkstationVMModelPtr model, const char* na
  * A physical host does not disappear in the current SimGrid code, but a VM may
  * disappear during a simulation.
  */
-WorkstationVMHL13::~WorkstationVMHL13()
+VMHL13::~VMHL13()
 {
   /* Free the cpu_action of the VM. */
   _XBT_GNUC_UNUSED int ret = p_action->unref();
   xbt_assert(ret == 1, "Bug: some resource still remains");
 }
 
-void WorkstationVMHL13::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {
+void VMHL13::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }
 
-bool WorkstationVMHL13::isUsed() {
+bool VMHL13::isUsed() {
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
   return -1;
 }
 
-e_surf_resource_state_t WorkstationVMHL13::getState()
+e_surf_resource_state_t VMHL13::getState()
 {
   return (e_surf_resource_state_t) p_currentState;
 }
 
-void WorkstationVMHL13::setState(e_surf_resource_state_t state)
+void VMHL13::setState(e_surf_resource_state_t state)
 {
   p_currentState = (e_surf_vm_state_t) state;
 }
 
-void WorkstationVMHL13::suspend()
+void VMHL13::suspend()
 {
   p_action->suspend();
   p_currentState = SURF_VM_STATE_SUSPENDED;
 }
 
-void WorkstationVMHL13::resume()
+void VMHL13::resume()
 {
   p_action->resume();
   p_currentState = SURF_VM_STATE_RUNNING;
 }
 
-void WorkstationVMHL13::save()
+void VMHL13::save()
 {
   p_currentState = SURF_VM_STATE_SAVING;
 
@@ -322,7 +315,7 @@ void WorkstationVMHL13::save()
   p_currentState = SURF_VM_STATE_SAVED;
 }
 
-void WorkstationVMHL13::restore()
+void VMHL13::restore()
 {
   p_currentState = SURF_VM_STATE_RESTORING;
 
@@ -334,10 +327,10 @@ void WorkstationVMHL13::restore()
 /*
  * Update the physical host of the given VM
  */
-void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
+void VMHL13::migrate(surf_resource_t ind_dst_pm)
 {
-   /* ind_phys_workstation equals to smx_host_t */
-   WorkstationPtr ws_dst = static_cast<WorkstationPtr>(surf_workstation_resource_priv(ind_dst_pm));
+   /* ind_dst_pm equals to smx_host_t */
+   HostPtr ws_dst = static_cast<HostPtr>(surf_host_resource_priv(ind_dst_pm));
    const char *vm_name = getName();
    const char *pm_name_src = p_subWs->getName();
    const char *pm_name_dst = ws_dst->getName();
@@ -400,11 +393,11 @@ void WorkstationVMHL13::migrate(surf_resource_t ind_dst_pm)
    delete old_net_elm;
 }
 
-void WorkstationVMHL13::setBound(double bound){
+void VMHL13::setBound(double bound){
  p_action->setBound(bound);
 }
 
-void WorkstationVMHL13::setAffinity(CpuPtr cpu, unsigned long mask){
+void VMHL13::setAffinity(CpuPtr cpu, unsigned long mask){
  p_action->setAffinity(cpu, mask);
 }
 
@@ -412,13 +405,13 @@ void WorkstationVMHL13::setAffinity(CpuPtr cpu, unsigned long mask){
  * A surf level object will be useless in the upper layer. Returning the
  * dict_elm of the host.
  **/
-surf_resource_t WorkstationVMHL13::getPm()
+surf_resource_t VMHL13::getPm()
 {
   return xbt_lib_get_elm_or_null(host_lib, p_subWs->getName());
 }
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
-ActionPtr WorkstationVMHL13::execute(double size)
+ActionPtr VMHL13::execute(double size)
 {
   double old_cost = p_action->getCost();
   double new_cost = old_cost + size;
@@ -432,7 +425,7 @@ ActionPtr WorkstationVMHL13::execute(double size)
   return p_cpu->execute(size);
 }
 
-ActionPtr WorkstationVMHL13::sleep(double duration) {
+ActionPtr VMHL13::sleep(double duration) {
   return p_cpu->sleep(duration);
 }
 

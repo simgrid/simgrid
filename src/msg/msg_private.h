@@ -154,7 +154,7 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #  define MSG_RETURN(val) return(val)
 #endif
 
-msg_host_t __MSG_host_create(smx_host_t workstation);
+msg_host_t __MSG_host_create(smx_host_t host);
 msg_storage_t __MSG_storage_create(smx_storage_t storage);
 void __MSG_host_destroy(msg_host_t host);
 void __MSG_storage_destroy(msg_storage_priv_t host);

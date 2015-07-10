@@ -26,7 +26,7 @@ int main(int argc, char **argv)
   /* Set the workstation model to default, as storage is not supported by the
    * ptask_L07 model yet.
    */
-  SD_config("workstation/model", "default");
+  SD_config("host/model", "default");
   SD_create_environment(argv[1]);
   workstations = SD_workstation_get_list();
   total_nworkstations = SD_workstation_get_number();

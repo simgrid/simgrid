@@ -8,12 +8,12 @@
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
 #include "cpu_interface.hpp"
-#include "workstation_interface.hpp"
-#include "vm_workstation_interface.hpp"
+#include "host_interface.hpp"
 #include "simix/smx_host_private.h"
 #include "surf_routing.hpp"
 #include "simgrid/sg_config.h"
 #include "mc/mc.h"
+#include "vm_interface.hpp"
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
@@ -84,9 +84,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
   xbt_dynar_free(&hosts);
 }*/
 
-/* model_list_invoke contains only surf_workstation and surf_vm_workstation.
+/* model_list_invoke contains only surf_host and surf_vm.
  * The callback functions of cpu_model and network_model will be called from
- * those of these workstation models. */
+ * those of these host models. */
 xbt_dynar_t model_list = NULL; /* for destroying all models correctly */
 xbt_dynar_t model_list_invoke = NULL;  /* for invoking callbacks */
 
@@ -150,22 +150,22 @@ s_surf_model_description_t surf_cpu_model_description[] = {
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
-s_surf_model_description_t surf_workstation_model_description[] = {
+s_surf_model_description_t surf_host_model_description[] = {
   {"default",
-   "Default workstation model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)",
-   surf_workstation_model_init_current_default},
+   "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)",
+   surf_host_model_init_current_default},
   {"compound",
-   "Workstation model that is automatically chosen if you change the network and CPU models",
-   surf_workstation_model_init_compound},
-  {"ptask_L07", "Workstation model somehow similar to Cas01+CM02 but allowing parallel tasks",
-   surf_workstation_model_init_ptask_L07},
+   "Host model that is automatically chosen if you change the network and CPU models",
+   surf_host_model_init_compound},
+  {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks",
+   surf_host_model_init_ptask_L07},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
-s_surf_model_description_t surf_vm_workstation_model_description[] = {
+s_surf_model_description_t surf_vm_model_description[] = {
   {"default",
-   "Default vm workstation model.",
-   surf_vm_workstation_model_init_HL13},
+   "Default vm model.",
+   surf_vm_model_init_HL13},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
@@ -375,9 +375,9 @@ static XBT_INLINE void surf_link_free(void *r)
   delete static_cast<NetworkLinkPtr>(r);
 }
 
-static XBT_INLINE void surf_workstation_free(void *r)
+static XBT_INLINE void surf_host_free(void *r)
 {
-  delete static_cast<WorkstationPtr>(r);
+  delete static_cast<HostPtr>(r);
 }
 
 static XBT_INLINE void surf_storage_free(void *r)
@@ -410,7 +410,7 @@ void surf_init(int *argc, char **argv)
 
   XBT_DEBUG("Add SURF levels");
   SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_cpu_free);
-  SURF_WKS_LEVEL = xbt_lib_add_level(host_lib,surf_workstation_free);
+  SURF_HOST_LEVEL = xbt_lib_add_level(host_lib,surf_host_free);
   SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_link_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 

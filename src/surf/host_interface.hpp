@@ -9,84 +9,80 @@
 #include "cpu_interface.hpp"
 #include "network_interface.hpp"
 
-#ifndef SURF_WORKSTATION_INTERFACE_HPP_
-#define SURF_WORKSTATION_INTERFACE_HPP_
+#ifndef SURF_HOST_INTERFACE_HPP_
+#define SURF_HOST_INTERFACE_HPP_
 
 /***********
  * Classes *
  ***********/
 
-class WorkstationModel;
-typedef WorkstationModel *WorkstationModelPtr;
+class HostModel;
+typedef HostModel *HostModelPtr;
 
-class Workstation;
-typedef Workstation *WorkstationPtr;
+class Host;
+typedef Host *HostPtr;
 
-class WorkstationAction;
-typedef WorkstationAction *WorkstationActionPtr;
+class HostAction;
+typedef HostAction *HostActionPtr;
 
 /*************
  * Callbacks *
  *************/
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Workstation creation *
- * @details Callback functions have the following signature: `void(WorkstationPtr)`
+ * @brief Callbacks handler which emit the callbacks after Host creation *
+ * @details Callback functions have the following signature: `void(HostPtr)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, WorkstationPtr)) workstationCreatedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, HostPtr)) hostCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Workstation destruction *
- * @details Callback functions have the following signature: `void(WorkstationPtr)`
+ * @brief Callbacks handler which emit the callbacks after Host destruction *
+ * @details Callback functions have the following signature: `void(HostPtr)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, WorkstationPtr)) workstationDestructedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, HostPtr)) hostDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Workstation State changed *
- * @details Callback functions have the following signature: `void(WorkstationActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @brief Callbacks handler which emit the callbacks after Host State changed *
+ * @details Callback functions have the following signature: `void(HostActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, WorkstationPtr, e_surf_resource_state_t, e_surf_resource_state_t)) workstationStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, HostPtr, e_surf_resource_state_t, e_surf_resource_state_t)) hostStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after WorkstationAction State changed *
- * @details Callback functions have the following signature: `void(WorkstationActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @brief Callbacks handler which emit the callbacks after HostAction State changed *
+ * @details Callback functions have the following signature: `void(HostActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, WorkstationActionPtr, e_surf_action_state_t, e_surf_action_state_t)) workstationActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, HostActionPtr, e_surf_action_state_t, e_surf_action_state_t)) hostActionStateChangedCallbacks;
 
 /*********
  * Tools *
  *********/
-XBT_PUBLIC_DATA(WorkstationModelPtr) surf_workstation_model;
-XBT_PUBLIC(void) workstation_parse_init(sg_platf_host_cbarg_t host);
-XBT_PUBLIC(void) workstation_add_traces();
+XBT_PUBLIC_DATA(HostModelPtr) surf_host_model;
+XBT_PUBLIC(void) host_parse_init(sg_platf_host_cbarg_t host);
+XBT_PUBLIC(void) host_add_traces();
 
 /*********
  * Model *
  *********/
-/** @ingroup SURF_workstation_interface
- * @brief SURF Workstation model interface class
+/** @ingroup SURF_host_interface
+ * @brief SURF Host model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class WorkstationModel : public Model {
+class HostModel : public Model {
 public:
     /**
-   * @brief WorkstationModel constructor
+   * @brief HostModel constructor
    *
    * @param name the name of the model
    */
-  WorkstationModel(const char *name);
+  HostModel(const char *name);
 
-  /**
-   * @brief WorkstationModel constructor
-   */
-  WorkstationModel();
+  /** @brief HostModel constructor */
+  HostModel();
 
-  /**
-   * @brief WorkstationModel destructor
-   */
-  ~WorkstationModel();
+  /** @brief HostModel destructor */
+  ~HostModel();
 
-  virtual WorkstationPtr createWorkstation(const char *name)=0;
+  virtual HostPtr createHost(const char *name)=0;
   void addTraces(){DIE_IMPOSSIBLE;}
 
   /**
@@ -99,15 +95,15 @@ public:
    * @brief [brief description]
    * @details [long description]
    *
-   * @param workstation_nb [description]
-   * @param workstation_list [description]
+   * @param host_nb [description]
+   * @param host_list [description]
    * @param flops_amount [description]
    * @param bytes_amount [description]
    * @param rate [description]
    * @return [description]
    */
-  virtual ActionPtr executeParallelTask(int workstation_nb,
-                                        void **workstation_list,
+  virtual ActionPtr executeParallelTask(int host_nb,
+                                        void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate)=0;
@@ -122,7 +118,7 @@ public:
   * @param rate [description]
   * @return [description]
   */
- virtual ActionPtr communicate(WorkstationPtr src, WorkstationPtr dst, double size, double rate)=0;
+ virtual ActionPtr communicate(HostPtr src, HostPtr dst, double size, double rate)=0;
 
  CpuModelPtr p_cpuModel;
 };
@@ -130,56 +126,54 @@ public:
 /************
  * Resource *
  ************/
-/** @ingroup SURF_workstation_interface
- * @brief SURF Workstation interface class
- * @details A workstation VM represent an virtual machine with a aggregation of a Cpu, a NetworkLink and a Storage
+/** @ingroup SURF_host_interface
+ * @brief SURF Host interface class
+ * @details An host represents a machine with a aggregation of a Cpu, a NetworkLink and a Storage
  */
-class Workstation : public Resource {
+class Host : public Resource {
 public:
   /**
-   * @brief Workstation constructor
+   * @brief Host constructor
    */
-  Workstation();
+  Host();
 
   /**
-   * @brief Workstation constructor
+   * @brief Host constructor
    *
-   * @param model WorkstationModel associated to this Workstation
-   * @param name The name of the Workstation
-   * @param props Dictionary of properties associated to this Workstation
-   * @param storage The Storage associated to this Workstation
-   * @param netElm The RoutingEdge associated to this Workstation
-   * @param cpu The Cpu associated to this Workstation
+   * @param model HostModel associated to this Host
+   * @param name The name of the Host
+   * @param props Dictionary of properties associated to this Host
+   * @param storage The Storage associated to this Host
+   * @param netElm The RoutingEdge associated to this Host
+   * @param cpu The Cpu associated to this Host
    */
-  Workstation(ModelPtr model, const char *name, xbt_dict_t props,
+  Host(ModelPtr model, const char *name, xbt_dict_t props,
 		      xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
 
   /**
-   * @brief Workstation constructor
+   * @brief Host constructor
    *
-   * @param model WorkstationModel associated to this Workstation
-   * @param name The name of the Workstation
-   * @param props Dictionary of properties associated to this Workstation
-   * @param constraint The lmm constraint associated to this Workstation if it is part of a LMM component
-   * @param storage The Storage associated to this Workstation
-   * @param netElm The RoutingEdge associated to this Workstation
-   * @param cpu The Cpu associated to this Workstation
+   * @param model HostModel associated to this Host
+   * @param name The name of the Host
+   * @param props Dictionary of properties associated to this Host
+   * @param constraint The lmm constraint associated to this Host if it is part of a LMM component
+   * @param storage The Storage associated to this Host
+   * @param netElm The RoutingEdge associated to this Host
+   * @param cpu The Cpu associated to this Host
    */
-  Workstation(ModelPtr model, const char *name, xbt_dict_t props,
+  Host(ModelPtr model, const char *name, xbt_dict_t props,
       lmm_constraint_t constraint, xbt_dynar_t storage, RoutingEdgePtr netElm,
       CpuPtr cpu);
 
-  /**
-   * @brief Workstation destructor
-   */
-  ~ Workstation();
+  /** @brief Host destructor */
+  ~ Host();
 
   void setState(e_surf_resource_state_t state);
 
   /**
-   * @brief Get the properties of the currenrt Workstation
+   * @brief Get the properties of the current Host
    *
-   * @return The properties of the current Workstation
+   * @return The properties of the current Host
    */
   xbt_dict_t getProperties();
 
@@ -256,7 +250,7 @@ public:
   virtual xbt_dict_t getMountedStorageList();
 
   /**
-   * @brief Get the xbt_dynar_t of storages attached to the workstation
+   * @brief Get the xbt_dynar_t of storages attached to the Host
    *
    * @return The xbt_dynar_t of Storage names
    */
@@ -367,7 +361,7 @@ public:
   NetworkLinkPtr p_network;
 
   /**
-   * @brief Get the list of virtual machines on the current Workstation
+   * @brief Get the list of virtual machines on the current Host
    *
    * @return The list of VMs
    */
@@ -396,34 +390,34 @@ public:
  * Action *
  **********/
 
-/** @ingroup SURF_workstation_interface
- * @brief SURF workstation action interface class
+/** @ingroup SURF_host_interface
+ * @brief SURF host action interface class
  */
-class WorkstationAction : public Action {
+class HostAction : public Action {
 public:
   /**
-   * @brief WorkstationAction constructor
+   * @brief HostAction constructor
    *
-   * @param model The WorkstationModel associated to this WorkstationAction
-   * @param cost The cost of this WorkstationAction in [TODO]
+   * @param model The HostModel associated to this HostAction
+   * @param cost The cost of this HostAction in [TODO]
    * @param failed [description]
    */
-  WorkstationAction(ModelPtr model, double cost, bool failed)
+  HostAction(ModelPtr model, double cost, bool failed)
   : Action(model, cost, failed) {}
 
   /**
-   * @brief WorkstationAction constructor
+   * @brief HostAction constructor
    *
-   * @param model The WorkstationModel associated to this WorkstationAction
-   * @param cost The cost of this WorkstationAction in [TODO]
+   * @param model The HostModel associated to this HostAction
+   * @param cost The cost of this HostAction in [TODO]
    * @param failed [description]
    * @param var The lmm variable associated to this StorageAction if it is part of a LMM component
    */
-  WorkstationAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+  HostAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {}
 
   void setState(e_surf_action_state_t state);
 };
 
 
-#endif /* SURF_WORKSTATION_INTERFACE_HPP_ */
+#endif /* SURF_Host_INTERFACE_HPP_ */

@@ -128,7 +128,7 @@ public:
   virtual void gapAppend(double /*size*/, const NetworkLinkPtr /*link*/, NetworkActionPtr /*action*/) {};
 
   /**
-   * @brief Create a communication between two workstations.
+   * @brief Create a communication between two hosts.
    * @details It makes calls to the routing part, and execute the communication
    * between the two end points.
    *
@@ -192,7 +192,7 @@ public:
  ************/
  /** @ingroup SURF_network_interface
   * @brief SURF network link interface class
-  * @details A NetworkLink represents the link between two [Workstations](\ref Workstation)
+  * @details A NetworkLink represents the link between two [hosts](\ref Host)
   */
 class NetworkLink : public Resource {
 public:
@@ -281,7 +281,7 @@ public:
 /** @ingroup SURF_network_interface
  * @brief SURF network action interface class
  * @details A NetworkAction represents a communication between two
- * [Workstations](\ref Workstation)
+ * [hosts](\ref Host)
  */
 class NetworkAction : public Action {
 public:

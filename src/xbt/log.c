@@ -738,8 +738,8 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_route_vivaldi);
   XBT_LOG_CONNECT(surf_storage);
   XBT_LOG_CONNECT(surf_trace);
-  XBT_LOG_CONNECT(surf_vm_workstation);
-  XBT_LOG_CONNECT(surf_workstation);
+  XBT_LOG_CONNECT(surf_vm);
+  XBT_LOG_CONNECT(surf_host);
 
 #endif /* simgrid_EXPORTS */
 }

@@ -160,7 +160,6 @@ int main(int argc, char *argv[])
   platform_file = argv[1];
   application_file = argv[2];
 
-  /* MSG_config("workstation/model","KCCFLN05"); */
   {                             /*  Simulation setting */
     MSG_create_environment(platform_file);
   }

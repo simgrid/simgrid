@@ -83,7 +83,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
     } else if (!strcmp(argv[i], "--help-models")) {
       int k;
 
-      model_help("workstation", surf_workstation_model_description);
+      model_help("host", surf_host_model_description);
       printf("\n");
       model_help("CPU", surf_cpu_model_description);
       printf("\n");
@@ -131,8 +131,8 @@ static void _sg_cfg_cb__plugin(const char *name, int pos)
   surf_plugin_description[plugin_id].model_init_preparse();
 }
 
-/* callback of the workstation/model variable */
-static void _sg_cfg_cb__workstation_model(const char *name, int pos)
+/* callback of the host/model variable */
+static void _sg_cfg_cb__host_model(const char *name, int pos)
 {
   char *val;
 
@@ -142,16 +142,16 @@ static void _sg_cfg_cb__workstation_model(const char *name, int pos)
   val = xbt_cfg_get_string(_sg_cfg_set, name);
 
   if (!strcmp(val, "help")) {
-    model_help("workstation", surf_workstation_model_description);
+    model_help("host", surf_host_model_description);
     sg_cfg_exit_early();
   }
 
   /* Make sure that the model exists */
-  find_model_description(surf_workstation_model_description, val);
+  find_model_description(surf_host_model_description, val);
 }
 
-/* callback of the vm_workstation/model variable */
-static void _sg_cfg_cb__vm_workstation_model(const char *name, int pos)
+/* callback of the vm/model variable */
+static void _sg_cfg_cb__vm_model(const char *name, int pos)
 {
   char *val;
 
@@ -161,12 +161,12 @@ static void _sg_cfg_cb__vm_workstation_model(const char *name, int pos)
   val = xbt_cfg_get_string(_sg_cfg_set, name);
 
   if (!strcmp(val, "help")) {
-    model_help("vm_workstation", surf_vm_workstation_model_description);
+    model_help("vm", surf_vm_model_description);
     sg_cfg_exit_early();
   }
 
   /* Make sure that the model exists */
-  find_model_description(surf_vm_workstation_model_description, val);
+  find_model_description(surf_vm_model_description, val);
 }
 
 /* callback of the cpu/model variable */
@@ -226,7 +226,7 @@ static void _sg_cfg_cb__storage_mode(const char *name, int pos)
   find_model_description(surf_storage_model_description, val);
 }
 
-/* callback of the workstation_model variable */
+/* callback of the network_model variable */
 static void _sg_cfg_cb__network_model(const char *name, int pos)
 {
   char *val;
@@ -553,17 +553,17 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "network/optim", "Lazy");
 
-    describe_model(description, surf_workstation_model_description,
-                   "model", "The model to use for the workstation");
-    xbt_cfg_register(&_sg_cfg_set, "workstation/model", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__workstation_model, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "workstation/model", "default");
+    describe_model(description, surf_host_model_description,
+                   "model", "The model to use for the host");
+    xbt_cfg_register(&_sg_cfg_set, "host/model", description,
+                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__host_model, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "host/model", "default");
 
-    describe_model(description, surf_vm_workstation_model_description,
-                   "model", "The model to use for the vm workstation");
-    xbt_cfg_register(&_sg_cfg_set, "vm_workstation/model", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__vm_workstation_model, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "vm_workstation/model", "default");
+    describe_model(description, surf_vm_model_description,
+                   "model", "The model to use for the vm");
+    xbt_cfg_register(&_sg_cfg_set, "vm/model", description,
+                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__vm_model, NULL);
+    xbt_cfg_setdefault_string(_sg_cfg_set, "vm/model", "default");
 
     xbt_cfg_register(&_sg_cfg_set, "network/TCP_gamma",
                      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
@@ -998,52 +998,48 @@ void sg_config_finalize(void)
   _sg_cfg_init_status = 0;
 }
 
-/* Pick the right models for CPU, net and workstation, and call their model_init_preparse */
+/* Pick the right models for CPU, net and host, and call their model_init_preparse */
 void surf_config_models_setup()
 {
-  const char *workstation_model_name;
-  const char *vm_workstation_model_name;
-  int workstation_id = -1;
-  int vm_workstation_id = -1;
+  const char *host_model_name;
+  const char *vm_model_name;
+  int host_id = -1;
+  int vm_id = -1;
   char *network_model_name = NULL;
   char *cpu_model_name = NULL;
   int storage_id = -1;
   char *storage_model_name = NULL;
 
-  workstation_model_name =
-      xbt_cfg_get_string(_sg_cfg_set, "workstation/model");
-  vm_workstation_model_name =
-      xbt_cfg_get_string(_sg_cfg_set, "vm_workstation/model");
+  host_model_name = xbt_cfg_get_string(_sg_cfg_set, "host/model");
+  vm_model_name = xbt_cfg_get_string(_sg_cfg_set, "vm/model");
   network_model_name = xbt_cfg_get_string(_sg_cfg_set, "network/model");
   cpu_model_name = xbt_cfg_get_string(_sg_cfg_set, "cpu/model");
   storage_model_name = xbt_cfg_get_string(_sg_cfg_set, "storage/model");
 
   /* Check whether we use a net/cpu model differing from the default ones, in which case
-   * we should switch to the "compound" workstation model to correctly dispatch stuff to
+   * we should switch to the "compound" host model to correctly dispatch stuff to
    * the right net/cpu models.
    */
 
   if ((!xbt_cfg_is_default_value(_sg_cfg_set, "network/model") ||
        !xbt_cfg_is_default_value(_sg_cfg_set, "cpu/model")) &&
-      xbt_cfg_is_default_value(_sg_cfg_set, "workstation/model")) {
-    XBT_INFO("Switching workstation model to compound since you changed the network and/or cpu model(s)");
-    workstation_model_name = "compound";
-    xbt_cfg_set_string(_sg_cfg_set, "workstation/model", workstation_model_name);
+      xbt_cfg_is_default_value(_sg_cfg_set, "host/model")) {
+    XBT_INFO("Switching host model to compound since you changed the network and/or cpu model(s)");
+    host_model_name = "compound";
+    xbt_cfg_set_string(_sg_cfg_set, "host/model", host_model_name);
   }
 
-  XBT_DEBUG("Workstation model: %s", workstation_model_name);
-  workstation_id =
-      find_model_description(surf_workstation_model_description,
-                             workstation_model_name);
-  if (!strcmp(workstation_model_name, "compound")) {
+  XBT_DEBUG("host model: %s", host_model_name);
+  host_id = find_model_description(surf_host_model_description, host_model_name);
+  if (!strcmp(host_model_name, "compound")) {
     int network_id = -1;
     int cpu_id = -1;
 
     xbt_assert(cpu_model_name,
-                "Set a cpu model to use with the 'compound' workstation model");
+                "Set a cpu model to use with the 'compound' host model");
 
     xbt_assert(network_model_name,
-                "Set a network model to use with the 'compound' workstation model");
+                "Set a network model to use with the 'compound' host model");
 
     if(surf_cpu_model_init_preparse){
       surf_cpu_model_init_preparse();
@@ -1059,13 +1055,12 @@ void surf_config_models_setup()
     surf_network_model_description[network_id].model_init_preparse();
   }
 
-  XBT_DEBUG("Call workstation_model_init");
-  surf_workstation_model_description[workstation_id].model_init_preparse();
+  XBT_DEBUG("Call host_model_init");
+  surf_host_model_description[host_id].model_init_preparse();
 
-  XBT_DEBUG("Call vm_workstation_model_init");
-  vm_workstation_id = find_model_description(surf_vm_workstation_model_description,
-                                          vm_workstation_model_name);
-  surf_vm_workstation_model_description[vm_workstation_id].model_init_preparse();
+  XBT_DEBUG("Call vm_model_init");
+  vm_id = find_model_description(surf_vm_model_description, vm_model_name);
+  surf_vm_model_description[vm_id].model_init_preparse();
 
   XBT_DEBUG("Call storage_model_init");
   storage_id = find_model_description(surf_storage_model_description, storage_model_name);

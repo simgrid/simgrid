@@ -88,11 +88,11 @@ set(EXTRA_DIST
   src/surf/surf_routing_vivaldi.hpp
   src/surf/surfxml_parse.c
   src/surf/trace_mgr_private.h
-  src/surf/vm_workstation_hl13.hpp
-  src/surf/vm_workstation_interface.hpp
-  src/surf/workstation_clm03.hpp
-  src/surf/workstation_interface.hpp
-  src/surf/workstation_ptask_L07.hpp
+  src/surf/vm_hl13.hpp
+  src/surf/vm_interface.hpp
+  src/surf/host_clm03.hpp
+  src/surf/host_interface.hpp
+  src/surf/host_ptask_L07.hpp
   src/win32/config.h
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
@@ -353,11 +353,11 @@ set(SURF_SRC
   src/surf/surfxml_parse.c
   src/surf/surfxml_parseplatf.c
   src/surf/trace_mgr.c
-  src/surf/vm_workstation_hl13.cpp
-  src/surf/vm_workstation_interface.cpp
-  src/surf/workstation_clm03.cpp
-  src/surf/workstation_interface.cpp
-  src/surf/workstation_ptask_L07.cpp
+  src/surf/vm_hl13.cpp
+  src/surf/vm_interface.cpp
+  src/surf/host_clm03.cpp
+  src/surf/host_interface.cpp
+  src/surf/host_ptask_L07.cpp
   src/xbt/xbt_sg_stubs.c
   )
 

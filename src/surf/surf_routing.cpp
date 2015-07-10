@@ -19,13 +19,13 @@
 
 /**
  * @ingroup SURF_build_api
- * @brief A library containing all known workstations
+ * @brief A library containing all known hosts
  */
 xbt_lib_t host_lib;
 
 int ROUTING_HOST_LEVEL;         //Routing level
 int SURF_CPU_LEVEL;             //Surf cpu level
-int SURF_WKS_LEVEL;             //Surf workstation level
+int SURF_HOST_LEVEL;            //Surf host level
 int SIMIX_HOST_LEVEL;           //Simix host level
 int SIMIX_STORAGE_LEVEL;        //Simix storage level
 int MSG_HOST_LEVEL;             //Msg host level
@@ -55,7 +55,7 @@ static xbt_dict_t random_value = NULL;
 
 /** @brief Retrieve a routing edge from its name
  *
- * Routing edges are either CPU/workstation and routers, whatever
+ * Routing edges are either host and routers, whatever
  */
 RoutingEdgePtr sg_routing_edge_by_name_or_null(const char *name) {
   RoutingEdgePtr net_elm = (RoutingEdgePtr) xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);

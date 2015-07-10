@@ -1191,7 +1191,7 @@ information.
 <config id="General">
 	<prop id="maxmin/precision" value="0.000010"></prop>
 	<prop id="cpu/optim" value="TI"></prop>
-	<prop id="workstation/model" value="compound"></prop>
+	<prop id="host/model" value="compound"></prop>
 	<prop id="network/model" value="SMPI"></prop>
 	<prop id="path" value="~/"></prop>
 	<prop id="smpi/bw_factor" value="65472:0.940694;15424:0.697866;9376:0.58729"></prop>
@@ -1535,7 +1535,7 @@ In SURF, we attach callbacks to the different events by initializing the
 pointer functions to some the right surf functions. Since there can be
 more than one callback attached to the same event (if more than one
 model is in use, for example), they are stored in a dynar. Example in
-workstation_ptask_L07.c:
+host_ptask_L07.c:
 \verbatim
   /* Adding callback functions */
   surf_parse_reset_parser();
