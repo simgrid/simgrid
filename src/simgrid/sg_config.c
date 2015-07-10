@@ -1024,7 +1024,6 @@ void surf_config_models_setup()
   if ((!xbt_cfg_is_default_value(_sg_cfg_set, "network/model") ||
        !xbt_cfg_is_default_value(_sg_cfg_set, "cpu/model")) &&
       xbt_cfg_is_default_value(_sg_cfg_set, "host/model")) {
-    XBT_INFO("Switching host model to compound since you changed the network and/or cpu model(s)");
     host_model_name = "compound";
     xbt_cfg_set_string(_sg_cfg_set, "host/model", host_model_name);
   }

@@ -3,9 +3,7 @@
 $ $SG_TEST_EXENV ${bindir:=.}/surf_usage ../../examples/platforms/two_hosts_platform_with_availability.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 
 $ $SG_TEST_EXENV ${bindir:=.}/surf_usage2  ../../examples/platforms/two_hosts_platform_with_availability.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)

@@ -5,7 +5,6 @@
 p Test reduce_scatter
 $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/reduce_scatter_coll --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
 >  No Errors
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 > [rank 0] -> Tremblay
 > [rank 10] -> Fafard
 > [rank 11] -> Fafard

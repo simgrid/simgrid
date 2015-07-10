@@ -10,7 +10,6 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
 > == pivot=2 : pingpong [2] <--> [3]
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_simgrid.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
@@ -56,7 +55,6 @@ $ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -tra
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 > [Jupiter:1:(0) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
 
 ! output sort
@@ -120,7 +118,6 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
 > == pivot=2 : pingpong [2] <--> [3]
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_simgrid.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
@@ -166,7 +163,6 @@ $ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -tra
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format/ti_one_file' to 'yes'
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 > [Jupiter:1:(0) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
 
 

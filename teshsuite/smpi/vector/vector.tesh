@@ -2,7 +2,6 @@ p Test vector
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ${srcdir:=.}/../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/vector_test -q --log=smpi_kernel.thres:warning
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'

@@ -38,7 +38,6 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ..
 > 	[9] ok.
 > ** IBM Test Result: ...
 > ** Small Test Result: ...
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 > [rank 0] -> Tremblay
 > [rank 10] -> Fafard
 > [rank 11] -> Fafard

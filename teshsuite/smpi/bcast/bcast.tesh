@@ -9,7 +9,6 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ..
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 
 # second test
 p Test Broadcast with as much processes than hosts
@@ -23,7 +22,6 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ..
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
 
 # Another test
 p Test Broadcast with more processes than hosts
@@ -44,4 +42,3 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ..
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-> [0.000000] [surf_config/INFO] Switching host model to compound since you changed the network and/or cpu model(s)
