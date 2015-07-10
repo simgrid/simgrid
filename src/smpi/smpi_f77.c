@@ -379,7 +379,7 @@ void mpi_initialized_(int* flag, int* ierr){
 void mpi_send_init_(void *buf, int* count, int* datatype, int* dst, int* tag,
                      int* comm, int* request, int* ierr) {
   MPI_Request req;
-
+  buf = (char *) FORT_BOTTOM(buf);
   *ierr = MPI_Send_init(buf, *count, smpi_type_f2c(*datatype), *dst, *tag,
                         smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
@@ -411,12 +411,14 @@ void mpi_irsend_(void *buf, int* count, int* datatype, int* dst,
 
 void mpi_send_(void* buf, int* count, int* datatype, int* dst,
                 int* tag, int* comm, int* ierr) {
+  buf = (char *) FORT_BOTTOM(buf);
    *ierr = MPI_Send(buf, *count, smpi_type_f2c(*datatype), *dst, *tag,
                     smpi_comm_f2c(*comm));
 }
 
 void mpi_rsend_(void* buf, int* count, int* datatype, int* dst,
                 int* tag, int* comm, int* ierr) {
+  buf = (char *) FORT_BOTTOM(buf);
    *ierr = MPI_Rsend(buf, *count, smpi_type_f2c(*datatype), *dst, *tag,
                     smpi_comm_f2c(*comm));
 }
@@ -425,6 +427,8 @@ void mpi_sendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst,
                 int* sendtag, void *recvbuf, int* recvcount,
                 int* recvtype, int* src, int* recvtag,
                 int* comm, MPI_Status* status, int* ierr) {
+  sendbuf = (char *) FORT_BOTTOM(sendbuf);
+  recvbuf = (char *) FORT_BOTTOM(recvbuf);
    *ierr = MPI_Sendrecv(sendbuf, *sendcount, smpi_type_f2c(*sendtype), *dst,
        *sendtag, recvbuf, *recvcount,smpi_type_f2c(*recvtype), *src, *recvtag,
        smpi_comm_f2c(*comm), FORT_STATUS_IGNORE(status));
@@ -433,7 +437,7 @@ void mpi_sendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst,
 void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag,
                      int* comm, int* request, int* ierr) {
   MPI_Request req;
-
+  buf = (char *) FORT_BOTTOM(buf);
   *ierr = MPI_Recv_init(buf, *count, smpi_type_f2c(*datatype), *src, *tag,
                         smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
@@ -454,7 +458,8 @@ void mpi_irecv_(void *buf, int* count, int* datatype, int* src, int* tag,
 
 void mpi_recv_(void* buf, int* count, int* datatype, int* src,
                 int* tag, int* comm, MPI_Status* status, int* ierr) {
-   *ierr = MPI_Recv(buf, *count, smpi_type_f2c(*datatype), *src, *tag,
+  buf = (char *) FORT_BOTTOM(buf);
+  *ierr = MPI_Recv(buf, *count, smpi_type_f2c(*datatype), *src, *tag,
                     smpi_comm_f2c(*comm), status);
 }
 
