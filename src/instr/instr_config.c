@@ -37,6 +37,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_VIVA_CAT_CONF        "viva/categorized"
 #define OPT_TRACING_DISABLE_LINK        "tracing/disable_link"
 #define OPT_TRACING_DISABLE_POWER       "tracing/disable_power"
+#define OPT_TRACING_PRECISION     "tracing/precision"
 
 static int trace_enabled = 0;
 static int trace_platform;
@@ -57,6 +58,7 @@ static int trace_basic;
 static int trace_display_sizes = 0;
 static int trace_disable_link;
 static int trace_disable_power;
+static int trace_precision;
 
 static int trace_configured = 0;
 static int trace_active = 0;
@@ -84,6 +86,7 @@ static void TRACE_getopts(void)
   trace_display_sizes = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_DISPLAY_SIZES);
   trace_disable_link = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_DISABLE_LINK);
   trace_disable_power = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING_DISABLE_POWER);
+  trace_precision = xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_PRECISION);
 }
 
 static xbt_dynar_t TRACE_start_functions = NULL;
@@ -335,6 +338,11 @@ char *TRACE_get_comment_file (void)
   return xbt_cfg_get_string(_sg_cfg_set, OPT_TRACING_COMMENT_FILE);
 }
 
+int TRACE_precision (void)
+{
+  return xbt_cfg_get_int(_sg_cfg_set, OPT_TRACING_PRECISION);
+}
+
 char *TRACE_get_filename(void)
 {
   return xbt_cfg_get_string(_sg_cfg_set, OPT_TRACING_FILENAME);
@@ -498,6 +506,12 @@ void TRACE_global_init(int *argc, char **argv)
                    "The contents of the file are added to the top of the trace file as comment.",
                    xbt_cfgelm_string, 1, 1, NULL, NULL);
   xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_COMMENT_FILE, "");
+
+  /* trace timestamp precision */
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_PRECISION,
+                   "Numerical precision used when timestamping events (hence this value is expressed in number of digits after decimal point)",
+                   xbt_cfgelm_int, 1, 1, NULL, NULL);
+  xbt_cfg_setdefault_int(_sg_cfg_set, OPT_TRACING_PRECISION, 6);
 
   /* Viva graph configuration for uncategorized tracing */
   xbt_cfg_register(&_sg_cfg_set, OPT_VIVA_UNCAT_CONF,
