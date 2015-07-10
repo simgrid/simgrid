@@ -1357,18 +1357,30 @@ void mpi_type_create_indexed_block_ (int* count, int* blocklength, int* indices,
 
 void mpi_type_struct_ (int* count, int* blocklens, MPI_Aint* indices, int* old_types, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
-  *ierr = MPI_Type_struct(*count, blocklens, indices, (MPI_Datatype*)old_types, &tmp);
+  int i=0;
+  MPI_Datatype* types = (MPI_Datatype*)xbt_malloc(*count*sizeof(MPI_Datatype));
+  for(i=0; i< *count; i++){
+    types[i] = smpi_type_f2c(old_types[i]);
+  }
+  *ierr = MPI_Type_struct(*count, blocklens, indices, types, &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = smpi_type_c2f(tmp);
   }
+  xbt_free(types);
 }
 
 void mpi_type_create_struct_ (int* count, int* blocklens, MPI_Aint* indices, int*  old_types, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
-  *ierr = MPI_Type_create_struct(*count, blocklens, indices, (MPI_Datatype*)old_types, &tmp);
+  int i=0;
+  MPI_Datatype* types = (MPI_Datatype*)xbt_malloc(*count*sizeof(MPI_Datatype));
+  for(i=0; i< *count; i++){
+    types[i] = smpi_type_f2c(old_types[i]);
+  }
+  *ierr = MPI_Type_create_struct(*count, blocklens, indices, types, &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newtype = smpi_type_c2f(tmp);
   }
+  xbt_free(types);
 }
 
 void mpi_ssend_ (void* buf, int* count, int* datatype, int* dest, int* tag, int* comm, int* ierr) {
