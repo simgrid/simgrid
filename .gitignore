@@ -970,6 +970,8 @@ teshsuite/msg/task_destroy_cancel/task_destroy_cancel
 teshsuite/msg/pid/pid
 teshsuite/msg/get_sender/get_sender
 teshsuite/msg/trace/test_trace_integration
+teshsuite/msg/host_on_off/host_on_off_recv
+teshsuite/msg/host_on_off/host_on_off_wait
 teshsuite/simix/check_defaults/check_defaults
 teshsuite/simix/stack_overflow/stack_overflow
 teshsuite/simdag/availability/availability_test
@@ -1050,6 +1052,7 @@ examples/java/surfPlugin/java_surf_plugin_compiled
 /CMakeCache.txt
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf_expression/dwarf-expression
+teshsuite/mc/replay/random_bug
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
 examples/smpi/mc/smpi_bugged2
