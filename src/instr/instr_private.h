@@ -284,6 +284,7 @@ int TRACE_basic (void);
 int TRACE_display_sizes (void);
 char *TRACE_get_comment (void);
 char *TRACE_get_comment_file (void);
+int TRACE_precision (void);
 char *TRACE_get_filename(void);
 char *TRACE_get_viva_uncat_conf (void);
 char *TRACE_get_viva_cat_conf (void);
