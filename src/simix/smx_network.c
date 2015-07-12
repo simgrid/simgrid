@@ -800,7 +800,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
 
     /* Check out for errors */
 
-    if (surf_resource_get_state(surf_host_resource_priv(
+    if (surf_host_get_state(surf_host_resource_priv(
           simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
       SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
@@ -879,7 +879,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
       }
     }
 
-    if (surf_resource_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+    if (surf_host_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 

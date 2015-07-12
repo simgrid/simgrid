@@ -53,6 +53,7 @@ class NetworkModel;
 class StorageModel;
 class Resource;
 class ResourceLmm;
+class Host;
 class HostCLM03;
 class NetworkCm02Link;
 class Cpu;
@@ -72,6 +73,7 @@ typedef struct StorageModel StorageModel;
 typedef struct Resource Resource;
 typedef struct ResourceLmm ResourceLmm;
 typedef struct HostCLM03 HostCLM03;
+typedef struct Host Host;
 typedef struct NetworkCm02Link NetworkCm02Link;
 typedef struct Cpu Cpu;
 typedef struct Action Action;
@@ -98,6 +100,7 @@ typedef StorageModel *surf_storage_model_t;
 
 typedef xbt_dictelm_t surf_resource_t;
 typedef Resource *surf_cpp_resource_t;
+typedef Host *surf_host_t;
 typedef HostCLM03 *surf_host_CLM03_t;
 typedef NetworkCm02Link *surf_network_link_t;
 typedef Cpu *surf_cpu_t;
@@ -183,14 +186,13 @@ typedef enum {
 /* Generic model object */
 /***************************/
 
-//FIXME:REMOVE typedef struct s_routing_platf s_routing_platf_t, *routing_platf_t;
 XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
-static inline void *surf_cpu_resource_priv(const void *host) {
-  return xbt_lib_get_level((xbt_dictelm_t)host, SURF_CPU_LEVEL);
+static inline surf_cpu_t surf_cpu_resource_priv(const void *host) {
+  return (surf_cpu_t)xbt_lib_get_level((xbt_dictelm_t)host, SURF_CPU_LEVEL);
 }
-static inline void *surf_host_resource_priv(const void *host){
-  return (void*)xbt_lib_get_level((xbt_dictelm_t)host, SURF_HOST_LEVEL);
+static inline surf_host_t surf_host_resource_priv(const void *host){
+  return (surf_host_t) xbt_lib_get_level((xbt_dictelm_t)host, SURF_HOST_LEVEL);
 }
 static inline void *surf_routing_resource_priv(const void *host){
   return (void*)xbt_lib_get_level((xbt_dictelm_t)host, ROUTING_HOST_LEVEL);
@@ -334,6 +336,9 @@ XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t mo
  * @return The name of the surf resource
  */
 XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
+static inline const char * surf_cpu_name(surf_cpu_t cpu) {
+	return surf_resource_name((surf_cpp_resource_t)cpu);
+}
 
 /**
  * @brief Get the properties of a surf resource (cpu, host, network, …)
@@ -342,6 +347,10 @@ XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
  * @return The properties of the surf resource
  */
 XBT_PUBLIC(xbt_dict_t) surf_resource_get_properties(surf_cpp_resource_t resource);
+static XBT_INLINE xbt_dict_t surf_host_get_properties(surf_host_t host) {
+	return surf_resource_get_properties((surf_cpp_resource_t)host);
+}
+
 
 /**
  * @brief Get the state of a surf resource (cpu, host, network, …)
@@ -351,6 +360,11 @@ XBT_PUBLIC(xbt_dict_t) surf_resource_get_properties(surf_cpp_resource_t resource
  */
 XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t resource);
 
+static XBT_INLINE e_surf_resource_state_t surf_host_get_state(surf_host_t host) {
+	return surf_resource_get_state((surf_cpp_resource_t)host);
+}
+
+
 /**
  * @brief Set the state of a surf resource (cpu, host, network, …)
  *
@@ -358,6 +372,9 @@ XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t 
  * @param state The new state of the surf resource
  */
 XBT_PUBLIC(void) surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
+static inline void surf_host_set_state(surf_host_t host, e_surf_resource_state_t state) {
+	surf_resource_set_state((surf_cpp_resource_t)host, state);
+}
 
 /**
  * @brief Get the speed of the cpu associated to a host

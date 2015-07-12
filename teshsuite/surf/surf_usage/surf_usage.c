@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include "simgrid/sg_config.h"
 #include "surf/surf.h"
-#include "surf/surf_resource.h"
 #include "surf/surfxml_parse.h" // for reset callback
 
 #include "xbt/log.h"
@@ -63,8 +62,8 @@ void test(char *platform)
   cpuB = surf_cpu_resource_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_resource_name(surf_cpu_resource_priv(cpuA)), cpuA);
-  XBT_DEBUG("%s : %p", surf_resource_name(surf_cpu_resource_priv(cpuB)), cpuB);
+  XBT_DEBUG("%s : %p", surf_cpu_name(surf_cpu_resource_priv(cpuA)), cpuA);
+  XBT_DEBUG("%s : %p", surf_cpu_name(surf_cpu_resource_priv(cpuB)), cpuB);
 
   /* Let's do something on it */
   actionA = surf_cpu_execute(cpuA, 1000.0);

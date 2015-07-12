@@ -21,12 +21,6 @@ typedef StorageModel *StorageModelPtr;
 class Storage;
 typedef Storage *StoragePtr;
 
-class Storage;
-typedef Storage *StoragePtr;
-
-class StorageAction;
-typedef StorageAction *StorageActionPtr;
-
 class StorageAction;
 typedef StorageAction *StorageActionPtr;
 

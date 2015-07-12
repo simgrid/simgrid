@@ -46,8 +46,8 @@ void SIMIX_host_on(smx_host_t h)
 
   xbt_assert((host != NULL), "Invalid parameters");
 
-  if (surf_resource_get_state(surf_host_resource_priv(h))==SURF_RESOURCE_OFF) {
-    surf_resource_set_state(surf_host_resource_priv(h), SURF_RESOURCE_ON);
+  if (surf_host_get_state(surf_host_resource_priv(h))==SURF_RESOURCE_OFF) {
+    surf_host_set_state(surf_host_resource_priv(h), SURF_RESOURCE_ON);
 
     unsigned int cpt;
     smx_process_arg_t arg;
@@ -102,8 +102,8 @@ void SIMIX_host_off(smx_host_t h, smx_process_t issuer)
 
   xbt_assert((host != NULL), "Invalid parameters");
 
-  if (surf_resource_get_state(surf_host_resource_priv(h))==SURF_RESOURCE_ON) {
-	surf_resource_set_state(surf_host_resource_priv(h), SURF_RESOURCE_OFF);
+  if (surf_host_get_state(surf_host_resource_priv(h))==SURF_RESOURCE_ON) {
+	surf_host_set_state(surf_host_resource_priv(h), SURF_RESOURCE_OFF);
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {
@@ -176,7 +176,7 @@ const char* SIMIX_host_self_get_name(void)
 }
 
 xbt_dict_t SIMIX_host_get_properties(smx_host_t host){
-  return surf_resource_get_properties(surf_host_resource_priv(host));
+  return surf_host_get_properties(surf_host_resource_priv(host));
 }
 
 double SIMIX_host_get_speed(smx_host_t host){
@@ -229,7 +229,7 @@ double SIMIX_host_get_wattmax_at(smx_host_t host,int pstate) {
 }
 
 int SIMIX_host_get_state(smx_host_t host){
-  return surf_resource_get_state(surf_host_resource_priv(host));
+  return surf_host_get_state(surf_host_resource_priv(host));
 }
 
 void _SIMIX_host_free_process_arg(void *data)
@@ -546,7 +546,7 @@ void SIMIX_execution_finish(smx_synchro_t synchro)
             (int)synchro->state);
     }
     /* check if the host is down */
-    if (surf_resource_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+    if (surf_host_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -564,7 +564,7 @@ void SIMIX_post_host_execute(smx_synchro_t synchro)
 {
   if (synchro->type == SIMIX_SYNC_EXECUTE && /* FIMXE: handle resource failure
                                                * for parallel tasks too */
-      surf_resource_get_state(surf_host_resource_priv(synchro->execution.host)) == SURF_RESOURCE_OFF) {
+      surf_host_get_state(surf_host_resource_priv(synchro->execution.host)) == SURF_RESOURCE_OFF) {
     /* If the host running the synchro failed, notice it so that the asking
      * process can be killed if it runs on that host itself */
     synchro->state = SIMIX_FAILED;
