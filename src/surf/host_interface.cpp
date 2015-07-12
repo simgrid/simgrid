@@ -71,16 +71,12 @@ void HostModel::adjustWeightOfDummyCpuActions()
     int is_active = lmm_constraint_used(cpu_cas01->getModel()->getMaxminSystem(), cpu_cas01->getConstraint());
     // int is_active_old = constraint_is_active(cpu_cas01);
 
-    // {
-    //   xbt_assert(is_active == is_active_old, "%d %d", is_active, is_active_old);
-    // }
-
     if (is_active) {
       /* some tasks exist on this VM */
       XBT_DEBUG("set the weight of the dummy CPU action on PM to 1");
 
-      /* FIXME: we shoud use lmm_update_variable_weight() ? */
-      /* FIXME: If we assgign 1.05 and 0.05, the system makes apparently wrong values. */
+      /* FIXME: we should use lmm_update_variable_weight() ? */
+      /* FIXME: If we assign 1.05 and 0.05, the system makes apparently wrong values. */
       ws_vm->p_action->setPriority(1);
 
     } else {
@@ -95,11 +91,6 @@ void HostModel::adjustWeightOfDummyCpuActions()
 /************
  * Resource *
  ************/
-Host::Host()
-{
-  surf_callback_emit(hostCreatedCallbacks, this);
-}
-
 Host::Host(ModelPtr model, const char *name, xbt_dict_t props,
 		                 xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
  : Resource(model, name, props)

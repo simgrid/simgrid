@@ -134,11 +134,6 @@ class Host : public Resource {
 public:
   /**
    * @brief Host constructor
-   */
-  Host();
-
-  /**
-   * @brief Host constructor
    *
    * @param model HostModel associated to this Host
    * @param name The name of the Host
