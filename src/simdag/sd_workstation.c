@@ -10,7 +10,6 @@
 #include "xbt/lib.h"
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
-#include "surf/surf_resource.h"
 #include "simgrid/msg.h" //FIXME: why?
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_workstation, sd,

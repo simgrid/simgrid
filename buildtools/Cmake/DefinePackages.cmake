@@ -15,8 +15,6 @@ set(EXTRA_DIST
   src/include/surf/maxmin.h
   src/include/surf/random_mgr.h
   src/include/surf/surf.h
-  src/include/surf/surf_resource.h
-  src/include/surf/surf_resource_lmm.h
   src/include/surf/surfxml_parse_values.h
   src/include/surf/trace_mgr.h
   src/include/xbt/win32_ucontext.h
