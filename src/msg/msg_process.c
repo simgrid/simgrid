@@ -164,7 +164,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
   simdata->data = data;
   simdata->last_errno = MSG_OK;
 
-  int future_simix_process_pid = SIMIX_process_get_nextpid();
+  int future_simix_process_pid = SIMIX_process_get_maxpid();
   TRACE_msg_process_create(name, future_simix_process_pid, host);
 
   /* Let's create the process: SIMIX may decide to start it right now,

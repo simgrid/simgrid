@@ -327,6 +327,8 @@ static XBT_INLINE smx_process_t SIMIX_context_get_process(smx_context_t context)
   return simix_global->context_factory->get_process(context);
 }
 
+XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
+
 void SIMIX_post_create_environment(void);
 
 SG_END_DECL()
