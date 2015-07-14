@@ -68,12 +68,9 @@ void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_h
   int len = INSTR_DEFAULT_STR_SIZE;
   char str[INSTR_DEFAULT_STR_SIZE];
 
-  // Avoids multiple destroys of the same process
-  container_t process = PJ_container_get_or_null (instr_process_id_2 (process_name, process_pid, str, len));
-  if (process){
-    PJ_container_remove_from_parent (process);
-    PJ_container_free (process);
-  }
+  container_t process = PJ_container_get (instr_process_id_2 (process_name, process_pid, str, len));
+  PJ_container_remove_from_parent (process);
+  PJ_container_free (process);
 }
 
 void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process)
@@ -137,7 +134,12 @@ void TRACE_msg_process_sleep_out(msg_process_t process)
 void TRACE_msg_process_end(msg_process_t process)
 {
   if (TRACE_msg_process_is_enabled()) {
+    int len = INSTR_DEFAULT_STR_SIZE;
+    char str[INSTR_DEFAULT_STR_SIZE];
+
     //that's the end, let's destroy it
-    TRACE_msg_process_destroy(MSG_process_get_name (process), MSG_process_get_PID (process), MSG_process_get_host (process));
+    container_t container = PJ_container_get (instr_process_id(process, str, len));
+    PJ_container_remove_from_parent (container);
+    PJ_container_free (container);
   }
 }

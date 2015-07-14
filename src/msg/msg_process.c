@@ -164,14 +164,12 @@ msg_process_t MSG_process_create_with_environment(const char *name,
   simdata->data = data;
   simdata->last_errno = MSG_OK;
 
-  int future_simix_process_pid = SIMIX_process_get_maxpid();
-  TRACE_msg_process_create(name, future_simix_process_pid, host);
-
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  simcall_process_create(&process, name, code, simdata, sg_host_name(host), -1,
+ simcall_process_create(&process, name, code, simdata, sg_host_name(host), -1,
                            argc, argv, properties,0);
-  xbt_assert(future_simix_process_pid == SIMIX_process_get_PID(process));
+
+  TRACE_msg_process_create(name, SIMIX_process_get_PID(process), host);
 
   if (!process) {
     /* Undo everything we have just changed */
