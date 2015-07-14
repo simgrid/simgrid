@@ -30,7 +30,7 @@ smx_rdv_t SIMIX_rdv_create(const char *name);
 void SIMIX_rdv_destroy(smx_rdv_t rdv);
 smx_rdv_t SIMIX_rdv_get_by_name(const char *name);
 void SIMIX_rdv_remove(smx_rdv_t rdv, smx_synchro_t comm);
-int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host);
+int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host);
 smx_synchro_t SIMIX_rdv_get_head(smx_rdv_t rdv);
 void SIMIX_rdv_set_receiver(smx_rdv_t rdv, smx_process_t proc);
 smx_process_t SIMIX_rdv_get_receiver(smx_rdv_t rdv);

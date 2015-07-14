@@ -91,14 +91,14 @@ smx_rdv_t SIMIX_rdv_get_by_name(const char *name)
   return xbt_dict_get_or_null(rdv_points, name);
 }
 
-int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
+int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host)
 {
   smx_synchro_t comm = NULL;
   xbt_fifo_item_t item = NULL;
   int count = 0;
 
   xbt_fifo_foreach(rdv->comm_fifo, item, comm, smx_synchro_t) {
-    if (comm->comm.src_proc->smx_host == host)
+    if (comm->comm.src_proc->host == host)
       count++;
   }
 
@@ -616,7 +616,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, dou
   if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
-    sleep = surf_host_sleep(simcall->issuer->smx_host, timeout);
+    sleep = surf_host_sleep(simcall->issuer->host, timeout);
     surf_action_set_data(sleep, synchro);
 
     if (simcall->issuer == synchro->comm.src_proc)
@@ -727,8 +727,8 @@ static XBT_INLINE void SIMIX_comm_start(smx_synchro_t synchro)
   /* If both the sender and the receiver are already there, start the communication */
   if (synchro->state == SIMIX_READY) {
 
-    smx_host_t sender = synchro->comm.src_proc->smx_host;
-    smx_host_t receiver = synchro->comm.dst_proc->smx_host;
+    sg_host_t sender = synchro->comm.src_proc->host;
+    sg_host_t receiver = synchro->comm.dst_proc->host;
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro,
               SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
@@ -757,10 +757,10 @@ static XBT_INLINE void SIMIX_comm_start(smx_synchro_t synchro)
 
       if (SIMIX_process_is_suspended(synchro->comm.src_proc))
         XBT_DEBUG("The communication is suspended on startup because src (%s:%s) were suspended since it initiated the communication",
-                  SIMIX_host_get_name(synchro->comm.src_proc->smx_host), synchro->comm.src_proc->name);
+                  SIMIX_host_get_name(synchro->comm.src_proc->host), synchro->comm.src_proc->name);
       else
         XBT_DEBUG("The communication is suspended on startup because dst (%s:%s) were suspended since it initiated the communication",
-                  SIMIX_host_get_name(synchro->comm.dst_proc->smx_host), synchro->comm.dst_proc->name);
+                  SIMIX_host_get_name(synchro->comm.dst_proc->host), synchro->comm.dst_proc->name);
 
       surf_action_suspend(synchro->comm.surf_comm);
 
@@ -801,7 +801,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
     /* Check out for errors */
 
     if (surf_host_get_state(surf_host_resource_priv(
-          simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+          simcall->issuer->host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
       SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
     } else
@@ -843,8 +843,8 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
 
       XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
                 synchro,
-                synchro->comm.src_proc ? sg_host_name(synchro->comm.src_proc->smx_host) : NULL,
-                synchro->comm.dst_proc ? sg_host_name(synchro->comm.dst_proc->smx_host) : NULL,
+                synchro->comm.src_proc ? sg_host_name(synchro->comm.src_proc->host) : NULL,
+                synchro->comm.dst_proc ? sg_host_name(synchro->comm.dst_proc->host) : NULL,
                 simcall->issuer->name, simcall->issuer, synchro->comm.detached);
       if (synchro->comm.src_proc == simcall->issuer) {
         XBT_DEBUG("I'm source");
@@ -879,7 +879,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
       }
     }
 
-    if (surf_host_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+    if (surf_host_get_state(surf_host_resource_priv(simcall->issuer->host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -1103,9 +1103,9 @@ void SIMIX_comm_copy_data(smx_synchro_t comm)
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
             comm,
-            comm->comm.src_proc ? sg_host_name(comm->comm.src_proc->smx_host) : "a finished process",
+            comm->comm.src_proc ? sg_host_name(comm->comm.src_proc->host) : "a finished process",
             comm->comm.src_buff,
-            comm->comm.dst_proc ? sg_host_name(comm->comm.dst_proc->smx_host) : "a finished process",
+            comm->comm.dst_proc ? sg_host_name(comm->comm.dst_proc->host) : "a finished process",
             comm->comm.dst_buff, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */

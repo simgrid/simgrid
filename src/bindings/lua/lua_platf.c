@@ -64,7 +64,7 @@ int console_close(lua_State *L) {
     if(data[SURF_HOST_LEVEL]){
       XBT_DEBUG("\tSee surf host %s",name);
       SIMIX_host_create(name, NULL);
-      __MSG_host_create((smx_host_t)data[SIMIX_HOST_LEVEL]);
+      __MSG_host_create((sg_host_t)data[SIMIX_HOST_LEVEL]);
     }
   }
 

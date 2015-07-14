@@ -26,7 +26,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
  */
 
 /********************************* Host **************************************/
-msg_host_t __MSG_host_create(smx_host_t host)
+msg_host_t __MSG_host_create(sg_host_t host)
 {
   const char *name = SIMIX_host_get_name(host);
   msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);

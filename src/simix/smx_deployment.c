@@ -23,7 +23,7 @@ extern int surf_parse_lineno;
 
 static void parse_process(sg_platf_process_cbarg_t process)
 {
-  smx_host_t host = SIMIX_host_get_by_name(process->host);
+  sg_host_t host = SIMIX_host_get_by_name(process->host);
   if (!host)
     THROWF(arg_error, 0, "Host '%s' unknown", process->host);
   parse_code = SIMIX_get_registered_function(process->function);
@@ -196,7 +196,7 @@ void SIMIX_process_set_function(const char *process_host,
 {
   s_sg_platf_process_cbarg_t process = SG_PLATF_PROCESS_INITIALIZER;
 
-  smx_host_t host = SIMIX_host_get_by_name(process_host);
+  sg_host_t host = SIMIX_host_get_by_name(process_host);
   if (!host)
     THROWF(arg_error, 0, "Host '%s' unknown", process_host);
   process.host = sg_host_name(host);

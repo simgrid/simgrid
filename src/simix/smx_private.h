@@ -50,7 +50,7 @@ typedef struct s_smx_global {
   /** Callback used when killing a SMX_process */
   void_pfn_smxprocess_t cleanup_process_function;
   xbt_mallocator_t synchro_mallocator;
-  void_pfn_smxhost_t autorestart;
+  void_pfn_sghost_t autorestart;
 
 #ifdef TIME_BENCH_AMDAHL
   xbt_os_timer_t timer_seq; /* used to bench the sequential and parallel parts of the simulation, if requested to */
@@ -131,7 +131,7 @@ typedef struct s_smx_synchro {
   union {
 
     struct {
-      smx_host_t host;                /* The host where the execution takes place */
+      sg_host_t host;                /* The host where the execution takes place */
       surf_action_t surf_exec;        /* The Surf execution action encapsulated */
     } execution; /* Possibly parallel execution */
 
@@ -174,7 +174,7 @@ typedef struct s_smx_synchro {
     } comm;
 
     struct {
-      smx_host_t host;                /* The host that is sleeping */
+      sg_host_t host;                /* The host that is sleeping */
       surf_action_t surf_sleep;       /* The Surf sleeping action encapsulated */
     } sleep;
 
@@ -183,7 +183,7 @@ typedef struct s_smx_synchro {
     } synchro;
 
     struct {
-      smx_host_t host;
+      sg_host_t host;
       surf_action_t surf_io;
     } io;
   };

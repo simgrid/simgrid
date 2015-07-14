@@ -56,7 +56,7 @@ typedef struct simdata_task {
   void *isused;  /* Indicates whether the task is used in SIMIX currently */
   int host_nb;                  /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
-  smx_host_t *host_list;
+  sg_host_t *host_list;
   double *flops_parallel_amount;
   double *bytes_parallel_amount;
 } s_simdata_task_t;
@@ -154,7 +154,7 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #  define MSG_RETURN(val) return(val)
 #endif
 
-msg_host_t __MSG_host_create(smx_host_t host);
+msg_host_t __MSG_host_create(sg_host_t host);
 msg_storage_t __MSG_storage_create(smx_storage_t storage);
 void __MSG_host_destroy(msg_host_t host);
 void __MSG_storage_destroy(msg_storage_priv_t host);

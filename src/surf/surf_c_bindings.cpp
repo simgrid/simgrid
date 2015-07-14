@@ -430,11 +430,11 @@ int surf_host_file_move(surf_resource_t host, surf_file_t fd, const char* fullpa
 
 xbt_dynar_t surf_host_get_vms(surf_resource_t host){
   xbt_dynar_t vms = get_casted_host(host)->getVms();
-  xbt_dynar_t vms_ = xbt_dynar_new(sizeof(smx_host_t), NULL);
+  xbt_dynar_t vms_ = xbt_dynar_new(sizeof(sg_host_t), NULL);
   unsigned int cpt;
   VMPtr vm;
   xbt_dynar_foreach(vms, cpt, vm) {
-    smx_host_t vm_ = xbt_lib_get_elm_or_null(host_lib, vm->getName());
+    sg_host_t vm_ = xbt_lib_get_elm_or_null(host_lib, vm->getName());
     xbt_dynar_push(vms_, &vm_);
   }
   xbt_dynar_free(&vms);

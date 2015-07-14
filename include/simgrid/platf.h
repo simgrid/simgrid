@@ -10,6 +10,7 @@
 #define SG_PLATF_H
 
 #include <xbt.h>
+#include <simgrid/host.h>
 
 SG_BEGIN_DECL()
 
@@ -81,7 +82,6 @@ XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(const
                                                                            double scale,
                                                                            double shape);
 
-typedef xbt_dictelm_t sg_host_t;
 static inline char* sg_host_name(sg_host_t host) {
   return host->key;
 }

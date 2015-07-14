@@ -96,7 +96,7 @@ void SIMIX_process_cleanup(smx_process_t process)
 
   XBT_DEBUG("%p should not be run anymore",process);
   xbt_swag_remove(process, simix_global->process_list);
-  xbt_swag_remove(process, SIMIX_host_priv(process->smx_host)->process_list);
+  xbt_swag_remove(process, SIMIX_host_priv(process->host)->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
   process->context->iwannadie = 0;
 
@@ -163,14 +163,14 @@ void SIMIX_process_stop(smx_process_t arg) {
   /* Add the process to the list of process to restart, only if
    * the host is down
    */
-  if (arg->auto_restart && !SIMIX_host_get_state(arg->smx_host)) {
-    SIMIX_host_add_auto_restart_process(arg->smx_host,arg->name,arg->code, arg->data,
-                                        sg_host_name(arg->smx_host),
+  if (arg->auto_restart && !SIMIX_host_get_state(arg->host)) {
+    SIMIX_host_add_auto_restart_process(arg->host,arg->name,arg->code, arg->data,
+                                        sg_host_name(arg->host),
                                         SIMIX_timer_get_date(arg->kill_timer),
                                         arg->argc,arg->argv,arg->properties,
                                         arg->auto_restart);
   }
-  XBT_DEBUG("Process %s (%s) is dead",arg->name,sg_host_name(arg->smx_host));
+  XBT_DEBUG("Process %s (%s) is dead",arg->name,sg_host_name(arg->host));
   /* stop the context */
   SIMIX_context_stop(arg->context);
 }
@@ -234,7 +234,7 @@ void SIMIX_process_create(smx_process_t *process,
                           smx_process_t parent_process)
 {
   *process = NULL;
-  smx_host_t host = SIMIX_host_get_by_name(hostname);
+  sg_host_t host = SIMIX_host_get_by_name(hostname);
 
   XBT_DEBUG("Start process %s on host '%s'", name, hostname);
 
@@ -253,7 +253,7 @@ void SIMIX_process_create(smx_process_t *process,
     /* Process data */
     (*process)->pid = simix_process_maxpid++;
     (*process)->name = xbt_strdup(name);
-    (*process)->smx_host = host;
+    (*process)->host = host;
     (*process)->data = data;
     (*process)->comms = xbt_fifo_new();
     (*process)->simcall.issuer = *process;
@@ -297,7 +297,7 @@ void SIMIX_process_create(smx_process_t *process,
 
     if (kill_time > SIMIX_get_clock() && simix_global->kill_process_function) {
       XBT_DEBUG("Process %s(%s) will be kill at time %f", (*process)->name,
-          sg_host_name((*process)->smx_host), kill_time);
+          sg_host_name((*process)->host), kill_time);
       (*process)->kill_timer = SIMIX_timer_set(kill_time, simix_global->kill_process_function, *process);
     }
   }
@@ -336,7 +336,7 @@ void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_process_t process) 
  */
 void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
-  XBT_DEBUG("Killing process %s on %s", process->name, sg_host_name(process->smx_host));
+  XBT_DEBUG("Killing process %s on %s", process->name, sg_host_name(process->host));
 
   process->context->iwannadie = 1;
   process->blocked = 0;
@@ -464,16 +464,16 @@ void SIMIX_process_killall(smx_process_t issuer, int reset_pid)
 }
 
 void simcall_HANDLER_process_change_host(smx_simcall_t simcall, smx_process_t process,
-		                   smx_host_t dest)
+		                   sg_host_t dest)
 {
   process->new_host = dest;
 }
 void SIMIX_process_change_host(smx_process_t process,
-             smx_host_t dest)
+             sg_host_t dest)
 {
   xbt_assert((process != NULL), "Invalid parameters");
-  xbt_swag_remove(process, SIMIX_host_priv(process->smx_host)->process_list);
-  process->smx_host = dest;
+  xbt_swag_remove(process, SIMIX_host_priv(process->host)->process_list);
+  process->host = dest;
   xbt_swag_insert(process, SIMIX_host_priv(dest)->process_list);
 }
 
@@ -540,7 +540,7 @@ smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
     }
   } else {
     /* FIXME: computation size is zero. Is it okay that bound is zero ? */
-    return SIMIX_host_execute("suspend", process->smx_host, 0.0, 1.0, 0.0, 0);
+    return SIMIX_host_execute("suspend", process->host, 0.0, 1.0, 0.0, 0);
   }
 }
 
@@ -646,9 +646,9 @@ void SIMIX_process_set_data(smx_process_t process, void *data)
   process->data = data;
 }
 
-smx_host_t SIMIX_process_get_host(smx_process_t process)
+sg_host_t SIMIX_process_get_host(smx_process_t process)
 {
-  return process->smx_host;
+  return process->host;
 }
 
 /* needs to be public and without simcall because it is called
@@ -743,7 +743,7 @@ void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
 smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
 {
   smx_synchro_t synchro;
-  smx_host_t host = process->smx_host;
+  sg_host_t host = process->host;
 
   /* check if the host is active */
   if (surf_host_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
@@ -788,7 +788,7 @@ void SIMIX_post_process_sleep(smx_synchro_t synchro)
         THROW_IMPOSSIBLE;
         break;
     }
-    if (surf_host_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+    if (surf_host_get_state(surf_host_resource_priv(simcall->issuer->host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
     simcall_process_sleep__set__result(simcall, state);
@@ -964,12 +964,12 @@ smx_process_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_process
 }
 /** @brief Restart a process, starting it again from the beginning. */
 smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer) {
-  XBT_DEBUG("Restarting process %s on %s", process->name, sg_host_name(process->smx_host));
+  XBT_DEBUG("Restarting process %s on %s", process->name, sg_host_name(process->host));
   //retrieve the arguments of the old process
   //FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
   s_smx_process_arg_t arg;
   arg.code = process->code;
-  arg.hostname = sg_host_name(process->smx_host);
+  arg.hostname = sg_host_name(process->host);
   arg.kill_time = SIMIX_timer_get_date(process->kill_timer);
   arg.argc = process->argc;
   arg.data = process->data;

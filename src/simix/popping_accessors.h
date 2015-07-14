@@ -20,15 +20,15 @@ static inline const char* simcall_host_get_by_name__get__name(smx_simcall_t simc
 static inline void simcall_host_get_by_name__set__name(smx_simcall_t simcall, const char* arg) {
     simcall->args[0].cc = arg;
 }
-static inline smx_host_t simcall_host_get_by_name__get__result(smx_simcall_t simcall){
-    return (smx_host_t) simcall->result.dp;
+static inline sg_host_t simcall_host_get_by_name__get__result(smx_simcall_t simcall){
+    return (sg_host_t) simcall->result.dp;
 }
 static inline void simcall_host_get_by_name__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
 
-static inline smx_host_t simcall_host_get_name__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_name__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_name__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -40,22 +40,22 @@ static inline void simcall_host_get_name__set__result(smx_simcall_t simcall, con
     simcall->result.cc = result;
 }
 
-static inline smx_host_t simcall_host_on__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_on__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_on__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 
-static inline smx_host_t simcall_host_off__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_off__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_off__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 
-static inline smx_host_t simcall_host_get_properties__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_properties__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_properties__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -67,8 +67,8 @@ static inline void simcall_host_get_properties__set__result(smx_simcall_t simcal
     simcall->result.dp = result;
 }
 
-static inline smx_host_t simcall_host_get_core__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_core__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_core__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -80,8 +80,8 @@ static inline void simcall_host_get_core__set__result(smx_simcall_t simcall, int
     simcall->result.i = result;
 }
 
-static inline smx_host_t simcall_host_get_process_list__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_process_list__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_process_list__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -93,8 +93,8 @@ static inline void simcall_host_get_process_list__set__result(smx_simcall_t simc
     simcall->result.dp = result;
 }
 
-static inline smx_host_t simcall_host_get_speed__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_speed__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_speed__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -106,8 +106,8 @@ static inline void simcall_host_get_speed__set__result(smx_simcall_t simcall, do
     simcall->result.d = result;
 }
 
-static inline smx_host_t simcall_host_get_available_speed__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_available_speed__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_available_speed__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -119,8 +119,8 @@ static inline void simcall_host_get_available_speed__set__result(smx_simcall_t s
     simcall->result.d = result;
 }
 
-static inline smx_host_t simcall_host_get_state__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_state__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_state__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -132,8 +132,8 @@ static inline void simcall_host_get_state__set__result(smx_simcall_t simcall, in
     simcall->result.i = result;
 }
 
-static inline smx_host_t simcall_host_get_current_power_peak__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_current_power_peak__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_current_power_peak__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -145,8 +145,8 @@ static inline void simcall_host_get_current_power_peak__set__result(smx_simcall_
     simcall->result.d = result;
 }
 
-static inline smx_host_t simcall_host_get_power_peak_at__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_power_peak_at__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_power_peak_at__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -164,8 +164,8 @@ static inline void simcall_host_get_power_peak_at__set__result(smx_simcall_t sim
     simcall->result.d = result;
 }
 
-static inline smx_host_t simcall_host_get_nb_pstates__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_nb_pstates__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_nb_pstates__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -177,8 +177,8 @@ static inline void simcall_host_get_nb_pstates__set__result(smx_simcall_t simcal
     simcall->result.i = result;
 }
 
-static inline smx_host_t simcall_host_get_wattmin_at__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_wattmin_at__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_wattmin_at__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -196,8 +196,8 @@ static inline void simcall_host_get_wattmin_at__set__result(smx_simcall_t simcal
     simcall->result.d = result;
 }
 
-static inline smx_host_t simcall_host_get_wattmax_at__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_wattmax_at__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_wattmax_at__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -215,8 +215,8 @@ static inline void simcall_host_get_wattmax_at__set__result(smx_simcall_t simcal
     simcall->result.d = result;
 }
 
-static inline smx_host_t simcall_host_set_pstate__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_set_pstate__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_set_pstate__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -228,8 +228,8 @@ static inline void simcall_host_set_pstate__set__pstate_index(smx_simcall_t simc
     simcall->args[1].i = arg;
 }
 
-static inline smx_host_t simcall_host_get_pstate__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_pstate__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_pstate__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -241,8 +241,8 @@ static inline void simcall_host_get_pstate__set__result(smx_simcall_t simcall, i
     simcall->result.i = result;
 }
 
-static inline smx_host_t simcall_host_get_consumed_energy__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_consumed_energy__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_consumed_energy__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -260,8 +260,8 @@ static inline const char* simcall_host_execute__get__name(smx_simcall_t simcall)
 static inline void simcall_host_execute__set__name(smx_simcall_t simcall, const char* arg) {
     simcall->args[0].cc = arg;
 }
-static inline smx_host_t simcall_host_execute__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_host_execute__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_host_execute__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
@@ -309,8 +309,8 @@ static inline int simcall_host_parallel_execute__get__host_nb(smx_simcall_t simc
 static inline void simcall_host_parallel_execute__set__host_nb(smx_simcall_t simcall, int arg) {
     simcall->args[1].i = arg;
 }
-static inline smx_host_t* simcall_host_parallel_execute__get__host_list(smx_simcall_t simcall) {
-  return (smx_host_t*) simcall->args[2].dp;
+static inline sg_host_t* simcall_host_parallel_execute__get__host_list(smx_simcall_t simcall) {
+  return (sg_host_t*) simcall->args[2].dp;
 }
 static inline void simcall_host_parallel_execute__set__host_list(smx_simcall_t simcall, void* arg) {
     simcall->args[2].dp = arg;
@@ -418,8 +418,8 @@ static inline smx_synchro_t simcall_host_execution_set_affinity__get__execution(
 static inline void simcall_host_execution_set_affinity__set__execution(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_host_execution_set_affinity__get__ws(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_host_execution_set_affinity__get__ws(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_host_execution_set_affinity__set__ws(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
@@ -444,8 +444,8 @@ static inline void simcall_host_execution_wait__set__result(smx_simcall_t simcal
     simcall->result.i = result;
 }
 
-static inline smx_host_t simcall_host_get_mounted_storage_list__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_mounted_storage_list__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_mounted_storage_list__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -457,8 +457,8 @@ static inline void simcall_host_get_mounted_storage_list__set__result(smx_simcal
     simcall->result.dp = result;
 }
 
-static inline smx_host_t simcall_host_get_attached_storage_list__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_attached_storage_list__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_attached_storage_list__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -470,8 +470,8 @@ static inline void simcall_host_get_attached_storage_list__set__result(smx_simca
     simcall->result.dp = result;
 }
 
-static inline smx_host_t simcall_host_get_params__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_get_params__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_get_params__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -483,8 +483,8 @@ static inline void simcall_host_get_params__set__params(smx_simcall_t simcall, v
     simcall->args[1].dp = arg;
 }
 
-static inline smx_host_t simcall_host_set_params__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_host_set_params__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_host_set_params__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -502,28 +502,28 @@ static inline const char* simcall_vm_create__get__name(smx_simcall_t simcall) {
 static inline void simcall_vm_create__set__name(smx_simcall_t simcall, const char* arg) {
     simcall->args[0].cc = arg;
 }
-static inline smx_host_t simcall_vm_create__get__ind_pm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_vm_create__get__ind_pm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_vm_create__set__ind_pm(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
-static inline smx_host_t simcall_vm_create__get__result(smx_simcall_t simcall){
-    return (smx_host_t) simcall->result.dp;
+static inline sg_host_t simcall_vm_create__get__result(smx_simcall_t simcall){
+    return (sg_host_t) simcall->result.dp;
 }
 static inline void simcall_vm_create__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
 
-static inline smx_host_t simcall_vm_start__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_start__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_start__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 
-static inline smx_host_t simcall_vm_get_state__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_get_state__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_get_state__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -535,21 +535,21 @@ static inline void simcall_vm_get_state__set__result(smx_simcall_t simcall, int 
     simcall->result.i = result;
 }
 
-static inline smx_host_t simcall_vm_migrate__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_migrate__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_migrate__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_vm_migrate__get__ind_dst_pm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_vm_migrate__get__ind_dst_pm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_vm_migrate__set__ind_dst_pm(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
 
-static inline smx_host_t simcall_vm_get_pm__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_get_pm__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_get_pm__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -561,8 +561,8 @@ static inline void simcall_vm_get_pm__set__result(smx_simcall_t simcall, void* r
     simcall->result.dp = result;
 }
 
-static inline smx_host_t simcall_vm_set_bound__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_set_bound__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_set_bound__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
@@ -574,14 +574,14 @@ static inline void simcall_vm_set_bound__set__bound(smx_simcall_t simcall, doubl
     simcall->args[1].d = arg;
 }
 
-static inline smx_host_t simcall_vm_set_affinity__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_set_affinity__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_set_affinity__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_vm_set_affinity__get__ind_pm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_vm_set_affinity__get__ind_pm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_vm_set_affinity__set__ind_pm(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
@@ -593,62 +593,62 @@ static inline void simcall_vm_set_affinity__set__mask(smx_simcall_t simcall, uns
     simcall->args[2].ul = arg;
 }
 
-static inline smx_host_t simcall_vm_destroy__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_destroy__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_destroy__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 
-static inline smx_host_t simcall_vm_suspend__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_suspend__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_suspend__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 
-static inline smx_host_t simcall_vm_resume__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_resume__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_resume__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 
-static inline smx_host_t simcall_vm_shutdown__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_shutdown__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_shutdown__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 
-static inline smx_host_t simcall_vm_save__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_save__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_save__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 
-static inline smx_host_t simcall_vm_restore__get__ind_vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_restore__get__ind_vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_restore__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 
-static inline smx_host_t simcall_vm_migratefrom_resumeto__get__vm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[0].dp;
+static inline sg_host_t simcall_vm_migratefrom_resumeto__get__vm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[0].dp;
 }
 static inline void simcall_vm_migratefrom_resumeto__set__vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_vm_migratefrom_resumeto__get__src_pm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_vm_migratefrom_resumeto__get__src_pm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_vm_migratefrom_resumeto__set__src_pm(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
-static inline smx_host_t simcall_vm_migratefrom_resumeto__get__dst_pm(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[2].dp;
+static inline sg_host_t simcall_vm_migratefrom_resumeto__get__dst_pm(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[2].dp;
 }
 static inline void simcall_vm_migratefrom_resumeto__set__dst_pm(smx_simcall_t simcall, void* arg) {
     simcall->args[2].dp = arg;
@@ -742,8 +742,8 @@ static inline smx_process_t simcall_process_change_host__get__process(smx_simcal
 static inline void simcall_process_change_host__set__process(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_process_change_host__get__dest(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_process_change_host__get__dest(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_process_change_host__set__dest(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
@@ -828,8 +828,8 @@ static inline smx_process_t simcall_process_get_host__get__process(smx_simcall_t
 static inline void simcall_process_get_host__set__process(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_process_get_host__get__result(smx_simcall_t simcall){
-    return (smx_host_t) simcall->result.dp;
+static inline sg_host_t simcall_process_get_host__get__result(smx_simcall_t simcall){
+    return (sg_host_t) simcall->result.dp;
 }
 static inline void simcall_process_get_host__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
@@ -977,8 +977,8 @@ static inline smx_rdv_t simcall_rdv_comm_count_by_host__get__rdv(smx_simcall_t s
 static inline void simcall_rdv_comm_count_by_host__set__rdv(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_rdv_comm_count_by_host__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_rdv_comm_count_by_host__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_rdv_comm_count_by_host__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
@@ -1627,8 +1627,8 @@ static inline sg_size_t simcall_file_read__get__size(smx_simcall_t simcall) {
 static inline void simcall_file_read__set__size(smx_simcall_t simcall, sg_size_t arg) {
     simcall->args[1].sgsz = arg;
 }
-static inline smx_host_t simcall_file_read__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[2].dp;
+static inline sg_host_t simcall_file_read__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[2].dp;
 }
 static inline void simcall_file_read__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[2].dp = arg;
@@ -1652,8 +1652,8 @@ static inline sg_size_t simcall_file_write__get__size(smx_simcall_t simcall) {
 static inline void simcall_file_write__set__size(smx_simcall_t simcall, sg_size_t arg) {
     simcall->args[1].sgsz = arg;
 }
-static inline smx_host_t simcall_file_write__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[2].dp;
+static inline sg_host_t simcall_file_write__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[2].dp;
 }
 static inline void simcall_file_write__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[2].dp = arg;
@@ -1671,8 +1671,8 @@ static inline const char* simcall_file_open__get__fullpath(smx_simcall_t simcall
 static inline void simcall_file_open__set__fullpath(smx_simcall_t simcall, const char* arg) {
     simcall->args[0].cc = arg;
 }
-static inline smx_host_t simcall_file_open__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_file_open__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_file_open__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
@@ -1690,8 +1690,8 @@ static inline smx_file_t simcall_file_close__get__fd(smx_simcall_t simcall) {
 static inline void simcall_file_close__set__fd(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_file_close__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_file_close__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_file_close__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
@@ -1709,8 +1709,8 @@ static inline smx_file_t simcall_file_unlink__get__fd(smx_simcall_t simcall) {
 static inline void simcall_file_unlink__set__fd(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_host_t simcall_file_unlink__get__host(smx_simcall_t simcall) {
-  return (smx_host_t) simcall->args[1].dp;
+static inline sg_host_t simcall_file_unlink__get__host(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
 }
 static inline void simcall_file_unlink__set__host(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
@@ -1949,17 +1949,17 @@ static inline void simcall_mc_compare_snapshots__set__result(smx_simcall_t simca
 
 /* The prototype of all simcall handlers, automatically generated for you */
 
-void simcall_HANDLER_host_off(smx_simcall_t simcall, smx_host_t host);
+void simcall_HANDLER_host_off(smx_simcall_t simcall, sg_host_t host);
 void simcall_HANDLER_host_execution_wait(smx_simcall_t simcall, smx_synchro_t execution);
-void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm);
-void simcall_HANDLER_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm);
-void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm);
-void simcall_HANDLER_vm_save(smx_simcall_t simcall, smx_host_t ind_vm);
-void simcall_HANDLER_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm);
+void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm);
+void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_vm);
+void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm);
+void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t ind_vm);
+void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t ind_vm);
 void simcall_HANDLER_process_create(smx_simcall_t simcall, smx_process_t* process, const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart);
 void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_process_t process);
 void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
-void simcall_HANDLER_process_change_host(smx_simcall_t simcall, smx_process_t process, smx_host_t dest);
+void simcall_HANDLER_process_change_host(smx_simcall_t simcall, smx_process_t process, sg_host_t dest);
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t process);
 void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_process_t process);
 void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout);
@@ -1985,10 +1985,10 @@ int simcall_HANDLER_sem_would_block(smx_simcall_t simcall, smx_sem_t sem);
 void simcall_HANDLER_sem_acquire(smx_simcall_t simcall, smx_sem_t sem);
 void simcall_HANDLER_sem_acquire_timeout(smx_simcall_t simcall, smx_sem_t sem, double timeout);
 int simcall_HANDLER_sem_get_capacity(smx_simcall_t simcall, smx_sem_t sem);
-void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host);
-void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host);
-void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, smx_host_t host);
-void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, smx_host_t host);
+void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host);
+void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host);
+void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, sg_host_t host);
+void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, sg_host_t host);
 sg_size_t simcall_HANDLER_file_get_size(smx_simcall_t simcall, smx_file_t fd);
 sg_size_t simcall_HANDLER_file_tell(smx_simcall_t simcall, smx_file_t fd);
 int simcall_HANDLER_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t offset, int origin);

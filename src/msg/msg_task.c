@@ -107,7 +107,7 @@ MSG_parallel_task_create(const char *name, int host_nb,
 
   /* Simulator Data specific to parallel tasks */
   simdata->host_nb = host_nb;
-  simdata->host_list = xbt_new0(smx_host_t, host_nb);
+  simdata->host_list = xbt_new0(sg_host_t, host_nb);
   simdata->flops_parallel_amount = flops_amount;
   simdata->bytes_parallel_amount = bytes_amount;
 

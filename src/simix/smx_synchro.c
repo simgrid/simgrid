@@ -11,7 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix,
                                 "SIMIX Synchronization (mutex, semaphores and conditions)");
 
-static smx_synchro_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout);
+static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
 static void SIMIX_synchro_finish(smx_synchro_t synchro);
 static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
                              smx_process_t issuer, smx_simcall_t simcall);
@@ -20,7 +20,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
 
 /***************************** Raw synchronization *********************************/
 
-static smx_synchro_t SIMIX_synchro_wait(smx_host_t smx_host, double timeout)
+static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
 {
   XBT_IN("(%p, %f)",smx_host,timeout);
 
@@ -154,7 +154,7 @@ void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
   if (mutex->locked) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
-    synchro = SIMIX_synchro_wait(process->smx_host, -1);
+    synchro = SIMIX_synchro_wait(process->host, -1);
     xbt_fifo_push(synchro->simcalls, simcall);
     simcall->issuer->waiting_synchro = synchro;
     xbt_swag_insert(simcall->issuer, mutex->sleeping);   
@@ -309,7 +309,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
     SIMIX_mutex_unlock(mutex, issuer);
   }
 
-  synchro = SIMIX_synchro_wait(issuer->smx_host, timeout);
+  synchro = SIMIX_synchro_wait(issuer->host, timeout);
   xbt_fifo_unshift(synchro->simcalls, simcall);
   issuer->waiting_synchro = synchro;
   xbt_swag_insert(simcall->issuer, cond->sleeping);   
@@ -473,7 +473,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
   if (sem->value <= 0) {
-    synchro = SIMIX_synchro_wait(issuer->smx_host, timeout);
+    synchro = SIMIX_synchro_wait(issuer->host, timeout);
     xbt_fifo_unshift(synchro->simcalls, simcall);
     issuer->waiting_synchro = synchro;
     xbt_swag_insert(issuer, sem->sleeping);
