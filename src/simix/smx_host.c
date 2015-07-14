@@ -19,9 +19,8 @@ static void SIMIX_execution_finish(smx_synchro_t synchro);
 /**
  * \brief Internal function to create a SIMIX host.
  * \param name name of the host to create
- * \param data some user data (may be NULL)
  */
-sg_host_t SIMIX_host_create(const char *name, void *killme) // FIXME: braindead prototype. Take sg_host as first arg
+void SIMIX_host_create(const char *name) // FIXME: braindead prototype. Take sg_host as parameter
 {
   sg_host_t host = xbt_lib_get_elm_or_null(host_lib, name);
   smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
@@ -33,8 +32,6 @@ sg_host_t SIMIX_host_create(const char *name, void *killme) // FIXME: braindead 
 
   /* Update global variables */
   sg_host_simix_set(host, smx_host);
-
-  return host;
 }
 
 /**
@@ -152,10 +149,6 @@ void SIMIX_host_destroy(void *h)
 }
 
 sg_host_t SIMIX_host_get_by_name(const char *name){
-  xbt_assert(((simix_global != NULL)
-               && (host_lib != NULL)),
-              "Environment not set yet");
-
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 

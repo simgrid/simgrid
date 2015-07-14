@@ -53,7 +53,7 @@ void SIMIX_post_create_environment(void) {
   /* Create host at SIMIX level */
   xbt_lib_foreach(host_lib, cursor, name, host) {
     if(host[SURF_HOST_LEVEL])
-      SIMIX_host_create(name, NULL);
+      SIMIX_host_create(name);
   }
 
   /* Create storage at SIMIX level */

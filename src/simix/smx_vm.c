@@ -25,12 +25,12 @@ sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host)
   /* Create surf associated resource */
   surf_vm_model_create(name, ind_phys_host);
 
-  sg_host_t smx_host = SIMIX_host_create(name, NULL);
+  SIMIX_host_create(name);
 
   /* We will be able to register the VM to its physical host, so that we can promptly
    * retrieve the list VMs on the physical host. */
 
-  return smx_host;
+  return SIMIX_host_get_by_name(name);
 }
 
 
