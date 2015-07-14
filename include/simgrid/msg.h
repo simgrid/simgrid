@@ -46,7 +46,6 @@ XBT_PUBLIC_DATA(int) MSG_HOST_LEVEL;
     process.
  */
 typedef xbt_dictelm_t msg_host_t;
-typedef s_xbt_dictelm_t s_msg_host_t;
 
 typedef struct msg_host_priv {
   int        dp_enabled;
