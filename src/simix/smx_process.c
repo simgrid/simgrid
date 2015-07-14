@@ -596,7 +596,9 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
   XBT_OUT();
 }
 
-int SIMIX_process_get_maxpid(void) {
+/* Warning, the tracing mechanism uses this function to guess the future PID of the
+ * currently created process, Please do not change that feature */
+int SIMIX_process_get_nextpid(void) {
   return simix_process_maxpid;
 }
 
