@@ -21,8 +21,9 @@ static void SIMIX_execution_finish(smx_synchro_t synchro);
  * \param name name of the host to create
  * \param data some user data (may be NULL)
  */
-sg_host_t SIMIX_host_create(const char *name, void *data)
+sg_host_t SIMIX_host_create(const char *name, void *killme) // FIXME: braindead prototype. Take sg_host as first arg
 {
+  sg_host_t host = xbt_lib_get_elm_or_null(host_lib, name);
   smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
   s_smx_process_t proc;
 
@@ -31,9 +32,9 @@ sg_host_t SIMIX_host_create(const char *name, void *data)
       xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
   /* Update global variables */
-  xbt_lib_set(host_lib,name,SIMIX_HOST_LEVEL,smx_host);
+  sg_host_simix_set(host, smx_host);
 
-  return xbt_lib_get_elm_or_null(host_lib, name);
+  return host;
 }
 
 /**
@@ -42,7 +43,7 @@ sg_host_t SIMIX_host_create(const char *name, void *data)
  */
 void SIMIX_host_on(sg_host_t h)
 {
-  smx_host_priv_t host = SIMIX_host_priv(h);
+  smx_host_priv_t host = sg_host_simix(h);
 
   xbt_assert((host != NULL), "Invalid parameters");
 
@@ -98,7 +99,7 @@ void simcall_HANDLER_host_off(smx_simcall_t simcall, sg_host_t h)
  */
 void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
 {
-  smx_host_priv_t host = SIMIX_host_priv(h);
+  smx_host_priv_t host = sg_host_simix(h);
 
   xbt_assert((host != NULL), "Invalid parameters");
 
@@ -188,7 +189,7 @@ int SIMIX_host_get_core(sg_host_t host){
 }
 
 xbt_swag_t SIMIX_host_get_process_list(sg_host_t host){
-  smx_host_priv_t host_priv = SIMIX_host_priv(host);
+  smx_host_priv_t host_priv = sg_host_simix(host);
 
   return host_priv->process_list;
 }
@@ -259,8 +260,8 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
                                          xbt_dict_t properties,
                                          int auto_restart)
 {
-  if (!SIMIX_host_priv(host)->auto_restart_processes) {
-    SIMIX_host_priv(host)->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
+  if (!sg_host_simix(host)->auto_restart_processes) {
+    sg_host_simix(host)->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
   }
   smx_process_arg_t arg = xbt_new(s_smx_process_arg_t,1);
   arg->name = xbt_strdup(name);
@@ -286,7 +287,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
     xbt_dict_set(watched_hosts_lib,sg_host_name(host),host,NULL);
     XBT_DEBUG("Have pushed host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_name(host));
   }
-  xbt_dynar_push_as(SIMIX_host_priv(host)->auto_restart_processes,smx_process_arg_t,arg);
+  xbt_dynar_push_as(sg_host_simix(host)->auto_restart_processes,smx_process_arg_t,arg);
 }
 /**
  * \brief Restart the list of processes that have been registered to the host
@@ -295,7 +296,7 @@ void SIMIX_host_restart_processes(sg_host_t host)
 {
   unsigned int cpt;
   smx_process_arg_t arg;
-  xbt_dynar_t process_list = SIMIX_host_priv(host)->auto_restart_processes;
+  xbt_dynar_t process_list = sg_host_simix(host)->auto_restart_processes;
   if (!process_list)
     return;
 

@@ -64,7 +64,9 @@ int console_close(lua_State *L) {
     if(data[SURF_HOST_LEVEL]){
       XBT_DEBUG("\tSee surf host %s",name);
       SIMIX_host_create(name, NULL);
-      __MSG_host_create((sg_host_t)data[SIMIX_HOST_LEVEL]);
+      // THIS IS BRAINDEAD. There is no sg_host_t in that level, but a smx_host_priv. So commenting out for now.
+      // Lua is broken anyway. Christian will fix it
+      // __MSG_host_create((sg_host_t)data[SIMIX_HOST_LEVEL]);
     }
   }
 

@@ -196,13 +196,13 @@ void SIMIX_vm_suspend(sg_host_t ind_vm, smx_process_t issuer)
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
 
-  XBT_DEBUG("suspend VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("suspend VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   /* jump to vm_ws_suspend. The state will be set. */
   surf_vm_suspend(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("suspend %s", smx_process->name);
     SIMIX_process_suspend(smx_process, issuer);
   }
@@ -236,13 +236,13 @@ void SIMIX_vm_resume(sg_host_t ind_vm, smx_process_t issuer)
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_SUSPENDED)
     THROWF(vm_error, 0, "VM(%s) was not suspended", name);
 
-  XBT_DEBUG("resume VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("resume VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   /* jump to vm_ws_resume() */
   surf_vm_resume(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("resume %s", smx_process->name);
     SIMIX_process_resume(smx_process, issuer);
   }
@@ -269,13 +269,13 @@ void SIMIX_vm_save(sg_host_t ind_vm, smx_process_t issuer)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
 
 
-  XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   /* jump to vm_ws_save() */
   surf_vm_save(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("suspend %s", smx_process->name);
     SIMIX_process_suspend(smx_process, issuer);
   }
@@ -300,13 +300,13 @@ void SIMIX_vm_restore(sg_host_t ind_vm, smx_process_t issuer)
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_SAVED)
     THROWF(vm_error, 0, "VM(%s) was not saved", name);
 
-  XBT_DEBUG("restore VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("restore VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   /* jump to vm_ws_restore() */
   surf_vm_resume(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("resume %s", smx_process->name);
     SIMIX_process_resume(smx_process, issuer);
   }
@@ -333,10 +333,10 @@ void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
 
   XBT_DEBUG("shutdown %s", name);
-  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("%d processes in the VM", xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("kill %s", smx_process->name);
     SIMIX_process_kill(smx_process, issuer);
   }
@@ -367,7 +367,7 @@ void SIMIX_vm_destroy(sg_host_t ind_vm)
   XBT_DEBUG("destroy %s", hostname);
 
   /* this will call the registered callback function, i.e., SIMIX_host_destroy().  */
-  xbt_lib_unset(host_lib, hostname, SIMIX_HOST_LEVEL, 1);
+  sg_host_simix_destroy(ind_vm);
 
   /* jump to vm_ws_destroy(). The surf level resource will be freed. */
   surf_vm_destroy(ind_vm);

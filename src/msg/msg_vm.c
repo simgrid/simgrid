@@ -205,7 +205,7 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
   /* make sure the VM of the same name does not exit */
   {
     xbt_dictelm_t ind_host_tmp = xbt_lib_get_elm_or_null(host_lib, name);
-    if (ind_host_tmp && xbt_lib_get_level(ind_host_tmp, SIMIX_HOST_LEVEL) != NULL) {
+    if (ind_host_tmp && sg_host_simix(ind_host_tmp) != NULL) {
       XBT_ERROR("host %s already exits", name);
       return NULL;
     }

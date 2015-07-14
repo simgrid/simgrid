@@ -96,7 +96,7 @@ void SIMIX_process_cleanup(smx_process_t process)
 
   XBT_DEBUG("%p should not be run anymore",process);
   xbt_swag_remove(process, simix_global->process_list);
-  xbt_swag_remove(process, SIMIX_host_priv(process->host)->process_list);
+  xbt_swag_remove(process, sg_host_simix(process->host)->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
   process->context->iwannadie = 0;
 
@@ -286,7 +286,7 @@ void SIMIX_process_create(smx_process_t *process,
     (*process)->properties = properties;
 
     /* Add the process to it's host process list */
-    xbt_swag_insert(*process, SIMIX_host_priv(host)->process_list);
+    xbt_swag_insert(*process, sg_host_simix(host)->process_list);
 
     XBT_DEBUG("Start context '%s'", (*process)->name);
 
@@ -472,9 +472,9 @@ void SIMIX_process_change_host(smx_process_t process,
              sg_host_t dest)
 {
   xbt_assert((process != NULL), "Invalid parameters");
-  xbt_swag_remove(process, SIMIX_host_priv(process->host)->process_list);
+  xbt_swag_remove(process, sg_host_simix(process->host)->process_list);
   process->host = dest;
-  xbt_swag_insert(process, SIMIX_host_priv(dest)->process_list);
+  xbt_swag_insert(process, sg_host_simix(dest)->process_list);
 }
 
 

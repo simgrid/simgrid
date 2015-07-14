@@ -16,7 +16,6 @@ XBT_PUBLIC_DATA(xbt_lib_t) host_lib;
 XBT_PUBLIC_DATA(int) ROUTING_HOST_LEVEL; //Routing level
 XBT_PUBLIC_DATA(int)  SURF_CPU_LEVEL;    //Surf cpu level
 XBT_PUBLIC_DATA(int) SURF_HOST_LEVEL;    //Surf workstation level
-XBT_PUBLIC_DATA(int) SIMIX_HOST_LEVEL;  //Simix host level
 XBT_PUBLIC_DATA(int) SIMIX_STORAGE_LEVEL;  //Simix storage level
 XBT_PUBLIC_DATA(int)  MSG_HOST_LEVEL;    //Msg level
 XBT_PUBLIC_DATA(int)  SD_HOST_LEVEL;    //Simdag host level

@@ -393,6 +393,7 @@ endif()
 
 set(SIMGRID_SRC
   src/simgrid/sg_config.c
+  src/simgrid/host.cpp
   )
 
 set(MSG_SRC

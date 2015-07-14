@@ -12,16 +12,12 @@
 
 SG_BEGIN_DECL()
 
-/** @brief Host datatype */
+/** @brief Host datatype from SIMIX POV */
 typedef struct s_smx_host_priv {
   xbt_swag_t process_list;
   xbt_dynar_t auto_restart_processes;
-  xbt_dynar_t boot_processes; 
+  xbt_dynar_t boot_processes;
 } s_smx_host_priv_t;
-
-static inline smx_host_priv_t SIMIX_host_priv(sg_host_t host){
-  return (smx_host_priv_t) xbt_lib_get_level(host, SIMIX_HOST_LEVEL);
-}
 
 void _SIMIX_host_free_process_arg(void *);
 sg_host_t SIMIX_host_create(const char *name, void *data);

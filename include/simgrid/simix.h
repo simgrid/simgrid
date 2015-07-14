@@ -36,7 +36,6 @@ typedef union u_smx_scalar u_smx_scalar_t;
 
     \see m_host_management
   @{ */
-typedef struct s_smx_host_priv *smx_host_priv_t;
 typedef enum {
   SIMIX_WAITING,
   SIMIX_READY,

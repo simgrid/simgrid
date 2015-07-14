@@ -48,10 +48,10 @@ static void parse_process(sg_platf_process_cbarg_t process)
   arg->name = xbt_strdup(arg->argv[0]);
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
-  if (!SIMIX_host_priv(host)->boot_processes) {
-    SIMIX_host_priv(host)->boot_processes = xbt_dynar_new(sizeof(smx_process_arg_t), _SIMIX_host_free_process_arg);
+  if (!sg_host_simix(host)->boot_processes) {
+    sg_host_simix(host)->boot_processes = xbt_dynar_new(sizeof(smx_process_arg_t), _SIMIX_host_free_process_arg);
   }
-  xbt_dynar_push_as(SIMIX_host_priv(host)->boot_processes,smx_process_arg_t,arg);
+  xbt_dynar_push_as(sg_host_simix(host)->boot_processes,smx_process_arg_t,arg);
 
   if (start_time > SIMIX_get_clock()) {
     arg = xbt_new0(s_smx_process_arg_t, 1);

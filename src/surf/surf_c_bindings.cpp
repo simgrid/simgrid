@@ -38,10 +38,6 @@ char *surf_routing_edge_name(sg_routing_edge_t edge){
   return edge->getName();
 }
 
-#ifdef CONTEXT_THREADS
-//FIXME:keeporremove static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
-#endif
-
 extern double NOW;
 extern double *surf_mins; /* return value of share_resources for each model */
 extern int surf_min_index;       /* current index in surf_mins */
