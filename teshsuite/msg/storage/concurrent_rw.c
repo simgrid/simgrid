@@ -116,16 +116,16 @@ int main(int argc, char **argv)
   MSG_create_environment(argv[1]);
 
   MSG_function_register("host", host);
-  storage_info(MSG_get_host_by_name(xbt_strdup("host")));
+  storage_info(MSG_host_by_name(xbt_strdup("host")));
   for(i = 0 ; i<10; i++){
-  	MSG_process_create(xbt_strdup("host"), host, NULL, MSG_get_host_by_name(xbt_strdup("host")));
+  	MSG_process_create(xbt_strdup("host"), host, NULL, MSG_host_by_name(xbt_strdup("host")));
   }
 
 
 
 
   res = MSG_main();
-  storage_info(MSG_get_host_by_name(xbt_strdup("host")));
+  storage_info(MSG_host_by_name(xbt_strdup("host")));
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
   if (res == MSG_OK)

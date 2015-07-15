@@ -131,7 +131,7 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
   }
 
   /* bind/retrieve the msg host */
-  host = MSG_get_host_by_name(hostname);
+  host = MSG_host_by_name(hostname);
 
   if (!(host)) {    /* not bound */
     jxbt_throw_host_not_found(env, hostname);

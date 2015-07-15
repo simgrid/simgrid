@@ -28,7 +28,7 @@ int test_launcher(int argc, char *argv[])
   char **argvF;
   argvF = xbt_new(char*, 2);
   argvF[0] = xbt_strdup("process_daemon");
-  msg_host_t jupiter = MSG_get_host_by_name("Jupiter");
+  msg_host_t jupiter = MSG_host_by_name("Jupiter");
 
   test = 1;
   // Create a process running a simple task on a host and turn the host off during the execution of the process.
@@ -90,7 +90,7 @@ int test_launcher(int argc, char *argv[])
     MSG_process_sleep(10);
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("commRX");
-    MSG_process_create_with_arguments("commRX", commRX, NULL, MSG_get_host_by_name("Tremblay"), 1, argvF);
+    MSG_process_create_with_arguments("commRX", commRX, NULL, MSG_host_by_name("Tremblay"), 1, argvF);
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("commTX");
     MSG_process_create_with_arguments("commTX", commTX, NULL, jupiter, 1, argvF);
@@ -111,7 +111,7 @@ int test_launcher(int argc, char *argv[])
     MSG_process_create_with_arguments("commRX", commRX, NULL, jupiter, 1, argvF);
     argvF = xbt_new(char*, 2);
     argvF[0] = xbt_strdup("commTX");
-    MSG_process_create_with_arguments("commTX", commTX, NULL, MSG_get_host_by_name("Tremblay"), 1, argvF);
+    MSG_process_create_with_arguments("commTX", commTX, NULL, MSG_host_by_name("Tremblay"), 1, argvF);
     XBT_INFO("  number of processes: %d", MSG_process_get_number());
     MSG_process_sleep(10);
     XBT_INFO("  Turn Jupiter off");

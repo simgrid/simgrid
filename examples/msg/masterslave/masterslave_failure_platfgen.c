@@ -125,7 +125,7 @@ int master(int argc, char *argv[])
     slaves = xbt_new0(msg_host_t, slaves_count);
 
     for (i = 0; i < argc; i++) {
-      slaves[i] = MSG_get_host_by_name(argv[i]);
+      slaves[i] = MSG_host_by_name(argv[i]);
       if (slaves[i] == NULL) {
         XBT_INFO("Unknown host %s. Stopping Now! ", argv[i]);
         abort();
@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
     MSG_process_auto_restart_set(process, TRUE);
     hostname_list[i] = (char*) MSG_host_get_name(host);
   }
-  host_master = MSG_get_host_by_name("host_master");
+  host_master = MSG_host_by_name("host_master");
   MSG_process_create_with_arguments("master", master, NULL, host_master,
                                     xbt_dynar_length(host_dynar),
                                     hostname_list);

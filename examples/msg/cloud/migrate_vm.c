@@ -33,8 +33,8 @@ static int migration_worker_main(int argc, char *argv[])
   char *vm_name = argv[1];
   char *dst_pm_name = argv[2];
 
-  msg_vm_t vm = MSG_get_host_by_name(vm_name);
-  msg_host_t dst_pm = MSG_get_host_by_name(dst_pm_name);
+  msg_vm_t vm = MSG_host_by_name(vm_name);
+  msg_host_t dst_pm = MSG_host_by_name(dst_pm_name);
 
   vm_migrate(vm, dst_pm);
 

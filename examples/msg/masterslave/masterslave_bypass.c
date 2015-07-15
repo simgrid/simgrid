@@ -192,7 +192,7 @@ int master(int argc, char *argv[])
     slaves = xbt_new0(msg_host_t, slaves_count);
 
     for (i = 4; i < argc; i++) {
-      slaves[i - 4] = MSG_get_host_by_name(argv[i]);
+      slaves[i - 4] = MSG_host_by_name(argv[i]);
       if (slaves[i - 4] == NULL) {
         XBT_INFO("Unknown host %s. Stopping Now!", argv[i]);
         abort();

@@ -77,7 +77,7 @@ int dvfs(int argc, char *argv[])
 
 
   // Verify the default pstate is set to 0
-  host = MSG_get_host_by_name("MyHost2");
+  host = MSG_host_by_name("MyHost2");
   int nb2 = MSG_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb2);
 

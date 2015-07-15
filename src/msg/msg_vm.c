@@ -76,7 +76,7 @@ void MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value, void_
 
 msg_vm_t MSG_vm_get_by_name(const char *name)
 {
-  return MSG_get_host_by_name(name);
+  return MSG_host_by_name(name);
 }
 
 /** \ingroup m_vm_management

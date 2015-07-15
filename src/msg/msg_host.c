@@ -66,7 +66,7 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
  * \param name the name of an host.
  * \return the corresponding host
  */
-msg_host_t MSG_host_get_by_name(const char *name)
+msg_host_t MSG_host_by_name(const char *name)
 {
   return (msg_host_t) xbt_lib_get_elm_or_null(host_lib,name);
 }

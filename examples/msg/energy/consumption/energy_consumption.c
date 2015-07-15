@@ -24,7 +24,7 @@ int dvfs(int argc, char *argv[])
 {
   msg_host_t host = NULL;
   msg_task_t task1 = NULL;
-  host = MSG_get_host_by_name("MyHost1");
+  host = MSG_host_by_name("MyHost1");
 
 
   XBT_INFO("Energetic profile: %s",
@@ -78,8 +78,8 @@ int dvfs(int argc, char *argv[])
 
   // =========== Turn the other host off ==========
   XBT_INFO("Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 dissipated %.0f J so far.",
-		  MSG_host_get_consumed_energy(MSG_get_host_by_name("MyHost2")) );
-  MSG_host_off(MSG_get_host_by_name("MyHost2"));
+		  MSG_host_get_consumed_energy(MSG_host_by_name("MyHost2")) );
+  MSG_host_off(MSG_host_by_name("MyHost2"));
   start = MSG_get_clock();
   MSG_process_sleep(10);
   XBT_INFO("Done sleeping (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",

@@ -25,7 +25,7 @@ int master(int argc, char *argv[])
 {
   xbt_ex_t e;
   TRY {
-    msg_host_t jupiter = MSG_get_host_by_name("Jupiter");
+    msg_host_t jupiter = MSG_host_by_name("Jupiter");
     
     XBT_INFO("Master starting");
     MSG_process_sleep(0.5);
