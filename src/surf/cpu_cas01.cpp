@@ -113,7 +113,8 @@ CpuPtr CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
                           xbt_dict_t cpu_properties)
 {
   CpuPtr cpu = NULL;
-  xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
+  sg_host_t host = sg_host_by_name(name);
+  xbt_assert(!sg_host_surfcpu(host),
              "Host '%s' declared several times in the platform file",
              name);
   xbt_assert(xbt_dynar_getfirst_as(power_peak, double) > 0.0,
@@ -121,7 +122,7 @@ CpuPtr CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
 
   cpu = new CpuCas01(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
+  sg_host_surfcpu_set(host, cpu);
 
   return cpu;
 }
@@ -144,7 +145,7 @@ void CpuCas01Model::addTraces()
   /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01Ptr host = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuCas01Ptr host = static_cast<CpuCas01Ptr>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -154,7 +155,7 @@ void CpuCas01Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01Ptr host = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuCas01Ptr host = static_cast<CpuCas01Ptr>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);

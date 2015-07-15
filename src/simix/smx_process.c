@@ -234,7 +234,7 @@ void SIMIX_process_create(smx_process_t *process,
                           smx_process_t parent_process)
 {
   *process = NULL;
-  sg_host_t host = SIMIX_host_get_by_name(hostname);
+  sg_host_t host = sg_host_by_name(hostname);
 
   XBT_DEBUG("Start process %s on host '%s'", name, hostname);
 

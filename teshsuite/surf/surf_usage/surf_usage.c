@@ -58,12 +58,12 @@ void test(char *platform)
 
   /*********************** CPU ***********************************/
   XBT_DEBUG("%p", surf_cpu_model_pm);
-  cpuA = surf_cpu_resource_by_name("Cpu A");
-  cpuB = surf_cpu_resource_by_name("Cpu B");
+  cpuA = sg_host_by_name("Cpu A");
+  cpuB = sg_host_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_cpu_name(surf_cpu_resource_priv(cpuA)), cpuA);
-  XBT_DEBUG("%s : %p", surf_cpu_name(surf_cpu_resource_priv(cpuB)), cpuB);
+  XBT_DEBUG("%s : %p", surf_cpu_name(sg_host_surfcpu(cpuA)), cpuA);
+  XBT_DEBUG("%s : %p", surf_cpu_name(sg_host_surfcpu(cpuB)), cpuB);
 
   /* Let's do something on it */
   actionA = surf_cpu_execute(cpuA, 1000.0);

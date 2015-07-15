@@ -17,7 +17,6 @@ class CpuModel;
 typedef CpuModel *CpuModelPtr;
 
 class Cpu;
-typedef Cpu *CpuPtr;
 
 class CpuAction;
 typedef CpuAction *CpuActionPtr;

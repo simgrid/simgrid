@@ -434,14 +434,15 @@ CpuPtr CpuTiModel::createCpu(const char *name,
                            xbt_dict_t cpuProperties)
 {
   xbt_assert(core==1,"Multi-core not handled with this model yet");
-  xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
+  sg_host_t host = sg_host_by_name(name);
+  xbt_assert(!sg_host_surfcpu(host),
               "Host '%s' declared several times in the platform file",
               name);
   xbt_assert(xbt_dynar_getfirst_as(powerPeak, double) > 0.0,
       "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
   CpuTiPtr cpu = new CpuTi(this, name, powerPeak, pstate, powerScale, powerTrace,
 		           core, stateInitial, stateTrace, cpuProperties);
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
+  sg_host_surfcpu_set(host, cpu);
   return cpu;
 }
 
@@ -495,7 +496,7 @@ void CpuTiModel::addTraces()
 /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuTiPtr cpu = static_cast<CpuTiPtr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuTiPtr cpu = static_cast<CpuTiPtr>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -511,7 +512,7 @@ void CpuTiModel::addTraces()
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuTiPtr cpu = static_cast<CpuTiPtr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuTiPtr cpu = static_cast<CpuTiPtr>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);

@@ -259,8 +259,6 @@ XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
                                             double process_kill_time);
 
 /*********************************** Host *************************************/
-//XBT_PUBLIC(xbt_dict_t) SIMIX_host_get_dict(u_smx_scalar_t *args);
-XBT_PUBLIC(sg_host_t) SIMIX_host_get_by_name(const char *name);
 XBT_PUBLIC(sg_host_t) SIMIX_host_self(void);
 XBT_PUBLIC(const char*) SIMIX_host_self_get_name(void);
 #define SIMIX_host_get_name(h) sg_host_name(h)  /* DEPRECATED: SIMIX_host_get_name */

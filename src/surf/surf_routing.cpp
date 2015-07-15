@@ -24,7 +24,6 @@
 xbt_lib_t host_lib;
 
 int ROUTING_HOST_LEVEL;         //Routing level
-int SURF_CPU_LEVEL;             //Surf cpu level
 int SURF_HOST_LEVEL;            //Surf host level
 int SIMIX_STORAGE_LEVEL;        //Simix storage level
 int MSG_STORAGE_LEVEL;          //Msg storage level

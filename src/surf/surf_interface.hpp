@@ -60,7 +60,6 @@ XBT_PUBLIC(double) surf_get_clock(void);
 }
 
 extern double sg_sender_gap;
-XBT_PUBLIC_DATA(int)  SURF_CPU_LEVEL;    //Surf cpu level
 
 extern surf_callback(void, void) surfExitCallbacks;
 

@@ -241,10 +241,7 @@ VMHL13::VMHL13(VMModelPtr model, const char* name, xbt_dict_t props,
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01Ptr sub_cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(host_PM));
-
-  /* We can assume one core and cas01 cpu for the first step.
-   * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
+  CpuCas01Ptr sub_cpu = static_cast<CpuCas01Ptr>(sg_host_surfcpu(host_PM));
 
   p_cpu = surf_cpu_model_vm->createCpu(name, // name
       sub_cpu->getPowerPeakList(),        // host->power_peak,
@@ -367,7 +364,7 @@ void VMHL13::migrate(surf_resource_t ind_dst_pm)
 
      /* create a cpu action bound to the pm model at the destination. */
      CpuActionPtr new_cpu_action = static_cast<CpuActionPtr>(
-    		                            static_cast<CpuPtr>(surf_cpu_resource_priv(ind_dst_pm))->execute(0));
+    		                            static_cast<CpuPtr>(sg_host_surfcpu(ind_dst_pm))->execute(0));
 
      e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)

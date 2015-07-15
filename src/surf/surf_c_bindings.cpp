@@ -18,10 +18,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  * TOOLS *
  *********/
 
-static CpuPtr get_casted_cpu(surf_resource_t resource){
-  return static_cast<CpuPtr>(surf_cpu_resource_priv(resource));
-}
-
 static HostPtr get_casted_host(surf_resource_t resource){
   return static_cast<HostPtr>(surf_host_resource_priv(resource));
 }
@@ -447,7 +443,6 @@ void surf_host_set_params(surf_resource_t host, ws_params_t params){
 
 void surf_vm_destroy(surf_resource_t resource){
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  CpuPtr cpu = get_casted_cpu(resource);
   VMPtr vm = get_casted_vm(resource);
   RoutingEdgePtr routing = get_casted_routing(resource);
   char* name = xbt_dict_get_elm_key(resource);
@@ -457,14 +452,13 @@ void surf_vm_destroy(surf_resource_t resource){
    * Do not call xbt_lib_remove() here. It deletes all levels of the key,
    * including MSG_HOST_LEVEL and others. We should unregister only what we know.
    */
-  xbt_lib_unset(host_lib, name, SURF_CPU_LEVEL, 0);
+  sg_host_surfcpu_destroy((sg_host_t)resource);
   xbt_lib_unset(host_lib, name, ROUTING_HOST_LEVEL, 0);
   xbt_lib_unset(host_lib, name, SURF_HOST_LEVEL, 0);
 
   /* TODO: comment out when VM storage is implemented. */
   // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
 
-  delete cpu;
   delete vm;
   delete routing;
 }
@@ -498,7 +492,7 @@ void surf_vm_set_bound(surf_resource_t vm, double bound){
 }
 
 void surf_vm_set_affinity(surf_resource_t vm, surf_resource_t cpu, unsigned long mask){
-  return get_casted_vm(vm)->setAffinity(get_casted_cpu(cpu), mask);
+  return get_casted_vm(vm)->setAffinity(sg_host_surfcpu(cpu), mask);
 }
 
 int surf_network_link_is_shared(surf_cpp_resource_t link){
@@ -534,11 +528,11 @@ const char* surf_storage_get_host(surf_resource_t resource){
 }
 
 surf_action_t surf_cpu_execute(surf_resource_t cpu, double size){
-  return get_casted_cpu(cpu)->execute(size);
+  return sg_host_surfcpu(cpu)->execute(size);
 }
 
 surf_action_t surf_cpu_sleep(surf_resource_t cpu, double duration){
-  return get_casted_cpu(cpu)->sleep(duration);
+  return sg_host_surfcpu(cpu)->sleep(duration);
 }
 
 double surf_action_get_start_time(surf_action_t action){
@@ -594,7 +588,7 @@ double surf_action_get_cost(surf_action_t action){
 }
 
 void surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask) {
-  static_cast<CpuActionPtr>(action)->setAffinity(get_casted_cpu(cpu), mask);
+  static_cast<CpuActionPtr>(action)->setAffinity(sg_host_surfcpu(cpu), mask);
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

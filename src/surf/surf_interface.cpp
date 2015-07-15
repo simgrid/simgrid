@@ -365,11 +365,6 @@ static XBT_INLINE void routing_asr_prop_free(void *p)
   xbt_dict_free(&elm);
 }
 
-static XBT_INLINE void surf_cpu_free(void *r)
-{
-  delete static_cast<CpuPtr>(r);
-}
-
 static XBT_INLINE void surf_link_free(void *r)
 {
   delete static_cast<NetworkLinkPtr>(r);
@@ -403,13 +398,14 @@ void surf_init(int *argc, char **argv)
   file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(NULL);
 
+  sg_host_init();
+
   XBT_DEBUG("Add routing levels");
   ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
   ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,routing_asr_host_free);
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");
-  SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_cpu_free);
   SURF_HOST_LEVEL = xbt_lib_add_level(host_lib,surf_host_free);
   SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_link_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);

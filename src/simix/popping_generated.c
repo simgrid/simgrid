@@ -169,7 +169,7 @@ void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
     return;
   switch (simcall->call) {
 case SIMCALL_HOST_GET_BY_NAME:
-      simcall->result.dp = SIMIX_host_get_by_name( simcall->args[0].cc);
+      simcall->result.dp = sg_host_by_name( simcall->args[0].cc);
       SIMIX_simcall_answer(simcall);
       break;  
 

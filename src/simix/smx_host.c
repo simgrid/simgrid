@@ -148,10 +148,6 @@ void SIMIX_host_destroy(void *h)
   return;
 }
 
-sg_host_t SIMIX_host_get_by_name(const char *name){
-  return xbt_lib_get_elm_or_null(host_lib, name);
-}
-
 sg_host_t SIMIX_host_self(void)
 {
   smx_process_t process = SIMIX_process_self();

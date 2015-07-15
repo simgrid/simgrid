@@ -56,7 +56,6 @@ class ResourceLmm;
 class Host;
 class HostCLM03;
 class NetworkCm02Link;
-class Cpu;
 class Action;
 class ActionLmm;
 class StorageActionLmm;
@@ -75,7 +74,6 @@ typedef struct ResourceLmm ResourceLmm;
 typedef struct HostCLM03 HostCLM03;
 typedef struct Host Host;
 typedef struct NetworkCm02Link NetworkCm02Link;
-typedef struct Cpu Cpu;
 typedef struct Action Action;
 typedef struct ActionLmm ActionLmm;
 typedef struct StorageActionLmm StorageActionLmm;
@@ -103,7 +101,6 @@ typedef Resource *surf_cpp_resource_t;
 typedef Host *surf_host_t;
 typedef HostCLM03 *surf_host_CLM03_t;
 typedef NetworkCm02Link *surf_network_link_t;
-typedef Cpu *surf_cpu_t;
 
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
@@ -188,9 +185,6 @@ typedef enum {
 
 XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
-static inline surf_cpu_t surf_cpu_resource_priv(const void *host) {
-  return (surf_cpu_t)xbt_lib_get_level((xbt_dictelm_t)host, SURF_CPU_LEVEL);
-}
 static inline surf_host_t surf_host_resource_priv(const void *host){
   return (surf_host_t) xbt_lib_get_level((xbt_dictelm_t)host, SURF_HOST_LEVEL);
 }
@@ -201,12 +195,6 @@ static inline void *surf_storage_resource_priv(const void *storage){
   return (void*)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
 }
 
-static inline void *surf_cpu_resource_by_name(const char *name) {
-  return xbt_lib_get_elm_or_null(host_lib, name);
-}
-static inline void *surf_host_resource_by_name(const char *name){
-  return xbt_lib_get_elm_or_null(host_lib, name);
-}
 static inline void *surf_storage_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }

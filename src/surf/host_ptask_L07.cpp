@@ -275,13 +275,15 @@ ActionPtr HostL07Model::executeParallelTask(int host_nb,
 HostPtr HostL07Model::createHost(const char *name)
 {
   HostL07Ptr wk = NULL;
-  xbt_assert(!surf_host_resource_priv(surf_host_resource_by_name(name)),
+  sg_host_t sg_host = sg_host_by_name(name);
+
+  xbt_assert(!surf_host_resource_priv(sg_host),
               "Host '%s' declared several times in the platform file.",
               name);
 
   wk = new HostL07(this, name, NULL,
 		                  static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL)),
-		                  static_cast<CpuPtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL)));
+						  sg_host_surfcpu(sg_host));
 
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, wk);
 
@@ -323,8 +325,9 @@ CpuPtr CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
 {
   double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
   xbt_dynar_free(&powerPeak);   // kill memory leak
+  sg_host_t sg_host = sg_host_by_name(name);
 
-  xbt_assert(!surf_host_resource_priv(surf_host_resource_by_name(name)),
+  xbt_assert(!surf_host_resource_priv(sg_host),
               "Host '%s' declared several times in the platform file.",
               name);
 
@@ -332,7 +335,7 @@ CpuPtr CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
 		                     power_initial, power_scale, power_trace,
                          core, state_initial, state_trace);
 
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
+  sg_host_surfcpu_set(sg_host, cpu);
 
   return cpu;
 }
@@ -373,7 +376,7 @@ void HostL07Model::addTraces()
   /* Connect traces relative to cpu */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07Ptr host = static_cast<CpuL07Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuL07Ptr host = static_cast<CpuL07Ptr>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -383,7 +386,7 @@ void HostL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07Ptr host = static_cast<CpuL07Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuL07Ptr host = static_cast<CpuL07Ptr>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);

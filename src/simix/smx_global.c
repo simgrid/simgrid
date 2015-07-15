@@ -206,7 +206,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_timers = xbt_heap_new(8, &free);
   }
 
-  sg_host_init();
   SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
 
   if (sg_cfg_get_boolean("clean_atexit"))
@@ -486,7 +485,7 @@ void SIMIX_run(void)
       char *hostname = NULL;
       xbt_dynar_foreach(host_that_restart,iter,hostname) {
         XBT_INFO("Restart processes on host: %s",hostname);
-        SIMIX_host_autorestart(SIMIX_host_get_by_name(hostname));
+        SIMIX_host_autorestart(sg_host_by_name(hostname));
       }
       xbt_dynar_reset(host_that_restart);
     }
