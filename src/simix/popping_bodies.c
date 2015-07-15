@@ -17,27 +17,6 @@
 #include "mc/mc_forward.h"
 #include "xbt/ex.h"
   
-inline static sg_host_t simcall_BODY_host_get_by_name(const char* name) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) sg_host_by_name(name);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_GET_BY_NAME;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].cc = (const char*) name;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.dp;
-  }
-  
 inline static const char* simcall_BODY_host_get_name(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
