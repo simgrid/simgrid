@@ -27,7 +27,6 @@ int ROUTING_HOST_LEVEL;         //Routing level
 int SURF_CPU_LEVEL;             //Surf cpu level
 int SURF_HOST_LEVEL;            //Surf host level
 int SIMIX_STORAGE_LEVEL;        //Simix storage level
-int MSG_HOST_LEVEL;             //Msg host level
 int MSG_STORAGE_LEVEL;          //Msg storage level
 int MSG_FILE_LEVEL;             //Msg file level
 int SD_HOST_LEVEL;              //Simdag host level

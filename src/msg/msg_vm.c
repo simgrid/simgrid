@@ -16,6 +16,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "simgrid/platf.h"
+#include "simgrid/host.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg,
                                 "Cloud-oriented parts of the MSG API");
@@ -118,7 +119,7 @@ int MSG_vm_is_running(msg_vm_t vm)
  */
 int MSG_vm_is_migrating(msg_vm_t vm)
 {
-  msg_host_priv_t priv = msg_host_resource_priv(vm);
+  msg_host_priv_t priv = sg_host_msg(vm);
   return priv->is_migrating;
 }
 
@@ -390,7 +391,7 @@ static int migration_rx_fun(int argc, char *argv[])
    msg_vm_t vm = ms->vm;
    msg_host_t src_pm = ms->src_pm;
    msg_host_t dst_pm = ms-> dst_pm;
-   msg_host_priv_t priv = msg_host_resource_priv(vm);
+   msg_host_priv_t priv = sg_host_msg(vm);
 
 // // TODO: we have an issue, if the DST node is turning off during the three next calls, then the VM is in an inconsistent state
 // // I should check with Takahiro in order to make this portion of code atomic
@@ -416,7 +417,7 @@ static int migration_rx_fun(int argc, char *argv[])
   {
 
    // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
-   msg_host_priv_t priv = msg_host_resource_priv(vm);
+   msg_host_priv_t priv = sg_host_msg(vm);
    priv->is_migrating = 0;
    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", ms->vm->key, ms->src_pm->key, ms->dst_pm->key);
    TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
@@ -449,7 +450,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
 static void reset_dirty_pages(msg_vm_t vm)
 {
-  msg_host_priv_t priv = msg_host_resource_priv(vm);
+  msg_host_priv_t priv = sg_host_msg(vm);
 
   char *key = NULL;
   xbt_dict_cursor_t cursor = NULL;
@@ -465,7 +466,7 @@ static void reset_dirty_pages(msg_vm_t vm)
 
 static void start_dirty_page_tracking(msg_vm_t vm)
 {
-  msg_host_priv_t priv = msg_host_resource_priv(vm);
+  msg_host_priv_t priv = sg_host_msg(vm);
   priv->dp_enabled = 1;
 
   reset_dirty_pages(vm);
@@ -473,7 +474,7 @@ static void start_dirty_page_tracking(msg_vm_t vm)
 
 static void stop_dirty_page_tracking(msg_vm_t vm)
 {
-  msg_host_priv_t priv = msg_host_resource_priv(vm);
+  msg_host_priv_t priv = sg_host_msg(vm);
   priv->dp_enabled = 0;
 }
 
@@ -509,7 +510,7 @@ static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remai
 
 static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug, int stage2_round_for_fancy_debug)
 {
-  msg_host_priv_t priv = msg_host_resource_priv(vm);
+  msg_host_priv_t priv = sg_host_msg(vm);
   double total = 0;
 
   char *key = NULL;
@@ -546,7 +547,7 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
 // msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
 void MSG_host_add_task(msg_host_t host, msg_task_t task)
 {
-  msg_host_priv_t priv = msg_host_resource_priv(host);
+  msg_host_priv_t priv = sg_host_msg(host);
   double remaining = MSG_task_get_flops_amount(task);
   char *key = bprintf("%s-%p", task->name, task);
 
@@ -568,7 +569,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
 
 void MSG_host_del_task(msg_host_t host, msg_task_t task)
 {
-  msg_host_priv_t priv = msg_host_resource_priv(host);
+  msg_host_priv_t priv = sg_host_msg(host);
 
   char *key = bprintf("%s-%p", task->name, task);
 
@@ -978,7 +979,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   if (MSG_vm_is_migrating(vm))
     THROWF(vm_error, 0, "VM(%s) is already migrating", sg_host_name(vm));
 
-  msg_host_priv_t priv = msg_host_resource_priv(vm);
+  msg_host_priv_t priv = sg_host_msg(vm);
   priv->is_migrating = 1;
 
   {
@@ -1126,7 +1127,7 @@ void MSG_vm_set_bound(msg_vm_t vm, double bound)
  */
 void MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask)
 {
-  msg_host_priv_t priv = msg_host_resource_priv(vm);
+  msg_host_priv_t priv = sg_host_msg(vm);
 
   if (mask == 0)
     xbt_dict_remove_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm));

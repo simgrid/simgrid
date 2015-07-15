@@ -370,7 +370,7 @@ int console_set_function(lua_State *L) {
   lua_pop(L, 1);
 
   // FIXME: hackish to go under MSG that way
-  msg_host_t host = xbt_lib_get_or_null(host_lib,host_id,MSG_HOST_LEVEL);
+  msg_host_t host = MSG_host_get_by_name(host_id);
   if (!host) {
     XBT_ERROR("no host '%s' found",host_id);
     return -1;
@@ -409,8 +409,7 @@ int console_host_set_property(lua_State *L) {
   prop_value = lua_tostring(L,-1);
   lua_pop(L, 1);
 
-  // FIXME: hackish to go under MSG that way
-  msg_host_t host = xbt_lib_get_or_null(host_lib,name,MSG_HOST_LEVEL);
+  msg_host_t host = MSG_host_get_by_name(name);
   if (!host) {
     XBT_ERROR("no host '%s' found",name);
     return -1;

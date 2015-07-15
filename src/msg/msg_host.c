@@ -26,9 +26,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
  */
 
 /********************************* Host **************************************/
-msg_host_t __MSG_host_create(sg_host_t host)
+msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our parameter
 {
-  const char *name = SIMIX_host_get_name(host);
   msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
 
 #ifdef MSG_USE_DEPRECATED
@@ -55,11 +54,10 @@ msg_host_t __MSG_host_create(sg_host_t host)
 
   priv->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
 
-  xbt_lib_set(host_lib, name, MSG_HOST_LEVEL, priv);
+  sg_host_msg_set(host,priv);
   
-  return xbt_lib_get_elm_or_null(host_lib, name);
+  return host;
 }
-
 
 /** \ingroup m_host_management
  * \brief Finds a msg_host_t using its name.
@@ -68,7 +66,7 @@ msg_host_t __MSG_host_create(sg_host_t host)
  * \param name the name of an host.
  * \return the corresponding host
  */
-msg_host_t MSG_get_host_by_name(const char *name)
+msg_host_t MSG_host_get_by_name(const char *name)
 {
   return (msg_host_t) xbt_lib_get_elm_or_null(host_lib,name);
 }
@@ -165,13 +163,11 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
  */
 void __MSG_host_destroy(msg_host_t host)
 {
-  const char *name = MSG_host_get_name(host);
   /* TODO:
    * What happens if VMs still remain on this host?
    * Revisit here after the surf layer gets stable.
    **/
-
-  xbt_lib_unset(host_lib, name, MSG_HOST_LEVEL, 1);
+  sg_host_msg_destroy(host);
 }
 
 /** \ingroup m_host_management
