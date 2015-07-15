@@ -275,7 +275,6 @@ XBT_PUBLIC(msg_error_t) MSG_file_move(msg_file_t fd, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
 /************************** Storage handling ***********************************/
-XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name); //FIXME: WAAAT? That cannot exist
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(msg_storage_t storage);
