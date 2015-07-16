@@ -100,6 +100,12 @@ SimGrid (3.12) NOT RELEASED; urgency=low
     - msg/datatypes.h was removed
     - msg/msg.h -> simgrid/msg.h
 
+ MC
+  * The model checker now runs as a separate process.
+  * The model checker runs must now be launched with the new simgrid-mc program.
+  * Record/Replay: the MC can display a textual representation of a path in the
+    execution graph. It can then be replayed outside of the model checker.
+
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.11) stable; urgency=low
