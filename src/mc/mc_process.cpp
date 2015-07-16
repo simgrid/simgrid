@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#define _FILE_OFFSET_BITS 64
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -109,12 +111,12 @@ static char* MC_get_lib_name(const char* pathname, struct s_mc_memory_map_re* re
   return libname;
 }
 
-static ssize_t pread_whole(int fd, void *buf, size_t count, off_t offset)
+static ssize_t pread_whole(int fd, void *buf, size_t count, std::uint64_t offset)
 {
   char* buffer = (char*) buf;
   ssize_t real_count = count;
   while (count) {
-    ssize_t res = pread(fd, buffer, count, offset);
+    ssize_t res = pread(fd, buffer, count, (off_t)(std::int64_t) offset);
     if (res > 0) {
       count  -= res;
       buffer += res;
@@ -548,7 +550,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
       return buffer;
     }
   } else {
-    if (pread_whole(this->memory_file, buffer, size, (off_t) address.address()) < 0)
+    if (pread_whole(this->memory_file, buffer, size, address.address()) < 0)
       xbt_die("Read from process %lli failed", (long long) this->pid_);
     return buffer;
   }

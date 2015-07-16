@@ -29,7 +29,7 @@ template<class T> class remote_ptr {
 public:
   remote_ptr() : address_(0) {}
   remote_ptr(std::uint64_t address) : address_(address) {}
-  remote_ptr(T* address) : address_((std::uint64_t)address) {}
+  remote_ptr(T* address) : address_((std::uintptr_t)address) {}
   std::uint64_t address() const { return address_; }
   operator bool() const
   {
