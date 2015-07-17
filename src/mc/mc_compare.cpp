@@ -104,12 +104,12 @@ static int compare_areas_with_type(struct mc_compare_state& state,
                                    int process_index,
                                    void* real_area1, mc_snapshot_t snapshot1, mc_mem_region_t region1,
                                    void* real_area2, mc_snapshot_t snapshot2, mc_mem_region_t region2,
-                                   dw_type_t type, int pointer_level)
+                                   mc_type_t type, int pointer_level)
 {
   mc_process_t process = &mc_model_checker->process();
 
   unsigned int cursor = 0;
-  dw_type_t member, subtype, subsubtype;
+  mc_type_t member, subtype, subsubtype;
   int elm_size, i, res;
 
   top:
@@ -211,7 +211,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
       else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
         if (!region2->contain(simgrid::mc::remote(addr_pointed2)))
           return 1;
-        if (type->dw_type_id == NULL)
+        if (type->dw_type_id.empty())
           return (addr_pointed1 != addr_pointed2);
         else {
           return compare_areas_with_type(state, process_index,
@@ -311,7 +311,7 @@ static int compare_global_variables(mc_object_info_t object_info,
         || (char *) current_var->address > (char *) object_info->end_rw)
       continue;
 
-    dw_type_t bvariable_type = current_var->type;
+    mc_type_t bvariable_type = current_var->type;
     res =
         compare_areas_with_type(state, process_index,
                                 (char *) current_var->address, snapshot1, r1,
@@ -361,7 +361,7 @@ static int compare_local_variables(int process_index,
       }
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
-        dw_type_t subtype = current_var1->type;
+        mc_type_t subtype = current_var1->type;
         res =
             compare_areas_with_type(state, process_index,
                                     current_var1->address, snapshot1, mc_get_snapshot_region(current_var1->address, snapshot1, process_index),

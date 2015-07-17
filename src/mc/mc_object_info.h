@@ -12,7 +12,8 @@
 #define SIMGRID_MC_OBJECT_INFO_H
 
 #include <stdint.h>
-#include <stdbool.h>
+
+#include <string>
 
 #include <simgrid_config.h>
 #include <xbt/dict.h>
@@ -25,18 +26,24 @@
 
 // ***** Type
 
-typedef int e_dw_type_type;
+typedef int e_mc_type_type;
 
-struct s_dw_type {
-  s_dw_type();
-  ~s_dw_type();
+namespace simgrid {
+namespace mc {
 
-  e_dw_type_type type;
+class Type {
+public:
+  Type();
+  ~Type();
+  Type(Type const& type) = delete;
+  Type& operator=(Type const&) = delete;
+
+  e_mc_type_type type;
   Dwarf_Off id; /* Offset in the section (in hexadecimal form) */
-  char *name; /* Name of the type */
+  std::string name; /* Name of the type */
   int byte_size; /* Size in bytes */
   int element_count; /* Number of elements for array type */
-  char *dw_type_id; /* DW_AT_type id */
+  std::string dw_type_id; /* DW_AT_type id */
   xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
   int is_pointer_type;
 
@@ -44,12 +51,12 @@ struct s_dw_type {
   struct s_mc_expression location;
   int offset;
 
-  dw_type_t subtype; // DW_AT_type
-  dw_type_t full_type; // The same (but more complete) type
+  mc_type_t subtype; // DW_AT_type
+  mc_type_t full_type; // The same (but more complete) type
 };
 
-XBT_INTERNAL void dw_variable_free(dw_variable_t v);
-XBT_INTERNAL void dw_variable_free_voidp(void *t);
+}
+}
 
 // ***** Object info
 
@@ -80,8 +87,8 @@ public:
   char *end_ro; // read-only segment
   xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, dw_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
-  xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, dw_type_t>
-  xbt_dict_t full_types_by_name; // xbt_dict_t<name, dw_type_t> (full defined type only)
+  xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, mc_type_t>
+  xbt_dict_t full_types_by_name; // xbt_dict_t<name, mc_type_t> (full defined type only)
 
   // Here we sort the minimal information for an efficient (and cache-efficient)
   // lookup of a function given an instruction pointer.
@@ -117,14 +124,14 @@ XBT_INTERNAL void MC_dwarf_get_variables_libdw(mc_object_info_t info);
 XBT_INTERNAL const char* MC_dwarf_attrname(int attr);
 XBT_INTERNAL const char* MC_dwarf_tagname(int tag);
 
-XBT_INTERNAL void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_address_space_t snapshot, int process_index);
+XBT_INTERNAL void* mc_member_resolve(const void* base, mc_type_t type, mc_type_t member, mc_address_space_t snapshot, int process_index);
 
 struct s_dw_variable{
   Dwarf_Off dwarf_offset; /* Global offset of the field. */
   int global;
   char *name;
   char *type_origin;
-  dw_type_t type;
+  mc_type_t type;
 
   // Use either of:
   s_mc_location_list_t locations;

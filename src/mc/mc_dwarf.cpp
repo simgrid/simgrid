@@ -18,6 +18,9 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
+static void dw_variable_free(dw_variable_t v);
+static void dw_variable_free_voidp(void *t);
+
 static void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
 static void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 static void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
@@ -449,7 +452,7 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
   return result;
 }
 
-// ***** dw_type_t
+// ***** mc_type_t
 
 /** \brief Initialize the location of a member of a type
  * (DW_AT_data_member_location of a DW_TAG_member).
@@ -458,7 +461,7 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
  *  \param  member the member of the type
  *  \param  child  DIE of the member (DW_TAG_member)
  */
-static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
+static void MC_dwarf_fill_member_location(mc_type_t type, mc_type_t member,
                                           Dwarf_Die * child)
 {
   if (dwarf_hasattr(child, DW_AT_data_bit_offset)) {
@@ -469,7 +472,8 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
     if (type->type != DW_TAG_union_type) {
       xbt_die
           ("Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%"
-           PRIx64 ">%s", member->name, (uint64_t) type->id, type->name);
+           PRIx64 ">%s", member->name.c_str(),
+           (uint64_t) type->id, type->name.c_str());
     } else {
       return;
     }
@@ -490,7 +494,7 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
         xbt_die
             ("Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%"
              PRIx64 ">%s", MC_dwarf_attr_integrate_string(child, DW_AT_name),
-             (uint64_t) type->id, type->name);
+             (uint64_t) type->id, type->name.c_str());
       }
       if (len == 1 && expr[0].atom == DW_OP_plus_uconst) {
         member->offset = expr[0].number;
@@ -508,7 +512,7 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
       else
         xbt_die("Cannot get %s location <%" PRIx64 ">%s",
                 MC_dwarf_attr_integrate_string(child, DW_AT_name),
-                (uint64_t) type->id, type->name);
+                (uint64_t) type->id, type->name.c_str());
       break;
     }
   case MC_DW_CLASS_LOCLISTPTR:
@@ -526,7 +530,7 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
 
 static void dw_type_free_voidp(void *t)
 {
-  delete *(dw_type_t*)t;
+  delete *(mc_type_t*)t;
 }
 
 /** \brief Populate the list of members of a type
@@ -537,13 +541,13 @@ static void dw_type_free_voidp(void *t)
  *  \param type the type
  */
 static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
-                                 Dwarf_Die * unit, dw_type_t type)
+                                 Dwarf_Die * unit, mc_type_t type)
 {
   int res;
   Dwarf_Die child;
   xbt_assert(!type->members);
   type->members =
-      xbt_dynar_new(sizeof(dw_type_t), (void (*)(void *)) dw_type_free_voidp);
+      xbt_dynar_new(sizeof(mc_type_t), (void (*)(void *)) dw_type_free_voidp);
   for (res = dwarf_child(die, &child); res == 0;
        res = dwarf_siblingof(&child, &child)) {
     int tag = dwarf_tag(&child);
@@ -558,7 +562,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
         continue;
 
       // TODO, we should use another type (because is is not a type but a member)
-      dw_type_t member = xbt_new0(s_dw_type_t, 1);
+      mc_type_t member = new simgrid::mc::Type();
       member->type = tag;
 
       // Global Offset:
@@ -566,17 +570,16 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
 
       const char *name = MC_dwarf_attr_integrate_string(&child, DW_AT_name);
       if (name)
-        member->name = xbt_strdup(name);
-      else
-        member->name = NULL;
-
+        member->name = name;
       member->byte_size =
           MC_dwarf_attr_integrate_uint(&child, DW_AT_byte_size, 0);
       member->element_count = -1;
-      member->dw_type_id = MC_dwarf_at_type(&child);
-      member->members = NULL;
-      member->is_pointer_type = 0;
-      member->offset = 0;
+
+      char* type_id = MC_dwarf_at_type(&child);
+      if (type_id) {
+        member->dw_type_id = type_id;
+        free(type_id);
+      }
 
       if (dwarf_hasattr(&child, DW_AT_data_bit_offset)) {
         xbt_die("Can't groke DW_AT_data_bit_offset.");
@@ -584,9 +587,10 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
 
       MC_dwarf_fill_member_location(type, member, &child);
 
-      if (!member->dw_type_id) {
-        xbt_die("Missing type for member %s of <%" PRIx64 ">%s", member->name,
-                (uint64_t) type->id, type->name);
+      if (member->dw_type_id.empty()) {
+        xbt_die("Missing type for member %s of <%" PRIx64 ">%s",
+                member->name.c_str(),
+                (uint64_t) type->id, type->name.c_str());
       }
 
       xbt_dynar_push(type->members, &member);
@@ -601,21 +605,15 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
  *  \param unit compilation unit of the current DIE
  *  \return MC representation of the type
  */
-static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
+static mc_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
                                       Dwarf_Die * unit, dw_frame_t frame,
                                       const char *ns)
 {
 
-  dw_type_t type = new s_dw_type();
+  mc_type_t type = new simgrid::mc::Type();
   type->type = -1;
-  type->id = 0;
-  type->name = NULL;
-  type->byte_size = 0;
+  type->name = std::string();
   type->element_count = -1;
-  type->dw_type_id = NULL;
-  type->members = NULL;
-  type->is_pointer_type = 0;
-  type->offset = 0;
 
   type->type = dwarf_tag(die);
 
@@ -639,12 +637,17 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
 
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (name != NULL) {
-    type->name =
-        ns ? bprintf("%s%s::%s", prefix, ns,
-                            name) : bprintf("%s%s", prefix, name);
+    char* full_name = ns ? bprintf("%s%s::%s", prefix, ns, name) :
+      bprintf("%s%s", prefix, name);
+    type->name = std::string(full_name);
+    free(full_name);
   }
 
-  type->dw_type_id = MC_dwarf_at_type(die);
+  char* type_id = MC_dwarf_at_type(die);
+  if (type_id) {
+    type->dw_type_id = type_id;
+    free(type_id);
+  }
 
   // Some compilers do not emit DW_AT_byte_size for pointer_type,
   // so we fill this. We currently assume that the model-checked process is in
@@ -680,7 +683,7 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
   case DW_TAG_union_type:
   case DW_TAG_class_type:
     MC_dwarf_add_members(info, die, unit, type);
-    char *new_ns = ns == NULL ? xbt_strdup(type->name)
+    char *new_ns = ns == NULL ? xbt_strdup(type->name.c_str())
         : bprintf("%s::%s", ns, name);
     MC_dwarf_handle_children(info, die, unit, frame, new_ns);
     free(new_ns);
@@ -694,14 +697,14 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
                                      Dwarf_Die * unit, dw_frame_t frame,
                                      const char *ns)
 {
-  dw_type_t type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
+  mc_type_t type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
 
   char *key = bprintf("%" PRIx64, (uint64_t) type->id);
   xbt_dict_set(info->types, key, type, NULL);
   xbt_free(key);
 
-  if (type->name && type->byte_size != 0) {
-    xbt_dict_set(info->full_types_by_name, type->name, type, NULL);
+  if (!type->name.empty() && type->byte_size != 0) {
+    xbt_dict_set(info->full_types_by_name, type->name.c_str(), type, NULL);
   }
 }
 
@@ -1039,31 +1042,7 @@ void mc_frame_free(dw_frame_t frame)
   xbt_free(frame);
 }
 
-s_dw_type::s_dw_type()
-{
-  this->type = 0;
-  this->id = 0;
-  this->name = nullptr;
-  this->byte_size = 0;
-  this->element_count = 0;
-  this->dw_type_id = nullptr;
-  this->members = nullptr;
-  this->is_pointer_type = 0;
-  this->location = { 0, 0, 0, 0};
-  this->offset = 0;
-  this->subtype = nullptr;
-  this->full_type = nullptr;
-}
-
-s_dw_type::~s_dw_type()
-{
-  xbt_free(this->name);
-  xbt_free(this->dw_type_id);
-  xbt_dynar_free(&this->members);
-  mc_dwarf_expression_clear(&this->location);
-}
-
-static void dw_type_free(dw_type_t t)
+static void dw_type_free(mc_type_t t)
 {
   delete t;
 }
@@ -1201,7 +1180,7 @@ static void MC_post_process_variables(mc_object_info_t info)
   dw_variable_t variable = NULL;
   xbt_dynar_foreach(info->global_variables, cursor, variable) {
     if (variable->type_origin) {
-      variable->type = (dw_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
+      variable->type = (mc_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
     }
   }
 }
@@ -1224,7 +1203,7 @@ static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope)
   dw_variable_t variable = NULL;
   xbt_dynar_foreach(scope->variables, cursor, variable) {
     if (variable->type_origin) {
-      variable->type = (dw_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
+      variable->type = (mc_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
     }
   }
 
@@ -1248,23 +1227,25 @@ static void MC_post_process_functions(mc_object_info_t info)
 
 /** \brief Fill/lookup the "subtype" field.
  */
-static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type)
+static void MC_resolve_subtype(mc_object_info_t info, mc_type_t type)
 {
 
-  if (type->dw_type_id == NULL)
+  if (type->dw_type_id.empty())
     return;
-  type->subtype = (dw_type_t) xbt_dict_get_or_null(info->types, type->dw_type_id);
+  type->subtype = (mc_type_t) xbt_dict_get_or_null(
+    info->types, type->dw_type_id.c_str());
   if (type->subtype == NULL)
     return;
   if (type->subtype->byte_size != 0)
     return;
-  if (type->subtype->name == NULL)
+  if (type->subtype->name.empty())
     return;
   // Try to find a more complete description of the type:
   // We need to fix in order to support C++.
 
-  dw_type_t subtype =
-    (dw_type_t) xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
+  mc_type_t subtype =
+    (mc_type_t) xbt_dict_get_or_null(
+      info->full_types_by_name, type->subtype->name.c_str());
   if (subtype != NULL) {
     type->subtype = subtype;
   }
@@ -1275,13 +1256,13 @@ static void MC_post_process_types(mc_object_info_t info)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *origin;
-  dw_type_t type;
+  mc_type_t type;
 
   // Lookup "subtype" field:
   xbt_dict_foreach(info->types, cursor, origin, type) {
     MC_resolve_subtype(info, type);
 
-    dw_type_t member;
+    mc_type_t member;
     unsigned int i = 0;
     if (type->members != NULL)
       xbt_dynar_foreach(type->members, i, member) {
@@ -1394,10 +1375,10 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *key = NULL;
-  dw_type_t type = NULL;
+  mc_type_t type = NULL;
   xbt_dict_foreach(info->types, cursor, key, type) {
 
-    dw_type_t subtype = type;
+    mc_type_t subtype = type;
     while (subtype->type == DW_TAG_typedef || subtype->type == DW_TAG_volatile_type
       || subtype->type == DW_TAG_const_type) {
       if (subtype->subtype)
@@ -1407,12 +1388,12 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
     }
 
     // Resolve full_type:
-    if (subtype->name && subtype->byte_size == 0) {
+    if (!subtype->name.empty() && subtype->byte_size == 0) {
       for (auto const& object_info : process->object_infos) {
-        dw_type_t same_type = (dw_type_t)
+        mc_type_t same_type = (mc_type_t)
             xbt_dict_get_or_null(object_info->full_types_by_name,
-                                 subtype->name);
-        if (same_type && same_type->name && same_type->byte_size) {
+                                 subtype->name.c_str());
+        if (same_type && !same_type->name.empty() && same_type->byte_size) {
           type->full_type = same_type;
           break;
         }

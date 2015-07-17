@@ -17,7 +17,7 @@
  * @param snapshot Snapshot (or NULL)
  * @return Process address of the given member of the 'object' struct/class
  */
-void *mc_member_resolve(const void *base, dw_type_t type, dw_type_t member,
+void *mc_member_resolve(const void *base, mc_type_t type, mc_type_t member,
                         mc_address_space_t address_space, int process_index)
 {
   if (!member->location.size) {

@@ -113,7 +113,7 @@ typedef struct s_local_variable{
   dw_frame_t subprogram;
   unsigned long ip;
   std::string name;
-  dw_type_t type;
+  mc_type_t type;
   void *address;
   int region;
 } s_local_variable_t, *local_variable_t;

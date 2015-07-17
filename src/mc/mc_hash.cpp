@@ -84,7 +84,7 @@ static void mc_hash_binary(hash_type * hash, const void *s, size_t len)
  * */
 static void mc_hash_value(hash_type * hash, mc_hashing_state * state,
                           mc_object_info_t info, const void *address,
-                          dw_type_t type)
+                          mc_type_t type)
 {
   mc_process_t process = &mc_model_checker->process();
 top:
@@ -111,7 +111,7 @@ top:
         return;
 
       long element_count = type->element_count;
-      dw_type_t subtype = type->subtype;
+      mc_type_t subtype = type->subtype;
       if (subtype == NULL) {
         XBT_DEBUG("Hash array without subtype");
         return;
@@ -145,7 +145,7 @@ top:
         return;
 
       unsigned int cursor = 0;
-      dw_type_t member;
+      mc_type_t member;
       xbt_dynar_foreach(type->members, cursor, member) {
         XBT_DEBUG("Hash struct member %s", member->name);
         if (type->subtype == NULL)
@@ -189,7 +189,8 @@ top:
       }
 
       if (type->subtype == NULL) {
-        XBT_DEBUG("Missing type for %p (type=%s)", pointed, type->dw_type_id);
+        XBT_DEBUG("Missing type for %p (type=%s)",
+          pointed, type->dw_type_id.c_str());
         return;
       }
 
@@ -219,7 +220,7 @@ static void mc_hash_object_globals(hash_type * hash, mc_hashing_state * state,
       continue;
     }
 
-    dw_type_t type = variable->type;
+    mc_type_t type = variable->type;
     if (type == NULL) {
       // Nothing
       continue;
@@ -267,7 +268,7 @@ static void mc_hash_stack_frame(mc_hash_t * hash,
                                             variable->object_info, unw_cursor,
                                             frame_pointer, NULL);
 
-    dw_type_t type = variable->type;
+    mc_type_t type = variable->type;
     if (type == NULL) {
       XBT_DEBUG("Hash local variable %s without loctypeation", variable->name);
       continue;

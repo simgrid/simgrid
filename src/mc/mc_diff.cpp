@@ -151,7 +151,7 @@ struct s_mc_diff {
   std::vector<s_mc_heap_ignore_region_t>* to_ignore1;
   std::vector<s_mc_heap_ignore_region_t>* to_ignore2;
   s_heap_area_t *equals_to1, *equals_to2;
-  dw_type_t *types1, *types2;
+  mc_type_t *types1, *types2;
   size_t available;
 };
 
@@ -380,7 +380,7 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
         realloc(state->equals_to1,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
                 sizeof(s_heap_area_t));
-    state->types1 = (s_dw_type**)
+    state->types1 = (simgrid::mc::Type**)
         realloc(state->types1,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
                 sizeof(type_name *));
@@ -388,7 +388,7 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
         realloc(state->equals_to2,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
                 sizeof(s_heap_area_t));
-    state->types2 = (s_dw_type**)
+    state->types2 = (simgrid::mc::Type**)
         realloc(state->types2,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
                 sizeof(type_name *));
@@ -875,7 +875,7 @@ static int compare_heap_area_with_type(struct s_mc_diff *state, int process_inde
                                        const void *real_area1, const void *real_area2,
                                        mc_snapshot_t snapshot1,
                                        mc_snapshot_t snapshot2,
-                                       xbt_dynar_t previous, dw_type_t type,
+                                       xbt_dynar_t previous, mc_type_t type,
                                        int area_size, int check_ignore,
                                        int pointer_level)
 {
@@ -893,10 +893,10 @@ top:
     return 0;
   }
 
-  dw_type_t subtype, subsubtype;
+  mc_type_t subtype, subsubtype;
   int res, elm_size;
   unsigned int cursor = 0;
-  dw_type_t member;
+  mc_type_t member;
   const void *addr_pointed1, *addr_pointed2;;
 
   mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
@@ -907,7 +907,7 @@ top:
     return 1;
 
   case DW_TAG_base_type:
-    if (type->name != NULL && strcmp(type->name, "char") == 0) {        /* String, hence random (arbitrary ?) size */
+    if (!type->name.empty() && type->name == "char") {        /* String, hence random (arbitrary ?) size */
       if (real_area1 == real_area2)
         return -1;
       else
@@ -1083,7 +1083,7 @@ top:
  * @param  area_size
  * @return                    DWARF type ID for given offset
  */
-static dw_type_t get_offset_type(void *real_base_address, dw_type_t type,
+static mc_type_t get_offset_type(void *real_base_address, mc_type_t type,
                                  int offset, int area_size,
                                  mc_snapshot_t snapshot, int process_index)
 {
@@ -1105,7 +1105,7 @@ static dw_type_t get_offset_type(void *real_base_address, dw_type_t type,
         return NULL;
     } else {
       unsigned int cursor = 0;
-      dw_type_t member;
+      mc_type_t member;
       xbt_dynar_foreach(type->members, cursor, member) {
 
         if (!member->location.size) {
@@ -1144,7 +1144,7 @@ static dw_type_t get_offset_type(void *real_base_address, dw_type_t type,
  */
 int compare_heap_area(int process_index, const void *area1, const void *area2, mc_snapshot_t snapshot1,
                       mc_snapshot_t snapshot2, xbt_dynar_t previous,
-                      dw_type_t type, int pointer_level)
+                      mc_type_t type, int pointer_level)
 {
   mc_process_t process = &mc_model_checker->process();
 
@@ -1159,7 +1159,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
   int type_size = -1;
   int offset1 = 0, offset2 = 0;
   int new_size1 = -1, new_size2 = -1;
-  dw_type_t new_type1 = NULL, new_type2 = NULL;
+  mc_type_t new_type1 = NULL, new_type2 = NULL;
 
   int match_pairs = 0;
 
@@ -1223,8 +1223,8 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
 
     // Find type_size:
     if ((type->type == DW_TAG_pointer_type)
-        || ((type->type == DW_TAG_base_type) && type->name != NULL
-            && (!strcmp(type->name, "char"))))
+        || ((type->type == DW_TAG_base_type) && !type->name.empty()
+            && type->name == "char"))
       type_size = -1;
     else
       type_size = type->byte_size;
@@ -1272,7 +1272,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
     if (type_size != -1) {
       if (type_size != (ssize_t) heapinfo1->busy_block.busy_size
           && type_size != (ssize_t)   heapinfo2->busy_block.busy_size
-          && (type->name == NULL || !strcmp(type->name, "struct s_smx_context"))) {
+          && (type->name.empty() || type->name == "struct s_smx_context")) {
         if (match_pairs) {
           match_equals(state, previous);
           xbt_dynar_free(&previous);
