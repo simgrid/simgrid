@@ -10,7 +10,7 @@
 #include <sys/types.h>
 
 #include <simgrid_config.h>
-#include <xbt/dynar.h>
+#include <xbt/dict.h>
 
 #include "mc_forward.h"
 #include "mc_process.h"
@@ -32,14 +32,14 @@ class ModelChecker {
   // TODO, use std::unordered_set with heterogeneous comparison lookup (C++14)
   xbt_dict_t /* <hostname, NULL> */ hostnames_;
   // This is the parent snapshot of the current state:
-  s_mc_pages_store_t page_store_;
-  s_mc_process_t process_;
+  PageStore page_store_;
+  Process process_;
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
   ModelChecker(pid_t pid, int socket);
   ~ModelChecker();
-  s_mc_process_t& process()
+  Process& process()
   {
     return process_;
   }
