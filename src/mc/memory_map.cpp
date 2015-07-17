@@ -4,7 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
 
 #include <sys/types.h>
 
@@ -26,9 +28,9 @@ std::vector<VmMap> get_memory_map(pid_t pid)
   /* Open the actual process's proc maps file and create the memory_map_t */
   /* to be returned. */
   char* path = bprintf("/proc/%i/maps", (int) pid);
-  FILE *fp = fopen(path, "r");
+  FILE *fp = std::fopen(path, "r");
   if(fp == NULL)
-    perror("fopen failed");
+    std::perror("fopen failed");
   xbt_assert(fp,
     "Cannot open %s to investigate the memory map of the process.", path);
   free(path);
@@ -39,7 +41,7 @@ std::vector<VmMap> get_memory_map(pid_t pid)
   /* Read one line at the time, parse it and add it to the memory map to be returned */
   ssize_t read; /* Number of bytes readed */
   char* line = NULL;
-  size_t n = 0; /* Amount of bytes to read by xbt_getline */
+  std::size_t n = 0; /* Amount of bytes to read by xbt_getline */
   while ((read = xbt_getline(&line, &n, fp)) != -1) {
 
     //fprintf(stderr,"%s", line);
@@ -54,7 +56,7 @@ std::vector<VmMap> get_memory_map(pid_t pid)
 
     int i;
     for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
-      lfields[i] = strtok(NULL, " ");
+      lfields[i] = std::strtok(NULL, " ");
     }
 
     /* Check to see if we got the expected amount of columns */
@@ -63,28 +65,28 @@ std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Ok we are good enough to try to get the info we need */
     /* First get the start and the end address of the map   */
-    char *tok = strtok(lfields[0], "-");
+    char *tok = std::strtok(lfields[0], "-");
     if (tok == NULL)
       xbt_abort();
 
     VmMap memreg;
     char *endptr;
-    memreg.start_addr = strtoull(tok, &endptr, 16);
+    memreg.start_addr = std::strtoull(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
       xbt_abort();
 
-    tok = strtok(NULL, "-");
+    tok = std::strtok(NULL, "-");
     if (tok == NULL)
       xbt_abort();
 
-    memreg.end_addr = strtoull(tok, &endptr, 16);
+    memreg.end_addr = std::strtoull(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
       xbt_abort();
 
     /* Get the permissions flags */
-    if (strlen(lfields[1]) < 4)
+    if (std::strlen(lfields[1]) < 4)
       xbt_abort();
 
     memreg.prot = 0;
@@ -114,13 +116,13 @@ std::vector<VmMap> get_memory_map(pid_t pid)
       memreg.flags |= MAP_SHARED;
 
     /* Get the offset value */
-    memreg.offset = strtoull(lfields[2], &endptr, 16);
+    memreg.offset = std::strtoull(lfields[2], &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
       xbt_abort();
 
     /* Get the device major:minor bytes */
-    tok = strtok(lfields[3], ":");
+    tok = std::strtok(lfields[3], ":");
     if (tok == NULL)
       xbt_abort();
 
@@ -129,11 +131,11 @@ std::vector<VmMap> get_memory_map(pid_t pid)
     if (*endptr != '\0')
       xbt_abort();
 
-    tok = strtok(NULL, ":");
+    tok = std::strtok(NULL, ":");
     if (tok == NULL)
       xbt_abort();
 
-    memreg.dev_minor = (char) strtoul(tok, &endptr, 16);
+    memreg.dev_minor = (char) std::strtoul(tok, &endptr, 16);
     /* Make sure that the entire string was an hex number */
     if (*endptr != '\0')
       xbt_abort();
@@ -155,8 +157,8 @@ std::vector<VmMap> get_memory_map(pid_t pid)
     ret.push_back(std::move(memreg));
   }
 
-  free(line);
-  fclose(fp);
+  std::free(line);
+  std::fclose(fp);
   return std::move(ret);
 }
 
