@@ -3,13 +3,18 @@
 **
 ******************************************************
 
-There is at least 4 sub-projects in the tree:
+There is at least 5 sub-projects in the tree:
 
  - XBT: eXtended Bundle of Tools (low-level toolbox: logging, datatypes).
  - SURF: a SimUlation aRtiFact. This is the simulation kernel.
  - MSG:  originally MetaSimGrid, MSG is a simple distributed application
          simulator.
- - SMPI: Simulated MPI, to run MPI application using emulation technics.
+ - SMPI: Simulated MPI, to run MPI application using emulation technics;
+ - MC: model-checker;
+ - SIMIX: basix interface for simulated processes. This layer defines simcalls
+   (simulation calls) exposed to the simulated processes by the SIMIX "kernel".
+   This interface is used to implement the MSG, SMPI layers.
+ - SIMDAG;
 
 They are all in the same tree because they are complementary tools and
 having all of them in the same package makes the installation easier
