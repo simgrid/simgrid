@@ -107,10 +107,6 @@ if(HAVE_GTNETS)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
 endif()
 
-if(enable_mc_content_adressable_pages)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lnettle")
-endif()
-
 if(HAVE_MC)
   # The availability of libunwind was checked in CompleteInFiles.cmake
   #   (that includes FindLibunwind.cmake), so simply load it now.

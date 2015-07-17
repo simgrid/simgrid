@@ -78,24 +78,13 @@ namespace mc {
  */
 class PageStore {
 public: // Types
-#ifdef MC_PAGE_STORE_MD4
-  typedef boost::array<uint64_t,2> hash_type;
-#else
   typedef uint64_t hash_type;
-#endif
 private: // Types
-#ifdef MC_PAGE_STORE_MD4
-  // We are using a secure hash to identify a page.
-  // We assume there will not be any collision: we need to map a hash
-  // to a single page index.
-  typedef boost::unordered_map<hash_type, size_t> pages_map_type;
-#else
   // We are using a cheap hash to index a page.
   // We should expect collision and we need to associate multiple page indices
   // to the same hash.
   typedef boost::unordered_set<size_t> page_set_type;
   typedef boost::unordered_map<hash_type, page_set_type> pages_map_type;
-#endif
 
 private: // Fields:
   /** First page

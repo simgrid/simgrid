@@ -101,11 +101,6 @@ if(enable_model-checking AND enable_compile_optimizations)
   endforeach()
 endif()
 
-if(enable_mc_content_adressable_pages)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMC_PAGE_STORE_MD4")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMC_PAGE_STORE_MD4")
-endif()
-
 if(APPLE AND COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
   set(optCFLAGS "-O0 ")
