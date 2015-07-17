@@ -761,36 +761,36 @@ static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.initial_state = SURF_RESOURCE_ON;
-    host.pstate = 0;
-    host.power_scale = 1.0;
-    host.core_amount = 1;
+    host.pstate        = 0;
+    host.power_scale   = 1.0;
+    host.core_amount   = 1;
 
     s_sg_platf_link_cbarg_t link;
     memset(&link, 0, sizeof(link));
-    link.state = SURF_RESOURCE_ON;
-    link.policy = SURF_LINK_FULLDUPLEX;
-    link.latency = cabinet->lat;
+    link.state     = SURF_RESOURCE_ON;
+    link.policy    = SURF_LINK_FULLDUPLEX;
+    link.latency   = cabinet->lat;
     link.bandwidth = cabinet->bw;
 
     s_sg_platf_host_link_cbarg_t host_link;
     memset(&host_link, 0, sizeof(host_link));
 
     for (i = start; i <= end; i++) {
-      host_id = bprintf("%s%d%s",cabinet->prefix,i,cabinet->suffix);
-      link_id = bprintf("link_%s%d%s",cabinet->prefix,i,cabinet->suffix);
-      host.id = host_id;
-      link.id = link_id;
+      host_id                      = bprintf("%s%d%s",cabinet->prefix,i,cabinet->suffix);
+      link_id                      = bprintf("link_%s%d%s",cabinet->prefix,i,cabinet->suffix);
+      host.id                      = host_id;
+      link.id                      = link_id;
       xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
       xbt_dynar_push(power_state_list,&cabinet->power);
       host.power_peak = power_state_list;
       sg_platf_new_host(&host);
       sg_platf_new_link(&link);
 
-      char* link_up = bprintf("%s_UP",link_id);
-      char* link_down = bprintf("%s_DOWN",link_id);
-      host_link.id = host_id;
-      host_link.link_up = link_up;
-      host_link.link_down= link_down;
+      char* link_up       = bprintf("%s_UP",link_id);
+      char* link_down     = bprintf("%s_DOWN",link_id);
+      host_link.id        = host_id;
+      host_link.link_up   = link_up;
+      host_link.link_down = link_down;
       sg_platf_new_host_link(&host_link);
 
       free(host_id);
@@ -955,13 +955,13 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
 
         memset(&link, 0, sizeof(link));
-        link.id = tmp_link;
+        link.id        = tmp_link;
         link.bandwidth = cluster->loopback_bw;
-        link.latency = cluster->loopback_lat;
-        link.state = SURF_RESOURCE_ON;
-        link.policy = SURF_LINK_FATPIPE;
+        link.latency   = cluster->loopback_lat;
+        link.state     = SURF_RESOURCE_ON;
+        link.policy    = SURF_LINK_FATPIPE;
         sg_platf_new_link(&link);
-        info_loop.link_up =
+        info_loop.link_up   =
             xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
         info_loop.link_down = info_loop.link_up;
         free(tmp_link);
@@ -1040,11 +1040,11 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
               cluster->bb_bw, cluster->bb_lat);
 
     memset(&link, 0, sizeof(link));
-    link.id = link_backbone;
+    link.id        = link_backbone;
     link.bandwidth = cluster->bb_bw;
-    link.latency = cluster->bb_lat;
-    link.state = SURF_RESOURCE_ON;
-    link.policy = cluster->bb_sharing_policy;
+    link.latency   = cluster->bb_lat;
+    link.state     = SURF_RESOURCE_ON;
+    link.policy    = cluster->bb_sharing_policy;
 
     sg_platf_new_link(&link);
 
@@ -1076,8 +1076,8 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", peer->id);
   s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
-  AS.id = peer->id;
-  AS.routing = A_surfxml_AS_routing_Cluster;
+  AS.id                    = peer->id;
+  AS.routing               = A_surfxml_AS_routing_Cluster;
   sg_platf_new_AS_begin(&AS);
 
   current_routing->p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
@@ -1101,8 +1101,8 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
 
   s_sg_platf_link_cbarg_t link;
   memset(&link, 0, sizeof(link));
-  link.state = SURF_RESOURCE_ON;
-  link.policy = SURF_LINK_SHARED;
+  link.state   = SURF_RESOURCE_ON;
+  link.policy  = SURF_LINK_SHARED;
   link.latency = peer->lat;
 
   char* link_up = bprintf("%s_UP",link_id);
@@ -1122,9 +1122,9 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   XBT_DEBUG("<host_link\tid=\"%s\"\tup=\"%s\"\tdown=\"%s\" />", host_id,link_up,link_down);
   s_sg_platf_host_link_cbarg_t host_link;
   memset(&host_link, 0, sizeof(host_link));
-  host_link.id = host_id;
-  host_link.link_up = link_up;
-  host_link.link_down= link_down;
+  host_link.id        = host_id;
+  host_link.link_up   = link_up;
+  host_link.link_down = link_down;
   sg_platf_new_host_link(&host_link);
 
   XBT_DEBUG("<router id=\"%s\"/>", router_id);
