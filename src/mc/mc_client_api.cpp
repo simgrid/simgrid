@@ -58,7 +58,7 @@ void MC_ignore(void* addr, size_t size)
   if (mc_mode == MC_MODE_CLIENT) {
     s_mc_ignore_memory_message_t message;
     message.type = MC_MESSAGE_IGNORE_MEMORY;
-    message.addr = addr;
+    message.addr = (std::uintptr_t) addr;
     message.size = size;
     MC_client_send_message(&message, sizeof(message));
   }

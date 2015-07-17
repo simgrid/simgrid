@@ -58,7 +58,7 @@ void MC_remove_ignore_heap(void *address, size_t size)
 
   s_mc_ignore_memory_message_t message;
   message.type = MC_MESSAGE_UNIGNORE_HEAP;
-  message.addr = address;
+  message.addr = (std::uintptr_t) address;
   message.size = size;
   MC_client_send_message(&message, sizeof(message));
 }

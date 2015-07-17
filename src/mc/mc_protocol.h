@@ -81,7 +81,7 @@ typedef struct s_mc_ignore_heap_message {
 
 typedef struct s_mc_ignore_memory_message {
   e_mc_message_type type;
-  void *addr;
+  uint64_t addr;
   size_t size;
 } s_mc_ignore_memory_message_t, *mc_ignore_memory_message_t;
 

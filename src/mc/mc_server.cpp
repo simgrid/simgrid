@@ -188,7 +188,8 @@ bool s_mc_server::handle_events()
           if (size != sizeof(message))
             xbt_die("Broken messsage");
           memcpy(&message, buffer, sizeof(message));
-          MC_heap_region_ignore_remove(message.addr, message.size);
+          MC_heap_region_ignore_remove(
+            (void *)(std::uintptr_t) message.addr, message.size);
           break;
         }
 
@@ -199,7 +200,7 @@ bool s_mc_server::handle_events()
             xbt_die("Broken messsage");
           memcpy(&message, buffer, sizeof(message));
           mc_model_checker->process().ignore_region(
-            (std::uint64_t)message.addr, message.size);
+            message.addr, message.size);
           break;
         }
 
