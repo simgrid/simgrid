@@ -16,14 +16,17 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_hash, mc, "Logging specific to mc_hash");
 
-// This is djb2:
-typedef uint64_t mc_hash_t;
-#define MC_HASH_INIT ((uint64_t)5381)
+namespace simgrid {
+namespace mc {
 
-// #define MC_HASH(hash, value) hash = (((hash << 5) + hash) + (uint64_t) value)
-#define MC_HASH(hash, value) \
-  { hash = (((hash << 5) + hash) + (uint64_t) value);\
-  XBT_DEBUG("%s:%i: %" PRIx64 " -> %" PRIx64, __FILE__, __LINE__, (uint64_t) value, hash); }
+// This is djb2:
+#define MC_HASH_INIT ((simgrid::mc::hash_type)5381)
+
+template<class T>
+static void hash_update(hash_type& hash, T const& value)
+{
+  hash = (hash << 5) + hash + (uint64_t) value;
+}
 
 // ***** Hash state
 
@@ -64,11 +67,11 @@ static bool mc_ignored(const void *address, size_t size)
   return false;
 }
 
-static void mc_hash_binary(mc_hash_t * hash, const void *s, size_t len)
+static void mc_hash_binary(hash_type * hash, const void *s, size_t len)
 {
   const char *p = (const char*) s;
   for (size_t i = 0; i != len; ++i) {
-    MC_HASH(*hash, p[i]);
+    hash_update(*hash, p[i]);
   }
 }
 
@@ -79,7 +82,7 @@ static void mc_hash_binary(mc_hash_t * hash, const void *s, size_t len)
  *  \param address address of the variable
  *  \param type type of the variable
  * */
-static void mc_hash_value(mc_hash_t * hash, mc_hashing_state * state,
+static void mc_hash_value(hash_type * hash, mc_hashing_state * state,
                           mc_object_info_t info, const void *address,
                           dw_type_t type)
 {
@@ -203,7 +206,7 @@ top:
   }
 }
 
-static void mc_hash_object_globals(mc_hash_t * hash, mc_hashing_state * state,
+static void mc_hash_object_globals(hash_type * hash, mc_hashing_state * state,
                                    mc_object_info_t info)
 {
   unsigned int cursor = 0;
@@ -285,7 +288,7 @@ static void mc_hash_stack(mc_hash_t * hash, mc_snapshot_stack_t stack,
 
   for(s_mc_stack_frame_t const& stack_frame : stack->stack_frames) {
 
-    MC_HASH(*hash, stack_frame.ip);
+    hash_update(*hash, stack_frame.ip);
 
     mc_object_info_t info;
     if (stack_frame.ip >= (unw_word_t) libsimgrid_info->start_exec
@@ -310,7 +313,7 @@ static void mc_hash_stacks(mc_hash_t * hash, mc_hashing_state * state,
   unsigned int cursor = 0;
   mc_snapshot_stack_t current_stack;
 
-  MC_HASH(*hash, xbt_dynar_length(stacks_areas));
+  hash_update(*hash, xbt_dynar_length(stacks_areas));
 
   int i = 0;
   xbt_dynar_foreach(stacks, cursor, current_stack) {
@@ -321,18 +324,16 @@ static void mc_hash_stacks(mc_hash_t * hash, mc_hashing_state * state,
 }
 #endif
 
-uint64_t mc_hash_processes_state(int num_state, std::vector<s_mc_snapshot_stack_t> const& stacks)
+static hash_type hash(std::vector<s_mc_snapshot_stack_t> const& stacks)
 {
-  XBT_DEBUG("START hash %i", num_state);
-
 #if 0
   mc_hashing_state state;
   mc_hash_state_init(&state);
 #endif
 
-  mc_hash_t hash = MC_HASH_INIT;
+  hash_type hash = MC_HASH_INIT;
 
-  MC_HASH(hash, xbt_swag_size(simix_global->process_list));     // process count
+  hash_update(hash, xbt_swag_size(simix_global->process_list));
 #if 0
   // mc_hash_object_globals(&hash, &state, binary_info);
   // mc_hash_object_globals(&hash, &state, libsimgrid_info);
@@ -340,6 +341,17 @@ uint64_t mc_hash_processes_state(int num_state, std::vector<s_mc_snapshot_stack_
   mc_hash_state_destroy(&state);
 #endif
 
-  XBT_DEBUG("END hash %i", num_state);
+
   return hash;
+}
+
+hash_type hash(Snapshot const& snapshot)
+{
+  XBT_DEBUG("START hash %i", snapshot.num_state);
+  hash_type res = simgrid::mc::hash(snapshot.stacks);
+  XBT_DEBUG("END hash %i", snapshot.num_state);
+  return res;
+}
+
+}
 }

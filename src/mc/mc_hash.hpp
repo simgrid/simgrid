@@ -7,28 +7,19 @@
 #ifndef SIMGRID_MC_HASH_HPP
 #define SIMGRID_MC_HASH_HPP
 
-#include <stdio.h>
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
 #include "xbt/misc.h"
 #include "mc_snapshot.h"
 
-/** \brief Hash the current state
- *  \param num_state number of states
- *  \param stacks stacks (mc_snapshot_stak_t) used fot the stack unwinding informations
- *  \result resulting hash
- * */
-XBT_INTERNAL uint64_t mc_hash_processes_state(
-  int num_state, std::vector<s_mc_snapshot_stack_t> const& stacks);
+namespace simgrid {
+namespace mc {
 
-/** @brief Dump the stacks of the application processes
- *
- *   This functions is currently not used but it is quite convenient
- *   to call from the debugger.
- *
- *   Does not work when an application thread is running.
- */
+typedef std::uint64_t hash_type;
+XBT_INTERNAL hash_type hash(simgrid::mc::Snapshot const& snapshot);
+
+}
+}
 
 #endif
