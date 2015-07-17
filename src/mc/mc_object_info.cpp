@@ -11,9 +11,12 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
-dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, const void *ip)
+namespace simgrid {
+namespace mc {
+
+dw_frame_t ObjectInformation::find_function(const void *ip) const
 {
-  xbt_dynar_t dynar = info->functions_index;
+  xbt_dynar_t dynar = this->functions_index;
   mc_function_index_item_t base =
       (mc_function_index_item_t) xbt_dynar_get_ptr(dynar, 0);
   int i = 0;
@@ -28,17 +31,20 @@ dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, const void *
       return base[k].function;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
-dw_variable_t MC_file_object_info_find_variable_by_name(mc_object_info_t info, const char* name)
+dw_variable_t ObjectInformation::find_variable(const char* name) const
 {
   unsigned int cursor = 0;
   dw_variable_t variable;
-  xbt_dynar_foreach(info->global_variables, cursor, variable){
+  xbt_dynar_foreach(this->global_variables, cursor, variable){
     if(!strcmp(name, variable->name))
       return variable;
   }
 
-  return NULL;
+  return nullptr;
+}
+
+}
 }

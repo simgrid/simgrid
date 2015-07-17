@@ -230,7 +230,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       if (state->stack_size == MC_EXPRESSION_STACK_SIZE)
         return MC_EXPRESSION_E_STACK_OVERFLOW;
       Dwarf_Off addr = (Dwarf_Off) (uintptr_t)
-        MC_object_base_address(state->object_info) + op->number;
+        state->object_info->base_address() + op->number;
       error = mc_dwarf_push_value(state, addr);
       break;
     }
@@ -601,9 +601,7 @@ void mc_dwarf_location_list_init(mc_location_list_t list, mc_object_info_t info,
     expression->ops = NULL;
     mc_dwarf_expression_init(expression, len, ops);
 
-    void *base =
-        info->
-        flags & MC_OBJECT_INFO_EXECUTABLE ? 0 : MC_object_base_address(info);
+    void *base = info->base_address();
     // If start == 0, this is not a location list:
     expression->lowpc = start == 0 ? NULL : (char *) base + start;
     expression->highpc = start == 0 ? NULL : (char *) base + end;

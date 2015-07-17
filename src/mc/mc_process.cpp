@@ -411,9 +411,9 @@ std::shared_ptr<s_mc_object_info_t> Process::find_object_info(remote_ptr<void> a
   return NULL;
 }
 
-std::shared_ptr<s_mc_object_info_t> Process::find_object_info_exec(remote_ptr<void> addr) const
+std::shared_ptr<ObjectInformation> Process::find_object_info_exec(remote_ptr<void> addr) const
 {
-  for (std::shared_ptr<s_mc_object_info> const& info : this->object_infos) {
+  for (std::shared_ptr<ObjectInformation> const& info : this->object_infos) {
     if (addr.address() >= (std::uint64_t) info->start_exec
         && addr.address() <= (std::uint64_t) info->end_exec) {
       return info;
@@ -422,9 +422,9 @@ std::shared_ptr<s_mc_object_info_t> Process::find_object_info_exec(remote_ptr<vo
   return nullptr;
 }
 
-std::shared_ptr<s_mc_object_info_t> Process::find_object_info_rw(remote_ptr<void> addr) const
+std::shared_ptr<ObjectInformation> Process::find_object_info_rw(remote_ptr<void> addr) const
 {
-  for (std::shared_ptr<s_mc_object_info> const& info : this->object_infos) {
+  for (std::shared_ptr<ObjectInformation> const& info : this->object_infos) {
     if (addr.address() >= (std::uint64_t)info->start_rw
         && addr.address() <= (std::uint64_t)info->end_rw) {
       return info;
@@ -436,10 +436,7 @@ std::shared_ptr<s_mc_object_info_t> Process::find_object_info_rw(remote_ptr<void
 dw_frame_t Process::find_function(remote_ptr<void> ip) const
 {
   std::shared_ptr<s_mc_object_info_t> info = this->find_object_info_exec(ip);
-  if (!info)
-    return nullptr;
-  else
-    return MC_file_object_info_find_function(info.get(), (void*) ip.address());
+  return info ? info->find_function((void*) ip.address()) : nullptr;
 }
 
 /** Find (one occurence of) the named variable definition
@@ -452,13 +449,13 @@ dw_variable_t Process::find_variable(const char* name) const
   // We need to look up the variable in the execvutable first.
   if (this->binary_info) {
     std::shared_ptr<s_mc_object_info_t> const& info = this->binary_info;
-    dw_variable_t var = MC_file_object_info_find_variable_by_name(info.get(), name);
+    dw_variable_t var = info->find_variable(name);
     if (var)
       return var;
   }
 
   for (std::shared_ptr<s_mc_object_info_t> const& info : this->object_infos) {
-    dw_variable_t var = MC_file_object_info_find_variable_by_name(info.get(), name);
+    dw_variable_t var = info->find_variable(name);
     if (var)
       return var;
   }
@@ -521,7 +518,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
     std::shared_ptr<s_mc_object_info_t> const& info =
       this->find_object_info_rw((void*)address.address());
     // Segment overlap is not handled.
-    if (MC_object_info_is_privatized(info.get())) {
+    if (info.get() && info.get()->privatized()) {
       if (process_index < 0)
         xbt_die("Missing process index");
       if (process_index >= (int) MC_smpi_process_count())

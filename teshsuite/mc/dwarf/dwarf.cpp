@@ -87,7 +87,7 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
 
 static dw_variable_t test_global_variable(mc_process_t process, mc_object_info_t info, const char* name, void* address, long byte_size) {
 
-  dw_variable_t variable = MC_file_object_info_find_variable_by_name(info, name);
+  dw_variable_t variable = info->find_variable(name);
   xbt_assert(variable, "Global variable %s was not found", name);
   xbt_assert(!strcmp(variable->name, name), "Name mismatch for %s", name);
   xbt_assert(variable->global, "Variable %s is not global", name);

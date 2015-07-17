@@ -755,7 +755,7 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
       if (len == 1 && expr[0].atom == DW_OP_addr) {
         variable->global = 1;
         uintptr_t offset = (uintptr_t) expr[0].number;
-        uintptr_t base = (uintptr_t) MC_object_base_address(info);
+        uintptr_t base = (uintptr_t) info->base_address();
         variable->address = (void *) (base + offset);
       } else {
         mc_dwarf_location_list_init_from_expression(&variable->locations, len,
@@ -863,7 +863,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
   // This is the base address for DWARF addresses.
   // Relocated addresses are offset from this base address.
   // See DWARF4 spec 7.5
-  void *base = MC_object_base_address(info);
+  void *base = info->base_address();
 
   // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
   frame->variables =
@@ -1087,7 +1087,10 @@ void dw_variable_free_voidp(void *t)
 
 // ***** object_info
 
-s_mc_object_info::s_mc_object_info()
+namespace simgrid {
+namespace mc {
+
+ObjectInformation::ObjectInformation()
 {
   this->flags = 0;
   this->file_name = nullptr;
@@ -1107,7 +1110,7 @@ s_mc_object_info::s_mc_object_info()
   this->functions_index = nullptr;
 }
 
-s_mc_object_info::~s_mc_object_info()
+ObjectInformation::~ObjectInformation()
 {
   xbt_free(this->file_name);
   xbt_dict_free(&this->subprograms);
@@ -1117,19 +1120,37 @@ s_mc_object_info::~s_mc_object_info()
   xbt_dynar_free(&this->functions_index);
 }
 
-// ***** Helpers
-
-void *MC_object_base_address(mc_object_info_t info)
+/** Find the DWARF offset for this ELF object
+ *
+ *  An offset is applied to address found in DWARF:
+ *
+ *  <ul>
+ *    <li>for an executable obejct, addresses are virtual address
+ *        (there is no offset) i.e. \f$\text{virtual address} = \{dwarf address}\f$;</li>
+ *    <li>for a shared object, the addreses are offset from the begining
+ *        of the shared object (the base address of the mapped shared
+ *        object must be used as offset
+ *        i.e. \f$\text{virtual address} = \text{shared object base address}
+ *             + \text{dwarf address}\f$.</li>
+ *
+ */
+void *ObjectInformation::base_address() const
 {
-  if (info->flags & MC_OBJECT_INFO_EXECUTABLE)
-    return 0;
-  void *result = info->start_exec;
-  if (info->start_rw != NULL && result > (void *) info->start_rw)
-    result = info->start_rw;
-  if (info->start_ro != NULL && result > (void *) info->start_ro)
-    result = info->start_ro;
+  if (this->executable())
+    return nullptr;
+
+  void *result = this->start_exec;
+  if (this->start_rw != NULL && result > (void *) this->start_rw)
+    result = this->start_rw;
+  if (this->start_ro != NULL && result > (void *) this->start_ro)
+    result = this->start_ro;
   return result;
 }
+
+}
+}
+
+// ***** Helpers
 
 // ***** Functions index
 

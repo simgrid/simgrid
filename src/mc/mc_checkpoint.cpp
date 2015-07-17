@@ -140,7 +140,7 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
   else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(!object_info, "Unexpected object info for heap region.");
 
-  const bool privatization_aware = MC_object_info_is_privatized(object_info);
+  const bool privatization_aware = object_info && object_info->privatized();
 
   simgrid::mc::RegionSnapshot region;
   if (privatization_aware && MC_smpi_process_count())

@@ -1573,27 +1573,6 @@ static int get_pointed_area_size(void *area, int heap)
   }
 }
 
-// Not used:
-char *get_type_description(mc_object_info_t info, char *type_name)
-{
-
-  xbt_dict_cursor_t dict_cursor;
-  char *type_origin;
-  dw_type_t type;
-
-  xbt_dict_foreach(info->types, dict_cursor, type_origin, type) {
-    if (type->name && (strcmp(type->name, type_name) == 0)
-        && type->byte_size > 0) {
-      xbt_dict_cursor_free(&dict_cursor);
-      return type_origin;
-    }
-  }
-
-  xbt_dict_cursor_free(&dict_cursor);
-  return NULL;
-}
-
-
 #ifndef max
 #define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
 #endif

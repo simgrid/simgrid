@@ -58,11 +58,15 @@ typedef int mc_object_info_flags;
 #define MC_OBJECT_INFO_NONE 0
 #define MC_OBJECT_INFO_EXECUTABLE 1
 
-struct s_mc_object_info {
-  s_mc_object_info();
-  ~s_mc_object_info();
-  s_mc_object_info(s_mc_object_info const&) = delete;
-  s_mc_object_info& operator=(s_mc_object_info const&) = delete;
+namespace simgrid {
+namespace mc {
+
+class ObjectInformation {
+public:
+  ObjectInformation();
+  ~ObjectInformation();
+  ObjectInformation(ObjectInformation const&) = delete;
+  ObjectInformation& operator=(ObjectInformation const&) = delete;
 
   mc_object_info_flags flags;
   char* file_name;
@@ -83,53 +87,35 @@ struct s_mc_object_info {
   // lookup of a function given an instruction pointer.
   // The entries are sorted by low_pc and a binary search can be used to look them up.
   xbt_dynar_t functions_index;
+
+  bool executable() const
+  {
+    return this->flags & MC_OBJECT_INFO_EXECUTABLE;
+  }
+
+  bool privatized() const
+  {
+    return this->executable() && smpi_privatize_global_variables;
+  }
+
+  void* base_address() const;
+
+  dw_frame_t find_function(const void *ip) const;
+  dw_variable_t find_variable(const char* name) const;
+
 };
 
-static inline __attribute__ ((always_inline))
-bool MC_object_info_executable(mc_object_info_t info)
-{
-  return info->flags & MC_OBJECT_INFO_EXECUTABLE;
 }
-
-static inline __attribute__ ((always_inline))
-bool MC_object_info_is_privatized(mc_object_info_t info)
-{
-  return info && MC_object_info_executable(info) && smpi_privatize_global_variables;
 }
-
-/** Find the DWARF offset for this ELF object
- *
- *  An offset is applied to address found in DWARF:
- *
- *  <ul>
- *    <li>for an executable obejct, addresses are virtual address
- *        (there is no offset) i.e. \f$\text{virtual address} = \{dwarf address}\f$;</li>
- *    <li>for a shared object, the addreses are offset from the begining
- *        of the shared object (the base address of the mapped shared
- *        object must be used as offset
- *        i.e. \f$\text{virtual address} = \text{shared object base address}
- *             + \text{dwarf address}\f$.</li>
- *
- */
-XBT_INTERNAL void* MC_object_base_address(mc_object_info_t info);
 
 XBT_INTERNAL std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char* name, int executable);
-
-XBT_INTERNAL void MC_free_object_info(mc_object_info_t* p);
-
-XBT_INTERNAL dw_frame_t MC_file_object_info_find_function(mc_object_info_t info, const void *ip);
-MC_SHOULD_BE_INTERNAL dw_variable_t MC_file_object_info_find_variable_by_name(mc_object_info_t info, const char* name);
-
 XBT_INTERNAL void MC_post_process_object_info(mc_process_t process, mc_object_info_t info);
 
 XBT_INTERNAL void MC_dwarf_get_variables(mc_object_info_t info);
 XBT_INTERNAL void MC_dwarf_get_variables_libdw(mc_object_info_t info);
 XBT_INTERNAL const char* MC_dwarf_attrname(int attr);
 XBT_INTERNAL const char* MC_dwarf_tagname(int tag);
-
-// Not used:
-XBT_INTERNAL char* get_type_description(mc_object_info_t info, char *type_name);
 
 XBT_INTERNAL void* mc_member_resolve(const void* base, dw_type_t type, dw_type_t member, mc_address_space_t snapshot, int process_index);
 
