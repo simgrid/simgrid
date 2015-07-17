@@ -182,7 +182,7 @@ coordinates     | no        | string | Must be provided when choosing the Vivald
 
 Tag name        | Description | Documentation
 ------------    | ----------- | -------------
-\<mount/\>        | Defines mounting points between some storage resource and the host. | \ref pf_sto_mo
+\<mount/\>        | Defines mounting points between some storage resource and the host. | \ref pf_storage_entity_mount
 \<prop/\>         | The prop tag allows you to define additional information on this host following the attribute/value schema. You may want to use it to give information to the tool you use for rendering your simulation, for example. | N/A
 
 ### Example ###
@@ -278,7 +278,6 @@ periodicity 10.0). It will be turned on again at time 13.0 until time 23.0, and
 so on.
 
 
-
 \subsubsection pf_cluster &lt;cluster&gt;
 
 ``<cluster />`` represents a machine-cluster. It is most commonly used
@@ -333,7 +332,7 @@ suffix          | yes       | string | Each node of the cluster will be suffixed
 radical         | yes       | string | Regexp used to generate cluster nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
 power           | yes       | int    | Same as the ``power`` attribute of the ``\<host\>`` tag.
 core            | no        | int (default: 1) | Same as the ``core`` attribute of the ``\<host\>`` tag.
-bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). <b>See <b>link</b> section for syntax/details.</b>
+bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_link "link section" for syntax/details.
 lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
 sharing_policy  | no        | string | Sharing policy for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
 bb_bw           | no        | int    | Bandwidth for backbone (if any). See <b>link</b> section for syntax/details. If bb_bw and bb_lat (see below) attributes are omitted, no backbone is created (alternative cluster architecture <b>described before</b>).
@@ -378,6 +377,62 @@ c-2.me
 ...
 c-99.me
 \endverbatim
+
+\subsubsection pf_cabinet &lt;cabinet&gt;
+
+\note
+    This tag is only available when the routing mode of the AS
+    is set to ``Cluster``.
+
+The ``&lt;cabinet /&gt;`` tag is, like the \ref pf_cluster "&lt;cluster&gt;" tag,
+a meta-tag. This means that it is simply a shortcut for creating a set of (homogenous) hosts and links quickly;
+unsurprisingly, this tag was introduced to setup cabinets in data centers quickly. Unlike
+&lt;cluster&gt;, however, the &lt;cabinet&gt; assumes that you create the backbone
+and routers yourself; see our examples below.
+
+#### Attributes ####
+
+Attribute name  | Mandatory | Values | Description
+--------------- | --------- | ------ | -----------
+id              | yes       | string | The identifier of the cabinet. Facilitates referring to this cluster.
+prefix          | yes       | string | Each node of the cabinet has to have a name. This name will be prefixed with this prefix.
+suffix          | yes       | string | Each node of the cabinet will be suffixed with this suffix
+radical         | yes       | string | Regexp used to generate cabinet nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
+power           | yes       | int    | Same as the ``power`` attribute of the \ref pf_host "&lt;host&gt;" tag.
+bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_link "link section" for syntax/details.
+lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See the \ref pf_link "link section" for syntax/details.
+
+\note
+    Please note that as of now, it is impossible to change attributes such as,
+    amount of cores (always set to 1), the initial state of hosts/links
+    (always set to ON), the sharing policy of the links (always set to \ref sharing_policy_fullduplex "FULLDUPLEX").
+
+#### Example ####
+
+The following example was taken from ``examples/platforms/meta_cluster.xml`` and
+shows how to use the cabinet tag.
+
+\verbatim
+  <AS  id="my_cluster1"  routing="Cluster">
+    <cabinet id="cabinet1" prefix="host-" suffix=".cluster1"
+      power="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
+    <cabinet id="cabinet2" prefix="host-" suffix=".cluster1"
+      power="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
+    <cabinet id="cabinet3" prefix="host-" suffix=".cluster1"
+      power="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
+
+    <backbone id="backbone1" bandwidth="2.25GBps" latency="500us"/>
+  </AS>
+\endverbatim
+
+\note
+   Please note that you must specify the \ref pf_backbone "&lt;backbone&gt;"
+   tag by yourself; this is not done automatically and there are no checks
+   that ensure this backbone was defined.
+
+The hosts generated in the above example are named host-1.cluster, host-2.cluster1
+etc.
+
 
 \subsubsection pf_peer The &lt;peer&gt; tag
 
