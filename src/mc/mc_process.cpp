@@ -116,7 +116,7 @@ static ssize_t pread_whole(int fd, void *buf, size_t count, std::uint64_t offset
   char* buffer = (char*) buf;
   ssize_t real_count = count;
   while (count) {
-    ssize_t res = pread(fd, buffer, count, (off_t)(std::int64_t) offset);
+    ssize_t res = pread(fd, buffer, count, (std::int64_t) offset);
     if (res > 0) {
       count  -= res;
       buffer += res;
