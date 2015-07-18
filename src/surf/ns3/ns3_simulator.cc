@@ -24,8 +24,7 @@ static void StartFlow(Ptr<Socket> sock,
     const char *to,
     uint16_t port_number);
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simulator_ns3, surf,
-                                "Logging specific to the SURF network NS3 module");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
 // Constructor.
 NS3Sim::NS3Sim(){

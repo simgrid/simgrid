@@ -8,8 +8,7 @@
 #include "surf_private.h"
 #include "simgrid/sg_config.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_ns3, surf,
-                                "Logging specific to the SURF network NS3 module");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
 extern xbt_lib_t host_lib;
 extern xbt_lib_t link_lib;

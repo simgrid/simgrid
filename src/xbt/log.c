@@ -721,9 +721,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_network_gtnets_topology);
 #endif
 #ifdef HAVE_NS3
-  XBT_LOG_CONNECT(surf_network_ns3);
-  XBT_LOG_CONNECT(interface_ns3);
-  XBT_LOG_CONNECT(simulator_ns3);
+  XBT_LOG_CONNECT(ns3);
 #endif
   XBT_LOG_CONNECT(surf_parse);
   XBT_LOG_CONNECT(surf_route);

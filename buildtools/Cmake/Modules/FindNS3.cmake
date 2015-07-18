@@ -1,19 +1,10 @@
-# If you use NS-3 version 3.14 (prefer used at most 3.13) be sure having do
-# ln -sf libns3.14.1-applications-debug.so libns3-applications.so
-# ln -sf libns3.14.1-internet-debug.so libns3-internet.so
-# ln -sf libns3.14.1-point-to-point-debug.so libns3-point-to-point.so
-# ln -sf libns3.14.1-csma-debug.so libns3-csma.so
-# ln -sf libns3.14.1-core-debug.so libns3-core.so
 
-find_library(HAVE_NS3_LIB
-  NAME ns3
-  PATH_SUFFIXES lib64 lib ns3/lib
-  PATHS
-  ${ns3_path}
-  )
+## ADDING A NS3 VERSION.
+#   - Add ns3.${version}-core to the NAME line of the find_library below
+#   - Add include/ns3{version} to the PATH_SUFFIXES line of the find_path below
 
 find_library(HAVE_NS3_CORE_LIB
-  NAME ns3-core ns3.14-core ns3.17-core
+  NAME ns3-core ns3.14-core ns3.15-core ns3.16-core ns3.17-core ns3.18-core ns3.19-core ns3.20-core ns3.21-core ns3.22-core
   PATH_SUFFIXES lib64 lib ns3/lib
   PATHS
   ${ns3_path}
@@ -21,26 +12,19 @@ find_library(HAVE_NS3_CORE_LIB
 
 find_path(HAVE_CORE_MODULE_H
   NAME ns3/core-module.h
-  PATH_SUFFIXES include ns3/include include/ns3.14.1 include/ns3.17
+  PATH_SUFFIXES include ns3/include include/ns3.14 include/ns3.15 include/ns3.16 include/ns3.17 include/ns3.18 include/ns3.19 include/ns3.20 include/ns3.21 include/ns3.22
   PATHS
   ${ns3_path}
   )
 
-message(STATUS "Looking for core-module.h")
+
+
 if(HAVE_CORE_MODULE_H)
-  message(STATUS "Looking for core-module.h - found")
+  message(STATUS "Looking for ns3/core-module.h - found")
 else()
-  message(STATUS "Looking for core-module.h - not found")
+  message(STATUS "Looking for ns3/core-module.h - not found")
 endif()
 mark_as_advanced(HAVE_CORE_MODULE_H)
-
-message(STATUS "Looking for lib ns3")
-if(HAVE_NS3_LIB)
-  message(STATUS "Looking for lib ns3 - found")
-else()
-  message(STATUS "Looking for lib ns3 - not found")
-endif()
-mark_as_advanced(HAVE_NS3_LIB)
 
 message(STATUS "Looking for lib ns3-core")
 if(HAVE_NS3_CORE_LIB)

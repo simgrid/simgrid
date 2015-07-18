@@ -17,7 +17,7 @@ extern xbt_lib_t host_lib;
 extern int NS3_HOST_LEVEL;		//host node for ns3
 extern xbt_dynar_t IPV4addr;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(interface_ns3, surf,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf,
                                 "Logging specific to the SURF network NS3 module");
 
 InternetStackHelper stack;

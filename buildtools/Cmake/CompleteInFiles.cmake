@@ -102,6 +102,9 @@ endif()
 set(HAVE_NS3 0)
 if(enable_ns3)
   include(FindNS3)
+  if (NOT HAVE_NS3)
+    message(FATAL_ERROR "Cannot find NS3. Please install it (apt-get install ns3 libns3-dev) or disable that cmake option")
+  endif()
 endif()
 
 # algorithm 1.50.0
@@ -114,9 +117,9 @@ if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
   if(APPLE) #MAC
-    message(FATAL_ERROR, "Failed to find Boost libraries (Try to install them with 'sudo fink install boost1.53.nopython')")
+    message(FATAL_ERROR "Failed to find Boost libraries (Try to install them with 'sudo fink install boost1.53.nopython')")
   else()
-    message(FATAL_ERROR, "Failed to find Boost libraries")
+    message(FATAL_ERROR "Failed to find Boost libraries")
   endif()
 endif()
 

@@ -24,18 +24,14 @@
  *
  */
 
-#include "ns3/log.h"
 #include "ns3/enum.h"
 #include "ns3/uinteger.h"
 #include "ns3/double.h"
 #include "red-queue.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
-#include "ns3/random-variable.h"
 
 #include <cstdlib>
-
-NS_LOG_COMPONENT_DEFINE ("red");
 
 #define RED_STATS_TABLE_SIZE 256
 #define RED_STATS_MASK (RED_STATS_TABLE_SIZE - 1)
@@ -46,7 +42,7 @@ NS_OBJECT_ENSURE_REGISTERED (RedQueue);
 
 TypeId RedQueue::GetTypeId (void)
 {
-  ///< Note: these paramemters must be worked out beforehand for RED to work correctly
+  ///< Note: these parameters must be worked out beforehand for RED to work correctly
   ///< How these parameters are set up can affect RED performance greatly
   static TypeId tid = TypeId ("ns3::RedQueue")
                       .SetParent<Queue> ()
@@ -123,13 +119,11 @@ RedQueue::RedQueue ()
 
 RedQueue::~RedQueue ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
 RedQueue::SetMode (enum Mode mode)
 {
-  NS_LOG_FUNCTION (mode);
   m_mode = mode;
 }
 
@@ -162,7 +156,6 @@ RedQueue::GetAverageQueueSize (void)
 uint32_t
 RedQueue::evalEwma (uint32_t minTh, uint32_t burst, uint32_t avpkt)
 {
-  NS_LOG_FUNCTION (this);
   uint32_t wlog = 1;
 
 
@@ -174,11 +167,9 @@ RedQueue::evalEwma (uint32_t minTh, uint32_t burst, uint32_t avpkt)
   ///< Note: bursts must be larger than minTh/avpkt for it to work
   temp = (double)burst + 1 - (double)minTh / avpkt;
 
-  NS_LOG_DEBUG ( "\t temp =" << temp);
 
   if (temp < 1.0)
     {
-      NS_LOG_DEBUG ("\tFailed to calculate EWMA constant");
       return -1;
     }
 
@@ -198,12 +189,10 @@ RedQueue::evalEwma (uint32_t minTh, uint32_t burst, uint32_t avpkt)
     {
       if (temp <= (1 - pow (1 - W, burst)) / W )
         {
-          NS_LOG_DEBUG ("\t wlog=" << wlog);
           return wlog;
         }
     }
 
-  NS_LOG_DEBUG ("\tFailed to calculate EWMA constant");
   return -1;
 }
 
@@ -222,13 +211,11 @@ RedQueue::evalEwma (uint32_t minTh, uint32_t burst, uint32_t avpkt)
 uint32_t
 RedQueue::evalP (uint32_t minTh, uint32_t maxTh, double prob)
 {
-  NS_LOG_FUNCTION (this);
 
   uint32_t i = maxTh - minTh ;
 
   if (i <= 0)
     {
-      NS_LOG_DEBUG ("maxTh - minTh = 0");
       return -1;
     }
 
@@ -247,11 +234,11 @@ RedQueue::evalP (uint32_t minTh, uint32_t maxTh, double prob)
   ///< Error checking
   if (i >= 32 )
     {
-      NS_LOG_DEBUG ("i >= 32, this shouldn't happen");
+      //NS_LOG_DEBUG ("i >= 32, this shouldn't happen");
       return -1;
     }
 
-  NS_LOG_DEBUG ("\t i(makes C1 power of two)=" << i);
+  //NS_LOG_DEBUG ("\t i(makes C1 power of two)=" << i);
   return i;
 }
 
@@ -269,7 +256,6 @@ RedQueue::evalP (uint32_t minTh, uint32_t maxTh, double prob)
 uint32_t
 RedQueue::evalIdleDamping (uint32_t wLog, uint32_t avpkt, uint32_t bps)
 {
-  NS_LOG_FUNCTION (this);
 
   ///> in microsecond ticks: 1 sec = 1000000 microsecond ticks
   double xmitTime =  ((double) avpkt / bps) * 1000000;
@@ -282,8 +268,8 @@ RedQueue::evalIdleDamping (uint32_t wLog, uint32_t avpkt, uint32_t bps)
   ///> the maximum allow idle time
   double maxTime = 31 / wLogTemp;
 
-  NS_LOG_DEBUG ("\t xmitTime=" << xmitTime << " wLogTemp=" << wLogTemp
-                               << " maxTime=" << maxTime);
+  //NS_LOG_DEBUG ("\t xmitTime=" << xmitTime << " wLogTemp=" << wLogTemp
+  //                             << " maxTime=" << maxTime);
 
 
   uint32_t cLog, i;
@@ -320,7 +306,7 @@ RedQueue::evalIdleDamping (uint32_t wLog, uint32_t avpkt, uint32_t bps)
 
   m_sTable[255] = 31;
 
-  NS_LOG_DEBUG ("\t cLog=" << cLog);
+  //NS_LOG_DEBUG ("\t cLog=" << cLog);
   return cLog;
 }
 
@@ -340,7 +326,6 @@ void
 RedQueue::SetParams (uint32_t minTh, uint32_t maxTh,
                      uint32_t wLog, uint32_t pLog, uint64_t scellLog)
 {
-  NS_LOG_FUNCTION (this);
 
   m_qavg = 0;
   m_count = -1;
@@ -352,20 +337,18 @@ RedQueue::SetParams (uint32_t minTh, uint32_t maxTh,
   m_scellLog = scellLog;
   m_scellMax = (255 << m_scellLog);
 
-  NS_LOG_DEBUG ("\t m_wLog" << m_wLog << " m_pLog" << m_pLog << " m_scellLog" << m_scellLog
-                            << " m_minTh" << m_minTh << " m_maxTh" << m_maxTh
-                            << " rmask=" << m_rmask << " m_scellMax=" << m_scellMax);
+  //NS_LOG_DEBUG ("\t m_wLog" << m_wLog << " m_pLog" << m_pLog << " m_scellLog" << m_scellLog
+  //                          << " m_minTh" << m_minTh << " m_maxTh" << m_maxTh
+  //                          << " rmask=" << m_rmask << " m_scellMax=" << m_scellMax);
 }
 
 int
 RedQueue::IsIdling ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   //use IsZero instead
   if ( m_idleStart.GetNanoSeconds () != 0)
     {
-      NS_LOG_DEBUG ("\t IsIdling");
+      //NS_LOG_DEBUG ("\t IsIdling");
     }
 
   return m_idleStart.GetNanoSeconds () != 0;
@@ -373,22 +356,16 @@ RedQueue::IsIdling ()
 void
 RedQueue::StartIdlePeriod ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   m_idleStart = Simulator::Now ();
 }
 void
 RedQueue::EndIdlePeriod ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   m_idleStart = NanoSeconds (0);
 }
 void
 RedQueue::Restart ()
 {
-
-  NS_LOG_FUNCTION_NOARGS ();
 
   EndIdlePeriod ();
   m_qavg = 0;
@@ -413,8 +390,6 @@ RedQueue::Restart ()
 uint64_t
 RedQueue::AvgFromIdleTime ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
   uint64_t idleTime;
   int shift;
 
@@ -426,7 +401,7 @@ RedQueue::AvgFromIdleTime ()
       idleTime = m_scellMax;
     }
 
-  NS_LOG_DEBUG ("\t idleTime=" << idleTime);
+  //NS_LOG_DEBUG ("\t idleTime=" << idleTime);
   //PrintTable ();
 
   shift = m_sTable [(idleTime >>  m_scellLog) & RED_STATS_MASK];
@@ -441,7 +416,7 @@ RedQueue::AvgFromIdleTime ()
       idleTime = (m_qavg * idleTime) >> m_scellLog;
 
 
-      NS_LOG_DEBUG ("\t idleus=" << idleTime);
+     // NS_LOG_DEBUG ("\t idleus=" << idleTime);
 
       if (idleTime < (m_qavg / 2))
         {
@@ -459,10 +434,10 @@ RedQueue::AvgFromIdleTime ()
 uint64_t
 RedQueue::AvgFromNonIdleTime (uint32_t backlog)
 {
-  NS_LOG_FUNCTION (this << backlog);
+  //NS_LOG_FUNCTION (this << backlog);
 
-  NS_LOG_DEBUG ("qavg " << m_qavg);
-  NS_LOG_DEBUG ("backlog" << backlog);
+  //NS_LOG_DEBUG ("qavg " << m_qavg);
+  //NS_LOG_DEBUG ("backlog" << backlog);
 
  /**
   * This is basically EWMA
@@ -476,21 +451,21 @@ RedQueue::AvgFromNonIdleTime (uint32_t backlog)
 uint64_t
 RedQueue::AvgCalc (uint32_t backlog)
 {
-  NS_LOG_FUNCTION (this << backlog);
+  //NS_LOG_FUNCTION (this << backlog);
 
   uint64_t qtemp;
 
   if ( !IsIdling ())
     {
       qtemp = AvgFromNonIdleTime (backlog);
-      NS_LOG_DEBUG ("NonIdle Avg " << qtemp);
+      //NS_LOG_DEBUG ("NonIdle Avg " << qtemp);
       //std::cout <<"n "<< qtemp << std::endl;
       return qtemp;
     }
   else
     {
       qtemp = AvgFromIdleTime ();
-      NS_LOG_DEBUG ("Idle Avg" << qtemp);
+      //NS_LOG_DEBUG ("Idle Avg" << qtemp);
       //std::cout <<"i "<< qtemp << std::endl;
       return qtemp;
     }
@@ -500,8 +475,8 @@ int
 RedQueue::CheckThresh (uint64_t avg)
 {
 
-  NS_LOG_FUNCTION (this << avg);
-  NS_LOG_DEBUG ("\t check threshold: min " << m_minTh << " max" << m_maxTh);
+  //NS_LOG_FUNCTION (this << avg);
+  //NS_LOG_DEBUG ("\t check threshold: min " << m_minTh << " max" << m_maxTh);
 
   if (avg < m_minTh)
     {
@@ -519,7 +494,7 @@ RedQueue::CheckThresh (uint64_t avg)
 uint32_t
 RedQueue::RedRandom ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  //NS_LOG_FUNCTION_NOARGS ();
 
   ///> obtain a random u32 number
   ///> return m_rmask & ran.GetInteger ();
@@ -529,10 +504,10 @@ RedQueue::RedRandom ()
 int
 RedQueue::MarkProbability (uint64_t avg)
 {
-  NS_LOG_FUNCTION (this << avg);
-  NS_LOG_DEBUG ("\t m_randNum " << m_randNum);
-  NS_LOG_DEBUG ("\t right\t" << m_randNum);
-  NS_LOG_DEBUG ("\t left\t" << ((avg - m_minTh)*m_count));
+  //NS_LOG_FUNCTION (this << avg);
+  //NS_LOG_DEBUG ("\t m_randNum " << m_randNum);
+  //NS_LOG_DEBUG ("\t right\t" << m_randNum);
+  //NS_LOG_DEBUG ("\t left\t" << ((avg - m_minTh)*m_count));
 
   ///> max_P* (qavg - qth_min)/(qth_max-qth_min) < rnd/qcount
   //return !((avg - m_minTh ) * m_count < m_randNum);
@@ -544,32 +519,32 @@ int
 RedQueue::Processing (uint64_t qavg)
 {
 
-  NS_LOG_FUNCTION (this << "qavg" << qavg << " m_minTh" << m_minTh << " m_maxTh" << m_maxTh);
+  //NS_LOG_FUNCTION (this << "qavg" << qavg << " m_minTh" << m_minTh << " m_maxTh" << m_maxTh);
 
   switch (CheckThresh (qavg))
     {
     case BELOW_MIN_THRESH:
-      NS_LOG_DEBUG ("\t below threshold ");
+      //NS_LOG_DEBUG ("\t below threshold ");
 
       m_count = -1;
       return DONT_MARK;
 
     case BETWEEN_THRESH:
-      NS_LOG_DEBUG ("\t between threshold ");
+      //NS_LOG_DEBUG ("\t between threshold ");
 
       if (++m_count)
         {
-          NS_LOG_DEBUG ("\t check Mark Prob");
+          //NS_LOG_DEBUG ("\t check Mark Prob");
           if (MarkProbability (qavg))
             {
               m_count = 0;
               m_randNum = RedRandom ();
 
-              NS_LOG_DEBUG ("\t Marked Will Drop " << m_qavg);
+              //NS_LOG_DEBUG ("\t Marked Will Drop " << m_qavg);
 
               return PROB_MARK;
             }
-          NS_LOG_DEBUG ("\t Marked Will Save " << m_qavg);
+          //NS_LOG_DEBUG ("\t Marked Will Save " << m_qavg);
         }
       else
         {
@@ -579,13 +554,13 @@ RedQueue::Processing (uint64_t qavg)
 
     case ABOVE_MAX_THRESH:
 
-      NS_LOG_DEBUG ("\t above threshold ");
+      //NS_LOG_DEBUG ("\t above threshold ");
 
       m_count = -1;
       return HARD_MARK;
     }
 
-  NS_LOG_DEBUG ("BUG HERE\n");
+  //NS_LOG_DEBUG ("BUG HERE\n");
   return DONT_MARK;
 }
 
@@ -593,18 +568,18 @@ RedQueue::Processing (uint64_t qavg)
 bool
 RedQueue::DoEnqueue (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
+  //NS_LOG_FUNCTION (this << p);
 
   if (m_mode == PACKETS && (m_packets.size () >= m_maxPackets))
     {
-      NS_LOG_LOGIC ("Queue full (at max packets) -- droppping pkt");
+      //NS_LOG_LOGIC ("Queue full (at max packets) -- droppping pkt");
       Drop (p);
       return false;
     }
 
   if (m_mode == BYTES && (m_bytesInQueue + p->GetSize () >= m_maxBytes))
     {
-      NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- droppping pkt");
+      //NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- droppping pkt");
       Drop (p);
       return false;
     }
@@ -612,11 +587,11 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
   if (!m_initialized)
     {
       // making sure all the variables are initialized ok
-      NS_LOG_DEBUG ("\t m_maxPackets" << m_maxPackets
-                                      << " m_maxBytes" << m_maxBytes
-                                      << " m_burst" << m_burst << " m_avPkt" << m_avPkt
-                                      << " m_minTh" << m_minTh << " m_maxTh" << m_maxTh
-                                      << " m_rate" << m_rate <<  " m_prob" << m_prob);
+      //NS_LOG_DEBUG ("\t m_maxPackets" << m_maxPackets
+      //                                << " m_maxBytes" << m_maxBytes
+      //                                << " m_burst" << m_burst << " m_avPkt" << m_avPkt
+      //                                << " m_minTh" << m_minTh << " m_maxTh" << m_maxTh
+      //                                << " m_rate" << m_rate <<  " m_prob" << m_prob);
 
       m_wLog = evalEwma (m_minTh, m_burst, m_avPkt);
       m_pLog = evalP (m_minTh, m_maxTh, m_prob);
@@ -640,8 +615,8 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
 //      m_qavg = AvgCalc (m_packets.size ());
     }
 
-  NS_LOG_DEBUG ("\t bytesInQueue  " << m_bytesInQueue << "\tQavg " << m_qavg);
-  NS_LOG_DEBUG ("\t packetsInQueue  " << m_packets.size () << "\tQavg " << m_qavg);
+  //NS_LOG_DEBUG ("\t bytesInQueue  " << m_bytesInQueue << "\tQavg " << m_qavg);
+  //NS_LOG_DEBUG ("\t packetsInQueue  " << m_packets.size () << "\tQavg " << m_qavg);
 
 
   if (IsIdling ())
@@ -655,14 +630,14 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
       break;
 
     case PROB_MARK:
-      NS_LOG_DEBUG ("\t Dropping due to Prob Mark " << m_qavg);
+      //NS_LOG_DEBUG ("\t Dropping due to Prob Mark " << m_qavg);
       m_stats.probDrop++;
       m_stats.probMark++;
       Drop (p);
       return false;
 
     case HARD_MARK:
-      NS_LOG_DEBUG ("\t Dropping due to Hard Mark " << m_qavg);
+      //NS_LOG_DEBUG ("\t Dropping due to Hard Mark " << m_qavg);
       m_stats.forcedMark++;
       m_stats.probDrop++;
       Drop (p);
@@ -673,8 +648,8 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
   m_bytesInQueue += p->GetSize ();
   m_packets.push_back (p);
 
-  NS_LOG_LOGIC ("Number packets " << m_packets.size ());
-  NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
+  //NS_LOG_LOGIC ("Number packets " << m_packets.size ());
+  //NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
   return true;
 }
@@ -682,11 +657,11 @@ RedQueue::DoEnqueue (Ptr<Packet> p)
 Ptr<Packet>
 RedQueue::DoDequeue (void)
 {
-  NS_LOG_FUNCTION (this);
+  //NS_LOG_FUNCTION (this);
 
   if (m_packets.empty ())
     {
-      NS_LOG_LOGIC ("Queue empty");
+      //NS_LOG_LOGIC ("Queue empty");
       return 0;
     }
 
@@ -694,10 +669,10 @@ RedQueue::DoDequeue (void)
   m_packets.pop_front ();
   m_bytesInQueue -= p->GetSize ();
 
-  NS_LOG_LOGIC ("Popped " << p);
+  //NS_LOG_LOGIC ("Popped " << p);
 
-  NS_LOG_LOGIC ("Number packets " << m_packets.size ());
-  NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
+  //NS_LOG_LOGIC ("Number packets " << m_packets.size ());
+  //NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
   if (m_bytesInQueue <= 0 && !IsIdling ())
     {
@@ -713,9 +688,9 @@ int
 RedQueue::DropPacket (Ptr<Packet> p)
 {
 
-  NS_LOG_FUNCTION (this << p);
+  //NS_LOG_FUNCTION (this << p);
 
-  NS_LOG_DEBUG ("\t Dropping Packet p");
+  //NS_LOG_DEBUG ("\t Dropping Packet p");
 
   std::list<Ptr<Packet> >::iterator iter;
   uint32_t packetSize;
@@ -742,18 +717,18 @@ RedQueue::DropPacket (Ptr<Packet> p)
 Ptr<const Packet>
 RedQueue::DoPeek (void) const
 {
-  NS_LOG_FUNCTION (this);
+  //NS_LOG_FUNCTION (this);
 
   if (m_packets.empty ())
     {
-      NS_LOG_LOGIC ("Queue empty");
+      //NS_LOG_LOGIC ("Queue empty");
       return NULL;
     }
 
   Ptr<Packet> p = m_packets.front ();
 
-  NS_LOG_LOGIC ("Number packets " << m_packets.size ());
-  NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
+  //NS_LOG_LOGIC ("Number packets " << m_packets.size ());
+  //NS_LOG_LOGIC ("Number bytes " << m_bytesInQueue);
 
   return p;
 }
@@ -761,7 +736,7 @@ RedQueue::DoPeek (void) const
 void
 RedQueue::PrintTable ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  //NS_LOG_FUNCTION_NOARGS ();
 
   for (uint32_t i = 0; i < RED_STATS_TABLE_SIZE; i++)
     {
