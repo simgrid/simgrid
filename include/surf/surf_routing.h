@@ -13,12 +13,11 @@
 SG_BEGIN_DECL()
 
 XBT_PUBLIC_DATA(xbt_lib_t) host_lib;
-XBT_PUBLIC_DATA(int) SURF_HOST_LEVEL;    //Surf workstation level
-XBT_PUBLIC_DATA(int) SIMIX_STORAGE_LEVEL;  //Simix storage level
-XBT_PUBLIC_DATA(int)  SD_HOST_LEVEL;    //Simdag host level
-XBT_PUBLIC_DATA(int)  SD_STORAGE_LEVEL;    //Simdag storage level
-XBT_PUBLIC_DATA(int)  COORD_HOST_LEVEL;  //Coordinates level
-XBT_PUBLIC_DATA(int) NS3_HOST_LEVEL;    //host node for ns3
+XBT_PUBLIC_DATA(int) SURF_HOST_LEVEL;     //Surf workstation level
+XBT_PUBLIC_DATA(int) SIMIX_STORAGE_LEVEL; //Simix storage level
+XBT_PUBLIC_DATA(int) SD_STORAGE_LEVEL;    //Simdag storage level
+XBT_PUBLIC_DATA(int) COORD_HOST_LEVEL;    //Coordinates level
+XBT_PUBLIC_DATA(int) NS3_HOST_LEVEL;      //host node for ns3
 
 XBT_PUBLIC_DATA(xbt_lib_t) link_lib;
 XBT_PUBLIC_DATA(int) SD_LINK_LEVEL;    //Simdag level

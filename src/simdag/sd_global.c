@@ -87,7 +87,6 @@ void SD_init(int *argc, char **argv)
 #endif
 
   XBT_DEBUG("ADD SD LEVELS");
-  SD_HOST_LEVEL = xbt_lib_add_level(host_lib,__SD_workstation_destroy);
   SD_LINK_LEVEL = xbt_lib_add_level(link_lib,__SD_link_destroy);
   SD_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,__SD_storage_destroy);
 

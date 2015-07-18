@@ -16,6 +16,8 @@
 #include "xbt/mallocator.h"
 #include <stdbool.h>
 
+SG_BEGIN_DECL()
+
 /* Global variables */
 
 typedef struct SD_global {
@@ -64,10 +66,6 @@ typedef struct SD_workstation {
   SD_task_t current_task;       /* only used in sequential mode */
 } s_SD_workstation_priv_t, *SD_workstation_priv_t;
 
-static inline SD_workstation_priv_t SD_workstation_priv(SD_workstation_t host){
-  return xbt_lib_get_level(host, SD_HOST_LEVEL);
-}
-
 /* Storage */
 typedef s_xbt_dictelm_t s_SD_storage_t;
 typedef struct SD_storage {
@@ -76,7 +74,7 @@ typedef struct SD_storage {
 } s_SD_storage_priv_t, *SD_storage_priv_t;
 
 static inline SD_storage_priv_t SD_storage_priv(SD_storage_t storage){
-  return xbt_lib_get_level(storage, SD_STORAGE_LEVEL);
+  return (SD_storage_priv_t)xbt_lib_get_level(storage, SD_STORAGE_LEVEL);
 }
 
 /* Task */
@@ -219,5 +217,6 @@ void TRACE_sd_task_execute_start(SD_task_t task);
 void TRACE_sd_task_execute_end(SD_task_t task);
 void TRACE_sd_task_destroy(SD_task_t task);
 
+SG_END_DECL()
 
 #endif

@@ -145,6 +145,9 @@ void MSG_host_off(msg_host_t host)
  */
 void __MSG_host_priv_free(msg_host_priv_t priv)
 {
+
+  if (priv == NULL)
+	  return;
   unsigned int size = xbt_dict_size(priv->dp_objs);
   if (size > 0)
     XBT_WARN("dp_objs: %u pending task?", size);
@@ -161,7 +164,7 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
 /*
  * \brief Destroys a host (internal call only)
  */
-void __MSG_host_destroy(msg_host_t host)
+void __MSG_host_destroy(msg_host_t host) //FIXME: killme?
 {
   /* TODO:
    * What happens if VMs still remain on this host?

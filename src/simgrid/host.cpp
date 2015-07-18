@@ -39,13 +39,15 @@ xbt_dynar_t sg_hosts_as_dynar(void) {
 // ========= Layering madness ==============
 
 int MSG_HOST_LEVEL;
+int SD_HOST_LEVEL;
 int SIMIX_HOST_LEVEL;
 int ROUTING_HOST_LEVEL;
 int SURF_CPU_LEVEL;
 
 
-#include "simix/smx_host_private.h" // SIMIX_host_destroy. FIXME: killme
 #include "msg/msg_private.h" // MSG_host_priv_free. FIXME: killme
+#include "simdag/private.h" // __SD_workstation_destroy. FIXME: killme
+#include "simix/smx_host_private.h" // SIMIX_host_destroy. FIXME: killme
 #include "surf/cpu_interface.hpp"
 #include "surf/surf_routing.hpp"
 
@@ -57,9 +59,11 @@ static XBT_INLINE void routing_asr_host_free(void *p) {
 }
 
 
-void sg_host_init() {
-  SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
+void sg_host_init() { // FIXME: only add the needed levels
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_priv_free);
+  SD_HOST_LEVEL = xbt_lib_add_level(host_lib,__SD_workstation_destroy);
+
+  SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
   SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_cpu_free);
   ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
 }
@@ -74,9 +78,18 @@ void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
 void sg_host_msg_destroy(sg_host_t host) {
 	  xbt_lib_unset(host_lib,host->key,MSG_HOST_LEVEL,1);
 }
+// ========== SimDag Layer ==============
+SD_workstation_priv_t sg_host_sd(sg_host_t host) {
+       return (SD_workstation_priv_t) xbt_lib_get_level(host, SD_HOST_LEVEL);
+}
+void sg_host_sd_set(sg_host_t host, SD_workstation_priv_t smx_host) {
+         xbt_lib_set(host_lib,host->key,SD_HOST_LEVEL,smx_host);
+}
+void sg_host_sd_destroy(sg_host_t host) {
+         xbt_lib_unset(host_lib,host->key,SD_HOST_LEVEL,1);
+}
 
 // ========== Simix layer =============
-
 smx_host_priv_t sg_host_simix(sg_host_t host){
   return (smx_host_priv_t) xbt_lib_get_level(host, SIMIX_HOST_LEVEL);
 }

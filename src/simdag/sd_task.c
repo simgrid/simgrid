@@ -1106,7 +1106,7 @@ void __SD_task_really_run(SD_task_t task)
   for (i = 0; i < host_nb; i++) {
     if (SD_workstation_get_access_mode(task->workstation_list[i]) ==
         SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-      SD_workstation_priv(task->workstation_list[i])->current_task = task;
+    	sg_host_sd(task->workstation_list[i])->current_task = task;
       xbt_assert(__SD_workstation_is_busy(task->workstation_list[i]),
                   "The workstation should be busy now");
     }
@@ -1185,11 +1185,11 @@ int __SD_task_try_to_run(SD_task_t task)
   if (!can_start) {             /* if the task cannot start and is not in the FIFOs yet */
     for (i = 0; i < task->workstation_nb; i++) {
       workstation = task->workstation_list[i];
-      if (SD_workstation_priv(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
+      if (sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
         XBT_DEBUG("Pushing task '%s' in the FIFO of workstation '%s'",
                SD_task_get_name(task),
                SD_workstation_get_name(workstation));
-        xbt_fifo_push(SD_workstation_priv(workstation)->task_fifo, task);
+        xbt_fifo_push(sg_host_sd(workstation)->task_fifo, task);
       }
     }
     __SD_task_set_state(task, SD_IN_FIFO);
@@ -1239,23 +1239,23 @@ void __SD_task_just_done(SD_task_t task)
   for (i = 0; i < task->workstation_nb; i++) {
     workstation = task->workstation_list[i];
     XBT_DEBUG("Workstation '%s': access_mode = %d",
-              SD_workstation_get_name(workstation), (int)SD_workstation_priv(workstation)->access_mode);
-    if (SD_workstation_priv(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-      xbt_assert(SD_workstation_priv(workstation)->task_fifo != NULL,
+              SD_workstation_get_name(workstation), (int)sg_host_sd(workstation)->access_mode);
+    if (sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
+      xbt_assert(sg_host_sd(workstation)->task_fifo != NULL,
                   "Workstation '%s' has sequential access but no FIFO!",
                   SD_workstation_get_name(workstation));
-      xbt_assert(SD_workstation_priv(workstation)->current_task =
+      xbt_assert(sg_host_sd(workstation)->current_task =
                   task, "Workstation '%s': current task should be '%s'",
                   SD_workstation_get_name(workstation),
                   SD_task_get_name(task));
 
       /* the task is over so we can release the workstation */
-      SD_workstation_priv(workstation)->current_task = NULL;
+      sg_host_sd(workstation)->current_task = NULL;
 
       XBT_DEBUG("Getting candidate in FIFO");
       candidate =
           xbt_fifo_get_item_content(xbt_fifo_get_first_item
-                                    (SD_workstation_priv(workstation)->task_fifo));
+                                    (sg_host_sd(workstation)->task_fifo));
 
       if (candidate != NULL) {
         XBT_DEBUG("Candidate: '%s'", SD_task_get_name(candidate));
@@ -1309,10 +1309,10 @@ void __SD_task_just_done(SD_task_t task)
 
       /* I can start on this workstation if the workstation is shared
          or if I am the first task in the FIFO */
-      can_start = SD_workstation_priv(workstation)->access_mode == SD_WORKSTATION_SHARED_ACCESS
+      can_start = sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SHARED_ACCESS
           || candidate ==
           xbt_fifo_get_item_content(xbt_fifo_get_first_item
-                                    (SD_workstation_priv(workstation)->task_fifo));
+                                    (sg_host_sd(workstation)->task_fifo));
     }
 
     XBT_DEBUG("Candidate '%s' can start: %d", SD_task_get_name(candidate),
@@ -1324,8 +1324,8 @@ void __SD_task_just_done(SD_task_t task)
         workstation = candidate->workstation_list[j];
 
         /* update the FIFO */
-        if (SD_workstation_priv(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-          candidate = xbt_fifo_shift(SD_workstation_priv(workstation)->task_fifo);   /* the return value is stored just for debugging */
+        if (sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
+          candidate = xbt_fifo_shift(sg_host_sd(workstation)->task_fifo);   /* the return value is stored just for debugging */
           XBT_DEBUG("Head of the FIFO: '%s'",
                  (candidate !=
                   NULL) ? SD_task_get_name(candidate) : "NULL");
