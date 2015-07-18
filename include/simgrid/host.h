@@ -8,6 +8,7 @@
 #define SIMGRID_HOST_H_
 
 #include <xbt/dict.h>
+#include <xbt/dynar.h>
 SG_BEGIN_DECL()
 
 typedef xbt_dictelm_t sg_host_t;
@@ -16,6 +17,7 @@ XBT_PUBLIC(sg_host_t) sg_host_by_name_or_create(const char *name);
 static XBT_INLINE char *sg_host_get_name(sg_host_t host){
 	return host->key;
 }
+XBT_PUBLIC(xbt_dynar_t) sg_hosts_as_dynar(void);
 
 #ifdef __cplusplus
 #define DEFINE_EXTERNAL_CLASS(klass) class klass;

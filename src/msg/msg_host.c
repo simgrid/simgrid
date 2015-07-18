@@ -206,18 +206,7 @@ msg_host_t *MSG_get_host_table(void)
  * \remark The host order in the returned array is generally different from the host creation/declaration order in the XML platform (we use a hash table internally)
  */
 xbt_dynar_t MSG_hosts_as_dynar(void) {
-  xbt_lib_cursor_t cursor;
-  char *key;
-  void **data;
-  xbt_dynar_t res = xbt_dynar_new(sizeof(msg_host_t),NULL);
-
-  xbt_lib_foreach(host_lib, cursor, key, data) {
-    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST) {
-      xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
-      xbt_dynar_push(res, &elm);
-    }
-  }
-  return res;
+  return sg_hosts_as_dynar();
 }
 
 /** \ingroup m_host_management

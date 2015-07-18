@@ -7,6 +7,7 @@
 #include "xbt/dict.h"
 #include "simgrid/host.h"
 #include "surf/surf_routing.h" // SIMIX_HOST_LEVEL and friends FIXME: make private here
+#include "surf/surf.h" // routing_get_network_element_type FIXME:killme
 
 sg_host_t sg_host_by_name(const char *name){
   return xbt_lib_get_elm_or_null(host_lib, name);
@@ -17,6 +18,20 @@ sg_host_t sg_host_by_name_or_create(const char *name) {
 	if (!res) {
 		xbt_lib_set(host_lib,name,0,NULL); // Should only create the bucklet with no data added
 		res = xbt_lib_get_elm_or_null(host_lib, name);
+	}
+	return res;
+}
+xbt_dynar_t sg_hosts_as_dynar(void) {
+	xbt_lib_cursor_t cursor;
+	char *key;
+	void **data;
+	xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),NULL);
+
+	xbt_lib_foreach(host_lib, cursor, key, data) {
+		if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST) {
+			xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
+			xbt_dynar_push(res, &elm);
+		}
 	}
 	return res;
 }

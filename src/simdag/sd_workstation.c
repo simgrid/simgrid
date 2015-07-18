@@ -83,26 +83,12 @@ SD_workstation_t SD_workstation_get_by_name(const char *name)
  * \remark The workstation order in the returned array is generally different from the workstation creation/declaration order in the XML platform (we use a hash table internally).
  * \see SD_workstation_get_number()
  */
-const SD_workstation_t *SD_workstation_get_list(void)
-{
-
-  xbt_lib_cursor_t cursor;
-  char *key;
-  void **data;
-  int i;
-
+const SD_workstation_t *SD_workstation_get_list(void) {
   xbt_assert(SD_workstation_get_number() > 0, "There is no workstation!");
 
-  if (sd_global->workstation_list == NULL) {    /* this is the first time the function is called */
-    sd_global->workstation_list =
-      xbt_new(SD_workstation_t, xbt_lib_length(host_lib));
+  if (sd_global->workstation_list == NULL)     /* this is the first time the function is called */
+    sd_global->workstation_list = xbt_dynar_to_array(sg_hosts_as_dynar());
 
-    i = 0;
-    xbt_lib_foreach(host_lib, cursor, key, data) {
-      if(data[SD_HOST_LEVEL])
-        sd_global->workstation_list[i++] = xbt_dict_cursor_get_elm(cursor);
-    }
-  }
   return sd_global->workstation_list;
 }
 
