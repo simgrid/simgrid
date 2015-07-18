@@ -99,8 +99,6 @@ typedef StorageModel *surf_storage_model_t;
 typedef xbt_dictelm_t surf_resource_t;
 typedef Resource *surf_cpp_resource_t;
 typedef Host *surf_host_t;
-typedef HostCLM03 *surf_host_CLM03_t;
-typedef NetworkCm02Link *surf_network_link_t;
 
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
