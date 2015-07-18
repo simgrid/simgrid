@@ -461,14 +461,16 @@ static void _sg_cfg_cb_contexts_parallel_mode(const char *name, int pos)
 static void _sg_cfg_cb__surf_network_coordinates(const char *name,
                                                  int pos)
 {
+  static int already_set = 0;
   int val = xbt_cfg_get_boolean(_sg_cfg_set, name);
   if (val) {
-    if (!COORD_HOST_LEVEL) {
+    if (!already_set) {
       COORD_HOST_LEVEL = xbt_lib_add_level(host_lib,xbt_dynar_free_voidp);
       COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
     }
+    already_set = 1;
   } else
-    if (COORD_HOST_LEVEL)
+    if (already_set)
       xbt_die("Setting of whether to use coordinate cannot be disabled once set.");
 }
 
