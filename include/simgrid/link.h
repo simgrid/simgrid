@@ -16,12 +16,12 @@ typedef struct Link Link;
 
 /* C interface */
 SG_BEGIN_DECL()
-XBT_PUBLIC(int) surf_network_link_is_shared(Link *link);
-XBT_PUBLIC(double) surf_network_link_get_bandwidth(Link *link);
-XBT_PUBLIC(double) surf_network_link_get_latency(Link *link);
-XBT_PUBLIC(const char*) surf_network_link_get_name(Link *link);
-XBT_PUBLIC(void*) surf_network_link_data(Link *link);
-XBT_PUBLIC(void) surf_network_link_data_set(Link *link,void *data);
+XBT_PUBLIC(int) sg_link_is_shared(Link *link);
+XBT_PUBLIC(double) sg_link_bandwidth(Link *link);
+XBT_PUBLIC(double) sg_link_latency(Link *link);
+XBT_PUBLIC(const char*) sg_link_name(Link *link);
+XBT_PUBLIC(void*) sg_link_data(Link *link);
+XBT_PUBLIC(void) sg_link_data_set(Link *link,void *data);
 SG_END_DECL()
 
 #endif /* INCLUDE_SIMGRID_LINK_H_ */

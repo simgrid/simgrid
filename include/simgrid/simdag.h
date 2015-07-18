@@ -120,7 +120,7 @@ XBT_PUBLIC(const SD_link_t *) SD_link_get_list(void);
 XBT_PUBLIC(int) SD_link_get_number(void);
 /** @brief Returns the user data of a link */
 static inline void *SD_link_get_data(SD_link_t link) {
-  return surf_network_link_data(link);
+  return sg_link_data(link);
 }
 
 /** @brief Sets the user data of a link
@@ -129,25 +129,25 @@ static inline void *SD_link_get_data(SD_link_t link) {
  * if it was not \c NULL.
  */
 static inline void SD_link_set_data(SD_link_t link, void *data) {
-	surf_network_link_data_set(link, data);
+	sg_link_data_set(link, data);
 }
 /** @Returns the name of a link  */
 static inline const char *SD_link_get_name(SD_link_t link) {
-  return surf_network_link_get_name(link);
+  return sg_link_name(link);
 }
 /** @brief Returns the current bandwidth of a link (in bytes per second) */
 static inline double SD_link_get_current_bandwidth(SD_link_t link) {
-  return surf_network_link_get_bandwidth(link);
+  return sg_link_bandwidth(link);
 }
 /** @brief Returns the current latency of a link (in seconds) */
 static inline double SD_link_get_current_latency(SD_link_t link){
-  return surf_network_link_get_latency(link);
+  return sg_link_latency(link);
 }
 /** @brief Returns the sharing policy of this workstation.
  *  @return true if the link is shared, and false if it's a fatpipe
  */
 static inline int SD_link_is_shared(SD_link_t link) {
-  return surf_network_link_is_shared(link);
+  return sg_link_is_shared(link);
 }
 /** @} */
 
