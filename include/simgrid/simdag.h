@@ -131,7 +131,7 @@ static inline void *SD_link_get_data(SD_link_t link) {
 static inline void SD_link_set_data(SD_link_t link, void *data) {
 	sg_link_data_set(link, data);
 }
-/** @Returns the name of a link  */
+/** @brief Returns the name of a link  */
 static inline const char *SD_link_get_name(SD_link_t link) {
   return sg_link_name(link);
 }
