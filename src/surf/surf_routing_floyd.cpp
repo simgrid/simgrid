@@ -124,7 +124,7 @@ void AsFloyd::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_plat
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_push_as(res->link_list, sg_routing_link_t, link);
       if (lat)
-        *lat += static_cast<LinkPtr>(link)->getLatency();
+        *lat += static_cast<Link*>(link)->getLatency();
     }
 
     prev_dst_gw = e_route->gw_dst;

@@ -16,9 +16,6 @@
 class NetworkNS3Model;
 typedef NetworkNS3Model *NetworkNS3ModelPtr;
 
-class NetworkNS3Link;
-typedef NetworkNS3Link *NetworkNS3LinkPtr;
-
 class NetworkNS3Action;
 typedef NetworkNS3Action *NetworkNS3ActionPtr;
 
@@ -37,7 +34,7 @@ public:
   NetworkNS3Model();
 
   ~NetworkNS3Model();
-  LinkPtr createLink(const char *name,
+  Link* createLink(const char *name,
   	                                 double bw_initial,
   	                                 tmgr_trace_t bw_trace,
   	                                 double lat_initial,

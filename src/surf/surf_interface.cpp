@@ -362,7 +362,7 @@ static XBT_INLINE void routing_asr_prop_free(void *p)
 
 static XBT_INLINE void surf_link_free(void *r)
 {
-  delete static_cast<LinkPtr>(r);
+  delete static_cast<Link*>(r);
 }
 
 static XBT_INLINE void surf_host_free(void *r)

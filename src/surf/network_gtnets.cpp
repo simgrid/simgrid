@@ -24,7 +24,7 @@ void newRoute(int src_id, int dst_id,
 		      xbt_dynar_t links, int nb_link)
 {
   void *_link;
-  NetworkGTNetsLinkPtr link;
+  NetworkGTNetsLink *link;
   unsigned int cursor;
   int i = 0;
   int *gtnets_links;
@@ -36,7 +36,7 @@ void newRoute(int src_id, int dst_id,
   gtnets_links = xbt_new0(int, nb_link);
   i = 0;
   xbt_dynar_foreach(links, cursor, _link) {
-	link = (NetworkGTNetsLinkPtr) _link;
+	link = (NetworkGTNetsLink*) _link;
     gtnets_links[i++] = link->m_id;
   }
 
@@ -47,7 +47,7 @@ void newRoute(int src_id, int dst_id,
 }
 
 void newRouteOnehop(int src_id, int dst_id,
-                    NetworkGTNetsLinkPtr link)
+                    NetworkGTNetsLink *link)
 {
   if (gtnets_add_onehop_route(src_id, dst_id, link->m_id)) {
     xbt_die("Cannot create GTNetS route");

@@ -340,7 +340,7 @@ CpuPtr CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
   return cpu;
 }
 
-LinkPtr NetworkL07Model::createLink(const char *name,
+Link* NetworkL07Model::createLink(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,

@@ -201,7 +201,7 @@ void NetworkCm02Model::initialize()
   m_haveGap = false;
 }
 
-LinkPtr NetworkCm02Model::createLink(const char *name,
+Link* NetworkCm02Model::createLink(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
@@ -215,7 +215,7 @@ LinkPtr NetworkCm02Model::createLink(const char *name,
              "Link '%s' declared several times in the platform file.",
              name);
 
-  NetworkCm02LinkPtr nw_link =
+  NetworkCm02Link *nw_link =
 		  new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial, history,
 				                 state_initial, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
 
@@ -240,7 +240,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
         lmm_constraint_t constraint = lmm_get_cnst_from_var(p_maxminSystem,
                                                             action->getVariable(),
                                                             i);
-        NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(lmm_constraint_id(constraint));
+        NetworkCm02Link *link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
         TRACE_surf_link_set_utilization(link->getName(),
                                         action->getCategory(),
                                         (lmm_variable_getvalue(action->getVariable())*
@@ -308,7 +308,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
           lmm_constraint_t constraint = lmm_get_cnst_from_var(p_maxminSystem,
                                                             action->getVariable(),
                                                             i);
-          NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(lmm_constraint_id(constraint));
+          NetworkCm02Link* link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
           TRACE_surf_link_set_utilization(link->getName(),
                                         action->getCategory(),
                                         (lmm_variable_getvalue(action->getVariable())*
@@ -352,7 +352,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
 {
   unsigned int i;
   void *_link;
-  NetworkCm02LinkPtr link;
+  NetworkCm02Link *link;
   int failed = 0;
   NetworkCm02ActionPtr action = NULL;
   double bandwidth_bound;
@@ -370,7 +370,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
              src->getName(), dst->getName());
 
   xbt_dynar_foreach(route, i, _link) {
-	link = static_cast<NetworkCm02LinkPtr>(_link);
+	link = static_cast<NetworkCm02Link*>(_link);
     if (link->getState() == SURF_RESOURCE_OFF) {
       failed = 1;
       break;
@@ -379,7 +379,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   if (sg_network_crosstraffic == 1) {
 	  routing_platf->getRouteAndLatency(dst, src, &back_route, NULL);
     xbt_dynar_foreach(back_route, i, _link) {
-      link = static_cast<NetworkCm02LinkPtr>(_link);
+      link = static_cast<NetworkCm02Link*>(_link);
       if (link->getState() == SURF_RESOURCE_OFF) {
         failed = 1;
         break;
@@ -403,12 +403,12 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   bandwidth_bound = -1.0;
   if (sg_weight_S_parameter > 0) {
     xbt_dynar_foreach(route, i, _link) {
-      link = static_cast<NetworkCm02LinkPtr>(_link);
+      link = static_cast<NetworkCm02Link*>(_link);
       action->m_weight += sg_weight_S_parameter / link->getBandwidth();
     }
   }
   xbt_dynar_foreach(route, i, _link) {
-	link = static_cast<NetworkCm02LinkPtr>(_link);
+	link = static_cast<NetworkCm02Link*>(_link);
     double bb = bandwidthFactor(size) * link->getBandwidth(); //(link->p_power.peak * link->p_power.scale);
     bandwidth_bound =
         (bandwidth_bound < 0.0) ? bb : min(bandwidth_bound, bb);
@@ -421,7 +421,7 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
     xbt_assert(!xbt_dynar_is_empty(route),
                "Using a model with a gap (e.g., SMPI) with a platform without links (e.g. vivaldi)!!!");
 
-    link = *static_cast<NetworkCm02LinkPtr *>(xbt_dynar_get_ptr(route, 0));
+    link = *static_cast<NetworkCm02Link **>(xbt_dynar_get_ptr(route, 0));
     gapAppend(size, link, action);
     XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",
               action, src->getName(), dst->getName(), action->m_senderGap,
@@ -451,14 +451,14 @@ ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
   }
 
   xbt_dynar_foreach(route, i, _link) {
-	link = static_cast<NetworkCm02LinkPtr>(_link);
+	link = static_cast<NetworkCm02Link*>(_link);
     lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), 1.0);
   }
 
   if (sg_network_crosstraffic == 1) {
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
     xbt_dynar_foreach(back_route, i, _link) {
-      link = static_cast<NetworkCm02LinkPtr>(_link);
+      link = static_cast<NetworkCm02Link*>(_link);
       lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), .05);
     }
   }
@@ -482,7 +482,7 @@ void NetworkCm02Model::addTraces(){
   /* connect all traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
+    NetworkCm02Link *link = static_cast<NetworkCm02Link*>(
                             xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
 
     xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
@@ -496,7 +496,7 @@ void NetworkCm02Model::addTraces(){
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
+    NetworkCm02Link *link = static_cast<NetworkCm02Link*>(
                                 xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
 
     xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
@@ -510,7 +510,7 @@ void NetworkCm02Model::addTraces(){
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02LinkPtr link = static_cast<NetworkCm02LinkPtr>(
+    NetworkCm02Link *link = static_cast<NetworkCm02Link*>(
                             xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
 
     xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",

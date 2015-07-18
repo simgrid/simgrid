@@ -79,7 +79,7 @@ class NetworkL07Model : public NetworkModel {
 public:
   NetworkL07Model() : NetworkModel() {};
   ~NetworkL07Model() {surf_network_model = NULL;};
-  LinkPtr createLink(const char *name,
+  Link* createLink(const char *name,
 		                                   double bw_initial,
 		                                   tmgr_trace_t bw_trace,
 		                                   double lat_initial,

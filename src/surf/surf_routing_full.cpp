@@ -127,7 +127,7 @@ void AsFull::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf
     xbt_dynar_foreach(e_route->link_list, cpt, link) {
       xbt_dynar_push(res->link_list, &link);
       if (lat)
-        *lat += static_cast<LinkPtr>(link)->getLatency();
+        *lat += static_cast<Link*>(link)->getLatency();
     }
   }
 }

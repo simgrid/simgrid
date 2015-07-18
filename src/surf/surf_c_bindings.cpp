@@ -224,7 +224,7 @@ void *surf_as_cluster_get_backbone(AS_t as){
 }
 
 void surf_as_cluster_set_backbone(AS_t as, void* backbone){
-  static_cast<AsClusterPtr>(as)->p_backbone = static_cast<LinkPtr>(backbone);
+  static_cast<AsClusterPtr>(as)->p_backbone = static_cast<Link*>(backbone);
 }
 
 const char *surf_model_name(surf_model_t model){

@@ -27,21 +27,21 @@ typedef NetworkAction *NetworkActionPtr;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after Link creation
- * @details Callback functions have the following signature: `void(LinkPtr)`
+ * @details Callback functions have the following signature: `void(Link*)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, LinkPtr)) networkLinkCreatedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, Link*)) networkLinkCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after Link destruction
- * @details Callback functions have the following signature: `void(LinkPtr)`
+ * @details Callback functions have the following signature: `void(Link*)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, LinkPtr)) networkLinkDestructedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, Link*)) networkLinkDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after Link State changed
  * @details Callback functions have the following signature: `void(LinkActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, LinkPtr, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, Link*, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after NetworkAction State changed
@@ -105,7 +105,7 @@ public:
    * @param properties Dictionary of properties associated to this Resource
    * @return The created Link
    */
-  virtual LinkPtr createLink(const char *name,
+  virtual Link* createLink(const char *name,
                                    double bw_initial,
                                    tmgr_trace_t bw_trace,
                                    double lat_initial,
@@ -115,7 +115,7 @@ public:
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties)=0;
 
-  virtual void gapAppend(double /*size*/, const LinkPtr /*link*/, NetworkActionPtr /*action*/) {};
+  virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkActionPtr /*action*/) {};
 
   /**
    * @brief Create a communication between two hosts.

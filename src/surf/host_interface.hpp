@@ -353,7 +353,7 @@ public:
   xbt_dynar_t p_storage;
   RoutingEdgePtr p_netElm;
   CpuPtr p_cpu;
-  LinkPtr p_network;
+  Link* p_network; //FIXME:rename
 
   /**
    * @brief Get the list of virtual machines on the current Host

@@ -15,9 +15,6 @@
 class NetworkConstantModel;
 typedef NetworkConstantModel *NetworkConstantModelPtr;
 
-class NetworkConstantLink;
-typedef NetworkConstantLink *NetworkConstantLinkPtr;
-
 class NetworkConstantAction;
 typedef NetworkConstantAction *NetworkConstantActionPtr;
 

@@ -17,9 +17,6 @@
 class NetworkCm02Model;
 typedef NetworkCm02Model *NetworkCm02ModelPtr;
 
-class NetworkCm02Link;
-typedef NetworkCm02Link *NetworkCm02LinkPtr;
-
 class NetworkCm02Action;
 typedef NetworkCm02Action *NetworkCm02ActionPtr;
 
@@ -48,7 +45,7 @@ public:
   }
   ~NetworkCm02Model() {
   }
-  LinkPtr createLink(const char *name,
+  Link* createLink(const char *name,
 		  double bw_initial,
 		  tmgr_trace_t bw_trace,
 		  double lat_initial,

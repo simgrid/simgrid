@@ -34,9 +34,9 @@ SG_END_DECL()
  * Callbacks *
  *************/
 
-surf_callback(void, LinkPtr) networkLinkCreatedCallbacks;
-surf_callback(void, LinkPtr) networkLinkDestructedCallbacks;
-surf_callback(void, LinkPtr, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
+surf_callback(void, Link*) networkLinkCreatedCallbacks;
+surf_callback(void, Link*) networkLinkDestructedCallbacks;
+surf_callback(void, Link*, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
 surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
 surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) networkCommunicateCallbacks;
 

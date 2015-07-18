@@ -57,7 +57,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 
   if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
-  LinkPtr net_link = surf_network_model->createLink(link->id,
+  Link* net_link = surf_network_model->createLink(link->id,
                                      link->bandwidth,
                                      link->bandwidth_trace,
                                      link->latency,
@@ -207,7 +207,7 @@ static void create_ns3_topology(void)
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
     char *src = onelink->p_src->getName();
     char *dst = onelink->p_dst->getName();
-    NetworkNS3LinkPtr link = static_cast<NetworkNS3LinkPtr>(onelink->p_link);
+    NetworkNS3Link *link = static_cast<NetworkNS3Link *>(onelink->p_link);
 
     if (strcmp(src,dst) && link->m_created){
       XBT_DEBUG("Route from '%s' to '%s' with link '%s'", src, dst, link->getName());
@@ -258,7 +258,7 @@ static void define_callbacks_ns3(void)
  *********/
 static void free_ns3_link(void * elmts)
 {
-  delete static_cast<NetworkNS3LinkPtr>(elmts);
+  delete static_cast<NetworkNS3Link*>(elmts);
 }
 
 static void free_ns3_host(void * elmts)
@@ -294,7 +294,7 @@ NetworkNS3Model::~NetworkNS3Model() {
   xbt_dict_free(&dict_socket);
 }
 
-LinkPtr NetworkNS3Model::createLink(const char *name,
+Link* NetworkNS3Model::createLink(const char *name,
 	                                 double bw_initial,
 	                                 tmgr_trace_t bw_trace,
 	                                 double lat_initial,
@@ -390,7 +390,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     	routing_get_route_and_latency (action->p_srcElm, action->p_dstElm, &route, NULL);
     	unsigned int i;
     	for (i = 0; i < xbt_dynar_length (route); i++){
-    		NetworkNS3LinkPtr link = ((NetworkNS3LinkPtr)xbt_dynar_get_ptr (route, i));
+    		NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr (route, i));
     		TRACE_surf_link_set_utilization (link->getName(),
     				action->getCategory(),
 					(data_delta_sent)/delta,

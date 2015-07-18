@@ -30,9 +30,6 @@ xbt_dict_t network_card_ids;
 class NetworkGTNetsModel;
 typedef NetworkGTNetsModel *NetworkGTNetsModelPtr;
 
-class NetworkGTNetsLink;
-typedef NetworkGTNetsLink *NetworkGTNetsLinkPtr;
-
 class NetworkGTNetsAction;
 typedef NetworkGTNetsAction *NetworkGTNetsActionPtr;
 
