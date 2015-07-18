@@ -245,6 +245,12 @@ public:
   /* LMM */
   tmgr_trace_event_t p_stateEvent;
   s_surf_metric_t p_power;
+
+  /* User data */
+  void *getData()        { return userData;}
+  void  setData(void *d) { userData=d;}
+private:
+  void *userData;
 };
 
 /**********

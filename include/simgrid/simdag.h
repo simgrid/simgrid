@@ -11,6 +11,7 @@
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 
+#include "simgrid/link.h"
 
 SG_BEGIN_DECL()
 /** @brief Workstation datatype
@@ -38,11 +39,6 @@ typedef enum {
   SD_WORKSTATION_SEQUENTIAL_ACCESS  /**< @brief Only one task can be executed, the others wait in a FIFO. */
 } e_SD_workstation_access_mode_t;
 
-typedef enum {
-  SD_LINK_SHARED,
-  SD_LINK_FATPIPE
-} e_SD_link_sharing_policy_t;
-
 /** @brief Link datatype
     @ingroup SD_datatypes_management
 
@@ -51,7 +47,7 @@ typedef enum {
     links between two workstations.
 
     @see SD_link_management */
-typedef struct SD_link *SD_link_t;
+typedef Link *SD_link_t;
 
 /** @brief Task datatype
     @ingroup SD_datatypes_management
@@ -122,13 +118,37 @@ XBT_PUBLIC(const char*) SD_as_router_get_property_value(const char * as,
  */
 XBT_PUBLIC(const SD_link_t *) SD_link_get_list(void);
 XBT_PUBLIC(int) SD_link_get_number(void);
-XBT_PUBLIC(void *) SD_link_get_data(SD_link_t link);
-XBT_PUBLIC(void) SD_link_set_data(SD_link_t link, void *data);
-XBT_PUBLIC(const char *) SD_link_get_name(SD_link_t link);
-XBT_PUBLIC(double) SD_link_get_current_bandwidth(SD_link_t link);
-XBT_PUBLIC(double) SD_link_get_current_latency(SD_link_t link);
-XBT_PUBLIC(e_SD_link_sharing_policy_t) SD_link_get_sharing_policy(SD_link_t
-                                                                  link);
+/** @brief Returns the user data of a link */
+static inline void *SD_link_get_data(SD_link_t link) {
+  return surf_network_link_data(link);
+}
+
+/** @brief Sets the user data of a link
+ *
+ * The new data can be \c NULL. The old data should have been freed first
+ * if it was not \c NULL.
+ */
+static inline void SD_link_set_data(SD_link_t link, void *data) {
+	surf_network_link_data_set(link, data);
+}
+/** @Returns the name of a link  */
+static inline const char *SD_link_get_name(SD_link_t link) {
+  return surf_network_link_get_name(link);
+}
+/** @brief Returns the current bandwidth of a link (in bytes per second) */
+static inline double SD_link_get_current_bandwidth(SD_link_t link) {
+  return surf_network_link_get_bandwidth(link);
+}
+/** @brief Returns the current latency of a link (in seconds) */
+static inline double SD_link_get_current_latency(SD_link_t link){
+  return surf_network_link_get_latency(link);
+}
+/** @brief Returns the sharing policy of this workstation.
+ *  @return true if the link is shared, and false if it's a fatpipe
+ */
+static inline int SD_link_is_shared(SD_link_t link) {
+  return surf_network_link_is_shared(link);
+}
 /** @} */
 
 /************************** Workstation handling ****************************/

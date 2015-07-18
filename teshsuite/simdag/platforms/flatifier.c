@@ -183,7 +183,7 @@ int main(int argc, char **argv)
           SD_link_get_name(links[i]),
           SD_link_get_current_bandwidth(links[i]),
           SD_link_get_current_latency(links[i]));
-      if (SD_link_get_sharing_policy(links[i]) == SD_LINK_SHARED) {
+      if (SD_link_is_shared(links[i])) {
         printf("/>\n");
       } else {
         printf(" sharing_policy=\"FATPIPE\"/>\n");

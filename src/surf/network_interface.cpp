@@ -20,14 +20,22 @@ SG_BEGIN_DECL()
 int surf_network_link_is_shared(Link *link){
   return link->isShared();
 }
-
 double surf_network_link_get_bandwidth(Link *link){
   return link->getBandwidth();
 }
-
 double surf_network_link_get_latency(Link *link){
   return link->getLatency();
 }
+const char* surf_network_link_get_name(Link *link) {
+  return link->getName();
+}
+void* surf_network_link_data(Link *link) {
+	return link->getData();
+}
+void surf_network_link_data_set(Link *link,void *data) {
+	link->setData(data);
+}
+
 SG_END_DECL()
 
 /*************

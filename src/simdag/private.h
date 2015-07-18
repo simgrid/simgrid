@@ -49,13 +49,6 @@ typedef struct SD_global {
 
 extern SD_global_t sd_global;
 
-/* Link */
-typedef struct SD_link {
-  void *surf_link;              /* surf object */
-  void *data;                   /* user data */
-  e_SD_link_sharing_policy_t sharing_policy;
-} s_SD_link_t;
-
 /* Workstation */
 typedef s_xbt_dictelm_t s_SD_workstation_t;
 typedef struct SD_workstation {
@@ -127,9 +120,6 @@ typedef struct SD_dependency {
 /* SimDag private functions */
 XBT_PUBLIC(xbt_swag_t) SD_simulate_swag(double how_long); /* could be public, but you need to see the internals of the SD_task_t to use it */
 
-
-SD_link_t __SD_link_create(void *surf_link, void *data);
-#define __SD_link_destroy xbt_free_f
 
 SD_workstation_t __SD_workstation_create(void *surf_workstation,
                                          void *data);
