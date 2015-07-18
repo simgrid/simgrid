@@ -9,7 +9,7 @@
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
-
+#include "simgrid/link.h"
 
 /* Creates a link and registers it in SD.
  */

@@ -687,6 +687,7 @@ set(headers_to_install
   include/simgrid/plugins.h
   include/simgrid/simix.h
   include/simgrid/host.h
+  include/simgrid/link.h
   include/smpi/mpi.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h

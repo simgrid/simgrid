@@ -13,6 +13,23 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
                                 "Logging specific to the SURF network module");
 
+/*********
+ * C API *
+ *********/
+SG_BEGIN_DECL()
+int surf_network_link_is_shared(Link *link){
+  return link->isShared();
+}
+
+double surf_network_link_get_bandwidth(Link *link){
+  return link->getBandwidth();
+}
+
+double surf_network_link_get_latency(Link *link){
+  return link->getLatency();
+}
+SG_END_DECL()
+
 /*************
  * Callbacks *
  *************/

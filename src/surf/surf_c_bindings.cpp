@@ -489,18 +489,6 @@ void surf_vm_set_affinity(surf_resource_t vm, surf_resource_t cpu, unsigned long
   return get_casted_vm(vm)->setAffinity(sg_host_surfcpu(cpu), mask);
 }
 
-int surf_network_link_is_shared(surf_cpp_resource_t link){
-  return static_cast<LinkPtr>(link)->isShared();
-}
-
-double surf_network_link_get_bandwidth(surf_cpp_resource_t link){
-  return static_cast<LinkPtr>(link)->getBandwidth();
-}
-
-double surf_network_link_get_latency(surf_cpp_resource_t link){
-  return static_cast<LinkPtr>(link)->getLatency();
-}
-
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
   return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->getContent();
 }

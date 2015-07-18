@@ -7,6 +7,8 @@
 #include "surf_interface.hpp"
 #include "surf_routing.hpp"
 
+#include "simgrid/link.h"
+
 #ifndef SURF_NETWORK_INTERFACE_HPP_
 #define SURF_NETWORK_INTERFACE_HPP_
 
@@ -15,9 +17,6 @@
  ***********/
 class NetworkModel;
 typedef NetworkModel *NetworkModelPtr;
-
-class Link;
-typedef Link *LinkPtr;
 
 class NetworkAction;
 typedef NetworkAction *NetworkActionPtr;

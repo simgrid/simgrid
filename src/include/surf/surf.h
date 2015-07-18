@@ -708,31 +708,6 @@ XBT_PUBLIC(int) surf_host_file_seek(surf_resource_t host,
                                            int origin);
 
 /**
- * @brief [brief description]
- * @details [long description]
- *
- * @param link [description]
- * @return [description]
- */
-XBT_PUBLIC(int) surf_network_link_is_shared(surf_cpp_resource_t link);
-
-/**
- * @brief Get the bandwidth of a link in bytes per second
- *
- * @param link The surf link
- * @return The bandwidth in bytes per second
- */
-XBT_PUBLIC(double) surf_network_link_get_bandwidth(surf_cpp_resource_t link);
-
-/**
- * @brief Get the latency of a link in seconds
- *
- * @param link The surf link
- * @return The latency in seconds
- */
-XBT_PUBLIC(double) surf_network_link_get_latency(surf_cpp_resource_t link);
-
-/**
  * @brief Get the content of a storage
  *
  * @param resource The surf storage
