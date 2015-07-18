@@ -72,26 +72,17 @@ XBT_PUBLIC(void) net_add_traces();
  */
 class NetworkModel : public Model {
 public:
-  /**
-   * @brief NetworkModel constructor
-   */
+  /** @brief NetworkModel constructor */
   NetworkModel() : Model("network") {
     f_networkSolve = lmm_solve;
   };
 
-  /**
-   * @brief NetworkModel constructor
-   *
-   * @param name The name of the NetworkModel
-   */
+  /** @brief NetworkModel constructor */
   NetworkModel(const char *name) : Model(name) {
 	f_networkSolve = lmm_solve;
-	m_haveGap = false;
   };
 
-  /**
-   * @brief The destructor of the NetworkModel
-   */
+  /** @brief The destructor of the NetworkModel */
   ~NetworkModel() {
 	if (p_maxminSystem)
 	  lmm_system_free(p_maxminSystem);
@@ -184,7 +175,7 @@ public:
    */
   virtual double bandwidthConstraint(double rate, double bound, double size);
   double shareResourcesFull(double now);
-  bool m_haveGap;
+  bool m_haveGap = false;
 };
 
 /************
@@ -220,33 +211,19 @@ public:
               tmgr_history_t history,
               tmgr_trace_t state_trace);
 
-  /**
-   * @brief NetworkLink destructor
-   */
+  /** @brief NetworkLink destructor */
   ~NetworkLink();
 
-  /**
-   * @brief Get the bandwidth in bytes per second of current NetworkLink
-   *
-   * @return The bandwith in bytes per second of the current NetworkLink
-   */
+  /** @brief Get the bandwidth in bytes per second of current NetworkLink */
   virtual double getBandwidth();
 
-  /**
-   * @brief Update the bandwidth in bytes per second of current NetworkLink
-   */
+  /** @brief Update the bandwidth in bytes per second of current NetworkLink */
   virtual void updateBandwidth(double value, double date=surf_get_clock())=0;
 
-  /**
-   * @brief Get the latency in seconds of current NetworkLink
-   *
-   * @return The latency in seconds of the current NetworkLink
-   */
+  /** @brief Get the latency in seconds of current NetworkLink */
   virtual double getLatency();
 
-  /**
-   * @brief Update the latency in seconds of current NetworkLink
-   */
+  /** @brief Update the latency in seconds of current NetworkLink */
   virtual void updateLatency(double value, double date=surf_get_clock())=0;
 
   /**
@@ -256,11 +233,7 @@ public:
    */
   virtual bool isShared();
 
-  /**
-   * @brief Check if the NetworkLink is used
-   *
-   * @return true if the current NetwokrLink is used, false otherwise
-   */
+  /** @brief Check if the NetworkLink is used */
   bool isUsed();
 
   void setState(e_surf_resource_state_t state);
@@ -280,8 +253,7 @@ public:
  **********/
 /** @ingroup SURF_network_interface
  * @brief SURF network action interface class
- * @details A NetworkAction represents a communication between two
- * [hosts](\ref Host)
+ * @details A NetworkAction represents a communication between two [hosts](\ref Host)
  */
 class NetworkAction : public Action {
 public:
