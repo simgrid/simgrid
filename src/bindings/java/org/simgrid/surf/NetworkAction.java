@@ -10,7 +10,7 @@ package org.simgrid.surf;
 
 /**
   * An network action created by network model
-  * @see NetworkLink
+  * @see Link
   */
 public class NetworkAction extends Action {
   private long swigCPtr;

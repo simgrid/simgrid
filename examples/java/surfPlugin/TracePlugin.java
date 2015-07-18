@@ -18,40 +18,48 @@ public class TracePlugin extends Plugin {
     activateCpuStateChangedCallback();
     activateCpuActionStateChangedCallback();
 
-    activateNetworkLinkCreatedCallback();
-    activateNetworkLinkDestructedCallback();
-    activateNetworkLinkStateChangedCallback();
+    activateLinkCreatedCallback();
+    activateLinkDestructedCallback();
+    activateLinkStateChangedCallback();
     activateNetworkActionStateChangedCallback();
   }
 
+  @Override
   public void cpuCreatedCallback(Cpu cpu) {
     Msg.info("Trace: Cpu created "+cpu.getName());
   }
 
+  @Override
   public void cpuDestructedCallback(Cpu cpu) {
     Msg.info("Trace: Cpu destructed "+cpu.getName());
   }
 
+  @Override
   public void cpuStateChangedCallback(Cpu cpu, ResourceState old, ResourceState cur){
     Msg.info("Trace: Cpu state changed "+cpu.getName());
   }
 
+  @Override
   public void cpuActionStateChangedCallback(CpuAction action, ActionState old, ActionState cur){
     Msg.info("Trace: CpuAction state changed "+action.getModel().getName());
   }
 
-  public void networkLinkCreatedCallback(NetworkLink link) {
-    Msg.info("Trace: NetworkLink created "+link.getName());
+  @Override
+  public void networkLinkCreatedCallback(Link link) {
+    Msg.info("Trace: Link created "+link.getName());
   }
 
-  public void networkLinkDestructedCallback(NetworkLink link) {
-    Msg.info("Trace: NetworkLink destructed "+link.getName());
+  @Override
+  public void networkLinkDestructedCallback(Link link) {
+    Msg.info("Trace: Link destructed "+link.getName());
   }
 
-  public void networkLinkStateChangedCallback(NetworkLink link, ResourceState old, ResourceState cur){
-    Msg.info("Trace: NetworkLink state changed "+link.getName());
+  @Override
+  public void networkLinkStateChangedCallback(Link link, ResourceState old, ResourceState cur){
+    Msg.info("Trace: Link state changed "+link.getName());
   }
 
+  @Override
   public void networkActionStateChangedCallback(NetworkAction action, ActionState old, ActionState cur){
     Msg.info("Trace: NetworkAction state changed "+action.getModel().getName());
   }

@@ -37,7 +37,7 @@ public:
   NetworkNS3Model();
 
   ~NetworkNS3Model();
-  NetworkLinkPtr createNetworkLink(const char *name,
+  LinkPtr createLink(const char *name,
   	                                 double bw_initial,
   	                                 tmgr_trace_t bw_trace,
   	                                 double lat_initial,
@@ -57,7 +57,7 @@ public:
 /************
  * Resource *
  ************/
-class NetworkNS3Link : public NetworkLink {
+class NetworkNS3Link : public Link {
 public:
   NetworkNS3Link(NetworkNS3ModelPtr model, const char *name, xbt_dict_t props,
   		         double bw_initial, double lat_initial);

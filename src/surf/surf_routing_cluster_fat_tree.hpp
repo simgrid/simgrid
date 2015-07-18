@@ -52,11 +52,11 @@ public:
 
   /** Virtual link standing for the node global capacity.
    */
-  NetworkLink* limiterLink;
+  Link* limiterLink;
   /** If present, communications from this node to this node will pass through it
    * instead of passing by an upper level switch.
    */
-  NetworkLink* loopback;
+  Link* loopback;
   FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
               int position);
 };
@@ -74,10 +74,10 @@ public:
               FatTreeNode *destination);
   /** Link going up in the tree
    */
-  NetworkLink *upLink; 
+  Link *upLink; 
   /** Link going down in the tree
    */
-  NetworkLink *downLink;
+  Link *downLink;
   /** Upper end of the link
    */
   FatTreeNode *upNode;

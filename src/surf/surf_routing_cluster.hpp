@@ -39,7 +39,7 @@ public:
   int parsePU(RoutingEdgePtr elm); /* A host or a router, whatever */
   int parseAS(RoutingEdgePtr elm);
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
-  NetworkLinkPtr p_backbone;
+  LinkPtr p_backbone;
   void *p_loopback;
   RoutingEdgePtr p_router;
   int p_has_limiter;

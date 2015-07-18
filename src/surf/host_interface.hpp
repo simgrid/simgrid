@@ -128,7 +128,7 @@ public:
  ************/
 /** @ingroup SURF_host_interface
  * @brief SURF Host interface class
- * @details An host represents a machine with a aggregation of a Cpu, a NetworkLink and a Storage
+ * @details An host represents a machine with a aggregation of a Cpu, a Link and a Storage
  */
 class Host : public Resource {
 public:
@@ -353,7 +353,7 @@ public:
   xbt_dynar_t p_storage;
   RoutingEdgePtr p_netElm;
   CpuPtr p_cpu;
-  NetworkLinkPtr p_network;
+  LinkPtr p_network;
 
   /**
    * @brief Get the list of virtual machines on the current Host

@@ -11,15 +11,15 @@ package org.simgrid.surf;
 /**
  * A generic resource for the network component
  */
-public class NetworkLink extends Resource {
+public class Link extends Resource {
   private long swigCPtr;
 
-  protected NetworkLink(long cPtr, boolean cMemoryOwn) {
-    super(SurfJNI.NetworkLink_SWIGUpcast(cPtr), cMemoryOwn);
+  protected Link(long cPtr, boolean cMemoryOwn) {
+    super(SurfJNI.Link_SWIGUpcast(cPtr), cMemoryOwn);
     swigCPtr = cPtr;
   }
 
-  protected static long getCPtr(NetworkLink obj) {
+  protected static long getCPtr(Link obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 
@@ -31,24 +31,24 @@ public class NetworkLink extends Resource {
     if (swigCPtr != 0) {
       if (swigCMemOwn) {
         swigCMemOwn = false;
-        SurfJNI.delete_NetworkLink(swigCPtr);
+        SurfJNI.delete_Link(swigCPtr);
       }
       swigCPtr = 0;
     }
     super.delete();
   }
 
-  protected static long[] cArrayUnwrap(NetworkLink[] arrayWrapper) {
+  protected static long[] cArrayUnwrap(Link[] arrayWrapper) {
       long[] cArray = new long[arrayWrapper.length];
       for (int i=0; i<arrayWrapper.length; i++)
-        cArray[i] = NetworkLink.getCPtr(arrayWrapper[i]);
+        cArray[i] = Link.getCPtr(arrayWrapper[i]);
       return cArray;
   }
 
-  protected static NetworkLink[] cArrayWrap(long[] cArray, boolean cMemoryOwn) {
-    NetworkLink[] arrayWrapper = new NetworkLink[cArray.length];
+  protected static Link[] cArrayWrap(long[] cArray, boolean cMemoryOwn) {
+    Link[] arrayWrapper = new Link[cArray.length];
     for (int i=0; i<cArray.length; i++)
-      arrayWrapper[i] = new NetworkLink(cArray[i], cMemoryOwn);
+      arrayWrapper[i] = new Link(cArray[i], cMemoryOwn);
     return arrayWrapper;
   }
 
@@ -57,7 +57,7 @@ public class NetworkLink extends Resource {
     * @return The bandwidth of the link
     */
   public double getBandwidth() {
-    return SurfJNI.NetworkLink_getBandwidth(swigCPtr, this);
+    return SurfJNI.Link_getBandwidth(swigCPtr, this);
   }
 
   
@@ -65,7 +65,7 @@ public class NetworkLink extends Resource {
     * @param value The new bandwidth
     */
   public void updateBandwidth(double value, double date) {
-    SurfJNI.NetworkLink_updateBandwidth__SWIG_0(swigCPtr, this, value, date);
+    SurfJNI.Link_updateBandwidth__SWIG_0(swigCPtr, this, value, date);
   }
 
   
@@ -73,7 +73,7 @@ public class NetworkLink extends Resource {
     * @param value The new bandwidth
     */
   public void updateBandwidth(double value) {
-    SurfJNI.NetworkLink_updateBandwidth__SWIG_1(swigCPtr, this, value);
+    SurfJNI.Link_updateBandwidth__SWIG_1(swigCPtr, this, value);
   }
 
   
@@ -81,7 +81,7 @@ public class NetworkLink extends Resource {
     * @return The latency of the link
     */
   public double getLatency() {
-    return SurfJNI.NetworkLink_getLatency(swigCPtr, this);
+    return SurfJNI.Link_getLatency(swigCPtr, this);
   }
 
   
@@ -89,7 +89,7 @@ public class NetworkLink extends Resource {
     * @param value The new latency
     */
   public void updateLatency(double value, double date) {
-    SurfJNI.NetworkLink_updateLatency__SWIG_0(swigCPtr, this, value, date);
+    SurfJNI.Link_updateLatency__SWIG_0(swigCPtr, this, value, date);
   }
 
   
@@ -97,7 +97,7 @@ public class NetworkLink extends Resource {
     * @param value The new latency
     */
   public void updateLatency(double value) {
-    SurfJNI.NetworkLink_updateLatency__SWIG_1(swigCPtr, this, value);
+    SurfJNI.Link_updateLatency__SWIG_1(swigCPtr, this, value);
   }
 
 }

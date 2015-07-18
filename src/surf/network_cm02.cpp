@@ -186,7 +186,7 @@ void NetworkCm02Model::initialize()
 	p_maxminSystem = lmm_system_new(m_selectiveUpdate);
 
   const char* lb_name = "__loopback__";
-  routing_model_create(createNetworkLink(lb_name,
+  routing_model_create(createLink(lb_name,
 	                                           498000000, NULL, 0.000015, NULL,
 	                                           SURF_RESOURCE_ON, NULL,
 	                                           SURF_LINK_FATPIPE, NULL));
@@ -201,7 +201,7 @@ void NetworkCm02Model::initialize()
   m_haveGap = false;
 }
 
-NetworkLinkPtr NetworkCm02Model::createNetworkLink(const char *name,
+LinkPtr NetworkCm02Model::createLink(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
@@ -537,7 +537,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02ModelPtr model, const char *name, xb
 	                           double lat_initial,
 	                           tmgr_trace_t lat_trace,
 	                           e_surf_link_sharing_policy_t policy)
-: NetworkLink(model, name, props, lmm_constraint_new(system, this, constraint_value), history, state_trace)
+: Link(model, name, props, lmm_constraint_new(system, this, constraint_value), history, state_trace)
 {
   setState(state_init);
 

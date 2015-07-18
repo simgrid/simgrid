@@ -224,7 +224,7 @@ void *surf_as_cluster_get_backbone(AS_t as){
 }
 
 void surf_as_cluster_set_backbone(AS_t as, void* backbone){
-  static_cast<AsClusterPtr>(as)->p_backbone = static_cast<NetworkLinkPtr>(backbone);
+  static_cast<AsClusterPtr>(as)->p_backbone = static_cast<LinkPtr>(backbone);
 }
 
 const char *surf_model_name(surf_model_t model){
@@ -490,15 +490,15 @@ void surf_vm_set_affinity(surf_resource_t vm, surf_resource_t cpu, unsigned long
 }
 
 int surf_network_link_is_shared(surf_cpp_resource_t link){
-  return static_cast<NetworkLinkPtr>(link)->isShared();
+  return static_cast<LinkPtr>(link)->isShared();
 }
 
 double surf_network_link_get_bandwidth(surf_cpp_resource_t link){
-  return static_cast<NetworkLinkPtr>(link)->getBandwidth();
+  return static_cast<LinkPtr>(link)->getBandwidth();
 }
 
 double surf_network_link_get_latency(surf_cpp_resource_t link){
-  return static_cast<NetworkLinkPtr>(link)->getLatency();
+  return static_cast<LinkPtr>(link)->getLatency();
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){

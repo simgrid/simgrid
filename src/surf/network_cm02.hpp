@@ -48,15 +48,15 @@ public:
   }
   ~NetworkCm02Model() {
   }
-  NetworkLinkPtr createNetworkLink(const char *name,
-                                   double bw_initial,
-                                   tmgr_trace_t bw_trace,
-                                   double lat_initial,
-                                   tmgr_trace_t lat_trace,
-                                   e_surf_resource_state_t state_initial,
-                                   tmgr_trace_t state_trace,
-                                   e_surf_link_sharing_policy_t policy,
-                                   xbt_dict_t properties);
+  LinkPtr createLink(const char *name,
+		  double bw_initial,
+		  tmgr_trace_t bw_trace,
+		  double lat_initial,
+		  tmgr_trace_t lat_trace,
+		  e_surf_resource_state_t state_initial,
+		  tmgr_trace_t state_trace,
+		  e_surf_link_sharing_policy_t policy,
+		  xbt_dict_t properties);
   void addTraces();
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
@@ -68,7 +68,7 @@ public:
  * Resource *
  ************/
 
-class NetworkCm02Link : public NetworkLink {
+class NetworkCm02Link : public Link {
 public:
   NetworkCm02Link(NetworkCm02ModelPtr model, const char *name, xbt_dict_t props,
 	                           lmm_system_t system,

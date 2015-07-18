@@ -1,3 +1,6 @@
+ surf.java:
+ * class NetworkLink renamed to Link
+
 SimGrid (3.12) NOT RELEASED; urgency=low
 
  cMSG:

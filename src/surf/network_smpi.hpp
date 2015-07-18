@@ -26,7 +26,7 @@ public:
   NetworkSmpiModel();
   ~NetworkSmpiModel();
 
-  void gapAppend(double size, const NetworkLinkPtr link, NetworkActionPtr action);
+  void gapAppend(double size, const LinkPtr link, NetworkActionPtr action);
   void gapRemove(ActionPtr action);
   double latencyFactor(double size);
   double bandwidthFactor(double size);

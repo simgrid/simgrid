@@ -133,7 +133,7 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
        xbt_dynar_push_as(route->link_list, void *, info.link_up);
 
        if (lat)
-         *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
+         *lat += static_cast<LinkPtr>(info.link_up)->getLatency();
        return;
      }
 
@@ -222,12 +222,12 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
            xbt_dynar_push_as(route->link_list,void*,info.link_down);
 
        if (lat)
-         *lat += static_cast<NetworkLinkPtr>(info.link_down)->getLatency();
+         *lat += static_cast<LinkPtr>(info.link_down)->getLatency();
        }else{
            xbt_dynar_push_as(route->link_list,void*,info.link_up);
 
        if (lat)
-         *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
+         *lat += static_cast<LinkPtr>(info.link_up)->getLatency();
        }
        current_node = next_node;
        next_node = 0;

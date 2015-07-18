@@ -17,9 +17,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
  * Callbacks *
  *************/
 
-surf_callback(void, NetworkLinkPtr) networkLinkCreatedCallbacks;
-surf_callback(void, NetworkLinkPtr) networkLinkDestructedCallbacks;
-surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
+surf_callback(void, LinkPtr) networkLinkCreatedCallbacks;
+surf_callback(void, LinkPtr) networkLinkDestructedCallbacks;
+surf_callback(void, LinkPtr, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
 surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
 surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) networkCommunicateCallbacks;
 
@@ -27,7 +27,7 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
   if (link->policy == SURF_LINK_FULLDUPLEX) {
     char *link_id;
     link_id = bprintf("%s_UP", link->id);
-    surf_network_model->createNetworkLink(link_id,
+    surf_network_model->createLink(link_id,
                       link->bandwidth,
                       link->bandwidth_trace,
                       link->latency,
@@ -36,7 +36,7 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
                       link->state_trace, link->policy, link->properties);
     xbt_free(link_id);
     link_id = bprintf("%s_DOWN", link->id);
-    surf_network_model->createNetworkLink(link_id,
+    surf_network_model->createLink(link_id,
                       link->bandwidth,
                       link->bandwidth_trace,
                       link->latency,
@@ -45,13 +45,13 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
                       link->state_trace, link->policy, link->properties);
     xbt_free(link_id);
   } else {
-  surf_network_model->createNetworkLink(link->id,
-                      link->bandwidth,
-                      link->bandwidth_trace,
-                      link->latency,
-                      link->latency_trace,
-                      link->state,
-                      link->state_trace, link->policy, link->properties);
+	  surf_network_model->createLink(link->id,
+			  link->bandwidth,
+			  link->bandwidth_trace,
+			  link->latency,
+			  link->latency_trace,
+			  link->state,
+			  link->state_trace, link->policy, link->properties);
   }
 }
 
@@ -109,14 +109,14 @@ double NetworkModel::shareResourcesFull(double now)
  * Resource *
  ************/
 
-NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props)
+Link::Link(NetworkModelPtr model, const char *name, xbt_dict_t props)
 : Resource(model, name, props)
 , p_latEvent(NULL)
 {
   surf_callback_emit(networkLinkCreatedCallbacks, this);
 }
 
-NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props,
+Link::Link(NetworkModelPtr model, const char *name, xbt_dict_t props,
 		                 lmm_constraint_t constraint,
 	                     tmgr_history_t history,
 	                     tmgr_trace_t state_trace)
@@ -128,32 +128,32 @@ NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t pro
     p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
 }
 
-NetworkLink::~NetworkLink()
+Link::~Link()
 {
   surf_callback_emit(networkLinkDestructedCallbacks, this);
 }
 
-bool NetworkLink::isUsed()
+bool Link::isUsed()
 {
   return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
 }
 
-double NetworkLink::getLatency()
+double Link::getLatency()
 {
   return m_latCurrent;
 }
 
-double NetworkLink::getBandwidth()
+double Link::getBandwidth()
 {
   return p_power.peak * p_power.scale;
 }
 
-bool NetworkLink::isShared()
+bool Link::isShared()
 {
   return lmm_constraint_is_shared(getConstraint());
 }
 
-void NetworkLink::setState(e_surf_resource_state_t state){
+void Link::setState(e_surf_resource_state_t state){
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
   surf_callback_emit(networkLinkStateChangedCallbacks, this, old, state);

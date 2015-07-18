@@ -53,7 +53,7 @@ HostL07Model::HostL07Model() : HostModel("Host ptask_L07") {
   surf_host_model = NULL;
   surf_network_model = new NetworkL07Model();
   surf_cpu_model_pm = new CpuL07Model();
-  routing_model_create(surf_network_model->createNetworkLink("__loopback__",
+  routing_model_create(surf_network_model->createLink("__loopback__",
 	                                                  498000000, NULL,
 	                                                  0.000015, NULL,
 	                                                  SURF_RESOURCE_ON, NULL,
@@ -340,7 +340,7 @@ CpuPtr CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
   return cpu;
 }
 
-NetworkLinkPtr NetworkL07Model::createNetworkLink(const char *name,
+LinkPtr NetworkL07Model::createLink(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
@@ -486,7 +486,7 @@ LinkL07::LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
 		         e_surf_resource_state_t state_initial,
 		         tmgr_trace_t state_trace,
 		         e_surf_link_sharing_policy_t policy)
- : NetworkLink(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, bw_initial), history, state_trace)
+ : Link(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, bw_initial), history, state_trace)
 {
   m_bwCurrent = bw_initial;
   if (bw_trace)

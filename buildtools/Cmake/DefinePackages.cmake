@@ -464,7 +464,7 @@ set(JSURF_JAVA_GENERATED_SRC
   src/bindings/java/org/simgrid/surf/LmmVariable.java
   src/bindings/java/org/simgrid/surf/Model.java
   src/bindings/java/org/simgrid/surf/NetworkAction.java
-  src/bindings/java/org/simgrid/surf/NetworkLink.java
+  src/bindings/java/org/simgrid/surf/Link.java
   src/bindings/java/org/simgrid/surf/Plugin.java
   src/bindings/java/org/simgrid/surf/Resource.java
   src/bindings/java/org/simgrid/surf/ResourceState.java

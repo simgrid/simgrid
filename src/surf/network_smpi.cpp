@@ -104,7 +104,7 @@ NetworkSmpiModel::~NetworkSmpiModel(){
   }
 }
 
-void NetworkSmpiModel::gapAppend(double size, const NetworkLinkPtr link, NetworkActionPtr action)
+void NetworkSmpiModel::gapAppend(double size, const LinkPtr link, NetworkActionPtr action)
 {
   const char *src = link->getName();
   xbt_fifo_t fifo;

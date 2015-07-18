@@ -38,7 +38,7 @@ void setCpu(char *name, Cpu *cpu) {
 	sg_host_surfcpu_set(sg_host_by_name(name), cpu);
 }
 
-NetworkLinkDynar getRoute(char *srcName, char *dstName) {
+LinkDynar getRoute(char *srcName, char *dstName) {
   RoutingEdge *src = sg_host_edge(sg_host_by_name(srcName));
   RoutingEdge *dst = sg_host_edge(sg_host_by_name(dstName));
   xbt_assert(src,"Cannot get the route from a NULL source");
@@ -65,15 +65,15 @@ void Plugin::activateCpuActionStateChangedCallback(){
 }
 
 
-void Plugin::activateNetworkLinkCreatedCallback(){
+void Plugin::activateLinkCreatedCallback(){
   surf_callback_connect(networkLinkCreatedCallbacks, boost::bind(&Plugin::networkLinkCreatedCallback, this, _1));
 }
 
-void Plugin::activateNetworkLinkDestructedCallback(){
+void Plugin::activateLinkDestructedCallback(){
   surf_callback_connect(networkLinkDestructedCallbacks, boost::bind(&Plugin::networkLinkDestructedCallback, this, _1));
 }
 
-void Plugin::activateNetworkLinkStateChangedCallback(){
+void Plugin::activateLinkStateChangedCallback(){
   surf_callback_connect(networkLinkStateChangedCallbacks, boost::bind(&Plugin::networkLinkStateChangedCallback, this, _1, _2, _3));
 }
 

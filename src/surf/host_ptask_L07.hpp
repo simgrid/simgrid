@@ -79,7 +79,7 @@ class NetworkL07Model : public NetworkModel {
 public:
   NetworkL07Model() : NetworkModel() {};
   ~NetworkL07Model() {surf_network_model = NULL;};
-  NetworkLinkPtr createNetworkLink(const char *name,
+  LinkPtr createLink(const char *name,
 		                                   double bw_initial,
 		                                   tmgr_trace_t bw_trace,
 		                                   double lat_initial,
@@ -137,7 +137,7 @@ public:
   double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
 };
 
-class LinkL07 : public NetworkLink {
+class LinkL07 : public Link {
 public:
   LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
 		  double bw_initial,

@@ -501,7 +501,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     linkTemplate.policy = SURF_LINK_SHARED;
     linkTemplate.id = bprintf("limiter_%d", id);
     sg_platf_new_link(&linkTemplate);
-    this->limiterLink = (NetworkLink*) xbt_lib_get_or_null(link_lib,
+    this->limiterLink = (Link*) xbt_lib_get_or_null(link_lib,
                                                            linkTemplate.id,
                                                            SURF_LINK_LEVEL);
     free((void*)linkTemplate.id);
@@ -514,7 +514,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     linkTemplate.policy = SURF_LINK_FATPIPE;
     linkTemplate.id = bprintf("loopback_%d", id);
     sg_platf_new_link(&linkTemplate);
-    this->loopback = (NetworkLink*) xbt_lib_get_or_null(link_lib,
+    this->loopback = (Link*) xbt_lib_get_or_null(link_lib,
                                                         linkTemplate.id,
                                                         SURF_LINK_LEVEL);
     free((void*)linkTemplate.id);
@@ -535,20 +535,20 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster,
   linkTemplate.id = bprintf("link_from_%d_to_%d_%d", downNode->id, upNode->id,
                             uniqueId);
   sg_platf_new_link(&linkTemplate);
-  NetworkLink* link;
+  Link* link;
   std::string tmpID;
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
     tmpID = std::string(linkTemplate.id) + "_UP";
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
+    link = (Link*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
                                               SURF_LINK_LEVEL);
     this->upLink = link; // check link?
     tmpID = std::string(linkTemplate.id) + "_DOWN";
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
+    link = (Link*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
                                               SURF_LINK_LEVEL);
     this->downLink = link; // check link ?
   }
   else {
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, linkTemplate.id,
+    link = (Link*) xbt_lib_get_or_null(link_lib, linkTemplate.id,
                                               SURF_LINK_LEVEL);
     this->upLink = link;
     this->downLink = link;
