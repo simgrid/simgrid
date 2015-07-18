@@ -39,8 +39,8 @@ void setCpu(char *name, Cpu *cpu) {
 }
 
 NetworkLinkDynar getRoute(char *srcName, char *dstName) {
-  RoutingEdge *src = (RoutingEdge*)xbt_lib_get_or_null(host_lib, srcName, ROUTING_HOST_LEVEL);
-  RoutingEdge *dst = (RoutingEdge*)xbt_lib_get_or_null(host_lib, dstName, ROUTING_HOST_LEVEL);
+  RoutingEdge *src = sg_host_edge(sg_host_by_name(srcName));
+  RoutingEdge *dst = sg_host_edge(sg_host_by_name(dstName));
   xbt_assert(src,"Cannot get the route from a NULL source");
   xbt_assert(dst,"Cannot get the route to a NULL destination");
   xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdgePtr), NULL);

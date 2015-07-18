@@ -21,16 +21,13 @@ xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xb
  * Classes *
  ***********/
 
-/* Note: As and RoutingEdge are declard as struct instead of class, to keep
+/* Note: As and RoutingEdge are declared as struct instead of class, to keep
    compatibility with C files where they are mentioned. */
 struct As;
 typedef As *AsPtr;
 
 class RoutingModelDescription;
 typedef RoutingModelDescription *RoutingModelDescriptionPtr;
-
-struct RoutingEdge;
-typedef RoutingEdge *RoutingEdgePtr;
 
 class Onelink;
 typedef Onelink *OnelinkPtr;

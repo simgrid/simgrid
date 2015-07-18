@@ -70,7 +70,6 @@ void xbt_lib_set(xbt_lib_t lib, const char *key, int level, void *obj)
   elts[level] = obj;
 }
 
-/* for vm */
 void xbt_lib_unset(xbt_lib_t lib, const char *key, int level, int invoke_callback)
 {
   void **elts = xbt_dict_get_or_null(lib->dict, key);

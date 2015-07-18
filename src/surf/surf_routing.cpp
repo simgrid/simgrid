@@ -23,7 +23,6 @@
  */
 xbt_lib_t host_lib;
 
-int ROUTING_HOST_LEVEL;         //Routing level
 int SURF_HOST_LEVEL;            //Surf host level
 int SIMIX_STORAGE_LEVEL;        //Simix storage level
 int MSG_STORAGE_LEVEL;          //Msg storage level
@@ -55,7 +54,8 @@ static xbt_dict_t random_value = NULL;
  * Routing edges are either host and routers, whatever
  */
 RoutingEdgePtr sg_routing_edge_by_name_or_null(const char *name) {
-  RoutingEdgePtr net_elm = (RoutingEdgePtr) xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL);
+  sg_host_t h = sg_host_by_name(name);
+  RoutingEdgePtr net_elm = h==NULL?NULL: sg_host_edge(h);
   if (!net_elm)
 	net_elm = (RoutingEdgePtr) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
   return net_elm;
@@ -119,7 +119,7 @@ struct s_model_type routing_models[] = {
  */
 static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
 {
-  RoutingEdgePtr info = static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL));
+  RoutingEdgePtr info = sg_host_edge(sg_host_by_name(host->id));
   xbt_assert(info, "Host '%s' not found!", host->id);
   xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER] ||
       current_routing->p_modelDesc == &routing_models[SURF_MODEL_VIVALDI],
@@ -151,15 +151,15 @@ static void parse_S_host(sg_platf_host_cbarg_t host)
 {
   if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
     current_routing->p_hierarchy = SURF_ROUTING_BASE;
-  xbt_assert(!xbt_lib_get_or_null(host_lib, host->id, ROUTING_HOST_LEVEL),
-             "Reading a host, processing unit \"%s\" already exists", host->id);
+  xbt_assert(!sg_host_by_name(host->id),
+		     "Reading a host, processing unit \"%s\" already exists", host->id);
 
   RoutingEdgePtr info = new RoutingEdgeImpl(xbt_strdup(host->id),
 		                                    -1,
 		                                    SURF_NETWORK_ELEMENT_HOST,
 		                                    current_routing);
   info->setId(current_routing->parsePU(info));
-  xbt_lib_set(host_lib, host->id, ROUTING_HOST_LEVEL, (void *) info);
+  sg_host_edge_set(sg_host_by_name_or_create(host->id), info);
   XBT_DEBUG("Having set name '%s' id '%d'", host->id, info->getId());
 
   if(mount_list){

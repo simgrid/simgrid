@@ -282,7 +282,7 @@ HostPtr HostL07Model::createHost(const char *name)
               name);
 
   wk = new HostL07(this, name, NULL,
-		                  static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL)),
+		                  sg_host_edge(sg_host),
 						  sg_host_surfcpu(sg_host));
 
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, wk);

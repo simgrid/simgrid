@@ -233,8 +233,9 @@ VMHL13::VMHL13(VMModelPtr model, const char* name, xbt_dict_t props,
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  p_netElm = new RoutingEdgeWrapper(static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, sub_ws->getName(), ROUTING_HOST_LEVEL)));
-  xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, p_netElm);
+  sg_host_t sg_sub_ws = sg_host_by_name_or_create(sub_ws->getName());
+  p_netElm = new RoutingEdgeWrapper(sg_host_edge(sg_sub_ws));
+  sg_host_edge_set(sg_host_by_name_or_create(name), p_netElm);
 
   p_subWs = sub_ws;
   p_currentState = SURF_VM_STATE_CREATED;
@@ -334,19 +335,17 @@ void VMHL13::migrate(surf_resource_t ind_dst_pm)
 
    xbt_assert(ws_dst);
 
-   /* do something */
-
    /* update net_elm with that of the destination physical host */
    RoutingEdgePtr old_net_elm = p_netElm;
-   RoutingEdgePtr new_net_elm = new RoutingEdgeWrapper(static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, pm_name_dst, ROUTING_HOST_LEVEL)));
+   RoutingEdgePtr new_net_elm = new RoutingEdgeWrapper(sg_host_edge(sg_host_by_name(pm_name_dst)));
    xbt_assert(new_net_elm);
 
    /* Unregister the current net_elm from host_lib. Do not call the free callback. */
-   xbt_lib_unset(host_lib, vm_name, ROUTING_HOST_LEVEL, 0);
+   sg_host_edge_destroy(sg_host_by_name(vm_name), 0);
 
    /* Then, resister the new one. */
    p_netElm = new_net_elm;
-   xbt_lib_set(host_lib, vm_name, ROUTING_HOST_LEVEL, p_netElm);
+   sg_host_edge_set(sg_host_by_name(vm_name), p_netElm);
 
    p_subWs = ws_dst;
 

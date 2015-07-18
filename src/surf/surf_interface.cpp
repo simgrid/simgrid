@@ -354,15 +354,10 @@ int find_model_description(s_surf_model_description_t * table,
   return -1;
 }
 
-static XBT_INLINE void routing_asr_host_free(void *p)
-{
-  delete ((RoutingEdgePtr) p);
-}
-
 static XBT_INLINE void routing_asr_prop_free(void *p)
 {
-  xbt_dict_t elm = (xbt_dict_t) p;
-  xbt_dict_free(&elm);
+  //xbt_dict_t elm = (xbt_dict_t) p;
+  //xbt_dict_free(&elm); FIXME: leaking in some case? That's a sometimes double-free with AsCluster::~AsCluster
 }
 
 static XBT_INLINE void surf_link_free(void *r)
@@ -401,8 +396,6 @@ void surf_init(int *argc, char **argv)
   sg_host_init();
 
   XBT_DEBUG("Add routing levels");
-  ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
-  ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,routing_asr_host_free);
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");

@@ -12,18 +12,33 @@ sg_host_t sg_host_by_name(const char *name){
   return xbt_lib_get_elm_or_null(host_lib, name);
 }
 
+sg_host_t sg_host_by_name_or_create(const char *name) {
+	sg_host_t res = xbt_lib_get_elm_or_null(host_lib, name);
+	if (!res) {
+		xbt_lib_set(host_lib,name,0,NULL); // Should only create the bucklet with no data added
+		res = xbt_lib_get_elm_or_null(host_lib, name);
+	}
+	return res;
+}
+
 // ========= Layering madness ==============
 
-int SIMIX_HOST_LEVEL;
 int MSG_HOST_LEVEL;
+int SIMIX_HOST_LEVEL;
+int ROUTING_HOST_LEVEL;
 int SURF_CPU_LEVEL;
+
 
 #include "simix/smx_host_private.h" // SIMIX_host_destroy. FIXME: killme
 #include "msg/msg_private.h" // MSG_host_priv_free. FIXME: killme
 #include "surf/cpu_interface.hpp"
+#include "surf/surf_routing.hpp"
 
 static XBT_INLINE void surf_cpu_free(void *r) {
   delete static_cast<CpuPtr>(r);
+}
+static XBT_INLINE void routing_asr_host_free(void *p) {
+  delete static_cast<RoutingEdgePtr>(p);
 }
 
 
@@ -31,8 +46,8 @@ void sg_host_init() {
   SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_priv_free);
   SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_cpu_free);
+  ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
 }
-
 
 // ========== MSG Layer ==============
 msg_host_priv_t sg_host_msg(sg_host_t host) {
@@ -66,6 +81,16 @@ void sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu) {
 }
 void sg_host_surfcpu_destroy(sg_host_t host) {
 	xbt_lib_unset(host_lib,host->key,SURF_CPU_LEVEL,1);
+}
+// ========== RoutingEdge ============
+RoutingEdgePtr sg_host_edge(sg_host_t host) {
+	return (RoutingEdgePtr) xbt_lib_get_level(host, ROUTING_HOST_LEVEL);
+}
+void sg_host_edge_set(sg_host_t host, RoutingEdgePtr edge) {
+	xbt_lib_set(host_lib, host->key, ROUTING_HOST_LEVEL, edge);
+}
+void sg_host_edge_destroy(sg_host_t host, int do_callback) {
+	xbt_lib_unset(host_lib,host->key,ROUTING_HOST_LEVEL,do_callback);
 }
 
 

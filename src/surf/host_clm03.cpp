@@ -59,7 +59,7 @@ HostPtr HostCLM03Model::createHost(const char *name){
   sg_host_t sg_host = sg_host_by_name(name);
   HostPtr host = new HostCLM03(surf_host_model, name, NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
-		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL),
+		  sg_host_edge(sg_host),
 		  sg_host_surfcpu(sg_host));
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, host);

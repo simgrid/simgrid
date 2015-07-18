@@ -429,10 +429,7 @@ AsPtr AsGeneric::autonomousSystemExist(char *element)
 
 AsPtr AsGeneric::processingUnitsExist(char *element)
 {
-  AsPtr element_as;
-  element_as = ((RoutingEdgePtr)
-      xbt_lib_get_or_null(host_lib,
-          element, ROUTING_HOST_LEVEL))->getRcComponent();
+  AsPtr element_as = sg_host_edge(sg_host_by_name(element)) ->getRcComponent();
   if (element_as == this)
     return element_as;
   return asExist(element_as);

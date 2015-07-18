@@ -22,10 +22,6 @@ static HostPtr get_casted_host(surf_resource_t resource){
   return static_cast<HostPtr>(surf_host_resource_priv(resource));
 }
 
-static RoutingEdgePtr get_casted_routing(surf_resource_t resource){
-  return static_cast<RoutingEdgePtr>(surf_routing_resource_priv(resource));
-}
-
 static VMPtr get_casted_vm(surf_resource_t resource){
   return static_cast<VMPtr>(surf_host_resource_priv(resource));
 }
@@ -444,7 +440,6 @@ void surf_host_set_params(surf_resource_t host, ws_params_t params){
 void surf_vm_destroy(surf_resource_t resource){
   /* Before clearing the entries in host_lib, we have to pick up resources. */
   VMPtr vm = get_casted_vm(resource);
-  RoutingEdgePtr routing = get_casted_routing(resource);
   char* name = xbt_dict_get_elm_key(resource);
   /* We deregister objects from host_lib, without invoking the freeing callback
    * of each level.
@@ -453,14 +448,13 @@ void surf_vm_destroy(surf_resource_t resource){
    * including MSG_HOST_LEVEL and others. We should unregister only what we know.
    */
   sg_host_surfcpu_destroy((sg_host_t)resource);
-  xbt_lib_unset(host_lib, name, ROUTING_HOST_LEVEL, 0);
+  sg_host_edge_destroy((sg_host_t)resource,1);
   xbt_lib_unset(host_lib, name, SURF_HOST_LEVEL, 0);
 
   /* TODO: comment out when VM storage is implemented. */
   // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
 
   delete vm;
-  delete routing;
 }
 
 void surf_vm_suspend(surf_resource_t vm){

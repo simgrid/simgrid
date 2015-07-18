@@ -12,6 +12,7 @@ SG_BEGIN_DECL()
 
 typedef xbt_dictelm_t sg_host_t;
 XBT_PUBLIC(sg_host_t) sg_host_by_name(const char *name);
+XBT_PUBLIC(sg_host_t) sg_host_by_name_or_create(const char *name);
 static XBT_INLINE char *sg_host_get_name(sg_host_t host){
 	return host->key;
 }
@@ -42,6 +43,12 @@ typedef Cpu *CpuPtr;
 XBT_PUBLIC(surf_cpu_t) sg_host_surfcpu(sg_host_t host);
 XBT_PUBLIC(void) sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu);
 XBT_PUBLIC(void) sg_host_surfcpu_destroy(sg_host_t host);
+
+// ========== RoutingEdge ============
+typedef struct RoutingEdge *RoutingEdgePtr;
+XBT_PUBLIC(RoutingEdgePtr) sg_host_edge(sg_host_t host);
+XBT_PUBLIC(void) sg_host_edge_set(sg_host_t host, RoutingEdgePtr edge);
+XBT_PUBLIC(void) sg_host_edge_destroy(sg_host_t host, int do_callback);
 
 
 // Module initializer. Won't survive the conversion to C++. Hopefully.
