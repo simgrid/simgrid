@@ -8,11 +8,14 @@
 #ifndef INCLUDE_SIMGRID_LINK_H_
 #define INCLUDE_SIMGRID_LINK_H_
 
+
 #ifdef __cplusplus
 class Link;
 #else
 typedef struct Link Link;
 #endif
+
+
 
 /* C interface */
 SG_BEGIN_DECL()

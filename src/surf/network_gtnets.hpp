@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "network.hpp"
+#include "network_cm02.hpp"
 
 #ifndef NETWORK_GTNETS_HPP_
 #define NETWORK_GTNETS_HPP_
@@ -21,6 +21,7 @@
 #include "event.h"
 #include "routing-manual.h"
 #include "red.h"
+#include "surf/gtnets/gtnets_topology.h"
 
 xbt_dict_t network_card_ids;
 
@@ -76,7 +77,7 @@ private:
 
    map<int, TCPServer*> p_gtnetsServers;
    map<int, TCPSend*> p_gtnetsClients;
-   map<int, Linkp2p*> p_gtnetsLinks_;
+   map<int, GTLinkp2p*> p_gtnetsLinks_;
    map<int, Node*> p_gtnetsNodes;
    map<void*, int> p_gtnetsActionToFlow;
 
