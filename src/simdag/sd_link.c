@@ -32,7 +32,7 @@ const SD_link_t *SD_link_get_list(void)
 
     i = 0;
     xbt_lib_foreach(link_lib, cursor, key, data) {
-        sd_global->link_list[i++] = (SD_link_t) data[SD_LINK_LEVEL];
+        sd_global->link_list[i++] = (SD_link_t) data[SURF_LINK_LEVEL];
     }
   }
   return sd_global->link_list;

@@ -221,7 +221,6 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
   void *surf_src;
   void *surf_dst;
   xbt_dynar_t surf_route;
-  const char *link_name;
   void *surf_link;
   unsigned int cpt;
 
@@ -237,9 +236,7 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
 		                                        surf_src, surf_dst);
 
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
-    link_name = surf_resource_name(surf_link);
-    sd_global->recyclable_route[cpt] =
-        xbt_lib_get_or_null(link_lib, link_name, SD_LINK_LEVEL);
+    sd_global->recyclable_route[cpt] = surf_link;
   }
   return sd_global->recyclable_route;
 }

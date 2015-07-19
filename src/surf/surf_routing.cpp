@@ -36,7 +36,6 @@ int NS3_HOST_LEVEL;             //host node for ns3
  * @brief A library containing all known links
  */
 xbt_lib_t link_lib;
-int SD_LINK_LEVEL;              //Simdag level
 int SURF_LINK_LEVEL;            //Surf level
 
 xbt_lib_t as_router_lib;
