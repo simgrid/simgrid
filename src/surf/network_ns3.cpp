@@ -11,7 +11,6 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
 extern xbt_lib_t host_lib;
-extern xbt_lib_t link_lib;
 extern xbt_lib_t as_router_lib;
 
 extern xbt_dict_t dict_socket;
@@ -56,7 +55,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 
   if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
-  Link* net_link = surf_network_model->createLink(link->id,
+  surf_network_model->createLink(link->id,
                                      link->bandwidth,
                                      link->bandwidth_trace,
                                      link->latency,
@@ -65,8 +64,6 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
                                      link->state_trace,
                                      link->policy,
                                      link->properties);
-
-  xbt_lib_set(link_lib, link->id, SURF_LINK_LEVEL, net_link);
 }
 
 static void parse_ns3_add_router(sg_platf_router_cbarg_t router)

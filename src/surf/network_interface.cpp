@@ -17,6 +17,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
  * C API *
  *********/
 SG_BEGIN_DECL()
+const char* sg_link_name(Link *link) {
+  return link->getName();
+}
+Link * sg_link_by_name(const char* name) {
+  return Link::byName(name);
+}
+
 int sg_link_is_shared(Link *link){
   return link->isShared();
 }
@@ -26,18 +33,53 @@ double sg_link_bandwidth(Link *link){
 double sg_link_latency(Link *link){
   return link->getLatency();
 }
-const char* sg_link_name(Link *link) {
-  return link->getName();
-}
 void* sg_link_data(Link *link) {
 	return link->getData();
 }
 void sg_link_data_set(Link *link,void *data) {
 	link->setData(data);
 }
-
+int sg_link_amount(void) {
+	return Link::linksAmount();
+}
+Link** sg_link_list(void) {
+	return Link::linksList();
+}
+void sg_link_exit(void) {
+	Link::linksExit();
+}
 SG_END_DECL()
+/*****************
+ * List of links *
+ *****************/
 
+boost::unordered_map<std::string,Link *> *Link::links = new boost::unordered_map<std::string,Link *>();
+Link *Link::byName(const char* name) {
+	  Link * res = NULL;
+	  try {
+		  res = links->at(name);
+	  } catch (std::out_of_range& e) {}
+
+	  return res;
+}
+/** @brief Returns the amount of links in the platform */
+int Link::linksAmount() {
+	  return links->size();
+}
+/** @brief Returns a list of all existing links */
+Link **Link::linksList() {
+	  Link **res = xbt_new(Link*, (int)links->size());
+	  int i=0;
+	  for (auto kv : *links) {
+		  res[i++] = kv.second;
+	  }
+	  return res;
+}
+/** @brief destructor of the static data */
+void Link::linksExit() {
+	for (auto kv : *links)
+		delete (kv.second);
+}
 /*************
  * Callbacks *
  *************/
@@ -139,6 +181,9 @@ Link::Link(NetworkModelPtr model, const char *name, xbt_dict_t props)
 , p_latEvent(NULL)
 {
   surf_callback_emit(networkLinkCreatedCallbacks, this);
+  links->insert({name, this});
+
+  XBT_DEBUG("Create link '%s'",name);
 }
 
 Link::Link(NetworkModelPtr model, const char *name, xbt_dict_t props,
@@ -151,6 +196,10 @@ Link::Link(NetworkModelPtr model, const char *name, xbt_dict_t props,
   surf_callback_emit(networkLinkCreatedCallbacks, this);
   if (state_trace)
     p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
+
+  links->insert({name, this});
+  XBT_DEBUG("Create link '%s'",name);
+
 }
 
 Link::~Link()
@@ -183,6 +232,8 @@ void Link::setState(e_surf_resource_state_t state){
   Resource::setState(state);
   surf_callback_emit(networkLinkStateChangedCallbacks, this, old, state);
 }
+
+
 
 /**********
  * Action *

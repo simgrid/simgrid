@@ -31,13 +31,6 @@ int SD_STORAGE_LEVEL;           //Simdag storage level
 int COORD_HOST_LEVEL=0;         //Coordinates level
 int NS3_HOST_LEVEL;             //host node for ns3
 
-/**
- * @ingroup SURF_build_api
- * @brief A library containing all known links
- */
-xbt_lib_t link_lib;
-int SURF_LINK_LEVEL;            //Surf level
-
 xbt_lib_t as_router_lib;
 int ROUTING_ASR_LEVEL;          //Routing level
 int COORD_ASR_LEVEL;            //Coordinates level
@@ -124,8 +117,8 @@ static void parse_S_host_link(sg_platf_host_link_cbarg_t host)
       "You have to be in model Cluster to use tag host_link!");
 
   s_surf_parsing_link_up_down_t link_up_down;
-  link_up_down.link_up = xbt_lib_get_or_null(link_lib, host->link_up, SURF_LINK_LEVEL);
-  link_up_down.link_down = xbt_lib_get_or_null(link_lib, host->link_down, SURF_LINK_LEVEL);
+  link_up_down.link_up = Link::byName(host->link_up);
+  link_up_down.link_down = Link::byName(host->link_down);
 
   xbt_assert(link_up_down.link_up, "Link '%s' not found!",host->link_up);
   xbt_assert(link_up_down.link_down, "Link '%s' not found!",host->link_down);
@@ -956,8 +949,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         link.state     = SURF_RESOURCE_ON;
         link.policy    = SURF_LINK_FATPIPE;
         sg_platf_new_link(&link);
-        info_loop.link_up   =
-            xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+        info_loop.link_up   = Link::byName(tmp_link);
         info_loop.link_down = info_loop.link_up;
         free(tmp_link);
         xbt_dynar_set(current_routing->p_linkUpDownList, rankId*((AsClusterPtr)current_routing)->p_nb_links_per_node, &info_loop);
@@ -977,8 +969,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         link.state = SURF_RESOURCE_ON;
         link.policy = SURF_LINK_SHARED;
         sg_platf_new_link(&link);
-        info_lim.link_up =
-            xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+        info_lim.link_up = Link::byName(tmp_link);
         info_lim.link_down = info_lim.link_up;
         free(tmp_link);
         xbt_dynar_set(current_routing->p_linkUpDownList,
@@ -1043,7 +1034,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
 
     sg_platf_new_link(&link);
 
-    routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, link_backbone, SURF_LINK_LEVEL));
+    routing_cluster_add_backbone(Link::byName(link_backbone));
 
     free(link_backbone);
   }

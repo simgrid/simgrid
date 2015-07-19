@@ -19,10 +19,6 @@ XBT_PUBLIC_DATA(int) SD_STORAGE_LEVEL;    //Simdag storage level
 XBT_PUBLIC_DATA(int) COORD_HOST_LEVEL;    //Coordinates level
 XBT_PUBLIC_DATA(int) NS3_HOST_LEVEL;      //host node for ns3
 
-XBT_PUBLIC_DATA(xbt_lib_t) link_lib;
-XBT_PUBLIC_DATA(int) SURF_LINK_LEVEL;  //Surf level
-XBT_PUBLIC_DATA(int) NS3_LINK_LEVEL;    //link for ns3
-
 XBT_PUBLIC_DATA(xbt_lib_t) as_router_lib;
 XBT_PUBLIC_DATA(int) ROUTING_ASR_LEVEL;  //Routing level
 XBT_PUBLIC_DATA(int) COORD_ASR_LEVEL;  //Coordinates level

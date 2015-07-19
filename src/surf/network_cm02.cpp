@@ -185,11 +185,10 @@ void NetworkCm02Model::initialize()
   if (!p_maxminSystem)
 	p_maxminSystem = lmm_system_new(m_selectiveUpdate);
 
-  const char* lb_name = "__loopback__";
-  routing_model_create(createLink(lb_name,
-	                                           498000000, NULL, 0.000015, NULL,
-	                                           SURF_RESOURCE_ON, NULL,
-	                                           SURF_LINK_FATPIPE, NULL));
+  routing_model_create(createLink("__loopback__",
+	                              498000000, NULL, 0.000015, NULL,
+	                              SURF_RESOURCE_ON, NULL,
+	                              SURF_LINK_FATPIPE, NULL));
 
   if (p_updateMechanism == UM_LAZY) {
 	p_actionHeap = xbt_heap_new(8, NULL);
@@ -211,19 +210,12 @@ Link* NetworkCm02Model::createLink(const char *name,
                                  e_surf_link_sharing_policy_t policy,
                                  xbt_dict_t properties)
 {
-  xbt_assert(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
-             "Link '%s' declared several times in the platform file.",
+  xbt_assert(NULL == Link::byName(name),
+             "Link '%s' declared several times in the platform",
              name);
 
-  NetworkCm02Link *nw_link =
-		  new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial, history,
-				                 state_initial, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
-
-
-  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, nw_link);
-  XBT_DEBUG("Create link '%s'",name);
-
-  return nw_link;
+  return new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial, history,
+				             state_initial, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
 }
 
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
@@ -482,8 +474,7 @@ void NetworkCm02Model::addTraces(){
   /* connect all traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02Link *link = static_cast<NetworkCm02Link*>(
-                            xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+    NetworkCm02Link *link = static_cast<NetworkCm02Link*>( Link::byName(elm) );
 
     xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
                trace_name, elm);
@@ -496,8 +487,7 @@ void NetworkCm02Model::addTraces(){
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02Link *link = static_cast<NetworkCm02Link*>(
-                                xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+    NetworkCm02Link *link = static_cast<NetworkCm02Link*>( Link::byName(elm) );
 
     xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
                trace_name, elm);
@@ -510,8 +500,7 @@ void NetworkCm02Model::addTraces(){
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02Link *link = static_cast<NetworkCm02Link*>(
-                            xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+    NetworkCm02Link *link = static_cast<NetworkCm02Link*>(Link::byName(elm));;
 
     xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
                trace_name, elm);

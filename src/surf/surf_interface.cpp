@@ -386,7 +386,6 @@ void surf_init(int *argc, char **argv)
 {
   XBT_DEBUG("Create all Libs");
   host_lib = xbt_lib_new();
-  link_lib = xbt_lib_new();
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
@@ -400,7 +399,6 @@ void surf_init(int *argc, char **argv)
 
   XBT_DEBUG("Add SURF levels");
   SURF_HOST_LEVEL = xbt_lib_add_level(host_lib,surf_host_free);
-  SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_link_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);
@@ -434,9 +432,9 @@ void surf_exit(void)
   xbt_dynar_free(&surf_path);
 
   xbt_lib_free(&host_lib);
-  xbt_lib_free(&link_lib);
   xbt_lib_free(&as_router_lib);
   xbt_lib_free(&storage_lib);
+  sg_link_exit();
   xbt_lib_free(&storage_type_lib);
   xbt_lib_free(&file_lib);
   xbt_dict_free(&watched_hosts_lib);

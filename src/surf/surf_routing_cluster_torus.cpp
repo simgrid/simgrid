@@ -70,15 +70,13 @@ void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int
       s_surf_parsing_link_up_down_t info;
       if (link.policy == SURF_LINK_FULLDUPLEX) {
           char *tmp_link = bprintf("%s_UP", link_id);
-          info.link_up =
-              xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+          info.link_up = Link::byName(tmp_link);
           free(tmp_link);
           tmp_link = bprintf("%s_DOWN", link_id);
-          info.link_down =
-              xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+          info.link_down = Link::byName(tmp_link);
           free(tmp_link);
       } else {
-          info.link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+          info.link_up = Link::byName(link_id);
           info.link_down = info.link_up;
       }
       /**

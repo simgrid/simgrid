@@ -3,6 +3,9 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include <boost/unordered_map.hpp>
+
 #include "xbt/fifo.h"
 #include "surf_interface.hpp"
 #include "surf_routing.hpp"
@@ -243,14 +246,24 @@ public:
   tmgr_trace_event_t p_latEvent;
 
   /* LMM */
-  tmgr_trace_event_t p_stateEvent;
+  tmgr_trace_event_t p_stateEvent = NULL;
   s_surf_metric_t p_power;
 
   /* User data */
+public:
   void *getData()        { return userData;}
   void  setData(void *d) { userData=d;}
 private:
-  void *userData;
+  void *userData = NULL;
+
+  /* List of all links */
+private:
+  static boost::unordered_map<std::string, Link *> *links;
+public:
+  static Link *byName(const char* name);
+  static int linksAmount();
+  static Link **linksList();
+  static void linksExit();
 };
 
 /**********

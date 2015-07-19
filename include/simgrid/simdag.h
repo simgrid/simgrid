@@ -117,7 +117,11 @@ XBT_PUBLIC(const char*) SD_as_router_get_property_value(const char * as,
  *  @{
  */
 XBT_PUBLIC(const SD_link_t *) SD_link_get_list(void);
-XBT_PUBLIC(int) SD_link_get_number(void);
+/** @brief Returns the number of links in the whole platform */
+static inline int SD_link_get_number(void) {
+  return sg_link_amount();
+}
+
 /** @brief Returns the user data of a link */
 static inline void *SD_link_get_data(SD_link_t link) {
   return sg_link_data(link);

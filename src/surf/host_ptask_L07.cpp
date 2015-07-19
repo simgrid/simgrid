@@ -53,6 +53,7 @@ HostL07Model::HostL07Model() : HostModel("Host ptask_L07") {
   surf_host_model = NULL;
   surf_network_model = new NetworkL07Model();
   surf_cpu_model_pm = new CpuL07Model();
+
   routing_model_create(surf_network_model->createLink("__loopback__",
 	                                                  498000000, NULL,
 	                                                  0.000015, NULL,
@@ -351,7 +352,7 @@ Link* NetworkL07Model::createLink(const char *name,
                                  e_surf_link_sharing_policy_t policy,
                                  xbt_dict_t properties)
 {
-  xbt_assert(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
+  xbt_assert(!Link::byName(name),
 	              "Link '%s' declared several times in the platform file.",
 	              name);
 
@@ -361,7 +362,6 @@ Link* NetworkL07Model::createLink(const char *name,
 	                               state_initial, state_trace,
 	                               policy);
 
-  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, nw_link);
   return nw_link;
 }
 
@@ -397,7 +397,7 @@ void HostL07Model::addTraces()
   /* Connect traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = static_cast<LinkL07Ptr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+    LinkL07Ptr link = static_cast<LinkL07Ptr>(Link::byName(elm));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -407,7 +407,7 @@ void HostL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = static_cast<LinkL07Ptr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+    LinkL07Ptr link = static_cast<LinkL07Ptr>(Link::byName(elm));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -417,7 +417,7 @@ void HostL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = static_cast<LinkL07Ptr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+    LinkL07Ptr link = static_cast<LinkL07Ptr>(Link::byName(elm));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);

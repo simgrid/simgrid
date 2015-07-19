@@ -11,7 +11,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
 /* Global vars */
 extern routing_platf_t routing_platf;
-extern int surf_parse_lineno;
 
 #define TO_ROUTE_FULL(i,j) p_routingTable[(i)+(j)*table_size]
 
@@ -168,7 +167,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
     xbt_dynar_t link_route_to_test =
         xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
     xbt_dynar_foreach(route->link_list, i, link_name) {
-      void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+      void *link = Link::byName(link_name);
       xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
       xbt_dynar_push(link_route_to_test, &link);
     }
@@ -246,7 +245,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
           xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
       for (i = xbt_dynar_length(route->link_list); i > 0; i--) {
         link_name = xbt_dynar_get_as(route->link_list, i - 1, char *);
-        void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+        void *link = Link::byName(link_name);
         xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
         xbt_dynar_push(link_route_to_test, &link);
       }

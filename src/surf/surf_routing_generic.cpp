@@ -361,21 +361,21 @@ sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hi
     xbt_assert(routearg->gw_src && routearg->gw_dst,
         "NULL is obviously a bad gateway");
 
-    /* remeber not erase the gateway names */
+    /* remember not erase the gateway names */
     result->gw_src = routearg->gw_src;
     result->gw_dst = routearg->gw_dst;
   }
 
   xbt_dynar_foreach(routearg->link_list, cpt, link_name) {
 
-    void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+    Link *link = Link::byName(link_name);
     if (link) {
       if (change_order)
         xbt_dynar_push(result->link_list, &link);
       else
         xbt_dynar_unshift(result->link_list, &link);
     } else
-      THROWF(mismatch_error, 0, "Link %s not found", link_name);
+      THROWF(mismatch_error, 0, "Link '%s' not found", link_name);
   }
 
   return result;

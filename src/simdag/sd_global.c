@@ -126,6 +126,7 @@ void SD_application_reinit(void)
   s_SD_task_t task;
 
   SD_task_t done_task, next_done_task;
+  xbt_die("This function is not working since the C++ links and others. Please report the problem if you really need that function.");
 
    XBT_DEBUG("Recreating the swags...");
   xbt_swag_free(sd_global->not_scheduled_task_set);

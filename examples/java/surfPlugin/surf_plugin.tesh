@@ -1,4 +1,5 @@
 #! tesh
+! output sort
 
 $ java -classpath ${classpath:=.} surfPlugin/TestPlugin ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/surfPlugin/surfPluginDeployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
@@ -52,15 +53,15 @@ $ java -classpath ${classpath:=.} surfPlugin/TestPlugin ${srcdir:=.}/../platform
 > [0.019146] [jmsg/INFO] Trace: Cpu destructed Bourassa
 > [0.019146] [jmsg/INFO] Trace: Cpu destructed Jupiter
 > [0.019146] [jmsg/INFO] Trace: Cpu destructed Ginette
-> [0.019146] [jmsg/INFO] Trace: Link destructed __loopback__
 > [0.019146] [jmsg/INFO] Trace: Link destructed loopback
+> [0.019146] [jmsg/INFO] Trace: Link destructed 5
 > [0.019146] [jmsg/INFO] Trace: Link destructed 0
 > [0.019146] [jmsg/INFO] Trace: Link destructed 1
-> [0.019146] [jmsg/INFO] Trace: Link destructed 2
-> [0.019146] [jmsg/INFO] Trace: Link destructed 3
-> [0.019146] [jmsg/INFO] Trace: Link destructed 4
-> [0.019146] [jmsg/INFO] Trace: Link destructed 5
-> [0.019146] [jmsg/INFO] Trace: Link destructed 6
-> [0.019146] [jmsg/INFO] Trace: Link destructed 7
-> [0.019146] [jmsg/INFO] Trace: Link destructed 8
 > [0.019146] [jmsg/INFO] Trace: Link destructed 9
+> [0.019146] [jmsg/INFO] Trace: Link destructed 4
+> [0.019146] [jmsg/INFO] Trace: Link destructed 7
+> [0.019146] [jmsg/INFO] Trace: Link destructed 3
+> [0.019146] [jmsg/INFO] Trace: Link destructed 8
+> [0.019146] [jmsg/INFO] Trace: Link destructed 6
+> [0.019146] [jmsg/INFO] Trace: Link destructed 2
+> [0.019146] [jmsg/INFO] Trace: Link destructed __loopback__

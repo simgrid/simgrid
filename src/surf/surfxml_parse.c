@@ -702,7 +702,7 @@ void ETag_surfxml_backbone(void){
   link.policy = SURF_LINK_SHARED;
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, A_surfxml_backbone_id, SURF_LINK_LEVEL));
+  routing_cluster_add_backbone(sg_link_by_name(A_surfxml_backbone_id));
 }
 
 void STag_surfxml_route(void){

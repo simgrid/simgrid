@@ -501,9 +501,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     linkTemplate.policy = SURF_LINK_SHARED;
     linkTemplate.id = bprintf("limiter_%d", id);
     sg_platf_new_link(&linkTemplate);
-    this->limiterLink = (Link*) xbt_lib_get_or_null(link_lib,
-                                                           linkTemplate.id,
-                                                           SURF_LINK_LEVEL);
+    this->limiterLink = Link::byName(linkTemplate.id);
     free((void*)linkTemplate.id);
   }
   if(cluster->loopback_bw || cluster->loopback_lat) {
@@ -514,9 +512,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     linkTemplate.policy = SURF_LINK_FATPIPE;
     linkTemplate.id = bprintf("loopback_%d", id);
     sg_platf_new_link(&linkTemplate);
-    this->loopback = (Link*) xbt_lib_get_or_null(link_lib,
-                                                        linkTemplate.id,
-                                                        SURF_LINK_LEVEL);
+    this->loopback = Link::byName(linkTemplate.id);
     free((void*)linkTemplate.id);
   }  
 }
@@ -539,17 +535,14 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster,
   std::string tmpID;
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
     tmpID = std::string(linkTemplate.id) + "_UP";
-    link = (Link*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
-                                              SURF_LINK_LEVEL);
+    link =  Link::byName(tmpID.c_str());
     this->upLink = link; // check link?
     tmpID = std::string(linkTemplate.id) + "_DOWN";
-    link = (Link*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
-                                              SURF_LINK_LEVEL);
+    link = Link::byName(tmpID.c_str());
     this->downLink = link; // check link ?
   }
   else {
-    link = (Link*) xbt_lib_get_or_null(link_lib, linkTemplate.id,
-                                              SURF_LINK_LEVEL);
+    link = Link::byName(linkTemplate.id);
     this->upLink = link;
     this->downLink = link;
   }
