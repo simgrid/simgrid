@@ -12,16 +12,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
                                 "Logging specific to the SURF CPU IMPROVED module");
 
-/*************
- * CallBacks *
- *************/
-
-static void cpu_define_callbacks()
-{
-  sg_platf_host_add_cb(cpu_parse_init);
-  sg_platf_postparse_add_cb(cpu_add_traces);
-}
-
 /*********
  * Model *
  *********/
@@ -40,7 +30,9 @@ void surf_cpu_model_init_Cas01()
   surf_cpu_model_pm = new CpuCas01Model();
   surf_cpu_model_vm  = new CpuCas01Model();
 
-  cpu_define_callbacks();
+  sg_platf_host_add_cb(cpu_parse_init);
+  sg_platf_postparse_add_cb(cpu_add_traces);
+
   ModelPtr model_pm = surf_cpu_model_pm;
   ModelPtr model_vm = surf_cpu_model_vm;
   xbt_dynar_push(model_list, &model_pm);
