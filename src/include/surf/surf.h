@@ -158,8 +158,7 @@ typedef enum {
   SURF_ACTION_FAILED,           /**< Task Failure */
   SURF_ACTION_DONE,             /**< Completed    */
   SURF_ACTION_TO_FREE,          /**< Action to free in next cleanup */
-  SURF_ACTION_NOT_IN_THE_SYSTEM
-                                /**< Not in the system anymore. Why did you ask ? */
+  SURF_ACTION_NOT_IN_THE_SYSTEM /**< Not in the system anymore. Why did you ask ? */
 } e_surf_action_state_t;
 
 /** @ingroup SURF_vm_interface
