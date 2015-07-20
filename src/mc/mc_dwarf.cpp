@@ -496,11 +496,7 @@ static void MC_dwarf_fill_member_location(mc_type_t type, mc_type_t member,
              PRIx64 ">%s", MC_dwarf_attr_integrate_string(child, DW_AT_name),
              (uint64_t) type->id, type->name.c_str());
       }
-      if (len == 1 && expr[0].atom == DW_OP_plus_uconst) {
-        member->offset = expr[0].number;
-      } else {
-        mc_dwarf_expression_init(&member->location, len, expr);
-      }
+      simgrid::mc::DwarfExpression(expr, expr+len);
       break;
     }
   case MC_DW_CLASS_CONSTANT:
@@ -508,7 +504,7 @@ static void MC_dwarf_fill_member_location(mc_type_t type, mc_type_t member,
     {
       Dwarf_Word offset;
       if (!dwarf_formudata(&attr, &offset))
-        member->offset = offset;
+        member->offset(offset);
       else
         xbt_die("Cannot get %s location <%" PRIx64 ">%s",
                 MC_dwarf_attr_integrate_string(child, DW_AT_name),

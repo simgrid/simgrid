@@ -19,6 +19,8 @@
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
 
+#include <elfutils/libdw.h>
+
 #include "mc_forward.h"
 #include "mc_location.h"
 #include "mc_process.h"
@@ -31,6 +33,10 @@ typedef int e_mc_type_type;
 namespace simgrid {
 namespace mc {
 
+/** Represents a type in the program
+ *
+ *  It is currently used to represent members of structs and unions as well.
+ */
 class Type {
 public:
   Type();
@@ -48,11 +54,31 @@ public:
   int is_pointer_type;
 
   // Location (for members) is either of:
-  struct s_mc_expression location;
-  int offset;
+  simgrid::mc::DwarfExpression location_expression;
 
   mc_type_t subtype; // DW_AT_type
   mc_type_t full_type; // The same (but more complete) type
+
+  bool has_offset_location() const
+  {
+    return location_expression.size() == 1 &&
+      location_expression[0].atom == DW_OP_plus_uconst;
+  }
+
+  // TODO, check if this shortcut is really necessary
+  int offset() const
+  {
+    xbt_assert(this->has_offset_location());
+    return this->location_expression[0].number;
+  }
+
+  void offset(int new_offset)
+  {
+    Dwarf_Op op;
+    op.atom = DW_OP_plus_uconst;
+    op.number = new_offset;
+    this->location_expression = { op };
+  }
 };
 
 }

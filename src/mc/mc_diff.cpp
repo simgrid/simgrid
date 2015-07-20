@@ -1108,9 +1108,9 @@ static mc_type_t get_offset_type(void *real_base_address, mc_type_t type,
       mc_type_t member;
       xbt_dynar_foreach(type->members, cursor, member) {
 
-        if (!member->location.size) {
+        if (member->has_offset_location()) {
           // We have the offset, use it directly (shortcut):
-          if (member->offset == offset)
+          if (member->offset() == offset)
             return member->subtype;
         } else {
           void *real_member =

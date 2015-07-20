@@ -9,6 +9,8 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include <libunwind.h>
 #include <dwarf.h>
 #include <elfutils/libdw.h>
@@ -17,6 +19,14 @@
 #include "mc_base.h"
 #include "mc_forward.h"
 #include "AddressSpace.hpp"
+
+namespace simgrid {
+namespace mc {
+
+typedef std::vector<Dwarf_Op> DwarfExpression;
+
+}
+}
 
 SG_BEGIN_DECL()
 
@@ -114,5 +124,18 @@ MC_SHOULD_BE_INTERNAL void* mc_find_frame_base(
   dw_frame_t frame, mc_object_info_t object_info, unw_cursor_t* unw_cursor);
 
 SG_END_DECL()
+
+namespace simgrid {
+namespace mc {
+
+inline
+int execute(DwarfExpression const& expression, mc_expression_state_t state)
+{
+  return mc_dwarf_execute_expression(
+    expression.size(), expression.data(), state);
+}
+
+}
+}
 
 #endif

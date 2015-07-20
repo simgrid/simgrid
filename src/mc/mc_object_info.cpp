@@ -20,13 +20,10 @@ Type::Type()
 {
   this->type = 0;
   this->id = 0;
-  this->name = std::string();
   this->byte_size = 0;
   this->element_count = 0;
   this->members = nullptr;
   this->is_pointer_type = 0;
-  this->location = {0, 0, 0, 0};
-  this->offset = 0;
   this->subtype = nullptr;
   this->full_type = nullptr;
 }
@@ -34,7 +31,6 @@ Type::Type()
 Type::~Type()
 {
   xbt_dynar_free(&this->members);
-  mc_dwarf_expression_clear(&this->location);
 }
 
 // ObjectInformations

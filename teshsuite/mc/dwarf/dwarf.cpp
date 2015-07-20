@@ -136,8 +136,8 @@ int main(int argc, char** argv)
   var = test_global_variable(process, process->binary_info.get(),
     "test_some_struct", &test_some_struct, sizeof(test_some_struct));
   type = (mc_type_t) xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
-  assert(find_member(process->binary_info.get(), "first", type)->offset == 0);
-  assert(find_member(process->binary_info.get(), "second", type)->offset
+  assert(find_member(process->binary_info.get(), "first", type)->offset() == 0);
+  assert(find_member(process->binary_info.get(), "second", type)->offset()
       == ((const char*)&test_some_struct.second) - (const char*)&test_some_struct);
 
   unw_context_t context;
