@@ -895,9 +895,7 @@ top:
 
   mc_type_t subtype, subsubtype;
   int res, elm_size;
-  unsigned int cursor = 0;
-  mc_type_t member;
-  const void *addr_pointed1, *addr_pointed2;;
+  const void *addr_pointed1, *addr_pointed2;
 
   mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
   mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
@@ -1042,17 +1040,16 @@ top:
         return -1;
       }
     } else {
-      cursor = 0;
-      xbt_dynar_foreach(type->members, cursor, member) {
+      for(simgrid::mc::Type& member : type->members) {
         // TODO, optimize this? (for the offset case)
         void *real_member1 =
-            mc_member_resolve(real_area1, type, member, (mc_address_space_t) snapshot1, process_index);
+            mc_member_resolve(real_area1, type, &member, (mc_address_space_t) snapshot1, process_index);
         void *real_member2 =
-            mc_member_resolve(real_area2, type, member, (mc_address_space_t) snapshot2, process_index);
+            mc_member_resolve(real_area2, type, &member, (mc_address_space_t) snapshot2, process_index);
         res =
             compare_heap_area_with_type(state, process_index, real_member1, real_member2,
                                         snapshot1, snapshot2,
-                                        previous, member->subtype, -1,
+                                        previous, member.subtype, -1,
                                         check_ignore, 0);
         if (res == 1) {
           return res;
@@ -1104,20 +1101,18 @@ static mc_type_t get_offset_type(void *real_base_address, mc_type_t type,
       else
         return NULL;
     } else {
-      unsigned int cursor = 0;
-      mc_type_t member;
-      xbt_dynar_foreach(type->members, cursor, member) {
+      for(simgrid::mc::Type& member : type->members) {
 
-        if (member->has_offset_location()) {
+        if (member.has_offset_location()) {
           // We have the offset, use it directly (shortcut):
-          if (member->offset() == offset)
-            return member->subtype;
+          if (member.offset() == offset)
+            return member.subtype;
         } else {
           void *real_member =
-            mc_member_resolve(real_base_address, type, member,
+            mc_member_resolve(real_base_address, type, &member,
               snapshot, process_index);
           if ((char*) real_member - (char *) real_base_address == offset)
-            return member->subtype;
+            return member.subtype;
         }
 
       }

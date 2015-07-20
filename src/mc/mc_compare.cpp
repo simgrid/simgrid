@@ -108,8 +108,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
 {
   mc_process_t process = &mc_model_checker->process();
 
-  unsigned int cursor = 0;
-  mc_type_t member, subtype, subsubtype;
+  mc_type_t subtype, subsubtype;
   int elm_size, i, res;
 
   top:
@@ -232,18 +231,18 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   }
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
-    xbt_dynar_foreach(type->members, cursor, member) {
+    for(simgrid::mc::Type& member : type->members) {
       void *member1 =
-        mc_member_resolve(real_area1, type, member, snapshot1, process_index);
+        mc_member_resolve(real_area1, type, &member, snapshot1, process_index);
       void *member2 =
-        mc_member_resolve(real_area2, type, member, snapshot2, process_index);
+        mc_member_resolve(real_area2, type, &member, snapshot2, process_index);
       mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, process_index, region1);
       mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, process_index, region2);
       res =
           compare_areas_with_type(state, process_index,
                                   member1, snapshot1, subregion1,
                                   member2, snapshot2, subregion2,
-                                  member->subtype, pointer_level);
+                                  member.subtype, pointer_level);
       if (res == 1)
         return res;
     }

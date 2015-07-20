@@ -541,9 +541,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
 {
   int res;
   Dwarf_Die child;
-  xbt_assert(!type->members);
-  type->members =
-      xbt_dynar_new(sizeof(mc_type_t), (void (*)(void *)) dw_type_free_voidp);
+  xbt_assert(type->members.empty());
   for (res = dwarf_child(die, &child); res == 0;
        res = dwarf_siblingof(&child, &child)) {
     int tag = dwarf_tag(&child);
@@ -558,22 +556,22 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
         continue;
 
       // TODO, we should use another type (because is is not a type but a member)
-      mc_type_t member = new simgrid::mc::Type();
-      member->type = tag;
+      simgrid::mc::Type member;
+      member.type = tag;
 
       // Global Offset:
-      member->id = dwarf_dieoffset(&child);
+      member.id = dwarf_dieoffset(&child);
 
       const char *name = MC_dwarf_attr_integrate_string(&child, DW_AT_name);
       if (name)
-        member->name = name;
-      member->byte_size =
+        member.name = name;
+      member.byte_size =
           MC_dwarf_attr_integrate_uint(&child, DW_AT_byte_size, 0);
-      member->element_count = -1;
+      member.element_count = -1;
 
       char* type_id = MC_dwarf_at_type(&child);
       if (type_id) {
-        member->dw_type_id = type_id;
+        member.dw_type_id = type_id;
         free(type_id);
       }
 
@@ -581,15 +579,15 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
         xbt_die("Can't groke DW_AT_data_bit_offset.");
       }
 
-      MC_dwarf_fill_member_location(type, member, &child);
+      MC_dwarf_fill_member_location(type, &member, &child);
 
-      if (member->dw_type_id.empty()) {
+      if (member.dw_type_id.empty()) {
         xbt_die("Missing type for member %s of <%" PRIx64 ">%s",
-                member->name.c_str(),
+                member.name.c_str(),
                 (uint64_t) type->id, type->name.c_str());
       }
 
-      xbt_dynar_push(type->members, &member);
+      type->members.push_back(std::move(member));
     }
   }
 }
@@ -1257,13 +1255,8 @@ static void MC_post_process_types(mc_object_info_t info)
   // Lookup "subtype" field:
   xbt_dict_foreach(info->types, cursor, origin, type) {
     MC_resolve_subtype(info, type);
-
-    mc_type_t member;
-    unsigned int i = 0;
-    if (type->members != NULL)
-      xbt_dynar_foreach(type->members, i, member) {
-      MC_resolve_subtype(info, member);
-      }
+    for (simgrid::mc::Type& member : type->members)
+      MC_resolve_subtype(info, &member);
   }
 }
 

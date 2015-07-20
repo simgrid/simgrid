@@ -98,13 +98,12 @@ static dw_variable_t test_global_variable(mc_process_t process, mc_object_info_t
   return variable;
 }
 
-static mc_type_t find_member(mc_object_info_t info, const char* name, mc_type_t type) {
-  unsigned int cursor = 0;
-  mc_type_t member;
-  xbt_dynar_foreach(type->members, cursor, member)
-    if(member->name == name)
-      return member;
-  return NULL;
+static mc_type_t find_member(mc_object_info_t info, const char* name, mc_type_t type)
+{
+  for (simgrid::mc::Type& member : type->members)
+    if(member.name == name)
+      return &member;
+  return nullptr;
 }
 
 int some_local_variable = 0;

@@ -22,15 +22,9 @@ Type::Type()
   this->id = 0;
   this->byte_size = 0;
   this->element_count = 0;
-  this->members = nullptr;
   this->is_pointer_type = 0;
   this->subtype = nullptr;
   this->full_type = nullptr;
-}
-
-Type::~Type()
-{
-  xbt_dynar_free(&this->members);
 }
 
 // ObjectInformations

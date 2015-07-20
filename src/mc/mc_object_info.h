@@ -40,9 +40,10 @@ namespace mc {
 class Type {
 public:
   Type();
-  ~Type();
-  Type(Type const& type) = delete;
-  Type& operator=(Type const&) = delete;
+  Type(Type const& type) = default;
+  Type& operator=(Type const&) = default;
+  Type(Type&& type) = default;
+  Type& operator=(Type&&) = default;
 
   e_mc_type_type type;
   Dwarf_Off id; /* Offset in the section (in hexadecimal form) */
@@ -50,7 +51,7 @@ public:
   int byte_size; /* Size in bytes */
   int element_count; /* Number of elements for array type */
   std::string dw_type_id; /* DW_AT_type id */
-  xbt_dynar_t members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
+  std::vector<Type> members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
   int is_pointer_type;
 
   // Location (for members) is either of:
