@@ -38,7 +38,6 @@ public:
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate);
- Action *communicate(Host *src, Host *dst, double size, double rate);
 };
 
 /************

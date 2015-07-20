@@ -64,7 +64,7 @@ void test(char *platform)
   surf_host_execute(hostB, 1000.0);
   surf_host_sleep(hostB, 7.32);
 
-  surf_host_model_communicate(surf_host_model, hostA, hostB, 150.0, -1.0);
+  surf_network_model_communicate(surf_network_model, hostA, hostB, 150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {

@@ -44,7 +44,6 @@ public:
                                         double *bytes_amount,
                                         double rate);
   xbt_dynar_t getRoute(Host *src, Host *dst);
-  Action *communicate(Host *src, Host *dst, double size, double rate);
   void addTraces();
   NetworkModel *p_networkModel;
 };
@@ -79,7 +78,7 @@ public:
 		                                   e_surf_link_sharing_policy_t
 		                                   policy, xbt_dict_t properties);
 
-  Action *communicate(RoutingEdge */*src*/, RoutingEdge */*dst*/, double /*size*/, double /*rate*/) {DIE_IMPOSSIBLE;};
+  Action *communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate);
   void addTraces() {DIE_IMPOSSIBLE;};
   bool shareResourcesIsIdempotent() {return true;}
 

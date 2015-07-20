@@ -264,18 +264,6 @@ XBT_PUBLIC(surf_action_t) surf_host_model_execute_parallel_task(surf_host_model_
                                             double rate);
 
 /**
- * @brief Create a communication between two hosts
- *
- * @param model The model which handle the communication
- * @param src The source host
- * @param dst The destination host
- * @param size The amount of data (in bytes) needed to transfer
- * @param rate [description]
- * @return The action corresponding to the communication
- */
-XBT_PUBLIC(surf_action_t) surf_host_model_communicate(surf_host_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate);
-
-/**
  * @brief Get the route between two hosts
  * @details [long description]
  *
@@ -295,8 +283,7 @@ XBT_PUBLIC(xbt_dynar_t) surf_host_model_get_route(surf_host_model_t model, surf_
 XBT_PUBLIC(void) surf_vm_model_create(const char *name, surf_resource_t host_PM);
 
 /**
- * @brief Create a communication between two routing edges [TODO]
- * @details [long description]
+ * @brief Create a communication between two routing edges
  *
  * @param model The model which handle the communication
  * @param src The source host
@@ -305,7 +292,7 @@ XBT_PUBLIC(void) surf_vm_model_create(const char *name, surf_resource_t host_PM)
  * @param rate [description]
  * @return The action corresponding to the communication
  */
-XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate);
+XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate);
 
 /**
  * @brief Get the name of a surf resource (cpu, host, network, …)

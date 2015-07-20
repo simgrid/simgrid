@@ -31,7 +31,6 @@ public:
   VM *createVM(const char *name, surf_resource_t host_PM);
   double shareResources(double now);
   void adjustWeightOfDummyCpuActions() {};
-  Action *communicate(Host *src, Host *dst, double size, double rate);
   Action *executeParallelTask(int host_nb,
                                           void **host_list,
                                           double *flops_amount,

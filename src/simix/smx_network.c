@@ -733,7 +733,7 @@ static XBT_INLINE void SIMIX_comm_start(smx_synchro_t synchro)
     XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro,
               SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
 
-    synchro->comm.surf_comm = surf_host_model_communicate(surf_host_model,
+    synchro->comm.surf_comm = surf_network_model_communicate(surf_network_model,
     		                                                    sender, receiver,
     		                                                    synchro->comm.task_size, synchro->comm.rate);
 

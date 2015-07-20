@@ -41,10 +41,8 @@ const char *string_action(e_surf_action_state_t state)
 void test(char *platform);
 void test(char *platform)
 {
-  void *cpuA = NULL;
-  void *cpuB = NULL;
-  void *cardA = NULL;
-  void *cardB = NULL;
+  sg_host_t cpuA = NULL;
+  sg_host_t cpuB = NULL;
   surf_action_t actionA = NULL;
   surf_action_t actionB = NULL;
   surf_action_t actionC = NULL;
@@ -82,15 +80,9 @@ void test(char *platform)
 
   /*********************** Network *******************************/
   XBT_DEBUG("%p", surf_network_model);
-  cardA = sg_routing_edge_by_name_or_null("Cpu A");
-  cardB = sg_routing_edge_by_name_or_null("Cpu B");
-
-  /* Let's check that those two processors exist */
-  XBT_DEBUG("Cpu A: %p", cardA);
-  XBT_DEBUG("Cpu B: %p", cardB);
 
   /* Let's do something on it */
-  surf_network_model_communicate(surf_network_model, cardA, cardB, 150.0, -1.0);
+  surf_network_model_communicate(surf_network_model, cpuA, cpuB, 150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {

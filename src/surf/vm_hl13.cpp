@@ -27,10 +27,6 @@ VMHL13Model::VMHL13Model() : VMModel() {}
 
 void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 
-Action *VMHL13Model::communicate(Host *src, Host *dst, double size, double rate){
-  return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
-}
-
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
  * structure (i.e not on the surf_resource_private infos) */
 
@@ -187,7 +183,7 @@ Action *VMHL13Model::executeParallelTask(int host_nb,
     return static_cast<HostCLM03*>(host_list[0])->execute(flops_amount[0]);
   else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0))
-    return communicate(static_cast<HostCLM03*>(host_list[0]), static_cast<HostCLM03*>(host_list[0]),bytes_amount[0], rate);
+    return surf_network_model->communicate(static_cast<HostCLM03*>(host_list[0])->p_netElm, static_cast<HostCLM03*>(host_list[0])->p_netElm,bytes_amount[0], rate);
   else if ((host_nb == 2)
              && (cost_or_zero(flops_amount, 0) == 0.0)
              && (cost_or_zero(flops_amount, 1) == 0.0)) {
@@ -201,11 +197,11 @@ Action *VMHL13Model::executeParallelTask(int host_nb,
       }
     }
     if (nb == 1)
-      return communicate(static_cast<HostCLM03*>(host_list[0]), static_cast<HostCLM03*>(host_list[1]),value, rate);
+      return surf_network_model->communicate(static_cast<HostCLM03*>(host_list[0])->p_netElm, static_cast<HostCLM03*>(host_list[1])->p_netElm,value, rate);
   }
 #undef cost_or_zero
 
-  THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
+  THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks for more than 2 hosts. */
   return NULL;
 }
 

@@ -234,10 +234,6 @@ surf_action_t surf_host_model_execute_parallel_task(surf_host_model_t model,
   return static_cast<Action*>(model->executeParallelTask(host_nb, host_list, flops_amount, bytes_amount, rate));
 }
 
-surf_action_t surf_host_model_communicate(surf_host_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate){
-  return model->communicate(get_casted_host(src), get_casted_host(dst), size, rate);
-}
-
 xbt_dynar_t surf_host_model_get_route(surf_host_model_t /*model*/,
                                              surf_resource_t src, surf_resource_t dst){
   xbt_dynar_t route = NULL;
@@ -250,8 +246,8 @@ void surf_vm_model_create(const char *name, surf_resource_t ind_phys_host){
   surf_vm_model->createVM(name, ind_phys_host);
 }
 
-surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate){
-  return model->communicate(src, dst, size, rate);
+surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate){
+  return model->communicate(sg_host_edge(src), sg_host_edge(dst), size, rate);
 }
 
 const char *surf_resource_name(surf_cpp_resource_t resource){

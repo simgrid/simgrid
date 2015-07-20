@@ -95,8 +95,9 @@ Action *HostCLM03Model::executeParallelTask(int host_nb,
     action = static_cast<HostCLM03*>(host_list[0])->execute(flops_amount[0]);
   } else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0)) {
-    action = communicate(static_cast<HostCLM03*>(host_list[0]),
-    		static_cast<HostCLM03*>(host_list[0]),bytes_amount[0], rate);
+    action = surf_network_model->communicate(static_cast<HostCLM03*>(host_list[0])->p_netElm,
+    		                                 static_cast<HostCLM03*>(host_list[0])->p_netElm,
+											 bytes_amount[0], rate);
   } else if ((host_nb == 2)
              && (cost_or_zero(flops_amount, 0) == 0.0)
              && (cost_or_zero(flops_amount, 1) == 0.0)) {
@@ -110,21 +111,16 @@ Action *HostCLM03Model::executeParallelTask(int host_nb,
       }
     }
     if (nb == 1){
-      action = communicate(static_cast<HostCLM03*>(host_list[0]),
-    		  static_cast<HostCLM03*>(host_list[1]),value, rate);
+      action = surf_network_model->communicate(static_cast<HostCLM03*>(host_list[0])->p_netElm,
+    		                                   static_cast<HostCLM03*>(host_list[1])->p_netElm,
+											   value, rate);
     }
   } else
-    THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks */
+    THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks for more than 2 hosts */
 #undef cost_or_zero
   xbt_free(host_list);
   return action;
 }
-
-Action *HostCLM03Model::communicate(Host *src, Host *dst, double size, double rate){
-  return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
-}
-
-
 
 /************
  * Resource *

@@ -8,6 +8,7 @@
 
 #include "cpu_interface.hpp"
 #include "surf_routing.hpp"
+#include "xbt/lib.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 
@@ -283,7 +284,7 @@ Host *HostL07Model::createHost(const char *name)
   return wk;
 }
 
-Action *HostL07Model::communicate(Host *src, Host *dst,
+Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
                                        double size, double rate)
 {
   void **host_list = xbt_new0(void *, 2);
@@ -291,11 +292,11 @@ Action *HostL07Model::communicate(Host *src, Host *dst,
   double *bytes_amount = xbt_new0(double, 4);
   Action *res = NULL;
 
-  host_list[0] = src;
-  host_list[1] = dst;
+  host_list[0] = xbt_lib_get_level(xbt_lib_get_elm_or_null(host_lib, src->getName()), SURF_HOST_LEVEL);
+  host_list[1] = xbt_lib_get_level(xbt_lib_get_elm_or_null(host_lib, dst->getName()), SURF_HOST_LEVEL);
   bytes_amount[1] = size;
 
-  res = executeParallelTask(2, host_list,
+  res = p_hostModel->executeParallelTask(2, host_list,
                                     flops_amount,
                                     bytes_amount, rate);
 
