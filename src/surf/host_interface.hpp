@@ -143,40 +143,6 @@ public:
    */
   virtual Action *sleep(double duration)=0;
 
-  /**
-   * @brief Get the number of cores of the associated Cpu
-   *
-   * @return The number of cores of the associated Cpu
-   * @see Cpu
-   */
-  virtual int getCore();
-
-  /**
-   * @brief Get the speed of the associated Cpu
-   *
-   * @param load [TODO]
-   * @return The speed of the associated Cpu
-   * @see Cpu
-   */
-  virtual double getSpeed(double load);
-
-  /**
-   * @brief Get the available speed of the associated Cpu
-   * @details [TODO]
-   *
-   * @return The available speed of the associated Cpu
-   * @see Cpu
-   */
-  virtual double getAvailableSpeed();
-
-  /** @brief Get the associated Cpu power peak */
-  virtual double getCurrentPowerPeak();
-
-  virtual double getPowerPeakAt(int pstate_index);
-  virtual int getNbPstates();
-  virtual void setPstate(int pstate_index);
-  virtual int  getPstate();
-
   /** @brief Return the storage of corresponding mount point */
   virtual Storage *findStorageOnMountList(const char* storage);
 

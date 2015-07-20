@@ -106,42 +106,6 @@ void Host::setState(e_surf_resource_state_t state){
   p_cpu->setState(state);
 }
 
-int Host::getCore(){
-  return p_cpu->getCore();
-}
-
-double Host::getSpeed(double load){
-  return p_cpu->getSpeed(load);
-}
-
-double Host::getAvailableSpeed(){
-  return p_cpu->getAvailableSpeed();
-}
-
-double Host::getCurrentPowerPeak()
-{
-  return p_cpu->getCurrentPowerPeak();
-}
-
-double Host::getPowerPeakAt(int pstate_index)
-{
-  return p_cpu->getPowerPeakAt(pstate_index);
-}
-
-int Host::getNbPstates()
-{
-  return p_cpu->getNbPstates();
-}
-
-void Host::setPstate(int pstate_index)
-{
-	p_cpu->setPstate(pstate_index);
-}
-int Host::getPstate()
-{
-	return p_cpu->getPstate();
-}
-
 xbt_dict_t Host::getProperties()
 {
   return p_cpu->getProperties();

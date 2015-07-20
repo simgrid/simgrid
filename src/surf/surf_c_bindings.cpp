@@ -266,43 +266,43 @@ void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state
   resource->setState(state);
 }
 
-surf_action_t surf_host_sleep(surf_resource_t resource, double duration){
-  return get_casted_host(resource)->sleep(duration);
+surf_action_t surf_host_sleep(surf_resource_t host, double duration){
+  return get_casted_host(host)->sleep(duration);
 }
 
-double surf_host_get_speed(surf_resource_t resource, double load){
-  return get_casted_host(resource)->getSpeed(load);
+double surf_host_get_speed(surf_resource_t host, double load){
+  return sg_host_surfcpu(host)->getSpeed(load);
 }
 
-double surf_host_get_available_speed(surf_resource_t resource){
-  return get_casted_host(resource)->getAvailableSpeed();
+double surf_host_get_available_speed(surf_resource_t host){
+  return sg_host_surfcpu(host)->getAvailableSpeed();
 }
 
-int surf_host_get_core(surf_resource_t resource){
-  return get_casted_host(resource)->getCore();
+int surf_host_get_core(surf_resource_t host){
+  return sg_host_surfcpu(host)->getCore();
 }
 
-surf_action_t surf_host_execute(surf_resource_t resource, double size){
-  return get_casted_host(resource)->execute(size);
+surf_action_t surf_host_execute(surf_resource_t host, double size){
+  return get_casted_host(host)->execute(size);
 }
 
-double surf_host_get_current_power_peak(surf_resource_t resource){
-  return get_casted_host(resource)->getCurrentPowerPeak();
+double surf_host_get_current_power_peak(surf_resource_t host){
+  return sg_host_surfcpu(host)->getCurrentPowerPeak();
 }
 
-double surf_host_get_power_peak_at(surf_resource_t resource, int pstate_index){
-  return get_casted_host(resource)->getPowerPeakAt(pstate_index);
+double surf_host_get_power_peak_at(surf_resource_t host, int pstate_index){
+  return sg_host_surfcpu(host)->getPowerPeakAt(pstate_index);
 }
 
-int surf_host_get_nb_pstates(surf_resource_t resource){
-  return get_casted_host(resource)->getNbPstates();
+int surf_host_get_nb_pstates(surf_resource_t host){
+  return sg_host_surfcpu(host)->getNbPstates();
 }
 
-void surf_host_set_pstate(surf_resource_t resource, int pstate_index){
-  get_casted_host(resource)->setPstate(pstate_index);
+void surf_host_set_pstate(surf_resource_t host, int pstate_index){
+	sg_host_surfcpu(host)->setPstate(pstate_index);
 }
-int surf_host_get_pstate(surf_resource_t resource){
-  return get_casted_host(resource)->getPstate();
+int surf_host_get_pstate(surf_resource_t host){
+  return sg_host_surfcpu(host)->getPstate();
 }
 double surf_host_get_wattmin_at(surf_resource_t resource, int pstate){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");

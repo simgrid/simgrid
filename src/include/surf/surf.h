@@ -328,16 +328,16 @@ XBT_PUBLIC(double) surf_host_get_speed(surf_resource_t resource, double load);
  * @param resource The surf host
  * @return [description]
  */
-XBT_PUBLIC(double) surf_host_get_available_speed(surf_resource_t resource);
+XBT_PUBLIC(double) surf_host_get_available_speed(surf_resource_t host);
 
 /** @brief Get the number of cores of the cpu associated to a host */
-XBT_PUBLIC(int) surf_host_get_core(surf_resource_t resource);
+XBT_PUBLIC(int) surf_host_get_core(surf_resource_t host);
 
 /** @brief Create a computation action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_execute(surf_resource_t resource, double size);
+XBT_PUBLIC(surf_action_t) surf_host_execute(surf_resource_t host, double size);
 
 /** @brief Create a sleep action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_sleep(surf_resource_t resource, double duration);
+XBT_PUBLIC(surf_action_t) surf_host_sleep(surf_resource_t host, double duration);
 
 /** @brief Create a file opening action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_open(surf_resource_t host, const char* fullpath);
