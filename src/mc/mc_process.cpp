@@ -433,7 +433,7 @@ std::shared_ptr<ObjectInformation> Process::find_object_info_rw(remote_ptr<void>
   return nullptr;
 }
 
-dw_frame_t Process::find_function(remote_ptr<void> ip) const
+mc_frame_t Process::find_function(remote_ptr<void> ip) const
 {
   std::shared_ptr<s_mc_object_info_t> info = this->find_object_info_exec(ip);
   return info ? info->find_function((void*) ip.address()) : nullptr;

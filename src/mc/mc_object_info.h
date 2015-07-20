@@ -112,7 +112,7 @@ public:
   char *end_rw; // Read-write segment
   char *start_ro;
   char *end_ro; // read-only segment
-  xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, dw_frame_t>
+  xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, mc_frame_t>
   xbt_dynar_t global_variables; // xbt_dynar_t<mc_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, mc_type_t>
   xbt_dict_t full_types_by_name; // xbt_dict_t<name, mc_type_t> (full defined type only)
@@ -134,7 +134,7 @@ public:
 
   void* base_address() const;
 
-  dw_frame_t find_function(const void *ip) const;
+  mc_frame_t find_function(const void *ip) const;
   mc_variable_t find_variable(const char* name) const;
 
 };
@@ -178,27 +178,33 @@ public:
 
 };
 
-}
-}
+class Frame {
+public:
+  Frame();
+  ~Frame();
+  Frame(Frame const&) = delete;
+  Frame& operator=(Frame&) = delete;
 
-struct s_dw_frame{
   int tag;
-  char *name;
+  std::string name;
   void *low_pc;
   void *high_pc;
   s_mc_location_list_t frame_base;
   xbt_dynar_t /* <mc_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
   unsigned long int id; /* DWARF offset of the subprogram */
-  xbt_dynar_t /* <dw_frame_t> */ scopes;
+  xbt_dynar_t /* <mc_frame_t> */ scopes;
   Dwarf_Off abstract_origin_id;
   mc_object_info_t object_info;
 };
 
+}
+}
+
+
+
 struct s_mc_function_index_item {
   void* low_pc, *high_pc;
-  dw_frame_t function;
+  mc_frame_t function;
 };
-
-XBT_INTERNAL void mc_frame_free(dw_frame_t freme);
 
 #endif

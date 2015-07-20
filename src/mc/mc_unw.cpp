@@ -164,12 +164,12 @@ static int get_proc_name(unw_addr_space_t as,
               void* arg)
 {
   mc_unw_context_t context = (mc_unw_context_t) arg;
-  dw_frame_t frame = context->process->find_function(remote(addr));
+  mc_frame_t frame = context->process->find_function(remote(addr));
   if (!frame)
     return - UNW_ENOINFO;
   *offp = (unw_word_t) frame->low_pc - addr;
 
-  strncpy(bufp, frame->name, buf_len);
+  strncpy(bufp, frame->name.c_str(), buf_len);
   if (bufp[buf_len - 1]) {
     bufp[buf_len - 1] = 0;
     return -UNW_ENOMEM;

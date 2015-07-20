@@ -260,7 +260,7 @@ void MC_find_object_address(std::vector<simgrid::mc::VmMap> const& maps, mc_obje
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
-static bool mc_valid_variable(mc_variable_t var, dw_frame_t scope,
+static bool mc_valid_variable(mc_variable_t var, mc_frame_t scope,
                               const void *ip)
 {
   // The variable is not yet valid:
@@ -271,7 +271,7 @@ static bool mc_valid_variable(mc_variable_t var, dw_frame_t scope,
 }
 
 static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
-                                           dw_frame_t scope, int process_index,
+                                           mc_frame_t scope, int process_index,
                                            std::vector<s_local_variable>& result)
 {
   mc_process_t process = &mc_model_checker->process();
@@ -330,7 +330,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
   }
 
   // Recursive processing of nested scopes:
-  dw_frame_t nested_scope = NULL;
+  mc_frame_t nested_scope = nullptr;
   xbt_dynar_foreach(scope->scopes, cursor, nested_scope) {
     mc_fill_local_variables_values(stack_frame, nested_scope, process_index, result);
   }
@@ -380,7 +380,7 @@ static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t s
 
       // TODO, use real addresses in frame_t instead of fixing it here
 
-      dw_frame_t frame = process->find_function(remote(ip));
+      mc_frame_t frame = process->find_function(remote(ip));
       stack_frame.frame = frame;
 
       if (frame) {
@@ -395,8 +395,8 @@ static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t s
       result.push_back(std::move(stack_frame));
 
       /* Stop before context switch with maestro */
-      if (frame != NULL && frame->name != NULL
-          && !strcmp(frame->name, "smx_ctx_sysv_wrapper"))
+      if (frame != nullptr &&
+          frame->name == "smx_ctx_sysv_wrapper")
         break;
 
       int ret = unw_step(&c);

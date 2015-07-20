@@ -242,7 +242,7 @@ static void mc_hash_object_globals(hash_type * hash, mc_hashing_state * state,
 
 static void mc_hash_stack_frame(mc_hash_t * hash,
                                 mc_object_info_t info,
-                                unw_cursor_t * unw_cursor, dw_frame_t frame,
+                                unw_cursor_t * unw_cursor, mc_frame_t frame,
                                 char *frame_pointer, mc_hashing_state * state)
 {
 

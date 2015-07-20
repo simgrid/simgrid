@@ -121,7 +121,7 @@ MC_SHOULD_BE_INTERNAL int mc_dwarf_execute_expression(
   size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
 
 MC_SHOULD_BE_INTERNAL void* mc_find_frame_base(
-  dw_frame_t frame, mc_object_info_t object_info, unw_cursor_t* unw_cursor);
+  mc_frame_t frame, mc_object_info_t object_info, unw_cursor_t* unw_cursor);
 
 SG_END_DECL()
 

@@ -506,7 +506,7 @@ void mc_dwarf_resolve_locations(mc_location_t location,
  *  \param frame
  *  \param unw_cursor
  */
-void *mc_find_frame_base(dw_frame_t frame, mc_object_info_t object_info,
+void *mc_find_frame_base(mc_frame_t frame, mc_object_info_t object_info,
                          unw_cursor_t * unw_cursor)
 {
   s_mc_location_t location;

@@ -31,27 +31,27 @@ static mc_type_t find_type_by_name(mc_object_info_t info, const char* name) {
   return NULL;
 }
 
-static dw_frame_t find_function_by_name(mc_object_info_t info, const char* name) {
+static mc_frame_t find_function_by_name(
+    mc_object_info_t info, const char* name)
+{
   xbt_dict_cursor_t cursor = 0;
-  dw_frame_t subprogram;
+  mc_frame_t subprogram;
   char* key;
-  xbt_dict_foreach(info->subprograms, cursor, key, subprogram){
-    if(!strcmp(name, subprogram->name))
+  xbt_dict_foreach(info->subprograms, cursor, key, subprogram)
+    if(subprogram->name == name)
       return subprogram;
-  }
-
-  return NULL;
+  return nullptr;
 }
 
 static mc_variable_t find_local_variable(
-    dw_frame_t frame, const char* argument_name) {
+    mc_frame_t frame, const char* argument_name) {
   unsigned int cursor = 0;
   mc_variable_t variable;
   xbt_dynar_foreach(frame->variables, cursor, variable)
     if(argument_name == variable->name)
       return variable;
 
-  dw_frame_t scope = nullptr;
+  mc_frame_t scope = nullptr;
   xbt_dynar_foreach(frame->scopes, cursor, scope) {
     variable = find_local_variable(scope, argument_name);
     if(variable)
@@ -62,7 +62,7 @@ static mc_variable_t find_local_variable(
 }
 
 static void test_local_variable(mc_object_info_t info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
-  dw_frame_t subprogram = find_function_by_name(info, function);
+  mc_frame_t subprogram = find_function_by_name(info, function);
   assert(subprogram);
   // TODO, Lookup frame by IP and test against name instead
 

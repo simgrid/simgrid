@@ -92,7 +92,7 @@ public:
   std::shared_ptr<s_mc_object_info_t> find_object_info(remote_ptr<void> addr) const;
   std::shared_ptr<s_mc_object_info_t> find_object_info_exec(remote_ptr<void> addr) const;
   std::shared_ptr<s_mc_object_info_t> find_object_info_rw(remote_ptr<void> addr) const;
-  dw_frame_t find_function(remote_ptr<void> ip) const;
+  mc_frame_t find_function(remote_ptr<void> ip) const;
   mc_variable_t find_variable(const char* name) const;
 
   // Heap access:

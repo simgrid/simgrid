@@ -104,13 +104,13 @@ typedef struct s_mc_stack_frame {
   /** Stack pointer */
   unw_word_t sp;
   unw_word_t frame_base;
-  dw_frame_t frame;
+  mc_frame_t frame;
   std::string frame_name;
   unw_cursor_t unw_cursor;
 } s_mc_stack_frame_t, *mc_stack_frame_t;
 
 typedef struct s_local_variable{
-  dw_frame_t subprogram;
+  mc_frame_t subprogram;
   unsigned long ip;
   std::string name;
   mc_type_t type;

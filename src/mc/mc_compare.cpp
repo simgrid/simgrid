@@ -353,9 +353,12 @@ static int compare_local_variables(int process_index,
           || current_var1->ip != current_var2->ip) {
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
         XBT_VERB
-            ("Different name of variable (%s - %s) or frame (%s - %s) or ip (%lu - %lu)",
-             current_var1->name.c_str(), current_var2->name.c_str(),
-             current_var1->subprogram->name, current_var2->subprogram->name,
+            ("Different name of variable (%s - %s) "
+             "or frame (%s - %s) or ip (%lu - %lu)",
+             current_var1->name.c_str(),
+             current_var2->name.c_str(),
+             current_var1->subprogram->name.c_str(),
+             current_var2->subprogram->name.c_str(),
              current_var1->ip, current_var2->ip);
         return 1;
       }
@@ -372,9 +375,12 @@ static int compare_local_variables(int process_index,
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
         XBT_TRACE3(mc, local_diff, -1, -1, current_var1->name);
         XBT_VERB
-            ("Local variable %s (%p - %p) in frame %s  is different between snapshots",
-             current_var1->name.c_str(), current_var1->address, current_var2->address,
-             current_var1->subprogram->name);
+            ("Local variable %s (%p - %p) in frame %s "
+             "is different between snapshots",
+             current_var1->name.c_str(),
+             current_var1->address,
+             current_var2->address,
+             current_var1->subprogram->name.c_str());
         return res;
       }
       cursor++;

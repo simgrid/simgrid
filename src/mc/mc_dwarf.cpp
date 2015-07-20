@@ -18,13 +18,20 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
-static void mc_variable_free(mc_variable_t v);
-static void mc_variable_free_voidp(void *t);
+static void mc_variable_free_voidp(void *t)
+{
+  delete *(simgrid::mc::Variable**)t;
+}
+
+static void mc_frame_free(void* frame)
+{
+  delete (simgrid::mc::Frame*)frame;
+}
 
 static void MC_dwarf_register_global_variable(mc_object_info_t info, mc_variable_t variable);
-static void MC_register_variable(mc_object_info_t info, dw_frame_t frame, mc_variable_t variable);
-static void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, mc_variable_t variable);
-static void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, mc_variable_t variable);
+static void MC_register_variable(mc_object_info_t info, mc_frame_t frame, mc_variable_t variable);
+static void MC_dwarf_register_non_global_variable(mc_object_info_t info, mc_frame_t frame, mc_variable_t variable);
+static void MC_dwarf_register_variable(mc_object_info_t info, mc_frame_t frame, mc_variable_t variable);
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
@@ -64,13 +71,13 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit);
  *  \param frame containg frame if any
  */
 static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
-                                Dwarf_Die * unit, dw_frame_t frame,
+                                Dwarf_Die * unit, mc_frame_t frame,
                                 const char *ns);
 
 /** \brief Process a type DIE
  */
 static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, dw_frame_t frame,
+                                     Dwarf_Die * unit, mc_frame_t frame,
                                      const char *ns);
 
 /** \brief Calls MC_dwarf_handle_die on all childrend of the given die
@@ -81,7 +88,7 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
  *  \param frame containg frame if any
  */
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, dw_frame_t frame,
+                                     Dwarf_Die * unit, mc_frame_t frame,
                                      const char *ns);
 
 /** \brief Handle a variable (DW_TAG_variable or other)
@@ -92,7 +99,7 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
  *  \param frame containg frame if any
  */
 static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
-                                         Dwarf_Die * unit, dw_frame_t frame,
+                                         Dwarf_Die * unit, mc_frame_t frame,
                                          const char *ns);
 
 /** \brief Get the DW_TAG_type of the DIE
@@ -601,7 +608,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
  *  \return MC representation of the type
  */
 static mc_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
-                                      Dwarf_Die * unit, dw_frame_t frame,
+                                      Dwarf_Die * unit, mc_frame_t frame,
                                       const char *ns)
 {
 
@@ -685,7 +692,7 @@ static mc_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
 }
 
 static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, dw_frame_t frame,
+                                     Dwarf_Die * unit, mc_frame_t frame,
                                      const char *ns)
 {
   mc_type_t type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
@@ -702,7 +709,7 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
 static int mc_anonymous_variable_index = 0;
 
 static mc_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
-                                        Dwarf_Die * unit, dw_frame_t frame,
+                                        Dwarf_Die * unit, mc_frame_t frame,
                                         const char *ns)
 {
   // Skip declarations:
@@ -812,7 +819,7 @@ static mc_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
 }
 
 static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
-                                         Dwarf_Die * unit, dw_frame_t frame,
+                                         Dwarf_Die * unit, mc_frame_t frame,
                                          const char *ns)
 {
   mc_variable_t variable =
@@ -822,14 +829,8 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
   MC_dwarf_register_variable(info, frame, variable);
 }
 
-static void mc_frame_free_voipd(dw_frame_t * p)
-{
-  mc_frame_free(*p);
-  *p = NULL;
-}
-
 static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
-                                      Dwarf_Die * unit, dw_frame_t parent_frame,
+                                      Dwarf_Die * unit, mc_frame_t parent_frame,
                                       const char *ns)
 {
   // TODO, handle DW_TAG_type/DW_TAG_location for DW_TAG_with_stmt
@@ -844,7 +845,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
   if (klass == mc_tag_scope)
     xbt_assert(parent_frame, "No parent scope for this scope");
 
-  dw_frame_t frame = xbt_new0(s_dw_frame_t, 1);
+  mc_frame_t frame = new simgrid::mc::Frame();
 
   frame->tag = tag;
   frame->id = dwarf_dieoffset(die);
@@ -852,8 +853,10 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
 
   if (klass == mc_tag_subprogram) {
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-    frame->name =
-        ns ? bprintf("%s::%s", ns, name) : xbt_strdup(name);
+    if(ns)
+      frame->name  = std::string(ns) + "::" + name;
+    else
+      frame->name = name;
   }
 
   frame->abstract_origin_id =
@@ -863,10 +866,6 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
   // Relocated addresses are offset from this base address.
   // See DWARF4 spec 7.5
   void *base = info->base_address();
-
-  // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
-  frame->variables =
-      xbt_dynar_new(sizeof(mc_variable_t), mc_variable_free_voidp);
 
   // TODO, support DW_AT_ranges
   uint64_t low_pc = MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
@@ -911,9 +910,6 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
                                   &attr_frame_base);
   }
 
-  frame->scopes =
-      xbt_dynar_new(sizeof(dw_frame_t), (void_f_pvoid_t) mc_frame_free_voipd);
-
   // Register it:
   if (klass == mc_tag_subprogram) {
     char *key = bprintf("%" PRIx64, (uint64_t) frame->id);
@@ -928,7 +924,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
 
 static void mc_dwarf_handle_namespace_die(mc_object_info_t info,
                                           Dwarf_Die * die, Dwarf_Die * unit,
-                                          dw_frame_t frame,
+                                          mc_frame_t frame,
                                           const char *ns)
 {
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
@@ -941,7 +937,7 @@ static void mc_dwarf_handle_namespace_die(mc_object_info_t info,
 }
 
 static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, dw_frame_t frame,
+                                     Dwarf_Die * unit, mc_frame_t frame,
                                      const char *ns)
 {
   // For each child DIE:
@@ -954,7 +950,7 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
 }
 
 static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
-                                Dwarf_Die * unit, dw_frame_t frame,
+                                Dwarf_Die * unit, mc_frame_t frame,
                                 const char *ns)
 {
   int tag = dwarf_tag(die);
@@ -1029,23 +1025,9 @@ void MC_dwarf_get_variables(mc_object_info_t info)
 
 /************************** Free functions *************************/
 
-void mc_frame_free(dw_frame_t frame)
-{
-  xbt_free(frame->name);
-  mc_dwarf_location_list_clear(&(frame->frame_base));
-  xbt_dynar_free(&(frame->variables));
-  xbt_dynar_free(&(frame->scopes));
-  xbt_free(frame);
-}
-
 static void dw_type_free(mc_type_t t)
 {
   delete t;
-}
-
-void mc_variable_free_voidp(void *t)
-{
-  delete *(simgrid::mc::Variable**)t;
 }
 
 // ***** object_info
@@ -1065,7 +1047,7 @@ ObjectInformation::ObjectInformation()
   this->end_rw = nullptr;
   this->start_ro = nullptr;
   this->end_ro = nullptr;
-  this->subprograms = xbt_dict_new_homogeneous((void (*)(void *)) mc_frame_free);
+  this->subprograms = xbt_dict_new_homogeneous(mc_frame_free);
   this->global_variables =
       xbt_dynar_new(sizeof(mc_variable_t), mc_variable_free_voidp);
   this->types = xbt_dict_new_homogeneous((void (*)(void *)) dw_type_free);
@@ -1133,7 +1115,7 @@ static void MC_make_functions_index(mc_object_info_t info)
   xbt_dynar_t index = xbt_dynar_new(sizeof(s_mc_function_index_item_t), NULL);
 
   // Populate the array:
-  dw_frame_t frame = NULL;
+  mc_frame_t frame = NULL;
   xbt_dict_cursor_t cursor;
   char *key;
   xbt_dict_foreach(info->subprograms, cursor, key, frame) {
@@ -1168,18 +1150,17 @@ static void MC_post_process_variables(mc_object_info_t info)
         info->types, variable->type_id.c_str());
 }
 
-static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope)
+static void mc_post_process_scope(mc_object_info_t info, mc_frame_t scope)
 {
 
   if (scope->tag == DW_TAG_inlined_subroutine) {
 
     // Attach correct namespaced name in inlined subroutine:
     char *key = bprintf("%" PRIx64, (uint64_t) scope->abstract_origin_id);
-    dw_frame_t abstract_origin = (dw_frame_t) xbt_dict_get_or_null(info->subprograms, key);
+    mc_frame_t abstract_origin = (mc_frame_t) xbt_dict_get_or_null(info->subprograms, key);
     xbt_assert(abstract_origin, "Could not lookup abstract origin %s", key);
     xbt_free(key);
-    scope->name = xbt_strdup(abstract_origin->name);
-
+    scope->name = abstract_origin->name;
   }
 
   // Direct:
@@ -1191,7 +1172,7 @@ static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope)
         info->types, variable->type_id.c_str());
 
   // Recursive post-processing of nested-scopes:
-  dw_frame_t nested_scope = nullptr;
+  mc_frame_t nested_scope = nullptr;
   xbt_dynar_foreach(scope->scopes, cursor, nested_scope)
       mc_post_process_scope(info, nested_scope);
 
@@ -1201,7 +1182,7 @@ static void MC_post_process_functions(mc_object_info_t info)
 {
   xbt_dict_cursor_t cursor;
   char *key;
-  dw_frame_t subprogram = NULL;
+  mc_frame_t subprogram = NULL;
   xbt_dict_foreach(info->subprograms, cursor, key, subprogram) {
     mc_post_process_scope(info, subprogram);
   }
@@ -1328,7 +1309,7 @@ void MC_dwarf_register_global_variable(mc_object_info_t info,
 }
 
 void MC_dwarf_register_non_global_variable(mc_object_info_t info,
-                                           dw_frame_t frame,
+                                           mc_frame_t frame,
                                            mc_variable_t variable)
 {
   xbt_assert(frame, "Frame is NULL");
@@ -1340,7 +1321,7 @@ void MC_dwarf_register_non_global_variable(mc_object_info_t info,
   // TODO, else ?
 }
 
-void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame,
+void MC_dwarf_register_variable(mc_object_info_t info, mc_frame_t frame,
                                 mc_variable_t variable)
 {
   if (variable->global)

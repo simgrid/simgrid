@@ -14,6 +14,19 @@
 namespace simgrid {
 namespace mc {
 
+// Free functions
+
+static void mc_variable_free_voidp(void *t)
+{
+  delete *(simgrid::mc::Variable**)t;
+}
+
+static void mc_frame_free_voipd(void** p)
+{
+  delete *(mc_frame_t**)p;
+  *p = nullptr;
+}
+
 // Type
 
 Type::Type()
@@ -46,9 +59,33 @@ Variable::~Variable()
     mc_dwarf_location_list_clear(&this->location_list);
 }
 
+// Frame
+
+Frame::Frame()
+{
+  this->tag = 0;
+  this->low_pc = nullptr;
+  this->high_pc = nullptr;
+  this->frame_base = {0, nullptr};
+  this->variables = xbt_dynar_new(
+    sizeof(mc_variable_t), mc_variable_free_voidp);
+  this->id = 0;
+  this->scopes = xbt_dynar_new(
+    sizeof(mc_frame_t), (void_f_pvoid_t) mc_frame_free_voipd);
+  this->abstract_origin_id = 0;
+  this->object_info = nullptr;
+}
+
+Frame::~Frame()
+{
+  mc_dwarf_location_list_clear(&(this->frame_base));
+  xbt_dynar_free(&(this->variables));
+  xbt_dynar_free(&(this->scopes));
+}
+
 // ObjectInformations
 
-dw_frame_t ObjectInformation::find_function(const void *ip) const
+mc_frame_t ObjectInformation::find_function(const void *ip) const
 {
   xbt_dynar_t dynar = this->functions_index;
   mc_function_index_item_t base =
