@@ -57,10 +57,6 @@ public:
   bool isUsed();
 
   xbt_dynar_t getVms();
-
-  /* common with vm */
-  void getParams(ws_params_t params);
-  void setParams(ws_params_t params);
 };
 
 
