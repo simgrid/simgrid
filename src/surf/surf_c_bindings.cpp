@@ -62,36 +62,6 @@ void surf_presolve(void)
       model->updateActionsState(NOW, 0.0);
 }
 
-/**
- * Computes when the next action executed in a
- * specific model terminates; this is important,
- * because we can safely skip the amount of time
- * in which no model (read: not even a single one)
- * changes its state; so, if for instance network,
- * cpu, storage don't change (and if we assume they're
- * the only models we use... simple example here :) )
- * for 2s, 1s, 3s then we can skip 1s as after this
- * amount of time the new state needs to be considered.
- *
- */
-static void surf_share_resources(surf_model_t model)
-{
-  double next_action_end = -1.0;
-  int i = __sync_fetch_and_add(&surf_min_index, 1);
-  if (strcmp(model->getName(), "network NS3")) {
-    XBT_DEBUG("Running for Resource [%s]", model->getName());
-    next_action_end = model->shareResources(NOW);
-    XBT_DEBUG("Resource [%s] : next action end = %f",
-        model->getName(), next_action_end);
-  }
-  surf_mins[i] = next_action_end;
-}
-
-static void surf_update_actions_state(surf_model_t model)
-{
-  model->updateActionsState(NOW, surf_min);
-}
-
 double surf_solve(double max_date)
 {
   surf_min = -1.0; /* duration */
@@ -119,7 +89,15 @@ double surf_solve(double max_date)
 
   /* sequential version */
   xbt_dynar_foreach(model_list_invoke, iter, model) {
-    surf_share_resources(static_cast<Model*>(model));
+	  double next_action_end = -1.0;
+	  int i = __sync_fetch_and_add(&surf_min_index, 1);
+	  if (strcmp(model->getName(), "network NS3")) {
+	    XBT_DEBUG("Running for Resource [%s]", model->getName());
+	    next_action_end = model->shareResources(NOW);
+	    XBT_DEBUG("Resource [%s] : next action end = %f",
+	        model->getName(), next_action_end);
+	  }
+	  surf_mins[i] = next_action_end;
   }
 
   unsigned i;
@@ -195,7 +173,7 @@ double surf_solve(double max_date)
   /* FIXME: model_list or model_list_invoke? revisit here later */
   /* sequential version */
   xbt_dynar_foreach(model_list, iter, model) {
-    surf_update_actions_state(model);
+	  model->updateActionsState(NOW, surf_min);
   }
 
   TRACE_paje_dump_buffer (0);
