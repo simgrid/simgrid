@@ -288,7 +288,7 @@ Host *HostL07Model::createHost(const char *name)
 
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, wk);
 
-  return wk;//FIXME:xbt_lib_get_elm_or_null(host_lib, name);
+  return wk;
 }
 
 Action *HostL07Model::communicate(Host *src, Host *dst,
@@ -346,23 +346,19 @@ Link* NetworkL07Model::createLink(const char *name,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
                                  tmgr_trace_t lat_trace,
-                                 e_surf_resource_state_t
-                                 state_initial,
+                                 e_surf_resource_state_t state_initial,
                                  tmgr_trace_t state_trace,
                                  e_surf_link_sharing_policy_t policy,
                                  xbt_dict_t properties)
 {
   xbt_assert(!Link::byName(name),
-	              "Link '%s' declared several times in the platform file.",
-	              name);
+	         "Link '%s' declared several times in the platform file.", name);
 
-  LinkL07 *nw_link = new LinkL07(this, name, properties,
-	                               bw_initial, bw_trace,
-	                               lat_initial, lat_trace,
-	                               state_initial, state_trace,
-	                               policy);
-
-  return nw_link;
+  return new LinkL07(this, name, properties,
+		             bw_initial, bw_trace,
+					 lat_initial, lat_trace,
+					 state_initial, state_trace,
+					 policy);
 }
 
 void HostL07Model::addTraces()
@@ -531,7 +527,7 @@ void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*d
   return;
 }
 
-void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double date){
+void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double date) {
   XBT_DEBUG("Updating link %s (%p) with value=%f for date=%g", getName(), this, value, date);
   if (event_type == p_bwEvent) {
     updateBandwidth(value, date);
@@ -555,8 +551,7 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
   return;
 }
 
-e_surf_resource_state_t HostL07::getState()
-{
+e_surf_resource_state_t HostL07::getState() {
   return p_cpu->getState();
 }
 

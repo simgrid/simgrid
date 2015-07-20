@@ -25,26 +25,22 @@ class HostAction;
  *************/
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Host creation *
- * @details Callback functions have the following signature: `void(HostPtr)`
+ * @brief Callbacks fired after Host creation. Signature: `void(Host*)`
  */
 XBT_PUBLIC_DATA(surf_callback(void, Host*)) hostCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Host destruction *
- * @details Callback functions have the following signature: `void(HostPtr)`
+ * @brief Callbacks fired Host destruction. Signature: `void(Host*)`
  */
 XBT_PUBLIC_DATA(surf_callback(void, Host*)) hostDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Host State changed *
- * @details Callback functions have the following signature: `void(HostAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @brief Callbacks fired after Host State changed. Signature: `void(Host *, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
 XBT_PUBLIC_DATA(surf_callback(void, Host*, e_surf_resource_state_t, e_surf_resource_state_t)) hostStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after HostAction State changed *
- * @details Callback functions have the following signature: `void(HostAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @brief Callbacks fired HostAction State changed. Signature: `void(HostAction *, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
 XBT_PUBLIC_DATA(surf_callback(void, HostAction*, e_surf_action_state_t, e_surf_action_state_t)) hostActionStateChangedCallbacks;
 
@@ -64,58 +60,28 @@ XBT_PUBLIC(void) host_add_traces();
  */
 class HostModel : public Model {
 public:
-    /**
-   * @brief HostModel constructor
-   *
-   * @param name the name of the model
-   */
+  /** @brief Constructor */
   HostModel(const char *name);
 
-  /** @brief HostModel constructor */
+  /** @brief Constructor */
   HostModel();
 
-  /** @brief HostModel destructor */
+  /** @brief Destructor */
   ~HostModel();
 
   virtual Host *createHost(const char *name)=0;
   void addTraces(){DIE_IMPOSSIBLE;}
 
-  /**
-   * @brief [brief description]
-   * @details [long description]
-   */
   virtual void adjustWeightOfDummyCpuActions();
-
-  /**
-   * @brief [brief description]
-   * @details [long description]
-   *
-   * @param host_nb [description]
-   * @param host_list [description]
-   * @param flops_amount [description]
-   * @param bytes_amount [description]
-   * @param rate [description]
-   * @return [description]
-   */
   virtual Action *executeParallelTask(int host_nb,
                                         void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate)=0;
 
- /**
-  * @brief [brief description]
-  * @details [long description]
-  *
-  * @param src [description]
-  * @param dst [description]
-  * @param size [description]
-  * @param rate [description]
-  * @return [description]
-  */
- virtual Action *communicate(Host *src, Host *dst, double size, double rate)=0;
+  virtual Action *communicate(Host *src, Host *dst, double size, double rate)=0;
 
- CpuModel *p_cpuModel;
+  CpuModel *p_cpuModel;
 };
 
 /************
