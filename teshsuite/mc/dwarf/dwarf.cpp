@@ -32,12 +32,9 @@ static mc_type_t find_type_by_name(mc_object_info_t info, const char* name)
 static mc_frame_t find_function_by_name(
     mc_object_info_t info, const char* name)
 {
-  xbt_dict_cursor_t cursor = 0;
-  mc_frame_t subprogram;
-  char* key;
-  xbt_dict_foreach(info->subprograms, cursor, key, subprogram)
-    if(subprogram->name == name)
-      return subprogram;
+  for (auto& entry : info->subprograms)
+    if(entry.second.name == name)
+      return &entry.second;
   return nullptr;
 }
 

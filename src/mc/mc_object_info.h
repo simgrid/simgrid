@@ -97,52 +97,6 @@ typedef int mc_object_info_flags;
 namespace simgrid {
 namespace mc {
 
-class ObjectInformation {
-public:
-  ObjectInformation();
-  ~ObjectInformation();
-  ObjectInformation(ObjectInformation const&) = delete;
-  ObjectInformation& operator=(ObjectInformation const&) = delete;
-
-  mc_object_info_flags flags;
-  char* file_name;
-  const void* start;
-  const void *end;
-  char *start_exec;
-  char *end_exec; // Executable segment
-  char *start_rw;
-  char *end_rw; // Read-write segment
-  char *start_ro;
-  char *end_ro; // read-only segment
-  xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, mc_frame_t>
-  // TODO, remove the mutable (to remove it we'll have to add a lot of const everywhere)
-  mutable std::vector<simgrid::mc::Variable> global_variables;
-  std::unordered_map<std::uint64_t, simgrid::mc::Type> types;
-  std::unordered_map<std::string, simgrid::mc::Type*> full_types_by_name;
-
-  // Here we sort the minimal information for an efficient (and cache-efficient)
-  // lookup of a function given an instruction pointer.
-  // The entries are sorted by low_pc and a binary search can be used to look them up.
-  xbt_dynar_t functions_index;
-
-  bool executable() const
-  {
-    return this->flags & MC_OBJECT_INFO_EXECUTABLE;
-  }
-
-  bool privatized() const
-  {
-    return this->executable() && smpi_privatize_global_variables;
-  }
-
-  void* base_address() const;
-
-  mc_frame_t find_function(const void *ip) const;
-  // TODO, should be simgrid::mc::Variable*
-  simgrid::mc::Variable* find_variable(const char* name) const;
-
-};
-
 class Variable {
 public:
   Variable();
@@ -176,6 +130,52 @@ public:
   std::vector<Frame> scopes;
   Dwarf_Off abstract_origin_id;
   mc_object_info_t object_info;
+};
+
+class ObjectInformation {
+public:
+  ObjectInformation();
+  ~ObjectInformation();
+  ObjectInformation(ObjectInformation const&) = delete;
+  ObjectInformation& operator=(ObjectInformation const&) = delete;
+
+  mc_object_info_flags flags;
+  char* file_name;
+  const void* start;
+  const void *end;
+  char *start_exec;
+  char *end_exec; // Executable segment
+  char *start_rw;
+  char *end_rw; // Read-write segment
+  char *start_ro;
+  char *end_ro; // read-only segment
+  std::unordered_map<std::uint64_t, simgrid::mc::Frame> subprograms;
+  // TODO, remove the mutable (to remove it we'll have to add a lot of const everywhere)
+  mutable std::vector<simgrid::mc::Variable> global_variables;
+  std::unordered_map<std::uint64_t, simgrid::mc::Type> types;
+  std::unordered_map<std::string, simgrid::mc::Type*> full_types_by_name;
+
+  // Here we sort the minimal information for an efficient (and cache-efficient)
+  // lookup of a function given an instruction pointer.
+  // The entries are sorted by low_pc and a binary search can be used to look them up.
+  xbt_dynar_t functions_index;
+
+  bool executable() const
+  {
+    return this->flags & MC_OBJECT_INFO_EXECUTABLE;
+  }
+
+  bool privatized() const
+  {
+    return this->executable() && smpi_privatize_global_variables;
+  }
+
+  void* base_address() const;
+
+  mc_frame_t find_function(const void *ip) const;
+  // TODO, should be simgrid::mc::Variable*
+  simgrid::mc::Variable* find_variable(const char* name) const;
+
 };
 
 }

@@ -161,12 +161,9 @@ static void MC_ignore_local_variable_in_object(const char *var_name,
                                                const char *subprogram_name,
                                                mc_object_info_t info)
 {
-  xbt_dict_cursor_t cursor2;
-  mc_frame_t frame;
-  char *key;
-  xbt_dict_foreach(info->subprograms, cursor2, key, frame) {
-    mc_ignore_local_variable_in_scope(var_name, subprogram_name, frame, frame);
-  }
+  for (auto& entry : info->subprograms)
+    mc_ignore_local_variable_in_scope(
+      var_name, subprogram_name, &entry.second, &entry.second);
 }
 
 /** \brief Ignore a local variable in a scope

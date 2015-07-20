@@ -79,14 +79,12 @@ ObjectInformation::ObjectInformation()
   this->end_rw = nullptr;
   this->start_ro = nullptr;
   this->end_ro = nullptr;
-  this->subprograms = xbt_dict_new_homogeneous(mc_frame_free);
   this->functions_index = nullptr;
 }
 
 ObjectInformation::~ObjectInformation()
 {
   xbt_free(this->file_name);
-  xbt_dict_free(&this->subprograms);
   xbt_dynar_free(&this->functions_index);
 }
 

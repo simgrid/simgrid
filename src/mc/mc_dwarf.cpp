@@ -899,13 +899,9 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
   MC_dwarf_handle_children(info, die, unit, &frame, ns);
 
   // Register it:
-  if (klass == mc_tag_subprogram) {
-    char *key = bprintf("%" PRIx64, (uint64_t) frame.id);
-
-    xbt_dict_set(info->subprograms, key,
-      new simgrid::mc::Frame(std::move(frame)), NULL);
-    xbt_free(key);
-  } else if (klass == mc_tag_scope)
+  if (klass == mc_tag_subprogram)
+    info->subprograms[frame.id] = frame;
+  else if (klass == mc_tag_scope)
     parent_frame->scopes.push_back(std::move(frame));
 }
 
@@ -1027,17 +1023,13 @@ static void MC_make_functions_index(mc_object_info_t info)
 {
   xbt_dynar_t index = xbt_dynar_new(sizeof(s_mc_function_index_item_t), NULL);
 
-  // Populate the array:
-  mc_frame_t frame = NULL;
-  xbt_dict_cursor_t cursor;
-  char *key;
-  xbt_dict_foreach(info->subprograms, cursor, key, frame) {
-    if (frame->low_pc == NULL)
+  for (auto& e : info->subprograms) {
+    if (e.second.low_pc == nullptr)
       continue;
     s_mc_function_index_item_t entry;
-    entry.low_pc = frame->low_pc;
-    entry.high_pc = frame->high_pc;
-    entry.function = frame;
+    entry.low_pc = e.second.low_pc;
+    entry.high_pc = e.second.high_pc;
+    entry.function = &e.second;
     xbt_dynar_push(index, &entry);
   }
 
@@ -1069,13 +1061,12 @@ static void mc_post_process_scope(mc_object_info_t info, mc_frame_t scope)
 {
 
   if (scope->tag == DW_TAG_inlined_subroutine) {
-
     // Attach correct namespaced name in inlined subroutine:
-    char *key = bprintf("%" PRIx64, (uint64_t) scope->abstract_origin_id);
-    mc_frame_t abstract_origin = (mc_frame_t) xbt_dict_get_or_null(info->subprograms, key);
-    xbt_assert(abstract_origin, "Could not lookup abstract origin %s", key);
-    xbt_free(key);
-    scope->name = abstract_origin->name;
+    auto i = info->subprograms.find(scope->abstract_origin_id);
+    xbt_assert(i != info->subprograms.end(),
+      "Could not lookup abstract origin %" PRIx64,
+      (uint64_t) scope->abstract_origin_id);
+    scope->name = i->second.name;
   }
 
   // Direct:
@@ -1096,12 +1087,8 @@ static void mc_post_process_scope(mc_object_info_t info, mc_frame_t scope)
 
 static void MC_post_process_functions(mc_object_info_t info)
 {
-  xbt_dict_cursor_t cursor;
-  char *key;
-  mc_frame_t subprogram = NULL;
-  xbt_dict_foreach(info->subprograms, cursor, key, subprogram) {
-    mc_post_process_scope(info, subprogram);
-  }
+  for (auto& entry : info->subprograms)
+    mc_post_process_scope(info, &entry.second);
 }
 
 
