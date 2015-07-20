@@ -75,7 +75,7 @@ HostL07Model::~HostL07Model() {
 
 double HostL07Model::shareResources(double /*now*/)
 {
-  HostL07Action *action;
+  L07Action *action;
 
   ActionList *running_actions = getRunningActionSet();
   double min = this->shareResourcesMaxMin(running_actions,
@@ -84,7 +84,7 @@ double HostL07Model::shareResources(double /*now*/)
 
   for(ActionList::iterator it(running_actions->begin()), itend(running_actions->end())
 	 ; it != itend ; ++it) {
-	action = static_cast<HostL07Action*>(&*it);
+	action = static_cast<L07Action*>(&*it);
     if (action->m_latency > 0) {
       if (min < 0) {
         min = action->m_latency;
@@ -105,14 +105,14 @@ double HostL07Model::shareResources(double /*now*/)
 
 void HostL07Model::updateActionsState(double /*now*/, double delta) {
 
-  HostL07Action *action;
+  L07Action *action;
   ActionList *actionSet = getRunningActionSet();
 
   for(ActionList::iterator it = actionSet->begin(), itNext = it
 	 ; it != actionSet->end()
 	 ; it =  itNext) {
 	++itNext;
-    action = static_cast<HostL07Action*>(&*it);
+    action = static_cast<L07Action*>(&*it);
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
         double_update(&(action->m_latency), delta, sg_surf_precision);
@@ -173,7 +173,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 										  double *bytes_amount,
 										  double rate)
 {
-  HostL07Action *action;
+  L07Action *action;
   int i, j;
   unsigned int cpt;
   int nb_link = 0;
@@ -217,7 +217,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
     if (flops_amount[i] > 0)
       nb_host++;
 
-  action = new HostL07Action(this, 1, 0);
+  action = new L07Action(this, 1, 0);
   XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
          action, host_nb, nb_link);
   action->m_suspended = 0;        /* Should be useless because of the
@@ -570,11 +570,11 @@ Action *HostL07::execute(double size)
 
 Action *HostL07::sleep(double duration)
 {
-  HostL07Action *action = NULL;
+  L07Action *action = NULL;
 
   XBT_IN("(%s,%g)", getName(), duration);
 
-  action = static_cast<HostL07Action*>(execute(1.0));
+  action = static_cast<L07Action*>(execute(1.0));
   action->m_maxDuration = duration;
   action->m_suspended = 2;
   lmm_update_variable_weight(ptask_maxmin_system, action->getVariable(), 0.0);
@@ -602,12 +602,12 @@ double LinkL07::getLatency()
 void LinkL07::updateLatency(double value, double date)
 {
   lmm_variable_t var = NULL;
-  HostL07Action *action;
+  L07Action *action;
   lmm_element_t elem = NULL;
 
   m_latCurrent = value;
   while ((var = lmm_get_var_from_cnst(ptask_maxmin_system, getConstraint(), &elem))) {
-    action = static_cast<HostL07Action*>(lmm_variable_id(var));
+    action = static_cast<L07Action*>(lmm_variable_id(var));
     action->updateBound();
   }
 }
@@ -622,13 +622,13 @@ bool LinkL07::isShared()
  * Action *
  **********/
 
-HostL07Action::~HostL07Action(){
+L07Action::~L07Action(){
   free(p_hostList);
   free(p_communicationAmount);
   free(p_computationAmount);
 }
 
-void HostL07Action::updateBound()
+void L07Action::updateBound()
 {
   double lat_current = 0.0;
   double lat_bound = -1.0;
@@ -658,7 +658,7 @@ void HostL07Action::updateBound()
   }
 }
 
-int HostL07Action::unref()
+int L07Action::unref()
 {
   m_refcount--;
   if (!m_refcount) {
@@ -672,13 +672,13 @@ int HostL07Action::unref()
   return 0;
 }
 
-void HostL07Action::cancel()
+void L07Action::cancel()
 {
   setState(SURF_ACTION_FAILED);
   return;
 }
 
-void HostL07Action::suspend()
+void L07Action::suspend()
 {
   XBT_IN("(%p))", this);
   if (m_suspended != 2) {
@@ -688,7 +688,7 @@ void HostL07Action::suspend()
   XBT_OUT();
 }
 
-void HostL07Action::resume()
+void L07Action::resume()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
@@ -698,26 +698,26 @@ void HostL07Action::resume()
   XBT_OUT();
 }
 
-bool HostL07Action::isSuspended()
+bool L07Action::isSuspended()
 {
   return m_suspended == 1;
 }
 
-void HostL07Action::setMaxDuration(double duration)
+void L07Action::setMaxDuration(double duration)
 {                               /* FIXME: should inherit */
   XBT_IN("(%p,%g)", this, duration);
   m_maxDuration = duration;
   XBT_OUT();
 }
 
-void HostL07Action::setPriority(double priority)
+void L07Action::setPriority(double priority)
 {                               /* FIXME: should inherit */
   XBT_IN("(%p,%g)", this, priority);
   m_priority = priority;
   XBT_OUT();
 }
 
-double HostL07Action::getRemains()
+double L07Action::getRemains()
 {
   XBT_IN("(%p)", this);
   XBT_OUT();

@@ -21,7 +21,7 @@ class HostL07;
 class CpuL07;
 class LinkL07;
 
-class HostL07Action;
+class L07Action;
 
 /*********
  * Tools *
@@ -156,7 +156,7 @@ public:
 /**********
  * Action *
  **********/
-class HostL07Action : public HostAction {
+class L07Action : public HostAction {
   friend Action *HostL07::execute(double size);
   friend Action *HostL07::sleep(double duration);
   friend Action *HostL07Model::executeParallelTask(int host_nb,
@@ -165,9 +165,9 @@ class HostL07Action : public HostAction {
 												   double *bytes_amount,
                                                    double rate);
 public:
-  HostL07Action(Model *model, double cost, bool failed)
+  L07Action(Model *model, double cost, bool failed)
   : HostAction(model, cost, failed) {};
- ~HostL07Action();
+ ~L07Action();
 
   void updateBound();
 
