@@ -334,7 +334,7 @@ int MSG_host_is_off(msg_host_t host)
  * \param host a host
  * \param params a prameter object
  */
-void MSG_host_set_params(msg_host_t host, ws_params_t params)
+void MSG_host_set_params(msg_host_t host, vm_params_t params)
 {
   simcall_host_set_params(host, params);
 }
@@ -345,7 +345,7 @@ void MSG_host_set_params(msg_host_t host, ws_params_t params)
  * \param host a host
  * \param params a prameter object
  */
-void MSG_host_get_params(msg_host_t host, ws_params_t params)
+void MSG_host_get_params(msg_host_t host, vm_params_t params)
 {
   simcall_host_get_params(host, params);
 }

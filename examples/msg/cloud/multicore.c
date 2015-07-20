@@ -177,7 +177,7 @@ static void test_vm_pin(void)
   msg_vm_t vm2 = MSG_vm_create_core(pm2, "VM2");
   msg_vm_t vm3 = MSG_vm_create_core(pm2, "VM3");
 
-  s_ws_params_t params;
+  s_vm_params_t params;
   memset(&params, 0, sizeof(params));
   params.ramsize = 1L * 1024 * 1024;
   params.skip_stage1 = 1;

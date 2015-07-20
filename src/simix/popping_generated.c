@@ -312,12 +312,12 @@ case SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST:
       break;  
 
 case SIMCALL_HOST_GET_PARAMS:
-       SIMIX_host_get_params((sg_host_t) simcall->args[0].dp,(ws_params_t) simcall->args[1].dp);
+       SIMIX_host_get_params((sg_host_t) simcall->args[0].dp,(vm_params_t) simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
 case SIMCALL_HOST_SET_PARAMS:
-       SIMIX_host_set_params((sg_host_t) simcall->args[0].dp,(ws_params_t) simcall->args[1].dp);
+       SIMIX_host_set_params((sg_host_t) simcall->args[0].dp,(vm_params_t) simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

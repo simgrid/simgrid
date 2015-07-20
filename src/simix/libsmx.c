@@ -457,12 +457,12 @@ void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
   simcall_BODY_vm_set_affinity(vm, pm, mask);
 }
 
-void simcall_host_get_params(sg_host_t vm, ws_params_t params)
+void simcall_host_get_params(sg_host_t vm, vm_params_t params)
 {
   simcall_BODY_host_get_params(vm, params);
 }
 
-void simcall_host_set_params(sg_host_t vm, ws_params_t params)
+void simcall_host_set_params(sg_host_t vm, vm_params_t params)
 {
   simcall_BODY_host_set_params(vm, params);
 }

@@ -645,7 +645,7 @@ inline static xbt_dynar_t simcall_BODY_host_get_attached_storage_list(sg_host_t 
     return self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_host_get_params(sg_host_t ind_vm, ws_params_t params) {
+inline static void simcall_BODY_host_get_params(sg_host_t ind_vm, vm_params_t params) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -667,7 +667,7 @@ inline static void simcall_BODY_host_get_params(sg_host_t ind_vm, ws_params_t pa
     
   }
   
-inline static void simcall_BODY_host_set_params(sg_host_t ind_vm, ws_params_t params) {
+inline static void simcall_BODY_host_set_params(sg_host_t ind_vm, vm_params_t params) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */

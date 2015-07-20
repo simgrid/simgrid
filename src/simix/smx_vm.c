@@ -37,7 +37,7 @@ sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host)
 /* works for VMs and PMs */
 static long host_get_ramsize(sg_host_t vm, int *overcommit)
 {
-  s_ws_params_t params;
+  s_vm_params_t params;
   surf_host_get_params(vm, &params);
 
   if (overcommit)

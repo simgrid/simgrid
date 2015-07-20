@@ -373,12 +373,12 @@ xbt_dynar_t Host::getVms()
   return dyn;
 }
 
-void Host::getParams(ws_params_t params)
+void Host::getParams(vm_params_t params)
 {
   *params = p_params;
 }
 
-void Host::setParams(ws_params_t params)
+void Host::setParams(vm_params_t params)
 {
   /* may check something here. */
   p_params = *params;

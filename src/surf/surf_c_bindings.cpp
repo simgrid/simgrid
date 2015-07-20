@@ -383,11 +383,11 @@ xbt_dynar_t surf_host_get_vms(surf_resource_t host){
   return vms_;
 }
 
-void surf_host_get_params(surf_resource_t host, ws_params_t params){
+void surf_host_get_params(surf_resource_t host, vm_params_t params){
   get_casted_host(host)->getParams(params);
 }
 
-void surf_host_set_params(surf_resource_t host, ws_params_t params){
+void surf_host_set_params(surf_resource_t host, vm_params_t params){
   get_casted_host(host)->setParams(params);
 }
 

@@ -341,8 +341,8 @@ XBT_PUBLIC(void) simcall_host_execution_set_affinity(smx_synchro_t execution, sg
 XBT_PUBLIC(e_smx_state_t) simcall_host_execution_wait(smx_synchro_t execution);
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_mounted_storage_list(sg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) simcall_host_get_attached_storage_list(sg_host_t host);
-XBT_PUBLIC(void) simcall_host_get_params(sg_host_t vm, ws_params_t param);
-XBT_PUBLIC(void) simcall_host_set_params(sg_host_t vm, ws_params_t param);
+XBT_PUBLIC(void) simcall_host_get_params(sg_host_t vm, vm_params_t param);
+XBT_PUBLIC(void) simcall_host_set_params(sg_host_t vm, vm_params_t param);
 
 /******************************* VM simcalls ********************************/
 // Create the vm_workstation at the SURF level

@@ -7,7 +7,7 @@
 #ifndef SIMGRID_DATATYPES_H_
 #define SIMGRID_DATATYPES_H_
 
-typedef struct ws_params {
+typedef struct vm_params {
   int ncpus;
   sg_size_t ramsize;
   int overcommit;
@@ -24,6 +24,6 @@ typedef struct ws_params {
 
   /* set migration speed */
   double mig_speed;
-} s_ws_params_t, *ws_params_t;
+} s_vm_params_t, *vm_params_t;
 
 #endif /* SIMGRID_DATATYPES_H_ */

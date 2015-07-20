@@ -103,9 +103,9 @@ void SIMIX_vm_set_affinity(sg_host_t ind_vm, sg_host_t ind_pm, unsigned long mas
 
 void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm);
 
-void SIMIX_host_get_params(sg_host_t ind_vm, ws_params_t params);
+void SIMIX_host_get_params(sg_host_t ind_vm, vm_params_t params);
 
-void SIMIX_host_set_params(sg_host_t ind_vm, ws_params_t params);
+void SIMIX_host_set_params(sg_host_t ind_vm, vm_params_t params);
 
 SG_END_DECL()
 

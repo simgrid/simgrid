@@ -594,13 +594,13 @@ void SIMIX_set_category(smx_synchro_t synchro, const char *category)
  * \param host the host to get_phys_host (a sg_host_t)
  * \param param the parameter object space to be overwritten (a ws_params_t)
  */
-void SIMIX_host_get_params(sg_host_t ind_vm, ws_params_t params)
+void SIMIX_host_get_params(sg_host_t ind_vm, vm_params_t params)
 {
   /* jump to ws_get_params(). */
   surf_host_get_params(ind_vm, params);
 }
 
-void SIMIX_host_set_params(sg_host_t ind_vm, ws_params_t params)
+void SIMIX_host_set_params(sg_host_t ind_vm, vm_params_t params)
 {
   /* jump to ws_set_params(). */
   surf_host_set_params(ind_vm, params);

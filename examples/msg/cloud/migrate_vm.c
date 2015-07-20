@@ -64,7 +64,7 @@ static int master_main(int argc, char *argv[])
   msg_host_t pm1 = xbt_dynar_get_as(hosts_dynar, 1, msg_host_t);
   msg_host_t pm2 = xbt_dynar_get_as(hosts_dynar, 2, msg_host_t);
   msg_vm_t vm0, vm1;
-  s_ws_params_t params;
+  s_vm_params_t params;
   memset(&params, 0, sizeof(params));
 
 

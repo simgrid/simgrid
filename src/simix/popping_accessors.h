@@ -463,8 +463,8 @@ static inline sg_host_t simcall_host_get_params__get__ind_vm(smx_simcall_t simca
 static inline void simcall_host_get_params__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline ws_params_t simcall_host_get_params__get__params(smx_simcall_t simcall) {
-  return (ws_params_t) simcall->args[1].dp;
+static inline vm_params_t simcall_host_get_params__get__params(smx_simcall_t simcall) {
+  return (vm_params_t) simcall->args[1].dp;
 }
 static inline void simcall_host_get_params__set__params(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
@@ -476,8 +476,8 @@ static inline sg_host_t simcall_host_set_params__get__ind_vm(smx_simcall_t simca
 static inline void simcall_host_set_params__set__ind_vm(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline ws_params_t simcall_host_set_params__get__params(smx_simcall_t simcall) {
-  return (ws_params_t) simcall->args[1].dp;
+static inline vm_params_t simcall_host_set_params__get__params(smx_simcall_t simcall) {
+  return (vm_params_t) simcall->args[1].dp;
 }
 static inline void simcall_host_set_params__set__params(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;

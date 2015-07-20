@@ -387,23 +387,15 @@ XBT_PUBLIC(sg_size_t) surf_host_get_used_size(surf_resource_t resource, const ch
 /** @brief Get the list of VMs hosted on the host */
 XBT_PUBLIC(xbt_dynar_t) surf_host_get_vms(surf_resource_t resource);
 
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param resource [description]
- * @param params [description]
+/** @brief Retrieve the params of that VM
+ * @details You can use fields ramsize and overcommit on a PM, too.
  */
-XBT_PUBLIC(void) surf_host_get_params(surf_resource_t resource, ws_params_t params);
+XBT_PUBLIC(void) surf_host_get_params(surf_resource_t resource, vm_params_t params);
 
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param resource [description]
- * @param params [description]
+/** @brief Sets the params of that VM/PM
+ * @details You can use fields ramsize and overcommit on a PM, too.
  */
-XBT_PUBLIC(void) surf_host_set_params(surf_resource_t resource, ws_params_t params);
+XBT_PUBLIC(void) surf_host_set_params(surf_resource_t resource, vm_params_t params);
 
 /**
  * @brief Destroy a VM
@@ -412,18 +404,10 @@ XBT_PUBLIC(void) surf_host_set_params(surf_resource_t resource, ws_params_t para
  */
 XBT_PUBLIC(void) surf_vm_destroy(surf_resource_t resource);
 
-/**
- * @brief Suspend a VM
- *
- * @param resource The surf vm
- */
+/** @brief Suspend a VM */
 XBT_PUBLIC(void) surf_vm_suspend(surf_resource_t resource);
 
-/**
- * @brief Resume a VM
- *
- * @param resource The surf vm
- */
+/** @brief Resume a VM */
 XBT_PUBLIC(void) surf_vm_resume(surf_resource_t resource);
 
 /**

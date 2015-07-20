@@ -178,7 +178,7 @@ msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
   double update_speed = ((double)dp_intensity/100) * mig_netspeed;
 
   msg_vm_t vm = MSG_vm_create_core(ind_pm, name);
-  s_ws_params_t params;
+  s_vm_params_t params;
   memset(&params, 0, sizeof(params));
   params.ramsize = (sg_size_t)ramsize * 1024 * 1024;
   //params.overcommit = 0;
@@ -354,7 +354,7 @@ static int migration_rx_fun(int argc, char *argv[])
   // The structure has been created in the do_migration function and should only be freed in the same place ;)
   struct migration_session *ms = MSG_process_get_data(MSG_process_self());
 
-  s_ws_params_t params;
+  s_vm_params_t params;
   simcall_host_get_params(ms->vm, &params);
 
   int need_exit = 0;
@@ -699,7 +699,7 @@ static int migration_tx_fun(int argc, char *argv[])
   // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;)
   struct migration_session *ms = MSG_process_get_data(MSG_process_self());
 
-  s_ws_params_t params;
+  s_vm_params_t params;
   simcall_host_get_params(ms->vm, &params);
   const sg_size_t ramsize   = params.ramsize;
   const sg_size_t devsize   = params.devsize;

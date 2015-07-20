@@ -315,22 +315,13 @@ public:
   xbt_dynar_t getVms();
 
   /* common with vm */
-  /**
-   * @brief [brief description]
-   * @details [long description]
-   *
-   * @param params [description]
-   */
-  void getParams(ws_params_t params);
-
-  /**
-   * @brief [brief description]
-   * @details [long description]
-   *
-   * @param params [description]
-   */
-  void setParams(ws_params_t params);
-  s_ws_params_t p_params;
+  /** @brief Retrieve a copy of the parameters of that VM/PM
+   *  @details The ramsize and overcommit fields are used on the PM too */
+  void getParams(vm_params_t params);
+  /** @brief Sets the params of that VM/PM */
+  void setParams(vm_params_t params);
+private:
+  s_vm_params_t p_params;
 };
 
 /**********
