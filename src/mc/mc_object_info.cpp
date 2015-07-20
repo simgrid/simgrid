@@ -14,6 +14,18 @@
 namespace simgrid {
 namespace mc {
 
+// Free functions
+
+static void mc_frame_free(void* frame)
+{
+  delete (simgrid::mc::Frame*)frame;
+}
+
+static void mc_type_free(void* t)
+{
+  delete (simgrid::mc::Type*)t;
+}
+
 // Type
 
 Type::Type()
@@ -52,6 +64,60 @@ Frame::Frame()
 }
 
 // ObjectInformations
+
+ObjectInformation::ObjectInformation()
+{
+  this->flags = 0;
+  this->file_name = nullptr;
+  this->start = nullptr;
+  this->end = nullptr;
+  this->start_exec = nullptr;
+  this->end_exec = nullptr;
+  this->start_rw = nullptr;
+  this->end_rw = nullptr;
+  this->start_ro = nullptr;
+  this->end_ro = nullptr;
+  this->subprograms = xbt_dict_new_homogeneous(mc_frame_free);
+  this->types = xbt_dict_new_homogeneous((void (*)(void *)) mc_type_free);
+  this->full_types_by_name = xbt_dict_new_homogeneous(NULL);
+  this->functions_index = nullptr;
+}
+
+ObjectInformation::~ObjectInformation()
+{
+  xbt_free(this->file_name);
+  xbt_dict_free(&this->subprograms);
+  xbt_dict_free(&this->types);
+  xbt_dict_free(&this->full_types_by_name);
+  xbt_dynar_free(&this->functions_index);
+}
+
+/** Find the DWARF offset for this ELF object
+ *
+ *  An offset is applied to address found in DWARF:
+ *
+ *  <ul>
+ *    <li>for an executable obejct, addresses are virtual address
+ *        (there is no offset) i.e. \f$\text{virtual address} = \{dwarf address}\f$;</li>
+ *    <li>for a shared object, the addreses are offset from the begining
+ *        of the shared object (the base address of the mapped shared
+ *        object must be used as offset
+ *        i.e. \f$\text{virtual address} = \text{shared object base address}
+ *             + \text{dwarf address}\f$.</li>
+ *
+ */
+void *ObjectInformation::base_address() const
+{
+  if (this->executable())
+    return nullptr;
+
+  void *result = this->start_exec;
+  if (this->start_rw != NULL && result > (void *) this->start_rw)
+    result = this->start_rw;
+  if (this->start_ro != NULL && result > (void *) this->start_ro)
+    result = this->start_ro;
+  return result;
+}
 
 mc_frame_t ObjectInformation::find_function(const void *ip) const
 {
