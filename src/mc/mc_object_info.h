@@ -141,23 +141,6 @@ public:
 
 };
 
-}
-}
-
-XBT_INTERNAL std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
-  std::vector<simgrid::mc::VmMap> const& maps, const char* name, int executable);
-XBT_INTERNAL void MC_post_process_object_info(mc_process_t process, mc_object_info_t info);
-
-XBT_INTERNAL void MC_dwarf_get_variables(mc_object_info_t info);
-XBT_INTERNAL void MC_dwarf_get_variables_libdw(mc_object_info_t info);
-XBT_INTERNAL const char* MC_dwarf_attrname(int attr);
-XBT_INTERNAL const char* MC_dwarf_tagname(int tag);
-
-XBT_INTERNAL void* mc_member_resolve(const void* base, mc_type_t type, mc_type_t member, mc_address_space_t snapshot, int process_index);
-
-namespace simgrid {
-namespace mc {
-
 class Variable {
 public:
   Variable();
@@ -196,6 +179,19 @@ public:
 }
 }
 
+
+XBT_INTERNAL std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
+  std::vector<simgrid::mc::VmMap> const& maps, const char* name, int executable);
+XBT_INTERNAL void MC_post_process_object_info(mc_process_t process, mc_object_info_t info);
+
+XBT_INTERNAL void MC_dwarf_get_variables(mc_object_info_t info);
+XBT_INTERNAL void MC_dwarf_get_variables_libdw(mc_object_info_t info);
+XBT_INTERNAL const char* MC_dwarf_attrname(int attr);
+XBT_INTERNAL const char* MC_dwarf_tagname(int tag);
+
+XBT_INTERNAL void* mc_member_resolve(
+  const void* base, mc_type_t type, mc_type_t member,
+  mc_address_space_t snapshot, int process_index);
 
 
 struct s_mc_function_index_item {
