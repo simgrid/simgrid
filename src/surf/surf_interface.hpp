@@ -467,9 +467,6 @@ public:
   /** @brief Cancel the current Action if running */
   virtual void cancel();
 
-  /** @brief Recycle an Action */
-  virtual void recycle(){};
-
   /** @brief Suspend the current Action */
   virtual void suspend();
 

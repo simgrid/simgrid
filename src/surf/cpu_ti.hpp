@@ -161,7 +161,6 @@ public:
   void setState(e_surf_action_state_t state);
   int unref();
   void cancel();
-  void recycle();
   void updateIndexHeap(int i);
   void suspend();
   void resume();

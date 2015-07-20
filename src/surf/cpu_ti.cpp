@@ -903,11 +903,6 @@ void CpuTiAction::cancel()
   return;
 }
 
-void CpuTiAction::recycle()
-{
-  DIE_IMPOSSIBLE;
-}
-
 void CpuTiAction::suspend()
 {
   XBT_IN("(%p)", this);

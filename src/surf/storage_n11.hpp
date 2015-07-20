@@ -63,7 +63,6 @@ public:
   void suspend();
   int unref();
   void cancel();
-  //FIXME:??void recycle();
   void resume();
   bool isSuspended();
   void setMaxDuration(double duration);

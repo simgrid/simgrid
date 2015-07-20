@@ -92,7 +92,6 @@ public:
   NetworkCm02Action(Model *model, double cost, bool failed)
  : NetworkAction(model, cost, failed) {};
   void updateRemainingLazy(double now);
-  void recycle();
 };
 
 #endif /* SURF_NETWORK_CM02_HPP_ */

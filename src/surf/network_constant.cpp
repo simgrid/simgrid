@@ -157,11 +157,6 @@ void NetworkConstantAction::resume()
 	m_suspended = false;
 }
 
-void NetworkConstantAction::recycle()
-{
-  return;
-}
-
 bool NetworkConstantAction::isSuspended()
 {
   return m_suspended;

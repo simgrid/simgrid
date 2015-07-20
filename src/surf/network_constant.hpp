@@ -62,7 +62,6 @@ public:
 	p_variable = NULL;
   };
   int unref();
-  void recycle();
   void cancel();
   void setCategory(const char *category);
   void suspend();
