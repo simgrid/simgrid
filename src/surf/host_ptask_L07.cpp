@@ -57,7 +57,6 @@ HostL07Model::HostL07Model() : HostModel("Host ptask_L07") {
 	                                                  0.000015, NULL,
 	                                                  SURF_RESOURCE_ON, NULL,
 	                                                  SURF_LINK_FATPIPE, NULL));
-  p_cpuModel = surf_cpu_model_pm;
 }
 
 HostL07Model::~HostL07Model() {

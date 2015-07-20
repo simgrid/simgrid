@@ -24,9 +24,7 @@ surf_callback(void, VM*) VMStateChangedCallbacks;
  * Model *
  *********/
 
-VMModel::VMModel() : HostModel("Virtual Machine") {
-  p_cpuModel = surf_cpu_model_vm;
-}
+VMModel::VMModel() : HostModel("Virtual Machine") {}
 
 VMModel::vm_list_t VMModel::ws_vms;
 

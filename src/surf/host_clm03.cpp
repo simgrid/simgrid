@@ -26,7 +26,6 @@ void surf_host_model_init_current_default(void)
   xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "yes");
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
-  surf_host_model->p_cpuModel = surf_cpu_model_pm;
 
   Model *model = surf_host_model;
   xbt_dynar_push(model_list, &model);
@@ -69,11 +68,9 @@ Host *HostCLM03Model::createHost(const char *name){
 double HostCLM03Model::shareResources(double now){
   adjustWeightOfDummyCpuActions();
 
-  double min_by_cpu = p_cpuModel->shareResources(now);
+  double min_by_cpu = surf_cpu_model_pm->shareResources(now);
   double min_by_net = (strcmp(surf_network_model->getName(), "network NS3")) ? surf_network_model->shareResources(now) : -1;
-  double min_by_sto = -1;
-  if (p_cpuModel == surf_cpu_model_pm)
-	min_by_sto = surf_storage_model->shareResources(now);
+  double min_by_sto = surf_storage_model->shareResources(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
       this, surf_cpu_model_pm->getName(), min_by_cpu,

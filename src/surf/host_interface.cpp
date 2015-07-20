@@ -41,14 +41,10 @@ void host_add_traces(){
  *********/
 HostModel::HostModel(const char *name)
  : Model(name)
-{
-  p_cpuModel = surf_cpu_model_pm;
-}
+{}
 
 HostModel::HostModel()
-: Model("Host") {
-  p_cpuModel = surf_cpu_model_pm;
-}
+: Model("Host") {}
 
 HostModel::~HostModel() {
 }

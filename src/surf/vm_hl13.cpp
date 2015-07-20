@@ -23,13 +23,9 @@ void surf_vm_model_init_HL13(void){
  * Model *
  *********/
 
-VMHL13Model::VMHL13Model() : VMModel() {
-  p_cpuModel = surf_cpu_model_vm;
-}
+VMHL13Model::VMHL13Model() : VMModel() {}
 
-void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/){
-  return;
-}
+void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 
 Action *VMHL13Model::communicate(Host *src, Host *dst, double size, double rate){
   return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
@@ -130,16 +126,15 @@ double VMHL13Model::shareResources(double now)
   /* 2. Calculate resource share at the virtual machine layer. */
   adjustWeightOfDummyCpuActions();
 
-  double min_by_cpu = p_cpuModel->shareResources(now);
+  double min_by_cpu = surf_cpu_model_vm->shareResources(now);
   double min_by_net = (strcmp(surf_network_model->getName(), "network NS3")) ? surf_network_model->shareResources(now) : -1;
+  // Fixme: take storage into account once it's implemented
   double min_by_sto = -1;
-  if (p_cpuModel == surf_cpu_model_pm)
-	min_by_sto = surf_storage_model->shareResources(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
-      this, surf_cpu_model_pm->getName(), min_by_cpu,
-            surf_network_model->getName(), min_by_net,
-            surf_storage_model->getName(), min_by_sto);
+      this, typeid(surf_cpu_model_pm ).name(), min_by_cpu,
+	        typeid(surf_network_model).name(), min_by_net,
+            typeid(surf_storage_model).name(), min_by_sto);
 
   double ret = max(max(min_by_cpu, min_by_net), min_by_sto);
   if (min_by_cpu >= 0.0 && min_by_cpu < ret)
