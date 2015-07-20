@@ -408,209 +408,91 @@ public:
    */
   Action(Model *model, double cost, bool failed, lmm_variable_t var);
 
-  /**
-   * @brief Action destructor
-   */
+  /** @brief Destructor */
   virtual ~Action();
 
-  /**
-   * @brief Finish the action
-   */
+  /** @brief Mark that the action is now finished */
   void finish();
 
-  /**
-   * @brief Get the [state](\ref e_surf_action_state_t) of the current Action
-   *
-   * @return The state of the current Action
-   */
+  /** @brief Get the [state](\ref e_surf_action_state_t) of the current Action */
   e_surf_action_state_t getState(); /**< get the state*/
-
-  /**
-   * @brief Set the [state](\ref e_surf_action_state_t) of the current Action
-   *
-   * @param state The new state of the current Action
-   */
+  /** @brief Set the [state](\ref e_surf_action_state_t) of the current Action */
   virtual void setState(e_surf_action_state_t state);
 
-  /**
-   * @brief Get the bound of the current Action
-   *
-   * @return The bound of the current Action
-   */
+  /** @brief Get the bound of the current Action */
   double getBound();
-
-  /**
-   * @brief Set the bound of the current Action
-   *
-   * @param bound The new bound of the current Action
-   */
+  /** @brief Set the bound of the current Action */
   void setBound(double bound);
 
-  /**
-   * @brief Get the start time of the current action
-   *
-   * @return The start time of the current action
-   */
+  /** @brief Get the start time of the current action */
   double getStartTime();
-
-  /**
-   * @brief Get the finish time of the current action
-   *
-   * @return The finish time of the current action
-   */
+  /** @brief Get the finish time of the current action */
   double getFinishTime();
 
-  /**
-   * @brief Get the data associated to the current action
-   *
-   * @return The data associated to the current action
-   */
+  /** @brief Get the user data associated to the current action */
   void *getData() {return p_data;}
-
-  /**
-   * @brief Set the data associated to the current action
-   *
-   * @param data The new data associated to the current action
-   */
+  /** @brief Set the user data associated to the current action */
   void setData(void* data);
 
-  /**
-   * @brief Get the maximum duration of the current action
-   *
-   * @return The maximum duration of the current action
-   */
-  double getMaxDuration() {return m_maxDuration;}
-
-  /**
-   * @brief Get the category associated to the current action
-   *
-   * @return The category associated to the current action
-   */
-  char *getCategory() {return p_category;}
-
-  /**
-   * @brief Get the cost of the current action
-   *
-   * @return The cost of the current action
-   */
+  /** @brief Get the cost of the current action */
   double getCost() {return m_cost;}
-
-  /**
-   * @brief Set the cost of the current action
-   *
-   * @param cost The new cost of the current action
-   */
+  /** @brief Set the cost of the current action */
   void setCost(double cost) {m_cost = cost;}
 
-  /**
-   * @brief Update the maximum duration of the current action
-   *
-   * @param delta [TODO]
-   */
+  /** @brief Update the maximum duration of the current action
+   *  @param delta Amount to remove from the MaxDuration */
   void updateMaxDuration(double delta) {double_update(&m_maxDuration, delta,sg_surf_precision);}
 
-  /**
-   * @brief Update the remaining time of the current action
-   *
-   * @param delta [TODO]
-   */
+  /** @brief Update the remaining time of the current action
+   *  @param delta Amount to remove from the remaining time */
   void updateRemains(double delta) {double_update(&m_remains, delta, sg_maxmin_precision*sg_surf_precision);}
 
-  /**
-   * @brief Set the remaining time of the current action
-   *
-   * @param value The new remaining time of the current action
-   */
+  /** @brief Set the remaining time of the current action */
   void setRemains(double value) {m_remains = value;}
+  /** @brief Get the remaining time of the current action after updating the resource */
+  virtual double getRemains();
+  /** @brief Get the remaining time of the current action without updating the resource */
+  double getRemainsNoUpdate();
 
-  /**
-   * @brief Set the finish time of the current action
-   *
-   * @param value The new Finush time of the current action
-   */
+  /** @brief Set the finish time of the current action */
   void setFinishTime(double value) {m_finish = value;}
 
-  /**
-   * @brief Add a reference to the current action
-   */
+  /**@brief Add a reference to the current action (refcounting) */
   void ref();
-
-  /**
-   * @brief Remove a reference to the current action
-   * @details If the Action has no more reference, we destroy it
-   *
-   * @return true if the action was destroyed and false if someone still has references on it
+  /** @brief Unref that action (and destroy it if refcount reaches 0)
+   *  @return true if the action was destroyed and false if someone still has references on it
    */
   virtual int unref();
 
-  /**
-   * @brief Cancel the current Action if running
-   */
+  /** @brief Cancel the current Action if running */
   virtual void cancel();
 
-  /**
-   * @brief Recycle an Action
-   */
+  /** @brief Recycle an Action */
   virtual void recycle(){};
 
-  /**
-   * @brief Suspend the current Action
-   */
+  /** @brief Suspend the current Action */
   virtual void suspend();
 
-  /**
-   * @brief Resume the current Action
-   */
+  /** @brief Resume the current Action */
   virtual void resume();
 
-  /**
-   * @brief Check if the current action is running
-   *
-   * @return true if the current Action is suspended, false otherwise
-   */
+  /** @brief Returns true if the current action is running */
   virtual bool isSuspended();
 
-  /**
-   * @brief Set the maximum duration of the current Action
-   *
-   * @param duration The new maximum duration of the current Action
-   */
+  /** @brief Get the maximum duration of the current action */
+  double getMaxDuration() {return m_maxDuration;}
+  /** @brief Set the maximum duration of the current Action */
   virtual void setMaxDuration(double duration);
 
-  /**
-   * @brief Set the priority of the current Action
-   *
-   * @param priority The new priority of the current Action
-   */
-  virtual void setPriority(double priority);
-
-  /**
-   * @brief Set the category of the current Action
-   *
-   * @param category The new category of the current Action
-   */
+  /** @brief Get the tracing category associated to the current action */
+  char *getCategory() {return p_category;}
+  /** @brief Set the tracing category of the current Action */
   void setCategory(const char *category);
 
-  /**
-   * @brief Get the remaining time of the current action after updating the resource
-   *
-   * @return The remaining time
-   */
-  virtual double getRemains();
-
-  /**
-   * @brief Get the remaining time of the current action without updating the resource
-   *
-   * @return The remaining time
-   */
-  double getRemainsNoUpdate();
-
-  /**
-   * @brief Get the priority of the current Action
-   *
-   * @return The priority of the current Action
-   */
+  /** @brief Get the priority of the current Action */
   double getPriority() {return m_priority;};
+  /** @brief Set the priority of the current Action */
+  virtual void setPriority(double priority);
 
   /**
    * @brief Get the state set in which the action is
