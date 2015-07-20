@@ -263,27 +263,13 @@ XBT_PUBLIC(surf_action_t) surf_host_model_execute_parallel_task(surf_host_model_
                                             double *bytes_amount,
                                             double rate);
 
-/**
- * @brief Get the route between two hosts
- * @details [long description]
- *
- * @param model The model which handle the routes
- * @param src The source host
- * @param dst The destination host
- * @return The list of [TODO] from the source to the host
- */
+/** @brief Get the route (dynar of sg_link_t) between two hosts */
 XBT_PUBLIC(xbt_dynar_t) surf_host_model_get_route(surf_host_model_t model, surf_resource_t src, surf_resource_t dst);
 
-/**
- * @brief Create a new VM on the specified host
- *
- * @param name The name of the VM
- * @param host_PM The host on which the VM is created
- */
+/** @brief Create a new VM on the specified host */
 XBT_PUBLIC(void) surf_vm_model_create(const char *name, surf_resource_t host_PM);
 
-/**
- * @brief Create a communication between two routing edges
+/** @brief Create a communication between two hosts
  *
  * @param model The model which handle the communication
  * @param src The source host
@@ -305,24 +291,14 @@ static inline const char * surf_cpu_name(surf_cpu_t cpu) {
 	return surf_resource_name((surf_cpp_resource_t)cpu);
 }
 
-/**
- * @brief Get the properties of a surf resource (cpu, host, network, …)
- *
- * @param resource The surf resource
- * @return The properties of the surf resource
- */
+/** @brief Get the properties of a surf resource (cpu, host, network, …) */
 XBT_PUBLIC(xbt_dict_t) surf_resource_get_properties(surf_cpp_resource_t resource);
 static XBT_INLINE xbt_dict_t surf_host_get_properties(surf_host_t host) {
 	return surf_resource_get_properties((surf_cpp_resource_t)host);
 }
 
 
-/**
- * @brief Get the state of a surf resource (cpu, host, network, …)
- *
- * @param resource The surf resource
- * @return The state of the surf resource
- */
+/** @brief Get the state of a surf resource (cpu, host, network, …) */
 XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t resource);
 
 static XBT_INLINE e_surf_resource_state_t surf_host_get_state(surf_host_t host) {
@@ -330,12 +306,7 @@ static XBT_INLINE e_surf_resource_state_t surf_host_get_state(surf_host_t host) 
 }
 
 
-/**
- * @brief Set the state of a surf resource (cpu, host, network, …)
- *
- * @param resource The surf resource
- * @param state The new state of the surf resource
- */
+/** @brief Set the state of a surf resource (cpu, host, network, …) */
 XBT_PUBLIC(void) surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
 static inline void surf_host_set_state(surf_host_t host, e_surf_resource_state_t state) {
 	surf_resource_set_state((surf_cpp_resource_t)host, state);
@@ -359,70 +330,25 @@ XBT_PUBLIC(double) surf_host_get_speed(surf_resource_t resource, double load);
  */
 XBT_PUBLIC(double) surf_host_get_available_speed(surf_resource_t resource);
 
-/**
- * @brief Get the number of cores of the cpu associated to a host
- *
- * @param resource The surf host
- * @return The number of cores
- */
+/** @brief Get the number of cores of the cpu associated to a host */
 XBT_PUBLIC(int) surf_host_get_core(surf_resource_t resource);
 
-/**
- * @brief Execute some quantity of computation
- *
- * @param resource The surf host
- * @param size The value of the processing amount (in flop) needed to process
- *
- * @return The surf action corresponding to the processing
- */
+/** @brief Create a computation action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_execute(surf_resource_t resource, double size);
 
-/**
- * @brief Make the host sleep
- *
- * @param resource The surf host
- * @param duration The number of seconds to sleep
- * @return The surf action corresponding to the sleep
- */
+/** @brief Create a sleep action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_sleep(surf_resource_t resource, double duration);
 
-/**
- * @brief Open a file on an host
- *
- * @param host The surf host
- * @param fullpath The path to the file
- * @return The surf action corresponding to the openning
- */
+/** @brief Create a file opening action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_open(surf_resource_t host, const char* fullpath);
 
-/**
- * @brief Close a file descriptor on an host
- *
- * @param host The surf host
- * @param fd The file descriptor
- *
- * @return The surf action corresponding to the closing
- */
+/** @brief Create a file closing action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_close(surf_resource_t host, surf_file_t fd);
 
-/**
- * @brief Read a file
- *
- * @param host The surf host
- * @param fd The file descriptor to read
- * @param size The size in bytes to read
- * @return The surf action corresponding to the reading
- */
+/** @brief Create a file reading action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_read(surf_resource_t host, surf_file_t fd, sg_size_t size);
 
-/**
- * @brief Write a file
- *
- * @param host The surf host
- * @param fd The file descriptor to write
- * @param size The size in bytes to write
- * @return The surf action corresponding to the writing
- */
+/** @brief Create a file writing action on the given host  */
 XBT_PUBLIC(surf_action_t) surf_host_write(surf_resource_t host, surf_file_t fd, sg_size_t size);
 
 /**
@@ -458,12 +384,7 @@ XBT_PUBLIC(sg_size_t) surf_host_get_free_size(surf_resource_t resource, const ch
  */
 XBT_PUBLIC(sg_size_t) surf_host_get_used_size(surf_resource_t resource, const char* name);
 
-/**
- * @brief Get the VMs hosted on the host
- *
- * @param resource The surf host
- * @return The list of VMs on the host
- */
+/** @brief Get the list of VMs hosted on the host */
 XBT_PUBLIC(xbt_dynar_t) surf_host_get_vms(surf_resource_t resource);
 
 /**

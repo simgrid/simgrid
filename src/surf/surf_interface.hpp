@@ -482,11 +482,7 @@ public:
   /** @brief Set the priority of the current Action */
   virtual void setPriority(double priority);
 
-  /**
-   * @brief Get the state set in which the action is
-   *
-   * @return The state set in which the action is
-   */
+  /** @brief Get the state set in which the action is */
   ActionListPtr getStateSet() {return p_stateSet;};
 
   s_xbt_swag_hookup_t p_stateHookup;
