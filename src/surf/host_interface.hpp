@@ -169,12 +169,7 @@ public:
    */
   virtual double getAvailableSpeed();
 
-  /**
-   * @brief Get the associated Cpu power peak
-   *
-   * @return The associated Cpu power peak
-   * @see Cpu
-   */
+  /** @brief Get the associated Cpu power peak */
   virtual double getCurrentPowerPeak();
 
   virtual double getPowerPeakAt(int pstate_index);
@@ -182,26 +177,13 @@ public:
   virtual void setPstate(int pstate_index);
   virtual int  getPstate();
 
-  /**
-   * @brief Return the storage of corresponding mount point
-   *
-   * @param storage The mount point
-   * @return The corresponding Storage
-   */
+  /** @brief Return the storage of corresponding mount point */
   virtual Storage *findStorageOnMountList(const char* storage);
 
-  /**
-   * @brief Get the xbt_dict_t of mount_point: Storage
-   *
-   * @return The xbt_dict_t of mount_point: Storage
-   */
+  /** @brief Get the xbt_dict_t of mount_point: Storage */
   virtual xbt_dict_t getMountedStorageList();
 
-  /**
-   * @brief Get the xbt_dynar_t of storages attached to the Host
-   *
-   * @return The xbt_dynar_t of Storage names
-   */
+  /** @brief Get the xbt_dynar_t of storages attached to the Host */
   virtual xbt_dynar_t getAttachedStorageList();
 
   /**
@@ -307,11 +289,7 @@ public:
   RoutingEdge *p_netElm;
   Cpu *p_cpu;
 
-  /**
-   * @brief Get the list of virtual machines on the current Host
-   *
-   * @return The list of VMs
-   */
+  /** @brief Get the list of virtual machines on the current Host */
   xbt_dynar_t getVms();
 
   /* common with vm */

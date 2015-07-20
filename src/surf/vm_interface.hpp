@@ -78,7 +78,7 @@ class VM : public Host,
            public boost::intrusive::list_base_hook<> {
 public:
   /**
-   * @brief VM constructor
+   * @brief Constructor
    *
    * @param model VMModel associated to this VM
    * @param name The name of the VM
@@ -89,9 +89,7 @@ public:
   VM(Model *model, const char *name, xbt_dict_t props,
 		        RoutingEdge *netElm, Cpu *cpu);
 
-  /**
-   * @brief WdorkstationVM destructor
-   */
+  /** @brief Destructor */
   ~VM();
 
   void setState(e_surf_resource_state_t state);
@@ -108,11 +106,8 @@ public:
   /** @brief Restore the VM (Not yet implemented) */
   virtual void restore()=0;
 
-  /** @brief Migrate the VM to the destination host
-   *
-   * @param ind_vm_ws_dest The destination host
-   */
-  virtual void migrate(surf_resource_t ind_vm_ws_dest)=0;
+  /** @brief Migrate the VM to the destination host */
+  virtual void migrate(surf_resource_t dest_PM)=0;
 
   /** @brief Get the physical machine hosting the VM */
   virtual surf_resource_t getPm()=0;
