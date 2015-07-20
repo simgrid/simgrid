@@ -379,7 +379,7 @@ smx_synchro_t SIMIX_host_parallel_execute(const char *name,
     double *flops_amount, double *bytes_amount,
     double amount, double rate){
 
-  void **surf_host_list = NULL;
+  sg_host_t*host_list_cpy = NULL;
   int i;
 
   /* alloc structures and initialize */
@@ -391,9 +391,9 @@ smx_synchro_t SIMIX_host_parallel_execute(const char *name,
   synchro->category = NULL;
 
   /* set surf's synchro */
-  surf_host_list = xbt_new0(void *, host_nb);
+  host_list_cpy = xbt_new0(sg_host_t, host_nb);
   for (i = 0; i < host_nb; i++)
-    surf_host_list[i] = surf_host_resource_priv(host_list[i]);
+    host_list_cpy[i] = host_list[i];
 
 
   /* FIXME: what happens if host_list contains VMs and PMs. If
@@ -411,8 +411,8 @@ smx_synchro_t SIMIX_host_parallel_execute(const char *name,
   /* set surf's synchro */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
     synchro->execution.surf_exec =
-      surf_host_model_execute_parallel_task((surf_host_model_t)surf_host_model,
-    		  host_nb, surf_host_list, flops_amount, bytes_amount, rate);
+      surf_host_model_execute_parallel_task(surf_host_model,
+    		  host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
 
     surf_action_set_data(synchro->execution.surf_exec, synchro);
   }

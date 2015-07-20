@@ -39,10 +39,10 @@ public:
   void updateActionsState(double now, double delta);
   Host *createHost(const char *name);
   Action *executeParallelTask(int host_nb,
-                                        void **host_list,
-                                        double *flops_amount,
-                                        double *bytes_amount,
-                                        double rate);
+                              sg_host_t *host_list,
+							  double *flops_amount,
+							  double *bytes_amount,
+							  double rate);
   xbt_dynar_t getRoute(Host *src, Host *dst);
   void addTraces();
   NetworkModel *p_networkModel;
@@ -161,7 +161,7 @@ class L07Action : public HostAction {
   friend Action *HostL07::execute(double size);
   friend Action *HostL07::sleep(double duration);
   friend Action *HostL07Model::executeParallelTask(int host_nb,
-                                                     void **host_list,
+                                                   sg_host_t*host_list,
                                                    double *flops_amount,
 												   double *bytes_amount,
                                                    double rate);

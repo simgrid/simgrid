@@ -84,7 +84,7 @@ void HostCLM03Model::updateActionsState(double /*now*/, double /*delta*/){
 }
 
 Action *HostCLM03Model::executeParallelTask(int host_nb,
-                                        void **host_list,
+                                        sg_host_t *host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate){
@@ -92,11 +92,11 @@ Action *HostCLM03Model::executeParallelTask(int host_nb,
   Action *action =NULL;
   if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0)){
-    action = static_cast<HostCLM03*>(host_list[0])->execute(flops_amount[0]);
+    action = surf_host_execute(host_list[0],flops_amount[0]);
   } else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0)) {
-    action = surf_network_model->communicate(static_cast<HostCLM03*>(host_list[0])->p_netElm,
-    		                                 static_cast<HostCLM03*>(host_list[0])->p_netElm,
+    action = surf_network_model->communicate(sg_host_edge(host_list[0]),
+    		                                 sg_host_edge(host_list[0]),
 											 bytes_amount[0], rate);
   } else if ((host_nb == 2)
              && (cost_or_zero(flops_amount, 0) == 0.0)
@@ -111,8 +111,8 @@ Action *HostCLM03Model::executeParallelTask(int host_nb,
       }
     }
     if (nb == 1){
-      action = surf_network_model->communicate(static_cast<HostCLM03*>(host_list[0])->p_netElm,
-    		                                   static_cast<HostCLM03*>(host_list[1])->p_netElm,
+      action = surf_network_model->communicate(sg_host_edge(host_list[0]),
+    		                                   sg_host_edge(host_list[1]),
 											   value, rate);
     }
   } else

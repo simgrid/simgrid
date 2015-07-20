@@ -1090,7 +1090,7 @@ void __SD_task_really_run(SD_task_t task)
 {
 
   int i;
-  void **surf_hosts;
+  sg_host_t *hosts;
 
   xbt_assert(__SD_task_is_runnable_or_in_fifo(task),
               "Task '%s' is not runnable or in a fifo! Task state: %d",
@@ -1117,12 +1117,11 @@ void __SD_task_really_run(SD_task_t task)
 
   /* start the task */
 
-  /* we have to create a Surf workstation array instead of the SimDag
-   * workstation array */
-  surf_hosts = xbt_new(void *, host_nb);
+  /* Copy the elements of the task into the action */
+  hosts = xbt_new(sg_host_t, host_nb);
 
   for (i = 0; i < host_nb; i++)
-    surf_hosts[i] =  surf_host_resource_priv(task->workstation_list[i]);
+    hosts[i] =  task->workstation_list[i];
 
   double *flops_amount = xbt_new0(double, host_nb);
   double *bytes_amount = xbt_new0(double, host_nb * host_nb);
@@ -1137,7 +1136,7 @@ void __SD_task_really_run(SD_task_t task)
 
   task->surf_action = surf_host_model_execute_parallel_task((surf_host_model_t)surf_host_model,
 		                                                     host_nb,
-		                                                     surf_hosts,
+		                                                     hosts,
 		                                                     flops_amount,
 		                                                     bytes_amount,
 		                                                     task->rate);

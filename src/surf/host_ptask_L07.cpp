@@ -168,7 +168,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
 }
 
 Action *HostL07Model::executeParallelTask(int host_nb,
-                                          void **host_list,
+                                          sg_host_t*host_list,
 										  double *flops_amount,
 										  double *bytes_amount,
 										  double rate)
@@ -181,7 +181,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 
   action->p_edgeList->reserve(host_nb);
   for (int i = 0; i<host_nb; i++)
-	  action->p_edgeList->push_back(static_cast<HostL07*>(host_list[i])->p_netElm);
+	  action->p_edgeList->push_back(sg_host_edge(host_list[i]));
 
   if (ptask_parallel_task_link_set == NULL)
     ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
@@ -235,7 +235,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 
   for (int i = 0; i < host_nb; i++)
     lmm_expand(ptask_maxmin_system,
-    	         static_cast<HostL07*>(host_list[i])->p_cpu->getConstraint(),
+    	       sg_host_surfcpu(host_list[i])->getConstraint(),
                action->getVariable(), flops_amount[i]);
 
   for (int i = 0; i < host_nb; i++) {
@@ -287,13 +287,13 @@ Host *HostL07Model::createHost(const char *name)
 Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
                                        double size, double rate)
 {
-  void **host_list = xbt_new0(void *, 2);
+  sg_host_t*host_list = xbt_new0(sg_host_t, 2);
   double *flops_amount = xbt_new0(double, 2);
   double *bytes_amount = xbt_new0(double, 4);
   Action *res = NULL;
 
-  host_list[0] = xbt_lib_get_level(xbt_lib_get_elm_or_null(host_lib, src->getName()), SURF_HOST_LEVEL);
-  host_list[1] = xbt_lib_get_level(xbt_lib_get_elm_or_null(host_lib, dst->getName()), SURF_HOST_LEVEL);
+  host_list[0] = sg_host_by_name(src->getName());
+  host_list[1] = sg_host_by_name(dst->getName());
   bytes_amount[1] = size;
 
   res = p_hostModel->executeParallelTask(2, host_list,
@@ -550,12 +550,11 @@ e_surf_resource_state_t HostL07::getState() {
 
 Action *HostL07::execute(double size)
 {
-  void **host_list = xbt_new0(void *, 1);
+  sg_host_t*host_list = xbt_new0(sg_host_t, 1);
   double *flops_amount = xbt_new0(double, 1);
   double *bytes_amount = xbt_new0(double, 1);
 
-  host_list[0] = this;
-  bytes_amount[0] = 0.0;
+  host_list[0] = sg_host_by_name(getName());
   flops_amount[0] = size;
 
   return static_cast<HostL07Model*>(getModel())->executeParallelTask(1, host_list,

@@ -264,8 +264,7 @@ public:
  */
 class NetworkAction : public Action {
 public:
-  /**
-   * @brief NetworkAction constructor
+  /** @brief Constructor
    *
    * @param model The NetworkModel associated to this NetworkAction
    * @param cost The cost of this  NetworkAction in [TODO]

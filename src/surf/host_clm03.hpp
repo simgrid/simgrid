@@ -34,10 +34,10 @@ public:
   void updateActionsState(double now, double delta);
 
   Action *executeParallelTask(int host_nb,
-                                        void **host_list,
-                                        double *flops_amount,
-                                        double *bytes_amount,
-                                        double rate);
+                              sg_host_t *host_list,
+							  double *flops_amount,
+							  double *bytes_amount,
+							  double rate);
 };
 
 /************

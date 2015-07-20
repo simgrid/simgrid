@@ -258,7 +258,7 @@ XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
  */
 XBT_PUBLIC(surf_action_t) surf_host_model_execute_parallel_task(surf_host_model_t model,
 		                                    int host_nb,
-                                            void **host_list,
+											sg_host_t *host_list,
                                             double *flops_amount,
                                             double *bytes_amount,
                                             double rate);
