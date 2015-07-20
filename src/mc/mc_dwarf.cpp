@@ -761,9 +761,9 @@ static mc_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
         uintptr_t base = (uintptr_t) info->base_address();
         variable->address = (void *) (base + offset);
       } else {
-        mc_dwarf_location_list_init_from_expression(
-          &variable->location_list, len,
-          expr);
+        simgrid::mc::LocationListEntry entry;
+        entry.expression = {expr, expr + len};
+        variable->location_list = { std::move(entry) };
       }
 
       break;

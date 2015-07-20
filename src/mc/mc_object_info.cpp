@@ -47,16 +47,9 @@ Variable::Variable()
   this->dwarf_offset = 0;
   this->global = 0;
   this->type = nullptr;
-  this->location_list = {0, nullptr};
   this->address = nullptr;
   this->start_scope = 0;
   this->object_info = nullptr;
-}
-
-Variable::~Variable()
-{
-  if (this->location_list.locations)
-    mc_dwarf_location_list_clear(&this->location_list);
 }
 
 // Frame
@@ -66,7 +59,6 @@ Frame::Frame()
   this->tag = 0;
   this->low_pc = nullptr;
   this->high_pc = nullptr;
-  this->frame_base = {0, nullptr};
   this->variables = xbt_dynar_new(
     sizeof(mc_variable_t), mc_variable_free_voidp);
   this->id = 0;
@@ -78,7 +70,6 @@ Frame::Frame()
 
 Frame::~Frame()
 {
-  mc_dwarf_location_list_clear(&(this->frame_base));
   xbt_dynar_free(&(this->variables));
   xbt_dynar_free(&(this->scopes));
 }

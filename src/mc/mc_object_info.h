@@ -159,7 +159,6 @@ namespace mc {
 class Variable {
 public:
   Variable();
-  ~Variable();
   Variable(Variable const&) = delete;
   Variable& operator=(Variable const&) = delete;
 
@@ -170,7 +169,7 @@ public:
   mc_type_t type;
 
   // Use either of:
-  s_mc_location_list_t location_list;
+  simgrid::mc::LocationList location_list;
   void* address;
 
   size_t start_scope;
@@ -189,7 +188,7 @@ public:
   std::string name;
   void *low_pc;
   void *high_pc;
-  s_mc_location_list_t frame_base;
+  simgrid::mc::LocationList frame_base;
   xbt_dynar_t /* <mc_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
   unsigned long int id; /* DWARF offset of the subprogram */
   xbt_dynar_t /* <mc_frame_t> */ scopes;

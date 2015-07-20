@@ -429,7 +429,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
  *  \deprecated Use mc_dwarf_resolve_expression
  */
 void mc_dwarf_resolve_location(mc_location_t location,
-                               mc_expression_t expression,
+                               simgrid::mc::DwarfExpression* expression,
                                mc_object_info_t object_info,
                                unw_cursor_t * c,
                                void *frame_pointer_address,
@@ -443,10 +443,12 @@ void mc_dwarf_resolve_location(mc_location_t location,
   state.object_info = object_info;
   state.process_index = process_index;
 
-  if (expression->size >= 1
-    && expression->ops[0].atom >=DW_OP_reg0 && expression->ops[0].atom <= DW_OP_reg31) {
-    int dwarf_register = expression->ops[0].atom - DW_OP_reg0;
-    xbt_assert(c, "Missing frame context for register operation DW_OP_reg%i",
+  if (expression->size() >= 1
+      && (*expression)[0].atom >=DW_OP_reg0
+      && (*expression)[0].atom <= DW_OP_reg31) {
+    int dwarf_register = (*expression)[0].atom - DW_OP_reg0;
+    xbt_assert(c,
+      "Missing frame context for register operation DW_OP_reg%i",
       dwarf_register);
     location->memory_location = NULL;
     location->cursor = c;
@@ -454,7 +456,8 @@ void mc_dwarf_resolve_location(mc_location_t location,
     return;
   }
 
-  if (mc_dwarf_execute_expression(expression->size, expression->ops, &state))
+  if (mc_dwarf_execute_expression(
+      expression->size(), expression->data(), &state))
     xbt_die("Error evaluating DWARF expression");
   if (state.stack_size == 0)
     xbt_die("No value on the stack");
@@ -465,24 +468,23 @@ void mc_dwarf_resolve_location(mc_location_t location,
   }
 }
 
-static mc_expression_t mc_find_expression(mc_location_list_t locations, unw_word_t ip) {
-  for (size_t i = 0; i != locations->size; ++i) {
-    mc_expression_t expression = locations->locations + i;
-    if ((expression->lowpc == NULL && expression->highpc == NULL)
-        || (ip && ip >= (unw_word_t) expression->lowpc
-            && ip < (unw_word_t) expression->highpc)) {
-      return expression;
-    }
-  }
-  return NULL;
+// TODO, move this in a method of LocationList
+static simgrid::mc::DwarfExpression* mc_find_expression(
+    simgrid::mc::LocationList* locations, unw_word_t ip)
+{
+  for (simgrid::mc::LocationListEntry& entry : *locations)
+    if (entry.valid_for_ip(ip))
+      return &entry.expression;
+  return nullptr;
 }
 
 void mc_dwarf_resolve_locations(mc_location_t location,
-                                     mc_location_list_t locations,
-                                     mc_object_info_t object_info,
-                                     unw_cursor_t * c,
-                                     void *frame_pointer_address,
-                                     mc_address_space_t address_space, int process_index)
+                                simgrid::mc::LocationList* locations,
+                                mc_object_info_t object_info,
+                                unw_cursor_t * c,
+                                void *frame_pointer_address,
+                                mc_address_space_t address_space,
+                                int process_index)
 {
 
   unw_word_t ip = 0;
@@ -491,7 +493,7 @@ void mc_dwarf_resolve_locations(mc_location_t location,
       xbt_die("Could not resolve IP");
   }
 
-  mc_expression_t expression = mc_find_expression(locations, ip);
+  simgrid::mc::DwarfExpression* expression = mc_find_expression(locations, ip);
   if (expression) {
     mc_dwarf_resolve_location(location,
                               expression, object_info, c,
@@ -534,50 +536,11 @@ void *mc_find_frame_base(mc_frame_t frame, mc_object_info_t object_info,
   }
 }
 
-void mc_dwarf_expression_clear(mc_expression_t expression)
+void mc_dwarf_location_list_init(
+  simgrid::mc::LocationList* list, mc_object_info_t info,
+  Dwarf_Die * die, Dwarf_Attribute * attr)
 {
-  free(expression->ops);
-  expression->ops = NULL;
-  expression->size = 0;
-  expression->lowpc = NULL;
-  expression->highpc = NULL;
-}
-
-void mc_dwarf_location_list_clear(mc_location_list_t list)
-{
-  for (size_t i = 0; i != list->size; ++i) {
-    mc_dwarf_expression_clear(list->locations + i);
-  }
-  free(list->locations);
-  list->locations = NULL;
-  list->size = 0;
-}
-
-void mc_dwarf_expression_init(mc_expression_t expression, size_t len,
-                              Dwarf_Op * ops)
-{
-  expression->lowpc = NULL;
-  expression->highpc = NULL;
-  expression->size = len;
-  expression->ops = (Dwarf_Op*) xbt_malloc(len * sizeof(Dwarf_Op));
-  memcpy(expression->ops, ops, len * sizeof(Dwarf_Op));
-}
-
-void mc_dwarf_location_list_init_from_expression(mc_location_list_t target,
-                                                 size_t len, Dwarf_Op * ops)
-{
-  target->size = 1;
-  target->locations = (mc_expression_t) xbt_malloc(sizeof(s_mc_expression_t));
-  mc_dwarf_expression_init(target->locations, len, ops);
-}
-
-void mc_dwarf_location_list_init(mc_location_list_t list, mc_object_info_t info,
-                                 Dwarf_Die * die, Dwarf_Attribute * attr)
-{
-  if (list->locations) {
-    mc_dwarf_location_list_clear(list);
-  }
-  list->size = 0;
+  list->clear();
 
   ptrdiff_t offset = 0;
   Dwarf_Addr base, start, end;
@@ -592,19 +555,15 @@ void mc_dwarf_location_list_init(mc_location_list_t list, mc_object_info_t info,
     else if (offset == -1)
       xbt_die("Error while loading location list");
 
-    int i = list->size;
-    list->size++;
-    list->locations =
-        (mc_expression_t) realloc(list->locations,
-                                  list->size * sizeof(s_mc_expression_t));
-    mc_expression_t expression = list->locations + i;
-    expression->ops = NULL;
-    mc_dwarf_expression_init(expression, len, ops);
+    simgrid::mc::LocationListEntry entry;
+    entry.expression = simgrid::mc::DwarfExpression(ops, ops + len);
 
     void *base = info->base_address();
     // If start == 0, this is not a location list:
-    expression->lowpc = start == 0 ? NULL : (char *) base + start;
-    expression->highpc = start == 0 ? NULL : (char *) base + end;
+    entry.lowpc = start == 0 ? NULL : (char *) base + start;
+    entry.highpc = start == 0 ? NULL : (char *) base + end;
+
+    list->push_back(std::move(entry));
   }
 
 }

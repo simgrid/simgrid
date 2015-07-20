@@ -304,7 +304,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
 
     if (current_variable->address != NULL) {
       new_var.address = current_variable->address;
-    } else if (current_variable->location_list.size != 0) {
+    } else if (!current_variable->location_list.empty()) {
       s_mc_location_t location;
       mc_dwarf_resolve_locations(
         &location, &current_variable->location_list,
