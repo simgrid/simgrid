@@ -233,40 +233,12 @@ FILE *surf_fopen(const char *name, const char *mode)
   return NULL;
 }
 
-
-#ifndef MAX_DRIVE
-#define MAX_DRIVE 26
-#endif
-
 #ifdef _XBT_WIN32
 #include <windows.h>
+#define MAX_DRIVE 26
 static const char *disk_drives_letter_table[MAX_DRIVE] = {
-  "A:\\",
-  "B:\\",
-  "C:\\",
-  "D:\\",
-  "E:\\",
-  "F:\\",
-  "G:\\",
-  "H:\\",
-  "I:\\",
-  "J:\\",
-  "K:\\",
-  "L:\\",
-  "M:\\",
-  "N:\\",
-  "O:\\",
-  "P:\\",
-  "Q:\\",
-  "R:\\",
-  "S:\\",
-  "T:\\",
-  "U:\\",
-  "V:\\",
-  "W:\\",
-  "X:\\",
-  "Y:\\",
-  "Z:\\"
+  "A:\\","B:\\","C:\\","D:\\","E:\\","F:\\","G:\\","H:\\","I:\\","J:\\","K:\\","L:\\","M:\\",
+  "N:\\","O:\\","P:\\","Q:\\","R:\\","S:\\","T:\\","U:\\","V:\\","W:\\","X:\\","Y:\\","Z:\\"
 };
 #endif
 
