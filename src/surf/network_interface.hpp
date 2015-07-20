@@ -71,15 +71,11 @@ XBT_PUBLIC(void) net_add_traces();
  */
 class NetworkModel : public Model {
 public:
-  /** @brief NetworkModel constructor */
-  NetworkModel() : Model("network") {
-    f_networkSolve = lmm_solve;
-  };
+  /** @brief Constructor */
+  NetworkModel() : Model("network") { }
 
-  /** @brief NetworkModel constructor */
-  NetworkModel(const char *name) : Model(name) {
-	f_networkSolve = lmm_solve;
-  };
+  /** @brief Constructor */
+  NetworkModel(const char *name) : Model(name) { }
 
   /** @brief The destructor of the NetworkModel */
   ~NetworkModel() {
@@ -132,12 +128,11 @@ public:
   virtual Action *communicate(RoutingEdge *src, RoutingEdge *dst,
 		                           double size, double rate)=0;
 
-  /**
-   * @brief Function pointer to the function to use to solve the lmm_system_t
+  /** @brief Function pointer to the function to use to solve the lmm_system_t
    *
    * @param system The lmm_system_t to solve
    */
-  void (*f_networkSolve)(lmm_system_t);
+  void (*f_networkSolve)(lmm_system_t) = lmm_solve;
 
   /**
    * @brief Get the right multiplicative factor for the latency.
