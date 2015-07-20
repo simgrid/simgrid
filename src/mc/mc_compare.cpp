@@ -210,7 +210,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
       else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
         if (!region2->contain(simgrid::mc::remote(addr_pointed2)))
           return 1;
-        if (type->dw_type_id.empty())
+        if (type->type_id.empty())
           return (addr_pointed1 != addr_pointed2);
         else {
           return compare_areas_with_type(state, process_index,
@@ -297,7 +297,7 @@ static int compare_global_variables(mc_object_info_t object_info,
   xbt_dynar_t variables;
   int res;
   unsigned int cursor = 0;
-  dw_variable_t current_var;
+  mc_variable_t current_var;
 
   variables = object_info->global_variables;
 
@@ -319,7 +319,8 @@ static int compare_global_variables(mc_object_info_t object_info,
     if (res == 1) {
       XBT_TRACE3(mc, global_diff, -1, -1, current_var->name);
       XBT_VERB("Global variable %s (%p) is different between snapshots",
-               current_var->name, (char *) current_var->address);
+               current_var->name.c_str(),
+               (char *) current_var->address);
       return 1;
     }
 

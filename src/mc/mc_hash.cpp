@@ -190,7 +190,7 @@ top:
 
       if (type->subtype == NULL) {
         XBT_DEBUG("Missing type for %p (type=%s)",
-          pointed, type->dw_type_id.c_str());
+          pointed, type->type_id.c_str());
         return;
       }
 
@@ -211,11 +211,11 @@ static void mc_hash_object_globals(hash_type * hash, mc_hashing_state * state,
                                    mc_object_info_t info)
 {
   unsigned int cursor = 0;
-  dw_variable_t variable;
+  mc_variable_t variable;
   xbt_dynar_foreach(info->global_variables, cursor, variable) {
     XBT_DEBUG("Hash global variable %s", variable->name);
 
-    if (variable->type_origin == NULL) {
+    if (variable->type_id == NULL) {
       // Nothing
       continue;
     }
@@ -249,10 +249,10 @@ static void mc_hash_stack_frame(mc_hash_t * hash,
   // return; // TEMP
 
   unsigned int cursor = 0;
-  dw_variable_t variable;
+  mc_variable_t variable;
   xbt_dynar_foreach(frame->variables, cursor, variable) {
 
-    if (variable->type_origin == NULL) {
+    if (variable->type_id == NULL) {
       XBT_DEBUG("Hash local variable %s without type", variable->name);
       continue;
     }

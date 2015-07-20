@@ -260,7 +260,7 @@ void MC_find_object_address(std::vector<simgrid::mc::VmMap> const& maps, mc_obje
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
-static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope,
+static bool mc_valid_variable(mc_variable_t var, dw_frame_t scope,
                               const void *ip)
 {
   // The variable is not yet valid:
@@ -281,7 +281,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     return;
 
   unsigned cursor = 0;
-  dw_variable_t current_variable;
+  mc_variable_t current_variable;
   xbt_dynar_foreach(scope->variables, cursor, current_variable) {
 
     if (!mc_valid_variable(current_variable, scope, (void *) stack_frame->ip))
@@ -304,10 +304,10 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
 
     if (current_variable->address != NULL) {
       new_var.address = current_variable->address;
-    } else if (current_variable->locations.size != 0) {
+    } else if (current_variable->location_list.size != 0) {
       s_mc_location_t location;
       mc_dwarf_resolve_locations(
-        &location, &current_variable->locations,
+        &location, &current_variable->location_list,
         current_variable->object_info,
         &(stack_frame->unw_cursor),
         (void *) stack_frame->frame_base,

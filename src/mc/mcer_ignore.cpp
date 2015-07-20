@@ -121,14 +121,15 @@ void MCer_ignore_global_variable(const char *name)
     int end = xbt_dynar_length(info->global_variables) - 1;
     while (start <= end) {
       unsigned int cursor = (start + end) / 2;
-      dw_variable_t current_var =
-          (dw_variable_t) xbt_dynar_get_as(info->global_variables,
-                                           cursor, dw_variable_t);
-      if (strcmp(current_var->name, name) == 0) {
+      mc_variable_t current_var =
+          (mc_variable_t) xbt_dynar_get_as(info->global_variables,
+                                           cursor, mc_variable_t);
+      int cmp = strcmp(current_var->name.c_str(), name);
+      if (cmp == 0) {
         xbt_dynar_remove_at(info->global_variables, cursor, NULL);
         start = 0;
         end = xbt_dynar_length(info->global_variables) - 1;
-      } else if (strcmp(current_var->name, name) < 0) {
+      } else if (cmp < 0) {
         start = cursor + 1;
       } else {
         end = cursor - 1;
@@ -198,11 +199,11 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
     // Dichotomic search:
     while (start <= end) {
       int cursor = (start + end) / 2;
-      dw_variable_t current_var =
-          (dw_variable_t) xbt_dynar_get_as(scope->variables, cursor,
-                                           dw_variable_t);
+      mc_variable_t current_var =
+          (mc_variable_t) xbt_dynar_get_as(scope->variables, cursor,
+                                           mc_variable_t);
 
-      int compare = strcmp(current_var->name, var_name);
+      int compare = strcmp(current_var->name.c_str(), var_name);
       if (compare == 0) {
         // Variable found, remove it:
         xbt_dynar_remove_at(scope->variables, cursor, NULL);

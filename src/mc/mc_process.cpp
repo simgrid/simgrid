@@ -218,7 +218,7 @@ Process::Process(pid_t pid, int sockfd)
   }
 
   // Read std_heap (is a struct mdesc*):
-  dw_variable_t std_heap_var = process->find_variable("__mmalloc_default_mdp");
+  mc_variable_t std_heap_var = process->find_variable("__mmalloc_default_mdp");
   if (!std_heap_var)
     xbt_die("No heap information in the target process");
   if(!std_heap_var->address)
@@ -441,7 +441,7 @@ dw_frame_t Process::find_function(remote_ptr<void> ip) const
 
 /** Find (one occurence of) the named variable definition
  */
-dw_variable_t Process::find_variable(const char* name) const
+mc_variable_t Process::find_variable(const char* name) const
 {
   // First lookup the variable in the executable shared object.
   // A global variable used directly by the executable code from a library
@@ -449,13 +449,13 @@ dw_variable_t Process::find_variable(const char* name) const
   // We need to look up the variable in the execvutable first.
   if (this->binary_info) {
     std::shared_ptr<s_mc_object_info_t> const& info = this->binary_info;
-    dw_variable_t var = info->find_variable(name);
+    mc_variable_t var = info->find_variable(name);
     if (var)
       return var;
   }
 
   for (std::shared_ptr<s_mc_object_info_t> const& info : this->object_infos) {
-    dw_variable_t var = info->find_variable(name);
+    mc_variable_t var = info->find_variable(name);
     if (var)
       return var;
   }
@@ -465,7 +465,7 @@ dw_variable_t Process::find_variable(const char* name) const
 
 void Process::read_variable(const char* name, void* target, size_t size) const
 {
-  dw_variable_t var = this->find_variable(name);
+  mc_variable_t var = this->find_variable(name);
   if (!var->address)
     xbt_die("No simple location for this variable");
   if (!var->type->full_type)

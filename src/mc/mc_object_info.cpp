@@ -27,6 +27,25 @@ Type::Type()
   this->full_type = nullptr;
 }
 
+// Type
+
+Variable::Variable()
+{
+  this->dwarf_offset = 0;
+  this->global = 0;
+  this->type = nullptr;
+  this->location_list = {0, nullptr};
+  this->address = nullptr;
+  this->start_scope = 0;
+  this->object_info = nullptr;
+}
+
+Variable::~Variable()
+{
+  if (this->location_list.locations)
+    mc_dwarf_location_list_clear(&this->location_list);
+}
+
 // ObjectInformations
 
 dw_frame_t ObjectInformation::find_function(const void *ip) const
@@ -49,15 +68,13 @@ dw_frame_t ObjectInformation::find_function(const void *ip) const
   return nullptr;
 }
 
-dw_variable_t ObjectInformation::find_variable(const char* name) const
+mc_variable_t ObjectInformation::find_variable(const char* name) const
 {
   unsigned int cursor = 0;
-  dw_variable_t variable;
-  xbt_dynar_foreach(this->global_variables, cursor, variable){
-    if(!strcmp(name, variable->name))
+  mc_variable_t variable;
+  xbt_dynar_foreach(this->global_variables, cursor, variable)
+    if(variable->name == name)
       return variable;
-  }
-
   return nullptr;
 }
 

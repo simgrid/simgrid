@@ -50,7 +50,7 @@ public:
   std::string name; /* Name of the type */
   int byte_size; /* Size in bytes */
   int element_count; /* Number of elements for array type */
-  std::string dw_type_id; /* DW_AT_type id */
+  std::string type_id; /* DW_AT_type id */
   std::vector<Type> members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
   int is_pointer_type;
 
@@ -113,7 +113,7 @@ public:
   char *start_ro;
   char *end_ro; // read-only segment
   xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, dw_frame_t>
-  xbt_dynar_t global_variables; // xbt_dynar_t<dw_variable_t>
+  xbt_dynar_t global_variables; // xbt_dynar_t<mc_variable_t>
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, mc_type_t>
   xbt_dict_t full_types_by_name; // xbt_dict_t<name, mc_type_t> (full defined type only)
 
@@ -135,7 +135,7 @@ public:
   void* base_address() const;
 
   dw_frame_t find_function(const void *ip) const;
-  dw_variable_t find_variable(const char* name) const;
+  mc_variable_t find_variable(const char* name) const;
 
 };
 
@@ -153,15 +153,24 @@ XBT_INTERNAL const char* MC_dwarf_tagname(int tag);
 
 XBT_INTERNAL void* mc_member_resolve(const void* base, mc_type_t type, mc_type_t member, mc_address_space_t snapshot, int process_index);
 
-struct s_dw_variable{
+namespace simgrid {
+namespace mc {
+
+class Variable {
+public:
+  Variable();
+  ~Variable();
+  Variable(Variable const&) = delete;
+  Variable& operator=(Variable const&) = delete;
+
   Dwarf_Off dwarf_offset; /* Global offset of the field. */
   int global;
-  char *name;
-  char *type_origin;
+  std::string name;
+  std::string type_id;
   mc_type_t type;
 
   // Use either of:
-  s_mc_location_list_t locations;
+  s_mc_location_list_t location_list;
   void* address;
 
   size_t start_scope;
@@ -169,13 +178,16 @@ struct s_dw_variable{
 
 };
 
+}
+}
+
 struct s_dw_frame{
   int tag;
   char *name;
   void *low_pc;
   void *high_pc;
   s_mc_location_list_t frame_base;
-  xbt_dynar_t /* <dw_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
+  xbt_dynar_t /* <mc_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
   unsigned long int id; /* DWARF offset of the subprogram */
   xbt_dynar_t /* <dw_frame_t> */ scopes;
   Dwarf_Off abstract_origin_id;

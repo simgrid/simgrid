@@ -43,22 +43,22 @@ static dw_frame_t find_function_by_name(mc_object_info_t info, const char* name)
   return NULL;
 }
 
-static dw_variable_t find_local_variable(dw_frame_t frame, const char* argument_name) {
+static mc_variable_t find_local_variable(
+    dw_frame_t frame, const char* argument_name) {
   unsigned int cursor = 0;
-  dw_variable_t variable;
-  xbt_dynar_foreach(frame->variables, cursor, variable){
-    if(!strcmp(argument_name, variable->name))
+  mc_variable_t variable;
+  xbt_dynar_foreach(frame->variables, cursor, variable)
+    if(argument_name == variable->name)
       return variable;
-  }
 
-  dw_frame_t scope = NULL;
+  dw_frame_t scope = nullptr;
   xbt_dynar_foreach(frame->scopes, cursor, scope) {
     variable = find_local_variable(scope, argument_name);
     if(variable)
       return variable;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 static void test_local_variable(mc_object_info_t info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
@@ -66,14 +66,14 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
   assert(subprogram);
   // TODO, Lookup frame by IP and test against name instead
 
-  dw_variable_t var = find_local_variable(subprogram, variable);
+  mc_variable_t var = find_local_variable(subprogram, variable);
   assert(var);
 
   void* frame_base = mc_find_frame_base(subprogram, info, cursor);
   s_mc_location_t location;
 
   mc_dwarf_resolve_locations(&location,
-    &var->locations, info, cursor, frame_base, NULL, -1);
+    &var->location_list, info, cursor, frame_base, NULL, -1);
 
   xbt_assert(mc_get_location_type(&location)==MC_LOCATION_TYPE_ADDRESS,
     "Unexpected location type for variable %s of %s", variable, function);
@@ -83,16 +83,19 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
 
 }
 
-static dw_variable_t test_global_variable(mc_process_t process, mc_object_info_t info, const char* name, void* address, long byte_size) {
+static mc_variable_t test_global_variable(mc_process_t process, mc_object_info_t info, const char* name, void* address, long byte_size) {
 
-  dw_variable_t variable = info->find_variable(name);
+  mc_variable_t variable = info->find_variable(name);
   xbt_assert(variable, "Global variable %s was not found", name);
-  xbt_assert(!strcmp(variable->name, name), "Name mismatch for %s", name);
+  xbt_assert(variable->name == name,
+    "Name mismatch for %s", name);
   xbt_assert(variable->global, "Variable %s is not global", name);
   xbt_assert(variable->address == address,
-      "Address mismatch for %s : %p expected but %p found", name, address, variable->address);
+      "Address mismatch for %s : %p expected but %p found",
+      name, address, variable->address);
 
-  mc_type_t type = (mc_type_t) xbt_dict_get_or_null(process->binary_info->types, variable->type_origin);
+  mc_type_t type = (mc_type_t) xbt_dict_get_or_null(
+    process->binary_info->types, variable->type_id.c_str());
   xbt_assert(type!=NULL, "Missing type for %s", name);
   xbt_assert(type->byte_size = byte_size, "Byte size mismatch for %s", name);
   return variable;
@@ -118,7 +121,7 @@ int main(int argc, char** argv)
 {
   SIMIX_global_init(&argc, argv);
 
-  dw_variable_t var;
+  mc_variable_t var;
   mc_type_t type;
 
   s_mc_process_t p(getpid(), -1);
@@ -129,12 +132,14 @@ int main(int argc, char** argv)
 
   var = test_global_variable(process, process->binary_info.get(),
     "test_some_array", &test_some_array, sizeof(test_some_array));
-  type = (mc_type_t) xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
+  type = (mc_type_t) xbt_dict_get_or_null(
+    process->binary_info->types, var->type_id.c_str());
   xbt_assert(type->element_count == 6*5*4, "element_count mismatch in test_some_array : %i / %i", type->element_count, 6*5*4);
 
   var = test_global_variable(process, process->binary_info.get(),
     "test_some_struct", &test_some_struct, sizeof(test_some_struct));
-  type = (mc_type_t) xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
+  type = (mc_type_t) xbt_dict_get_or_null(
+    process->binary_info->types, var->type_id.c_str());
   assert(find_member(process->binary_info.get(), "first", type)->offset() == 0);
   assert(find_member(process->binary_info.get(), "second", type)->offset()
       == ((const char*)&test_some_struct.second) - (const char*)&test_some_struct);

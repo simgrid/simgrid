@@ -18,13 +18,13 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
-static void dw_variable_free(dw_variable_t v);
-static void dw_variable_free_voidp(void *t);
+static void mc_variable_free(mc_variable_t v);
+static void mc_variable_free_voidp(void *t);
 
-static void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
-static void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
-static void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
-static void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
+static void MC_dwarf_register_global_variable(mc_object_info_t info, mc_variable_t variable);
+static void MC_register_variable(mc_object_info_t info, dw_frame_t frame, mc_variable_t variable);
+static void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, mc_variable_t variable);
+static void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, mc_variable_t variable);
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
@@ -100,7 +100,7 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
  *  \param die DIE
  *  \return DW_TAG_type attribute as a new string (NULL if none)
  */
-static char *MC_dwarf_at_type(Dwarf_Die * die);
+static std::string MC_dwarf_at_type(Dwarf_Die * die);
 
 /** \brief A class of DWARF tags (DW_TAG_*)
  */
@@ -305,10 +305,16 @@ static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die * die,
  *  \param dit the DIE
  *  \return DW_AT_type reference as a global offset in hexadecimal (or NULL)
  */
-static char *MC_dwarf_at_type(Dwarf_Die * die)
+static
+std::string MC_dwarf_at_type(Dwarf_Die * die)
 {
   Dwarf_Off offset = MC_dwarf_attr_integrate_dieoffset(die, DW_AT_type);
-  return offset == 0 ? NULL : bprintf("%" PRIx64, offset);
+  if (offset == 0)
+    return std::string();
+  char* s = bprintf("%" PRIx64, offset);
+  std::string res(s);
+  free(s);
+  return std::move(res);
 }
 
 static uint64_t MC_dwarf_attr_integrate_addr(Dwarf_Die * die, int attribute)
@@ -568,12 +574,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
       member.byte_size =
           MC_dwarf_attr_integrate_uint(&child, DW_AT_byte_size, 0);
       member.element_count = -1;
-
-      char* type_id = MC_dwarf_at_type(&child);
-      if (type_id) {
-        member.dw_type_id = type_id;
-        free(type_id);
-      }
+      member.type_id = MC_dwarf_at_type(&child);
 
       if (dwarf_hasattr(&child, DW_AT_data_bit_offset)) {
         xbt_die("Can't groke DW_AT_data_bit_offset.");
@@ -581,7 +582,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
 
       MC_dwarf_fill_member_location(type, &member, &child);
 
-      if (member.dw_type_id.empty()) {
+      if (member.type_id.empty()) {
         xbt_die("Missing type for member %s of <%" PRIx64 ">%s",
                 member.name.c_str(),
                 (uint64_t) type->id, type->name.c_str());
@@ -637,11 +638,7 @@ static mc_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
     free(full_name);
   }
 
-  char* type_id = MC_dwarf_at_type(die);
-  if (type_id) {
-    type->dw_type_id = type_id;
-    free(type_id);
-  }
+  type->type_id = MC_dwarf_at_type(die);
 
   // Some compilers do not emit DW_AT_byte_size for pointer_type,
   // so we fill this. We currently assume that the model-checked process is in
@@ -704,7 +701,7 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
 
 static int mc_anonymous_variable_index = 0;
 
-static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
+static mc_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
                                         Dwarf_Die * unit, dw_frame_t frame,
                                         const char *ns)
 {
@@ -722,15 +719,15 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
     return NULL;
   }
 
-  dw_variable_t variable = xbt_new0(s_dw_variable_t, 1);
+  simgrid::mc::Variable* variable = new simgrid::mc::Variable();
   variable->dwarf_offset = dwarf_dieoffset(die);
   variable->global = frame == NULL;     // Can be override base on DW_AT_location
   variable->object_info = info;
 
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-  variable->name = xbt_strdup(name);
-
-  variable->type_origin = MC_dwarf_at_type(die);
+  if (name)
+    variable->name = name;
+  variable->type_id = MC_dwarf_at_type(die);
 
   int form = dwarf_whatform(&attr_location);
   int klass =
@@ -744,9 +741,11 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
       Dwarf_Op *expr;
       size_t len;
       if (dwarf_getlocation(&attr_location, &expr, &len)) {
-        xbt_die
-            ("Could not read location expression in DW_AT_location of variable <%"
-             PRIx64 ">%s", (uint64_t) variable->dwarf_offset, variable->name);
+        xbt_die(
+          "Could not read location expression in DW_AT_location "
+          "of variable <%" PRIx64 ">%s",
+          (uint64_t) variable->dwarf_offset,
+          variable->name.c_str());
       }
 
       if (len == 1 && expr[0].atom == DW_OP_addr) {
@@ -755,8 +754,9 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
         uintptr_t base = (uintptr_t) info->base_address();
         variable->address = (void *) (base + offset);
       } else {
-        mc_dwarf_location_list_init_from_expression(&variable->locations, len,
-                                                    expr);
+        mc_dwarf_location_list_init_from_expression(
+          &variable->location_list, len,
+          expr);
       }
 
       break;
@@ -764,13 +764,16 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
   case MC_DW_CLASS_LOCLISTPTR:
   case MC_DW_CLASS_CONSTANT:
     // Reference to location list:
-    mc_dwarf_location_list_init(&variable->locations, info, die,
-                                &attr_location);
+    mc_dwarf_location_list_init(
+      &variable->location_list, info, die,
+      &attr_location);
     break;
   default:
-    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%"
-            PRIx64 ">%s", form, form, klass, klass,
-            (uint64_t) variable->dwarf_offset, variable->name);
+    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location "
+            "in <%" PRIx64 ">%s",
+            form, form, klass, klass,
+            (uint64_t) variable->dwarf_offset,
+            variable->name.c_str());
   }
 
   // Handle start_scope:
@@ -795,16 +798,15 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
     }
   }
 
-  if (ns && variable->global) {
-    char *old_name = variable->name;
-    variable->name = bprintf("%s::%s", ns, old_name);
-    free(old_name);
-  }
+  if (ns && variable->global)
+    variable->name =
+      std::string(ns) + "::" + variable->name;
+
   // The current code needs a variable name,
   // generate a fake one:
-  if (!variable->name) {
-    variable->name = bprintf("@anonymous#%i", mc_anonymous_variable_index++);
-  }
+  if (variable->name.empty())
+    variable->name =
+      "@anonymous#" + std::to_string(mc_anonymous_variable_index++);
 
   return variable;
 }
@@ -813,7 +815,7 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
                                          Dwarf_Die * unit, dw_frame_t frame,
                                          const char *ns)
 {
-  dw_variable_t variable =
+  mc_variable_t variable =
       MC_die_to_variable(info, die, unit, frame, ns);
   if (variable == NULL)
     return;
@@ -864,7 +866,7 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
 
   // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
   frame->variables =
-      xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+      xbt_dynar_new(sizeof(mc_variable_t), mc_variable_free_voidp);
 
   // TODO, support DW_AT_ranges
   uint64_t low_pc = MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
@@ -1041,21 +1043,9 @@ static void dw_type_free(mc_type_t t)
   delete t;
 }
 
-void dw_variable_free(dw_variable_t v)
+void mc_variable_free_voidp(void *t)
 {
-  if (v) {
-    xbt_free(v->name);
-    xbt_free(v->type_origin);
-
-    if (v->locations.locations)
-      mc_dwarf_location_list_clear(&v->locations);
-    xbt_free(v);
-  }
-}
-
-void dw_variable_free_voidp(void *t)
-{
-  dw_variable_free((dw_variable_t) * (void **) t);
+  delete *(simgrid::mc::Variable**)t;
 }
 
 // ***** object_info
@@ -1077,7 +1067,7 @@ ObjectInformation::ObjectInformation()
   this->end_ro = nullptr;
   this->subprograms = xbt_dict_new_homogeneous((void (*)(void *)) mc_frame_free);
   this->global_variables =
-      xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+      xbt_dynar_new(sizeof(mc_variable_t), mc_variable_free_voidp);
   this->types = xbt_dict_new_homogeneous((void (*)(void *)) dw_type_free);
   this->full_types_by_name = xbt_dict_new_homogeneous(NULL);
   this->functions_index = nullptr;
@@ -1171,12 +1161,11 @@ static void MC_make_functions_index(mc_object_info_t info)
 static void MC_post_process_variables(mc_object_info_t info)
 {
   unsigned cursor = 0;
-  dw_variable_t variable = NULL;
-  xbt_dynar_foreach(info->global_variables, cursor, variable) {
-    if (variable->type_origin) {
-      variable->type = (mc_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
-    }
-  }
+  mc_variable_t variable = nullptr;
+  xbt_dynar_foreach(info->global_variables, cursor, variable)
+    if (!variable->type_id.empty())
+      variable->type = (mc_type_t) xbt_dict_get_or_null(
+        info->types, variable->type_id.c_str());
 }
 
 static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope)
@@ -1192,17 +1181,17 @@ static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope)
     scope->name = xbt_strdup(abstract_origin->name);
 
   }
+
   // Direct:
   unsigned cursor = 0;
-  dw_variable_t variable = NULL;
-  xbt_dynar_foreach(scope->variables, cursor, variable) {
-    if (variable->type_origin) {
-      variable->type = (mc_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
-    }
-  }
+  mc_variable_t variable = nullptr;
+  xbt_dynar_foreach(scope->variables, cursor, variable)
+    if (!variable->type_id.empty())
+      variable->type = (mc_type_t) xbt_dict_get_or_null(
+        info->types, variable->type_id.c_str());
 
   // Recursive post-processing of nested-scopes:
-  dw_frame_t nested_scope = NULL;
+  dw_frame_t nested_scope = nullptr;
   xbt_dynar_foreach(scope->scopes, cursor, nested_scope)
       mc_post_process_scope(info, nested_scope);
 
@@ -1224,10 +1213,10 @@ static void MC_post_process_functions(mc_object_info_t info)
 static void MC_resolve_subtype(mc_object_info_t info, mc_type_t type)
 {
 
-  if (type->dw_type_id.empty())
+  if (type->type_id.empty())
     return;
   type->subtype = (mc_type_t) xbt_dict_get_or_null(
-    info->types, type->dw_type_id.c_str());
+    info->types, type->type_id.c_str());
   if (type->subtype == NULL)
     return;
   if (type->subtype->byte_size != 0)
@@ -1280,7 +1269,7 @@ std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
 
 /*************************************************************************/
 
-static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char *var,
+static int MC_dwarf_get_variable_index(xbt_dynar_t variables, const char *var,
                                        void *address)
 {
 
@@ -1290,15 +1279,15 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char *var,
   unsigned int cursor = 0;
   int start = 0;
   int end = xbt_dynar_length(variables) - 1;
-  dw_variable_t var_test = NULL;
+  mc_variable_t var_test = NULL;
 
   while (start <= end) {
     cursor = (start + end) / 2;
     var_test =
-        (dw_variable_t) xbt_dynar_get_as(variables, cursor, dw_variable_t);
-    if (strcmp(var_test->name, var) < 0) {
+        (mc_variable_t) xbt_dynar_get_as(variables, cursor, mc_variable_t);
+    if (strcmp(var_test->name.c_str(), var) < 0) {
       start = cursor + 1;
-    } else if (strcmp(var_test->name, var) > 0) {
+    } else if (strcmp(var_test->name.c_str(), var) > 0) {
       end = cursor - 1;
     } else {
       if (address) {            /* global variable */
@@ -1314,12 +1303,12 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char *var,
     }
   }
 
-  if (strcmp(var_test->name, var) == 0) {
+  if (strcmp(var_test->name.c_str(), var) == 0) {
     if (address && var_test->address < address)
       return cursor + 1;
     else
       return cursor;
-  } else if (strcmp(var_test->name, var) < 0)
+  } else if (strcmp(var_test->name.c_str(), var) < 0)
     return cursor + 1;
   else
     return cursor;
@@ -1327,11 +1316,12 @@ static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char *var,
 }
 
 void MC_dwarf_register_global_variable(mc_object_info_t info,
-                                       dw_variable_t variable)
+                                       mc_variable_t variable)
 {
   int index =
-      MC_dwarf_get_variable_index(info->global_variables, variable->name,
-                                  variable->address);
+      MC_dwarf_get_variable_index(info->global_variables,
+        variable->name.c_str(),
+        variable->address);
   if (index != -1)
     xbt_dynar_insert_at(info->global_variables, index, &variable);
   // TODO, else ?
@@ -1339,18 +1329,19 @@ void MC_dwarf_register_global_variable(mc_object_info_t info,
 
 void MC_dwarf_register_non_global_variable(mc_object_info_t info,
                                            dw_frame_t frame,
-                                           dw_variable_t variable)
+                                           mc_variable_t variable)
 {
   xbt_assert(frame, "Frame is NULL");
   int index =
-      MC_dwarf_get_variable_index(frame->variables, variable->name, NULL);
+      MC_dwarf_get_variable_index(
+        frame->variables, variable->name.c_str(), NULL);
   if (index != -1)
     xbt_dynar_insert_at(frame->variables, index, &variable);
   // TODO, else ?
 }
 
 void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame,
-                                dw_variable_t variable)
+                                mc_variable_t variable)
 {
   if (variable->global)
     MC_dwarf_register_global_variable(info, variable);
