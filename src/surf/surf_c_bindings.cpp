@@ -76,11 +76,11 @@ double surf_solve(double max_date)
   XBT_DEBUG("Looking for next action end for all models except NS3");
   xbt_dynar_foreach(model_list_invoke, iter, model) {
 	  double next_action_end = -1.0;
-	  if (strcmp(model->getName(), "network NS3")) {
-	    XBT_DEBUG("Running for Resource [%s]", model->getName());
+	  if (model->shareResourcesIsIdempotent()) {
+	    XBT_DEBUG("Running for Resource [%s]", typeid(model).name());
 	    next_action_end = model->shareResources(NOW);
 	    XBT_DEBUG("Resource [%s] : next action end = %f",
-	        model->getName(), next_action_end);
+	        typeid(model).name(), next_action_end);
 	  }
 	  if ((surf_min < 0.0 || next_action_end < surf_min)
 			  && next_action_end >= 0.0) {
@@ -97,7 +97,7 @@ double surf_solve(double max_date)
 
     next_event_date = tmgr_history_next_date(history);
 
-    if(!strcmp(surf_network_model->getName(), "network NS3")){
+    if(! surf_network_model->shareResourcesIsIdempotent()){ // NS3, I see you
       if(next_event_date!=-1.0 && surf_min!=-1.0) {
         surf_min = MIN(next_event_date - NOW, surf_min);
       } else{
@@ -186,7 +186,7 @@ void surf_as_cluster_set_backbone(AS_t as, void* backbone){
 }
 
 const char *surf_model_name(surf_model_t model){
-  return model->getName();
+  return typeid(model).name();
 }
 
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){

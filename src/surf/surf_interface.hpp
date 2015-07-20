@@ -211,6 +211,13 @@ public:
   virtual void updateActionsStateLazy(double now, double delta);
   virtual void updateActionsStateFull(double now, double delta);
 
+  /** @brief Returns whether this model have an idempotent shareResource()
+   *
+   * The only model that is not is NS3: computing the next timestamp moves the model up to that point,
+   * so we need to call it only when the next timestamp of other sources is computed.
+   */
+  virtual bool shareResourcesIsIdempotent()=0;
+
 protected:
   ActionLmmListPtr p_modifiedSet;
   lmm_system_t p_maxminSystem;

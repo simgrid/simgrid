@@ -127,7 +127,7 @@ double VMHL13Model::shareResources(double now)
   adjustWeightOfDummyCpuActions();
 
   double min_by_cpu = surf_cpu_model_vm->shareResources(now);
-  double min_by_net = (strcmp(surf_network_model->getName(), "network NS3")) ? surf_network_model->shareResources(now) : -1;
+  double min_by_net = surf_network_model->shareResourcesIsIdempotent() ? surf_network_model->shareResources(now) : -1;
   // Fixme: take storage into account once it's implemented
   double min_by_sto = -1;
 

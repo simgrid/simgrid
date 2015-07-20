@@ -80,6 +80,8 @@ public:
                                         double rate)=0;
 
   virtual Action *communicate(Host *src, Host *dst, double size, double rate)=0;
+
+  bool shareResourcesIsIdempotent() {return true;}
 };
 
 /************

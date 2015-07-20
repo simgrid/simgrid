@@ -69,13 +69,13 @@ double HostCLM03Model::shareResources(double now){
   adjustWeightOfDummyCpuActions();
 
   double min_by_cpu = surf_cpu_model_pm->shareResources(now);
-  double min_by_net = (strcmp(surf_network_model->getName(), "network NS3")) ? surf_network_model->shareResources(now) : -1;
+  double min_by_net = surf_network_model->shareResourcesIsIdempotent() ? surf_network_model->shareResources(now) : -1;
   double min_by_sto = surf_storage_model->shareResources(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
-      this, surf_cpu_model_pm->getName(), min_by_cpu,
-            surf_network_model->getName(), min_by_net,
-            surf_storage_model->getName(), min_by_sto);
+      this, typeid(surf_cpu_model_pm).name(), min_by_cpu,
+	        typeid(surf_network_model).name(), min_by_net,
+			typeid(surf_storage_model).name(), min_by_sto);
 
   double res = max(max(min_by_cpu, min_by_net), min_by_sto);
   if (min_by_cpu >= 0.0 && min_by_cpu < res)

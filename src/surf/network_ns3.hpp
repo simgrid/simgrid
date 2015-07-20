@@ -46,6 +46,7 @@ public:
   double shareResources(double now);
   void updateActionsState(double now, double delta);
   void addTraces(){DIE_IMPOSSIBLE;}
+  bool shareResourcesIsIdempotent() {return false;}
 };
 
 /************

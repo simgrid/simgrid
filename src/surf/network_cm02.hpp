@@ -56,6 +56,7 @@ public:
   void updateActionsStateFull(double now, double delta);
   Action *communicate(RoutingEdge *src, RoutingEdge *dst,
 		                           double size, double rate);
+  bool shareResourcesIsIdempotent() {return true;}
 };
 
 /************

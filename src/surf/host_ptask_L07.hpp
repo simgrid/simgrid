@@ -81,6 +81,8 @@ public:
 
   Action *communicate(RoutingEdge */*src*/, RoutingEdge */*dst*/, double /*size*/, double /*rate*/) {DIE_IMPOSSIBLE;};
   void addTraces() {DIE_IMPOSSIBLE;};
+  bool shareResourcesIsIdempotent() {return true;}
+
   HostL07Model *p_hostModel;
 };
 

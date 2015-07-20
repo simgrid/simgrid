@@ -84,6 +84,8 @@ public:
                                     xbt_dict_t properties,
                                     const char *attach) = 0;
 
+  bool shareResourcesIsIdempotent() {return true;}
+
   xbt_dynar_t p_storageList;
 };
 
