@@ -280,11 +280,10 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
   if (ip < scope->low_pc || ip >= scope->high_pc)
     return;
 
-  unsigned cursor = 0;
-  mc_variable_t current_variable;
-  xbt_dynar_foreach(scope->variables, cursor, current_variable) {
+  for(simgrid::mc::Variable& current_variable :
+      scope->variables) {
 
-    if (!mc_valid_variable(current_variable, scope, (void *) stack_frame->ip))
+    if (!mc_valid_variable(&current_variable, scope, (void *) stack_frame->ip))
       continue;
 
     int region_type;
@@ -297,18 +296,18 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     s_local_variable_t new_var;
     new_var.subprogram = stack_frame->frame;
     new_var.ip = stack_frame->ip;
-    new_var.name = current_variable->name;
-    new_var.type = current_variable->type;
+    new_var.name = current_variable.name;
+    new_var.type = current_variable.type;
     new_var.region = region_type;
     new_var.address = nullptr;
 
-    if (current_variable->address != NULL) {
-      new_var.address = current_variable->address;
-    } else if (!current_variable->location_list.empty()) {
+    if (current_variable.address != NULL) {
+      new_var.address = current_variable.address;
+    } else if (!current_variable.location_list.empty()) {
       s_mc_location_t location;
       mc_dwarf_resolve_locations(
-        &location, &current_variable->location_list,
-        current_variable->object_info,
+        &location, &current_variable.location_list,
+        current_variable.object_info,
         &(stack_frame->unw_cursor),
         (void *) stack_frame->frame_base,
         &mc_model_checker->process(), process_index);
@@ -330,10 +329,9 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
   }
 
   // Recursive processing of nested scopes:
-  mc_frame_t nested_scope = nullptr;
-  xbt_dynar_foreach(scope->scopes, cursor, nested_scope) {
-    mc_fill_local_variables_values(stack_frame, nested_scope, process_index, result);
-  }
+  for(simgrid::mc::Frame& nested_scope : scope->scopes)
+    mc_fill_local_variables_values(
+      stack_frame, &nested_scope, process_index, result);
 }
 
 static std::vector<s_local_variable> MC_get_local_variables_values(

@@ -44,16 +44,15 @@ static mc_frame_t find_function_by_name(
 }
 
 static mc_variable_t find_local_variable(
-    mc_frame_t frame, const char* argument_name) {
-  unsigned int cursor = 0;
-  mc_variable_t variable;
-  xbt_dynar_foreach(frame->variables, cursor, variable)
-    if(argument_name == variable->name)
-      return variable;
+    mc_frame_t frame, const char* argument_name)
+{
+  for (simgrid::mc::Variable& variable : frame->variables)
+    if(argument_name == variable.name)
+      return &variable;
 
-  mc_frame_t scope = nullptr;
-  xbt_dynar_foreach(frame->scopes, cursor, scope) {
-    variable = find_local_variable(scope, argument_name);
+  for (simgrid::mc::Frame& scope : frame->scopes) {
+    simgrid::mc::Variable* variable = find_local_variable(
+      &scope, argument_name);
     if(variable)
       return variable;
   }

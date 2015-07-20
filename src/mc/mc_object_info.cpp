@@ -14,19 +14,6 @@
 namespace simgrid {
 namespace mc {
 
-// Free functions
-
-static void mc_variable_free_voidp(void *t)
-{
-  delete *(simgrid::mc::Variable**)t;
-}
-
-static void mc_frame_free_voipd(void** p)
-{
-  delete *(mc_frame_t**)p;
-  *p = nullptr;
-}
-
 // Type
 
 Type::Type()
@@ -59,19 +46,9 @@ Frame::Frame()
   this->tag = 0;
   this->low_pc = nullptr;
   this->high_pc = nullptr;
-  this->variables = xbt_dynar_new(
-    sizeof(mc_variable_t), mc_variable_free_voidp);
   this->id = 0;
-  this->scopes = xbt_dynar_new(
-    sizeof(mc_frame_t), (void_f_pvoid_t) mc_frame_free_voipd);
   this->abstract_origin_id = 0;
   this->object_info = nullptr;
-}
-
-Frame::~Frame()
-{
-  xbt_dynar_free(&(this->variables));
-  xbt_dynar_free(&(this->scopes));
 }
 
 // ObjectInformations
@@ -96,13 +73,11 @@ mc_frame_t ObjectInformation::find_function(const void *ip) const
   return nullptr;
 }
 
-mc_variable_t ObjectInformation::find_variable(const char* name) const
+simgrid::mc::Variable* ObjectInformation::find_variable(const char* name) const
 {
-  unsigned int cursor = 0;
-  mc_variable_t variable;
-  xbt_dynar_foreach(this->global_variables, cursor, variable)
-    if(variable->name == name)
-      return variable;
+  for (simgrid::mc::Variable& variable : this->global_variables)
+    if(variable.name == name)
+      return &variable;
   return nullptr;
 }
 

@@ -113,7 +113,8 @@ public:
   char *start_ro;
   char *end_ro; // read-only segment
   xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, mc_frame_t>
-  xbt_dynar_t global_variables; // xbt_dynar_t<mc_variable_t>
+  // TODO, remove the mutable (to remove it we'll have to add a lot of const everywhere)
+  mutable std::vector<simgrid::mc::Variable> global_variables;
   xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, mc_type_t>
   xbt_dict_t full_types_by_name; // xbt_dict_t<name, mc_type_t> (full defined type only)
 
@@ -135,7 +136,8 @@ public:
   void* base_address() const;
 
   mc_frame_t find_function(const void *ip) const;
-  mc_variable_t find_variable(const char* name) const;
+  // TODO, should be simgrid::mc::Variable*
+  simgrid::mc::Variable* find_variable(const char* name) const;
 
 };
 
@@ -159,8 +161,6 @@ namespace mc {
 class Variable {
 public:
   Variable();
-  Variable(Variable const&) = delete;
-  Variable& operator=(Variable const&) = delete;
 
   Dwarf_Off dwarf_offset; /* Global offset of the field. */
   int global;
@@ -180,18 +180,15 @@ public:
 class Frame {
 public:
   Frame();
-  ~Frame();
-  Frame(Frame const&) = delete;
-  Frame& operator=(Frame&) = delete;
 
   int tag;
   std::string name;
   void *low_pc;
   void *high_pc;
   simgrid::mc::LocationList frame_base;
-  xbt_dynar_t /* <mc_variable_t> */ variables; /* Cannot use dict, there may be several variables with the same name (in different lexical blocks)*/
+  std::vector<Variable> variables;
   unsigned long int id; /* DWARF offset of the subprogram */
-  xbt_dynar_t /* <mc_frame_t> */ scopes;
+  std::vector<Frame> scopes;
   Dwarf_Off abstract_origin_id;
   mc_object_info_t object_info;
 };

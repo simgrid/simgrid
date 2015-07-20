@@ -294,33 +294,28 @@ static int compare_global_variables(mc_object_info_t object_info,
 
   struct mc_compare_state state;
 
-  xbt_dynar_t variables;
-  int res;
-  unsigned int cursor = 0;
-  mc_variable_t current_var;
+  std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
 
-  variables = object_info->global_variables;
-
-  xbt_dynar_foreach(variables, cursor, current_var) {
+  for (simgrid::mc::Variable& current_var : variables) {
 
     // If the variable is not in this object, skip it:
     // We do not expect to find a pointer to something which is not reachable
     // by the global variables.
-    if ((char *) current_var->address < (char *) object_info->start_rw
-        || (char *) current_var->address > (char *) object_info->end_rw)
+    if ((char *) current_var.address < (char *) object_info->start_rw
+        || (char *) current_var.address > (char *) object_info->end_rw)
       continue;
 
-    mc_type_t bvariable_type = current_var->type;
-    res =
+    mc_type_t bvariable_type = current_var.type;
+    int res =
         compare_areas_with_type(state, process_index,
-                                (char *) current_var->address, snapshot1, r1,
-                                (char *) current_var->address, snapshot2, r2,
+                                (char *) current_var.address, snapshot1, r1,
+                                (char *) current_var.address, snapshot2, r2,
                                 bvariable_type, 0);
     if (res == 1) {
       XBT_TRACE3(mc, global_diff, -1, -1, current_var->name);
       XBT_VERB("Global variable %s (%p) is different between snapshots",
-               current_var->name.c_str(),
-               (char *) current_var->address);
+               current_var.name.c_str(),
+               (char *) current_var.address);
       return 1;
     }
 
