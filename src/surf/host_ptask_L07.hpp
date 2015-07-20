@@ -14,25 +14,14 @@
  ***********/
 
 class HostL07Model;
-typedef HostL07Model *HostL07ModelPtr;
-
 class CpuL07Model;
-typedef CpuL07Model *CpuL07ModelPtr;
-
 class NetworkL07Model;
-typedef NetworkL07Model *NetworkL07ModelPtr;
 
 class HostL07;
-typedef HostL07 *HostL07Ptr;
-
 class CpuL07;
-typedef CpuL07 *CpuL07Ptr;
-
 class LinkL07;
-typedef LinkL07 *LinkL07Ptr;
 
 class HostL07Action;
-typedef HostL07Action *HostL07ActionPtr;
 
 /*********
  * Tools *
@@ -48,23 +37,23 @@ public:
 
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-  HostPtr createHost(const char *name);
-  ActionPtr executeParallelTask(int host_nb,
+  Host *createHost(const char *name);
+  Action *executeParallelTask(int host_nb,
                                         void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate);
-  xbt_dynar_t getRoute(HostPtr src, HostPtr dst);
-  ActionPtr communicate(HostPtr src, HostPtr dst, double size, double rate);
+  xbt_dynar_t getRoute(Host *src, Host *dst);
+  Action *communicate(Host *src, Host *dst, double size, double rate);
   void addTraces();
-  NetworkModelPtr p_networkModel;
+  NetworkModel *p_networkModel;
 };
 
 class CpuL07Model : public CpuModel {
 public:
   CpuL07Model() : CpuModel("cpuL07") {};
   ~CpuL07Model() {surf_cpu_model_pm = NULL;};
-  CpuPtr createCpu(const char *name,  xbt_dynar_t powerPeak,
+  Cpu *createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -72,7 +61,7 @@ public:
                           xbt_dict_t cpu_properties);
   void addTraces() {DIE_IMPOSSIBLE;};
 
-  HostL07ModelPtr p_hostModel;
+  HostL07Model *p_hostModel;
 };
 
 class NetworkL07Model : public NetworkModel {
@@ -90,9 +79,9 @@ public:
 		                                   e_surf_link_sharing_policy_t
 		                                   policy, xbt_dict_t properties);
 
-  ActionPtr communicate(RoutingEdgePtr /*src*/, RoutingEdgePtr /*dst*/, double /*size*/, double /*rate*/) {DIE_IMPOSSIBLE;};
+  Action *communicate(RoutingEdge */*src*/, RoutingEdge */*dst*/, double /*size*/, double /*rate*/) {DIE_IMPOSSIBLE;};
   void addTraces() {DIE_IMPOSSIBLE;};
-  HostL07ModelPtr p_hostModel;
+  HostL07Model *p_hostModel;
 };
 
 /************
@@ -101,12 +90,12 @@ public:
 
 class HostL07 : public Host {
 public:
-  HostL07(HostModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu);
+  HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEdge *netElm, Cpu *cpu);
   //bool isUsed();
   bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {DIE_IMPOSSIBLE;};
-  ActionPtr execute(double size);
-  ActionPtr sleep(double duration);
+  Action *execute(double size);
+  Action *sleep(double duration);
   e_surf_resource_state_t getState();
   double getPowerPeakAt(int pstate_index);
   int getNbPstates();
@@ -120,14 +109,14 @@ class CpuL07 : public Cpu {
   tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_powerEvent;
 public:
-  CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t properties,
+  CpuL07(CpuL07Model *model, const char* name, xbt_dict_t properties,
 		 double power_scale, double power_initial, tmgr_trace_t power_trace,
      int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
   bool isUsed();
   //bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t event_type, double value, double date);
-  CpuActionPtr execute(double /*size*/) {DIE_IMPOSSIBLE;};
-  CpuActionPtr sleep(double /*duration*/) {DIE_IMPOSSIBLE;};
+  CpuAction *execute(double /*size*/) {DIE_IMPOSSIBLE;};
+  CpuAction *sleep(double /*duration*/) {DIE_IMPOSSIBLE;};
 
   double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
   double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
@@ -139,7 +128,7 @@ public:
 
 class LinkL07 : public Link {
 public:
-  LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
+  LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
 		  double bw_initial,
           tmgr_trace_t bw_trace,
           double lat_initial,
@@ -168,15 +157,15 @@ public:
  * Action *
  **********/
 class HostL07Action : public HostAction {
-  friend ActionPtr HostL07::execute(double size);
-  friend ActionPtr HostL07::sleep(double duration);
-  friend ActionPtr HostL07Model::executeParallelTask(int host_nb,
+  friend Action *HostL07::execute(double size);
+  friend Action *HostL07::sleep(double duration);
+  friend Action *HostL07Model::executeParallelTask(int host_nb,
                                                      void **host_list,
                                                    double *flops_amount,
 												   double *bytes_amount,
                                                    double rate);
 public:
-  HostL07Action(ModelPtr model, double cost, bool failed)
+  HostL07Action(Model *model, double cost, bool failed)
   : HostAction(model, cost, failed) {};
  ~HostL07Action();
 
@@ -192,7 +181,7 @@ public:
   double getRemains();
 
   int m_hostNb;
-  HostPtr *p_hostList;
+  Host **p_hostList;
   double *p_computationAmount;
   double *p_communicationAmount;
   double m_latency;

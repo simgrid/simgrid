@@ -87,8 +87,8 @@ void Link::linksExit() {
 surf_callback(void, Link*) networkLinkCreatedCallbacks;
 surf_callback(void, Link*) networkLinkDestructedCallbacks;
 surf_callback(void, Link*, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
-surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
-surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) networkCommunicateCallbacks;
+surf_callback(void, NetworkAction*, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
+surf_callback(void, NetworkAction*, RoutingEdge *src, RoutingEdge *dst, double size, double rate) networkCommunicateCallbacks;
 
 void netlink_parse_init(sg_platf_link_cbarg_t link){
   if (link->policy == SURF_LINK_FULLDUPLEX) {
@@ -130,7 +130,7 @@ void net_add_traces(){
  * Model *
  *********/
 
-NetworkModelPtr surf_network_model = NULL;
+NetworkModel *surf_network_model = NULL;
 
 double NetworkModel::latencyFactor(double /*size*/) {
   return sg_latency_factor;
@@ -146,15 +146,15 @@ double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /
 
 double NetworkModel::shareResourcesFull(double now)
 {
-  NetworkActionPtr action = NULL;
-  ActionListPtr runningActions = surf_network_model->getRunningActionSet();
+  NetworkAction *action = NULL;
+  ActionList *runningActions = surf_network_model->getRunningActionSet();
   double minRes;
 
   minRes = shareResourcesMaxMin(runningActions, surf_network_model->p_maxminSystem, surf_network_model->f_networkSolve);
 
   for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
        ; it != itend ; ++it) {
-      action = static_cast<NetworkActionPtr>(&*it);
+      action = static_cast<NetworkAction*>(&*it);
 #ifdef HAVE_LATENCY_BOUND_TRACKING
     if (lmm_is_variable_limited_by_latency(action->getVariable())) {
       action->m_latencyLimited = 1;
@@ -176,7 +176,7 @@ double NetworkModel::shareResourcesFull(double now)
  * Resource *
  ************/
 
-Link::Link(NetworkModelPtr model, const char *name, xbt_dict_t props)
+Link::Link(NetworkModel *model, const char *name, xbt_dict_t props)
 : Resource(model, name, props)
 , p_latEvent(NULL)
 {
@@ -186,7 +186,7 @@ Link::Link(NetworkModelPtr model, const char *name, xbt_dict_t props)
   XBT_DEBUG("Create link '%s'",name);
 }
 
-Link::Link(NetworkModelPtr model, const char *name, xbt_dict_t props,
+Link::Link(NetworkModel *model, const char *name, xbt_dict_t props,
 		                 lmm_constraint_t constraint,
 	                     tmgr_history_t history,
 	                     tmgr_trace_t state_trace)

@@ -25,7 +25,7 @@ void model_full_end(AS_t _routing)
   sg_platf_route_cbarg_t e_route;
 
   /* set utils vars */
-  AsFullPtr routing = ((AsFullPtr) _routing);
+  AsFull *routing = static_cast<AsFull*>(_routing);
   int table_size = (int)xbt_dynar_length(routing->p_indexNetworkElm);
 
   /* Create table if necessary */
@@ -70,7 +70,7 @@ AsFull::~AsFull(){
 
 xbt_dynar_t AsFull::getOneLinkRoutes()
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free_f);
+  xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
 
   int src, dst;
   int table_size = xbt_dynar_length(p_indexNetworkElm);
@@ -81,11 +81,11 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
       if (route) {
         if (xbt_dynar_length(route->link_list) == 1) {
           void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-          OnelinkPtr onelink;
+          Onelink *onelink;
           if (p_hierarchy == SURF_ROUTING_BASE) {
-        	RoutingEdgePtr tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_routing_edge_t);
+        	RoutingEdge *tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_routing_edge_t);
             tmp_src->setId(src);
-        	RoutingEdgePtr tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_routing_edge_t);
+        	RoutingEdge *tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_routing_edge_t);
         	tmp_dst->setId(dst);
             onelink = new Onelink(link, tmp_src, tmp_dst);
           } else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
@@ -103,7 +103,7 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
   return ret;
 }
 
-void AsFull::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t res, double *lat)
+void AsFull::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t res, double *lat)
 {
   XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]",
       src->getName(),
@@ -145,7 +145,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
   int as_route = 0;
   char *src = (char*)(route->src);
   char *dst = (char*)(route->dst);
-  RoutingEdgePtr src_net_elm, dst_net_elm;
+  RoutingEdge *src_net_elm, *dst_net_elm;
   src_net_elm = sg_routing_edge_by_name_or_null(src);
   dst_net_elm = sg_routing_edge_by_name_or_null(dst);
 

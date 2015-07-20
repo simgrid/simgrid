@@ -13,22 +13,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 int autoload_surf_cpu_model = 1;
 void_f_void_t surf_cpu_model_init_preparse = NULL;
 
-CpuModelPtr surf_cpu_model_pm;
-CpuModelPtr surf_cpu_model_vm;
+CpuModel *surf_cpu_model_pm;
+CpuModel *surf_cpu_model_vm;
 /*************
  * Callbacks *
  *************/
 
-CpuPtr getActionCpu(CpuActionPtr action) {
-  return static_cast<CpuPtr>(lmm_constraint_id(lmm_get_cnst_from_var
+Cpu *getActionCpu(CpuAction *action) {
+  return static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var
 		                	 (action->getModel()->getMaxminSystem(),
 		                	 action->getVariable(), 0)));
 }
 
-surf_callback(void, CpuPtr) cpuCreatedCallbacks;
-surf_callback(void, CpuPtr) cpuDestructedCallbacks;
-surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
-surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
+surf_callback(void, Cpu*) cpuCreatedCallbacks;
+surf_callback(void, Cpu*) cpuDestructedCallbacks;
+surf_callback(void, Cpu*, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
+surf_callback(void, CpuAction*, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
 
 void cpu_parse_init(sg_platf_host_cbarg_t host){
   surf_cpu_model_pm->createCpu(
@@ -52,13 +52,13 @@ void cpu_add_traces(){
  *********/
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
-  CpuActionPtr action;
+  CpuAction *action;
   while ((xbt_heap_size(getActionHeap()) > 0)
          && (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
-    action = static_cast<CpuActionPtr>(xbt_heap_pop(getActionHeap()));
+    action = static_cast<CpuAction*>(xbt_heap_pop(getActionHeap()));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
-      CpuPtr cpu = static_cast<CpuPtr>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
+      Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
       TRACE_surf_host_set_utilization(cpu->getName(), action->getCategory(),
                                       lmm_variable_getvalue(action->getVariable()),
                                       action->getLastUpdate(),
@@ -77,10 +77,10 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     //defining the last timestamp that we can safely dump to trace file
     //without losing the event ascending order (considering all CPU's)
     double smaller = -1;
-    ActionListPtr actionSet = getRunningActionSet();
+    ActionList *actionSet = getRunningActionSet();
     for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
        ; it != itend ; ++it) {
-      action = static_cast<CpuActionPtr>(&*it);
+      action = static_cast<CpuAction*>(&*it);
         if (smaller < 0) {
           smaller = action->getLastUpdate();
           continue;
@@ -98,16 +98,15 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 
 void CpuModel::updateActionsStateFull(double now, double delta)
 {
-  CpuActionPtr action = NULL;
-  ActionListPtr running_actions = getRunningActionSet();
+  CpuAction *action = NULL;
+  ActionList *running_actions = getRunningActionSet();
 
   for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
      ; it != itend ; it=itNext) {
 	++itNext;
-    action = static_cast<CpuActionPtr>(&*it);
+    action = static_cast<CpuAction*>(&*it);
     if (TRACE_is_enabled()) {
-      CpuPtr x = (CpuPtr) lmm_constraint_id(lmm_get_cnst_from_var
-                              (getMaxminSystem(), action->getVariable(), 0));
+      Cpu *x = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
 
       TRACE_surf_host_set_utilization(x->getName(),
                                       action->getCategory(),
@@ -146,7 +145,7 @@ Cpu::Cpu(){
   surf_callback_emit(cpuCreatedCallbacks, this);
 }
 
-Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
+Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
 		 int core, double powerPeak, double powerScale)
  : Resource(model, name, props)
  , m_core(core)
@@ -158,7 +157,7 @@ Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
   surf_callback_emit(cpuCreatedCallbacks, this);
 }
 
-Cpu::Cpu(ModelPtr model, const char *name, xbt_dict_t props,
+Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
 		 lmm_constraint_t constraint, int core, double powerPeak, double powerScale)
  : Resource(model, name, props, constraint)
  , m_core(core)
@@ -246,7 +245,7 @@ void CpuAction::updateRemainingLazy(double now)
     double_update(&(m_remains), m_lastValue * delta, sg_maxmin_precision*sg_surf_precision);
 
     if (TRACE_is_enabled()) {
-      CpuPtr cpu = static_cast<CpuPtr>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
+      Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
       TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, m_remains);
@@ -276,7 +275,7 @@ void CpuAction::updateRemainingLazy(double now)
  * action object does not have the information about the location where the
  * action is being executed.
  */
-void CpuAction::setAffinity(CpuPtr cpu, unsigned long mask)
+void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
 {
   lmm_variable_t var_obj = getVariable();
   XBT_IN("(%p,%lx)", this, mask);

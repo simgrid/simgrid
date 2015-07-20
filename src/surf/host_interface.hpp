@@ -17,13 +17,8 @@
  ***********/
 
 class HostModel;
-typedef HostModel *HostModelPtr;
-
 class Host;
-typedef Host *HostPtr;
-
 class HostAction;
-typedef HostAction *HostActionPtr;
 
 /*************
  * Callbacks *
@@ -33,30 +28,30 @@ typedef HostAction *HostActionPtr;
  * @brief Callbacks handler which emit the callbacks after Host creation *
  * @details Callback functions have the following signature: `void(HostPtr)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, HostPtr)) hostCreatedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, Host*)) hostCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Host destruction *
  * @details Callback functions have the following signature: `void(HostPtr)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, HostPtr)) hostDestructedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, Host*)) hostDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Host State changed *
- * @details Callback functions have the following signature: `void(HostActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @details Callback functions have the following signature: `void(HostAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, HostPtr, e_surf_resource_state_t, e_surf_resource_state_t)) hostStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, Host*, e_surf_resource_state_t, e_surf_resource_state_t)) hostStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after HostAction State changed *
- * @details Callback functions have the following signature: `void(HostActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @details Callback functions have the following signature: `void(HostAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, HostActionPtr, e_surf_action_state_t, e_surf_action_state_t)) hostActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, HostAction*, e_surf_action_state_t, e_surf_action_state_t)) hostActionStateChangedCallbacks;
 
 /*********
  * Tools *
  *********/
-XBT_PUBLIC_DATA(HostModelPtr) surf_host_model;
+XBT_PUBLIC_DATA(HostModel*) surf_host_model;
 XBT_PUBLIC(void) host_parse_init(sg_platf_host_cbarg_t host);
 XBT_PUBLIC(void) host_add_traces();
 
@@ -82,7 +77,7 @@ public:
   /** @brief HostModel destructor */
   ~HostModel();
 
-  virtual HostPtr createHost(const char *name)=0;
+  virtual Host *createHost(const char *name)=0;
   void addTraces(){DIE_IMPOSSIBLE;}
 
   /**
@@ -102,7 +97,7 @@ public:
    * @param rate [description]
    * @return [description]
    */
-  virtual ActionPtr executeParallelTask(int host_nb,
+  virtual Action *executeParallelTask(int host_nb,
                                         void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
@@ -118,9 +113,9 @@ public:
   * @param rate [description]
   * @return [description]
   */
- virtual ActionPtr communicate(HostPtr src, HostPtr dst, double size, double rate)=0;
+ virtual Action *communicate(Host *src, Host *dst, double size, double rate)=0;
 
- CpuModelPtr p_cpuModel;
+ CpuModel *p_cpuModel;
 };
 
 /************
@@ -142,8 +137,8 @@ public:
    * @param netElm The RoutingEdge associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  Host(ModelPtr model, const char *name, xbt_dict_t props,
-		      xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
+  Host(Model *model, const char *name, xbt_dict_t props,
+		      xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu);
 
   /**
    * @brief Host constructor
@@ -156,9 +151,9 @@ public:
    * @param netElm The RoutingEdge associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  Host(ModelPtr model, const char *name, xbt_dict_t props,
-      lmm_constraint_t constraint, xbt_dynar_t storage, RoutingEdgePtr netElm,
-      CpuPtr cpu);
+  Host(Model *model, const char *name, xbt_dict_t props,
+      lmm_constraint_t constraint, xbt_dynar_t storage, RoutingEdge *netElm,
+      Cpu *cpu);
 
   /** @brief Host destructor */
   ~ Host();
@@ -179,7 +174,7 @@ public:
    * @return The CpuAction corresponding to the processing
    * @see Cpu
    */
-  virtual ActionPtr execute(double flops_amount)=0;
+  virtual Action *execute(double flops_amount)=0;
 
   /**
    * @brief Make a process sleep for duration seconds
@@ -188,7 +183,7 @@ public:
    * @return The CpuAction corresponding to the sleeping
    * @see Cpu
    */
-  virtual ActionPtr sleep(double duration)=0;
+  virtual Action *sleep(double duration)=0;
 
   /**
    * @brief Get the number of cores of the associated Cpu
@@ -235,7 +230,7 @@ public:
    * @param storage The mount point
    * @return The corresponding Storage
    */
-  virtual StoragePtr findStorageOnMountList(const char* storage);
+  virtual Storage *findStorageOnMountList(const char* storage);
 
   /**
    * @brief Get the xbt_dict_t of mount_point: Storage
@@ -258,7 +253,7 @@ public:
    *
    * @return The StorageAction corresponding to the opening
    */
-  virtual ActionPtr open(const char* fullpath);
+  virtual Action *open(const char* fullpath);
 
   /**
    * @brief Close a file
@@ -266,7 +261,7 @@ public:
    * @param fd The file descriptor to close
    * @return The StorageAction corresponding to the closing
    */
-  virtual ActionPtr close(surf_file_t fd);
+  virtual Action *close(surf_file_t fd);
 
   /**
    * @brief Unlink a file
@@ -292,7 +287,7 @@ public:
    * @param size The size in bytes to read
    * @return The StorageAction corresponding to the reading
    */
-  virtual ActionPtr read(surf_file_t fd, sg_size_t size);
+  virtual Action *read(surf_file_t fd, sg_size_t size);
 
   /**
    * @brief Write a file
@@ -301,7 +296,7 @@ public:
    * @param size The size in bytes to write
    * @return The StorageAction corresponding to the writing
    */
-  virtual ActionPtr write(surf_file_t fd, sg_size_t size);
+  virtual Action *write(surf_file_t fd, sg_size_t size);
 
   /**
    * @brief Get the informations of a file descriptor
@@ -351,8 +346,8 @@ public:
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
   xbt_dynar_t p_storage;
-  RoutingEdgePtr p_netElm;
-  CpuPtr p_cpu;
+  RoutingEdge *p_netElm;
+  Cpu *p_cpu;
 
   /**
    * @brief Get the list of virtual machines on the current Host
@@ -396,7 +391,7 @@ public:
    * @param cost The cost of this HostAction in [TODO]
    * @param failed [description]
    */
-  HostAction(ModelPtr model, double cost, bool failed)
+  HostAction(Model *model, double cost, bool failed)
   : Action(model, cost, failed) {}
 
   /**
@@ -407,7 +402,7 @@ public:
    * @param failed [description]
    * @param var The lmm variable associated to this StorageAction if it is part of a LMM component
    */
-  HostAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+  HostAction(Model *model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {}
 
   void setState(e_surf_action_state_t state);

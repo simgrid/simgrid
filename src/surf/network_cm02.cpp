@@ -54,7 +54,7 @@ void surf_network_model_init_LegrandVelho(void)
 
   surf_network_model = new NetworkCm02Model();
   net_define_callbacks();
-  ModelPtr model = surf_network_model;
+  Model *model = surf_network_model;
   xbt_dynar_push(model_list, &model);
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor",
@@ -83,7 +83,7 @@ void surf_network_model_init_CM02(void)
 
   surf_network_model = new NetworkCm02Model();
   net_define_callbacks();
-  ModelPtr model = surf_network_model;
+  Model *model = surf_network_model;
   xbt_dynar_push(model_list, &model);
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 1.0);
@@ -109,7 +109,7 @@ void surf_network_model_init_Reno(void)
 
   surf_network_model = new NetworkCm02Model();
   net_define_callbacks();
-  ModelPtr model = surf_network_model;
+  Model *model = surf_network_model;
   xbt_dynar_push(model_list, &model);
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
                                     func_reno_fpi);
@@ -129,7 +129,7 @@ void surf_network_model_init_Reno2(void)
 
   surf_network_model = new NetworkCm02Model();
   net_define_callbacks();
-  ModelPtr model = surf_network_model;
+  Model *model = surf_network_model;
   xbt_dynar_push(model_list, &model);
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp,
                                     func_reno2_fpi);
@@ -149,7 +149,7 @@ void surf_network_model_init_Vegas(void)
 
   surf_network_model = new NetworkCm02Model();
   net_define_callbacks();
-  ModelPtr model = surf_network_model;
+  Model *model = surf_network_model;
   xbt_dynar_push(model_list, &model);
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
                                     func_vegas_fpi);
@@ -220,10 +220,10 @@ Link* NetworkCm02Model::createLink(const char *name,
 
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
-  NetworkCm02ActionPtr action;
+  NetworkCm02Action *action;
   while ((xbt_heap_size(p_actionHeap) > 0)
          && (double_equals(xbt_heap_maxkey(p_actionHeap), now, sg_surf_precision))) {
-    action = (NetworkCm02ActionPtr) xbt_heap_pop(p_actionHeap);
+    action = static_cast<NetworkCm02Action*> (xbt_heap_pop(p_actionHeap));
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       int n = lmm_get_number_of_cnst_from_var(p_maxminSystem, action->getVariable());
@@ -271,14 +271,14 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 
 void NetworkCm02Model::updateActionsStateFull(double now, double delta)
 {
-  NetworkCm02ActionPtr action;
-  ActionListPtr running_actions = getRunningActionSet();
+  NetworkCm02Action *action;
+  ActionList *running_actions = getRunningActionSet();
 
   for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
      ; it != itend ; it=itNext) {
 	++itNext;
 
-    action = (NetworkCm02ActionPtr) &*it;
+    action = static_cast<NetworkCm02Action*> (&*it);
     XBT_DEBUG("Something happened to action %p", action);
       double deltap = delta;
       if (action->m_latency > 0) {
@@ -339,20 +339,20 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
   return;
 }
 
-ActionPtr NetworkCm02Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+Action *NetworkCm02Model::communicate(RoutingEdge *src, RoutingEdge *dst,
                                                 double size, double rate)
 {
   unsigned int i;
   void *_link;
   NetworkCm02Link *link;
   int failed = 0;
-  NetworkCm02ActionPtr action = NULL;
+  NetworkCm02Action *action = NULL;
   double bandwidth_bound;
   double latency = 0.0;
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
 
-  xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdgePtr), NULL);
+  xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdge*), NULL);
 
   XBT_IN("(%s,%s,%g,%g)", src->getName(), dst->getName(), size, rate);
 
@@ -515,7 +515,7 @@ void NetworkCm02Model::addTraces(){
 /************
  * Resource *
  ************/
-NetworkCm02Link::NetworkCm02Link(NetworkCm02ModelPtr model, const char *name, xbt_dict_t props,
+NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
 	                           lmm_system_t system,
 	                           double constraint_value,
 	                           tmgr_history_t history,
@@ -572,7 +572,7 @@ void NetworkCm02Link::updateState(tmgr_trace_event_t event_type,
 
       setState(SURF_RESOURCE_OFF);
       while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
-        ActionPtr action = (ActionPtr) lmm_variable_id(var);
+        Action *action = static_cast<Action*>( lmm_variable_id(var) );
 
         if (action->getState() == SURF_ACTION_RUNNING ||
             action->getState() == SURF_ACTION_READY) {
@@ -602,7 +602,7 @@ void NetworkCm02Link::updateBandwidth(double value, double date){
   lmm_element_t nextelem = NULL;
   int numelem = 0;
 
-  NetworkCm02ActionPtr action = NULL;
+  NetworkCm02Action *action = NULL;
 
   p_power.peak = value;
   lmm_update_constraint_bound(getModel()->getMaxminSystem(),
@@ -612,7 +612,7 @@ void NetworkCm02Link::updateBandwidth(double value, double date){
   TRACE_surf_link_set_bandwidth(date, getName(), sg_bandwidth_factor * p_power.peak * p_power.scale);
   if (sg_weight_S_parameter > 0) {
     while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
-      action = (NetworkCm02ActionPtr) lmm_variable_id(var);
+      action = (NetworkCm02Action*) lmm_variable_id(var);
       action->m_weight += delta;
       if (!action->isSuspended())
         lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), action->m_weight);
@@ -626,11 +626,11 @@ void NetworkCm02Link::updateLatency(double value, double date){
   lmm_element_t elem = NULL;
   lmm_element_t nextelem = NULL;
   int numelem = 0;
-  NetworkCm02ActionPtr action = NULL;
+  NetworkCm02Action *action = NULL;
 
   m_latCurrent = value;
   while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
-    action = (NetworkCm02ActionPtr) lmm_variable_id(var);
+    action = (NetworkCm02Action*) lmm_variable_id(var);
     action->m_latCurrent += delta;
     action->m_weight += delta;
     if (action->m_rate < 0)

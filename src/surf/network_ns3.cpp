@@ -198,7 +198,7 @@ static void create_ns3_topology(void)
     xbt_die("There is no routes!");
   XBT_DEBUG("Have get_onelink_routes, found %ld routes",onelink_routes->used);
   //save them in trace file
-  OnelinkPtr onelink;
+  Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
     char *src = onelink->p_src->getName();
@@ -308,7 +308,7 @@ Link* NetworkNS3Model::createLink(const char *name,
   return new NetworkNS3Link(this, name, properties, bw_initial, lat_initial);
 }
 
-xbt_dynar_t NetworkNS3Model::getRoute(RoutingEdgePtr src, RoutingEdgePtr dst)
+xbt_dynar_t NetworkNS3Model::getRoute(RoutingEdge *src, RoutingEdge *dst)
 {
   xbt_dynar_t route = NULL;
   routing_get_route_and_latency(src, dst, &route, NULL);
@@ -316,11 +316,11 @@ xbt_dynar_t NetworkNS3Model::getRoute(RoutingEdgePtr src, RoutingEdgePtr dst)
   return route;
 }
 
-ActionPtr NetworkNS3Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+Action *NetworkNS3Model::communicate(RoutingEdge *src, RoutingEdge *dst,
 		                               double size, double rate)
 {
   XBT_DEBUG("Communicate from %s to %s", src->getName(), dst->getName());
-  NetworkNS3ActionPtr action = new NetworkNS3Action(this, size, 0);
+  NetworkNS3Action *action = new NetworkNS3Action(this, size, 0);
 
   ns3_create_flow(src->getName(), dst->getName(), surf_get_clock(), size, action);
 
@@ -370,9 +370,9 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     return;
   }
 
-  NetworkNS3ActionPtr action;
+  NetworkNS3Action *action;
   xbt_dict_foreach(dict_socket,cursor,key,data){
-    action = static_cast<NetworkNS3ActionPtr>(ns3_get_socket_action(data));
+    action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
     XBT_DEBUG("Processing socket %p (action %p)",data,action);
     action->setRemains(action->getCost() - ns3_get_socket_sent(data));
 
@@ -386,7 +386,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     	routing_get_route_and_latency (action->p_srcElm, action->p_dstElm, &route, NULL);
     	unsigned int i;
     	for (i = 0; i < xbt_dynar_length (route); i++){
-    		NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr (route, i));
+    		NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr(route, i));
     		TRACE_surf_link_set_utilization (link->getName(),
     				action->getCategory(),
 					(data_delta_sent)/delta,
@@ -408,7 +408,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     xbt_dynar_pop(socket_to_destroy,&key);
 
     void *data = xbt_dict_get (dict_socket, key);
-    action = static_cast<NetworkNS3ActionPtr>(ns3_get_socket_action(data));
+    action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
     XBT_DEBUG ("Removing socket %p of action %p", key, action);
     xbt_dict_remove(dict_socket, key);
   }
@@ -419,7 +419,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
  * Resource *
  ************/
 
-NetworkNS3Link::NetworkNS3Link(NetworkNS3ModelPtr model, const char *name, xbt_dict_t props,
+NetworkNS3Link::NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props,
 		                       double bw_initial, double lat_initial)
  : Link(model, name, props)
  , p_lat(bprintf("%f", lat_initial))
@@ -441,7 +441,7 @@ void NetworkNS3Link::updateState(tmgr_trace_event_t event_type, double value, do
  * Action *
  **********/
 
-NetworkNS3Action::NetworkNS3Action(ModelPtr model, double cost, bool failed)
+NetworkNS3Action::NetworkNS3Action(Model *model, double cost, bool failed)
 : NetworkAction(model, cost, failed)
 {}
 

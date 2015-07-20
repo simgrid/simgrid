@@ -121,7 +121,7 @@ JAVA_ARRAYSOFCLASSES(Action);
   jlong *elts = jenv->GetLongArrayElements($result, NULL);
   l = 0;
   for(ActionList::iterator it($1->begin()), itend($1->end()); it != itend ; ++it) {
-    elts[l++] = (jlong)static_cast<ActionPtr>(&*it);
+    elts[l++] = (jlong)static_cast<Action*>(&*it);
   }
   jenv->ReleaseLongArrayElements($result, elts, 0);
 }

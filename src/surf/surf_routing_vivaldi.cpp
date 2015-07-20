@@ -23,7 +23,7 @@ AS_t model_vivaldi_create(void)
   return new AsVivaldi();
 }
 
-void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat)
+void AsVivaldi::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
 
@@ -101,7 +101,7 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
   }
 }
 
-int AsVivaldi::parsePU(RoutingEdgePtr elm) {
+int AsVivaldi::parsePU(RoutingEdge *elm) {
   XBT_DEBUG("Load process unit \"%s\"", elm->getName());
   xbt_dynar_push_as(p_indexNetworkElm, sg_routing_edge_t, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;

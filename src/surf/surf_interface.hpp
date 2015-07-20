@@ -68,15 +68,6 @@ int __surf_is_absolute_file_path(const char *file_path);
 /***********
  * Classes *
  ***********/
-//class Model;
-typedef Model* ModelPtr;
-
-//class Resource;
-typedef Resource* ResourcePtr;
-
-//class Action;
-typedef Action* ActionPtr;
-
 typedef boost::intrusive::list<Action> ActionList;
 typedef ActionList* ActionListPtr;
 typedef boost::intrusive::list_base_hook<> actionHook;
@@ -267,7 +258,7 @@ public:
    * @param name The name of the Resource
    * @param props Dictionary of properties associated to this Resource
    */
-  Resource(ModelPtr model, const char *name, xbt_dict_t props);
+  Resource(Model *model, const char *name, xbt_dict_t props);
 
   /**
    * @brief Resource constructor
@@ -277,7 +268,7 @@ public:
    * @param props Dictionary of properties associated to this Resource
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
-  Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
+  Resource(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
   /**
    * @brief Resource constructor
    *
@@ -286,7 +277,7 @@ public:
    * @param props Dictionary of properties associated to this Resource
    * @param stateInit the initial state of the Resource
    */
-  Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
+  Resource(Model *model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
 
   /**
    * @brief Resource destructor
@@ -298,7 +289,7 @@ public:
    *
    * @return The Model of the current Resource
    */
-  ModelPtr getModel();
+  Model *getModel();
 
   /**
    * @brief Get the name of the current Resource
@@ -364,7 +355,7 @@ public:
 private:
   const char *p_name;
   xbt_dict_t p_properties;
-  ModelPtr p_model;
+  Model *p_model;
   bool m_running;
   e_surf_resource_state_t m_stateCurrent;
 
@@ -394,7 +385,7 @@ private:
   /**
    * @brief Common initializations for the constructors
    */
-  void initialize(ModelPtr model, double cost, bool failed,
+  void initialize(Model *model, double cost, bool failed,
                   lmm_variable_t var = NULL);
 
 public:
@@ -405,7 +396,7 @@ public:
    * @param cost The cost of the Action
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    */
-  Action(ModelPtr model, double cost, bool failed);
+  Action(Model *model, double cost, bool failed);
 
   /**
    * @brief Action constructor
@@ -415,7 +406,7 @@ public:
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  Action(ModelPtr model, double cost, bool failed, lmm_variable_t var);
+  Action(Model *model, double cost, bool failed, lmm_variable_t var);
 
   /**
    * @brief Action destructor
@@ -630,7 +621,7 @@ public:
 
   s_xbt_swag_hookup_t p_stateHookup;
 
-  ModelPtr getModel() {return p_model;}
+  Model *getModel() {return p_model;}
 
 protected:
   ActionListPtr p_stateSet;
@@ -649,7 +640,7 @@ private:
   int m_latencyLimited;               /**< Set to 1 if is limited by latency, 0 otherwise */
   #endif
   double    m_cost;
-  ModelPtr p_model;
+  Model *p_model;
   void *p_data; /**< for your convenience */
 
   /* LMM */

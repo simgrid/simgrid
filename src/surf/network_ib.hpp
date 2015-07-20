@@ -15,7 +15,7 @@ class ActiveComm{
 public :
   //IBNode* origin;
   IBNode* destination;
-  NetworkActionPtr action;
+  NetworkAction *action;
   double init_rate;
   ActiveComm() : destination(NULL),action(NULL),init_rate(-1){};
   ~ActiveComm(){};
@@ -42,10 +42,10 @@ public:
   NetworkIBModel();
   NetworkIBModel(const char *name);
   ~NetworkIBModel();
-  void updateIBfactors(NetworkActionPtr action, IBNode *from, IBNode * to, int remove);
+  void updateIBfactors(NetworkAction *action, IBNode *from, IBNode * to, int remove);
   
   xbt_dict_t active_nodes;
-  std::map<NetworkActionPtr , std::pair<IBNode*,IBNode*> > active_comms;
+  std::map<NetworkAction *, std::pair<IBNode*,IBNode*> > active_comms;
   
   double Bs;
   double Be;

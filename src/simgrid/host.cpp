@@ -52,10 +52,10 @@ int SURF_CPU_LEVEL;
 #include "surf/surf_routing.hpp"
 
 static XBT_INLINE void surf_cpu_free(void *r) {
-  delete static_cast<CpuPtr>(r);
+  delete static_cast<Cpu*>(r);
 }
 static XBT_INLINE void routing_asr_host_free(void *p) {
-  delete static_cast<RoutingEdgePtr>(p);
+  delete static_cast<RoutingEdge*>(p);
 }
 
 
@@ -111,10 +111,10 @@ void sg_host_surfcpu_destroy(sg_host_t host) {
 	xbt_lib_unset(host_lib,host->key,SURF_CPU_LEVEL,1);
 }
 // ========== RoutingEdge ============
-RoutingEdgePtr sg_host_edge(sg_host_t host) {
-	return (RoutingEdgePtr) xbt_lib_get_level(host, ROUTING_HOST_LEVEL);
+RoutingEdge *sg_host_edge(sg_host_t host) {
+	return (RoutingEdge*) xbt_lib_get_level(host, ROUTING_HOST_LEVEL);
 }
-void sg_host_edge_set(sg_host_t host, RoutingEdgePtr edge) {
+void sg_host_edge_set(sg_host_t host, RoutingEdge *edge) {
 	xbt_lib_set(host_lib, host->key, ROUTING_HOST_LEVEL, edge);
 }
 void sg_host_edge_destroy(sg_host_t host, int do_callback) {

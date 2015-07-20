@@ -14,10 +14,7 @@
  * Classes *
  ***********/
 class NetworkNS3Model;
-typedef NetworkNS3Model *NetworkNS3ModelPtr;
-
 class NetworkNS3Action;
-typedef NetworkNS3Action *NetworkNS3ActionPtr;
 
 /*********
  * Tools *
@@ -43,8 +40,8 @@ public:
   	                                 tmgr_trace_t state_trace,
   	                                 e_surf_link_sharing_policy_t policy,
   	                                 xbt_dict_t properties);
-  xbt_dynar_t getRoute(RoutingEdgePtr src, RoutingEdgePtr dst);
-  ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+  xbt_dynar_t getRoute(RoutingEdge *src, RoutingEdge *dst);
+  Action *communicate(RoutingEdge *src, RoutingEdge *dst,
 		                           double size, double rate);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
@@ -56,7 +53,7 @@ public:
  ************/
 class NetworkNS3Link : public Link {
 public:
-  NetworkNS3Link(NetworkNS3ModelPtr model, const char *name, xbt_dict_t props,
+  NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props,
   		         double bw_initial, double lat_initial);
   ~NetworkNS3Link();
 
@@ -78,7 +75,7 @@ public:
  **********/
 class NetworkNS3Action : public NetworkAction {
 public:
-  NetworkNS3Action(ModelPtr model, double cost, bool failed);
+  NetworkNS3Action(Model *model, double cost, bool failed);
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
   int getLatencyLimited();
@@ -91,8 +88,8 @@ void resume();
 
 //private:
   double m_lastSent;
-  RoutingEdgePtr p_srcElm;
-  RoutingEdgePtr p_dstElm;
+  RoutingEdge *p_srcElm;
+  RoutingEdge *p_dstElm;
 };
 
 

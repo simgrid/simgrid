@@ -19,10 +19,7 @@
  * Classes *
  ***********/
 class NetworkModel;
-typedef NetworkModel *NetworkModelPtr;
-
 class NetworkAction;
-typedef NetworkAction *NetworkActionPtr;
 
 /*************
  * Callbacks *
@@ -42,21 +39,21 @@ XBT_PUBLIC_DATA( surf_callback(void, Link*)) networkLinkDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after Link State changed
- * @details Callback functions have the following signature: `void(LinkActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @details Callback functions have the following signature: `void(LinkAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
 XBT_PUBLIC_DATA( surf_callback(void, Link*, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after NetworkAction State changed
- * @details Callback functions have the following signature: `void(NetworkActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
+ * @details Callback functions have the following signature: `void(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t)) networkActionStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)) networkActionStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after communication created
- * @details Callback functions have the following signature: `void(NetworkActionPtr action, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate)`
+ * @details Callback functions have the following signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate)) networkCommunicateCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, NetworkAction*, RoutingEdge *src, RoutingEdge *dst, double size, double rate)) networkCommunicateCallbacks;
 
 /*********
  * Tools *
@@ -118,7 +115,7 @@ public:
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties)=0;
 
-  virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkActionPtr /*action*/) {};
+  virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction */*action*/) {};
 
   /**
    * @brief Create a communication between two hosts.
@@ -132,7 +129,7 @@ public:
    * unlimited.
    * @return The action representing the communication
    */
-  virtual ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+  virtual Action *communicate(RoutingEdge *src, RoutingEdge *dst,
 		                           double size, double rate)=0;
 
   /**
@@ -196,7 +193,7 @@ public:
    * @param name The name of the Link
    * @param props Dictionary of properties associated to this Link
    */
-  Link(NetworkModelPtr model, const char *name, xbt_dict_t props);
+  Link(NetworkModel *model, const char *name, xbt_dict_t props);
 
   /**
    * @brief Link constructor
@@ -208,7 +205,7 @@ public:
    * @param history [TODO]
    * @param state_trace [TODO]
    */
-  Link(NetworkModelPtr model, const char *name, xbt_dict_t props,
+  Link(NetworkModel *model, const char *name, xbt_dict_t props,
               lmm_constraint_t constraint,
               tmgr_history_t history,
               tmgr_trace_t state_trace);
@@ -282,7 +279,7 @@ public:
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]
    */
-  NetworkAction(ModelPtr model, double cost, bool failed)
+  NetworkAction(Model *model, double cost, bool failed)
   : Action(model, cost, failed) {}
 
   /**
@@ -294,7 +291,7 @@ public:
    * @param var The lmm variable associated to this Action if it is part of a
    * LMM component
    */
-  NetworkAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+  NetworkAction(Model *model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {};
 
   void setState(e_surf_action_state_t state);

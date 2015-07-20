@@ -14,44 +14,38 @@
  * Classes *
  ***********/
 class CpuModel;
-typedef CpuModel *CpuModelPtr;
-
 class Cpu;
-
 class CpuAction;
-typedef CpuAction *CpuActionPtr;
-
 class CpuPlugin;
-typedef CpuPlugin *CpuPluginPtr;
 
 /*************
  * Callbacks *
  *************/
-XBT_PUBLIC(CpuPtr) getActionCpu(CpuActionPtr action);
+XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu creation *
  * @details Callback functions have the following signature: `void(CpuPtr)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, CpuPtr)) cpuCreatedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, Cpu*)) cpuCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu destruction *
  * @details Callback functions have the following signature: `void(CpuPtr)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, CpuPtr)) cpuDestructedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, Cpu*)) cpuDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Cpu State changed *
- * @details Callback functions have the following signature: `void(CpuActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @details Callback functions have the following signature: `void(CpuAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_resource_state_t)) cpuStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, Cpu*, e_surf_resource_state_t, e_surf_resource_state_t)) cpuStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after CpuAction State changed *
- * @details Callback functions have the following signature: `void(CpuActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
+ * @details Callback functions have the following signature: `void(CpuAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t)) cpuActionStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, CpuAction*, e_surf_action_state_t, e_surf_action_state_t)) cpuActionStateChangedCallbacks;
 
 XBT_PUBLIC(void) cpu_parse_init(sg_platf_host_cbarg_t host);
 
@@ -87,7 +81,7 @@ public:
    * @param state_trace [TODO]
    * @param cpu_properties Dictionary of properties associated to this Cpu
    */
-  virtual CpuPtr createCpu(const char *name, xbt_dynar_t power_peak,
+  virtual Cpu *createCpu(const char *name, xbt_dynar_t power_peak,
                       int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -124,7 +118,7 @@ public:
    * @param powerPeak The power peak of this Cpu
    * @param powerScale The power scale of this Cpu
    */
-  Cpu(ModelPtr model, const char *name, xbt_dict_t props,
+  Cpu(Model *model, const char *name, xbt_dict_t props,
 	  lmm_constraint_t constraint, int core, double powerPeak, double powerScale);
 
   /**
@@ -137,7 +131,7 @@ public:
    * @param powerPeak The power peak of this Cpu in [TODO]
    * @param powerScale The power scale of this Cpu in [TODO]
    */
-  Cpu(ModelPtr model, const char *name, xbt_dict_t props,
+  Cpu(Model *model, const char *name, xbt_dict_t props,
 	  int core, double powerPeak, double powerScale);
 
   /**
@@ -151,7 +145,7 @@ public:
    * @param size The value of the processing amount (in flop) needed to process
    * @return The CpuAction corresponding to the processing
    */
-  virtual CpuActionPtr execute(double size)=0;
+  virtual CpuAction *execute(double size)=0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)
@@ -159,7 +153,7 @@ public:
    * @param duration The number of seconds to sleep
    * @return The CpuAction corresponding to the sleeping
    */
-  virtual CpuActionPtr sleep(double duration)=0;
+  virtual CpuAction *sleep(double duration)=0;
 
   /**
    * @brief Get the number of cores of the current Cpu
@@ -222,7 +216,7 @@ public:
  * @details A CpuAction represent the execution of code on a Cpu
  */
 XBT_PUBLIC_CLASS CpuAction : public Action {
-friend XBT_PUBLIC(CpuPtr) getActionCpu(CpuActionPtr action);
+friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 public:
   /**
    * @brief CpuAction constructor
@@ -231,7 +225,7 @@ public:
    * @param cost [TODO]
    * @param failed [TODO]
    */
-  CpuAction(ModelPtr model, double cost, bool failed)
+  CpuAction(Model *model, double cost, bool failed)
     : Action(model, cost, failed) {} //FIXME:REMOVE
 
   /**
@@ -242,7 +236,7 @@ public:
    * @param failed [TODO]
    * @param var The lmm variable associated to this CpuAction if it is part of a LMM component
    */
-  CpuAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+  CpuAction(Model *model, double cost, bool failed, lmm_variable_t var)
     : Action(model, cost, failed, var) {}
 
   /**
@@ -252,7 +246,7 @@ public:
    * @param cpu [TODO]
    * @param mask [TODO]
    */
-  virtual void setAffinity(CpuPtr cpu, unsigned long mask);
+  virtual void setAffinity(Cpu *cpu, unsigned long mask);
 
   void setState(e_surf_action_state_t state);
 

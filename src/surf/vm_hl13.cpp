@@ -12,7 +12,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm);
 void surf_vm_model_init_HL13(void){
   if (surf_cpu_model_vm) {
     surf_vm_model = new VMHL13Model();
-    ModelPtr model = surf_vm_model;
+    Model *model = surf_vm_model;
 
     xbt_dynar_push(model_list, &model);
     xbt_dynar_push(model_list_invoke, &model);
@@ -31,16 +31,16 @@ void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/){
   return;
 }
 
-ActionPtr VMHL13Model::communicate(HostPtr src, HostPtr dst, double size, double rate){
+Action *VMHL13Model::communicate(Host *src, Host *dst, double size, double rate){
   return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
 }
 
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
  * structure (i.e not on the surf_resource_private infos) */
 
-VMPtr VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
+VM *VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
 {
-  VMHL13Ptr ws = new VMHL13(this, name, NULL, host_PM);
+  VMHL13 *ws = new VMHL13(this, name, NULL, host_PM);
 
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, ws);
 
@@ -50,7 +50,7 @@ VMPtr VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
   return ws;
 }
 
-static inline double get_solved_value(CpuActionPtr cpu_action)
+static inline double get_solved_value(CpuAction *cpu_action)
 {
   return cpu_action->getVariable()->value;
 }
@@ -70,8 +70,8 @@ double VMHL13Model::shareResources(double now)
   /* 0. Make sure that we already calculated the resource share at the physical
    * machine layer. */
   {
-    _XBT_GNUC_UNUSED ModelPtr ws_model = surf_host_model;
-    _XBT_GNUC_UNUSED ModelPtr vm_ws_model = surf_vm_model;
+    _XBT_GNUC_UNUSED Model *ws_model = surf_host_model;
+    _XBT_GNUC_UNUSED Model *vm_ws_model = surf_vm_model;
     _XBT_GNUC_UNUSED unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &ws_model);
     _XBT_GNUC_UNUSED unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &vm_ws_model);
     xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_host_model comes before");
@@ -111,8 +111,8 @@ double VMHL13Model::shareResources(double now)
          VMModel::ws_vms.begin();
        iter !=  VMModel::ws_vms.end(); ++iter) {
 
-    VMPtr ws_vm = &*iter;
-    CpuPtr cpu = ws_vm->p_cpu;
+    VM *ws_vm = &*iter;
+    Cpu *cpu = ws_vm->p_cpu;
     xbt_assert(cpu, "cpu-less host");
 
     double solved_value = get_solved_value(ws_vm->p_action);
@@ -158,7 +158,7 @@ double VMHL13Model::shareResources(double now)
 
     {
 #if 0
-      VM2013Ptr ws_vm2013 = static_cast<VM2013Ptr>(&*iter);
+      VM2013 *ws_vm2013 = static_cast<VM2013Ptr>(&*iter);
       XBT_INFO("cost %f remains %f start %f finish %f", ws_vm2013->cpu_action->cost,
           ws_vm2013->cpu_action->remains,
           ws_vm2013->cpu_action->start,
@@ -181,7 +181,7 @@ double VMHL13Model::shareResources(double now)
   return ret;
 }
 
-ActionPtr VMHL13Model::executeParallelTask(int host_nb,
+Action *VMHL13Model::executeParallelTask(int host_nb,
                                         void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
@@ -189,10 +189,10 @@ ActionPtr VMHL13Model::executeParallelTask(int host_nb,
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
   if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0))
-    return ((HostCLM03Ptr)host_list[0])->execute(flops_amount[0]);
+    return static_cast<HostCLM03*>(host_list[0])->execute(flops_amount[0]);
   else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0))
-    return communicate((HostCLM03Ptr)host_list[0], (HostCLM03Ptr)host_list[0],bytes_amount[0], rate);
+    return communicate(static_cast<HostCLM03*>(host_list[0]), static_cast<HostCLM03*>(host_list[0]),bytes_amount[0], rate);
   else if ((host_nb == 2)
              && (cost_or_zero(flops_amount, 0) == 0.0)
              && (cost_or_zero(flops_amount, 1) == 0.0)) {
@@ -206,7 +206,7 @@ ActionPtr VMHL13Model::executeParallelTask(int host_nb,
       }
     }
     if (nb == 1)
-      return communicate((HostCLM03Ptr)host_list[0], (HostCLM03Ptr)host_list[1],value, rate);
+      return communicate(static_cast<HostCLM03*>(host_list[0]), static_cast<HostCLM03*>(host_list[1]),value, rate);
   }
 #undef cost_or_zero
 
@@ -218,11 +218,11 @@ ActionPtr VMHL13Model::executeParallelTask(int host_nb,
  * Resource *
  ************/
 
-VMHL13::VMHL13(VMModelPtr model, const char* name, xbt_dict_t props,
+VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
 		                                   surf_resource_t host_PM)
  : VM(model, name, props, NULL, NULL)
 {
-  HostPtr sub_ws = static_cast<HostPtr>(surf_host_resource_priv(host_PM));
+  Host *sub_ws = static_cast<Host*>(surf_host_resource_priv(host_PM));
 
   /* Currently, we assume a VM has no storage. */
   p_storage = NULL;
@@ -242,7 +242,7 @@ VMHL13::VMHL13(VMModelPtr model, const char* name, xbt_dict_t props,
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01Ptr sub_cpu = static_cast<CpuCas01Ptr>(sg_host_surfcpu(host_PM));
+  CpuCas01 *sub_cpu = static_cast<CpuCas01*>(sg_host_surfcpu(host_PM));
 
   p_cpu = surf_cpu_model_vm->createCpu(name, // name
       sub_cpu->getPowerPeakList(),        // host->power_peak,
@@ -328,7 +328,7 @@ void VMHL13::restore()
 void VMHL13::migrate(surf_resource_t ind_dst_pm)
 {
    /* ind_dst_pm equals to smx_host_t */
-   HostPtr ws_dst = static_cast<HostPtr>(surf_host_resource_priv(ind_dst_pm));
+   Host *ws_dst = static_cast<Host*>(surf_host_resource_priv(ind_dst_pm));
    const char *vm_name = getName();
    const char *pm_name_src = p_subWs->getName();
    const char *pm_name_dst = ws_dst->getName();
@@ -336,8 +336,8 @@ void VMHL13::migrate(surf_resource_t ind_dst_pm)
    xbt_assert(ws_dst);
 
    /* update net_elm with that of the destination physical host */
-   RoutingEdgePtr old_net_elm = p_netElm;
-   RoutingEdgePtr new_net_elm = new RoutingEdgeWrapper(sg_host_edge(sg_host_by_name(pm_name_dst)));
+   RoutingEdge *old_net_elm = p_netElm;
+   RoutingEdge *new_net_elm = new RoutingEdgeWrapper(sg_host_edge(sg_host_by_name(pm_name_dst)));
    xbt_assert(new_net_elm);
 
    /* Unregister the current net_elm from host_lib. Do not call the free callback. */
@@ -362,8 +362,8 @@ void VMHL13::migrate(surf_resource_t ind_dst_pm)
 #endif
 
      /* create a cpu action bound to the pm model at the destination. */
-     CpuActionPtr new_cpu_action = static_cast<CpuActionPtr>(
-    		                            static_cast<CpuPtr>(sg_host_surfcpu(ind_dst_pm))->execute(0));
+     CpuAction *new_cpu_action = static_cast<CpuAction*>(
+    		                            static_cast<Cpu*>(sg_host_surfcpu(ind_dst_pm))->execute(0));
 
      e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)
@@ -393,7 +393,7 @@ void VMHL13::setBound(double bound){
  p_action->setBound(bound);
 }
 
-void VMHL13::setAffinity(CpuPtr cpu, unsigned long mask){
+void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
  p_action->setAffinity(cpu, mask);
 }
 
@@ -407,7 +407,7 @@ surf_resource_t VMHL13::getPm()
 }
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
-ActionPtr VMHL13::execute(double size)
+Action *VMHL13::execute(double size)
 {
   double old_cost = p_action->getCost();
   double new_cost = old_cost + size;
@@ -421,7 +421,7 @@ ActionPtr VMHL13::execute(double size)
   return p_cpu->execute(size);
 }
 
-ActionPtr VMHL13::sleep(double duration) {
+Action *VMHL13::sleep(double duration) {
   return p_cpu->sleep(duration);
 }
 

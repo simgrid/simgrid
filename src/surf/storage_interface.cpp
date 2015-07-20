@@ -18,16 +18,16 @@ int SURF_STORAGE_LEVEL;
 xbt_lib_t storage_type_lib;
 int ROUTING_STORAGE_TYPE_LEVEL; //Routing for storage_type level
 xbt_dynar_t mount_list = NULL;
-StorageModelPtr surf_storage_model = NULL;
+StorageModel *surf_storage_model = NULL;
 
 /*************
  * Callbacks *
  *************/
 
-surf_callback(void, StoragePtr) storageCreatedCallbacks;
-surf_callback(void, StoragePtr) storageDestructedCallbacks;
-surf_callback(void, StoragePtr, e_surf_resource_state_t, e_surf_resource_state_t) storageStateChangedCallbacks;
-surf_callback(void, StorageActionPtr, e_surf_action_state_t, e_surf_action_state_t) storageActionStateChangedCallbacks;
+surf_callback(void, Storage*) storageCreatedCallbacks;
+surf_callback(void, Storage*) storageDestructedCallbacks;
+surf_callback(void, Storage*, e_surf_resource_state_t, e_surf_resource_state_t) storageStateChangedCallbacks;
+surf_callback(void, StorageAction*, e_surf_action_state_t, e_surf_action_state_t) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -49,21 +49,21 @@ StorageModel::~StorageModel(){
  * Resource *
  ************/
 
-Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
+Storage::Storage(Model *model, const char *name, xbt_dict_t props,
                  const char* type_id, char *content_name, char *content_type,
                  sg_size_t size)
  : Resource(model, name, props)
  , p_contentType(content_type)
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
- , p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL))
+ , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL))
 {
   surf_callback_emit(storageCreatedCallbacks, this);
   p_content = parseContent(content_name);
   setState(SURF_RESOURCE_ON);
 }
 
-Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
+Storage::Storage(Model *model, const char *name, xbt_dict_t props,
                  lmm_system_t maxminSystem, double bread, double bwrite,
                  double bconnection, const char* type_id, char *content_name,
                  char *content_type, sg_size_t size, char *attach)
@@ -71,7 +71,7 @@ Storage::Storage(ModelPtr model, const char *name, xbt_dict_t props,
  , p_contentType(content_type)
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
- , p_writeActions(xbt_dynar_new(sizeof(ActionPtr),NULL)) {
+ , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL)) {
   surf_callback_emit(storageCreatedCallbacks, this);
   p_content = parseContent(content_name);
   p_attach = xbt_strdup(attach);
@@ -175,15 +175,15 @@ sg_size_t Storage::getUsedSize(){
 /**********
  * Action *
  **********/
-StorageAction::StorageAction(ModelPtr model, double cost, bool failed,
-                             StoragePtr storage, e_surf_action_storage_type_t type)
+StorageAction::StorageAction(Model *model, double cost, bool failed,
+                             Storage *storage, e_surf_action_storage_type_t type)
 : Action(model, cost, failed)
 , m_type(type), p_storage(storage), p_file(NULL){
   progress = 0;
 };
 
-StorageAction::StorageAction(ModelPtr model, double cost, bool failed, lmm_variable_t var,
-                             StoragePtr storage, e_surf_action_storage_type_t type)
+StorageAction::StorageAction(Model *model, double cost, bool failed, lmm_variable_t var,
+                             Storage *storage, e_surf_action_storage_type_t type)
   : Action(model, cost, failed, var)
   , m_type(type), p_storage(storage), p_file(NULL){
   progress = 0;

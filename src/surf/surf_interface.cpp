@@ -367,12 +367,12 @@ static XBT_INLINE void surf_link_free(void *r)
 
 static XBT_INLINE void surf_host_free(void *r)
 {
-  delete static_cast<HostPtr>(r);
+  delete static_cast<Host*>(r);
 }
 
 static XBT_INLINE void surf_storage_free(void *r)
 {
-  delete static_cast<StoragePtr>(r);
+  delete static_cast<Storage*>(r);
 }
 
 
@@ -403,9 +403,9 @@ void surf_init(int *argc, char **argv)
 
   xbt_init(argc, argv);
   if (!model_list)
-    model_list = xbt_dynar_new(sizeof(ModelPtr), NULL);
+    model_list = xbt_dynar_new(sizeof(Model*), NULL);
   if (!model_list_invoke)
-    model_list_invoke = xbt_dynar_new(sizeof(ModelPtr), NULL);
+    model_list_invoke = xbt_dynar_new(sizeof(Model*), NULL);
   if (!history)
     history = tmgr_history_new();
 
@@ -421,7 +421,7 @@ void surf_init(int *argc, char **argv)
 void surf_exit(void)
 {
   unsigned int iter;
-  ModelPtr model = NULL;
+  Model *model = NULL;
 
   TRACE_end();                  /* Just in case it was not called by the upper
                                  * layer (or there is no upper layer) */
@@ -509,7 +509,7 @@ double Model::shareResources(double now)
 
 double Model::shareResourcesLazy(double now)
 {
-  ActionPtr action = NULL;
+  Action *action = NULL;
   double min = -1;
   double share;
 
@@ -588,11 +588,11 @@ double Model::shareResourcesFull(double /*now*/) {
   THROW_UNIMPLEMENTED;
 }
 
-double Model::shareResourcesMaxMin(ActionListPtr running_actions,
+double Model::shareResourcesMaxMin(ActionList *running_actions,
                           lmm_system_t sys,
                           void (*solve) (lmm_system_t))
 {
-  ActionPtr action = NULL;
+  Action *action = NULL;
   double min = -1;
   double value = -1;
 
@@ -671,17 +671,17 @@ Resource::Resource()
 : p_name(NULL), p_properties(NULL), p_model(NULL)
 {}
 
-Resource::Resource(ModelPtr model, const char *name, xbt_dict_t props)
+Resource::Resource(Model *model, const char *name, xbt_dict_t props)
   : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
   , m_running(true), m_stateCurrent(SURF_RESOURCE_ON)
 {}
 
-Resource::Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
+Resource::Resource(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
   : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
   , m_running(true), m_stateCurrent(SURF_RESOURCE_ON), p_constraint(constraint)
 {}
 
-Resource::Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
+Resource::Resource(Model *model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
   : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
   , m_running(true), m_stateCurrent(stateInit)
 {}
@@ -720,7 +720,7 @@ void Resource::turnOff()
   }
 }
 
-ModelPtr Resource::getModel() {
+Model *Resource::getModel() {
   return p_model;
 }
 
@@ -751,7 +751,7 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-void Action::initialize(ModelPtr model, double cost, bool failed,
+void Action::initialize(Model *model, double cost, bool failed,
                         lmm_variable_t var)
 {
   m_priority = 1.0;
@@ -771,7 +771,7 @@ void Action::initialize(ModelPtr model, double cost, bool failed,
   m_hat = NOTSET;
 }
 
-Action::Action(ModelPtr model, double cost, bool failed)
+Action::Action(Model *model, double cost, bool failed)
 {
   initialize(model, cost, failed);
   p_category = NULL;
@@ -785,7 +785,7 @@ Action::Action(ModelPtr model, double cost, bool failed)
   p_stateSet->push_back(*this);
 }
 
-Action::Action(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+Action::Action(Model *model, double cost, bool failed, lmm_variable_t var)
 {
   initialize(model, cost, failed, var);
   p_category = NULL;
@@ -995,7 +995,7 @@ void Action::heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat)
 
 /* added to manage the communication action's heap */
 void surf_action_lmm_update_index_heap(void *action, int i) {
-  ((ActionPtr)action)->updateIndexHeap(i);
+  static_cast<Action*>(action)->updateIndexHeap(i);
 }
 
 void Action::updateIndexHeap(int i) {
@@ -1044,7 +1044,7 @@ void Action::updateRemainingLazy(double now)
     double_update(&m_remains, m_lastValue * delta, sg_surf_precision*sg_maxmin_precision);
 
     if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
-      ResourcePtr cpu = static_cast<ResourcePtr>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
+      Resource *cpu = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
       TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
     XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);

@@ -17,13 +17,8 @@
  ***********/
 
 class HostCLM03Model;
-typedef HostCLM03Model *HostCLM03ModelPtr;
-
 class HostCLM03;
-typedef HostCLM03 *HostCLM03Ptr;
-
 class HostCLM03Action;
-typedef HostCLM03Action *HostCLM03ActionPtr;
 
 /*********
  * Model *
@@ -33,17 +28,17 @@ class HostCLM03Model : public HostModel {
 public:
   HostCLM03Model();
   ~HostCLM03Model();
-  HostPtr createHost(const char *name);
+  Host *createHost(const char *name);
   double shareResources(double now);
 
   void updateActionsState(double now, double delta);
 
-  ActionPtr executeParallelTask(int host_nb,
+  Action *executeParallelTask(int host_nb,
                                         void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate);
- ActionPtr communicate(HostPtr src, HostPtr dst, double size, double rate);
+ Action *communicate(Host *src, Host *dst, double size, double rate);
 };
 
 /************
@@ -52,12 +47,12 @@ public:
 
 class HostCLM03 : public Host {
 public:
-  HostCLM03(HostModelPtr model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu);
+  HostCLM03(HostModel *model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu);
 
   void updateState(tmgr_trace_event_t event_type, double value, double date);
 
-  virtual ActionPtr execute(double size);
-  virtual ActionPtr sleep(double duration);
+  virtual Action *execute(double size);
+  virtual Action *sleep(double duration);
   e_surf_resource_state_t getState();
 
   bool isUsed();

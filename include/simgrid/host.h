@@ -47,15 +47,14 @@ XBT_PUBLIC(void) sg_host_simix_destroy(sg_host_t host);
 // ========== SURF CPU ============
 DEFINE_EXTERNAL_CLASS(Cpu);
 typedef Cpu *surf_cpu_t;
-typedef Cpu *CpuPtr;
 XBT_PUBLIC(surf_cpu_t) sg_host_surfcpu(sg_host_t host);
 XBT_PUBLIC(void) sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu);
 XBT_PUBLIC(void) sg_host_surfcpu_destroy(sg_host_t host);
 
 // ========== RoutingEdge ============
-typedef struct RoutingEdge *RoutingEdgePtr;
-XBT_PUBLIC(RoutingEdgePtr) sg_host_edge(sg_host_t host);
-XBT_PUBLIC(void) sg_host_edge_set(sg_host_t host, RoutingEdgePtr edge);
+DEFINE_EXTERNAL_CLASS(RoutingEdge);
+XBT_PUBLIC(RoutingEdge*) sg_host_edge(sg_host_t host);
+XBT_PUBLIC(void) sg_host_edge_set(sg_host_t host, RoutingEdge* edge);
 XBT_PUBLIC(void) sg_host_edge_destroy(sg_host_t host, int do_callback);
 
 

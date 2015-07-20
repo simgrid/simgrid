@@ -27,7 +27,6 @@ typedef struct route_cache_element {
  * Classes *
  ***********/
 class AsDijkstra;
-typedef AsDijkstra *AsDijkstraPtr;
 
 class AsDijkstra : public AsGeneric {
 public:
@@ -50,7 +49,7 @@ public:
      * will have a loopback attached to it.
      */
 	void addLoopback();
-	void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat);
+	void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat);
 	xbt_dynar_t getOnelinkRoutes();
 	void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat);
 	void parseASroute(sg_platf_route_cbarg_t route);

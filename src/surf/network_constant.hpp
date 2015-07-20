@@ -13,10 +13,7 @@
  * Classes *
  ***********/
 class NetworkConstantModel;
-typedef NetworkConstantModel *NetworkConstantModelPtr;
-
 class NetworkConstantAction;
-typedef NetworkConstantAction *NetworkConstantActionPtr;
 
 /*********
  * Model *
@@ -30,9 +27,9 @@ public:
   };
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-  ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+  Action *communicate(RoutingEdge *src, RoutingEdge *dst,
 		                           double size, double rate);
-  void gapRemove(ActionPtr action);
+  void gapRemove(Action *action);
 };
 
 /************
@@ -40,7 +37,7 @@ public:
  ************/
 class NetworkConstantLink : public NetworkCm02Link {
 public:
-  NetworkConstantLink(NetworkCm02ModelPtr model, const char* name, xbt_dict_t properties);
+  NetworkConstantLink(NetworkCm02Model *model, const char* name, xbt_dict_t properties);
   bool isUsed();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   double getBandwidth();
@@ -53,7 +50,7 @@ public:
  **********/
 class NetworkConstantAction : public NetworkCm02Action {
 public:
-  NetworkConstantAction(NetworkConstantModelPtr model_, double size, double latency)
+  NetworkConstantAction(NetworkConstantModel *model_, double size, double latency)
   : NetworkCm02Action(model_, size, false)
   , m_latInit(latency)
   {

@@ -10,15 +10,15 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf,
                                 "Logging specific to the SURF VM module");
 
-VMModelPtr surf_vm_model = NULL;
+VMModel *surf_vm_model = NULL;
 
 /*************
  * Callbacks *
  *************/
 
-surf_callback(void, VMPtr) VMCreatedCallbacks;
-surf_callback(void, VMPtr) VMDestructedCallbacks;
-surf_callback(void, VMPtr) VMStateChangedCallbacks;
+surf_callback(void, VM*) VMCreatedCallbacks;
+surf_callback(void, VM*) VMDestructedCallbacks;
+surf_callback(void, VM*) VMStateChangedCallbacks;
 
 /*********
  * Model *
@@ -34,8 +34,8 @@ VMModel::vm_list_t VMModel::ws_vms;
  * Resource *
  ************/
 
-VM::VM(ModelPtr model, const char *name, xbt_dict_t props,
-		        RoutingEdgePtr netElm, CpuPtr cpu)
+VM::VM(Model *model, const char *name, xbt_dict_t props,
+		        RoutingEdge *netElm, Cpu *cpu)
 : Host(model, name, props, NULL, netElm, cpu)
 {
   VMModel::ws_vms.push_back(*this);

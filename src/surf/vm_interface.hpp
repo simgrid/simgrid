@@ -17,13 +17,7 @@
  ***********/
 
 class VMModel;
-typedef VMModel *VMModelPtr;
-
 class VM;
-typedef VM *VMPtr;
-
-class VMLmm;
-typedef VMLmm *VMLmmPtr;
 
 /*************
  * Callbacks *
@@ -33,19 +27,19 @@ typedef VMLmm *VMLmmPtr;
  * @brief Callbacks handler which emit the callbacks after VM creation *
  * @details Callback functions have the following signature: `void(VMPtr)`
  */
-extern surf_callback(void, VMPtr) VMCreatedCallbacks;
+extern surf_callback(void, VM*) VMCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after VM destruction *
  * @details Callback functions have the following signature: `void(VMPtr)`
  */
-extern surf_callback(void, VMPtr) VMDestructedCallbacks;
+extern surf_callback(void, VM*) VMDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after VM State changed *
  * @details Callback functions have the following signature: `void(VMActionPtr)`
  */
-extern surf_callback(void, VMPtr) VMStateChangedCallbacks;
+extern surf_callback(void, VM*) VMStateChangedCallbacks;
 
 /*********
  * Model *
@@ -59,7 +53,7 @@ public:
   VMModel();
   ~VMModel(){};
 
-  HostPtr createHost(const char *name){DIE_IMPOSSIBLE;}
+  Host *createHost(const char *name){DIE_IMPOSSIBLE;}
 
   /**
    * @brief Create a new VM
@@ -68,7 +62,7 @@ public:
    * @param host_PM The real machine hosting the VM
    *
    */
-  virtual VMPtr createVM(const char *name, surf_resource_t host_PM)=0;
+  virtual VM *createVM(const char *name, surf_resource_t host_PM)=0;
   void adjustWeightOfDummyCpuActions() {};
 
   typedef boost::intrusive::list<VM,
@@ -97,8 +91,8 @@ public:
    * @param netElm The RoutingEdge associated to this VM
    * @param cpu The Cpu associated to this VM
    */
-  VM(ModelPtr model, const char *name, xbt_dict_t props,
-		        RoutingEdgePtr netElm, CpuPtr cpu);
+  VM(Model *model, const char *name, xbt_dict_t props,
+		        RoutingEdge *netElm, Cpu *cpu);
 
   /**
    * @brief WdorkstationVM destructor
@@ -141,11 +135,11 @@ public:
   virtual surf_resource_t getPm()=0;
 
   virtual void setBound(double bound)=0;
-  virtual void setAffinity(CpuPtr cpu, unsigned long mask)=0;
+  virtual void setAffinity(Cpu *cpu, unsigned long mask)=0;
 
   /* The vm object of the lower layer */
-  CpuActionPtr p_action;
-  HostPtr p_subWs;  // Pointer to the ''host'' OS
+  CpuAction *p_action;
+  Host *p_subWs;  // Pointer to the ''host'' OS
   e_surf_vm_state_t p_currentState;
 };
 

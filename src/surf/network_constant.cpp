@@ -24,19 +24,19 @@ void surf_network_model_init_Constant()
 
   sg_platf_host_add_cb(netcste_count_hosts);
 
-  ModelPtr model = surf_network_model;
+  Model *model = surf_network_model;
   xbt_dynar_push(model_list, &model);
 }
 
 double NetworkConstantModel::shareResources(double /*now*/)
 {
-  NetworkConstantActionPtr action = NULL;
+  NetworkConstantAction *action = NULL;
   double min = -1.0;
 
-  ActionListPtr actionSet = getRunningActionSet();
+  ActionList *actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
 	 ; it != itend ; ++it) {
-	action = static_cast<NetworkConstantActionPtr>(&*it);
+	action = static_cast<NetworkConstantAction*>(&*it);
         if (action->m_latency > 0 && (min < 0 || action->m_latency < min))
             min = action->m_latency;
   }
@@ -46,12 +46,12 @@ double NetworkConstantModel::shareResources(double /*now*/)
 
 void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 {
-  NetworkConstantActionPtr action = NULL;
-  ActionListPtr actionSet = getRunningActionSet();
+  NetworkConstantAction *action = NULL;
+  ActionList *actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
      ; it != itend ; it=itNext) {
     ++itNext;
-	action = static_cast<NetworkConstantActionPtr>(&*it);
+	action = static_cast<NetworkConstantAction*>(&*it);
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
         double_update(&(action->m_latency), delta, sg_surf_precision);
@@ -74,14 +74,14 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
   }
 }
 
-ActionPtr NetworkConstantModel::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+Action *NetworkConstantModel::communicate(RoutingEdge *src, RoutingEdge *dst,
 		                         double size, double rate)
 {
   char *src_name = src->getName();
   char *dst_name = dst->getName();
 
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
-  NetworkConstantActionPtr action = new NetworkConstantAction(this, size, sg_latency_factor);
+  NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
   XBT_OUT();
 
   surf_callback_emit(networkCommunicateCallbacks, action, src, dst, size, rate);

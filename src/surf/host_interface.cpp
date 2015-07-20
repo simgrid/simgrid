@@ -16,16 +16,16 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf,
                                 "Logging specific to the SURF host module");
 
-HostModelPtr surf_host_model = NULL;
+HostModel *surf_host_model = NULL;
 
 /*************
  * Callbacks *
  *************/
 
-surf_callback(void, HostPtr) hostCreatedCallbacks;
-surf_callback(void, HostPtr) hostDestructedCallbacks;
-surf_callback(void, HostPtr, e_surf_resource_state_t, e_surf_resource_state_t) hostStateChangedCallbacks;
-surf_callback(void, HostActionPtr, e_surf_action_state_t, e_surf_action_state_t) hostActionStateChangedCallbacks;
+surf_callback(void, Host*) hostCreatedCallbacks;
+surf_callback(void, Host*) hostDestructedCallbacks;
+surf_callback(void, Host*, e_surf_resource_state_t, e_surf_resource_state_t) hostStateChangedCallbacks;
+surf_callback(void, HostAction*, e_surf_action_state_t, e_surf_action_state_t) hostActionStateChangedCallbacks;
 
 void host_parse_init(sg_platf_host_cbarg_t host)
 {
@@ -64,8 +64,8 @@ void HostModel::adjustWeightOfDummyCpuActions()
          VMModel::ws_vms.begin();
        iter !=  VMModel::ws_vms.end(); ++iter) {
 
-    VMPtr ws_vm = &*iter;
-    CpuCas01Ptr cpu_cas01 = static_cast<CpuCas01Ptr>(ws_vm->p_cpu);
+    VM *ws_vm = &*iter;
+    CpuCas01 *cpu_cas01 = static_cast<CpuCas01*>(ws_vm->p_cpu);
     xbt_assert(cpu_cas01, "cpu-less host");
 
     int is_active = lmm_constraint_used(cpu_cas01->getModel()->getMaxminSystem(), cpu_cas01->getConstraint());
@@ -91,8 +91,8 @@ void HostModel::adjustWeightOfDummyCpuActions()
 /************
  * Resource *
  ************/
-Host::Host(ModelPtr model, const char *name, xbt_dict_t props,
-		                 xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
+Host::Host(Model *model, const char *name, xbt_dict_t props,
+		                 xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
  : Resource(model, name, props)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
 {
@@ -100,8 +100,8 @@ Host::Host(ModelPtr model, const char *name, xbt_dict_t props,
   surf_callback_emit(hostCreatedCallbacks, this);
 }
 
-Host::Host(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
-				         xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
+Host::Host(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
+				         xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
  : Resource(model, name, props, constraint)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
 {
@@ -161,9 +161,9 @@ xbt_dict_t Host::getProperties()
   return p_cpu->getProperties();
 }
 
-StoragePtr Host::findStorageOnMountList(const char* mount)
+Storage *Host::findStorageOnMountList(const char* mount)
 {
-  StoragePtr st = NULL;
+  Storage *st = NULL;
   s_mount_t mnt;
   unsigned int cursor;
 
@@ -172,7 +172,7 @@ StoragePtr Host::findStorageOnMountList(const char* mount)
   {
     XBT_DEBUG("See '%s'",mnt.name);
     if(!strcmp(mount,mnt.name)){
-      st = static_cast<StoragePtr>(mnt.storage);
+      st = static_cast<Storage*>(mnt.storage);
       break;
     }
   }
@@ -188,7 +188,7 @@ xbt_dict_t Host::getMountedStorageList()
   char *storage_name = NULL;
 
   xbt_dynar_foreach(p_storage,i,mnt){
-    storage_name = (char *)static_cast<StoragePtr>(mnt.storage)->getName();
+    storage_name = (char *)static_cast<Storage*>(mnt.storage)->getName();
     xbt_dict_set(storage_list,mnt.name,storage_name,NULL);
   }
   return storage_list;
@@ -202,7 +202,7 @@ xbt_dynar_t Host::getAttachedStorageList()
   xbt_dynar_t result = xbt_dynar_new(sizeof(void*), NULL);
   xbt_lib_foreach(storage_lib, cursor, key, data) {
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
-	  StoragePtr storage = static_cast<StoragePtr>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
+	  Storage *storage = static_cast<Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
 	  if(!strcmp((const char*)storage->p_attach,this->getName())){
 	    xbt_dynar_push_as(result, void *, (void*)storage->getName());
 	  }
@@ -211,9 +211,9 @@ xbt_dynar_t Host::getAttachedStorageList()
   return result;
 }
 
-ActionPtr Host::open(const char* fullpath) {
+Action *Host::open(const char* fullpath) {
 
-  StoragePtr st = NULL;
+  Storage *st = NULL;
   s_mount_t mnt;
   unsigned int cursor;
   size_t longest_prefix_length = 0;
@@ -232,7 +232,7 @@ ActionPtr Host::open(const char* fullpath) {
     if(!strcmp(file_mount_name,mnt.name) && strlen(mnt.name)>longest_prefix_length)
     {/* The current mount name is found in the full path and is bigger than the previous*/
       longest_prefix_length = strlen(mnt.name);
-      st = static_cast<StoragePtr>(mnt.storage);
+      st = static_cast<Storage*>(mnt.storage);
     }
     free(file_mount_name);
   }
@@ -249,26 +249,26 @@ ActionPtr Host::open(const char* fullpath) {
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
 
   XBT_DEBUG("OPEN %s on disk '%s'",path, st->getName());
-  ActionPtr action = st->open((const char*)mount_name, (const char*)path);
+  Action *action = st->open((const char*)mount_name, (const char*)path);
   free((char*)path);
   free((char*)mount_name);
   return action;
 }
 
-ActionPtr Host::close(surf_file_t fd) {
-  StoragePtr st = findStorageOnMountList(fd->mount);
+Action *Host::close(surf_file_t fd) {
+  Storage *st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("CLOSE %s on disk '%s'",fd->name, st->getName());
   return st->close(fd);
 }
 
-ActionPtr Host::read(surf_file_t fd, sg_size_t size) {
-  StoragePtr st = findStorageOnMountList(fd->mount);
+Action *Host::read(surf_file_t fd, sg_size_t size) {
+  Storage *st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("READ %s on disk '%s'",fd->name, st->getName());
   return st->read(fd, size);
 }
 
-ActionPtr Host::write(surf_file_t fd, sg_size_t size) {
-  StoragePtr st = findStorageOnMountList(fd->mount);
+Action *Host::write(surf_file_t fd, sg_size_t size) {
+  Storage *st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("WRITE %s on disk '%s'",fd->name, st->getName());
   return st->write(fd, size);
 }
@@ -279,7 +279,7 @@ int Host::unlink(surf_file_t fd) {
     return -1;
   } else {
 
-    StoragePtr st = findStorageOnMountList(fd->mount);
+    Storage *st = findStorageOnMountList(fd->mount);
     /* Check if the file is on this storage */
     if (!xbt_dict_get_or_null(st->p_content, fd->name)){
       XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name,
@@ -306,7 +306,7 @@ sg_size_t Host::getSize(surf_file_t fd){
 
 xbt_dynar_t Host::getInfo( surf_file_t fd)
 {
-  StoragePtr st = findStorageOnMountList(fd->mount);
+  Storage *st = findStorageOnMountList(fd->mount);
   sg_size_t *psize = xbt_new(sg_size_t, 1);
   *psize = fd->size;
   xbt_dynar_t info = xbt_dynar_new(sizeof(void*), NULL);
@@ -372,14 +372,14 @@ int Host::fileMove(surf_file_t fd, const char* fullpath){
 
 xbt_dynar_t Host::getVms()
 {
-  xbt_dynar_t dyn = xbt_dynar_new(sizeof(VMPtr), NULL);
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(VM*), NULL);
 
   /* iterate for all virtual machines */
   for (VMModel::vm_list_t::iterator iter =
          VMModel::ws_vms.begin();
        iter !=  VMModel::ws_vms.end(); ++iter) {
 
-    VMPtr ws_vm = &*iter;
+    VM *ws_vm = &*iter;
     if (this == ws_vm->p_subWs)
       xbt_dynar_push(dyn, &ws_vm);
   }

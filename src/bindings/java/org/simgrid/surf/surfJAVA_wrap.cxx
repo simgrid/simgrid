@@ -2226,7 +2226,7 @@ SWIGEXPORT jlongArray JNICALL Java_org_simgrid_surf_SurfJNI_ActionList_1getArray
     jlong *elts = jenv->GetLongArrayElements(jresult, NULL);
     l = 0;
     for(ActionList::iterator it(result->begin()), itend(result->end()); it != itend ; ++it) {
-      elts[l++] = (jlong)static_cast<ActionPtr>(&*it);
+      elts[l++] = (jlong)static_cast<Action*>(&*it);
     }
     jenv->ReleaseLongArrayElements(jresult, elts, 0);
   }

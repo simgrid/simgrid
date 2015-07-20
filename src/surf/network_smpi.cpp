@@ -104,7 +104,7 @@ NetworkSmpiModel::~NetworkSmpiModel(){
   }
 }
 
-void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkActionPtr action)
+void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *action)
 {
   const char *src = link->getName();
   xbt_fifo_t fifo;
@@ -139,11 +139,11 @@ void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkActionPtr actio
   }
 }
 
-void NetworkSmpiModel::gapRemove(ActionPtr lmm_action)
+void NetworkSmpiModel::gapRemove(Action *lmm_action)
 {
   xbt_fifo_t fifo;
   size_t size;
-  NetworkCm02ActionPtr action = static_cast<NetworkCm02ActionPtr>(lmm_action);
+  NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_action);
 
   if (sg_sender_gap > 0.0 && action->p_senderLinkName
       && action->p_senderFifoItem) {

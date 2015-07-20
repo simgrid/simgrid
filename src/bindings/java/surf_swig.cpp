@@ -43,7 +43,7 @@ LinkDynar getRoute(char *srcName, char *dstName) {
   RoutingEdge *dst = sg_host_edge(sg_host_by_name(dstName));
   xbt_assert(src,"Cannot get the route from a NULL source");
   xbt_assert(dst,"Cannot get the route to a NULL destination");
-  xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdgePtr), NULL);
+  xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdge*), NULL);
   routing_platf->getRouteAndLatency(src, dst, &route, NULL);
   return route;
 }

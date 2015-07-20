@@ -111,7 +111,7 @@ class AsClusterFatTree : public AsCluster {
 public:
   AsClusterFatTree();
   ~AsClusterFatTree();
-  virtual void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst,
+  virtual void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst,
                                   sg_platf_route_cbarg_t into,
                                   double *latency);
 

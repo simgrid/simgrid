@@ -28,7 +28,7 @@ void surf_host_model_init_current_default(void)
   surf_network_model_init_LegrandVelho();
   surf_host_model->p_cpuModel = surf_cpu_model_pm;
 
-  ModelPtr model = surf_host_model;
+  Model *model = surf_host_model;
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(host_parse_init);
@@ -41,7 +41,7 @@ void surf_host_model_init_compound()
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_host_model = new HostCLM03Model();
 
-  ModelPtr model = surf_host_model;
+  Model *model = surf_host_model;
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(host_parse_init);
@@ -55,9 +55,9 @@ HostCLM03Model::HostCLM03Model()
 HostCLM03Model::~HostCLM03Model()
 {}
 
-HostPtr HostCLM03Model::createHost(const char *name){
+Host *HostCLM03Model::createHost(const char *name){
   sg_host_t sg_host = sg_host_by_name(name);
-  HostPtr host = new HostCLM03(surf_host_model, name, NULL,
+  Host *host = new HostCLM03(surf_host_model, name, NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  sg_host_edge(sg_host),
 		  sg_host_surfcpu(sg_host));
@@ -94,20 +94,20 @@ void HostCLM03Model::updateActionsState(double /*now*/, double /*delta*/){
   return;
 }
 
-ActionPtr HostCLM03Model::executeParallelTask(int host_nb,
+Action *HostCLM03Model::executeParallelTask(int host_nb,
                                         void **host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate){
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
-  ActionPtr action =NULL;
+  Action *action =NULL;
   if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0)){
-    action = ((HostCLM03Ptr)host_list[0])->execute(flops_amount[0]);
+    action = static_cast<HostCLM03*>(host_list[0])->execute(flops_amount[0]);
   } else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0)) {
-    action = communicate((HostCLM03Ptr)host_list[0],
-        (HostCLM03Ptr)host_list[0],bytes_amount[0], rate);
+    action = communicate(static_cast<HostCLM03*>(host_list[0]),
+    		static_cast<HostCLM03*>(host_list[0]),bytes_amount[0], rate);
   } else if ((host_nb == 2)
              && (cost_or_zero(flops_amount, 0) == 0.0)
              && (cost_or_zero(flops_amount, 1) == 0.0)) {
@@ -121,17 +121,17 @@ ActionPtr HostCLM03Model::executeParallelTask(int host_nb,
       }
     }
     if (nb == 1){
-      action = communicate((HostCLM03Ptr)host_list[0],
-          (HostCLM03Ptr)host_list[1],value, rate);
+      action = communicate(static_cast<HostCLM03*>(host_list[0]),
+    		  static_cast<HostCLM03*>(host_list[1]),value, rate);
     }
   } else
     THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks */
 #undef cost_or_zero
-  xbt_free((HostCLM03Ptr)host_list);
+  xbt_free(host_list);
   return action;
 }
 
-ActionPtr HostCLM03Model::communicate(HostPtr src, HostPtr dst, double size, double rate){
+Action *HostCLM03Model::communicate(Host *src, Host *dst, double size, double rate){
   return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
 }
 
@@ -140,7 +140,7 @@ ActionPtr HostCLM03Model::communicate(HostPtr src, HostPtr dst, double size, dou
 /************
  * Resource *
  ************/
-HostCLM03::HostCLM03(HostModelPtr model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
+HostCLM03::HostCLM03(HostModel *model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
   : Host(model, name, properties, storage, netElm, cpu) {}
 
 bool HostCLM03::isUsed(){
@@ -152,11 +152,11 @@ void HostCLM03::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/,
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }
 
-ActionPtr HostCLM03::execute(double size) {
+Action *HostCLM03::execute(double size) {
   return p_cpu->execute(size);
 }
 
-ActionPtr HostCLM03::sleep(double duration) {
+Action *HostCLM03::sleep(double duration) {
   return p_cpu->sleep(duration);
 }
 

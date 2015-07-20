@@ -29,7 +29,7 @@ AsCluster::AsCluster() : AsNone()
 }
 
 /* Business methods */
-void AsCluster::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat)
+void AsCluster::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
   XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]",
@@ -61,7 +61,7 @@ void AsCluster::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
   }
 
   if (p_backbone) {
-    xbt_dynar_push_as(route->link_list, void *, static_cast<ResourcePtr>(p_backbone));
+    xbt_dynar_push_as(route->link_list, void *, static_cast<Resource*>(p_backbone));
     if (lat)
       *lat += p_backbone->getLatency();
   }
@@ -86,7 +86,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   int isrc;
   int table_size = xbt_dynar_length(p_indexNetworkElm);
 
-  RoutingEdgePtr src;
+  RoutingEdge *src;
   xbt_node_t current, previous, backboneNode = NULL, routerNode;
   s_surf_parsing_link_up_down_t info;
 
@@ -104,7 +104,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   }
 
   for (isrc = 0; isrc < table_size; isrc++) {
-    src = xbt_dynar_get_as(p_indexNetworkElm, isrc, RoutingEdgePtr);
+    src = xbt_dynar_get_as(p_indexNetworkElm, isrc, RoutingEdge*);
 
     if (src->getRcType() != SURF_NETWORK_ELEMENT_ROUTER) {
       previous = new_xbt_graph_node(graph, src->getName(), nodes);
@@ -113,7 +113,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       if (info.link_up) {     // link up
 
-        const char *link_name = static_cast<ResourcePtr>(info.link_up)->getName();
+        const char *link_name = static_cast<Resource*>(info.link_up)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -126,7 +126,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       if (info.link_down) {    // link down
-        const char *link_name = static_cast<ResourcePtr>(info.link_down)->getName();
+        const char *link_name = static_cast<Resource*>(info.link_down)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -169,15 +169,15 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
   xbt_free(link_id);
 }
 
-int AsCluster::parsePU(RoutingEdgePtr elm) {
+int AsCluster::parsePU(RoutingEdge *elm) {
   XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
+  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdge*, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
-int AsCluster::parseAS(RoutingEdgePtr elm) {
+int AsCluster::parseAS(RoutingEdge *elm) {
   XBT_DEBUG("Load Autonomous system \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
+  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdge*, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
