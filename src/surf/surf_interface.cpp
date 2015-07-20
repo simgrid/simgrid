@@ -194,9 +194,6 @@ static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
 double NOW = 0;
-double *surf_mins = NULL; /* return value of share_resources for each model */
-int surf_min_index;       /* current index in surf_mins */
-double surf_min;               /* duration determined by surf_solve */
 
 double surf_get_clock(void)
 {
@@ -426,9 +423,6 @@ void surf_exit(void)
 #ifdef CONTEXT_THREADS
   xbt_parmap_destroy(surf_parmap);
 #endif
-
-  xbt_free(surf_mins);
-  surf_mins = NULL;
 
   tmgr_finalize();
   surf_parse_lex_destroy();

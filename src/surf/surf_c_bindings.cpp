@@ -31,9 +31,6 @@ char *surf_routing_edge_name(sg_routing_edge_t edge){
 }
 
 extern double NOW;
-extern double *surf_mins; /* return value of share_resources for each model */
-extern int surf_min_index;       /* current index in surf_mins */
-extern double surf_min;               /* duration determined by surf_solve */
 
 void surf_presolve(void)
 {
@@ -64,7 +61,7 @@ void surf_presolve(void)
 
 double surf_solve(double max_date)
 {
-  surf_min = -1.0; /* duration */
+  double surf_min = -1.0; /* duration */
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
@@ -81,31 +78,18 @@ double surf_solve(double max_date)
   }
 
   XBT_DEBUG("Looking for next action end for all models except NS3");
-
-  if (surf_mins == NULL) {
-    surf_mins = xbt_new(double, xbt_dynar_length(model_list_invoke));
-  }
-  surf_min_index = 0;
-
-  /* sequential version */
   xbt_dynar_foreach(model_list_invoke, iter, model) {
 	  double next_action_end = -1.0;
-	  int i = __sync_fetch_and_add(&surf_min_index, 1);
 	  if (strcmp(model->getName(), "network NS3")) {
 	    XBT_DEBUG("Running for Resource [%s]", model->getName());
 	    next_action_end = model->shareResources(NOW);
 	    XBT_DEBUG("Resource [%s] : next action end = %f",
 	        model->getName(), next_action_end);
 	  }
-	  surf_mins[i] = next_action_end;
-  }
-
-  unsigned i;
-  for (i = 0; i < xbt_dynar_length(model_list_invoke); i++) {
-    if ((surf_min < 0.0 || surf_mins[i] < surf_min)
-        && surf_mins[i] >= 0.0) {
-      surf_min = surf_mins[i];
-    }
+	  if ((surf_min < 0.0 || next_action_end < surf_min)
+			  && next_action_end >= 0.0) {
+		  surf_min = next_action_end;
+	  }
   }
 
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value) : %f", surf_min);
