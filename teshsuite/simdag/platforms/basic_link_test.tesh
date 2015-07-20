@@ -1,7 +1,7 @@
 #! ./tesh
 
 $ ${bindir:=.}/basic_link_test one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) surf_host_model_init_ptask_L07
+> [  0.000000] (0:@) Switching to the L07 model to handle parallel tasks.
 > [  0.000000] (0:@) Link count: 12
 > [  0.000000] (0:@) __loopback__: latency = 0.00002, bandwidth = 498000000.000000
 > [  0.000000] (0:@) bob_cluster_backbone: latency = 0.00050, bandwidth = 2250000000.000000

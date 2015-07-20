@@ -3,7 +3,7 @@
 p Simple test of simdag
 
 $ $SG_TEST_EXENV ./sd_seq_access ${srcdir:=.}/2clusters.xml
-> [0.000000] [surf_host/INFO] surf_host_model_init_ptask_L07
+> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_workstation/INFO] Displaying workstation C2-05
 > [0.000000] [sd_workstation/INFO]   - power: 5000000000
 > [0.000000] [sd_workstation/INFO]   - available power: 1.00

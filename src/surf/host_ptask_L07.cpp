@@ -26,20 +26,18 @@ static void ptask_netlink_parse_init(sg_platf_link_cbarg_t link)
   current_property_set = NULL;
 }
 
-static void ptask_define_callbacks()
+void surf_host_model_init_ptask_L07(void)
 {
+  XBT_INFO("Switching to the L07 model to handle parallel tasks.");
+  xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
+  xbt_assert(!surf_network_model, "network model type already defined");
+
+  // Define the callbacks to parse the XML
   sg_platf_host_add_cb(cpu_parse_init);
   sg_platf_host_add_cb(host_parse_init);
   sg_platf_link_add_cb(ptask_netlink_parse_init);
   sg_platf_postparse_add_cb(host_add_traces);
-}
 
-void surf_host_model_init_ptask_L07(void)
-{
-  XBT_INFO("surf_host_model_init_ptask_L07");
-  xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
-  xbt_assert(!surf_network_model, "network model type already defined");
-  ptask_define_callbacks();
   surf_host_model = new HostL07Model();
   Model *model = surf_host_model;
   xbt_dynar_push(model_list, &model);
