@@ -332,11 +332,6 @@ static XBT_INLINE void routing_asr_prop_free(void *p)
   //xbt_dict_free(&elm); FIXME: leaking in some case? That's a sometimes double-free with AsCluster::~AsCluster
 }
 
-static XBT_INLINE void surf_link_free(void *r)
-{
-  delete static_cast<Link*>(r);
-}
-
 static XBT_INLINE void surf_host_free(void *r)
 {
   delete static_cast<Host*>(r);
