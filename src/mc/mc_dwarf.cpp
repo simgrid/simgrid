@@ -103,7 +103,7 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
  *  \param die DIE
  *  \return DW_TAG_type attribute as a new string (NULL if none)
  */
-static std::string MC_dwarf_at_type(Dwarf_Die * die);
+static std::uint64_t MC_dwarf_at_type(Dwarf_Die * die);
 
 /** \brief A class of DWARF tags (DW_TAG_*)
  */
@@ -309,15 +309,9 @@ static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die * die,
  *  \return DW_AT_type reference as a global offset in hexadecimal (or NULL)
  */
 static
-std::string MC_dwarf_at_type(Dwarf_Die * die)
+std::uint64_t MC_dwarf_at_type(Dwarf_Die * die)
 {
-  Dwarf_Off offset = MC_dwarf_attr_integrate_dieoffset(die, DW_AT_type);
-  if (offset == 0)
-    return std::string();
-  char* s = bprintf("%" PRIx64, offset);
-  std::string res(s);
-  free(s);
-  return std::move(res);
+  return MC_dwarf_attr_integrate_dieoffset(die, DW_AT_type);
 }
 
 static uint64_t MC_dwarf_attr_integrate_addr(Dwarf_Die * die, int attribute)
@@ -585,7 +579,7 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
 
       MC_dwarf_fill_member_location(type, &member, &child);
 
-      if (member.type_id.empty()) {
+      if (!member.type_id) {
         xbt_die("Missing type for member %s of <%" PRIx64 ">%s",
                 member.name.c_str(),
                 (uint64_t) type->id, type->name.c_str());
@@ -603,23 +597,24 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
  *  \param unit compilation unit of the current DIE
  *  \return MC representation of the type
  */
-static mc_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
-                                      Dwarf_Die * unit, mc_frame_t frame,
-                                      const char *ns)
+static simgrid::mc::Type MC_dwarf_die_to_type(
+  mc_object_info_t info, Dwarf_Die * die,
+  Dwarf_Die * unit, mc_frame_t frame,
+  const char *ns)
 {
 
-  mc_type_t type = new simgrid::mc::Type();
-  type->type = -1;
-  type->name = std::string();
-  type->element_count = -1;
+  simgrid::mc::Type type;
+  type.type = -1;
+  type.name = std::string();
+  type.element_count = -1;
 
-  type->type = dwarf_tag(die);
+  type.type = dwarf_tag(die);
 
   // Global Offset
-  type->id = dwarf_dieoffset(die);
+  type.id = dwarf_dieoffset(die);
 
   const char *prefix = "";
-  switch (type->type) {
+  switch (type.type) {
   case DW_TAG_structure_type:
     prefix = "struct ";
     break;
@@ -637,69 +632,64 @@ static mc_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
   if (name != NULL) {
     char* full_name = ns ? bprintf("%s%s::%s", prefix, ns, name) :
       bprintf("%s%s", prefix, name);
-    type->name = std::string(full_name);
+    type.name = std::string(full_name);
     free(full_name);
   }
 
-  type->type_id = MC_dwarf_at_type(die);
+  type.type_id = MC_dwarf_at_type(die);
 
   // Some compilers do not emit DW_AT_byte_size for pointer_type,
   // so we fill this. We currently assume that the model-checked process is in
   // the same architecture..
-  if (type->type == DW_TAG_pointer_type)
-    type->byte_size = sizeof(void*);
+  if (type.type == DW_TAG_pointer_type)
+    type.byte_size = sizeof(void*);
 
   // Computation of the byte_size;
   if (dwarf_hasattr_integrate(die, DW_AT_byte_size))
-    type->byte_size = MC_dwarf_attr_integrate_uint(die, DW_AT_byte_size, 0);
-  else if (type->type == DW_TAG_array_type
-           || type->type == DW_TAG_structure_type
-           || type->type == DW_TAG_class_type) {
+    type.byte_size = MC_dwarf_attr_integrate_uint(die, DW_AT_byte_size, 0);
+  else if (type.type == DW_TAG_array_type
+           || type.type == DW_TAG_structure_type
+           || type.type == DW_TAG_class_type) {
     Dwarf_Word size;
     if (dwarf_aggregate_size(die, &size) == 0) {
-      type->byte_size = size;
+      type.byte_size = size;
     }
   }
 
-  switch (type->type) {
+  switch (type.type) {
   case DW_TAG_array_type:
-    type->element_count = MC_dwarf_array_element_count(die, unit);
+    type.element_count = MC_dwarf_array_element_count(die, unit);
     // TODO, handle DW_byte_stride and (not) DW_bit_stride
     break;
 
   case DW_TAG_pointer_type:
   case DW_TAG_reference_type:
   case DW_TAG_rvalue_reference_type:
-    type->is_pointer_type = 1;
+    type.is_pointer_type = 1;
     break;
 
   case DW_TAG_structure_type:
   case DW_TAG_union_type:
   case DW_TAG_class_type:
-    MC_dwarf_add_members(info, die, unit, type);
-    char *new_ns = ns == NULL ? xbt_strdup(type->name.c_str())
+    MC_dwarf_add_members(info, die, unit, &type);
+    char *new_ns = ns == NULL ? xbt_strdup(type.name.c_str())
         : bprintf("%s::%s", ns, name);
     MC_dwarf_handle_children(info, die, unit, frame, new_ns);
     free(new_ns);
     break;
   }
 
-  return type;
+  return std::move(type);
 }
 
 static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
                                      Dwarf_Die * unit, mc_frame_t frame,
                                      const char *ns)
 {
-  mc_type_t type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
-
-  char *key = bprintf("%" PRIx64, (uint64_t) type->id);
-  xbt_dict_set(info->types, key, type, NULL);
-  xbt_free(key);
-
-  if (!type->name.empty() && type->byte_size != 0) {
-    xbt_dict_set(info->full_types_by_name, type->name.c_str(), type, NULL);
-  }
+  simgrid::mc::Type type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
+  auto& t = (info->types[type.id] = std::move(type));
+  if (!t.name.empty() && type.byte_size != 0)
+    info->full_types_by_name[t.name] = &t;
 }
 
 static int mc_anonymous_variable_index = 0;
@@ -1066,9 +1056,13 @@ static void MC_make_functions_index(mc_object_info_t info)
 static void MC_post_process_variables(mc_object_info_t info)
 {
   for(simgrid::mc::Variable& variable : info->global_variables)
-    if (!variable.type_id.empty())
-      variable.type = (mc_type_t) xbt_dict_get_or_null(
-        info->types, variable.type_id.c_str());
+    if (variable.type_id) {
+      auto i = info->types.find(variable.type_id);
+      if (i != info->types.end())
+        variable.type = &(i->second);
+      else
+        variable.type = nullptr;
+    }
 }
 
 static void mc_post_process_scope(mc_object_info_t info, mc_frame_t scope)
@@ -1086,9 +1080,13 @@ static void mc_post_process_scope(mc_object_info_t info, mc_frame_t scope)
 
   // Direct:
   for (simgrid::mc::Variable& variable : scope->variables)
-    if (!variable.type_id.empty())
-      variable.type = (mc_type_t) xbt_dict_get_or_null(
-        info->types, variable.type_id.c_str());
+    if (variable.type_id) {
+      auto i = info->types.find(variable.type_id);
+      if (i != info->types.end())
+        variable.type = &(i->second);
+      else
+        variable.type = nullptr;
+    }
 
   // Recursive post-processing of nested-scopes:
   for (simgrid::mc::Frame& nested_scope : scope->scopes)
@@ -1111,13 +1109,15 @@ static void MC_post_process_functions(mc_object_info_t info)
  */
 static void MC_resolve_subtype(mc_object_info_t info, mc_type_t type)
 {
-
-  if (type->type_id.empty())
+  if (!type->type_id)
     return;
-  type->subtype = (mc_type_t) xbt_dict_get_or_null(
-    info->types, type->type_id.c_str());
-  if (type->subtype == NULL)
+  auto i = info->types.find(type->type_id);
+  if (i != info->types.end())
+    type->subtype = &(i->second);
+  else {
+    type->subtype = nullptr;
     return;
+  }
   if (type->subtype->byte_size != 0)
     return;
   if (type->subtype->name.empty())
@@ -1125,25 +1125,17 @@ static void MC_resolve_subtype(mc_object_info_t info, mc_type_t type)
   // Try to find a more complete description of the type:
   // We need to fix in order to support C++.
 
-  mc_type_t subtype =
-    (mc_type_t) xbt_dict_get_or_null(
-      info->full_types_by_name, type->subtype->name.c_str());
-  if (subtype != NULL) {
-    type->subtype = subtype;
-  }
-
+  auto j = info->full_types_by_name.find(type->subtype->name);
+  if (j != info->full_types_by_name.end())
+    type->subtype = j->second;
 }
 
 static void MC_post_process_types(mc_object_info_t info)
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char *origin;
-  mc_type_t type;
-
   // Lookup "subtype" field:
-  xbt_dict_foreach(info->types, cursor, origin, type) {
-    MC_resolve_subtype(info, type);
-    for (simgrid::mc::Type& member : type->members)
+  for(auto& i : info->types) {
+    MC_resolve_subtype(info, &(i.second));
+    for (simgrid::mc::Type& member : i.second.members)
       MC_resolve_subtype(info, &member);
   }
 }
@@ -1258,11 +1250,9 @@ void MC_dwarf_register_variable(
 
 void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char *key = NULL;
-  mc_type_t type = NULL;
-  xbt_dict_foreach(info->types, cursor, key, type) {
+  for (auto& i : info->types) {
 
+    mc_type_t type = &(i.second);
     mc_type_t subtype = type;
     while (subtype->type == DW_TAG_typedef || subtype->type == DW_TAG_volatile_type
       || subtype->type == DW_TAG_const_type) {
@@ -1275,11 +1265,10 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
     // Resolve full_type:
     if (!subtype->name.empty() && subtype->byte_size == 0) {
       for (auto const& object_info : process->object_infos) {
-        mc_type_t same_type = (mc_type_t)
-            xbt_dict_get_or_null(object_info->full_types_by_name,
-                                 subtype->name.c_str());
-        if (same_type && !same_type->name.empty() && same_type->byte_size) {
-          type->full_type = same_type;
+        auto i = object_info->full_types_by_name.find(subtype->name);
+        if (i != object_info->full_types_by_name.end()
+            && !i->second->name.empty() && i->second->byte_size) {
+          type->full_type = i->second;
           break;
         }
       }

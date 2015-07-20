@@ -21,14 +21,12 @@
 int test_some_array[4][5][6];
 struct some_struct { int first; int second[4][5]; } test_some_struct;
 
-static mc_type_t find_type_by_name(mc_object_info_t info, const char* name) {
-  xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  mc_type_t type;
-  xbt_dict_foreach(info->types, cursor, key, type)
-    if(type->name == name)
-      return type;
-  return NULL;
+static mc_type_t find_type_by_name(mc_object_info_t info, const char* name)
+{
+  for (auto& entry : info->types)
+    if(entry.second.name == name)
+      return &entry.second;
+  return nullptr;
 }
 
 static mc_frame_t find_function_by_name(
@@ -93,9 +91,9 @@ static mc_variable_t test_global_variable(mc_process_t process, mc_object_info_t
       "Address mismatch for %s : %p expected but %p found",
       name, address, variable->address);
 
-  mc_type_t type = (mc_type_t) xbt_dict_get_or_null(
-    process->binary_info->types, variable->type_id.c_str());
-  xbt_assert(type!=NULL, "Missing type for %s", name);
+  auto i = process->binary_info->types.find(variable->type_id);
+  xbt_assert(i != process->binary_info->types.end(), "Missing type for %s", name);
+  mc_type_t type = &i->second;
   xbt_assert(type->byte_size = byte_size, "Byte size mismatch for %s", name);
   return variable;
 }
@@ -112,8 +110,11 @@ int some_local_variable = 0;
 
 typedef struct foo {int i;} s_foo;
 
-static void test_type_by_name(mc_process_t process, s_foo my_foo) {
-  assert(xbt_dict_get_or_null(process->binary_info->full_types_by_name, "struct foo"));
+static void test_type_by_name(mc_process_t process, s_foo my_foo)
+{
+  assert(
+    process->binary_info->full_types_by_name.find("struct foo") !=
+      process->binary_info->full_types_by_name.end());
 }
 
 int main(int argc, char** argv)
@@ -131,14 +132,18 @@ int main(int argc, char** argv)
 
   var = test_global_variable(process, process->binary_info.get(),
     "test_some_array", &test_some_array, sizeof(test_some_array));
-  type = (mc_type_t) xbt_dict_get_or_null(
-    process->binary_info->types, var->type_id.c_str());
-  xbt_assert(type->element_count == 6*5*4, "element_count mismatch in test_some_array : %i / %i", type->element_count, 6*5*4);
+  auto i = process->binary_info->types.find(var->type_id);
+  xbt_assert(i != process->binary_info->types.end(), "Missing type");
+  type = &i->second;
+  xbt_assert(type->element_count == 6*5*4,
+    "element_count mismatch in test_some_array : %i / %i",
+    type->element_count, 6*5*4);
 
   var = test_global_variable(process, process->binary_info.get(),
     "test_some_struct", &test_some_struct, sizeof(test_some_struct));
-  type = (mc_type_t) xbt_dict_get_or_null(
-    process->binary_info->types, var->type_id.c_str());
+  i = process->binary_info->types.find(var->type_id);
+  xbt_assert(i != process->binary_info->types.end(), "Missing type");
+  type = &i->second;
   assert(find_member(process->binary_info.get(), "first", type)->offset() == 0);
   assert(find_member(process->binary_info.get(), "second", type)->offset()
       == ((const char*)&test_some_struct.second) - (const char*)&test_some_struct);

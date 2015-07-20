@@ -11,9 +11,11 @@
 #ifndef SIMGRID_MC_OBJECT_INFO_H
 #define SIMGRID_MC_OBJECT_INFO_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <string>
+#include <vector>
+#include <unordered_map>
 
 #include <simgrid_config.h>
 #include <xbt/dict.h>
@@ -50,7 +52,7 @@ public:
   std::string name; /* Name of the type */
   int byte_size; /* Size in bytes */
   int element_count; /* Number of elements for array type */
-  std::string type_id; /* DW_AT_type id */
+  std::uint64_t type_id; /* DW_AT_type id */
   std::vector<Type> members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
   int is_pointer_type;
 
@@ -115,8 +117,8 @@ public:
   xbt_dict_t subprograms; // xbt_dict_t<origin as hexadecimal string, mc_frame_t>
   // TODO, remove the mutable (to remove it we'll have to add a lot of const everywhere)
   mutable std::vector<simgrid::mc::Variable> global_variables;
-  xbt_dict_t types; // xbt_dict_t<origin as hexadecimal string, mc_type_t>
-  xbt_dict_t full_types_by_name; // xbt_dict_t<name, mc_type_t> (full defined type only)
+  std::unordered_map<std::uint64_t, simgrid::mc::Type> types;
+  std::unordered_map<std::string, simgrid::mc::Type*> full_types_by_name;
 
   // Here we sort the minimal information for an efficient (and cache-efficient)
   // lookup of a function given an instruction pointer.
@@ -148,7 +150,7 @@ public:
   Dwarf_Off dwarf_offset; /* Global offset of the field. */
   int global;
   std::string name;
-  std::string type_id;
+  std::uint64_t type_id;
   mc_type_t type;
 
   // Use either of:

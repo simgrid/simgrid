@@ -210,7 +210,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
       else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
         if (!region2->contain(simgrid::mc::remote(addr_pointed2)))
           return 1;
-        if (type->type_id.empty())
+        if (!type->type_id)
           return (addr_pointed1 != addr_pointed2);
         else {
           return compare_areas_with_type(state, process_index,

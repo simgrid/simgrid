@@ -35,6 +35,7 @@ Type::Type()
   this->byte_size = 0;
   this->element_count = 0;
   this->is_pointer_type = 0;
+  this->type_id = 0;
   this->subtype = nullptr;
   this->full_type = nullptr;
 }
@@ -46,6 +47,7 @@ Variable::Variable()
   this->dwarf_offset = 0;
   this->global = 0;
   this->type = nullptr;
+  this->type_id = 0;
   this->address = nullptr;
   this->start_scope = 0;
   this->object_info = nullptr;
@@ -78,8 +80,6 @@ ObjectInformation::ObjectInformation()
   this->start_ro = nullptr;
   this->end_ro = nullptr;
   this->subprograms = xbt_dict_new_homogeneous(mc_frame_free);
-  this->types = xbt_dict_new_homogeneous((void (*)(void *)) mc_type_free);
-  this->full_types_by_name = xbt_dict_new_homogeneous(NULL);
   this->functions_index = nullptr;
 }
 
@@ -87,8 +87,6 @@ ObjectInformation::~ObjectInformation()
 {
   xbt_free(this->file_name);
   xbt_dict_free(&this->subprograms);
-  xbt_dict_free(&this->types);
-  xbt_dict_free(&this->full_types_by_name);
   xbt_dynar_free(&this->functions_index);
 }
 
