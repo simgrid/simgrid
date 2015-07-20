@@ -180,8 +180,7 @@ public:
   void setPriority(double priority);
   double getRemains();
 
-  int m_hostNb;
-  Host **p_hostList;
+  vector<RoutingEdge*> * p_edgeList = new vector<RoutingEdge*>();
   double *p_computationAmount;
   double *p_communicationAmount;
   double m_latency;

@@ -173,12 +173,15 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 										  double *bytes_amount,
 										  double rate)
 {
-  L07Action *action;
-  int i, j;
+  L07Action *action = new L07Action(this, 1, 0);
   unsigned int cpt;
   int nb_link = 0;
   int nb_host = 0;
   double latency = 0.0;
+
+  action->p_edgeList->reserve(host_nb);
+  for (int i = 0; i<host_nb; i++)
+	  action->p_edgeList->push_back(static_cast<HostL07*>(host_list[i])->p_netElm);
 
   if (ptask_parallel_task_link_set == NULL)
     ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
@@ -186,8 +189,8 @@ Action *HostL07Model::executeParallelTask(int host_nb,
   xbt_dict_reset(ptask_parallel_task_link_set);
 
   /* Compute the number of affected resources... */
-  for (i = 0; i < host_nb; i++) {
-    for (j = 0; j < host_nb; j++) {
+  for (int i = 0; i < host_nb; i++) {
+    for (int j = 0; j < host_nb; j++) {
       xbt_dynar_t route=NULL;
 
       if (bytes_amount[i * host_nb + j] > 0) {
@@ -196,10 +199,8 @@ Action *HostL07Model::executeParallelTask(int host_nb,
         void *_link;
         LinkL07 *link;
 
-        routing_platf->getRouteAndLatency(static_cast<HostL07*>(host_list[i])->p_netElm,
-        		                          static_cast<HostL07*>(host_list[j])->p_netElm,
-        		                          &route,
-        		                          &lat);
+        routing_platf->getRouteAndLatency((*action->p_edgeList)[i], (*action->p_edgeList)[j],
+        		                          &route, &lat);
         latency = MAX(latency, lat);
 
         xbt_dynar_foreach(route, cpt, _link) {
@@ -213,49 +214,43 @@ Action *HostL07Model::executeParallelTask(int host_nb,
   nb_link = xbt_dict_length(ptask_parallel_task_link_set);
   xbt_dict_reset(ptask_parallel_task_link_set);
 
-  for (i = 0; i < host_nb; i++)
+  for (int i = 0; i < host_nb; i++)
     if (flops_amount[i] > 0)
       nb_host++;
 
-  action = new L07Action(this, 1, 0);
   XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
          action, host_nb, nb_link);
-  action->m_suspended = 0;        /* Should be useless because of the
-                                   calloc but it seems to help valgrind... */
-  action->m_hostNb = host_nb;
-  action->p_hostList = (Host **) host_list;
+  action->m_suspended = 0; /* valgrind seems to want it despite the calloc... */
   action->p_computationAmount = flops_amount;
   action->p_communicationAmount = bytes_amount;
   action->m_latency = latency;
   action->m_rate = rate;
 
   action->p_variable = lmm_variable_new(ptask_maxmin_system, action, 1.0,
-                       (action->m_rate > 0) ? action->m_rate : -1.0,
-                       host_nb + nb_link);
+                                        (rate > 0 ? rate : -1.0),
+										host_nb + nb_link);
 
   if (action->m_latency > 0)
     lmm_update_variable_weight(ptask_maxmin_system, action->getVariable(), 0.0);
 
-  for (i = 0; i < host_nb; i++)
+  for (int i = 0; i < host_nb; i++)
     lmm_expand(ptask_maxmin_system,
     	         static_cast<HostL07*>(host_list[i])->p_cpu->getConstraint(),
                action->getVariable(), flops_amount[i]);
 
-  for (i = 0; i < host_nb; i++) {
-    for (j = 0; j < host_nb; j++) {
+  for (int i = 0; i < host_nb; i++) {
+    for (int j = 0; j < host_nb; j++) {
       void *_link;
-      LinkL07 *link;
 
       xbt_dynar_t route=NULL;
       if (bytes_amount[i * host_nb + j] == 0.0)
         continue;
 
-      routing_platf->getRouteAndLatency(static_cast<HostL07*>(host_list[i])->p_netElm,
-                                        static_cast<HostL07*>(host_list[j])->p_netElm,
+      routing_platf->getRouteAndLatency((*action->p_edgeList)[i], (*action->p_edgeList)[j],
     		                            &route, NULL);
 
       xbt_dynar_foreach(route, cpt, _link) {
-        link = static_cast<LinkL07*>(_link);
+        LinkL07 *link = static_cast<LinkL07*>(_link);
         lmm_expand_add(ptask_maxmin_system, link->getConstraint(),
                        action->getVariable(),
                        bytes_amount[i * host_nb + j]);
@@ -623,7 +618,6 @@ bool LinkL07::isShared()
  **********/
 
 L07Action::~L07Action(){
-  free(p_hostList);
   free(p_communicationAmount);
   free(p_computationAmount);
 }
@@ -634,17 +628,18 @@ void L07Action::updateBound()
   double lat_bound = -1.0;
   int i, j;
 
-  for (i = 0; i < m_hostNb; i++) {
-    for (j = 0; j < m_hostNb; j++) {
+  int hostNb = p_edgeList->size();
+
+  for (i = 0; i < hostNb; i++) {
+    for (j = 0; j < hostNb; j++) {
       xbt_dynar_t route=NULL;
 
-      if (p_communicationAmount[i * m_hostNb + j] > 0) {
+      if (p_communicationAmount[i * hostNb + j] > 0) {
         double lat = 0.0;
-        routing_platf->getRouteAndLatency(static_cast<HostL07*>(((void**)p_hostList)[i])->p_netElm,
-                                          static_cast<HostL07*>(((void**)p_hostList)[j])->p_netElm,
+        routing_platf->getRouteAndLatency((*p_edgeList)[i], (*p_edgeList)[j],
                 				          &route, &lat);
 
-        lat_current = MAX(lat_current, lat * p_communicationAmount[i * m_hostNb + j]);
+        lat_current = MAX(lat_current, lat * p_communicationAmount[i * hostNb + j]);
       }
     }
   }
