@@ -719,7 +719,6 @@ void Action::initialize(Model *model, double cost, bool failed,
   m_remains = cost;
   m_maxDuration = NO_MAX_DURATION;
   m_finish = -1.0;
-  m_failed = failed;
   m_start = surf_get_clock();
   m_cost = cost;
   p_model = model;

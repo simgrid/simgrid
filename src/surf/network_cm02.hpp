@@ -86,7 +86,7 @@ class NetworkCm02Action : public NetworkAction {
 
 public:
   NetworkCm02Action(Model *model, double cost, bool failed)
- : NetworkAction(model, cost, failed) {};
+     : NetworkAction(model, cost, failed) {};
   void updateRemainingLazy(double now);
 };
 

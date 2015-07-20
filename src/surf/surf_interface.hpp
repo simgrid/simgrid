@@ -502,7 +502,6 @@ protected:
   double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
 private:
-  bool m_failed;
   double m_start; /**< start time  */
   char *p_category;               /**< tracing category for categorized resource utilization monitoring */
 
