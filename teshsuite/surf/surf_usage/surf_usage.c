@@ -86,8 +86,8 @@ void test(char *platform)
   cardB = sg_routing_edge_by_name_or_null("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_routing_edge_name(cardA), cardA);
-  XBT_DEBUG("%s : %p", surf_routing_edge_name(cardB), cardB);
+  XBT_DEBUG("Cpu A: %p", cardA);
+  XBT_DEBUG("Cpu B: %p", cardB);
 
   /* Let's do something on it */
   surf_network_model_communicate(surf_network_model, cardA, cardB, 150.0, -1.0);

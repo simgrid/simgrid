@@ -194,7 +194,6 @@ static inline void *surf_storage_resource_by_name(const char *name){
 }
 
 
-XBT_PUBLIC(char *) surf_routing_edge_name(sg_routing_edge_t edge);
 XBT_PUBLIC(void *) surf_as_cluster_get_backbone(AS_t as);
 XBT_PUBLIC(void) surf_as_cluster_set_backbone(AS_t as, void* backbone);
 

@@ -26,10 +26,6 @@ static VM *get_casted_vm(surf_resource_t resource){
   return static_cast<VM*>(surf_host_resource_priv(resource));
 }
 
-char *surf_routing_edge_name(sg_routing_edge_t edge){
-  return edge->getName();
-}
-
 extern double NOW;
 
 void surf_presolve(void)
@@ -41,8 +37,8 @@ void surf_presolve(void)
   Model *model = NULL;
   unsigned int iter;
 
-  XBT_DEBUG
-      ("First Run! Let's \"purge\" events and put models in the right state");
+  XBT_DEBUG ("First Run! Let's \"purge\" events and put models in the right state");
+
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     if (next_event_date > NOW)
       break;
