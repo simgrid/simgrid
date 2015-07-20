@@ -728,34 +728,25 @@ void Action::initialize(Model *model, double cost, bool failed,
   m_lastUpdate = 0;
   m_suspended = false;
   m_hat = NOTSET;
+  p_category = NULL;
+  p_stateHookup.prev = 0;
+  p_stateHookup.next = 0;
+  if (failed)
+    p_stateSet = getModel()->getFailedActionSet();
+  else
+    p_stateSet = getModel()->getRunningActionSet();
+
+  p_stateSet->push_back(*this);
 }
 
 Action::Action(Model *model, double cost, bool failed)
 {
   initialize(model, cost, failed);
-  p_category = NULL;
-  p_stateHookup.prev = 0;
-  p_stateHookup.next = 0;
-  if (failed)
-    p_stateSet = getModel()->getFailedActionSet();
-  else
-    p_stateSet = getModel()->getRunningActionSet();
-
-  p_stateSet->push_back(*this);
 }
 
 Action::Action(Model *model, double cost, bool failed, lmm_variable_t var)
 {
   initialize(model, cost, failed, var);
-  p_category = NULL;
-  p_stateHookup.prev = 0;
-  p_stateHookup.next = 0;
-  if (failed)
-    p_stateSet = getModel()->getFailedActionSet();
-  else
-    p_stateSet = getModel()->getRunningActionSet();
-
-  p_stateSet->push_back(*this);
 }
 
 Action::~Action() {
