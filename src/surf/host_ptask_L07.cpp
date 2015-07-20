@@ -103,24 +103,20 @@ double HostL07Model::shareResources(double /*now*/)
   return min;
 }
 
-void HostL07Model::updateActionsState(double /*now*/, double delta)
-{
-  double deltap = 0.0;
-  HostL07Action *action;
+void HostL07Model::updateActionsState(double /*now*/, double delta) {
 
+  HostL07Action *action;
   ActionList *actionSet = getRunningActionSet();
 
-  for(ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end())
-	 ; it != itend ; it=itNext) {
+  for(ActionList::iterator it = actionSet->begin(), itNext = it
+	 ; it != actionSet->end()
+	 ; it =  itNext) {
 	++itNext;
     action = static_cast<HostL07Action*>(&*it);
-    deltap = delta;
     if (action->m_latency > 0) {
-      if (action->m_latency > deltap) {
-        double_update(&(action->m_latency), deltap, sg_surf_precision);
-        deltap = 0.0;
+      if (action->m_latency > delta) {
+        double_update(&(action->m_latency), delta, sg_surf_precision);
       } else {
-        double_update(&(deltap), action->m_latency, sg_surf_precision);
         action->m_latency = 0.0;
       }
       if ((action->m_latency == 0.0) && (action->isSuspended() == 0)) {
@@ -135,8 +131,14 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
     if (action->getMaxDuration() != NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
-    XBT_DEBUG("Action (%p) : remains (%g).",
-           action, action->getRemains());
+    XBT_DEBUG("Action (%p) : remains (%g).", action, action->getRemains());
+
+    /* In the next if cascade, the action can be finished either because:
+     *  - The amount of remaining work reached 0
+     *  - The max duration was reached
+     * If it's not done, it may have failed.
+     */
+
     if ((action->getRemains() <= 0) &&
         (lmm_get_variable_weight(action->getVariable()) > 0)) {
       action->finish();
@@ -144,16 +146,14 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
     } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
                (action->getMaxDuration() <= 0)) {
       action->finish();
-     action->setState(SURF_ACTION_DONE);
+      action->setState(SURF_ACTION_DONE);
     } else {
       /* Need to check that none of the model has failed */
       lmm_constraint_t cnst = NULL;
       int i = 0;
-      void *constraint_id = NULL;
 
-      while ((cnst = lmm_get_cnst_from_var(ptask_maxmin_system, action->getVariable(),
-                                    i++))) {
-        constraint_id = lmm_constraint_id(cnst);
+      while ((cnst = lmm_get_cnst_from_var(ptask_maxmin_system, action->getVariable(), i++))) {
+        void *constraint_id = lmm_constraint_id(cnst);
 
         if (static_cast<Host*>(constraint_id)->getState() == SURF_RESOURCE_OFF) {
           XBT_DEBUG("Action (%p) Failed!!", action);
@@ -168,10 +168,10 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
 }
 
 Action *HostL07Model::executeParallelTask(int host_nb,
-                                                   void **host_list,
-                                                   double *flops_amount,
-												   double *bytes_amount,
-                                                   double rate)
+                                          void **host_list,
+										  double *flops_amount,
+										  double *bytes_amount,
+										  double rate)
 {
   HostL07Action *action;
   int i, j;
