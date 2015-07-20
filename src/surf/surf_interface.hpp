@@ -107,26 +107,12 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
  */
 XBT_PUBLIC_CLASS Model {
 public:
-  /**
-   * @brief Model constructor
-   *
-   * @param name the name of the model
-   */
-  Model(const char *name);
-
-  /**
-   * @brief Model destructor
-   */
+  /** @brief Constructor */
+  Model();
+  /** @brief Destructor */
   virtual ~Model();
 
   virtual void addTraces() =0;
-
-  /**
-   * @brief Get the name of the current Model
-   *
-   * @return The name of the current Model
-   */
-  const char *getName() {return p_name;}
 
   /**
    * @brief Get the set of [actions](@ref Action) in *ready* state
@@ -226,8 +212,6 @@ protected:
   xbt_heap_t p_actionHeap;
 
 private:
-  const char *p_name;
-
   ActionListPtr p_readyActionSet; /**< Actions in state SURF_ACTION_READY */
   ActionListPtr p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
   ActionListPtr p_failedActionSet; /**< Actions in state SURF_ACTION_FAILED */

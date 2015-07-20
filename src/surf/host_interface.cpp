@@ -39,16 +39,6 @@ void host_add_traces(){
 /*********
  * Model *
  *********/
-HostModel::HostModel(const char *name)
- : Model(name)
-{}
-
-HostModel::HostModel()
-: Model("Host") {}
-
-HostModel::~HostModel() {
-}
-
 /* Each VM has a dummy CPU action on the PM layer. This CPU action works as the
  * constraint (capacity) of the VM in the PM layer. If the VM does not have any
  * active task, the dummy CPU action must be deactivated, so that the VM does

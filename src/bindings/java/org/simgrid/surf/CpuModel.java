@@ -55,13 +55,8 @@ public class CpuModel extends Model {
     SurfJNI.CpuModel_change_ownership(this, swigCPtr, true);
   }
 
-  
-  /**
-    * CpuModel constructon
-    * @param name The name of the cpumodel
-    */
-  public CpuModel(String name) {
-    this(SurfJNI.new_CpuModel(name), true);
+  public CpuModel() {
+    this(SurfJNI.new_CpuModel(), true);
     SurfJNI.CpuModel_director_connect(this, swigCPtr, swigCMemOwn, true);
   }
 

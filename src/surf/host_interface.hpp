@@ -60,14 +60,8 @@ XBT_PUBLIC(void) host_add_traces();
  */
 class HostModel : public Model {
 public:
-  /** @brief Constructor */
-  HostModel(const char *name);
-
-  /** @brief Constructor */
-  HostModel();
-
-  /** @brief Destructor */
-  ~HostModel();
+  HostModel() : Model() {}
+  ~HostModel() {}
 
   virtual Host *createHost(const char *name)=0;
   void addTraces(){DIE_IMPOSSIBLE;}

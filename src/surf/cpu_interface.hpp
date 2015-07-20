@@ -61,12 +61,8 @@ XBT_PUBLIC(void) cpu_add_traces();
  */
 XBT_PUBLIC_CLASS CpuModel : public Model {
 public:
-  /**
-   * @brief CpuModel constructor
-   *
-   * @param name The name of the model
-   */
-  CpuModel(const char *name) : Model(name) {};
+  /** @brief Constructor */
+  CpuModel() : Model() {};
 
   /**
    * @brief Create a Cpu

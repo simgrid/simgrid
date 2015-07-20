@@ -41,7 +41,7 @@ public class TracePlugin extends Plugin {
 
   @Override
   public void cpuActionStateChangedCallback(CpuAction action, ActionState old, ActionState cur){
-    Msg.info("Trace: CpuAction state changed "+action.getModel().getName());
+    Msg.info("Trace: CpuAction state changed");
   }
 
   @Override
@@ -61,7 +61,7 @@ public class TracePlugin extends Plugin {
 
   @Override
   public void networkActionStateChangedCallback(NetworkAction action, ActionState old, ActionState cur){
-    Msg.info("Trace: NetworkAction state changed "+action.getModel().getName());
+    Msg.info("Trace: NetworkAction state changed");
   }
 
 }

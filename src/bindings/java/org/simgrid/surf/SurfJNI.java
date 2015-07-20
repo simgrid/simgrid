@@ -72,7 +72,6 @@ public class SurfJNI {
   public final static native void delete_TmgrTrace(long jarg1);
   public final static native long TmgrTraceEvent_getIdx(long jarg1, TmgrTraceEvent jarg1_);
   public final static native void delete_TmgrTraceEvent(long jarg1);
-  public final static native String Model_getName(long jarg1, Model jarg1_);
   public final static native double Model_shareResources(long jarg1, Model jarg1_, double jarg2);
   public final static native double Model_shareResourcesLazy(long jarg1, Model jarg1_, double jarg2);
   public final static native double Model_shareResourcesFull(long jarg1, Model jarg1_, double jarg2);
@@ -82,7 +81,7 @@ public class SurfJNI {
   public final static native long Model_getRunningActionSet(long jarg1, Model jarg1_);
   public final static native void Model_addTraces(long jarg1, Model jarg1_);
   public final static native void delete_Model(long jarg1);
-  public final static native long new_CpuModel(String jarg1);
+  public final static native long new_CpuModel();
   public final static native void delete_CpuModel(long jarg1);
   public final static native long CpuModel_createCpu(long jarg1, CpuModel jarg1_, String jarg2, double[] jarg3, int jarg4, double jarg5, long jarg6, TmgrTrace jarg6_, int jarg7, int jarg8, long jarg9, TmgrTrace jarg9_, long jarg10, XbtDict jarg10_);
   public final static native void CpuModel_director_connect(CpuModel obj, long cptr, boolean mem_own, boolean weak_global);

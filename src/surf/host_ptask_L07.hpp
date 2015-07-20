@@ -51,7 +51,7 @@ public:
 
 class CpuL07Model : public CpuModel {
 public:
-  CpuL07Model() : CpuModel("cpuL07") {};
+  CpuL07Model() : CpuModel() {};
   ~CpuL07Model() {surf_cpu_model_pm = NULL;};
   Cpu *createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,

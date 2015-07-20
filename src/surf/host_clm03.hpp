@@ -26,8 +26,8 @@ class HostCLM03Action;
 
 class HostCLM03Model : public HostModel {
 public:
-  HostCLM03Model();
-  ~HostCLM03Model();
+  HostCLM03Model(): HostModel(){}
+  ~HostCLM03Model() {}
   Host *createHost(const char *name);
   double shareResources(double now);
 

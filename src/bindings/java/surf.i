@@ -236,8 +236,8 @@ struct tmgr_trace_event {
 %nodefaultctor Model;
 class Model {
 public:
-  Model(const char *name);
-  const char *getName();
+  Model();
+  
   virtual double shareResources(double now);
   virtual double shareResourcesLazy(double now);
   virtual double shareResourcesFull(double now);
@@ -254,7 +254,7 @@ public:
 %feature("director") CpuModel;
 class CpuModel : public Model {
 public:
-  CpuModel(const char *name);
+  CpuModel();
   virtual ~CpuModel();
   virtual Cpu *createCpu(const char *name, DoubleDynar power_peak,
                               int pstate, double power_scale,

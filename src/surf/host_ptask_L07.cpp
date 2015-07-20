@@ -45,7 +45,7 @@ void surf_host_model_init_ptask_L07(void)
 }
 
 
-HostL07Model::HostL07Model() : HostModel("Host ptask_L07") {
+HostL07Model::HostL07Model() : HostModel() {
   if (!ptask_maxmin_system)
 	ptask_maxmin_system = lmm_system_new(1);
   surf_host_model = NULL;

@@ -42,10 +42,10 @@ $ java -classpath ${classpath:=.} surfPlugin/TestPlugin ${srcdir:=.}/../platform
 > [Tremblay:surfPlugin.Sender:(1) 0.000000] [jmsg/INFO] sender time: 0.0
 > [Jupiter:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
 > [Jupiter:surfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
-> [0.019014] [jmsg/INFO] Trace: NetworkAction state changed network
+> [0.019014] [jmsg/INFO] Trace: NetworkAction state changed
 > [Jupiter:surfPlugin.Receiver:(2) 0.019014] [jmsg/INFO] Got at time 0.019014486310327584
 > [Tremblay:surfPlugin.Sender:(1) 0.019014] [jmsg/INFO] goodbye!
-> [0.019146] [jmsg/INFO] Trace: CpuAction state changed cpu
+> [0.019146] [jmsg/INFO] Trace: CpuAction state changed
 > [Jupiter:surfPlugin.Receiver:(2) 0.019146] [jmsg/INFO] goodbye!
 > [0.019146] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [0.019146] [jmsg/INFO] Trace: Cpu destructed Fafard

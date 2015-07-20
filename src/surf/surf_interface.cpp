@@ -435,9 +435,8 @@ void surf_exit(void)
  * Model *
  *********/
 
-Model::Model(const char *name)
+Model::Model()
   : p_maxminSystem(NULL)
-  , p_name(name)
 {
   p_readyActionSet = new ActionList();
   p_runningActionSet = new ActionList();

@@ -39,7 +39,7 @@ void surf_cpu_model_init_Cas01()
   xbt_dynar_push(model_list, &model_vm);
 }
 
-CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
+CpuCas01Model::CpuCas01Model() : CpuModel()
 {
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   int select = xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");

@@ -38,7 +38,7 @@ class SwigDirector_CpuModel : public CpuModel, public Swig::Director {
 
 public:
     void swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
-    SwigDirector_CpuModel(JNIEnv *jenv, char const *name);
+    SwigDirector_CpuModel(JNIEnv *jenv);
     virtual double shareResources(double now);
     virtual double shareResourcesLazy(double now);
     virtual double shareResourcesFull(double now);

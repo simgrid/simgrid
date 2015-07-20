@@ -72,12 +72,9 @@ XBT_PUBLIC(void) net_add_traces();
 class NetworkModel : public Model {
 public:
   /** @brief Constructor */
-  NetworkModel() : Model("network") { }
+  NetworkModel() : Model() { }
 
-  /** @brief Constructor */
-  NetworkModel(const char *name) : Model(name) { }
-
-  /** @brief The destructor of the NetworkModel */
+  /** @brief Destructor */
   ~NetworkModel() {
 	if (p_maxminSystem)
 	  lmm_system_free(p_maxminSystem);

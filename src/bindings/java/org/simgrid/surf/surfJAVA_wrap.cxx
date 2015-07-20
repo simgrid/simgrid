@@ -1348,7 +1348,7 @@ void SwigDirector_Plugin::swig_connect_director(JNIEnv *jenv, jobject jself, jcl
 }
 
 
-SwigDirector_CpuModel::SwigDirector_CpuModel(JNIEnv *jenv, char const *name) : CpuModel(name), Swig::Director(jenv) {
+SwigDirector_CpuModel::SwigDirector_CpuModel(JNIEnv *jenv) : CpuModel(), Swig::Director(jenv) {
 }
 
 double SwigDirector_CpuModel::shareResources(double now) {
@@ -2835,21 +2835,6 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1TmgrTraceEvent(JNI
 }
 
 
-SWIGEXPORT jstring JNICALL Java_org_simgrid_surf_SurfJNI_Model_1getName(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jstring jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
-  char *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
-  result = (char *)(arg1)->getName();
-  if (result) jresult = jenv->NewStringUTF((const char *)result);
-  return jresult;
-}
-
-
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Model_1shareResources(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   jdouble jresult = 0 ;
   Model *arg1 = (Model *) 0 ;
@@ -2982,23 +2967,14 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1Model(JNIEnv *jenv
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1CpuModel(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1CpuModel(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
-  char *arg1 = (char *) 0 ;
   CpuModel *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = 0;
-  if (jarg1) {
-    arg1 = (char *)jenv->GetStringUTFChars(jarg1, 0);
-    if (!arg1) return 0;
-  }
-  result = (CpuModel *)new SwigDirector_CpuModel(jenv,(char const *)arg1);
+  result = (CpuModel *)new SwigDirector_CpuModel(jenv);
   *(CpuModel **)&jresult = result; 
-  {
-    
-  }
   return jresult;
 }
 

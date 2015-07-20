@@ -21,14 +21,13 @@ class NetworkConstantAction;
 class NetworkConstantModel : public NetworkCm02Model {
 public:
   NetworkConstantModel()
-  : NetworkCm02Model("constant time network")
+  : NetworkCm02Model()
   {
     p_updateMechanism = UM_UNDEFINED;
   };
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-  Action *communicate(RoutingEdge *src, RoutingEdge *dst,
-		                           double size, double rate);
+  Action *communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate);
   void gapRemove(Action *action);
 };
 

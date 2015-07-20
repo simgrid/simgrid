@@ -47,14 +47,6 @@ public class Model {
 
   
   /**
-    * @return The name of the model
-    */
-  public String getName() {
-    return SurfJNI.Model_getName(swigCPtr, this);
-  }
-
-  
-  /**
     * Share the resources between the actions
     * @param now the current time
     * @return the date of the next action of the model will finish

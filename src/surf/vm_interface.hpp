@@ -47,7 +47,7 @@ extern surf_callback(void, VM*) VMStateChangedCallbacks;
  */
 class VMModel : public HostModel {
 public:
-  VMModel();
+  VMModel() :HostModel(){}
   ~VMModel(){};
 
   Host *createHost(const char *name){DIE_IMPOSSIBLE;}

@@ -404,7 +404,7 @@ void surf_cpu_model_init_ti()
   xbt_dynar_push(model_list, &model_vm);
 }
 
-CpuTiModel::CpuTiModel() : CpuModel("cpu_ti")
+CpuTiModel::CpuTiModel() : CpuModel()
 {
   p_runningActionSetThatDoesNotNeedBeingChecked = new ActionList();
 

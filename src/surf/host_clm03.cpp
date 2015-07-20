@@ -46,14 +46,6 @@ void surf_host_model_init_compound()
   sg_platf_host_add_cb(host_parse_init);
 }
 
-HostCLM03Model::HostCLM03Model()
- : HostModel("Host CLM03")
-{
-}
-
-HostCLM03Model::~HostCLM03Model()
-{}
-
 Host *HostCLM03Model::createHost(const char *name){
   sg_host_t sg_host = sg_host_by_name(name);
   Host *host = new HostCLM03(surf_host_model, name, NULL,

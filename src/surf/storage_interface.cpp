@@ -33,7 +33,9 @@ surf_callback(void, StorageAction*, e_surf_action_state_t, e_surf_action_state_t
  * Model *
  *********/
 
-StorageModel::StorageModel() : Model("Storage") {
+StorageModel::StorageModel()
+	: Model()
+{
   p_storageList = NULL;
 }
 

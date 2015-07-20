@@ -273,7 +273,7 @@ void surf_network_model_init_NS3()
   xbt_dynar_push(model_list, &surf_network_model);
 }
 
-NetworkNS3Model::NetworkNS3Model() : NetworkModel("network NS3") {
+NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   if (ns3_initialize(xbt_cfg_get_string(_sg_cfg_set, "ns3/TcpModel"))) {
     xbt_die("Impossible to initialize NS3 interface");
   }

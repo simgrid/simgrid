@@ -23,8 +23,6 @@ surf_callback(void, VM*) VMStateChangedCallbacks;
  * Model *
  *********/
 
-VMModel::VMModel() : HostModel("Virtual Machine") {}
-
 VMModel::vm_list_t VMModel::ws_vms;
 
 /************
