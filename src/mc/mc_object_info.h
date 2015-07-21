@@ -140,9 +140,28 @@ struct FunctionIndexEntry {
   mc_frame_t function;
 };
 
+/** Information about an (ELF) executable/sharedobject
+ *
+ *  This contain sall the information we have at runtime about an
+ *  executable/shared object in the target (modelchecked) process:
+ *  - where it is located in the virtual address space;
+ *  - where are located it's different memory mapping in the the
+ *    virtual address space ;
+ *  - all the debugging (DWARF) information,
+ *    - location of the functions,
+ *    - types
+ *  - etc.
+ *
+ *  It is not copyable because we are taking pointers to Types/Frames.
+ *  We'd have to update/rebuild some data structures in order to copy
+ *  successfully.
+ */
+
 class ObjectInformation {
 public:
   ObjectInformation();
+
+  // Not copyable:
   ObjectInformation(ObjectInformation const&) = delete;
   ObjectInformation& operator=(ObjectInformation const&) = delete;
 
