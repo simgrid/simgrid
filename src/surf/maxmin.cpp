@@ -48,7 +48,7 @@ lmm_system_t lmm_system_new(int selective_update)
   l->selective_update_active = selective_update;
   l->visited_counter = 1;
 
-  XBT_DEBUG("Setting selective_update_active flag to %d\n",
+  XBT_DEBUG("Setting selective_update_active flag to %d",
          l->selective_update_active);
 
   xbt_swag_init(&(l->variable_set),
