@@ -162,7 +162,7 @@ void __MSG_storage_destroy(msg_storage_priv_t host);
 void __MSG_file_destroy(msg_file_priv_t host);
 
 void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
-void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,
+smx_process_t MSG_process_create_from_SIMIX(const char *name,
                                    xbt_main_func_t code, void *data,
                                    const char *hostname, double kill_time,
                                    int argc, char **argv,

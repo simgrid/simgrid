@@ -182,8 +182,7 @@ void SIMIX_process_stop(smx_process_t arg) {
  */
 smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
 
-  smx_process_t process;
-  simix_global->create_process_function(&process,
+  smx_process_t process = simix_global->create_process_function(
                                         args->name,
                                         args->code,
                                         args->data,
@@ -199,8 +198,7 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
 }
 
 
-void simcall_HANDLER_process_create(smx_simcall_t simcall,
-		          smx_process_t *process,
+void* simcall_HANDLER_process_create(smx_simcall_t simcall,
                           const char *name,
                           xbt_main_func_t code,
                           void *data,
@@ -209,7 +207,7 @@ void simcall_HANDLER_process_create(smx_simcall_t simcall,
                           int argc, char **argv,
                           xbt_dict_t properties,
                           int auto_restart){
-  SIMIX_process_create(process, name, code, data, hostname,
+  return (void*)SIMIX_process_create(name, code, data, hostname,
                        kill_time, argc, argv, properties, auto_restart,
                        simcall->issuer);
 }
@@ -222,7 +220,7 @@ void simcall_HANDLER_process_create(smx_simcall_t simcall,
  *
  * \return the process created
  */
-void SIMIX_process_create(smx_process_t *process,
+smx_process_t SIMIX_process_create(
                           const char *name,
                           xbt_main_func_t code,
                           void *data,
@@ -233,7 +231,7 @@ void SIMIX_process_create(smx_process_t *process,
                           int auto_restart,
                           smx_process_t parent_process)
 {
-  *process = NULL;
+  smx_process_t process = NULL;
   sg_host_t host = sg_host_by_name(hostname);
 
   XBT_DEBUG("Start process %s on host '%s'", name, hostname);
@@ -247,60 +245,60 @@ void SIMIX_process_create(smx_process_t *process,
     xbt_free(argv);
   }
   else {
-    *process = xbt_new0(s_smx_process_t, 1);
+    process = xbt_new0(s_smx_process_t, 1);
 
     xbt_assert(((code != NULL) && (host != NULL)), "Invalid parameters");
     /* Process data */
-    (*process)->pid = simix_process_maxpid++;
-    (*process)->name = xbt_strdup(name);
-    (*process)->host = host;
-    (*process)->data = data;
-    (*process)->comms = xbt_fifo_new();
-    (*process)->simcall.issuer = *process;
+    process->pid = simix_process_maxpid++;
+    process->name = xbt_strdup(name);
+    process->host = host;
+    process->data = data;
+    process->comms = xbt_fifo_new();
+    process->simcall.issuer = process;
 
      if (parent_process) {
-       (*process)->ppid = SIMIX_process_get_PID(parent_process);
+       process->ppid = SIMIX_process_get_PID(parent_process);
      } else {
-       (*process)->ppid = -1;
+       process->ppid = -1;
      }
 
     /* Process data for auto-restart */
-    (*process)->auto_restart = auto_restart;
-    (*process)->code = code;
-    (*process)->argc = argc;
-    (*process)->argv = argv;
+    process->auto_restart = auto_restart;
+    process->code = code;
+    process->argc = argc;
+    process->argv = argv;
 
 
-    XBT_VERB("Create context %s", (*process)->name);
-    (*process)->context = SIMIX_context_new(code, argc, argv,
-      simix_global->cleanup_process_function, *process);
+    XBT_VERB("Create context %s", process->name);
+    process->context = SIMIX_context_new(code, argc, argv, simix_global->cleanup_process_function, process);
 
-    (*process)->running_ctx = xbt_new(xbt_running_ctx_t, 1);
-    XBT_RUNNING_CTX_INITIALIZE((*process)->running_ctx);
+    process->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+    XBT_RUNNING_CTX_INITIALIZE(process->running_ctx);
 
     if(MC_is_active()){
-      MC_ignore_heap((*process)->running_ctx, sizeof(*(*process)->running_ctx));
+      MC_ignore_heap(process->running_ctx, sizeof(*process->running_ctx));
     }
 
     /* Add properties */
-    (*process)->properties = properties;
+    process->properties = properties;
 
     /* Add the process to it's host process list */
-    xbt_swag_insert(*process, sg_host_simix(host)->process_list);
+    xbt_swag_insert(process, sg_host_simix(host)->process_list);
 
-    XBT_DEBUG("Start context '%s'", (*process)->name);
+    XBT_DEBUG("Start context '%s'", process->name);
 
     /* Now insert it in the global process list and in the process to run list */
-    xbt_swag_insert(*process, simix_global->process_list);
-    XBT_DEBUG("Inserting %s(%s) in the to_run list", (*process)->name, sg_host_name(host));
-    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, *process);
+    xbt_swag_insert(process, simix_global->process_list);
+    XBT_DEBUG("Inserting %s(%s) in the to_run list", process->name, sg_host_name(host));
+    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
 
     if (kill_time > SIMIX_get_clock() && simix_global->kill_process_function) {
-      XBT_DEBUG("Process %s(%s) will be kill at time %f", (*process)->name,
-          sg_host_name((*process)->host), kill_time);
-      (*process)->kill_timer = SIMIX_timer_set(kill_time, simix_global->kill_process_function, *process);
+      XBT_DEBUG("Process %s(%s) will be kill at time %f", process->name,
+          sg_host_name(process->host), kill_time);
+      process->kill_timer = SIMIX_timer_set(kill_time, simix_global->kill_process_function, process);
     }
   }
+  return process;
 }
 
 /**
@@ -986,7 +984,7 @@ smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer)
   //start the new process
   smx_process_t new_process;
   if (simix_global->create_process_function) {
-    simix_global->create_process_function(&new_process,
+    new_process = simix_global->create_process_function(
                                           arg.argv[0],
                                           arg.code,
                                           arg.data,
@@ -998,7 +996,7 @@ smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer)
                                           arg.auto_restart,
                                           NULL);
   } else {
-    simcall_process_create(&new_process,
+    new_process = simcall_process_create(
                            arg.argv[0],
                            arg.code,
                            arg.data,

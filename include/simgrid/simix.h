@@ -79,7 +79,7 @@ typedef struct s_smx_synchro *smx_synchro_t; /* FIXME: replace by specialized sy
 /** @brief Process datatype
     @ingroup simix_process_management
 
-    A processt may be defined as a <em>code</em>, with some <em>private
+    A process may be defined as a <em>code</em>, with some <em>private
     data</em>, executing in a <em>location</em>.
     \see m_process_management
   @{ */
@@ -102,7 +102,7 @@ typedef enum {
  * int argc, char **argv: parameters passed to code
  * xbt_dict_t pros: properties
  */
-typedef void (*smx_creation_func_t) ( /* process */ smx_process_t*,
+typedef smx_process_t (*smx_creation_func_t) (
                                       /* name */ const char*,
                                       /* code */ xbt_main_func_t,
                                       /* userdata */ void*,
@@ -363,8 +363,7 @@ XBT_PUBLIC(void) simcall_vm_shutdown(sg_host_t vm);
 
 /**************************** Process simcalls ********************************/
 /* Constructor and Destructor */
-XBT_PUBLIC(void) simcall_process_create(smx_process_t *process,
-                                          const char *name,
+XBT_PUBLIC(smx_process_t) simcall_process_create(const char *name,
                                           xbt_main_func_t code,
                                           void *data,
                                           const char *hostname,

@@ -62,7 +62,7 @@ typedef struct s_smx_process {
 } s_smx_process_t;
 
 
-void SIMIX_process_create(smx_process_t *process,
+smx_process_t SIMIX_process_create(
                           const char *name,
                           xbt_main_func_t code,
                           void *data,

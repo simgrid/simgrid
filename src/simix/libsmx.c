@@ -582,7 +582,7 @@ void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t d
  * \param properties the properties of the process
  * \param auto_restart either it is autorestarting or not.
  */
-void simcall_process_create(smx_process_t *process, const char *name,
+smx_process_t simcall_process_create(const char *name,
                               xbt_main_func_t code,
                               void *data,
                               const char *hostname,
@@ -591,7 +591,7 @@ void simcall_process_create(smx_process_t *process, const char *name,
                               xbt_dict_t properties,
                               int auto_restart)
 {
-  simcall_BODY_process_create(process, name, code, data, hostname,
+  return (smx_process_t) simcall_BODY_process_create(name, code, data, hostname,
                               kill_time, argc, argv, properties,
                               auto_restart);
 }

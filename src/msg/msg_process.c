@@ -53,7 +53,7 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-void MSG_process_create_from_SIMIX(smx_process_t* process, const char *name,
+smx_process_t MSG_process_create_from_SIMIX(const char *name,
                                    xbt_main_func_t code, void *data,
                                    const char *hostname, double kill_time,
                                    int argc, char **argv,
@@ -68,7 +68,7 @@ void MSG_process_create_from_SIMIX(smx_process_t* process, const char *name,
     MSG_process_set_kill_time(p,kill_time);
     MSG_process_auto_restart_set(p,auto_restart);
   }
-  *((msg_process_t*) process) = p;
+  return p;
 }
 
 /** \ingroup m_process_management
@@ -166,7 +166,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
- simcall_process_create(&process, name, code, simdata, sg_host_name(host), -1,
+ process = simcall_process_create(name, code, simdata, sg_host_name(host), -1,
                            argc, argv, properties,0);
 
   TRACE_msg_process_create(name, SIMIX_process_get_PID(process), host);

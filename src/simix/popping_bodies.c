@@ -990,26 +990,25 @@ inline static void simcall_BODY_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t 
     
   }
   
-inline static void simcall_BODY_process_create(smx_process_t* process, const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart) {
+inline static void* simcall_BODY_process_create(const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_process_create(&self->simcall, process, name, code, data, hostname, kill_time, argc, argv, properties, auto_restart);
+    if (0) simcall_HANDLER_process_create(&self->simcall, name, code, data, hostname, kill_time, argc, argv, properties, auto_restart);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_PROCESS_CREATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) process;
-    self->simcall.args[1].cc = (const char*) name;
-    self->simcall.args[2].fp = (FPtr) code;
-    self->simcall.args[3].dp = (void*) data;
-    self->simcall.args[4].cc = (const char*) hostname;
-    self->simcall.args[5].d = (double) kill_time;
-    self->simcall.args[6].i = (int) argc;
-    self->simcall.args[7].dp = (void*) argv;
-    self->simcall.args[8].dp = (void*) properties;
-    self->simcall.args[9].i = (int) auto_restart;
+    self->simcall.args[0].cc = (const char*) name;
+    self->simcall.args[1].fp = (FPtr) code;
+    self->simcall.args[2].dp = (void*) data;
+    self->simcall.args[3].cc = (const char*) hostname;
+    self->simcall.args[4].d = (double) kill_time;
+    self->simcall.args[5].i = (int) argc;
+    self->simcall.args[6].dp = (void*) argv;
+    self->simcall.args[7].dp = (void*) properties;
+    self->simcall.args[8].i = (int) auto_restart;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
@@ -1017,7 +1016,7 @@ inline static void simcall_BODY_process_create(smx_process_t* process, const cha
     } else {
       SIMIX_simcall_handle(&self->simcall, 0);
     }    
-    
+    return self->simcall.result.dp;
   }
   
 inline static void simcall_BODY_process_kill(smx_process_t process) {

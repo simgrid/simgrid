@@ -392,7 +392,7 @@ case SIMCALL_VM_MIGRATEFROM_RESUMETO:
       break;  
 
 case SIMCALL_PROCESS_CREATE:
-       simcall_HANDLER_process_create(simcall , (smx_process_t*) simcall->args[0].dp,  simcall->args[1].cc, (xbt_main_func_t) simcall->args[2].fp,  simcall->args[3].dp,  simcall->args[4].cc,  simcall->args[5].d,  simcall->args[6].i, (char**) simcall->args[7].dp, (xbt_dict_t) simcall->args[8].dp,  simcall->args[9].i);
+      simcall->result.dp = simcall_HANDLER_process_create(simcall ,  simcall->args[0].cc, (xbt_main_func_t) simcall->args[1].fp,  simcall->args[2].dp,  simcall->args[3].cc,  simcall->args[4].d,  simcall->args[5].i, (char**) simcall->args[6].dp, (xbt_dict_t) simcall->args[7].dp,  simcall->args[8].i);
       SIMIX_simcall_answer(simcall);
       break;  
 

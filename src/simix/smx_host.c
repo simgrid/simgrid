@@ -50,7 +50,6 @@ void SIMIX_host_on(sg_host_t h)
     unsigned int cpt;
     smx_process_arg_t arg;
     xbt_dynar_foreach(host->boot_processes,cpt,arg) {
-      smx_process_t process;
 
       char** argv = xbt_new(char*, arg->argc);
       for (int i=0; i<arg->argc; i++)
@@ -58,8 +57,7 @@ void SIMIX_host_on(sg_host_t h)
 
       XBT_DEBUG("Booting Process %s(%s) right now", arg->argv[0], arg->hostname);
       if (simix_global->create_process_function) {
-        simix_global->create_process_function(&process,
-                                              argv[0],
+        simix_global->create_process_function(argv[0],
                                               arg->code,
                                               NULL,
                                               arg->hostname,
@@ -70,8 +68,7 @@ void SIMIX_host_on(sg_host_t h)
                                               arg->auto_restart,
                                               NULL);
       } else {
-        simcall_process_create(&process,
-                               arg->argv[0],
+        simcall_process_create(arg->argv[0],
                                arg->code,
                                NULL,
                                arg->hostname,
@@ -291,12 +288,9 @@ void SIMIX_host_restart_processes(sg_host_t host)
 
   xbt_dynar_foreach (process_list, cpt, arg) {
 
-    smx_process_t process;
-
     XBT_DEBUG("Restarting Process %s(%s) right now", arg->argv[0], arg->hostname);
     if (simix_global->create_process_function) {
-      simix_global->create_process_function(&process,
-                                            arg->argv[0],
+      simix_global->create_process_function(arg->argv[0],
                                             arg->code,
                                             NULL,
                                             arg->hostname,
@@ -307,8 +301,7 @@ void SIMIX_host_restart_processes(sg_host_t host)
                                             arg->auto_restart,
                                             NULL);
     } else {
-      simcall_process_create(&process,
-                             arg->argv[0],
+      simcall_process_create(arg->argv[0],
                              arg->code,
                              NULL,
                              arg->hostname,

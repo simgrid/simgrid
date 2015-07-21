@@ -641,65 +641,65 @@ static inline void simcall_vm_migratefrom_resumeto__set__dst_pm(smx_simcall_t si
     simcall->args[2].dp = arg;
 }
 
-static inline smx_process_t* simcall_process_create__get__process(smx_simcall_t simcall) {
-  return (smx_process_t*) simcall->args[0].dp;
-}
-static inline void simcall_process_create__set__process(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
 static inline const char* simcall_process_create__get__name(smx_simcall_t simcall) {
-  return  simcall->args[1].cc;
+  return  simcall->args[0].cc;
 }
 static inline void simcall_process_create__set__name(smx_simcall_t simcall, const char* arg) {
-    simcall->args[1].cc = arg;
+    simcall->args[0].cc = arg;
 }
 static inline xbt_main_func_t simcall_process_create__get__code(smx_simcall_t simcall) {
-  return (xbt_main_func_t) simcall->args[2].fp;
+  return (xbt_main_func_t) simcall->args[1].fp;
 }
 static inline void simcall_process_create__set__code(smx_simcall_t simcall, FPtr arg) {
-    simcall->args[2].fp = arg;
+    simcall->args[1].fp = arg;
 }
 static inline void* simcall_process_create__get__data(smx_simcall_t simcall) {
-  return  simcall->args[3].dp;
+  return  simcall->args[2].dp;
 }
 static inline void simcall_process_create__set__data(smx_simcall_t simcall, void* arg) {
-    simcall->args[3].dp = arg;
+    simcall->args[2].dp = arg;
 }
 static inline const char* simcall_process_create__get__hostname(smx_simcall_t simcall) {
-  return  simcall->args[4].cc;
+  return  simcall->args[3].cc;
 }
 static inline void simcall_process_create__set__hostname(smx_simcall_t simcall, const char* arg) {
-    simcall->args[4].cc = arg;
+    simcall->args[3].cc = arg;
 }
 static inline double simcall_process_create__get__kill_time(smx_simcall_t simcall) {
-  return  simcall->args[5].d;
+  return  simcall->args[4].d;
 }
 static inline void simcall_process_create__set__kill_time(smx_simcall_t simcall, double arg) {
-    simcall->args[5].d = arg;
+    simcall->args[4].d = arg;
 }
 static inline int simcall_process_create__get__argc(smx_simcall_t simcall) {
-  return  simcall->args[6].i;
+  return  simcall->args[5].i;
 }
 static inline void simcall_process_create__set__argc(smx_simcall_t simcall, int arg) {
-    simcall->args[6].i = arg;
+    simcall->args[5].i = arg;
 }
 static inline char** simcall_process_create__get__argv(smx_simcall_t simcall) {
-  return (char**) simcall->args[7].dp;
+  return (char**) simcall->args[6].dp;
 }
 static inline void simcall_process_create__set__argv(smx_simcall_t simcall, void* arg) {
-    simcall->args[7].dp = arg;
+    simcall->args[6].dp = arg;
 }
 static inline xbt_dict_t simcall_process_create__get__properties(smx_simcall_t simcall) {
-  return (xbt_dict_t) simcall->args[8].dp;
+  return (xbt_dict_t) simcall->args[7].dp;
 }
 static inline void simcall_process_create__set__properties(smx_simcall_t simcall, void* arg) {
-    simcall->args[8].dp = arg;
+    simcall->args[7].dp = arg;
 }
 static inline int simcall_process_create__get__auto_restart(smx_simcall_t simcall) {
-  return  simcall->args[9].i;
+  return  simcall->args[8].i;
 }
 static inline void simcall_process_create__set__auto_restart(smx_simcall_t simcall, int arg) {
-    simcall->args[9].i = arg;
+    simcall->args[8].i = arg;
+}
+static inline void* simcall_process_create__get__result(smx_simcall_t simcall){
+    return  simcall->result.dp;
+}
+static inline void simcall_process_create__set__result(smx_simcall_t simcall, void* result){
+    simcall->result.dp = result;
 }
 
 static inline smx_process_t simcall_process_kill__get__process(smx_simcall_t simcall) {
@@ -1943,7 +1943,7 @@ void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_vm);
 void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm);
 void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t ind_vm);
 void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t ind_vm);
-void simcall_HANDLER_process_create(smx_simcall_t simcall, smx_process_t* process, const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart);
+void* simcall_HANDLER_process_create(smx_simcall_t simcall, const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart);
 void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_process_t process);
 void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
 void simcall_HANDLER_process_change_host(smx_simcall_t simcall, smx_process_t process, sg_host_t dest);

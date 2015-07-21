@@ -71,7 +71,7 @@ static void parse_process(sg_platf_process_cbarg_t process)
     XBT_DEBUG("Starting Process %s(%s) right now", process->argv[0], sg_host_name(host));
 
     if (simix_global->create_process_function)
-      simix_global->create_process_function(&process_created,
+      process_created = simix_global->create_process_function(
                                             (char*)(process->argv)[0],
                                             parse_code,
                                             NULL,
@@ -82,7 +82,7 @@ static void parse_process(sg_platf_process_cbarg_t process)
                                             current_property_set,
                                             auto_restart, NULL);
     else
-      simcall_process_create(&process_created, (char*)(process->argv)[0], parse_code, NULL, sg_host_name(host), kill_time, process->argc,
+      process_created = simcall_process_create((char*)(process->argv)[0], parse_code, NULL, sg_host_name(host), kill_time, process->argc,
           (char**)process->argv, current_property_set,auto_restart);
     
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
