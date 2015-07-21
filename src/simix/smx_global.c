@@ -242,7 +242,14 @@ void SIMIX_clean(void)
 #endif
   if (cleaned) return; // to avoid double cleaning by java and C
   cleaned = 1;
-  /* Kill everyone (except maestro) */
+  XBT_DEBUG("SIMIX_clean called. Simulation's over.");
+  if (!xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() == 0.0) {
+	  XBT_CRITICAL("   ");
+	  XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
+	  XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
+	  xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
+  }
+  /* Kill all processes (but maestro) */
   SIMIX_process_killall(simix_global->maestro_process, 1);
 
   /* Exit the SIMIX network module */
