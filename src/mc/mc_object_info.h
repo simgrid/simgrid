@@ -113,7 +113,6 @@ public:
 
   size_t start_scope;
   mc_object_info_t object_info;
-
 };
 
 class Frame {
@@ -132,10 +131,18 @@ public:
   mc_object_info_t object_info;
 };
 
+/** An entry in the functions index
+ *
+ *  See the code of ObjectInformation::find_function.
+ */
+struct FunctionIndexEntry {
+  void* low_pc;
+  mc_frame_t function;
+};
+
 class ObjectInformation {
 public:
   ObjectInformation();
-  ~ObjectInformation();
   ObjectInformation(ObjectInformation const&) = delete;
   ObjectInformation& operator=(ObjectInformation const&) = delete;
 
@@ -155,10 +162,12 @@ public:
   std::unordered_map<std::uint64_t, simgrid::mc::Type> types;
   std::unordered_map<std::string, simgrid::mc::Type*> full_types_by_name;
 
-  // Here we sort the minimal information for an efficient (and cache-efficient)
-  // lookup of a function given an instruction pointer.
-  // The entries are sorted by low_pc and a binary search can be used to look them up.
-  xbt_dynar_t functions_index;
+  /** Index of functions by IP
+   *
+   * The entries are sorted by low_pc and a binary search can be used to look
+   * them up. Should we used a binary tree instead?
+   */
+  std::vector<FunctionIndexEntry> functions_index;
 
   bool executable() const
   {
@@ -194,11 +203,5 @@ XBT_INTERNAL const char* MC_dwarf_tagname(int tag);
 XBT_INTERNAL void* mc_member_resolve(
   const void* base, mc_type_t type, mc_type_t member,
   mc_address_space_t snapshot, int process_index);
-
-
-struct s_mc_function_index_item {
-  void* low_pc, *high_pc;
-  mc_frame_t function;
-};
 
 #endif

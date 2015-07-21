@@ -78,12 +78,6 @@ ObjectInformation::ObjectInformation()
   this->end_rw = nullptr;
   this->start_ro = nullptr;
   this->end_ro = nullptr;
-  this->functions_index = nullptr;
-}
-
-ObjectInformation::~ObjectInformation()
-{
-  xbt_dynar_free(&this->functions_index);
 }
 
 /** Find the DWARF offset for this ELF object
@@ -113,22 +107,35 @@ void *ObjectInformation::base_address() const
   return result;
 }
 
+/* Find a function by instruction pointer */
 mc_frame_t ObjectInformation::find_function(const void *ip) const
 {
-  xbt_dynar_t dynar = this->functions_index;
-  mc_function_index_item_t base =
-      (mc_function_index_item_t) xbt_dynar_get_ptr(dynar, 0);
+  /* This is implemented by binary search on a sorted array.
+   *
+   * We do quite a lot ot those so we want this to be cache efficient.
+   * We pack the only information we need in the index entries in order
+   * to successfully do the binary search. We do not need the high_pc
+   * during the binary search (only at the end) so it is not included
+   * in the index entry. We could use parallel arrays as well.
+   *
+   * We cannot really use the std:: alogrithm for this.
+   * We could use std::binary_search by including the high_pc inside
+   * the FunctionIndexEntry.
+   */
+  const simgrid::mc::FunctionIndexEntry* base =
+    this->functions_index.data();
   int i = 0;
-  int j = xbt_dynar_length(dynar) - 1;
+  int j = this->functions_index.size() - 1;
   while (j >= i) {
     int k = i + ((j - i) / 2);
-    if (ip < base[k].low_pc) {
+    if (ip < base[k].low_pc)
       j = k - 1;
-    } else if (ip >= base[k].high_pc) {
+    else if (k <= j && ip >= base[k + 1].low_pc)
       i = k + 1;
-    } else {
+    else if (ip < base[k].function->high_pc)
       return base[k].function;
-    }
+    else
+      return nullptr;
   }
   return nullptr;
 }

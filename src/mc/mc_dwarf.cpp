@@ -6,6 +6,7 @@
 
 #include <cinttypes>
 
+#include <algorithm>
 #include <memory>
 
 #include <stdlib.h>
@@ -1007,8 +1008,8 @@ void MC_dwarf_get_variables(mc_object_info_t info)
 
 // ***** Functions index
 
-static int MC_compare_frame_index_items(mc_function_index_item_t a,
-                                        mc_function_index_item_t b)
+static int MC_compare_frame_index_items(simgrid::mc::FunctionIndexEntry* a,
+                                        simgrid::mc::FunctionIndexEntry* b)
 {
   if (a->low_pc < b->low_pc)
     return -1;
@@ -1020,28 +1021,26 @@ static int MC_compare_frame_index_items(mc_function_index_item_t a,
 
 static void MC_make_functions_index(mc_object_info_t info)
 {
-  xbt_dynar_t index = xbt_dynar_new(sizeof(s_mc_function_index_item_t), NULL);
+  info->functions_index.clear();
 
   for (auto& e : info->subprograms) {
     if (e.second.low_pc == nullptr)
       continue;
-    s_mc_function_index_item_t entry;
+    simgrid::mc::FunctionIndexEntry entry;
     entry.low_pc = e.second.low_pc;
-    entry.high_pc = e.second.high_pc;
     entry.function = &e.second;
-    xbt_dynar_push(index, &entry);
+    info->functions_index.push_back(entry);
   }
 
-  mc_function_index_item_t base =
-      (mc_function_index_item_t) xbt_dynar_get_ptr(index, 0);
+  info->functions_index.shrink_to_fit();
 
   // Sort the array by low_pc:
-  qsort(base,
-        xbt_dynar_length(index),
-        sizeof(s_mc_function_index_item_t),
-        (int (*)(const void *, const void *)) MC_compare_frame_index_items);
-
-  info->functions_index = index;
+  std::sort(info->functions_index.begin(), info->functions_index.end(),
+        [](simgrid::mc::FunctionIndexEntry& a,
+          simgrid::mc::FunctionIndexEntry& b)
+        {
+          return a.low_pc < b.low_pc;
+        });
 }
 
 static void MC_post_process_variables(mc_object_info_t info)
