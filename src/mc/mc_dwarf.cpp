@@ -21,11 +21,8 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
-static void MC_dwarf_register_global_variable(
-  mc_object_info_t info, std::unique_ptr<simgrid::mc::Variable> variable);
 static void MC_register_variable(
   mc_object_info_t info, mc_frame_t frame, std::unique_ptr<simgrid::mc::Variable> variable);
-static void MC_dwarf_register_non_global_variable(mc_object_info_t info, mc_frame_t frame, mc_variable_t variable);
 static void MC_dwarf_register_variable(
   mc_object_info_t info, mc_frame_t frame,
   std::unique_ptr<simgrid::mc::Variable> variable);
@@ -454,6 +451,20 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
     }
   }
   return result;
+}
+
+// ***** Variable
+
+static bool MC_compare_variable(
+  simgrid::mc::Variable const& a, simgrid::mc::Variable const& b)
+{
+  int cmp = strcmp(a.name.c_str(), b.name.c_str());
+  if (cmp < 0)
+    return true;
+  else if (cmp > 0)
+    return false;
+  else
+    return a.address < b.address;
 }
 
 // ***** mc_type_t
@@ -899,6 +910,10 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
   // Handle children:
   MC_dwarf_handle_children(info, die, unit, &frame, ns);
 
+  // Someone needs this to be sorted but who?
+  std::sort(frame.variables.begin(), frame.variables.end(),
+    MC_compare_variable);
+
   // Register it:
   if (klass == mc_tag_subprogram)
     info->subprograms[frame.id] = frame;
@@ -1045,6 +1060,10 @@ static void MC_make_functions_index(mc_object_info_t info)
 
 static void MC_post_process_variables(mc_object_info_t info)
 {
+  // Someone needs this to be sorted but who?
+  std::sort(info->global_variables.begin(), info->global_variables.end(),
+    MC_compare_variable);
+
   for(simgrid::mc::Variable& variable : info->global_variables)
     if (variable.type_id) {
       auto i = info->types.find(variable.type_id);
@@ -1136,8 +1155,8 @@ std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
   result->file_name = name;
   MC_find_object_address(maps, result.get());
   MC_dwarf_get_variables(result.get());
-  MC_post_process_types(result.get());
   MC_post_process_variables(result.get());
+  MC_post_process_types(result.get());
   MC_post_process_functions(result.get());
   MC_make_functions_index(result.get());
   return std::move(result);
@@ -1145,90 +1164,17 @@ std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
 
 /*************************************************************************/
 
-static int MC_dwarf_get_variable_index(
-  std::vector<simgrid::mc::Variable> variables, const char *var, void *address)
-{
-
-  if (variables.empty())
-    return 0;
-
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = variables.size() - 1;
-  mc_variable_t var_test = nullptr;
-
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    var_test = &variables[cursor];
-    if (strcmp(var_test->name.c_str(), var) < 0) {
-      start = cursor + 1;
-    } else if (strcmp(var_test->name.c_str(), var) > 0) {
-      end = cursor - 1;
-    } else {
-      if (address) {            /* global variable */
-        if (var_test->address == address)
-          return -1;
-        if (var_test->address > address)
-          end = cursor - 1;
-        else
-          start = cursor + 1;
-      } else {                  /* local variable */
-        return -1;
-      }
-    }
-  }
-
-  if (strcmp(var_test->name.c_str(), var) == 0) {
-    if (address && var_test->address < address)
-      return cursor + 1;
-    else
-      return cursor;
-  } else if (strcmp(var_test->name.c_str(), var) < 0)
-    return cursor + 1;
-  else
-    return cursor;
-
-}
-
-void MC_dwarf_register_global_variable(
-  mc_object_info_t info,
-  std::unique_ptr<simgrid::mc::Variable> variable)
-{
-  int index =
-      MC_dwarf_get_variable_index(info->global_variables,
-        variable->name.c_str(),
-        variable->address);
-  if (index != -1)
-    info->global_variables.insert(
-      info->global_variables.begin() + index, std::move(*variable));
-  // TODO, else ?
-}
-
-void MC_dwarf_register_non_global_variable(
-  mc_object_info_t info,
-  mc_frame_t frame,
-  std::unique_ptr<simgrid::mc::Variable> variable)
-{
-  xbt_assert(frame, "Frame is NULL");
-  int index =
-      MC_dwarf_get_variable_index(
-        frame->variables, variable->name.c_str(), NULL);
-  if (index != -1)
-    frame->variables.insert(
-      frame->variables.begin() + index, std::move(*variable));
-  // TODO, else ?
-}
-
 void MC_dwarf_register_variable(
   mc_object_info_t info, mc_frame_t frame,
   std::unique_ptr<simgrid::mc::Variable> variable)
 {
   if (!variable)
     return;
-  if (variable->global)
-    MC_dwarf_register_global_variable(info, std::move(variable));
+  // Those arrays are sorted later:
+  else if (variable->global)
+    info->global_variables.push_back(std::move(*variable));
   else if (frame != nullptr)
-    MC_dwarf_register_non_global_variable(info, frame, std::move(variable));
+    frame->variables.push_back(std::move(*variable));
   else
     xbt_die("No frame for this local variable");
 }
