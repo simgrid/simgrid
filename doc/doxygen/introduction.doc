@@ -1,4 +1,4 @@
-/*! @page introduction Introduction to SimGrid 
+/*! @page introduction Introduction to SimGrid
 
 [SimGrid](http://simgrid.gforge.inria.fr/) is a toolkit
 that provides core functionalities for the simulation of distributed
@@ -9,7 +9,7 @@ distributed and parallel application scheduling on distributed computing
 platforms ranging from simple network of workstations to Computational
 Grids.
 
-# Scenario 
+# Scenario
 The goal of this practical session is to illustrate various usage of
 the MSG interface. To this end we will use the following simple setting:
 
@@ -28,25 +28,25 @@ interesting questions:
     The most obvious algorithm would be to send tasks to workers in a
     round-robin fashion. This is the initial code we provide you.
 
-    A less obvious one but probably more efficient would be to set up
-    a request mechanism where client first ask for tasks, which allows
+    A less obvious but probably more efficient approach would be to set up
+    a request mechanism where a client first ask for tasks, which allows
     the server to decide which request to answer and possibly to send
     the tasks to the fastest machines. Maybe you can think of a
     smarter mechanism...
 
-- How much tasks should the client ask for?
-    
-    Indeed, if we set up a request mechanism and that workers only
+- How many tasks should the client ask for?
+
+    Indeed, if we set up a request mechanism so that workers only
     send request whenever they have no more task to process, they are
     likely to be poorly exploited since they will have to wait for the
     master to consider their request and for the input data to be
     transferred. A client should thus probably request a pool of tasks
-    but if it requests too much task, it is likely to lead to a poor
+    but if it requests too many tasks, it is likely to lead to a poor
     load-balancing...
-    
+
 - How is the quality of such algorithm dependent on the platform
-    characteristics? on the task characteristics?
-    
+    characteristics and on the task characteristics?
+
     Whenever the input communication time is very small compared to
     processing time and workers are homogeneous, it is likely that the
     round-robin algorithm performs very well. Would it still hold true
@@ -54,20 +54,20 @@ interesting questions:
     a volunteer computing system ?
 
 - The network topology interconnecting the master and the workers
-  may be quite complicated. How does such topology impact the
+  may be quite complicated. How does such a topology impact the
   previous result?
 
     When data transfers are the bottleneck, it is likely that a good
-    modeling of the platform becomes essential, in which case, you may
+    modeling of the platform becomes essential. In this case, you may
     want to be able to account for complex platform topologies.
 
 - Do the algorithms depend on a perfect knowledge of this
   topology?
 
     Should we still use a flat master worker deployment or should we
-    use a 
+    use a
 
-- How is such algorithm sensitive to external workload variation?
+- How is such an algorithm sensitive to external workload variation?
 
     What if bandwidth, latency and power can vary with no warning?
     Shouldn't you study whether your algorithm is sensitive to such
@@ -76,13 +76,13 @@ interesting questions:
 - Although an algorithm may be more efficient than another, how
   does it interfere with other applications?
 
-    As you can see, this very simple setting may need to evolve way
-    beyond what you initially imagined. 
+    %As you can see, this very simple setting may need to evolve way
+    beyond what you initially imagined.
 
     <blockquote> Premature optimization is  the root of all evil. -- D.E.Knuth</blockquote>
 
-    Furthermore, writing your own simulator is much harder that what you
-    may imagine. This is why should rely on an established and flexible
+    Furthermore, writing your own simulator is much harder than you
+    may imagine. This is why you should rely on an established and flexible
     one.
 
 The following figure is a screenshot of [triva][fn:1] visualizing a [SimGrid
@@ -97,7 +97,7 @@ usage over a long period of time.
 ## Tutorials
 
 A lot of information on how to install and use Simgrid are
-available on the [online documentation][fn:4] and in the tutorials:
+provided by the [online documentation][fn:4] and by several tutorials:
 
 - http://simgrid.gforge.inria.fr/tutorials/simgrid-use-101.pdf
 - http://simgrid.gforge.inria.fr/tutorials/simgrid-tracing-101.pdf
@@ -105,15 +105,24 @@ available on the [online documentation][fn:4] and in the tutorials:
 
 ## Installing SimGrid
 
+In case you're using [Debian](https://www.debian.org) or a derivate,
+such as Ubuntu or Mint, you can install SimGrid by using the provided
+packages:
+
     sudo apt-get install libsimgrid-dev
 
 This tutorial requires simgrid 3.8 at least so you may need to get
 the [debian packages](http://packages.debian.org/libsimgrid-dev).
 
+Please note that your distribution may ship with an old version of
+SimGrid; you may want to use [a newer release](https://gforge.inria.fr/frs/?group_id=12)
+or even [clone our git repository](https://gforge.inria.fr/frs/?group_id=12)
+(a [GitHub mirror](https://github.com/mquinson/simgrid) is also available).
+
 # Recommended Steps
 
-## Installing Viva 
-   
+## Installing Viva
+
 This [software][fn:1] will be useful to make fancy graph or treemap
 visualizations and get a better understanding of simulations. You
 will first need to install pajeng:
@@ -121,7 +130,7 @@ will first need to install pajeng:
 ~~~~{.sh}
 sudo apt-get install git cmake build-essential libqt4-dev  libboost-dev freeglut3-dev ;
 git clone https://github.com/schnorr/pajeng.git
-cd pajeng && mkdir -p build &&  cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=$HOME &&  make -j install 
+cd pajeng && mkdir -p build &&  cd build && cmake ../ -DCMAKE_INSTALL_PREFIX=$HOME &&  make -j install
 cd ../../
 ~~~~
 
@@ -130,11 +139,11 @@ Then you can install viva.
 ~~~~{.sh}
 sudo apt-get install libboost-dev libconfig++-dev libconfig8-dev libgtk2.0-dev freeglut3-dev
 git clone https://github.com/schnorr/viva.git
-cd viva && mkdir -p build_graph &&  cd build_graph && cmake ../ -DTUPI_LIBRARY=ON -DVIVA=ON -DCMAKE_INSTALL_PREFIX=$HOME &&  make -j install 
+cd viva && mkdir -p build_graph &&  cd build_graph && cmake ../ -DTUPI_LIBRARY=ON -DVIVA=ON -DCMAKE_INSTALL_PREFIX=$HOME &&  make -j install
 cd ../../
 ~~~~
 
-## Installing Paje 
+## Installing Paje
 
 This [software][fn:5] provides a Gantt-chart visualization.
 
@@ -142,7 +151,7 @@ This [software][fn:5] provides a Gantt-chart visualization.
 sudo apt-get install paje.app
 ~~~~
 
-## Installing Vite 
+## Installing Vite
 
 This software provides a [Gantt-chart visualization][fn:6].
 
@@ -152,7 +161,7 @@ sudo apt-get install vite
 
 # Let's get Started
 ## Setting up and Compiling
-   
+
 The corresponding archive with all source files and platform files
 can be obtained [here](http://simgrid.gforge.inria.fr/tutorials/msg-tuto/msg-tuto.tgz).
 
@@ -162,7 +171,7 @@ cd msg-tuto/src
 make
 ~~~~
 
-As you can see, there is already a nice Makefile that compiles
+%As you can see, there is already a nice Makefile that compiles
 everything for you. Now the tiny example has been compiled and it
 can be easily run as follows:
 
@@ -191,7 +200,7 @@ For a really fancy output, you should use [viva/triva][fn:1]:
     --cfg=tracing/uncategorized:yes --cfg=viva/uncategorized:uncat.plist
 LANG=C ; viva simgrid.trace uncat.plist
 ~~~~
- 
+
 For a more classical Gantt-Chart visualization, you can produce a
 [Paje][fn:5] trace:
 
@@ -258,23 +267,23 @@ new deployment file `deployment1.xml` should thus now simply be:
 </platform>
 ~~~~
 
-To this end you may need the following MSG functions, whose
-behavior is described in the [online documentation](http://simgrid.gforge.inria.fr/simgrid/3.8.1/ref_guide/html/index.html) (hint: use the
-search field to access directly the function you are looking for):
+To this end you may need the following MSG functions (click on the links
+to see their descriptions):
 
 ~~~~{.c}
-int MSG_get_host_number (void)
+int MSG_get_host_number(void);
 xbt_dynar_t MSG_hosts_as_dynar(void);
 void * xbt_dynar_to_array (xbt_dynar_t dynar);
 msg_process_t MSG_process_create(const char *name, xbt_main_func_t code,
                                  void *data, msg_host_t host);
 ~~~~
 
-Note that it may avoid bugs later to avoid launching a worker on
-the master host so you probably want to remove it from the host
-list.
+\note
+    It may avoid bugs later to avoid launching a worker on
+    the master host so you probably want to remove it from the host
+    list.
 
-The `data` field of the `MSG_process_create` can be used to pass
+The `data` field of the @ref MSG_process_create can be used to pass
 a channel name that will be private between master
 and workers (e.g., `master_name:worker_name`). Adding the
 `master_name` in the channel name will allow to easily have several
@@ -287,10 +296,10 @@ const char * MSG_host_get_name(msg_host_t host);
 msg_process_t MSG_process_self(void);
 void * MSG_process_get_data(msg_process_t process);
 ~~~~
-   
-Again, you should check the [online documentation](http://simgrid.gforge.inria.fr/simgrid/3.8.1/ref_guide/html/index.html)
-for more information.  If you are not too much familiar with string
+
+If you are not too familiar with string
 manipulation in C, you may want to use the following functions
+(see the C reference for details):
 
 ~~~~{.c}
 char *strcpy(char *dest, const char *src);
@@ -299,18 +308,18 @@ char *strcat(char *dest, const char *src);
 
 ## Setting up a Time Limit Mechanism
 
-In the current version, the number of tasks is defined in the
+In the current version, the number of tasks is defined through the
 worker arguments. Hence, tasks are created at the very beginning of
 the simulation. Instead, create tasks as needed and provide a time
 limit indicating when it stops sending tasks. To this end, you will
-obviously need to know what time it is ([reference manual][fn:7]):
+obviously need to know what time it is:
 
 ~~~~{.c}
 double MSG_get_clock(void);
 ~~~~
 
 Otherwise, a quite effective way of terminating the simulation
-would be to use some of the following [function][fn:7]:
+would be to use some of the following functions:
 
 ~~~~{.c}
 void MSG_process_kill(msg_process_t process);
@@ -344,7 +353,7 @@ tasks processed). These debug messages can be activated as follows:
 
 SimGrid can trace all resource consumption and the outcome can be
 displayed with viva as illustrated in the section "Setting up and Compiling". However, when several
-masters are deployed, it is hard to understand what happens. 
+masters are deployed, it is hard to understand what happens.
 
 ~~~~{.xml}
 <?xml version='1.0'?>
@@ -368,14 +377,13 @@ masters are deployed, it is hard to understand what happens.
 </platform>
 ~~~~
 
-So let's use categories to track more precisely who does what and
-[when][fn:7].
+So let's use categories to track more precisely who does what and when:
 
 ~~~~{.c}
 void TRACE_category(const char *category);
 void MSG_task_set_category (msg_task_t task, const char *category);
 ~~~~
-   
+
 The outcome can then be visualized as follows:
 
 ~~~~{.sh}
@@ -476,7 +484,6 @@ bytes that you manage to distribute and process in one hour on
 [fn:4]: http://simgrid.gforge.inria.fr/documentation.html
 [fn:5]: http://paje.sourceforge.net/
 [fn:6]: http://vite.gforge.inria.fr/
-[fn:7]: http://simgrid.gforge.inria.fr/simgrid/3.8.1/ref_guide/html/index.html
 
 
 
