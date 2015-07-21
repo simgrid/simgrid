@@ -142,7 +142,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 }
 
 void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int , int position){
-  s_sg_platf_link_cbarg_t link;
+  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   s_surf_parsing_link_up_down_t info;
   char* link_id = bprintf("%s_link_%d", cluster->id, id);
 

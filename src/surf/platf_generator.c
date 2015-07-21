@@ -616,8 +616,8 @@ void platf_generate(void) {
   sg_platf_host_cbarg_t host_parameters;
   sg_platf_cluster_cbarg_t cluster_parameters;
   sg_platf_link_cbarg_t link_parameters;
-  s_sg_platf_router_cbarg_t router_parameters; /* This one is not a pointer! */
-  s_sg_platf_route_cbarg_t route_parameters; /* neither this one! */
+  s_sg_platf_router_cbarg_t router_parameters = SG_PLATF_ROUTER_INITIALIZER; /* This one is not a pointer! */
+  s_sg_platf_route_cbarg_t route_parameters   = SG_PLATF_ROUTE_INITIALIZER; /* neither this one! */
 
   router_parameters.coord = NULL;
   route_parameters.symmetrical = FALSE;
