@@ -1109,13 +1109,6 @@ static void mc_post_process_scope(mc_object_info_t info, mc_frame_t scope)
 
 }
 
-static void MC_post_process_functions(mc_object_info_t info)
-{
-  for (auto& entry : info->subprograms)
-    mc_post_process_scope(info, &entry.second);
-}
-
-
 /** \brief Fill/lookup the "subtype" field.
  */
 static void MC_resolve_subtype(mc_object_info_t info, mc_type_t type)
@@ -1164,7 +1157,8 @@ std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
   MC_dwarf_get_variables(result.get());
   MC_post_process_variables(result.get());
   MC_post_process_types(result.get());
-  MC_post_process_functions(result.get());
+  for (auto& entry : result.get()->subprograms)
+    mc_post_process_scope(result.get(), &entry.second);
   MC_make_functions_index(result.get());
   return std::move(result);
 }
