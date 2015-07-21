@@ -51,8 +51,8 @@ double SIMIX_host_get_wattmin_at(sg_host_t host,int pstate);
 double SIMIX_host_get_wattmax_at(sg_host_t host,int pstate);
 void SIMIX_host_set_pstate(sg_host_t host, int pstate_index);
 int SIMIX_host_get_pstate(sg_host_t host);
-smx_synchro_t SIMIX_process_execute(const char *name,
-    sg_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask);
+smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
+    double flops_amount, double priority, double bound, unsigned long affinity_mask);
 smx_synchro_t SIMIX_process_parallel_execute(const char *name,
     int host_nb, sg_host_t *host_list,
     double *flops_amount, double *bytes_amount,

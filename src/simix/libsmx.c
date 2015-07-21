@@ -242,7 +242,7 @@ double simcall_host_get_wattmax_at(msg_host_t host, int pstate){
  * \param affinity_mask
  * \return A new SIMIX execution synchronization
  */
-smx_synchro_t simcall_process_execute(const char *name, sg_host_t host,
+smx_synchro_t simcall_process_execute(const char *name,
                                     double flops_amount,
                                     double priority, double bound, unsigned long affinity_mask)
 {
@@ -250,7 +250,7 @@ smx_synchro_t simcall_process_execute(const char *name, sg_host_t host,
   xbt_assert(isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
 
-  return simcall_BODY_process_execute(name, host, flops_amount, priority, bound, affinity_mask);
+  return simcall_BODY_process_execute(name, flops_amount, priority, bound, affinity_mask);
 }
 
 /**

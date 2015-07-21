@@ -241,196 +241,6 @@ static inline void simcall_host_get_consumed_energy__set__result(smx_simcall_t s
     simcall->result.d = result;
 }
 
-static inline const char* simcall_process_execute__get__name(smx_simcall_t simcall) {
-  return  simcall->args[0].cc;
-}
-static inline void simcall_process_execute__set__name(smx_simcall_t simcall, const char* arg) {
-    simcall->args[0].cc = arg;
-}
-static inline sg_host_t simcall_process_execute__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[1].dp;
-}
-static inline void simcall_process_execute__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[1].dp = arg;
-}
-static inline double simcall_process_execute__get__flops_amount(smx_simcall_t simcall) {
-  return  simcall->args[2].d;
-}
-static inline void simcall_process_execute__set__flops_amount(smx_simcall_t simcall, double arg) {
-    simcall->args[2].d = arg;
-}
-static inline double simcall_process_execute__get__priority(smx_simcall_t simcall) {
-  return  simcall->args[3].d;
-}
-static inline void simcall_process_execute__set__priority(smx_simcall_t simcall, double arg) {
-    simcall->args[3].d = arg;
-}
-static inline double simcall_process_execute__get__bound(smx_simcall_t simcall) {
-  return  simcall->args[4].d;
-}
-static inline void simcall_process_execute__set__bound(smx_simcall_t simcall, double arg) {
-    simcall->args[4].d = arg;
-}
-static inline unsigned long simcall_process_execute__get__affinity_mask(smx_simcall_t simcall) {
-  return  simcall->args[5].ul;
-}
-static inline void simcall_process_execute__set__affinity_mask(smx_simcall_t simcall, unsigned long arg) {
-    simcall->args[5].ul = arg;
-}
-static inline smx_synchro_t simcall_process_execute__get__result(smx_simcall_t simcall){
-    return (smx_synchro_t) simcall->result.dp;
-}
-static inline void simcall_process_execute__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
-static inline const char* simcall_process_parallel_execute__get__name(smx_simcall_t simcall) {
-  return  simcall->args[0].cc;
-}
-static inline void simcall_process_parallel_execute__set__name(smx_simcall_t simcall, const char* arg) {
-    simcall->args[0].cc = arg;
-}
-static inline int simcall_process_parallel_execute__get__host_nb(smx_simcall_t simcall) {
-  return  simcall->args[1].i;
-}
-static inline void simcall_process_parallel_execute__set__host_nb(smx_simcall_t simcall, int arg) {
-    simcall->args[1].i = arg;
-}
-static inline sg_host_t* simcall_process_parallel_execute__get__host_list(smx_simcall_t simcall) {
-  return (sg_host_t*) simcall->args[2].dp;
-}
-static inline void simcall_process_parallel_execute__set__host_list(smx_simcall_t simcall, void* arg) {
-    simcall->args[2].dp = arg;
-}
-static inline double* simcall_process_parallel_execute__get__flops_amount(smx_simcall_t simcall) {
-  return (double*) simcall->args[3].dp;
-}
-static inline void simcall_process_parallel_execute__set__flops_amount(smx_simcall_t simcall, void* arg) {
-    simcall->args[3].dp = arg;
-}
-static inline double* simcall_process_parallel_execute__get__bytes_amount(smx_simcall_t simcall) {
-  return (double*) simcall->args[4].dp;
-}
-static inline void simcall_process_parallel_execute__set__bytes_amount(smx_simcall_t simcall, void* arg) {
-    simcall->args[4].dp = arg;
-}
-static inline double simcall_process_parallel_execute__get__amount(smx_simcall_t simcall) {
-  return  simcall->args[5].d;
-}
-static inline void simcall_process_parallel_execute__set__amount(smx_simcall_t simcall, double arg) {
-    simcall->args[5].d = arg;
-}
-static inline double simcall_process_parallel_execute__get__rate(smx_simcall_t simcall) {
-  return  simcall->args[6].d;
-}
-static inline void simcall_process_parallel_execute__set__rate(smx_simcall_t simcall, double arg) {
-    simcall->args[6].d = arg;
-}
-static inline smx_synchro_t simcall_process_parallel_execute__get__result(smx_simcall_t simcall){
-    return (smx_synchro_t) simcall->result.dp;
-}
-static inline void simcall_process_parallel_execute__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
-static inline smx_synchro_t simcall_process_execution_destroy__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_process_execution_destroy__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-
-static inline smx_synchro_t simcall_process_execution_cancel__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_process_execution_cancel__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-
-static inline smx_synchro_t simcall_process_execution_get_remains__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_process_execution_get_remains__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline double simcall_process_execution_get_remains__get__result(smx_simcall_t simcall){
-    return  simcall->result.d;
-}
-static inline void simcall_process_execution_get_remains__set__result(smx_simcall_t simcall, double result){
-    simcall->result.d = result;
-}
-
-static inline smx_synchro_t simcall_process_execution_get_state__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_process_execution_get_state__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline e_smx_state_t simcall_process_execution_get_state__get__result(smx_simcall_t simcall){
-    return (e_smx_state_t) simcall->result.i;
-}
-static inline void simcall_process_execution_get_state__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
-
-static inline smx_synchro_t simcall_process_execution_set_priority__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_process_execution_set_priority__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline double simcall_process_execution_set_priority__get__priority(smx_simcall_t simcall) {
-  return  simcall->args[1].d;
-}
-static inline void simcall_process_execution_set_priority__set__priority(smx_simcall_t simcall, double arg) {
-    simcall->args[1].d = arg;
-}
-
-static inline smx_synchro_t simcall_process_execution_set_bound__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_process_execution_set_bound__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline double simcall_process_execution_set_bound__get__bound(smx_simcall_t simcall) {
-  return  simcall->args[1].d;
-}
-static inline void simcall_process_execution_set_bound__set__bound(smx_simcall_t simcall, double arg) {
-    simcall->args[1].d = arg;
-}
-
-static inline smx_synchro_t simcall_process_execution_set_affinity__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_process_execution_set_affinity__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline sg_host_t simcall_process_execution_set_affinity__get__ws(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[1].dp;
-}
-static inline void simcall_process_execution_set_affinity__set__ws(smx_simcall_t simcall, void* arg) {
-    simcall->args[1].dp = arg;
-}
-static inline unsigned long simcall_process_execution_set_affinity__get__mask(smx_simcall_t simcall) {
-  return  simcall->args[2].ul;
-}
-static inline void simcall_process_execution_set_affinity__set__mask(smx_simcall_t simcall, unsigned long arg) {
-    simcall->args[2].ul = arg;
-}
-
-static inline smx_synchro_t simcall_process_execution_wait__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_process_execution_wait__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline int simcall_process_execution_wait__get__result(smx_simcall_t simcall){
-    return  simcall->result.i;
-}
-static inline void simcall_process_execution_wait__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
-
 static inline sg_host_t simcall_host_get_mounted_storage_list__get__host(smx_simcall_t simcall) {
   return (sg_host_t) simcall->args[0].dp;
 }
@@ -890,6 +700,190 @@ static inline int simcall_process_sleep__get__result(smx_simcall_t simcall){
     return  simcall->result.i;
 }
 static inline void simcall_process_sleep__set__result(smx_simcall_t simcall, int result){
+    simcall->result.i = result;
+}
+
+static inline const char* simcall_process_execute__get__name(smx_simcall_t simcall) {
+  return  simcall->args[0].cc;
+}
+static inline void simcall_process_execute__set__name(smx_simcall_t simcall, const char* arg) {
+    simcall->args[0].cc = arg;
+}
+static inline double simcall_process_execute__get__flops_amount(smx_simcall_t simcall) {
+  return  simcall->args[1].d;
+}
+static inline void simcall_process_execute__set__flops_amount(smx_simcall_t simcall, double arg) {
+    simcall->args[1].d = arg;
+}
+static inline double simcall_process_execute__get__priority(smx_simcall_t simcall) {
+  return  simcall->args[2].d;
+}
+static inline void simcall_process_execute__set__priority(smx_simcall_t simcall, double arg) {
+    simcall->args[2].d = arg;
+}
+static inline double simcall_process_execute__get__bound(smx_simcall_t simcall) {
+  return  simcall->args[3].d;
+}
+static inline void simcall_process_execute__set__bound(smx_simcall_t simcall, double arg) {
+    simcall->args[3].d = arg;
+}
+static inline unsigned long simcall_process_execute__get__affinity_mask(smx_simcall_t simcall) {
+  return  simcall->args[4].ul;
+}
+static inline void simcall_process_execute__set__affinity_mask(smx_simcall_t simcall, unsigned long arg) {
+    simcall->args[4].ul = arg;
+}
+static inline smx_synchro_t simcall_process_execute__get__result(smx_simcall_t simcall){
+    return (smx_synchro_t) simcall->result.dp;
+}
+static inline void simcall_process_execute__set__result(smx_simcall_t simcall, void* result){
+    simcall->result.dp = result;
+}
+
+static inline const char* simcall_process_parallel_execute__get__name(smx_simcall_t simcall) {
+  return  simcall->args[0].cc;
+}
+static inline void simcall_process_parallel_execute__set__name(smx_simcall_t simcall, const char* arg) {
+    simcall->args[0].cc = arg;
+}
+static inline int simcall_process_parallel_execute__get__host_nb(smx_simcall_t simcall) {
+  return  simcall->args[1].i;
+}
+static inline void simcall_process_parallel_execute__set__host_nb(smx_simcall_t simcall, int arg) {
+    simcall->args[1].i = arg;
+}
+static inline sg_host_t* simcall_process_parallel_execute__get__host_list(smx_simcall_t simcall) {
+  return (sg_host_t*) simcall->args[2].dp;
+}
+static inline void simcall_process_parallel_execute__set__host_list(smx_simcall_t simcall, void* arg) {
+    simcall->args[2].dp = arg;
+}
+static inline double* simcall_process_parallel_execute__get__flops_amount(smx_simcall_t simcall) {
+  return (double*) simcall->args[3].dp;
+}
+static inline void simcall_process_parallel_execute__set__flops_amount(smx_simcall_t simcall, void* arg) {
+    simcall->args[3].dp = arg;
+}
+static inline double* simcall_process_parallel_execute__get__bytes_amount(smx_simcall_t simcall) {
+  return (double*) simcall->args[4].dp;
+}
+static inline void simcall_process_parallel_execute__set__bytes_amount(smx_simcall_t simcall, void* arg) {
+    simcall->args[4].dp = arg;
+}
+static inline double simcall_process_parallel_execute__get__amount(smx_simcall_t simcall) {
+  return  simcall->args[5].d;
+}
+static inline void simcall_process_parallel_execute__set__amount(smx_simcall_t simcall, double arg) {
+    simcall->args[5].d = arg;
+}
+static inline double simcall_process_parallel_execute__get__rate(smx_simcall_t simcall) {
+  return  simcall->args[6].d;
+}
+static inline void simcall_process_parallel_execute__set__rate(smx_simcall_t simcall, double arg) {
+    simcall->args[6].d = arg;
+}
+static inline smx_synchro_t simcall_process_parallel_execute__get__result(smx_simcall_t simcall){
+    return (smx_synchro_t) simcall->result.dp;
+}
+static inline void simcall_process_parallel_execute__set__result(smx_simcall_t simcall, void* result){
+    simcall->result.dp = result;
+}
+
+static inline smx_synchro_t simcall_process_execution_destroy__get__execution(smx_simcall_t simcall) {
+  return (smx_synchro_t) simcall->args[0].dp;
+}
+static inline void simcall_process_execution_destroy__set__execution(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+
+static inline smx_synchro_t simcall_process_execution_cancel__get__execution(smx_simcall_t simcall) {
+  return (smx_synchro_t) simcall->args[0].dp;
+}
+static inline void simcall_process_execution_cancel__set__execution(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+
+static inline smx_synchro_t simcall_process_execution_get_remains__get__execution(smx_simcall_t simcall) {
+  return (smx_synchro_t) simcall->args[0].dp;
+}
+static inline void simcall_process_execution_get_remains__set__execution(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline double simcall_process_execution_get_remains__get__result(smx_simcall_t simcall){
+    return  simcall->result.d;
+}
+static inline void simcall_process_execution_get_remains__set__result(smx_simcall_t simcall, double result){
+    simcall->result.d = result;
+}
+
+static inline smx_synchro_t simcall_process_execution_get_state__get__execution(smx_simcall_t simcall) {
+  return (smx_synchro_t) simcall->args[0].dp;
+}
+static inline void simcall_process_execution_get_state__set__execution(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline e_smx_state_t simcall_process_execution_get_state__get__result(smx_simcall_t simcall){
+    return (e_smx_state_t) simcall->result.i;
+}
+static inline void simcall_process_execution_get_state__set__result(smx_simcall_t simcall, int result){
+    simcall->result.i = result;
+}
+
+static inline smx_synchro_t simcall_process_execution_set_priority__get__execution(smx_simcall_t simcall) {
+  return (smx_synchro_t) simcall->args[0].dp;
+}
+static inline void simcall_process_execution_set_priority__set__execution(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline double simcall_process_execution_set_priority__get__priority(smx_simcall_t simcall) {
+  return  simcall->args[1].d;
+}
+static inline void simcall_process_execution_set_priority__set__priority(smx_simcall_t simcall, double arg) {
+    simcall->args[1].d = arg;
+}
+
+static inline smx_synchro_t simcall_process_execution_set_bound__get__execution(smx_simcall_t simcall) {
+  return (smx_synchro_t) simcall->args[0].dp;
+}
+static inline void simcall_process_execution_set_bound__set__execution(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline double simcall_process_execution_set_bound__get__bound(smx_simcall_t simcall) {
+  return  simcall->args[1].d;
+}
+static inline void simcall_process_execution_set_bound__set__bound(smx_simcall_t simcall, double arg) {
+    simcall->args[1].d = arg;
+}
+
+static inline smx_synchro_t simcall_process_execution_set_affinity__get__execution(smx_simcall_t simcall) {
+  return (smx_synchro_t) simcall->args[0].dp;
+}
+static inline void simcall_process_execution_set_affinity__set__execution(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline sg_host_t simcall_process_execution_set_affinity__get__ws(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
+}
+static inline void simcall_process_execution_set_affinity__set__ws(smx_simcall_t simcall, void* arg) {
+    simcall->args[1].dp = arg;
+}
+static inline unsigned long simcall_process_execution_set_affinity__get__mask(smx_simcall_t simcall) {
+  return  simcall->args[2].ul;
+}
+static inline void simcall_process_execution_set_affinity__set__mask(smx_simcall_t simcall, unsigned long arg) {
+    simcall->args[2].ul = arg;
+}
+
+static inline smx_synchro_t simcall_process_execution_wait__get__execution(smx_simcall_t simcall) {
+  return (smx_synchro_t) simcall->args[0].dp;
+}
+static inline void simcall_process_execution_wait__set__execution(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline int simcall_process_execution_wait__get__result(smx_simcall_t simcall){
+    return  simcall->result.i;
+}
+static inline void simcall_process_execution_wait__set__result(smx_simcall_t simcall, int result){
     simcall->result.i = result;
 }
 
@@ -1937,7 +1931,6 @@ static inline void simcall_mc_compare_snapshots__set__result(smx_simcall_t simca
 /* The prototype of all simcall handlers, automatically generated for you */
 
 void simcall_HANDLER_host_off(smx_simcall_t simcall, sg_host_t host);
-void simcall_HANDLER_process_execution_wait(smx_simcall_t simcall, smx_synchro_t execution);
 void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm);
 void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_vm);
 void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm);
@@ -1951,6 +1944,8 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t proces
 void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_process_t process);
 void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout);
 void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
+smx_synchro_t simcall_HANDLER_process_execute(smx_simcall_t simcall, const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask);
+void simcall_HANDLER_process_execution_wait(smx_simcall_t simcall, smx_synchro_t execution);
 smx_process_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_process_t process);
 smx_synchro_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_rdv_t rdv, int type, int src, int tag, simix_match_func_t match_fun, void* data);
 void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);

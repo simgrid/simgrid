@@ -321,7 +321,7 @@ XBT_PUBLIC(double) simcall_host_get_consumed_energy(sg_host_t host);
 XBT_PUBLIC(double) simcall_host_get_wattmin_at(sg_host_t host, int pstate);
 XBT_PUBLIC(double) simcall_host_get_wattmax_at(sg_host_t host, int pstate);
 
-XBT_PUBLIC(smx_synchro_t) simcall_process_execute(const char *name, sg_host_t host,
+XBT_PUBLIC(smx_synchro_t) simcall_process_execute(const char *name,
                                                 double flops_amount,
                                                 double priority, double bound, unsigned long affinity_mask);
 XBT_PUBLIC(smx_synchro_t) simcall_process_parallel_execute(const char *name,

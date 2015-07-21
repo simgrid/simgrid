@@ -328,22 +328,25 @@ void SIMIX_host_autorestart(sg_host_t host)
   else
     xbt_die("No function for simix_global->autorestart");
 }
-
-smx_synchro_t SIMIX_process_execute(const char *name,
-    sg_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask){
+smx_synchro_t simcall_HANDLER_process_execute(smx_simcall_t simcall,
+		const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
+	return SIMIX_process_execute(simcall->issuer, name,flops_amount,priority,bound,affinity_mask);
+}
+smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
+     double flops_amount, double priority, double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
   smx_synchro_t synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_EXECUTE;
   synchro->name = xbt_strdup(name);
   synchro->state = SIMIX_RUNNING;
-  synchro->execution.host = host;
+  synchro->execution.host = issuer->host;
   synchro->category = NULL;
 
   /* set surf's action */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
 
-    synchro->execution.surf_exec = surf_host_execute(host, flops_amount);
+    synchro->execution.surf_exec = surf_host_execute(issuer->host, flops_amount);
     surf_action_set_data(synchro->execution.surf_exec, synchro);
     surf_action_set_priority(synchro->execution.surf_exec, priority);
 
@@ -351,14 +354,14 @@ smx_synchro_t SIMIX_process_execute(const char *name,
      * surf layer should not be zero (i.e., unlimited). It should be the
      * capacity of a CPU core. */
     if (bound == 0)
-      surf_cpu_action_set_bound(synchro->execution.surf_exec, SIMIX_host_get_speed(host));
+      surf_cpu_action_set_bound(synchro->execution.surf_exec, SIMIX_host_get_speed(issuer->host));
     else
       surf_cpu_action_set_bound(synchro->execution.surf_exec, bound);
 
     if (affinity_mask != 0) {
       /* just a double check to confirm that this host is the host where this task is running. */
-      xbt_assert(synchro->execution.host == host);
-      surf_cpu_action_set_affinity(synchro->execution.surf_exec, host, affinity_mask);
+      xbt_assert(synchro->execution.host == issuer->host);
+      surf_cpu_action_set_affinity(synchro->execution.surf_exec, issuer->host, affinity_mask);
     }
   }
 
