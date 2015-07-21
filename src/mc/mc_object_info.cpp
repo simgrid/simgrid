@@ -70,7 +70,6 @@ Frame::Frame()
 ObjectInformation::ObjectInformation()
 {
   this->flags = 0;
-  this->file_name = nullptr;
   this->start = nullptr;
   this->end = nullptr;
   this->start_exec = nullptr;
@@ -84,7 +83,6 @@ ObjectInformation::ObjectInformation()
 
 ObjectInformation::~ObjectInformation()
 {
-  xbt_free(this->file_name);
   xbt_dynar_free(&this->functions_index);
 }
 

@@ -196,9 +196,11 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
  *
  *  `dl_iterate_phdr` would be more robust but would not work in cross-process.
  * */
-void MC_find_object_address(std::vector<simgrid::mc::VmMap> const& maps, mc_object_info_t result)
+void MC_find_object_address(
+  std::vector<simgrid::mc::VmMap> const& maps, mc_object_info_t result)
 {
-  const char *name = basename(result->file_name);
+  const char* file_name = xbt_strdup(result->file_name.c_str());
+  const char *name = basename(file_name);
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::mc::VmMap const& reg = maps[i];
     if (maps[i].pathname.empty()
@@ -243,7 +245,6 @@ void MC_find_object_address(std::vector<simgrid::mc::VmMap> const& maps, mc_obje
   if (result->end_exec && (const void*) result->end_exec > result->end)
     result->end = result->end_exec;
 
-  xbt_assert(result->file_name);
   xbt_assert(result->start_rw);
   xbt_assert(result->start_exec);
 }

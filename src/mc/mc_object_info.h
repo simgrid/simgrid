@@ -140,7 +140,7 @@ public:
   ObjectInformation& operator=(ObjectInformation const&) = delete;
 
   mc_object_info_flags flags;
-  char* file_name;
+  std::string file_name;
   const void* start;
   const void *end;
   char *start_exec;

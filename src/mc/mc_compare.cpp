@@ -584,7 +584,7 @@ int snapshot_compare(void *state1, void *state2)
     xbt_assert(region1->object_info() == region2->object_info());
     xbt_assert(region1->object_info());
 
-    const char* name = region1->object_info()->file_name;
+    std::string const& name = region1->object_info()->file_name;
 
 #ifdef MC_DEBUG
     if (is_diff == 0)
@@ -604,13 +604,13 @@ int snapshot_compare(void *state1, void *state2)
       xbt_os_walltimer_stop(timer);
       mc_comp_times->global_variables_comparison_time
         += xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("(%d - %d) Different global variables in %s", num1, num2,
-                name);
+      XBT_DEBUG("(%d - %d) Different global variables in %s",
+        num1, num2, name.c_str());
       errors++;
 #else
 #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different global variables in %s", num1, num2,
-               name);
+      XBT_VERB("(%d - %d) Different global variables in %s",
+        num1, num2, name.c_str());
 #endif
 
       reset_heap_information();

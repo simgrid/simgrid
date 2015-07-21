@@ -973,14 +973,13 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
  */
 void MC_dwarf_get_variables(mc_object_info_t info)
 {
-  int fd = open(info->file_name, O_RDONLY);
-  if (fd < 0) {
-    xbt_die("Could not open file %s", info->file_name);
-  }
+  int fd = open(info->file_name.c_str(), O_RDONLY);
+  if (fd < 0)
+    xbt_die("Could not open file %s", info->file_name.c_str());
   Dwarf *dwarf = dwarf_begin(fd, DWARF_C_READ);
-  if (dwarf == NULL) {
-    xbt_die("Your program must be compiled with -g (%s)", info->file_name);
-  }
+  if (dwarf == NULL)
+    xbt_die("Your program must be compiled with -g (%s)",
+      info->file_name.c_str());
   // For each compilation unit:
   Dwarf_Off offset = 0;
   Dwarf_Off next_offset = 0;
@@ -1135,7 +1134,7 @@ std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
     std::make_shared<s_mc_object_info_t>();
   if (executable)
     result->flags |= MC_OBJECT_INFO_EXECUTABLE;
-  result->file_name = xbt_strdup(name);
+  result->file_name = name;
   MC_find_object_address(maps, result.get());
   MC_dwarf_get_variables(result.get());
   MC_post_process_types(result.get());
