@@ -21,12 +21,6 @@
 #include "mc_object_info.h"
 #include "mc_private.h"
 
-static void MC_register_variable(
-  mc_object_info_t info, mc_frame_t frame, std::unique_ptr<simgrid::mc::Variable> variable);
-static void MC_dwarf_register_variable(
-  mc_object_info_t info, mc_frame_t frame,
-  std::unique_ptr<simgrid::mc::Variable> variable);
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
 /** \brief The default DW_TAG_lower_bound for a given DW_AT_language.
@@ -455,6 +449,10 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
 
 // ***** Variable
 
+/** Sort the variable by name and address.
+ *
+ *  We could use boost::container::flat_set instead.
+ */
 static bool MC_compare_variable(
   simgrid::mc::Variable const& a, simgrid::mc::Variable const& b)
 {
@@ -822,8 +820,17 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
                                          Dwarf_Die * unit, mc_frame_t frame,
                                          const char *ns)
 {
-  MC_dwarf_register_variable(info, frame,
-    MC_die_to_variable(info, die, unit, frame, ns));
+  std::unique_ptr<simgrid::mc::Variable> variable =
+    MC_die_to_variable(info, die, unit, frame, ns);
+  if (!variable)
+    return;
+  // Those arrays are sorted later:
+  else if (variable->global)
+    info->global_variables.push_back(std::move(*variable));
+  else if (frame != nullptr)
+    frame->variables.push_back(std::move(*variable));
+  else
+    xbt_die("No frame for this local variable");
 }
 
 static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
@@ -1163,21 +1170,6 @@ std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
 }
 
 /*************************************************************************/
-
-void MC_dwarf_register_variable(
-  mc_object_info_t info, mc_frame_t frame,
-  std::unique_ptr<simgrid::mc::Variable> variable)
-{
-  if (!variable)
-    return;
-  // Those arrays are sorted later:
-  else if (variable->global)
-    info->global_variables.push_back(std::move(*variable));
-  else if (frame != nullptr)
-    frame->variables.push_back(std::move(*variable));
-  else
-    xbt_die("No frame for this local variable");
-}
 
 void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
 {
