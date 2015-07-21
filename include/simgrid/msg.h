@@ -221,16 +221,10 @@ XBT_PUBLIC(void) MSG_config(const char *key, const char *value);
  *
  *  We allow to link against compiled versions that differ in the patch level.
  */
-#define MSG_init(argc,argv)  {                                          \
-    int ver_major,ver_minor,ver_patch;                                  \
-    sg_version(&ver_major,&ver_minor,&ver_patch);                       \
-    if ((ver_major != SIMGRID_VERSION_MAJOR) ||                         \
-        (ver_minor != SIMGRID_VERSION_MINOR)) {                         \
-      fprintf(stderr,"FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, and then linked against SimGrid %d.%d.%d. Please fix this.\n", \
-              SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,ver_major,ver_minor,ver_patch); \
-    }                                                                   \
-    MSG_init_nocheck(argc,argv);                                        \
-  }
+#define MSG_init(argc,argv)  do {                                                          \
+	sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
+    MSG_init_nocheck(argc,argv);                                                        \
+  } while (0)
 
 XBT_PUBLIC(void) MSG_init_nocheck(int *argc, char **argv);
 XBT_PUBLIC(msg_error_t) MSG_main(void);
