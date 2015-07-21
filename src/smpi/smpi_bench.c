@@ -156,9 +156,9 @@ void smpi_execute_flops(double flops) {
   sg_host_t host;
   host = SIMIX_host_self();
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  action = simcall_host_execute("computation", host, flops, 1, 0, 0);
+  action = simcall_process_execute("computation", host, flops, 1, 0, 0);
   simcall_set_category (action, TRACE_internal_smpi_get_category());
-  simcall_host_execution_wait(action);
+  simcall_process_execution_wait(action);
   smpi_switch_data_segment(smpi_process_index());
 }
 

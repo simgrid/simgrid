@@ -228,7 +228,7 @@ double simcall_host_get_wattmax_at(msg_host_t host, int pstate){
 
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Creates a synchro that executes some computation of an host.
  *
  * This function creates a SURF action and allocates the data necessary
@@ -242,7 +242,7 @@ double simcall_host_get_wattmax_at(msg_host_t host, int pstate){
  * \param affinity_mask
  * \return A new SIMIX execution synchronization
  */
-smx_synchro_t simcall_host_execute(const char *name, sg_host_t host,
+smx_synchro_t simcall_process_execute(const char *name, sg_host_t host,
                                     double flops_amount,
                                     double priority, double bound, unsigned long affinity_mask)
 {
@@ -250,11 +250,11 @@ smx_synchro_t simcall_host_execute(const char *name, sg_host_t host,
   xbt_assert(isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
 
-  return simcall_BODY_host_execute(name, host, flops_amount, priority, bound, affinity_mask);
+  return simcall_BODY_process_execute(name, host, flops_amount, priority, bound, affinity_mask);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Creates a synchro that may involve parallel computation on
  * several hosts and communication between them.
  *
@@ -268,7 +268,7 @@ smx_synchro_t simcall_host_execute(const char *name, sg_host_t host,
  * \param rate the SURF action rate
  * \return A new SIMIX execution synchronization
  */
-smx_synchro_t simcall_host_parallel_execute(const char *name,
+smx_synchro_t simcall_process_parallel_execute(const char *name,
                                          int host_nb,
                                          sg_host_t *host_list,
                                          double *flops_amount,
@@ -289,7 +289,7 @@ smx_synchro_t simcall_host_parallel_execute(const char *name,
   xbt_assert(isfinite(amount), "amount is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
 
-  return simcall_BODY_host_parallel_execute(name, host_nb, host_list,
+  return simcall_BODY_process_parallel_execute(name, host_nb, host_list,
                                             flops_amount,
                                             bytes_amount,
                                             amount, rate);
@@ -297,84 +297,84 @@ smx_synchro_t simcall_host_parallel_execute(const char *name,
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Destroys an execution synchro.
  *
  * Destroys a synchro, freeing its memory. This function cannot be called if there are a conditional waiting for it.
  * \param execution The execution synchro to destroy
  */
-void simcall_host_execution_destroy(smx_synchro_t execution)
+void simcall_process_execution_destroy(smx_synchro_t execution)
 {
-  simcall_BODY_host_execution_destroy(execution);
+  simcall_BODY_process_execution_destroy(execution);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Cancels an execution synchro.
  *
  * This functions stops the execution. It calls a surf function.
  * \param execution The execution synchro to cancel
  */
-void simcall_host_execution_cancel(smx_synchro_t execution)
+void simcall_process_execution_cancel(smx_synchro_t execution)
 {
-  simcall_BODY_host_execution_cancel(execution);
+  simcall_BODY_process_execution_cancel(execution);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Returns how much of an execution synchro remains to be done.
  *
  * \param execution The execution synchro
  * \return The remaining amount
  */
-double simcall_host_execution_get_remains(smx_synchro_t execution)
+double simcall_process_execution_get_remains(smx_synchro_t execution)
 {
-  return simcall_BODY_host_execution_get_remains(execution);
+  return simcall_BODY_process_execution_get_remains(execution);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Returns the state of an execution synchro.
  *
  * \param execution The execution synchro
  * \return The state
  */
-e_smx_state_t simcall_host_execution_get_state(smx_synchro_t execution)
+e_smx_state_t simcall_process_execution_get_state(smx_synchro_t execution)
 {
-  return simcall_BODY_host_execution_get_state(execution);
+  return simcall_BODY_process_execution_get_state(execution);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Changes the priority of an execution synchro.
  *
  * This functions changes the priority only. It calls a surf function.
  * \param execution The execution synchro
  * \param priority The new priority
  */
-void simcall_host_execution_set_priority(smx_synchro_t execution, double priority)
+void simcall_process_execution_set_priority(smx_synchro_t execution, double priority)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(priority), "priority is not finite!");
 
-  simcall_BODY_host_execution_set_priority(execution, priority);
+  simcall_BODY_process_execution_set_priority(execution, priority);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Changes the capping (the maximum CPU utilization) of an execution synchro.
  *
  * This functions changes the capping only. It calls a surf function.
  * \param execution The execution synchro
  * \param bound The new bound
  */
-void simcall_host_execution_set_bound(smx_synchro_t execution, double bound)
+void simcall_process_execution_set_bound(smx_synchro_t execution, double bound)
 {
-  simcall_BODY_host_execution_set_bound(execution, bound);
+  simcall_BODY_process_execution_set_bound(execution, bound);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Changes the CPU affinity of an execution synchro.
  *
  * This functions changes the CPU affinity of an execution synchro. See taskset(1) on Linux.
@@ -382,9 +382,9 @@ void simcall_host_execution_set_bound(smx_synchro_t execution, double bound)
  * \param host Host
  * \param mask Affinity mask
  */
-void simcall_host_execution_set_affinity(smx_synchro_t execution, sg_host_t host, unsigned long mask)
+void simcall_process_execution_set_affinity(smx_synchro_t execution, sg_host_t host, unsigned long mask)
 {
-  simcall_BODY_host_execution_set_affinity(execution, host, mask);
+  simcall_BODY_process_execution_set_affinity(execution, host, mask);
 }
 
 /**
@@ -393,9 +393,9 @@ void simcall_host_execution_set_affinity(smx_synchro_t execution, sg_host_t host
  *
  * \param execution The execution synchro
  */
-e_smx_state_t simcall_host_execution_wait(smx_synchro_t execution)
+e_smx_state_t simcall_process_execution_wait(smx_synchro_t execution)
 {
-  return simcall_BODY_host_execution_wait(execution);
+  return simcall_BODY_process_execution_wait(execution);
 }
 
 

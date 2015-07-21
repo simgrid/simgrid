@@ -329,7 +329,7 @@ void SIMIX_host_autorestart(sg_host_t host)
     xbt_die("No function for simix_global->autorestart");
 }
 
-smx_synchro_t SIMIX_host_execute(const char *name,
+smx_synchro_t SIMIX_process_execute(const char *name,
     sg_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
@@ -367,7 +367,7 @@ smx_synchro_t SIMIX_host_execute(const char *name,
   return synchro;
 }
 
-smx_synchro_t SIMIX_host_parallel_execute(const char *name,
+smx_synchro_t SIMIX_process_parallel_execute(const char *name,
     int host_nb, sg_host_t *host_list,
     double *flops_amount, double *bytes_amount,
     double amount, double rate){
@@ -414,7 +414,7 @@ smx_synchro_t SIMIX_host_parallel_execute(const char *name,
   return synchro;
 }
 
-void SIMIX_host_execution_destroy(smx_synchro_t synchro){
+void SIMIX_process_execution_destroy(smx_synchro_t synchro){
   XBT_DEBUG("Destroy synchro %p", synchro);
 
   if (synchro->execution.surf_exec) {
@@ -425,14 +425,14 @@ void SIMIX_host_execution_destroy(smx_synchro_t synchro){
   xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
 }
 
-void SIMIX_host_execution_cancel(smx_synchro_t synchro){
+void SIMIX_process_execution_cancel(smx_synchro_t synchro){
   XBT_DEBUG("Cancel synchro %p", synchro);
 
   if (synchro->execution.surf_exec)
     surf_action_cancel(synchro->execution.surf_exec);
 }
 
-double SIMIX_host_execution_get_remains(smx_synchro_t synchro){
+double SIMIX_process_execution_get_remains(smx_synchro_t synchro){
   double result = 0.0;
 
   if (synchro->state == SIMIX_RUNNING)
@@ -441,23 +441,23 @@ double SIMIX_host_execution_get_remains(smx_synchro_t synchro){
   return result;
 }
 
-e_smx_state_t SIMIX_host_execution_get_state(smx_synchro_t synchro){
+e_smx_state_t SIMIX_process_execution_get_state(smx_synchro_t synchro){
   return synchro->state;
 }
 
-void SIMIX_host_execution_set_priority(smx_synchro_t synchro, double priority){
+void SIMIX_process_execution_set_priority(smx_synchro_t synchro, double priority){
 
   if(synchro->execution.surf_exec)
 	surf_action_set_priority(synchro->execution.surf_exec, priority);
 }
 
-void SIMIX_host_execution_set_bound(smx_synchro_t synchro, double bound){
+void SIMIX_process_execution_set_bound(smx_synchro_t synchro, double bound){
 
   if(synchro->execution.surf_exec)
 	surf_cpu_action_set_bound(synchro->execution.surf_exec, bound);
 }
 
-void SIMIX_host_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask){
+void SIMIX_process_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask){
   xbt_assert(synchro->type == SIMIX_SYNC_EXECUTE);
 
   if (synchro->execution.surf_exec) {
@@ -467,7 +467,7 @@ void SIMIX_host_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, un
   }
 }
 
-void simcall_HANDLER_host_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro){
+void simcall_HANDLER_process_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro){
 
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state);
 
@@ -534,12 +534,12 @@ void SIMIX_execution_finish(smx_synchro_t synchro)
     }
 
     simcall->issuer->waiting_synchro =    NULL;
-    simcall_host_execution_wait__set__result(simcall, synchro->state);
+    simcall_process_execution_wait__set__result(simcall, synchro->state);
     SIMIX_simcall_answer(simcall);
   }
 
   /* We no longer need it */
-  SIMIX_host_execution_destroy(synchro);
+  SIMIX_process_execution_destroy(synchro);
 }
 
 

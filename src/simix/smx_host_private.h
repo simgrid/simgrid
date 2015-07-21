@@ -51,19 +51,19 @@ double SIMIX_host_get_wattmin_at(sg_host_t host,int pstate);
 double SIMIX_host_get_wattmax_at(sg_host_t host,int pstate);
 void SIMIX_host_set_pstate(sg_host_t host, int pstate_index);
 int SIMIX_host_get_pstate(sg_host_t host);
-smx_synchro_t SIMIX_host_execute(const char *name,
+smx_synchro_t SIMIX_process_execute(const char *name,
     sg_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask);
-smx_synchro_t SIMIX_host_parallel_execute(const char *name,
+smx_synchro_t SIMIX_process_parallel_execute(const char *name,
     int host_nb, sg_host_t *host_list,
     double *flops_amount, double *bytes_amount,
     double amount, double rate);
-void SIMIX_host_execution_destroy(smx_synchro_t synchro);
-void SIMIX_host_execution_cancel(smx_synchro_t synchro);
-double SIMIX_host_execution_get_remains(smx_synchro_t synchro);
-e_smx_state_t SIMIX_host_execution_get_state(smx_synchro_t synchro);
-void SIMIX_host_execution_set_priority(smx_synchro_t synchro, double priority);
-void SIMIX_host_execution_set_bound(smx_synchro_t synchro, double bound);
-void SIMIX_host_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask);
+void SIMIX_process_execution_destroy(smx_synchro_t synchro);
+void SIMIX_process_execution_cancel(smx_synchro_t synchro);
+double SIMIX_process_execution_get_remains(smx_synchro_t synchro);
+e_smx_state_t SIMIX_process_execution_get_state(smx_synchro_t synchro);
+void SIMIX_process_execution_set_priority(smx_synchro_t synchro, double priority);
+void SIMIX_process_execution_set_bound(smx_synchro_t synchro, double bound);
+void SIMIX_process_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask);
 xbt_dict_t SIMIX_host_get_mounted_storage_list(sg_host_t host);
 xbt_dynar_t SIMIX_host_get_attached_storage_list(sg_host_t host);
 

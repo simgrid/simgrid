@@ -378,14 +378,14 @@ inline static double simcall_BODY_host_get_consumed_energy(sg_host_t host) {
     return self->simcall.result.d;
   }
   
-inline static smx_synchro_t simcall_BODY_host_execute(const char* name, sg_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
+inline static smx_synchro_t simcall_BODY_process_execute(const char* name, sg_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execute(name, host, flops_amount, priority, bound, affinity_mask);
+    if (0) SIMIX_process_execute(name, host, flops_amount, priority, bound, affinity_mask);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_EXECUTE;
+    self->simcall.call = SIMCALL_PROCESS_EXECUTE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].cc = (const char*) name;
@@ -404,14 +404,14 @@ inline static smx_synchro_t simcall_BODY_host_execute(const char* name, sg_host_
     return self->simcall.result.dp;
   }
   
-inline static smx_synchro_t simcall_BODY_host_parallel_execute(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate) {
+inline static smx_synchro_t simcall_BODY_process_parallel_execute(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_parallel_execute(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate);
+    if (0) SIMIX_process_parallel_execute(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_PARALLEL_EXECUTE;
+    self->simcall.call = SIMCALL_PROCESS_PARALLEL_EXECUTE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].cc = (const char*) name;
@@ -431,14 +431,14 @@ inline static smx_synchro_t simcall_BODY_host_parallel_execute(const char* name,
     return self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_host_execution_destroy(smx_synchro_t execution) {
+inline static void simcall_BODY_process_execution_destroy(smx_synchro_t execution) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_destroy(execution);
+    if (0) SIMIX_process_execution_destroy(execution);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_EXECUTION_DESTROY;
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_DESTROY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
@@ -452,14 +452,14 @@ inline static void simcall_BODY_host_execution_destroy(smx_synchro_t execution) 
     
   }
   
-inline static void simcall_BODY_host_execution_cancel(smx_synchro_t execution) {
+inline static void simcall_BODY_process_execution_cancel(smx_synchro_t execution) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_cancel(execution);
+    if (0) SIMIX_process_execution_cancel(execution);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_EXECUTION_CANCEL;
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_CANCEL;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
@@ -473,14 +473,14 @@ inline static void simcall_BODY_host_execution_cancel(smx_synchro_t execution) {
     
   }
   
-inline static double simcall_BODY_host_execution_get_remains(smx_synchro_t execution) {
+inline static double simcall_BODY_process_execution_get_remains(smx_synchro_t execution) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_get_remains(execution);
+    if (0) SIMIX_process_execution_get_remains(execution);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_EXECUTION_GET_REMAINS;
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_GET_REMAINS;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
@@ -494,14 +494,14 @@ inline static double simcall_BODY_host_execution_get_remains(smx_synchro_t execu
     return self->simcall.result.d;
   }
   
-inline static e_smx_state_t simcall_BODY_host_execution_get_state(smx_synchro_t execution) {
+inline static e_smx_state_t simcall_BODY_process_execution_get_state(smx_synchro_t execution) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_get_state(execution);
+    if (0) SIMIX_process_execution_get_state(execution);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_EXECUTION_GET_STATE;
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_GET_STATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
@@ -515,14 +515,14 @@ inline static e_smx_state_t simcall_BODY_host_execution_get_state(smx_synchro_t 
     return self->simcall.result.i;
   }
   
-inline static void simcall_BODY_host_execution_set_priority(smx_synchro_t execution, double priority) {
+inline static void simcall_BODY_process_execution_set_priority(smx_synchro_t execution, double priority) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_set_priority(execution, priority);
+    if (0) SIMIX_process_execution_set_priority(execution, priority);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_EXECUTION_SET_PRIORITY;
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_SET_PRIORITY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
@@ -537,14 +537,14 @@ inline static void simcall_BODY_host_execution_set_priority(smx_synchro_t execut
     
   }
   
-inline static void simcall_BODY_host_execution_set_bound(smx_synchro_t execution, double bound) {
+inline static void simcall_BODY_process_execution_set_bound(smx_synchro_t execution, double bound) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_set_bound(execution, bound);
+    if (0) SIMIX_process_execution_set_bound(execution, bound);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_EXECUTION_SET_BOUND;
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_SET_BOUND;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
@@ -559,14 +559,14 @@ inline static void simcall_BODY_host_execution_set_bound(smx_synchro_t execution
     
   }
   
-inline static void simcall_BODY_host_execution_set_affinity(smx_synchro_t execution, sg_host_t ws, unsigned long mask) {
+inline static void simcall_BODY_process_execution_set_affinity(smx_synchro_t execution, sg_host_t ws, unsigned long mask) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_set_affinity(execution, ws, mask);
+    if (0) SIMIX_process_execution_set_affinity(execution, ws, mask);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_EXECUTION_SET_AFFINITY;
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_SET_AFFINITY;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
@@ -582,14 +582,14 @@ inline static void simcall_BODY_host_execution_set_affinity(smx_synchro_t execut
     
   }
   
-inline static int simcall_BODY_host_execution_wait(smx_synchro_t execution) {
+inline static int simcall_BODY_process_execution_wait(smx_synchro_t execution) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_host_execution_wait(&self->simcall, execution);
+    if (0) simcall_HANDLER_process_execution_wait(&self->simcall, execution);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
-    self->simcall.call = SIMCALL_HOST_EXECUTION_WAIT;
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_WAIT;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
