@@ -758,8 +758,6 @@ void simcall_process_set_data(smx_process_t process, void *data)
 /**
  * \ingroup simix_process_management
  * \brief Set the kill time of a process.
- * \param process a process
- * \param kill_time a double
  */
 void simcall_process_set_kill_time(smx_process_t process, double kill_time)
 {
@@ -771,6 +769,13 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
       process->kill_timer = SIMIX_timer_set(kill_time, simix_global->kill_process_function, process);
     }
   }
+}
+/**
+ * \ingroup simix_process_management
+ * \brief Get the kill time of a process (or 0 if unset).
+ */
+double simcall_process_get_kill_time(smx_process_t process) {
+	return SIMIX_timer_get_date(process->kill_timer);
 }
 
 /**
