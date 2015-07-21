@@ -16,7 +16,8 @@
        <model_prop id="Bconnection" value="120MBps" />
     </storage_type>
 
-    <storage_type id="single_SSD" model="linear_no_lat" size="500GiB">
+    <storage_type id="single_SSD" model="linear_no_lat" size="500GiB"
+                  content="content/storage_content.txt" content_type="txt_unix">
        <model_prop id="Bwrite" value="60MBps" />
        <model_prop id="Bread" value="200MBps" />
        <model_prop id="Bconnection" value="220MBps" />
