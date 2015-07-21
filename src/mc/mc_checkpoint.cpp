@@ -46,22 +46,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
-static void MC_snapshot_stack_free_voidp(void *s)
-{
-  mc_snapshot_stack_t stack = (mc_snapshot_stack_t) * (void **) s;
-  delete stack;
-}
-
-static void local_variable_free_voidp(void *v)
-{
-  local_variable_t var = *(local_variable_t*)v;
-  delete var;
-}
-
-}
-
-extern "C" {
-
 /** @brief Restore a region from a snapshot
  *
  *  @param reg     Target region

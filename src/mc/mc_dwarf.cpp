@@ -537,11 +537,6 @@ static void MC_dwarf_fill_member_location(mc_type_t type, mc_type_t member,
 
 }
 
-static void dw_type_free_voidp(void *t)
-{
-  delete *(mc_type_t*)t;
-}
-
 /** \brief Populate the list of members of a type
  *
  *  \param info ELF object containing the type DIE
