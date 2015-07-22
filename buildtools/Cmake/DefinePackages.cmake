@@ -389,6 +389,12 @@ else()
       src/simix/smx_context_boost.cpp)
 endif()
 
+set(S4U_SRC
+  src/s4u/s4u_engine.cpp  
+  src/s4u/s4u_host.cpp  
+  src/s4u/s4u_process.cpp
+)
+
 set(SIMGRID_SRC
   src/simgrid/sg_config.c
   src/simgrid/host.cpp
@@ -688,6 +694,10 @@ set(headers_to_install
   include/simgrid/simix.h
   include/simgrid/host.h
   include/simgrid/link.h
+  include/simgrid/s4u/s4u/engine.hpp  
+  include/simgrid/s4u/host.hpp  
+  include/simgrid/s4u/process.hpp
+  include/simgrid/s4u.h
   include/smpi/mpi.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h
@@ -785,6 +795,7 @@ endif()
 set(simgrid_sources
   ${BINDINGS_SRC}
   ${GTNETS_USED}
+  ${S4U_SRC}
   ${MSG_SRC}
   ${SIMDAG_SRC}
   ${SIMGRID_SRC}
