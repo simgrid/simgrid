@@ -694,7 +694,7 @@ set(headers_to_install
   include/simgrid/simix.h
   include/simgrid/host.h
   include/simgrid/link.h
-  include/simgrid/s4u/s4u/engine.hpp  
+  include/simgrid/s4u/engine.hpp  
   include/simgrid/s4u/host.hpp  
   include/simgrid/s4u/process.hpp
   include/simgrid/s4u.h
@@ -1066,6 +1066,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/suspend/CMakeLists.txt
   examples/msg/token_ring/CMakeLists.txt
   examples/msg/tracing/CMakeLists.txt
+  examples/s4u/dumb/CMakeLists.txt
   examples/scala/CMakeLists.txt
   examples/scala/master_slave_bypass/CMakeLists.txt
   examples/scala/master_slave_kill/CMakeLists.txt
