@@ -15,8 +15,11 @@
 #include <elfutils/libdw.h>
 
 #include <simgrid_config.h>
+#include <simgrid/util.hpp>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
+
+#include <simgrid/util.hpp>
 
 #include "mc_object_info.h"
 #include "mc_private.h"
@@ -1068,11 +1071,8 @@ static void MC_post_process_variables(mc_object_info_t info)
 
   for(simgrid::mc::Variable& variable : info->global_variables)
     if (variable.type_id) {
-      auto i = info->types.find(variable.type_id);
-      if (i != info->types.end())
-        variable.type = &(i->second);
-      else
-        variable.type = nullptr;
+      variable.type = simgrid::util::find_map_ptr(
+        info->types, variable.type_id);
     }
 }
 
@@ -1091,11 +1091,8 @@ static void mc_post_process_scope(mc_object_info_t info, mc_frame_t scope)
   // Direct:
   for (simgrid::mc::Variable& variable : scope->variables)
     if (variable.type_id) {
-      auto i = info->types.find(variable.type_id);
-      if (i != info->types.end())
-        variable.type = &(i->second);
-      else
-        variable.type = nullptr;
+      variable.type = simgrid::util::find_map_ptr(
+        info->types, variable.type_id);
     }
 
   // Recursive post-processing of nested-scopes:
@@ -1110,23 +1107,19 @@ static void MC_resolve_subtype(mc_object_info_t info, mc_type_t type)
 {
   if (!type->type_id)
     return;
-  auto i = info->types.find(type->type_id);
-  if (i != info->types.end())
-    type->subtype = &(i->second);
-  else {
-    type->subtype = nullptr;
+  type->subtype = simgrid::util::find_map_ptr(info->types, type->type_id);
+  if (type->subtype == nullptr)
     return;
-  }
   if (type->subtype->byte_size != 0)
     return;
   if (type->subtype->name.empty())
     return;
   // Try to find a more complete description of the type:
   // We need to fix in order to support C++.
-
-  auto j = info->full_types_by_name.find(type->subtype->name);
-  if (j != info->full_types_by_name.end())
-    type->subtype = j->second;
+  simgrid::mc::Type** subtype = simgrid::util::find_map_ptr(
+    info->full_types_by_name, type->subtype->name);
+  if (subtype)
+    type->subtype = *subtype;
 }
 
 static void MC_post_process_types(mc_object_info_t info)
