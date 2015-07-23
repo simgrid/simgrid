@@ -857,8 +857,10 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
     if(ns)
       frame.name  = std::string(ns) + "::" + name;
-    else
+    else if (name)
       frame.name = name;
+    else
+      frame.name.clear();
   }
 
   frame.abstract_origin_id =
