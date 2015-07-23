@@ -8,16 +8,16 @@
 
 require("simgrid")
 
-nb_bits = 24
-nb_keys = 2^nb_bits
-comp_size = 0
-comm_size = 10
-timeout = 50
-max_simulation_time = 1000
-stabilize_delay = 20
-fix_fingers_delay = 120
+nb_bits                 = 24
+nb_keys                 = 2^nb_bits
+comp_size               = 0
+comm_size               = 10
+timeout                 = 50
+max_simulation_time     = 1000
+stabilize_delay         = 20
+fix_fingers_delay       = 120
 check_predecessor_delay = 120
-lookup_delay = 10
+lookup_delay            = 10
 
 -- current node (don't worry, globals are duplicated in each simulated process)
 my_node = {
