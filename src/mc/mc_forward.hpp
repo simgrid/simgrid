@@ -12,7 +12,15 @@
 #ifndef SIMGRID_MC_FORWARD_HPP
 #define SIMGRID_MC_FORWARD_HPP
 
-#define MC_OVERRIDE
+#ifndef __has_feature
+  #define __has_feature(x) 0
+#endif
+
+#if __has_feature(cxx_override_control)
+  #define MC_OVERRIDE override
+#else
+  #define MC_OVERRIDE
+#endif
 
 namespace simgrid {
 namespace mc {
