@@ -19,6 +19,8 @@
 
 #define SIMGRID_VERSION_STRING "@SIMGRID_VERSION_STRING@"
 
+#define SIMGRID_VERSION_BANNER "@SIMGRID_VERSION_BANNER@"
+
 /* Version X.Y.Z will get version number XYZ: all digits concatenated without dots
  * (with Y and Z must be on two positions)*/
 
