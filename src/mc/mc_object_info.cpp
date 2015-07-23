@@ -130,7 +130,7 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
     int k = i + ((j - i) / 2);
     if (ip < base[k].low_pc)
       j = k - 1;
-    else if (k <= j && ip >= base[k + 1].low_pc)
+    else if (k < j && ip >= base[k + 1].low_pc)
       i = k + 1;
     else if (ip < base[k].function->high_pc)
       return base[k].function;
