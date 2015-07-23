@@ -183,26 +183,16 @@ function get_peers_data()
 				if v ~= data.id then
 					--Add the peer to our list and build its data
 					local peer_data = {}
-					peer_data.id = math.tointeger(v);
+					peer_data.id = v;
 					peer_data.bitfield = nil
-					peer_data.mailbox = math.tointeger(v);
+					peer_data.mailbox = tostring(v);
 					peer_data.am_interested = false
 					peer_data.interested = false
 					peer_data.choked_upload = true
 					peer_data.choked_download = true
-                    data.peers[v] = peer_data
-                    simgrid.info("Added " .. v)
+					data.peers[v] = peer_data
 				end
 			end
-            mt = {}
-            mt.__len = function(obj)
-                local len = 0;
-                for j,k in pairs(obj) do
-                    len = len+1
-                end
-                return len
-            end
-            setmetatable(data.peers, mt)
 		else
 			success = false
 		end
@@ -286,7 +276,6 @@ function handle_message(task)
 			end
 		end
 	elseif task.type == "PIECE" then
-        task.piece = math.tointeger(task.piece)
 		if task.stalled == true then
 			simgrid.debug("The received piece is stalled")
 		else
@@ -427,7 +416,7 @@ function send_interested(mailbox)
 end
 -- Send a "not interested" message to a peer.
 function send_not_interested(mailbox)
-    simgrid.info("Sending a send_not_interested")
+    simgrid.debug("Sending a send_not_interested")
 	local task = new_task("NOTINTERESTED")
 	task:dsend(mailbox)
 end

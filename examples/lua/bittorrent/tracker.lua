@@ -25,8 +25,6 @@ function tracker(...)
   if #args ~= 1 then
   	simgrid.info("Wrong number of arguments for the tracker")
   end
-  -- Initialization of the random generator
-  math.randomseed(42)
   -- Retrieve the end time
   tracker_data.deadline = tonumber(args[1])
   
