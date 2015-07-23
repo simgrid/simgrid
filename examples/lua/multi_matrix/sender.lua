@@ -4,22 +4,22 @@
 -- This program is free software; you can redistribute it and/or modify it
 -- under the terms of the license (GNU LGPL) which comes with this package.
 
-function Sender(...) 
+function Sender(...)
 
   simgrid.info("Hello From Sender")
-  local receiver = simgrid.host.get_by_name(arg[1])
-  local task_comp = arg[2]
-  local task_comm = arg[3]
-  local rec_alias = arg[4]
+  local receiver = simgrid.host.get_by_name(select(1, ...))
+  local task_comp = select(2, ...)
+  local task_comm = select(3, ...)
+  local rec_alias = select(4, ...)
 
   local size = 4
   local m1 = mkmatrix(size, size)
   local m2 = mkmatrix(size, size)
 
-  if #arg ~= 4 then
+  if select("#", ...) ~= 4 then
     error("Argc should be 4")
   end
-  simgrid.info("Argc=" .. (#arg) .. " (should be 4)")
+  simgrid.info("Argc=" .. select("#", ...) .. " (should be 4)")
 
   -- Sending Task
   local task = simgrid.task.new("matrix_task", task_comp, task_comm)
