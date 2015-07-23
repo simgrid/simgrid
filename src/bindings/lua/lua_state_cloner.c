@@ -259,7 +259,12 @@ static void sglua_copy_nil(lua_State* src, lua_State* dst) {
  * @param dst destination state
  */
 static void sglua_copy_number(lua_State* src, lua_State* dst) {
-  lua_pushnumber(dst, lua_tonumber(src, -1));
+  lua_Number n = lua_tonumber(src, -1);
+  if ( ((lua_Integer) n) == n) {
+    lua_pushinteger(dst, lua_tointeger(src, -1));
+  }
+  else
+    lua_pushnumber(dst, lua_tonumber(src, -1));
 }
 
 /**
