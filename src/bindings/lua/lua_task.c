@@ -419,6 +419,11 @@ static const luaL_Reg task_functions[] = {
  */
 static int l_task_gc(lua_State* L)
 {
+  void *p = luaL_testudata(L, 1, TASK_MODULE_NAME);
+  if (p == NULL) {
+      return 0;
+  }
+
   msg_task_t task = *((msg_task_t*) luaL_checkudata(L, 1, TASK_MODULE_NAME));
   /* the task is NULL if I sent it to someone else */
   if (task != NULL) {
