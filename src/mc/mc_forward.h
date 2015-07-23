@@ -64,8 +64,6 @@ typedef s_mc_type_t *mc_type_t;
 typedef s_mc_variable_t *mc_variable_t;
 typedef s_mc_frame_t *mc_frame_t;
 
-typedef struct s_memory_map s_memory_map_t, *memory_map_t;
-
 SG_BEGIN_DECL()
 extern mc_model_checker_t mc_model_checker;
 SG_END_DECL()
