@@ -15,7 +15,7 @@ require "simgrid"
 
     -- create Links
   for i=10,0,-1 do
-    simgrid.AS.addLink{AS="AS0",id=i,bandwidth=252750+ i*768,latency=0.000270544+i*0.087};   
+    simgrid.AS.addLink{AS="AS0",id=i,bandwidth=252750+ i*768,lat=0.000270544+i*0.087};   
   end
   -- simgrid.route.new(src_id,des_id,links_nb,links_list)
    simgrid.AS.addRoute("AS0","Splayd_1","Splayd_2",{"1"});
