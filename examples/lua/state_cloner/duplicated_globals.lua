@@ -14,7 +14,7 @@ global_string = "A global string set by maestro"
 -- Assigns to the global string the first argument and prints it
 function set_global_string(...)
 
-  global_string = arg[1]
+  global_string = select(1, ...)
   simgrid.info("Changing the global string")
   print_global()
 end
