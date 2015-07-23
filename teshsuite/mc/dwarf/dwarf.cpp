@@ -21,7 +21,7 @@
 int test_some_array[4][5][6];
 struct some_struct { int first; int second[4][5]; } test_some_struct;
 
-static mc_type_t find_type_by_name(mc_object_info_t info, const char* name)
+static simgrid::mc::Type* find_type_by_name(simgrid::mc::ObjectInformation* info, const char* name)
 {
   for (auto& entry : info->types)
     if(entry.second.name == name)
@@ -29,8 +29,8 @@ static mc_type_t find_type_by_name(mc_object_info_t info, const char* name)
   return nullptr;
 }
 
-static mc_frame_t find_function_by_name(
-    mc_object_info_t info, const char* name)
+static simgrid::mc::Frame* find_function_by_name(
+    simgrid::mc::ObjectInformation* info, const char* name)
 {
   for (auto& entry : info->subprograms)
     if(entry.second.name == name)
@@ -38,8 +38,8 @@ static mc_frame_t find_function_by_name(
   return nullptr;
 }
 
-static mc_variable_t find_local_variable(
-    mc_frame_t frame, const char* argument_name)
+static simgrid::mc::Variable* find_local_variable(
+    simgrid::mc::Frame* frame, const char* argument_name)
 {
   for (simgrid::mc::Variable& variable : frame->variables)
     if(argument_name == variable.name)
@@ -55,12 +55,12 @@ static mc_variable_t find_local_variable(
   return nullptr;
 }
 
-static void test_local_variable(mc_object_info_t info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
-  mc_frame_t subprogram = find_function_by_name(info, function);
+static void test_local_variable(simgrid::mc::ObjectInformation* info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
+  simgrid::mc::Frame* subprogram = find_function_by_name(info, function);
   assert(subprogram);
   // TODO, Lookup frame by IP and test against name instead
 
-  mc_variable_t var = find_local_variable(subprogram, variable);
+  simgrid::mc::Variable* var = find_local_variable(subprogram, variable);
   assert(var);
 
   void* frame_base = mc_find_frame_base(subprogram, info, cursor);
@@ -77,9 +77,9 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
 
 }
 
-static mc_variable_t test_global_variable(mc_process_t process, mc_object_info_t info, const char* name, void* address, long byte_size) {
+static simgrid::mc::Variable* test_global_variable(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info, const char* name, void* address, long byte_size) {
 
-  mc_variable_t variable = info->find_variable(name);
+  simgrid::mc::Variable* variable = info->find_variable(name);
   xbt_assert(variable, "Global variable %s was not found", name);
   xbt_assert(variable->name == name,
     "Name mismatch for %s", name);
@@ -90,12 +90,12 @@ static mc_variable_t test_global_variable(mc_process_t process, mc_object_info_t
 
   auto i = process->binary_info->types.find(variable->type_id);
   xbt_assert(i != process->binary_info->types.end(), "Missing type for %s", name);
-  mc_type_t type = &i->second;
+  simgrid::mc::Type* type = &i->second;
   xbt_assert(type->byte_size = byte_size, "Byte size mismatch for %s", name);
   return variable;
 }
 
-static mc_type_t find_member(mc_object_info_t info, const char* name, mc_type_t type)
+static simgrid::mc::Type* find_member(simgrid::mc::ObjectInformation* info, const char* name, simgrid::mc::Type* type)
 {
   for (simgrid::mc::Type& member : type->members)
     if(member.name == name)
@@ -107,7 +107,7 @@ int some_local_variable = 0;
 
 typedef struct foo {int i;} s_foo;
 
-static void test_type_by_name(mc_process_t process, s_foo my_foo)
+static void test_type_by_name(simgrid::mc::Process* process, s_foo my_foo)
 {
   assert(
     process->binary_info->full_types_by_name.find("struct foo") !=
@@ -118,11 +118,11 @@ int main(int argc, char** argv)
 {
   SIMIX_global_init(&argc, argv);
 
-  mc_variable_t var;
-  mc_type_t type;
+  simgrid::mc::Variable* var;
+  simgrid::mc::Type* type;
 
-  s_mc_process_t p(getpid(), -1);
-  mc_process_t process = &p;
+  simgrid::mc::Process p(getpid(), -1);
+  simgrid::mc::Process* process = &p;
 
   test_global_variable(process, process->binary_info.get(),
     "some_local_variable", &some_local_variable, sizeof(int));

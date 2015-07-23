@@ -61,14 +61,14 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit);
  *  \param unit the DIE of the compile unit of the current DIE
  *  \param frame containg frame if any
  */
-static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
-                                Dwarf_Die * unit, mc_frame_t frame,
+static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                 const char *ns);
 
 /** \brief Process a type DIE
  */
-static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, mc_frame_t frame,
+static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                     Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns);
 
 /** \brief Calls MC_dwarf_handle_die on all childrend of the given die
@@ -78,8 +78,8 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
  *  \param unit the DIE of the compile unit of the current DIE
  *  \param frame containg frame if any
  */
-static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, mc_frame_t frame,
+static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                     Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns);
 
 /** \brief Handle a variable (DW_TAG_variable or other)
@@ -89,8 +89,8 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
  *  \param unit the DIE of the compile unit of the current DIE
  *  \param frame containg frame if any
  */
-static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
-                                         Dwarf_Die * unit, mc_frame_t frame,
+static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                         Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                          const char *ns);
 
 /** \brief Get the DW_TAG_type of the DIE
@@ -468,7 +468,7 @@ static bool MC_compare_variable(
     return a.address < b.address;
 }
 
-// ***** mc_type_t
+// ***** simgrid::mc::Type*
 
 /** \brief Initialize the location of a member of a type
  * (DW_AT_data_member_location of a DW_TAG_member).
@@ -477,7 +477,7 @@ static bool MC_compare_variable(
  *  \param  member the member of the type
  *  \param  child  DIE of the member (DW_TAG_member)
  */
-static void MC_dwarf_fill_member_location(mc_type_t type, mc_type_t member,
+static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::Type* member,
                                           Dwarf_Die * child)
 {
   if (dwarf_hasattr(child, DW_AT_data_bit_offset)) {
@@ -547,8 +547,8 @@ static void MC_dwarf_fill_member_location(mc_type_t type, mc_type_t member,
  *  \param unit DIE of the compilation unit containing the type DIE
  *  \param type the type
  */
-static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
-                                 Dwarf_Die * unit, mc_type_t type)
+static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                 Dwarf_Die * unit, simgrid::mc::Type* type)
 {
   int res;
   Dwarf_Die child;
@@ -606,8 +606,8 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
  *  \return MC representation of the type
  */
 static simgrid::mc::Type MC_dwarf_die_to_type(
-  mc_object_info_t info, Dwarf_Die * die,
-  Dwarf_Die * unit, mc_frame_t frame,
+  simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+  Dwarf_Die * unit, simgrid::mc::Frame* frame,
   const char *ns)
 {
 
@@ -690,8 +690,8 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   return std::move(type);
 }
 
-static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, mc_frame_t frame,
+static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                     Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns)
 {
   simgrid::mc::Type type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
@@ -703,8 +703,8 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
 static int mc_anonymous_variable_index = 0;
 
 static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
-  mc_object_info_t info, Dwarf_Die * die,
-  Dwarf_Die * unit, mc_frame_t frame,
+  simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+  Dwarf_Die * unit, simgrid::mc::Frame* frame,
   const char *ns)
 {
   // Skip declarations:
@@ -814,8 +814,8 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
   return std::move(variable);
 }
 
-static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
-                                         Dwarf_Die * unit, mc_frame_t frame,
+static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                         Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                          const char *ns)
 {
   std::unique_ptr<simgrid::mc::Variable> variable =
@@ -831,8 +831,8 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
     xbt_die("No frame for this local variable");
 }
 
-static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
-                                      Dwarf_Die * unit, mc_frame_t parent_frame,
+static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                      Dwarf_Die * unit, simgrid::mc::Frame* parent_frame,
                                       const char *ns)
 {
   // TODO, handle DW_TAG_type/DW_TAG_location for DW_TAG_with_stmt
@@ -926,9 +926,9 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
     parent_frame->scopes.push_back(std::move(frame));
 }
 
-static void mc_dwarf_handle_namespace_die(mc_object_info_t info,
+static void mc_dwarf_handle_namespace_die(simgrid::mc::ObjectInformation* info,
                                           Dwarf_Die * die, Dwarf_Die * unit,
-                                          mc_frame_t frame,
+                                          simgrid::mc::Frame* frame,
                                           const char *ns)
 {
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
@@ -940,8 +940,8 @@ static void mc_dwarf_handle_namespace_die(mc_object_info_t info,
   xbt_free(new_ns);
 }
 
-static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, mc_frame_t frame,
+static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                     Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns)
 {
   // For each child DIE:
@@ -953,8 +953,8 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
   }
 }
 
-static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
-                                Dwarf_Die * unit, mc_frame_t frame,
+static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                 const char *ns)
 {
   int tag = dwarf_tag(die);
@@ -992,7 +992,7 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
  *  Read the DWARf information of the EFFL object and populate the
  *  lists of types, variables, functions.
  */
-void MC_dwarf_get_variables(mc_object_info_t info)
+void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
 {
   int fd = open(info->file_name.c_str(), O_RDONLY);
   if (fd < 0)
@@ -1039,7 +1039,7 @@ static int MC_compare_frame_index_items(simgrid::mc::FunctionIndexEntry* a,
     return 1;
 }
 
-static void MC_make_functions_index(mc_object_info_t info)
+static void MC_make_functions_index(simgrid::mc::ObjectInformation* info)
 {
   info->functions_index.clear();
 
@@ -1063,7 +1063,7 @@ static void MC_make_functions_index(mc_object_info_t info)
         });
 }
 
-static void MC_post_process_variables(mc_object_info_t info)
+static void MC_post_process_variables(simgrid::mc::ObjectInformation* info)
 {
   // Someone needs this to be sorted but who?
   std::sort(info->global_variables.begin(), info->global_variables.end(),
@@ -1076,7 +1076,7 @@ static void MC_post_process_variables(mc_object_info_t info)
     }
 }
 
-static void mc_post_process_scope(mc_object_info_t info, mc_frame_t scope)
+static void mc_post_process_scope(simgrid::mc::ObjectInformation* info, simgrid::mc::Frame* scope)
 {
 
   if (scope->tag == DW_TAG_inlined_subroutine) {
@@ -1103,7 +1103,7 @@ static void mc_post_process_scope(mc_object_info_t info, mc_frame_t scope)
 
 /** \brief Fill/lookup the "subtype" field.
  */
-static void MC_resolve_subtype(mc_object_info_t info, mc_type_t type)
+static void MC_resolve_subtype(simgrid::mc::ObjectInformation* info, simgrid::mc::Type* type)
 {
   if (!type->type_id)
     return;
@@ -1122,7 +1122,7 @@ static void MC_resolve_subtype(mc_object_info_t info, mc_type_t type)
     type->subtype = *subtype;
 }
 
-static void MC_post_process_types(mc_object_info_t info)
+static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 {
   // Lookup "subtype" field:
   for(auto& i : info->types) {
@@ -1133,11 +1133,11 @@ static void MC_post_process_types(mc_object_info_t info)
 }
 
 /** \brief Finds informations about a given shared object/executable */
-std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
+std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char *name, int executable)
 {
-  std::shared_ptr<s_mc_object_info_t> result =
-    std::make_shared<s_mc_object_info_t>();
+  std::shared_ptr<simgrid::mc::ObjectInformation> result =
+    std::make_shared<simgrid::mc::ObjectInformation>();
   if (executable)
     result->flags |= MC_OBJECT_INFO_EXECUTABLE;
   result->file_name = name;
@@ -1153,12 +1153,12 @@ std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
 
 /*************************************************************************/
 
-void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
+void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info)
 {
   for (auto& i : info->types) {
 
-    mc_type_t type = &(i.second);
-    mc_type_t subtype = type;
+    simgrid::mc::Type* type = &(i.second);
+    simgrid::mc::Type* subtype = type;
     while (subtype->type == DW_TAG_typedef || subtype->type == DW_TAG_volatile_type
       || subtype->type == DW_TAG_const_type) {
       if (subtype->subtype)

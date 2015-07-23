@@ -37,7 +37,7 @@ mc_server_t mc_server;
 
 struct mc_symbol_pointer_callback
 {
-  mc_process_t process;
+  simgrid::mc::Process* process;
   void* value;
 };
 
@@ -95,7 +95,7 @@ void s_mc_server::shutdown()
 {
   XBT_DEBUG("Shuting down model-checker");
 
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   int status = process->status();
   if (process->running()) {
     XBT_DEBUG("Killing process");
@@ -123,7 +123,7 @@ void s_mc_server::exit()
   }
 }
 
-void s_mc_server::resume(mc_process_t process)
+void s_mc_server::resume(simgrid::mc::Process* process)
 {
   int res = process->send_message(MC_MESSAGE_CONTINUE);
   if (res)
@@ -336,7 +336,7 @@ void s_mc_server::on_signal(const struct signalfd_siginfo* info)
   }
 }
 
-void MC_server_wait_client(mc_process_t process)
+void MC_server_wait_client(simgrid::mc::Process* process)
 {
   mc_server->resume(process);
   while (mc_model_checker->process().running()) {
@@ -345,7 +345,7 @@ void MC_server_wait_client(mc_process_t process)
   }
 }
 
-void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value)
+void MC_server_simcall_handle(simgrid::mc::Process* process, unsigned long pid, int value)
 {
   s_mc_simcall_handle_message m;
   memset(&m, 0, sizeof(m));

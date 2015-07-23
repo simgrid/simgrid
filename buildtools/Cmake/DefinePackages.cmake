@@ -603,6 +603,7 @@ set(MC_SRC
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
   src/mc/mc_forward.h
+  src/mc/mc_forward.hpp
   src/mc/mc_process.h
   src/mc/mc_process.cpp
   src/mc/mc_unw.h

@@ -56,7 +56,7 @@ RegionSnapshot region(
 RegionSnapshot sparse_region(RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");

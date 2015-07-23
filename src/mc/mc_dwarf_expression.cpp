@@ -430,10 +430,10 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
  */
 void mc_dwarf_resolve_location(mc_location_t location,
                                simgrid::mc::DwarfExpression* expression,
-                               mc_object_info_t object_info,
+                               simgrid::mc::ObjectInformation* object_info,
                                unw_cursor_t * c,
                                void *frame_pointer_address,
-                               mc_address_space_t address_space, int process_index)
+                               simgrid::mc::AddressSpace* address_space, int process_index)
 {
   s_mc_expression_state_t state;
   memset(&state, 0, sizeof(s_mc_expression_state_t));
@@ -480,10 +480,10 @@ static simgrid::mc::DwarfExpression* mc_find_expression(
 
 void mc_dwarf_resolve_locations(mc_location_t location,
                                 simgrid::mc::LocationList* locations,
-                                mc_object_info_t object_info,
+                                simgrid::mc::ObjectInformation* object_info,
                                 unw_cursor_t * c,
                                 void *frame_pointer_address,
-                                mc_address_space_t address_space,
+                                simgrid::mc::AddressSpace* address_space,
                                 int process_index)
 {
 
@@ -508,7 +508,7 @@ void mc_dwarf_resolve_locations(mc_location_t location,
  *  \param frame
  *  \param unw_cursor
  */
-void *mc_find_frame_base(mc_frame_t frame, mc_object_info_t object_info,
+void *mc_find_frame_base(simgrid::mc::Frame* frame, simgrid::mc::ObjectInformation* object_info,
                          unw_cursor_t * unw_cursor)
 {
   s_mc_location_t location;
@@ -537,7 +537,7 @@ void *mc_find_frame_base(mc_frame_t frame, mc_object_info_t object_info,
 }
 
 void mc_dwarf_location_list_init(
-  simgrid::mc::LocationList* list, mc_object_info_t info,
+  simgrid::mc::LocationList* list, simgrid::mc::ObjectInformation* info,
   Dwarf_Die * die, Dwarf_Attribute * attr)
 {
   list->clear();

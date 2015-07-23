@@ -24,7 +24,7 @@ extern "C" {
  *         (or NULL if it does not belong to any snapshot region)
  * */
 mc_mem_region_t mc_get_snapshot_region(
-  const void* addr, const s_mc_snapshot_t* snapshot, int process_index)
+  const void* addr, const simgrid::mc::Snapshot* snapshot, int process_index)
 {
   size_t n = snapshot->snapshot_regions.size();
   for (size_t i = 0; i != n; ++i) {

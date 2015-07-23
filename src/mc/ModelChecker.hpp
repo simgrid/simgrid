@@ -12,7 +12,7 @@
 #include <simgrid_config.h>
 #include <xbt/dict.h>
 
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 #include "mc_process.h"
 #include "PageStore.hpp"
 #include "mc_protocol.h"

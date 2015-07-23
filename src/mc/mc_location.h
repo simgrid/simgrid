@@ -17,7 +17,7 @@
 
 #include <simgrid_config.h>
 #include "mc_base.h"
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 #include "AddressSpace.hpp"
 
 namespace simgrid {
@@ -92,17 +92,17 @@ enum mc_location_type mc_get_location_type(mc_location_t location) {
 
 XBT_INTERNAL void mc_dwarf_resolve_location(
   mc_location_t location, simgrid::mc::DwarfExpression* expression,
-  mc_object_info_t object_info, unw_cursor_t* c,
-  void* frame_pointer_address, mc_address_space_t address_space,
+  simgrid::mc::ObjectInformation* object_info, unw_cursor_t* c,
+  void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
   int process_index);
 MC_SHOULD_BE_INTERNAL void mc_dwarf_resolve_locations(
   mc_location_t location, simgrid::mc::LocationList* locations,
-  mc_object_info_t object_info, unw_cursor_t* c,
-  void* frame_pointer_address, mc_address_space_t address_space,
+  simgrid::mc::ObjectInformation* object_info, unw_cursor_t* c,
+  void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
   int process_index);
 
 XBT_INTERNAL void mc_dwarf_location_list_init(
-  simgrid::mc::LocationList*, mc_object_info_t info, Dwarf_Die* die,
+  simgrid::mc::LocationList*, simgrid::mc::ObjectInformation* info, Dwarf_Die* die,
   Dwarf_Attribute* attr);
 
 #define MC_EXPRESSION_STACK_SIZE 64
@@ -121,8 +121,8 @@ typedef struct s_mc_expression_state {
 
   unw_cursor_t* cursor;
   void* frame_base;
-  mc_address_space_t address_space;
-  mc_object_info_t object_info;
+  simgrid::mc::AddressSpace* address_space;
+  simgrid::mc::ObjectInformation* object_info;
   int process_index;
 } s_mc_expression_state_t, *mc_expression_state_t;
 
@@ -130,7 +130,7 @@ MC_SHOULD_BE_INTERNAL int mc_dwarf_execute_expression(
   size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
 
 MC_SHOULD_BE_INTERNAL void* mc_find_frame_base(
-  mc_frame_t frame, mc_object_info_t object_info, unw_cursor_t* unw_cursor);
+  simgrid::mc::Frame* frame, simgrid::mc::ObjectInformation* object_info, unw_cursor_t* unw_cursor);
 
 SG_END_DECL()
 

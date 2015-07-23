@@ -28,8 +28,8 @@ typedef struct s_mc_server s_mc_server_t, *mc_server_t;
 
 extern mc_server_t mc_server;
 
-XBT_INTERNAL void MC_server_wait_client(mc_process_t process);
-XBT_INTERNAL void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value);
+XBT_INTERNAL void MC_server_wait_client(simgrid::mc::Process* process);
+XBT_INTERNAL void MC_server_simcall_handle(simgrid::mc::Process* process, unsigned long pid, int value);
 
 XBT_INTERNAL void MC_server_loop(mc_server_t server);
 
@@ -47,7 +47,7 @@ public:
   void start();
   void shutdown();
   void exit();
-  void resume(mc_process_t process);
+  void resume(simgrid::mc::Process* process);
   void loop();
   bool handle_events();
 protected:

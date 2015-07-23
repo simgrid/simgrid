@@ -108,7 +108,7 @@ void *ObjectInformation::base_address() const
 }
 
 /* Find a function by instruction pointer */
-mc_frame_t ObjectInformation::find_function(const void *ip) const
+simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
 {
   /* This is implemented by binary search on a sorted array.
    *

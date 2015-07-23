@@ -17,7 +17,7 @@
  *
  *  This component implements the libunwind API for he model-checker:
  *
- *    * reading memory from a mc_address_space_t;
+ *    * reading memory from a simgrid::mc::AddressSpace*;
  *
  *    * reading stack registers from a saved snapshot (context).
  *
@@ -48,7 +48,7 @@ extern unw_accessors_t mc_unw_vmread_accessors;
 
 /** Virtual table for our `libunwind` implementation
  *
- *  Stack unwinding on a `mc_process_t` (for memory, unwinding information)
+ *  Stack unwinding on a `simgrid::mc::Process*` (for memory, unwinding information)
  *  and `ucontext_t` (for processor registers).
  *
  *  It works with the `s_mc_unw_context_t` context.
@@ -60,14 +60,14 @@ extern XBT_INTERNAL unw_accessors_t mc_unw_accessors;
 /** A `libunwind` context
  */
 typedef struct s_mc_unw_context {
-  mc_address_space_t address_space;
-  mc_process_t       process;
+  simgrid::mc::AddressSpace* address_space;
+  simgrid::mc::Process*       process;
   unw_context_t      context;
 } s_mc_unw_context_t, *mc_unw_context_t;
 
 /** Initialises an already allocated context */
 XBT_INTERNAL int mc_unw_init_context(
-  mc_unw_context_t context, mc_process_t process, unw_context_t* c);
+  mc_unw_context_t context, simgrid::mc::Process* process, unw_context_t* c);
 
 // ***** Libunwind cursor
 

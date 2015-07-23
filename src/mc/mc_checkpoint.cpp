@@ -116,7 +116,7 @@ extern "C" {
 
 static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
                                   simgrid::mc::RegionType type,
-                                  mc_object_info_t object_info,
+                                  simgrid::mc::ObjectInformation* object_info,
                                   void *start_addr, void* permanent_addr, size_t size)
 {
   if (type == simgrid::mc::RegionType::Data)
@@ -139,7 +139,7 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
   return;
 }
 
-static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
+static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snapshot)
 {
   const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
@@ -181,7 +181,7 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
  *  `dl_iterate_phdr` would be more robust but would not work in cross-process.
  * */
 void MC_find_object_address(
-  std::vector<simgrid::mc::VmMap> const& maps, mc_object_info_t result)
+  std::vector<simgrid::mc::VmMap> const& maps, simgrid::mc::ObjectInformation* result)
 {
   const char* file_name = xbt_strdup(result->file_name.c_str());
   const char *name = basename(file_name);
@@ -245,7 +245,7 @@ void MC_find_object_address(
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
-static bool mc_valid_variable(mc_variable_t var, mc_frame_t scope,
+static bool mc_valid_variable(simgrid::mc::Variable* var, simgrid::mc::Frame* scope,
                               const void *ip)
 {
   // The variable is not yet valid:
@@ -256,10 +256,10 @@ static bool mc_valid_variable(mc_variable_t var, mc_frame_t scope,
 }
 
 static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
-                                           mc_frame_t scope, int process_index,
+                                           simgrid::mc::Frame* scope, int process_index,
                                            std::vector<s_local_variable>& result)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
   void *ip = (void *) stack_frame->ip;
   if (ip < scope->low_pc || ip >= scope->high_pc)
@@ -336,7 +336,7 @@ static void MC_stack_frame_free_voipd(void *s)
 
 static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t stack_context)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c;
@@ -363,7 +363,7 @@ static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t s
 
       // TODO, use real addresses in frame_t instead of fixing it here
 
-      mc_frame_t frame = process->find_function(remote(ip));
+      simgrid::mc::Frame* frame = process->find_function(remote(ip));
       stack_frame.frame = frame;
 
       if (frame) {
@@ -569,7 +569,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
-  mc_process_t mc_process = &mc_model_checker->process();
+  simgrid::mc::Process* mc_process = &mc_model_checker->process();
 
   mc_snapshot_t snapshot = new simgrid::mc::Snapshot();
 

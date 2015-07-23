@@ -14,7 +14,7 @@
 #include <boost/unordered_set.hpp>
 
 #include "mc_mmu.h"
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 
 namespace simgrid {
 namespace mc {

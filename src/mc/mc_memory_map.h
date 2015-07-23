@@ -14,8 +14,10 @@
 
 #include <sys/types.h>
 
+#include <xbt/base.h>
+
 #include <simgrid_config.h>
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -40,7 +42,7 @@ std::vector<VmMap> get_memory_map(pid_t pid);
 extern "C" {
 
 XBT_INTERNAL void MC_find_object_address(
-  std::vector<simgrid::mc::VmMap> const& maps, mc_object_info_t result);
+  std::vector<simgrid::mc::VmMap> const& maps, simgrid::mc::ObjectInformation* result);
 
 }
 

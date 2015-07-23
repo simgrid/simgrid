@@ -23,7 +23,7 @@
 
 #include <elfutils/libdw.h>
 
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 #include "mc_location.h"
 #include "mc_process.h"
 #include "../smpi/private.h"
@@ -59,8 +59,8 @@ public:
   // Location (for members) is either of:
   simgrid::mc::DwarfExpression location_expression;
 
-  mc_type_t subtype; // DW_AT_type
-  mc_type_t full_type; // The same (but more complete) type
+  simgrid::mc::Type* subtype; // DW_AT_type
+  simgrid::mc::Type* full_type; // The same (but more complete) type
 
   bool has_offset_location() const
   {
@@ -105,14 +105,14 @@ public:
   int global;
   std::string name;
   std::uint64_t type_id;
-  mc_type_t type;
+  simgrid::mc::Type* type;
 
   // Use either of:
   simgrid::mc::LocationList location_list;
   void* address;
 
   size_t start_scope;
-  mc_object_info_t object_info;
+  simgrid::mc::ObjectInformation* object_info;
 };
 
 class Frame {
@@ -128,7 +128,7 @@ public:
   unsigned long int id; /* DWARF offset of the subprogram */
   std::vector<Frame> scopes;
   Dwarf_Off abstract_origin_id;
-  mc_object_info_t object_info;
+  simgrid::mc::ObjectInformation* object_info;
 };
 
 /** An entry in the functions index
@@ -137,7 +137,7 @@ public:
  */
 struct FunctionIndexEntry {
   void* low_pc;
-  mc_frame_t function;
+  simgrid::mc::Frame* function;
 };
 
 /** Information about an (ELF) executable/sharedobject
@@ -200,7 +200,7 @@ public:
 
   void* base_address() const;
 
-  mc_frame_t find_function(const void *ip) const;
+  simgrid::mc::Frame* find_function(const void *ip) const;
   // TODO, should be simgrid::mc::Variable*
   simgrid::mc::Variable* find_variable(const char* name) const;
 
@@ -210,17 +210,17 @@ public:
 }
 
 
-XBT_INTERNAL std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
+XBT_INTERNAL std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char* name, int executable);
-XBT_INTERNAL void MC_post_process_object_info(mc_process_t process, mc_object_info_t info);
+XBT_INTERNAL void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info);
 
-XBT_INTERNAL void MC_dwarf_get_variables(mc_object_info_t info);
-XBT_INTERNAL void MC_dwarf_get_variables_libdw(mc_object_info_t info);
+XBT_INTERNAL void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info);
+XBT_INTERNAL void MC_dwarf_get_variables_libdw(simgrid::mc::ObjectInformation* info);
 XBT_INTERNAL const char* MC_dwarf_attrname(int attr);
 XBT_INTERNAL const char* MC_dwarf_tagname(int tag);
 
 XBT_INTERNAL void* mc_member_resolve(
-  const void* base, mc_type_t type, mc_type_t member,
-  mc_address_space_t snapshot, int process_index);
+  const void* base, simgrid::mc::Type* type, simgrid::mc::Type* member,
+  simgrid::mc::AddressSpace* snapshot, int process_index);
 
 #endif

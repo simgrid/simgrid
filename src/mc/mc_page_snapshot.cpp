@@ -69,7 +69,7 @@ extern "C" {
  *  @param page_count       Number of pages of the region
  *  @param pagenos
  */
-void mc_restore_page_snapshot_region(mc_process_t process,
+void mc_restore_page_snapshot_region(simgrid::mc::Process* process,
   void* start_addr, simgrid::mc::PerPageCopy const& pages_copy)
 {
   for (size_t i = 0; i != pages_copy.page_count(); ++i) {
@@ -82,7 +82,7 @@ void mc_restore_page_snapshot_region(mc_process_t process,
 
 // ***** High level API
 
-void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg)
+void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_region_t reg)
 {
   xbt_assert(((reg->permanent_address().address()) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");

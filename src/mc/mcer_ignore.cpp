@@ -111,17 +111,17 @@ void MC_heap_region_ignore_remove(void *address, size_t size)
 
 void MCer_ignore_global_variable(const char *name)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   xbt_assert(!process->object_infos.empty(), "MC subsystem not initialized");
 
-  for (std::shared_ptr<s_mc_object_info_t> const& info : process->object_infos) {
+  for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : process->object_infos) {
 
     // Binary search:
     int start = 0;
     int end = info->global_variables.size() - 1;
     while (start <= end) {
       unsigned int cursor = (start + end) / 2;
-      mc_variable_t current_var = &info->global_variables[cursor];
+      simgrid::mc::Variable* current_var = &info->global_variables[cursor];
       int cmp = strcmp(current_var->name.c_str(), name);
       if (cmp == 0) {
         info->global_variables.erase(
@@ -141,25 +141,25 @@ void MCer_ignore_global_variable(const char *name)
 
 static void mc_ignore_local_variable_in_scope(const char *var_name,
                                               const char *subprogram_name,
-                                              mc_frame_t subprogram,
-                                              mc_frame_t scope);
+                                              simgrid::mc::Frame* subprogram,
+                                              simgrid::mc::Frame* scope);
 static void MC_ignore_local_variable_in_object(const char *var_name,
                                                const char *subprogram_name,
-                                               mc_object_info_t info);
+                                               simgrid::mc::ObjectInformation* info);
 
 void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   if (strcmp(frame_name, "*") == 0)
     frame_name = NULL;
 
-  for (std::shared_ptr<s_mc_object_info_t> const& info : process->object_infos)
+  for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : process->object_infos)
     MC_ignore_local_variable_in_object(var_name, frame_name, info.get());
 }
 
 static void MC_ignore_local_variable_in_object(const char *var_name,
                                                const char *subprogram_name,
-                                               mc_object_info_t info)
+                                               simgrid::mc::ObjectInformation* info)
 {
   for (auto& entry : info->subprograms)
     mc_ignore_local_variable_in_scope(
@@ -179,8 +179,8 @@ static void MC_ignore_local_variable_in_object(const char *var_name,
  */
 static void mc_ignore_local_variable_in_scope(const char *var_name,
                                               const char *subprogram_name,
-                                              mc_frame_t subprogram,
-                                              mc_frame_t scope)
+                                              simgrid::mc::Frame* subprogram,
+                                              simgrid::mc::Frame* scope)
 {
   // Processing of direct variables:
 
@@ -196,7 +196,7 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
     // Dichotomic search:
     while (start <= end) {
       int cursor = (start + end) / 2;
-      mc_variable_t current_var = &scope->variables[cursor];
+      simgrid::mc::Variable* current_var = &scope->variables[cursor];
 
       int compare = strcmp(current_var->name.c_str(), var_name);
       if (compare == 0) {
@@ -218,7 +218,7 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
   for (simgrid::mc::Frame& nested_scope : scope->scopes) {
     // The new scope may be an inlined subroutine, in this case we want to use its
     // namespaced name in recursive calls:
-    mc_frame_t nested_subprogram =
+    simgrid::mc::Frame* nested_subprogram =
         nested_scope.tag ==
         DW_TAG_inlined_subroutine ? &nested_scope : subprogram;
 

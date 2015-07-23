@@ -83,10 +83,10 @@ static void mc_hash_binary(hash_type * hash, const void *s, size_t len)
  *  \param type type of the variable
  * */
 static void mc_hash_value(hash_type * hash, mc_hashing_state * state,
-                          mc_object_info_t info, const void *address,
-                          mc_type_t type)
+                          simgrid::mc::ObjectInformation* info, const void *address,
+                          simgrid::mc::Type* type)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 top:
 
   switch (type->type) {
@@ -111,7 +111,7 @@ top:
         return;
 
       long element_count = type->element_count;
-      mc_type_t subtype = type->subtype;
+      simgrid::mc::Type* subtype = type->subtype;
       if (subtype == NULL) {
         XBT_DEBUG("Hash array without subtype");
         return;
@@ -145,7 +145,7 @@ top:
         return;
 
       unsigned int cursor = 0;
-      mc_type_t member;
+      simgrid::mc::Type* member;
       xbt_dynar_foreach(type->members, cursor, member) {
         XBT_DEBUG("Hash struct member %s", member->name);
         if (type->subtype == NULL)
@@ -208,10 +208,10 @@ top:
 }
 
 static void mc_hash_object_globals(hash_type * hash, mc_hashing_state * state,
-                                   mc_object_info_t info)
+                                   simgrid::mc::ObjectInformation* info)
 {
   unsigned int cursor = 0;
-  mc_variable_t variable;
+  simgrid::mc::Variable* variable;
   xbt_dynar_foreach(info->global_variables, cursor, variable) {
     XBT_DEBUG("Hash global variable %s", variable->name);
 
@@ -220,7 +220,7 @@ static void mc_hash_object_globals(hash_type * hash, mc_hashing_state * state,
       continue;
     }
 
-    mc_type_t type = variable->type;
+    simgrid::mc::Type* type = variable->type;
     if (type == NULL) {
       // Nothing
       continue;
@@ -241,15 +241,15 @@ static void mc_hash_object_globals(hash_type * hash, mc_hashing_state * state,
 }
 
 static void mc_hash_stack_frame(mc_hash_t * hash,
-                                mc_object_info_t info,
-                                unw_cursor_t * unw_cursor, mc_frame_t frame,
+                                simgrid::mc::ObjectInformation* info,
+                                unw_cursor_t * unw_cursor, simgrid::mc::Frame* frame,
                                 char *frame_pointer, mc_hashing_state * state)
 {
 
   // return; // TEMP
 
   unsigned int cursor = 0;
-  mc_variable_t variable;
+  simgrid::mc::Variable* variable;
   xbt_dynar_foreach(frame->variables, cursor, variable) {
 
     if (variable->type_id == NULL) {
@@ -268,7 +268,7 @@ static void mc_hash_stack_frame(mc_hash_t * hash,
                                             variable->object_info, unw_cursor,
                                             frame_pointer, NULL);
 
-    mc_type_t type = variable->type;
+    simgrid::mc::Type* type = variable->type;
     if (type == NULL) {
       XBT_DEBUG("Hash local variable %s without loctypeation", variable->name);
       continue;
@@ -291,7 +291,7 @@ static void mc_hash_stack(mc_hash_t * hash, mc_snapshot_stack_t stack,
 
     hash_update(*hash, stack_frame.ip);
 
-    mc_object_info_t info;
+    simgrid::mc::ObjectInformation* info;
     if (stack_frame.ip >= (unw_word_t) libsimgrid_info->start_exec
         && stack_frame.ip < (unw_word_t) libsimgrid_info->end_exec)
       info = libsimgrid_info;

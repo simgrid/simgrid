@@ -54,7 +54,7 @@ void visited_state_free_voidp(void *s)
  */
 static mc_visited_state_t visited_state_new()
 {
-  mc_process_t process = &(mc_model_checker->process());
+  simgrid::mc::Process* process = &(mc_model_checker->process());
   mc_visited_state_t new_state = xbt_new0(s_mc_visited_state_t, 1);
   new_state->heap_bytes_used = mmalloc_get_bytes_used_remote(
     process->get_heap()->heaplimit,
@@ -76,7 +76,7 @@ static mc_visited_state_t visited_state_new()
 
 mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
 {
-  mc_process_t process = &(mc_model_checker->process());
+  simgrid::mc::Process* process = &(mc_model_checker->process());
   mc_visited_pair_t pair = NULL;
   pair = xbt_new0(s_mc_visited_pair_t, 1);
   pair->graph_state = graph_state;

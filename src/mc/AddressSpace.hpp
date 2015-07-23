@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 
 namespace simgrid {
 namespace mc {

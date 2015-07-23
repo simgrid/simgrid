@@ -151,7 +151,8 @@ struct s_mc_diff {
   std::vector<s_mc_heap_ignore_region_t>* to_ignore1;
   std::vector<s_mc_heap_ignore_region_t>* to_ignore2;
   s_heap_area_t *equals_to1, *equals_to2;
-  mc_type_t *types1, *types2;
+  simgrid::mc::Type **types1;
+  simgrid::mc::Type **types2;
   size_t available;
 };
 
@@ -383,7 +384,7 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
     state->types1 = (simgrid::mc::Type**)
         realloc(state->types1,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
-                sizeof(type_name *));
+                sizeof(simgrid::mc::Type*));
     state->equals_to2 = (s_heap_area_t*)
         realloc(state->equals_to2,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
@@ -391,7 +392,7 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
     state->types2 = (simgrid::mc::Type**)
         realloc(state->types2,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
-                sizeof(type_name *));
+                sizeof(simgrid::mc::Type*));
     state->available = state->heaplimit;
   }
 
@@ -430,7 +431,7 @@ mc_mem_region_t MC_get_heap_region(mc_snapshot_t snapshot)
 
 int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   struct s_mc_diff *state = mc_diff_info;
 
   /* Start comparison */
@@ -787,7 +788,7 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
                                           xbt_dynar_t previous, int size,
                                           int check_ignore)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
   int i = 0;
   const void *addr_pointed1, *addr_pointed2;
@@ -875,7 +876,7 @@ static int compare_heap_area_with_type(struct s_mc_diff *state, int process_inde
                                        const void *real_area1, const void *real_area2,
                                        mc_snapshot_t snapshot1,
                                        mc_snapshot_t snapshot2,
-                                       xbt_dynar_t previous, mc_type_t type,
+                                       xbt_dynar_t previous, simgrid::mc::Type* type,
                                        int area_size, int check_ignore,
                                        int pointer_level)
 {
@@ -893,7 +894,7 @@ top:
     return 0;
   }
 
-  mc_type_t subtype, subsubtype;
+  simgrid::mc::Type *subtype, *subsubtype;
   int res, elm_size;
   const void *addr_pointed1, *addr_pointed2;
 
@@ -1043,9 +1044,9 @@ top:
       for(simgrid::mc::Type& member : type->members) {
         // TODO, optimize this? (for the offset case)
         void *real_member1 =
-            mc_member_resolve(real_area1, type, &member, (mc_address_space_t) snapshot1, process_index);
+            mc_member_resolve(real_area1, type, &member, (simgrid::mc::AddressSpace*) snapshot1, process_index);
         void *real_member2 =
-            mc_member_resolve(real_area2, type, &member, (mc_address_space_t) snapshot2, process_index);
+            mc_member_resolve(real_area2, type, &member, (simgrid::mc::AddressSpace*) snapshot2, process_index);
         res =
             compare_heap_area_with_type(state, process_index, real_member1, real_member2,
                                         snapshot1, snapshot2,
@@ -1080,7 +1081,7 @@ top:
  * @param  area_size
  * @return                    DWARF type ID for given offset
  */
-static mc_type_t get_offset_type(void *real_base_address, mc_type_t type,
+static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::Type* type,
                                  int offset, int area_size,
                                  mc_snapshot_t snapshot, int process_index)
 {
@@ -1139,9 +1140,9 @@ static mc_type_t get_offset_type(void *real_base_address, mc_type_t type,
  */
 int compare_heap_area(int process_index, const void *area1, const void *area2, mc_snapshot_t snapshot1,
                       mc_snapshot_t snapshot2, xbt_dynar_t previous,
-                      mc_type_t type, int pointer_level)
+                      simgrid::mc::Type* type, int pointer_level)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
   struct s_mc_diff *state = mc_diff_info;
 
@@ -1154,7 +1155,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
   int type_size = -1;
   int offset1 = 0, offset2 = 0;
   int new_size1 = -1, new_size2 = -1;
-  mc_type_t new_type1 = NULL, new_type2 = NULL;
+  simgrid::mc::Type *new_type1 = NULL, *new_type2 = NULL;
 
   int match_pairs = 0;
 
