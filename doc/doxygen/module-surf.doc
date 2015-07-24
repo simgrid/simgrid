@@ -3,6 +3,7 @@
   \section SURF_doc Surf documentation
    Surf is composed several components:
    - \ref SURF_simulation
+   - \ref SURF_models
    - \ref SURF_build_api
    - \ref SURF_c_bindings
    - \ref SURF_interface
@@ -10,14 +11,19 @@
    - \ref SURF_cpu_interface
    - \ref SURF_network_interface
    - \ref SURF_storage_interface
-   - \ref SURF_workstation_interface
-   - \ref SURF_vm_workstation_interface
+   - \ref SURF_host_interface
+   - \ref SURF_vm_interface
    - \ref SURF_lmm
    - \ref SURF_callbacks
    - \ref SURF_plugin_energy
    
 
 */
+
+/** \defgroup SURF_models Simulation Models
+    \ingroup SURF_API
+    \brief Functions to declare the kind of models that you want to use
+    */
 
 /** \defgroup SURF_simulation Simulation
     \ingroup SURF_API
@@ -33,44 +39,38 @@
 
     SURF provides the functionalities to simulate the platform. There are two main data types in SURF:
     the actions and the resources. Several types of resources exist:
-	- the workstation resource,
+	- the host resource,
 	- the network resource,
 	- the CPU resource,
 	- the timer resource.
 
-    The implementation of these resources depends on the platform model you choose. There are several
-    platform models. You can select your model by calling surf_workstation_resource_init_CLM03()
-    or surf_workstation_resource_init_KCCFLN05(). See the documentation of these functions to have
-    more details about the models. Remember that the model KCCFLN05 is an implementation of both the
-    workstation resource and the network.
+    The implementation of these resources depends on the platform
+    models you choose.  You can select your model by calling
+    #surf_host_model_init_current_default() (which will give you a
+    CLM03 model), or similar (see \ref SURF_models).
 
-    Typically, your functions should call the SURF functions provided by the structures
-    \a surf_workstation_resource->common_public and \a surf_workstation_resource->extension_public.
-    See surf_resource_public and surf_workstation_resource_extension_public to know the available functions.
-
-    To initialize SURF, call surf_init(). Then call surf_timer_resource_init() and
-    surf_workstation_resource_init_CLM03() or surf_workstation_resource_init_KCCFLN05()
+    To initialize SURF, call #surf_init(). Then
+    #surf_host_model_init_current_default() or #surf_host_model_init_ptask_L07() 
     to create the platform.
 
-    Then you can access the workstations and the network links with
-    the global variables \ref host_lib
-    and \ref link_lib. Some functions in \a surf_workstation_resource->extension_public can give
+    Then you can access the hosts with the global variables \ref host_lib.
+    Some functions of the \ref SURF_host_interface and similar can give
     you some information about:
-	- a workstation: get_speed(), get_available_speed();
+	- a host: get_speed(), get_available_speed();
 	- a network link: get_link_name(), get_link_latency(), get_link_bandwith();
 	- a route: get_route(), get_route_size().
 
-    During the simulation, call \a surf_workstation_resource->extension_public->execute() to schedule a
-    computation task on a workstation, or \a surf_workstation_resource->extension_public->communicate()
-    to schedule a communication task between two workstations. You can also create parallel task
-    with \a surf_workstation_resource->extension_public->execute_parallel_task(). These functions return
+    During the simulation, call \a surf_host_model->execute() to schedule a
+    computation task on a host, or \a surf_host_model->communicate()
+    to schedule a communication task between two hosts. You can also create parallel task
+    with \a surf_host_model->extension_public->execute_parallel_task(). These functions return
     a new action that represents the task you have just created.
 
     To execute the actions created with \a execute(), \a communicate() or \a execute_parallel_task(), call
     surf_solve(). The function surf_solve() is where the simulation takes place. It returns the
     time elapsed to execute the actions. You can know what actions have changed their state thanks
     to the states sets. For example, if your want to know what actions are finished,
-    extract them from \a surf_workstation_resource->common_public->states.done_action_set.
+    extract them from \a surf_host_model->common_public->states.done_action_set.
     Depending on these results, you can schedule other tasks and call surf_solve() again.
 
     When the simulation is over, just call surf_exit() to clean the memory.
@@ -92,7 +92,7 @@
 /**
 @defgroup SURF_interface   SURF Interface
 @ingroup SURF_API
-@brief Describes the general interface for all components (Cpu, Network, Storage, Workstation, WorkstationVM)
+@brief Describes the general interface for all components (Cpu, Network, Storage, Host, VM)
 
 @htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf Interface" --> @endhtmlonly
 */
@@ -130,19 +130,19 @@
 */
 
 /**
-@defgroup SURF_workstation_interface   SURF Workstation Interface
+@defgroup SURF_host_interface   SURF Host Interface
 @ingroup SURF_API
-@brief Describes the general  interface for all Workstation implementations
+@brief Describes the general  interface for all Host implementations
 
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Workstation Interface" --> @endhtmlonly
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Host Interface" --> @endhtmlonly
 */
 
 /**
-@defgroup SURF_vm_workstation_interface   SURF VM Workstation Interface
+@defgroup SURF_vm_interface   SURF VM Interface
 @ingroup SURF_API
-@brief Describes the general  interface for all VM Workstation implementations
+@brief Describes the general  interface for all VM implementations
 
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="VM Workstation Interface" --> @endhtmlonly
+@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="VM Interface" --> @endhtmlonly
 */
 
 /**

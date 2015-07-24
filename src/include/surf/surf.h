@@ -148,8 +148,6 @@ XBT_PUBLIC(void) model_help(const char *category,
 /** @ingroup SURF_interface
  *  @brief Action states
  *
- *  Action states.
- *
  *  @see Action
  */
 typedef enum {
@@ -312,22 +310,10 @@ static inline void surf_host_set_state(surf_host_t host, e_surf_resource_state_t
 	surf_resource_set_state((surf_cpp_resource_t)host, state);
 }
 
-/**
- * @brief Get the speed of the cpu associated to a host
- *
- * @param resource The surf host
- * @param load [description]
- *
- * @return [description]
- */
+/** @brief Get the speed of the cpu associated to a host */
 XBT_PUBLIC(double) surf_host_get_speed(surf_resource_t resource, double load);
 
-/**
- * @brief Get the available speed of cpu associated to a host
- *
- * @param resource The surf host
- * @return [description]
- */
+/** @brief Get the available speed of cpu associated to a host */
 XBT_PUBLIC(double) surf_host_get_available_speed(surf_resource_t host);
 
 /** @brief Get the number of cores of the cpu associated to a host */
@@ -912,7 +898,6 @@ XBT_PUBLIC(void) surf_network_model_init_CM02(void);
 #ifdef HAVE_GTNETS
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model GTNETS
- *  \param filename XML platform file name
  *
  *  This function is called by surf_host_model_init_GTNETS
  *  or by yourself only if you plan using surf_host_model_init_compound
@@ -925,7 +910,6 @@ XBT_PUBLIC(void) surf_network_model_init_GTNETS(void);
 #ifdef HAVE_NS3
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model NS3
- *  \param filename XML platform file name
  *
  *  This function is called by surf_host_model_init_NS3
  *  or by yourself only if you plan using surf_host_model_init_compound
@@ -937,7 +921,6 @@ XBT_PUBLIC(void) surf_network_model_init_NS3(void);
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model Reno
- *  \param filename XML platform file name
  *
  *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
  *
@@ -952,7 +935,6 @@ XBT_PUBLIC(void) surf_network_model_init_Reno(void);
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model Reno2
- *  \param filename XML platform file name
  *
  *  The problem is related to max( sum( arctan(C * Df * xi) ) ).
  *
@@ -967,7 +949,6 @@ XBT_PUBLIC(void) surf_network_model_init_Reno2(void);
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model Vegas
- *  \param filename XML platform file name
  *
  *  This problem is related to max( sum( a * Df * ln(xi) ) ) which is equivalent
  *  to the proportional fairness.

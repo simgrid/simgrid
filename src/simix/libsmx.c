@@ -235,7 +235,6 @@ double simcall_host_get_wattmax_at(msg_host_t host, int pstate){
  * to create the SIMIX synchro. It can raise a host_error exception if the host crashed.
  *
  * \param name Name of the execution synchro to create
- * \param host SIMIX host where the synchro will be executed
  * \param flops_amount amount Computation amount (in flops)
  * \param priority computation priority
  * \param bound
@@ -570,7 +569,6 @@ void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t d
  *
  * The structure and the corresponding thread are created and put in the list of ready processes.
  *
- * \param process the process created will be stored in this pointer
  * \param name a name for the process. It is for user-level information and can be NULL.
  * \param code the main function of the process
  * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be NULL.
