@@ -1267,7 +1267,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/trace/trace_A.txt
   examples/platforms/trace/trace_B.txt
   examples/platforms/data_center.xml
-  examples/platforms/deployment_remote_io.xml
   examples/platforms/energy_platform.xml
   examples/platforms/fat_tree_cluster.xml
   examples/platforms/g5k.xml
@@ -1280,9 +1279,10 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/multicore_machine.xml
   examples/platforms/platform.xml
   examples/platforms/prop.xml
-  examples/platforms/remote_io.xml
   examples/platforms/routing_cluster.xml
-  examples/platforms/storage.xml
+  examples/platforms/storage/remote_io.deployment.xml
+  examples/platforms/storage/remote_io.xml
+  examples/platforms/storage/storage.xml
   examples/platforms/small_platform.xml
   examples/platforms/small_platform_fatpipe.xml
   examples/platforms/small_platform_one_link_routes.xml
