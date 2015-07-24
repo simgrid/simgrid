@@ -8,6 +8,7 @@
 
 #include "mc_object_info.h"
 #include "mc_private.h"
+#include "mc/Type.hpp"
 
 /** Resolve snapshot in the process address space
  *

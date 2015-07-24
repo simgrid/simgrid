@@ -601,6 +601,18 @@ set(MC_SRC_BASE
 set(MC_SRC
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
+  src/mc/Frame.hpp
+  src/mc/ModelChecker.hpp
+  src/mc/ModelChecker.cpp
+  src/mc/ObjectInformation.hpp
+  src/mc/ObjectInformation.cpp
+  src/mc/PageStore.hpp
+  src/mc/PageStore.cpp
+  src/mc/RegionSnapshot.cpp
+  src/mc/RegionSnapshot.hpp
+  src/mc/Type.hpp
+  src/mc/Variable.hpp
+
   src/mc/mc_forward.h
   src/mc/mc_forward.hpp
   src/mc/mc_process.h
@@ -609,17 +621,11 @@ set(MC_SRC
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
   src/mc/mc_mmalloc.h
-  src/mc/ModelChecker.hpp
-  src/mc/ModelChecker.cpp
   src/mc/mc_object_info.h
   src/mc/mc_object_info.cpp
   src/mc/mc_checkpoint.cpp
   src/mc/mc_snapshot.h
   src/mc/mc_snapshot.cpp
-  src/mc/RegionSnapshot.cpp
-  src/mc/RegionSnapshot.hpp
-  src/mc/PageStore.hpp
-  src/mc/PageStore.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
   src/mc/mc_comm_pattern.cpp

@@ -21,6 +21,7 @@
 #include "mc_object_info.h"
 #include "mc_process.h"
 #include "mc_unw.h"
+#include "mc/Frame.hpp"
 
 using simgrid::mc::remote;
 

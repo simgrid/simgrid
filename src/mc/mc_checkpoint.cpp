@@ -36,6 +36,10 @@
 #include "mc_smx.h"
 #include "mc_hash.hpp"
 
+#include "mc/ObjectInformation.hpp"
+#include "mc/Frame.hpp"
+#include "mc/Variable.hpp"
+
 using simgrid::mc::remote;
 
 extern "C" {

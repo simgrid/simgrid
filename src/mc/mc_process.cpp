@@ -29,12 +29,15 @@
 
 #include "mc_process.h"
 #include "mc_object_info.h"
-#include "AddressSpace.hpp"
 #include "mc_unw.h"
 #include "mc_snapshot.h"
 #include "mc_ignore.h"
 #include "mc_smx.h"
 #include "mc_server.h"
+
+#include "mc/AddressSpace.hpp"
+#include "mc/ObjectInformation.hpp"
+#include "mc/Variable.hpp"
 
 using simgrid::mc::remote;
 

@@ -14,6 +14,7 @@
 #include "mc/datatypes.h"
 #include "mc/mc_private.h"
 #include "mc/mc_snapshot.h"
+#include "mc/Type.hpp"
 
 using simgrid::mc::remote;
 

@@ -23,6 +23,10 @@
 
 #include "mc_object_info.h"
 #include "mc_private.h"
+#include "mc_process.h"
+
+#include "mc/ObjectInformation.hpp"
+#include "mc/Variable.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
