@@ -57,7 +57,7 @@ mc_smx_process_info_t MC_smx_process_get_info(smx_process_t p)
  *  @param remote_swag Address of the process SWAG in the remote list
  */
 static void MC_process_refresh_simix_process_list(
-  mc_process_t process,
+  simgrid::mc::Process* process,
   xbt_dynar_t target, xbt_swag_t remote_swag)
 {
   // swag = REMOTE(*simix_global->process_list)
@@ -84,7 +84,7 @@ static void MC_process_refresh_simix_process_list(
   assert(i == swag.count);
 }
 
-void MC_process_smx_refresh(mc_process_t process)
+void MC_process_smx_refresh(simgrid::mc::Process* process)
 {
   xbt_assert(mc_mode == MC_MODE_SERVER);
   xbt_assert(!process->is_self());
@@ -178,7 +178,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
   if (mc_mode == MC_MODE_CLIENT)
     return SIMIX_host_get_name(p->smx_host);
 
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
   // Currently, smx_host_t = xbt_dictelm_t.
   // TODO, add an static_assert on this if switching to C++
@@ -199,7 +199,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
 
 const char* MC_smx_process_get_name(smx_process_t p)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   if (mc_mode == MC_MODE_CLIENT)
     return p->name;
   if (!p->name)

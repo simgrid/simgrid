@@ -36,12 +36,12 @@ namespace mc {
 static inline  __attribute__ ((always_inline))
 PageStore::hash_type mc_hash_page(const void* data)
 {
-  const uint64_t* values = (const uint64_t*) data;
-  size_t n = xbt_pagesize / sizeof(uint64_t);
+  const std::uint64_t* values = (const uint64_t*) data;
+  std::size_t n = xbt_pagesize / sizeof(uint64_t);
 
   // This djb2:
-  uint64_t hash = 5381;
-  for (size_t i=0; i!=n; ++i) {
+  std::uint64_t hash = 5381;
+  for (std::size_t i = 0; i != n; ++i) {
     hash = ((hash << 5) + hash) + values[i];
   }
   return hash;
@@ -55,8 +55,8 @@ PageStore::PageStore(size_t size) :
   // Using mmap in order to be able to expand the region
   // by relocating it somewhere else in the virtual memory
   // space:
-  void * memory = ::mmap(NULL, size << xbt_pagebits, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
-  if (memory==MAP_FAILED) {
+  void* memory = ::mmap(NULL, size << xbt_pagebits, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+  if (memory == MAP_FAILED) {
     xbt_die("Could not mmap initial snapshot pages.");
   }
 
@@ -71,7 +71,7 @@ PageStore::~PageStore()
   ::munmap(this->memory_, this->capacity_ << xbt_pagebits);
 }
 
-void PageStore::resize(size_t size)
+void PageStore::resize(std::size_t size)
 {
   size_t old_bytesize = this->capacity_ << xbt_pagebits;
   size_t new_bytesize = size << xbt_pagebits;
@@ -92,7 +92,7 @@ void PageStore::resize(size_t size)
  *
  *  @return index of the free page
  */
-size_t PageStore::alloc_page()
+std::size_t PageStore::alloc_page()
 {
   if (this->free_pages_.empty()) {
 
@@ -115,7 +115,7 @@ size_t PageStore::alloc_page()
   }
 }
 
-void PageStore::remove_page(size_t pageno)
+void PageStore::remove_page(std::size_t pageno)
 {
   this->free_pages_.push_back(pageno);
   const void* page = this->get_page(pageno);
@@ -124,7 +124,7 @@ void PageStore::remove_page(size_t pageno)
 }
 
 /** Store a page in memory */
-size_t PageStore::store_page(void* page)
+std::size_t PageStore::store_page(void* page)
 {
   xbt_assert(top_index_ <= this->capacity_, "top_index is not consistent");
 
@@ -151,7 +151,7 @@ size_t PageStore::store_page(void* page)
 
   // Otherwise, a new page is allocated in the page store and the content
   // of the page is `memcpy()`-ed to this new page.
-  size_t pageno = alloc_page();
+  std::size_t pageno = alloc_page();
   xbt_assert(this->page_counts_[pageno]==0, "Allocated page is already used");
   void* snapshot_page = (void*) this->get_page(pageno);
   memcpy(snapshot_page, page, xbt_pagesize);
@@ -165,9 +165,9 @@ size_t PageStore::store_page(void* page)
 
 #ifdef SIMGRID_TEST
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdint.h>
+#include <cstring>
+#include <cstdint>
+
 #include <unistd.h>
 #include <sys/mman.h>
 
@@ -177,9 +177,9 @@ size_t PageStore::store_page(void* page)
 
 static int value = 0;
 
-static void new_content(void* data, size_t size)
+static void new_content(void* data, std::size_t size)
 {
-  memset(data, ++value, size);
+  ::memset(data, ++value, size);
 }
 
 static void* getpage()
@@ -193,10 +193,12 @@ XBT_TEST_SUITE("mc_page_store", "Page store");
 
 XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the store")
 {
+  using simgrid::mc::PageStore;
+  
   xbt_test_add("Init");
-  size_t pagesize = (size_t) getpagesize();
-  std::unique_ptr<simgrid::mc::PageStore> store
-    = std::unique_ptr<simgrid::mc::PageStore>(new simgrid::mc::PageStore(500));
+  std::size_t pagesize = (size_t) getpagesize();
+  std::unique_ptr<PageStore> store
+    = std::unique_ptr<PageStore>(new simgrid::mc::PageStore(500));
   void* data = getpage();
   xbt_test_assert(store->size()==0, "Bad size");
 
@@ -205,7 +207,7 @@ XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the sto
   size_t pageno1 = store->store_page(data);
   xbt_test_assert(store->get_ref(pageno1)==1, "Bad refcount");
   const void* copy = store->get_page(pageno1);
-  xbt_test_assert(memcmp(data, copy, pagesize)==0, "Page data should be the same");
+  xbt_test_assert(::memcmp(data, copy, pagesize)==0, "Page data should be the same");
   xbt_test_assert(store->size()==1, "Bad size");
 
   xbt_test_add("Store the same page again");

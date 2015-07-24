@@ -124,7 +124,7 @@ class RegionSnapshot {
 private:
   RegionType region_type_;
   StorageType storage_type_;
-  mc_object_info_t object_info_;
+  simgrid::mc::ObjectInformation* object_info_;
 
   /** @brief  Virtual address of the region in the simulated process */
   void *start_addr_;
@@ -251,8 +251,8 @@ public:
     return privatized_regions_;
   }
 
-  mc_object_info_t object_info() const { return object_info_; }
-  void object_info(mc_object_info_t info) { object_info_ = info; }
+  simgrid::mc::ObjectInformation* object_info() const { return object_info_; }
+  void object_info(simgrid::mc::ObjectInformation* info) { object_info_ = info; }
 
   // Other getters
 

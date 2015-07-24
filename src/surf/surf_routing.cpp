@@ -518,7 +518,7 @@ static void elements_father(sg_routing_edge_t src, sg_routing_edge_t dst,
 static void _get_route_and_latency(RoutingEdge *src, RoutingEdge *dst,
                                    xbt_dynar_t * links, double *latency)
 {
-  s_sg_platf_route_cbarg_t route;
+  s_sg_platf_route_cbarg_t route = SG_PLATF_ROUTE_INITIALIZER;
   memset(&route,0,sizeof(route));
 
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
@@ -748,21 +748,21 @@ static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
       surf_parse_error("Malformed radical");
       break;
     }
-    s_sg_platf_host_cbarg_t host;
+    s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
     memset(&host, 0, sizeof(host));
     host.initial_state = SURF_RESOURCE_ON;
     host.pstate        = 0;
     host.power_scale   = 1.0;
     host.core_amount   = 1;
 
-    s_sg_platf_link_cbarg_t link;
+    s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
     memset(&link, 0, sizeof(link));
     link.state     = SURF_RESOURCE_ON;
     link.policy    = SURF_LINK_FULLDUPLEX;
     link.latency   = cabinet->lat;
     link.bandwidth = cabinet->bw;
 
-    s_sg_platf_host_link_cbarg_t host_link;
+    s_sg_platf_host_link_cbarg_t host_link = SG_PLATF_HOST_LINK_INITIALIZER;
     memset(&host_link, 0, sizeof(host_link));
 
     for (i = start; i <= end; i++) {
@@ -800,8 +800,8 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   xbt_dict_t patterns = NULL;
   int rankId=0;
 
-  s_sg_platf_host_cbarg_t host;
-  s_sg_platf_link_cbarg_t link;
+  s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
+  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
 
   unsigned int iter;
   int start, end, i;
@@ -1009,7 +1009,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id);
   char *newid = NULL;
-  s_sg_platf_router_cbarg_t router;
+  s_sg_platf_router_cbarg_t router = SG_PLATF_ROUTER_INITIALIZER;
   memset(&router, 0, sizeof(router));
   router.id = cluster->router_id;
   router.coord = "";
@@ -1071,7 +1071,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   current_routing->p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
   XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->power);
-  s_sg_platf_host_cbarg_t host;
+  s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
   memset(&host, 0, sizeof(host));
   host.initial_state = SURF_RESOURCE_ON;
   host.id = host_id;
@@ -1087,7 +1087,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   host.core_amount = 1;
   sg_platf_new_host(&host);
 
-  s_sg_platf_link_cbarg_t link;
+  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link, 0, sizeof(link));
   link.state   = SURF_RESOURCE_ON;
   link.policy  = SURF_LINK_SHARED;
@@ -1108,7 +1108,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   sg_platf_new_link(&link);
 
   XBT_DEBUG("<host_link\tid=\"%s\"\tup=\"%s\"\tdown=\"%s\" />", host_id,link_up,link_down);
-  s_sg_platf_host_link_cbarg_t host_link;
+  s_sg_platf_host_link_cbarg_t host_link = SG_PLATF_HOST_LINK_INITIALIZER;
   memset(&host_link, 0, sizeof(host_link));
   host_link.id        = host_id;
   host_link.link_up   = link_up;
@@ -1116,7 +1116,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   sg_platf_new_host_link(&host_link);
 
   XBT_DEBUG("<router id=\"%s\"/>", router_id);
-  s_sg_platf_router_cbarg_t router;
+  s_sg_platf_router_cbarg_t router = SG_PLATF_ROUTER_INITIALIZER;
   memset(&router, 0, sizeof(router));
   router.id = router_id;
   router.coord = peer->coord;

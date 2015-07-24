@@ -218,7 +218,7 @@ Process::Process(pid_t pid, int sockfd)
   }
 
   // Read std_heap (is a struct mdesc*):
-  dw_variable_t std_heap_var = process->find_variable("__mmalloc_default_mdp");
+  simgrid::mc::Variable* std_heap_var = process->find_variable("__mmalloc_default_mdp");
   if (!std_heap_var)
     xbt_die("No heap information in the target process");
   if(!std_heap_var->address)
@@ -377,7 +377,7 @@ void Process::init_memory_map_info()
       }
     }
 
-    std::shared_ptr<s_mc_object_info_t> info =
+    std::shared_ptr<simgrid::mc::ObjectInformation> info =
       MC_find_object_info(this->memory_map_, pathname, is_executable);
     this->object_infos.push_back(info);
     if (is_executable)
@@ -400,7 +400,7 @@ void Process::init_memory_map_info()
   XBT_DEBUG("Get debug information done !");
 }
 
-std::shared_ptr<s_mc_object_info_t> Process::find_object_info(remote_ptr<void> addr) const
+std::shared_ptr<simgrid::mc::ObjectInformation> Process::find_object_info(remote_ptr<void> addr) const
 {
   for (auto const& object_info : this->object_infos) {
     if (addr.address() >= (std::uint64_t)object_info->start
@@ -411,9 +411,9 @@ std::shared_ptr<s_mc_object_info_t> Process::find_object_info(remote_ptr<void> a
   return NULL;
 }
 
-std::shared_ptr<s_mc_object_info_t> Process::find_object_info_exec(remote_ptr<void> addr) const
+std::shared_ptr<ObjectInformation> Process::find_object_info_exec(remote_ptr<void> addr) const
 {
-  for (std::shared_ptr<s_mc_object_info> const& info : this->object_infos) {
+  for (std::shared_ptr<ObjectInformation> const& info : this->object_infos) {
     if (addr.address() >= (std::uint64_t) info->start_exec
         && addr.address() <= (std::uint64_t) info->end_exec) {
       return info;
@@ -422,9 +422,9 @@ std::shared_ptr<s_mc_object_info_t> Process::find_object_info_exec(remote_ptr<vo
   return nullptr;
 }
 
-std::shared_ptr<s_mc_object_info_t> Process::find_object_info_rw(remote_ptr<void> addr) const
+std::shared_ptr<ObjectInformation> Process::find_object_info_rw(remote_ptr<void> addr) const
 {
-  for (std::shared_ptr<s_mc_object_info> const& info : this->object_infos) {
+  for (std::shared_ptr<ObjectInformation> const& info : this->object_infos) {
     if (addr.address() >= (std::uint64_t)info->start_rw
         && addr.address() <= (std::uint64_t)info->end_rw) {
       return info;
@@ -433,32 +433,29 @@ std::shared_ptr<s_mc_object_info_t> Process::find_object_info_rw(remote_ptr<void
   return nullptr;
 }
 
-dw_frame_t Process::find_function(remote_ptr<void> ip) const
+simgrid::mc::Frame* Process::find_function(remote_ptr<void> ip) const
 {
-  std::shared_ptr<s_mc_object_info_t> info = this->find_object_info_exec(ip);
-  if (!info)
-    return nullptr;
-  else
-    return MC_file_object_info_find_function(info.get(), (void*) ip.address());
+  std::shared_ptr<simgrid::mc::ObjectInformation> info = this->find_object_info_exec(ip);
+  return info ? info->find_function((void*) ip.address()) : nullptr;
 }
 
 /** Find (one occurence of) the named variable definition
  */
-dw_variable_t Process::find_variable(const char* name) const
+simgrid::mc::Variable* Process::find_variable(const char* name) const
 {
   // First lookup the variable in the executable shared object.
   // A global variable used directly by the executable code from a library
   // is reinstanciated in the executable memory .data/.bss.
   // We need to look up the variable in the execvutable first.
   if (this->binary_info) {
-    std::shared_ptr<s_mc_object_info_t> const& info = this->binary_info;
-    dw_variable_t var = MC_file_object_info_find_variable_by_name(info.get(), name);
+    std::shared_ptr<simgrid::mc::ObjectInformation> const& info = this->binary_info;
+    simgrid::mc::Variable* var = info->find_variable(name);
     if (var)
       return var;
   }
 
-  for (std::shared_ptr<s_mc_object_info_t> const& info : this->object_infos) {
-    dw_variable_t var = MC_file_object_info_find_variable_by_name(info.get(), name);
+  for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : this->object_infos) {
+    simgrid::mc::Variable* var = info->find_variable(name);
     if (var)
       return var;
   }
@@ -468,7 +465,7 @@ dw_variable_t Process::find_variable(const char* name) const
 
 void Process::read_variable(const char* name, void* target, size_t size) const
 {
-  dw_variable_t var = this->find_variable(name);
+  simgrid::mc::Variable* var = this->find_variable(name);
   if (!var->address)
     xbt_die("No simple location for this variable");
   if (!var->type->full_type)
@@ -518,10 +515,10 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
   AddressSpace::ReadMode mode) const
 {
   if (process_index != simgrid::mc::ProcessIndexDisabled) {
-    std::shared_ptr<s_mc_object_info_t> const& info =
+    std::shared_ptr<simgrid::mc::ObjectInformation> const& info =
       this->find_object_info_rw((void*)address.address());
     // Segment overlap is not handled.
-    if (MC_object_info_is_privatized(info.get())) {
+    if (info.get() && info.get()->privatized()) {
       if (process_index < 0)
         xbt_die("Missing process index");
       if (process_index >= (int) MC_smpi_process_count())

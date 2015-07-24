@@ -27,7 +27,7 @@
 #include "simix/popping_private.h"
 #include "simix/smx_private.h"
 
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 #include "mc_base.h"
 #include "mc_mmalloc.h" // std_heap
 #include "mc_memory_map.h"
@@ -89,11 +89,11 @@ public:
   void clear_bytes(remote_ptr<void> address, size_t len);
 
   // Debug information:
-  std::shared_ptr<s_mc_object_info_t> find_object_info(remote_ptr<void> addr) const;
-  std::shared_ptr<s_mc_object_info_t> find_object_info_exec(remote_ptr<void> addr) const;
-  std::shared_ptr<s_mc_object_info_t> find_object_info_rw(remote_ptr<void> addr) const;
-  dw_frame_t find_function(remote_ptr<void> ip) const;
-  dw_variable_t find_variable(const char* name) const;
+  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info(remote_ptr<void> addr) const;
+  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_exec(remote_ptr<void> addr) const;
+  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_rw(remote_ptr<void> addr) const;
+  simgrid::mc::Frame* find_function(remote_ptr<void> ip) const;
+  simgrid::mc::Variable* find_variable(const char* name) const;
 
   // Heap access:
   xbt_mheap_t get_heap()
@@ -173,10 +173,10 @@ private:
   std::vector<IgnoredRegion> ignored_regions_;
 
 public: // object info
-  // TODO, make private (first, objectify mc_object_info_t)
-  std::vector<std::shared_ptr<s_mc_object_info_t>> object_infos;
-  std::shared_ptr<s_mc_object_info_t> libsimgrid_info;
-  std::shared_ptr<s_mc_object_info_t> binary_info;
+  // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)
+  std::vector<std::shared_ptr<simgrid::mc::ObjectInformation>> object_infos;
+  std::shared_ptr<simgrid::mc::ObjectInformation> libsimgrid_info;
+  std::shared_ptr<simgrid::mc::ObjectInformation> binary_info;
 
 public: // Copies of MCed SMX data structures
   /** Copy of `simix_global->process_list`
@@ -218,7 +218,8 @@ public: // Libunwind-data
   /** Full-featured MC-aware libunwind address space for the process
    *
    *  This address space is using a mc_unw_context_t
-   *  (with mc_process_t/mc_address_space_t and unw_context_t).
+   *  (with simgrid::mc::Process* / simgrid::mc::AddressSpace*
+   *  and unw_context_t).
    */
   unw_addr_space_t unw_addr_space;
 

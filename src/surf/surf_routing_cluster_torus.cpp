@@ -42,7 +42,7 @@ AsClusterTorus::~AsClusterTorus()
 
 
 void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position){
-  s_sg_platf_link_cbarg_t link;
+  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   char* link_id;
   unsigned int j = 0;
   /**

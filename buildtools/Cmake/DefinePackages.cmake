@@ -394,6 +394,7 @@ endif()
 set(SIMGRID_SRC
   src/simgrid/sg_config.c
   src/simgrid/host.cpp
+  src/simgrid/util.hpp
   )
 
 set(MSG_SRC
@@ -603,6 +604,7 @@ set(MC_SRC
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
   src/mc/mc_forward.h
+  src/mc/mc_forward.hpp
   src/mc/mc_process.h
   src/mc/mc_process.cpp
   src/mc/mc_unw.h
@@ -699,6 +701,7 @@ set(headers_to_install
   include/xbt/RngStream.h
   include/xbt/asserts.h
   include/xbt/automaton.h
+  include/xbt/automaton.hpp
   include/xbt/base.h
   include/xbt/config.h
   include/xbt/cunit.h

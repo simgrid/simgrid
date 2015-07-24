@@ -111,24 +111,24 @@ void MC_heap_region_ignore_remove(void *address, size_t size)
 
 void MCer_ignore_global_variable(const char *name)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   xbt_assert(!process->object_infos.empty(), "MC subsystem not initialized");
 
-  for (std::shared_ptr<s_mc_object_info_t> const& info : process->object_infos) {
+  for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : process->object_infos) {
 
     // Binary search:
     int start = 0;
-    int end = xbt_dynar_length(info->global_variables) - 1;
+    int end = info->global_variables.size() - 1;
     while (start <= end) {
       unsigned int cursor = (start + end) / 2;
-      dw_variable_t current_var =
-          (dw_variable_t) xbt_dynar_get_as(info->global_variables,
-                                           cursor, dw_variable_t);
-      if (strcmp(current_var->name, name) == 0) {
-        xbt_dynar_remove_at(info->global_variables, cursor, NULL);
+      simgrid::mc::Variable* current_var = &info->global_variables[cursor];
+      int cmp = strcmp(current_var->name.c_str(), name);
+      if (cmp == 0) {
+        info->global_variables.erase(
+          info->global_variables.begin() + cursor);
         start = 0;
-        end = xbt_dynar_length(info->global_variables) - 1;
-      } else if (strcmp(current_var->name, name) < 0) {
+        end = info->global_variables.size() - 1;
+      } else if (cmp < 0) {
         start = cursor + 1;
       } else {
         end = cursor - 1;
@@ -141,32 +141,29 @@ void MCer_ignore_global_variable(const char *name)
 
 static void mc_ignore_local_variable_in_scope(const char *var_name,
                                               const char *subprogram_name,
-                                              dw_frame_t subprogram,
-                                              dw_frame_t scope);
+                                              simgrid::mc::Frame* subprogram,
+                                              simgrid::mc::Frame* scope);
 static void MC_ignore_local_variable_in_object(const char *var_name,
                                                const char *subprogram_name,
-                                               mc_object_info_t info);
+                                               simgrid::mc::ObjectInformation* info);
 
 void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   if (strcmp(frame_name, "*") == 0)
     frame_name = NULL;
 
-  for (std::shared_ptr<s_mc_object_info_t> const& info : process->object_infos)
+  for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : process->object_infos)
     MC_ignore_local_variable_in_object(var_name, frame_name, info.get());
 }
 
 static void MC_ignore_local_variable_in_object(const char *var_name,
                                                const char *subprogram_name,
-                                               mc_object_info_t info)
+                                               simgrid::mc::ObjectInformation* info)
 {
-  xbt_dict_cursor_t cursor2;
-  dw_frame_t frame;
-  char *key;
-  xbt_dict_foreach(info->subprograms, cursor2, key, frame) {
-    mc_ignore_local_variable_in_scope(var_name, subprogram_name, frame, frame);
-  }
+  for (auto& entry : info->subprograms)
+    mc_ignore_local_variable_in_scope(
+      var_name, subprogram_name, &entry.second, &entry.second);
 }
 
 /** \brief Ignore a local variable in a scope
@@ -182,34 +179,33 @@ static void MC_ignore_local_variable_in_object(const char *var_name,
  */
 static void mc_ignore_local_variable_in_scope(const char *var_name,
                                               const char *subprogram_name,
-                                              dw_frame_t subprogram,
-                                              dw_frame_t scope)
+                                              simgrid::mc::Frame* subprogram,
+                                              simgrid::mc::Frame* scope)
 {
   // Processing of direct variables:
 
   // If the current subprogram matches the given name:
-  if (!subprogram_name ||
-      (subprogram->name && strcmp(subprogram_name, subprogram->name) == 0)) {
+  if (subprogram_name == nullptr ||
+      (!subprogram->name.empty()
+        && subprogram->name == subprogram_name)) {
 
     // Try to find the variable and remove it:
     int start = 0;
-    int end = xbt_dynar_length(scope->variables) - 1;
+    int end = scope->variables.size() - 1;
 
     // Dichotomic search:
     while (start <= end) {
       int cursor = (start + end) / 2;
-      dw_variable_t current_var =
-          (dw_variable_t) xbt_dynar_get_as(scope->variables, cursor,
-                                           dw_variable_t);
+      simgrid::mc::Variable* current_var = &scope->variables[cursor];
 
-      int compare = strcmp(current_var->name, var_name);
+      int compare = strcmp(current_var->name.c_str(), var_name);
       if (compare == 0) {
         // Variable found, remove it:
-        xbt_dynar_remove_at(scope->variables, cursor, NULL);
+        scope->variables.erase(scope->variables.begin() + cursor);
 
         // and start again:
         start = 0;
-        end = xbt_dynar_length(scope->variables) - 1;
+        end = scope->variables.size() - 1;
       } else if (compare < 0) {
         start = cursor + 1;
       } else {
@@ -219,17 +215,15 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
 
   }
   // And recursive processing in nested scopes:
-  unsigned cursor = 0;
-  dw_frame_t nested_scope = NULL;
-  xbt_dynar_foreach(scope->scopes, cursor, nested_scope) {
+  for (simgrid::mc::Frame& nested_scope : scope->scopes) {
     // The new scope may be an inlined subroutine, in this case we want to use its
     // namespaced name in recursive calls:
-    dw_frame_t nested_subprogram =
-        nested_scope->tag ==
-        DW_TAG_inlined_subroutine ? nested_scope : subprogram;
+    simgrid::mc::Frame* nested_subprogram =
+        nested_scope.tag ==
+        DW_TAG_inlined_subroutine ? &nested_scope : subprogram;
 
     mc_ignore_local_variable_in_scope(var_name, subprogram_name,
-                                      nested_subprogram, nested_scope);
+                                      nested_subprogram, &nested_scope);
   }
 }
 

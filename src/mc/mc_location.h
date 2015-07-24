@@ -9,30 +9,45 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include <libunwind.h>
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
 #include <simgrid_config.h>
 #include "mc_base.h"
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 #include "AddressSpace.hpp"
 
-SG_BEGIN_DECL()
+namespace simgrid {
+namespace mc {
 
-/** \brief a DWARF expression with optional validity contraints */
-typedef struct s_mc_expression {
-  size_t size;
-  Dwarf_Op* ops;
-  // Optional validity:
+typedef std::vector<Dwarf_Op> DwarfExpression;
+
+
+/** \brief A DWARF expression with optional validity contraints */
+class LocationListEntry {
+public:
+  DwarfExpression expression;
   void* lowpc, *highpc;
-} s_mc_expression_t, *mc_expression_t;
 
-/** A location list (list of location expressions) */
-typedef struct s_mc_location_list {
-  size_t size;
-  mc_expression_t locations;
-} s_mc_location_list_t, *mc_location_list_t;
+  LocationListEntry() : lowpc(nullptr), highpc(nullptr) {}
+
+  bool valid_for_ip(unw_word_t ip)
+  {
+    return (this->lowpc == nullptr && this->highpc == nullptr)
+        || (ip >= (unw_word_t) this->lowpc
+            && ip < (unw_word_t) this->highpc);
+  }
+};
+
+typedef std::vector<LocationListEntry> LocationList;
+
+}
+}
+
+SG_BEGIN_DECL()
 
 /** A location is either a location in memory of a register location
  *
@@ -75,16 +90,20 @@ enum mc_location_type mc_get_location_type(mc_location_t location) {
   }
 }
 
-XBT_INTERNAL void mc_dwarf_resolve_location(mc_location_t location, mc_expression_t expression, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_address_space_t address_space, int process_index);
-MC_SHOULD_BE_INTERNAL void mc_dwarf_resolve_locations(mc_location_t location, mc_location_list_t locations, mc_object_info_t object_info, unw_cursor_t* c, void* frame_pointer_address, mc_address_space_t address_space, int process_index);
+XBT_INTERNAL void mc_dwarf_resolve_location(
+  mc_location_t location, simgrid::mc::DwarfExpression* expression,
+  simgrid::mc::ObjectInformation* object_info, unw_cursor_t* c,
+  void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
+  int process_index);
+MC_SHOULD_BE_INTERNAL void mc_dwarf_resolve_locations(
+  mc_location_t location, simgrid::mc::LocationList* locations,
+  simgrid::mc::ObjectInformation* object_info, unw_cursor_t* c,
+  void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
+  int process_index);
 
-XBT_INTERNAL void mc_dwarf_expression_clear(mc_expression_t expression);
-XBT_INTERNAL void mc_dwarf_expression_init(mc_expression_t expression, size_t len, Dwarf_Op* ops);
-
-XBT_INTERNAL void mc_dwarf_location_list_clear(mc_location_list_t list);
-
-XBT_INTERNAL void mc_dwarf_location_list_init_from_expression(mc_location_list_t target, size_t len, Dwarf_Op* ops);
-XBT_INTERNAL void mc_dwarf_location_list_init(mc_location_list_t target, mc_object_info_t info, Dwarf_Die* die, Dwarf_Attribute* attr);
+XBT_INTERNAL void mc_dwarf_location_list_init(
+  simgrid::mc::LocationList*, simgrid::mc::ObjectInformation* info, Dwarf_Die* die,
+  Dwarf_Attribute* attr);
 
 #define MC_EXPRESSION_STACK_SIZE 64
 
@@ -102,8 +121,8 @@ typedef struct s_mc_expression_state {
 
   unw_cursor_t* cursor;
   void* frame_base;
-  mc_address_space_t address_space;
-  mc_object_info_t object_info;
+  simgrid::mc::AddressSpace* address_space;
+  simgrid::mc::ObjectInformation* object_info;
   int process_index;
 } s_mc_expression_state_t, *mc_expression_state_t;
 
@@ -111,8 +130,21 @@ MC_SHOULD_BE_INTERNAL int mc_dwarf_execute_expression(
   size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
 
 MC_SHOULD_BE_INTERNAL void* mc_find_frame_base(
-  dw_frame_t frame, mc_object_info_t object_info, unw_cursor_t* unw_cursor);
+  simgrid::mc::Frame* frame, simgrid::mc::ObjectInformation* object_info, unw_cursor_t* unw_cursor);
 
 SG_END_DECL()
+
+namespace simgrid {
+namespace mc {
+
+inline
+int execute(DwarfExpression const& expression, mc_expression_state_t state)
+{
+  return mc_dwarf_execute_expression(
+    expression.size(), expression.data(), state);
+}
+
+}
+}
 
 #endif

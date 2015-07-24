@@ -124,16 +124,9 @@ typedef struct {
 } s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 
 #define SG_PLATF_HOST_INITIALIZER { \
-    .id = NULL,\
-    .power_peak = 0,\
-    .core_amount = 1.,\
-    .power_scale = 1,\
-    .initial_state = SURF_RESOURCE_ON,\
-    .power_trace = NULL,\
-    .state_trace = NULL,\
-    .coord = NULL,\
-    .properties = NULL\
-    }
+    NULL, 0, 1, 1, 1., NULL, SURF_RESOURCE_ON, NULL, \
+    NULL, NULL \
+}
 
 typedef struct {
   const char* id;
@@ -163,15 +156,8 @@ typedef struct {
 } s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
 
 #define SG_PLATF_LINK_INITIALIZER {\
-  .id = NULL,\
-  .bandwidth = 0.,\
-  .bandwidth_trace = NULL,\
-  .latency = 0.,\
-  .latency_trace = NULL,\
-  .state = SURF_RESOURCE_ON,\
-  .state_trace = NULL,\
-  .policy = SURF_LINK_SHARED,\
-  .properties = NULL\
+  NULL, 0., NULL, 0., NULL, SURF_RESOURCE_ON, \
+  NULL, SURF_LINK_SHARED, NULL \
 }
 
 typedef struct s_sg_platf_peer_cbarg *sg_platf_peer_cbarg_t;
@@ -186,7 +172,7 @@ typedef struct s_sg_platf_peer_cbarg {
   tmgr_trace_t state_trace;
 } s_sg_platf_peer_cbarg_t;
 
-#define SG_PLATF_PEER_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL}
+#define SG_PLATF_PEER_INITIALIZER {NULL,0.0,0.0,0.0,0.0,NULL,NULL,NULL}
 
 typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
 typedef struct s_sg_platf_route_cbarg {
@@ -198,7 +184,7 @@ typedef struct s_sg_platf_route_cbarg {
   xbt_dynar_t link_list;
 } s_sg_platf_route_cbarg_t;
 
-#define SG_PLATF_ROUTE_INITIALIZER {TRUE,NULL,NULL,NULL,NULL,NULL}
+#define SG_PLATF_ROUTE_INITIALIZER {1,NULL,NULL,NULL,NULL,NULL}
 
 typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;
 typedef struct s_sg_platf_cluster_cbarg {
@@ -225,8 +211,11 @@ typedef struct s_sg_platf_cluster_cbarg {
   const char* state_trace;
 } s_sg_platf_cluster_cbarg_t;
 
-#define SG_PLATF_CLUSTER_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL \
-  ,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL}
+#define SG_PLATF_CLUSTER_INITIALIZER {NULL,NULL,NULL,NULL,0.0,1 \
+  ,1.,1.,0.,0.,0.,0.,0. \
+  ,SURF_CLUSTER_FLAT,NULL,NULL,NULL, \
+  SURF_LINK_SHARED,SURF_LINK_SHARED,NULL \
+  ,NULL}
 
 typedef struct s_sg_platf_cabinet_cbarg *sg_platf_cabinet_cbarg_t;
 typedef struct s_sg_platf_cabinet_cbarg {
@@ -239,7 +228,7 @@ typedef struct s_sg_platf_cabinet_cbarg {
   double lat;
 } s_sg_platf_cabinet_cbarg_t;
 
-#define SG_PLATF_CABINET_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL,NULL}
+#define SG_PLATF_CABINET_INITIALIZER {NULL,NULL,NULL,NULL,0.0,0.0,0.0}
 
 typedef struct {
   const char* id;
@@ -250,7 +239,7 @@ typedef struct {
   const char* attach;
 } s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
 
-#define SG_PLATF_STORAGE_INITIALIZER {NULL,NULL,NULL,NULL}
+#define SG_PLATF_STORAGE_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL}
 
 typedef struct {
   const char* id;
@@ -262,7 +251,7 @@ typedef struct {
   sg_size_t size;
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
 
-#define SG_PLATF_STORAGE_TYPE_INITIALIZER {NULL,NULL,NULL,NULL,NULL}
+#define SG_PLATF_STORAGE_TYPE_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL}
 
 typedef struct {
   const char* type_id;
@@ -294,7 +283,7 @@ typedef struct s_sg_platf_trace_cbarg {
   const char *pc_data;
 } s_sg_platf_trace_cbarg_t;
 
-#define SG_PLATF_TRACE_INITIALIZER {NULL,NULL,NULL,NULL}
+#define SG_PLATF_TRACE_INITIALIZER {NULL,NULL,0.0,NULL}
 
 typedef struct s_sg_platf_trace_connect_cbarg *sg_platf_trace_connect_cbarg_t;
 typedef struct s_sg_platf_trace_connect_cbarg {
@@ -303,7 +292,7 @@ typedef struct s_sg_platf_trace_connect_cbarg {
   const char *element;
 } s_sg_platf_trace_connect_cbarg_t;
 
-#define SG_PLATF_TRACE_CONNECT_INITIALIZER {NULL,NULL,NULL}
+#define SG_PLATF_TRACE_CONNECT_INITIALIZER {SURF_TRACE_CONNECT_KIND_LATENCY,NULL,NULL}
 
 typedef struct s_sg_platf_process_cbarg *sg_platf_process_cbarg_t;
 typedef struct s_sg_platf_process_cbarg {

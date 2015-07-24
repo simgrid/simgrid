@@ -229,7 +229,7 @@ void STag_surfxml_storage(void)
 }
 void ETag_surfxml_storage(void)
 {
-  s_sg_platf_storage_cbarg_t storage;
+  s_sg_platf_storage_cbarg_t storage = SG_PLATF_STORAGE_INITIALIZER;
   memset(&storage,0,sizeof(storage));
 
   storage.id           = A_surfxml_storage_id;
@@ -250,7 +250,7 @@ void STag_surfxml_storage___type(void)
 }
 void ETag_surfxml_storage___type(void)
 {
-  s_sg_platf_storage_type_cbarg_t storage_type;
+  s_sg_platf_storage_type_cbarg_t storage_type = SG_PLATF_STORAGE_TYPE_INITIALIZER;
   memset(&storage_type,0,sizeof(storage_type));
 
   storage_type.content          = A_surfxml_storage___type_content;
@@ -270,7 +270,7 @@ void STag_surfxml_mstorage(void)
 }
 void ETag_surfxml_mstorage(void)
 {
-  s_sg_platf_mstorage_cbarg_t mstorage;
+  s_sg_platf_mstorage_cbarg_t mstorage = SG_PLATF_MSTORAGE_INITIALIZER;
   memset(&mstorage,0,sizeof(mstorage));
 
   mstorage.name    = A_surfxml_mstorage_name;
@@ -283,7 +283,7 @@ void STag_surfxml_mount(void)
 }
 void ETag_surfxml_mount(void)
 {
-  s_sg_platf_mount_cbarg_t mount;
+  s_sg_platf_mount_cbarg_t mount = SG_PLATF_MOUNT_INITIALIZER;
   memset(&mount,0,sizeof(mount));
 
   mount.name      = A_surfxml_mount_name;
@@ -430,7 +430,7 @@ void STag_surfxml_prop(void)
 }
 
 void ETag_surfxml_host(void)    {
-  s_sg_platf_host_cbarg_t host;
+  s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
   char* buf;
   memset(&host,0,sizeof(host));
 
@@ -484,7 +484,7 @@ void ETag_surfxml_host(void)    {
 
 void STag_surfxml_host___link(void){
   XBT_DEBUG("Create a Host_link for %s",A_surfxml_host___link_id);
-  s_sg_platf_host_link_cbarg_t host_link;
+  s_sg_platf_host_link_cbarg_t host_link = SG_PLATF_HOST_LINK_INITIALIZER;
   memset(&host_link,0,sizeof(host_link));
 
   host_link.id        = A_surfxml_host___link_id;
@@ -494,7 +494,7 @@ void STag_surfxml_host___link(void){
 }
 
 void STag_surfxml_router(void){
-  s_sg_platf_router_cbarg_t router;
+  s_sg_platf_router_cbarg_t router = SG_PLATF_ROUTER_INITIALIZER;
   memset(&router, 0, sizeof(router));
 
   router.id    = A_surfxml_router_id;
@@ -504,7 +504,7 @@ void STag_surfxml_router(void){
 }
 
 void ETag_surfxml_cluster(void){
-  s_sg_platf_cluster_cbarg_t cluster;
+  s_sg_platf_cluster_cbarg_t cluster = SG_PLATF_CLUSTER_INITIALIZER;
   memset(&cluster,0,sizeof(cluster));
   cluster.properties = as_current_property_set;
 
@@ -587,7 +587,7 @@ void STag_surfxml_cluster(void){
 
 void STag_surfxml_cabinet(void){
   parse_after_config();
-  s_sg_platf_cabinet_cbarg_t cabinet;
+  s_sg_platf_cabinet_cbarg_t cabinet = SG_PLATF_CABINET_INITIALIZER;
   memset(&cabinet,0,sizeof(cabinet));
   cabinet.id      = A_surfxml_cabinet_id;
   cabinet.prefix  = A_surfxml_cabinet_prefix;
@@ -602,7 +602,7 @@ void STag_surfxml_cabinet(void){
 
 void STag_surfxml_peer(void){
   parse_after_config();
-  s_sg_platf_peer_cbarg_t peer;
+  s_sg_platf_peer_cbarg_t peer = SG_PLATF_PEER_INITIALIZER;
   memset(&peer,0,sizeof(peer));
   peer.id                 = A_surfxml_peer_id;
   peer.power              = surf_parse_get_power(A_surfxml_peer_power);
@@ -622,7 +622,7 @@ void STag_surfxml_link(void){
 }
 
 void ETag_surfxml_link(void){
-  s_sg_platf_link_cbarg_t link;
+  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link,0,sizeof(link));
 
   link.properties = current_property_set;
@@ -690,7 +690,7 @@ void STag_surfxml_link___ctn(void){
 }
 
 void ETag_surfxml_backbone(void){
-  s_sg_platf_link_cbarg_t link;
+  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link,0,sizeof(link));
 
   link.properties = NULL;
@@ -743,7 +743,7 @@ void STag_surfxml_bypassASroute(void){
 }
 
 void ETag_surfxml_route(void){
-  s_sg_platf_route_cbarg_t route;
+  s_sg_platf_route_cbarg_t route = SG_PLATF_ROUTE_INITIALIZER;
   memset(&route,0,sizeof(route));
 
   route.src       = A_surfxml_route_src;
@@ -767,7 +767,7 @@ void ETag_surfxml_route(void){
 }
 
 void ETag_surfxml_ASroute(void){
-  s_sg_platf_route_cbarg_t ASroute;
+  s_sg_platf_route_cbarg_t ASroute = SG_PLATF_ROUTE_INITIALIZER;
   memset(&ASroute,0,sizeof(ASroute));
 
   ASroute.src = A_surfxml_ASroute_src;
@@ -800,7 +800,7 @@ void ETag_surfxml_ASroute(void){
 }
 
 void ETag_surfxml_bypassRoute(void){
-  s_sg_platf_route_cbarg_t route;
+  s_sg_platf_route_cbarg_t route = SG_PLATF_ROUTE_INITIALIZER;
   memset(&route,0,sizeof(route));
 
   route.src = A_surfxml_bypassRoute_src;
@@ -815,7 +815,7 @@ void ETag_surfxml_bypassRoute(void){
 }
 
 void ETag_surfxml_bypassASroute(void){
-  s_sg_platf_route_cbarg_t ASroute;
+  s_sg_platf_route_cbarg_t ASroute = SG_PLATF_ROUTE_INITIALIZER;
   memset(&ASroute,0,sizeof(ASroute));
 
   ASroute.src         = A_surfxml_bypassASroute_src;
@@ -831,7 +831,7 @@ void ETag_surfxml_bypassASroute(void){
 }
 
 void ETag_surfxml_trace(void){
-  s_sg_platf_trace_cbarg_t trace;
+  s_sg_platf_trace_cbarg_t trace = SG_PLATF_TRACE_INITIALIZER;
   memset(&trace,0,sizeof(trace));
 
   trace.id = A_surfxml_trace_id;
@@ -844,7 +844,7 @@ void ETag_surfxml_trace(void){
 
 void STag_surfxml_trace___connect(void){
   parse_after_config();
-  s_sg_platf_trace_connect_cbarg_t trace_connect;
+  s_sg_platf_trace_connect_cbarg_t trace_connect = SG_PLATF_TRACE_CONNECT_INITIALIZER;
   memset(&trace_connect,0,sizeof(trace_connect));
 
   trace_connect.element = A_surfxml_trace___connect_element;
@@ -936,7 +936,7 @@ void STag_surfxml_process(void){
 }
 
 void ETag_surfxml_process(void){
-  s_sg_platf_process_cbarg_t process;
+  s_sg_platf_process_cbarg_t process = SG_PLATF_PROCESS_INITIALIZER;
   memset(&process,0,sizeof(process));
 
   process.argc       = argc;
@@ -982,7 +982,7 @@ void STag_surfxml_gpu(void)
 }
 void ETag_surfxml_gpu(void)
 {
-  s_sg_platf_gpu_cbarg_t gpu;
+  s_sg_platf_gpu_cbarg_t gpu = SG_PLATF_GPU_INITIALIZER;
   memset(&gpu,0,sizeof(gpu));
 
   gpu.name = A_surfxml_gpu_name;

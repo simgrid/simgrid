@@ -7,19 +7,14 @@
 #ifndef SIMGRID_MC_PAGESTORE_HPP
 #define SIMGRID_MC_PAGESTORE_HPP
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <vector>
 
-#include <boost/array.hpp>
-#include <boost/utility.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 
-#include <xbt.h>
-
 #include "mc_mmu.h"
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -78,40 +73,37 @@ namespace mc {
  */
 class PageStore {
 public: // Types
-  typedef uint64_t hash_type;
+  typedef std::uint64_t hash_type;
 private: // Types
   // We are using a cheap hash to index a page.
   // We should expect collision and we need to associate multiple page indices
   // to the same hash.
-  typedef boost::unordered_set<size_t> page_set_type;
+  typedef boost::unordered_set<std::size_t> page_set_type;
   typedef boost::unordered_map<hash_type, page_set_type> pages_map_type;
 
 private: // Fields:
-  /** First page
-   *
-   *  mc_page_store_get_page expects that this is the first field.
-   * */
+  /** First page */
   void* memory_;
   /** Number of available pages in virtual memory */
-  size_t capacity_;
+  std::size_t capacity_;
   /** Top of the used pages (index of the next available page) */
-  size_t top_index_;
+  std::size_t top_index_;
   /** Page reference count */
-  std::vector<uint64_t> page_counts_;
+  std::vector<std::uint64_t> page_counts_;
   /** Index of available pages before the top */
-  std::vector<size_t> free_pages_;
+  std::vector<std::size_t> free_pages_;
   /** Index from page hash to page index */
   pages_map_type hash_index_;
 
 private: // Methods
-  void resize(size_t size);
-  size_t alloc_page();
-  void remove_page(size_t pageno);
+  void resize(std::size_t size);
+  std::size_t alloc_page();
+  void remove_page(std::size_t pageno);
 
 public: // Constructors
   PageStore(PageStore const&) = delete;
   PageStore& operator=(PageStore const&) = delete;
-  explicit PageStore(size_t size);
+  explicit PageStore(std::size_t size);
   ~PageStore();
 
 public: // Methods
@@ -125,7 +117,7 @@ public: // Methods
    * it is added to the `free_pages_` list and removed from the `hash_index_`.
    *
    * */
-  void unref_page(size_t pageno);
+  void unref_page(std::size_t pageno);
 
   /** @brief Increment the refcount for a given page
    *
@@ -147,43 +139,45 @@ public: // Methods
    *  @param Number of the memory page in the store
    *  @return Start of the page
    */
-  const void* get_page(size_t pageno) const;
+  const void* get_page(std::size_t pageno) const;
 
 public: // Debug/test methods
 
   /** @brief Get the number of references for a page */
-  size_t get_ref(size_t pageno);
+  std::size_t get_ref(std::size_t pageno);
 
   /** @brief Get the number of used pages */
-  size_t size();
+  std::size_t size();
 
   /** @brief Get the capacity of the page store
    *
    *  The capacity is expanded by a system call (mremap).
    * */
-  size_t capacity();
+  std::size_t capacity();
 
 };
 
 inline __attribute__((always_inline))
-void PageStore::unref_page(size_t pageno) {
-  if ((--this->page_counts_[pageno]) == 0) {
+void PageStore::unref_page(std::size_t pageno) {
+  if ((--this->page_counts_[pageno]) == 0)
     this->remove_page(pageno);
-  }
 }
 
 inline __attribute__((always_inline))
-void PageStore::ref_page(size_t pageno) {
+void PageStore::ref_page(size_t pageno)
+{
   ++this->page_counts_[pageno];
 }
 
 inline __attribute__((always_inline))
-const void* PageStore::get_page(size_t pageno) const {
+const void* PageStore::get_page(std::size_t pageno) const
+{
   return mc_page_from_number(this->memory_, pageno);
 }
 
 inline __attribute__((always_inline))
-size_t PageStore::get_ref(size_t pageno)  {
+std::size_t PageStore::get_ref(std::size_t pageno)
+{
   return this->page_counts_[pageno];
 }
 
@@ -193,7 +187,8 @@ size_t PageStore::size() {
 }
 
 inline __attribute__((always_inline))
-size_t PageStore::capacity() {
+std::size_t PageStore::capacity()
+{
   return this->capacity_;
 }
 

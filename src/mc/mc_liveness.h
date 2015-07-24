@@ -46,7 +46,6 @@ typedef struct s_mc_visited_pair{
 
 XBT_INTERNAL mc_pair_t MC_pair_new(void);
 XBT_INTERNAL void MC_pair_delete(mc_pair_t);
-XBT_INTERNAL void mc_pair_free_voidp(void *p);
 XBT_INTERNAL mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state);
 XBT_INTERNAL void MC_visited_pair_delete(mc_visited_pair_t p);
 

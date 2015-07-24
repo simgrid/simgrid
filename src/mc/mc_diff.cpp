@@ -151,7 +151,8 @@ struct s_mc_diff {
   std::vector<s_mc_heap_ignore_region_t>* to_ignore1;
   std::vector<s_mc_heap_ignore_region_t>* to_ignore2;
   s_heap_area_t *equals_to1, *equals_to2;
-  dw_type_t *types1, *types2;
+  simgrid::mc::Type **types1;
+  simgrid::mc::Type **types2;
   size_t available;
 };
 
@@ -380,18 +381,18 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
         realloc(state->equals_to1,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
                 sizeof(s_heap_area_t));
-    state->types1 = (s_dw_type**)
+    state->types1 = (simgrid::mc::Type**)
         realloc(state->types1,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
-                sizeof(type_name *));
+                sizeof(simgrid::mc::Type*));
     state->equals_to2 = (s_heap_area_t*)
         realloc(state->equals_to2,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
                 sizeof(s_heap_area_t));
-    state->types2 = (s_dw_type**)
+    state->types2 = (simgrid::mc::Type**)
         realloc(state->types2,
                 state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
-                sizeof(type_name *));
+                sizeof(simgrid::mc::Type*));
     state->available = state->heaplimit;
   }
 
@@ -430,7 +431,7 @@ mc_mem_region_t MC_get_heap_region(mc_snapshot_t snapshot)
 
 int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   struct s_mc_diff *state = mc_diff_info;
 
   /* Start comparison */
@@ -787,7 +788,7 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
                                           xbt_dynar_t previous, int size,
                                           int check_ignore)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
   int i = 0;
   const void *addr_pointed1, *addr_pointed2;
@@ -875,7 +876,7 @@ static int compare_heap_area_with_type(struct s_mc_diff *state, int process_inde
                                        const void *real_area1, const void *real_area2,
                                        mc_snapshot_t snapshot1,
                                        mc_snapshot_t snapshot2,
-                                       xbt_dynar_t previous, dw_type_t type,
+                                       xbt_dynar_t previous, simgrid::mc::Type* type,
                                        int area_size, int check_ignore,
                                        int pointer_level)
 {
@@ -893,11 +894,9 @@ top:
     return 0;
   }
 
-  dw_type_t subtype, subsubtype;
+  simgrid::mc::Type *subtype, *subsubtype;
   int res, elm_size;
-  unsigned int cursor = 0;
-  dw_type_t member;
-  const void *addr_pointed1, *addr_pointed2;;
+  const void *addr_pointed1, *addr_pointed2;
 
   mc_mem_region_t heap_region1 = MC_get_heap_region(snapshot1);
   mc_mem_region_t heap_region2 = MC_get_heap_region(snapshot2);
@@ -907,7 +906,7 @@ top:
     return 1;
 
   case DW_TAG_base_type:
-    if (type->name != NULL && strcmp(type->name, "char") == 0) {        /* String, hence random (arbitrary ?) size */
+    if (!type->name.empty() && type->name == "char") {        /* String, hence random (arbitrary ?) size */
       if (real_area1 == real_area2)
         return -1;
       else
@@ -1042,17 +1041,16 @@ top:
         return -1;
       }
     } else {
-      cursor = 0;
-      xbt_dynar_foreach(type->members, cursor, member) {
+      for(simgrid::mc::Type& member : type->members) {
         // TODO, optimize this? (for the offset case)
         void *real_member1 =
-            mc_member_resolve(real_area1, type, member, (mc_address_space_t) snapshot1, process_index);
+            mc_member_resolve(real_area1, type, &member, (simgrid::mc::AddressSpace*) snapshot1, process_index);
         void *real_member2 =
-            mc_member_resolve(real_area2, type, member, (mc_address_space_t) snapshot2, process_index);
+            mc_member_resolve(real_area2, type, &member, (simgrid::mc::AddressSpace*) snapshot2, process_index);
         res =
             compare_heap_area_with_type(state, process_index, real_member1, real_member2,
                                         snapshot1, snapshot2,
-                                        previous, member->subtype, -1,
+                                        previous, member.subtype, -1,
                                         check_ignore, 0);
         if (res == 1) {
           return res;
@@ -1083,7 +1081,7 @@ top:
  * @param  area_size
  * @return                    DWARF type ID for given offset
  */
-static dw_type_t get_offset_type(void *real_base_address, dw_type_t type,
+static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::Type* type,
                                  int offset, int area_size,
                                  mc_snapshot_t snapshot, int process_index)
 {
@@ -1104,20 +1102,18 @@ static dw_type_t get_offset_type(void *real_base_address, dw_type_t type,
       else
         return NULL;
     } else {
-      unsigned int cursor = 0;
-      dw_type_t member;
-      xbt_dynar_foreach(type->members, cursor, member) {
+      for(simgrid::mc::Type& member : type->members) {
 
-        if (!member->location.size) {
+        if (member.has_offset_location()) {
           // We have the offset, use it directly (shortcut):
-          if (member->offset == offset)
-            return member->subtype;
+          if (member.offset() == offset)
+            return member.subtype;
         } else {
           void *real_member =
-            mc_member_resolve(real_base_address, type, member,
+            mc_member_resolve(real_base_address, type, &member,
               snapshot, process_index);
           if ((char*) real_member - (char *) real_base_address == offset)
-            return member->subtype;
+            return member.subtype;
         }
 
       }
@@ -1144,9 +1140,9 @@ static dw_type_t get_offset_type(void *real_base_address, dw_type_t type,
  */
 int compare_heap_area(int process_index, const void *area1, const void *area2, mc_snapshot_t snapshot1,
                       mc_snapshot_t snapshot2, xbt_dynar_t previous,
-                      dw_type_t type, int pointer_level)
+                      simgrid::mc::Type* type, int pointer_level)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
   struct s_mc_diff *state = mc_diff_info;
 
@@ -1159,7 +1155,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
   int type_size = -1;
   int offset1 = 0, offset2 = 0;
   int new_size1 = -1, new_size2 = -1;
-  dw_type_t new_type1 = NULL, new_type2 = NULL;
+  simgrid::mc::Type *new_type1 = NULL, *new_type2 = NULL;
 
   int match_pairs = 0;
 
@@ -1223,8 +1219,8 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
 
     // Find type_size:
     if ((type->type == DW_TAG_pointer_type)
-        || ((type->type == DW_TAG_base_type) && type->name != NULL
-            && (!strcmp(type->name, "char"))))
+        || ((type->type == DW_TAG_base_type) && !type->name.empty()
+            && type->name == "char"))
       type_size = -1;
     else
       type_size = type->byte_size;
@@ -1272,7 +1268,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
     if (type_size != -1) {
       if (type_size != (ssize_t) heapinfo1->busy_block.busy_size
           && type_size != (ssize_t)   heapinfo2->busy_block.busy_size
-          && (type->name == NULL || !strcmp(type->name, "struct s_smx_context"))) {
+          && (type->name.empty() || type->name == "struct s_smx_context")) {
         if (match_pairs) {
           match_equals(state, previous);
           xbt_dynar_free(&previous);
@@ -1572,27 +1568,6 @@ static int get_pointed_area_size(void *area, int heap)
     return (int) heapinfo[block].busy_frag.frag_size[frag];
   }
 }
-
-// Not used:
-char *get_type_description(mc_object_info_t info, char *type_name)
-{
-
-  xbt_dict_cursor_t dict_cursor;
-  char *type_origin;
-  dw_type_t type;
-
-  xbt_dict_foreach(info->types, dict_cursor, type_origin, type) {
-    if (type->name && (strcmp(type->name, type_name) == 0)
-        && type->byte_size > 0) {
-      xbt_dict_cursor_free(&dict_cursor);
-      return type_origin;
-    }
-  }
-
-  xbt_dict_cursor_free(&dict_cursor);
-  return NULL;
-}
-
 
 #ifndef max
 #define max( a, b ) ( ((a) > (b)) ? (a) : (b) )

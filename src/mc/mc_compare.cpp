@@ -104,12 +104,12 @@ static int compare_areas_with_type(struct mc_compare_state& state,
                                    int process_index,
                                    void* real_area1, mc_snapshot_t snapshot1, mc_mem_region_t region1,
                                    void* real_area2, mc_snapshot_t snapshot2, mc_mem_region_t region2,
-                                   dw_type_t type, int pointer_level)
+                                   simgrid::mc::Type* type, int pointer_level)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
-  unsigned int cursor = 0;
-  dw_type_t member, subtype, subsubtype;
+  simgrid::mc::Type* subtype;
+  simgrid::mc::Type* subsubtype;
   int elm_size, i, res;
 
   top:
@@ -211,7 +211,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
       else if (region1->contain(simgrid::mc::remote(addr_pointed1))) {
         if (!region2->contain(simgrid::mc::remote(addr_pointed2)))
           return 1;
-        if (type->dw_type_id == NULL)
+        if (!type->type_id)
           return (addr_pointed1 != addr_pointed2);
         else {
           return compare_areas_with_type(state, process_index,
@@ -232,18 +232,18 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   }
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
-    xbt_dynar_foreach(type->members, cursor, member) {
+    for(simgrid::mc::Type& member : type->members) {
       void *member1 =
-        mc_member_resolve(real_area1, type, member, snapshot1, process_index);
+        mc_member_resolve(real_area1, type, &member, snapshot1, process_index);
       void *member2 =
-        mc_member_resolve(real_area2, type, member, snapshot2, process_index);
+        mc_member_resolve(real_area2, type, &member, snapshot2, process_index);
       mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, process_index, region1);
       mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, process_index, region2);
       res =
           compare_areas_with_type(state, process_index,
                                   member1, snapshot1, subregion1,
                                   member2, snapshot2, subregion2,
-                                  member->subtype, pointer_level);
+                                  member.subtype, pointer_level);
       if (res == 1)
         return res;
     }
@@ -259,7 +259,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   return 0;
 }
 
-static int compare_global_variables(mc_object_info_t object_info,
+static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
                                     int process_index,
                                     mc_mem_region_t r1,
                                     mc_mem_region_t r2, mc_snapshot_t snapshot1,
@@ -295,32 +295,28 @@ static int compare_global_variables(mc_object_info_t object_info,
 
   struct mc_compare_state state;
 
-  xbt_dynar_t variables;
-  int res;
-  unsigned int cursor = 0;
-  dw_variable_t current_var;
+  std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
 
-  variables = object_info->global_variables;
-
-  xbt_dynar_foreach(variables, cursor, current_var) {
+  for (simgrid::mc::Variable& current_var : variables) {
 
     // If the variable is not in this object, skip it:
     // We do not expect to find a pointer to something which is not reachable
     // by the global variables.
-    if ((char *) current_var->address < (char *) object_info->start_rw
-        || (char *) current_var->address > (char *) object_info->end_rw)
+    if ((char *) current_var.address < (char *) object_info->start_rw
+        || (char *) current_var.address > (char *) object_info->end_rw)
       continue;
 
-    dw_type_t bvariable_type = current_var->type;
-    res =
+    simgrid::mc::Type* bvariable_type = current_var.type;
+    int res =
         compare_areas_with_type(state, process_index,
-                                (char *) current_var->address, snapshot1, r1,
-                                (char *) current_var->address, snapshot2, r2,
+                                (char *) current_var.address, snapshot1, r1,
+                                (char *) current_var.address, snapshot2, r2,
                                 bvariable_type, 0);
     if (res == 1) {
       XBT_TRACE3(mc, global_diff, -1, -1, current_var->name);
       XBT_VERB("Global variable %s (%p) is different between snapshots",
-               current_var->name, (char *) current_var->address);
+               current_var.name.c_str(),
+               (char *) current_var.address);
       return 1;
     }
 
@@ -353,15 +349,18 @@ static int compare_local_variables(int process_index,
           || current_var1->ip != current_var2->ip) {
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
         XBT_VERB
-            ("Different name of variable (%s - %s) or frame (%s - %s) or ip (%lu - %lu)",
-             current_var1->name.c_str(), current_var2->name.c_str(),
-             current_var1->subprogram->name, current_var2->subprogram->name,
+            ("Different name of variable (%s - %s) "
+             "or frame (%s - %s) or ip (%lu - %lu)",
+             current_var1->name.c_str(),
+             current_var2->name.c_str(),
+             current_var1->subprogram->name.c_str(),
+             current_var2->subprogram->name.c_str(),
              current_var1->ip, current_var2->ip);
         return 1;
       }
       // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
 
-        dw_type_t subtype = current_var1->type;
+        simgrid::mc::Type* subtype = current_var1->type;
         res =
             compare_areas_with_type(state, process_index,
                                     current_var1->address, snapshot1, mc_get_snapshot_region(current_var1->address, snapshot1, process_index),
@@ -372,9 +371,12 @@ static int compare_local_variables(int process_index,
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
         XBT_TRACE3(mc, local_diff, -1, -1, current_var1->name);
         XBT_VERB
-            ("Local variable %s (%p - %p) in frame %s  is different between snapshots",
-             current_var1->name.c_str(), current_var1->address, current_var2->address,
-             current_var1->subprogram->name);
+            ("Local variable %s (%p - %p) in frame %s "
+             "is different between snapshots",
+             current_var1->name.c_str(),
+             current_var1->address,
+             current_var2->address,
+             current_var1->subprogram->name.c_str());
         return res;
       }
       cursor++;
@@ -385,7 +387,7 @@ static int compare_local_variables(int process_index,
 
 int snapshot_compare(void *state1, void *state2)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
   mc_snapshot_t s1, s2;
   int num1, num2;
@@ -583,7 +585,7 @@ int snapshot_compare(void *state1, void *state2)
     xbt_assert(region1->object_info() == region2->object_info());
     xbt_assert(region1->object_info());
 
-    const char* name = region1->object_info()->file_name;
+    std::string const& name = region1->object_info()->file_name;
 
 #ifdef MC_DEBUG
     if (is_diff == 0)
@@ -603,13 +605,13 @@ int snapshot_compare(void *state1, void *state2)
       xbt_os_walltimer_stop(timer);
       mc_comp_times->global_variables_comparison_time
         += xbt_os_timer_elapsed(timer);
-      XBT_DEBUG("(%d - %d) Different global variables in %s", num1, num2,
-                name);
+      XBT_DEBUG("(%d - %d) Different global variables in %s",
+        num1, num2, name.c_str());
       errors++;
 #else
 #ifdef MC_VERBOSE
-      XBT_VERB("(%d - %d) Different global variables in %s", num1, num2,
-               name);
+      XBT_VERB("(%d - %d) Different global variables in %s",
+        num1, num2, name.c_str());
 #endif
 
       reset_heap_information();

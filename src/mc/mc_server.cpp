@@ -14,6 +14,8 @@
 #include <sys/signalfd.h>
 
 #include <xbt/log.h>
+#include <xbt/automaton.h>
+#include <xbt/automaton.hpp>
 
 #include "ModelChecker.hpp"
 #include "mc_protocol.h"
@@ -22,6 +24,7 @@
 #include "mc_ignore.h"
 #include "mcer_ignore.h"
 #include "mc_exit.h"
+#include "mc/mc_liveness.h"
 
 using simgrid::mc::remote;
 
@@ -34,20 +37,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_server, mc, "MC server logic");
 #define SIGNAL_FD_INDEX 1
 
 mc_server_t mc_server;
-
-struct mc_symbol_pointer_callback
-{
-  mc_process_t process;
-  void* value;
-};
-
-static int mc_symbol_pointer_callback_evaluate(void* p)
-{
-  struct mc_symbol_pointer_callback* callback = (struct mc_symbol_pointer_callback*) p;
-  int value;
-  callback->process->read_bytes(&value, sizeof(value), remote(callback->value));
-  return value;
-}
 
 s_mc_server::s_mc_server(pid_t pid, int socket)
 {
@@ -95,7 +84,7 @@ void s_mc_server::shutdown()
 {
   XBT_DEBUG("Shuting down model-checker");
 
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   int status = process->status();
   if (process->running()) {
     XBT_DEBUG("Killing process");
@@ -123,7 +112,7 @@ void s_mc_server::exit()
   }
 }
 
-void s_mc_server::resume(mc_process_t process)
+void s_mc_server::resume(simgrid::mc::Process* process)
 {
   int res = process->send_message(MC_MESSAGE_CONTINUE);
   if (res)
@@ -223,15 +212,20 @@ bool s_mc_server::handle_events()
             xbt_die("Broken message");
           memcpy(&message, buffer, sizeof(message));
           if (message.callback)
-            xbt_die("Support for callbacks/functions symbols not implemented in client/server mode.");
+            xbt_die("Support for client-side function proposition is not implemented.");
           XBT_DEBUG("Received symbol: %s", message.name);
 
-          struct mc_symbol_pointer_callback* callback = xbt_new(struct mc_symbol_pointer_callback, 1);
-          callback->process = &mc_model_checker->process();
-          callback->value   = message.data;
+          if (_mc_property_automaton == NULL)
+            _mc_property_automaton = xbt_automaton_new();
 
-          MC_automaton_new_propositional_symbol_callback(message.name,
-            mc_symbol_pointer_callback_evaluate, callback, free);
+          simgrid::mc::Process* process = &mc_model_checker->process();
+          simgrid::mc::remote_ptr<int> address
+            = simgrid::mc::remote((int*) message.data);
+          simgrid::xbt::add_proposition(_mc_property_automaton,
+            message.name,
+            [process, address]() { return process->read(address); }
+            );
+
           break;
         }
 
@@ -336,7 +330,7 @@ void s_mc_server::on_signal(const struct signalfd_siginfo* info)
   }
 }
 
-void MC_server_wait_client(mc_process_t process)
+void MC_server_wait_client(simgrid::mc::Process* process)
 {
   mc_server->resume(process);
   while (mc_model_checker->process().running()) {
@@ -345,7 +339,7 @@ void MC_server_wait_client(mc_process_t process)
   }
 }
 
-void MC_server_simcall_handle(mc_process_t process, unsigned long pid, int value)
+void MC_server_simcall_handle(simgrid::mc::Process* process, unsigned long pid, int value)
 {
   s_mc_simcall_handle_message m;
   memset(&m, 0, sizeof(m));

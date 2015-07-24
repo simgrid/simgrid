@@ -21,61 +21,53 @@
 int test_some_array[4][5][6];
 struct some_struct { int first; int second[4][5]; } test_some_struct;
 
-static dw_type_t find_type_by_name(mc_object_info_t info, const char* name) {
-  xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  dw_type_t type;
-  xbt_dict_foreach(info->types, cursor, key, type) {
-    if(!strcmp(name, type->name))
-      return type;
-  }
-
-  return NULL;
+static simgrid::mc::Type* find_type_by_name(simgrid::mc::ObjectInformation* info, const char* name)
+{
+  for (auto& entry : info->types)
+    if(entry.second.name == name)
+      return &entry.second;
+  return nullptr;
 }
 
-static dw_frame_t find_function_by_name(mc_object_info_t info, const char* name) {
-  xbt_dict_cursor_t cursor = 0;
-  dw_frame_t subprogram;
-  char* key;
-  xbt_dict_foreach(info->subprograms, cursor, key, subprogram){
-    if(!strcmp(name, subprogram->name))
-      return subprogram;
-  }
-
-  return NULL;
+static simgrid::mc::Frame* find_function_by_name(
+    simgrid::mc::ObjectInformation* info, const char* name)
+{
+  for (auto& entry : info->subprograms)
+    if(entry.second.name == name)
+      return &entry.second;
+  return nullptr;
 }
 
-static dw_variable_t find_local_variable(dw_frame_t frame, const char* argument_name) {
-  unsigned int cursor = 0;
-  dw_variable_t variable;
-  xbt_dynar_foreach(frame->variables, cursor, variable){
-    if(!strcmp(argument_name, variable->name))
-      return variable;
-  }
+static simgrid::mc::Variable* find_local_variable(
+    simgrid::mc::Frame* frame, const char* argument_name)
+{
+  for (simgrid::mc::Variable& variable : frame->variables)
+    if(argument_name == variable.name)
+      return &variable;
 
-  dw_frame_t scope = NULL;
-  xbt_dynar_foreach(frame->scopes, cursor, scope) {
-    variable = find_local_variable(scope, argument_name);
+  for (simgrid::mc::Frame& scope : frame->scopes) {
+    simgrid::mc::Variable* variable = find_local_variable(
+      &scope, argument_name);
     if(variable)
       return variable;
   }
 
-  return NULL;
+  return nullptr;
 }
 
-static void test_local_variable(mc_object_info_t info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
-  dw_frame_t subprogram = find_function_by_name(info, function);
+static void test_local_variable(simgrid::mc::ObjectInformation* info, const char* function, const char* variable, void* address, unw_cursor_t* cursor) {
+  simgrid::mc::Frame* subprogram = find_function_by_name(info, function);
   assert(subprogram);
   // TODO, Lookup frame by IP and test against name instead
 
-  dw_variable_t var = find_local_variable(subprogram, variable);
+  simgrid::mc::Variable* var = find_local_variable(subprogram, variable);
   assert(var);
 
   void* frame_base = mc_find_frame_base(subprogram, info, cursor);
   s_mc_location_t location;
 
   mc_dwarf_resolve_locations(&location,
-    &var->locations, info, cursor, frame_base, NULL, -1);
+    &var->location_list, info, cursor, frame_base, NULL, -1);
 
   xbt_assert(mc_get_location_type(&location)==MC_LOCATION_TYPE_ADDRESS,
     "Unexpected location type for variable %s of %s", variable, function);
@@ -85,62 +77,72 @@ static void test_local_variable(mc_object_info_t info, const char* function, con
 
 }
 
-static dw_variable_t test_global_variable(mc_process_t process, mc_object_info_t info, const char* name, void* address, long byte_size) {
+static simgrid::mc::Variable* test_global_variable(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info, const char* name, void* address, long byte_size) {
 
-  dw_variable_t variable = MC_file_object_info_find_variable_by_name(info, name);
+  simgrid::mc::Variable* variable = info->find_variable(name);
   xbt_assert(variable, "Global variable %s was not found", name);
-  xbt_assert(!strcmp(variable->name, name), "Name mismatch for %s", name);
+  xbt_assert(variable->name == name,
+    "Name mismatch for %s", name);
   xbt_assert(variable->global, "Variable %s is not global", name);
   xbt_assert(variable->address == address,
-      "Address mismatch for %s : %p expected but %p found", name, address, variable->address);
+      "Address mismatch for %s : %p expected but %p found",
+      name, address, variable->address);
 
-  dw_type_t type = (dw_type_t) xbt_dict_get_or_null(process->binary_info->types, variable->type_origin);
-  xbt_assert(type!=NULL, "Missing type for %s", name);
+  auto i = process->binary_info->types.find(variable->type_id);
+  xbt_assert(i != process->binary_info->types.end(), "Missing type for %s", name);
+  simgrid::mc::Type* type = &i->second;
   xbt_assert(type->byte_size = byte_size, "Byte size mismatch for %s", name);
   return variable;
 }
 
-static dw_type_t find_member(mc_object_info_t info, const char* name, dw_type_t type) {
-  unsigned int cursor = 0;
-  dw_type_t member;
-  xbt_dynar_foreach(type->members, cursor, member){
-    if(!strcmp(name,member->name))
-      return member;
-  }
-  return NULL;
+static simgrid::mc::Type* find_member(simgrid::mc::ObjectInformation* info, const char* name, simgrid::mc::Type* type)
+{
+  for (simgrid::mc::Type& member : type->members)
+    if(member.name == name)
+      return &member;
+  return nullptr;
 }
 
 int some_local_variable = 0;
 
 typedef struct foo {int i;} s_foo;
 
-static void test_type_by_name(mc_process_t process, s_foo my_foo) {
-  assert(xbt_dict_get_or_null(process->binary_info->full_types_by_name, "struct foo"));
+static void test_type_by_name(simgrid::mc::Process* process, s_foo my_foo)
+{
+  assert(
+    process->binary_info->full_types_by_name.find("struct foo") !=
+      process->binary_info->full_types_by_name.end());
 }
 
 int main(int argc, char** argv)
 {
   SIMIX_global_init(&argc, argv);
 
-  dw_variable_t var;
-  dw_type_t type;
+  simgrid::mc::Variable* var;
+  simgrid::mc::Type* type;
 
-  s_mc_process_t p(getpid(), -1);
-  mc_process_t process = &p;
+  simgrid::mc::Process p(getpid(), -1);
+  simgrid::mc::Process* process = &p;
 
   test_global_variable(process, process->binary_info.get(),
     "some_local_variable", &some_local_variable, sizeof(int));
 
   var = test_global_variable(process, process->binary_info.get(),
     "test_some_array", &test_some_array, sizeof(test_some_array));
-  type = (dw_type_t) xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
-  xbt_assert(type->element_count == 6*5*4, "element_count mismatch in test_some_array : %i / %i", type->element_count, 6*5*4);
+  auto i = process->binary_info->types.find(var->type_id);
+  xbt_assert(i != process->binary_info->types.end(), "Missing type");
+  type = &i->second;
+  xbt_assert(type->element_count == 6*5*4,
+    "element_count mismatch in test_some_array : %i / %i",
+    type->element_count, 6*5*4);
 
   var = test_global_variable(process, process->binary_info.get(),
     "test_some_struct", &test_some_struct, sizeof(test_some_struct));
-  type = (dw_type_t) xbt_dict_get_or_null(process->binary_info->types, var->type_origin);
-  assert(find_member(process->binary_info.get(), "first", type)->offset == 0);
-  assert(find_member(process->binary_info.get(), "second", type)->offset
+  i = process->binary_info->types.find(var->type_id);
+  xbt_assert(i != process->binary_info->types.end(), "Missing type");
+  type = &i->second;
+  assert(find_member(process->binary_info.get(), "first", type)->offset() == 0);
+  assert(find_member(process->binary_info.get(), "second", type)->offset()
       == ((const char*)&test_some_struct.second) - (const char*)&test_some_struct);
 
   unw_context_t context;

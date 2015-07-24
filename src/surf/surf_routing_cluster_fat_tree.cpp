@@ -492,7 +492,7 @@ void AsClusterFatTree::generateDotFile(const string& filename) const {
 FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
                          int position) : id(id), level(level),
                                          position(position) {
-  s_sg_platf_link_cbarg_t linkTemplate;
+  s_sg_platf_link_cbarg_t linkTemplate = SG_PLATF_LINK_INITIALIZER;
   if(cluster->limiter_link) {
     memset(&linkTemplate, 0, sizeof(linkTemplate));
     linkTemplate.bandwidth = cluster->limiter_link;
@@ -522,7 +522,7 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster,
                          FatTreeNode *upNode) : upNode(upNode),
                                                 downNode(downNode) {
   static int uniqueId = 0;
-  s_sg_platf_link_cbarg_t linkTemplate;
+  s_sg_platf_link_cbarg_t linkTemplate = SG_PLATF_LINK_INITIALIZER;
   memset(&linkTemplate, 0, sizeof(linkTemplate));
   linkTemplate.bandwidth = cluster->bw;
   linkTemplate.latency = cluster->lat;

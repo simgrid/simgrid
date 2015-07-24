@@ -19,7 +19,7 @@
 #include <xbt/asserts.h>
 #include <xbt/dynar.h>
 
-#include "mc_forward.h"
+#include "mc_forward.hpp"
 #include "ModelChecker.hpp"
 #include "PageStore.hpp"
 #include "mc_mmalloc.h"
@@ -31,7 +31,7 @@ SG_BEGIN_DECL()
 
 // ***** Snapshot region
 
-XBT_INTERNAL void mc_region_restore_sparse(mc_process_t process, mc_mem_region_t reg);
+XBT_INTERNAL void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_region_t reg);
 
 static inline __attribute__((always_inline))
 void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
@@ -72,7 +72,7 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
 }
 
 XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
-  const void* addr, const s_mc_snapshot_t *snapshot, int process_index);
+  const void* addr, const simgrid::mc::Snapshot *snapshot, int process_index);
 
 }
 
@@ -104,16 +104,16 @@ typedef struct s_mc_stack_frame {
   /** Stack pointer */
   unw_word_t sp;
   unw_word_t frame_base;
-  dw_frame_t frame;
+  simgrid::mc::Frame* frame;
   std::string frame_name;
   unw_cursor_t unw_cursor;
 } s_mc_stack_frame_t, *mc_stack_frame_t;
 
 typedef struct s_local_variable{
-  dw_frame_t subprogram;
+  simgrid::mc::Frame* subprogram;
   unsigned long ip;
   std::string name;
-  dw_type_t type;
+  simgrid::mc::Type* type;
   void *address;
   int region;
 } s_local_variable_t, *local_variable_t;
@@ -147,7 +147,7 @@ public:
     remote_ptr<void> address, int process_index = ProcessIndexAny,
     ReadMode mode = Normal) const MC_OVERRIDE;
 public: // To be private
-  mc_process_t process;
+  simgrid::mc::Process* process;
   int num_state;
   size_t heap_bytes_used;
   std::vector<std::unique_ptr<s_mc_mem_region_t>> snapshot_regions;
@@ -181,7 +181,7 @@ XBT_INTERNAL mc_snapshot_t MC_take_snapshot(int num_state);
 XBT_INTERNAL void MC_restore_snapshot(mc_snapshot_t);
 
 XBT_INTERNAL void mc_restore_page_snapshot_region(
-  mc_process_t process,
+  simgrid::mc::Process* process,
   void* start_addr, simgrid::mc::PerPageCopy const& pagenos);
 
 MC_SHOULD_BE_INTERNAL const void* MC_region_read_fragmented(

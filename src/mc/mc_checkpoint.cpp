@@ -46,22 +46,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
-static void MC_snapshot_stack_free_voidp(void *s)
-{
-  mc_snapshot_stack_t stack = (mc_snapshot_stack_t) * (void **) s;
-  delete stack;
-}
-
-static void local_variable_free_voidp(void *v)
-{
-  local_variable_t var = *(local_variable_t*)v;
-  delete var;
-}
-
-}
-
-extern "C" {
-
 /** @brief Restore a region from a snapshot
  *
  *  @param reg     Target region
@@ -132,7 +116,7 @@ extern "C" {
 
 static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
                                   simgrid::mc::RegionType type,
-                                  mc_object_info_t object_info,
+                                  simgrid::mc::ObjectInformation* object_info,
                                   void *start_addr, void* permanent_addr, size_t size)
 {
   if (type == simgrid::mc::RegionType::Data)
@@ -140,7 +124,7 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
   else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(!object_info, "Unexpected object info for heap region.");
 
-  const bool privatization_aware = MC_object_info_is_privatized(object_info);
+  const bool privatization_aware = object_info && object_info->privatized();
 
   simgrid::mc::RegionSnapshot region;
   if (privatization_aware && MC_smpi_process_count())
@@ -155,7 +139,7 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
   return;
 }
 
-static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
+static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snapshot)
 {
   const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
@@ -196,9 +180,11 @@ static void MC_get_memory_regions(mc_process_t process, mc_snapshot_t snapshot)
  *
  *  `dl_iterate_phdr` would be more robust but would not work in cross-process.
  * */
-void MC_find_object_address(std::vector<simgrid::mc::VmMap> const& maps, mc_object_info_t result)
+void MC_find_object_address(
+  std::vector<simgrid::mc::VmMap> const& maps, simgrid::mc::ObjectInformation* result)
 {
-  const char *name = basename(result->file_name);
+  const char* file_name = xbt_strdup(result->file_name.c_str());
+  const char *name = basename(file_name);
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::mc::VmMap const& reg = maps[i];
     if (maps[i].pathname.empty()
@@ -243,7 +229,6 @@ void MC_find_object_address(std::vector<simgrid::mc::VmMap> const& maps, mc_obje
   if (result->end_exec && (const void*) result->end_exec > result->end)
     result->end = result->end_exec;
 
-  xbt_assert(result->file_name);
   xbt_assert(result->start_rw);
   xbt_assert(result->start_exec);
 }
@@ -260,7 +245,7 @@ void MC_find_object_address(std::vector<simgrid::mc::VmMap> const& maps, mc_obje
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
-static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope,
+static bool mc_valid_variable(simgrid::mc::Variable* var, simgrid::mc::Frame* scope,
                               const void *ip)
 {
   // The variable is not yet valid:
@@ -271,20 +256,19 @@ static bool mc_valid_variable(dw_variable_t var, dw_frame_t scope,
 }
 
 static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
-                                           dw_frame_t scope, int process_index,
+                                           simgrid::mc::Frame* scope, int process_index,
                                            std::vector<s_local_variable>& result)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
 
   void *ip = (void *) stack_frame->ip;
   if (ip < scope->low_pc || ip >= scope->high_pc)
     return;
 
-  unsigned cursor = 0;
-  dw_variable_t current_variable;
-  xbt_dynar_foreach(scope->variables, cursor, current_variable) {
+  for(simgrid::mc::Variable& current_variable :
+      scope->variables) {
 
-    if (!mc_valid_variable(current_variable, scope, (void *) stack_frame->ip))
+    if (!mc_valid_variable(&current_variable, scope, (void *) stack_frame->ip))
       continue;
 
     int region_type;
@@ -297,18 +281,18 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     s_local_variable_t new_var;
     new_var.subprogram = stack_frame->frame;
     new_var.ip = stack_frame->ip;
-    new_var.name = current_variable->name;
-    new_var.type = current_variable->type;
+    new_var.name = current_variable.name;
+    new_var.type = current_variable.type;
     new_var.region = region_type;
     new_var.address = nullptr;
 
-    if (current_variable->address != NULL) {
-      new_var.address = current_variable->address;
-    } else if (current_variable->locations.size != 0) {
+    if (current_variable.address != NULL) {
+      new_var.address = current_variable.address;
+    } else if (!current_variable.location_list.empty()) {
       s_mc_location_t location;
       mc_dwarf_resolve_locations(
-        &location, &current_variable->locations,
-        current_variable->object_info,
+        &location, &current_variable.location_list,
+        current_variable.object_info,
         &(stack_frame->unw_cursor),
         (void *) stack_frame->frame_base,
         &mc_model_checker->process(), process_index);
@@ -330,10 +314,9 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
   }
 
   // Recursive processing of nested scopes:
-  dw_frame_t nested_scope = NULL;
-  xbt_dynar_foreach(scope->scopes, cursor, nested_scope) {
-    mc_fill_local_variables_values(stack_frame, nested_scope, process_index, result);
-  }
+  for(simgrid::mc::Frame& nested_scope : scope->scopes)
+    mc_fill_local_variables_values(
+      stack_frame, &nested_scope, process_index, result);
 }
 
 static std::vector<s_local_variable> MC_get_local_variables_values(
@@ -353,7 +336,7 @@ static void MC_stack_frame_free_voipd(void *s)
 
 static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t stack_context)
 {
-  mc_process_t process = &mc_model_checker->process();
+  simgrid::mc::Process* process = &mc_model_checker->process();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c;
@@ -380,7 +363,7 @@ static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t s
 
       // TODO, use real addresses in frame_t instead of fixing it here
 
-      dw_frame_t frame = process->find_function(remote(ip));
+      simgrid::mc::Frame* frame = process->find_function(remote(ip));
       stack_frame.frame = frame;
 
       if (frame) {
@@ -395,8 +378,8 @@ static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t s
       result.push_back(std::move(stack_frame));
 
       /* Stop before context switch with maestro */
-      if (frame != NULL && frame->name != NULL
-          && !strcmp(frame->name, "smx_ctx_sysv_wrapper"))
+      if (frame != nullptr &&
+          frame->name == "smx_ctx_sysv_wrapper")
         break;
 
       int ret = unw_step(&c);
@@ -586,7 +569,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
-  mc_process_t mc_process = &mc_model_checker->process();
+  simgrid::mc::Process* mc_process = &mc_model_checker->process();
 
   mc_snapshot_t snapshot = new simgrid::mc::Snapshot();
 

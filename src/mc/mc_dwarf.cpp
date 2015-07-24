@@ -6,22 +6,23 @@
 
 #include <cinttypes>
 
+#include <algorithm>
+#include <memory>
+
 #include <stdlib.h>
 #define DW_LANG_Objc DW_LANG_ObjC       /* fix spelling error in older dwarf.h */
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
 #include <simgrid_config.h>
+#include <simgrid/util.hpp>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
+#include <simgrid/util.hpp>
+
 #include "mc_object_info.h"
 #include "mc_private.h"
-
-static void MC_dwarf_register_global_variable(mc_object_info_t info, dw_variable_t variable);
-static void MC_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
-static void MC_dwarf_register_non_global_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
-static void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame, dw_variable_t variable);
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
@@ -60,14 +61,14 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit);
  *  \param unit the DIE of the compile unit of the current DIE
  *  \param frame containg frame if any
  */
-static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
-                                Dwarf_Die * unit, dw_frame_t frame,
+static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                 const char *ns);
 
 /** \brief Process a type DIE
  */
-static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, dw_frame_t frame,
+static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                     Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns);
 
 /** \brief Calls MC_dwarf_handle_die on all childrend of the given die
@@ -77,8 +78,8 @@ static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
  *  \param unit the DIE of the compile unit of the current DIE
  *  \param frame containg frame if any
  */
-static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, dw_frame_t frame,
+static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                     Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns);
 
 /** \brief Handle a variable (DW_TAG_variable or other)
@@ -88,8 +89,8 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
  *  \param unit the DIE of the compile unit of the current DIE
  *  \param frame containg frame if any
  */
-static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
-                                         Dwarf_Die * unit, dw_frame_t frame,
+static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                         Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                          const char *ns);
 
 /** \brief Get the DW_TAG_type of the DIE
@@ -97,7 +98,7 @@ static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
  *  \param die DIE
  *  \return DW_TAG_type attribute as a new string (NULL if none)
  */
-static char *MC_dwarf_at_type(Dwarf_Die * die);
+static std::uint64_t MC_dwarf_at_type(Dwarf_Die * die);
 
 /** \brief A class of DWARF tags (DW_TAG_*)
  */
@@ -302,10 +303,10 @@ static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die * die,
  *  \param dit the DIE
  *  \return DW_AT_type reference as a global offset in hexadecimal (or NULL)
  */
-static char *MC_dwarf_at_type(Dwarf_Die * die)
+static
+std::uint64_t MC_dwarf_at_type(Dwarf_Die * die)
 {
-  Dwarf_Off offset = MC_dwarf_attr_integrate_dieoffset(die, DW_AT_type);
-  return offset == 0 ? NULL : bprintf("%" PRIx64, offset);
+  return MC_dwarf_attr_integrate_dieoffset(die, DW_AT_type);
 }
 
 static uint64_t MC_dwarf_attr_integrate_addr(Dwarf_Die * die, int attribute)
@@ -449,7 +450,25 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
   return result;
 }
 
-// ***** dw_type_t
+// ***** Variable
+
+/** Sort the variable by name and address.
+ *
+ *  We could use boost::container::flat_set instead.
+ */
+static bool MC_compare_variable(
+  simgrid::mc::Variable const& a, simgrid::mc::Variable const& b)
+{
+  int cmp = strcmp(a.name.c_str(), b.name.c_str());
+  if (cmp < 0)
+    return true;
+  else if (cmp > 0)
+    return false;
+  else
+    return a.address < b.address;
+}
+
+// ***** simgrid::mc::Type*
 
 /** \brief Initialize the location of a member of a type
  * (DW_AT_data_member_location of a DW_TAG_member).
@@ -458,7 +477,7 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
  *  \param  member the member of the type
  *  \param  child  DIE of the member (DW_TAG_member)
  */
-static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
+static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::Type* member,
                                           Dwarf_Die * child)
 {
   if (dwarf_hasattr(child, DW_AT_data_bit_offset)) {
@@ -469,7 +488,8 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
     if (type->type != DW_TAG_union_type) {
       xbt_die
           ("Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%"
-           PRIx64 ">%s", member->name, (uint64_t) type->id, type->name);
+           PRIx64 ">%s", member->name.c_str(),
+           (uint64_t) type->id, type->name.c_str());
     } else {
       return;
     }
@@ -490,13 +510,9 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
         xbt_die
             ("Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%"
              PRIx64 ">%s", MC_dwarf_attr_integrate_string(child, DW_AT_name),
-             (uint64_t) type->id, type->name);
+             (uint64_t) type->id, type->name.c_str());
       }
-      if (len == 1 && expr[0].atom == DW_OP_plus_uconst) {
-        member->offset = expr[0].number;
-      } else {
-        mc_dwarf_expression_init(&member->location, len, expr);
-      }
+      simgrid::mc::DwarfExpression(expr, expr+len);
       break;
     }
   case MC_DW_CLASS_CONSTANT:
@@ -504,11 +520,11 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
     {
       Dwarf_Word offset;
       if (!dwarf_formudata(&attr, &offset))
-        member->offset = offset;
+        member->offset(offset);
       else
         xbt_die("Cannot get %s location <%" PRIx64 ">%s",
                 MC_dwarf_attr_integrate_string(child, DW_AT_name),
-                (uint64_t) type->id, type->name);
+                (uint64_t) type->id, type->name.c_str());
       break;
     }
   case MC_DW_CLASS_LOCLISTPTR:
@@ -524,11 +540,6 @@ static void MC_dwarf_fill_member_location(dw_type_t type, dw_type_t member,
 
 }
 
-static void dw_type_free_voidp(void *t)
-{
-  delete *(dw_type_t*)t;
-}
-
 /** \brief Populate the list of members of a type
  *
  *  \param info ELF object containing the type DIE
@@ -536,14 +547,12 @@ static void dw_type_free_voidp(void *t)
  *  \param unit DIE of the compilation unit containing the type DIE
  *  \param type the type
  */
-static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
-                                 Dwarf_Die * unit, dw_type_t type)
+static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                 Dwarf_Die * unit, simgrid::mc::Type* type)
 {
   int res;
   Dwarf_Die child;
-  xbt_assert(!type->members);
-  type->members =
-      xbt_dynar_new(sizeof(dw_type_t), (void (*)(void *)) dw_type_free_voidp);
+  xbt_assert(type->members.empty());
   for (res = dwarf_child(die, &child); res == 0;
        res = dwarf_siblingof(&child, &child)) {
     int tag = dwarf_tag(&child);
@@ -558,38 +567,33 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
         continue;
 
       // TODO, we should use another type (because is is not a type but a member)
-      dw_type_t member = xbt_new0(s_dw_type_t, 1);
-      member->type = tag;
+      simgrid::mc::Type member;
+      member.type = tag;
 
       // Global Offset:
-      member->id = dwarf_dieoffset(&child);
+      member.id = dwarf_dieoffset(&child);
 
       const char *name = MC_dwarf_attr_integrate_string(&child, DW_AT_name);
       if (name)
-        member->name = xbt_strdup(name);
-      else
-        member->name = NULL;
-
-      member->byte_size =
+        member.name = name;
+      member.byte_size =
           MC_dwarf_attr_integrate_uint(&child, DW_AT_byte_size, 0);
-      member->element_count = -1;
-      member->dw_type_id = MC_dwarf_at_type(&child);
-      member->members = NULL;
-      member->is_pointer_type = 0;
-      member->offset = 0;
+      member.element_count = -1;
+      member.type_id = MC_dwarf_at_type(&child);
 
       if (dwarf_hasattr(&child, DW_AT_data_bit_offset)) {
         xbt_die("Can't groke DW_AT_data_bit_offset.");
       }
 
-      MC_dwarf_fill_member_location(type, member, &child);
+      MC_dwarf_fill_member_location(type, &member, &child);
 
-      if (!member->dw_type_id) {
-        xbt_die("Missing type for member %s of <%" PRIx64 ">%s", member->name,
-                (uint64_t) type->id, type->name);
+      if (!member.type_id) {
+        xbt_die("Missing type for member %s of <%" PRIx64 ">%s",
+                member.name.c_str(),
+                (uint64_t) type->id, type->name.c_str());
       }
 
-      xbt_dynar_push(type->members, &member);
+      type->members.push_back(std::move(member));
     }
   }
 }
@@ -601,29 +605,24 @@ static void MC_dwarf_add_members(mc_object_info_t info, Dwarf_Die * die,
  *  \param unit compilation unit of the current DIE
  *  \return MC representation of the type
  */
-static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
-                                      Dwarf_Die * unit, dw_frame_t frame,
-                                      const char *ns)
+static simgrid::mc::Type MC_dwarf_die_to_type(
+  simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+  Dwarf_Die * unit, simgrid::mc::Frame* frame,
+  const char *ns)
 {
 
-  dw_type_t type = new s_dw_type();
-  type->type = -1;
-  type->id = 0;
-  type->name = NULL;
-  type->byte_size = 0;
-  type->element_count = -1;
-  type->dw_type_id = NULL;
-  type->members = NULL;
-  type->is_pointer_type = 0;
-  type->offset = 0;
+  simgrid::mc::Type type;
+  type.type = -1;
+  type.name = std::string();
+  type.element_count = -1;
 
-  type->type = dwarf_tag(die);
+  type.type = dwarf_tag(die);
 
   // Global Offset
-  type->id = dwarf_dieoffset(die);
+  type.id = dwarf_dieoffset(die);
 
   const char *prefix = "";
-  switch (type->type) {
+  switch (type.type) {
   case DW_TAG_structure_type:
     prefix = "struct ";
     break;
@@ -639,101 +638,99 @@ static dw_type_t MC_dwarf_die_to_type(mc_object_info_t info, Dwarf_Die * die,
 
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (name != NULL) {
-    type->name =
-        ns ? bprintf("%s%s::%s", prefix, ns,
-                            name) : bprintf("%s%s", prefix, name);
+    char* full_name = ns ? bprintf("%s%s::%s", prefix, ns, name) :
+      bprintf("%s%s", prefix, name);
+    type.name = std::string(full_name);
+    free(full_name);
   }
 
-  type->dw_type_id = MC_dwarf_at_type(die);
+  type.type_id = MC_dwarf_at_type(die);
 
   // Some compilers do not emit DW_AT_byte_size for pointer_type,
   // so we fill this. We currently assume that the model-checked process is in
   // the same architecture..
-  if (type->type == DW_TAG_pointer_type)
-    type->byte_size = sizeof(void*);
+  if (type.type == DW_TAG_pointer_type)
+    type.byte_size = sizeof(void*);
 
   // Computation of the byte_size;
   if (dwarf_hasattr_integrate(die, DW_AT_byte_size))
-    type->byte_size = MC_dwarf_attr_integrate_uint(die, DW_AT_byte_size, 0);
-  else if (type->type == DW_TAG_array_type
-           || type->type == DW_TAG_structure_type
-           || type->type == DW_TAG_class_type) {
+    type.byte_size = MC_dwarf_attr_integrate_uint(die, DW_AT_byte_size, 0);
+  else if (type.type == DW_TAG_array_type
+           || type.type == DW_TAG_structure_type
+           || type.type == DW_TAG_class_type) {
     Dwarf_Word size;
     if (dwarf_aggregate_size(die, &size) == 0) {
-      type->byte_size = size;
+      type.byte_size = size;
     }
   }
 
-  switch (type->type) {
+  switch (type.type) {
   case DW_TAG_array_type:
-    type->element_count = MC_dwarf_array_element_count(die, unit);
+    type.element_count = MC_dwarf_array_element_count(die, unit);
     // TODO, handle DW_byte_stride and (not) DW_bit_stride
     break;
 
   case DW_TAG_pointer_type:
   case DW_TAG_reference_type:
   case DW_TAG_rvalue_reference_type:
-    type->is_pointer_type = 1;
+    type.is_pointer_type = 1;
     break;
 
   case DW_TAG_structure_type:
   case DW_TAG_union_type:
   case DW_TAG_class_type:
-    MC_dwarf_add_members(info, die, unit, type);
-    char *new_ns = ns == NULL ? xbt_strdup(type->name)
+    MC_dwarf_add_members(info, die, unit, &type);
+    char *new_ns = ns == NULL ? xbt_strdup(type.name.c_str())
         : bprintf("%s::%s", ns, name);
     MC_dwarf_handle_children(info, die, unit, frame, new_ns);
     free(new_ns);
     break;
   }
 
-  return type;
+  return std::move(type);
 }
 
-static void MC_dwarf_handle_type_die(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, dw_frame_t frame,
+static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                     Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns)
 {
-  dw_type_t type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
-
-  char *key = bprintf("%" PRIx64, (uint64_t) type->id);
-  xbt_dict_set(info->types, key, type, NULL);
-  xbt_free(key);
-
-  if (type->name && type->byte_size != 0) {
-    xbt_dict_set(info->full_types_by_name, type->name, type, NULL);
-  }
+  simgrid::mc::Type type = MC_dwarf_die_to_type(info, die, unit, frame, ns);
+  auto& t = (info->types[type.id] = std::move(type));
+  if (!t.name.empty() && type.byte_size != 0)
+    info->full_types_by_name[t.name] = &t;
 }
 
 static int mc_anonymous_variable_index = 0;
 
-static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
-                                        Dwarf_Die * unit, dw_frame_t frame,
-                                        const char *ns)
+static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
+  simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+  Dwarf_Die * unit, simgrid::mc::Frame* frame,
+  const char *ns)
 {
   // Skip declarations:
   if (MC_dwarf_attr_flag(die, DW_AT_declaration, false))
-    return NULL;
+    return nullptr;
 
   // Skip compile time constants:
   if (dwarf_hasattr(die, DW_AT_const_value))
-    return NULL;
+    return nullptr;
 
   Dwarf_Attribute attr_location;
   if (dwarf_attr(die, DW_AT_location, &attr_location) == NULL) {
     // No location: do not add it ?
-    return NULL;
+    return nullptr;
   }
 
-  dw_variable_t variable = xbt_new0(s_dw_variable_t, 1);
+  std::unique_ptr<simgrid::mc::Variable> variable =
+    std::unique_ptr<simgrid::mc::Variable>(new simgrid::mc::Variable());
   variable->dwarf_offset = dwarf_dieoffset(die);
   variable->global = frame == NULL;     // Can be override base on DW_AT_location
   variable->object_info = info;
 
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-  variable->name = xbt_strdup(name);
-
-  variable->type_origin = MC_dwarf_at_type(die);
+  if (name)
+    variable->name = name;
+  variable->type_id = MC_dwarf_at_type(die);
 
   int form = dwarf_whatform(&attr_location);
   int klass =
@@ -747,19 +744,22 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
       Dwarf_Op *expr;
       size_t len;
       if (dwarf_getlocation(&attr_location, &expr, &len)) {
-        xbt_die
-            ("Could not read location expression in DW_AT_location of variable <%"
-             PRIx64 ">%s", (uint64_t) variable->dwarf_offset, variable->name);
+        xbt_die(
+          "Could not read location expression in DW_AT_location "
+          "of variable <%" PRIx64 ">%s",
+          (uint64_t) variable->dwarf_offset,
+          variable->name.c_str());
       }
 
       if (len == 1 && expr[0].atom == DW_OP_addr) {
         variable->global = 1;
         uintptr_t offset = (uintptr_t) expr[0].number;
-        uintptr_t base = (uintptr_t) MC_object_base_address(info);
+        uintptr_t base = (uintptr_t) info->base_address();
         variable->address = (void *) (base + offset);
       } else {
-        mc_dwarf_location_list_init_from_expression(&variable->locations, len,
-                                                    expr);
+        simgrid::mc::LocationListEntry entry;
+        entry.expression = {expr, expr + len};
+        variable->location_list = { std::move(entry) };
       }
 
       break;
@@ -767,13 +767,16 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
   case MC_DW_CLASS_LOCLISTPTR:
   case MC_DW_CLASS_CONSTANT:
     // Reference to location list:
-    mc_dwarf_location_list_init(&variable->locations, info, die,
-                                &attr_location);
+    mc_dwarf_location_list_init(
+      &variable->location_list, info, die,
+      &attr_location);
     break;
   default:
-    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location in <%"
-            PRIx64 ">%s", form, form, klass, klass,
-            (uint64_t) variable->dwarf_offset, variable->name);
+    xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location "
+            "in <%" PRIx64 ">%s",
+            form, form, klass, klass,
+            (uint64_t) variable->dwarf_offset,
+            variable->name.c_str());
   }
 
   // Handle start_scope:
@@ -798,39 +801,38 @@ static dw_variable_t MC_die_to_variable(mc_object_info_t info, Dwarf_Die * die,
     }
   }
 
-  if (ns && variable->global) {
-    char *old_name = variable->name;
-    variable->name = bprintf("%s::%s", ns, old_name);
-    free(old_name);
-  }
+  if (ns && variable->global)
+    variable->name =
+      std::string(ns) + "::" + variable->name;
+
   // The current code needs a variable name,
   // generate a fake one:
-  if (!variable->name) {
-    variable->name = bprintf("@anonymous#%i", mc_anonymous_variable_index++);
-  }
+  if (variable->name.empty())
+    variable->name =
+      "@anonymous#" + std::to_string(mc_anonymous_variable_index++);
 
-  return variable;
+  return std::move(variable);
 }
 
-static void MC_dwarf_handle_variable_die(mc_object_info_t info, Dwarf_Die * die,
-                                         Dwarf_Die * unit, dw_frame_t frame,
+static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                         Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                          const char *ns)
 {
-  dw_variable_t variable =
-      MC_die_to_variable(info, die, unit, frame, ns);
-  if (variable == NULL)
+  std::unique_ptr<simgrid::mc::Variable> variable =
+    MC_die_to_variable(info, die, unit, frame, ns);
+  if (!variable)
     return;
-  MC_dwarf_register_variable(info, frame, variable);
+  // Those arrays are sorted later:
+  else if (variable->global)
+    info->global_variables.push_back(std::move(*variable));
+  else if (frame != nullptr)
+    frame->variables.push_back(std::move(*variable));
+  else
+    xbt_die("No frame for this local variable");
 }
 
-static void mc_frame_free_voipd(dw_frame_t * p)
-{
-  mc_frame_free(*p);
-  *p = NULL;
-}
-
-static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
-                                      Dwarf_Die * unit, dw_frame_t parent_frame,
+static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                      Dwarf_Die * unit, simgrid::mc::Frame* parent_frame,
                                       const char *ns)
 {
   // TODO, handle DW_TAG_type/DW_TAG_location for DW_TAG_with_stmt
@@ -845,33 +847,33 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
   if (klass == mc_tag_scope)
     xbt_assert(parent_frame, "No parent scope for this scope");
 
-  dw_frame_t frame = xbt_new0(s_dw_frame_t, 1);
+  simgrid::mc::Frame frame;
 
-  frame->tag = tag;
-  frame->id = dwarf_dieoffset(die);
-  frame->object_info = info;
+  frame.tag = tag;
+  frame.id = dwarf_dieoffset(die);
+  frame.object_info = info;
 
   if (klass == mc_tag_subprogram) {
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-    frame->name =
-        ns ? bprintf("%s::%s", ns, name) : xbt_strdup(name);
+    if(ns)
+      frame.name  = std::string(ns) + "::" + name;
+    else if (name)
+      frame.name = name;
+    else
+      frame.name.clear();
   }
 
-  frame->abstract_origin_id =
-      MC_dwarf_attr_dieoffset(die, DW_AT_abstract_origin);
+  frame.abstract_origin_id =
+    MC_dwarf_attr_dieoffset(die, DW_AT_abstract_origin);
 
   // This is the base address for DWARF addresses.
   // Relocated addresses are offset from this base address.
   // See DWARF4 spec 7.5
-  void *base = MC_object_base_address(info);
-
-  // Variables are filled in the (recursive) call of MC_dwarf_handle_children:
-  frame->variables =
-      xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
+  void *base = info->base_address();
 
   // TODO, support DW_AT_ranges
   uint64_t low_pc = MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
-  frame->low_pc = low_pc ? ((char *) base) + low_pc : 0;
+  frame.low_pc = low_pc ? ((char *) base) + low_pc : 0;
   if (low_pc) {
     // DW_AT_high_pc:
     Dwarf_Attribute attr;
@@ -889,14 +891,14 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
 
       if (dwarf_formsdata(&attr, &offset) != 0)
         xbt_die("Could not read constant");
-      frame->high_pc = (void *) ((char *) frame->low_pc + offset);
+      frame.high_pc = (void *) ((char *) frame.low_pc + offset);
       break;
 
       // DW_AT_high_pc is a relocatable address:
     case MC_DW_CLASS_ADDRESS:
       if (dwarf_formaddr(&attr, &high_pc) != 0)
         xbt_die("Could not read address");
-      frame->high_pc = ((char *) base) + high_pc;
+      frame.high_pc = ((char *) base) + high_pc;
       break;
 
     default:
@@ -908,28 +910,27 @@ static void MC_dwarf_handle_scope_die(mc_object_info_t info, Dwarf_Die * die,
   if (klass == mc_tag_subprogram) {
     Dwarf_Attribute attr_frame_base;
     if (dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
-      mc_dwarf_location_list_init(&frame->frame_base, info, die,
+      mc_dwarf_location_list_init(&frame.frame_base, info, die,
                                   &attr_frame_base);
   }
 
-  frame->scopes =
-      xbt_dynar_new(sizeof(dw_frame_t), (void_f_pvoid_t) mc_frame_free_voipd);
+  // Handle children:
+  MC_dwarf_handle_children(info, die, unit, &frame, ns);
+
+  // Someone needs this to be sorted but who?
+  std::sort(frame.variables.begin(), frame.variables.end(),
+    MC_compare_variable);
 
   // Register it:
-  if (klass == mc_tag_subprogram) {
-    char *key = bprintf("%" PRIx64, (uint64_t) frame->id);
-    xbt_dict_set(info->subprograms, key, frame, NULL);
-    xbt_free(key);
-  } else if (klass == mc_tag_scope) {
-    xbt_dynar_push(parent_frame->scopes, &frame);
-  }
-  // Handle children:
-  MC_dwarf_handle_children(info, die, unit, frame, ns);
+  if (klass == mc_tag_subprogram)
+    info->subprograms[frame.id] = frame;
+  else if (klass == mc_tag_scope)
+    parent_frame->scopes.push_back(std::move(frame));
 }
 
-static void mc_dwarf_handle_namespace_die(mc_object_info_t info,
+static void mc_dwarf_handle_namespace_die(simgrid::mc::ObjectInformation* info,
                                           Dwarf_Die * die, Dwarf_Die * unit,
-                                          dw_frame_t frame,
+                                          simgrid::mc::Frame* frame,
                                           const char *ns)
 {
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
@@ -941,8 +942,8 @@ static void mc_dwarf_handle_namespace_die(mc_object_info_t info,
   xbt_free(new_ns);
 }
 
-static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
-                                     Dwarf_Die * unit, dw_frame_t frame,
+static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                     Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns)
 {
   // For each child DIE:
@@ -954,8 +955,8 @@ static void MC_dwarf_handle_children(mc_object_info_t info, Dwarf_Die * die,
   }
 }
 
-static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
-                                Dwarf_Die * unit, dw_frame_t frame,
+static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
+                                Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                 const char *ns)
 {
   int tag = dwarf_tag(die);
@@ -993,16 +994,15 @@ static void MC_dwarf_handle_die(mc_object_info_t info, Dwarf_Die * die,
  *  Read the DWARf information of the EFFL object and populate the
  *  lists of types, variables, functions.
  */
-void MC_dwarf_get_variables(mc_object_info_t info)
+void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
 {
-  int fd = open(info->file_name, O_RDONLY);
-  if (fd < 0) {
-    xbt_die("Could not open file %s", info->file_name);
-  }
+  int fd = open(info->file_name.c_str(), O_RDONLY);
+  if (fd < 0)
+    xbt_die("Could not open file %s", info->file_name.c_str());
   Dwarf *dwarf = dwarf_begin(fd, DWARF_C_READ);
-  if (dwarf == NULL) {
-    xbt_die("Your program must be compiled with -g (%s)", info->file_name);
-  }
+  if (dwarf == NULL)
+    xbt_die("Your program must be compiled with -g (%s)",
+      info->file_name.c_str());
   // For each compilation unit:
   Dwarf_Off offset = 0;
   Dwarf_Off next_offset = 0;
@@ -1028,113 +1028,10 @@ void MC_dwarf_get_variables(mc_object_info_t info)
   close(fd);
 }
 
-/************************** Free functions *************************/
-
-void mc_frame_free(dw_frame_t frame)
-{
-  xbt_free(frame->name);
-  mc_dwarf_location_list_clear(&(frame->frame_base));
-  xbt_dynar_free(&(frame->variables));
-  xbt_dynar_free(&(frame->scopes));
-  xbt_free(frame);
-}
-
-s_dw_type::s_dw_type()
-{
-  this->type = 0;
-  this->id = 0;
-  this->name = nullptr;
-  this->byte_size = 0;
-  this->element_count = 0;
-  this->dw_type_id = nullptr;
-  this->members = nullptr;
-  this->is_pointer_type = 0;
-  this->location = { 0, 0, 0, 0};
-  this->offset = 0;
-  this->subtype = nullptr;
-  this->full_type = nullptr;
-}
-
-s_dw_type::~s_dw_type()
-{
-  xbt_free(this->name);
-  xbt_free(this->dw_type_id);
-  xbt_dynar_free(&this->members);
-  mc_dwarf_expression_clear(&this->location);
-}
-
-static void dw_type_free(dw_type_t t)
-{
-  delete t;
-}
-
-void dw_variable_free(dw_variable_t v)
-{
-  if (v) {
-    xbt_free(v->name);
-    xbt_free(v->type_origin);
-
-    if (v->locations.locations)
-      mc_dwarf_location_list_clear(&v->locations);
-    xbt_free(v);
-  }
-}
-
-void dw_variable_free_voidp(void *t)
-{
-  dw_variable_free((dw_variable_t) * (void **) t);
-}
-
-// ***** object_info
-
-s_mc_object_info::s_mc_object_info()
-{
-  this->flags = 0;
-  this->file_name = nullptr;
-  this->start = nullptr;
-  this->end = nullptr;
-  this->start_exec = nullptr;
-  this->end_exec = nullptr;
-  this->start_rw = nullptr;
-  this->end_rw = nullptr;
-  this->start_ro = nullptr;
-  this->end_ro = nullptr;
-  this->subprograms = xbt_dict_new_homogeneous((void (*)(void *)) mc_frame_free);
-  this->global_variables =
-      xbt_dynar_new(sizeof(dw_variable_t), dw_variable_free_voidp);
-  this->types = xbt_dict_new_homogeneous((void (*)(void *)) dw_type_free);
-  this->full_types_by_name = xbt_dict_new_homogeneous(NULL);
-  this->functions_index = nullptr;
-}
-
-s_mc_object_info::~s_mc_object_info()
-{
-  xbt_free(this->file_name);
-  xbt_dict_free(&this->subprograms);
-  xbt_dynar_free(&this->global_variables);
-  xbt_dict_free(&this->types);
-  xbt_dict_free(&this->full_types_by_name);
-  xbt_dynar_free(&this->functions_index);
-}
-
-// ***** Helpers
-
-void *MC_object_base_address(mc_object_info_t info)
-{
-  if (info->flags & MC_OBJECT_INFO_EXECUTABLE)
-    return 0;
-  void *result = info->start_exec;
-  if (info->start_rw != NULL && result > (void *) info->start_rw)
-    result = info->start_rw;
-  if (info->start_ro != NULL && result > (void *) info->start_ro)
-    result = info->start_ro;
-  return result;
-}
-
 // ***** Functions index
 
-static int MC_compare_frame_index_items(mc_function_index_item_t a,
-                                        mc_function_index_item_t b)
+static int MC_compare_frame_index_items(simgrid::mc::FunctionIndexEntry* a,
+                                        simgrid::mc::FunctionIndexEntry* b)
 {
   if (a->low_pc < b->low_pc)
     return -1;
@@ -1144,239 +1041,126 @@ static int MC_compare_frame_index_items(mc_function_index_item_t a,
     return 1;
 }
 
-static void MC_make_functions_index(mc_object_info_t info)
+static void MC_make_functions_index(simgrid::mc::ObjectInformation* info)
 {
-  xbt_dynar_t index = xbt_dynar_new(sizeof(s_mc_function_index_item_t), NULL);
+  info->functions_index.clear();
 
-  // Populate the array:
-  dw_frame_t frame = NULL;
-  xbt_dict_cursor_t cursor;
-  char *key;
-  xbt_dict_foreach(info->subprograms, cursor, key, frame) {
-    if (frame->low_pc == NULL)
+  for (auto& e : info->subprograms) {
+    if (e.second.low_pc == nullptr)
       continue;
-    s_mc_function_index_item_t entry;
-    entry.low_pc = frame->low_pc;
-    entry.high_pc = frame->high_pc;
-    entry.function = frame;
-    xbt_dynar_push(index, &entry);
+    simgrid::mc::FunctionIndexEntry entry;
+    entry.low_pc = e.second.low_pc;
+    entry.function = &e.second;
+    info->functions_index.push_back(entry);
   }
 
-  mc_function_index_item_t base =
-      (mc_function_index_item_t) xbt_dynar_get_ptr(index, 0);
+  info->functions_index.shrink_to_fit();
 
   // Sort the array by low_pc:
-  qsort(base,
-        xbt_dynar_length(index),
-        sizeof(s_mc_function_index_item_t),
-        (int (*)(const void *, const void *)) MC_compare_frame_index_items);
-
-  info->functions_index = index;
+  std::sort(info->functions_index.begin(), info->functions_index.end(),
+        [](simgrid::mc::FunctionIndexEntry& a,
+          simgrid::mc::FunctionIndexEntry& b)
+        {
+          return a.low_pc < b.low_pc;
+        });
 }
 
-static void MC_post_process_variables(mc_object_info_t info)
+static void MC_post_process_variables(simgrid::mc::ObjectInformation* info)
 {
-  unsigned cursor = 0;
-  dw_variable_t variable = NULL;
-  xbt_dynar_foreach(info->global_variables, cursor, variable) {
-    if (variable->type_origin) {
-      variable->type = (dw_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
+  // Someone needs this to be sorted but who?
+  std::sort(info->global_variables.begin(), info->global_variables.end(),
+    MC_compare_variable);
+
+  for(simgrid::mc::Variable& variable : info->global_variables)
+    if (variable.type_id) {
+      variable.type = simgrid::util::find_map_ptr(
+        info->types, variable.type_id);
     }
-  }
 }
 
-static void mc_post_process_scope(mc_object_info_t info, dw_frame_t scope)
+static void mc_post_process_scope(simgrid::mc::ObjectInformation* info, simgrid::mc::Frame* scope)
 {
 
   if (scope->tag == DW_TAG_inlined_subroutine) {
-
     // Attach correct namespaced name in inlined subroutine:
-    char *key = bprintf("%" PRIx64, (uint64_t) scope->abstract_origin_id);
-    dw_frame_t abstract_origin = (dw_frame_t) xbt_dict_get_or_null(info->subprograms, key);
-    xbt_assert(abstract_origin, "Could not lookup abstract origin %s", key);
-    xbt_free(key);
-    scope->name = xbt_strdup(abstract_origin->name);
+    auto i = info->subprograms.find(scope->abstract_origin_id);
+    xbt_assert(i != info->subprograms.end(),
+      "Could not lookup abstract origin %" PRIx64,
+      (uint64_t) scope->abstract_origin_id);
+    scope->name = i->second.name;
+  }
 
-  }
   // Direct:
-  unsigned cursor = 0;
-  dw_variable_t variable = NULL;
-  xbt_dynar_foreach(scope->variables, cursor, variable) {
-    if (variable->type_origin) {
-      variable->type = (dw_type_t) xbt_dict_get_or_null(info->types, variable->type_origin);
+  for (simgrid::mc::Variable& variable : scope->variables)
+    if (variable.type_id) {
+      variable.type = simgrid::util::find_map_ptr(
+        info->types, variable.type_id);
     }
-  }
 
   // Recursive post-processing of nested-scopes:
-  dw_frame_t nested_scope = NULL;
-  xbt_dynar_foreach(scope->scopes, cursor, nested_scope)
-      mc_post_process_scope(info, nested_scope);
+  for (simgrid::mc::Frame& nested_scope : scope->scopes)
+      mc_post_process_scope(info, &nested_scope);
 
 }
-
-static void MC_post_process_functions(mc_object_info_t info)
-{
-  xbt_dict_cursor_t cursor;
-  char *key;
-  dw_frame_t subprogram = NULL;
-  xbt_dict_foreach(info->subprograms, cursor, key, subprogram) {
-    mc_post_process_scope(info, subprogram);
-  }
-}
-
 
 /** \brief Fill/lookup the "subtype" field.
  */
-static void MC_resolve_subtype(mc_object_info_t info, dw_type_t type)
+static void MC_resolve_subtype(simgrid::mc::ObjectInformation* info, simgrid::mc::Type* type)
 {
-
-  if (type->dw_type_id == NULL)
+  if (!type->type_id)
     return;
-  type->subtype = (dw_type_t) xbt_dict_get_or_null(info->types, type->dw_type_id);
-  if (type->subtype == NULL)
+  type->subtype = simgrid::util::find_map_ptr(info->types, type->type_id);
+  if (type->subtype == nullptr)
     return;
   if (type->subtype->byte_size != 0)
     return;
-  if (type->subtype->name == NULL)
+  if (type->subtype->name.empty())
     return;
   // Try to find a more complete description of the type:
   // We need to fix in order to support C++.
-
-  dw_type_t subtype =
-    (dw_type_t) xbt_dict_get_or_null(info->full_types_by_name, type->subtype->name);
-  if (subtype != NULL) {
-    type->subtype = subtype;
-  }
-
+  simgrid::mc::Type** subtype = simgrid::util::find_map_ptr(
+    info->full_types_by_name, type->subtype->name);
+  if (subtype)
+    type->subtype = *subtype;
 }
 
-static void MC_post_process_types(mc_object_info_t info)
+static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char *origin;
-  dw_type_t type;
-
   // Lookup "subtype" field:
-  xbt_dict_foreach(info->types, cursor, origin, type) {
-    MC_resolve_subtype(info, type);
-
-    dw_type_t member;
-    unsigned int i = 0;
-    if (type->members != NULL)
-      xbt_dynar_foreach(type->members, i, member) {
-      MC_resolve_subtype(info, member);
-      }
+  for(auto& i : info->types) {
+    MC_resolve_subtype(info, &(i.second));
+    for (simgrid::mc::Type& member : i.second.members)
+      MC_resolve_subtype(info, &member);
   }
 }
 
 /** \brief Finds informations about a given shared object/executable */
-std::shared_ptr<s_mc_object_info_t> MC_find_object_info(
+std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char *name, int executable)
 {
-  std::shared_ptr<s_mc_object_info_t> result =
-    std::make_shared<s_mc_object_info_t>();
+  std::shared_ptr<simgrid::mc::ObjectInformation> result =
+    std::make_shared<simgrid::mc::ObjectInformation>();
   if (executable)
     result->flags |= MC_OBJECT_INFO_EXECUTABLE;
-  result->file_name = xbt_strdup(name);
+  result->file_name = name;
   MC_find_object_address(maps, result.get());
   MC_dwarf_get_variables(result.get());
-  MC_post_process_types(result.get());
   MC_post_process_variables(result.get());
-  MC_post_process_functions(result.get());
+  MC_post_process_types(result.get());
+  for (auto& entry : result.get()->subprograms)
+    mc_post_process_scope(result.get(), &entry.second);
   MC_make_functions_index(result.get());
   return std::move(result);
 }
 
 /*************************************************************************/
 
-static int MC_dwarf_get_variable_index(xbt_dynar_t variables, char *var,
-                                       void *address)
+void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info)
 {
+  for (auto& i : info->types) {
 
-  if (xbt_dynar_is_empty(variables))
-    return 0;
-
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(variables) - 1;
-  dw_variable_t var_test = NULL;
-
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    var_test =
-        (dw_variable_t) xbt_dynar_get_as(variables, cursor, dw_variable_t);
-    if (strcmp(var_test->name, var) < 0) {
-      start = cursor + 1;
-    } else if (strcmp(var_test->name, var) > 0) {
-      end = cursor - 1;
-    } else {
-      if (address) {            /* global variable */
-        if (var_test->address == address)
-          return -1;
-        if (var_test->address > address)
-          end = cursor - 1;
-        else
-          start = cursor + 1;
-      } else {                  /* local variable */
-        return -1;
-      }
-    }
-  }
-
-  if (strcmp(var_test->name, var) == 0) {
-    if (address && var_test->address < address)
-      return cursor + 1;
-    else
-      return cursor;
-  } else if (strcmp(var_test->name, var) < 0)
-    return cursor + 1;
-  else
-    return cursor;
-
-}
-
-void MC_dwarf_register_global_variable(mc_object_info_t info,
-                                       dw_variable_t variable)
-{
-  int index =
-      MC_dwarf_get_variable_index(info->global_variables, variable->name,
-                                  variable->address);
-  if (index != -1)
-    xbt_dynar_insert_at(info->global_variables, index, &variable);
-  // TODO, else ?
-}
-
-void MC_dwarf_register_non_global_variable(mc_object_info_t info,
-                                           dw_frame_t frame,
-                                           dw_variable_t variable)
-{
-  xbt_assert(frame, "Frame is NULL");
-  int index =
-      MC_dwarf_get_variable_index(frame->variables, variable->name, NULL);
-  if (index != -1)
-    xbt_dynar_insert_at(frame->variables, index, &variable);
-  // TODO, else ?
-}
-
-void MC_dwarf_register_variable(mc_object_info_t info, dw_frame_t frame,
-                                dw_variable_t variable)
-{
-  if (variable->global)
-    MC_dwarf_register_global_variable(info, variable);
-  else if (frame == NULL)
-    xbt_die("No frame for this local variable");
-  else
-    MC_dwarf_register_non_global_variable(info, frame, variable);
-}
-
-void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
-{
-  xbt_dict_cursor_t cursor = NULL;
-  char *key = NULL;
-  dw_type_t type = NULL;
-  xbt_dict_foreach(info->types, cursor, key, type) {
-
-    dw_type_t subtype = type;
+    simgrid::mc::Type* type = &(i.second);
+    simgrid::mc::Type* subtype = type;
     while (subtype->type == DW_TAG_typedef || subtype->type == DW_TAG_volatile_type
       || subtype->type == DW_TAG_const_type) {
       if (subtype->subtype)
@@ -1386,13 +1170,12 @@ void MC_post_process_object_info(mc_process_t process, mc_object_info_t info)
     }
 
     // Resolve full_type:
-    if (subtype->name && subtype->byte_size == 0) {
+    if (!subtype->name.empty() && subtype->byte_size == 0) {
       for (auto const& object_info : process->object_infos) {
-        dw_type_t same_type = (dw_type_t)
-            xbt_dict_get_or_null(object_info->full_types_by_name,
-                                 subtype->name);
-        if (same_type && same_type->name && same_type->byte_size) {
-          type->full_type = same_type;
+        auto i = object_info->full_types_by_name.find(subtype->name);
+        if (i != object_info->full_types_by_name.end()
+            && !i->second->name.empty() && i->second->byte_size) {
+          type->full_type = i->second;
           break;
         }
       }

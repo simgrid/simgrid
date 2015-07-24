@@ -33,7 +33,7 @@
  *
  * The process lists are currently refreshed each time MCed code is executed.
  * We don't try to give a persistent MCer address for a given MCed process.
- * For this reason, a MCer mc_process_t is currently not reusable after
+ * For this reason, a MCer simgrid::mc::Process* is currently not reusable after
  * MCed code.
  */
 
@@ -51,7 +51,7 @@ struct s_mc_smx_process_info {
 
 XBT_INTERNAL xbt_dynar_t MC_smx_process_info_list_new(void);
 
-XBT_INTERNAL void MC_process_smx_refresh(mc_process_t process);
+XBT_INTERNAL void MC_process_smx_refresh(simgrid::mc::Process* process);
 
 /** Get the issuer of  a simcall (`req->issuer`)
  *

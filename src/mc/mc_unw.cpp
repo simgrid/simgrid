@@ -74,7 +74,7 @@ static int get_dyn_info_list_addr(unw_addr_space_t as,
 
 /** Read from the target address space memory (libunwind method)
  *
- *  Delegates to the `mc_process_t`.
+ *  Delegates to the `simgrid::mc::Process*`.
  */
 static int access_mem(unw_addr_space_t as,
               unw_word_t addr, unw_word_t *valp,
@@ -164,12 +164,12 @@ static int get_proc_name(unw_addr_space_t as,
               void* arg)
 {
   mc_unw_context_t context = (mc_unw_context_t) arg;
-  dw_frame_t frame = context->process->find_function(remote(addr));
+  simgrid::mc::Frame* frame = context->process->find_function(remote(addr));
   if (!frame)
     return - UNW_ENOINFO;
   *offp = (unw_word_t) frame->low_pc - addr;
 
-  strncpy(bufp, frame->name, buf_len);
+  strncpy(bufp, frame->name.c_str(), buf_len);
   if (bufp[buf_len - 1]) {
     bufp[buf_len - 1] = 0;
     return -UNW_ENOMEM;
@@ -195,7 +195,7 @@ unw_accessors_t mc_unw_accessors =
 // ***** Context management
 
 int mc_unw_init_context(
-  mc_unw_context_t context, mc_process_t process, unw_context_t* c)
+  mc_unw_context_t context, simgrid::mc::Process* process, unw_context_t* c)
 {
   context->address_space = process;
   context->process = process;
@@ -223,9 +223,9 @@ int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context)
 {
   if (!context->process || !context->address_space)
     return -UNW_EUNSPEC;
-  mc_address_space_t as = context->address_space;
+  simgrid::mc::AddressSpace* as = context->address_space;
 
-  mc_process_t process = dynamic_cast<mc_process_t>(as);
+  simgrid::mc::Process* process = dynamic_cast<simgrid::mc::Process*>(as);
   if (process && process->is_self())
     return unw_init_local(cursor, &context->context);
 
