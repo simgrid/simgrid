@@ -698,6 +698,7 @@ set(headers_to_install
   include/xbt/RngStream.h
   include/xbt/asserts.h
   include/xbt/automaton.h
+  include/xbt/automaton.hpp
   include/xbt/base.h
   include/xbt/config.h
   include/xbt/cunit.h

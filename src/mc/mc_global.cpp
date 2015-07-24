@@ -549,17 +549,6 @@ void MC_automaton_new_propositional_symbol_pointer(const char *id, int* value)
   register_symbol(symbol);
 }
 
-void MC_automaton_new_propositional_symbol_callback(const char* id,
-  xbt_automaton_propositional_symbol_callback_type callback,
-  void* data, xbt_automaton_propositional_symbol_free_function_type free_function)
-{
-  if (_mc_property_automaton == NULL)
-    _mc_property_automaton = xbt_automaton_new();
-  xbt_automaton_propositional_symbol_t symbol = xbt_automaton_propositional_symbol_new_callback(
-    _mc_property_automaton, id, callback, data, free_function);
-  register_symbol(symbol);
-}
-
 // TODO, fix cross-process access (this function is not used)
 void MC_dump_stacks(FILE* file)
 {
