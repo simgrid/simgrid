@@ -203,6 +203,7 @@ examples/simdag/goal/goal_test
 examples/simdag/scheduling/minmin_test
 examples/simdag/io/sd_io
 examples/msg/actions/actions
+examples/msg/actions/storage_actions
 examples/msg/bittorrent/bittorrent
 examples/msg/bittorrent/bittorrent_platfgen
 examples/msg/kademlia/kademlia
