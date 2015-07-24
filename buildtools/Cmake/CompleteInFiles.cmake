@@ -123,7 +123,7 @@ else()
   if(APPLE) #MAC
     message(FATAL_ERROR "Failed to find Boost libraries (Try to install them with 'sudo fink install boost1.53.nopython')")
   else()
-    message(FATAL_ERROR "Failed to find Boost libraries")
+    message(FATAL_ERROR "Failed to find Boost libraries. Did you install libboost-dev and libboost-context-dev?")
   endif()
 endif()
 
