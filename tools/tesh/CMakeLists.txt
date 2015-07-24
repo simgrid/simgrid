@@ -1,27 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
 
-if(1)
-#  add_custom_target(tesh ALL
-#    DEPENDS ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl
-#    COMMENT "Install ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl"
-#    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl ${CMAKE_BINARY_DIR}/bin/tesh
-#    )
-    configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl"
+configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl"
   "${CMAKE_BINARY_DIR}/bin/tesh" @ONLY IMMEDIATE)
 
     file(COPY        ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/Diff.pm
          DESTINATION ${CMAKE_BINARY_DIR}/bin
          FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                           GROUP_EXECUTE GROUP_READ)
-
-else()
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
-
-  add_executable(tesh tesh.c run_context.c signal.c)
-
-  ### Add definitions for compile
-  target_link_libraries(tesh simgrid m pthread)
-endif()
 
 set(tesh_files
   ${tesh_files}

@@ -25,8 +25,6 @@ find_program(PERL_PROGRAM NAMES perl)
 SET(TESH_COMMAND ${PERL_PROGRAM} ${CMAKE_BINARY_DIR}/bin/tesh)
 IF(CMAKE_HOST_WIN32)
   SET(TESH_OPTION $TESH_OPTION --timeout 50)
-ELSE()
-  SET(TESH_COMMAND perl ${CMAKE_BINARY_DIR}/bin/tesh)
 ENDIF()
 
 #some tests may take forever on non futexes systems, using busy_wait with n cores < n workers
