@@ -27,6 +27,7 @@ extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
   "Public API for the model-checked application");
+
 }
 
 int MC_random(int min, int max)
