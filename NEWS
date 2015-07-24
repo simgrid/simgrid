@@ -9,9 +9,9 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |___ \
  * Surf internal cleanup: rename workstation into host.
    Option "workstation/model" now reads "host/model"
  * The model checker now runs in a separate process.
- * The mocel checker has support for memory compaction of its snapshots.
- * MC record/replay: a interesting path found by the modelchecker can be replayed
-   outside of the modelchecker.
+ * The model checker has support for memory compaction of its snapshots.
+ * MC record/replay: a interesting path found by the modelchecker can be
+   replayed outside of the modelchecker.
                     _               _____  _ _
 __   _____ _ __ ___(_) ___  _ __   |___ / / / |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | |
