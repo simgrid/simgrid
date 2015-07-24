@@ -177,12 +177,6 @@ int MC_request_is_visible(smx_simcall_t req)
       ;
 }
 
-int MC_random(int min, int max)
-{
-  /*FIXME: return mc_current_state->executed_transition->random.value; */
-  return simcall_mc_random(min, max);
-}
-
 static int prng_random(int min, int max)
 {
   unsigned long output_size = ((unsigned long) max - (unsigned long) min) + 1;
