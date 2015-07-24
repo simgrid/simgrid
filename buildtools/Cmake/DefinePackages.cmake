@@ -1260,9 +1260,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/conf/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/config_tracing.xml
-  examples/platforms/content/small_content.txt
-  examples/platforms/content/storage_content.txt
-  examples/platforms/content/win_storage_content.txt
   examples/platforms/trace/trace_A_failure.txt
   examples/platforms/trace/trace_A.txt
   examples/platforms/trace/trace_B.txt
@@ -1280,6 +1277,9 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/platform.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
+  examples/platforms/storage/content/small_content.txt
+  examples/platforms/storage/content/storage_content.txt
+  examples/platforms/storage/content/win_storage_content.txt
   examples/platforms/storage/remote_io.deployment.xml
   examples/platforms/storage/remote_io.xml
   examples/platforms/storage/storage.xml

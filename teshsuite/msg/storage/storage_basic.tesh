@@ -1,4 +1,4 @@
-$ ./storage_basic$EXEEXT --cfg=path:${srcdir:=.} ${srcdir:=.}/../../../examples/platforms/storage.xml ${srcdir:=.}/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ./storage_basic$EXEEXT --cfg=path:${srcdir:=.} ${srcdir:=.}/../../../examples/platforms/storage/storage.xml ${srcdir:=.}/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) The custom configuration 'path' is already defined by user!
 > [  0.000000] (1:server@alice) *** Storage info on alice ***
 > [  0.000000] (1:server@alice) 	Storage name: Disk2, mount name: c:
