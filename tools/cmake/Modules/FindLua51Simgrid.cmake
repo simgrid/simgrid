@@ -1,4 +1,4 @@
-include(FindLua)
+include(./FindLua)
 find_program(HAVE_LUA_BIN NAMES lua)
 mark_as_advanced(HAVE_LUA_BIN)
 
@@ -35,10 +35,10 @@ else()
   message(STATUS "Looking for lib lua - not found")
 endif()
 
-if(LUA_FOUND)
+if(LUA_FOUND AND LUA_VERSION_MAJOR EQUAL 5 AND LUA_VERSION_MINOR EQUAL 3)
   set(HAVE_LUA 1)
   include_directories(${LUA_INCLUDE_DIR})
   link_directories(${LUA_LIBRARY_DIR})
 else()
-  message(STATUS "Warning : Lua need version 5.1")
+  message(FATAL_ERROR "Warning: Lua version 5.3 is required, ${LUA_VERSION_STRING} found.")
 endif()
