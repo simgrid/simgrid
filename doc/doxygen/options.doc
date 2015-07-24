@@ -78,7 +78,7 @@ should provide information about all models for all existing resources.
    - \b cpu/model: specify the used CPU model
    - \b host/model: specify the used host model
    - \b storage/model: specify the used storage model (there is currently only one such model - this option is hence only useful for future releases)
-   - \b vm_workstation/model: specify the workstation model for virtual machines (there is currently only one such model - this option is hence only useful for future releases)
+   - \b vm/model: specify the model for virtual machines (there is currently only one such model - this option is hence only useful for future releases)
 
 %As of writing, the following network models are accepted. Over
 the time new models can be added, and some experimental models can be
@@ -1148,7 +1148,7 @@ silently overflow on other parts of the memory.
 - \c storage/model: \ref options_storage_model
 - \c verbose-exit: \ref options_generic_exit
 
-- \c vm_workstation/model: \ref options_vm_workstation_model
+- \c vm/model: \ref options_vm_model
 
 \subsection options_index_smpi_coll Index of SMPI collective algorithms options
 
