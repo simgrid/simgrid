@@ -17,6 +17,12 @@
 #include "mc_client.h"
 #include "ModelChecker.hpp"
 
+/** \file mc_client_api.cpp
+ *
+ *  This is the implementation of the API used by the user simulated program to
+ *  communicate with the MC (declared in modelchecker.h).
+ */
+
 extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
@@ -62,6 +68,28 @@ void MC_ignore(void* addr, size_t size)
     message.size = size;
     MC_client_send_message(&message, sizeof(message));
   }
+}
+
+void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
+{
+  xbt_die("Support for client-side function proposition is not implemented: "
+    "use MC_automaton_new_propositional_symbol_pointer instead."
+  );
+}
+
+void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
+{
+  xbt_assert(mc_mode != MC_MODE_SERVER);
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+  s_mc_register_symbol_message_t message;
+  message.type = MC_MESSAGE_REGISTER_SYMBOL;
+  if (strlen(name) + 1 > sizeof(message.name))
+    xbt_die("Symbol is too long");
+  strncpy(message.name, name, sizeof(message.name));
+  message.callback = nullptr;
+  message.data = value;
+  MC_client_send_message(&message, sizeof(message));
 }
 
 }
