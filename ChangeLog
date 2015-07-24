@@ -96,6 +96,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    - Add a xbt wrapper for simcall_mutex_trylock (asked in [#17878])
    - Add two new log appenders : rollfile and splitfile. Patch by Fabien Chaix.
  Build System
+  * Require g++ v4.7 at least to not speak prehistorical C++.
   * Tracing is now always enabled (no way to turn it out)
   * Move headers around to sort them out on installed systems:
     - instr/instr.h  -> simgrid/instr.h
