@@ -1,9 +1,14 @@
 find_library(HAVE_GTNETS_LIB
-  NAME gtnets
-  PATH_SUFFIXES lib64 lib lib64/gtnets lib/gtnets
-  PATHS
-  ${gtnets_path}
+  NAME gtsim
+  PATHS ${gtnets_path} ${gtnets_path}/lib
   )
+  
+if (HAVE_GTNETS_LIB)
+  message(STATUS "Looking for GTNetS library - found")
+else()
+  message(STATUS "Looking for GTNetS library - no found (search path: ${gtnets_path})")
+  message(STATUS "  library file name must be libgtsim.so (not gtnets.so, not libgtsim-opt.so)")
+endif()
 
 find_path(HAVE_SIMULATOR_H
   NAME simulator.h
@@ -11,12 +16,17 @@ find_path(HAVE_SIMULATOR_H
   PATHS
   ${gtnets_path}
   )
+if (HAVE_GTNETS_LIB)
+  message(STATUS "Looking for GTNetS header simulator.h - found")
+else()
+  message(STATUS "Looking for GTNetS header simulator.h - no found")
+endif()
 
 string(REPLACE "/libgtnets.${LIB_EXE}" ""  GTNETS_LIB_PATH "${HAVE_GTNETS_LIB}")
 
 if(HAVE_GTNETS_LIB AND HAVE_SIMULATOR_H)
 
-  execute_process(COMMAND ${CMAKE_CXX_COMPILER} -I${HAVE_SIMULATOR_H} -lgtnets -L${GTNETS_LIB_PATH} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_gtnets.cpp
+  execute_process(COMMAND ${CMAKE_CXX_COMPILER} -I${HAVE_SIMULATOR_H} -lgtsim -L${GTNETS_LIB_PATH} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_gtnets.cpp
     OUTPUT_VARIABLE COMPILE_GTNETS_VAR)
   if(COMPILE_GTNETS_VAR)
     SET(HAVE_GTNETS 0)
@@ -32,7 +42,7 @@ if(HAVE_GTNETS_LIB AND HAVE_SIMULATOR_H)
 
     string(REGEX MATCH "${GTNETS_LIB_PATH}" operation "$ENV{LD_LIBRARY_PATH}")
     if(NOT operation)
-      message(FATAL_ERROR "\n\nTo use GTNETS don't forget to set LD_LIBRARY_PATH with \n\texport LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${GTNETS_LIB_PATH}\n\n")
+      message(FATAL_ERROR "\nGTNetS library found but unusable. Did you set LD_LIBRARY_PATH?\n\texport LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${GTNETS_LIB_PATH}\n\n")
     endif()
 
   endif()

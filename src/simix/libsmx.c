@@ -23,24 +23,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 /**
  * \ingroup simix_host_management
- * \brief Returns a host given its name.
- *
- * \param name The name of the host to get
- * \return The corresponding host
- */
-smx_host_t simcall_host_get_by_name(const char *name)
-{
-  return simcall_BODY_host_get_by_name(name);
-}
-
-/**
- * \ingroup simix_host_management
  * \brief Returns the name of a host.
  *
  * \param host A SIMIX host
  * \return The name of this host
  */
-const char* simcall_host_get_name(smx_host_t host)
+const char* simcall_host_get_name(sg_host_t host)
 {
   return simcall_BODY_host_get_name(host);
 }
@@ -51,7 +39,7 @@ const char* simcall_host_get_name(smx_host_t host)
  *
  * \param host A SIMIX host
  */
-void simcall_host_on(smx_host_t host)
+void simcall_host_on(sg_host_t host)
 {
   simcall_BODY_host_on(host);
 }
@@ -62,7 +50,7 @@ void simcall_host_on(smx_host_t host)
  *
  * \param host A SIMIX host
  */
-void simcall_host_off(smx_host_t host)
+void simcall_host_off(sg_host_t host)
 {
   simcall_BODY_host_off(host);
 }
@@ -74,7 +62,7 @@ void simcall_host_off(smx_host_t host)
  * \param host A host
  * \return The properties of this host
  */
-xbt_dict_t simcall_host_get_properties(smx_host_t host)
+xbt_dict_t simcall_host_get_properties(sg_host_t host)
 {
   return simcall_BODY_host_get_properties(host);
 }
@@ -100,7 +88,7 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
  * \param host A SIMIX host
  * \return The speed of this host (in Mflop/s)
  */
-double simcall_host_get_speed(smx_host_t host)
+double simcall_host_get_speed(sg_host_t host)
 {
   return simcall_BODY_host_get_speed(host);
 }
@@ -112,7 +100,7 @@ double simcall_host_get_speed(smx_host_t host)
  * \param host A SIMIX host
  * \return The number of core
  */
-int simcall_host_get_core(smx_host_t host)
+int simcall_host_get_core(sg_host_t host)
 {
   return simcall_BODY_host_get_core(host);
 }
@@ -124,7 +112,7 @@ int simcall_host_get_core(smx_host_t host)
  * \param host A SIMIX host
  * \return the swag of attached processes
  */
-xbt_swag_t simcall_host_get_process_list(smx_host_t host)
+xbt_swag_t simcall_host_get_process_list(sg_host_t host)
 {
   return simcall_BODY_host_get_process_list(host);
 }
@@ -136,7 +124,7 @@ xbt_swag_t simcall_host_get_process_list(smx_host_t host)
  *
  * \return Speed currently available (in Mflop/s)
  */
-double simcall_host_get_available_speed(smx_host_t host)
+double simcall_host_get_available_speed(sg_host_t host)
 {
   return simcall_BODY_host_get_available_speed(host);
 }
@@ -149,7 +137,7 @@ double simcall_host_get_available_speed(smx_host_t host)
  * \param host A SIMIX host
  * \return 1 if the host is available, 0 otherwise
  */
-int simcall_host_get_state(smx_host_t host)
+int simcall_host_get_state(sg_host_t host)
 {
   return simcall_BODY_host_get_state(host);
 }
@@ -161,7 +149,7 @@ int simcall_host_get_state(smx_host_t host)
  * \param host A SIMIX host
  * \return the current power peak value (double)
  */
-double simcall_host_get_current_power_peak(smx_host_t host)
+double simcall_host_get_current_power_peak(sg_host_t host)
 {
   return simcall_BODY_host_get_current_power_peak(host);
 }
@@ -174,7 +162,7 @@ double simcall_host_get_current_power_peak(smx_host_t host)
  * \param pstate_index pstate to test
  * \return the current power peak value (double) for pstate_index
  */
-double simcall_host_get_power_peak_at(smx_host_t host, int pstate_index)
+double simcall_host_get_power_peak_at(sg_host_t host, int pstate_index)
 {
   return simcall_BODY_host_get_power_peak_at(host, pstate_index);
 }
@@ -186,7 +174,7 @@ double simcall_host_get_power_peak_at(smx_host_t host, int pstate_index)
  * \param host A SIMIX host
  * \return the number of power states
  */
-int simcall_host_get_nb_pstates(smx_host_t host)
+int simcall_host_get_nb_pstates(sg_host_t host)
 {
   return simcall_BODY_host_get_nb_pstates(host);
 }
@@ -198,7 +186,7 @@ int simcall_host_get_nb_pstates(smx_host_t host)
  * \param host A SIMIX host
  * \param pstate_index The pstate to which the CPU power will be set
  */
-void simcall_host_set_pstate(smx_host_t host, int pstate_index)
+void simcall_host_set_pstate(sg_host_t host, int pstate_index)
 {
 	simcall_BODY_host_set_pstate(host, pstate_index);
 }
@@ -208,7 +196,7 @@ void simcall_host_set_pstate(smx_host_t host, int pstate_index)
  *
  * \param host A SIMIX host
  */
-int simcall_host_get_pstate(smx_host_t host)
+int simcall_host_get_pstate(sg_host_t host)
 {
 	return simcall_BODY_host_get_pstate(host);
 }
@@ -220,7 +208,7 @@ int simcall_host_get_pstate(smx_host_t host)
  * \param host A SIMIX host
  * \return the energy consumed by the host (double)
  */
-double simcall_host_get_consumed_energy(smx_host_t host)
+double simcall_host_get_consumed_energy(sg_host_t host)
 {
   return simcall_BODY_host_get_consumed_energy(host);
 }
@@ -240,7 +228,7 @@ double simcall_host_get_wattmax_at(msg_host_t host, int pstate){
 
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Creates a synchro that executes some computation of an host.
  *
  * This function creates a SURF action and allocates the data necessary
@@ -254,7 +242,7 @@ double simcall_host_get_wattmax_at(msg_host_t host, int pstate){
  * \param affinity_mask
  * \return A new SIMIX execution synchronization
  */
-smx_synchro_t simcall_host_execute(const char *name, smx_host_t host,
+smx_synchro_t simcall_process_execute(const char *name,
                                     double flops_amount,
                                     double priority, double bound, unsigned long affinity_mask)
 {
@@ -262,11 +250,11 @@ smx_synchro_t simcall_host_execute(const char *name, smx_host_t host,
   xbt_assert(isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(isfinite(priority), "priority is not finite!");
 
-  return simcall_BODY_host_execute(name, host, flops_amount, priority, bound, affinity_mask);
+  return simcall_BODY_process_execute(name, flops_amount, priority, bound, affinity_mask);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Creates a synchro that may involve parallel computation on
  * several hosts and communication between them.
  *
@@ -280,9 +268,9 @@ smx_synchro_t simcall_host_execute(const char *name, smx_host_t host,
  * \param rate the SURF action rate
  * \return A new SIMIX execution synchronization
  */
-smx_synchro_t simcall_host_parallel_execute(const char *name,
+smx_synchro_t simcall_process_parallel_execute(const char *name,
                                          int host_nb,
-                                         smx_host_t *host_list,
+                                         sg_host_t *host_list,
                                          double *flops_amount,
                                          double *bytes_amount,
                                          double amount,
@@ -301,7 +289,7 @@ smx_synchro_t simcall_host_parallel_execute(const char *name,
   xbt_assert(isfinite(amount), "amount is not finite!");
   xbt_assert(isfinite(rate), "rate is not finite!");
 
-  return simcall_BODY_host_parallel_execute(name, host_nb, host_list,
+  return simcall_BODY_process_parallel_execute(name, host_nb, host_list,
                                             flops_amount,
                                             bytes_amount,
                                             amount, rate);
@@ -309,84 +297,84 @@ smx_synchro_t simcall_host_parallel_execute(const char *name,
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Destroys an execution synchro.
  *
  * Destroys a synchro, freeing its memory. This function cannot be called if there are a conditional waiting for it.
  * \param execution The execution synchro to destroy
  */
-void simcall_host_execution_destroy(smx_synchro_t execution)
+void simcall_process_execution_destroy(smx_synchro_t execution)
 {
-  simcall_BODY_host_execution_destroy(execution);
+  simcall_BODY_process_execution_destroy(execution);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Cancels an execution synchro.
  *
  * This functions stops the execution. It calls a surf function.
  * \param execution The execution synchro to cancel
  */
-void simcall_host_execution_cancel(smx_synchro_t execution)
+void simcall_process_execution_cancel(smx_synchro_t execution)
 {
-  simcall_BODY_host_execution_cancel(execution);
+  simcall_BODY_process_execution_cancel(execution);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Returns how much of an execution synchro remains to be done.
  *
  * \param execution The execution synchro
  * \return The remaining amount
  */
-double simcall_host_execution_get_remains(smx_synchro_t execution)
+double simcall_process_execution_get_remains(smx_synchro_t execution)
 {
-  return simcall_BODY_host_execution_get_remains(execution);
+  return simcall_BODY_process_execution_get_remains(execution);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Returns the state of an execution synchro.
  *
  * \param execution The execution synchro
  * \return The state
  */
-e_smx_state_t simcall_host_execution_get_state(smx_synchro_t execution)
+e_smx_state_t simcall_process_execution_get_state(smx_synchro_t execution)
 {
-  return simcall_BODY_host_execution_get_state(execution);
+  return simcall_BODY_process_execution_get_state(execution);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Changes the priority of an execution synchro.
  *
  * This functions changes the priority only. It calls a surf function.
  * \param execution The execution synchro
  * \param priority The new priority
  */
-void simcall_host_execution_set_priority(smx_synchro_t execution, double priority)
+void simcall_process_execution_set_priority(smx_synchro_t execution, double priority)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(priority), "priority is not finite!");
 
-  simcall_BODY_host_execution_set_priority(execution, priority);
+  simcall_BODY_process_execution_set_priority(execution, priority);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Changes the capping (the maximum CPU utilization) of an execution synchro.
  *
  * This functions changes the capping only. It calls a surf function.
  * \param execution The execution synchro
  * \param bound The new bound
  */
-void simcall_host_execution_set_bound(smx_synchro_t execution, double bound)
+void simcall_process_execution_set_bound(smx_synchro_t execution, double bound)
 {
-  simcall_BODY_host_execution_set_bound(execution, bound);
+  simcall_BODY_process_execution_set_bound(execution, bound);
 }
 
 /**
- * \ingroup simix_host_management
+ * \ingroup simix_process_management
  * \brief Changes the CPU affinity of an execution synchro.
  *
  * This functions changes the CPU affinity of an execution synchro. See taskset(1) on Linux.
@@ -394,9 +382,9 @@ void simcall_host_execution_set_bound(smx_synchro_t execution, double bound)
  * \param host Host
  * \param mask Affinity mask
  */
-void simcall_host_execution_set_affinity(smx_synchro_t execution, smx_host_t host, unsigned long mask)
+void simcall_process_execution_set_affinity(smx_synchro_t execution, sg_host_t host, unsigned long mask)
 {
-  simcall_BODY_host_execution_set_affinity(execution, host, mask);
+  simcall_BODY_process_execution_set_affinity(execution, host, mask);
 }
 
 /**
@@ -405,9 +393,9 @@ void simcall_host_execution_set_affinity(smx_synchro_t execution, smx_host_t hos
  *
  * \param execution The execution synchro
  */
-e_smx_state_t simcall_host_execution_wait(smx_synchro_t execution)
+e_smx_state_t simcall_process_execution_wait(smx_synchro_t execution)
 {
-  return simcall_BODY_host_execution_wait(execution);
+  return simcall_BODY_process_execution_wait(execution);
 }
 
 
@@ -420,7 +408,7 @@ e_smx_state_t simcall_host_execution_wait(smx_synchro_t execution)
  *
  * \return The host object of the VM
  */
-void* simcall_vm_create(const char *name, smx_host_t phys_host){
+void* simcall_vm_create(const char *name, sg_host_t phys_host){
   return simcall_BODY_vm_create(name, phys_host);
 }
 
@@ -430,7 +418,7 @@ void* simcall_vm_create(const char *name, smx_host_t phys_host){
  *
  * \param vm VM
  */
-void simcall_vm_start(smx_host_t vm)
+void simcall_vm_start(sg_host_t vm)
 {
   simcall_BODY_vm_start(vm);
 }
@@ -442,7 +430,7 @@ void simcall_vm_start(smx_host_t vm)
  * \param vm VM
  * \return The state of the VM
  */
-int simcall_vm_get_state(smx_host_t vm)
+int simcall_vm_get_state(sg_host_t vm)
 {
   return simcall_BODY_vm_get_state(vm);
 }
@@ -454,27 +442,27 @@ int simcall_vm_get_state(smx_host_t vm)
  * \param vm VM
  * \return The name of the physical host
  */
-void *simcall_vm_get_pm(smx_host_t vm)
+void *simcall_vm_get_pm(sg_host_t vm)
 {
   return simcall_BODY_vm_get_pm(vm);
 }
 
-void simcall_vm_set_bound(smx_host_t vm, double bound)
+void simcall_vm_set_bound(sg_host_t vm, double bound)
 {
   simcall_BODY_vm_set_bound(vm, bound);
 }
 
-void simcall_vm_set_affinity(smx_host_t vm, smx_host_t pm, unsigned long mask)
+void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
 {
   simcall_BODY_vm_set_affinity(vm, pm, mask);
 }
 
-void simcall_host_get_params(smx_host_t vm, ws_params_t params)
+void simcall_host_get_params(sg_host_t vm, vm_params_t params)
 {
   simcall_BODY_host_get_params(vm, params);
 }
 
-void simcall_host_set_params(smx_host_t vm, ws_params_t params)
+void simcall_host_set_params(sg_host_t vm, vm_params_t params)
 {
   simcall_BODY_host_set_params(vm, params);
 }
@@ -486,7 +474,7 @@ void simcall_host_set_params(smx_host_t vm, ws_params_t params)
  * \param vm VM
  * \param host Destination physical host
  */
-void simcall_vm_migrate(smx_host_t vm, smx_host_t host)
+void simcall_vm_migrate(sg_host_t vm, sg_host_t host)
 {
   simcall_BODY_vm_migrate(vm, host);
 }
@@ -497,7 +485,7 @@ void simcall_vm_migrate(smx_host_t vm, smx_host_t host)
  *
  * \param vm VM
  */
-void simcall_vm_suspend(smx_host_t vm)
+void simcall_vm_suspend(sg_host_t vm)
 {
   simcall_BODY_vm_suspend(vm);
 }
@@ -508,7 +496,7 @@ void simcall_vm_suspend(smx_host_t vm)
  *
  * \param vm VM
  */
-void simcall_vm_resume(smx_host_t vm)
+void simcall_vm_resume(sg_host_t vm)
 {
   simcall_BODY_vm_resume(vm);
 }
@@ -519,7 +507,7 @@ void simcall_vm_resume(smx_host_t vm)
  *
  * \param vm VM
  */
-void simcall_vm_save(smx_host_t vm)
+void simcall_vm_save(sg_host_t vm)
 {
   simcall_BODY_vm_save(vm);
 }
@@ -530,7 +518,7 @@ void simcall_vm_save(smx_host_t vm)
  *
  * \param vm VM
  */
-void simcall_vm_restore(smx_host_t vm)
+void simcall_vm_restore(sg_host_t vm)
 {
   simcall_BODY_vm_restore(vm);
 }
@@ -541,7 +529,7 @@ void simcall_vm_restore(smx_host_t vm)
  *
  * \param vm VM
  */
-void simcall_vm_shutdown(smx_host_t vm)
+void simcall_vm_shutdown(sg_host_t vm)
 {
   simcall_BODY_vm_shutdown(vm);
 }
@@ -552,7 +540,7 @@ void simcall_vm_shutdown(smx_host_t vm)
  *
  * \param vm VM
  */
-void simcall_vm_destroy(smx_host_t vm)
+void simcall_vm_destroy(sg_host_t vm)
 {
   simcall_BODY_vm_destroy(vm);
 }
@@ -571,7 +559,7 @@ void simcall_vm_destroy(smx_host_t vm)
  * \param src_pm  Source physical host
  * \param dst_pmt Destination physical host
  */
-void simcall_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t dst_pm)
+void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm)
 {
   simcall_BODY_vm_migratefrom_resumeto(vm, src_pm, dst_pm);
 }
@@ -594,7 +582,7 @@ void simcall_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_
  * \param properties the properties of the process
  * \param auto_restart either it is autorestarting or not.
  */
-void simcall_process_create(smx_process_t *process, const char *name,
+smx_process_t simcall_process_create(const char *name,
                               xbt_main_func_t code,
                               void *data,
                               const char *hostname,
@@ -603,7 +591,7 @@ void simcall_process_create(smx_process_t *process, const char *name,
                               xbt_dict_t properties,
                               int auto_restart)
 {
-  simcall_BODY_process_create(process, name, code, data, hostname,
+  return (smx_process_t) simcall_BODY_process_create(name, code, data, hostname,
                               kill_time, argc, argv, properties,
                               auto_restart);
 }
@@ -649,7 +637,7 @@ void simcall_process_cleanup(smx_process_t process)
  * \param process the process to migrate
  * \param dest name of the new host
  */
-void simcall_process_change_host(smx_process_t process, smx_host_t dest)
+void simcall_process_change_host(smx_process_t process, sg_host_t dest)
 {
   simcall_BODY_process_change_host(process, dest);
 }
@@ -770,8 +758,6 @@ void simcall_process_set_data(smx_process_t process, void *data)
 /**
  * \ingroup simix_process_management
  * \brief Set the kill time of a process.
- * \param process a process
- * \param kill_time a double
  */
 void simcall_process_set_kill_time(smx_process_t process, double kill_time)
 {
@@ -779,22 +765,29 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
   if (kill_time > SIMIX_get_clock()) {
     if (simix_global->kill_process_function) {
       XBT_DEBUG("Set kill time %f for process %s(%s)",kill_time, process->name,
-          sg_host_name(process->smx_host));
+          sg_host_name(process->host));
       process->kill_timer = SIMIX_timer_set(kill_time, simix_global->kill_process_function, process);
     }
   }
+}
+/**
+ * \ingroup simix_process_management
+ * \brief Get the kill time of a process (or 0 if unset).
+ */
+double simcall_process_get_kill_time(smx_process_t process) {
+	return SIMIX_timer_get_date(process->kill_timer);
 }
 
 /**
  * \ingroup simix_process_management
  * \brief Return the location on which an agent is running.
  *
- * This functions returns the smx_host_t corresponding to the location on which
+ * This functions returns the sg_host_t corresponding to the location on which
  * \a process is running.
  * \param process SIMIX process
  * \return SIMIX host
  */
-smx_host_t simcall_process_get_host(smx_process_t process)
+sg_host_t simcall_process_get_host(smx_process_t process)
 {
   return simcall_BODY_process_get_host(process);
 }
@@ -929,7 +922,7 @@ smx_rdv_t simcall_rdv_get_by_name(const char *name)
  *  \param host The host to be counted
  *  \return The number of comm synchros pending in the rdv
  */
-int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host)
+int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host)
 {
   return simcall_BODY_rdv_comm_count_by_host(rdv, host);
 }
@@ -1350,7 +1343,7 @@ int simcall_sem_get_capacity(smx_sem_t sem)
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size, smx_host_t host)
+sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   return simcall_BODY_file_read(fd, size, host);
 }
@@ -1359,7 +1352,7 @@ sg_size_t simcall_file_read(smx_file_t fd, sg_size_t size, smx_host_t host)
  * \ingroup simix_file_management
  *
  */
-sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size, smx_host_t host)
+sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   return simcall_BODY_file_write(fd, size, host);
 }
@@ -1368,7 +1361,7 @@ sg_size_t simcall_file_write(smx_file_t fd, sg_size_t size, smx_host_t host)
  * \ingroup simix_file_management
  * \brief
  */
-smx_file_t simcall_file_open(const char* fullpath, smx_host_t host)
+smx_file_t simcall_file_open(const char* fullpath, sg_host_t host)
 {
   return simcall_BODY_file_open(fullpath, host);
 }
@@ -1377,7 +1370,7 @@ smx_file_t simcall_file_open(const char* fullpath, smx_host_t host)
  * \ingroup simix_file_management
  *
  */
-int simcall_file_close(smx_file_t fd, smx_host_t host)
+int simcall_file_close(smx_file_t fd, sg_host_t host)
 {
   return simcall_BODY_file_close(fd, host);
 }
@@ -1386,7 +1379,7 @@ int simcall_file_close(smx_file_t fd, smx_host_t host)
  * \ingroup simix_file_management
  *
  */
-int simcall_file_unlink(smx_file_t fd, smx_host_t host)
+int simcall_file_unlink(smx_file_t fd, sg_host_t host)
 {
   return simcall_BODY_file_unlink(fd, host);
 }
@@ -1460,7 +1453,7 @@ sg_size_t simcall_storage_get_used_size (smx_storage_t storage){
  * \param host A SIMIX host
  * \return a dict containing all storages mounted on the host
  */
-xbt_dict_t simcall_host_get_mounted_storage_list(smx_host_t host)
+xbt_dict_t simcall_host_get_mounted_storage_list(sg_host_t host)
 {
   return simcall_BODY_host_get_mounted_storage_list(host);
 }
@@ -1471,7 +1464,7 @@ xbt_dict_t simcall_host_get_mounted_storage_list(smx_host_t host)
  * \param host A SIMIX host
  * \return a dict containing all storages attached to the host
  */
-xbt_dynar_t simcall_host_get_attached_storage_list(smx_host_t host)
+xbt_dynar_t simcall_host_get_attached_storage_list(sg_host_t host)
 {
   return simcall_BODY_host_get_attached_storage_list(host);
 }

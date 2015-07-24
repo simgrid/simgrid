@@ -24,7 +24,6 @@
  */
 
 #include <ns3/abort.h>
-#include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/point-to-point-channel.h"
@@ -40,7 +39,9 @@
 #include "ns3/trace-helper.h"
 #include "my-point-to-point-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("MyPointToPointHelper");
+#include "xbt/log.h"
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
 ///> RED Parameters  see src/node/red-queue.* for details
 //.AddAttribute ("Mode",
@@ -163,7 +164,7 @@ MyPointToPointHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd,
   Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice> ();
   if (device == 0)
     {
-      NS_LOG_INFO ("MyPointToPointHelper::EnablePcapInternal(): Device " << device << " not of type ns3::PointToPointNetDevice");
+      XBT_INFO ("MyPointToPointHelper::EnablePcapInternal(): Device not of type ns3::PointToPointNetDevice");
       return;
     }
 
@@ -199,8 +200,7 @@ MyPointToPointHelper::EnableAsciiInternal (
   Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice> ();
   if (device == 0)
     {
-      NS_LOG_INFO ("MyPointToPointHelper::EnableAsciiInternal(): Device " << device <<
-                   " not of type ns3::PointToPointNetDevice");
+      XBT_INFO ("MyPointToPointHelper::EnableAsciiInternal(): Device not of type ns3::PointToPointNetDevice");
       return;
     }
 

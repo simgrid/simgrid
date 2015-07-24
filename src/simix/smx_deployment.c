@@ -23,7 +23,7 @@ extern int surf_parse_lineno;
 
 static void parse_process(sg_platf_process_cbarg_t process)
 {
-  smx_host_t host = SIMIX_host_get_by_name(process->host);
+  sg_host_t host = sg_host_by_name(process->host);
   if (!host)
     THROWF(arg_error, 0, "Host '%s' unknown", process->host);
   parse_code = SIMIX_get_registered_function(process->function);
@@ -48,10 +48,10 @@ static void parse_process(sg_platf_process_cbarg_t process)
   arg->name = xbt_strdup(arg->argv[0]);
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
-  if (!SIMIX_host_priv(host)->boot_processes) {
-    SIMIX_host_priv(host)->boot_processes = xbt_dynar_new(sizeof(smx_process_arg_t), _SIMIX_host_free_process_arg);
+  if (!sg_host_simix(host)->boot_processes) {
+    sg_host_simix(host)->boot_processes = xbt_dynar_new(sizeof(smx_process_arg_t), _SIMIX_host_free_process_arg);
   }
-  xbt_dynar_push_as(SIMIX_host_priv(host)->boot_processes,smx_process_arg_t,arg);
+  xbt_dynar_push_as(sg_host_simix(host)->boot_processes,smx_process_arg_t,arg);
 
   if (start_time > SIMIX_get_clock()) {
     arg = xbt_new0(s_smx_process_arg_t, 1);
@@ -71,7 +71,7 @@ static void parse_process(sg_platf_process_cbarg_t process)
     XBT_DEBUG("Starting Process %s(%s) right now", process->argv[0], sg_host_name(host));
 
     if (simix_global->create_process_function)
-      simix_global->create_process_function(&process_created,
+      process_created = simix_global->create_process_function(
                                             (char*)(process->argv)[0],
                                             parse_code,
                                             NULL,
@@ -82,7 +82,7 @@ static void parse_process(sg_platf_process_cbarg_t process)
                                             current_property_set,
                                             auto_restart, NULL);
     else
-      simcall_process_create(&process_created, (char*)(process->argv)[0], parse_code, NULL, sg_host_name(host), kill_time, process->argc,
+      process_created = simcall_process_create((char*)(process->argv)[0], parse_code, NULL, sg_host_name(host), kill_time, process->argc,
           (char**)process->argv, current_property_set,auto_restart);
     
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
@@ -196,7 +196,7 @@ void SIMIX_process_set_function(const char *process_host,
 {
   s_sg_platf_process_cbarg_t process = SG_PLATF_PROCESS_INITIALIZER;
 
-  smx_host_t host = SIMIX_host_get_by_name(process_host);
+  sg_host_t host = sg_host_by_name(process_host);
   if (!host)
     THROWF(arg_error, 0, "Host '%s' unknown", process_host);
   process.host = sg_host_name(host);

@@ -70,15 +70,13 @@ void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int
       s_surf_parsing_link_up_down_t info;
       if (link.policy == SURF_LINK_FULLDUPLEX) {
           char *tmp_link = bprintf("%s_UP", link_id);
-          info.link_up =
-              xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+          info.link_up = Link::byName(tmp_link);
           free(tmp_link);
           tmp_link = bprintf("%s_DOWN", link_id);
-          info.link_down =
-              xbt_lib_get_or_null(link_lib, tmp_link, SURF_LINK_LEVEL);
+          info.link_down = Link::byName(tmp_link);
           free(tmp_link);
       } else {
-          info.link_up = xbt_lib_get_or_null(link_lib, link_id, SURF_LINK_LEVEL);
+          info.link_up = Link::byName(link_id);
           info.link_down = info.link_up;
       }
       /**
@@ -120,7 +118,7 @@ void AsClusterTorus::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster){
     xbt_dynar_free(&dimensions);
 }
 
-void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat){
+void AsClusterTorus::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat){
 
   XBT_VERB("torus_get_route_and_latency from '%s'[%d] to '%s'[%d]",
                src->getName(), src->getId(),
@@ -133,7 +131,7 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
        xbt_dynar_push_as(route->link_list, void *, info.link_up);
 
        if (lat)
-         *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
+         *lat += static_cast<Link*>(info.link_up)->getLatency();
        return;
      }
 
@@ -222,12 +220,12 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, 
            xbt_dynar_push_as(route->link_list,void*,info.link_down);
 
        if (lat)
-         *lat += static_cast<NetworkLinkPtr>(info.link_down)->getLatency();
+         *lat += static_cast<Link*>(info.link_down)->getLatency();
        }else{
            xbt_dynar_push_as(route->link_list,void*,info.link_up);
 
        if (lat)
-         *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
+         *lat += static_cast<Link*>(info.link_up)->getLatency();
        }
        current_node = next_node;
        next_node = 0;

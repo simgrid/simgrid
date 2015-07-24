@@ -66,9 +66,9 @@ void model_floyd_parse_route(AS_t rc, sg_platf_route_cbarg_t route);
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
 
-AsPtr model_cluster_create(void);      /* create structures for cluster routing model */
-AsPtr model_torus_cluster_create(void); 
-AsPtr model_fat_tree_cluster_create(void);
+As *model_cluster_create(void);      /* create structures for cluster routing model */
+As *model_torus_cluster_create(void);
+As *model_fat_tree_cluster_create(void);
 
 /* ************************************************** */
 /* **************  Vivaldi ROUTING   **************** */

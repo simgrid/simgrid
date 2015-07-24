@@ -20,7 +20,7 @@ AS_t model_floyd_create(void)
 
 void model_floyd_end(AS_t current_routing)
 {
-  static_cast<AsFloydPtr>(current_routing)->end();
+  static_cast<AsFloyd*>(current_routing)->end();
 }
 
 AsFloyd::AsFloyd(): AsGeneric() {
@@ -51,7 +51,7 @@ AsFloyd::~AsFloyd(){
 /* Business methods */
 xbt_dynar_t AsFloyd::getOneLinkRoutes()
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free_f);
+  xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
   sg_platf_route_cbarg_t route =   xbt_new0(s_sg_platf_route_cbarg_t, 1);
   route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
 
@@ -61,13 +61,13 @@ xbt_dynar_t AsFloyd::getOneLinkRoutes()
   for(src=0; src < table_size; src++) {
     for(dst=0; dst< table_size; dst++) {
       xbt_dynar_reset(route->link_list);
-      src_elm = xbt_dynar_get_as(p_indexNetworkElm, src, RoutingEdgePtr);
-      dst_elm = xbt_dynar_get_as(p_indexNetworkElm, dst, RoutingEdgePtr);
+      src_elm = xbt_dynar_get_as(p_indexNetworkElm, src, RoutingEdge*);
+      dst_elm = xbt_dynar_get_as(p_indexNetworkElm, dst, RoutingEdge*);
       this->getRouteAndLatency(src_elm, dst_elm, route, NULL);
 
       if (xbt_dynar_length(route->link_list) == 1) {
         void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-        OnelinkPtr onelink;
+        Onelink *onelink;
         if (p_hierarchy == SURF_ROUTING_BASE)
           onelink = new Onelink(link, src_elm, dst_elm);
         else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
@@ -82,7 +82,7 @@ xbt_dynar_t AsFloyd::getOneLinkRoutes()
   return ret;
 }
 
-void AsFloyd::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t res, double *lat)
+void AsFloyd::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t res, double *lat)
 {
 
   /* set utils vars */
@@ -124,7 +124,7 @@ void AsFloyd::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_plat
     xbt_dynar_foreach(links, cpt, link) {
       xbt_dynar_push_as(res->link_list, sg_routing_link_t, link);
       if (lat)
-        *lat += static_cast<NetworkLinkPtr>(link)->getLatency();
+        *lat += static_cast<Link*>(link)->getLatency();
     }
 
     prev_dst_gw = e_route->gw_dst;
@@ -149,7 +149,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
 
   /* set the size of table routing */
   int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
-  RoutingEdgePtr src_net_elm, dst_net_elm;
+  RoutingEdge *src_net_elm, *dst_net_elm;
 
   src_net_elm = sg_routing_edge_by_name_or_null(src);
   dst_net_elm = sg_routing_edge_by_name_or_null(dst);
@@ -193,7 +193,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
     xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
     xbt_dynar_foreach(route->link_list,cpt,link_name)
     {
-      void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+      void *link = Link::byName(link_name);
       xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
       xbt_dynar_push(link_route_to_test,&link);
     }
@@ -229,7 +229,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
       for(i=xbt_dynar_length(route->link_list) ;i>0 ;i--)
       {
         link_name = xbt_dynar_get_as(route->link_list,i-1,char *);
-        void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+        void *link = Link::byName(link_name);
         xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
         xbt_dynar_push(link_route_to_test,&link);
       }

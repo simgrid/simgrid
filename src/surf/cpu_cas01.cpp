@@ -12,16 +12,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
                                 "Logging specific to the SURF CPU IMPROVED module");
 
-/*************
- * CallBacks *
- *************/
-
-static void cpu_define_callbacks()
-{
-  sg_platf_host_add_cb(cpu_parse_init);
-  sg_platf_postparse_add_cb(cpu_add_traces);
-}
-
 /*********
  * Model *
  *********/
@@ -40,14 +30,16 @@ void surf_cpu_model_init_Cas01()
   surf_cpu_model_pm = new CpuCas01Model();
   surf_cpu_model_vm  = new CpuCas01Model();
 
-  cpu_define_callbacks();
-  ModelPtr model_pm = surf_cpu_model_pm;
-  ModelPtr model_vm = surf_cpu_model_vm;
+  sg_platf_host_add_cb(cpu_parse_init);
+  sg_platf_postparse_add_cb(cpu_add_traces);
+
+  Model *model_pm = surf_cpu_model_pm;
+  Model *model_vm = surf_cpu_model_vm;
   xbt_dynar_push(model_list, &model_pm);
   xbt_dynar_push(model_list, &model_vm);
 }
 
-CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
+CpuCas01Model::CpuCas01Model() : CpuModel()
 {
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   int select = xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
@@ -105,15 +97,16 @@ CpuCas01Model::~CpuCas01Model()
   delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
 
-CpuPtr CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
+Cpu *CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
 		                  int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
                           xbt_dict_t cpu_properties)
 {
-  CpuPtr cpu = NULL;
-  xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
+  Cpu *cpu = NULL;
+  sg_host_t host = sg_host_by_name(name);
+  xbt_assert(!sg_host_surfcpu(host),
              "Host '%s' declared several times in the platform file",
              name);
   xbt_assert(xbt_dynar_getfirst_as(power_peak, double) > 0.0,
@@ -121,7 +114,7 @@ CpuPtr CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
 
   cpu = new CpuCas01(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
+  sg_host_surfcpu_set(host, cpu);
 
   return cpu;
 }
@@ -144,7 +137,7 @@ void CpuCas01Model::addTraces()
   /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01Ptr host = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuCas01 *host = static_cast<CpuCas01*>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -154,7 +147,7 @@ void CpuCas01Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01Ptr host = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuCas01 *host = static_cast<CpuCas01*>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -166,7 +159,7 @@ void CpuCas01Model::addTraces()
 /************
  * Resource *
  ************/
-CpuCas01::CpuCas01(CpuCas01ModelPtr model, const char *name, xbt_dynar_t powerPeak,
+CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak,
                          int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
                          e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
                          xbt_dict_t properties)
@@ -235,7 +228,7 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
                               m_powerPeak);
     while ((var = lmm_get_var_from_cnst
             (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
-      CpuCas01ActionPtr action = static_cast<CpuCas01ActionPtr>(lmm_variable_id(var));
+      CpuCas01Action *action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
       lmm_update_variable_bound(getModel()->getMaxminSystem(),
                                 action->getVariable(),
@@ -257,7 +250,7 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
       setState(SURF_RESOURCE_OFF);
 
       while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
-        ActionPtr action = static_cast<ActionPtr>(lmm_variable_id(var));
+        Action *action = static_cast<Action*>(lmm_variable_id(var));
 
         if (action->getState() == SURF_ACTION_RUNNING ||
             action->getState() == SURF_ACTION_READY ||
@@ -277,24 +270,24 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
   return;
 }
 
-CpuActionPtr CpuCas01::execute(double size)
+CpuAction *CpuCas01::execute(double size)
 {
 
   XBT_IN("(%s,%g)", getName(), size);
-  CpuCas01ActionPtr action = new CpuCas01Action(getModel(), size, getState() != SURF_RESOURCE_ON,
+  CpuCas01Action *action = new CpuCas01Action(getModel(), size, getState() != SURF_RESOURCE_ON,
 		                                              m_powerScale * m_powerPeak, getConstraint());
 
   XBT_OUT();
   return action;
 }
 
-CpuActionPtr CpuCas01::sleep(double duration)
+CpuAction *CpuCas01::sleep(double duration)
 {
   if (duration > 0)
     duration = MAX(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getName(), duration);
-  CpuCas01ActionPtr action = new CpuCas01Action(getModel(), 1.0, getState() != SURF_RESOURCE_ON,
+  CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, getState() != SURF_RESOURCE_ON,
                                                       m_powerScale * m_powerPeak, getConstraint());
 
 
@@ -305,7 +298,7 @@ CpuActionPtr CpuCas01::sleep(double duration)
     /* Move to the *end* of the corresponding action set. This convention
        is used to speed up update_resource_state  */
 	action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
-    action->p_stateSet = static_cast<CpuCas01ModelPtr>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
+    action->p_stateSet = static_cast<CpuCas01Model*>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
     action->getStateSet()->push_back(*action);
   }
 
@@ -360,7 +353,7 @@ int CpuCas01::getPstate()
  * Action *
  **********/
 
-CpuCas01Action::CpuCas01Action(ModelPtr model, double cost, bool failed, double power, lmm_constraint_t constraint)
+CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double power, lmm_constraint_t constraint)
  : CpuAction(model, cost, failed,
 		     lmm_variable_new(model->getMaxminSystem(), this,
 		     1.0, power, 1))

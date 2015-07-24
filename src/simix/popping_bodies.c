@@ -17,28 +17,7 @@
 #include "mc/mc_forward.h"
 #include "xbt/ex.h"
   
-inline static smx_host_t simcall_BODY_host_get_by_name(const char* name) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_get_by_name(name);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_GET_BY_NAME;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].cc = (const char*) name;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.dp;
-  }
-  
-inline static const char* simcall_BODY_host_get_name(smx_host_t host) {
+inline static const char* simcall_BODY_host_get_name(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -59,7 +38,7 @@ inline static const char* simcall_BODY_host_get_name(smx_host_t host) {
     return self->simcall.result.cc;
   }
   
-inline static void simcall_BODY_host_on(smx_host_t host) {
+inline static void simcall_BODY_host_on(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -80,7 +59,7 @@ inline static void simcall_BODY_host_on(smx_host_t host) {
     
   }
   
-inline static void simcall_BODY_host_off(smx_host_t host) {
+inline static void simcall_BODY_host_off(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -101,7 +80,7 @@ inline static void simcall_BODY_host_off(smx_host_t host) {
     
   }
   
-inline static xbt_dict_t simcall_BODY_host_get_properties(smx_host_t host) {
+inline static xbt_dict_t simcall_BODY_host_get_properties(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -122,7 +101,7 @@ inline static xbt_dict_t simcall_BODY_host_get_properties(smx_host_t host) {
     return self->simcall.result.dp;
   }
   
-inline static int simcall_BODY_host_get_core(smx_host_t host) {
+inline static int simcall_BODY_host_get_core(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -143,7 +122,7 @@ inline static int simcall_BODY_host_get_core(smx_host_t host) {
     return self->simcall.result.i;
   }
   
-inline static xbt_swag_t simcall_BODY_host_get_process_list(smx_host_t host) {
+inline static xbt_swag_t simcall_BODY_host_get_process_list(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -164,7 +143,7 @@ inline static xbt_swag_t simcall_BODY_host_get_process_list(smx_host_t host) {
     return self->simcall.result.dp;
   }
   
-inline static double simcall_BODY_host_get_speed(smx_host_t host) {
+inline static double simcall_BODY_host_get_speed(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -185,7 +164,7 @@ inline static double simcall_BODY_host_get_speed(smx_host_t host) {
     return self->simcall.result.d;
   }
   
-inline static double simcall_BODY_host_get_available_speed(smx_host_t host) {
+inline static double simcall_BODY_host_get_available_speed(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -206,7 +185,7 @@ inline static double simcall_BODY_host_get_available_speed(smx_host_t host) {
     return self->simcall.result.d;
   }
   
-inline static int simcall_BODY_host_get_state(smx_host_t host) {
+inline static int simcall_BODY_host_get_state(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -227,7 +206,7 @@ inline static int simcall_BODY_host_get_state(smx_host_t host) {
     return self->simcall.result.i;
   }
   
-inline static double simcall_BODY_host_get_current_power_peak(smx_host_t host) {
+inline static double simcall_BODY_host_get_current_power_peak(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -248,7 +227,7 @@ inline static double simcall_BODY_host_get_current_power_peak(smx_host_t host) {
     return self->simcall.result.d;
   }
   
-inline static double simcall_BODY_host_get_power_peak_at(smx_host_t host, int pstate_index) {
+inline static double simcall_BODY_host_get_power_peak_at(sg_host_t host, int pstate_index) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -270,7 +249,7 @@ inline static double simcall_BODY_host_get_power_peak_at(smx_host_t host, int ps
     return self->simcall.result.d;
   }
   
-inline static int simcall_BODY_host_get_nb_pstates(smx_host_t host) {
+inline static int simcall_BODY_host_get_nb_pstates(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -291,7 +270,7 @@ inline static int simcall_BODY_host_get_nb_pstates(smx_host_t host) {
     return self->simcall.result.i;
   }
   
-inline static double simcall_BODY_host_get_wattmin_at(smx_host_t host, int pstate_index) {
+inline static double simcall_BODY_host_get_wattmin_at(sg_host_t host, int pstate_index) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -313,7 +292,7 @@ inline static double simcall_BODY_host_get_wattmin_at(smx_host_t host, int pstat
     return self->simcall.result.d;
   }
   
-inline static double simcall_BODY_host_get_wattmax_at(smx_host_t host, int pstate_index) {
+inline static double simcall_BODY_host_get_wattmax_at(sg_host_t host, int pstate_index) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -335,7 +314,7 @@ inline static double simcall_BODY_host_get_wattmax_at(smx_host_t host, int pstat
     return self->simcall.result.d;
   }
   
-inline static void simcall_BODY_host_set_pstate(smx_host_t host, int pstate_index) {
+inline static void simcall_BODY_host_set_pstate(sg_host_t host, int pstate_index) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -357,7 +336,7 @@ inline static void simcall_BODY_host_set_pstate(smx_host_t host, int pstate_inde
     
   }
   
-inline static int simcall_BODY_host_get_pstate(smx_host_t host) {
+inline static int simcall_BODY_host_get_pstate(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -378,7 +357,7 @@ inline static int simcall_BODY_host_get_pstate(smx_host_t host) {
     return self->simcall.result.i;
   }
   
-inline static double simcall_BODY_host_get_consumed_energy(smx_host_t host) {
+inline static double simcall_BODY_host_get_consumed_energy(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -399,232 +378,7 @@ inline static double simcall_BODY_host_get_consumed_energy(smx_host_t host) {
     return self->simcall.result.d;
   }
   
-inline static smx_synchro_t simcall_BODY_host_execute(const char* name, smx_host_t host, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execute(name, host, flops_amount, priority, bound, affinity_mask);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_EXECUTE;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].cc = (const char*) name;
-    self->simcall.args[1].dp = (void*) host;
-    self->simcall.args[2].d = (double) flops_amount;
-    self->simcall.args[3].d = (double) priority;
-    self->simcall.args[4].d = (double) bound;
-    self->simcall.args[5].ul = (unsigned long) affinity_mask;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.dp;
-  }
-  
-inline static smx_synchro_t simcall_BODY_host_parallel_execute(const char* name, int host_nb, smx_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_parallel_execute(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_PARALLEL_EXECUTE;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].cc = (const char*) name;
-    self->simcall.args[1].i = (int) host_nb;
-    self->simcall.args[2].dp = (void*) host_list;
-    self->simcall.args[3].dp = (void*) flops_amount;
-    self->simcall.args[4].dp = (void*) bytes_amount;
-    self->simcall.args[5].d = (double) amount;
-    self->simcall.args[6].d = (double) rate;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.dp;
-  }
-  
-inline static void simcall_BODY_host_execution_destroy(smx_synchro_t execution) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_destroy(execution);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_EXECUTION_DESTROY;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) execution;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
-  }
-  
-inline static void simcall_BODY_host_execution_cancel(smx_synchro_t execution) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_cancel(execution);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_EXECUTION_CANCEL;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) execution;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
-  }
-  
-inline static double simcall_BODY_host_execution_get_remains(smx_synchro_t execution) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_get_remains(execution);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_EXECUTION_GET_REMAINS;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) execution;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.d;
-  }
-  
-inline static e_smx_state_t simcall_BODY_host_execution_get_state(smx_synchro_t execution) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_get_state(execution);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_EXECUTION_GET_STATE;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) execution;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.i;
-  }
-  
-inline static void simcall_BODY_host_execution_set_priority(smx_synchro_t execution, double priority) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_set_priority(execution, priority);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_EXECUTION_SET_PRIORITY;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) execution;
-    self->simcall.args[1].d = (double) priority;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
-  }
-  
-inline static void simcall_BODY_host_execution_set_bound(smx_synchro_t execution, double bound) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_set_bound(execution, bound);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_EXECUTION_SET_BOUND;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) execution;
-    self->simcall.args[1].d = (double) bound;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
-  }
-  
-inline static void simcall_BODY_host_execution_set_affinity(smx_synchro_t execution, smx_host_t ws, unsigned long mask) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_execution_set_affinity(execution, ws, mask);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_EXECUTION_SET_AFFINITY;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) execution;
-    self->simcall.args[1].dp = (void*) ws;
-    self->simcall.args[2].ul = (unsigned long) mask;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
-  }
-  
-inline static int simcall_BODY_host_execution_wait(smx_synchro_t execution) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_host_execution_wait(&self->simcall, execution);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_EXECUTION_WAIT;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) execution;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.i;
-  }
-  
-inline static xbt_dict_t simcall_BODY_host_get_mounted_storage_list(smx_host_t host) {
+inline static xbt_dict_t simcall_BODY_host_get_mounted_storage_list(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -645,7 +399,7 @@ inline static xbt_dict_t simcall_BODY_host_get_mounted_storage_list(smx_host_t h
     return self->simcall.result.dp;
   }
   
-inline static xbt_dynar_t simcall_BODY_host_get_attached_storage_list(smx_host_t host) {
+inline static xbt_dynar_t simcall_BODY_host_get_attached_storage_list(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -666,7 +420,7 @@ inline static xbt_dynar_t simcall_BODY_host_get_attached_storage_list(smx_host_t
     return self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_host_get_params(smx_host_t ind_vm, ws_params_t params) {
+inline static void simcall_BODY_host_get_params(sg_host_t ind_vm, vm_params_t params) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -688,7 +442,7 @@ inline static void simcall_BODY_host_get_params(smx_host_t ind_vm, ws_params_t p
     
   }
   
-inline static void simcall_BODY_host_set_params(smx_host_t ind_vm, ws_params_t params) {
+inline static void simcall_BODY_host_set_params(sg_host_t ind_vm, vm_params_t params) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -710,7 +464,7 @@ inline static void simcall_BODY_host_set_params(smx_host_t ind_vm, ws_params_t p
     
   }
   
-inline static smx_host_t simcall_BODY_vm_create(const char* name, smx_host_t ind_pm) {
+inline static sg_host_t simcall_BODY_vm_create(const char* name, sg_host_t ind_pm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -732,7 +486,7 @@ inline static smx_host_t simcall_BODY_vm_create(const char* name, smx_host_t ind
     return self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_vm_start(smx_host_t ind_vm) {
+inline static void simcall_BODY_vm_start(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -753,7 +507,7 @@ inline static void simcall_BODY_vm_start(smx_host_t ind_vm) {
     
   }
   
-inline static int simcall_BODY_vm_get_state(smx_host_t ind_vm) {
+inline static int simcall_BODY_vm_get_state(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -774,7 +528,7 @@ inline static int simcall_BODY_vm_get_state(smx_host_t ind_vm) {
     return self->simcall.result.i;
   }
   
-inline static void simcall_BODY_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm) {
+inline static void simcall_BODY_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -796,7 +550,7 @@ inline static void simcall_BODY_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst
     
   }
   
-inline static void* simcall_BODY_vm_get_pm(smx_host_t ind_vm) {
+inline static void* simcall_BODY_vm_get_pm(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -817,7 +571,7 @@ inline static void* simcall_BODY_vm_get_pm(smx_host_t ind_vm) {
     return self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_vm_set_bound(smx_host_t ind_vm, double bound) {
+inline static void simcall_BODY_vm_set_bound(sg_host_t ind_vm, double bound) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -839,7 +593,7 @@ inline static void simcall_BODY_vm_set_bound(smx_host_t ind_vm, double bound) {
     
   }
   
-inline static void simcall_BODY_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask) {
+inline static void simcall_BODY_vm_set_affinity(sg_host_t ind_vm, sg_host_t ind_pm, unsigned long mask) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -862,7 +616,7 @@ inline static void simcall_BODY_vm_set_affinity(smx_host_t ind_vm, smx_host_t in
     
   }
   
-inline static void simcall_BODY_vm_destroy(smx_host_t ind_vm) {
+inline static void simcall_BODY_vm_destroy(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -883,7 +637,7 @@ inline static void simcall_BODY_vm_destroy(smx_host_t ind_vm) {
     
   }
   
-inline static void simcall_BODY_vm_suspend(smx_host_t ind_vm) {
+inline static void simcall_BODY_vm_suspend(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -904,7 +658,7 @@ inline static void simcall_BODY_vm_suspend(smx_host_t ind_vm) {
     
   }
   
-inline static void simcall_BODY_vm_resume(smx_host_t ind_vm) {
+inline static void simcall_BODY_vm_resume(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -925,7 +679,7 @@ inline static void simcall_BODY_vm_resume(smx_host_t ind_vm) {
     
   }
   
-inline static void simcall_BODY_vm_shutdown(smx_host_t ind_vm) {
+inline static void simcall_BODY_vm_shutdown(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -946,7 +700,7 @@ inline static void simcall_BODY_vm_shutdown(smx_host_t ind_vm) {
     
   }
   
-inline static void simcall_BODY_vm_save(smx_host_t ind_vm) {
+inline static void simcall_BODY_vm_save(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -967,7 +721,7 @@ inline static void simcall_BODY_vm_save(smx_host_t ind_vm) {
     
   }
   
-inline static void simcall_BODY_vm_restore(smx_host_t ind_vm) {
+inline static void simcall_BODY_vm_restore(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -988,7 +742,7 @@ inline static void simcall_BODY_vm_restore(smx_host_t ind_vm) {
     
   }
   
-inline static void simcall_BODY_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t dst_pm) {
+inline static void simcall_BODY_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -1011,26 +765,25 @@ inline static void simcall_BODY_vm_migratefrom_resumeto(smx_host_t vm, smx_host_
     
   }
   
-inline static void simcall_BODY_process_create(smx_process_t* process, const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart) {
+inline static void* simcall_BODY_process_create(const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_process_create(&self->simcall, process, name, code, data, hostname, kill_time, argc, argv, properties, auto_restart);
+    if (0) simcall_HANDLER_process_create(&self->simcall, name, code, data, hostname, kill_time, argc, argv, properties, auto_restart);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_PROCESS_CREATE;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) process;
-    self->simcall.args[1].cc = (const char*) name;
-    self->simcall.args[2].fp = (FPtr) code;
-    self->simcall.args[3].dp = (void*) data;
-    self->simcall.args[4].cc = (const char*) hostname;
-    self->simcall.args[5].d = (double) kill_time;
-    self->simcall.args[6].i = (int) argc;
-    self->simcall.args[7].dp = (void*) argv;
-    self->simcall.args[8].dp = (void*) properties;
-    self->simcall.args[9].i = (int) auto_restart;
+    self->simcall.args[0].cc = (const char*) name;
+    self->simcall.args[1].fp = (FPtr) code;
+    self->simcall.args[2].dp = (void*) data;
+    self->simcall.args[3].cc = (const char*) hostname;
+    self->simcall.args[4].d = (double) kill_time;
+    self->simcall.args[5].i = (int) argc;
+    self->simcall.args[6].dp = (void*) argv;
+    self->simcall.args[7].dp = (void*) properties;
+    self->simcall.args[8].i = (int) auto_restart;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
@@ -1038,7 +791,7 @@ inline static void simcall_BODY_process_create(smx_process_t* process, const cha
     } else {
       SIMIX_simcall_handle(&self->simcall, 0);
     }    
-    
+    return self->simcall.result.dp;
   }
   
 inline static void simcall_BODY_process_kill(smx_process_t process) {
@@ -1104,7 +857,7 @@ inline static void simcall_BODY_process_cleanup(smx_process_t process) {
     
   }
   
-inline static void simcall_BODY_process_change_host(smx_process_t process, smx_host_t dest) {
+inline static void simcall_BODY_process_change_host(smx_process_t process, sg_host_t dest) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -1274,7 +1027,7 @@ inline static void simcall_BODY_process_set_data(smx_process_t process, void* da
     
   }
   
-inline static smx_host_t simcall_BODY_process_get_host(smx_process_t process) {
+inline static sg_host_t simcall_BODY_process_get_host(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -1401,6 +1154,230 @@ inline static int simcall_BODY_process_sleep(double duration) {
     return self->simcall.result.i;
   }
   
+inline static smx_synchro_t simcall_BODY_process_execute(const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) simcall_HANDLER_process_execute(&self->simcall, name, flops_amount, priority, bound, affinity_mask);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_EXECUTE;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].cc = (const char*) name;
+    self->simcall.args[1].d = (double) flops_amount;
+    self->simcall.args[2].d = (double) priority;
+    self->simcall.args[3].d = (double) bound;
+    self->simcall.args[4].ul = (unsigned long) affinity_mask;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    return self->simcall.result.dp;
+  }
+  
+inline static smx_synchro_t simcall_BODY_process_parallel_execute(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_process_parallel_execute(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_PARALLEL_EXECUTE;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].cc = (const char*) name;
+    self->simcall.args[1].i = (int) host_nb;
+    self->simcall.args[2].dp = (void*) host_list;
+    self->simcall.args[3].dp = (void*) flops_amount;
+    self->simcall.args[4].dp = (void*) bytes_amount;
+    self->simcall.args[5].d = (double) amount;
+    self->simcall.args[6].d = (double) rate;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    return self->simcall.result.dp;
+  }
+  
+inline static void simcall_BODY_process_execution_destroy(smx_synchro_t execution) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_process_execution_destroy(execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_DESTROY;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) execution;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    
+  }
+  
+inline static void simcall_BODY_process_execution_cancel(smx_synchro_t execution) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_process_execution_cancel(execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_CANCEL;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) execution;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    
+  }
+  
+inline static double simcall_BODY_process_execution_get_remains(smx_synchro_t execution) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_process_execution_get_remains(execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_GET_REMAINS;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) execution;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    return self->simcall.result.d;
+  }
+  
+inline static e_smx_state_t simcall_BODY_process_execution_get_state(smx_synchro_t execution) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_process_execution_get_state(execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_GET_STATE;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) execution;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    return self->simcall.result.i;
+  }
+  
+inline static void simcall_BODY_process_execution_set_priority(smx_synchro_t execution, double priority) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_process_execution_set_priority(execution, priority);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_SET_PRIORITY;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) execution;
+    self->simcall.args[1].d = (double) priority;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    
+  }
+  
+inline static void simcall_BODY_process_execution_set_bound(smx_synchro_t execution, double bound) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_process_execution_set_bound(execution, bound);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_SET_BOUND;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) execution;
+    self->simcall.args[1].d = (double) bound;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    
+  }
+  
+inline static void simcall_BODY_process_execution_set_affinity(smx_synchro_t execution, sg_host_t ws, unsigned long mask) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_process_execution_set_affinity(execution, ws, mask);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_SET_AFFINITY;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) execution;
+    self->simcall.args[1].dp = (void*) ws;
+    self->simcall.args[2].ul = (unsigned long) mask;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    
+  }
+  
+inline static int simcall_BODY_process_execution_wait(smx_synchro_t execution) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) simcall_HANDLER_process_execution_wait(&self->simcall, execution);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_EXECUTION_WAIT;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) execution;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    return self->simcall.result.i;
+  }
+  
 inline static void simcall_BODY_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void* data) {
     smx_process_t self = SIMIX_process_self();
 
@@ -1509,7 +1486,7 @@ inline static void simcall_BODY_rdv_destroy(smx_rdv_t rdv) {
     
   }
   
-inline static unsigned int simcall_BODY_rdv_comm_count_by_host(smx_rdv_t rdv, smx_host_t host) {
+inline static unsigned int simcall_BODY_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -2351,7 +2328,7 @@ inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
     return self->simcall.result.i;
   }
   
-inline static sg_size_t simcall_BODY_file_read(smx_file_t fd, sg_size_t size, smx_host_t host) {
+inline static sg_size_t simcall_BODY_file_read(smx_file_t fd, sg_size_t size, sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -2374,7 +2351,7 @@ inline static sg_size_t simcall_BODY_file_read(smx_file_t fd, sg_size_t size, sm
     return self->simcall.result.sgsz;
   }
   
-inline static sg_size_t simcall_BODY_file_write(smx_file_t fd, sg_size_t size, smx_host_t host) {
+inline static sg_size_t simcall_BODY_file_write(smx_file_t fd, sg_size_t size, sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -2397,7 +2374,7 @@ inline static sg_size_t simcall_BODY_file_write(smx_file_t fd, sg_size_t size, s
     return self->simcall.result.sgsz;
   }
   
-inline static smx_file_t simcall_BODY_file_open(const char* fullpath, smx_host_t host) {
+inline static smx_file_t simcall_BODY_file_open(const char* fullpath, sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -2419,7 +2396,7 @@ inline static smx_file_t simcall_BODY_file_open(const char* fullpath, smx_host_t
     return self->simcall.result.dp;
   }
   
-inline static int simcall_BODY_file_close(smx_file_t fd, smx_host_t host) {
+inline static int simcall_BODY_file_close(smx_file_t fd, sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -2441,7 +2418,7 @@ inline static int simcall_BODY_file_close(smx_file_t fd, smx_host_t host) {
     return self->simcall.result.i;
   }
   
-inline static int simcall_BODY_file_unlink(smx_file_t fd, smx_host_t host) {
+inline static int simcall_BODY_file_unlink(smx_file_t fd, sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */

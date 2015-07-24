@@ -15,27 +15,16 @@
  * Classes *
  ***********/
 class CpuTiTrace;
-typedef CpuTiTrace *CpuTiTracePtr;
-
 class CpuTiTgmr;
-typedef CpuTiTgmr *CpuTiTgmrPtr;
-
 class CpuTiModel;
-typedef CpuTiModel *CpuTiModelPtr;
-
 class CpuTi;
-typedef CpuTi *CpuTiPtr;
-
 class CpuTiAction;
-typedef CpuTiAction *CpuTiActionPtr;
 
 typedef boost::intrusive::list<CpuTi> CpuTiList;
-typedef CpuTiList* CpuTiListPtr;
 typedef boost::intrusive::list_base_hook<> cpuTiHook;
 
 struct tiTag;
 typedef boost::intrusive::list<CpuTiAction, boost::intrusive::base_hook<boost::intrusive::list_base_hook<boost::intrusive::tag<tiTag> > > > ActionTiList;
-typedef ActionTiList* ActionTiListPtr;
 typedef boost::intrusive::list_base_hook<boost::intrusive::tag<tiTag> > actionTiHook;
 
 /*********
@@ -82,7 +71,7 @@ public:
   double m_lastTime;             /*< Integral interval last point (discret time) */
   double m_total;                 /*< Integral total between 0 and last_pointn */
 
-  CpuTiTracePtr p_trace;
+  CpuTiTrace *p_trace;
   tmgr_trace_t p_powerTrace;
 };
 
@@ -93,7 +82,7 @@ class CpuTiModel : public CpuModel {
 public:
   CpuTiModel();
   ~CpuTiModel();
-  CpuPtr createCpu(const char *name,  xbt_dynar_t powerPeak,
+  Cpu *createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -103,17 +92,17 @@ public:
   void updateActionsState(double now, double delta);
   void addTraces();
 
-  ActionListPtr p_runningActionSetThatDoesNotNeedBeingChecked;
-  CpuTiListPtr p_modifiedCpu;
+  ActionList *p_runningActionSetThatDoesNotNeedBeingChecked;
+  CpuTiList *p_modifiedCpu;
   xbt_heap_t p_tiActionHeap;
 
 protected:
-  void NotifyResourceTurnedOn(ResourcePtr){};
-  void NotifyResourceTurnedOff(ResourcePtr){};
+  void NotifyResourceTurnedOn(Resource*){};
+  void NotifyResourceTurnedOff(Resource*){};
 
-  void NotifyActionCancel(ActionPtr){};
-  void NotifyActionResume(ActionPtr){};
-  void NotifyActionSuspend(ActionPtr){};
+  void NotifyActionCancel(Action*){};
+  void NotifyActionResume(Action*){};
+  void NotifyActionSuspend(Action*){};
 };
 
 /************
@@ -122,7 +111,7 @@ protected:
 class CpuTi : public cpuTiHook, public Cpu {
 public:
   CpuTi() {};
-  CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
+  CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t powerPeak,
         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) ;
@@ -132,8 +121,8 @@ public:
   void updateActionsFinishTime(double now);
   bool isUsed();
   void printCpuTiModel();
-  CpuActionPtr execute(double size);
-  CpuActionPtr sleep(double duration);
+  CpuAction *execute(double size);
+  CpuAction *sleep(double duration);
   double getAvailableSpeed();
 
   double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
@@ -143,10 +132,10 @@ public:
   int  getPstate() { THROW_UNIMPLEMENTED;}
   void modified(bool modified);
 
-  CpuTiTgmrPtr p_availTrace;       /*< Structure with data needed to integrate trace file */
+  CpuTiTgmr *p_availTrace;       /*< Structure with data needed to integrate trace file */
   tmgr_trace_event_t p_stateEvent;       /*< trace file with states events (ON or OFF) */
   tmgr_trace_event_t p_powerEvent;       /*< trace file with availability events */
-  ActionTiListPtr p_actionSet;        /*< set with all actions running on cpu */
+  ActionTiList *p_actionSet;        /*< set with all actions running on cpu */
   double m_sumPriority;          /*< the sum of actions' priority that are running on cpu */
   double m_lastUpdate;           /*< last update of actions' remaining amount done */
 
@@ -160,19 +149,18 @@ public:
  **********/
 
 class CpuTiAction: public actionTiHook, public CpuAction {
-  friend CpuActionPtr CpuTi::execute(double size);
-  friend CpuActionPtr CpuTi::sleep(double duration);
+  friend CpuAction *CpuTi::execute(double size);
+  friend CpuAction *CpuTi::sleep(double duration);
   friend void CpuTi::updateActionsFinishTime(double now);//FIXME
   friend void CpuTi::updateRemainingAmount(double now);//FIXME
 
 public:
-  CpuTiAction(CpuTiModelPtr model, double cost, bool failed,
-  		                 CpuTiPtr cpu);
+  CpuTiAction(CpuTiModel *model, double cost, bool failed,
+  		                 CpuTi *cpu);
 
   void setState(e_surf_action_state_t state);
   int unref();
   void cancel();
-  void recycle();
   void updateIndexHeap(int i);
   void suspend();
   void resume();
@@ -180,9 +168,9 @@ public:
   void setMaxDuration(double duration);
   void setPriority(double priority);
   double getRemains();
-  void setAffinity(CpuPtr /*cpu*/, unsigned long /*mask*/) {};
+  void setAffinity(Cpu */*cpu*/, unsigned long /*mask*/) {};
 
-  CpuTiPtr p_cpu;
+  CpuTi *p_cpu;
   int m_indexHeap;
   int m_suspended;
 private:

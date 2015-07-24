@@ -10,7 +10,7 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/maxmin_private.hpp"
 
-typedef xbt_dynar_t NetworkLinkDynar;
+typedef xbt_dynar_t LinkDynar;
 typedef ActionList *ActionArrayPtr;
 
 double getClock();
@@ -22,7 +22,7 @@ void setCpuModel(CpuModel *cpuModel);
 
 void setCpu(char *name, Cpu *cpu);
 
-NetworkLinkDynar getRoute(char *srcName, char *dstName);
+LinkDynar getRoute(char *srcName, char *dstName);
 
 class Plugin {
 public:
@@ -43,14 +43,14 @@ public:
  virtual void cpuActionStateChangedCallback(CpuAction *action, e_surf_action_state_t, e_surf_action_state_t) {}
 
 
- void activateNetworkLinkCreatedCallback();
- virtual void networkLinkCreatedCallback(NetworkLink *link) {}
+ void activateLinkCreatedCallback();
+ virtual void networkLinkCreatedCallback(Link *link) {}
 
- void activateNetworkLinkDestructedCallback();
- virtual void networkLinkDestructedCallback(NetworkLink *link) {}
+ void activateLinkDestructedCallback();
+ virtual void networkLinkDestructedCallback(Link *link) {}
 
- void activateNetworkLinkStateChangedCallback();
- virtual void networkLinkStateChangedCallback(NetworkLink *link, e_surf_resource_state_t, e_surf_resource_state_t) {}
+ void activateLinkStateChangedCallback();
+ virtual void networkLinkStateChangedCallback(Link *link, e_surf_resource_state_t, e_surf_resource_state_t) {}
 
  void activateNetworkActionStateChangedCallback();
  virtual void networkActionStateChangedCallback(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t cur) {}

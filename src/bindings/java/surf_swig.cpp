@@ -35,17 +35,15 @@ void setCpuModel(CpuModel *cpuModel){
 }
 
 void setCpu(char *name, Cpu *cpu) {
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
+	sg_host_surfcpu_set(sg_host_by_name(name), cpu);
 }
 
-NetworkLinkDynar getRoute(char *srcName, char *dstName) {
-  RoutingEdge *src = (RoutingEdge*)xbt_lib_get_or_null(host_lib, srcName, ROUTING_HOST_LEVEL);
-  RoutingEdge *dst = (RoutingEdge*)xbt_lib_get_or_null(host_lib, dstName, ROUTING_HOST_LEVEL);
-  if (src==NULL)
-    xbt_die("TOTO");
-  if (dst==NULL)
-    xbt_die("TOTO");
-  xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdgePtr), NULL);
+LinkDynar getRoute(char *srcName, char *dstName) {
+  RoutingEdge *src = sg_host_edge(sg_host_by_name(srcName));
+  RoutingEdge *dst = sg_host_edge(sg_host_by_name(dstName));
+  xbt_assert(src,"Cannot get the route from a NULL source");
+  xbt_assert(dst,"Cannot get the route to a NULL destination");
+  xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdge*), NULL);
   routing_platf->getRouteAndLatency(src, dst, &route, NULL);
   return route;
 }
@@ -67,15 +65,15 @@ void Plugin::activateCpuActionStateChangedCallback(){
 }
 
 
-void Plugin::activateNetworkLinkCreatedCallback(){
+void Plugin::activateLinkCreatedCallback(){
   surf_callback_connect(networkLinkCreatedCallbacks, boost::bind(&Plugin::networkLinkCreatedCallback, this, _1));
 }
 
-void Plugin::activateNetworkLinkDestructedCallback(){
+void Plugin::activateLinkDestructedCallback(){
   surf_callback_connect(networkLinkDestructedCallbacks, boost::bind(&Plugin::networkLinkDestructedCallback, this, _1));
 }
 
-void Plugin::activateNetworkLinkStateChangedCallback(){
+void Plugin::activateLinkStateChangedCallback(){
   surf_callback_connect(networkLinkStateChangedCallbacks, boost::bind(&Plugin::networkLinkStateChangedCallback, this, _1, _2, _3));
 }
 

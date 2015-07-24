@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -33,8 +33,6 @@ typedef struct As *msg_as_t;
 
 /* ******************************** Host ************************************ */
 
-XBT_PUBLIC_DATA(int) MSG_HOST_LEVEL;
-
 /** @brief Host datatype.
     @ingroup m_host_management
 
@@ -45,9 +43,9 @@ XBT_PUBLIC_DATA(int) MSG_HOST_LEVEL;
     some <em>private data</em> that can be only accessed by local
     process.
  */
-typedef xbt_dictelm_t msg_host_t;
+typedef sg_host_t msg_host_t;
 
-typedef struct msg_host_priv {
+typedef struct s_msg_host_priv {
   int        dp_enabled;
   xbt_dict_t dp_objs;
   double     dp_updated_by_deleted_tasks;
@@ -58,13 +56,7 @@ typedef struct msg_host_priv {
 #ifdef MSG_USE_DEPRECATED
   msg_mailbox_t *mailboxes;     /**< the channels  */
 #endif
-} s_msg_host_priv_t, *msg_host_priv_t;
-
-static inline msg_host_priv_t MSG_host_priv(msg_host_t host){
-  return (msg_host_priv_t )xbt_lib_get_level(host, MSG_HOST_LEVEL);
-}
-
-
+} s_msg_host_priv_t;
 
 /* ******************************** Task ************************************ */
 
@@ -89,11 +81,6 @@ typedef struct msg_task *msg_task_t;
 
 /* ******************************** VM ************************************* */
 typedef msg_host_t msg_vm_t;
-typedef msg_host_priv_t msg_vm_priv_t;
-
-static inline msg_vm_priv_t MSG_vm_priv(msg_vm_t vm){
-  return (msg_vm_priv_t) xbt_lib_get_level(vm, MSG_HOST_LEVEL);
-}
 
 /** ******************************** File ************************************ */
 
@@ -234,16 +221,10 @@ XBT_PUBLIC(void) MSG_config(const char *key, const char *value);
  *
  *  We allow to link against compiled versions that differ in the patch level.
  */
-#define MSG_init(argc,argv)  {                                          \
-    int ver_major,ver_minor,ver_patch;                                  \
-    sg_version(&ver_major,&ver_minor,&ver_patch);                       \
-    if ((ver_major != SIMGRID_VERSION_MAJOR) ||                         \
-        (ver_minor != SIMGRID_VERSION_MINOR)) {                         \
-      fprintf(stderr,"FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, and then linked against SimGrid %d.%d.%d. Please fix this.\n", \
-              SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,ver_major,ver_minor,ver_patch); \
-    }                                                                   \
-    MSG_init_nocheck(argc,argv);                                        \
-  }
+#define MSG_init(argc,argv)  do {                                                          \
+	sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
+    MSG_init_nocheck(argc,argv);                                                        \
+  } while (0)
 
 XBT_PUBLIC(void) MSG_init_nocheck(int *argc, char **argv);
 XBT_PUBLIC(msg_error_t) MSG_main(void);
@@ -288,7 +269,6 @@ XBT_PUBLIC(msg_error_t) MSG_file_move(msg_file_t fd, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
 /************************** Storage handling ***********************************/
-XBT_PUBLIC(msg_host_t) MSG_get_storage_by_name(const char *name);
 XBT_PUBLIC(const char *) MSG_storage_get_name(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_free_size(msg_storage_t storage);
 XBT_PUBLIC(sg_size_t) MSG_storage_get_used_size(msg_storage_t storage);
@@ -309,6 +289,8 @@ XBT_PUBLIC(xbt_dict_t) MSG_as_router_get_properties(const char* asr);
 XBT_PUBLIC(void) MSG_as_router_set_property_value(const char* asr, const char *name, char *value,void_f_pvoid_t free_ctn);
 
 /************************** Host handling ***********************************/
+XBT_PUBLIC(msg_host_t) MSG_host_by_name(const char *name);
+#define MSG_get_host_by_name(n) MSG_host_by_name(n) /* Rewrite the old name into the new one transparently */
 XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);
 XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
 XBT_PUBLIC(const char *) MSG_host_get_name(msg_host_t host);
@@ -324,7 +306,6 @@ XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 XBT_PUBLIC(double) MSG_host_get_wattmin_at(msg_host_t host, int pstate);
 XBT_PUBLIC(double) MSG_host_get_wattmax_at(msg_host_t host, int pstate);
 
-XBT_PUBLIC(void) __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
@@ -332,6 +313,13 @@ XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
 XBT_PUBLIC(void)   MSG_host_set_pstate(msg_host_t h, int pstate);
 XBT_PUBLIC(int)    MSG_host_get_pstate(msg_host_t host);
+XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
+XBT_PUBLIC(int) MSG_get_host_number(void);
+XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, vm_params_t params);
+XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, vm_params_t params);
+XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
+XBT_PUBLIC(xbt_dynar_t) MSG_host_get_attached_storage_list(msg_host_t host);
+XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
 
 XBT_PUBLIC(double) MSG_host_get_consumed_energy(msg_host_t h);
 
@@ -346,14 +334,6 @@ XBT_PUBLIC(void) MSG_host_set_property_value(msg_host_t host,
 
 XBT_PUBLIC(void) MSG_create_environment(const char *file);
 
-XBT_PUBLIC(msg_host_t) MSG_get_host_by_name(const char *name);
-XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
-XBT_PUBLIC(int) MSG_get_host_number(void);
-XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, ws_params_t params);
-XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, ws_params_t params);
-XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
-XBT_PUBLIC(xbt_dynar_t) MSG_host_get_attached_storage_list(msg_host_t host);
-XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
 /************************** Process handling *********************************/
 XBT_PUBLIC(msg_process_t) MSG_process_create(const char *name,
                                            xbt_main_func_t code,

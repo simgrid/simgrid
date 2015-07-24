@@ -183,7 +183,7 @@ int main(int argc, char **argv)
           SD_link_get_name(links[i]),
           SD_link_get_current_bandwidth(links[i]),
           SD_link_get_current_latency(links[i]));
-      if (SD_link_get_sharing_policy(links[i]) == SD_LINK_SHARED) {
+      if (SD_link_is_shared(links[i])) {
         printf("/>\n");
       } else {
         printf(" sharing_policy=\"FATPIPE\"/>\n");
@@ -193,14 +193,14 @@ int main(int argc, char **argv)
 
     xbt_lib_foreach(host_lib, cursor_src, src, value1) // Routes from host
     {
-      value1 = xbt_lib_get_or_null(host_lib,src,ROUTING_HOST_LEVEL);
+      value1 = sg_host_edge(sg_host_by_name(src));
       xbt_lib_foreach(host_lib, cursor_dst, dst, value2) //to host
       {
         printf("  <route src=\"%s\" dst=\"%s\">\n  "
             ,src
             ,dst);
         xbt_dynar_t route=NULL;
-        value2 = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
+        value2 = sg_host_edge(sg_host_by_name(dst));
         routing_get_route_and_latency(value1,value2,&route,NULL);
         for(i=0;i<xbt_dynar_length(route) ;i++)
         {
@@ -263,7 +263,7 @@ int main(int argc, char **argv)
           printf("  <route src=\"%s\" dst=\"%s\">\n  "
               ,src, dst);
           xbt_dynar_t route=NULL;
-          value2 = xbt_lib_get_or_null(host_lib,dst,ROUTING_HOST_LEVEL);
+          value2 = sg_host_edge(sg_host_by_name(dst));
           routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route, NULL);
           for(i=0;i<xbt_dynar_length(route) ;i++)
           {

@@ -56,7 +56,6 @@ class ResourceLmm;
 class Host;
 class HostCLM03;
 class NetworkCm02Link;
-class Cpu;
 class Action;
 class ActionLmm;
 class StorageActionLmm;
@@ -75,7 +74,6 @@ typedef struct ResourceLmm ResourceLmm;
 typedef struct HostCLM03 HostCLM03;
 typedef struct Host Host;
 typedef struct NetworkCm02Link NetworkCm02Link;
-typedef struct Cpu Cpu;
 typedef struct Action Action;
 typedef struct ActionLmm ActionLmm;
 typedef struct StorageActionLmm StorageActionLmm;
@@ -101,9 +99,6 @@ typedef StorageModel *surf_storage_model_t;
 typedef xbt_dictelm_t surf_resource_t;
 typedef Resource *surf_cpp_resource_t;
 typedef Host *surf_host_t;
-typedef HostCLM03 *surf_host_CLM03_t;
-typedef NetworkCm02Link *surf_network_link_t;
-typedef Cpu *surf_cpu_t;
 
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
@@ -163,8 +158,7 @@ typedef enum {
   SURF_ACTION_FAILED,           /**< Task Failure */
   SURF_ACTION_DONE,             /**< Completed    */
   SURF_ACTION_TO_FREE,          /**< Action to free in next cleanup */
-  SURF_ACTION_NOT_IN_THE_SYSTEM
-                                /**< Not in the system anymore. Why did you ask ? */
+  SURF_ACTION_NOT_IN_THE_SYSTEM /**< Not in the system anymore. Why did you ask ? */
 } e_surf_action_state_t;
 
 /** @ingroup SURF_vm_interface
@@ -188,41 +182,25 @@ typedef enum {
 
 XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
-static inline surf_cpu_t surf_cpu_resource_priv(const void *host) {
-  return (surf_cpu_t)xbt_lib_get_level((xbt_dictelm_t)host, SURF_CPU_LEVEL);
-}
 static inline surf_host_t surf_host_resource_priv(const void *host){
   return (surf_host_t) xbt_lib_get_level((xbt_dictelm_t)host, SURF_HOST_LEVEL);
-}
-static inline void *surf_routing_resource_priv(const void *host){
-  return (void*)xbt_lib_get_level((xbt_dictelm_t)host, ROUTING_HOST_LEVEL);
 }
 static inline void *surf_storage_resource_priv(const void *storage){
   return (void*)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
 }
 
-static inline void *surf_cpu_resource_by_name(const char *name) {
-  return xbt_lib_get_elm_or_null(host_lib, name);
-}
-static inline void *surf_host_resource_by_name(const char *name){
-  return xbt_lib_get_elm_or_null(host_lib, name);
-}
 static inline void *surf_storage_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
-
-XBT_PUBLIC(char *) surf_routing_edge_name(sg_routing_edge_t edge);
 XBT_PUBLIC(void *) surf_as_cluster_get_backbone(AS_t as);
 XBT_PUBLIC(void) surf_as_cluster_set_backbone(AS_t as, void* backbone);
 
 /** @{ @ingroup SURF_c_bindings */
 
-/**
- * @brief Get the name of a surf model
+/** @brief Get the name of a surf model (dont rely on exact value)
  *
- * @param model A model
- * @return The name of the model
+ * This is implemented using typeid(), so it may change with the compiler
  */
 XBT_PUBLIC(const char *) surf_model_name(surf_model_t model);
 
@@ -280,45 +258,18 @@ XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
  */
 XBT_PUBLIC(surf_action_t) surf_host_model_execute_parallel_task(surf_host_model_t model,
 		                                    int host_nb,
-                                            void **host_list,
+											sg_host_t *host_list,
                                             double *flops_amount,
                                             double *bytes_amount,
                                             double rate);
 
-/**
- * @brief Create a communication between two hosts
- *
- * @param model The model which handle the communication
- * @param src The source host
- * @param dst The destination host
- * @param size The amount of data (in bytes) needed to transfer
- * @param rate [description]
- * @return The action corresponding to the communication
- */
-XBT_PUBLIC(surf_action_t) surf_host_model_communicate(surf_host_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate);
-
-/**
- * @brief Get the route between two hosts
- * @details [long description]
- *
- * @param model The model which handle the routes
- * @param src The source host
- * @param dst The destination host
- * @return The list of [TODO] from the source to the host
- */
+/** @brief Get the route (dynar of sg_link_t) between two hosts */
 XBT_PUBLIC(xbt_dynar_t) surf_host_model_get_route(surf_host_model_t model, surf_resource_t src, surf_resource_t dst);
 
-/**
- * @brief Create a new VM on the specified host
- *
- * @param name The name of the VM
- * @param host_PM The host on which the VM is created
- */
+/** @brief Create a new VM on the specified host */
 XBT_PUBLIC(void) surf_vm_model_create(const char *name, surf_resource_t host_PM);
 
-/**
- * @brief Create a communication between two routing edges [TODO]
- * @details [long description]
+/** @brief Create a communication between two hosts
  *
  * @param model The model which handle the communication
  * @param src The source host
@@ -327,7 +278,7 @@ XBT_PUBLIC(void) surf_vm_model_create(const char *name, surf_resource_t host_PM)
  * @param rate [description]
  * @return The action corresponding to the communication
  */
-XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate);
+XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate);
 
 /**
  * @brief Get the name of a surf resource (cpu, host, network, …)
@@ -340,24 +291,14 @@ static inline const char * surf_cpu_name(surf_cpu_t cpu) {
 	return surf_resource_name((surf_cpp_resource_t)cpu);
 }
 
-/**
- * @brief Get the properties of a surf resource (cpu, host, network, …)
- *
- * @param resource The surf resource
- * @return The properties of the surf resource
- */
+/** @brief Get the properties of a surf resource (cpu, host, network, …) */
 XBT_PUBLIC(xbt_dict_t) surf_resource_get_properties(surf_cpp_resource_t resource);
 static XBT_INLINE xbt_dict_t surf_host_get_properties(surf_host_t host) {
 	return surf_resource_get_properties((surf_cpp_resource_t)host);
 }
 
 
-/**
- * @brief Get the state of a surf resource (cpu, host, network, …)
- *
- * @param resource The surf resource
- * @return The state of the surf resource
- */
+/** @brief Get the state of a surf resource (cpu, host, network, …) */
 XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t resource);
 
 static XBT_INLINE e_surf_resource_state_t surf_host_get_state(surf_host_t host) {
@@ -365,12 +306,7 @@ static XBT_INLINE e_surf_resource_state_t surf_host_get_state(surf_host_t host) 
 }
 
 
-/**
- * @brief Set the state of a surf resource (cpu, host, network, …)
- *
- * @param resource The surf resource
- * @param state The new state of the surf resource
- */
+/** @brief Set the state of a surf resource (cpu, host, network, …) */
 XBT_PUBLIC(void) surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
 static inline void surf_host_set_state(surf_host_t host, e_surf_resource_state_t state) {
 	surf_resource_set_state((surf_cpp_resource_t)host, state);
@@ -392,72 +328,27 @@ XBT_PUBLIC(double) surf_host_get_speed(surf_resource_t resource, double load);
  * @param resource The surf host
  * @return [description]
  */
-XBT_PUBLIC(double) surf_host_get_available_speed(surf_resource_t resource);
+XBT_PUBLIC(double) surf_host_get_available_speed(surf_resource_t host);
 
-/**
- * @brief Get the number of cores of the cpu associated to a host
- *
- * @param resource The surf host
- * @return The number of cores
- */
-XBT_PUBLIC(int) surf_host_get_core(surf_resource_t resource);
+/** @brief Get the number of cores of the cpu associated to a host */
+XBT_PUBLIC(int) surf_host_get_core(surf_resource_t host);
 
-/**
- * @brief Execute some quantity of computation
- *
- * @param resource The surf host
- * @param size The value of the processing amount (in flop) needed to process
- *
- * @return The surf action corresponding to the processing
- */
-XBT_PUBLIC(surf_action_t) surf_host_execute(surf_resource_t resource, double size);
+/** @brief Create a computation action on the given host */
+XBT_PUBLIC(surf_action_t) surf_host_execute(surf_resource_t host, double size);
 
-/**
- * @brief Make the host sleep
- *
- * @param resource The surf host
- * @param duration The number of seconds to sleep
- * @return The surf action corresponding to the sleep
- */
-XBT_PUBLIC(surf_action_t) surf_host_sleep(surf_resource_t resource, double duration);
+/** @brief Create a sleep action on the given host */
+XBT_PUBLIC(surf_action_t) surf_host_sleep(surf_resource_t host, double duration);
 
-/**
- * @brief Open a file on an host
- *
- * @param host The surf host
- * @param fullpath The path to the file
- * @return The surf action corresponding to the openning
- */
+/** @brief Create a file opening action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_open(surf_resource_t host, const char* fullpath);
 
-/**
- * @brief Close a file descriptor on an host
- *
- * @param host The surf host
- * @param fd The file descriptor
- *
- * @return The surf action corresponding to the closing
- */
+/** @brief Create a file closing action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_close(surf_resource_t host, surf_file_t fd);
 
-/**
- * @brief Read a file
- *
- * @param host The surf host
- * @param fd The file descriptor to read
- * @param size The size in bytes to read
- * @return The surf action corresponding to the reading
- */
+/** @brief Create a file reading action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_read(surf_resource_t host, surf_file_t fd, sg_size_t size);
 
-/**
- * @brief Write a file
- *
- * @param host The surf host
- * @param fd The file descriptor to write
- * @param size The size in bytes to write
- * @return The surf action corresponding to the writing
- */
+/** @brief Create a file writing action on the given host  */
 XBT_PUBLIC(surf_action_t) surf_host_write(surf_resource_t host, surf_file_t fd, sg_size_t size);
 
 /**
@@ -493,31 +384,18 @@ XBT_PUBLIC(sg_size_t) surf_host_get_free_size(surf_resource_t resource, const ch
  */
 XBT_PUBLIC(sg_size_t) surf_host_get_used_size(surf_resource_t resource, const char* name);
 
-/**
- * @brief Get the VMs hosted on the host
- *
- * @param resource The surf host
- * @return The list of VMs on the host
- */
+/** @brief Get the list of VMs hosted on the host */
 XBT_PUBLIC(xbt_dynar_t) surf_host_get_vms(surf_resource_t resource);
 
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param resource [description]
- * @param params [description]
+/** @brief Retrieve the params of that VM
+ * @details You can use fields ramsize and overcommit on a PM, too.
  */
-XBT_PUBLIC(void) surf_host_get_params(surf_resource_t resource, ws_params_t params);
+XBT_PUBLIC(void) surf_host_get_params(surf_resource_t resource, vm_params_t params);
 
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param resource [description]
- * @param params [description]
+/** @brief Sets the params of that VM/PM
+ * @details You can use fields ramsize and overcommit on a PM, too.
  */
-XBT_PUBLIC(void) surf_host_set_params(surf_resource_t resource, ws_params_t params);
+XBT_PUBLIC(void) surf_host_set_params(surf_resource_t resource, vm_params_t params);
 
 /**
  * @brief Destroy a VM
@@ -526,18 +404,10 @@ XBT_PUBLIC(void) surf_host_set_params(surf_resource_t resource, ws_params_t para
  */
 XBT_PUBLIC(void) surf_vm_destroy(surf_resource_t resource);
 
-/**
- * @brief Suspend a VM
- *
- * @param resource The surf vm
- */
+/** @brief Suspend a VM */
 XBT_PUBLIC(void) surf_vm_suspend(surf_resource_t resource);
 
-/**
- * @brief Resume a VM
- *
- * @param resource The surf vm
- */
+/** @brief Resume a VM */
 XBT_PUBLIC(void) surf_vm_resume(surf_resource_t resource);
 
 /**
@@ -723,31 +593,6 @@ XBT_PUBLIC(int) surf_host_file_move(surf_resource_t host, surf_file_t fd, const 
 XBT_PUBLIC(int) surf_host_file_seek(surf_resource_t host,
                                            surf_file_t fd, sg_offset_t offset,
                                            int origin);
-
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param link [description]
- * @return [description]
- */
-XBT_PUBLIC(int) surf_network_link_is_shared(surf_cpp_resource_t link);
-
-/**
- * @brief Get the bandwidth of a link in bytes per second
- *
- * @param link The surf link
- * @return The bandwidth in bytes per second
- */
-XBT_PUBLIC(double) surf_network_link_get_bandwidth(surf_cpp_resource_t link);
-
-/**
- * @brief Get the latency of a link in seconds
- *
- * @param link The surf link
- * @return The latency in seconds
- */
-XBT_PUBLIC(double) surf_network_link_get_latency(surf_cpp_resource_t link);
 
 /**
  * @brief Get the content of a storage

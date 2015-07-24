@@ -30,7 +30,7 @@ void AsGeneric::parseASroute(sg_platf_route_cbarg_t /*route*/){
   THROW_IMPOSSIBLE;
 }
 
-void AsGeneric::getRouteAndLatency(RoutingEdgePtr /*src*/, RoutingEdgePtr /*dst*/, sg_platf_route_cbarg_t /*into*/, double */*latency*/){
+void AsGeneric::getRouteAndLatency(RoutingEdge */*src*/, RoutingEdge */*dst*/, sg_platf_route_cbarg_t /*into*/, double */*latency*/){
   THROW_IMPOSSIBLE;
 }
 
@@ -42,17 +42,17 @@ AsGeneric::~AsGeneric() {
   xbt_dict_free(&p_bypassRoutes);
 }
 
-int AsGeneric::parsePU(RoutingEdgePtr elm)
+int AsGeneric::parsePU(RoutingEdge *elm)
 {
   XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
+  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdge*, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
-int AsGeneric::parseAS(RoutingEdgePtr elm)
+int AsGeneric::parseAS(RoutingEdge *elm)
 {
   XBT_DEBUG("Load Autonomous system \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdgePtr, elm);
+  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdge*, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
@@ -149,13 +149,13 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
 
   for (src = 0; src < table_size; src++) {
-    RoutingEdgePtr my_src =
-        xbt_dynar_get_as(p_indexNetworkElm, src, RoutingEdgePtr);
+    RoutingEdge *my_src =
+        xbt_dynar_get_as(p_indexNetworkElm, src, RoutingEdge*);
     for (dst = 0; dst < table_size; dst++) {
       if (src == dst)
         continue;
-      RoutingEdgePtr my_dst =
-          xbt_dynar_get_as(p_indexNetworkElm, dst, RoutingEdgePtr);
+      RoutingEdge *my_dst =
+          xbt_dynar_get_as(p_indexNetworkElm, dst, RoutingEdge*);
 
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
       route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
@@ -179,7 +179,7 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       xbt_dynar_foreach(route->link_list, cpt, link) {
-        const char *link_name = ((ResourcePtr) link)->getName();
+        const char *link_name = static_cast<Resource*>(link)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         current_name = link_name;
         new_xbt_graph_edge(graph, previous, current, edges);
@@ -204,8 +204,8 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   }
 }
 
-sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
-                                               RoutingEdgePtr dst,
+sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdge *src,
+                                               RoutingEdge *dst,
                                                double *lat)
 {
   // If never set a bypass route return NULL without any further computations
@@ -224,13 +224,13 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
     free(route_name);
   }
   else{
-    AsPtr src_as, dst_as;
+    As *src_as, *dst_as;
     int index_src, index_dst;
     xbt_dynar_t path_src = NULL;
     xbt_dynar_t path_dst = NULL;
-    AsPtr current = NULL;
-    AsPtr *current_src = NULL;
-    AsPtr *current_dst = NULL;
+    As *current = NULL;
+    As **current_src = NULL;
+    As **current_dst = NULL;
 
     if (src == NULL || dst == NULL)
       xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
@@ -241,13 +241,13 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
     dst_as = dst->getRcComponent();
 
     /* (2) find the path to the root routing component */
-    path_src = xbt_dynar_new(sizeof(AsPtr), NULL);
+    path_src = xbt_dynar_new(sizeof(As*), NULL);
     current = src_as;
     while (current != NULL) {
       xbt_dynar_push(path_src, &current);
       current = current->p_routingFather;
     }
-    path_dst = xbt_dynar_new(sizeof(AsPtr), NULL);
+    path_dst = xbt_dynar_new(sizeof(As*), NULL);
     current = dst_as;
     while (current != NULL) {
       xbt_dynar_push(path_dst, &current);
@@ -257,15 +257,15 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
     /* (3) find the common father */
     index_src = path_src->used - 1;
     index_dst = path_dst->used - 1;
-    current_src = (AsPtr *) xbt_dynar_get_ptr(path_src, index_src);
-    current_dst = (AsPtr *) xbt_dynar_get_ptr(path_dst, index_dst);
+    current_src = (As **) xbt_dynar_get_ptr(path_src, index_src);
+    current_dst = (As **) xbt_dynar_get_ptr(path_dst, index_dst);
     while (index_src >= 0 && index_dst >= 0 && *current_src == *current_dst) {
       xbt_dynar_pop_ptr(path_src);
       xbt_dynar_pop_ptr(path_dst);
       index_src--;
       index_dst--;
-      current_src = (AsPtr *) xbt_dynar_get_ptr(path_src, index_src);
-      current_dst = (AsPtr *) xbt_dynar_get_ptr(path_dst, index_dst);
+      current_src = (As **) xbt_dynar_get_ptr(path_src, index_src);
+      current_dst = (As **) xbt_dynar_get_ptr(path_dst, index_dst);
     }
 
     int max_index_src = path_src->used - 1;
@@ -278,9 +278,9 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
       for (i = 0; i < max; i++) {
         if (i <= max_index_src && max <= max_index_dst) {
           char *route_name = bprintf("%s#%s",
-              (*(AsPtr *)
+              (*(As **)
                   (xbt_dynar_get_ptr(path_src, i)))->p_name,
-                  (*(AsPtr *)
+                  (*(As **)
                       (xbt_dynar_get_ptr(path_dst, max)))->p_name);
           e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
           xbt_free(route_name);
@@ -289,9 +289,9 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
           break;
         if (max <= max_index_src && i <= max_index_dst) {
           char *route_name = bprintf("%s#%s",
-              (*(AsPtr *)
+              (*(As **)
                   (xbt_dynar_get_ptr(path_src, max)))->p_name,
-                  (*(AsPtr *)
+                  (*(As **)
                       (xbt_dynar_get_ptr(path_dst, i)))->p_name);
           e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
           xbt_free(route_name);
@@ -305,9 +305,9 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
 
       if (max <= max_index_src && max <= max_index_dst) {
         char *route_name = bprintf("%s#%s",
-            (*(AsPtr *)
+            (*(As **)
                 (xbt_dynar_get_ptr(path_src, max)))->p_name,
-                (*(AsPtr *)
+                (*(As **)
                     (xbt_dynar_get_ptr(path_dst, max)))->p_name);
         e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
         xbt_free(route_name);
@@ -322,7 +322,7 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdgePtr src,
 
   sg_platf_route_cbarg_t new_e_route = NULL;
   if (e_route_bypass) {
-    NetworkLinkPtr link;
+	  Link* link;
     unsigned int cpt = 0;
     new_e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
     new_e_route->gw_src = e_route_bypass->gw_src;
@@ -361,21 +361,21 @@ sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hi
     xbt_assert(routearg->gw_src && routearg->gw_dst,
         "NULL is obviously a bad gateway");
 
-    /* remeber not erase the gateway names */
+    /* remember not erase the gateway names */
     result->gw_src = routearg->gw_src;
     result->gw_dst = routearg->gw_dst;
   }
 
   xbt_dynar_foreach(routearg->link_list, cpt, link_name) {
 
-    void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+    Link *link = Link::byName(link_name);
     if (link) {
       if (change_order)
         xbt_dynar_push(result->link_list, &link);
       else
         xbt_dynar_unshift(result->link_list, &link);
     } else
-      THROWF(mismatch_error, 0, "Link %s not found", link_name);
+      THROWF(mismatch_error, 0, "Link '%s' not found", link_name);
   }
 
   return result;
@@ -383,13 +383,13 @@ sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hi
 
 
 
-AsPtr AsGeneric::asExist(AsPtr to_find)
+As *AsGeneric::asExist(As *to_find)
 {
   //return to_find; // FIXME: BYPASSERROR OF FOREACH WITH BREAK
   xbt_dict_cursor_t cursor = NULL;
   char *key;
   int found = 0;
-  AsGenericPtr elem;
+  AsGeneric *elem;
   xbt_dict_foreach(p_routingSons, cursor, key, elem) {
     if (to_find == elem || elem->asExist(to_find)) {
       found = 1;
@@ -401,16 +401,16 @@ AsPtr AsGeneric::asExist(AsPtr to_find)
   return NULL;
 }
 
-AsPtr AsGeneric::autonomousSystemExist(char *element)
+As *AsGeneric::autonomousSystemExist(char *element)
 {
   //return rc; // FIXME: BYPASSERROR OF FOREACH WITH BREAK
-  AsPtr element_as, result, elem;
+  As *element_as, *result, *elem;
   xbt_dict_cursor_t cursor = NULL;
   char *key;
-  element_as = ((RoutingEdgePtr)
+  element_as = ((RoutingEdge*)
       xbt_lib_get_or_null(as_router_lib, element,
           ROUTING_ASR_LEVEL))->getRcComponent();
-  result = ((AsPtr) - 1);
+  result = ((As*) - 1);
   if (element_as != this)
     result = asExist(element_as);
 
@@ -427,18 +427,15 @@ AsPtr AsGeneric::autonomousSystemExist(char *element)
   return NULL;
 }
 
-AsPtr AsGeneric::processingUnitsExist(char *element)
+As *AsGeneric::processingUnitsExist(char *element)
 {
-  AsPtr element_as;
-  element_as = ((RoutingEdgePtr)
-      xbt_lib_get_or_null(host_lib,
-          element, ROUTING_HOST_LEVEL))->getRcComponent();
+  As *element_as = sg_host_edge(sg_host_by_name(element)) ->getRcComponent();
   if (element_as == this)
     return element_as;
   return asExist(element_as);
 }
 
-void AsGeneric::srcDstCheck(RoutingEdgePtr src, RoutingEdgePtr dst)
+void AsGeneric::srcDstCheck(RoutingEdge *src, RoutingEdge *dst)
 {
   if (src == NULL || dst == NULL)
     xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
@@ -446,8 +443,8 @@ void AsGeneric::srcDstCheck(RoutingEdgePtr src, RoutingEdgePtr dst)
             dst ? dst->getName() : "(null)",
             p_name);
 
-  AsPtr src_as = src->getRcComponent();
-  AsPtr dst_as = dst->getRcComponent();
+  As *src_as = src->getRcComponent();
+  As *dst_as = dst->getRcComponent();
 
   if (src_as != dst_as)
     xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",

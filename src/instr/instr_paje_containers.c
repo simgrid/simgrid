@@ -55,11 +55,12 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   new->name = xbt_strdup (name); // name of the container
   new->id = xbt_strdup (id_str); // id (or alias) of the container
   new->father = father;
+  sg_host_t sg_host = sg_host_by_name(name);
 
   //Search for network_element_t
   switch (kind){
     case INSTR_HOST:
-      new->net_elm = xbt_lib_get_or_null(host_lib,name,ROUTING_HOST_LEVEL);
+      new->net_elm = sg_host_edge(sg_host);
       if(!new->net_elm) xbt_die("Element '%s' not found",name);
       break;
     case INSTR_ROUTER:

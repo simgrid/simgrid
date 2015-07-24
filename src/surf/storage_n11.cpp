@@ -31,7 +31,7 @@ static XBT_INLINE void routing_storage_type_free(void *r)
 static XBT_INLINE void surf_storage_resource_free(void *r)
 {
   // specific to storage
-  StoragePtr storage = static_cast<StoragePtr>(r);
+  Storage *storage = static_cast<Storage*>(r);
   // generic resource
   delete storage;
 }
@@ -218,7 +218,7 @@ void surf_storage_model_init_default(void)
 }
 
 StorageN11Model::StorageN11Model() : StorageModel() {
-  ActionPtr action = NULL;
+  Action *action = NULL;
 
   XBT_DEBUG("surf_storage_model_init_internal");
 
@@ -234,7 +234,7 @@ StorageN11Model::~StorageN11Model(){
   storage_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
-StoragePtr StorageN11Model::createStorage(const char* id, const char* type_id,
+Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
     const char* content_name, const char* content_type, xbt_dict_t properties,
     const char* attach)
 {
@@ -249,7 +249,7 @@ StoragePtr StorageN11Model::createStorage(const char* id, const char* type_id,
   double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bwrite"));
   double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"));
 
-  StoragePtr storage = new StorageN11(this, id, properties, p_maxminSystem,
+  Storage *storage = new StorageN11(this, id, properties, p_maxminSystem,
       Bread, Bwrite, Bconnection, type_id, (char *)content_name,
       xbt_strdup(content_type), storage_type->size, (char *) attach);
 
@@ -272,9 +272,9 @@ double StorageN11Model::shareResources(double now)
 {
   XBT_DEBUG("storage_share_resources %f", now);
   unsigned int i, j;
-  StoragePtr storage;
+  Storage *storage;
   void *_write_action;
-  StorageActionPtr write_action;
+  StorageAction *write_action;
 
   double min_completion = shareResourcesMaxMin(getRunningActionSet(),
       p_maxminSystem, lmm_solve);
@@ -287,7 +287,7 @@ double StorageN11Model::shareResources(double now)
     // Foreach write action on disk
     xbt_dynar_foreach(storage->p_writeActions, j, _write_action)
     {
-      write_action = static_cast<StorageActionPtr>(_write_action);
+      write_action = static_cast<StorageAction*>(_write_action);
       rate += lmm_variable_getvalue(write_action->getVariable());
     }
     if(rate > 0)
@@ -299,13 +299,13 @@ double StorageN11Model::shareResources(double now)
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-  StorageActionPtr action = NULL;
+  StorageAction *action = NULL;
 
-  ActionListPtr actionSet = getRunningActionSet();
+  ActionList *actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
      ; it != itend ; it=itNext) {
     ++itNext;
-    action = static_cast<StorageActionPtr>(&*it);
+    action = static_cast<StorageAction*>(&*it);
 
     if(action->m_type == WRITE)
     {
@@ -371,7 +371,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
  * Resource *
  ************/
 
-StorageN11::StorageN11(StorageModelPtr model, const char* name,
+StorageN11::StorageN11(StorageModel *model, const char* name,
     xbt_dict_t properties, lmm_system_t maxminSystem, double bread,
     double bwrite, double bconnection, const char* type_id, char *content_name,
     char *content_type, sg_size_t size, char *attach)
@@ -380,7 +380,7 @@ StorageN11::StorageN11(StorageModelPtr model, const char* name,
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 }
 
-StorageActionPtr StorageN11::open(const char* mount, const char* path)
+StorageAction *StorageN11::open(const char* mount, const char* path)
 {
   XBT_DEBUG("\tOpen file '%s'",path);
 
@@ -402,22 +402,22 @@ StorageActionPtr StorageN11::open(const char* mount, const char* path)
   file->mount = xbt_strdup(mount);
   file->current_position = 0;
 
-  StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, OPEN);
+  StorageAction *action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, OPEN);
   action->p_file = file;
 
   return action;
 }
 
-StorageActionPtr StorageN11::close(surf_file_t fd)
+StorageAction *StorageN11::close(surf_file_t fd)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tClose file '%s' size '%llu'", filename, fd->size);
   // unref write actions from storage
   void *_write_action;
-  StorageActionPtr write_action;
+  StorageAction *write_action;
   unsigned int i;
   xbt_dynar_foreach(p_writeActions, i, _write_action) {
-	write_action = static_cast<StorageActionPtr>(_write_action);
+	write_action = static_cast<StorageAction*>(_write_action);
     if ((write_action->p_file) == fd) {
       xbt_dynar_cursor_rm(p_writeActions, &i);
       write_action->unref();
@@ -426,11 +426,11 @@ StorageActionPtr StorageN11::close(surf_file_t fd)
   free(fd->name);
   free(fd->mount);
   xbt_free(fd);
-  StorageActionPtr action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, CLOSE);
+  StorageAction *action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, CLOSE);
   return action;
 }
 
-StorageActionPtr StorageN11::read(surf_file_t fd, sg_size_t size)
+StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
 {
   if(fd->current_position + size > fd->size){
     size = fd->size - fd->current_position;
@@ -439,16 +439,16 @@ StorageActionPtr StorageN11::read(surf_file_t fd, sg_size_t size)
   else
     fd->current_position += size;
 
-  StorageActionPtr action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, READ);
+  StorageAction *action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, READ);
   return action;
 }
 
-StorageActionPtr StorageN11::write(surf_file_t fd, sg_size_t size)
+StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
 {
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
 
-  StorageActionPtr action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, WRITE);
+  StorageAction *action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, WRITE);
   action->p_file = fd;
   /* Substract the part of the file that might disappear from the used sized on
    * the storage element */
@@ -464,7 +464,7 @@ StorageActionPtr StorageN11::write(surf_file_t fd, sg_size_t size)
  * Action *
  **********/
 
-StorageN11Action::StorageN11Action(ModelPtr model, double cost, bool failed, StoragePtr storage, e_surf_action_storage_type_t type)
+StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Storage *storage, e_surf_action_storage_type_t type)
   : StorageAction(model, cost, failed,
     		      lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0 , 3),
     		      storage, type) {
@@ -486,7 +486,7 @@ StorageN11Action::StorageN11Action(ModelPtr model, double cost, bool failed, Sto
                getVariable(), 1.0);
 
 //TODO there is something annoying with what's below. Have to sort it out...
-//    ActionPtr action = this;
+//    Action *action = this;
 //    xbt_dynar_push(storage->p_writeActions, &action);
 //    ref();
     break;

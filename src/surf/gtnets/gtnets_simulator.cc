@@ -14,6 +14,7 @@
 #include "xbt/log.h"
 #include "xbt/asserts.h"
 #include "RngStream.h"
+#include <unistd.h> /* pipe */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_gtnets_simulator, surf_network_gtnets,
                                 "Logging specific to the SURF network GTNetS simulator");

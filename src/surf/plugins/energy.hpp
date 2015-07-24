@@ -11,13 +11,12 @@
 #define CALLBACK_HPP_
 
 class CpuEnergy;
-typedef CpuEnergy *CpuEnergyPtr;
 
-extern std::map<CpuPtr, CpuEnergyPtr> *surf_energy;
+extern std::map<Cpu*, CpuEnergy*> *surf_energy;
 
 class CpuEnergy {
 public:
-  CpuEnergy(CpuPtr ptr);
+  CpuEnergy(Cpu *ptr);
   ~CpuEnergy();
 
   double getCurrentWattsValue(double cpu_load);
@@ -30,7 +29,7 @@ public:
   double watts_off;                      /*< Consumption when the machine is turned off (shutdown) */
   double total_energy;					/*< Total energy consumed by the host */
   double last_updated;					/*< Timestamp of the last energy update event*/
-  CpuPtr cpu;
+  Cpu *cpu;
 };
 
 #endif /* CALLBACK_HPP_ */

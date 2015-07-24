@@ -23,7 +23,7 @@ int master(int argc, char *argv[])
 {
   xbt_ex_t e;
   TRY {
-    msg_host_t jupiter = MSG_get_host_by_name("Jupiter");
+    msg_host_t jupiter = MSG_host_by_name("Jupiter");
     XBT_INFO("Master waiting");
     if(MSG_process_sleep(1)) {
       XBT_ERROR("Unexpected error while sleeping");

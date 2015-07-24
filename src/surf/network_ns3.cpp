@@ -8,11 +8,9 @@
 #include "surf_private.h"
 #include "simgrid/sg_config.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network_ns3, surf,
-                                "Logging specific to the SURF network NS3 module");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
 extern xbt_lib_t host_lib;
-extern xbt_lib_t link_lib;
 extern xbt_lib_t as_router_lib;
 
 extern xbt_dict_t dict_socket;
@@ -57,7 +55,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 
   if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
-  NetworkLinkPtr net_link = surf_network_model->createNetworkLink(link->id,
+  surf_network_model->createLink(link->id,
                                      link->bandwidth,
                                      link->bandwidth_trace,
                                      link->latency,
@@ -66,8 +64,6 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
                                      link->state_trace,
                                      link->policy,
                                      link->properties);
-
-  xbt_lib_set(link_lib, link->id, SURF_LINK_LEVEL, net_link);
 }
 
 static void parse_ns3_add_router(sg_platf_router_cbarg_t router)
@@ -202,12 +198,12 @@ static void create_ns3_topology(void)
     xbt_die("There is no routes!");
   XBT_DEBUG("Have get_onelink_routes, found %ld routes",onelink_routes->used);
   //save them in trace file
-  OnelinkPtr onelink;
+  Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
     char *src = onelink->p_src->getName();
     char *dst = onelink->p_dst->getName();
-    NetworkNS3LinkPtr link = static_cast<NetworkNS3LinkPtr>(onelink->p_link);
+    NetworkNS3Link *link = static_cast<NetworkNS3Link *>(onelink->p_link);
 
     if (strcmp(src,dst) && link->m_created){
       XBT_DEBUG("Route from '%s' to '%s' with link '%s'", src, dst, link->getName());
@@ -258,7 +254,7 @@ static void define_callbacks_ns3(void)
  *********/
 static void free_ns3_link(void * elmts)
 {
-  delete static_cast<NetworkNS3LinkPtr>(elmts);
+  delete static_cast<NetworkNS3Link*>(elmts);
 }
 
 static void free_ns3_host(void * elmts)
@@ -277,7 +273,7 @@ void surf_network_model_init_NS3()
   xbt_dynar_push(model_list, &surf_network_model);
 }
 
-NetworkNS3Model::NetworkNS3Model() : NetworkModel("network NS3") {
+NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   if (ns3_initialize(xbt_cfg_get_string(_sg_cfg_set, "ns3/TcpModel"))) {
     xbt_die("Impossible to initialize NS3 interface");
   }
@@ -294,7 +290,7 @@ NetworkNS3Model::~NetworkNS3Model() {
   xbt_dict_free(&dict_socket);
 }
 
-NetworkLinkPtr NetworkNS3Model::createNetworkLink(const char *name,
+Link* NetworkNS3Model::createLink(const char *name,
 	                                 double bw_initial,
 	                                 tmgr_trace_t bw_trace,
 	                                 double lat_initial,
@@ -312,7 +308,7 @@ NetworkLinkPtr NetworkNS3Model::createNetworkLink(const char *name,
   return new NetworkNS3Link(this, name, properties, bw_initial, lat_initial);
 }
 
-xbt_dynar_t NetworkNS3Model::getRoute(RoutingEdgePtr src, RoutingEdgePtr dst)
+xbt_dynar_t NetworkNS3Model::getRoute(RoutingEdge *src, RoutingEdge *dst)
 {
   xbt_dynar_t route = NULL;
   routing_get_route_and_latency(src, dst, &route, NULL);
@@ -320,11 +316,11 @@ xbt_dynar_t NetworkNS3Model::getRoute(RoutingEdgePtr src, RoutingEdgePtr dst)
   return route;
 }
 
-ActionPtr NetworkNS3Model::communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+Action *NetworkNS3Model::communicate(RoutingEdge *src, RoutingEdge *dst,
 		                               double size, double rate)
 {
   XBT_DEBUG("Communicate from %s to %s", src->getName(), dst->getName());
-  NetworkNS3ActionPtr action = new NetworkNS3Action(this, size, 0);
+  NetworkNS3Action *action = new NetworkNS3Action(this, size, 0);
 
   ns3_create_flow(src->getName(), dst->getName(), surf_get_clock(), size, action);
 
@@ -374,9 +370,9 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     return;
   }
 
-  NetworkNS3ActionPtr action;
+  NetworkNS3Action *action;
   xbt_dict_foreach(dict_socket,cursor,key,data){
-    action = static_cast<NetworkNS3ActionPtr>(ns3_get_socket_action(data));
+    action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
     XBT_DEBUG("Processing socket %p (action %p)",data,action);
     action->setRemains(action->getCost() - ns3_get_socket_sent(data));
 
@@ -390,7 +386,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     	routing_get_route_and_latency (action->p_srcElm, action->p_dstElm, &route, NULL);
     	unsigned int i;
     	for (i = 0; i < xbt_dynar_length (route); i++){
-    		NetworkNS3LinkPtr link = ((NetworkNS3LinkPtr)xbt_dynar_get_ptr (route, i));
+    		NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr(route, i));
     		TRACE_surf_link_set_utilization (link->getName(),
     				action->getCategory(),
 					(data_delta_sent)/delta,
@@ -412,7 +408,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     xbt_dynar_pop(socket_to_destroy,&key);
 
     void *data = xbt_dict_get (dict_socket, key);
-    action = static_cast<NetworkNS3ActionPtr>(ns3_get_socket_action(data));
+    action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
     XBT_DEBUG ("Removing socket %p of action %p", key, action);
     xbt_dict_remove(dict_socket, key);
   }
@@ -423,9 +419,9 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
  * Resource *
  ************/
 
-NetworkNS3Link::NetworkNS3Link(NetworkNS3ModelPtr model, const char *name, xbt_dict_t props,
+NetworkNS3Link::NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props,
 		                       double bw_initial, double lat_initial)
- : NetworkLink(model, name, props)
+ : Link(model, name, props)
  , p_lat(bprintf("%f", lat_initial))
  , p_bdw(bprintf("%f", bw_initial))
  , m_created(1)
@@ -445,7 +441,7 @@ void NetworkNS3Link::updateState(tmgr_trace_event_t event_type, double value, do
  * Action *
  **********/
 
-NetworkNS3Action::NetworkNS3Action(ModelPtr model, double cost, bool failed)
+NetworkNS3Action::NetworkNS3Action(Model *model, double cost, bool failed)
 : NetworkAction(model, cost, failed)
 {}
 

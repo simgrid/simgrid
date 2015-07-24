@@ -99,7 +99,7 @@ GETDIRECTOR(CpuAction)
 %typemap(freearg) char* name {
 }
 
-/* Handle xbt_dynar_t of NetworkLink */
+/* Handle xbt_dynar_t of Link */
 JAVA_ARRAYSOFCLASSES(Action);
 %apply Action[] {ActionArrayPtr};
 %typemap(jstype) ActionArrayPtr "Action[]"
@@ -121,7 +121,7 @@ JAVA_ARRAYSOFCLASSES(Action);
   jlong *elts = jenv->GetLongArrayElements($result, NULL);
   l = 0;
   for(ActionList::iterator it($1->begin()), itend($1->end()); it != itend ; ++it) {
-    elts[l++] = (jlong)static_cast<ActionPtr>(&*it);
+    elts[l++] = (jlong)static_cast<Action*>(&*it);
   }
   jenv->ReleaseLongArrayElements($result, elts, 0);
 }
@@ -137,19 +137,19 @@ public:
 }
 };
 
-/* Handle xbt_dynar_t of NetworkLink */
-JAVA_ARRAYSOFCLASSES(NetworkLink);
-%apply NetworkLink[] {NetworkLinkDynar};
-%typemap(jstype) NetworkLinkDynar "NetworkLink[]"
-%typemap(javain) NetworkLinkDynar "NetworkLink.cArrayUnwrap($javainput)"
-%typemap(javaout) NetworkLinkDynar {
-     return NetworkLink.cArrayWrap($jnicall, $owner);
+/* Handle xbt_dynar_t of Link */
+JAVA_ARRAYSOFCLASSES(Link);
+%apply Link[] {LinkDynar};
+%typemap(jstype) LinkDynar "Link[]"
+%typemap(javain) LinkDynar "Link.cArrayUnwrap($javainput)"
+%typemap(javaout) LinkDynar {
+     return Link.cArrayWrap($jnicall, $owner);
 }
-%typemap(out) NetworkLinkDynar {
+%typemap(out) LinkDynar {
   long l = xbt_dynar_length($1);
   $result = jenv->NewLongArray(l);
   unsigned i;
-  NetworkLink *link;
+  Link *link;
   jlong *elts = jenv->GetLongArrayElements($result, NULL);
   xbt_dynar_foreach($1, i, link) {
     elts[i] = (jlong)link;
@@ -236,8 +236,8 @@ struct tmgr_trace_event {
 %nodefaultctor Model;
 class Model {
 public:
-  Model(const char *name);
-  const char *getName();
+  Model();
+  
   virtual double shareResources(double now);
   virtual double shareResourcesLazy(double now);
   virtual double shareResourcesFull(double now);
@@ -254,7 +254,7 @@ public:
 %feature("director") CpuModel;
 class CpuModel : public Model {
 public:
-  CpuModel(const char *name);
+  CpuModel();
   virtual ~CpuModel();
   virtual Cpu *createCpu(const char *name, DoubleDynar power_peak,
                               int pstate, double power_scale,
@@ -298,10 +298,10 @@ public:
   void setState(e_surf_resource_state_t state);
 };
 
-class NetworkLink : public Resource {
+class Link : public Resource {
 public:
-  NetworkLink();
-  ~NetworkLink();
+  Link();
+  ~Link();
   double getBandwidth();
   void updateBandwidth(double value, double date=surf_get_clock());
   double getLatency();

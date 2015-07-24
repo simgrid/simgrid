@@ -60,7 +60,6 @@ XBT_PUBLIC(double) surf_get_clock(void);
 }
 
 extern double sg_sender_gap;
-XBT_PUBLIC_DATA(int)  SURF_CPU_LEVEL;    //Surf cpu level
 
 extern surf_callback(void, void) surfExitCallbacks;
 
@@ -69,15 +68,6 @@ int __surf_is_absolute_file_path(const char *file_path);
 /***********
  * Classes *
  ***********/
-//class Model;
-typedef Model* ModelPtr;
-
-//class Resource;
-typedef Resource* ResourcePtr;
-
-//class Action;
-typedef Action* ActionPtr;
-
 typedef boost::intrusive::list<Action> ActionList;
 typedef ActionList* ActionListPtr;
 typedef boost::intrusive::list_base_hook<> actionHook;
@@ -117,26 +107,12 @@ XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
  */
 XBT_PUBLIC_CLASS Model {
 public:
-  /**
-   * @brief Model constructor
-   *
-   * @param name the name of the model
-   */
-  Model(const char *name);
-
-  /**
-   * @brief Model destructor
-   */
+  /** @brief Constructor */
+  Model();
+  /** @brief Destructor */
   virtual ~Model();
 
   virtual void addTraces() =0;
-
-  /**
-   * @brief Get the name of the current Model
-   *
-   * @return The name of the current Model
-   */
-  const char *getName() {return p_name;}
 
   /**
    * @brief Get the set of [actions](@ref Action) in *ready* state
@@ -221,6 +197,13 @@ public:
   virtual void updateActionsStateLazy(double now, double delta);
   virtual void updateActionsStateFull(double now, double delta);
 
+  /** @brief Returns whether this model have an idempotent shareResource()
+   *
+   * The only model that is not is NS3: computing the next timestamp moves the model up to that point,
+   * so we need to call it only when the next timestamp of other sources is computed.
+   */
+  virtual bool shareResourcesIsIdempotent()=0;
+
 protected:
   ActionLmmListPtr p_modifiedSet;
   lmm_system_t p_maxminSystem;
@@ -229,8 +212,6 @@ protected:
   xbt_heap_t p_actionHeap;
 
 private:
-  const char *p_name;
-
   ActionListPtr p_readyActionSet; /**< Actions in state SURF_ACTION_READY */
   ActionListPtr p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
   ActionListPtr p_failedActionSet; /**< Actions in state SURF_ACTION_FAILED */
@@ -268,7 +249,7 @@ public:
    * @param name The name of the Resource
    * @param props Dictionary of properties associated to this Resource
    */
-  Resource(ModelPtr model, const char *name, xbt_dict_t props);
+  Resource(Model *model, const char *name, xbt_dict_t props);
 
   /**
    * @brief Resource constructor
@@ -278,7 +259,7 @@ public:
    * @param props Dictionary of properties associated to this Resource
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
-  Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
+  Resource(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
   /**
    * @brief Resource constructor
    *
@@ -287,7 +268,7 @@ public:
    * @param props Dictionary of properties associated to this Resource
    * @param stateInit the initial state of the Resource
    */
-  Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
+  Resource(Model *model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
 
   /**
    * @brief Resource destructor
@@ -299,7 +280,7 @@ public:
    *
    * @return The Model of the current Resource
    */
-  ModelPtr getModel();
+  Model *getModel();
 
   /**
    * @brief Get the name of the current Resource
@@ -365,7 +346,7 @@ public:
 private:
   const char *p_name;
   xbt_dict_t p_properties;
-  ModelPtr p_model;
+  Model *p_model;
   bool m_running;
   e_surf_resource_state_t m_stateCurrent;
 
@@ -395,7 +376,7 @@ private:
   /**
    * @brief Common initializations for the constructors
    */
-  void initialize(ModelPtr model, double cost, bool failed,
+  void initialize(Model *model, double cost, bool failed,
                   lmm_variable_t var = NULL);
 
 public:
@@ -406,7 +387,7 @@ public:
    * @param cost The cost of the Action
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    */
-  Action(ModelPtr model, double cost, bool failed);
+  Action(Model *model, double cost, bool failed);
 
   /**
    * @brief Action constructor
@@ -416,222 +397,97 @@ public:
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  Action(ModelPtr model, double cost, bool failed, lmm_variable_t var);
+  Action(Model *model, double cost, bool failed, lmm_variable_t var);
 
-  /**
-   * @brief Action destructor
-   */
+  /** @brief Destructor */
   virtual ~Action();
 
-  /**
-   * @brief Finish the action
-   */
+  /** @brief Mark that the action is now finished */
   void finish();
 
-  /**
-   * @brief Get the [state](\ref e_surf_action_state_t) of the current Action
-   *
-   * @return The state of the current Action
-   */
+  /** @brief Get the [state](\ref e_surf_action_state_t) of the current Action */
   e_surf_action_state_t getState(); /**< get the state*/
-
-  /**
-   * @brief Set the [state](\ref e_surf_action_state_t) of the current Action
-   *
-   * @param state The new state of the current Action
-   */
+  /** @brief Set the [state](\ref e_surf_action_state_t) of the current Action */
   virtual void setState(e_surf_action_state_t state);
 
-  /**
-   * @brief Get the bound of the current Action
-   *
-   * @return The bound of the current Action
-   */
+  /** @brief Get the bound of the current Action */
   double getBound();
-
-  /**
-   * @brief Set the bound of the current Action
-   *
-   * @param bound The new bound of the current Action
-   */
+  /** @brief Set the bound of the current Action */
   void setBound(double bound);
 
-  /**
-   * @brief Get the start time of the current action
-   *
-   * @return The start time of the current action
-   */
+  /** @brief Get the start time of the current action */
   double getStartTime();
-
-  /**
-   * @brief Get the finish time of the current action
-   *
-   * @return The finish time of the current action
-   */
+  /** @brief Get the finish time of the current action */
   double getFinishTime();
 
-  /**
-   * @brief Get the data associated to the current action
-   *
-   * @return The data associated to the current action
-   */
+  /** @brief Get the user data associated to the current action */
   void *getData() {return p_data;}
-
-  /**
-   * @brief Set the data associated to the current action
-   *
-   * @param data The new data associated to the current action
-   */
+  /** @brief Set the user data associated to the current action */
   void setData(void* data);
 
-  /**
-   * @brief Get the maximum duration of the current action
-   *
-   * @return The maximum duration of the current action
-   */
-  double getMaxDuration() {return m_maxDuration;}
-
-  /**
-   * @brief Get the category associated to the current action
-   *
-   * @return The category associated to the current action
-   */
-  char *getCategory() {return p_category;}
-
-  /**
-   * @brief Get the cost of the current action
-   *
-   * @return The cost of the current action
-   */
+  /** @brief Get the cost of the current action */
   double getCost() {return m_cost;}
-
-  /**
-   * @brief Set the cost of the current action
-   *
-   * @param cost The new cost of the current action
-   */
+  /** @brief Set the cost of the current action */
   void setCost(double cost) {m_cost = cost;}
 
-  /**
-   * @brief Update the maximum duration of the current action
-   *
-   * @param delta [TODO]
-   */
+  /** @brief Update the maximum duration of the current action
+   *  @param delta Amount to remove from the MaxDuration */
   void updateMaxDuration(double delta) {double_update(&m_maxDuration, delta,sg_surf_precision);}
 
-  /**
-   * @brief Update the remaining time of the current action
-   *
-   * @param delta [TODO]
-   */
+  /** @brief Update the remaining time of the current action
+   *  @param delta Amount to remove from the remaining time */
   void updateRemains(double delta) {double_update(&m_remains, delta, sg_maxmin_precision*sg_surf_precision);}
 
-  /**
-   * @brief Set the remaining time of the current action
-   *
-   * @param value The new remaining time of the current action
-   */
+  /** @brief Set the remaining time of the current action */
   void setRemains(double value) {m_remains = value;}
+  /** @brief Get the remaining time of the current action after updating the resource */
+  virtual double getRemains();
+  /** @brief Get the remaining time of the current action without updating the resource */
+  double getRemainsNoUpdate();
 
-  /**
-   * @brief Set the finish time of the current action
-   *
-   * @param value The new Finush time of the current action
-   */
+  /** @brief Set the finish time of the current action */
   void setFinishTime(double value) {m_finish = value;}
 
-  /**
-   * @brief Add a reference to the current action
-   */
+  /**@brief Add a reference to the current action (refcounting) */
   void ref();
-
-  /**
-   * @brief Remove a reference to the current action
-   * @details If the Action has no more reference, we destroy it
-   *
-   * @return true if the action was destroyed and false if someone still has references on it
+  /** @brief Unref that action (and destroy it if refcount reaches 0)
+   *  @return true if the action was destroyed and false if someone still has references on it
    */
   virtual int unref();
 
-  /**
-   * @brief Cancel the current Action if running
-   */
+  /** @brief Cancel the current Action if running */
   virtual void cancel();
 
-  /**
-   * @brief Recycle an Action
-   */
-  virtual void recycle(){};
-
-  /**
-   * @brief Suspend the current Action
-   */
+  /** @brief Suspend the current Action */
   virtual void suspend();
 
-  /**
-   * @brief Resume the current Action
-   */
+  /** @brief Resume the current Action */
   virtual void resume();
 
-  /**
-   * @brief Check if the current action is running
-   *
-   * @return true if the current Action is suspended, false otherwise
-   */
+  /** @brief Returns true if the current action is running */
   virtual bool isSuspended();
 
-  /**
-   * @brief Set the maximum duration of the current Action
-   *
-   * @param duration The new maximum duration of the current Action
-   */
+  /** @brief Get the maximum duration of the current action */
+  double getMaxDuration() {return m_maxDuration;}
+  /** @brief Set the maximum duration of the current Action */
   virtual void setMaxDuration(double duration);
 
-  /**
-   * @brief Set the priority of the current Action
-   *
-   * @param priority The new priority of the current Action
-   */
-  virtual void setPriority(double priority);
-
-  /**
-   * @brief Set the category of the current Action
-   *
-   * @param category The new category of the current Action
-   */
+  /** @brief Get the tracing category associated to the current action */
+  char *getCategory() {return p_category;}
+  /** @brief Set the tracing category of the current Action */
   void setCategory(const char *category);
 
-  /**
-   * @brief Get the remaining time of the current action after updating the resource
-   *
-   * @return The remaining time
-   */
-  virtual double getRemains();
-
-  /**
-   * @brief Get the remaining time of the current action without updating the resource
-   *
-   * @return The remaining time
-   */
-  double getRemainsNoUpdate();
-
-  /**
-   * @brief Get the priority of the current Action
-   *
-   * @return The priority of the current Action
-   */
+  /** @brief Get the priority of the current Action */
   double getPriority() {return m_priority;};
+  /** @brief Set the priority of the current Action */
+  virtual void setPriority(double priority);
 
-  /**
-   * @brief Get the state set in which the action is
-   *
-   * @return The state set in which the action is
-   */
+  /** @brief Get the state set in which the action is */
   ActionListPtr getStateSet() {return p_stateSet;};
 
   s_xbt_swag_hookup_t p_stateHookup;
 
-  ModelPtr getModel() {return p_model;}
+  Model *getModel() {return p_model;}
 
 protected:
   ActionListPtr p_stateSet;
@@ -642,7 +498,6 @@ protected:
   double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
 private:
-  bool m_failed;
   double m_start; /**< start time  */
   char *p_category;               /**< tracing category for categorized resource utilization monitoring */
 
@@ -650,7 +505,7 @@ private:
   int m_latencyLimited;               /**< Set to 1 if is limited by latency, 0 otherwise */
   #endif
   double    m_cost;
-  ModelPtr p_model;
+  Model *p_model;
   void *p_data; /**< for your convenience */
 
   /* LMM */

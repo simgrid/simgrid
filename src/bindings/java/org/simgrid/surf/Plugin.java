@@ -82,28 +82,28 @@ public class Plugin {
     if (getClass() == Plugin.class) SurfJNI.Plugin_cpuActionStateChangedCallback(swigCPtr, this, CpuAction.getCPtr(action), action, arg1.swigValue(), arg2.swigValue()); else SurfJNI.Plugin_cpuActionStateChangedCallbackSwigExplicitPlugin(swigCPtr, this, CpuAction.getCPtr(action), action, arg1.swigValue(), arg2.swigValue());
   }
 
-  public void activateNetworkLinkCreatedCallback() {
-    SurfJNI.Plugin_activateNetworkLinkCreatedCallback(swigCPtr, this);
+  public void activateLinkCreatedCallback() {
+    SurfJNI.Plugin_activateLinkCreatedCallback(swigCPtr, this);
   }
 
-  public void networkLinkCreatedCallback(NetworkLink link) {
-    if (getClass() == Plugin.class) SurfJNI.Plugin_networkLinkCreatedCallback(swigCPtr, this, NetworkLink.getCPtr(link), link); else SurfJNI.Plugin_networkLinkCreatedCallbackSwigExplicitPlugin(swigCPtr, this, NetworkLink.getCPtr(link), link);
+  public void networkLinkCreatedCallback(Link link) {
+    if (getClass() == Plugin.class) SurfJNI.Plugin_networkLinkCreatedCallback(swigCPtr, this, Link.getCPtr(link), link); else SurfJNI.Plugin_networkLinkCreatedCallbackSwigExplicitPlugin(swigCPtr, this, Link.getCPtr(link), link);
   }
 
-  public void activateNetworkLinkDestructedCallback() {
-    SurfJNI.Plugin_activateNetworkLinkDestructedCallback(swigCPtr, this);
+  public void activateLinkDestructedCallback() {
+    SurfJNI.Plugin_activateLinkDestructedCallback(swigCPtr, this);
   }
 
-  public void networkLinkDestructedCallback(NetworkLink link) {
-    if (getClass() == Plugin.class) SurfJNI.Plugin_networkLinkDestructedCallback(swigCPtr, this, NetworkLink.getCPtr(link), link); else SurfJNI.Plugin_networkLinkDestructedCallbackSwigExplicitPlugin(swigCPtr, this, NetworkLink.getCPtr(link), link);
+  public void networkLinkDestructedCallback(Link link) {
+    if (getClass() == Plugin.class) SurfJNI.Plugin_networkLinkDestructedCallback(swigCPtr, this, Link.getCPtr(link), link); else SurfJNI.Plugin_networkLinkDestructedCallbackSwigExplicitPlugin(swigCPtr, this, Link.getCPtr(link), link);
   }
 
-  public void activateNetworkLinkStateChangedCallback() {
-    SurfJNI.Plugin_activateNetworkLinkStateChangedCallback(swigCPtr, this);
+  public void activateLinkStateChangedCallback() {
+    SurfJNI.Plugin_activateLinkStateChangedCallback(swigCPtr, this);
   }
 
-  public void networkLinkStateChangedCallback(NetworkLink link, ResourceState arg1, ResourceState arg2) {
-    if (getClass() == Plugin.class) SurfJNI.Plugin_networkLinkStateChangedCallback(swigCPtr, this, NetworkLink.getCPtr(link), link, arg1.swigValue(), arg2.swigValue()); else SurfJNI.Plugin_networkLinkStateChangedCallbackSwigExplicitPlugin(swigCPtr, this, NetworkLink.getCPtr(link), link, arg1.swigValue(), arg2.swigValue());
+  public void networkLinkStateChangedCallback(Link link, ResourceState arg1, ResourceState arg2) {
+    if (getClass() == Plugin.class) SurfJNI.Plugin_networkLinkStateChangedCallback(swigCPtr, this, Link.getCPtr(link), link, arg1.swigValue(), arg2.swigValue()); else SurfJNI.Plugin_networkLinkStateChangedCallbackSwigExplicitPlugin(swigCPtr, this, Link.getCPtr(link), link, arg1.swigValue(), arg2.swigValue());
   }
 
   public void activateNetworkActionStateChangedCallback() {

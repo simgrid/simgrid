@@ -39,7 +39,7 @@ typedef struct s_smx_process {
   unsigned long pid;
   unsigned long ppid;
   char *name;                   /**< @brief process name if any */
-  smx_host_t smx_host;          /* the host on which the process is running */
+  sg_host_t host;          /* the host on which the process is running */
   smx_context_t context;        /* the context (uctx/raw/thread) that executes the user function */
   xbt_running_ctx_t *running_ctx;
   unsigned doexception:1;
@@ -47,7 +47,7 @@ typedef struct s_smx_process {
   unsigned suspended:1;
   unsigned auto_restart:1;
 
-  smx_host_t new_host;          /* if not null, the host on which the process must migrate to */
+  sg_host_t new_host;          /* if not null, the host on which the process must migrate to */
   smx_synchro_t waiting_synchro;  /* the current blocking synchro if any */
   xbt_fifo_t comms;       /* the current non-blocking communication synchros */
   xbt_dict_t properties;
@@ -62,7 +62,7 @@ typedef struct s_smx_process {
 } s_smx_process_t;
 
 
-void SIMIX_process_create(smx_process_t *process,
+smx_process_t SIMIX_process_create(
                           const char *name,
                           xbt_main_func_t code,
                           void *data,
@@ -84,14 +84,14 @@ void SIMIX_process_yield(smx_process_t self);
 xbt_running_ctx_t *SIMIX_process_get_running_context(void);
 void SIMIX_process_exception_terminate(xbt_ex_t * e);
 void SIMIX_process_change_host(smx_process_t process,
-             smx_host_t dest);
+             sg_host_t dest);
 smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
 void SIMIX_process_resume(smx_process_t process, smx_process_t issuer);
 int SIMIX_process_get_PID(smx_process_t self);
 int SIMIX_process_get_PPID(smx_process_t self);
 void* SIMIX_process_get_data(smx_process_t process);
 void SIMIX_process_set_data(smx_process_t process, void *data);
-smx_host_t SIMIX_process_get_host(smx_process_t process);
+sg_host_t SIMIX_process_get_host(smx_process_t process);
 const char* SIMIX_process_get_name(smx_process_t process);
 smx_process_t SIMIX_process_get_by_name(const char* name);
 int SIMIX_process_is_suspended(smx_process_t process);

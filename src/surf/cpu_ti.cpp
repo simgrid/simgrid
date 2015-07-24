@@ -395,16 +395,16 @@ void surf_cpu_model_init_ti()
   xbt_assert(!surf_cpu_model_vm,"CPU model already initialized. This should not happen.");
 
   surf_cpu_model_pm = new CpuTiModel();
-  surf_cpu_model_vm  = new CpuTiModel();
+  surf_cpu_model_vm = new CpuTiModel();
 
   cpu_ti_define_callbacks();
-  ModelPtr model_pm = static_cast<ModelPtr>(surf_cpu_model_pm);
-  ModelPtr model_vm = static_cast<ModelPtr>(surf_cpu_model_vm);
+  Model *model_pm = static_cast<Model*>(surf_cpu_model_pm);
+  Model *model_vm = static_cast<Model*>(surf_cpu_model_vm);
   xbt_dynar_push(model_list, &model_pm);
   xbt_dynar_push(model_list, &model_vm);
 }
 
-CpuTiModel::CpuTiModel() : CpuModel("cpu_ti")
+CpuTiModel::CpuTiModel() : CpuModel()
 {
   p_runningActionSetThatDoesNotNeedBeingChecked = new ActionList();
 
@@ -423,7 +423,7 @@ CpuTiModel::~CpuTiModel()
   xbt_heap_free(p_tiActionHeap);
 }
 
-CpuPtr CpuTiModel::createCpu(const char *name,
+Cpu *CpuTiModel::createCpu(const char *name,
 	                       xbt_dynar_t powerPeak,
 	                       int pstate,
                            double powerScale,
@@ -434,14 +434,15 @@ CpuPtr CpuTiModel::createCpu(const char *name,
                            xbt_dict_t cpuProperties)
 {
   xbt_assert(core==1,"Multi-core not handled with this model yet");
-  xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
+  sg_host_t host = sg_host_by_name(name);
+  xbt_assert(!sg_host_surfcpu(host),
               "Host '%s' declared several times in the platform file",
               name);
   xbt_assert(xbt_dynar_getfirst_as(powerPeak, double) > 0.0,
       "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
-  CpuTiPtr cpu = new CpuTi(this, name, powerPeak, pstate, powerScale, powerTrace,
+  CpuTi *cpu = new CpuTi(this, name, powerPeak, pstate, powerScale, powerTrace,
 		           core, stateInitial, stateTrace, cpuProperties);
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, static_cast<ResourcePtr>(cpu));
+  sg_host_surfcpu_set(host, cpu);
   return cpu;
 }
 
@@ -452,7 +453,7 @@ double CpuTiModel::shareResources(double now)
 /* iterates over modified cpus to update share resources */
   for(CpuTiList::iterator it(p_modifiedCpu->begin()), itend(p_modifiedCpu->end())
      ; it != itend ;) {
-    CpuTiPtr ti = &*it;
+    CpuTi *ti = &*it;
     ++it;
     ti->updateActionsFinishTime(now);
   }
@@ -470,7 +471,7 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
 {
   while ((xbt_heap_size(p_tiActionHeap) > 0)
          && (xbt_heap_maxkey(p_tiActionHeap) <= now)) {
-    CpuTiActionPtr action = (CpuTiActionPtr) xbt_heap_pop(p_tiActionHeap);
+    CpuTiAction *action = (CpuTiAction*) xbt_heap_pop(p_tiActionHeap);
     XBT_DEBUG("Action %p: finish", action);
     action->finish();
     /* set the remains to 0 due to precision problems when updating the remaining amount */
@@ -495,7 +496,7 @@ void CpuTiModel::addTraces()
 /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuTiPtr cpu = static_cast<CpuTiPtr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuTi *cpu = static_cast<CpuTi*>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -511,7 +512,7 @@ void CpuTiModel::addTraces()
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuTiPtr cpu = static_cast<CpuTiPtr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuTi *cpu = static_cast<CpuTi*>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -541,7 +542,7 @@ void CpuTiModel::addTraces()
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(CpuTiModelPtr model, const char *name, xbt_dynar_t powerPeak,
+CpuTi::CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t powerPeak,
         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties)
@@ -589,11 +590,11 @@ CpuTi::~CpuTi(){
 void CpuTi::updateState(tmgr_trace_event_t event_type,
                         double value, double date)
 {
-  CpuTiActionPtr action;
+  CpuTiAction *action;
 
   if (event_type == p_powerEvent) {
     tmgr_trace_t power_trace;
-    CpuTiTgmrPtr trace;
+    CpuTiTgmr *trace;
     s_tmgr_event_t val;
 
     XBT_DEBUG("Finish trace date: %f value %f date %f", surf_get_clock(),
@@ -636,8 +637,8 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
           action->setFinishTime(date);
           action->setState(SURF_ACTION_FAILED);
           if (action->m_indexHeap >= 0) {
-            CpuTiActionPtr heap_act = (CpuTiActionPtr)
-                xbt_heap_remove(static_cast<CpuTiModelPtr>(getModel())->p_tiActionHeap, action->m_indexHeap);
+            CpuTiAction *heap_act = (CpuTiAction*)
+                xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->p_tiActionHeap, action->m_indexHeap);
             if (heap_act != action)
               DIE_IMPOSSIBLE;
           }
@@ -656,7 +657,7 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
 
 void CpuTi::updateActionsFinishTime(double now)
 {
-  CpuTiActionPtr action;
+  CpuTiAction *action;
   double sum_priority = 0.0, total_area, min_finish = -1;
 
 /* update remaning amount of actions */
@@ -715,13 +716,13 @@ updateRemainingAmount(now);
     /* add in action heap */
     XBT_DEBUG("action(%p) index %d", action, action->m_indexHeap);
     if (action->m_indexHeap >= 0) {
-      CpuTiActionPtr heap_act = (CpuTiActionPtr)
-          xbt_heap_remove(static_cast<CpuTiModelPtr>(getModel())->p_tiActionHeap, action->m_indexHeap);
+      CpuTiAction *heap_act = (CpuTiAction*)
+          xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->p_tiActionHeap, action->m_indexHeap);
       if (heap_act != action)
         DIE_IMPOSSIBLE;
     }
     if (min_finish != NO_MAX_DURATION)
-      xbt_heap_push(static_cast<CpuTiModelPtr>(getModel())->p_tiActionHeap, action, min_finish);
+      xbt_heap_push(static_cast<CpuTiModel*>(getModel())->p_tiActionHeap, action, min_finish);
 
     XBT_DEBUG
         ("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f",
@@ -752,7 +753,7 @@ double CpuTi::getAvailableSpeed()
 void CpuTi::updateRemainingAmount(double now)
 {
   double area_total;
-  CpuTiActionPtr action;
+  CpuTiAction *action;
 
   /* already updated */
   if (m_lastUpdate >= now)
@@ -796,10 +797,10 @@ void CpuTi::updateRemainingAmount(double now)
   m_lastUpdate = now;
 }
 
-CpuActionPtr CpuTi::execute(double size)
+CpuAction *CpuTi::execute(double size)
 {
   XBT_IN("(%s,%g)", getName(), size);
-  CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(getModel()), size, getState() != SURF_RESOURCE_ON, this);
+  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), size, getState() != SURF_RESOURCE_ON, this);
 
   p_actionSet->push_back(*action);
 
@@ -808,13 +809,13 @@ CpuActionPtr CpuTi::execute(double size)
 }
 
 
-CpuActionPtr CpuTi::sleep(double duration)
+CpuAction *CpuTi::sleep(double duration)
 {
   if (duration > 0)
     duration = MAX(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getName(), duration);
-  CpuTiActionPtr action = new CpuTiAction(static_cast<CpuTiModelPtr>(getModel()), 1.0, getState() != SURF_RESOURCE_ON, this);
+  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), 1.0, getState() != SURF_RESOURCE_ON, this);
 
   action->m_maxDuration = duration;
   action->m_suspended = 2;
@@ -822,7 +823,7 @@ CpuActionPtr CpuTi::sleep(double duration)
    /* Move to the *end* of the corresponding action set. This convention
       is used to speed up update_resource_state  */
 	action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
-    action->p_stateSet = static_cast<CpuTiModelPtr>(getModel())->p_runningActionSetThatDoesNotNeedBeingChecked;
+    action->p_stateSet = static_cast<CpuTiModel*>(getModel())->p_runningActionSetThatDoesNotNeedBeingChecked;
     action->getStateSet()->push_back(*action);
   }
 
@@ -833,7 +834,7 @@ CpuActionPtr CpuTi::sleep(double duration)
 }
 
 void CpuTi::modified(bool modified){
-  CpuTiListPtr modifiedCpu = static_cast<CpuTiModelPtr>(getModel())->p_modifiedCpu;
+  CpuTiList *modifiedCpu = static_cast<CpuTiModel*>(getModel())->p_modifiedCpu;
   if (modified) {
     if (!is_linked()) {
       modifiedCpu->push_back(*this);
@@ -851,11 +852,11 @@ void CpuTi::modified(bool modified){
 
 static void cpu_ti_action_update_index_heap(void *action, int i)
 {
-((CpuTiActionPtr)action)->updateIndexHeap(i);
+((CpuTiAction*)action)->updateIndexHeap(i);
 }
 
-CpuTiAction::CpuTiAction(CpuTiModelPtr model_, double cost, bool failed,
-		                 CpuTiPtr cpu)
+CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed,
+		                 CpuTi *cpu)
  : CpuAction(model_, cost, failed)
 {
   m_suspended = 0;        /* Should be useless because of the
@@ -886,7 +887,7 @@ int CpuTiAction::unref()
     if (actionTiHook::is_linked())
       p_cpu->p_actionSet->erase(p_cpu->p_actionSet->iterator_to(*this));
     /* remove from heap */
-    xbt_heap_remove(static_cast<CpuTiModelPtr>(getModel())->p_tiActionHeap, this->m_indexHeap);
+    xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->p_tiActionHeap, this->m_indexHeap);
     p_cpu->modified(true);
     delete this;
     return 1;
@@ -900,11 +901,6 @@ void CpuTiAction::cancel()
   xbt_heap_remove(getModel()->getActionHeap(), this->m_indexHeap);
   p_cpu->modified(true);
   return;
-}
-
-void CpuTiAction::recycle()
-{
-  DIE_IMPOSSIBLE;
 }
 
 void CpuTiAction::suspend()
@@ -949,7 +945,7 @@ void CpuTiAction::setMaxDuration(double duration)
 
 /* add in action heap */
   if (m_indexHeap >= 0) {
-    CpuTiActionPtr heap_act = (CpuTiActionPtr)
+    CpuTiAction *heap_act = (CpuTiAction*)
         xbt_heap_remove(getModel()->getActionHeap(), m_indexHeap);
     if (heap_act != this)
       DIE_IMPOSSIBLE;

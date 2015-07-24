@@ -14,14 +14,13 @@
  * Classes *
  ***********/
 class AsFloyd;
-typedef AsFloyd *AsFloydPtr;
 
 class AsFloyd: public AsGeneric {
 public:
   AsFloyd();
   ~AsFloyd();
 
-  void getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t into, double *latency);
+  void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t into, double *latency);
   xbt_dynar_t getOneLinkRoutes();
   void parseASroute(sg_platf_route_cbarg_t route);
   void parseRoute(sg_platf_route_cbarg_t route);
@@ -29,14 +28,14 @@ public:
   //void parseASroute(sg_platf_route_cbarg_t route);
 
   //void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges);
-  //sg_platf_route_cbarg_t getBypassRoute(RoutingEdgePtr src, RoutingEdgePtr dst, double *lat);
+  //sg_platf_route_cbarg_t getBypassRoute(RoutingEdge *src, RoutingEdge *dst, double *lat);
 
   /* The parser calls the following functions to inform the routing models
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  //int parsePU(RoutingEdgePtr elm); /* A host or a router, whatever */
-  //int parseAS(RoutingEdgePtr elm);
+  //int parsePU(RoutingEdge *elm); /* A host or a router, whatever */
+  //int parseAS(RoutingEdge *elm);
 
   //virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
 

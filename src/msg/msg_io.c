@@ -100,7 +100,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
-  msg_host_t attached_host = MSG_get_host_by_name(storage_priv_src->hostname);
+  msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
   read_size = simcall_file_read(file_priv->simdata->smx_file, size, attached_host);
 
   if(strcmp(storage_priv_src->hostname, MSG_host_get_name(MSG_host_self()))){
@@ -145,7 +145,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
-  msg_host_t attached_host = MSG_get_host_by_name(storage_priv_src->hostname);
+  msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
 
   if(strcmp(storage_priv_src->hostname, MSG_host_get_name(MSG_host_self()))){
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
@@ -237,7 +237,7 @@ msg_error_t MSG_file_unlink(msg_file_t fd)
       (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib,
                                               file_priv->storageId);
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
-  msg_host_t attached_host = MSG_get_host_by_name(storage_priv_src->hostname);
+  msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
   int res = simcall_file_unlink(file_priv->simdata->smx_file, attached_host);
   return res;
 }
@@ -323,7 +323,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
-  msg_host_t attached_host = MSG_get_host_by_name(storage_priv_src->hostname);
+  msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
   MSG_file_seek(file, 0, SEEK_SET);
   read_size = simcall_file_read(file_priv->simdata->smx_file, file_priv->size, attached_host);
 
@@ -353,7 +353,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
     /* Mount point found, retrieve the host the storage is attached to */
     msg_storage_priv_t storage_dest_priv = MSG_storage_priv(storage_dest);
     host_name_dest = (char*)storage_dest_priv->hostname;
-    host_dest = MSG_get_host_by_name(host_name_dest);
+    host_dest = MSG_host_by_name(host_name_dest);
 
   }else{
     XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, SIMIX_host_get_name(host));

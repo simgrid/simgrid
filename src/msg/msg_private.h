@@ -56,7 +56,7 @@ typedef struct simdata_task {
   void *isused;  /* Indicates whether the task is used in SIMIX currently */
   int host_nb;                  /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
-  smx_host_t *host_list;
+  sg_host_t *host_list;
   double *flops_parallel_amount;
   double *bytes_parallel_amount;
 } s_simdata_task_t;
@@ -154,14 +154,15 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #  define MSG_RETURN(val) return(val)
 #endif
 
-msg_host_t __MSG_host_create(smx_host_t host);
+msg_host_t __MSG_host_create(sg_host_t host);
 msg_storage_t __MSG_storage_create(smx_storage_t storage);
 void __MSG_host_destroy(msg_host_t host);
+void __MSG_host_priv_free(msg_host_priv_t priv);
 void __MSG_storage_destroy(msg_storage_priv_t host);
 void __MSG_file_destroy(msg_file_priv_t host);
 
 void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
-void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,
+smx_process_t MSG_process_create_from_SIMIX(const char *name,
                                    xbt_main_func_t code, void *data,
                                    const char *hostname, double kill_time,
                                    int argc, char **argv,
@@ -170,10 +171,6 @@ void MSG_process_create_from_SIMIX(smx_process_t *process, const char *name,
 void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size);
 
 void MSG_post_create_environment(void);
-
-static inline void *msg_host_resource_priv(const void *host) {
-  return xbt_lib_get_level((void *)host, MSG_HOST_LEVEL);
-}
 
 void MSG_host_add_task(msg_host_t host, msg_task_t task);
 void MSG_host_del_task(msg_host_t host, msg_task_t task);

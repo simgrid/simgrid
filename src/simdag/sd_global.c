@@ -87,8 +87,6 @@ void SD_init(int *argc, char **argv)
 #endif
 
   XBT_DEBUG("ADD SD LEVELS");
-  SD_HOST_LEVEL = xbt_lib_add_level(host_lib,__SD_workstation_destroy);
-  SD_LINK_LEVEL = xbt_lib_add_level(link_lib,__SD_link_destroy);
   SD_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,__SD_storage_destroy);
 
   if (_sg_cfg_exit_asap) {
@@ -128,6 +126,7 @@ void SD_application_reinit(void)
   s_SD_task_t task;
 
   SD_task_t done_task, next_done_task;
+  xbt_die("This function is not working since the C++ links and others. Please report the problem if you really need that function.");
 
    XBT_DEBUG("Recreating the swags...");
   xbt_swag_free(sd_global->not_scheduled_task_set);
@@ -203,7 +202,6 @@ void SD_create_environment(const char *platform_file)
   xbt_lib_cursor_t cursor = NULL;
   char *name = NULL;
   void **surf_workstation = NULL;
-  void **surf_link = NULL;
   void **surf_storage = NULL;
 
   parse_platform_file(platform_file);
@@ -212,11 +210,6 @@ void SD_create_environment(const char *platform_file)
   xbt_lib_foreach(host_lib, cursor, name, surf_workstation){
     if(surf_workstation[SURF_HOST_LEVEL])
       __SD_workstation_create(surf_workstation[SURF_HOST_LEVEL], NULL);
-  }
-
-  xbt_lib_foreach(link_lib, cursor, name, surf_link) {
-  if(surf_link[SURF_LINK_LEVEL])
-    __SD_link_create(surf_link[SURF_LINK_LEVEL], NULL);
   }
 
   xbt_lib_foreach(storage_lib, cursor, name, surf_storage) {

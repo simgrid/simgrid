@@ -47,8 +47,8 @@ bool AsClusterFatTree::isInSubTree(FatTreeNode *root, FatTreeNode *node) {
   return true;
 }
 
-void AsClusterFatTree::getRouteAndLatency(RoutingEdgePtr src,
-                                          RoutingEdgePtr dst,
+void AsClusterFatTree::getRouteAndLatency(RoutingEdge *src,
+                                          RoutingEdge *dst,
                                           sg_platf_route_cbarg_t into,
                                           double *latency) {
   FatTreeNode *source, *destination, *currentNode;
@@ -501,9 +501,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     linkTemplate.policy = SURF_LINK_SHARED;
     linkTemplate.id = bprintf("limiter_%d", id);
     sg_platf_new_link(&linkTemplate);
-    this->limiterLink = (NetworkLink*) xbt_lib_get_or_null(link_lib,
-                                                           linkTemplate.id,
-                                                           SURF_LINK_LEVEL);
+    this->limiterLink = Link::byName(linkTemplate.id);
     free((void*)linkTemplate.id);
   }
   if(cluster->loopback_bw || cluster->loopback_lat) {
@@ -514,9 +512,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     linkTemplate.policy = SURF_LINK_FATPIPE;
     linkTemplate.id = bprintf("loopback_%d", id);
     sg_platf_new_link(&linkTemplate);
-    this->loopback = (NetworkLink*) xbt_lib_get_or_null(link_lib,
-                                                        linkTemplate.id,
-                                                        SURF_LINK_LEVEL);
+    this->loopback = Link::byName(linkTemplate.id);
     free((void*)linkTemplate.id);
   }  
 }
@@ -535,21 +531,18 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster,
   linkTemplate.id = bprintf("link_from_%d_to_%d_%d", downNode->id, upNode->id,
                             uniqueId);
   sg_platf_new_link(&linkTemplate);
-  NetworkLink* link;
+  Link* link;
   std::string tmpID;
   if (cluster->sharing_policy == SURF_LINK_FULLDUPLEX) {
     tmpID = std::string(linkTemplate.id) + "_UP";
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
-                                              SURF_LINK_LEVEL);
+    link =  Link::byName(tmpID.c_str());
     this->upLink = link; // check link?
     tmpID = std::string(linkTemplate.id) + "_DOWN";
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, tmpID.c_str(),
-                                              SURF_LINK_LEVEL);
+    link = Link::byName(tmpID.c_str());
     this->downLink = link; // check link ?
   }
   else {
-    link = (NetworkLink*) xbt_lib_get_or_null(link_lib, linkTemplate.id,
-                                              SURF_LINK_LEVEL);
+    link = Link::byName(linkTemplate.id);
     this->upLink = link;
     this->downLink = link;
   }

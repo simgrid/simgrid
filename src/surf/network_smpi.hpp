@@ -11,7 +11,6 @@
  ***********/
 
 class NetworkSmpiModel;
-typedef NetworkSmpiModel *NetworkSmpiModelPtr;
 
 /*********
  * Tools *
@@ -26,8 +25,8 @@ public:
   NetworkSmpiModel();
   ~NetworkSmpiModel();
 
-  void gapAppend(double size, const NetworkLinkPtr link, NetworkActionPtr action);
-  void gapRemove(ActionPtr action);
+  void gapAppend(double size, Link* link, NetworkAction *action);
+  void gapRemove(Action *action);
   double latencyFactor(double size);
   double bandwidthFactor(double size);
   double bandwidthConstraint(double rate, double bound, double size);

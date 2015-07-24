@@ -247,30 +247,30 @@
   public";
 
 
-%typemap(javaimports) NetworkLink "
+%typemap(javaimports) Link "
 /**
  * A generic resource for the network component
  */"
 
-  %javamethodmodifiers NetworkLink::getBandwidth() "
+  %javamethodmodifiers Link::getBandwidth() "
   /**
     * @return The bandwidth of the link
     */
   public";
 
-%javamethodmodifiers NetworkLink::updateBandwidth(double value, double date=surf_get_clock()) "
+%javamethodmodifiers Link::updateBandwidth(double value, double date=surf_get_clock()) "
   /**
     * @param value The new bandwidth
     */
   public";
 
-  %javamethodmodifiers NetworkLink::getLatency() "
+  %javamethodmodifiers Link::getLatency() "
   /**
     * @return The latency of the link
     */
   public";
 
-%javamethodmodifiers NetworkLink::updateLatency(double value, double date=surf_get_clock()) "
+%javamethodmodifiers Link::updateLatency(double value, double date=surf_get_clock()) "
   /**
     * @param value The new latency
     */
@@ -381,7 +381,7 @@
 %typemap(javaimports) NetworkAction "
 /**
   * An network action created by network model
-  * @see NetworkLink
+  * @see Link
   */"
 
 %javamethodmodifiers NetworkAction::getLatency() "

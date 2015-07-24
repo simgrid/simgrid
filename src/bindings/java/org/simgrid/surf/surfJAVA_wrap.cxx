@@ -1167,7 +1167,7 @@ void SwigDirector_Plugin::cpuActionStateChangedCallback(CpuAction *action, e_sur
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::networkLinkCreatedCallback(NetworkLink *link) {
+void SwigDirector_Plugin::networkLinkCreatedCallback(Link *link) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1179,7 +1179,7 @@ void SwigDirector_Plugin::networkLinkCreatedCallback(NetworkLink *link) {
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((NetworkLink **)&jlink) = (NetworkLink *) link; 
+    *((Link **)&jlink) = (Link *) link; 
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[4], swigjobj, jlink);
     if (jenv->ExceptionCheck() == JNI_TRUE) return ;
   } else {
@@ -1188,7 +1188,7 @@ void SwigDirector_Plugin::networkLinkCreatedCallback(NetworkLink *link) {
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::networkLinkDestructedCallback(NetworkLink *link) {
+void SwigDirector_Plugin::networkLinkDestructedCallback(Link *link) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1200,7 +1200,7 @@ void SwigDirector_Plugin::networkLinkDestructedCallback(NetworkLink *link) {
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((NetworkLink **)&jlink) = (NetworkLink *) link; 
+    *((Link **)&jlink) = (Link *) link; 
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[5], swigjobj, jlink);
     if (jenv->ExceptionCheck() == JNI_TRUE) return ;
   } else {
@@ -1209,7 +1209,7 @@ void SwigDirector_Plugin::networkLinkDestructedCallback(NetworkLink *link) {
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::networkLinkStateChangedCallback(NetworkLink *link, e_surf_resource_state_t arg1, e_surf_resource_state_t arg2) {
+void SwigDirector_Plugin::networkLinkStateChangedCallback(Link *link, e_surf_resource_state_t arg1, e_surf_resource_state_t arg2) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1223,7 +1223,7 @@ void SwigDirector_Plugin::networkLinkStateChangedCallback(NetworkLink *link, e_s
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((NetworkLink **)&jlink) = (NetworkLink *) link; 
+    *((Link **)&jlink) = (Link *) link; 
     jarg1 = (jint) arg1;
     jarg2 = (jint) arg2;
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[6], swigjobj, jlink, jarg1, jarg2);
@@ -1307,13 +1307,13 @@ void SwigDirector_Plugin::swig_connect_director(JNIEnv *jenv, jobject jself, jcl
       "cpuActionStateChangedCallback", "(Lorg/simgrid/surf/CpuAction;Lorg/simgrid/surf/ActionState;Lorg/simgrid/surf/ActionState;)V", NULL 
     },
     {
-      "networkLinkCreatedCallback", "(Lorg/simgrid/surf/NetworkLink;)V", NULL 
+      "networkLinkCreatedCallback", "(Lorg/simgrid/surf/Link;)V", NULL 
     },
     {
-      "networkLinkDestructedCallback", "(Lorg/simgrid/surf/NetworkLink;)V", NULL 
+      "networkLinkDestructedCallback", "(Lorg/simgrid/surf/Link;)V", NULL 
     },
     {
-      "networkLinkStateChangedCallback", "(Lorg/simgrid/surf/NetworkLink;Lorg/simgrid/surf/ResourceState;Lorg/simgrid/surf/ResourceState;)V", NULL 
+      "networkLinkStateChangedCallback", "(Lorg/simgrid/surf/Link;Lorg/simgrid/surf/ResourceState;Lorg/simgrid/surf/ResourceState;)V", NULL 
     },
     {
       "networkActionStateChangedCallback", "(Lorg/simgrid/surf/NetworkAction;Lorg/simgrid/surf/ActionState;Lorg/simgrid/surf/ActionState;)V", NULL 
@@ -1348,7 +1348,7 @@ void SwigDirector_Plugin::swig_connect_director(JNIEnv *jenv, jobject jself, jcl
 }
 
 
-SwigDirector_CpuModel::SwigDirector_CpuModel(JNIEnv *jenv, char const *name) : CpuModel(name), Swig::Director(jenv) {
+SwigDirector_CpuModel::SwigDirector_CpuModel(JNIEnv *jenv) : CpuModel(), Swig::Director(jenv) {
 }
 
 double SwigDirector_CpuModel::shareResources(double now) {
@@ -2226,7 +2226,7 @@ SWIGEXPORT jlongArray JNICALL Java_org_simgrid_surf_SurfJNI_ActionList_1getArray
     jlong *elts = jenv->GetLongArrayElements(jresult, NULL);
     l = 0;
     for(ActionList::iterator it(result->begin()), itend(result->end()); it != itend ; ++it) {
-      elts[l++] = (jlong)static_cast<ActionPtr>(&*it);
+      elts[l++] = (jlong)static_cast<Action*>(&*it);
     }
     jenv->ReleaseLongArrayElements(jresult, elts, 0);
   }
@@ -2322,7 +2322,7 @@ SWIGEXPORT jlongArray JNICALL Java_org_simgrid_surf_SurfJNI_getRoute(JNIEnv *jen
   jlongArray jresult = 0 ;
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
-  NetworkLinkDynar result;
+  LinkDynar result;
   
   (void)jenv;
   (void)jcls;
@@ -2341,7 +2341,7 @@ SWIGEXPORT jlongArray JNICALL Java_org_simgrid_surf_SurfJNI_getRoute(JNIEnv *jen
     long l = xbt_dynar_length(result);
     jresult = jenv->NewLongArray(l);
     unsigned i;
-    NetworkLink *link;
+    Link *link;
     jlong *elts = jenv->GetLongArrayElements(jresult, NULL);
     xbt_dynar_foreach(result, i, link) {
       elts[i] = (jlong)link;
@@ -2537,98 +2537,98 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuActionStateChan
 }
 
 
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateNetworkLinkCreatedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateLinkCreatedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   Plugin *arg1 = (Plugin *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(Plugin **)&jarg1; 
-  (arg1)->activateNetworkLinkCreatedCallback();
+  (arg1)->activateLinkCreatedCallback();
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkCreatedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkLink *arg2 = (NetworkLink *) 0 ;
+  Link *arg2 = (Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkLink **)&jarg2; 
+  arg2 = *(Link **)&jarg2; 
   (arg1)->networkLinkCreatedCallback(arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkCreatedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkLink *arg2 = (NetworkLink *) 0 ;
+  Link *arg2 = (Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkLink **)&jarg2; 
+  arg2 = *(Link **)&jarg2; 
   (arg1)->Plugin::networkLinkCreatedCallback(arg2);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateNetworkLinkDestructedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateLinkDestructedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   Plugin *arg1 = (Plugin *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(Plugin **)&jarg1; 
-  (arg1)->activateNetworkLinkDestructedCallback();
+  (arg1)->activateLinkDestructedCallback();
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkDestructedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkLink *arg2 = (NetworkLink *) 0 ;
+  Link *arg2 = (Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkLink **)&jarg2; 
+  arg2 = *(Link **)&jarg2; 
   (arg1)->networkLinkDestructedCallback(arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkDestructedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkLink *arg2 = (NetworkLink *) 0 ;
+  Link *arg2 = (Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkLink **)&jarg2; 
+  arg2 = *(Link **)&jarg2; 
   (arg1)->Plugin::networkLinkDestructedCallback(arg2);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateNetworkLinkStateChangedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateLinkStateChangedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   Plugin *arg1 = (Plugin *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   arg1 = *(Plugin **)&jarg1; 
-  (arg1)->activateNetworkLinkStateChangedCallback();
+  (arg1)->activateLinkStateChangedCallback();
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateChangedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkLink *arg2 = (NetworkLink *) 0 ;
+  Link *arg2 = (Link *) 0 ;
   e_surf_resource_state_t arg3 ;
   e_surf_resource_state_t arg4 ;
   
@@ -2637,7 +2637,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateCh
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkLink **)&jarg2; 
+  arg2 = *(Link **)&jarg2; 
   arg3 = (e_surf_resource_state_t)jarg3; 
   arg4 = (e_surf_resource_state_t)jarg4; 
   (arg1)->networkLinkStateChangedCallback(arg2,arg3,arg4);
@@ -2646,7 +2646,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateCh
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateChangedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkLink *arg2 = (NetworkLink *) 0 ;
+  Link *arg2 = (Link *) 0 ;
   e_surf_resource_state_t arg3 ;
   e_surf_resource_state_t arg4 ;
   
@@ -2655,7 +2655,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateCh
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkLink **)&jarg2; 
+  arg2 = *(Link **)&jarg2; 
   arg3 = (e_surf_resource_state_t)jarg3; 
   arg4 = (e_surf_resource_state_t)jarg4; 
   (arg1)->Plugin::networkLinkStateChangedCallback(arg2,arg3,arg4);
@@ -2835,21 +2835,6 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1TmgrTraceEvent(JNI
 }
 
 
-SWIGEXPORT jstring JNICALL Java_org_simgrid_surf_SurfJNI_Model_1getName(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  jstring jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
-  char *result = 0 ;
-  
-  (void)jenv;
-  (void)jcls;
-  (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
-  result = (char *)(arg1)->getName();
-  if (result) jresult = jenv->NewStringUTF((const char *)result);
-  return jresult;
-}
-
-
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Model_1shareResources(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   jdouble jresult = 0 ;
   Model *arg1 = (Model *) 0 ;
@@ -2982,23 +2967,14 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1Model(JNIEnv *jenv
 }
 
 
-SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1CpuModel(JNIEnv *jenv, jclass jcls, jstring jarg1) {
+SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1CpuModel(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
-  char *arg1 = (char *) 0 ;
   CpuModel *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = 0;
-  if (jarg1) {
-    arg1 = (char *)jenv->GetStringUTFChars(jarg1, 0);
-    if (!arg1) return 0;
-  }
-  result = (CpuModel *)new SwigDirector_CpuModel(jenv,(char const *)arg1);
+  result = (CpuModel *)new SwigDirector_CpuModel(jenv);
   *(CpuModel **)&jresult = result; 
-  {
-    
-  }
   return jresult;
 }
 
@@ -3530,97 +3506,97 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1change_1ownership(JNI
 }
 
 
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1NetworkLink(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  NetworkLink *arg1 = (NetworkLink *) 0 ;
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1Link(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  Link *arg1 = (Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(NetworkLink **)&jarg1; 
+  arg1 = *(Link **)&jarg1; 
   delete arg1;
 }
 
 
-SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_NetworkLink_1getBandwidth(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Link_1getBandwidth(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  NetworkLink *arg1 = (NetworkLink *) 0 ;
+  Link *arg1 = (Link *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(NetworkLink **)&jarg1; 
+  arg1 = *(Link **)&jarg1; 
   result = (double)(arg1)->getBandwidth();
   jresult = (jdouble)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_NetworkLink_1updateBandwidth_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jdouble jarg3) {
-  NetworkLink *arg1 = (NetworkLink *) 0 ;
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateBandwidth_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jdouble jarg3) {
+  Link *arg1 = (Link *) 0 ;
   double arg2 ;
   double arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(NetworkLink **)&jarg1; 
+  arg1 = *(Link **)&jarg1; 
   arg2 = (double)jarg2; 
   arg3 = (double)jarg3; 
   (arg1)->updateBandwidth(arg2,arg3);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_NetworkLink_1updateBandwidth_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
-  NetworkLink *arg1 = (NetworkLink *) 0 ;
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateBandwidth_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
+  Link *arg1 = (Link *) 0 ;
   double arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(NetworkLink **)&jarg1; 
+  arg1 = *(Link **)&jarg1; 
   arg2 = (double)jarg2; 
   (arg1)->updateBandwidth(arg2);
 }
 
 
-SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_NetworkLink_1getLatency(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Link_1getLatency(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  NetworkLink *arg1 = (NetworkLink *) 0 ;
+  Link *arg1 = (Link *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(NetworkLink **)&jarg1; 
+  arg1 = *(Link **)&jarg1; 
   result = (double)(arg1)->getLatency();
   jresult = (jdouble)result; 
   return jresult;
 }
 
 
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_NetworkLink_1updateLatency_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jdouble jarg3) {
-  NetworkLink *arg1 = (NetworkLink *) 0 ;
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateLatency_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jdouble jarg3) {
+  Link *arg1 = (Link *) 0 ;
   double arg2 ;
   double arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(NetworkLink **)&jarg1; 
+  arg1 = *(Link **)&jarg1; 
   arg2 = (double)jarg2; 
   arg3 = (double)jarg3; 
   (arg1)->updateLatency(arg2,arg3);
 }
 
 
-SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_NetworkLink_1updateLatency_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
-  NetworkLink *arg1 = (NetworkLink *) 0 ;
+SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateLatency_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
+  Link *arg1 = (Link *) 0 ;
   double arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(NetworkLink **)&jarg1; 
+  arg1 = *(Link **)&jarg1; 
   arg2 = (double)jarg2; 
   (arg1)->updateLatency(arg2);
 }
@@ -4081,11 +4057,11 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1SWIGUpcast(JNIEnv *j
     return baseptr;
 }
 
-SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_NetworkLink_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Link_1SWIGUpcast(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jlong baseptr = 0;
     (void)jenv;
     (void)jcls;
-    *(Resource **)&baseptr = *(NetworkLink **)&jarg1;
+    *(Resource **)&baseptr = *(Link **)&jarg1;
     return baseptr;
 }
 

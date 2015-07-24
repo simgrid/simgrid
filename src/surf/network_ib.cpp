@@ -24,7 +24,7 @@ static void IB_create_host_callback(sg_platf_host_cbarg_t t){
  
 }
 
-static void IB_action_state_changed_callback(NetworkActionPtr action, e_surf_action_state_t statein, e_surf_action_state_t stateout){
+static void IB_action_state_changed_callback(NetworkAction *action, e_surf_action_state_t statein, e_surf_action_state_t stateout){
  if(statein!=SURF_ACTION_RUNNING|| stateout!=SURF_ACTION_DONE)
     return;
   std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];
@@ -37,7 +37,7 @@ static void IB_action_state_changed_callback(NetworkActionPtr action, e_surf_act
 }
 
 
-static void IB_action_init_callback(NetworkActionPtr action,RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate){
+static void IB_action_init_callback(NetworkAction *action,RoutingEdge *src, RoutingEdge *dst, double size, double rate){
   if(((NetworkIBModel*)surf_network_model)->active_nodes==NULL)
     xbt_die("IB comm added, without any node connected !");
   
@@ -184,7 +184,7 @@ void NetworkIBModel::updateIBfactors_rec(IBNode *root, bool* updatedlist) {
 }
 
 
-void NetworkIBModel::updateIBfactors(NetworkActionPtr action, IBNode *from, IBNode * to, int remove) {
+void NetworkIBModel::updateIBfactors(NetworkAction *action, IBNode *from, IBNode * to, int remove) {
   if (from == to)//disregard local comms (should use loopback)
     return;
   

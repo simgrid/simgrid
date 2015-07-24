@@ -18,46 +18,27 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  * TOOLS *
  *********/
 
-static CpuPtr get_casted_cpu(surf_resource_t resource){
-  return static_cast<CpuPtr>(surf_cpu_resource_priv(resource));
+static Host *get_casted_host(surf_resource_t resource){
+  return static_cast<Host*>(surf_host_resource_priv(resource));
 }
 
-static HostPtr get_casted_host(surf_resource_t resource){
-  return static_cast<HostPtr>(surf_host_resource_priv(resource));
+static VM *get_casted_vm(surf_resource_t resource){
+  return static_cast<VM*>(surf_host_resource_priv(resource));
 }
-
-static RoutingEdgePtr get_casted_routing(surf_resource_t resource){
-  return static_cast<RoutingEdgePtr>(surf_routing_resource_priv(resource));
-}
-
-static VMPtr get_casted_vm(surf_resource_t resource){
-  return static_cast<VMPtr>(surf_host_resource_priv(resource));
-}
-
-char *surf_routing_edge_name(sg_routing_edge_t edge){
-  return edge->getName();
-}
-
-#ifdef CONTEXT_THREADS
-//FIXME:keeporremove static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
-#endif
 
 extern double NOW;
-extern double *surf_mins; /* return value of share_resources for each model */
-extern int surf_min_index;       /* current index in surf_mins */
-extern double surf_min;               /* duration determined by surf_solve */
 
 void surf_presolve(void)
 {
   double next_event_date = -1.0;
   tmgr_trace_event_t event = NULL;
   double value = -1.0;
-  ResourcePtr resource = NULL;
-  ModelPtr model = NULL;
+  Resource *resource = NULL;
+  Model *model = NULL;
   unsigned int iter;
 
-  XBT_DEBUG
-      ("First Run! Let's \"purge\" events and put models in the right state");
+  XBT_DEBUG ("First Run! Let's \"purge\" events and put models in the right state");
+
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     if (next_event_date > NOW)
       break;
@@ -74,44 +55,14 @@ void surf_presolve(void)
       model->updateActionsState(NOW, 0.0);
 }
 
-/**
- * Computes when the next action executed in a
- * specific model terminates; this is important,
- * because we can safely skip the amount of time
- * in which no model (read: not even a single one)
- * changes its state; so, if for instance network,
- * cpu, storage don't change (and if we assume they're
- * the only models we use... simple example here :) )
- * for 2s, 1s, 3s then we can skip 1s as after this
- * amount of time the new state needs to be considered.
- *
- */
-static void surf_share_resources(surf_model_t model)
-{
-  double next_action_end = -1.0;
-  int i = __sync_fetch_and_add(&surf_min_index, 1);
-  if (strcmp(model->getName(), "network NS3")) {
-    XBT_DEBUG("Running for Resource [%s]", model->getName());
-    next_action_end = model->shareResources(NOW);
-    XBT_DEBUG("Resource [%s] : next action end = %f",
-        model->getName(), next_action_end);
-  }
-  surf_mins[i] = next_action_end;
-}
-
-static void surf_update_actions_state(surf_model_t model)
-{
-  model->updateActionsState(NOW, surf_min);
-}
-
 double surf_solve(double max_date)
 {
-  surf_min = -1.0; /* duration */
+  double surf_min = -1.0; /* duration */
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
-  ResourcePtr resource = NULL;
-  ModelPtr model = NULL;
+  Resource *resource = NULL;
+  Model *model = NULL;
   tmgr_trace_event_t event = NULL;
   unsigned int iter;
 
@@ -123,23 +74,18 @@ double surf_solve(double max_date)
   }
 
   XBT_DEBUG("Looking for next action end for all models except NS3");
-
-  if (surf_mins == NULL) {
-    surf_mins = xbt_new(double, xbt_dynar_length(model_list_invoke));
-  }
-  surf_min_index = 0;
-
-  /* sequential version */
   xbt_dynar_foreach(model_list_invoke, iter, model) {
-    surf_share_resources(static_cast<ModelPtr>(model));
-  }
-
-  unsigned i;
-  for (i = 0; i < xbt_dynar_length(model_list_invoke); i++) {
-    if ((surf_min < 0.0 || surf_mins[i] < surf_min)
-        && surf_mins[i] >= 0.0) {
-      surf_min = surf_mins[i];
-    }
+	  double next_action_end = -1.0;
+	  if (model->shareResourcesIsIdempotent()) {
+	    XBT_DEBUG("Running for Resource [%s]", typeid(model).name());
+	    next_action_end = model->shareResources(NOW);
+	    XBT_DEBUG("Resource [%s] : next action end = %f",
+	        typeid(model).name(), next_action_end);
+	  }
+	  if ((surf_min < 0.0 || next_action_end < surf_min)
+			  && next_action_end >= 0.0) {
+		  surf_min = next_action_end;
+	  }
   }
 
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value) : %f", surf_min);
@@ -151,7 +97,7 @@ double surf_solve(double max_date)
 
     next_event_date = tmgr_history_next_date(history);
 
-    if(!strcmp(surf_network_model->getName(), "network NS3")){
+    if(! surf_network_model->shareResourcesIsIdempotent()){ // NS3, I see you
       if(next_event_date!=-1.0 && surf_min!=-1.0) {
         surf_min = MIN(next_event_date - NOW, surf_min);
       } else{
@@ -207,7 +153,7 @@ double surf_solve(double max_date)
   /* FIXME: model_list or model_list_invoke? revisit here later */
   /* sequential version */
   xbt_dynar_foreach(model_list, iter, model) {
-    surf_update_actions_state(model);
+	  model->updateActionsState(NOW, surf_min);
   }
 
   TRACE_paje_dump_buffer (0);
@@ -227,20 +173,20 @@ void routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
 surf_model_t surf_resource_model(const void *host, int level) {
   /* If level is SURF_WKS_LEVEL, ws is a host_CLM03 object. It has
    * surf_resource at the generic_resource field. */
-  ResourcePtr ws = static_cast<ResourcePtr>(xbt_lib_get_level((xbt_dictelm_t) host, level));
+  Resource *ws = static_cast<Resource*>(xbt_lib_get_level((xbt_dictelm_t) host, level));
   return ws->getModel();
 }
 
 void *surf_as_cluster_get_backbone(AS_t as){
-  return static_cast<AsClusterPtr>(as)->p_backbone;
+  return static_cast<AsCluster*>(as)->p_backbone;
 }
 
 void surf_as_cluster_set_backbone(AS_t as, void* backbone){
-  static_cast<AsClusterPtr>(as)->p_backbone = static_cast<NetworkLinkPtr>(backbone);
+  static_cast<AsCluster*>(as)->p_backbone = static_cast<Link*>(backbone);
 }
 
 const char *surf_model_name(surf_model_t model){
-  return model->getName();
+  return typeid(model).name();
 }
 
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
@@ -281,15 +227,11 @@ int surf_model_running_action_set_size(surf_model_t model){
 
 surf_action_t surf_host_model_execute_parallel_task(surf_host_model_t model,
 		                                    int host_nb,
-                                            void **host_list,
+                                            sg_host_t *host_list,
                                             double *flops_amount,
                                             double *bytes_amount,
                                             double rate){
-  return static_cast<ActionPtr>(model->executeParallelTask(host_nb, host_list, flops_amount, bytes_amount, rate));
-}
-
-surf_action_t surf_host_model_communicate(surf_host_model_t model, surf_resource_t src, surf_resource_t dst, double size, double rate){
-  return model->communicate(get_casted_host(src), get_casted_host(dst), size, rate);
+  return static_cast<Action*>(model->executeParallelTask(host_nb, host_list, flops_amount, bytes_amount, rate));
 }
 
 xbt_dynar_t surf_host_model_get_route(surf_host_model_t /*model*/,
@@ -304,8 +246,8 @@ void surf_vm_model_create(const char *name, surf_resource_t ind_phys_host){
   surf_vm_model->createVM(name, ind_phys_host);
 }
 
-surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_routing_edge_t src, sg_routing_edge_t dst, double size, double rate){
-  return model->communicate(src, dst, size, rate);
+surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate){
+  return model->communicate(sg_host_edge(src), sg_host_edge(dst), size, rate);
 }
 
 const char *surf_resource_name(surf_cpp_resource_t resource){
@@ -324,58 +266,58 @@ void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state
   resource->setState(state);
 }
 
-surf_action_t surf_host_sleep(surf_resource_t resource, double duration){
-  return get_casted_host(resource)->sleep(duration);
+surf_action_t surf_host_sleep(surf_resource_t host, double duration){
+  return get_casted_host(host)->sleep(duration);
 }
 
-double surf_host_get_speed(surf_resource_t resource, double load){
-  return get_casted_host(resource)->getSpeed(load);
+double surf_host_get_speed(surf_resource_t host, double load){
+  return sg_host_surfcpu(host)->getSpeed(load);
 }
 
-double surf_host_get_available_speed(surf_resource_t resource){
-  return get_casted_host(resource)->getAvailableSpeed();
+double surf_host_get_available_speed(surf_resource_t host){
+  return sg_host_surfcpu(host)->getAvailableSpeed();
 }
 
-int surf_host_get_core(surf_resource_t resource){
-  return get_casted_host(resource)->getCore();
+int surf_host_get_core(surf_resource_t host){
+  return sg_host_surfcpu(host)->getCore();
 }
 
-surf_action_t surf_host_execute(surf_resource_t resource, double size){
-  return get_casted_host(resource)->execute(size);
+surf_action_t surf_host_execute(surf_resource_t host, double size){
+  return get_casted_host(host)->execute(size);
 }
 
-double surf_host_get_current_power_peak(surf_resource_t resource){
-  return get_casted_host(resource)->getCurrentPowerPeak();
+double surf_host_get_current_power_peak(surf_resource_t host){
+  return sg_host_surfcpu(host)->getCurrentPowerPeak();
 }
 
-double surf_host_get_power_peak_at(surf_resource_t resource, int pstate_index){
-  return get_casted_host(resource)->getPowerPeakAt(pstate_index);
+double surf_host_get_power_peak_at(surf_resource_t host, int pstate_index){
+  return sg_host_surfcpu(host)->getPowerPeakAt(pstate_index);
 }
 
-int surf_host_get_nb_pstates(surf_resource_t resource){
-  return get_casted_host(resource)->getNbPstates();
+int surf_host_get_nb_pstates(surf_resource_t host){
+  return sg_host_surfcpu(host)->getNbPstates();
 }
 
-void surf_host_set_pstate(surf_resource_t resource, int pstate_index){
-  get_casted_host(resource)->setPstate(pstate_index);
+void surf_host_set_pstate(surf_resource_t host, int pstate_index){
+	sg_host_surfcpu(host)->setPstate(pstate_index);
 }
-int surf_host_get_pstate(surf_resource_t resource){
-  return get_casted_host(resource)->getPstate();
+int surf_host_get_pstate(surf_resource_t host){
+  return sg_host_surfcpu(host)->getPstate();
 }
 double surf_host_get_wattmin_at(surf_resource_t resource, int pstate){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
+  std::map<Cpu*, CpuEnergy*>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
   return cpuIt->second->getWattMinAt(pstate);
 }
 double surf_host_get_wattmax_at(surf_resource_t resource, int pstate){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
+  std::map<Cpu*, CpuEnergy*>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
   return cpuIt->second->getWattMaxAt(pstate);
 }
 
 double surf_host_get_consumed_energy(surf_resource_t resource){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<CpuPtr, CpuEnergyPtr>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
+  std::map<Cpu*, CpuEnergy*>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
   return cpuIt->second->getConsumedEnergy();
 }
 
@@ -430,30 +372,28 @@ int surf_host_file_move(surf_resource_t host, surf_file_t fd, const char* fullpa
 
 xbt_dynar_t surf_host_get_vms(surf_resource_t host){
   xbt_dynar_t vms = get_casted_host(host)->getVms();
-  xbt_dynar_t vms_ = xbt_dynar_new(sizeof(smx_host_t), NULL);
+  xbt_dynar_t vms_ = xbt_dynar_new(sizeof(sg_host_t), NULL);
   unsigned int cpt;
-  VMPtr vm;
+  VM *vm;
   xbt_dynar_foreach(vms, cpt, vm) {
-    smx_host_t vm_ = xbt_lib_get_elm_or_null(host_lib, vm->getName());
+    sg_host_t vm_ = xbt_lib_get_elm_or_null(host_lib, vm->getName());
     xbt_dynar_push(vms_, &vm_);
   }
   xbt_dynar_free(&vms);
   return vms_;
 }
 
-void surf_host_get_params(surf_resource_t host, ws_params_t params){
+void surf_host_get_params(surf_resource_t host, vm_params_t params){
   get_casted_host(host)->getParams(params);
 }
 
-void surf_host_set_params(surf_resource_t host, ws_params_t params){
+void surf_host_set_params(surf_resource_t host, vm_params_t params){
   get_casted_host(host)->setParams(params);
 }
 
 void surf_vm_destroy(surf_resource_t resource){
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  CpuPtr cpu = get_casted_cpu(resource);
-  VMPtr vm = get_casted_vm(resource);
-  RoutingEdgePtr routing = get_casted_routing(resource);
+  VM *vm = get_casted_vm(resource);
   char* name = xbt_dict_get_elm_key(resource);
   /* We deregister objects from host_lib, without invoking the freeing callback
    * of each level.
@@ -461,16 +401,14 @@ void surf_vm_destroy(surf_resource_t resource){
    * Do not call xbt_lib_remove() here. It deletes all levels of the key,
    * including MSG_HOST_LEVEL and others. We should unregister only what we know.
    */
-  xbt_lib_unset(host_lib, name, SURF_CPU_LEVEL, 0);
-  xbt_lib_unset(host_lib, name, ROUTING_HOST_LEVEL, 0);
+  sg_host_surfcpu_destroy((sg_host_t)resource);
+  sg_host_edge_destroy((sg_host_t)resource,1);
   xbt_lib_unset(host_lib, name, SURF_HOST_LEVEL, 0);
 
   /* TODO: comment out when VM storage is implemented. */
   // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
 
-  delete cpu;
   delete vm;
-  delete routing;
 }
 
 void surf_vm_suspend(surf_resource_t vm){
@@ -502,47 +440,35 @@ void surf_vm_set_bound(surf_resource_t vm, double bound){
 }
 
 void surf_vm_set_affinity(surf_resource_t vm, surf_resource_t cpu, unsigned long mask){
-  return get_casted_vm(vm)->setAffinity(get_casted_cpu(cpu), mask);
-}
-
-int surf_network_link_is_shared(surf_cpp_resource_t link){
-  return static_cast<NetworkLinkPtr>(link)->isShared();
-}
-
-double surf_network_link_get_bandwidth(surf_cpp_resource_t link){
-  return static_cast<NetworkLinkPtr>(link)->getBandwidth();
-}
-
-double surf_network_link_get_latency(surf_cpp_resource_t link){
-  return static_cast<NetworkLinkPtr>(link)->getLatency();
+  return get_casted_vm(vm)->setAffinity(sg_host_surfcpu(cpu), mask);
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
-  return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->getContent();
+  return static_cast<Storage*>(surf_storage_resource_priv(resource))->getContent();
 }
 
 sg_size_t surf_storage_get_size(surf_resource_t resource){
-  return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->getSize();
+  return static_cast<Storage*>(surf_storage_resource_priv(resource))->getSize();
 }
 
 sg_size_t surf_storage_get_free_size(surf_resource_t resource){
-  return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->getFreeSize();
+  return static_cast<Storage*>(surf_storage_resource_priv(resource))->getFreeSize();
 }
 
 sg_size_t surf_storage_get_used_size(surf_resource_t resource){
-  return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->getUsedSize();
+  return static_cast<Storage*>(surf_storage_resource_priv(resource))->getUsedSize();
 }
 
 const char* surf_storage_get_host(surf_resource_t resource){
-  return static_cast<StoragePtr>(surf_storage_resource_priv(resource))->p_attach;
+  return static_cast<Storage*>(surf_storage_resource_priv(resource))->p_attach;
 }
 
 surf_action_t surf_cpu_execute(surf_resource_t cpu, double size){
-  return get_casted_cpu(cpu)->execute(size);
+  return sg_host_surfcpu(cpu)->execute(size);
 }
 
 surf_action_t surf_cpu_sleep(surf_resource_t cpu, double duration){
-  return get_casted_cpu(cpu)->sleep(duration);
+  return sg_host_surfcpu(cpu)->sleep(duration);
 }
 
 double surf_action_get_start_time(surf_action_t action){
@@ -598,11 +524,11 @@ double surf_action_get_cost(surf_action_t action){
 }
 
 void surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask) {
-  static_cast<CpuActionPtr>(action)->setAffinity(get_casted_cpu(cpu), mask);
+  static_cast<CpuAction*>(action)->setAffinity(sg_host_surfcpu(cpu), mask);
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {
-  static_cast<CpuActionPtr>(action)->setBound(bound);
+  static_cast<CpuAction*>(action)->setBound(bound);
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
@@ -612,5 +538,5 @@ double surf_network_action_get_latency_limited(surf_action_t action) {
 #endif
 
 surf_file_t surf_storage_action_get_file(surf_action_t action){
-  return static_cast<StorageActionPtr>(action)->p_file;
+  return static_cast<StorageAction*>(action)->p_file;
 }

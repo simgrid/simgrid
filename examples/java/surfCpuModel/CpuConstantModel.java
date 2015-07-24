@@ -10,7 +10,6 @@ public class CpuConstantModel extends CpuModel {
   private List<CpuConstant> cpus = new ArrayList<CpuConstant>();
 
   public CpuConstantModel() {
-    super("Cpu Constant");
     Msg.info("Initialize Cpu Constant Model");
   }
 

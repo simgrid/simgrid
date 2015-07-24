@@ -12,7 +12,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm);
 void surf_vm_model_init_HL13(void){
   if (surf_cpu_model_vm) {
     surf_vm_model = new VMHL13Model();
-    ModelPtr model = surf_vm_model;
+    Model *model = surf_vm_model;
 
     xbt_dynar_push(model_list, &model);
     xbt_dynar_push(model_list_invoke, &model);
@@ -23,24 +23,16 @@ void surf_vm_model_init_HL13(void){
  * Model *
  *********/
 
-VMHL13Model::VMHL13Model() : VMModel() {
-  p_cpuModel = surf_cpu_model_vm;
-}
+VMHL13Model::VMHL13Model() : VMModel() {}
 
-void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/){
-  return;
-}
-
-ActionPtr VMHL13Model::communicate(HostPtr src, HostPtr dst, double size, double rate){
-  return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
-}
+void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
  * structure (i.e not on the surf_resource_private infos) */
 
-VMPtr VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
+VM *VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
 {
-  VMHL13Ptr ws = new VMHL13(this, name, NULL, host_PM);
+  VMHL13 *ws = new VMHL13(this, name, NULL, host_PM);
 
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, ws);
 
@@ -50,7 +42,7 @@ VMPtr VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
   return ws;
 }
 
-static inline double get_solved_value(CpuActionPtr cpu_action)
+static inline double get_solved_value(CpuAction *cpu_action)
 {
   return cpu_action->getVariable()->value;
 }
@@ -70,8 +62,8 @@ double VMHL13Model::shareResources(double now)
   /* 0. Make sure that we already calculated the resource share at the physical
    * machine layer. */
   {
-    _XBT_GNUC_UNUSED ModelPtr ws_model = surf_host_model;
-    _XBT_GNUC_UNUSED ModelPtr vm_ws_model = surf_vm_model;
+    _XBT_GNUC_UNUSED Model *ws_model = surf_host_model;
+    _XBT_GNUC_UNUSED Model *vm_ws_model = surf_vm_model;
     _XBT_GNUC_UNUSED unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &ws_model);
     _XBT_GNUC_UNUSED unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &vm_ws_model);
     xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_host_model comes before");
@@ -111,8 +103,8 @@ double VMHL13Model::shareResources(double now)
          VMModel::ws_vms.begin();
        iter !=  VMModel::ws_vms.end(); ++iter) {
 
-    VMPtr ws_vm = &*iter;
-    CpuPtr cpu = ws_vm->p_cpu;
+    VM *ws_vm = &*iter;
+    Cpu *cpu = ws_vm->p_cpu;
     xbt_assert(cpu, "cpu-less host");
 
     double solved_value = get_solved_value(ws_vm->p_action);
@@ -130,16 +122,15 @@ double VMHL13Model::shareResources(double now)
   /* 2. Calculate resource share at the virtual machine layer. */
   adjustWeightOfDummyCpuActions();
 
-  double min_by_cpu = p_cpuModel->shareResources(now);
-  double min_by_net = (strcmp(surf_network_model->getName(), "network NS3")) ? surf_network_model->shareResources(now) : -1;
+  double min_by_cpu = surf_cpu_model_vm->shareResources(now);
+  double min_by_net = surf_network_model->shareResourcesIsIdempotent() ? surf_network_model->shareResources(now) : -1;
+  // Fixme: take storage into account once it's implemented
   double min_by_sto = -1;
-  if (p_cpuModel == surf_cpu_model_pm)
-	min_by_sto = surf_storage_model->shareResources(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
-      this, surf_cpu_model_pm->getName(), min_by_cpu,
-            surf_network_model->getName(), min_by_net,
-            surf_storage_model->getName(), min_by_sto);
+      this, typeid(surf_cpu_model_pm ).name(), min_by_cpu,
+	        typeid(surf_network_model).name(), min_by_net,
+            typeid(surf_storage_model).name(), min_by_sto);
 
   double ret = max(max(min_by_cpu, min_by_net), min_by_sto);
   if (min_by_cpu >= 0.0 && min_by_cpu < ret)
@@ -158,7 +149,7 @@ double VMHL13Model::shareResources(double now)
 
     {
 #if 0
-      VM2013Ptr ws_vm2013 = static_cast<VM2013Ptr>(&*iter);
+      VM2013 *ws_vm2013 = static_cast<VM2013Ptr>(&*iter);
       XBT_INFO("cost %f remains %f start %f finish %f", ws_vm2013->cpu_action->cost,
           ws_vm2013->cpu_action->remains,
           ws_vm2013->cpu_action->start,
@@ -181,18 +172,18 @@ double VMHL13Model::shareResources(double now)
   return ret;
 }
 
-ActionPtr VMHL13Model::executeParallelTask(int host_nb,
-                                        void **host_list,
-                                        double *flops_amount,
-                                        double *bytes_amount,
-                                        double rate){
+Action *VMHL13Model::executeParallelTask(int host_nb,
+                                         sg_host_t *host_list,
+										 double *flops_amount,
+										 double *bytes_amount,
+										 double rate){
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
   if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0))
-    return ((HostCLM03Ptr)host_list[0])->execute(flops_amount[0]);
+    return surf_host_execute(host_list[0], flops_amount[0]);
   else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0))
-    return communicate((HostCLM03Ptr)host_list[0], (HostCLM03Ptr)host_list[0],bytes_amount[0], rate);
+    return surf_network_model_communicate(surf_network_model, host_list[0], host_list[0],bytes_amount[0], rate);
   else if ((host_nb == 2)
              && (cost_or_zero(flops_amount, 0) == 0.0)
              && (cost_or_zero(flops_amount, 1) == 0.0)) {
@@ -206,11 +197,11 @@ ActionPtr VMHL13Model::executeParallelTask(int host_nb,
       }
     }
     if (nb == 1)
-      return communicate((HostCLM03Ptr)host_list[0], (HostCLM03Ptr)host_list[1],value, rate);
+      return surf_network_model_communicate(surf_network_model, host_list[0], host_list[1], value, rate);
   }
 #undef cost_or_zero
 
-  THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks */
+  THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks for more than 2 hosts. */
   return NULL;
 }
 
@@ -218,11 +209,11 @@ ActionPtr VMHL13Model::executeParallelTask(int host_nb,
  * Resource *
  ************/
 
-VMHL13::VMHL13(VMModelPtr model, const char* name, xbt_dict_t props,
+VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
 		                                   surf_resource_t host_PM)
  : VM(model, name, props, NULL, NULL)
 {
-  HostPtr sub_ws = static_cast<HostPtr>(surf_host_resource_priv(host_PM));
+  Host *sub_ws = static_cast<Host*>(surf_host_resource_priv(host_PM));
 
   /* Currently, we assume a VM has no storage. */
   p_storage = NULL;
@@ -233,18 +224,16 @@ VMHL13::VMHL13(VMModelPtr model, const char* name, xbt_dict_t props,
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  p_netElm = new RoutingEdgeWrapper(static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, sub_ws->getName(), ROUTING_HOST_LEVEL)));
-  xbt_lib_set(host_lib, name, ROUTING_HOST_LEVEL, p_netElm);
+  sg_host_t sg_sub_ws = sg_host_by_name_or_create(sub_ws->getName());
+  p_netElm = new RoutingEdgeWrapper(sg_host_edge(sg_sub_ws));
+  sg_host_edge_set(sg_host_by_name_or_create(name), p_netElm);
 
   p_subWs = sub_ws;
   p_currentState = SURF_VM_STATE_CREATED;
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01Ptr sub_cpu = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(host_PM));
-
-  /* We can assume one core and cas01 cpu for the first step.
-   * Do xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu) if you get the resource. */
+  CpuCas01 *sub_cpu = static_cast<CpuCas01*>(sg_host_surfcpu(host_PM));
 
   p_cpu = surf_cpu_model_vm->createCpu(name, // name
       sub_cpu->getPowerPeakList(),        // host->power_peak,
@@ -330,26 +319,24 @@ void VMHL13::restore()
 void VMHL13::migrate(surf_resource_t ind_dst_pm)
 {
    /* ind_dst_pm equals to smx_host_t */
-   HostPtr ws_dst = static_cast<HostPtr>(surf_host_resource_priv(ind_dst_pm));
+   Host *ws_dst = static_cast<Host*>(surf_host_resource_priv(ind_dst_pm));
    const char *vm_name = getName();
    const char *pm_name_src = p_subWs->getName();
    const char *pm_name_dst = ws_dst->getName();
 
    xbt_assert(ws_dst);
 
-   /* do something */
-
    /* update net_elm with that of the destination physical host */
-   RoutingEdgePtr old_net_elm = p_netElm;
-   RoutingEdgePtr new_net_elm = new RoutingEdgeWrapper(static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, pm_name_dst, ROUTING_HOST_LEVEL)));
+   RoutingEdge *old_net_elm = p_netElm;
+   RoutingEdge *new_net_elm = new RoutingEdgeWrapper(sg_host_edge(sg_host_by_name(pm_name_dst)));
    xbt_assert(new_net_elm);
 
    /* Unregister the current net_elm from host_lib. Do not call the free callback. */
-   xbt_lib_unset(host_lib, vm_name, ROUTING_HOST_LEVEL, 0);
+   sg_host_edge_destroy(sg_host_by_name(vm_name), 0);
 
    /* Then, resister the new one. */
    p_netElm = new_net_elm;
-   xbt_lib_set(host_lib, vm_name, ROUTING_HOST_LEVEL, p_netElm);
+   sg_host_edge_set(sg_host_by_name(vm_name), p_netElm);
 
    p_subWs = ws_dst;
 
@@ -366,8 +353,8 @@ void VMHL13::migrate(surf_resource_t ind_dst_pm)
 #endif
 
      /* create a cpu action bound to the pm model at the destination. */
-     CpuActionPtr new_cpu_action = static_cast<CpuActionPtr>(
-    		                            static_cast<CpuPtr>(surf_cpu_resource_priv(ind_dst_pm))->execute(0));
+     CpuAction *new_cpu_action = static_cast<CpuAction*>(
+    		                            static_cast<Cpu*>(sg_host_surfcpu(ind_dst_pm))->execute(0));
 
      e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)
@@ -397,7 +384,7 @@ void VMHL13::setBound(double bound){
  p_action->setBound(bound);
 }
 
-void VMHL13::setAffinity(CpuPtr cpu, unsigned long mask){
+void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
  p_action->setAffinity(cpu, mask);
 }
 
@@ -411,7 +398,7 @@ surf_resource_t VMHL13::getPm()
 }
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
-ActionPtr VMHL13::execute(double size)
+Action *VMHL13::execute(double size)
 {
   double old_cost = p_action->getCost();
   double new_cost = old_cost + size;
@@ -425,7 +412,7 @@ ActionPtr VMHL13::execute(double size)
   return p_cpu->execute(size);
 }
 
-ActionPtr VMHL13::sleep(double duration) {
+Action *VMHL13::sleep(double duration) {
   return p_cpu->sleep(duration);
 }
 

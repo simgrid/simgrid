@@ -48,7 +48,7 @@ lmm_system_t lmm_system_new(int selective_update)
   l->selective_update_active = selective_update;
   l->visited_counter = 1;
 
-  XBT_DEBUG("Setting selective_update_active flag to %d\n",
+  XBT_DEBUG("Setting selective_update_active flag to %d",
          l->selective_update_active);
 
   xbt_swag_init(&(l->variable_set),
@@ -676,7 +676,7 @@ void lmm_solve(lmm_system_t sys)
           cnst->usage = elem->value / elem->variable->weight;
 
         make_elem_active(elem);
-        ActionPtr action = static_cast<ActionPtr>(elem->variable->id);
+        Action *action = static_cast<Action*>(elem->variable->id);
         if (sys->keep_track && !action->is_linked())
           sys->keep_track->push_back(*action);
       }

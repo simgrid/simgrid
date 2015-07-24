@@ -50,7 +50,7 @@ static int l_host_get_by_name(lua_State * L)
 {
   const char *name = luaL_checkstring(L, 1);
   XBT_DEBUG("Getting Host from name...");
-  msg_host_t msg_host = MSG_get_host_by_name(name);
+  msg_host_t msg_host = MSG_host_by_name(name);
   if (!msg_host) {
     luaL_error(L, "null Host : MSG_get_host_by_name failed");
   }
@@ -183,8 +183,8 @@ static int l_host_sleep(lua_State *L)
  */
 static int l_host_destroy(lua_State *L)
 {
-  msg_host_t ht = sglua_check_host(L, 1);
-  __MSG_host_priv_free(MSG_host_priv(ht));
+  //msg_host_t ht = sglua_check_host(L, 1);
+  //FIXME: not working..__MSG_host_priv_free(MSG_host_priv(ht));
   return 0;
 }
 

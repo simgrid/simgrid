@@ -13,6 +13,12 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic_link_test, sd,
                                 "SimDag test basic_link_test");
 
+static int cmp_link(const void*a, const void*b) {
+	const char *nameA = SD_link_get_name(*(SD_link_t*)a);
+	const char *nameB = SD_link_get_name(*(SD_link_t*)b);
+  return strcmp( nameA, nameB );
+}
+
 int main(int argc, char **argv)
 {
   int i;
@@ -24,8 +30,11 @@ int main(int argc, char **argv)
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
-  XBT_INFO("Link number: %d", SD_link_get_number());
   links = SD_link_get_list();
+  int count = SD_link_get_number();
+  XBT_INFO("Link count: %d", count);
+  qsort((void *)links, count, sizeof(SD_link_t), cmp_link);
+   
   for(i=0; i<SD_link_get_number();i++){
     XBT_INFO("%s: latency = %.5f, bandwidth = %f",
              SD_link_get_name(links[i]),

@@ -1,3 +1,8 @@
+New function: simcall_process_get_kill_time()
+
+ surf.java:
+ * class NetworkLink renamed to Link
+
 SimGrid (3.12) NOT RELEASED; urgency=low
 
  cMSG:

@@ -13,21 +13,11 @@
 SG_BEGIN_DECL()
 
 XBT_PUBLIC_DATA(xbt_lib_t) host_lib;
-XBT_PUBLIC_DATA(int) ROUTING_HOST_LEVEL; //Routing level
-XBT_PUBLIC_DATA(int)  SURF_CPU_LEVEL;    //Surf cpu level
-XBT_PUBLIC_DATA(int) SURF_HOST_LEVEL;    //Surf workstation level
-XBT_PUBLIC_DATA(int) SIMIX_HOST_LEVEL;  //Simix host level
-XBT_PUBLIC_DATA(int) SIMIX_STORAGE_LEVEL;  //Simix storage level
-XBT_PUBLIC_DATA(int)  MSG_HOST_LEVEL;    //Msg level
-XBT_PUBLIC_DATA(int)  SD_HOST_LEVEL;    //Simdag host level
-XBT_PUBLIC_DATA(int)  SD_STORAGE_LEVEL;    //Simdag storage level
-XBT_PUBLIC_DATA(int)  COORD_HOST_LEVEL;  //Coordinates level
-XBT_PUBLIC_DATA(int) NS3_HOST_LEVEL;    //host node for ns3
-
-XBT_PUBLIC_DATA(xbt_lib_t) link_lib;
-XBT_PUBLIC_DATA(int) SD_LINK_LEVEL;    //Simdag level
-XBT_PUBLIC_DATA(int) SURF_LINK_LEVEL;  //Surf level
-XBT_PUBLIC_DATA(int) NS3_LINK_LEVEL;    //link for ns3
+XBT_PUBLIC_DATA(int) SURF_HOST_LEVEL;     //Surf workstation level
+XBT_PUBLIC_DATA(int) SIMIX_STORAGE_LEVEL; //Simix storage level
+XBT_PUBLIC_DATA(int) SD_STORAGE_LEVEL;    //Simdag storage level
+XBT_PUBLIC_DATA(int) COORD_HOST_LEVEL;    //Coordinates level
+XBT_PUBLIC_DATA(int) NS3_HOST_LEVEL;      //host node for ns3
 
 XBT_PUBLIC_DATA(xbt_lib_t) as_router_lib;
 XBT_PUBLIC_DATA(int) ROUTING_ASR_LEVEL;  //Routing level

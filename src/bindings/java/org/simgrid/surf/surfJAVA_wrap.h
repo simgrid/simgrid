@@ -21,9 +21,9 @@ public:
     virtual void cpuDestructedCallback(Cpu *cpu);
     virtual void cpuStateChangedCallback(Cpu *cpu, e_surf_resource_state_t arg1, e_surf_resource_state_t arg2);
     virtual void cpuActionStateChangedCallback(CpuAction *action, e_surf_action_state_t arg1, e_surf_action_state_t arg2);
-    virtual void networkLinkCreatedCallback(NetworkLink *link);
-    virtual void networkLinkDestructedCallback(NetworkLink *link);
-    virtual void networkLinkStateChangedCallback(NetworkLink *link, e_surf_resource_state_t arg1, e_surf_resource_state_t arg2);
+    virtual void networkLinkCreatedCallback(Link *link);
+    virtual void networkLinkDestructedCallback(Link *link);
+    virtual void networkLinkStateChangedCallback(Link *link, e_surf_resource_state_t arg1, e_surf_resource_state_t arg2);
     virtual void networkActionStateChangedCallback(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t cur);
     virtual void networkCommunicateCallback(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate);
 public:
@@ -38,7 +38,7 @@ class SwigDirector_CpuModel : public CpuModel, public Swig::Director {
 
 public:
     void swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
-    SwigDirector_CpuModel(JNIEnv *jenv, char const *name);
+    SwigDirector_CpuModel(JNIEnv *jenv);
     virtual double shareResources(double now);
     virtual double shareResourcesLazy(double now);
     virtual double shareResourcesFull(double now);

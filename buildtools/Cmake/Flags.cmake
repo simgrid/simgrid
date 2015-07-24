@@ -11,7 +11,7 @@ if(NOT __VISUALC__ AND NOT __BORLANDC__)
   elseif(HAVE_CXX0X)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
   else()
-    message(STATUS "Missing support for C++11.")
+    message(FATAL_ERROR "Missing support for C++11.")
   endif()
 endif()
 

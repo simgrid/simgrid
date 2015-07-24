@@ -344,7 +344,7 @@ static int master_main(int argc, char *argv[])
   {
     msg_host_t vm0 = MSG_vm_create_core(pm0, "VM0");
 
-    s_ws_params_t params;
+    s_vm_params_t params;
     memset(&params, 0, sizeof(params));
     params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
     MSG_host_set_params(vm0, &params);

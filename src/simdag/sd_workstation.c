@@ -31,8 +31,9 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation,
   workstation->current_task = NULL;
 
   name = surf_resource_name(surf_workstation);
-  xbt_lib_set(host_lib,name,SD_HOST_LEVEL,workstation);
-  return xbt_lib_get_elm_or_null(host_lib,name);
+  sg_host_t sg_host = sg_host_by_name(name);
+  sg_host_sd_set(sg_host,workstation);
+  return sg_host;
 }
 
 /* Creates a storage and registers it in SD.
@@ -83,26 +84,12 @@ SD_workstation_t SD_workstation_get_by_name(const char *name)
  * \remark The workstation order in the returned array is generally different from the workstation creation/declaration order in the XML platform (we use a hash table internally).
  * \see SD_workstation_get_number()
  */
-const SD_workstation_t *SD_workstation_get_list(void)
-{
-
-  xbt_lib_cursor_t cursor;
-  char *key;
-  void **data;
-  int i;
-
+const SD_workstation_t *SD_workstation_get_list(void) {
   xbt_assert(SD_workstation_get_number() > 0, "There is no workstation!");
 
-  if (sd_global->workstation_list == NULL) {    /* this is the first time the function is called */
-    sd_global->workstation_list =
-      xbt_new(SD_workstation_t, xbt_lib_length(host_lib));
+  if (sd_global->workstation_list == NULL)     /* this is the first time the function is called */
+    sd_global->workstation_list = xbt_dynar_to_array(sg_hosts_as_dynar());
 
-    i = 0;
-    xbt_lib_foreach(host_lib, cursor, key, data) {
-      if(data[SD_HOST_LEVEL])
-        sd_global->workstation_list[i++] = xbt_dict_cursor_get_elm(cursor);
-    }
-  }
   return sd_global->workstation_list;
 }
 
@@ -126,7 +113,7 @@ int SD_workstation_get_number(void)
  */
 void *SD_workstation_get_data(SD_workstation_t workstation)
 {
-  return SD_workstation_priv(workstation)->data;
+  return sg_host_sd(workstation)->data;
 }
 
 /**
@@ -141,7 +128,7 @@ void *SD_workstation_get_data(SD_workstation_t workstation)
  */
 void SD_workstation_set_data(SD_workstation_t workstation, void *data)
 {
-  SD_workstation_priv(workstation)->data = data;
+	sg_host_sd(workstation)->data = data;
 }
 
 /**
@@ -192,7 +179,7 @@ void SD_workstation_dump(SD_workstation_t ws)
   XBT_INFO("Displaying workstation %s", SD_workstation_get_name(ws));
   XBT_INFO("  - power: %.0f", SD_workstation_get_power(ws));
   XBT_INFO("  - available power: %.2f", SD_workstation_get_available_power(ws));
-  switch (SD_workstation_priv(ws)->access_mode){
+  switch (sg_host_sd(ws)->access_mode){
   case SD_WORKSTATION_SHARED_ACCESS:
       XBT_INFO("  - access mode: Space shared");
       break;
@@ -234,7 +221,6 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
   void *surf_src;
   void *surf_dst;
   xbt_dynar_t surf_route;
-  const char *link_name;
   void *surf_link;
   unsigned int cpt;
 
@@ -250,9 +236,7 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
 		                                        surf_src, surf_dst);
 
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
-    link_name = surf_resource_name(surf_link);
-    sd_global->recyclable_route[cpt] =
-        xbt_lib_get_or_null(link_lib, link_name, SD_LINK_LEVEL);
+    sd_global->recyclable_route[cpt] = surf_link;
   }
   return sd_global->recyclable_route;
 }
@@ -438,7 +422,7 @@ double SD_route_get_communication_time(SD_workstation_t src,
 e_SD_workstation_access_mode_t
 SD_workstation_get_access_mode(SD_workstation_t workstation)
 {
-  return SD_workstation_priv(workstation)->access_mode;
+  return sg_host_sd(workstation)->access_mode;
 }
 
 /**
@@ -464,17 +448,17 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
              access_mode != SD_WORKSTATION_SHARED_ACCESS,
              "Trying to set an invalid access mode");
 
-  if (access_mode == SD_workstation_priv(workstation)->access_mode) {
+  if (access_mode == sg_host_sd(workstation)->access_mode) {
     return;                     // nothing is changed
   }
 
-  SD_workstation_priv(workstation)->access_mode = access_mode;
+  sg_host_sd(workstation)->access_mode = access_mode;
 
   if (access_mode == SD_WORKSTATION_SHARED_ACCESS) {
-    xbt_fifo_free(SD_workstation_priv(workstation)->task_fifo);
-    SD_workstation_priv(workstation)->task_fifo = NULL;
+    xbt_fifo_free(sg_host_sd(workstation)->task_fifo);
+    sg_host_sd(workstation)->task_fifo = NULL;
   } else {
-    SD_workstation_priv(workstation)->task_fifo = xbt_fifo_new();
+	  sg_host_sd(workstation)->task_fifo = xbt_fifo_new();
   }
 }
 
@@ -528,17 +512,17 @@ int __SD_workstation_is_busy(SD_workstation_t workstation)
   XBT_DEBUG
       ("Workstation '%s' access mode: '%s', current task: %s, fifo size: %d",
        SD_workstation_get_name(workstation),
-       (SD_workstation_priv(workstation)->access_mode ==
+       (sg_host_sd(workstation)->access_mode ==
         SD_WORKSTATION_SHARED_ACCESS) ? "SHARED" : "FIFO",
-       (SD_workstation_priv(workstation)->current_task ?
-        SD_task_get_name(SD_workstation_priv(workstation)->current_task)
+       (sg_host_sd(workstation)->current_task ?
+        SD_task_get_name(sg_host_sd(workstation)->current_task)
         : "none"),
-       (SD_workstation_priv(workstation)->task_fifo ? xbt_fifo_size(SD_workstation_priv(workstation)->task_fifo) :
+       (sg_host_sd(workstation)->task_fifo ? xbt_fifo_size(sg_host_sd(workstation)->task_fifo) :
         0));
 
-  return SD_workstation_priv(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS &&
-      (SD_workstation_priv(workstation)->current_task != NULL
-       || xbt_fifo_size(SD_workstation_priv(workstation)->task_fifo) > 0);
+  return sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS &&
+      (sg_host_sd(workstation)->current_task != NULL
+       || xbt_fifo_size(sg_host_sd(workstation)->task_fifo) > 0);
 }
 
 /* Destroys a workstation.
@@ -546,6 +530,8 @@ int __SD_workstation_is_busy(SD_workstation_t workstation)
 void __SD_workstation_destroy(void *workstation)
 {
 
+  if (workstation==NULL)
+	  return;
   SD_workstation_priv_t w;
 
   /* workstation->surf_workstation is freed by surf_exit and workstation->data is freed by the user */
@@ -564,11 +550,11 @@ void __SD_workstation_destroy(void *workstation)
  * \param workstation a workstation */
 SD_task_t SD_workstation_get_current_task(SD_workstation_t workstation)
 {
-  xbt_assert(SD_workstation_priv(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS,
+  xbt_assert(sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS,
               "Access mode must be set to SD_WORKSTATION_SEQUENTIAL_ACCESS"
               " to use this function");
 
-  return (SD_workstation_priv(workstation)->current_task);
+  return (sg_host_sd(workstation)->current_task);
 }
 
 /**

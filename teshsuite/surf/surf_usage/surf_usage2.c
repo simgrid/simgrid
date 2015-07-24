@@ -42,8 +42,8 @@ const char *string_action(e_surf_action_state_t state)
 void test(char *platform);
 void test(char *platform)
 {
-  void *hostA = NULL;
-  void *hostB = NULL;
+  sg_host_t hostA = NULL;
+  sg_host_t hostB = NULL;
   double now = -1.0;
   int running;
 
@@ -52,19 +52,19 @@ void test(char *platform)
   parse_platform_file(platform);
 
   /*********************** HOST ***********************************/
-  hostA = surf_host_resource_by_name("Cpu A");
-  hostB = surf_host_resource_by_name("Cpu B");
+  hostA = sg_host_by_name("Cpu A");
+  hostB = sg_host_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_resource_name(hostA), hostA);
-  XBT_DEBUG("%s : %p", surf_resource_name(hostB), hostB);
+  XBT_DEBUG("%s : %p", sg_host_get_name(hostA), hostA);
+  XBT_DEBUG("%s : %p", sg_host_get_name(hostB), hostB);
 
   /* Let's do something on it */
   surf_host_execute(hostA, 1000.0);
   surf_host_execute(hostB, 1000.0);
   surf_host_sleep(hostB, 7.32);
 
-  surf_host_model_communicate(surf_host_model, hostA, hostB, 150.0, -1.0);
+  surf_network_model_communicate(surf_network_model, hostA, hostB, 150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {

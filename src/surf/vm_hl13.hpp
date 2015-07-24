@@ -18,10 +18,7 @@
  ***********/
 
 class VMHL13Model;
-typedef VMHL13Model *VMHL13ModelPtr;
-
 class VMHL13;
-typedef VMHL13 *VMHL13Ptr;
 
 /*********
  * Model *
@@ -31,15 +28,14 @@ public:
   VMHL13Model();
   ~VMHL13Model(){};
 
-  VMPtr createVM(const char *name, surf_resource_t host_PM);
+  VM *createVM(const char *name, surf_resource_t host_PM);
   double shareResources(double now);
   void adjustWeightOfDummyCpuActions() {};
-  ActionPtr communicate(HostPtr src, HostPtr dst, double size, double rate);
-  ActionPtr executeParallelTask(int host_nb,
-                                          void **host_list,
-                                          double *flops_amount,
-                                          double *bytes_amount,
-                                          double rate);
+  Action *executeParallelTask(int host_nb,
+                              sg_host_t *host_list,
+							  double *flops_amount,
+							  double *bytes_amount,
+							  double rate);
   void updateActionsState(double /*now*/, double /*delta*/);
 };
 
@@ -49,7 +45,7 @@ public:
 
 class VMHL13 : public VM {
 public:
-  VMHL13(VMModelPtr model, const char* name, xbt_dict_t props, surf_resource_t host_PM);
+  VMHL13(VMModel *model, const char* name, xbt_dict_t props, surf_resource_t host_PM);
   ~VMHL13();
 
   void suspend();
@@ -66,14 +62,14 @@ public:
   surf_resource_t getPm(); // will be vm_ws_get_pm()
 
   void setBound(double bound);
-  void setAffinity(CpuPtr cpu, unsigned long mask);
+  void setAffinity(Cpu *cpu, unsigned long mask);
 
   //FIXME: remove
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   bool isUsed();
 
-  ActionPtr execute(double size);
-  ActionPtr sleep(double duration);
+  Action *execute(double size);
+  Action *sleep(double duration);
 };
 
 /**********

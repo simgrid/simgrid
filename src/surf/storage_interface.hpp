@@ -16,13 +16,8 @@ extern xbt_dynar_t mount_list;
  ***********/
 
 class StorageModel;
-typedef StorageModel *StorageModelPtr;
-
 class Storage;
-typedef Storage *StoragePtr;
-
 class StorageAction;
-typedef StorageAction *StorageActionPtr;
 
 /*************
  * Callbacks *
@@ -30,27 +25,27 @@ typedef StorageAction *StorageActionPtr;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage creation *
- * @details Callback functions have the following signature: `void(StoragePtr)`
+ * @details Callback functions have the following signature: `void(Storage*)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, StoragePtr)) storageCreatedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, Storage*)) storageCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage destruction *
  * @details Callback functions have the following signature: `void(StoragePtr)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, StoragePtr)) storageDestructedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, Storage*)) storageDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage State changed *
- * @details Callback functions have the following signature: `void(StorageActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @details Callback functions have the following signature: `void(StorageAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, StoragePtr, e_surf_resource_state_t, e_surf_resource_state_t)) storageStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, Storage*, e_surf_resource_state_t, e_surf_resource_state_t)) storageStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
- * @details Callback functions have the following signature: `void(StorageActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
+ * @details Callback functions have the following signature: `void(StorageAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, StorageActionPtr, e_surf_action_state_t, e_surf_action_state_t)) storageActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, StorageAction*, e_surf_action_state_t, e_surf_action_state_t)) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -82,12 +77,14 @@ public:
    * @param attach [description]
    * @return The created Storage
    */
-  virtual StoragePtr createStorage(const char* id,
+  virtual Storage *createStorage(const char* id,
                                     const char* type_id,
                                     const char* content_name,
                                     const char* content_type,
                                     xbt_dict_t properties,
                                     const char *attach) = 0;
+
+  bool shareResourcesIsIdempotent() {return true;}
 
   xbt_dynar_t p_storageList;
 };
@@ -112,7 +109,7 @@ public:
    * @param content_type [description]
    * @param size [description]
    */
-  Storage(ModelPtr model, const char *name, xbt_dict_t props,
+  Storage(Model *model, const char *name, xbt_dict_t props,
           const char* type_id, char *content_name, char *content_type,
           sg_size_t size);
 
@@ -132,7 +129,7 @@ public:
    * @param size [description]
    * @param attach [description]
    */
-  Storage(ModelPtr model, const char *name, xbt_dict_t props,
+  Storage(Model *model, const char *name, xbt_dict_t props,
           lmm_system_t maxminSystem, double bread, double bwrite,
           double bconnection,
           const char* type_id, char *content_name, char *content_type,
@@ -176,7 +173,7 @@ public:
    *
    * @return The StorageAction corresponding to the opening
    */
-  virtual StorageActionPtr open(const char* mount, const char* path)=0;
+  virtual StorageAction *open(const char* mount, const char* path)=0;
 
   /**
    * @brief Close a file
@@ -184,7 +181,7 @@ public:
    * @param fd The file descriptor to close
    * @return The StorageAction corresponding to the closing
    */
-  virtual StorageActionPtr close(surf_file_t fd)=0;
+  virtual StorageAction *close(surf_file_t fd)=0;
 
   /**
    * @brief Read a file
@@ -193,7 +190,7 @@ public:
    * @param size The size in bytes to read
    * @return The StorageAction corresponding to the reading
    */
-  virtual StorageActionPtr read(surf_file_t fd, sg_size_t size)=0;
+  virtual StorageAction *read(surf_file_t fd, sg_size_t size)=0;
 
   /**
    * @brief Write a file
@@ -202,7 +199,7 @@ public:
    * @param size The size in bytes to write
    * @return The StorageAction corresponding to the writing
    */
-  virtual StorageActionPtr write(surf_file_t fd, sg_size_t size)=0;
+  virtual StorageAction *write(surf_file_t fd, sg_size_t size)=0;
 
   /**
    * @brief Get the content of the current Storage
@@ -270,7 +267,7 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(ModelPtr model, double cost, bool failed, StoragePtr storage,
+  StorageAction(Model *model, double cost, bool failed, Storage *storage,
       e_surf_action_storage_type_t type);
 
     /**
@@ -283,13 +280,13 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(ModelPtr model, double cost, bool failed, lmm_variable_t var,
-      StoragePtr storage, e_surf_action_storage_type_t type);
+  StorageAction(Model *model, double cost, bool failed, lmm_variable_t var,
+      Storage *storage, e_surf_action_storage_type_t type);
 
   void setState(e_surf_action_state_t state);
 
   e_surf_action_storage_type_t m_type;
-  StoragePtr p_storage;
+  Storage *p_storage;
   surf_file_t p_file;
   double progress;
 };

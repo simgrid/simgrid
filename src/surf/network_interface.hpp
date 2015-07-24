@@ -3,9 +3,14 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include <boost/unordered_map.hpp>
+
 #include "xbt/fifo.h"
 #include "surf_interface.hpp"
 #include "surf_routing.hpp"
+
+#include "simgrid/link.h"
 
 #ifndef SURF_NETWORK_INTERFACE_HPP_
 #define SURF_NETWORK_INTERFACE_HPP_
@@ -14,47 +19,41 @@
  * Classes *
  ***********/
 class NetworkModel;
-typedef NetworkModel *NetworkModelPtr;
-
-class NetworkLink;
-typedef NetworkLink *NetworkLinkPtr;
-
 class NetworkAction;
-typedef NetworkAction *NetworkActionPtr;
 
 /*************
  * Callbacks *
  *************/
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emits the callbacks after NetworkLink creation
- * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
+ * @brief Callbacks handler which emits the callbacks after Link creation
+ * @details Callback functions have the following signature: `void(Link*)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, NetworkLinkPtr)) networkLinkCreatedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, Link*)) networkLinkCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emits the callbacks after NetworkLink destruction
- * @details Callback functions have the following signature: `void(NetworkLinkPtr)`
+ * @brief Callbacks handler which emits the callbacks after Link destruction
+ * @details Callback functions have the following signature: `void(Link*)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, NetworkLinkPtr)) networkLinkDestructedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, Link*)) networkLinkDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emits the callbacks after NetworkLink State changed
- * @details Callback functions have the following signature: `void(NetworkLinkActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @brief Callbacks handler which emits the callbacks after Link State changed
+ * @details Callback functions have the following signature: `void(LinkAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, Link*, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after NetworkAction State changed
- * @details Callback functions have the following signature: `void(NetworkActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
+ * @details Callback functions have the following signature: `void(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t)) networkActionStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)) networkActionStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after communication created
- * @details Callback functions have the following signature: `void(NetworkActionPtr action, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate)`
+ * @details Callback functions have the following signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate)) networkCommunicateCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, NetworkAction*, RoutingEdge *src, RoutingEdge *dst, double size, double rate)) networkCommunicateCallbacks;
 
 /*********
  * Tools *
@@ -72,26 +71,10 @@ XBT_PUBLIC(void) net_add_traces();
  */
 class NetworkModel : public Model {
 public:
-  /**
-   * @brief NetworkModel constructor
-   */
-  NetworkModel() : Model("network") {
-    f_networkSolve = lmm_solve;
-  };
+  /** @brief Constructor */
+  NetworkModel() : Model() { }
 
-  /**
-   * @brief NetworkModel constructor
-   *
-   * @param name The name of the NetworkModel
-   */
-  NetworkModel(const char *name) : Model(name) {
-	f_networkSolve = lmm_solve;
-	m_haveGap = false;
-  };
-
-  /**
-   * @brief The destructor of the NetworkModel
-   */
+  /** @brief Destructor */
   ~NetworkModel() {
 	if (p_maxminSystem)
 	  lmm_system_free(p_maxminSystem);
@@ -102,20 +85,20 @@ public:
   }
 
   /**
-   * @brief Create a NetworkLink
+   * @brief Create a Link
    *
-   * @param name The name of the NetworkLink
-   * @param bw_initial The initial bandwidth of the NetworkLink in bytes per second
-   * @param bw_trace The trace associated to the NetworkLink bandwidth
-   * @param lat_initial The initial latency of the NetworkLink in seconds
-   * @param lat_trace The trace associated to the NetworkLink latency
-   * @param state_initial The initial NetworkLink (state)[e_surf_resource_state_t]
-   * @param state_trace The trace associated to the NetworkLink (state)[e_surf_resource_state_t]
-   * @param policy The sharing policy of the NetworkLink
+   * @param name The name of the Link
+   * @param bw_initial The initial bandwidth of the Link in bytes per second
+   * @param bw_trace The trace associated to the Link bandwidth
+   * @param lat_initial The initial latency of the Link in seconds
+   * @param lat_trace The trace associated to the Link latency
+   * @param state_initial The initial Link (state)[e_surf_resource_state_t]
+   * @param state_trace The trace associated to the Link (state)[e_surf_resource_state_t]
+   * @param policy The sharing policy of the Link
    * @param properties Dictionary of properties associated to this Resource
-   * @return The created NetworkLink
+   * @return The created Link
    */
-  virtual NetworkLinkPtr createNetworkLink(const char *name,
+  virtual Link* createLink(const char *name,
                                    double bw_initial,
                                    tmgr_trace_t bw_trace,
                                    double lat_initial,
@@ -125,7 +108,7 @@ public:
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties)=0;
 
-  virtual void gapAppend(double /*size*/, const NetworkLinkPtr /*link*/, NetworkActionPtr /*action*/) {};
+  virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction */*action*/) {};
 
   /**
    * @brief Create a communication between two hosts.
@@ -139,15 +122,14 @@ public:
    * unlimited.
    * @return The action representing the communication
    */
-  virtual ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
+  virtual Action *communicate(RoutingEdge *src, RoutingEdge *dst,
 		                           double size, double rate)=0;
 
-  /**
-   * @brief Function pointer to the function to use to solve the lmm_system_t
+  /** @brief Function pointer to the function to use to solve the lmm_system_t
    *
    * @param system The lmm_system_t to solve
    */
-  void (*f_networkSolve)(lmm_system_t);
+  void (*f_networkSolve)(lmm_system_t) = lmm_solve;
 
   /**
    * @brief Get the right multiplicative factor for the latency.
@@ -184,7 +166,7 @@ public:
    */
   virtual double bandwidthConstraint(double rate, double bound, double size);
   double shareResourcesFull(double now);
-  bool m_haveGap;
+  bool m_haveGap = false;
 };
 
 /************
@@ -192,75 +174,57 @@ public:
  ************/
  /** @ingroup SURF_network_interface
   * @brief SURF network link interface class
-  * @details A NetworkLink represents the link between two [hosts](\ref Host)
+  * @details A Link represents the link between two [hosts](\ref Host)
   */
-class NetworkLink : public Resource {
+class Link : public Resource {
 public:
   /**
-   * @brief NetworkLink constructor
+   * @brief Link constructor
    *
-   * @param model The NetworkModel associated to this NetworkLink
-   * @param name The name of the NetworkLink
-   * @param props Dictionary of properties associated to this NetworkLink
+   * @param model The NetworkModel associated to this Link
+   * @param name The name of the Link
+   * @param props Dictionary of properties associated to this Link
    */
-  NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props);
+  Link(NetworkModel *model, const char *name, xbt_dict_t props);
 
   /**
-   * @brief NetworkLink constructor
+   * @brief Link constructor
    *
-   * @param model The NetworkModel associated to this NetworkLink
-   * @param name The name of the NetworkLink
-   * @param props Dictionary of properties associated to this NetworkLink
+   * @param model The NetworkModel associated to this Link
+   * @param name The name of the Link
+   * @param props Dictionary of properties associated to this Link
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
    * @param history [TODO]
    * @param state_trace [TODO]
    */
-  NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props,
+  Link(NetworkModel *model, const char *name, xbt_dict_t props,
               lmm_constraint_t constraint,
               tmgr_history_t history,
               tmgr_trace_t state_trace);
 
-  /**
-   * @brief NetworkLink destructor
-   */
-  ~NetworkLink();
+  /** @brief Link destructor */
+  ~Link();
 
-  /**
-   * @brief Get the bandwidth in bytes per second of current NetworkLink
-   *
-   * @return The bandwith in bytes per second of the current NetworkLink
-   */
+  /** @brief Get the bandwidth in bytes per second of current Link */
   virtual double getBandwidth();
 
-  /**
-   * @brief Update the bandwidth in bytes per second of current NetworkLink
-   */
+  /** @brief Update the bandwidth in bytes per second of current Link */
   virtual void updateBandwidth(double value, double date=surf_get_clock())=0;
 
-  /**
-   * @brief Get the latency in seconds of current NetworkLink
-   *
-   * @return The latency in seconds of the current NetworkLink
-   */
+  /** @brief Get the latency in seconds of current Link */
   virtual double getLatency();
 
-  /**
-   * @brief Update the latency in seconds of current NetworkLink
-   */
+  /** @brief Update the latency in seconds of current Link */
   virtual void updateLatency(double value, double date=surf_get_clock())=0;
 
   /**
-   * @brief Check if the NetworkLink is shared
+   * @brief Check if the Link is shared
    *
    * @return true if the current NetwokrLink is shared, false otherwise
    */
   virtual bool isShared();
 
-  /**
-   * @brief Check if the NetworkLink is used
-   *
-   * @return true if the current NetwokrLink is used, false otherwise
-   */
+  /** @brief Check if the Link is used */
   bool isUsed();
 
   void setState(e_surf_resource_state_t state);
@@ -271,8 +235,24 @@ public:
   tmgr_trace_event_t p_latEvent;
 
   /* LMM */
-  tmgr_trace_event_t p_stateEvent;
+  tmgr_trace_event_t p_stateEvent = NULL;
   s_surf_metric_t p_power;
+
+  /* User data */
+public:
+  void *getData()        { return userData;}
+  void  setData(void *d) { userData=d;}
+private:
+  void *userData = NULL;
+
+  /* List of all links */
+private:
+  static boost::unordered_map<std::string, Link *> *links;
+public:
+  static Link *byName(const char* name);
+  static int linksAmount();
+  static Link **linksList();
+  static void linksExit();
 };
 
 /**********
@@ -280,19 +260,17 @@ public:
  **********/
 /** @ingroup SURF_network_interface
  * @brief SURF network action interface class
- * @details A NetworkAction represents a communication between two
- * [hosts](\ref Host)
+ * @details A NetworkAction represents a communication between two [hosts](\ref Host)
  */
 class NetworkAction : public Action {
 public:
-  /**
-   * @brief NetworkAction constructor
+  /** @brief Constructor
    *
    * @param model The NetworkModel associated to this NetworkAction
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]
    */
-  NetworkAction(ModelPtr model, double cost, bool failed)
+  NetworkAction(Model *model, double cost, bool failed)
   : Action(model, cost, failed) {}
 
   /**
@@ -304,7 +282,7 @@ public:
    * @param var The lmm variable associated to this Action if it is part of a
    * LMM component
    */
-  NetworkAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+  NetworkAction(Model *model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {};
 
   void setState(e_surf_action_state_t state);

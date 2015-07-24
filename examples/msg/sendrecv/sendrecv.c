@@ -48,7 +48,7 @@ int sender(int argc, char *argv[])
 
   XBT_INFO("host = %s", argv[1]);
 
-  host = MSG_get_host_by_name(argv[1]);
+  host = MSG_host_by_name(argv[1]);
 
   if (host == NULL) {
     XBT_INFO("Unknown host %s. Stopping Now! ", argv[1]);

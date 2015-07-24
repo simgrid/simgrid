@@ -70,7 +70,7 @@ int master_fun(int argc, char *argv[])
     XBT_INFO("create %s on PM(%s)", vm_name, MSG_host_get_name(pm));
     msg_vm_t vm = MSG_vm_create_core(pm, vm_name);
 
-    s_ws_params_t params;
+    s_vm_params_t params;
     memset(&params, 0, sizeof(params));
     params.ramsize = 1L * 1024 * 1024 * 1024; // 1Gbytes
     MSG_host_set_params(vm, &params);

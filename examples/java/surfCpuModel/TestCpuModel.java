@@ -35,7 +35,7 @@ public class TestCpuModel {
     /* construct the platform and deploy the application */
     Msg.createEnvironment(args[0]);
     Msg.deployApplication(args[1]);
-    Msg.info("Cpu Loaded: "+Surf.getCpuModel().getName());
+    Msg.info("Cpu Loaded: "+Surf.getCpuModel().getClass().getName());
 
     /*  execute the simulation. */
     Msg.run();

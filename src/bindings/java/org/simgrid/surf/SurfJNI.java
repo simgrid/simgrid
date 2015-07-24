@@ -51,15 +51,15 @@ public class SurfJNI {
   public final static native void Plugin_activateCpuActionStateChangedCallback(long jarg1, Plugin jarg1_);
   public final static native void Plugin_cpuActionStateChangedCallback(long jarg1, Plugin jarg1_, long jarg2, CpuAction jarg2_, int jarg3, int jarg4);
   public final static native void Plugin_cpuActionStateChangedCallbackSwigExplicitPlugin(long jarg1, Plugin jarg1_, long jarg2, CpuAction jarg2_, int jarg3, int jarg4);
-  public final static native void Plugin_activateNetworkLinkCreatedCallback(long jarg1, Plugin jarg1_);
-  public final static native void Plugin_networkLinkCreatedCallback(long jarg1, Plugin jarg1_, long jarg2, NetworkLink jarg2_);
-  public final static native void Plugin_networkLinkCreatedCallbackSwigExplicitPlugin(long jarg1, Plugin jarg1_, long jarg2, NetworkLink jarg2_);
-  public final static native void Plugin_activateNetworkLinkDestructedCallback(long jarg1, Plugin jarg1_);
-  public final static native void Plugin_networkLinkDestructedCallback(long jarg1, Plugin jarg1_, long jarg2, NetworkLink jarg2_);
-  public final static native void Plugin_networkLinkDestructedCallbackSwigExplicitPlugin(long jarg1, Plugin jarg1_, long jarg2, NetworkLink jarg2_);
-  public final static native void Plugin_activateNetworkLinkStateChangedCallback(long jarg1, Plugin jarg1_);
-  public final static native void Plugin_networkLinkStateChangedCallback(long jarg1, Plugin jarg1_, long jarg2, NetworkLink jarg2_, int jarg3, int jarg4);
-  public final static native void Plugin_networkLinkStateChangedCallbackSwigExplicitPlugin(long jarg1, Plugin jarg1_, long jarg2, NetworkLink jarg2_, int jarg3, int jarg4);
+  public final static native void Plugin_activateLinkCreatedCallback(long jarg1, Plugin jarg1_);
+  public final static native void Plugin_networkLinkCreatedCallback(long jarg1, Plugin jarg1_, long jarg2, Link jarg2_);
+  public final static native void Plugin_networkLinkCreatedCallbackSwigExplicitPlugin(long jarg1, Plugin jarg1_, long jarg2, Link jarg2_);
+  public final static native void Plugin_activateLinkDestructedCallback(long jarg1, Plugin jarg1_);
+  public final static native void Plugin_networkLinkDestructedCallback(long jarg1, Plugin jarg1_, long jarg2, Link jarg2_);
+  public final static native void Plugin_networkLinkDestructedCallbackSwigExplicitPlugin(long jarg1, Plugin jarg1_, long jarg2, Link jarg2_);
+  public final static native void Plugin_activateLinkStateChangedCallback(long jarg1, Plugin jarg1_);
+  public final static native void Plugin_networkLinkStateChangedCallback(long jarg1, Plugin jarg1_, long jarg2, Link jarg2_, int jarg3, int jarg4);
+  public final static native void Plugin_networkLinkStateChangedCallbackSwigExplicitPlugin(long jarg1, Plugin jarg1_, long jarg2, Link jarg2_, int jarg3, int jarg4);
   public final static native void Plugin_activateNetworkActionStateChangedCallback(long jarg1, Plugin jarg1_);
   public final static native void Plugin_networkActionStateChangedCallback(long jarg1, Plugin jarg1_, long jarg2, NetworkAction jarg2_, int jarg3, int jarg4);
   public final static native void Plugin_networkActionStateChangedCallbackSwigExplicitPlugin(long jarg1, Plugin jarg1_, long jarg2, NetworkAction jarg2_, int jarg3, int jarg4);
@@ -72,7 +72,6 @@ public class SurfJNI {
   public final static native void delete_TmgrTrace(long jarg1);
   public final static native long TmgrTraceEvent_getIdx(long jarg1, TmgrTraceEvent jarg1_);
   public final static native void delete_TmgrTraceEvent(long jarg1);
-  public final static native String Model_getName(long jarg1, Model jarg1_);
   public final static native double Model_shareResources(long jarg1, Model jarg1_, double jarg2);
   public final static native double Model_shareResourcesLazy(long jarg1, Model jarg1_, double jarg2);
   public final static native double Model_shareResourcesFull(long jarg1, Model jarg1_, double jarg2);
@@ -82,7 +81,7 @@ public class SurfJNI {
   public final static native long Model_getRunningActionSet(long jarg1, Model jarg1_);
   public final static native void Model_addTraces(long jarg1, Model jarg1_);
   public final static native void delete_Model(long jarg1);
-  public final static native long new_CpuModel(String jarg1);
+  public final static native long new_CpuModel();
   public final static native void delete_CpuModel(long jarg1);
   public final static native long CpuModel_createCpu(long jarg1, CpuModel jarg1_, String jarg2, double[] jarg3, int jarg4, double jarg5, long jarg6, TmgrTrace jarg6_, int jarg7, int jarg8, long jarg9, TmgrTrace jarg9_, long jarg10, XbtDict jarg10_);
   public final static native void CpuModel_director_connect(CpuModel obj, long cptr, boolean mem_own, boolean weak_global);
@@ -115,13 +114,13 @@ public class SurfJNI {
   public final static native void Cpu_setState(long jarg1, Cpu jarg1_, int jarg2);
   public final static native void Cpu_director_connect(Cpu obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void Cpu_change_ownership(Cpu obj, long cptr, boolean take_or_release);
-  public final static native void delete_NetworkLink(long jarg1);
-  public final static native double NetworkLink_getBandwidth(long jarg1, NetworkLink jarg1_);
-  public final static native void NetworkLink_updateBandwidth__SWIG_0(long jarg1, NetworkLink jarg1_, double jarg2, double jarg3);
-  public final static native void NetworkLink_updateBandwidth__SWIG_1(long jarg1, NetworkLink jarg1_, double jarg2);
-  public final static native double NetworkLink_getLatency(long jarg1, NetworkLink jarg1_);
-  public final static native void NetworkLink_updateLatency__SWIG_0(long jarg1, NetworkLink jarg1_, double jarg2, double jarg3);
-  public final static native void NetworkLink_updateLatency__SWIG_1(long jarg1, NetworkLink jarg1_, double jarg2);
+  public final static native void delete_Link(long jarg1);
+  public final static native double Link_getBandwidth(long jarg1, Link jarg1_);
+  public final static native void Link_updateBandwidth__SWIG_0(long jarg1, Link jarg1_, double jarg2, double jarg3);
+  public final static native void Link_updateBandwidth__SWIG_1(long jarg1, Link jarg1_, double jarg2);
+  public final static native double Link_getLatency(long jarg1, Link jarg1_);
+  public final static native void Link_updateLatency__SWIG_0(long jarg1, Link jarg1_, double jarg2, double jarg3);
+  public final static native void Link_updateLatency__SWIG_1(long jarg1, Link jarg1_, double jarg2);
   public final static native long new_Action(long jarg1, Model jarg1_, double jarg2, boolean jarg3);
   public final static native void delete_Action(long jarg1);
   public final static native long Action_getModel(long jarg1, Action jarg1_);
@@ -157,7 +156,7 @@ public class SurfJNI {
   public final static native int SURF_RESOURCE_OFF_get();
   public final static native long CpuModel_SWIGUpcast(long jarg1);
   public final static native long Cpu_SWIGUpcast(long jarg1);
-  public final static native long NetworkLink_SWIGUpcast(long jarg1);
+  public final static native long Link_SWIGUpcast(long jarg1);
   public final static native long CpuAction_SWIGUpcast(long jarg1);
   public final static native long NetworkAction_SWIGUpcast(long jarg1);
 
@@ -174,13 +173,13 @@ public class SurfJNI {
     self.cpuActionStateChangedCallback((action == 0) ? null : new CpuAction(action, false), ActionState.swigToEnum(arg1), ActionState.swigToEnum(arg2));
   }
   public static void SwigDirector_Plugin_networkLinkCreatedCallback(Plugin self, long link) {
-    self.networkLinkCreatedCallback((link == 0) ? null : new NetworkLink(link, false));
+    self.networkLinkCreatedCallback((link == 0) ? null : new Link(link, false));
   }
   public static void SwigDirector_Plugin_networkLinkDestructedCallback(Plugin self, long link) {
-    self.networkLinkDestructedCallback((link == 0) ? null : new NetworkLink(link, false));
+    self.networkLinkDestructedCallback((link == 0) ? null : new Link(link, false));
   }
   public static void SwigDirector_Plugin_networkLinkStateChangedCallback(Plugin self, long link, int arg1, int arg2) {
-    self.networkLinkStateChangedCallback((link == 0) ? null : new NetworkLink(link, false), ResourceState.swigToEnum(arg1), ResourceState.swigToEnum(arg2));
+    self.networkLinkStateChangedCallback((link == 0) ? null : new Link(link, false), ResourceState.swigToEnum(arg1), ResourceState.swigToEnum(arg2));
   }
   public static void SwigDirector_Plugin_networkActionStateChangedCallback(Plugin self, long action, int old, int cur) {
     self.networkActionStateChangedCallback((action == 0) ? null : new NetworkAction(action, false), ActionState.swigToEnum(old), ActionState.swigToEnum(cur));

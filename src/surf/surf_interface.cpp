@@ -194,9 +194,6 @@ static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
 double NOW = 0;
-double *surf_mins = NULL; /* return value of share_resources for each model */
-int surf_min_index;       /* current index in surf_mins */
-double surf_min;               /* duration determined by surf_solve */
 
 double surf_get_clock(void)
 {
@@ -233,40 +230,12 @@ FILE *surf_fopen(const char *name, const char *mode)
   return NULL;
 }
 
-
-#ifndef MAX_DRIVE
-#define MAX_DRIVE 26
-#endif
-
 #ifdef _XBT_WIN32
 #include <windows.h>
+#define MAX_DRIVE 26
 static const char *disk_drives_letter_table[MAX_DRIVE] = {
-  "A:\\",
-  "B:\\",
-  "C:\\",
-  "D:\\",
-  "E:\\",
-  "F:\\",
-  "G:\\",
-  "H:\\",
-  "I:\\",
-  "J:\\",
-  "K:\\",
-  "L:\\",
-  "M:\\",
-  "N:\\",
-  "O:\\",
-  "P:\\",
-  "Q:\\",
-  "R:\\",
-  "S:\\",
-  "T:\\",
-  "U:\\",
-  "V:\\",
-  "W:\\",
-  "X:\\",
-  "Y:\\",
-  "Z:\\"
+  "A:\\","B:\\","C:\\","D:\\","E:\\","F:\\","G:\\","H:\\","I:\\","J:\\","K:\\","L:\\","M:\\",
+  "N:\\","O:\\","P:\\","Q:\\","R:\\","S:\\","T:\\","U:\\","V:\\","W:\\","X:\\","Y:\\","Z:\\"
 };
 #endif
 
@@ -354,37 +323,39 @@ int find_model_description(s_surf_model_description_t * table,
   return -1;
 }
 
-static XBT_INLINE void routing_asr_host_free(void *p)
-{
-  delete ((RoutingEdgePtr) p);
-}
-
 static XBT_INLINE void routing_asr_prop_free(void *p)
 {
-  xbt_dict_t elm = (xbt_dict_t) p;
-  xbt_dict_free(&elm);
-}
-
-static XBT_INLINE void surf_cpu_free(void *r)
-{
-  delete static_cast<CpuPtr>(r);
-}
-
-static XBT_INLINE void surf_link_free(void *r)
-{
-  delete static_cast<NetworkLinkPtr>(r);
+  //xbt_dict_t elm = (xbt_dict_t) p;
+  //xbt_dict_free(&elm); FIXME: leaking in some case? That's a sometimes double-free with AsCluster::~AsCluster
 }
 
 static XBT_INLINE void surf_host_free(void *r)
 {
-  delete static_cast<HostPtr>(r);
+  delete static_cast<Host*>(r);
 }
 
 static XBT_INLINE void surf_storage_free(void *r)
 {
-  delete static_cast<StoragePtr>(r);
+  delete static_cast<Storage*>(r);
 }
 
+void sg_version_check(int lib_version_major,int lib_version_minor,int lib_version_patch) {
+    if ((lib_version_major != SIMGRID_VERSION_MAJOR) || (lib_version_minor != SIMGRID_VERSION_MINOR)) {
+      fprintf(stderr,
+    		  "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
+    		  "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
+              SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,
+			  lib_version_major,lib_version_minor,lib_version_patch);
+      abort();
+    }
+    if (lib_version_patch != SIMGRID_VERSION_PATCH) {
+        fprintf(stderr,
+      		  "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
+      		  "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
+                SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,
+  			  lib_version_major,lib_version_minor,lib_version_patch);
+    }
+}
 
 void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
   *ver_major = SIMGRID_VERSION_MAJOR;
@@ -396,29 +367,26 @@ void surf_init(int *argc, char **argv)
 {
   XBT_DEBUG("Create all Libs");
   host_lib = xbt_lib_new();
-  link_lib = xbt_lib_new();
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
   file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(NULL);
 
+  sg_host_init();
+
   XBT_DEBUG("Add routing levels");
-  ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
-  ROUTING_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,routing_asr_host_free);
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");
-  SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_cpu_free);
   SURF_HOST_LEVEL = xbt_lib_add_level(host_lib,surf_host_free);
-  SURF_LINK_LEVEL = xbt_lib_add_level(link_lib,surf_link_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);
   if (!model_list)
-    model_list = xbt_dynar_new(sizeof(ModelPtr), NULL);
+    model_list = xbt_dynar_new(sizeof(Model*), NULL);
   if (!model_list_invoke)
-    model_list_invoke = xbt_dynar_new(sizeof(ModelPtr), NULL);
+    model_list_invoke = xbt_dynar_new(sizeof(Model*), NULL);
   if (!history)
     history = tmgr_history_new();
 
@@ -434,7 +402,7 @@ void surf_init(int *argc, char **argv)
 void surf_exit(void)
 {
   unsigned int iter;
-  ModelPtr model = NULL;
+  Model *model = NULL;
 
   TRACE_end();                  /* Just in case it was not called by the upper
                                  * layer (or there is no upper layer) */
@@ -445,9 +413,9 @@ void surf_exit(void)
   xbt_dynar_free(&surf_path);
 
   xbt_lib_free(&host_lib);
-  xbt_lib_free(&link_lib);
   xbt_lib_free(&as_router_lib);
   xbt_lib_free(&storage_lib);
+  sg_link_exit();
   xbt_lib_free(&storage_type_lib);
   xbt_lib_free(&file_lib);
   xbt_dict_free(&watched_hosts_lib);
@@ -473,9 +441,6 @@ void surf_exit(void)
   xbt_parmap_destroy(surf_parmap);
 #endif
 
-  xbt_free(surf_mins);
-  surf_mins = NULL;
-
   tmgr_finalize();
   surf_parse_lex_destroy();
   surf_parse_free_callbacks();
@@ -487,9 +452,8 @@ void surf_exit(void)
  * Model *
  *********/
 
-Model::Model(const char *name)
+Model::Model()
   : p_maxminSystem(NULL)
-  , p_name(name)
 {
   p_readyActionSet = new ActionList();
   p_runningActionSet = new ActionList();
@@ -522,7 +486,7 @@ double Model::shareResources(double now)
 
 double Model::shareResourcesLazy(double now)
 {
-  ActionPtr action = NULL;
+  Action *action = NULL;
   double min = -1;
   double share;
 
@@ -601,11 +565,11 @@ double Model::shareResourcesFull(double /*now*/) {
   THROW_UNIMPLEMENTED;
 }
 
-double Model::shareResourcesMaxMin(ActionListPtr running_actions,
+double Model::shareResourcesMaxMin(ActionList *running_actions,
                           lmm_system_t sys,
                           void (*solve) (lmm_system_t))
 {
-  ActionPtr action = NULL;
+  Action *action = NULL;
   double min = -1;
   double value = -1;
 
@@ -684,17 +648,17 @@ Resource::Resource()
 : p_name(NULL), p_properties(NULL), p_model(NULL)
 {}
 
-Resource::Resource(ModelPtr model, const char *name, xbt_dict_t props)
+Resource::Resource(Model *model, const char *name, xbt_dict_t props)
   : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
   , m_running(true), m_stateCurrent(SURF_RESOURCE_ON)
 {}
 
-Resource::Resource(ModelPtr model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
+Resource::Resource(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
   : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
   , m_running(true), m_stateCurrent(SURF_RESOURCE_ON), p_constraint(constraint)
 {}
 
-Resource::Resource(ModelPtr model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
+Resource::Resource(Model *model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
   : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
   , m_running(true), m_stateCurrent(stateInit)
 {}
@@ -733,7 +697,7 @@ void Resource::turnOff()
   }
 }
 
-ModelPtr Resource::getModel() {
+Model *Resource::getModel() {
   return p_model;
 }
 
@@ -764,7 +728,7 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-void Action::initialize(ModelPtr model, double cost, bool failed,
+void Action::initialize(Model *model, double cost, bool failed,
                         lmm_variable_t var)
 {
   m_priority = 1.0;
@@ -772,7 +736,6 @@ void Action::initialize(ModelPtr model, double cost, bool failed,
   m_remains = cost;
   m_maxDuration = NO_MAX_DURATION;
   m_finish = -1.0;
-  m_failed = failed;
   m_start = surf_get_clock();
   m_cost = cost;
   p_model = model;
@@ -782,34 +745,25 @@ void Action::initialize(ModelPtr model, double cost, bool failed,
   m_lastUpdate = 0;
   m_suspended = false;
   m_hat = NOTSET;
+  p_category = NULL;
+  p_stateHookup.prev = 0;
+  p_stateHookup.next = 0;
+  if (failed)
+    p_stateSet = getModel()->getFailedActionSet();
+  else
+    p_stateSet = getModel()->getRunningActionSet();
+
+  p_stateSet->push_back(*this);
 }
 
-Action::Action(ModelPtr model, double cost, bool failed)
+Action::Action(Model *model, double cost, bool failed)
 {
   initialize(model, cost, failed);
-  p_category = NULL;
-  p_stateHookup.prev = 0;
-  p_stateHookup.next = 0;
-  if (failed)
-    p_stateSet = getModel()->getFailedActionSet();
-  else
-    p_stateSet = getModel()->getRunningActionSet();
-
-  p_stateSet->push_back(*this);
 }
 
-Action::Action(ModelPtr model, double cost, bool failed, lmm_variable_t var)
+Action::Action(Model *model, double cost, bool failed, lmm_variable_t var)
 {
   initialize(model, cost, failed, var);
-  p_category = NULL;
-  p_stateHookup.prev = 0;
-  p_stateHookup.next = 0;
-  if (failed)
-    p_stateSet = getModel()->getFailedActionSet();
-  else
-    p_stateSet = getModel()->getRunningActionSet();
-
-  p_stateSet->push_back(*this);
 }
 
 Action::~Action() {
@@ -1008,7 +962,7 @@ void Action::heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat)
 
 /* added to manage the communication action's heap */
 void surf_action_lmm_update_index_heap(void *action, int i) {
-  ((ActionPtr)action)->updateIndexHeap(i);
+  static_cast<Action*>(action)->updateIndexHeap(i);
 }
 
 void Action::updateIndexHeap(int i) {
@@ -1057,7 +1011,7 @@ void Action::updateRemainingLazy(double now)
     double_update(&m_remains, m_lastValue * delta, sg_surf_precision*sg_maxmin_precision);
 
     if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
-      ResourcePtr cpu = static_cast<ResourcePtr>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
+      Resource *cpu = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
       TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
     XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);

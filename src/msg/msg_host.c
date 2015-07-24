@@ -26,9 +26,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
  */
 
 /********************************* Host **************************************/
-msg_host_t __MSG_host_create(smx_host_t host)
+msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our parameter
 {
-  const char *name = SIMIX_host_get_name(host);
   msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
 
 #ifdef MSG_USE_DEPRECATED
@@ -55,11 +54,10 @@ msg_host_t __MSG_host_create(smx_host_t host)
 
   priv->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
 
-  xbt_lib_set(host_lib, name, MSG_HOST_LEVEL, priv);
+  sg_host_msg_set(host,priv);
   
-  return xbt_lib_get_elm_or_null(host_lib, name);
+  return host;
 }
-
 
 /** \ingroup m_host_management
  * \brief Finds a msg_host_t using its name.
@@ -68,7 +66,7 @@ msg_host_t __MSG_host_create(smx_host_t host)
  * \param name the name of an host.
  * \return the corresponding host
  */
-msg_host_t MSG_get_host_by_name(const char *name)
+msg_host_t MSG_host_by_name(const char *name)
 {
   return (msg_host_t) xbt_lib_get_elm_or_null(host_lib,name);
 }
@@ -147,6 +145,9 @@ void MSG_host_off(msg_host_t host)
  */
 void __MSG_host_priv_free(msg_host_priv_t priv)
 {
+
+  if (priv == NULL)
+	  return;
   unsigned int size = xbt_dict_size(priv->dp_objs);
   if (size > 0)
     XBT_WARN("dp_objs: %u pending task?", size);
@@ -163,15 +164,13 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
 /*
  * \brief Destroys a host (internal call only)
  */
-void __MSG_host_destroy(msg_host_t host)
+void __MSG_host_destroy(msg_host_t host) //FIXME: killme?
 {
-  const char *name = MSG_host_get_name(host);
   /* TODO:
    * What happens if VMs still remain on this host?
    * Revisit here after the surf layer gets stable.
    **/
-
-  xbt_lib_unset(host_lib, name, MSG_HOST_LEVEL, 1);
+  sg_host_msg_destroy(host);
 }
 
 /** \ingroup m_host_management
@@ -210,18 +209,7 @@ msg_host_t *MSG_get_host_table(void)
  * \remark The host order in the returned array is generally different from the host creation/declaration order in the XML platform (we use a hash table internally)
  */
 xbt_dynar_t MSG_hosts_as_dynar(void) {
-  xbt_lib_cursor_t cursor;
-  char *key;
-  void **data;
-  xbt_dynar_t res = xbt_dynar_new(sizeof(msg_host_t),NULL);
-
-  xbt_lib_foreach(host_lib, cursor, key, data) {
-    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST) {
-      xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
-      xbt_dynar_push(res, &elm);
-    }
-  }
-  return res;
+  return sg_hosts_as_dynar();
 }
 
 /** \ingroup m_host_management
@@ -346,7 +334,7 @@ int MSG_host_is_off(msg_host_t host)
  * \param host a host
  * \param params a prameter object
  */
-void MSG_host_set_params(msg_host_t host, ws_params_t params)
+void MSG_host_set_params(msg_host_t host, vm_params_t params)
 {
   simcall_host_set_params(host, params);
 }
@@ -357,7 +345,7 @@ void MSG_host_set_params(msg_host_t host, ws_params_t params)
  * \param host a host
  * \param params a prameter object
  */
-void MSG_host_get_params(msg_host_t host, ws_params_t params)
+void MSG_host_get_params(msg_host_t host, vm_params_t params)
 {
   simcall_host_get_params(host, params);
 }
@@ -440,12 +428,6 @@ double MSG_host_get_wattmin_at(msg_host_t host, int pstate){
 double MSG_host_get_wattmax_at(msg_host_t host, int pstate){
 	return simcall_host_get_wattmax_at(host, pstate);
 }
-/** \ingroup m_host_management
- * \brief Set the parameters of a given host
- *
- * \param host a host
- * \param params a prameter object
- */
 
 /** \ingroup m_host_management
  * \brief Return the list of mount point names on an host.

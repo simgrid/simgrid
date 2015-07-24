@@ -23,7 +23,7 @@ AS_t model_vivaldi_create(void)
   return new AsVivaldi();
 }
 
-void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t route, double *lat)
+void AsVivaldi::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
 
@@ -51,7 +51,7 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
       if(info.link_up) { // link up
         xbt_dynar_push_as(route->link_list, void*, info.link_up);
         if (lat)
-          *lat += static_cast<NetworkLinkPtr>(info.link_up)->getLatency();
+          *lat += static_cast<Link*>(info.link_up)->getLatency();
       }
     }
     src_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, tmp_src_name, COORD_HOST_LEVEL);
@@ -73,7 +73,7 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
       if(info.link_down) { // link down
         xbt_dynar_push_as(route->link_list,void*,info.link_down);
         if (lat)
-          *lat += static_cast<NetworkLinkPtr>(info.link_down)->getLatency();
+          *lat += static_cast<Link*>(info.link_down)->getLatency();
       }
     }
     dst_ctn = (xbt_dynar_t) xbt_lib_get_or_null(host_lib, tmp_dst_name, COORD_HOST_LEVEL);
@@ -101,7 +101,7 @@ void AsVivaldi::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_pl
   }
 }
 
-int AsVivaldi::parsePU(RoutingEdgePtr elm) {
+int AsVivaldi::parsePU(RoutingEdge *elm) {
   XBT_DEBUG("Load process unit \"%s\"", elm->getName());
   xbt_dynar_push_as(p_indexNetworkElm, sg_routing_edge_t, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;

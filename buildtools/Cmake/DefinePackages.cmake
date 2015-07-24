@@ -393,6 +393,7 @@ endif()
 
 set(SIMGRID_SRC
   src/simgrid/sg_config.c
+  src/simgrid/host.cpp
   src/simgrid/util.hpp
   )
 
@@ -464,7 +465,7 @@ set(JSURF_JAVA_GENERATED_SRC
   src/bindings/java/org/simgrid/surf/LmmVariable.java
   src/bindings/java/org/simgrid/surf/Model.java
   src/bindings/java/org/simgrid/surf/NetworkAction.java
-  src/bindings/java/org/simgrid/surf/NetworkLink.java
+  src/bindings/java/org/simgrid/surf/Link.java
   src/bindings/java/org/simgrid/surf/Plugin.java
   src/bindings/java/org/simgrid/surf/Resource.java
   src/bindings/java/org/simgrid/surf/ResourceState.java
@@ -687,6 +688,8 @@ set(headers_to_install
   include/simgrid/platf_generator.h
   include/simgrid/plugins.h
   include/simgrid/simix.h
+  include/simgrid/host.h
+  include/simgrid/link.h
   include/smpi/mpi.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h
@@ -698,6 +701,7 @@ set(headers_to_install
   include/xbt/RngStream.h
   include/xbt/asserts.h
   include/xbt/automaton.h
+  include/xbt/automaton.hpp
   include/xbt/base.h
   include/xbt/config.h
   include/xbt/cunit.h

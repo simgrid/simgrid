@@ -50,8 +50,8 @@ public class Surf {
     SurfJNI.setCpu(name, Cpu.getCPtr(cpu), cpu);
   }
 
-  public static NetworkLink[] getRoute(String srcName, String dstName) {
-     return NetworkLink.cArrayWrap(SurfJNI.getRoute(srcName, dstName), false);
+  public static Link[] getRoute(String srcName, String dstName) {
+     return Link.cArrayWrap(SurfJNI.getRoute(srcName, dstName), false);
 }
 
 }

@@ -50,14 +50,14 @@ void SIMIX_storage_destroy(void *s)
 }
 
 //SIMIX FILE READ
-void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host)
+void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   smx_synchro_t synchro = SIMIX_file_read(fd, size, host);
   xbt_fifo_push(synchro->simcalls, simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, smx_host_t host)
+smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   smx_synchro_t synchro;
 
@@ -82,14 +82,14 @@ smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, smx_host_t host)
 }
 
 //SIMIX FILE WRITE
-void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, smx_host_t host)
+void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   smx_synchro_t synchro = SIMIX_file_write(fd,  size, host);
   xbt_fifo_push(synchro->simcalls, simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, smx_host_t host)
+smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   smx_synchro_t synchro;
 
@@ -114,14 +114,14 @@ smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, smx_host_t host)
 }
 
 //SIMIX FILE OPEN
-void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, smx_host_t host)
+void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, sg_host_t host)
 {
   smx_synchro_t synchro = SIMIX_file_open(fullpath, host);
   xbt_fifo_push(synchro->simcalls, simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_open(const char* fullpath, smx_host_t host)
+smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host)
 {
   smx_synchro_t synchro;
 
@@ -146,14 +146,14 @@ smx_synchro_t SIMIX_file_open(const char* fullpath, smx_host_t host)
 }
 
 //SIMIX FILE CLOSE
-void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, smx_host_t host)
+void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, sg_host_t host)
 {
   smx_synchro_t synchro = SIMIX_file_close(fd, host);
   xbt_fifo_push(synchro->simcalls, simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_close(smx_file_t fd, smx_host_t host)
+smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
 {
   smx_synchro_t synchro;
 
@@ -179,7 +179,7 @@ smx_synchro_t SIMIX_file_close(smx_file_t fd, smx_host_t host)
 
 
 //SIMIX FILE UNLINK
-int SIMIX_file_unlink(smx_file_t fd, smx_host_t host)
+int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
 {
   /* check if the host is active */
   if (surf_host_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
@@ -199,7 +199,7 @@ sg_size_t simcall_HANDLER_file_get_size(smx_simcall_t simcall, smx_file_t fd)
 
 sg_size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
 {
-  smx_host_t host = process->smx_host;
+  sg_host_t host = process->host;
   return  surf_host_get_size(host, fd->surf_file);
 }
 
@@ -210,7 +210,7 @@ sg_size_t simcall_HANDLER_file_tell(smx_simcall_t simcall, smx_file_t fd)
 
 sg_size_t SIMIX_file_tell(smx_process_t process, smx_file_t fd)
 {
-  smx_host_t host = process->smx_host;
+  sg_host_t host = process->host;
   return  surf_host_file_tell(host, fd->surf_file);
 }
 
@@ -222,7 +222,7 @@ xbt_dynar_t simcall_HANDLER_file_get_info(smx_simcall_t simcall, smx_file_t fd)
 
 xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd)
 {
-  smx_host_t host = process->smx_host;
+  sg_host_t host = process->host;
   return  surf_host_get_info(host, fd->surf_file);
 }
 
@@ -233,7 +233,7 @@ int simcall_HANDLER_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t 
 
 int SIMIX_file_seek(smx_process_t process, smx_file_t fd, sg_offset_t offset, int origin)
 {
-  smx_host_t host = process->smx_host;
+  sg_host_t host = process->host;
   return  surf_host_file_seek(host, fd->surf_file, offset, origin);
 }
 
@@ -244,7 +244,7 @@ int simcall_HANDLER_file_move(smx_simcall_t simcall, smx_file_t file, const char
 
 int SIMIX_file_move(smx_process_t process, smx_file_t file, const char* fullpath)
 {
-  smx_host_t host = process->smx_host;
+  sg_host_t host = process->host;
   return  surf_host_file_move(host, file->surf_file, fullpath);
 }
 
@@ -375,7 +375,7 @@ void SIMIX_io_finish(smx_synchro_t synchro)
             (int)synchro->state);
     }
 
-    if (surf_host_get_state(surf_host_resource_priv(simcall->issuer->smx_host)) != SURF_RESOURCE_ON) {
+    if (surf_host_get_state(surf_host_resource_priv(simcall->issuer->host)) != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
 

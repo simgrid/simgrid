@@ -25,7 +25,7 @@ int master(int argc, char *argv[])
 
   char mailbox[256];
   msg_task_t task = NULL;
-  msg_host_t jupiter = MSG_get_host_by_name("Jupiter");
+  msg_host_t jupiter = MSG_host_by_name("Jupiter");
   sprintf(mailbox, "jupi");
 
   task = MSG_task_create("task on", task_comp_size, task_comm_size, NULL);
@@ -55,7 +55,7 @@ int master(int argc, char *argv[])
 
   char **argvF = xbt_new(char*, 2);
   argvF[0] = xbt_strdup("slave");
-  MSG_process_create_with_arguments("slave", slave, NULL, MSG_get_host_by_name("Jupiter"), 1, argvF);
+  MSG_process_create_with_arguments("slave", slave, NULL, MSG_host_by_name("Jupiter"), 1, argvF);
 
   task = MSG_task_create("task on with proc", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending \"%s\"", task->name);

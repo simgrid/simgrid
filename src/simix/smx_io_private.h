@@ -22,11 +22,11 @@ static inline smx_storage_priv_t SIMIX_storage_priv(smx_storage_t storage){
 
 smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data);
 void SIMIX_storage_destroy(void *s);
-smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, smx_host_t host);
-smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, smx_host_t host);
-smx_synchro_t SIMIX_file_open(const char* fullpath, smx_host_t host);
-smx_synchro_t SIMIX_file_close(smx_file_t fd, smx_host_t host);
-int SIMIX_file_unlink(smx_file_t fd, smx_host_t host);
+smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host);
+smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host);
+smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host);
+smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host);
+int SIMIX_file_unlink(smx_file_t fd, sg_host_t host);
 sg_size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd);
 sg_size_t SIMIX_file_tell(smx_process_t process, smx_file_t fd);
 xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd);

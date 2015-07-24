@@ -8,6 +8,7 @@
 
 #include "cpu_interface.hpp"
 #include "surf_routing.hpp"
+#include "xbt/lib.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 
@@ -26,39 +27,37 @@ static void ptask_netlink_parse_init(sg_platf_link_cbarg_t link)
   current_property_set = NULL;
 }
 
-static void ptask_define_callbacks()
+void surf_host_model_init_ptask_L07(void)
 {
+  XBT_INFO("Switching to the L07 model to handle parallel tasks.");
+  xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
+  xbt_assert(!surf_network_model, "network model type already defined");
+
+  // Define the callbacks to parse the XML
   sg_platf_host_add_cb(cpu_parse_init);
   sg_platf_host_add_cb(host_parse_init);
   sg_platf_link_add_cb(ptask_netlink_parse_init);
   sg_platf_postparse_add_cb(host_add_traces);
-}
 
-void surf_host_model_init_ptask_L07(void)
-{
-  XBT_INFO("surf_host_model_init_ptask_L07");
-  xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
-  xbt_assert(!surf_network_model, "network model type already defined");
-  ptask_define_callbacks();
   surf_host_model = new HostL07Model();
-  ModelPtr model = surf_host_model;
+  Model *model = surf_host_model;
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
 }
 
 
-HostL07Model::HostL07Model() : HostModel("Host ptask_L07") {
+HostL07Model::HostL07Model() : HostModel() {
   if (!ptask_maxmin_system)
 	ptask_maxmin_system = lmm_system_new(1);
   surf_host_model = NULL;
   surf_network_model = new NetworkL07Model();
   surf_cpu_model_pm = new CpuL07Model();
-  routing_model_create(surf_network_model->createNetworkLink("__loopback__",
+
+  routing_model_create(surf_network_model->createLink("__loopback__",
 	                                                  498000000, NULL,
 	                                                  0.000015, NULL,
 	                                                  SURF_RESOURCE_ON, NULL,
 	                                                  SURF_LINK_FATPIPE, NULL));
-  p_cpuModel = surf_cpu_model_pm;
 }
 
 HostL07Model::~HostL07Model() {
@@ -76,16 +75,16 @@ HostL07Model::~HostL07Model() {
 
 double HostL07Model::shareResources(double /*now*/)
 {
-  HostL07ActionPtr action;
+  L07Action *action;
 
-  ActionListPtr running_actions = getRunningActionSet();
+  ActionList *running_actions = getRunningActionSet();
   double min = this->shareResourcesMaxMin(running_actions,
                                               ptask_maxmin_system,
                                               bottleneck_solve);
 
   for(ActionList::iterator it(running_actions->begin()), itend(running_actions->end())
 	 ; it != itend ; ++it) {
-	action = static_cast<HostL07ActionPtr>(&*it);
+	action = static_cast<L07Action*>(&*it);
     if (action->m_latency > 0) {
       if (min < 0) {
         min = action->m_latency;
@@ -104,24 +103,20 @@ double HostL07Model::shareResources(double /*now*/)
   return min;
 }
 
-void HostL07Model::updateActionsState(double /*now*/, double delta)
-{
-  double deltap = 0.0;
-  HostL07ActionPtr action;
+void HostL07Model::updateActionsState(double /*now*/, double delta) {
 
-  ActionListPtr actionSet = getRunningActionSet();
+  L07Action *action;
+  ActionList *actionSet = getRunningActionSet();
 
-  for(ActionList::iterator it(actionSet->begin()), itNext = it, itend(actionSet->end())
-	 ; it != itend ; it=itNext) {
+  for(ActionList::iterator it = actionSet->begin(), itNext = it
+	 ; it != actionSet->end()
+	 ; it =  itNext) {
 	++itNext;
-    action = static_cast<HostL07ActionPtr>(&*it);
-    deltap = delta;
+    action = static_cast<L07Action*>(&*it);
     if (action->m_latency > 0) {
-      if (action->m_latency > deltap) {
-        double_update(&(action->m_latency), deltap, sg_surf_precision);
-        deltap = 0.0;
+      if (action->m_latency > delta) {
+        double_update(&(action->m_latency), delta, sg_surf_precision);
       } else {
-        double_update(&(deltap), action->m_latency, sg_surf_precision);
         action->m_latency = 0.0;
       }
       if ((action->m_latency == 0.0) && (action->isSuspended() == 0)) {
@@ -136,8 +131,14 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
     if (action->getMaxDuration() != NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
-    XBT_DEBUG("Action (%p) : remains (%g).",
-           action, action->getRemains());
+    XBT_DEBUG("Action (%p) : remains (%g).", action, action->getRemains());
+
+    /* In the next if cascade, the action can be finished either because:
+     *  - The amount of remaining work reached 0
+     *  - The max duration was reached
+     * If it's not done, it may have failed.
+     */
+
     if ((action->getRemains() <= 0) &&
         (lmm_get_variable_weight(action->getVariable()) > 0)) {
       action->finish();
@@ -145,18 +146,16 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
     } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
                (action->getMaxDuration() <= 0)) {
       action->finish();
-     action->setState(SURF_ACTION_DONE);
+      action->setState(SURF_ACTION_DONE);
     } else {
       /* Need to check that none of the model has failed */
       lmm_constraint_t cnst = NULL;
       int i = 0;
-      void *constraint_id = NULL;
 
-      while ((cnst = lmm_get_cnst_from_var(ptask_maxmin_system, action->getVariable(),
-                                    i++))) {
-        constraint_id = lmm_constraint_id(cnst);
+      while ((cnst = lmm_get_cnst_from_var(ptask_maxmin_system, action->getVariable(), i++))) {
+        void *constraint_id = lmm_constraint_id(cnst);
 
-        if (static_cast<HostPtr>(constraint_id)->getState() == SURF_RESOURCE_OFF) {
+        if (static_cast<Host*>(constraint_id)->getState() == SURF_RESOURCE_OFF) {
           XBT_DEBUG("Action (%p) Failed!!", action);
           action->finish();
           action->setState(SURF_ACTION_FAILED);
@@ -168,18 +167,21 @@ void HostL07Model::updateActionsState(double /*now*/, double delta)
   return;
 }
 
-ActionPtr HostL07Model::executeParallelTask(int host_nb,
-                                                   void **host_list,
-                                                   double *flops_amount,
-												   double *bytes_amount,
-                                                   double rate)
+Action *HostL07Model::executeParallelTask(int host_nb,
+                                          sg_host_t*host_list,
+										  double *flops_amount,
+										  double *bytes_amount,
+										  double rate)
 {
-  HostL07ActionPtr action;
-  int i, j;
+  L07Action *action = new L07Action(this, 1, 0);
   unsigned int cpt;
   int nb_link = 0;
   int nb_host = 0;
   double latency = 0.0;
+
+  action->p_edgeList->reserve(host_nb);
+  for (int i = 0; i<host_nb; i++)
+	  action->p_edgeList->push_back(sg_host_edge(host_list[i]));
 
   if (ptask_parallel_task_link_set == NULL)
     ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
@@ -187,24 +189,22 @@ ActionPtr HostL07Model::executeParallelTask(int host_nb,
   xbt_dict_reset(ptask_parallel_task_link_set);
 
   /* Compute the number of affected resources... */
-  for (i = 0; i < host_nb; i++) {
-    for (j = 0; j < host_nb; j++) {
+  for (int i = 0; i < host_nb; i++) {
+    for (int j = 0; j < host_nb; j++) {
       xbt_dynar_t route=NULL;
 
       if (bytes_amount[i * host_nb + j] > 0) {
         double lat=0.0;
         unsigned int cpt;
         void *_link;
-        LinkL07Ptr link;
+        LinkL07 *link;
 
-        routing_platf->getRouteAndLatency(static_cast<HostL07Ptr>(host_list[i])->p_netElm,
-        		                          static_cast<HostL07Ptr>(host_list[j])->p_netElm,
-        		                          &route,
-        		                          &lat);
+        routing_platf->getRouteAndLatency((*action->p_edgeList)[i], (*action->p_edgeList)[j],
+        		                          &route, &lat);
         latency = MAX(latency, lat);
 
         xbt_dynar_foreach(route, cpt, _link) {
-           link = static_cast<LinkL07Ptr>(_link);
+           link = static_cast<LinkL07*>(_link);
            xbt_dict_set(ptask_parallel_task_link_set, link->getName(), link, NULL);
         }
       }
@@ -214,49 +214,43 @@ ActionPtr HostL07Model::executeParallelTask(int host_nb,
   nb_link = xbt_dict_length(ptask_parallel_task_link_set);
   xbt_dict_reset(ptask_parallel_task_link_set);
 
-  for (i = 0; i < host_nb; i++)
+  for (int i = 0; i < host_nb; i++)
     if (flops_amount[i] > 0)
       nb_host++;
 
-  action = new HostL07Action(this, 1, 0);
   XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
          action, host_nb, nb_link);
-  action->m_suspended = 0;        /* Should be useless because of the
-                                   calloc but it seems to help valgrind... */
-  action->m_hostNb = host_nb;
-  action->p_hostList = (HostPtr *) host_list;
+  action->m_suspended = 0; /* valgrind seems to want it despite the calloc... */
   action->p_computationAmount = flops_amount;
   action->p_communicationAmount = bytes_amount;
   action->m_latency = latency;
   action->m_rate = rate;
 
   action->p_variable = lmm_variable_new(ptask_maxmin_system, action, 1.0,
-                       (action->m_rate > 0) ? action->m_rate : -1.0,
-                       host_nb + nb_link);
+                                        (rate > 0 ? rate : -1.0),
+										host_nb + nb_link);
 
   if (action->m_latency > 0)
     lmm_update_variable_weight(ptask_maxmin_system, action->getVariable(), 0.0);
 
-  for (i = 0; i < host_nb; i++)
+  for (int i = 0; i < host_nb; i++)
     lmm_expand(ptask_maxmin_system,
-    	         static_cast<HostL07Ptr>(host_list[i])->p_cpu->getConstraint(),
+    	       sg_host_surfcpu(host_list[i])->getConstraint(),
                action->getVariable(), flops_amount[i]);
 
-  for (i = 0; i < host_nb; i++) {
-    for (j = 0; j < host_nb; j++) {
+  for (int i = 0; i < host_nb; i++) {
+    for (int j = 0; j < host_nb; j++) {
       void *_link;
-      LinkL07Ptr link;
 
       xbt_dynar_t route=NULL;
       if (bytes_amount[i * host_nb + j] == 0.0)
         continue;
 
-      routing_platf->getRouteAndLatency(static_cast<HostL07Ptr>(host_list[i])->p_netElm,
-                                        static_cast<HostL07Ptr>(host_list[j])->p_netElm,
+      routing_platf->getRouteAndLatency((*action->p_edgeList)[i], (*action->p_edgeList)[j],
     		                            &route, NULL);
 
       xbt_dynar_foreach(route, cpt, _link) {
-        link = static_cast<LinkL07Ptr>(_link);
+        LinkL07 *link = static_cast<LinkL07*>(_link);
         lmm_expand_add(ptask_maxmin_system, link->getConstraint(),
                        action->getVariable(),
                        bytes_amount[i * host_nb + j]);
@@ -272,49 +266,51 @@ ActionPtr HostL07Model::executeParallelTask(int host_nb,
   return action;
 }
 
-HostPtr HostL07Model::createHost(const char *name)
+Host *HostL07Model::createHost(const char *name)
 {
-  HostL07Ptr wk = NULL;
-  xbt_assert(!surf_host_resource_priv(surf_host_resource_by_name(name)),
+  HostL07 *wk = NULL;
+  sg_host_t sg_host = sg_host_by_name(name);
+
+  xbt_assert(!surf_host_resource_priv(sg_host),
               "Host '%s' declared several times in the platform file.",
               name);
 
   wk = new HostL07(this, name, NULL,
-		                  static_cast<RoutingEdgePtr>(xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL)),
-		                  static_cast<CpuPtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL)));
+		                  sg_host_edge(sg_host),
+						  sg_host_surfcpu(sg_host));
 
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, wk);
 
-  return wk;//FIXME:xbt_lib_get_elm_or_null(host_lib, name);
+  return wk;
 }
 
-ActionPtr HostL07Model::communicate(HostPtr src, HostPtr dst,
+Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
                                        double size, double rate)
 {
-  void **host_list = xbt_new0(void *, 2);
+  sg_host_t*host_list = xbt_new0(sg_host_t, 2);
   double *flops_amount = xbt_new0(double, 2);
   double *bytes_amount = xbt_new0(double, 4);
-  ActionPtr res = NULL;
+  Action *res = NULL;
 
-  host_list[0] = src;
-  host_list[1] = dst;
+  host_list[0] = sg_host_by_name(src->getName());
+  host_list[1] = sg_host_by_name(dst->getName());
   bytes_amount[1] = size;
 
-  res = executeParallelTask(2, host_list,
+  res = p_hostModel->executeParallelTask(2, host_list,
                                     flops_amount,
                                     bytes_amount, rate);
 
   return res;
 }
 
-xbt_dynar_t HostL07Model::getRoute(HostPtr src, HostPtr dst)
+xbt_dynar_t HostL07Model::getRoute(Host *src, Host *dst)
 {
   xbt_dynar_t route=NULL;
   routing_platf->getRouteAndLatency(src->p_netElm, dst->p_netElm, &route, NULL);
   return route;
 }
 
-CpuPtr CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
+Cpu *CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
@@ -323,43 +319,39 @@ CpuPtr CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
 {
   double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
   xbt_dynar_free(&powerPeak);   // kill memory leak
+  sg_host_t sg_host = sg_host_by_name(name);
 
-  xbt_assert(!surf_host_resource_priv(surf_host_resource_by_name(name)),
+  xbt_assert(!surf_host_resource_priv(sg_host),
               "Host '%s' declared several times in the platform file.",
               name);
 
-  CpuL07Ptr cpu = new CpuL07(this, name, cpu_properties,
+  CpuL07 *cpu = new CpuL07(this, name, cpu_properties,
 		                     power_initial, power_scale, power_trace,
                          core, state_initial, state_trace);
 
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
+  sg_host_surfcpu_set(sg_host, cpu);
 
   return cpu;
 }
 
-NetworkLinkPtr NetworkL07Model::createNetworkLink(const char *name,
+Link* NetworkL07Model::createLink(const char *name,
                                  double bw_initial,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
                                  tmgr_trace_t lat_trace,
-                                 e_surf_resource_state_t
-                                 state_initial,
+                                 e_surf_resource_state_t state_initial,
                                  tmgr_trace_t state_trace,
                                  e_surf_link_sharing_policy_t policy,
                                  xbt_dict_t properties)
 {
-  xbt_assert(!xbt_lib_get_or_null(link_lib, name, SURF_LINK_LEVEL),
-	              "Link '%s' declared several times in the platform file.",
-	              name);
+  xbt_assert(!Link::byName(name),
+	         "Link '%s' declared several times in the platform file.", name);
 
-  LinkL07Ptr nw_link = new LinkL07(this, name, properties,
-	                               bw_initial, bw_trace,
-	                               lat_initial, lat_trace,
-	                               state_initial, state_trace,
-	                               policy);
-
-  xbt_lib_set(link_lib, name, SURF_LINK_LEVEL, nw_link);
-  return nw_link;
+  return new LinkL07(this, name, properties,
+		             bw_initial, bw_trace,
+					 lat_initial, lat_trace,
+					 state_initial, state_trace,
+					 policy);
 }
 
 void HostL07Model::addTraces()
@@ -373,7 +365,7 @@ void HostL07Model::addTraces()
   /* Connect traces relative to cpu */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07Ptr host = static_cast<CpuL07Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuL07 *host = static_cast<CpuL07*>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -383,7 +375,7 @@ void HostL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07Ptr host = static_cast<CpuL07Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
+    CpuL07 *host = static_cast<CpuL07*>(sg_host_surfcpu(sg_host_by_name(elm)));
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -394,7 +386,7 @@ void HostL07Model::addTraces()
   /* Connect traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = static_cast<LinkL07Ptr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+    LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -404,7 +396,7 @@ void HostL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = static_cast<LinkL07Ptr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+    LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -414,7 +406,7 @@ void HostL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07Ptr link = static_cast<LinkL07Ptr>(xbt_lib_get_or_null(link_lib, elm, SURF_LINK_LEVEL));
+    LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
 
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -427,7 +419,7 @@ void HostL07Model::addTraces()
  * Resource *
  ************/
 
-HostL07::HostL07(HostModelPtr model, const char* name, xbt_dict_t props, RoutingEdgePtr netElm, CpuPtr cpu)
+HostL07::HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEdge *netElm, Cpu *cpu)
   : Host(model, name, props, NULL, netElm, cpu)
 {
 }
@@ -457,7 +449,7 @@ double HostL07::getConsumedEnergy()
 	THROW_UNIMPLEMENTED;
 }
 
-CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props,
+CpuL07::CpuL07(CpuL07Model *model, const char* name, xbt_dict_t props,
 	             double power_initial, double power_scale, tmgr_trace_t power_trace,
 		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
  : Cpu(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, power_initial * power_scale),
@@ -475,7 +467,7 @@ CpuL07::CpuL07(CpuL07ModelPtr model, const char* name, xbt_dict_t props,
 	p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
 }
 
-LinkL07::LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
+LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
 		         double bw_initial,
 		         tmgr_trace_t bw_trace,
 		         double lat_initial,
@@ -483,7 +475,7 @@ LinkL07::LinkL07(NetworkL07ModelPtr model, const char* name, xbt_dict_t props,
 		         e_surf_resource_state_t state_initial,
 		         tmgr_trace_t state_trace,
 		         e_surf_link_sharing_policy_t policy)
- : NetworkLink(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, bw_initial), history, state_trace)
+ : Link(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, bw_initial), history, state_trace)
 {
   m_bwCurrent = bw_initial;
   if (bw_trace)
@@ -528,7 +520,7 @@ void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*d
   return;
 }
 
-void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double date){
+void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double date) {
   XBT_DEBUG("Updating link %s (%p) with value=%f for date=%g", getName(), this, value, date);
   if (event_type == p_bwEvent) {
     updateBandwidth(value, date);
@@ -552,33 +544,31 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
   return;
 }
 
-e_surf_resource_state_t HostL07::getState()
-{
+e_surf_resource_state_t HostL07::getState() {
   return p_cpu->getState();
 }
 
-ActionPtr HostL07::execute(double size)
+Action *HostL07::execute(double size)
 {
-  void **host_list = xbt_new0(void *, 1);
+  sg_host_t*host_list = xbt_new0(sg_host_t, 1);
   double *flops_amount = xbt_new0(double, 1);
   double *bytes_amount = xbt_new0(double, 1);
 
-  host_list[0] = this;
-  bytes_amount[0] = 0.0;
+  host_list[0] = sg_host_by_name(getName());
   flops_amount[0] = size;
 
-  return static_cast<HostL07ModelPtr>(getModel())->executeParallelTask(1, host_list,
+  return static_cast<HostL07Model*>(getModel())->executeParallelTask(1, host_list,
 		                              flops_amount,
                                      bytes_amount, -1);
 }
 
-ActionPtr HostL07::sleep(double duration)
+Action *HostL07::sleep(double duration)
 {
-  HostL07ActionPtr action = NULL;
+  L07Action *action = NULL;
 
   XBT_IN("(%s,%g)", getName(), duration);
 
-  action = static_cast<HostL07ActionPtr>(execute(1.0));
+  action = static_cast<L07Action*>(execute(1.0));
   action->m_maxDuration = duration;
   action->m_suspended = 2;
   lmm_update_variable_weight(ptask_maxmin_system, action->getVariable(), 0.0);
@@ -606,12 +596,12 @@ double LinkL07::getLatency()
 void LinkL07::updateLatency(double value, double date)
 {
   lmm_variable_t var = NULL;
-  HostL07ActionPtr action;
+  L07Action *action;
   lmm_element_t elem = NULL;
 
   m_latCurrent = value;
   while ((var = lmm_get_var_from_cnst(ptask_maxmin_system, getConstraint(), &elem))) {
-    action = (HostL07ActionPtr) lmm_variable_id(var);
+    action = static_cast<L07Action*>(lmm_variable_id(var));
     action->updateBound();
   }
 }
@@ -626,29 +616,29 @@ bool LinkL07::isShared()
  * Action *
  **********/
 
-HostL07Action::~HostL07Action(){
-  free(p_hostList);
+L07Action::~L07Action(){
   free(p_communicationAmount);
   free(p_computationAmount);
 }
 
-void HostL07Action::updateBound()
+void L07Action::updateBound()
 {
   double lat_current = 0.0;
   double lat_bound = -1.0;
   int i, j;
 
-  for (i = 0; i < m_hostNb; i++) {
-    for (j = 0; j < m_hostNb; j++) {
+  int hostNb = p_edgeList->size();
+
+  for (i = 0; i < hostNb; i++) {
+    for (j = 0; j < hostNb; j++) {
       xbt_dynar_t route=NULL;
 
-      if (p_communicationAmount[i * m_hostNb + j] > 0) {
+      if (p_communicationAmount[i * hostNb + j] > 0) {
         double lat = 0.0;
-        routing_platf->getRouteAndLatency(static_cast<HostL07Ptr>(((void**)p_hostList)[i])->p_netElm,
-                                          static_cast<HostL07Ptr>(((void**)p_hostList)[j])->p_netElm,
+        routing_platf->getRouteAndLatency((*p_edgeList)[i], (*p_edgeList)[j],
                 				          &route, &lat);
 
-        lat_current = MAX(lat_current, lat * p_communicationAmount[i * m_hostNb + j]);
+        lat_current = MAX(lat_current, lat * p_communicationAmount[i * hostNb + j]);
       }
     }
   }
@@ -662,7 +652,7 @@ void HostL07Action::updateBound()
   }
 }
 
-int HostL07Action::unref()
+int L07Action::unref()
 {
   m_refcount--;
   if (!m_refcount) {
@@ -676,13 +666,13 @@ int HostL07Action::unref()
   return 0;
 }
 
-void HostL07Action::cancel()
+void L07Action::cancel()
 {
   setState(SURF_ACTION_FAILED);
   return;
 }
 
-void HostL07Action::suspend()
+void L07Action::suspend()
 {
   XBT_IN("(%p))", this);
   if (m_suspended != 2) {
@@ -692,7 +682,7 @@ void HostL07Action::suspend()
   XBT_OUT();
 }
 
-void HostL07Action::resume()
+void L07Action::resume()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
@@ -702,26 +692,26 @@ void HostL07Action::resume()
   XBT_OUT();
 }
 
-bool HostL07Action::isSuspended()
+bool L07Action::isSuspended()
 {
   return m_suspended == 1;
 }
 
-void HostL07Action::setMaxDuration(double duration)
+void L07Action::setMaxDuration(double duration)
 {                               /* FIXME: should inherit */
   XBT_IN("(%p,%g)", this, duration);
   m_maxDuration = duration;
   XBT_OUT();
 }
 
-void HostL07Action::setPriority(double priority)
+void L07Action::setPriority(double priority)
 {                               /* FIXME: should inherit */
   XBT_IN("(%p,%g)", this, priority);
   m_priority = priority;
   XBT_OUT();
 }
 
-double HostL07Action::getRemains()
+double L07Action::getRemains()
 {
   XBT_IN("(%p)", this);
   XBT_OUT();

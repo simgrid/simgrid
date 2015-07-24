@@ -30,7 +30,7 @@ static int emigrant(int argc, char *argv[])
   msg_task_t task;
   XBT_INFO
       ("I'll look for a new job on another machine where the grass is greener.");
-  MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name("Boivin"));
+  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Boivin"));
   
   XBT_INFO("Yeah, found something to do");
   task = MSG_task_create("job", 98095000, 0, NULL);
@@ -38,8 +38,8 @@ static int emigrant(int argc, char *argv[])
   MSG_task_destroy(task);
   MSG_process_sleep(2);
   XBT_INFO("Moving back home after work");
-  MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name("Jacquelin"));
-  MSG_process_migrate(MSG_process_self(), MSG_get_host_by_name("Boivin"));
+  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Jacquelin"));
+  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Boivin"));
   MSG_process_sleep(4);
   xbt_mutex_acquire(mutex);
   process_to_migrate = MSG_process_self();
@@ -60,7 +60,7 @@ static int policeman(int argc, char *argv[])
   xbt_mutex_acquire(mutex);
   XBT_INFO("Wait a bit before migrating the emigrant.");
   while (process_to_migrate == NULL) xbt_cond_wait(cond, mutex);
-  MSG_process_migrate(process_to_migrate, MSG_get_host_by_name("Jacquelin"));
+  MSG_process_migrate(process_to_migrate, MSG_host_by_name("Jacquelin"));
   XBT_INFO("I moved the emigrant");
   MSG_process_resume(process_to_migrate);
   xbt_mutex_release(mutex);

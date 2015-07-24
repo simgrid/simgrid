@@ -77,7 +77,7 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
   }
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
   /* get the host by name       (the hosts are created during the grid resolution) */
-  host = MSG_get_host_by_name(name);
+  host = MSG_host_by_name(name);
 
   if (!host) {                  /* invalid name */
     jxbt_throw_host_not_found(env, name);

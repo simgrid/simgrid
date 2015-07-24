@@ -16,6 +16,8 @@
 #include "xbt/mallocator.h"
 #include <stdbool.h>
 
+SG_BEGIN_DECL()
+
 /* Global variables */
 
 typedef struct SD_global {
@@ -47,13 +49,6 @@ typedef struct SD_global {
 
 extern SD_global_t sd_global;
 
-/* Link */
-typedef struct SD_link {
-  void *surf_link;              /* surf object */
-  void *data;                   /* user data */
-  e_SD_link_sharing_policy_t sharing_policy;
-} s_SD_link_t;
-
 /* Workstation */
 typedef s_xbt_dictelm_t s_SD_workstation_t;
 typedef struct SD_workstation {
@@ -64,10 +59,6 @@ typedef struct SD_workstation {
   SD_task_t current_task;       /* only used in sequential mode */
 } s_SD_workstation_priv_t, *SD_workstation_priv_t;
 
-static inline SD_workstation_priv_t SD_workstation_priv(SD_workstation_t host){
-  return xbt_lib_get_level(host, SD_HOST_LEVEL);
-}
-
 /* Storage */
 typedef s_xbt_dictelm_t s_SD_storage_t;
 typedef struct SD_storage {
@@ -76,7 +67,7 @@ typedef struct SD_storage {
 } s_SD_storage_priv_t, *SD_storage_priv_t;
 
 static inline SD_storage_priv_t SD_storage_priv(SD_storage_t storage){
-  return xbt_lib_get_level(storage, SD_STORAGE_LEVEL);
+  return (SD_storage_priv_t)xbt_lib_get_level(storage, SD_STORAGE_LEVEL);
 }
 
 /* Task */
@@ -129,9 +120,6 @@ typedef struct SD_dependency {
 /* SimDag private functions */
 XBT_PUBLIC(xbt_swag_t) SD_simulate_swag(double how_long); /* could be public, but you need to see the internals of the SD_task_t to use it */
 
-
-SD_link_t __SD_link_create(void *surf_link, void *data);
-#define __SD_link_destroy xbt_free_f
 
 SD_workstation_t __SD_workstation_create(void *surf_workstation,
                                          void *data);
@@ -219,5 +207,6 @@ void TRACE_sd_task_execute_start(SD_task_t task);
 void TRACE_sd_task_execute_end(SD_task_t task);
 void TRACE_sd_task_destroy(SD_task_t task);
 
+SG_END_DECL()
 
 #endif

@@ -20,24 +20,24 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms
  * \param name name of the host to create
  * \param data some user data (may be NULL)
  */
-smx_host_t SIMIX_vm_create(const char *name, smx_host_t ind_phys_host)
+sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host)
 {
   /* Create surf associated resource */
   surf_vm_model_create(name, ind_phys_host);
 
-  smx_host_t smx_host = SIMIX_host_create(name, NULL);
+  SIMIX_host_create(name);
 
   /* We will be able to register the VM to its physical host, so that we can promptly
    * retrieve the list VMs on the physical host. */
 
-  return smx_host;
+  return sg_host_by_name(name);
 }
 
 
 /* works for VMs and PMs */
-static long host_get_ramsize(smx_host_t vm, int *overcommit)
+static long host_get_ramsize(sg_host_t vm, int *overcommit)
 {
-  s_ws_params_t params;
+  s_vm_params_t params;
   surf_host_get_params(vm, &params);
 
   if (overcommit)
@@ -47,9 +47,9 @@ static long host_get_ramsize(smx_host_t vm, int *overcommit)
 }
 
 /* **** start a VM **** */
-static int __can_be_started(smx_host_t vm)
+static int __can_be_started(sg_host_t vm)
 {
-  smx_host_t pm = surf_vm_get_pm(vm);
+  sg_host_t pm = surf_vm_get_pm(vm);
 
   int pm_overcommit = 0;
   long pm_ramsize = host_get_ramsize(pm, &pm_overcommit);
@@ -69,7 +69,7 @@ static int __can_be_started(smx_host_t vm)
   xbt_dynar_t dyn_vms = surf_host_get_vms(pm);
   {
     unsigned int cursor = 0;
-    smx_host_t another_vm;
+    sg_host_t another_vm;
     xbt_dynar_foreach(dyn_vms, cursor, another_vm) {
       long another_vm_ramsize = host_get_ramsize(vm, NULL);
       total_ramsize_of_vms += another_vm_ramsize;
@@ -87,7 +87,7 @@ static int __can_be_started(smx_host_t vm)
 	return 1;
 }
 
-void SIMIX_vm_start(smx_host_t ind_vm)
+void SIMIX_vm_start(sg_host_t ind_vm)
 {
   if (__can_be_started(ind_vm))
     surf_host_set_state(surf_host_resource_priv(ind_vm),
@@ -97,7 +97,7 @@ void SIMIX_vm_start(smx_host_t ind_vm)
 }
 
 
-int SIMIX_vm_get_state(smx_host_t ind_vm)
+int SIMIX_vm_get_state(sg_host_t ind_vm)
 {
   return surf_host_get_state(surf_host_resource_priv(ind_vm));
 }
@@ -105,9 +105,9 @@ int SIMIX_vm_get_state(smx_host_t ind_vm)
 /**
  * \brief Function to migrate a SIMIX VM host.
  *
- * \param host the vm host to migrate (a smx_host_t)
+ * \param host the vm host to migrate (a sg_host_t)
  */
-void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
+void SIMIX_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm)
 {
   /* precopy migration makes the VM temporally paused */
   xbt_assert(SIMIX_vm_get_state(ind_vm) == SURF_VM_STATE_SUSPENDED);
@@ -129,7 +129,7 @@ void SIMIX_vm_migrate(smx_host_t ind_vm, smx_host_t ind_dst_pm)
  * \param src_pm  Source physical host
  * \param dst_pmt Destination physical host
  */
-void SIMIX_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t dst_pm)
+void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm)
 {
   /* deinstall the current affinity setting for the CPU */
   SIMIX_vm_set_affinity(vm, src_pm, 0);
@@ -145,9 +145,9 @@ void SIMIX_vm_migratefrom_resumeto(smx_host_t vm, smx_host_t src_pm, smx_host_t 
 /**
  * \brief Function to get the physical host of the given SIMIX VM host.
  *
- * \param host the vm host to get_phys_host (a smx_host_t)
+ * \param host the vm host to get_phys_host (a sg_host_t)
  */
-void *SIMIX_vm_get_pm(smx_host_t ind_vm)
+void *SIMIX_vm_get_pm(sg_host_t ind_vm)
 {
   /* jump to vm_ws_get_pm(). this will return the vm name. */
   return surf_vm_get_pm(ind_vm);
@@ -156,10 +156,10 @@ void *SIMIX_vm_get_pm(smx_host_t ind_vm)
 /**
  * \brief Function to set the CPU bound of the given SIMIX VM host.
  *
- * \param host the vm host (a smx_host_t)
+ * \param host the vm host (a sg_host_t)
  * \param bound bound (a double)
  */
-void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound)
+void SIMIX_vm_set_bound(sg_host_t ind_vm, double bound)
 {
   /* jump to vm_ws_set_vm_bound(). */
   surf_vm_set_bound(ind_vm, bound);
@@ -168,11 +168,11 @@ void SIMIX_vm_set_bound(smx_host_t ind_vm, double bound)
 /**
  * \brief Function to set the CPU affinity of the given SIMIX VM host.
  *
- * \param host the vm host (a smx_host_t)
- * \param host the pm host (a smx_host_t)
+ * \param host the vm host (a sg_host_t)
+ * \param host the pm host (a sg_host_t)
  * \param mask affinity mask (a unsigned long)
  */
-void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long mask)
+void SIMIX_vm_set_affinity(sg_host_t ind_vm, sg_host_t ind_pm, unsigned long mask)
 {
   /* make sure this at the MSG layer. */
   xbt_assert(SIMIX_vm_get_pm(ind_vm) == ind_pm);
@@ -187,22 +187,22 @@ void SIMIX_vm_set_affinity(smx_host_t ind_vm, smx_host_t ind_pm, unsigned long m
  * VM. All the processes on this VM will pause. The state of the VM is
  * preserved on memory. We can later resume it again.
  *
- * \param host the vm host to suspend (a smx_host_t)
+ * \param host the vm host to suspend (a sg_host_t)
  */
-void SIMIX_vm_suspend(smx_host_t ind_vm, smx_process_t issuer)
+void SIMIX_vm_suspend(sg_host_t ind_vm, smx_process_t issuer)
 {
   const char *name = SIMIX_host_get_name(ind_vm);
 
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
 
-  XBT_DEBUG("suspend VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("suspend VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   /* jump to vm_ws_suspend. The state will be set. */
   surf_vm_suspend(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("suspend %s", smx_process->name);
     SIMIX_process_suspend(smx_process, issuer);
   }
@@ -210,9 +210,9 @@ void SIMIX_vm_suspend(smx_host_t ind_vm, smx_process_t issuer)
   XBT_DEBUG("suspend all processes on the VM done done");
 }
 
-void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm)
 {
-  if (simcall->issuer->smx_host == ind_vm) {
+  if (simcall->issuer->host == ind_vm) {
     XBT_ERROR("cannot suspend the VM where I run");
     DIE_IMPOSSIBLE;
   }
@@ -227,28 +227,28 @@ void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, smx_host_t ind_vm)
  * \brief Function to resume a SIMIX VM host. This function restart the execution of the
  * VM. All the processes on this VM will run again.
  *
- * \param host the vm host to resume (a smx_host_t)
+ * \param host the vm host to resume (a sg_host_t)
  */
-void SIMIX_vm_resume(smx_host_t ind_vm, smx_process_t issuer)
+void SIMIX_vm_resume(sg_host_t ind_vm, smx_process_t issuer)
 {
   const char *name = SIMIX_host_get_name(ind_vm);
 
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_SUSPENDED)
     THROWF(vm_error, 0, "VM(%s) was not suspended", name);
 
-  XBT_DEBUG("resume VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("resume VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   /* jump to vm_ws_resume() */
   surf_vm_resume(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("resume %s", smx_process->name);
     SIMIX_process_resume(smx_process, issuer);
   }
 }
 
-void simcall_HANDLER_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_vm)
 {
   SIMIX_vm_resume(ind_vm, simcall->issuer);
 }
@@ -259,9 +259,9 @@ void simcall_HANDLER_vm_resume(smx_simcall_t simcall, smx_host_t ind_vm)
  * This function is the same as vm_suspend, but the state of the VM is saved to the disk, and not preserved on memory.
  * We can later restore it again.
  *
- * \param host the vm host to save (a smx_host_t)
+ * \param host the vm host to save (a sg_host_t)
  */
-void SIMIX_vm_save(smx_host_t ind_vm, smx_process_t issuer)
+void SIMIX_vm_save(sg_host_t ind_vm, smx_process_t issuer)
 {
   const char *name = SIMIX_host_get_name(ind_vm);
 
@@ -269,19 +269,19 @@ void SIMIX_vm_save(smx_host_t ind_vm, smx_process_t issuer)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
 
 
-  XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   /* jump to vm_ws_save() */
   surf_vm_save(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("suspend %s", smx_process->name);
     SIMIX_process_suspend(smx_process, issuer);
   }
 }
 
-void simcall_HANDLER_vm_save(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t ind_vm)
 {
   SIMIX_vm_save(ind_vm, simcall->issuer);
 }
@@ -291,28 +291,28 @@ void simcall_HANDLER_vm_save(smx_simcall_t simcall, smx_host_t ind_vm)
  * \brief Function to restore a SIMIX VM host. This function restart the execution of the
  * VM. All the processes on this VM will run again.
  *
- * \param host the vm host to restore (a smx_host_t)
+ * \param host the vm host to restore (a sg_host_t)
  */
-void SIMIX_vm_restore(smx_host_t ind_vm, smx_process_t issuer)
+void SIMIX_vm_restore(sg_host_t ind_vm, smx_process_t issuer)
 {
   const char *name = SIMIX_host_get_name(ind_vm);
 
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_SAVED)
     THROWF(vm_error, 0, "VM(%s) was not saved", name);
 
-  XBT_DEBUG("restore VM(%s), where %d processes exist", name, xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("restore VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   /* jump to vm_ws_restore() */
   surf_vm_resume(ind_vm);
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("resume %s", smx_process->name);
     SIMIX_process_resume(smx_process, issuer);
   }
 }
 
-void simcall_HANDLER_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t ind_vm)
 {
   SIMIX_vm_restore(ind_vm, simcall->issuer);
 }
@@ -323,9 +323,9 @@ void simcall_HANDLER_vm_restore(smx_simcall_t simcall, smx_host_t ind_vm)
  * VM. All the processes on this VM will be killed. But, the state of the VM is
  * preserved on memory. We can later start it again.
  *
- * \param host the vm host to shutdown (a smx_host_t)
+ * \param host the vm host to shutdown (a sg_host_t)
  */
-void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
+void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer)
 {
   const char *name = SIMIX_host_get_name(ind_vm);
 
@@ -333,10 +333,10 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
 
   XBT_DEBUG("shutdown %s", name);
-  XBT_DEBUG("%d processes in the VM", xbt_swag_size(SIMIX_host_priv(ind_vm)->process_list));
+  XBT_DEBUG("%d processes in the VM", xbt_swag_size(sg_host_simix(ind_vm)->process_list));
 
   smx_process_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, SIMIX_host_priv(ind_vm)->process_list) {
+  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
     XBT_DEBUG("kill %s", smx_process->name);
     SIMIX_process_kill(smx_process, issuer);
   }
@@ -346,7 +346,7 @@ void SIMIX_vm_shutdown(smx_host_t ind_vm, smx_process_t issuer)
                           (int)SURF_VM_STATE_CREATED);
 }
 
-void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm)
+void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm)
 {
   SIMIX_vm_shutdown(ind_vm, simcall->issuer);
 }
@@ -355,9 +355,9 @@ void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, smx_host_t ind_vm)
 /**
  * \brief Function to destroy a SIMIX VM host.
  *
- * \param host the vm host to destroy (a smx_host_t)
+ * \param host the vm host to destroy (a sg_host_t)
  */
-void SIMIX_vm_destroy(smx_host_t ind_vm)
+void SIMIX_vm_destroy(sg_host_t ind_vm)
 {
   /* this code basically performs a similar thing like SIMIX_host_destroy() */
 
@@ -367,7 +367,7 @@ void SIMIX_vm_destroy(smx_host_t ind_vm)
   XBT_DEBUG("destroy %s", hostname);
 
   /* this will call the registered callback function, i.e., SIMIX_host_destroy().  */
-  xbt_lib_unset(host_lib, hostname, SIMIX_HOST_LEVEL, 1);
+  sg_host_simix_destroy(ind_vm);
 
   /* jump to vm_ws_destroy(). The surf level resource will be freed. */
   surf_vm_destroy(ind_vm);

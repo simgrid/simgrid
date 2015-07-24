@@ -11,7 +11,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
 /* Global vars */
 extern routing_platf_t routing_platf;
-extern int surf_parse_lineno;
 
 #define TO_ROUTE_FULL(i,j) p_routingTable[(i)+(j)*table_size]
 
@@ -26,7 +25,7 @@ void model_full_end(AS_t _routing)
   sg_platf_route_cbarg_t e_route;
 
   /* set utils vars */
-  AsFullPtr routing = ((AsFullPtr) _routing);
+  AsFull *routing = static_cast<AsFull*>(_routing);
   int table_size = (int)xbt_dynar_length(routing->p_indexNetworkElm);
 
   /* Create table if necessary */
@@ -71,7 +70,7 @@ AsFull::~AsFull(){
 
 xbt_dynar_t AsFull::getOneLinkRoutes()
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(OnelinkPtr), xbt_free_f);
+  xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
 
   int src, dst;
   int table_size = xbt_dynar_length(p_indexNetworkElm);
@@ -82,11 +81,11 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
       if (route) {
         if (xbt_dynar_length(route->link_list) == 1) {
           void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
-          OnelinkPtr onelink;
+          Onelink *onelink;
           if (p_hierarchy == SURF_ROUTING_BASE) {
-        	RoutingEdgePtr tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_routing_edge_t);
+        	RoutingEdge *tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_routing_edge_t);
             tmp_src->setId(src);
-        	RoutingEdgePtr tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_routing_edge_t);
+        	RoutingEdge *tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_routing_edge_t);
         	tmp_dst->setId(dst);
             onelink = new Onelink(link, tmp_src, tmp_dst);
           } else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
@@ -104,7 +103,7 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
   return ret;
 }
 
-void AsFull::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf_route_cbarg_t res, double *lat)
+void AsFull::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t res, double *lat)
 {
   XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]",
       src->getName(),
@@ -127,7 +126,7 @@ void AsFull::getRouteAndLatency(RoutingEdgePtr src, RoutingEdgePtr dst, sg_platf
     xbt_dynar_foreach(e_route->link_list, cpt, link) {
       xbt_dynar_push(res->link_list, &link);
       if (lat)
-        *lat += static_cast<NetworkLinkPtr>(link)->getLatency();
+        *lat += static_cast<Link*>(link)->getLatency();
     }
   }
 }
@@ -146,7 +145,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
   int as_route = 0;
   char *src = (char*)(route->src);
   char *dst = (char*)(route->dst);
-  RoutingEdgePtr src_net_elm, dst_net_elm;
+  RoutingEdge *src_net_elm, *dst_net_elm;
   src_net_elm = sg_routing_edge_by_name_or_null(src);
   dst_net_elm = sg_routing_edge_by_name_or_null(dst);
 
@@ -168,7 +167,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
     xbt_dynar_t link_route_to_test =
         xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
     xbt_dynar_foreach(route->link_list, i, link_name) {
-      void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+      void *link = Link::byName(link_name);
       xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
       xbt_dynar_push(link_route_to_test, &link);
     }
@@ -246,7 +245,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
           xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
       for (i = xbt_dynar_length(route->link_list); i > 0; i--) {
         link_name = xbt_dynar_get_as(route->link_list, i - 1, char *);
-        void *link = xbt_lib_get_or_null(link_lib, link_name, SURF_LINK_LEVEL);
+        void *link = Link::byName(link_name);
         xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
         xbt_dynar_push(link_route_to_test, &link);
       }

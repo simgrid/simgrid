@@ -65,7 +65,7 @@ static void simulate_shutdown(msg_host_t host) {
 }
 
 static int onoff(int argc, char *argv[]) {
-	msg_host_t host1 = MSG_get_host_by_name("MyHost1");
+	msg_host_t host1 = MSG_host_by_name("MyHost1");
 
 	XBT_INFO("Energetic profile: %s",
 			MSG_host_get_property_value(host1,"watt_per_state"));

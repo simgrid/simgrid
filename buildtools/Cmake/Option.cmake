@@ -1,4 +1,4 @@
-### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see after)
+### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see below)
 ### ex: cmake -Denable_java=ON -Denable_gtnets=ON ./
 
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")

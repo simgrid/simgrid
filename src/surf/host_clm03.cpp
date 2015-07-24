@@ -26,9 +26,8 @@ void surf_host_model_init_current_default(void)
   xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "yes");
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
-  surf_host_model->p_cpuModel = surf_cpu_model_pm;
 
-  ModelPtr model = surf_host_model;
+  Model *model = surf_host_model;
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(host_parse_init);
@@ -41,25 +40,18 @@ void surf_host_model_init_compound()
   xbt_assert(surf_network_model, "No network model defined yet!");
   surf_host_model = new HostCLM03Model();
 
-  ModelPtr model = surf_host_model;
+  Model *model = surf_host_model;
   xbt_dynar_push(model_list, &model);
   xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(host_parse_init);
 }
 
-HostCLM03Model::HostCLM03Model()
- : HostModel("Host CLM03")
-{
-}
-
-HostCLM03Model::~HostCLM03Model()
-{}
-
-HostPtr HostCLM03Model::createHost(const char *name){
-  HostPtr host = new HostCLM03(surf_host_model, name, NULL,
+Host *HostCLM03Model::createHost(const char *name){
+  sg_host_t sg_host = sg_host_by_name(name);
+  Host *host = new HostCLM03(surf_host_model, name, NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
-		  (RoutingEdgePtr)xbt_lib_get_or_null(host_lib, name, ROUTING_HOST_LEVEL),
-		  static_cast<CpuPtr>(xbt_lib_get_or_null(host_lib, name, SURF_CPU_LEVEL)));
+		  sg_host_edge(sg_host),
+		  sg_host_surfcpu(sg_host));
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, host);
   return host;
@@ -68,16 +60,14 @@ HostPtr HostCLM03Model::createHost(const char *name){
 double HostCLM03Model::shareResources(double now){
   adjustWeightOfDummyCpuActions();
 
-  double min_by_cpu = p_cpuModel->shareResources(now);
-  double min_by_net = (strcmp(surf_network_model->getName(), "network NS3")) ? surf_network_model->shareResources(now) : -1;
-  double min_by_sto = -1;
-  if (p_cpuModel == surf_cpu_model_pm)
-	min_by_sto = surf_storage_model->shareResources(now);
+  double min_by_cpu = surf_cpu_model_pm->shareResources(now);
+  double min_by_net = surf_network_model->shareResourcesIsIdempotent() ? surf_network_model->shareResources(now) : -1;
+  double min_by_sto = surf_storage_model->shareResources(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
-      this, surf_cpu_model_pm->getName(), min_by_cpu,
-            surf_network_model->getName(), min_by_net,
-            surf_storage_model->getName(), min_by_sto);
+      this, typeid(surf_cpu_model_pm).name(), min_by_cpu,
+	        typeid(surf_network_model).name(), min_by_net,
+			typeid(surf_storage_model).name(), min_by_sto);
 
   double res = max(max(min_by_cpu, min_by_net), min_by_sto);
   if (min_by_cpu >= 0.0 && min_by_cpu < res)
@@ -93,20 +83,21 @@ void HostCLM03Model::updateActionsState(double /*now*/, double /*delta*/){
   return;
 }
 
-ActionPtr HostCLM03Model::executeParallelTask(int host_nb,
-                                        void **host_list,
+Action *HostCLM03Model::executeParallelTask(int host_nb,
+                                        sg_host_t *host_list,
                                         double *flops_amount,
                                         double *bytes_amount,
                                         double rate){
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
-  ActionPtr action =NULL;
+  Action *action =NULL;
   if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0)){
-    action = ((HostCLM03Ptr)host_list[0])->execute(flops_amount[0]);
+    action = surf_host_execute(host_list[0],flops_amount[0]);
   } else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0)) {
-    action = communicate((HostCLM03Ptr)host_list[0],
-        (HostCLM03Ptr)host_list[0],bytes_amount[0], rate);
+    action = surf_network_model->communicate(sg_host_edge(host_list[0]),
+    		                                 sg_host_edge(host_list[0]),
+											 bytes_amount[0], rate);
   } else if ((host_nb == 2)
              && (cost_or_zero(flops_amount, 0) == 0.0)
              && (cost_or_zero(flops_amount, 1) == 0.0)) {
@@ -120,26 +111,21 @@ ActionPtr HostCLM03Model::executeParallelTask(int host_nb,
       }
     }
     if (nb == 1){
-      action = communicate((HostCLM03Ptr)host_list[0],
-          (HostCLM03Ptr)host_list[1],value, rate);
+      action = surf_network_model->communicate(sg_host_edge(host_list[0]),
+    		                                   sg_host_edge(host_list[1]),
+											   value, rate);
     }
   } else
-    THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks */
+    THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks for more than 2 hosts */
 #undef cost_or_zero
-  xbt_free((HostCLM03Ptr)host_list);
+  xbt_free(host_list);
   return action;
 }
-
-ActionPtr HostCLM03Model::communicate(HostPtr src, HostPtr dst, double size, double rate){
-  return surf_network_model->communicate(src->p_netElm, dst->p_netElm, size, rate);
-}
-
-
 
 /************
  * Resource *
  ************/
-HostCLM03::HostCLM03(HostModelPtr model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdgePtr netElm, CpuPtr cpu)
+HostCLM03::HostCLM03(HostModel *model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
   : Host(model, name, properties, storage, netElm, cpu) {}
 
 bool HostCLM03::isUsed(){
@@ -151,11 +137,11 @@ void HostCLM03::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/,
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }
 
-ActionPtr HostCLM03::execute(double size) {
+Action *HostCLM03::execute(double size) {
   return p_cpu->execute(size);
 }
 
-ActionPtr HostCLM03::sleep(double duration) {
+Action *HostCLM03::sleep(double duration) {
   return p_cpu->sleep(duration);
 }
 
