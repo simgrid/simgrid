@@ -117,7 +117,7 @@ int console_add_backbone(lua_State *L) {
 
   lua_pushstring(L, "sharing_policy");
   type = lua_gettable(L, -2);
-  char* policy = lua_tostring(L, -1);
+  const char* policy = lua_tostring(L, -1);
   if (policy && !strcmp(policy,"FULLDUPLEX")) {
     link.policy = SURF_LINK_FULLDUPLEX;
   } else if (policy && !strcmp(policy,"FATPIPE")) {
