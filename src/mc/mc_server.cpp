@@ -212,7 +212,7 @@ bool s_mc_server::handle_events()
             xbt_die("Broken message");
           memcpy(&message, buffer, sizeof(message));
           if (message.callback)
-            xbt_die("Support for callbacks/functions symbols not implemented in client/server mode.");
+            xbt_die("Support for client-side function proposition is not implemented.");
           XBT_DEBUG("Received symbol: %s", message.name);
 
           if (_mc_property_automaton == NULL)
