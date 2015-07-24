@@ -610,13 +610,10 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   Dwarf_Die * unit, simgrid::mc::Frame* frame,
   const char *ns)
 {
-
   simgrid::mc::Type type;
-  type.type = -1;
+  type.type = dwarf_tag(die);
   type.name = std::string();
   type.element_count = -1;
-
-  type.type = dwarf_tag(die);
 
   // Global Offset
   type.id = dwarf_dieoffset(die);
@@ -1141,7 +1138,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
   std::shared_ptr<simgrid::mc::ObjectInformation> result =
     std::make_shared<simgrid::mc::ObjectInformation>();
   if (executable)
-    result->flags |= MC_OBJECT_INFO_EXECUTABLE;
+    result->flags |= simgrid::mc::ObjectInformation::Executable;
   result->file_name = name;
   MC_find_object_address(maps, result.get());
   MC_dwarf_get_variables(result.get());

@@ -9,19 +9,19 @@ fi
 echo -e "\n";
 echo '------------- Execute the edaggregation example under PSG -------------';
 echo -e "\n";
-java -Xmx1024m -cp lib.jar:classes peersim.Simulator configs/edaggregationPSG.txt
+java -Xmx1024m -cp lib.jar:classes:../../simgrid.jar peersim.Simulator configs/edaggregationPSG.txt
 echo -e "\n";
 echo '------------- Execute the edaggregation example under PS -------------';
 echo -e "\n";
-java -Xmx1024m -cp lib.jar:classes peersim.Simulator configs/edaggregation.txt
+java -Xmx1024m -cp lib.jar:classes:../../simgrid.jar peersim.Simulator configs/edaggregation.txt
 echo -e "\n";
 echo '------------- Execute the chord example under PSG -------------';
 echo -e "\n";
-java -Xmx1024m -cp lib.jar:classes peersim.Simulator configs/chordPSG.txt
+java -Xmx1024m -cp lib.jar:classes:../../simgrid.jar peersim.Simulator configs/chordPSG.txt
 echo -e "\n";
 echo '------------- Execute the chord example under PS -------------';
 echo -e "\n";
-java -Xmx1024m -cp lib.jar:classes peersim.Simulator configs/chord.txt
+java -Xmx1024m -cp lib.jar:classes:../../simgrid.jar peersim.Simulator configs/chord.txt
 echo -e "\n";
 echo '------------- Compare the 2 results PS and PSG -------------';
 echo -e "\n";

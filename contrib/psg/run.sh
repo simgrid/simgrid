@@ -6,7 +6,7 @@ else
 	eval ulimit -s 128
 fi
 echo '------------- Start execution..';
-java -Xmx1024m -cp lib.jar:classes peersim.Simulator $1
+java -Xmx1024m -cp lib.jar:classes:../../simgrid.jar peersim.Simulator $1
 echo '------------- done -------------';
 exit 0
 

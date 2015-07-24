@@ -30,8 +30,6 @@
 
 // ***** Type
 
-typedef int e_mc_type_type;
-
 namespace simgrid {
 namespace mc {
 
@@ -47,7 +45,8 @@ public:
   Type(Type&& type) = default;
   Type& operator=(Type&&) = default;
 
-  e_mc_type_type type;
+  /** The DWARF TAG of the type (e.g. DW_TAG_array_type) */
+  int type;
   Dwarf_Off id; /* Offset in the section (in hexadecimal form) */
   std::string name; /* Name of the type */
   int byte_size; /* Size in bytes */
@@ -88,11 +87,6 @@ public:
 }
 
 // ***** Object info
-
-/** Bit field of options */
-typedef int mc_object_info_flags;
-#define MC_OBJECT_INFO_NONE 0
-#define MC_OBJECT_INFO_EXECUTABLE 1
 
 namespace simgrid {
 namespace mc {
@@ -165,7 +159,11 @@ public:
   ObjectInformation(ObjectInformation const&) = delete;
   ObjectInformation& operator=(ObjectInformation const&) = delete;
 
-  mc_object_info_flags flags;
+  // Flag:
+  static const int Executable = 1;
+
+  /** Bitfield of flags */
+  int flags;
   std::string file_name;
   const void* start;
   const void *end;
@@ -190,7 +188,7 @@ public:
 
   bool executable() const
   {
-    return this->flags & MC_OBJECT_INFO_EXECUTABLE;
+    return this->flags & simgrid::mc::ObjectInformation::Executable;
   }
 
   bool privatized() const
@@ -201,7 +199,6 @@ public:
   void* base_address() const;
 
   simgrid::mc::Frame* find_function(const void *ip) const;
-  // TODO, should be simgrid::mc::Variable*
   simgrid::mc::Variable* find_variable(const char* name) const;
 
 };
