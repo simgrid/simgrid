@@ -19,7 +19,7 @@ Step 4: Apply the patch in "<simgrid-source-dir>/contrib/lua/lualib.patch" to th
         cd /tmp/lua-5.3.1/
         patch -p1 < lualib.patch
 
-Step 5: make
+Step 5: make <platform>, for instance "make linux"
 
 Step 6: sudo make install
 
