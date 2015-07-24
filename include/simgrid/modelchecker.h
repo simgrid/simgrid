@@ -6,6 +6,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/** \file modelchecker.h
+ *
+ *  This is the API used by the user simulated program to communicate
+ *  with the MC.
+ */
+
 #include <stdbool.h>
 
 #include <simgrid_config.h> /* HAVE_MC ? */
@@ -21,13 +27,21 @@ XBT_PUBLIC(int) MC_random(int min, int max);
 
 #ifdef HAVE_MC
 
-extern int _sg_do_model_check; /* please don't use directly: we inline MC_is_active, but that's what you should use */
+/* Internal variable used to check if we're running under the MC
+ *
+ * Please don't use directly: you should use MC_is_active. */
+extern int _sg_do_model_check;
 extern int _sg_mc_visited;
 
 #define MC_is_active()                  _sg_do_model_check
 #define MC_visited_reduction()          _sg_mc_visited
 
+/** Assertion for the model-checker
+ *
+ *  This function is used to define safety properties to verify.
+ */
 XBT_PUBLIC(void) MC_assert(int);
+
 XBT_PUBLIC(void) MC_automaton_new_propositional_symbol(const char* id, int(*fct)(void));
 XBT_PUBLIC(void) MC_automaton_new_propositional_symbol_pointer(const char *id, int* value);
 XBT_PUBLIC(void) MC_automaton_new_propositional_symbol_callback(const char* id,
