@@ -111,21 +111,22 @@ if(enable_ns3)
   endif()
 endif()
 
-# algorithm 1.50.0
-# function 1.23.0
-# intrusive 1.35.0
-# lambda 1.28.0
-# signals2 1.39.0
-find_package(Boost 1.42 COMPONENTS context)
+find_package(Boost 1.42)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
-  if(APPLE) #MAC
+  if(APPLE)
     message(FATAL_ERROR "Failed to find Boost libraries (Try to install them with 'sudo fink install boost1.53.nopython')")
   else()
-    message(FATAL_ERROR "Failed to find Boost libraries. Did you install libboost-dev and libboost-context-dev?")
+    message(FATAL_ERROR "Failed to find Boost libraries."
+                        "Did you install libboost-dev and libboost-context-dev?"
+                        "(libboost-context-dev is optional)")
   endif()
 endif()
+
+# Try again to see if we have libboost-context
+find_package(Boost 1.42 COMPONENTS context)
+set(Boost_FOUND 1) # We don't care of whether this component is missing
 
 if(Boost_FOUND AND Boost_CONTEXT_FOUND)
   # We should use feature detection for this instead:
@@ -137,6 +138,8 @@ if(Boost_FOUND AND Boost_CONTEXT_FOUND)
     set(HAVE_BOOST_CONTEXT 2)
   endif()
 else()
+  message ("   boost        : found.")
+  message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
   set(HAVE_BOOST_CONTEXT 0)
 endif()
 
