@@ -84,15 +84,15 @@ ObjectInformation::ObjectInformation()
  *
  *  An offset is applied to address found in DWARF:
  *
- *  <ul>
- *    <li>for an executable obejct, addresses are virtual address
- *        (there is no offset) i.e. \f$\text{virtual address} = \{dwarf address}\f$;</li>
- *    <li>for a shared object, the addreses are offset from the begining
- *        of the shared object (the base address of the mapped shared
- *        object must be used as offset
- *        i.e. \f$\text{virtual address} = \text{shared object base address}
- *             + \text{dwarf address}\f$.</li>
+ *  * for an executable obejct, addresses are virtual address
+ *    (there is no offset) i.e.
+ *    \f$\text{virtual address} = \{dwarf address}\f$;
  *
+ *  * for a shared object, the addreses are offset from the begining
+ *    of the shared object (the base address of the mapped shared
+ *    object must be used as offset
+ *    i.e. \f$\text{virtual address} = \text{shared object base address}
+ *             + \text{dwarf address}\f$.
  */
 void *ObjectInformation::base_address() const
 {
