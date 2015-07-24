@@ -61,17 +61,23 @@ void MC_cut(void)
 
 void MC_ignore(void* addr, size_t size)
 {
-  if (mc_mode == MC_MODE_CLIENT) {
-    s_mc_ignore_memory_message_t message;
-    message.type = MC_MESSAGE_IGNORE_MEMORY;
-    message.addr = (std::uintptr_t) addr;
-    message.size = size;
-    MC_client_send_message(&message, sizeof(message));
-  }
+  xbt_assert(mc_mode != MC_MODE_SERVER);
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+
+  s_mc_ignore_memory_message_t message;
+  message.type = MC_MESSAGE_IGNORE_MEMORY;
+  message.addr = (std::uintptr_t) addr;
+  message.size = size;
+  MC_client_send_message(&message, sizeof(message));
 }
 
 void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
 {
+  xbt_assert(mc_mode != MC_MODE_SERVER);
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+
   xbt_die("Support for client-side function proposition is not implemented: "
     "use MC_automaton_new_propositional_symbol_pointer instead."
   );
@@ -82,6 +88,7 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
   xbt_assert(mc_mode != MC_MODE_SERVER);
   if (mc_mode != MC_MODE_CLIENT)
     return;
+
   s_mc_register_symbol_message_t message;
   message.type = MC_MESSAGE_REGISTER_SYMBOL;
   if (strlen(name) + 1 > sizeof(message.name))
