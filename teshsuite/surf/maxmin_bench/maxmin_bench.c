@@ -6,11 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
-
 #include "surf/maxmin.h"
 #include "xbt/module.h"
 #include "xbt/xbt_os_time.h"
@@ -75,11 +70,6 @@ void test(int nb_cnst, int nb_var, int nb_elem)
   free(var);
   free(used);
 }
-
-#ifdef __BORLANDC__
-#pragma argsused
-#endif
-
 
 int main(int argc, char **argv)
 {

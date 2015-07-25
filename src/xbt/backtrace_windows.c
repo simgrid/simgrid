@@ -12,7 +12,7 @@
  *  support for application self-debugging.
  */
 
-#if defined(_XBT_BORLAND_COMPILER) || defined(_XBT_VISUALC_COMPILER)
+#if defined(_XBT_VISUALC_COMPILER)
 /* native windows build */
 #  include <dbghelp.h>
 #else

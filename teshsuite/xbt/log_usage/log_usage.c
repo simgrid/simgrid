@@ -6,19 +6,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
 #include "xbt.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,
                                 "Logging specific to this test");
 XBT_LOG_NEW_CATEGORY(top, "Useless test channel");
-
-#ifdef __BORLANDC__
-#pragma argsused
-#endif
 
 static void dolog(const char *settings)
 {

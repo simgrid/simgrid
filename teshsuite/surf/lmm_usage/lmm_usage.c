@@ -6,10 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
 #include "xbt/sysdep.h"
 #include "surf/maxmin.h"
 #include "xbt/log.h"
@@ -469,10 +465,6 @@ void test3(method_t method)
     xbt_free(A[i]);
   xbt_free(A);
 }
-
-#ifdef __BORLANDC__
-#pragma argsused
-#endif
 
 int main(int argc, char **argv)
 {

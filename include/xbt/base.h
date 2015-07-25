@@ -64,8 +64,6 @@
 #        define XBT_INLINE inline
 #    elif (defined(__STDC__) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 #        define XBT_INLINE inline
-#    elif defined(__BORLANDC__) && !defined(__STRICT_ANSI__)
-#        define XBT_INLINE __inline
 #    else
 #        define XBT_INLINE
 #    endif

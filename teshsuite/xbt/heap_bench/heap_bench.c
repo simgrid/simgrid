@@ -6,10 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <xbt/xbt_os_time.h>
@@ -19,11 +15,7 @@
 
 #define MAX_TEST 1000000
 
-#ifdef __BORLANDC__
-int _XBT_CALL compare_double(const void *a, const void *b);
-#else
 int compare_double(const void *a, const void *b);
-#endif
 
 void test_heap_validity(int size);
 void test_heap_mean_operation(int size);
@@ -113,10 +105,6 @@ void test_reset_heap(xbt_heap_t * heap, int size)
   }
 
 }
-
-#ifdef __BORLANDC__
-#pragma argsused
-#endif
 
 int main(int argc, char **argv)
 {
