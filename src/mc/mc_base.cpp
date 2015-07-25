@@ -30,6 +30,15 @@ extern "C" {
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 
+int MC_random(int min, int max)
+{
+  xbt_assert(mc_mode != MC_MODE_SERVER);
+  /* TODO, if the MC is disabled we do not really need to make a simcall for
+   * this :) */
+  /* FIXME: return mc_current_state->executed_transition->random.value; */
+  return simcall_mc_random(min, max);
+}
+
 void MC_wait_for_requests(void)
 {
 #ifdef HAVE_MC
