@@ -26,8 +26,7 @@ if(enable_compile_warnings)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-mismatched-tags")
   endif()
 
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall") # FIXME: Q&D hack
-
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 endif()
 
@@ -83,11 +82,6 @@ if(enable_model-checking AND enable_compile_optimizations)
       endif()
       set_source_files_properties(${s} PROPERTIES COMPILE_FLAGS ${mcCFLAGS})
   endforeach()
-endif()
-
-if(APPLE AND COMPILER_C_VERSION_MAJOR_MINOR MATCHES "4.6")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
-  set(optCFLAGS "-O0 ")
 endif()
 
 if(NOT enable_debug)
