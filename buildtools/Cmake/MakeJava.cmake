@@ -9,7 +9,7 @@ set_target_properties(simgrid-java PROPERTIES VERSION ${libsimgrid-java_version}
 if (CMAKE_VERSION VERSION_LESS "2.8.8")
   include_directories(${JNI_INCLUDE_DIRS})
 
-  message(WARNING "[Java] Try to workaround missing feature in older CMake.  You should better update CMake to version 2.8.8 or above.")
+  message("[Java] Try to workaround missing feature in older CMake. You should better update CMake to version 2.8.8 or above.")
   get_directory_property(CHECK_INCLUDES INCLUDE_DIRECTORIES)
 else()
   get_target_property(COMMON_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
