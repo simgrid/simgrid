@@ -111,7 +111,7 @@ if(enable_ns3)
   endif()
 endif()
 
-find_package(Boost 1.42)
+find_package(Boost 1.48)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 else()
