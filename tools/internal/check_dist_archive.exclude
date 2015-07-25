@@ -43,9 +43,4 @@
 
 + teshsuite/smpi/mpich3-test/f77/attr/.*
 
-+ tools/check_dist_archive
-+ tools/check_dist_archive\.exclude
-+ tools/generate-multi-jar\.py
-+ tools/update_copyright_header
-
-+ tools/spell/.*
++ tools/internal/.*
