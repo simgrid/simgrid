@@ -1,34 +1,33 @@
 set(warnCFLAGS "")
 set(optCFLAGS "")
 
-include(CheckCXXCompilerFlag)
+##
+## Request full debugging flags
+##
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -g3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 
+##
+## We need a decent support of the c++11 standard
+##
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+if(COMPILER_SUPPORTS_CXX11)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else()
+  message(FATAL_ERROR 
+          "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
+	  "Please use a decent C++ compiler.")
+endif()
 if (CMAKE_COMPILER_IS_GNUCC)
   if (COMPILER_C_VERSION_MAJOR_MINOR STRLESS "4.7")
-    message(FATAL_ERROR "SimGrid needs g++ version 4.7 to compile.")
+    message(FATAL_ERROR
+            "SimGrid needs g++ version 4.7 to compile "
+	    "(c++11 support of previous versions is too limited).")
   endif()
 endif()
 
-if(NOT __VISUALC__ AND NOT __BORLANDC__)
-  CHECK_CXX_COMPILER_FLAG("-std=gnu++11" HAVE_CXX11)
-  CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" HAVE_CXX0X)
-  if(HAVE_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-  elseif(HAVE_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
-  else()
-    message(FATAL_ERROR "Missing support for C++11.")
-  endif()
-endif()
-
-if(NOT __VISUALC__ AND NOT __BORLANDC__)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -g3")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
-else()
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}/Zi")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}/Zi")
-endif()
 
 if(enable_compile_warnings)
   set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
