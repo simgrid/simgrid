@@ -7,9 +7,13 @@ else()
   find_package(Doxygen)
 endif()
 
-find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
+if (HAVE_Java)
+  find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
+  mark_as_advanced(JAVADOC_PATH)
+endif()
+
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
-mark_as_advanced(JAVADOC_PATH)
+
 
 if(DOXYGEN_FOUND)
 
@@ -69,12 +73,17 @@ if(DOXYGEN_FOUND)
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen again"
     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
-    COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
-    COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
-
-
+    
+   if (HAVE_Java)
+      ADD_CUSTOM_COMMAND(TARGET doc
+        COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
+        COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
+        WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
+      )
+   endif()
+       
 
 
 
