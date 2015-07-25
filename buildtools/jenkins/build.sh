@@ -34,7 +34,7 @@ mkdir $WORKSPACE/build
 cd $WORKSPACE/build
 
 cmake -Denable_documentation=OFF $WORKSPACE
-make dist VERBOSE=1
+make dist
 tar xzf `cat VERSION`.tar.gz
 cd `cat VERSION`
 
@@ -63,7 +63,7 @@ cmake -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_compile_warnings=ON -Denable_smpi=ON -Denable_lib_static=OFF \
   -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF \
   -Denable_tracing=ON -Denable_java=ON
-make VERBOSE=1
+make
 
 cd $WORKSPACE/build
 cd `cat VERSION`
