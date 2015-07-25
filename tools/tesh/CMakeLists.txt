@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/tesh.pl"
+configure_file("${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.pl"
   "${CMAKE_BINARY_DIR}/bin/tesh" @ONLY IMMEDIATE)
 
     file(COPY        ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/Diff.pm
@@ -37,6 +37,7 @@ set(xml_files
   )
 set(bin_files
   ${bin_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/tesh.pl
   ${CMAKE_CURRENT_SOURCE_DIR}/colorize.pl
   ${CMAKE_CURRENT_SOURCE_DIR}/generate_tesh
   PARENT_SCOPE

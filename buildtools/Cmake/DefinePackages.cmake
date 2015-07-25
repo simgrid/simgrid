@@ -1216,7 +1216,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/Scripts/my_valgrind.pl
   buildtools/Cmake/Scripts/postinstall.sh
   buildtools/Cmake/Scripts/preinstall.sh
-  buildtools/Cmake/Scripts/tesh.pl
   buildtools/Cmake/Scripts/update_tesh.pl
   buildtools/Cmake/UnitTesting.cmake
   buildtools/Cmake/src/internal_config.h.in
