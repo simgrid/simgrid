@@ -1,6 +1,6 @@
 # Try to find the NS3 library.
 #
-# The user can hint a path using the ns3_path option.
+# The user can hint a path using the NS3_HINT option.
 #
 # Once done, the following will be defined:
 #
@@ -18,19 +18,20 @@
 #   - Add include/ns3{version} to the PATH_SUFFIXES line of the find_path below
 
 set(HAVE_NS3 0)
+set(NS3_HINT ${ns3_path} CACHE PATH "Path to search for NS3 lib and include")
 
 find_library(NS3_LIBRARIES
   NAME ns3-core ns3.14-core ns3.15-core ns3.16-core ns3.17-core ns3.18-core ns3.19-core ns3.20-core ns3.21-core ns3.22-core
   PATH_SUFFIXES lib64 lib ns3/lib
   PATHS
-  ${ns3_path}
+  ${NS3_HINT}
   )
 
 find_path(NS3_INCLUDE_DIR
   NAME ns3/core-module.h
   PATH_SUFFIXES include ns3/include include/ns3.14 include/ns3.15 include/ns3.16 include/ns3.17 include/ns3.18 include/ns3.19 include/ns3.20 include/ns3.21 include/ns3.22
   PATHS
-  ${ns3_path}
+  ${NS3_HINT}
   )
 
 
@@ -74,6 +75,8 @@ if(NS3_INCLUDE_DIR)
 endif()
 mark_as_advanced(NS3_LIBRARY_PATH)
 
+message("NS3_VERSION_MINOR: ${NS3_VERSION_MINOR}")
+message("NS3_LIBRARIES: ${NS3_LIBRARIES}")
 
 if(HAVE_NS3)
   link_directories(${NS3_LIBRARY_PATH})
