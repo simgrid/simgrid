@@ -30,14 +30,14 @@ then
 
     cmake -G "MSYS Makefiles" -Denable_documentation=OFF $WORKSPACE || die 1 "Failed to do the first cmake - Halting"
 
-    make dist || die 2 "Failed to build dist - Halting"
+    make dist VERBOSE=1|| die 2 "Failed to build dist - Halting"
 
     cmake -G "MSYS Makefiles" -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON  -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=OFF -Denable_documentation=OFF . \
     || die 5 "Failed to perform the Cmake for $build_mode - Halting"
 
-    make -j$NUMBER_OF_PROCESSORS || die 5 "Build failure - Halting"
+    make -j$NUMBER_OF_PROCESSORS VERBOSE=1|| die 5 "Build failure - Halting"
 
-    make nsis || die 6 "Failure while generating the Windows executable - Halting"
+    make nsis VERBOSE=1|| die 6 "Failure while generating the Windows executable - Halting"
 
 else
     # Linux:
@@ -49,7 +49,7 @@ else
     cmake -Denable_documentation=OFF $WORKSPACE || die 1 "Failed to do the first cmake - Halting"
 
     rm Simgrid*.tar.gz
-    make dist || die 2 "Failed to build dist - Halting"
+    make dist VERBOSE=1 || die 2 "Failed to build dist - Halting"
 
     tar xzf `cat VERSION`.tar.gz || die 3 "Failed to extract the generated tgz - Halting"
 
@@ -72,7 +72,7 @@ else
 
     [ $? -eq 0 ] || die 5 "Failed to perform the Cmake for $build_mode - Halting"
 
-    make -j$NUMBER_OF_PROCESSORS || die 6 "Build failure - Halting"
+    make -j$NUMBER_OF_PROCESSORS VERBOSE=1 || die 6 "Build failure - Halting"
 fi
 
 echo "running tests with $NUMBER_OF_PROCESSORS processors"

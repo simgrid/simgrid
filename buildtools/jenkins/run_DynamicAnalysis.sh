@@ -31,7 +31,7 @@ done
 cd $WORKSPACE/build
 
 cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON -Denable_smpi=ON  -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck_xml=ON $WORKSPACE
-make
+make VERBOSE=1
 
 ctest -D ExperimentalStart || true
 ctest -D ExperimentalConfigure || true
@@ -44,11 +44,11 @@ if [ -f Testing/TAG ] ; then
    mv Testing/`head -n 1 < Testing/TAG`/DynamicAnalysis.xml  $WORKSPACE
 fi
 
-make clean
+make clean VERBOSE=1
 
 cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_coverage=ON $WORKSPACE
 
-make
+make VERBOSE=1
 ctest -D ExperimentalStart || true
 ctest -D ExperimentalConfigure || true
 ctest -D ExperimentalBuild || true
