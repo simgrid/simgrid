@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sem_basic,
 #define THREAD_THREADS_MAX      ((unsigned int)10)
 
 /*
- * the thread funtion.
+ * the thread function.
  */
 void *thread_routine(void *param);
 
