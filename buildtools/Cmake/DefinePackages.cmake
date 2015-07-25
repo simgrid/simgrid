@@ -124,8 +124,6 @@ set(EXTRA_DIST
   src/xbt/probes.h
   src/xbt/setset_private.h
   src/xbt/win32_ucontext.c
-  tools/tesh/run_context.h
-  tools/tesh/tesh.h
   tools/tesh/generate_tesh
   examples/smpi/mc/only_send_deterministic.tesh
   examples/smpi/mc/non_deterministic.tesh

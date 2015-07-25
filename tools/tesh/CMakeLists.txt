@@ -35,15 +35,6 @@ set(xml_files
   ${xml_files}
   PARENT_SCOPE
   )
-set(tools_src
-  ${tools_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/run_context.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/run_context.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/signal.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/tesh.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/tesh.h
-  PARENT_SCOPE
-  )
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/colorize.pl
