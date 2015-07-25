@@ -29,7 +29,7 @@ my $enable_coverage=0;
 my $diff_tool=0;
 my $diff_tool_tmp_fh=0;
 my $diff_tool_tmp_filename=0;
-my $sort_prefix = 19;
+my $sort_prefix = -1;
 my $tesh_file;
 my $tesh_name;
 my $error=0;
@@ -339,14 +339,22 @@ sub parse_out {
         substr($a, 0, $sort_prefix) cmp substr($b, 0, $sort_prefix)
     }
     use sort 'stable';
-    @got = sort mysort @got;
+    if ($sort_prefix>0) {
+	@got = sort mysort @got;
+    } else {
+	@got = sort @got;
+    }	    
     while (@got and $got[0] eq "") {
       shift @got;
     }
 
     # Sort the expected output to make it easier to write for humans
     if(defined($cmd{'out'})){
-      @{$cmd{'out'}}=sort mysort @{$cmd{'out'}};
+      if ($sort_prefix>0) {
+	  @{$cmd{'out'}} = sort mysort @{$cmd{'out'}};
+      } else {
+	  @{$cmd{'out'}} = sort @{$cmd{'out'}};
+      }
       while (@{$cmd{'out'}} and ${$cmd{'out'}}[0] eq "") {
         shift @{$cmd{'out'}};
       }
@@ -401,10 +409,13 @@ sub parse_out {
     print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch".($cmd{'sort'}?" (even after sorting)":"").":\n";
     map { print "$_\n" } split(/\n/,$diff);
     if ($cmd{'sort'}) {
-	print "WARNING: both the observed output and expected output were sorted as requested.\n";
-	print "----8<---------------  Begin of unprocessed observed output (as it should appear in file):\n";
-	map {print "> $_\n"} @{$cmd{'unsorted got'}};
-	print "--------------->8----  End of the unprocessed observed output.\n";
+	print "WARNING: Both the observed output and expected output were sorted as requested.\n";
+	print "WARNING: Output were only sorted using the $sort_prefix first chars.\n"
+	  if ($sort_prefix>0);
+	print "WARNING: Use <! output sort 19> to sort by simulated date and process ID only.\n";
+	# print "----8<---------------  Begin of unprocessed observed output (as it should appear in file):\n";
+	# map {print "> $_\n"} @{$cmd{'unsorted got'}};
+	# print "--------------->8----  End of the unprocessed observed output.\n";
     }
 
     print "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> output mismatch)\n";

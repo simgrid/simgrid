@@ -2,7 +2,7 @@
 
 p Testing the Kademlia implementation with MSG
 
-! output sort
+! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/kademlia ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/kademlia.xml "--log=root.fmt:[%10.6r]%e(%02i:%P@%h)%e%m%n"
 > [  0.000000] ( 1:node@Jacquelin) Hi, I'm going to create the network with id 00000000
 > [  0.000000] ( 2:node@Boivin) Hi, I'm going to join the network with id 00000001

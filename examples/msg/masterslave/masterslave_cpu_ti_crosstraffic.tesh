@@ -2,7 +2,7 @@
 
 p Testing a simple master/slave example application
 
-! output sort
+! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml masterslave/deployment_masterslave.xml --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:master@Tremblay) Got 5 slaves and 20 tasks to process
@@ -127,7 +127,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platf
 
 p Testing a master/slave example application with a forwarder module
 
-! output sort
+! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platforms/platform.xml masterslave/deployment_masterslave_forwarder.xml --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:master@Jacquelin) Got 5 slaves and 20 tasks to process
@@ -278,7 +278,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platf
 
 p Testing a simple master/slave example application handling failures
 
-! output sort
+! output sort 19
 $ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/../platforms/small_platform_with_failures.xml masterslave/deployment_masterslave.xml --cfg=path:${srcdir} --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Cannot launch process 'slave' on failed host 'Fafard'
 > [  0.000000] (1:master@Tremblay) Got 5 slave(s) :
@@ -379,7 +379,7 @@ $ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_
 
 p Testing the bypassing of the flexml parser
 
-! output sort
+! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.

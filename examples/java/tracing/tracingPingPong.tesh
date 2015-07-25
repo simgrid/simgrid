@@ -1,6 +1,6 @@
 #! tesh
 
-! output sort
+! output sort 19
 
 $ java -classpath ${classpath:=.} tracing/TracingTest ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/tracing/tracingPingPongDeployment.xml --cfg=tracing:yes  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:yes
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.

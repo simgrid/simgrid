@@ -1,9 +1,13 @@
 #! tesh
 
-# we have to sort the output as events are delivered in the order of
-# map traversal, which is not portable
-
+#
+# DONT GIVE A SORT LENGTH PREFIX HERE.
+#
+#   we want to sort on the whole line so that link destruction events 
+#   (that are delivered in the order of map traversal) become reproducible
+#
 ! output sort
+#
 $ java -classpath ${classpath:=.} surfPlugin/TestPlugin ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/surfPlugin/surfPluginDeployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
 > [0.000000] [jmsg/INFO] Trace: Link created __loopback__

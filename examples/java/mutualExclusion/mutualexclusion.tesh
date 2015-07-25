@@ -1,6 +1,6 @@
 #! tesh
 
-! output sort
+! output sort 19
 
 $ java -classpath ${classpath:=.} mutualExclusion/MutexCentral ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/mutualExclusion/mutex_centralized_deployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.

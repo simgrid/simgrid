@@ -2,7 +2,7 @@
 
 p Testing the deprecated CM02 network model
 
-! output sort
+! output sort 19
 $ $SG_TEST_EXENV sendrecv/sendrecv$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/sendrecv/deployment_sendrecv.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:@) Configuration change: Set 'network/model' to 'CM02'

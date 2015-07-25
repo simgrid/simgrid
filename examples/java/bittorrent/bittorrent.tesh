@@ -1,6 +1,6 @@
 #! tesh
 
-! output sort
+! output sort 19
 ! timeout 15
 
 $ java -classpath ${classpath:=.} bittorrent/Bittorrent ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/bittorrent/bittorrent.xml

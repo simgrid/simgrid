@@ -2,7 +2,7 @@
 
 # Later modify the commande and specify the platform and deployment path
 
-! output sort
+! output sort 19
 $ lua mult_matrix.lua "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:Sender@Tremblay) Hello From Sender
 > [  0.000000] (1:Sender@Tremblay) Argc=4 (should be 4)

@@ -22,15 +22,15 @@ $ ${bindir:=.}/tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n' set-
 > [set-output-sort-1:64] printf 'c\\nprofiling: foo\\nprofiling: bar\\nd\\nb\\na\\nprofiling: baz'
 > Test suite `set-output-sort-1' OK
 
-p Check the default prefix length (19) for "output sort"
-! output sort
+p Check the Right Prefix Length (19) for "output sort"
+! output sort 19
 < 12345678901234567 B line
 < 12345678901234567 A line
 $ cat
 > 12345678901234567 A line
 > 12345678901234567 B line
 
-! output sort
+! output sort 19
 < 123456789012345678 B line
 < 123456789012345678 A line
 $ cat
@@ -39,7 +39,7 @@ $ cat
 
 ! expect return 2
 ! output ignore
-< ! output sort
+< ! output sort 19
 < < 123456789012345678 B line
 < < 123456789012345678 A line
 < $ cat

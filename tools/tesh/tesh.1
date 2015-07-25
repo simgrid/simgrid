@@ -104,32 +104,45 @@ and an error is raised on discrepancy. Metacommands to change this:
  "output display" -> output displayed (but not verified)
  "output sort"    -> sorts the display before verifying it (see below)
 .SH SORTING OUTPUT
-Sorting the output seems to be a strange idea, but it is mandatory in
-SimGrid since the processes run out of order at any scheduling point
-(ie, every processes ready to run at simulated time t run in
-parallel). To ensure that the simulator outputs still match, we have
-to sort the output back before comparing it.
 
-We expect the simulators to run with that log formatting argument:
-   --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
-Then, tesh sorts string on the 19 first chars only, and is stable when
-line beginnings are equal. This should ensure that:
- (1) tesh is effective (no false positive, no false negative)
- (2) scheduling points are separated from each other
- (3) at each scheduling point, processes are separated from each other
- (4) the order of what a given process says at a given scheduling
-     point is preserved.
+SimGrid is designed to produce perfectly reproducible results, so its
+output can usualy be compared without any preprocessing. This is not
+true anymore when the user activates parallel execution: User
+processes are run in parallel at each timestamp, and the output is not
+reproducible anymore. Until you sort the lines.
 
-This is of course very SimGrid oriented, breaking the generality of
-tesh, but who cares, actually?
+If you ask for 
+.B ! output sort
+then tesh will sort the whole lines. But it really complicates the
+analysis of the error detected: the logical order of the output is
+defeated by the lexicographical sort. 
 
-If you want to change the length of the prefix used for the sort,
-simply specify it after the output sort directive, like this:
+The solution is to ask for
+.B ! output sort 19
+instead to sort only on the prefix of the line. Indeed, we run our simulation
+tests with the flag: 
+  --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
 
-! output sort 22
+Then, the previous command sorts  lines on the first 19 chars, that is
+exactly the length of the prefix indicating the timestamp and the
+process. That's exactly what we need:
+ - Every timestamps remain separated, as it should; 
+ - In each timestamp, the output order of processes become
+   reproducible: that's the lexicographical order of their name;
+ - For each process, the order of its execution is preserved: its
+   messages within a given timestamp are not reordered.
+
+That way, tesh can do its job (no false positive, no false negative)
+despite the unpredictable order of executions of processes within a
+timestamp, and reported errors remain easy to analyze (execution of a
+given process preserved).
+
+This is of course very SimGrid oriented, but could even be usable by
+others, who knows?
+
 .SH ENVIRONMENT
 You can add some content to the tested processes environment with the
 setenv metacommand. It works as expected. For example:
   "setenv PATH=/bin"
 .SH BUGS
-No known bugs.
+No known bugs. 

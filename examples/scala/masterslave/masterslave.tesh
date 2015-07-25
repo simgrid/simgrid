@@ -1,6 +1,6 @@
 #! tesh
 
-! output sort
+! output sort 19
 
 $ java -classpath ${classpath:=.} masterslave/Masterslave ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/masterslave/masterslaveDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:@) Using regular java threads. Coroutines could speed your simulation up.

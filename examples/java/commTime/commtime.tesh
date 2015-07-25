@@ -1,6 +1,6 @@
 #! tesh
 
-! output sort
+! output sort 19
 ! timeout 15
 
 $ java -classpath ${classpath:=.} commTime/CommTimeTest ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/commTime/commTimeDeployment.xml

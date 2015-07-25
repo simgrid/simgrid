@@ -1,6 +1,6 @@
 #! tesh
 
-! output sort
+! output sort 19
 
 $ java -classpath ${classpath:=.} pingPong/PingPongTest ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/pingPong/pingPongDeployment.xml
 > [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
