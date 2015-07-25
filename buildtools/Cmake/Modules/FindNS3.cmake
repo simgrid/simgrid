@@ -56,13 +56,13 @@ if(NS3_INCLUDE_DIR)
   if(NS3_LIBRARIES)
     set(HAVE_NS3 1)
     
-    string(REGEX REPLACE ".*ns3.([0-9]+)-core.*" "\\1" NS3_VERSION_MINOR "${NS3_LIBRARIES}")
+    string(REGEX REPLACE ".*ns([.0-9]+)-core.*" "\\1" NS3_VERSION "${NS3_LIBRARIES}")
     get_filename_component(NS3_LIBRARY_PATH "${NS3_LIBRARIES}" PATH)
 
     # Compute NS3_PATH
     string(REGEX REPLACE "(.*)/lib" "\\1" NS3_PATH "${NS3_LIBRARY_PATH}")
     
-    message(STATUS "NS-3 found (v3.${NS3_VERSION_MINOR} in ${NS3_PATH}).")
+    message(STATUS "NS-3 found (v3.${NS3_VERSION} in ${NS3_PATH}).")
 
     if (NOT NS3_LIBRARY_PATH STREQUAL "/usr/lib") 
       string(REGEX MATCH "${NS3_LIBRARY_PATH}" MatchResult "$ENV{LD_LIBRARY_PATH}")
@@ -75,7 +75,7 @@ if(NS3_INCLUDE_DIR)
 endif()
 mark_as_advanced(NS3_LIBRARY_PATH)
 
-message("NS3_VERSION_MINOR: ${NS3_VERSION_MINOR}")
+message("NS3_VERSION: ${NS3_VERSION}")
 message("NS3_LIBRARIES: ${NS3_LIBRARIES}")
 
 if(HAVE_NS3)

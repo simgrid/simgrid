@@ -129,7 +129,7 @@ if(MMALLOC_WANT_OVERRIDE_LEGACY AND HAVE_GNU_LD)
 endif()
 
 if(HAVE_NS3)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lns3.${NS3_VERSION_MINOR}-core -lns3.${NS3_VERSION_MINOR}-csma -lns3.${NS3_VERSION_MINOR}-point-to-point -lns3.${NS3_VERSION_MINOR}-internet -lns3.${NS3_VERSION_MINOR}-applications")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lns${NS3_VERSION}-core -lns${NS3_VERSION}-csma -lns${NS3_VERSION}-point-to-point -lns${NS3_VERSION}-internet -lns${NS3_VERSION}-applications")
 endif()
 
 if(HAVE_POSIX_GETTIME)
