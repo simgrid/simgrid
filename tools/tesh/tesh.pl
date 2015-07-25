@@ -332,6 +332,9 @@ sub parse_out {
   }
 
   if ($cmd{'sort'}){
+    # Save the unsorted observed output to report it on error.
+    map { push @{$cmd{'unsorted got'}}, $_ } @got;
+
     sub mysort{
         substr($a, 0, $sort_prefix) cmp substr($b, 0, $sort_prefix)
     }
@@ -395,11 +398,14 @@ sub parse_out {
     print "(ignoring the output of <$cmd{'file'}:$cmd{'line'}> as requested)\n"
   }
   if (length $diff) {
-    print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch:\n";
-    if ($cmd{'sort'}) {
-	print "WARNING: both the observed output and expected output were sorted as requested\n";
-    }
+    print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch".($cmd{'sort'}?" (even after sorting)":"")."\n";
     map { print "$_\n" } split(/\n/,$diff);
+    if ($cmd{'sort'}) {
+	print "WARNING: both the observed output and expected output were sorted as requested.\n";
+	print "----8<---------------  Begin of unprocessed observed output (as it should appear in file):\n";
+	map {print "> $_\n"} @{$cmd{'unsorted got'}};
+	print "--------------->8----  End of the unprocessed observed output.\n";
+    }
 
     print "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> output mismatch)\n";
     $error=1;
