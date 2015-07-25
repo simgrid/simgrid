@@ -341,7 +341,7 @@ sub parse_out {
       shift @got;
     }
 
-    #also resort the other one, as perl sort is not the same as the C one used to generate teshes
+    # Sort the expected output to make it easier to write for humans
     if(defined($cmd{'out'})){
       @{$cmd{'out'}}=sort mysort @{$cmd{'out'}};
       while (@{$cmd{'out'}} and ${$cmd{'out'}}[0] eq "") {
@@ -396,6 +396,9 @@ sub parse_out {
   }
   if (length $diff) {
     print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch:\n";
+    if ($cmd{'sort'}) {
+	print "WARNING: both the observed output and expected output were sorted as requested\n";
+    }
     map { print "$_\n" } split(/\n/,$diff);
 
     print "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> output mismatch)\n";
