@@ -22,6 +22,9 @@ if(enable_compile_warnings)
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wclobbered -Wno-error=clobbered")
   endif()
+  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang") # don't care about class that become struct
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-mismatched-tags")
+  endif()
 
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall") # FIXME: Q&D hack
 
@@ -96,8 +99,7 @@ if(enable_msg_deprecated)
   set(CMAKE_C_FLAGS "-DMSG_USE_DEPRECATED ${CMAKE_C_FLAGS}")
 endif()
 
-set(CMAKE_C_FLAGS "${optCFLAGS} ${warnCFLAGS} ${CMAKE_C_FLAGS}")
-
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${optCFLAGS} ${warnCFLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 
 # Try to make Mac a bit more complient to open source standards

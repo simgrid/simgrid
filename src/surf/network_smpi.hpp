@@ -25,6 +25,7 @@ public:
   NetworkSmpiModel();
   ~NetworkSmpiModel();
 
+  using NetworkModel::gapAppend; // Explicit about overloaded method (silence Woverloaded-virtual from clang)
   void gapAppend(double size, Link* link, NetworkAction *action);
   void gapRemove(Action *action);
   double latencyFactor(double size);

@@ -30,10 +30,7 @@ class NetworkCm02Model : public NetworkModel {
 private:
   void initialize();
 public:
-  NetworkCm02Model(int /*i*/) : NetworkModel() {
-	f_networkSolve = lmm_solve;
-	m_haveGap = false;
-  };//FIXME: add network clean interface
+  NetworkCm02Model(int /*i*/) : NetworkModel() {};
   NetworkCm02Model();
   ~NetworkCm02Model() {
   }
