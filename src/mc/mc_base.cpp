@@ -13,11 +13,11 @@
 #include "mc/mc_record.h"
 #include "mc/mc_replay.h"
 #include "mc/mc.h"
+#include "mc_protocol.h"
 
 #ifdef HAVE_MC
 #include "mc_process.h"
 #include "ModelChecker.hpp"
-#include "mc_protocol.h"
 #include "mc_smx.h"
 #include "mc_server.h"
 #endif
