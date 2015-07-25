@@ -138,8 +138,8 @@ can use environment variables. For example, you can change the used
 compilers by issuing these commands before launching cmake:
 
 @verbatim
-export CC=gcc-4.4
-export CXX=g++-4.4
+export CC=gcc-4.7
+export CXX=g++-4.7
 @endverbatim
 
 Note that other variables are available, such as CFLAGS and CXXFLAGS to add
@@ -238,7 +238,7 @@ accepts several options, as listed below.
       (eg /usr or /opt).
   @li <b>enable_ns3</b> (ON/OFF): whether you want to use ns3.
       See section @ref pls_simgrid_configuration_ns3.
-  @li <b>ns3_path</b> (path): NS3 installation directory (eg /usr or /opt).
+  @li <b>NS3_HINT</b> (path): Where to search for NS3 (eg /usr or /opt).
   @li <b>enable_latency_bound_tracking</b> (ON/OFF): enable it if you
       want to be warned when communications are limited by round trip
       time while doing packet-level simulation.
