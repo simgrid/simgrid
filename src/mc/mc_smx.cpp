@@ -176,7 +176,7 @@ mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_a
 const char* MC_smx_process_get_host_name(smx_process_t p)
 {
   if (mc_mode == MC_MODE_CLIENT)
-    return SIMIX_host_get_name(p->smx_host);
+    return SIMIX_host_get_name(p->host);
 
   simgrid::mc::Process* process = &mc_model_checker->process();
 
@@ -188,7 +188,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
   if (!info->hostname) {
 
     // Read the hostname from the MCed process:
-    process->read_bytes(&host_copy, sizeof(host_copy), remote(p->smx_host));
+    process->read_bytes(&host_copy, sizeof(host_copy), remote(p->host));
     int len = host_copy.key_len + 1;
     char hostname[len];
     process->read_bytes(hostname, len, remote(host_copy.key));
