@@ -22,6 +22,7 @@ SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResul
 #If you use the --read-var-info option Memcheck will run more slowly but may give a more detailed description of any illegal address.
 
 find_program(PERL_PROGRAM NAMES perl)
+mark_as_advanced(PERL_PROGRAM)
 SET(TESH_COMMAND ${PERL_PROGRAM} ${CMAKE_BINARY_DIR}/bin/tesh)
 IF(CMAKE_HOST_WIN32)
   SET(TESH_OPTION $TESH_OPTION --timeout 50)

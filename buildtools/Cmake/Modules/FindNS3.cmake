@@ -75,9 +75,6 @@ if(NS3_INCLUDE_DIR)
 endif()
 mark_as_advanced(NS3_LIBRARY_PATH)
 
-message("NS3_VERSION: ${NS3_VERSION}")
-message("NS3_LIBRARIES: ${NS3_LIBRARIES}")
-
 if(HAVE_NS3)
   link_directories(${NS3_LIBRARY_PATH})
   include_directories(${NS3_INCLUDE_DIR})
