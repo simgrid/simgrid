@@ -353,7 +353,7 @@ sub parse_out {
     }
   }
 
-  #Did we timeout ? If yes, handle it. If not, kill the forked process.
+  # Did we timeout ? If yes, handle it. If not, kill the forked process.
 
   if($timeout==-1 and $gotret eq "got signal SIGKILL"){
     $gotret="return code 0";
@@ -398,7 +398,7 @@ sub parse_out {
     print "(ignoring the output of <$cmd{'file'}:$cmd{'line'}> as requested)\n"
   }
   if (length $diff) {
-    print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch".($cmd{'sort'}?" (even after sorting)":"")."\n";
+    print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch".($cmd{'sort'}?" (even after sorting)":"").":\n";
     map { print "$_\n" } split(/\n/,$diff);
     if ($cmd{'sort'}) {
 	print "WARNING: both the observed output and expected output were sorted as requested.\n";
