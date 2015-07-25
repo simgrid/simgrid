@@ -118,7 +118,9 @@ sub display_subtree {
 display_subtree("XBT_LOG_ROOT_CAT","");
 
 map {
-    warn "Category $_ does not seem to be connected.  Use XBT_LOG_CONNECT($_).\n";
+    if ($_ ne "mc_main") { # This one is not in libsimgrid
+      warn "Category $_ does not seem to be connected.  Use XBT_LOG_CONNECT($_).\n";
+    }
 } grep {!defined $connected{$_}} sort keys %ancestor;
 map {
     warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";
