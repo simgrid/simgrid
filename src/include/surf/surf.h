@@ -59,8 +59,8 @@ class NetworkCm02Link;
 class Action;
 class ActionLmm;
 class StorageActionLmm;
-struct As;
-struct RoutingEdge;
+class As;
+class RoutingEdge;
 class RoutingPlatf;
 #else
 typedef struct Model Model;

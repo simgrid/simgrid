@@ -15,7 +15,7 @@
 SG_BEGIN_DECL()
 
 typedef void *sg_routing_link_t; /* FIXME:The actual type is model-dependent so use void* instead*/
-typedef struct RoutingEdge *sg_routing_edge_t;
+typedef RoutingEdge *sg_routing_edge_t;
 
 XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
 
