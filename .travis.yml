@@ -1,3 +1,10 @@
+# NS3 is disabled because the version in ubuntu precise does not lead
+# to the same timings (precision error?)
+# Reenable with 
+#   cmake -Denable_ns3
+#   apt-get libns3-dev ns3
+
+
 language: cpp
 compiler:
    - gcc
@@ -14,11 +21,11 @@ addons:
 # Still need sudo for update-alternatives
 before_install:
    - sudo apt-get update  -qq
-   - sudo apt-get install -y cmake valgrind default-jdk gfortran liblua5.1-dev lua5.1 libboost-chrono1.48-dev libns3-dev ns3
+   - sudo apt-get install -y cmake valgrind default-jdk gfortran liblua5.1-dev lua5.1 libboost-chrono1.48-dev
    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 50
    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 50
 script:
-   - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_ns3=ON -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=ON -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . && make && ctest --output-on-failure --timeout 100
+   - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=ON -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . && make && ctest --output-on-failure --timeout 100
 branches:
   only:
      - master
