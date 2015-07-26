@@ -12,6 +12,7 @@ namespace simgrid {
 namespace s4u {
 
 class Host;
+class Channel;
 
 /** @brief Simulation Agent
  *
@@ -84,10 +85,10 @@ public:
 	//void* recv(const char *mailbox);
 
 	/** Block the process until it gets a string message (to be freed after use) from the given mailbox */
-	char *recvstr(const char* mailbox);
+	char *recvstr(Channel &chan);
 
 	/** Block the process until it delivers a string message (that will be copied) to the given mailbox */
-	void sendstr(const char*mailbox, const char*msg);
+	void sendstr(Channel &chan, const char*msg);
 
 protected:
 	smx_process_t getInferior() {return p_smx_process;}

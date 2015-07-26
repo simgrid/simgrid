@@ -10,6 +10,7 @@
 
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/process.hpp"
+#include "simgrid/s4u/channel.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_process,"S4U processes");
 
@@ -80,19 +81,17 @@ void s4u::Process::execute(double flops) {
 	simcall_process_execute(NULL,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
 }
 
-char *s4u::Process::recvstr(const char* mailbox) {
+char *s4u::Process::recvstr(Channel &chan) {
 	char *res=NULL;
 	size_t res_size=sizeof(res);
-	smx_rdv_t rdv = MSG_mailbox_get_by_alias(mailbox);
 
-	simcall_comm_recv(rdv,&res,&res_size,NULL,NULL,NULL,-1 /* timeout */,-1 /*rate*/);
+	simcall_comm_recv(chan.getInferior(),&res,&res_size,NULL,NULL,NULL,-1 /* timeout */,-1 /*rate*/);
 
     return res;
 }
-void s4u::Process::sendstr(const char* mailbox, const char*msg) {
+void s4u::Process::sendstr(Channel &chan, const char*msg) {
 	char *msg_cpy=xbt_strdup(msg);
-	smx_rdv_t rdv = MSG_mailbox_get_by_alias(mailbox);
-	smx_synchro_t comm = simcall_comm_isend(p_smx_process, rdv, strlen(msg),
+	smx_synchro_t comm = simcall_comm_isend(p_smx_process, chan.getInferior(), strlen(msg),
 			-1/*rate*/, msg_cpy, sizeof(void *),
 			NULL, NULL, NULL,NULL/*data*/, 0);
 	simcall_comm_wait(comm, -1/*timeout*/);

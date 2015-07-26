@@ -6,32 +6,33 @@
 #include "simgrid/s4u.h"
 
 using namespace simgrid;
+using namespace s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
-class Worker : s4u::Process {
+class Worker : Process {
 public:
-	Worker(const char*procname, s4u::Host *host,int argc, char **argv)
+	Worker(const char*procname, Host *host,int argc, char **argv)
 			: s4u::Process(procname,host,argc,argv){}
 
 	int main(int argc, char **argv) {
 		XBT_INFO("Hello s4u, I'm ready to serve");
 
-		char *msg = recvstr("worker");
+		char *msg = recvstr(*Channel::byName("worker"));
 		XBT_INFO("I received '%s'",msg);
 		XBT_INFO("I'm done. See you.");
 		return 1;
 	}
 };
 
-class Master : s4u::Process {
+class Master : Process {
 public:
-	Master(const char*procname, s4u::Host *host,int argc, char **argv)
-			: s4u::Process(procname,host,argc,argv){}
+	Master(const char*procname, Host *host,int argc, char **argv)
+			: Process(procname,host,argc,argv){}
 
 	int main(int argc, char **argv) {
 		XBT_INFO("Hello s4u, I have something to send");
-		sendstr("worker","GaBuZoMeu");
+		sendstr(*Channel::byName("worker"),"GaBuZoMeu");
 
 		XBT_INFO("I'm done. See you.");
 		return 1;
@@ -40,11 +41,11 @@ public:
 
 
 int main(int argc, char **argv) {
-	s4u::Engine *e = new s4u::Engine(&argc,argv);
+	Engine *e = new Engine(&argc,argv);
 	e->loadPlatform("../../platforms/two_hosts_platform.xml");
 
-	new Worker("worker", s4u::Host::byName("host0"), 0, NULL);
-	new Master("master", s4u::Host::byName("host1"), 0, NULL);
+	new Worker("worker", Host::byName("host0"), 0, NULL);
+	new Master("master", Host::byName("host1"), 0, NULL);
 	e->run();
 	return 0;
 }
