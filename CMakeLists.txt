@@ -20,6 +20,14 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 
+if (CMAKE_COMPILER_IS_GNUCC)
+  if (COMPILER_CXX_VERSION_MAJOR_MINOR STRLESS "4.7")
+    message(FATAL_ERROR
+            "SimGrid needs at least g++ version 4.7 to compile "
+	    "(c++11 support of previous versions is too limited).")
+  endif()
+endif()
+
 ## We need a decent support of the c++11 standard
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -32,13 +40,6 @@ else()
   message(FATAL_ERROR 
           "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
 	  "Please use a decent C++ compiler.")
-endif()
-if (CMAKE_COMPILER_IS_GNUCC)
-  if (COMPILER_CXX_VERSION_MAJOR_MINOR STRLESS "4.7")
-    message(FATAL_ERROR
-            "SimGrid needs g++ version 4.7 to compile "
-	    "(c++11 support of previous versions is too limited).")
-  endif()
 endif()
 
 ### And we need C11 standard, too
