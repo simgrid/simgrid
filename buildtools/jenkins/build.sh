@@ -6,6 +6,16 @@ build_mode="$1"
 
 echo "Build mode $build_mode on $(uname -np)" >&2
 
+if test "$(uname -o)" = "Msys";
+  if [ -z "$NUMBER_OF_PROCESSORS" ]; then
+    NUMBER_OF_PROCESSORS=1
+  fi
+  GENERATOR="MSYS Makefiles"
+else
+  NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
+  GENERATOR="Unix Makefiles"
+fi
+
 # usage: die status message...
 die () {
   local status=${1:-1}
@@ -33,8 +43,8 @@ fi
 mkdir $WORKSPACE/build
 cd $WORKSPACE/build
 
-cmake -Denable_documentation=OFF $WORKSPACE
-make dist
+cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
+make dist -j$NUMBER_OF_PROCESSORS
 tar xzf `cat VERSION`.tar.gz
 cd `cat VERSION`
 
@@ -53,7 +63,8 @@ case "$build_mode" in
   ;;
 esac
 
-cmake -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
+cmake -G"$GENERATOR"\
+  -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_compile_optimization=$(onoff test "$build_mode" = "Debug") \
   -Denable_smpi_MPICH3_testsuite=$(onoff test "$build_mode" != "DynamicAnalysis") \
@@ -63,7 +74,7 @@ cmake -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_compile_warnings=ON -Denable_smpi=ON -Denable_lib_static=OFF \
   -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF \
   -Denable_tracing=ON -Denable_java=ON
-make
+make -j$NUMBER_OF_PROCESSORS
 
 cd $WORKSPACE/build
 cd `cat VERSION`
