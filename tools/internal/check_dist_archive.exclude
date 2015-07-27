@@ -14,6 +14,7 @@
 + \.gitignore
 + \.project
 + \.travis.yml
++ appveyor.yml
 + COPYRIGHT.template
 + README\.(coding|git)
 + mk_win-dist.sh
