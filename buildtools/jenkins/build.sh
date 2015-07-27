@@ -34,7 +34,7 @@ onoff() {
   fi
 }
 
-ulimit -c 0
+ulimit -c 0 || true
 
 if [ -d $WORKSPACE/build ]
 then
