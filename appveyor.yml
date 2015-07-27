@@ -1,0 +1,36 @@
+# This file is intended to automatize the testing of SimGrid on
+# Windows using the appveyor.com continuous integration service
+
+version: "{build}"
+clone_depth: 1
+
+platform: 
+#  - Win32 # This is Windows 32bits (don't activate since we dont compile properly anyway)
+  - x64   # This is Windows 64bits
+
+environment:
+  BOOST_ROOT: c:\Libraries\boost
+  BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
+
+before_build:
+- call "C:/Program Files (x86)/Microsoft Visual Studio 12.0/Common7/Tools/vsvars32.bat"
+- cd c:\projects\simgrid
+- cmake -G "Visual Studio 12 2013" -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DBoost_USE_STATIC_LIBS="ON" -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=ON .
+- dir c:\projects\simgrid
+- cmake --build . # be brutal: cmake is my only friend in this windows world.
+
+# build:
+#  project: C:\projects\simgrid\SimGrid.sln # Cant get it working
+#  
+#  # MSBuild verbosity level (quiet|minimal|normal|detailed)
+#  verbosity: detailed
+  
+test_script:
+  cmd: ctest -VV
+
+# notifications:
+# - irc: "irc.debian.org#simgrid" # Not implemented by AppVeyor yet :(
+# Some source of inspiration:
+# https://github.com/dartsim/dart/blob/master/appveyor.yml
+# https://github.com/osmcode/libosmium/blob/master/appveyor.yml
+# https://github.com/polysquare/cmake-unit/blob/master/appveyor.yml
