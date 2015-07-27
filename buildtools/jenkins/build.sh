@@ -9,6 +9,25 @@ done
 echo "Build mode was $build_mode" >&1
 
 build_mode="$1"
+case "$build_mode" in
+  "Debug")
+  ;;
+
+  "ModelChecker")
+  ;;
+
+  "DynamicAnalysis")
+  ;;
+
+  *)
+    if "$(uname -o)" = "Msys"; then
+      echo "On Windows, jenkins is not willing to expand variables for some reason" >&2
+      echo "Force use Debug mode" >&2
+    else
+      die 1 "Unknown build_mode $build_mode"
+    fi
+  ;;
+esac
 echo "Build mode $build_mode on $(uname -np)" >&2
 
 if test "$(uname -o)" = "Msys"; then
@@ -47,21 +66,6 @@ then
 fi
 mkdir $WORKSPACE/build
 cd $WORKSPACE/build
-
-case "$build_mode" in
-  "Debug")
-  ;;
-
-  "ModelChecker")
-  ;;
-
-  "DynamicAnalysis")
-  ;;
-
-  *)
-  die 1 "Unknown build_mode $build_mode"
-  ;;
-esac
 
 cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
 make dist -j$NUMBER_OF_PROCESSORS
