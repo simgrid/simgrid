@@ -6,6 +6,7 @@ echo "Running $0 with arguments:" >&2
 for arg in "$@"; do
   echo "- $arg"
 done
+echo "Build mode was $build_mode" >&1
 
 build_mode="$1"
 echo "Build mode $build_mode on $(uname -np)" >&2
