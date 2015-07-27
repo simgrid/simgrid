@@ -85,8 +85,9 @@ public class PSGSimulator {
 
 		/** Process Controller **/
 		PSGPlatform.control();
-		new PSGProcessController(PSGPlatform.hostList[0],
-				PSGPlatform.hostList[0].getName(), null).start();
+		if (!PSGPlatform.controlStepMap.isEmpty())
+			new PSGProcessController(PSGPlatform.hostList[0],
+					PSGPlatform.hostList[0].getName(), null).start();
 
 		/** Load and execute the initializers classes in the configuration file **/
 		PSGPlatform.init();
