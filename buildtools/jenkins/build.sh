@@ -72,7 +72,7 @@ cmake -G"$GENERATOR"\
   -Denable_compile_warnings=ON -Denable_smpi=ON -Denable_lib_static=OFF \
   -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF \
   -Denable_tracing=ON -Denable_java=ON
-make -j$NUMBER_OF_PROCESSORS
+make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
 cd $WORKSPACE/build
 cd `cat VERSION`
