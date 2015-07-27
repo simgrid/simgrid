@@ -20,7 +20,7 @@ case "$build_mode" in
   ;;
 
   *)
-    if "$(uname -o)" = "Msys"; then
+    if test "$(uname -o)" = "Msys"; then
       echo "On Windows, jenkins is not willing to expand variables for some reason" >&2
       echo "Force use Debug mode" >&2
     else
