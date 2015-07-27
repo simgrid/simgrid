@@ -49,18 +49,36 @@ fi
 
 ulimit -c 0 || true
 
-if [ -d $WORKSPACE/build ]
-then
-  rm -rf $WORKSPACE/build
+if test "$(uname -o)" != "Msys"; then
+  echo "XX"
+  echo "XX Get out of the tree"
+  echo "XX"
+  if [ -d $WORKSPACE/build ]
+  then
+    rm -rf $WORKSPACE/build
+  fi
+  mkdir $WORKSPACE/build
+  cd $WORKSPACE/build
+
+  echo "XX"
+  echo "XX Build the archive out of the tree"
+  echo "XX   pwd: `pwd`"
+  echo "XX"
+
+  cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
+  make dist -j$NUMBER_OF_PROCESSORS
+
+  echo "XX"
+  echo "XX Open the resulting archive"
+  echo "XX"
+  tar xzf `cat VERSION`.tar.gz
+  cd `cat VERSION`
 fi
-mkdir $WORKSPACE/build
-cd $WORKSPACE/build
 
-cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
-make dist -j$NUMBER_OF_PROCESSORS
-tar xzf `cat VERSION`.tar.gz
-cd `cat VERSION`
-
+echo "XX"
+echo "XX Configure and build SimGrid"
+echo "XX   pwd: `pwd`"
+echo "XX"
 cmake -G"$GENERATOR"\
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
@@ -74,16 +92,27 @@ cmake -G"$GENERATOR"\
   -Denable_tracing=ON -Denable_java=ON
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
-cd $WORKSPACE/build
-cd `cat VERSION`
+if test "$(uname -o)" != "Msys"; then
+  cd $WORKSPACE/build
+  cd `cat VERSION`
+fi
 
 TRES=0
+
+echo "XX"
+echo "XX Run the tests"
+echo "XX   pwd: `pwd`"
+echo "XX"
 
 ctest -T test --output-on-failure --no-compress-output || true
 if [ -f Testing/TAG ] ; then
    xsltproc $WORKSPACE/buildtools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults.xml
    mv CTestResults.xml $WORKSPACE
 fi
+
+echo "XX"
+echo "XX Done. Return the results to cmake"
+echo "XX"
 
 if [ "$build_mode" = "DynamicAnalysis" ]
 then
