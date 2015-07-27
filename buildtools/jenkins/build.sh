@@ -2,8 +2,12 @@
 
 set -e
 
-build_mode="$1"
+echo "Running $0 with arguments:" >&2
+for arg in "$@"; do
+  echo "- $arg"
+done
 
+build_mode="$1"
 echo "Build mode $build_mode on $(uname -np)" >&2
 
 if test "$(uname -o)" = "Msys"; then
