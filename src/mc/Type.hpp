@@ -66,6 +66,19 @@ public:
   }
 };
 
+inline
+Type::Type()
+{
+  this->type = 0;
+  this->id = 0;
+  this->byte_size = 0;
+  this->element_count = 0;
+  this->is_pointer_type = 0;
+  this->type_id = 0;
+  this->subtype = nullptr;
+  this->full_type = nullptr;
+}
+
 }
 }
 

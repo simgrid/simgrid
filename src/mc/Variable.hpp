@@ -33,6 +33,18 @@ public:
   simgrid::mc::ObjectInformation* object_info;
 };
 
+inline
+Variable::Variable()
+{
+  this->dwarf_offset = 0;
+  this->global = 0;
+  this->type = nullptr;
+  this->type_id = 0;
+  this->address = nullptr;
+  this->start_scope = 0;
+  this->object_info = nullptr;
+}
+
 }
 }
 

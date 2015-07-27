@@ -11,6 +11,8 @@
 
 #include "mc_forward.h"
 #include "mc_location.h"
+#include "mc/Variable.hpp"
+#include "mc/Frame.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -30,6 +32,17 @@ public:
   unsigned long int abstract_origin_id;
   simgrid::mc::ObjectInformation* object_info;
 };
+
+inline
+Frame::Frame()
+{
+  this->tag = 0;
+  this->low_pc = nullptr;
+  this->high_pc = nullptr;
+  this->id = 0;
+  this->abstract_origin_id = 0;
+  this->object_info = nullptr;
+}
 
 }
 }
