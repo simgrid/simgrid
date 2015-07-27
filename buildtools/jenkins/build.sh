@@ -6,9 +6,9 @@ echo "Running $0 with arguments:" >&2
 for arg in "$@"; do
   echo "- $arg"
 done
-echo "Build mode was $build_mode" >&1
 
 build_mode="$1"
+echo "Build mode $build_mode on $(uname -np)" >&2
 case "$build_mode" in
   "Debug")
   ;;
@@ -24,11 +24,11 @@ case "$build_mode" in
       echo "On Windows, jenkins is not willing to expand variables for some reason" >&2
       echo "Force use Debug mode" >&2
     else
-      die 1 "Unknown build_mode $build_mode"
+      echo "Unknown build_mode $build_mode"
+      exit 1
     fi
   ;;
 esac
-echo "Build mode $build_mode on $(uname -np)" >&2
 
 if test "$(uname -o)" = "Msys"; then
   if [ -z "$NUMBER_OF_PROCESSORS" ]; then
