@@ -17,18 +17,6 @@
 namespace simgrid {
 namespace mc {
 
-// Free functions
-
-static void mc_frame_free(void* frame)
-{
-  delete (simgrid::mc::Frame*)frame;
-}
-
-static void mc_type_free(void* t)
-{
-  delete (simgrid::mc::Type*)t;
-}
-
 // Type
 
 Type::Type()
