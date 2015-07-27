@@ -47,11 +47,6 @@ fi
 mkdir $WORKSPACE/build
 cd $WORKSPACE/build
 
-cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
-make dist -j$NUMBER_OF_PROCESSORS
-tar xzf `cat VERSION`.tar.gz
-cd `cat VERSION`
-
 case "$build_mode" in
   "Debug")
   ;;
@@ -66,6 +61,11 @@ case "$build_mode" in
   die 1 "Unknown build_mode $build_mode"
   ;;
 esac
+
+cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
+make dist -j$NUMBER_OF_PROCESSORS
+tar xzf `cat VERSION`.tar.gz
+cd `cat VERSION`
 
 cmake -G"$GENERATOR"\
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
