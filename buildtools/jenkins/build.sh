@@ -2,44 +2,6 @@
 
 set -e
 
-echo "Running $0 with arguments:" >&2
-for arg in "$@"; do
-  echo "- $arg"
-done
-
-build_mode="$1"
-echo "Build mode $build_mode on $(uname -np)" >&2
-case "$build_mode" in
-  "Debug")
-  ;;
-
-  "ModelChecker")
-  ;;
-
-  "DynamicAnalysis")
-  ;;
-
-  *)
-    if test "$(uname -o)" = "Msys"; then
-      echo "On Windows, jenkins is not willing to expand variables for some reason" >&2
-      echo "Force use Debug mode" >&2
-    else
-      echo "Unknown build_mode $build_mode"
-      exit 1
-    fi
-  ;;
-esac
-
-if test "$(uname -o)" = "Msys"; then
-  if [ -z "$NUMBER_OF_PROCESSORS" ]; then
-    NUMBER_OF_PROCESSORS=1
-  fi
-  GENERATOR="MSYS Makefiles"
-else
-  NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
-  GENERATOR="Unix Makefiles"
-fi
-
 # usage: die status message...
 die () {
   local status=${1:-1}
@@ -57,6 +19,33 @@ onoff() {
     echo OFF
   fi
 }
+
+build_mode="$1"
+echo "Build mode $build_mode on $(uname -np)" >&2
+case "$build_mode" in
+  "Debug")
+  ;;
+
+  "ModelChecker")
+  ;;
+
+  "DynamicAnalysis")
+  ;;
+
+  *)
+    die 1 "Unknown build_mode $build_mode"
+  ;;
+esac
+
+if test "$(uname -o)" = "Msys"; then
+  if [ -z "$NUMBER_OF_PROCESSORS" ]; then
+    NUMBER_OF_PROCESSORS=1
+  fi
+  GENERATOR="MSYS Makefiles"
+else
+  NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
+  GENERATOR="Unix Makefiles"
+fi
 
 ulimit -c 0 || true
 
