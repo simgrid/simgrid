@@ -1059,8 +1059,8 @@ static void MC_make_functions_index(simgrid::mc::ObjectInformation* info)
 
   // Sort the array by low_pc:
   std::sort(info->functions_index.begin(), info->functions_index.end(),
-        [](simgrid::mc::FunctionIndexEntry& a,
-          simgrid::mc::FunctionIndexEntry& b)
+        [](simgrid::mc::FunctionIndexEntry const& a,
+          simgrid::mc::FunctionIndexEntry const& b)
         {
           return a.low_pc < b.low_pc;
         });
