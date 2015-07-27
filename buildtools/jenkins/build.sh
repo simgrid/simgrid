@@ -6,7 +6,7 @@ build_mode="$1"
 
 echo "Build mode $build_mode on $(uname -np)" >&2
 
-if test "$(uname -o)" = "Msys";
+if test "$(uname -o)" = "Msys"; then
   if [ -z "$NUMBER_OF_PROCESSORS" ]; then
     NUMBER_OF_PROCESSORS=1
   fi
