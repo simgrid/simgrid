@@ -74,7 +74,7 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
   ucp->uc_mcontext.Rip = (DWORD64) func;
   ucp->uc_mcontext.Rsp = (DWORD64) sp - sizeof(void*);
   #else
-  #error "No architecture defined for Windows build.
+  #error "No architecture defined for Windows build."
   #endif
 
       /* Save/Restore the full machine context */ 
