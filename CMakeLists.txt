@@ -34,13 +34,9 @@ CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 if(COMPILER_SUPPORTS_CXX11)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 else() 
-  if(MSVC)
-    message("MSVC is believed to have a sufficient C++11 support. Not sure")
-  else()
-    message(FATAL_ERROR 
-            "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
-  	    "Please use a decent C++ compiler.")
-  endif()
+  message(FATAL_ERROR 
+          "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
+          "Please use a decent C++ compiler.")
 endif()
 
 ### And we need C11 standard, too
@@ -49,14 +45,10 @@ CHECK_C_COMPILER_FLAG("-std=gnu11" COMPILER_SUPPORTS_C11)
 if(COMPILER_SUPPORTS_C11)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
 else()
-  if(MSVC)
-    message("MSVC is believed to have a sufficient C++11 support. Not sure")
-  else()
-    message(FATAL_ERROR 
-            "The compiler ${CMAKE_C_COMPILER} has no C11 support. "
-  	    "Please use a decent C compiler "
-	    "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
-  endif()
+  message(FATAL_ERROR 
+          "The compiler ${CMAKE_C_COMPILER} has no C11 support. "
+          "Please use a decent C compiler "
+          "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
 endif()
 
 ### SMPI vs. Fortran
