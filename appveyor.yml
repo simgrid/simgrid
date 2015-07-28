@@ -19,33 +19,31 @@ environment:
 # - dir c:\projects\simgrid
 # - cmake --build . # be brutal: cmake is my only friend in this windows world.
 
-before_build:
-- ps: >-
-    mkdir C:\pthreads-win32
-    
-    $source = "ftp://sourceware.org/pub/pthreads-win32/pthreads-w32-2-9-1-release.zip"
-    
-    $destination = "C:\pthreads-win32\pthreads-win32.zip"
-    
-    Invoke-WebRequest $source -OutFile $destination
-
-    cd C:\pthreads-win32
-    
-    7z x C:\pthreads-win32\pthreads-win32.zip
+#before_build:
+#- ps: >-
+#    mkdir C:\pthreads-win32
+#    
+#    $source = "ftp://sourceware.org/pub/pthreads-win32/pthreads-w32-2-9-1-release.zip"
+#    
+#    $destination = "C:\pthreads-win32\pthreads-win32.zip"
+#    
+#    Invoke-WebRequest $source -OutFile $destination
+#
+#    cd C:\pthreads-win32
+#    
+#    7z x C:\pthreads-win32\pthreads-win32.zip
     
 build_script:
 - '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd"'
 - C:\MinGW\msys\1.0\bin\bash -lc "echo \"C:/MinGW /mingw\" > /etc/fstab"
 - C:\MinGW\msys\1.0\bin\bash -lc "printenv"
-- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/include/* /c/MinGW/include"
-- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/dll/x86/* /c/MinGW/bin"
-- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && cmake -G \"MSYS Makefiles\" -DBOOST_ROOT=\"%BOOST_ROOT%\" -DBOOST_LIBRARYDIR=\"%BOOST_LIBRARYDIR%\" -DBoost_USE_STATIC_LIBS=ON -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=ON ."
+#- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/include/* /c/MinGW/include"
+#- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/dll/x86/* /c/MinGW/bin"
+- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && cmake -G \"MSYS Makefiles\" -DBOOST_ROOT=\"%BOOST_ROOT%\" -DBOOST_LIBRARYDIR=\"%BOOST_LIBRARYDIR%\" -DBoost_USE_STATIC_LIBS=ON -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=ON -Denable_model-checking=OFF ."
 - C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX simgrid_config.h; cat include/simgrid_config.h"
 - C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX src/internal_config.h; cat src/internal_config.h"
 - C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX Internal builtins; gcc -dM -E - < /dev/null"
 - C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && make"
-- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX CMakeFiles/CMakeOutput.log; cat CMakeFiles/CMakeOutput.log"
-- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX CMakeFiles/CMakeError.log; cat CMakeFiles/CMakeError.log"
 
 test_script:
   cmd: ctest -VV

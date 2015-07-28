@@ -147,11 +147,6 @@ endif()
 CHECK_LIBRARY_EXISTS(dl      dlopen                  "" HAVE_DLOPEN_IN_LIBDL)
 CHECK_LIBRARY_EXISTS(execinfo backtrace              "" HAVE_BACKTRACE_IN_LIBEXECINFO)
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
-
-if (NOT HAVE_PTHREAD)
-  message(FATAL_ERROR "You must have a working pthread installation to proceed.")
-endif()
-
 CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread sem_open                "" HAVE_SEM_OPEN_LIB)
 CHECK_LIBRARY_EXISTS(pthread sem_timedwait           "" HAVE_SEM_TIMEDWAIT_LIB)
@@ -338,13 +333,13 @@ endif()
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
 
-if(pthread)
+if(HAVE_PTHREAD)
   set(pthread 1)
 elseif(pthread)
   set(pthread 0)
 endif()
 
-if(pthread)
+if(HAVE_PTHREAD)
   ### Test that we have a way to create semaphores
 
   if(HAVE_SEM_OPEN_LIB)
@@ -503,7 +498,7 @@ if(HAVE_UCONTEXT)
   message("-- Support for ucontext factory")
 endif()
 
-if(pthread)
+if(HAVE_PTHREAD)
   set(CONTEXT_THREADS 1)
   message("-- Support for thread context factory")
 endif()
