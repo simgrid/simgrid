@@ -37,8 +37,8 @@ build_script:
 - '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd"'
 - C:\MinGW\msys\1.0\bin\bash -lc "echo \"C:/MinGW /mingw\" > /etc/fstab"
 - C:\MinGW\msys\1.0\bin\bash -lc "printenv"
-- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/include/* /c/MinGW/msys/1.0/include"
-- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/dll/x86/*.dll /c/MinGW/msys/1.0/bin"
+- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/include/* /c/MinGW/include"
+- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/dll/x86/*.dll /c/MinGW/bin"
 - C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && cmake -G \"MSYS Makefiles\" -DBOOST_ROOT=\"%BOOST_ROOT%\" -DBOOST_LIBRARYDIR=\"%BOOST_LIBRARYDIR%\" -DBoost_USE_STATIC_LIBS=ON -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=ON ."
 - C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && make"
 
