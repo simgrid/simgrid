@@ -58,7 +58,7 @@ else()
   set(SIMGRID_DEP "${SIMGRID_DEP} -lstdc++")
 endif()
 
-if(pthread AND ${CONTEXT_THREADS} AND NOT APPLE)
+if(HAVE_PTHREAD AND ${CONTEXT_THREADS} AND NOT APPLE)
   # Clang on recent Mac OS X is not happy about -pthread.
   SET(SIMGRID_DEP "${SIMGRID_DEP} -pthread")
 endif()
