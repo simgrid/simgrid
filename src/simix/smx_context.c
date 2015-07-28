@@ -163,8 +163,9 @@ void *SIMIX_context_stack_new(void)
 
 #ifndef _XBT_WIN32
     if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
-      XBT_WARN("Failed to protect stack: %s", strerror(errno));
-      /* That's not fatal, pursue anyway. */
+      xbt_die("Failed to protect stack: %s", strerror(errno));
+      /* This is fatal. We are going to fail at some point when
+         we tryi reusing this. */
     }
 #endif
     stack = (char *)stack + smx_context_guard_size;
