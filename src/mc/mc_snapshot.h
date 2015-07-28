@@ -145,7 +145,7 @@ public:
   ~Snapshot();
   const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
-    ReadMode mode = Normal) const MC_OVERRIDE;
+    ReadMode mode = Normal) const override;
 public: // To be private
   simgrid::mc::Process* process;
   int num_state;
