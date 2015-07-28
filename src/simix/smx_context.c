@@ -198,7 +198,7 @@ void SIMIX_context_stack_delete(void *stack)
   if (smx_context_guard_size > 0 && !MC_is_active()) {
     stack = (char *)stack - smx_context_guard_size;
     if (mprotect(stack, smx_context_guard_size,
-                 PROT_READ | PROT_WRITE | PROT_EXEC) == -1) {
+                 PROT_READ | PROT_WRITE) == -1) {
       XBT_WARN("Failed to remove page protection: %s", strerror(errno));
       /* try to pursue anyway */
     }
