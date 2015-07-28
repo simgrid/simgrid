@@ -44,6 +44,8 @@ build_script:
 - C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX src/internal_config.h; cat src/internal_config.h"
 - C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX Internal builtins; gcc -dM -E - < /dev/null"
 - C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && make"
+- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX CMakeFiles/CMakeOutput.log; cat CMakeFiles/CMakeOutput.log"
+- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX CMakeFiles/CMakeError.log; cat CMakeFiles/CMakeError.log"
 
 test_script:
   cmd: ctest -VV
