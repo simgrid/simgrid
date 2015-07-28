@@ -5,26 +5,43 @@ version: "{build}"
 clone_depth: 1
 
 platform: 
-#  - Win32 # This is Windows 32bits (don't activate since we dont compile properly anyway)
-  - x64   # This is Windows 64bits
+  - Win32 # This is Windows 32bits (don't activate since we dont compile properly anyway)
+#  - x64   # This is Windows 64bits
 
 environment:
   BOOST_ROOT: c:\Libraries\boost
   BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
 
-before_build:
-- call "C:/Program Files (x86)/Microsoft Visual Studio 12.0/Common7/Tools/vsvars32.bat"
-- cd c:\projects\simgrid
-- cmake -G "Visual Studio 12 2013" -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DBoost_USE_STATIC_LIBS="ON" -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=ON .
-- dir c:\projects\simgrid
-- cmake --build . # be brutal: cmake is my only friend in this windows world.
+#before_build:
+#- call "C:/Program Files (x86)/Microsoft Visual Studio 12.0/Common7/Tools/vsvars32.bat"
+#- cd c:\projects\simgrid
+# - cmake -G "Visual Studio 12 2013" -DBOOST_ROOT="%BOOST_ROOT%" -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR%" -DBoost_USE_STATIC_LIBS="ON" -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=ON .
+# - dir c:\projects\simgrid
+# - cmake --build . # be brutal: cmake is my only friend in this windows world.
 
-# build:
-#  project: C:\projects\simgrid\SimGrid.sln # Cant get it working
-#  
-#  # MSBuild verbosity level (quiet|minimal|normal|detailed)
-#  verbosity: detailed
-  
+before_build:
+- ps: >-
+    mkdir C:\pthreads-win32
+    
+    $source = "ftp://sourceware.org/pub/pthreads-win32/pthreads-w32-2-9-1-release.zip"
+    
+    $destination = "C:\pthreads-win32\pthreads-win32.zip"
+    
+    Invoke-WebRequest $source -OutFile $destination
+
+    cd C:\pthreads-win32
+    
+    7z x C:\pthreads-win32\pthreads-win32.zip
+    
+build_script:
+- '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd"'
+- C:\MinGW\msys\1.0\bin\bash -lc "echo \"C:/MinGW /mingw\" > /etc/fstab"
+- C:\MinGW\msys\1.0\bin\bash -lc "printenv"
+- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/include/* /c/MinGW/msys/1.0/include"
+- C:\MinGW\msys\1.0\bin\bash -lc "cp /c/pthreads-win32/Pre-built.2/dll/x86/*.dll /c/MinGW/msys/1.0/bin"
+- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && cmake -G \"MSYS Makefiles\" -DBOOST_ROOT=\"%BOOST_ROOT%\" -DBOOST_LIBRARYDIR=\"%BOOST_LIBRARYDIR%\" -DBoost_USE_STATIC_LIBS=ON -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=ON ."
+- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && make"
+
 test_script:
   cmd: ctest -VV
 
@@ -34,3 +51,4 @@ test_script:
 # https://github.com/dartsim/dart/blob/master/appveyor.yml
 # https://github.com/osmcode/libosmium/blob/master/appveyor.yml
 # https://github.com/polysquare/cmake-unit/blob/master/appveyor.yml
+# https://github.com/openvswitch/ovs/blob/master/appveyor.yml
