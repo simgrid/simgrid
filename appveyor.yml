@@ -1,6 +1,7 @@
 # This file is intended to automatize the testing of SimGrid on
 # Windows using the appveyor.com continuous integration service
 
+os: MinGW
 version: "{build}"
 clone_depth: 1
 
