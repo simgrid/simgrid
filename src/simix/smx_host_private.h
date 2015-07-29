@@ -41,8 +41,6 @@ xbt_swag_t SIMIX_host_get_process_list(sg_host_t host);
 double SIMIX_host_get_speed(sg_host_t host);
 double SIMIX_host_get_available_speed(sg_host_t host);
 int SIMIX_host_get_state(sg_host_t host);
-void SIMIX_host_on(sg_host_t host);
-void SIMIX_host_off(sg_host_t host, smx_process_t issuer);
 double SIMIX_host_get_current_power_peak(sg_host_t host);
 double SIMIX_host_get_power_peak_at(sg_host_t host, int pstate_index);
 int SIMIX_host_get_nb_pstates(sg_host_t host);
@@ -64,7 +62,6 @@ e_smx_state_t SIMIX_process_execution_get_state(smx_synchro_t synchro);
 void SIMIX_process_execution_set_priority(smx_synchro_t synchro, double priority);
 void SIMIX_process_execution_set_bound(smx_synchro_t synchro, double bound);
 void SIMIX_process_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask);
-xbt_dict_t SIMIX_host_get_mounted_storage_list(sg_host_t host);
 xbt_dynar_t SIMIX_host_get_attached_storage_list(sg_host_t host);
 
 void SIMIX_host_execution_suspend(smx_synchro_t synchro);

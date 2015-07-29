@@ -63,8 +63,6 @@ typedef struct s_smx_global {
 XBT_PUBLIC_DATA(smx_global_t) simix_global;
 extern unsigned long simix_process_maxpid;
 
-extern xbt_dict_t watched_hosts_lib;
-
 XBT_PUBLIC(void) SIMIX_clean(void);
 
 /******************************** Exceptions *********************************/
