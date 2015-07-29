@@ -30,7 +30,7 @@ XBT_PUBLIC(const char *) xbt_procname(void);
 XBT_PUBLIC(void) sg_version(int *major,int *minor,int *patch);
 
 /** Helps ensuring that the header version (SIMGRID_VERSION_MAJOR and friends) and the dynamic library version do match. */
-void sg_version_check(int lib_version_major,int lib_version_minor,int lib_version_patch);
+XBT_PUBLIC(void) sg_version_check(int lib_version_major,int lib_version_minor,int lib_version_patch);
 
 /** Contains all the parameters we got from the command line */
 XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
