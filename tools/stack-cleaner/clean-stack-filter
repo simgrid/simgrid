@@ -25,7 +25,7 @@ sub emit_code {
     if($size != 0) {
       # This is a crude hack to disable the stack cleaning on the main
       # stack.  It rellies on the fact that the main stack is high in
-      # the address space and the other stacks are in the hap (lower).
+      # the address space and the other stacks are in the heap (lower).
       print("\tmovq \$0x7fff00000000, %r11\n");
       print("\tcmpq %r11, %rsp\n");
       print("\tjae .Lstack_cleaner_done$id\n");
