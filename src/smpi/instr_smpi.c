@@ -85,10 +85,13 @@ static const char *instr_find_color (const char *state)
 
 static char *smpi_container(int rank, char *container, int n)
 {
-  snprintf(container, n, "%s-rank-%d", SIMIX_host_self_get_name(), rank);
+  if(smpi_process_get_replaying()){
+    snprintf(container, n, "%s-rank-%d", SIMIX_host_self_get_name(), rank);
   /*TODO We may need a configuration flag to enable or disable the tracing of
    * the migration of processes/tasks.*/
-  //snprintf(container, n, "rank-%d", rank);
+  }else{
+    snprintf(container, n, "rank-%d", rank);
+  }
   return container;
 }
 
