@@ -941,6 +941,7 @@ int persistent_send(MPI_Request *request)
     extra->send_size = req->size / smpi_datatype_size(req->old_type);
     extra->src = rank;
     extra->dst = dst_traced;
+    extra->tag = req->tag;
     extra->datatype1 = encode_datatype(req->old_type);
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, req->size);
@@ -983,6 +984,7 @@ int persistent_recv(MPI_Request *request)
     extra->send_size = req->size / smpi_datatype_size(req->old_type);
     extra->src = src_traced;
     extra->dst = rank;
+    extra->tag = req->tag;
     extra->datatype1 = encode_datatype(req->old_type);
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
@@ -1093,6 +1095,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
     extra->send_size = count;
     extra->src = src_traced;
     extra->dst = rank;
+    extra->tag = tag;
     extra->datatype1 = encode_datatype(datatype);
     TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
@@ -1147,6 +1150,7 @@ int PMPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
     extra->send_size = count;
     extra->src = rank;
     extra->dst = dst_traced;
+    extra->tag = tag;
     extra->datatype1 = encode_datatype(datatype);
     TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
     TRACE_smpi_send(rank, rank, dst_traced, count*smpi_datatype_size(datatype));
@@ -1585,6 +1589,9 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
     int is_wait_for_receive = (*request)->recv;
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type = TRACING_WAIT;
+    extra->src = src_traced;
+    extra->dst = dst_traced;
+    extra->tag = (*request)->tag;
     TRACE_smpi_ptp_in(rank, src_traced, dst_traced, __FUNCTION__, extra);
 #endif
 
