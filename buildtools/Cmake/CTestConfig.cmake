@@ -16,10 +16,6 @@ if(enable_compile_warnings AND enable_compile_optimizations)
   SET(BUILDNAME "FULL_FLAGS" CACHE INTERNAL "Buildname" FORCE)
 endif()
 
-if(HAVE_GTNETS)
-  SET(BUILDNAME "GTNETS" CACHE INTERNAL "Buildname" FORCE)
-endif()
-
 if(HAVE_MC)
   SET(BUILDNAME "MODEL-CHECKING" CACHE INTERNAL "Buildname" FORCE)
 endif()

@@ -3,101 +3,11 @@
 It is possible to use a packet-level network simulator
 instead of the default flow-based simulation. You may want to use such
 an approach if you have doubts about the validity of the default model
-or if you want to perform some validation experiments. At the moment,
-we support the NS3 and GTNetS simulators.
+or if you want to perform some validation experiments. 
 
-
-\section pls_simgrid_configuration_gtnets GTNetS as a SimGrid model
-
-\subsection pls_simgrid_configuration_gtnets_compile Compiling a patched version of  GTNetS
-
-GTNetS needs to be patched to work with SimGrid, so the easiest
-solution is to run the following commands:
-
-\verbatim
-# Get the files that we prepared for you
-svn checkout svn://scm.gforge.inria.fr/svn/simgrid/contrib/trunk/GTNetS/
-cd GTNetS
-
-# Unpack and patch the sources
-unzip gtnets-current.zip
-tar zxvf gtnets-current-patch.tgz
-cd gtnets-current
-cat ../*.patch | patch -p1
-
-# Compile GTNetS
-ln -sf Makefile.linux Makefile
-sed -i 's/-fPIC/-fPIC -fpermissive/g' Makefile
-make depend
-make opt   # compile an optimized version (required)
-make debug # compile a debug version (optional)
-
-# Install under /opt 
-mkdir -p /opt/gtnets/include /opt/gtnets/lib
-cp -fr SRC/*.h /opt/gtnets/include
-cp libgtsim-opt.so /opt/gtnets/lib/libgtsim.so
-\endverbatim
-
-Some remarks:
-
-<ul>
-
-  <li>The patch
-   AMD64-FATAL-Removed-DUL_SIZE_DIFF-Added-fPIC-compillin.patch is
-   only useful if you want to compile on Itanium 64bits (but should be
-   harmless on other architectures). Note that we only provide support
-   for Linux so far.  Your patches are welcome to improve this ;)</li>
-
-  <li>The compilation spits a lot of warnings, but the application
-   should compile by the end. If the makefile insists in compiling
-   some QT libraries please try a make clean before asking for help.</li>
-
-  <li>If you need to use another version of GTNetS, then you will
-   probably need to modify the patch. Please drop us a line: we will
-   gratefully integrate your work. For the record, the version that we
-   provide were downloaded from <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/software/gtnets-current.zip">here</a>
-   on June 12th, 2008.</li>
-
-  <li>Of course you can install GTNets wherever you want on your hard
-   disk. We provide the commands for /opt just to help you.</li>
-</ul>
-
-Add the following to your .bashrc so that it gets defined each time:
-
-\verbatim
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}/opt/gtnets/lib/
-\endverbatim
-
-\subsection pls_simgrid_configuration_gtnets_config Enabling SimGrid's support for GTNetS
-
-You just have to enable GTNetS in ccmake or cmake as follows, and
-recompile SimGrid.
-
-\verbatim
-cmake . -Denable_gtnets=ON -Dgtnets_path=/opt/gtnets
-\endverbatim
-
-By the end of the configuration, cmake reports whether GTNetS was found.
-You can also double-check by executing the tests after the compilation.
-
-\verbatim
-$ ctest -R gtnets
-(several tests should be run)
-\endverbatim
-
-\subsection pls_simgrid_configuration_gtnets_use Using GTNetS from SimGrid
-
-A working example can be found in the folder examples/msg/gtnets.
-
-\verbatim
-gtnets/gtnets gtnets/onelink-p.xml gtnets/onelink-d.xml --cfg=network/model:GTNets
-\endverbatim
-
-For more information, please refer to the <a
-href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html">GTNetS
-Website</a> or to this
-<a href="http://gforge.inria.fr/docman/view.php/12/6283/GTNetS
-HowTo.html">possibly outdated longer HowTo</a>
+At the moment, we only support the NS3 simulator. Previous versions of
+SimGrid did support the GTNetS simulator and that support could
+possibly be revived by someone who would need it.
 
 \section pls_simgrid_configuration_ns3 NS3 as a SimGrid model
 

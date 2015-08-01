@@ -103,10 +103,6 @@ if(HAVE_LIBSIGC++)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")
 endif()
 
-if(HAVE_GTNETS)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lgtnets")
-endif()
-
 if(HAVE_MC)
   # The availability of libunwind was checked in CompleteInFiles.cmake
   #   (that includes FindLibunwind.cmake), so simply load it now.

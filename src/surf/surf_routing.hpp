@@ -128,7 +128,7 @@ private:
 };
 
 /** @ingroup SURF_routing_interface
- * @brief Link of lenght 1, alongside with its source and destination. This is mainly usefull in the bindings to gtnets and ns3
+ * @brief Link of lenght 1, alongside with its source and destination. This is mainly usefull in the ns3 bindings
  */
 class Onelink {
 public:

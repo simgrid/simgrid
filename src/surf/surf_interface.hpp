@@ -49,10 +49,6 @@ extern double sg_latency_factor;
 extern double sg_bandwidth_factor;
 extern double sg_weight_S_parameter;
 extern int sg_network_crosstraffic;
-#ifdef HAVE_GTNETS
-extern double sg_gtnets_jitter;
-extern int sg_gtnets_jitter_seed;
-#endif
 extern xbt_dynar_t surf_path;
 
 extern "C" {

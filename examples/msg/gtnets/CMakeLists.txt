@@ -25,7 +25,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/crosstraffic-d.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/crosstraffic-p.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/dogbone-d.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/dogbone-p.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/onelink-d.xml

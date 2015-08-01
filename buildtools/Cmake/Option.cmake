@@ -1,8 +1,7 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see below)
-### ex: cmake -Denable_java=ON -Denable_gtnets=ON ./
+### ex: cmake -Denable_java=ON -Denable_ns3=ON ./
 
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
-set(gtnets_path ${gtnets_path} CACHE PATH "Path to gtnets lib and include")
 
 if(NOT CMAKE_INSTALL_PREFIX)
   set(CMAKE_INSTALL_PREFIX "/usr/local/simgrid/" CACHE PATH "Path where this project should be installed")
@@ -16,7 +15,6 @@ mark_as_advanced(pipol_user)
 option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
 option(enable_compile_optimizations "Whether to produce efficient code for the SimGrid library" on)
 option(enable_documentation "Whether to produce documentation" on)
-option(enable_gtnets "Whether gtnets model is activated." off)
 option(enable_ns3    "Whether ns3 model is activated." off)
 option(enable_java   "Whether the Java bindings are activated." off)
 option(enable_scala  "Whether the Scala bindings are activated." off)

@@ -37,14 +37,6 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
   }
 }
 
-/* to trace gtnets */
-void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst)
-{
-  /*FIXME:surf_action_network_GTNETS_t gtnets_action = (surf_action_network_GTNETS_t)action;
-  gtnets_action->src = src;
-  gtnets_action->dst = dst;*/
-}
-
 void TRACE_surf_action(surf_action_t surf_action, const char *category)
 {
   if (!TRACE_is_enabled())

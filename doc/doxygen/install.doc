@@ -232,10 +232,6 @@ accepts several options, as listed below.
       and developer header files.
 
 
-  @li <b>enable_gtnets</b> (ON/OFF): whether you want to use gtnets.
-      See section @ref pls_simgrid_configuration_gtnets.
-  @li <b>gtnets_path</b> (path): GTNetS installation directory
-      (eg /usr or /opt).
   @li <b>enable_ns3</b> (ON/OFF): whether you want to use ns3.
       See section @ref pls_simgrid_configuration_ns3.
   @li <b>NS3_HINT</b> (path): Where to search for NS3 (eg /usr or /opt).

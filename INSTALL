@@ -56,5 +56,5 @@ liblua5.1-dev.
 If you want to compile smpi, you should install a fortran compiler to use
  Fortran code. Only gfortran has been tested for now.
 
-If you want to compile the GTNetS backend, you have to have a patched version of
-GTNetS installed. The patch lives in the contrib section of the Git.
+If you want to compile the NS3 backend, you naturally need to install
+NS3, both libs and development headers.
