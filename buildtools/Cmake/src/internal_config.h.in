@@ -145,9 +145,6 @@
 /* Define to 1 if you have the `clock_gettime' function. */
 #cmakedefine HAVE_POSIX_GETTIME @HAVE_POSIX_GETTIME@
 
-/* Indicates that we have GTNETS support */
-#cmakedefine HAVE_GTNETS @HAVE_GTNETS@
-
 /* Indicates that we have SMPI support */
 #cmakedefine HAVE_SMPI @HAVE_SMPI@
 

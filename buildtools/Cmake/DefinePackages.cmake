@@ -50,13 +50,9 @@ set(EXTRA_DIST
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
-  src/surf/gtnets/gtnets_interface.h
-  src/surf/gtnets/gtnets_simulator.h
-  src/surf/gtnets/gtnets_topology.h
   src/surf/maxmin_private.hpp
   src/surf/network_cm02.hpp
   src/surf/network_constant.hpp
-  src/surf/network_gtnets.hpp
   src/surf/network_interface.hpp
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
@@ -298,13 +294,6 @@ if(HAVE_MMALLOC)
     src/xbt/mmalloc/mm.c
     )
 endif()
-
-set(GTNETS_SRC
-  src/surf/gtnets/gtnets_interface.cc
-  src/surf/gtnets/gtnets_simulator.cc
-  src/surf/gtnets/gtnets_topology.cc
-  src/surf/network_gtnets.cpp
-  )
 
 set(NS3_SRC
   src/surf/network_ns3.cpp
@@ -608,6 +597,19 @@ set(MC_SRC_BASE
 set(MC_SRC
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
+  src/mc/Frame.hpp
+  src/mc/ModelChecker.hpp
+  src/mc/ModelChecker.cpp
+  src/mc/ObjectInformation.hpp
+  src/mc/ObjectInformation.cpp
+  src/mc/PageStore.hpp
+  src/mc/PageStore.cpp
+  src/mc/RegionSnapshot.cpp
+  src/mc/RegionSnapshot.hpp
+  src/mc/Type.hpp
+  src/mc/Variable.cpp
+  src/mc/Variable.hpp
+
   src/mc/mc_forward.h
   src/mc/mc_forward.hpp
   src/mc/mc_process.h
@@ -616,17 +618,10 @@ set(MC_SRC
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
   src/mc/mc_mmalloc.h
-  src/mc/ModelChecker.hpp
-  src/mc/ModelChecker.cpp
   src/mc/mc_object_info.h
-  src/mc/mc_object_info.cpp
   src/mc/mc_checkpoint.cpp
   src/mc/mc_snapshot.h
   src/mc/mc_snapshot.cpp
-  src/mc/RegionSnapshot.cpp
-  src/mc/RegionSnapshot.hpp
-  src/mc/PageStore.hpp
-  src/mc/PageStore.cpp
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
   src/mc/mc_comm_pattern.cpp
@@ -780,23 +775,9 @@ else() # NOT ucontext
     )
 endif()
 
-# -->HAVE_GTNETS
-if(HAVE_GTNETS)
-  set(GTNETS_USED
-    ${GTNETS_SRC}
-    )
-else()
-  set(GTNETS_USED "")
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
-    ${GTNETS_SRC}
-    )
-endif()
-
 ### Simgrid Lib sources
 set(simgrid_sources
   ${BINDINGS_SRC}
-  ${GTNETS_USED}
   ${S4U_SRC}
   ${MSG_SRC}
   ${SIMDAG_SRC}
@@ -1049,7 +1030,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/energy/pstate/CMakeLists.txt
   examples/msg/exception/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
-  examples/msg/gtnets/CMakeLists.txt
+  examples/msg/gtnets/CMakeLists.txt 
   examples/msg/icomms/CMakeLists.txt
   examples/msg/io/CMakeLists.txt
   examples/msg/kademlia/CMakeLists.txt
@@ -1208,7 +1189,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/MakeLib.cmake
   buildtools/Cmake/MakeLibWin.cmake
   buildtools/Cmake/Modules/FindGFortran.cmake
-  buildtools/Cmake/Modules/FindGTnets.cmake
   buildtools/Cmake/Modules/FindGraphviz.cmake
   buildtools/Cmake/Modules/FindLibSigc++.cmake
   buildtools/Cmake/Modules/FindLibdw.cmake
@@ -1237,7 +1217,6 @@ set(CMAKE_SOURCE_FILES
   buildtools/Cmake/src/simgrid.nsi.in
   buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
   buildtools/Cmake/test_prog/prog_gnu_dynlinker.c
-  buildtools/Cmake/test_prog/prog_gtnets.cpp
   buildtools/Cmake/test_prog/prog_mutex_timedlock.c
   buildtools/Cmake/test_prog/prog_sem_init.c
   buildtools/Cmake/test_prog/prog_sem_open.c
@@ -1265,6 +1244,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_no_backbone.xml
   examples/platforms/clusters_routing_full.xml
+  examples/platforms/crosstraffic.xml
   examples/platforms/conf/gridpp_grid_2004.conf
   examples/platforms/conf/gridpp_grid_2004.xml
   examples/platforms/conf/lcg_sept2004_grid.conf

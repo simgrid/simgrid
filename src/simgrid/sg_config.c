@@ -480,18 +480,6 @@ static void _sg_cfg_cb__surf_network_crosstraffic(const char *name,
   sg_network_crosstraffic = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
-#ifdef HAVE_GTNETS
-static void _sg_cfg_cb__gtnets_jitter(const char *name, int pos)
-{
-  sg_gtnets_jitter = xbt_cfg_get_double(_sg_cfg_set, name);
-}
-
-static void _sg_cfg_cb__gtnets_jitter_seed(const char *name, int pos)
-{
-  sg_gtnets_jitter_seed = xbt_cfg_get_int(_sg_cfg_set, name);
-}
-#endif
-
 /* build description line with possible values */
 static void describe_model(char *result,
                            const s_surf_model_description_t model_description[],
@@ -799,17 +787,6 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb__surf_network_crosstraffic, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "no");
 
-#ifdef HAVE_GTNETS
-    xbt_cfg_register(&_sg_cfg_set, "gtnets/jitter",
-                     "Double value to oscillate the link latency, uniformly in random interval [-latency*gtnets_jitter,latency*gtnets_jitter)",
-                     xbt_cfgelm_double, 1, 1, _sg_cfg_cb__gtnets_jitter, NULL);
-    xbt_cfg_setdefault_double(_sg_cfg_set, "gtnets/jitter", 0.0);
-
-    xbt_cfg_register(&_sg_cfg_set, "gtnets/jitter_seed",
-                     "Use a positive seed to reproduce jitted results, value must be in [1,1e8], default is 10",
-                     xbt_cfgelm_int, 0, 1, _sg_cfg_cb__gtnets_jitter_seed, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "gtnets/jitter_seed", 10);
-#endif
 #ifdef HAVE_NS3
     xbt_cfg_register(&_sg_cfg_set, "ns3/TcpModel",
                      "The ns3 tcp model can be : NewReno or Reno or Tahoe",

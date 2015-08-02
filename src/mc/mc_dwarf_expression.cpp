@@ -12,6 +12,10 @@
 
 #include "mc_object_info.h"
 #include "mc_private.h"
+#include "mc_location.h"
+#include "mc/AddressSpace.hpp"
+#include "mc/Frame.hpp"
+#include "mc/ObjectInformation.hpp"
 
 using simgrid::mc::remote;
 

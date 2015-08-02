@@ -34,7 +34,7 @@ if(WIN32)
                 OUTPUT_VARIABLE IS_32_BITS_JVM)
   STRING( FIND ${IS_32_BITS_JVM} "Error" POSITION )
   if(${POSITION} GREATER -1)
-    message(FATAL_ERROR "Java JVM needs to be 32 bits to be able to run with Simgrid on Windows for now")
+    message("POTENTIAL ERROR: Java JVM needs to be 32 bits to be able to run with Simgrid on Windows for now")
   endif()
 
   set_target_properties(simgrid-java PROPERTIES

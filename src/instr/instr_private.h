@@ -262,9 +262,6 @@ XBT_PUBLIC(void) new_pajeStartLinkWithSize (double timestamp, container_t contai
 XBT_PUBLIC(void) new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key);
 XBT_PUBLIC(void) new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
 
-//for tracing gtnets
-void TRACE_surf_gtnets_communicate(void *action, void *src, void *dst);
-
 /* from instr_config.c */
 int TRACE_needs_platform (void);
 int TRACE_is_enabled(void);

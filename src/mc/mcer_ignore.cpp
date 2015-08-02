@@ -13,6 +13,10 @@
 #include "mc/mc_protocol.h"
 #include "mc/mc_client.h"
 
+#include "mc/Frame.hpp"
+#include "mc/Variable.hpp"
+#include "mc/ObjectInformation.hpp"
+
 extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mcer_ignore, mc,

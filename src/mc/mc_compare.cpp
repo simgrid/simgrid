@@ -17,6 +17,10 @@
 #include "mc_private.h"
 #include "mc_smx.h"
 
+#include "mc/Frame.hpp"
+#include "mc/ObjectInformation.hpp"
+#include "mc/Variable.hpp"
+
 #ifdef HAVE_SMPI
 #include "smpi/private.h"
 #endif

@@ -2,10 +2,6 @@
 
 set -e
 
-build_mode="$1"
-
-echo "Build mode $build_mode on $(uname -np)" >&2
-
 # usage: die status message...
 die () {
   local status=${1:-1}
@@ -24,20 +20,8 @@ onoff() {
   fi
 }
 
-ulimit -c 0
-
-if [ -d $WORKSPACE/build ]
-then
-  rm -rf $WORKSPACE/build
-fi
-mkdir $WORKSPACE/build
-cd $WORKSPACE/build
-
-cmake -Denable_documentation=OFF $WORKSPACE
-make dist
-tar xzf `cat VERSION`.tar.gz
-cd `cat VERSION`
-
+build_mode="$1"
+echo "Build mode $build_mode on $(uname -np)" >&2
 case "$build_mode" in
   "Debug")
   ;;
@@ -49,32 +33,87 @@ case "$build_mode" in
   ;;
 
   *)
-  die 1 "Unknown build_mode $build_mode"
+    die 1 "Unknown build_mode $build_mode"
   ;;
 esac
 
-cmake -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
+if test "$(uname -o)" = "Msys"; then
+  if [ -z "$NUMBER_OF_PROCESSORS" ]; then
+    NUMBER_OF_PROCESSORS=1
+  fi
+  GENERATOR="MSYS Makefiles"
+else
+  NUMBER_OF_PROCESSORS="$(nproc)" || NUMBER_OF_PROCESSORS=1
+  GENERATOR="Unix Makefiles"
+fi
+
+ulimit -c 0 || true
+
+if test "$(uname -o)" != "Msys"; then
+  echo "XX"
+  echo "XX Get out of the tree"
+  echo "XX"
+  if [ -d $WORKSPACE/build ]
+  then
+    rm -rf $WORKSPACE/build
+  fi
+  mkdir $WORKSPACE/build
+  cd $WORKSPACE/build
+
+  echo "XX"
+  echo "XX Build the archive out of the tree"
+  echo "XX   pwd: `pwd`"
+  echo "XX"
+
+  cmake -G"$GENERATOR" -Denable_documentation=OFF $WORKSPACE
+  make dist -j$NUMBER_OF_PROCESSORS
+
+  echo "XX"
+  echo "XX Open the resulting archive"
+  echo "XX"
+  tar xzf `cat VERSION`.tar.gz
+  cd `cat VERSION`
+fi
+
+echo "XX"
+echo "XX Configure and build SimGrid"
+echo "XX   pwd: `pwd`"
+echo "XX"
+cmake -G"$GENERATOR"\
+  -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
-  -Denable_compile_optimization=$(onoff test "$build_mode" = "Debug") \
+  -Denable_smpi_ISP_testsuite=$(onoff test "$build_mode" = "ModelChecker") \
+  -Denable_compile_optimizations=$(onoff test "$build_mode" = "Debug") \
   -Denable_smpi_MPICH3_testsuite=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=ON -Denable_smpi=ON -Denable_lib_static=OFF \
-  -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF \
+  -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF \
   -Denable_tracing=ON -Denable_java=ON
-make
+make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
-cd $WORKSPACE/build
-cd `cat VERSION`
+if test "$(uname -o)" != "Msys"; then
+  cd $WORKSPACE/build
+  cd `cat VERSION`
+fi
 
 TRES=0
+
+echo "XX"
+echo "XX Run the tests"
+echo "XX   pwd: `pwd`"
+echo "XX"
 
 ctest -T test --output-on-failure --no-compress-output || true
 if [ -f Testing/TAG ] ; then
    xsltproc $WORKSPACE/buildtools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults.xml
    mv CTestResults.xml $WORKSPACE
 fi
+
+echo "XX"
+echo "XX Done. Return the results to cmake"
+echo "XX"
 
 if [ "$build_mode" = "DynamicAnalysis" ]
 then

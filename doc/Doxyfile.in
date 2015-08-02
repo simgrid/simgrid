@@ -711,7 +711,6 @@ INPUT +=                 @top_srcdir@/examples/msg/sendrecv/sendrecv.c \
                          @top_srcdir@/examples/msg/tracing/link_user_variables.c \
                          @top_srcdir@/examples/msg/tracing/link_srcdst_user_variables.c \
                          @top_srcdir@/examples/msg/ns3 \
-                         @top_srcdir@/examples/msg/gtnets \
                          @top_srcdir@/examples/msg/io \
                          @top_srcdir@/examples/msg/gpu \
                          @top_srcdir@/examples/msg/actions \

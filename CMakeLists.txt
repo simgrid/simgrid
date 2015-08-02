@@ -20,22 +20,23 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 
-## We need a decent support of the c++11 standard
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX11)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-else()
-  message(FATAL_ERROR 
-          "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
-	  "Please use a decent C++ compiler.")
-endif()
 if (CMAKE_COMPILER_IS_GNUCC)
   if (COMPILER_CXX_VERSION_MAJOR_MINOR STRLESS "4.7")
     message(FATAL_ERROR
-            "SimGrid needs g++ version 4.7 to compile "
+            "SimGrid needs at least g++ version 4.7 to compile "
 	    "(c++11 support of previous versions is too limited).")
   endif()
+endif()
+
+## We need a decent support of the c++11 standard
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=gnu++11" COMPILER_SUPPORTS_CXX11)
+if(COMPILER_SUPPORTS_CXX11)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+else() 
+  message(FATAL_ERROR 
+          "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
+          "Please use a decent C++ compiler.")
 endif()
 
 ### And we need C11 standard, too
@@ -46,10 +47,9 @@ if(COMPILER_SUPPORTS_C11)
 else()
   message(FATAL_ERROR 
           "The compiler ${CMAKE_C_COMPILER} has no C11 support. "
-	  "Please use a decent C compiler "
-	  "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
+          "Please use a decent C compiler "
+          "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
 endif()
-
 
 ### SMPI vs. Fortran
 if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by default
@@ -148,7 +148,7 @@ string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
 string(REGEX MATCH "cl.exe" VBC "${CMAKE_C_COMPILER}")
 if(VBC)
-  message(FATAL_ERROR "VB is not yet supported by Simgrid.")
+  message("VB is not yet supported by Simgrid. Proceed with extrem caution")
 endif()
 
 ### Find programs and paths
@@ -217,7 +217,7 @@ if(WIN32)
       # set(__GNUC_MINOR__ ${COMPILER_C_MINOR_VERSION})
     endif()
   else()
-    message(FATAL_ERROR "Please use MinGW to compile SimGrid!")
+    message("You REALLY should use MinGW to compile SimGrid on Windows!")
   endif()
 
   if(ARCH_32_BITS)      ### Arch 32bits

@@ -1009,7 +1009,7 @@ basically 3 main kind of routing models :
 \subsubsection pf_raf The router affair
 
 Expressing routers becomes mandatory when using shortest-path based
-models or when using ns-3 or the bindings to the GTNetS packet-level
+models or when using the bindings to the ns-3 packet-level
 simulator instead of the native analytical network model implemented
 in SimGrid.
 
@@ -1017,7 +1017,7 @@ For graph-based shortest path algorithms, routers are mandatory,
 because both algorithms need a graph, and so we need to have source
 and destination for each edge.
 
-Routers are naturally an important concept in GTNetS or ns-3 since the
+Routers are naturally an important concept in ns-3 since the
 way they run the packet routing algorithms is actually simulated.
 Instead, the SimGrid’s analytical models aggregate the routing time
 with the transfer time. Rebuilding a graph representation only from
@@ -1676,8 +1676,8 @@ characteristics (lookup : time to resolve a route):
 
 Actually we did not include switch tag, ok. But when you're trying to
 simulate a switch, the only major impact it has when you're using
-fluid model (and SimGrid uses fluid model unless you activate GTNetS,
-ns-3, or constant network mode) is the impact of the upper limit of
+fluid model (and SimGrid uses fluid model unless you activate 
+ns-3 or constant network mode) is the impact of the upper limit of
 the switch motherboard speed that will eventually be reached if you're
 using intensively your switch. So, the switch impact is similar to a
 link one. That's why we are used to describe a switch using a link tag

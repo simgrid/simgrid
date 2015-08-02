@@ -21,11 +21,11 @@
 
 #include "simgrid_config.h"
 
+SG_BEGIN_DECL()
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>             /* va_list */
-
-SG_BEGIN_DECL()
 
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */

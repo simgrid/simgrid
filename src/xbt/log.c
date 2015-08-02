@@ -715,12 +715,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
   XBT_LOG_CONNECT(surf_maxmin);
   XBT_LOG_CONNECT(surf_network);
-#ifdef HAVE_GTNETS
-  XBT_LOG_CONNECT(surf_network_gtnets);
-  XBT_LOG_CONNECT(surf_network_gtnets_interface);
-  XBT_LOG_CONNECT(surf_network_gtnets_simulator);
-  XBT_LOG_CONNECT(surf_network_gtnets_topology);
-#endif
 #ifdef HAVE_NS3
   XBT_LOG_CONNECT(ns3);
 #endif

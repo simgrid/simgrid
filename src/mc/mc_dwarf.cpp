@@ -23,6 +23,10 @@
 
 #include "mc_object_info.h"
 #include "mc_private.h"
+#include "mc_process.h"
+
+#include "mc/ObjectInformation.hpp"
+#include "mc/Variable.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 
@@ -1055,8 +1059,8 @@ static void MC_make_functions_index(simgrid::mc::ObjectInformation* info)
 
   // Sort the array by low_pc:
   std::sort(info->functions_index.begin(), info->functions_index.end(),
-        [](simgrid::mc::FunctionIndexEntry& a,
-          simgrid::mc::FunctionIndexEntry& b)
+        [](simgrid::mc::FunctionIndexEntry const& a,
+          simgrid::mc::FunctionIndexEntry const& b)
         {
           return a.low_pc < b.low_pc;
         });

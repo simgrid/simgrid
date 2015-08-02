@@ -38,8 +38,6 @@ sg_size_t SIMIX_storage_get_used_size(smx_process_t process, smx_storage_t stora
 
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage);
 
-xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage);
-
 void SIMIX_post_io(smx_synchro_t synchro);
 void SIMIX_io_destroy(smx_synchro_t synchro);
 void SIMIX_io_finish(smx_synchro_t synchro);

@@ -195,7 +195,6 @@ set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
   ${BINDINGS_SRC}
-  ${GTNETS_SRC}
   ${JEDULE_SRC}
   ${JMSG_C_SRC}
   ${JMSG_JAVA_SRC}

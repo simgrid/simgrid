@@ -31,10 +31,6 @@ extern double sg_latency_factor;
 extern double sg_bandwidth_factor;
 extern double sg_weight_S_parameter;
 extern int sg_network_crosstraffic;
-#ifdef HAVE_GTNETS
-extern double sg_gtnets_jitter;
-extern int sg_gtnets_jitter_seed;
-#endif
 extern xbt_dynar_t surf_path;
 
 typedef enum {
@@ -894,18 +890,6 @@ XBT_PUBLIC(void) surf_network_model_init_Constant(void);
  *  See comments in the code for more information.
  */
 XBT_PUBLIC(void) surf_network_model_init_CM02(void);
-
-#ifdef HAVE_GTNETS
-/** \ingroup SURF_models
- *  \brief Initializes the platform with the network model GTNETS
- *
- *  This function is called by surf_host_model_init_GTNETS
- *  or by yourself only if you plan using surf_host_model_init_compound
- *
- *  \see surf_host_model_init_GTNETS()
- */
-XBT_PUBLIC(void) surf_network_model_init_GTNETS(void);
-#endif
 
 #ifdef HAVE_NS3
 /** \ingroup SURF_models
