@@ -1,4 +1,4 @@
-/*! \page platform Platform Description
+/*! \page platform Modelling your platform
 
 @tableofcontents
 
@@ -248,6 +248,7 @@ It is also possible to specify whether the host is up or down by setting the
 
 If you want this host to be unavailable, simply substitute ON with OFF.
 
+\anchor pf_host_churn
 ### Expressing churn ###
 
 To express the fact that a host can change state over time (as in P2P
@@ -1606,34 +1607,40 @@ each of them will then be usable.
 
 \subsection pf_trace trace and trace_connect
 
-Both tags are an alternate way to passe availability, state, and so on
-files to entity. Instead of referring to the file directly in the host,
-link, or cluster tag, you proceed by defining a trace with an id
-corresponding to a file, later a host/link/cluster, and finally using
-trace_connect you say that the file trace must be used by the entity.
-Get it ? Let's have a look at an example :
+Both tags are an alternate way to pass files containing information on
+availability, state etc. to an entity. (See also, for instance, Section \ref
+pf_host_churn "Churn", as described for the host entity.) Instead of referring
+to the file directly in the host, link, or cluster tag, you proceed by defining
+a trace with an id corresponding to a file, later a host/link/cluster, and
+finally using trace_connect you say that the file trace must be used by the
+entity. 
+
+
+#### Example #### 
 
 \verbatim
 <AS  id="AS0"  routing="Full">
   <host id="bob" power="1000000000"/>
 </AS>
-  <trace id="myTrace" file="bob.trace" periodicity="1.0"/>
-  <trace_connect trace="myTrace" element="bob" kind="POWER"/>
+<trace id="myTrace" file="bob.trace" periodicity="1.0"/>
+<trace_connect trace="myTrace" element="bob" kind="POWER"/>
 \endverbatim
 
-All constraints you have is that <b>trace_connect</b> is after
-<b>trace</b> and <b>host</b> definitions.
+\note 
+    The order here is important.  \c trace_connect must come 
+    after the elements \c trace and \c host, as both the host
+    and the trace definition must be known when \c trace_connect
+    is parsed; the order of \c trace and \c host is arbitrary.
 
 
-<b>trace</b> attributes :
-\li <b>id (mandatory)</b>: the identifier of the trace to be used when
-    referring to it.
-\li <b>file</b>: filename of the file to include. Possible values :
-    absolute or relative path, syntax similar to the one in use on
-    your system. If omitted, the system expects that you provide the
-    trace values inside the trace tags (see below).
-\li <b>trace periodicity (mandatory)</b>: trace periodicity, same
-    definition as in hosts (see upper for details).
+#### \c trace attributes ####
+
+
+| Attribute name  | Mandatory | Values                 | Description                                                                                       |
+| --------------- | --------- | ---------------------- | -----------                                                                                       |
+| id              | yes       | String                 | Identifier of this trace; this is the name you pass on to \c trace_connect.                       |
+| file            | no        | String                 | Filename of the file that contains the information - the path must follow the style of your OS. You can omit this, but then you must specifiy the values inside of &lt;trace&gt; and &lt;/trace&gt; - see the example below. |
+| trace_periodicity | yes | String | This is the same as for \ref pf_host "hosts" (see there for details) |
 
 Here is an example  of trace when no file name is provided:
 
@@ -1642,17 +1649,16 @@ Here is an example  of trace when no file name is provided:
     0.0 1.0
     11.0 0.5
     20.0 0.8
-  </trace>
+ </trace>
 \endverbatim
 
-<b>trace_connect</b> attributes :
-\li <b>kind</b>: the type of trace, possible values
-    <b>HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY,</b>  default:
-    <b>HOST_AVAIL</b>
-\li <b>trace (mandatory)</b>: the identifier of the trace referenced.
-\li <b>element (mandatory)</b>: the identifier of the entity referenced.
+#### \c trace_connect attributes ####
 
-
+| Attribute name  | Mandatory | Values                 | Description                                                                                       |
+| --------------- | --------- | ---------------------- | -----------                                                                                       |
+| kind            | no        | HOST_AVAIL\|POWER\|<br/>LINK_AVAIL\|BANDWIDTH\|LATENCY (Default: HOST_AVAIL)   | Describes the kind of trace.                   |
+| trace           | yes       | String                 | Identifier of the referenced trace (specified of the trace's \c id attribute)                     |
+| element         | yes       | String                 | The identifier of the referenced entity as given by its \c id attribute                           |
 
 \section pf_hints Hints and tips, or how to write a platform efficiently
 
