@@ -165,9 +165,14 @@ int smpi_process_finalized()
  */
 int smpi_process_initialized(void)
 {
-  int index = smpi_process_index();
-  return ( (index != MPI_UNDEFINED)
-          && (process_data[index_to_process_data[index]]->state == SMPI_INITIALIZED));
+  if (!index_to_process_data){
+    return false;
+  }
+  else{
+    int index = smpi_process_index();
+    return ( (index != MPI_UNDEFINED)
+             && (process_data[index_to_process_data[index]]->state == SMPI_INITIALIZED));
+  }
 }
 
 /**

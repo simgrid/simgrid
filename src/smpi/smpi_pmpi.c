@@ -25,16 +25,21 @@ void TRACE_smpi_set_category(const char *category)
 
 int PMPI_Init(int *argc, char ***argv)
 {
-  smpi_process_init(argc, argv);
-  smpi_process_mark_as_initialized();
-  int rank = smpi_process_index();
-  TRACE_smpi_init(rank);
-  TRACE_smpi_computing_init(rank);
-  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type = TRACING_INIT;
-  TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
-  TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
-  smpi_bench_begin();
+  // PMPI_Init is call only one time by only by SMPI process
+  int already_init;
+  MPI_Initialized(&already_init);
+  if(!(already_init)){
+    smpi_process_init(argc, argv);
+    smpi_process_mark_as_initialized();
+    int rank = smpi_process_index();
+    TRACE_smpi_init(rank);
+    TRACE_smpi_computing_init(rank);
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+    extra->type = TRACING_INIT;
+    TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
+    TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
+    smpi_bench_begin();
+  }
   return MPI_SUCCESS;
 }
 
