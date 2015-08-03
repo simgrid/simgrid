@@ -452,7 +452,7 @@ the beggining and size of the time slice.
 
 \subsubsection tracing_viva_graph Hierarchical Graph View
 
-As stated above (see section \ref tracing_tracing_analyzing), one
+%As stated above (see section \ref tracing_tracing_analyzing), one
 possibility to analyze SimGrid traces is to use Viva's graph view with
 a graph configuration to customize the graph according to the
 traces. A valid graph configuration (we are using the non-XML <a

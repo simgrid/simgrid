@@ -435,7 +435,7 @@ void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst);
 unsigned long xbt_dynar_length(const xbt_dynar_t dynar);
 ~~~~
 
-As you will soon realize, with such simple mechanisms, simple
+%As you will soon realize, with such simple mechanisms, simple
 deadlocks will soon appear. They can easily be removed with a
 simple polling mechanism, hence the need for the following
 [function][fn:7]:
@@ -444,7 +444,7 @@ simple polling mechanism, hence the need for the following
 msg_error_t MSG_process_sleep(double nb_sec);
 ~~~~
 
-As you should quickly realize, on the simple previous example, it
+%As you should quickly realize, on the simple previous example, it
 will double the throughput of the platform but will be quite
 ineffective when input size of the tasks is not negligible anymore.
 
