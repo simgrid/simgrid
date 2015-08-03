@@ -3,7 +3,9 @@
 It is possible to use a packet-level network simulator
 instead of the default flow-based simulation. You may want to use such
 an approach if you have doubts about the validity of the default model
-or if you want to perform some validation experiments. 
+or if you want to perform some validation experiments. At the moment,
+we support the NS3 simulator; see Section \ref pls_examples "Examples" for 
+some additional information.
 
 At the moment, we only support the NS3 simulator. Previous versions of
 SimGrid did support the GTNetS simulator and that support could
@@ -101,5 +103,10 @@ file that you will provide. There is some caveats to know:
 
 
 More about ns-3 simulator <a href="http://www.nsnam.org/">(Official website)</a>
+
+\subsection pls_examples Examples
+
+There are some examples in the \c examples/ folder, that show how to use
+the bindings; see also the \ref MSG_ex_PLS "documentation for these examples".
 
 */
