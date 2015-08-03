@@ -105,19 +105,13 @@ provided by the [online documentation][fn:4] and by several tutorials:
 
 ## Installing SimGrid
 
-In case you're using [Debian](https://www.debian.org) or a derivate,
-such as Ubuntu or Mint, you can install SimGrid by using the provided
-packages:
+Please see our Section on \ref install "installing SimGrid". 
 
-    sudo apt-get install libsimgrid-dev
-
-This tutorial requires simgrid 3.8 at least so you may need to get
-the [debian packages](http://packages.debian.org/libsimgrid-dev).
-
-Please note that your distribution may ship with an old version of
-SimGrid; you may want to use [a newer release](https://gforge.inria.fr/frs/?group_id=12)
-or even [clone our git repository](https://gforge.inria.fr/frs/?group_id=12)
-(a [GitHub mirror](https://github.com/mquinson/simgrid) is also available).
+\note
+   Please note that your distribution may ship with an old version of
+   SimGrid; you may want to use [a newer release](https://gforge.inria.fr/frs/?group_id=12)
+   or even [clone our git repository](https://gforge.inria.fr/frs/?group_id=12)
+   (a [GitHub mirror](https://github.com/mquinson/simgrid) is also available).
 
 # Recommended Steps
 
