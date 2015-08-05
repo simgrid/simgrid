@@ -92,42 +92,46 @@ for file; do
         continue
     fi
 
-    if head -n 1 "$file" | grep -q '^#!'; then
-        script=1
+    if grep -q "Copyright.*SimGrid" $file ; then 
+        if head -n 1 "$file" | grep -q '^#!'; then
+            script=1
+        else
+            script=0
+        fi
+
+        ### 1. create new template
+        dates=$(get_dates "$file" | sort -u | format_dates)
+        sed "s/(c) [[:digit:], -]*\./(c) $dates./" "$template" > "$tmp_copy"
+        printf '\n' >> "$tmp_copy"
+
+        # fix comments for scripts
+        if [ $script = 1 ]; then
+            sed -i 's!^..!#!;s! *\*/!!' "$tmp_copy"
+        fi
+
+        ### 2. copy file body
+        if grep -q 'Copyright.*SimGrid' "$file"; then
+            sed '/Copyright.*SimGrid/,$d' "$file" > "$tmp_head"
+            sed -i '${\!^/\* *$!d}' "$tmp_head"
+            sed '1,/the terms of the license/d' "$file" > "$tmp_foot"
+        elif [ $script = 1 ]; then
+            head -n 1 "$file" > "$tmp_head"
+            tail -n +2  "$file" > "$tmp_foot"
+            printf '\n' >> "$tmp_head"
+        else
+            :> "$tmp_head"
+            cp "$file" "$tmp_foot"
+        fi
+        sed -i '1{\!^ *\*/!d};/[^[:space:]]/,$!d' "$tmp_foot"
+
+        ### 3. concatenate new template and file body into $file
+#        cat "$tmp_head"
+#        cat "$tmp_copy"
+#        cat "$tmp_foot"
+        cat "$tmp_head" "$tmp_copy" "$tmp_foot" > $file
     else
-        script=0
-    fi
-
-    ### 1. create new template
-    dates=$(get_dates "$file" | sort -u | format_dates)
-    sed "s/(c) [[:digit:], -]*\./(c) $dates./" "$template" > "$tmp_copy"
-    printf '\n' >> "$tmp_copy"
-
-    # fix comments for scripts
-    if [ $script = 1 ]; then
-        sed -i 's!^..!#!;s! *\*/!!' "$tmp_copy"
-    fi
-
-    ### 2. copy file body
-    if grep -q 'Copyright.*SimGrid' "$file"; then
-        sed '/Copyright.*SimGrid/,$d' "$file" > "$tmp_head"
-        sed -i '${\!^/\* *$!d}' "$tmp_head"
-        sed '1,/the terms of the license/d' "$file" > "$tmp_foot"
-    elif [ $script = 1 ]; then
-        head -n 1 "$file" > "$tmp_head"
-        tail -n +2  "$file" > "$tmp_foot"
-        printf '\n' >> "$tmp_head"
-    else
-        :> "$tmp_head"
-        cp "$file" "$tmp_foot"
-    fi
-    sed -i '1{\!^ *\*/!d};/[^[:space:]]/,$!d' "$tmp_foot"
-
-    ### 3. concatenate new template and file body into $file
-#    cat "$tmp_head"
-#    cat "$tmp_copy"
-#    cat "$tmp_foot"
-    cat "$tmp_head" "$tmp_copy" "$tmp_foot" > $file
+        echo "Pass: there is no SimGrid Copyright header."
+    fi ; # 
 done
 
 cat <<EOF
