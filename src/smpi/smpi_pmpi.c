@@ -1255,6 +1255,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
   extra->send_size = count;
   extra->src = src_traced;
   extra->dst = rank;
+  extra->tag = tag;
   extra->datatype1 = encode_datatype(datatype);
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 #endif
@@ -1307,6 +1308,7 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
   extra->send_size = count;
   extra->src = rank;
   extra->dst = dst_traced;
+  extra->tag = tag;
   extra->datatype1 = encode_datatype(datatype);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   TRACE_smpi_send(rank, rank, dst_traced,count*smpi_datatype_size(datatype));

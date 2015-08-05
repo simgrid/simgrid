@@ -443,7 +443,7 @@ static void action_recv(const char *const *action) {
 //fflush(stderr);
   smpi_mpi_recv(NULL, size, MPI_CURRENT_TYPE, from, tag, MPI_COMM_WORLD, &status);
 //fprintf(stderr, "!!!!%d: DONE! Recv with src=%d, tag=%d.\n", smpi_process_index(), from, tag);
-  fflush(stderr);
+//  fflush(stderr);
 
 #ifdef HAVE_TRACING
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
