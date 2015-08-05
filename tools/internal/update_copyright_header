@@ -27,8 +27,6 @@ fi
 
 printf 'Using template: %s\n' "$template"
 
-now=$(date +%Y)
-
 get_dates() {
     local file=$1
     local date
@@ -50,7 +48,6 @@ get_dates() {
         esac
     done
     git log --format=%ad "$file" | cut -d\  -f5 | uniq
-    echo $now
 }
 
 format_dates() {
