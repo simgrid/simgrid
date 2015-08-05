@@ -7,9 +7,6 @@
 #include "surf_routing_dijkstra.hpp"
 #include "network_interface.hpp"
 
-/* Global vars */
-extern routing_platf_t routing_platf;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
 
 /* Free functions */

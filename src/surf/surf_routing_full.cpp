@@ -9,9 +9,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
-/* Global vars */
-extern routing_platf_t routing_platf;
-
 #define TO_ROUTE_FULL(i,j) p_routingTable[(i)+(j)*table_size]
 
 AS_t model_full_create(void)
