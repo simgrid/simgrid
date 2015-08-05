@@ -4,16 +4,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SURF_NETWORK_INTERFACE_HPP_
+#define SURF_NETWORK_INTERFACE_HPP_
+
 #include <boost/unordered_map.hpp>
 
 #include "xbt/fifo.h"
+#include "xbt/dict.h"
 #include "surf_interface.hpp"
 #include "surf_routing.hpp"
 
 #include "simgrid/link.h"
-
-#ifndef SURF_NETWORK_INTERFACE_HPP_
-#define SURF_NETWORK_INTERFACE_HPP_
 
 /***********
  * Classes *

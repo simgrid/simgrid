@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf_routing_none.hpp"
-#include "network_interface.hpp"
-
 #ifndef SURF_ROUTING_CLUSTER_HPP_
 #define SURF_ROUTING_CLUSTER_HPP_
+
+#include "surf_routing_none.hpp"
+#include "network_interface.hpp"
 
 /***********
  * Classes *
