@@ -1,7 +1,7 @@
 /* portable -- header loading to write portable code                         */
 /* loads much more stuff than sysdep.h since the latter is in public interface*/
 
-/* Copyright (c) 2004-2010, 2012-2014. The SimGrid Team.
+/* Copyright (c) 2004-2010, 2012-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

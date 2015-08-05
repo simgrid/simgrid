@@ -1,6 +1,6 @@
 /* A few tests for the xbt_heap module                                      */
 
-/* Copyright (c) 2004-2010, 2012-2014. The SimGrid Team.
+/* Copyright (c) 2004-2010, 2012-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
