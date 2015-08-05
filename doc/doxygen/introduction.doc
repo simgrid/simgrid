@@ -154,6 +154,8 @@ sudo apt-get install vite
 ~~~~
 
 # Let's get Started
+
+\anchor intro_setup
 ## Setting up and Compiling
 
 The corresponding archive with all source files and platform files
@@ -346,7 +348,7 @@ tasks processed). These debug messages can be activated as follows:
 ## Using the Tracing Mechanism
 
 SimGrid can trace all resource consumption and the outcome can be
-displayed with viva as illustrated in the section "Setting up and Compiling". However, when several
+displayed with viva as illustrated in the section \ref intro_setup. However, when several
 masters are deployed, it is hard to understand what happens.
 
 ~~~~{.xml}
@@ -453,8 +455,8 @@ From this, many things can easily be added. For example, you could:
 ## Using More Elaborate Platforms
 
 SimGrid offers a rather powerful platform modeling mechanism. The
-`src/platform/` repository comprises a variety of platform ranging
-from simple ones to quite elaborated ones. Associated to a good
+`src/examples/platforms/` repository comprises a variety of platforms ranging
+from simple to elaborate. Associated to a good
 visualization tool to ensure your simulation is meaningful, they
 can allow you to study to which extent your algorithm scales...
 
@@ -462,7 +464,7 @@ What is the largest number of tasks requiring 50e6 flops and 1e5
 bytes that you manage to distribute and process in one hour on
 `g5k.xml` (you should use `deployment_general.xml`)?
 
-# Points to improve for the next time
+# TODO: Points to improve for the next time
 
 - Propose equivalent exercises and skeleton in java.
 - Propose a virtualbox image with everything (simgrid, paje, viva,
