@@ -4,12 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef SURF_NETWORK_CM02_HPP_
+#define SURF_NETWORK_CM02_HPP_
+
 #include "network_interface.hpp"
 #include "xbt/fifo.h"
 #include "xbt/graph.h"
-
-#ifndef SURF_NETWORK_CM02_HPP_
-#define SURF_NETWORK_CM02_HPP_
 
 /***********
  * Classes *
@@ -42,7 +42,7 @@ public:
 		  e_surf_resource_state_t state_initial,
 		  tmgr_trace_t state_trace,
 		  e_surf_link_sharing_policy_t policy,
-		  xbt_dict_t properties);
+		  xbt_dict_t properties) override;
   void addTraces();
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);

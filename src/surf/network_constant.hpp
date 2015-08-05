@@ -4,10 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "network_cm02.hpp"
-
 #ifndef NETWORK_CONSTANT_HPP_
 #define NETWORK_CONSTANT_HPP_
+
+#include "network_interface.hpp"
 
 /***********
  * Classes *
@@ -18,39 +18,36 @@ class NetworkConstantAction;
 /*********
  * Model *
  *********/
-class NetworkConstantModel : public NetworkCm02Model {
+class NetworkConstantModel : public NetworkModel {
 public:
-  NetworkConstantModel()
-  : NetworkCm02Model()
-  {
-    p_updateMechanism = UM_UNDEFINED;
-  };
+  NetworkConstantModel()  : NetworkModel() { };
+  ~NetworkConstantModel() { }
+
+  Action *communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-  Action *communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate);
-  void gapRemove(Action *action);
-};
+  bool shareResourcesIsIdempotent() {return true;}
 
-/************
- * Resource *
- ************/
-class NetworkConstantLink : public NetworkCm02Link {
-public:
-  NetworkConstantLink(NetworkCm02Model *model, const char* name, xbt_dict_t properties);
-  bool isUsed();
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
-  double getBandwidth();
-  double getLatency();
-  bool isShared();
+  Link* createLink(const char *name,
+		           double bw_initial,
+				   tmgr_trace_t bw_trace,
+				   double lat_initial,
+				   tmgr_trace_t lat_trace,
+				   e_surf_resource_state_t state_initial,
+				   tmgr_trace_t state_trace,
+				   e_surf_link_sharing_policy_t policy,
+				   xbt_dict_t properties)                  { DIE_IMPOSSIBLE; }
+  void addTraces()                                         { DIE_IMPOSSIBLE; }
+  xbt_dynar_t getRoute(RoutingEdge *src, RoutingEdge *dst) { DIE_IMPOSSIBLE; }
 };
 
 /**********
  * Action *
  **********/
-class NetworkConstantAction : public NetworkCm02Action {
+class NetworkConstantAction : public NetworkAction {
 public:
   NetworkConstantAction(NetworkConstantModel *model_, double size, double latency)
-  : NetworkCm02Action(model_, size, false)
+  : NetworkAction(model_, size, false)
   , m_latInit(latency)
   {
 	m_latency = latency;
