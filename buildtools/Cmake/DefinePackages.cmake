@@ -1254,6 +1254,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/platform.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
+  examples/platforms/routing_none.xml
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
   examples/platforms/storage/content/win_storage_content.txt
