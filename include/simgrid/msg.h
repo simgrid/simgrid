@@ -661,17 +661,17 @@ void MSG_vm_set_property(msg_vm_t, char* key, void* data)
 
 void MSG_vm_setMemoryUsed(msg_vm_t vm, double size);
 void MSG_vm_setCpuUsed(msg_vm_t vm, double inducedLoad);
-  // inducedLoad: un pourcentage (>100 si ca charge plus d'un coeur;
-  //                              <100 si c'est pas CPU intensive)
-  // Contraintes à poser:
+  // inducedLoad: a percentage (>100 if it loads more than one core;
+  //                            <100 if it's not CPU intensive)
+  // Required contraints:
   //   HOST_Power >= CpuUsedVm (\forall VM) + CpuUsedTask (\forall Task)
-  //   VM_coreAmount >= Load de toutes les tasks
+  //   VM_coreAmount >= Load of all tasks
 */
 
   /*
 xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_host(msg_host_t)
 xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
-+ des fonctions de filtrage sur les dynar
++ filtering functions on dynars
 */
 #include "simgrid/instr.h"
 
