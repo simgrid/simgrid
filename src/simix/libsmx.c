@@ -5,10 +5,11 @@
 /*                                                                            */
 /* This is somehow the "libc" of SimGrid                                      */
 
-/* Copyright (c) 2010-2014. The SimGrid Team. All rights reserved.            */
+/* Copyright (c) 2010-2015. The SimGrid Team.
+ * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package.   */
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc_replay.h"
 #include "smx_private.h"
@@ -635,9 +636,9 @@ void simcall_process_cleanup(smx_process_t process)
  * \param process the process to migrate
  * \param dest name of the new host
  */
-void simcall_process_change_host(smx_process_t process, sg_host_t dest)
+void simcall_process_set_host(smx_process_t process, sg_host_t dest)
 {
-  simcall_BODY_process_change_host(process, dest);
+  simcall_BODY_process_set_host(process, dest);
 }
 
 void simcall_process_join(smx_process_t process, double timeout)

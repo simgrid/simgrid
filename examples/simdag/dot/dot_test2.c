@@ -1,6 +1,6 @@
 /* simple test trying to load a DOT file.                                   */
 
-/* Copyright (c) 2010-2014. The SimGrid Team.
+/* Copyright (c) 2010-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   unsigned int cursor;
   SD_task_t task, *dot_as_array=NULL;
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
 
   /* Check our arguments */

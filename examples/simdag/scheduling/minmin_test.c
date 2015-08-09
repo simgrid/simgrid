@@ -1,6 +1,6 @@
 /* simple test to schedule a DAX file with the Min-Min algorithm.           */
 
-/* Copyright (c) 2009-2014. The SimGrid Team.
+/* Copyright (c) 2009-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,
 
 typedef struct _WorkstationAttribute *WorkstationAttribute;
 struct _WorkstationAttribute {
-  /* Earliest time at wich a workstation is ready to execute a task */
+  /* Earliest time at which a workstation is ready to execute a task */
   double available_at;
   SD_task_t last_scheduled_task;
 };

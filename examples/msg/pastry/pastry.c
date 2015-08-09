@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -130,7 +130,7 @@ static int shl(int a, int b) {
 }
 
 /*
- * Get the cloest id to the dest in the node namespace_set
+ * Get the closest id to the dest in the node namespace_set
  */
 static int closest_in_namespace_set(node_t node, int dest) {
   int best_dist;
@@ -423,7 +423,7 @@ static int join(node_t node){
 }
 
 /*
- * Print the node infomations
+ * Print the node infomation
  */
 static void print_node(node_t node) {
   printf("Node:\n");

@@ -21,12 +21,8 @@ SG_BEGIN_DECL()
   * These is the classical producer/consumer synchronization scheme, 
   * which all concurrent programmer recode one day or another.
   *
-  * The good thing of this implementation is that it works seamlessly
-  * in your universe. When using one of the classical simulation
-  * interface (such as MSG), it achieves the synchronization on top
-  * of the simulator. If you use instead the real life implementation
-  * comming with GRAS, it uses the synchronization of your OS
-  * (whatever could it be). The choice is done at link time.
+  * The synchronization of this implementation is done within the SimGrid 
+  * realm, switching between SimGrid processes.
   *  
   * For performance concerns, the content of queue must be homogeneous, 
   * just like dynars (see the \ref XBT_dynar section). Actually, queues use a 

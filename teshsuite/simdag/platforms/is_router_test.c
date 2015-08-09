@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2014. The SimGrid Team.
+/* Copyright (c) 2008-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,7 +13,7 @@ extern routing_platf_t routing_platf;
 
 int main(int argc, char **argv)
 {
-  /* initialisation of SD */
+  /* SD initialization */
   int size;
   xbt_lib_cursor_t cursor = NULL;
   char *key, *data;

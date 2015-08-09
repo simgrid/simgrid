@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2014. The SimGrid Team.
+/* Copyright (c) 2010-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -54,7 +54,7 @@ int master(int argc, char *argv[])
     }
   }
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     slaves_count = argc - 4;
     slaves = xbt_new0(msg_host_t, slaves_count);
 

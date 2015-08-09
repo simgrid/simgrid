@@ -141,7 +141,7 @@ Available attributes :
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | String | The identifier of an AS; facilitates referring to this AS. ID must be unique.
-routing         | yes       | Full\| Floyd\| Dijkstra\| DijkstraCache\| none\| Vivaldi\| Cluster | See Section \ref pf_rm for details.
+routing         | yes       | Full\| Floyd\| Dijkstra\| DijkstraCache\| None\| Vivaldi\| Cluster | See Section \ref pf_rm for details.
 
 
 <b>Example:</b>
@@ -1056,7 +1056,7 @@ Floyd example :
   		radical="0-1"	power="1000000000"    bw="125000000"     lat="5E-5"
         router_id="router1"/>
 
- <AS id="AS1" routing="none">
+ <AS id="AS1" routing="None">
     <host id="host1" power="1000000000"/>
  </AS>
 
@@ -1118,11 +1118,11 @@ Full example :
 
 \subsubsection pf_rm_sf Simple/fast models
 
-\li <b>none</b>: No routing (Unless you know what you are doing, avoid
+\li <b>None</b>: No routing (Unless you know what you are doing, avoid
 using this mode in combination with a non Constant network model).
 None Example :
 \verbatim
-<AS id="exitAS"  routing="none">
+<AS id="exitAS"  routing="None">
 	<router id="exit_gateway"/>
 </AS>\endverbatim
 
@@ -1664,7 +1664,7 @@ characteristics (lookup : time to resolve a route):
     fast lookup, small memory requirements, shortest path routing
     only). Same as Dijkstra, except it handles a cache for latest used
     routes.
-\li <b>none</b>: No routing (usable with Constant network only).
+\li <b>None</b>: No routing (usable with Constant network only).
     Defines that there is no routes, so if you try to determine a
     route without constant network within this AS, SimGrid will raise
     an exception.

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2013-2014. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2013-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -64,7 +64,7 @@ int master(int argc, char *argv[])
     }
   }
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     workers_count = MSG_get_host_number();
     workers = xbt_dynar_to_array(MSG_hosts_as_dynar());
     

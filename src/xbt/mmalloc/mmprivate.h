@@ -1,6 +1,6 @@
 /* Declarations for `mmalloc' and friends. */
 
-/* Copyright (c) 2010-2014. The SimGrid Team.
+/* Copyright (c) 2010-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

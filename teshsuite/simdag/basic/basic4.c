@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2012, 2014. The SimGrid Team.
+/* Copyright (c) 2007-2012, 2014-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   double no_cost[] = { 0., 0., 0., 0. };
   double amount[] = { 0., 1., 0., 0. };
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
 
   /* creation of the environment */

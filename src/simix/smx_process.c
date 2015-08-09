@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -461,8 +461,7 @@ void SIMIX_process_killall(smx_process_t issuer, int reset_pid)
   SIMIX_process_empty_trash();
 }
 
-void simcall_HANDLER_process_change_host(smx_simcall_t simcall, smx_process_t process,
-		                   sg_host_t dest)
+void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_process_t process, sg_host_t dest)
 {
   process->new_host = dest;
 }

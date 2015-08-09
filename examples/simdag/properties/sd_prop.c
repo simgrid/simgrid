@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   const char *value;
   char exist[] = "Hdd";
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
   if (argc < 2) {
     XBT_INFO("Usage: %s platform_file", argv[0]);

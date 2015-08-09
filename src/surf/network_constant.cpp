@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,6 +13,10 @@ static int host_number_int = 0;
 static void netcste_count_hosts(sg_platf_host_cbarg_t /*h*/) {
   host_number_int++;
 }
+static void netcste_parse_nolink(sg_platf_link_cbarg_t link){
+	xbt_die("There is no link in the Constant network model. "
+			"Please remove any link from your platform (and switch to routing='None')");
+}
 
 /*********
  * Model *
@@ -22,7 +26,10 @@ void surf_network_model_init_Constant()
   xbt_assert(surf_network_model == NULL);
   surf_network_model = new NetworkConstantModel();
 
+  routing_model_create(NULL);
+
   sg_platf_host_add_cb(netcste_count_hosts);
+  sg_platf_link_add_cb(netcste_parse_nolink);
 
   Model *model = surf_network_model;
   xbt_dynar_push(model_list, &model);
@@ -86,38 +93,6 @@ Action *NetworkConstantModel::communicate(RoutingEdge *src, RoutingEdge *dst,
 
   surf_callback_emit(networkCommunicateCallbacks, action, src, dst, size, rate);
   return action;
-}
-
-/************
- * Resource *
- ************/
-bool NetworkConstantLink::isUsed()
-{
-  return 0;
-}
-
-void NetworkConstantLink::updateState(tmgr_trace_event_t /*event_type*/,
-                                         double /*value*/, double /*time*/)
-{
-  DIE_IMPOSSIBLE;
-}
-
-double NetworkConstantLink::getBandwidth()
-{
-  DIE_IMPOSSIBLE;
-  return -1.0; /* useless since DIE actually abort(), but eclipse prefer to have a useless and harmless return */
-}
-
-double NetworkConstantLink::getLatency()
-{
-  DIE_IMPOSSIBLE;
-  return -1.0; /* useless since DIE actually abort(), but eclipse prefer to have a useless and harmless return */
-}
-
-bool NetworkConstantLink::isShared()
-{
-  DIE_IMPOSSIBLE;
-  return -1; /* useless since DIE actually abort(), but eclipse prefer to have a useless and harmless return */
 }
 
 /**********

@@ -24,12 +24,15 @@ sub check_content($) {
 }
 
 my $TEMPFILE="/tmp/spell.tmp";
-my $DICTFILE="tools/spell_dict.txt";
-$DICTFILE="spell_dict.txt" unless (-e $DICTFILE);
+my $DICTFILE="tools/internal/spell_dict.txt";
+$DICTFILE="./spell_dict.txt" unless (-e $DICTFILE);
 die "Call this script from its location or from the SimGrid root directory\n" unless (-e $DICTFILE);
 
-die "Usage: ./spell_comments.pl `find ../ -name '*.[ch]' -name '*.hpp' -name '*.cpp'`\n"
+die "Usage: ". ($DICTFILE eq "./spell_dict.txt"? "./":"tools/internal/")."spell_comments.pl "
+           ."`find ". ($DICTFILE eq "./spell_dict.txt"? "../../":".")." -name '*.[ch]' -o -name '*.hpp' -o -name '*.cpp' |grep -v umpire|grep -v smpi/mpich3-test|grep -v NAS`\n"
   unless length(@ARGV)>1;
+
+my $total = 0;
 foreach my $file (@ARGV) {
 	open (FI, $file) || die "Cannot open $file: $!\n";
 	my $content = join ("", <FI>);
@@ -50,7 +53,10 @@ foreach my $file (@ARGV) {
 
 	if (@badwords) {
 		print "$file: ".scalar(@badwords)." errors: '".join("','",@badwords)."'\n";
+		$total += scalar(@badwords);    
 	}
 }
+
+print "Total: $total\n";
 
 unlink($TEMPFILE);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -90,7 +90,7 @@ int master(int argc, char *argv[])
     gl_data_size[id] = task_comm_size;
   }
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     MSG_get_host_by_name(slavename);
   }
 

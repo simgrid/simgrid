@@ -61,7 +61,6 @@ const char* simcall_names[] = {
   [SIMCALL_PROCESS_KILL] = "SIMCALL_PROCESS_KILL",
   [SIMCALL_PROCESS_KILLALL] = "SIMCALL_PROCESS_KILLALL",
   [SIMCALL_PROCESS_CLEANUP] = "SIMCALL_PROCESS_CLEANUP",
-  [SIMCALL_PROCESS_CHANGE_HOST] = "SIMCALL_PROCESS_CHANGE_HOST",
   [SIMCALL_PROCESS_SUSPEND] = "SIMCALL_PROCESS_SUSPEND",
   [SIMCALL_PROCESS_RESUME] = "SIMCALL_PROCESS_RESUME",
   [SIMCALL_PROCESS_COUNT] = "SIMCALL_PROCESS_COUNT",
@@ -69,6 +68,7 @@ const char* simcall_names[] = {
   [SIMCALL_PROCESS_GET_PPID] = "SIMCALL_PROCESS_GET_PPID",
   [SIMCALL_PROCESS_GET_DATA] = "SIMCALL_PROCESS_GET_DATA",
   [SIMCALL_PROCESS_SET_DATA] = "SIMCALL_PROCESS_SET_DATA",
+  [SIMCALL_PROCESS_SET_HOST] = "SIMCALL_PROCESS_SET_HOST",
   [SIMCALL_PROCESS_GET_HOST] = "SIMCALL_PROCESS_GET_HOST",
   [SIMCALL_PROCESS_GET_NAME] = "SIMCALL_PROCESS_GET_NAME",
   [SIMCALL_PROCESS_IS_SUSPENDED] = "SIMCALL_PROCESS_IS_SUSPENDED",
@@ -362,11 +362,6 @@ case SIMCALL_PROCESS_CLEANUP:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_CHANGE_HOST:
-       simcall_HANDLER_process_change_host(simcall , (smx_process_t) simcall->args[0].dp, (sg_host_t) simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_PROCESS_SUSPEND:
        simcall_HANDLER_process_suspend(simcall , (smx_process_t) simcall->args[0].dp);
        break;  
@@ -398,6 +393,11 @@ case SIMCALL_PROCESS_GET_DATA:
 
 case SIMCALL_PROCESS_SET_DATA:
        SIMIX_process_set_data((smx_process_t) simcall->args[0].dp, simcall->args[1].dp);
+      SIMIX_simcall_answer(simcall);
+      break;  
+
+case SIMCALL_PROCESS_SET_HOST:
+       simcall_HANDLER_process_set_host(simcall , (smx_process_t) simcall->args[0].dp, (sg_host_t) simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

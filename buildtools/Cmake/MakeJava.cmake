@@ -20,7 +20,6 @@ else()
     set_target_properties(simgrid-java PROPERTIES
       INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
   endif()
-  add_dependencies(simgrid-java simgrid)
 
   get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
 endif()

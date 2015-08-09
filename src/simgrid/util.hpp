@@ -1,5 +1,8 @@
 /* Copyright (c) 2015. The SimGrid Team.
- * All rights reserved. */
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #ifndef SIMGRID_UTIL_HTPP
 #define SIMGRID_UTIL_HTPP

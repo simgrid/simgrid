@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
+/* Copyright (c) 2006-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   double rate = -1.0;
   SD_workstation_t w1, w2;
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
 
   /*  xbt_log_control_set("sd.thres=debug"); */

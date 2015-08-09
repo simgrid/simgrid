@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2010, 2013-2014. The SimGrid Team.
+/* Copyright (c) 2007-2010, 2013-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -53,7 +53,7 @@ int master(int argc, char *argv[])
     }
   }
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     workers_count = argc - 4;
     workers = xbt_new0(msg_host_t, workers_count);
 

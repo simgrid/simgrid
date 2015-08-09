@@ -1,6 +1,6 @@
 /* A few basic tests for the graphxml library                               */
 
-/* Copyright (c) 2006-2014. The SimGrid Team.
+/* Copyright (c) 2006-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

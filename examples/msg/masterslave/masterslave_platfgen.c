@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -74,7 +74,7 @@ int master(int argc, char *argv[])
   task_comp_size = 2400000*argc;
   task_comm_size = 1000000;
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     slaves_count = argc;
     slaves = xbt_new0(msg_host_t, slaves_count);
 
@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
   int connected;
   int max_tries = 10;
 
-  //MSG initialisation
+  //MSG initialization
   MSG_init(&argc, argv);
 
   //Set up the seed for the platform generation
