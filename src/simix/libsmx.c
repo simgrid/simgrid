@@ -636,9 +636,9 @@ void simcall_process_cleanup(smx_process_t process)
  * \param process the process to migrate
  * \param dest name of the new host
  */
-void simcall_process_change_host(smx_process_t process, sg_host_t dest)
+void simcall_process_set_host(smx_process_t process, sg_host_t dest)
 {
-  simcall_BODY_process_change_host(process, dest);
+  simcall_BODY_process_set_host(process, dest);
 }
 
 void simcall_process_join(smx_process_t process, double timeout)

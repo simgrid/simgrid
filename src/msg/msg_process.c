@@ -223,7 +223,7 @@ msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
   simdata->m_host = host;
   msg_host_t now = simdata->m_host;
   TRACE_msg_process_change_host(process, now, host);
-  simcall_process_change_host(process, host);
+  simcall_process_set_host(process, host);
   return MSG_OK;
 }
 

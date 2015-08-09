@@ -533,19 +533,6 @@ static inline void simcall_process_cleanup__set__process(smx_simcall_t simcall, 
     simcall->args[0].dp = arg;
 }
 
-static inline smx_process_t simcall_process_change_host__get__process(smx_simcall_t simcall) {
-  return (smx_process_t) simcall->args[0].dp;
-}
-static inline void simcall_process_change_host__set__process(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline sg_host_t simcall_process_change_host__get__dest(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[1].dp;
-}
-static inline void simcall_process_change_host__set__dest(smx_simcall_t simcall, void* arg) {
-    simcall->args[1].dp = arg;
-}
-
 static inline smx_process_t simcall_process_suspend__get__process(smx_simcall_t simcall) {
   return (smx_process_t) simcall->args[0].dp;
 }
@@ -616,6 +603,19 @@ static inline void* simcall_process_set_data__get__data(smx_simcall_t simcall) {
   return  simcall->args[1].dp;
 }
 static inline void simcall_process_set_data__set__data(smx_simcall_t simcall, void* arg) {
+    simcall->args[1].dp = arg;
+}
+
+static inline smx_process_t simcall_process_set_host__get__process(smx_simcall_t simcall) {
+  return (smx_process_t) simcall->args[0].dp;
+}
+static inline void simcall_process_set_host__set__process(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
+static inline sg_host_t simcall_process_set_host__get__dest(smx_simcall_t simcall) {
+  return (sg_host_t) simcall->args[1].dp;
+}
+static inline void simcall_process_set_host__set__dest(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
 
@@ -1939,9 +1939,9 @@ void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t ind_vm);
 void* simcall_HANDLER_process_create(smx_simcall_t simcall, const char* name, xbt_main_func_t code, void* data, const char* hostname, double kill_time, int argc, char** argv, xbt_dict_t properties, int auto_restart);
 void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_process_t process);
 void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
-void simcall_HANDLER_process_change_host(smx_simcall_t simcall, smx_process_t process, sg_host_t dest);
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t process);
 void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_process_t process);
+void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_process_t process, sg_host_t dest);
 void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout);
 void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
 smx_synchro_t simcall_HANDLER_process_execute(smx_simcall_t simcall, const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask);

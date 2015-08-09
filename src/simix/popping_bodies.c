@@ -857,28 +857,6 @@ inline static void simcall_BODY_process_cleanup(smx_process_t process) {
     
   }
   
-inline static void simcall_BODY_process_change_host(smx_process_t process, sg_host_t dest) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_process_change_host(&self->simcall, process, dest);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_PROCESS_CHANGE_HOST;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) process;
-    self->simcall.args[1].dp = (void*) dest;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
-  }
-  
 inline static void simcall_BODY_process_suspend(smx_process_t process) {
     smx_process_t self = SIMIX_process_self();
 
@@ -1017,6 +995,28 @@ inline static void simcall_BODY_process_set_data(smx_process_t process, void* da
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) process;
     self->simcall.args[1].dp = (void*) data;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    
+  }
+  
+inline static void simcall_BODY_process_set_host(smx_process_t process, sg_host_t dest) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) simcall_HANDLER_process_set_host(&self->simcall, process, dest);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_PROCESS_SET_HOST;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) process;
+    self->simcall.args[1].dp = (void*) dest;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
