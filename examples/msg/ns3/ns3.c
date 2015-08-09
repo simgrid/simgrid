@@ -90,7 +90,7 @@ int master(int argc, char *argv[])
     gl_data_size[id] = task_comm_size;
   }
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     MSG_get_host_by_name(slavename);
   }
 

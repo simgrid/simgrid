@@ -11,7 +11,7 @@
 
 int main(int argc, char **argv)
 {
-  /* initialisation of SD */
+  /* SD initialization */
 
   SD_workstation_t w1, w2;
   const SD_workstation_t *workstations;

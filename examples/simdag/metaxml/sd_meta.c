@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   const char *name1, *name2;
   int i, j, k;
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
 
   /*  xbt_log_control_set("sd.thres=debug"); */

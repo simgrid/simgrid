@@ -24,7 +24,7 @@ int main(int argc, char **argv)
   int list_size;
   xbt_os_timer_t timer = xbt_os_timer_new();
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
 
   /* creation of the environment */

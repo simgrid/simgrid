@@ -39,7 +39,7 @@ int master(int argc, char *argv[])
   read = sscanf(argv[3], "%lg", &task_comm_size);
   xbt_assert(read, "Invalid argument %s\n", argv[3]);
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     slaves_count = argc - 4;
     slaves = xbt_new0(msg_host_t, slaves_count);
 

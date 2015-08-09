@@ -57,7 +57,7 @@ int main(int argc, char **argv)
   double final_cost = 5e+9;
   double *ParComp_wcomm2_table;
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
 
   /* creation of the environment */

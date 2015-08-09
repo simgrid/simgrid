@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   const char *value;
   char exist[] = "Hdd";
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
   if (argc < 2) {
     XBT_INFO("Usage: %s platform_file", argv[0]);

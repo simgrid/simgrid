@@ -53,7 +53,7 @@ int master(int argc, char *argv[])
   res = sscanf(argv[3], "%lg", &task_comm_size);
   xbt_assert(res, "Invalid argument %s\n", argv[3]);
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     workers_count = MSG_get_host_number();
     workers = xbt_dynar_to_array(MSG_hosts_as_dynar());
     

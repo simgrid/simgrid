@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   unsigned int cursor;
   SD_task_t task, *dot_as_array=NULL;
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
 
   /* Check our arguments */

@@ -63,7 +63,7 @@ int master(int argc, char *argv[])
     }
   }
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     slaves_count = argc - 4;
     slaves = xbt_new0(msg_host_t, slaves_count);
 
@@ -135,7 +135,7 @@ int forwarder(int argc, char *argv[])
   int slaves_count;
   msg_host_t *slaves;
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     slaves_count = argc - 1;
     slaves = xbt_new0(msg_host_t, slaves_count);
 

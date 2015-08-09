@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   double rate = -1.0;
   SD_workstation_t w1, w2;
 
-  /* initialisation of SD */
+  /* SD initialization */
   SD_init(&argc, argv);
 
   /*  xbt_log_control_set("sd.thres=debug"); */

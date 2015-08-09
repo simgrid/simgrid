@@ -53,7 +53,7 @@ int master(int argc, char *argv[])
     }
   }
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     workers_count = argc - 4;
     workers = xbt_new0(msg_host_t, workers_count);
 

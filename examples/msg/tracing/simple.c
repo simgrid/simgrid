@@ -10,7 +10,7 @@
 
 /** @addtogroup MSG_examples
  * 
- * @section MSG_ex_tracing Tracing and vizualization features
+ * @section MSG_ex_tracing Tracing and vizualisation features
  * 
  * - <b>tracing/simple.c</b> very simple program where each process creates, executes and
  *   destroy a task. You might want to run this program with the following parameters:

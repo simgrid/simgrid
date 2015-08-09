@@ -13,7 +13,7 @@ extern routing_platf_t routing_platf;
 
 int main(int argc, char **argv)
 {
-  /* initialisation of SD */
+  /* SD initialization */
   int size;
   xbt_lib_cursor_t cursor = NULL;
   char *key, *data;

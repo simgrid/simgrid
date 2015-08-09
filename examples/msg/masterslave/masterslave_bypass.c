@@ -187,7 +187,7 @@ int master(int argc, char *argv[])
     }
   }
 
-  {                             /* Process organisation */
+  {                             /* Process organization */
     slaves_count = argc - 4;
     slaves = xbt_new0(msg_host_t, slaves_count);
 
