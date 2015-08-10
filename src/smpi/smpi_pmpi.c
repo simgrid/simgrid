@@ -926,7 +926,6 @@ int persistent_send(MPI_Request *request)
   int retval = 0;
   MPI_Request req = *request;
 
-  smpi_bench_end();
   if (request == NULL || *request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_REQUEST;
   } else {
@@ -956,8 +955,6 @@ int persistent_send(MPI_Request *request)
 #endif
   }
 
-  smpi_bench_begin();
-  
   return retval;
 }
 
@@ -968,8 +965,6 @@ int persistent_recv(MPI_Request *request)
   int retval = 0;
   MPI_Request req = *request;
 
-  smpi_bench_end();
-  
   if (request == NULL || *request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_REQUEST;
   } else {
@@ -998,7 +993,6 @@ int persistent_recv(MPI_Request *request)
 
   }
 
-  smpi_bench_begin();
   return retval;
 }
 
