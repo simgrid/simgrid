@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# This script is used by various build projects on Jenkins
+
+# See https://ci.inria.fr/simgrid/job/SimGrid-Multi/configure
+# See https://ci.inria.fr/simgrid/job/Simgrid-Windows/configure
+
 set -e
 
 # usage: die status message...
