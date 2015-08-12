@@ -6,7 +6,7 @@
 #ifndef SIMGRID_S4U_S4U_H
 #define SIMGRID_S4U_S4U_H
 
-#include "simgrid/s4u/channel.hpp"
+#include "s4u/mailbox.hpp"
 #include "simgrid/s4u/engine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/process.hpp"

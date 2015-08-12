@@ -4,13 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "../../include/simgrid/s4u/mailbox.hpp"
 #include "xbt/log.h"
 #include "msg/msg_private.h"
 #include "msg/msg_mailbox.h"
 
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/process.hpp"
-#include "simgrid/s4u/channel.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_process,"S4U processes");
 
@@ -81,7 +81,7 @@ void s4u::Process::execute(double flops) {
 	simcall_process_execute(NULL,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
 }
 
-char *s4u::Process::recvstr(Channel &chan) {
+char *s4u::Process::recvstr(Mailbox &chan) {
 	char *res=NULL;
 	size_t res_size=sizeof(res);
 
@@ -89,7 +89,7 @@ char *s4u::Process::recvstr(Channel &chan) {
 
     return res;
 }
-void s4u::Process::sendstr(Channel &chan, const char*msg) {
+void s4u::Process::sendstr(Mailbox &chan, const char*msg) {
 	char *msg_cpy=xbt_strdup(msg);
 	smx_synchro_t comm = simcall_comm_isend(p_smx_process, chan.getInferior(), strlen(msg),
 			-1/*rate*/, msg_cpy, sizeof(void *),

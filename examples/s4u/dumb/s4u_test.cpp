@@ -18,7 +18,7 @@ public:
 	int main(int argc, char **argv) {
 		XBT_INFO("Hello s4u, I'm ready to serve");
 
-		char *msg = recvstr(*Channel::byName("worker"));
+		char *msg = recvstr(*Mailbox::byName("worker"));
 		XBT_INFO("I received '%s'",msg);
 		XBT_INFO("I'm done. See you.");
 		return 1;
@@ -32,7 +32,7 @@ public:
 
 	int main(int argc, char **argv) {
 		XBT_INFO("Hello s4u, I have something to send");
-		sendstr(*Channel::byName("worker"),"GaBuZoMeu");
+		sendstr(*Mailbox::byName("worker"),"GaBuZoMeu");
 
 		XBT_INFO("I'm done. See you.");
 		return 1;
