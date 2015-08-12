@@ -13,9 +13,9 @@
 namespace simgrid {
 namespace s4u {
 
-class Process;
+class Actor;
 
-/** @brief Simulated machine that can host some processes
+/** @brief Simulated machine that can host some actors
  *
  * It represents some physical resource with computing and networking capabilities.
  *
@@ -24,7 +24,7 @@ class Process;
  * You cannot create a host yourself.
  *
  * You can retrieve a particular host using @link{simgrid::s4u::Host.byName()},
- * and processes can retrieve the host on which they run using @link{simgrid::s4u::Host.current()}.
+ * and actors can retrieve the host on which they run using @link{simgrid::s4u::Host.current()}.
  */
 class Host {
 private:
@@ -32,18 +32,18 @@ private:
 public:
 	/** Retrieves an host from its name. */
 	static s4u::Host *byName(std::string name);
-	/** Retrieves the host on which the current process is running */
+	/** Retrieves the host on which the current actor is running */
 	static s4u::Host *current();
 
 	const char* getName();
 
-	/** Turn sthat host on if it was previously off
+	/** Turns that host on if it was previously off
 	 *
-	 * All processes on that host which were marked autorestart will be restarted automatically.
+	 * All actors on that host which were marked autorestart will be restarted automatically.
 	 * This call does nothing if the host is already on.
 	 */
 	void turnOn();
-	/** Turns that host off. All processes are forcefully stopped. */
+	/** Turns that host off. All actors are forcefully stopped. */
 	void turnOff();
 	/** Returns if that host is currently up and running */
 	bool isOn();
@@ -55,7 +55,7 @@ public:
 	void* getData() {return p_userdata;}
 
 protected:
-	friend Process;
+	friend Actor;
 	sg_host_t getInferior() {return p_sghost;}
 private:
 	void*p_userdata=NULL;

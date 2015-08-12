@@ -8,7 +8,7 @@
 
 #include <boost/unordered_map.hpp>
 
-#include "simgrid/s4u/process.hpp"
+#include "actor.hpp"
 
 namespace simgrid {
 namespace s4u {
@@ -21,7 +21,7 @@ namespace s4u {
  * sender and receiver.
  */
 class Mailbox {
-	friend Process;
+	friend Actor;
 
 private:
 	Mailbox(const char*name, smx_rdv_t inferior);

@@ -10,10 +10,10 @@ using namespace s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
-class Worker : Process {
+class Worker : Actor {
 public:
 	Worker(const char*procname, Host *host,int argc, char **argv)
-			: s4u::Process(procname,host,argc,argv){}
+			: s4u::Actor(procname,host,argc,argv){}
 
 	int main(int argc, char **argv) {
 		XBT_INFO("Hello s4u, I'm ready to serve");
@@ -25,10 +25,10 @@ public:
 	}
 };
 
-class Master : Process {
+class Master : Actor {
 public:
 	Master(const char*procname, Host *host,int argc, char **argv)
-			: Process(procname,host,argc,argv){}
+			: Actor(procname,host,argc,argv){}
 
 	int main(int argc, char **argv) {
 		XBT_INFO("Hello s4u, I have something to send");

@@ -379,10 +379,10 @@ else()
 endif()
 
 set(S4U_SRC
+  src/s4u/s4u_actor.cpp
   src/s4u/s4u_engine.cpp  
   src/s4u/s4u_host.cpp  
   src/s4u/s4u_mailbox.cpp
-  src/s4u/s4u_process.cpp
 )
 
 set(SIMGRID_SRC
@@ -690,10 +690,10 @@ set(headers_to_install
   include/simgrid/simix.h
   include/simgrid/host.h
   include/simgrid/link.h
+  include/simgrid/s4u/actor.hpp
   include/simgrid/s4u/engine.hpp  
   include/simgrid/s4u/host.hpp  
   include/simgrid/s4u/mailbox.hpp  
-  include/simgrid/s4u/process.hpp
   include/simgrid/s4u.h
   include/smpi/mpi.h
   include/smpi/smpi.h
