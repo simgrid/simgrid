@@ -1,6 +1,6 @@
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
-  ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
+  ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules
   )
 
 # x86_64
@@ -198,7 +198,7 @@ CHECK_FUNCTION_EXISTS(_strdup SIMGRID_HAVE__STRDUP)
 
 #Check if __thread is defined
 execute_process(
-  COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_thread_storage.c"
+  COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_thread_storage.c"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   RESULT_VARIABLE HAVE_thread_storage_run
   )
@@ -287,7 +287,7 @@ if (HAVE_DLFCN_H)
     if(HAVE_DLOPEN_IN_LIBDL)
       set(DL_LIBRARY "-ldl")
     endif(HAVE_DLOPEN_IN_LIBDL)
-    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_gnu_dynlinker.c ${DL_LIBRARY} -o test_gnu_ld
+    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c ${DL_LIBRARY} -o test_gnu_ld
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       OUTPUT_VARIABLE HAVE_GNU_LD_compil
     )
@@ -330,7 +330,7 @@ if(HAVE_PTHREAD)
   ### Test that we have a way to create semaphores
 
   if(HAVE_SEM_OPEN_LIB)
-    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_open.c -lpthread -o sem_open
+    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_open.c -lpthread -o sem_open
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     OUTPUT_VARIABLE HAVE_SEM_OPEN_compil
     )
@@ -374,7 +374,7 @@ if(HAVE_PTHREAD)
   endif()
 
   if(HAVE_SEM_INIT_LIB)
-    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_init.c -lpthread -o sem_init
+    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_init.c -lpthread -o sem_init
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     RESULT_VARIABLE HAVE_SEM_INIT_run OUTPUT_VARIABLE HAVE_SEM_INIT_compil)
 
@@ -422,7 +422,7 @@ if(HAVE_PTHREAD)
   if(HAVE_SEM_TIMEDWAIT_LIB)
 
     execute_process(
-      COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_sem_timedwait.c -lpthread"
+      COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_timedwait.c -lpthread"
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run
       )
@@ -441,7 +441,7 @@ if(HAVE_PTHREAD)
   if(HAVE_MUTEX_TIMEDLOCK_LIB)
 
     execute_process(
-      COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_mutex_timedlock.c -lpthread"
+      COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_mutex_timedlock.c -lpthread"
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       OUTPUT_VARIABLE HAVE_MUTEX_TIMEDLOCK_run
       )
@@ -465,7 +465,7 @@ if(WIN32)
   # We always provide our own implementation of ucontext on Windows.
   try_compile(HAVE_UCONTEXT
     ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c
+    ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_AC_CHECK_MCSC.c
     COMPILE_DEFINITIONS _XBT_WIN32
     INCLUDE_DIRECTORIES
       ${CMAKE_HOME_DIRECTORY}/src/include
@@ -475,7 +475,7 @@ else()
   # We always provide our own implementation of ucontext on Windows.
   try_compile(HAVE_UCONTEXT
     ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_AC_CHECK_MCSC.c)
+    ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_AC_CHECK_MCSC.c)
 endif()
 
 #If can have both context
@@ -575,7 +575,7 @@ if(HAVE_MAKECONTEXT OR WIN32)
   else()
     try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
       ${CMAKE_BINARY_DIR}
-      ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stacksetup.c
+      ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stacksetup.c
       COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
       )
   endif()
@@ -602,7 +602,7 @@ endif()
 if (NOT CMAKE_CROSSCOMPILING)
   try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
     ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_stackgrowth.c
+    ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
     RUN_OUTPUT_VARIABLE stack
     )
 endif()
@@ -643,7 +643,7 @@ set(diff_va "va_copy((d),(s))"
   )
 
 foreach(fct ${diff_va})
-  write_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c" "#include <stdlib.h>
+  write_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_va_copy.c" "#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #define DO_VA_COPY(d,s) ${fct}
@@ -674,7 +674,7 @@ int main(void)
     )
 
   execute_process(
-  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_va_copy.c"
+  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_va_copy.c"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   RESULT_VARIABLE COMPILE_VA_NULL_VAR
   OUTPUT_QUIET
@@ -747,7 +747,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
   else()
     try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
       ${CMAKE_BINARY_DIR}
-      ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_snprintf.c
+      ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_snprintf.c
       )
   endif()
 
@@ -757,7 +757,7 @@ if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
   else()
     try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
       ${CMAKE_BINARY_DIR}
-      ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/test_prog/prog_vsnprintf.c
+      ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_vsnprintf.c
       )
   endif()
 
@@ -808,7 +808,7 @@ configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in"
   "${CMAKE_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
 
 SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
 configure_file("${CMAKE_BINARY_DIR}/src/internal_config.h" "${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
 configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" "${CMAKE_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
 
@@ -1003,4 +1003,4 @@ IF(${ARCH_32_BITS})
 ELSE()
   set(WIN_ARCH "64")
 ENDIF()
-configure_file("${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/src/simgrid.nsi.in" "${CMAKE_BINARY_DIR}/simgrid.nsi" @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/simgrid.nsi.in" "${CMAKE_BINARY_DIR}/simgrid.nsi" @ONLY IMMEDIATE)

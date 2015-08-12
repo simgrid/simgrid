@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.pl"
   "${CMAKE_BINARY_DIR}/bin/tesh" @ONLY IMMEDIATE)
 
-    file(COPY        ${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Scripts/Diff.pm
+    file(COPY        ${CMAKE_HOME_DIRECTORY}/tools/cmake/Scripts/Diff.pm
          DESTINATION ${CMAKE_BINARY_DIR}/bin
          FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
                           GROUP_EXECUTE GROUP_READ)

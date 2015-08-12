@@ -4,7 +4,7 @@
 # TO CALL THIS FILE USE
 #set(CMAKE_MODULE_PATH
 #${CMAKE_MODULE_PATH}
-#${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Modules
+#${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules
 #)
 
 find_library(HAVE_SIMGRID_LIB

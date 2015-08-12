@@ -191,7 +191,7 @@ __asm__ (
 
 
 /* If you implement raw contexts for other processors, don't forget to
-   update the definition of HAVE_RAWCTX in buildtools/Cmake/CompleteInFiles.cmake */
+   update the definition of HAVE_RAWCTX in tools/cmake/CompleteInFiles.cmake */
 
 raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                             rawctx_entry_point_t entry_point, void* arg) {

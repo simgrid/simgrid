@@ -324,7 +324,7 @@ void ETag_surfxml_include(void) {
 
 /** @brief When reaching EOF, check whether we are in an include tag, and behave accordingly if yes
  *
- * This function is called automatically by sedding the parser in buildtools/Cmake/MaintainerMode.cmake
+ * This function is called automatically by sedding the parser in tools/cmake/MaintainerMode.cmake
  * Every FAIL on "Premature EOF" is preceded by a call to this function, which role is to restore the
  * previous buffer if we reached the EOF /of an include file/. Its return code is used to avoid the
  * error message in that case.

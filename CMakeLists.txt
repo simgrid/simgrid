@@ -8,7 +8,7 @@ project(SimGrid C)
 
 ## 
 ## Check the C/C++ standard that we need
-##   See also buildtools/Cmake/Flags.cmake that sets our paranoid warning flags
+##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
 
 enable_language(CXX)
 
@@ -252,53 +252,53 @@ endif()
 include_directories(${INCLUDES})
 
 ### Setup Options
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Option.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
 
 ### Make the *.h files with *.h.in files
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CompleteInFiles.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CompleteInFiles.cmake)
 
 ### Define source packages for Libs
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/DefinePackages.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
 
 ### Build some Maintainer files
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MaintainerMode.cmake)
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/UnitTesting.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/UnitTesting.cmake)
 
 ### Setup gcc flags
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Flags.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
 
 ### Make Libs
 if(NOT WIN32)
-  include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeLib.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeLib.cmake)
 else()
-  include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeLibWin.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeLibWin.cmake)
 endif()
 
 ### Make Exes
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeExe.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeExe.cmake)
 
 ### Make tests
 if(enable_memcheck_xml)
   set(enable_memcheck true)
 endif()
 
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/AddTests.cmake)
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestConfig.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/AddTests.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestConfig.cmake)
 
 ### Setup the distrib
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Distrib.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
 
 ### Pipol compilation
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/Pipol.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Pipol.cmake)
 
 ### Build the doc
 if(NOT WIN32)
-  include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDoc.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GenerateDoc.cmake)
 else()
-  include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/GenerateDocWin.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GenerateDocWin.cmake)
 endif()
 
 ### Print ARGS
-include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/PrintArgs.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/PrintArgs.cmake)
 
 INCLUDE(Dart)
