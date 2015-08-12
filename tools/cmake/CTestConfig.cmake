@@ -56,4 +56,4 @@ if(enable_coverage)
     endif()
 endif()
 
-CONFIGURE_FILE(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
+CONFIGURE_FILE(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)

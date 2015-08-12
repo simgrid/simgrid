@@ -30,7 +30,11 @@ done
 
 cd $WORKSPACE/build
 
-cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON -Denable_smpi=ON  -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck_xml=ON $WORKSPACE
+cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON \
+      -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF \
+      -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF -Denable_mallocators=OFF \
+      -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_model-checking=OFF \
+      -Denable_memcheck_xml=ON $WORKSPACE
 make
 
 ctest -D ExperimentalStart || true
@@ -46,7 +50,11 @@ fi
 
 make clean
 
-cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF -Denable_model-checking=OFF -Denable_latency_bound_tracking=OFF -Denable_gtnets=OFF -Denable_jedule=OFF -Denable_mallocators=OFF -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_coverage=ON $WORKSPACE
+cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON \
+      -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF \
+      -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF -Denable_mallocators=OFF \
+      -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_model-checking=OFF  \
+      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_coverage=ON $WORKSPACE
 
 make
 ctest -D ExperimentalStart || true

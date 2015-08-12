@@ -2,7 +2,7 @@
 #>gcc c:\simgrid-trunk\examples\msg\icomms\peer.c -static -Lc:\simgrid-trunk\lib -lsimgrid -Ic:\simgrid-trunk\include -lwsock32
 
 if(enable_java)
-  include(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/MakeJava.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeJava.cmake)
 endif()
 
 add_library(simgrid SHARED ${simgrid_sources})

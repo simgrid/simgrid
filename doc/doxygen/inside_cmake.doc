@@ -23,7 +23,7 @@ reports.
 
 \section inside_cmake_addsrc How to add source files?
 
-If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake.
+If you want modified, add or delete source files from a library you have to edit <project/directory>/tools/cmake/DefinePackages.cmake.
 Chose the section you are interested in and modify it.
 
 \verbatim
@@ -124,12 +124,12 @@ set(txt_files
 \endverbatim
 
 Then, you have to follow these steps:
-\li Add the following line to <project/directory>/buildtools/Cmake/MakeExe.cmake:
+\li Add the following line to <project/directory>/tools/cmake/MakeExe.cmake:
 \verbatim
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
 \endverbatim
 
-\li Add your CMakeLists.txt to CMAKE_SOURCE_FILES in <project/directory>/buildtools/Cmake/DefinePackages.cmake:
+\li Add your CMakeLists.txt to CMAKE_SOURCE_FILES in <project/directory>/tools/cmake/DefinePackages.cmake:
 \verbatim
 set(CMAKE_SOURCE_FILES
   CMakeLists.txt
@@ -150,7 +150,7 @@ not forget to add any file to the distributed archives.
 
 If you want to test a specific function or set of functions, you need
 a unit test. Edit
-<project/directory>/buildtools/Cmake/UnitTesting.cmake to add your
+<project/directory>/tools/cmake/UnitTesting.cmake to add your
 source file to the TEST_CFILES list, and add the corresponding unit
 file to the TEST_UNITS list. For example, if your file is toto.c,
 your unit file will be toto_unit.c. The full path to your file must be
@@ -207,7 +207,7 @@ machine.
 
 Then you have to request cmake to run your test when "ctest" is
 launched. For that, you have to modify source
-<project/directory>/buildtools/Cmake/AddTests.cmake. Make sure to pick
+<project/directory>/tools/cmake/AddTests.cmake. Make sure to pick
 a wise name for your test. It is often useful to check a category of
 tests together. The only way to do so in ctest is to use the -R
 argument that specifies a regular expression that the test names must

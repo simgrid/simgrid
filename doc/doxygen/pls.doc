@@ -59,7 +59,7 @@ $ ctest -R ns3
 
 If you have a NS3 version that is not known (yet) to SimGrid, the
 detection may fail. In that case, edit  the file
-buildtools/Cmake/Modules/FindNS3.cmake in your SimGrid tree. The
+tools/cmake/Modules/FindNS3.cmake in your SimGrid tree. The
 required changes are very easy, and documented at the beginning of
 this file.
 

@@ -594,5 +594,5 @@ IF(enable_auto_install)
 ENDIF()
 
 IF(enable_memcheck)
-  INCLUDE(${CMAKE_HOME_DIRECTORY}/buildtools/Cmake/memcheck_tests.cmake)
+  INCLUDE(${CMAKE_HOME_DIRECTORY}/tools/cmake/memcheck_tests.cmake)
 ENDIF()
