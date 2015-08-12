@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../../include/simgrid/s4u/actor.hpp"
-#include "../../include/simgrid/s4u/mailbox.hpp"
+#include "simgrid/s4u/actor.hpp"
+#include "simgrid/s4u/mailbox.hpp"
 #include "xbt/log.h"
 #include "msg/msg_private.h"
 #include "msg/msg_mailbox.h"

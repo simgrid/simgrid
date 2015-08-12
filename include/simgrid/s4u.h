@@ -8,7 +8,7 @@
 
 #include "s4u/actor.hpp"
 #include "s4u/mailbox.hpp"
-#include "simgrid/s4u/engine.hpp"
-#include "simgrid/s4u/host.hpp"
+#include "s4u/engine.hpp"
+#include "s4u/host.hpp"
 
 #endif /* SIMGRID_S4U_S4U_H */

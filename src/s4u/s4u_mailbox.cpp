@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../../include/simgrid/s4u/mailbox.hpp"
 #include "xbt/log.h"
 #include "msg/msg_private.h"
 #include "msg/msg_mailbox.h"
 
+#include "simgrid/s4u/mailbox.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_channel,"S4U Communication Mailboxes");
 
