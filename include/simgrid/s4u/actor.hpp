@@ -11,6 +11,7 @@
 namespace simgrid {
 namespace s4u {
 
+class Comm;
 class Host;
 class Mailbox;
 
@@ -39,6 +40,7 @@ class Mailbox;
  *
  */
 class Actor {
+	friend Comm;
 public:
 	Actor(const char*name, s4u::Host *host, int argc, char **argv);
 	Actor(const char*name, s4u::Host *host, int argc, char **argv, double killTime);
@@ -89,6 +91,9 @@ public:
 
 	/** Block the actor until it delivers a string message (that will be copied) to the given mailbox */
 	void sendstr(Mailbox &chan, const char*msg);
+
+	/** Creates (but don't start) an async send action */
+	Comm &send_init(Mailbox &chan);
 
 protected:
 	smx_process_t getInferior() {return p_smx_process;}

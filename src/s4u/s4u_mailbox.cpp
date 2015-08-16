@@ -10,7 +10,8 @@
 
 #include "simgrid/s4u/mailbox.hpp"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_channel,"S4U Communication Mailboxes");
+XBT_LOG_EXTERNAL_CATEGORY(s4u);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
 
 
 using namespace simgrid;

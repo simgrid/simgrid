@@ -4,13 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/actor.hpp"
-#include "simgrid/s4u/mailbox.hpp"
 #include "xbt/log.h"
 #include "msg/msg_private.h"
 #include "msg/msg_mailbox.h"
 
+#include "simgrid/s4u/actor.hpp"
+#include "simgrid/s4u/comm.hpp"
 #include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/mailbox.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
 
@@ -85,15 +86,18 @@ char *s4u::Actor::recvstr(Mailbox &chan) {
 	char *res=NULL;
 	size_t res_size=sizeof(res);
 
+
 	simcall_comm_recv(chan.getInferior(),&res,&res_size,NULL,NULL,NULL,-1 /* timeout */,-1 /*rate*/);
 
     return res;
 }
 void s4u::Actor::sendstr(Mailbox &chan, const char*msg) {
-	char *msg_cpy=xbt_strdup(msg);
-	smx_synchro_t comm = simcall_comm_isend(p_smx_process, chan.getInferior(), strlen(msg),
-			-1/*rate*/, msg_cpy, sizeof(void *),
-			NULL, NULL, NULL,NULL/*data*/, 0);
-	simcall_comm_wait(comm, -1/*timeout*/);
+	Comm c = Comm::send_init(this,chan);
+	c.setRemains(strlen(msg));
+	c.setSrcData(xbt_strdup(msg),sizeof(char*));
+	c.wait();
 }
 
+s4u::Comm &s4u::Actor::send_init(Mailbox &chan) {
+	return s4u::Comm::send_init(this, chan);
+}

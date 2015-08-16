@@ -13,6 +13,8 @@
 namespace simgrid {
 namespace s4u {
 
+class Comm;
+
 /** @brief Mailboxes
  *
  * Rendez-vous point for network communications, similar to URLs on which you could post and retrieve data.
@@ -21,7 +23,8 @@ namespace s4u {
  * sender and receiver.
  */
 class Mailbox {
-	friend Actor;
+	friend Actor; // FIXME: remove it when recv async exist
+	friend Comm;
 
 private:
 	Mailbox(const char*name, smx_rdv_t inferior);
