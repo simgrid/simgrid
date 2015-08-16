@@ -34,14 +34,6 @@ int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host);
 smx_synchro_t SIMIX_rdv_get_head(smx_rdv_t rdv);
 void SIMIX_rdv_set_receiver(smx_rdv_t rdv, smx_process_t proc);
 smx_process_t SIMIX_rdv_get_receiver(smx_rdv_t rdv);
-smx_synchro_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
-                              double task_size, double rate,
-                              void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *, smx_synchro_t),
-                              void (*clean_fun)(void *), // used to free the synchro in case of problem after a detached send
-                              void (*copy_data_fun)(smx_synchro_t, void*, size_t),
-                              void *data,
-                              int detached);
 smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*)(void *, void *, smx_synchro_t),
