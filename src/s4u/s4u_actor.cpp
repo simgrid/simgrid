@@ -83,13 +83,13 @@ void s4u::Actor::execute(double flops) {
 }
 
 char *s4u::Actor::recvstr(Mailbox &chan) {
-	char *res=NULL;
-	size_t res_size=sizeof(res);
+	void *res=NULL;
 
+	Comm c = Comm::recv_init(chan);
+	c.setDstData(&res,sizeof(res));
+	c.wait();
 
-	simcall_comm_recv(chan.getInferior(),&res,&res_size,NULL,NULL,NULL,-1 /* timeout */,-1 /*rate*/);
-
-    return res;
+    return (char*)res;
 }
 void s4u::Actor::sendstr(Mailbox &chan, const char*msg) {
 	Comm c = Comm::send_init(this,chan);

@@ -24,6 +24,12 @@ s4u::Comm &s4u::Comm::send_init(s4u::Actor *sender, s4u::Mailbox &chan) {
 
 	return *res;
 }
+s4u::Comm &s4u::Comm::recv_init(s4u::Mailbox &chan) {
+	s4u::Comm *res = new s4u::Comm();
+	res->p_mailbox = &chan;
+
+	return *res;
+}
 
 void s4u::Comm::setRate(double rate) {
 	xbt_assert(p_state==inited);
@@ -32,6 +38,7 @@ void s4u::Comm::setRate(double rate) {
 
 void s4u::Comm::setSrcData(void * buff) {
 	xbt_assert(p_state==inited);
+	xbt_assert(p_dstBuff == NULL, "Cannot set the src and dst buffers at the same time");
 	p_srcBuff = buff;
 }
 void s4u::Comm::setSrcDataSize(size_t size){
@@ -41,17 +48,43 @@ void s4u::Comm::setSrcDataSize(size_t size){
 void s4u::Comm::setSrcData(void * buff, size_t size) {
 	xbt_assert(p_state==inited);
 
+	xbt_assert(p_dstBuff == NULL, "Cannot set the src and dst buffers at the same time");
 	p_srcBuff = buff;
 	p_srcBuffSize = size;
+}
+void s4u::Comm::setDstData(void ** buff) {
+	xbt_assert(p_state==inited);
+	xbt_assert(p_srcBuff == NULL, "Cannot set the src and dst buffers at the same time");
+	p_dstBuff = buff;
+}
+size_t s4u::Comm::getDstDataSize(){
+	xbt_assert(p_state==finished);
+	return p_dstBuffSize;
+}
+void s4u::Comm::setDstData(void ** buff, size_t size) {
+	xbt_assert(p_state==inited);
+
+	xbt_assert(p_srcBuff == NULL, "Cannot set the src and dst buffers at the same time");
+	p_dstBuff = buff;
+	p_dstBuffSize = size;
 }
 
 void s4u::Comm::start() {
 	xbt_assert(p_state == inited);
 
-	p_inferior = simcall_comm_isend(p_sender->getInferior(), p_mailbox->getInferior(), p_remains, p_rate,
-			p_srcBuff, p_srcBuffSize,
-			p_matchFunction, p_cleanFunction, p_copyDataFunction,
-			p_userData, p_detached);
+	if (p_srcBuff != NULL) { // Sender side
+		p_inferior = simcall_comm_isend(p_sender->getInferior(), p_mailbox->getInferior(), p_remains, p_rate,
+				p_srcBuff, p_srcBuffSize,
+				p_matchFunction, p_cleanFunction, p_copyDataFunction,
+				p_userData, p_detached);
+	} else if (p_dstBuff != NULL) { // Receiver side
+		p_inferior = simcall_comm_irecv(p_mailbox->getInferior(), p_dstBuff, &p_dstBuffSize,
+				p_matchFunction, p_copyDataFunction,
+				p_userData, p_rate);
+
+	} else {
+		xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
+	}
 	p_state = started;
 }
 void s4u::Comm::wait() {
@@ -59,20 +92,41 @@ void s4u::Comm::wait() {
 
 	if (p_state == started)
 		simcall_comm_wait(p_inferior, -1/*timeout*/);
-	else // p_state == inited
-		/* Save a simcall and do directly a blocking send */
-		simcall_comm_send(p_sender->getInferior(), p_mailbox->getInferior(), p_remains, p_rate,
-				p_srcBuff, p_srcBuffSize,
-				p_matchFunction, p_copyDataFunction,
-				p_userData, p_detached);
+	else {// p_state == inited. Save a simcall and do directly a blocking send/recv
+		if (p_srcBuff != NULL) {
+			simcall_comm_send(p_sender->getInferior(), p_mailbox->getInferior(), p_remains, p_rate,
+					p_srcBuff, p_srcBuffSize,
+					p_matchFunction, p_copyDataFunction,
+					p_userData, -1 /*timeout*/);
+		} else {
+			simcall_comm_recv(p_mailbox->getInferior(), p_dstBuff, &p_dstBuffSize,
+					p_matchFunction, p_copyDataFunction,
+					p_userData, -1/*timeout*/, p_rate);
+		}
+	}
 	p_state = finished;
 }
 void s4u::Comm::wait(double timeout) {
 	xbt_assert(p_state == started || p_state == inited);
 
-	if (p_state == inited)
-		start();
-	simcall_comm_wait(p_inferior, timeout);
+	if (p_state == started) {
+		simcall_comm_wait(p_inferior, timeout);
+		p_state = finished;
+		return;
+	}
+
+	// It's not started yet. Do it in one simcall
+	if (p_srcBuff != NULL) {
+		simcall_comm_send(p_sender->getInferior(), p_mailbox->getInferior(), p_remains, p_rate,
+				p_srcBuff, p_srcBuffSize,
+				p_matchFunction, p_copyDataFunction,
+				p_userData, timeout);
+	} else { // Receiver
+		simcall_comm_recv(p_mailbox->getInferior(), p_dstBuff, &p_dstBuffSize,
+				p_matchFunction, p_copyDataFunction,
+				p_userData, timeout, p_rate);
+	}
+	p_state = finished;
 }
 
 s4u::Comm &s4u::Comm::send_async(s4u::Actor *sender, Mailbox &dest, void *data, int simulatedSize) {

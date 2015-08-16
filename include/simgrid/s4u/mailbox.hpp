@@ -23,7 +23,6 @@ class Comm;
  * sender and receiver.
  */
 class Mailbox {
-	friend Actor; // FIXME: remove it when recv async exist
 	friend Comm;
 
 private:

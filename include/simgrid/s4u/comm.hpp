@@ -30,7 +30,7 @@ public:
 	/** Creates and start an async send to the mailbox #dest */
 	static Comm &send_async(s4u::Actor *sender, Mailbox &dest, void *data, int simulatedByteAmount);
     /** Creates (but don't start) an async recv onto the mailbox #from */
-	//static Comm &recv_init(Mailbox &from);
+	static Comm &recv_init(Mailbox &from);
 	/** Creates and start an async recv to the mailbox #from */
 	//static Comm &recv_async(Mailbox &from, void *data);
 
@@ -45,6 +45,8 @@ public:
 	void setRate(double rate);
 
 private:
+	void *p_dstBuff = NULL;
+	size_t p_dstBuffSize = 0;
 	void *p_srcBuff = NULL;
 	size_t p_srcBuffSize = sizeof(void*);
 public:
@@ -54,6 +56,14 @@ public:
 	void setSrcDataSize(size_t size);
 	/** Specify the data to send and its size */
 	void setSrcData(void * buff, size_t size);
+
+	/** Specify where to receive the data */
+	void setDstData(void ** buff);
+	/** Specify the buffer in which the data should be received */
+	void setDstData(void ** buff, size_t size);
+	/** Retrieve the size of the received data */
+	size_t getDstDataSize();
+
 
 private: /* FIXME: expose these elements in the API */
 	int p_detached = 0;
