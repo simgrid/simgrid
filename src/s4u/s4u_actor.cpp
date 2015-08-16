@@ -78,8 +78,9 @@ void s4u::Actor::sleep(double duration) {
 	simcall_process_sleep(duration);
 }
 
-void s4u::Actor::execute(double flops) {
-	simcall_process_execute(NULL,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
+e_smx_state_t s4u::Actor::execute(double flops) {
+	smx_synchro_t s = simcall_process_execute(NULL,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
+    return simcall_process_execution_wait(s);
 }
 
 void *s4u::Actor::recv(Mailbox &chan) {

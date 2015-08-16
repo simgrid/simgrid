@@ -81,7 +81,7 @@ public:
 	void sleep(double duration);
 
 	/** Block the actor, computing the given amount of flops */
-	void execute(double flop);
+	e_smx_state_t execute(double flop);
 
 	/** Block the actor until it gets a message from the given mailbox */
 	void *recv(Mailbox &chan);
