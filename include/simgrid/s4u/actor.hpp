@@ -84,10 +84,7 @@ public:
 	void execute(double flop);
 
 	/** Block the actor until it gets a message from the given mailbox */
-	//void* recv(const char *mailbox);
-
-	/** Block the actor until it gets a string message (to be freed after use) from the given mailbox */
-	char *recvstr(Mailbox &chan);
+	void *recv(Mailbox &chan);
 
 	/** Block the actor until it delivers a string message (that will be copied) to the given mailbox */
 	void sendstr(Mailbox &chan, const char*msg);

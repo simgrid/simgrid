@@ -82,14 +82,14 @@ void s4u::Actor::execute(double flops) {
 	simcall_process_execute(NULL,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
 }
 
-char *s4u::Actor::recvstr(Mailbox &chan) {
+void *s4u::Actor::recv(Mailbox &chan) {
 	void *res=NULL;
 
 	Comm c = Comm::recv_init(this, chan);
 	c.setDstData(&res,sizeof(res));
 	c.wait();
 
-    return (char*)res;
+    return res;
 }
 void s4u::Actor::sendstr(Mailbox &chan, const char*msg) {
 	Comm c = Comm::send_init(this,chan);
