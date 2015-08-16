@@ -386,7 +386,7 @@ void smpi_mpi_start(MPI_Request request)
     request->real_size=request->size;
     smpi_datatype_use(request->old_type);
     smpi_comm_use(request->comm);
-    request->action = simcall_comm_irecv(mailbox, request->buf,
+    request->action = simcall_comm_irecv(SIMIX_process_self(), mailbox, request->buf,
                                          &request->real_size, &match_recv,
                                          !smpi_process_get_replaying()? &smpi_comm_copy_buffer_callback
                                          : &smpi_comm_null_copy_buffer_callback,

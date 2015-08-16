@@ -418,25 +418,25 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
   return (detached ? NULL : other_synchro);
 }
 
-void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
+void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_rdv_t rdv,
                          void *dst_buff, size_t *dst_buff_size,
                          int (*match_fun)(void *, void *, smx_synchro_t),
                          void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                          void *data, double timeout, double rate)
 {
-  smx_synchro_t comm = SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff,
+  smx_synchro_t comm = SIMIX_comm_irecv(receiver, rdv, dst_buff,
 		                       dst_buff_size, match_fun, copy_data_fun, data, rate);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 
-smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
+smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_rdv_t rdv,
                                   void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_synchro_t),
                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),
 				  void *data, double rate)
 {
-  return SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff, dst_buff_size,
+  return SIMIX_comm_irecv(receiver, rdv, dst_buff, dst_buff_size,
 		          match_fun, copy_data_fun, data, rate);
 }
 

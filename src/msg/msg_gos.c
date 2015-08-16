@@ -586,7 +586,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name,
   comm->task_sent = NULL;
   comm->task_received = task;
   comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv(rdv, task, NULL, NULL, NULL, NULL, rate);
+  comm->s_comm = simcall_comm_irecv(MSG_process_self(), rdv, task, NULL, NULL, NULL, NULL, rate);
 
   return comm;
 }

@@ -1598,17 +1598,17 @@ inline static smx_synchro_t simcall_BODY_comm_iprobe(smx_rdv_t rdv, int type, in
     return self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_comm_send(smx_process_t src, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) {
+inline static void simcall_BODY_comm_send(smx_process_t sender, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_comm_send(&self->simcall, src, rdv, task_size, rate, src_buff, src_buff_size, match_fun, copy_data_fun, data, timeout);
+    if (0) simcall_HANDLER_comm_send(&self->simcall, sender, rdv, task_size, rate, src_buff, src_buff_size, match_fun, copy_data_fun, data, timeout);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_COMM_SEND;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) src;
+    self->simcall.args[0].dp = (void*) sender;
     self->simcall.args[1].dp = (void*) rdv;
     self->simcall.args[2].d = (double) task_size;
     self->simcall.args[3].d = (double) rate;
@@ -1628,17 +1628,17 @@ inline static void simcall_BODY_comm_send(smx_process_t src, smx_rdv_t rdv, doub
     
   }
   
-inline static smx_synchro_t simcall_BODY_comm_isend(smx_process_t src, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached) {
+inline static smx_synchro_t simcall_BODY_comm_isend(smx_process_t sender, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_comm_isend(&self->simcall, src, rdv, task_size, rate, src_buff, src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
+    if (0) simcall_HANDLER_comm_isend(&self->simcall, sender, rdv, task_size, rate, src_buff, src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_COMM_ISEND;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) src;
+    self->simcall.args[0].dp = (void*) sender;
     self->simcall.args[1].dp = (void*) rdv;
     self->simcall.args[2].d = (double) task_size;
     self->simcall.args[3].d = (double) rate;
@@ -1659,24 +1659,25 @@ inline static smx_synchro_t simcall_BODY_comm_isend(smx_process_t src, smx_rdv_t
     return self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_comm_recv(smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate) {
+inline static void simcall_BODY_comm_recv(smx_process_t receiver, smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_comm_recv(&self->simcall, rdv, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, timeout, rate);
+    if (0) simcall_HANDLER_comm_recv(&self->simcall, receiver, rdv, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, timeout, rate);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_COMM_RECV;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) rdv;
-    self->simcall.args[1].dp = (void*) dst_buff;
-    self->simcall.args[2].dp = (void*) dst_buff_size;
-    self->simcall.args[3].fp = (FPtr) match_fun;
-    self->simcall.args[4].fp = (FPtr) copy_data_fun;
-    self->simcall.args[5].dp = (void*) data;
-    self->simcall.args[6].d = (double) timeout;
-    self->simcall.args[7].d = (double) rate;
+    self->simcall.args[0].dp = (void*) receiver;
+    self->simcall.args[1].dp = (void*) rdv;
+    self->simcall.args[2].dp = (void*) dst_buff;
+    self->simcall.args[3].dp = (void*) dst_buff_size;
+    self->simcall.args[4].fp = (FPtr) match_fun;
+    self->simcall.args[5].fp = (FPtr) copy_data_fun;
+    self->simcall.args[6].dp = (void*) data;
+    self->simcall.args[7].d = (double) timeout;
+    self->simcall.args[8].d = (double) rate;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
@@ -1687,23 +1688,24 @@ inline static void simcall_BODY_comm_recv(smx_rdv_t rdv, void* dst_buff, size_t*
     
   }
   
-inline static smx_synchro_t simcall_BODY_comm_irecv(smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate) {
+inline static smx_synchro_t simcall_BODY_comm_irecv(smx_process_t receiver, smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_comm_irecv(&self->simcall, rdv, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
+    if (0) simcall_HANDLER_comm_irecv(&self->simcall, receiver, rdv, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
     /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
 
     self->simcall.call = SIMCALL_COMM_IRECV;
     memset(&self->simcall.result, 0, sizeof(self->simcall.result));
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) rdv;
-    self->simcall.args[1].dp = (void*) dst_buff;
-    self->simcall.args[2].dp = (void*) dst_buff_size;
-    self->simcall.args[3].fp = (FPtr) match_fun;
-    self->simcall.args[4].fp = (FPtr) copy_data_fun;
-    self->simcall.args[5].dp = (void*) data;
-    self->simcall.args[6].d = (double) rate;
+    self->simcall.args[0].dp = (void*) receiver;
+    self->simcall.args[1].dp = (void*) rdv;
+    self->simcall.args[2].dp = (void*) dst_buff;
+    self->simcall.args[3].dp = (void*) dst_buff_size;
+    self->simcall.args[4].fp = (FPtr) match_fun;
+    self->simcall.args[5].fp = (FPtr) copy_data_fun;
+    self->simcall.args[6].dp = (void*) data;
+    self->simcall.args[7].d = (double) rate;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
