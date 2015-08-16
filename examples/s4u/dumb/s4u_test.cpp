@@ -31,8 +31,9 @@ public:
 			: Actor(procname,host,argc,argv){}
 
 	int main(int argc, char **argv) {
+		const char *msg = "GaBuZoMeu";
 		XBT_INFO("Hello s4u, I have something to send");
-		sendstr(*Mailbox::byName("worker"),"GaBuZoMeu");
+		send(*Mailbox::byName("worker"), xbt_strdup(msg), strlen(msg));
 
 		XBT_INFO("I'm done. See you.");
 		return 1;

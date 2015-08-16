@@ -86,8 +86,8 @@ public:
 	/** Block the actor until it gets a message from the given mailbox */
 	void *recv(Mailbox &chan);
 
-	/** Block the actor until it delivers a string message (that will be copied) to the given mailbox */
-	void sendstr(Mailbox &chan, const char*msg);
+	/** Block the actor until it delivers a message of the given simulated size to the given mailbox */
+	void send(Mailbox &chan, void*payload, size_t simulatedSize);
 
 	/** Creates (but don't start) an async send action */
 	Comm &send_init(Mailbox &chan);

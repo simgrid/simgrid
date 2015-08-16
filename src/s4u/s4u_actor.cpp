@@ -91,10 +91,10 @@ void *s4u::Actor::recv(Mailbox &chan) {
 
     return res;
 }
-void s4u::Actor::sendstr(Mailbox &chan, const char*msg) {
+void s4u::Actor::send(Mailbox &chan, void *payload, size_t simulatedSize) {
 	Comm c = Comm::send_init(this,chan);
-	c.setRemains(strlen(msg));
-	c.setSrcData(xbt_strdup(msg),sizeof(char*));
+	c.setRemains(simulatedSize);
+	c.setSrcData(payload);
 	c.wait();
 }
 
