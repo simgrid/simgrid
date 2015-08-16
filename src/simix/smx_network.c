@@ -335,31 +335,19 @@ void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_rdv
                                   int (*match_fun)(void *, void *,smx_synchro_t),
                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),
 				  void *data, double timeout){
-  smx_synchro_t comm = SIMIX_comm_isend(src, rdv, task_size, rate,
+  smx_synchro_t comm = simcall_HANDLER_comm_isend(simcall, src, rdv, task_size, rate,
 		                       src_buff, src_buff_size, match_fun, NULL, copy_data_fun,
 				       data, 0);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
-smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src, smx_rdv_t rdv,
+smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src_proc, smx_rdv_t rdv,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_synchro_t),
-                                  void (*clean_fun)(void *),
-                                  void (*copy_data_fun)(smx_synchro_t, void*, size_t),
-				  void *data, int detached){
-  return SIMIX_comm_isend(src, rdv, task_size, rate, src_buff,
-		          src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
-
-}
-smx_synchro_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
-                              double task_size, double rate,
-                              void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *,smx_synchro_t),
-                              void (*clean_fun)(void *), // used to free the synchro in case of problem after a detached send
-                              void (*copy_data_fun)(smx_synchro_t, void*, size_t), // used to copy data if not default one
-                              void *data,
-                              int detached)
+                                  void (*clean_fun)(void *), // used to free the synchro in case of problem after a detached send
+                                  void (*copy_data_fun)(smx_synchro_t, void*, size_t),// used to copy data if not default one
+				                  void *data, int detached)
 {
   XBT_DEBUG("send from %p", rdv);
 
@@ -430,25 +418,25 @@ smx_synchro_t SIMIX_comm_isend(smx_process_t src_proc, smx_rdv_t rdv,
   return (detached ? NULL : other_synchro);
 }
 
-void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_rdv_t rdv,
+void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_rdv_t rdv,
                          void *dst_buff, size_t *dst_buff_size,
                          int (*match_fun)(void *, void *, smx_synchro_t),
                          void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                          void *data, double timeout, double rate)
 {
-  smx_synchro_t comm = SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff,
+  smx_synchro_t comm = SIMIX_comm_irecv(receiver, rdv, dst_buff,
 		                       dst_buff_size, match_fun, copy_data_fun, data, rate);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 
-smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_rdv_t rdv,
+smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_rdv_t rdv,
                                   void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_synchro_t),
                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),
 				  void *data, double rate)
 {
-  return SIMIX_comm_irecv(simcall->issuer, rdv, dst_buff, dst_buff_size,
+  return SIMIX_comm_irecv(receiver, rdv, dst_buff, dst_buff_size,
 		          match_fun, copy_data_fun, data, rate);
 }
 

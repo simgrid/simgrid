@@ -417,14 +417,14 @@ XBT_PUBLIC(xbt_dict_t) SIMIX_get_rdv_points(void);
 
 /***** Communication simcalls *****/
 
-XBT_PUBLIC(void) simcall_comm_send(smx_process_t src, smx_rdv_t rdv, double task_size,
+XBT_PUBLIC(void) simcall_comm_send(smx_process_t sender, smx_rdv_t rdv, double task_size,
                                      double rate, void *src_buff,
                                      size_t src_buff_size,
                                      int (*match_fun)(void *, void *, smx_synchro_t),
                                      void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                      void *data, double timeout);
 
-XBT_PUBLIC(smx_synchro_t) simcall_comm_isend(smx_process_t src, smx_rdv_t rdv, 
+XBT_PUBLIC(smx_synchro_t) simcall_comm_isend(smx_process_t sender, smx_rdv_t rdv,
                                               double task_size,
                                               double rate, void *src_buff,
                                               size_t src_buff_size,
@@ -433,13 +433,13 @@ XBT_PUBLIC(smx_synchro_t) simcall_comm_isend(smx_process_t src, smx_rdv_t rdv,
                                               void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                               void *data, int detached);
 
-XBT_PUBLIC(void) simcall_comm_recv(smx_rdv_t rdv, void *dst_buff,
+XBT_PUBLIC(void) simcall_comm_recv(smx_process_t receiver, smx_rdv_t rdv, void *dst_buff,
                                    size_t * dst_buff_size,
                                    int (*match_fun)(void *, void *, smx_synchro_t),
                                    void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                    void *data, double timeout, double rate);
 
-XBT_PUBLIC(smx_synchro_t) simcall_comm_irecv(smx_rdv_t rdv, void *dst_buff,
+XBT_PUBLIC(smx_synchro_t) simcall_comm_irecv(smx_process_t receiver, smx_rdv_t rdv, void *dst_buff,
                                             size_t * dst_buff_size,
                                             int (*match_fun)(void *, void *, smx_synchro_t),
                                             void (*copy_data_fun)(smx_synchro_t, void*, size_t),

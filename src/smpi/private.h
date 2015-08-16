@@ -85,10 +85,10 @@ typedef struct s_smpi_mpi_datatype{
 
 typedef struct s_smpi_mpi_request {
   void *buf;
-  /* in the case of non-contignous memory the user address shoud be keep
+  /* in the case of non-contiguous memory the user address should be keep
    * to unserialize the data inside the user memory*/
   void *old_buf;
-  /* this let us know how tounserialize at the end of
+  /* this let us know how to unserialize at the end of
    * the communication*/
   MPI_Datatype old_type;
   size_t size;
