@@ -11,4 +11,7 @@
 #include "s4u/engine.hpp"
 #include "s4u/host.hpp"
 
+#include "s4u/async.hpp"
+#include "s4u/comm.hpp"
+
 #endif /* SIMGRID_S4U_S4U_H */
