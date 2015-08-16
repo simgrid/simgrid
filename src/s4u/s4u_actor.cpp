@@ -85,7 +85,7 @@ void s4u::Actor::execute(double flops) {
 char *s4u::Actor::recvstr(Mailbox &chan) {
 	void *res=NULL;
 
-	Comm c = Comm::recv_init(chan);
+	Comm c = Comm::recv_init(this, chan);
 	c.setDstData(&res,sizeof(res));
 	c.wait();
 

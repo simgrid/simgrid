@@ -24,8 +24,9 @@ s4u::Comm &s4u::Comm::send_init(s4u::Actor *sender, s4u::Mailbox &chan) {
 
 	return *res;
 }
-s4u::Comm &s4u::Comm::recv_init(s4u::Mailbox &chan) {
+s4u::Comm &s4u::Comm::recv_init(s4u::Actor *receiver, s4u::Mailbox &chan) {
 	s4u::Comm *res = new s4u::Comm();
+	res->p_receiver = receiver;
 	res->p_mailbox = &chan;
 
 	return *res;
@@ -78,7 +79,7 @@ void s4u::Comm::start() {
 				p_matchFunction, p_cleanFunction, p_copyDataFunction,
 				p_userData, p_detached);
 	} else if (p_dstBuff != NULL) { // Receiver side
-		p_inferior = simcall_comm_irecv(p_mailbox->getInferior(), p_dstBuff, &p_dstBuffSize,
+		p_inferior = simcall_comm_irecv(p_receiver->getInferior(), p_mailbox->getInferior(), p_dstBuff, &p_dstBuffSize,
 				p_matchFunction, p_copyDataFunction,
 				p_userData, p_rate);
 
@@ -99,7 +100,7 @@ void s4u::Comm::wait() {
 					p_matchFunction, p_copyDataFunction,
 					p_userData, -1 /*timeout*/);
 		} else {
-			simcall_comm_recv(p_mailbox->getInferior(), p_dstBuff, &p_dstBuffSize,
+			simcall_comm_recv(p_receiver->getInferior(), p_mailbox->getInferior(), p_dstBuff, &p_dstBuffSize,
 					p_matchFunction, p_copyDataFunction,
 					p_userData, -1/*timeout*/, p_rate);
 		}
@@ -122,7 +123,7 @@ void s4u::Comm::wait(double timeout) {
 				p_matchFunction, p_copyDataFunction,
 				p_userData, timeout);
 	} else { // Receiver
-		simcall_comm_recv(p_mailbox->getInferior(), p_dstBuff, &p_dstBuffSize,
+		simcall_comm_recv(p_receiver->getInferior(), p_mailbox->getInferior(), p_dstBuff, &p_dstBuffSize,
 				p_matchFunction, p_copyDataFunction,
 				p_userData, timeout, p_rate);
 	}
