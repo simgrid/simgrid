@@ -41,13 +41,14 @@ class Mailbox;
  */
 class Actor {
 	friend Comm;
+	Actor(smx_process_t smx_proc);
 public:
 	Actor(const char*name, s4u::Host *host, int argc, char **argv);
 	Actor(const char*name, s4u::Host *host, int argc, char **argv, double killTime);
 	virtual ~Actor() {}
 
 	/** The main method of your agent */
-	virtual int main(int argc, char **argv)=0;
+	int main(int argc, char **argv) {return 0;}
 
 	/** The Actor that is currently running */
 	static Actor *current();

@@ -28,6 +28,9 @@ static int s4u_actor_runner(int argc, char **argv) {
 
 using namespace simgrid;
 
+s4u::Actor::Actor(smx_process_t smx_proc) {
+	p_smx_process = smx_proc;
+}
 s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv)
     : s4u::Actor::Actor(name,host, argc,argv, -1) {
 }
@@ -41,7 +44,10 @@ s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv, doub
 
 s4u::Actor *s4u::Actor::current() {
 	smx_process_t smx_proc = SIMIX_process_self();
-	return (simgrid::s4u::Actor*) SIMIX_process_self_get_data(smx_proc);
+	simgrid::s4u::Actor* res = (simgrid::s4u::Actor*) SIMIX_process_self_get_data(smx_proc);
+	if (res == NULL) // The smx_process was not created by S4U (but by deployment?). Embed it in a S4U object
+		res = new Actor(smx_proc);
+	return res;
 }
 s4u::Actor *s4u::Actor::byPid(int pid) {
 	return (simgrid::s4u::Actor*) SIMIX_process_self_get_data(SIMIX_process_from_PID(pid));
