@@ -141,3 +141,12 @@ s4u::Comm &s4u::Comm::send_async(s4u::Actor *sender, Mailbox &dest, void *data, 
 	return res;
 }
 
+s4u::Comm &s4u::Comm::recv_async(s4u::Actor *receiver, Mailbox &dest, void **data) {
+	s4u::Comm &res = s4u::Comm::recv_init(receiver, dest);
+
+	res.setDstData(data);
+
+	res.start();
+	return res;
+}
+

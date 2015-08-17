@@ -102,6 +102,7 @@ void s4u::Actor::send(Mailbox &chan, void *payload, size_t simulatedSize) {
 	Comm c = Comm::send_init(this,chan);
 	c.setRemains(simulatedSize);
 	c.setSrcData(payload);
+	// c.start() is optional.
 	c.wait();
 }
 

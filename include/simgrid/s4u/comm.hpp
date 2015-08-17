@@ -32,7 +32,7 @@ public:
     /** Creates (but don't start) an async recv onto the mailbox #from */
 	static Comm &recv_init(s4u::Actor *receiver, Mailbox &from);
 	/** Creates and start an async recv to the mailbox #from */
-	//static Comm &recv_async(Mailbox &from, void *data);
+	static Comm &recv_async(s4u::Actor *receiver, Mailbox &from, void **data);
 
 	void start() override;
 	void wait() override;
