@@ -84,14 +84,17 @@ public:
 	/** Block the actor, computing the given amount of flops */
 	e_smx_state_t execute(double flop);
 
-	/** Block the actor until it gets a message from the given mailbox */
+	/** Block the actor until it gets a message from the given mailbox.
+	 *
+	 * See \ref Comm for the full communication API (including non blocking communications).
+	 */
 	void *recv(Mailbox &chan);
 
-	/** Block the actor until it delivers a message of the given simulated size to the given mailbox */
+	/** Block the actor until it delivers a message of the given simulated size to the given mailbox
+	 *
+	 * See \ref Comm for the full communication API (including non blocking communications).
+	*/
 	void send(Mailbox &chan, void*payload, size_t simulatedSize);
-
-	/** Creates (but don't start) an async send action */
-	Comm &send_init(Mailbox &chan);
 
 protected:
 	smx_process_t getInferior() {return p_smx_process;}

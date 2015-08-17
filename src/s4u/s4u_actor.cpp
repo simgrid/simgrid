@@ -105,7 +105,3 @@ void s4u::Actor::send(Mailbox &chan, void *payload, size_t simulatedSize) {
 	// c.start() is optional.
 	c.wait();
 }
-
-s4u::Comm &s4u::Actor::send_init(Mailbox &chan) {
-	return s4u::Comm::send_init(this, chan);
-}
