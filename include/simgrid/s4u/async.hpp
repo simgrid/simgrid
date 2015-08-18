@@ -7,15 +7,21 @@
 #ifndef SIMGRID_S4U_ASYNC_HPP
 #define SIMGRID_S4U_ASYNC_HPP
 
+#include <stdlib.h>
+#include <xbt/misc.h>
+
+SG_BEGIN_DECL();
+typedef enum {
+	inited, started, finished
+} e_s4u_async_state_t;
+SG_END_DECL();
+
 namespace simgrid {
 namespace s4u {
 
 /* Forward declaration */
 class Comm;
 
-typedef enum {
-	inited, started, finished
-} e_s4u_async_state_t;
 
 /** @brief Asynchronous Actions
  *
@@ -28,7 +34,7 @@ protected:
 	virtual ~Async();
 	
 private:
-	smx_synchro_t p_inferior = NULL;
+	struct s_smx_synchro *p_inferior = NULL;
 
 private:
 	e_s4u_async_state_t p_state = inited;
