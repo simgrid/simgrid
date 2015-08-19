@@ -6,6 +6,10 @@ if(WIN32)
 endif()
 project(SimGrid C)
 
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#     Check for the compiler        #
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
 ## 
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
@@ -25,6 +29,11 @@ if (CMAKE_COMPILER_IS_GNUCC)
     message(FATAL_ERROR
             "SimGrid needs at least g++ version 4.7 to compile "
 	    "(c++11 support of previous versions is too limited).")
+  endif()
+
+  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
+    set (CMAKE_AR gcc-ar)
+    set (CMAKE_RANLIB gcc-ranlib)
   endif()
 endif()
 
@@ -76,6 +85,10 @@ if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by
   enable_language(Fortran OPTIONAL)
 endif()
 
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#     Build the version number      #
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
 ## Mapping version number -> version name
 # 3.5.99 -> alpha1 (oops)
 # 3.5.9{1,2} -> beta{1,2}
@@ -108,10 +121,9 @@ set(SIMGRID_VERSION_BANNER
 
 set(libsimgrid_version "${release_version}")
 set(libsimgrid-java_version "${release_version}")
-set(GCC_NEED_VERSION "4.0")
 set(APPLE_NEED_GCC_VERSION "4.6")
 
-### SET THE LIBRARY EXTENSION AND GCC VERSION
+### SET THE LIBRARY EXTENSION 
 if(APPLE) #MAC
   set(LIB_EXE "dylib")
 else()
@@ -130,17 +142,7 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
   string(REGEX MATCH "[0-9].[0-9].[0-9]" COMPILER_CXX_VERSION "${COMPILER_CXX_VERSION}")
 
   string(REGEX MATCH "^[0-9].[0-9]" COMPILER_C_VERSION_MAJOR_MINOR "${COMPILER_C_VERSION}")
-  string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH "${COMPILER_C_VERSION}")
-
-  if(${GCC_NEED_VERSION} GREATER  COMPILER_C_VERSION_MAJOR_MINOR)
-    message(FATAL_ERROR "Gcc must be to version ${GCC_NEED_VERSION} current version ${COMPILER_C_VERSION_MAJOR_MINOR}")
-  endif()
-  
-  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
-    set (CMAKE_AR gcc-ar)
-    set (CMAKE_RANLIB gcc-ranlib)
-  endif()
-  
+  string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH "${COMPILER_C_VERSION}")  
 endif()
 
 exec_program("${CMAKE_LINKER} --version" OUTPUT_VARIABLE "LINKER_VERSION")
@@ -236,8 +238,8 @@ if(WIN32)
 
   set(_XBT_WIN32 1)
 
-  message(STATUS "C_COMPILER                    ${CMAKE_C_COMPILER} ${COMPILER_C_VERSION}")
-  message(STATUS "CXX_COMPILER                  ${CMAKE_CXX_COMPILER} ${COMPILER_CXX_VERSION}")
+  message(STATUS "C_COMPILER                    ${CMAKE_C_COMPILER} ${COMPILER_C_VERSION_MAJOR_MINOR}")
+  message(STATUS "CXX_COMPILER                  ${CMAKE_CXX_COMPILER} ${COMPILER_CXX_VERSION_MAJOR_MINOR}")
   message(STATUS "CMAKE_RC_COMPILER             ${CMAKE_RC_COMPILER}")
   message(STATUS "INCLUDE                       ${CMAKE_INCLUDE_WIN}")
   message(STATUS "LIB                           ${CMAKE_LIB_WIN}")
