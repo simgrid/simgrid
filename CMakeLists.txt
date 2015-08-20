@@ -1,15 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
 
-### Need to set rc ccompiler before enable language
-if(WIN32)
-  SET(CMAKE_RC_COMPILER "windres")
-endif()
 project(SimGrid C)
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #     Check for the compiler        #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
+### Need to set rc ccompiler before enable language
+if(WIN32)
+  SET(CMAKE_RC_COMPILER "windres")
+endif()
 ## 
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
@@ -59,6 +59,12 @@ else()
           "Please use a decent C compiler "
           "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
 endif()
+if(APPLE AND ("4.6" GREATER COMPILER_C_VERSION_MAJOR_MINOR))
+    ### gcc 4.[1-5] cannot compile ucontext on OSX
+    message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
+    set(HAVE_UCONTEXT_H 0)
+endif()
+
 
 ### SMPI vs. Fortran
 if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by default
@@ -89,19 +95,6 @@ endif()
 #     Build the version number      #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
-## Mapping version number -> version name
-# 3.5.99 -> alpha1 (oops)
-# 3.5.9{1,2} -> beta{1,2}
-# 3.5.9{3,4,5} -> rc{1,2,3}
-# 3.6.{0,1,2} -> release 3.6, 3.6.1, 3.6.2
-# 3.7.{0,1} -> release 3.7, 3.7.1
-# 3.8.{0,1} -> release 3.8, 3.8.1
-# 3.9.0 -> release 3.9
-# 3.9.90 -> release 3.10pre1
-# 3.10.0 -> release 3.10
-# 3.11.0 -> release 3.11
-# 3.12.0 -> release 3.12
-
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "12")
 set(SIMGRID_VERSION_PATCH "0")
@@ -121,7 +114,6 @@ set(SIMGRID_VERSION_BANNER
 
 set(libsimgrid_version "${release_version}")
 set(libsimgrid-java_version "${release_version}")
-set(APPLE_NEED_GCC_VERSION "4.6")
 
 ### SET THE LIBRARY EXTENSION 
 if(APPLE) #MAC

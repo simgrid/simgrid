@@ -794,14 +794,6 @@ if(ADDR2LINE)
   set(ADDR2LINE "${ADDR2LINE}/addr2line")
 endif()
 
-### Check if OSX can compile with ucontext (with gcc 4.[1-5] it is broken)
-if(APPLE)
-  if(APPLE_NEED_GCC_VERSION GREATER COMPILER_C_VERSION_MAJOR_MINOR)
-    message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
-    set(HAVE_UCONTEXT_H 0)
-  endif()
-endif()
-
 ### File to create
 
 configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in"
