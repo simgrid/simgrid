@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(SimGrid C)
+project(SimGrid C CXX)
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #     Check for the compiler        #
@@ -10,12 +10,10 @@ project(SimGrid C)
 if(WIN32)
   SET(CMAKE_RC_COMPILER "windres")
 endif()
+
 ## 
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
-
-enable_language(CXX)
-
 INCLUDE(CheckCCompilerFlag)
 CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
 
@@ -212,12 +210,6 @@ if(WIN32)
     endif()
   else()
     message("You REALLY should use MinGW to compile SimGrid on Windows!")
-  endif()
-
-  if(ARCH_32_BITS)      ### Arch 32bits
-    set(_WIN32 1)
-  else()        ### Arch 64bits
-    set(_WIN64 1)
   endif()
 
   set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITEW6432})
