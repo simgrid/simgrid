@@ -28,11 +28,6 @@ if (CMAKE_COMPILER_IS_GNUCC)
             "SimGrid needs at least g++ version 4.7 to compile "
 	    "(c++11 support of previous versions is too limited).")
   endif()
-
-  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
-    set (CMAKE_AR gcc-ar)
-    set (CMAKE_RANLIB gcc-ranlib)
-  endif()
 endif()
 
 ## We need a decent support of the c++11 standard
@@ -87,6 +82,13 @@ if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by
   endif()
   CMAKE_FORCE_Fortran_COMPILER(smpiff smpiff)
   enable_language(Fortran OPTIONAL)
+endif()
+
+if (CMAKE_COMPILER_IS_GNUCC)
+  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
+    set (CMAKE_AR gcc-ar)
+    set (CMAKE_RANLIB gcc-ranlib)
+  endif()
 endif()
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
