@@ -280,6 +280,8 @@ sub exec_cmd {
     die "fork() failed: $!" unless defined $forked;
     if ( $forked == 0 ) { # child
       sleep $time_to_wait;
+      kill(SIGTERM, $cmd{'pid'});
+      sleep 1;
       kill(SIGKILL, $cmd{'pid'});
       exit $time_to_wait;
     }
