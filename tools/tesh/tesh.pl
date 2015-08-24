@@ -365,7 +365,7 @@ sub parse_out {
 
   # Did we timeout ? If yes, handle it. If not, kill the forked process.
 
-  if($timeout==-1 and $gotret eq "got signal SIGKILL"){
+  if($timeout==-1 and ($gotret eq "got signal SIGTERM" or $gotret eq "got signal SIGKILL")){
     $gotret="return code 0";
     $timeout=1;
     $gotret= "timeout after $time_to_wait sec";
