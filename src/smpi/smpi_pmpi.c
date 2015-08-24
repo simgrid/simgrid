@@ -1820,10 +1820,11 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int dt_size_recv = 1;
   if(!known)
     dt_size_recv = smpi_datatype_size(recvtype);
+  if((smpi_comm_rank(comm)==root)){
   extra->recvcounts= xbt_malloc(size*sizeof(int));
   for(i=0; i< size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
-
+  }
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__,extra);
 
   smpi_mpi_gatherv(sendtmpbuf, sendtmpcount, sendtmptype, recvbuf, recvcounts,
@@ -2023,9 +2024,11 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
   int dt_size_send = 1;
   if(!known)
     dt_size_send = smpi_datatype_size(sendtype);
+  if((smpi_comm_rank(comm)==root)){
   extra->sendcounts= xbt_malloc(size*sizeof(int));
   for(i=0; i< size; i++)//copy data to avoid bad free
     extra->sendcounts[i] = sendcounts[i]*dt_size_send;
+  }
   extra->datatype2 = encode_datatype(recvtype, &known);
   int dt_size_recv = 1;
   if(!known)
