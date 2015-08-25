@@ -17,6 +17,7 @@
 
 ### cmake
 CTestCustom.cmake
+CTestResults.xml
 
 ### Maintainer mode
 src/simdag/dax_dtd.l
