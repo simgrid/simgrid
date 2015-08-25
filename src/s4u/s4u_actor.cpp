@@ -42,6 +42,10 @@ s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv, doub
 //	simcall_process_on_exit(p_smx_process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,p_smx_process);
 }
 
+int s4u::Actor::main(int argc, char **argv) {
+	fprintf(stderr,"Error: You should override the method main(int, char**) in Actor class %s\n",getName());
+	return 0;
+}
 s4u::Actor *s4u::Actor::current() {
 	smx_process_t smx_proc = SIMIX_process_self();
 	simgrid::s4u::Actor* res = (simgrid::s4u::Actor*) SIMIX_process_self_get_data(smx_proc);

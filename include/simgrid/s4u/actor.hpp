@@ -48,7 +48,7 @@ public:
 	virtual ~Actor() {}
 
 	/** The main method of your agent */
-	int main(int argc, char **argv) {return 0;}
+	virtual int main(int argc, char **argv);
 
 	/** The Actor that is currently running */
 	static Actor *current();
