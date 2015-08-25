@@ -1159,7 +1159,7 @@ MPI_Fint MPI_Errhandler_c2f(MPI_Errhandler errhandler){
 
 
 
-/*********** Experimental code to trace the duration of iteractions **********/
+/*********** Experimental code to trace the duration of iterations **********/
 
 
 
@@ -1168,12 +1168,12 @@ int MPI_Loop_init(const char *loopid)
   return PMPI_Loop_init(loopid);
 }
 
-int MPI_Iteraction_in(MPI_Comm comm)
+int MPI_Iteration_in(MPI_Comm comm)
 {
-  return PMPI_Iteraction_in(comm);
+  return PMPI_Iteration_in(comm);
 }
 
-int MPI_Iteraction_out(MPI_Comm comm)//implemented on instr_smpi.c
+int MPI_Iteration_out(MPI_Comm comm)//implemented on instr_smpi.c
 {	
-  return PMPI_Iteraction_out(comm);
+  return PMPI_Iteration_out(comm);
 }

@@ -3681,24 +3681,28 @@ int PMPI_Loop_init(const char *loop)
   return 1;
 }
 
-int PMPI_Iteraction_in(MPI_Comm comm)
+int PMPI_Iteration_in(MPI_Comm comm)
 {
+  smpi_bench_end();
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ITERACTION;
 
-  TRACE_Iteraction_in(rank, extra);
+  TRACE_Iteration_in(rank, extra);
 #endif
+  smpi_bench_begin();
   return 1;
 }
 
-int PMPI_Iteraction_out(MPI_Comm comm)//implemented on instr_smpi.c
+int PMPI_Iteration_out(MPI_Comm comm)//implemented on instr_smpi.c
 {	
+  smpi_bench_end();
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-  TRACE_Iteraction_out(rank);//implemented on instr_smpi.c
+  TRACE_Iteration_out(rank);//implemented on instr_smpi.c
 #endif
+  smpi_bench_begin();
  return 1;
 }
 

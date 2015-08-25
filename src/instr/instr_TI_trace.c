@@ -233,6 +233,8 @@ void print_TIPushState(paje_event_t event)
   case TRACING_COMM_DUP:
   case TRACING_SSEND:
   case TRACING_ISSEND:
+  case TRACING_ITERATION:
+    fprintf(trace_file, "%s iteration", process_id);
   default:
 
     XBT_WARN
