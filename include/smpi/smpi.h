@@ -835,7 +835,10 @@ XBT_PUBLIC(void) SMPI_app_instance_register(const char *name, xbt_main_func_t co
 XBT_PUBLIC(void) SMPI_init(void);
 XBT_PUBLIC(void) SMPI_finalize(void);
 
-
+/***************** Calls to trace iteraction times ***************************/
+MPI_CALL(XBT_PUBLIC(int), MPI_Loop_init, (const char *loopid));
+MPI_CALL(XBT_PUBLIC(int), MPI_Iteraction_in, (MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Iteraction_out, (MPI_Comm comm));
 
 
 SG_END_DECL()

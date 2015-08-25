@@ -755,6 +755,11 @@ void TRACE_smpi_finalize(int rank);
 void TRACE_smpi_process_change_host(int rank, smx_host_t host, smx_host_t new_host, int size);
 void TRACE_smpi_send_process_data_in(int rank);
 void TRACE_smpi_send_process_data_out(int rank);
+
+void TRACE_Loop_init(const char *loopid);
+void TRACE_Iteraction_in(int rank, instr_extra_data extra);
+void TRACE_Iteraction_out(int rank);
+
 #endif
 
 const char* encode_datatype(MPI_Datatype datatype);

@@ -55,6 +55,7 @@ static const char *smpi_colors[] ={
     "accumulate",       "1 0.3 0",
     "fence",       "1 0 0.3",
     "migration",	"0 0.5 0",
+    "iteraction", "0.5 0 0.5",
     NULL, NULL,
 };
 
@@ -556,6 +557,43 @@ void TRACE_smpi_process_change_host(int rank, smx_host_t host,
   new_pajeEndLink(SIMIX_get_clock(), PJ_container_get_root(),
 		    type, container, "MIG", key);
 
+}
+
+
+/*********** Experimental code to trace the duration of iteractions **********/
+
+void TRACE_loop_init(const char *loop)
+{
+}
+
+void TRACE_Iteraction_in(int rank, instr_extra_data extra)
+{
+  if (!TRACE_smpi_is_enabled()) {
+      cleanup_extra_data(extra);
+      return;
+  }
+  char *operation = "iteraction";
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+  const char *color = instr_find_color (operation);
+  val_t value = PJ_value_get_or_new (operation, color, type);
+  new_pajePushStateWithExtra(SIMIX_get_clock(), container, type, value,
+      (void *)extra);
+
+}
+
+void TRACE_Iteraction_out(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_STATE", container->type);
+
+  new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
 #endif /* HAVE_TRACING */

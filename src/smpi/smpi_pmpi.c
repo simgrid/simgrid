@@ -3673,3 +3673,32 @@ int PMPI_Win_unlock(int rank, MPI_Win win){
 int PMPI_Win_wait(MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
+
+/*********** Experimental code to trace the duration of iteractions **********/
+
+int PMPI_Loop_init(const char *loop)
+{
+  return 1;
+}
+
+int PMPI_Iteraction_in(MPI_Comm comm)
+{
+#ifdef HAVE_TRACING
+  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+  extra->type = TRACING_ITERACTION;
+
+  TRACE_Iteraction_in(rank, extra);
+#endif
+  return 1;
+}
+
+int PMPI_Iteraction_out(MPI_Comm comm)//implemented on instr_smpi.c
+{	
+#ifdef HAVE_TRACING
+  int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
+  TRACE_Iteraction_out(rank);//implemented on instr_smpi.c
+#endif
+ return 1;
+}
+
