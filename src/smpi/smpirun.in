@@ -69,6 +69,8 @@ HOSTFILETMP=0
 
 unset pid
 
+trapped_signals="HUP INT QUIT ILL ABRT SEGV FPE ALRM TERM USR1 USR2 BUS"
+
 smpirun_cleanup()
 {
   if [ -z "${KEEP}" ] ; then
@@ -92,17 +94,28 @@ smpirun_cleanup()
 }
 
 smpirun_trap() {
+  local sig
+  sig="$1"
+
+  # Cleanup and kill the child process:
   smpirun_cleanup
   if ! [ -z "$pid" ]; then
     kill -TERM $pid
   fi
   unset pid
-  trap - HUP INT QUIT ILL ABRT SEGV FPE ALRM TERM USR1 USR2 BUS
+
+  # Raise the same signal again (remove the traps first):
+  trap - $trapped_signals
+  kill -$sig $$
+
+  # This should never happen:
+  kill -ABRT $$
   kill -TERM $$
-  exit 128
 }
 
-trap smpirun_trap HUP INT QUIT ILL ABRT SEGV FPE ALRM TERM USR1 USR2 BUS
+for s in $trapped_signals; do
+  trap "smpirun_trap $s" $s
+done
 
 while true; do
     case "$1" in
