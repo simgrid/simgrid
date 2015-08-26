@@ -369,6 +369,7 @@ void print_pajeEndLink(paje_event_t event);
 void print_pajeNewEvent (paje_event_t event);
 
 void print_TIPushState(paje_event_t event);
+void print_TIPopState(paje_event_t event);
 void print_TICreateContainer(paje_event_t event);
 void print_TIDestroyContainer(paje_event_t event);
 void TRACE_TI_start(void);
@@ -444,7 +445,7 @@ typedef enum{
   TRACING_SLEEPING,
   TRACING_SCAN,
   TRACING_EXSCAN,
-  TRACING_ITERACTION
+  TRACING_ITERATION
 } e_caller_type ;
 
 

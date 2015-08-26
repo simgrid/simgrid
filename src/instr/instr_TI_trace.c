@@ -22,15 +22,19 @@ xbt_dict_t tracing_files = NULL;
 
 extern s_instr_trace_writer_t active_writer;
 
+xbt_dynar_t state_tracker;
+
 void TRACE_TI_init(void)
 {
   active_writer.print_PushState = print_TIPushState;
+  active_writer.print_PopState = print_TIPopState;// for tracing iterations
   active_writer.print_CreateContainer=print_TICreateContainer;
   active_writer.print_DestroyContainer=print_TIDestroyContainer;
 }
 
 void TRACE_TI_start(void)
 {
+  state_tracker = xbt_dynar_new(sizeof(e_caller_type), NULL);
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
   if (tracing_file == NULL) {
@@ -234,7 +238,7 @@ void print_TIPushState(paje_event_t event)
   case TRACING_SSEND:
   case TRACING_ISSEND:
   case TRACING_ITERATION:
-    fprintf(trace_file, "%s iteration", process_id);
+    fprintf(trace_file, "%s iteration_in\n", process_id);
   default:
 
     XBT_WARN
@@ -242,6 +246,10 @@ void print_TIPushState(paje_event_t event)
          ((pushState_t) event->data)->value->name);
     break;
   }
+ 
+  //We need to keep track of the current state, so we can register when the
+  //current iteration (TRACING_ITERATION) ends. 
+  xbt_dynar_push(state_tracker, &(extra->type));
 
   if (extra->recvcounts != NULL)
     xbt_free(extra->recvcounts);
@@ -250,3 +258,32 @@ void print_TIPushState(paje_event_t event)
   xbt_free(process_id);
   xbt_free(extra);
 }
+
+void print_TIPopState(paje_event_t event)
+{
+  char *process_id;
+  e_caller_type event_type;
+  FILE *trace_file;
+
+  //What is the current state?
+  xbt_dynar_pop(state_tracker, &event_type);
+  
+  //This function is actually only usefull for tracing the iterations of the
+  //application.
+  if(event_type != TRACING_ITERATION){
+    return;
+  }
+
+  if (strstr(((pushState_t) event->data)->container->name, "rank-") == NULL)
+    process_id = xbt_strdup(((pushState_t) event->data)->container->name);
+  else
+    process_id = xbt_strdup(((pushState_t) event->data)->container->name + 5);
+
+  trace_file = (FILE *)xbt_dict_get(tracing_files,
+      ((pushState_t) event->data)->container->name);
+  
+  fprintf(trace_file, "%s iteration_out\n", process_id); 
+  
+  return;
+}
+

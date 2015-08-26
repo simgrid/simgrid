@@ -3687,7 +3687,7 @@ int PMPI_Iteration_in(MPI_Comm comm)
 #ifdef HAVE_TRACING
   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-  extra->type = TRACING_ITERACTION;
+  extra->type = TRACING_ITERATION;
 
   TRACE_Iteration_in(rank, extra);
 #endif

@@ -566,7 +566,7 @@ void TRACE_loop_init(const char *loop)
 {
 }
 
-void TRACE_Iteraction_in(int rank, instr_extra_data extra)
+void TRACE_Iteration_in(int rank, instr_extra_data extra)
 {
   if (!TRACE_smpi_is_enabled()) {
       cleanup_extra_data(extra);
@@ -584,7 +584,7 @@ void TRACE_Iteraction_in(int rank, instr_extra_data extra)
 
 }
 
-void TRACE_Iteraction_out(int rank)
+void TRACE_Iteration_out(int rank)
 {
   if (!TRACE_smpi_is_enabled()) return;
 
