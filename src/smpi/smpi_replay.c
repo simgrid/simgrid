@@ -1392,7 +1392,7 @@ void smpi_replay_init(int *argc, char***argv){
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   TRACE_smpi_init(rank);
-  TRACE_smpi_computing_init(rank);
+  TRACE_smpi_computing_init(rank, NULL);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_INIT;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);

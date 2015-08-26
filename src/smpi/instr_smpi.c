@@ -55,7 +55,7 @@ static const char *smpi_colors[] ={
     "accumulate",       "1 0.3 0",
     "fence",       "1 0 0.3",
     "migration",	"0 0.5 0",
-    "iteraction", "0.5 0 0.5",
+    "iteration", "0.5 0 0.5",
     NULL, NULL,
 };
 
@@ -256,7 +256,7 @@ void TRACE_smpi_collective_out(int rank, int root, const char *operation)
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
-void TRACE_smpi_computing_init(int rank)
+void TRACE_smpi_computing_init(int rank, instr_extra_data extra)
 {
  //first use, initialize the color in the trace
  //TODO : check with lucas and Pierre how to generalize this approach
@@ -269,7 +269,12 @@ void TRACE_smpi_computing_init(int rank)
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color ("computing");
   val_t value = PJ_value_get_or_new ("computing", color, type);
-  new_pajePushState (SIMIX_get_clock(), container, type, value);
+  if(extra != NULL){
+    new_pajePushStateWithExtra(SIMIX_get_clock(), container, type, value,
+      (void *)extra);//we need the extra data to keep track of states.
+  }else{
+    new_pajePushState(SIMIX_get_clock(), container, type, value);
+  }
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
@@ -560,7 +565,7 @@ void TRACE_smpi_process_change_host(int rank, smx_host_t host,
 }
 
 
-/*********** Experimental code to trace the duration of iteractions **********/
+/*********** Experimental code to trace the duration of iterations **********/
 
 void TRACE_loop_init(const char *loop)
 {
@@ -572,7 +577,7 @@ void TRACE_Iteration_in(int rank, instr_extra_data extra)
       cleanup_extra_data(extra);
       return;
   }
-  char *operation = "iteraction";
+  char *operation = "iteration";
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);

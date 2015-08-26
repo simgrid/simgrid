@@ -736,7 +736,7 @@ void TRACE_internal_smpi_set_category (const char *category);
 const char *TRACE_internal_smpi_get_category (void);
 void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra);
 void TRACE_smpi_collective_out(int rank, int root, const char *operation);
-void TRACE_smpi_computing_init(int rank);
+void TRACE_smpi_computing_init(int rank, instr_extra_data extra);
 void TRACE_smpi_computing_out(int rank);
 void TRACE_smpi_computing_in(int rank, instr_extra_data extra);
 void TRACE_smpi_sleeping_init(int rank);

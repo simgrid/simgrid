@@ -239,6 +239,7 @@ void print_TIPushState(paje_event_t event)
   case TRACING_ISSEND:
   case TRACING_ITERATION:
     fprintf(trace_file, "%s iteration_in\n", process_id);
+    break;
   default:
 
     XBT_WARN

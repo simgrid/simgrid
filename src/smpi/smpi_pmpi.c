@@ -32,8 +32,11 @@ int PMPI_Init(int *argc, char ***argv)
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
   TRACE_smpi_init(rank);
-  TRACE_smpi_computing_init(rank);
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+  extra->type = TRACING_COMPUTING;
+  extra->comp_size = 0;
+  TRACE_smpi_computing_init(rank, extra);
+  extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_INIT;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__, extra);
   TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
@@ -3689,13 +3692,13 @@ int PMPI_Iteration_in(MPI_Comm comm)
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ITERATION;
 
-  TRACE_Iteration_in(rank, extra);
+  TRACE_Iteration_in(rank, extra);//implemented on instr_smpi.c
 #endif
   smpi_bench_begin();
   return 1;
 }
 
-int PMPI_Iteration_out(MPI_Comm comm)//implemented on instr_smpi.c
+int PMPI_Iteration_out(MPI_Comm comm)
 {	
   smpi_bench_end();
 #ifdef HAVE_TRACING
