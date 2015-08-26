@@ -21,3 +21,5 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/README
   PARENT_SCOPE
   )
+
+add_subdirectory(dumb)
