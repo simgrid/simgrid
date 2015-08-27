@@ -23,3 +23,4 @@ set(txt_files
   )
 
 add_subdirectory(dumb)
+add_subdirectory(io)

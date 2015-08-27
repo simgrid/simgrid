@@ -281,6 +281,8 @@ IF(NOT enable_memcheck)
 
   ### S4U ###
   ADD_TESH_FACTORIES(s4u-dumb "thread;ucontext;raw;boost" --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/dumb s4u_test.tesh)
+  ADD_TESH_FACTORIES(s4u-io "thread;ucontext;raw;boost" --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/io s4u_io_test.tesh)
+
 
   ### SIMDAG ###
   # BEGIN TESH TESTS

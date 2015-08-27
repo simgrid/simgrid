@@ -9,48 +9,76 @@
 #include "simix/smx_process_private.h"
 
 #include "simgrid/s4u/host.hpp"
+#include "simgrid/s4u/storage.hpp"
 
-using namespace simgrid;
+namespace simgrid {
+namespace s4u {
 
-boost::unordered_map<std::string, simgrid::s4u::Host*> *simgrid::s4u::Host::hosts
-		= new boost::unordered_map<std::string, simgrid::s4u::Host*>();
+boost::unordered_map<std::string, Host*> *Host::hosts
+		= new boost::unordered_map<std::string, Host*>();
 
-s4u::Host::Host(const char*name) {
-	p_sghost = sg_host_by_name(name);
-	if (p_sghost==NULL)
+Host::Host(const char*name) {
+	p_inferior = sg_host_by_name(name);
+	if (p_inferior==NULL)
 		xbt_die("No such host: %s",name); //FIXME: raise an exception
 }
+Host::~Host() {
+	if (mounts != NULL)
+		delete mounts;
+}
 
-s4u::Host *s4u::Host::byName(std::string name) {
-	s4u::Host * res = NULL;
+Host *Host::byName(std::string name) {
+	Host * res = NULL;
 	try {
 		res = hosts->at(name);
 	} catch (std::out_of_range& e) {}
 
 	if (res==NULL) {
-		res = new s4u::Host(name.c_str());
+		res = new Host(name.c_str());
 		hosts->insert({name,res});
 	}
 	return res;
 }
-s4u::Host *s4u::Host::current(){
+Host *Host::current(){
 	smx_process_t smx_proc = SIMIX_process_self();
 	if (smx_proc == NULL)
 		xbt_die("Cannot call Host::current() from the maestro context");
 
-	return s4u::Host::byName(SIMIX_host_get_name(SIMIX_process_get_host(smx_proc)));
+	return Host::byName(SIMIX_host_get_name(SIMIX_process_get_host(smx_proc)));
 }
 
-const char* s4u::Host::getName() {
-	return sg_host_name(p_sghost);
+const char* Host::name() {
+	return sg_host_name(p_inferior);
 }
 
-void s4u::Host::turnOn() {
-	simcall_host_on(p_sghost);
+void Host::turnOn() {
+	simcall_host_on(p_inferior);
 }
-void s4u::Host::turnOff() {
-	simcall_host_off(p_sghost);
+void Host::turnOff() {
+	simcall_host_off(p_inferior);
 }
-bool s4u::Host::isOn() {
-	return simcall_host_get_state(p_sghost);
+bool Host::isOn() {
+	return simcall_host_get_state(p_inferior);
 }
+
+boost::unordered_map<std::string, Storage&> &Host::mountedStorages() {
+	if (mounts == NULL) {
+		mounts = new boost::unordered_map<std::string, Storage&> ();
+
+		xbt_dict_t dict = simcall_host_get_mounted_storage_list(p_inferior);
+
+		xbt_dict_cursor_t cursor;
+		char *mountname;
+		char *storagename;
+		xbt_dict_foreach(dict, cursor, mountname, storagename) {
+			mounts->insert({mountname, Storage::byName(storagename)});
+		}
+		xbt_dict_free(&dict);
+	}
+
+	return *mounts;
+}
+
+
+} // namespace simgrid
+} // namespace s4u

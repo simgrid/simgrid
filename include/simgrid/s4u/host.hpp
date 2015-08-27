@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_HOST_HPP
 
 #include <boost/unordered_map.hpp>
+#include <vector>
 
 #include "simgrid/simix.h"
 
@@ -14,6 +15,8 @@ namespace simgrid {
 namespace s4u {
 
 class Actor;
+class Storage;
+class File;
 
 /** @brief Simulated machine that can host some actors
  *
@@ -27,15 +30,19 @@ class Actor;
  * and actors can retrieve the host on which they run using @link{simgrid::s4u::Host.current()}.
  */
 class Host {
+	friend Actor;
+	friend File;
 private:
 	Host(const char *name);
+protected:
+	~Host();
 public:
 	/** Retrieves an host from its name. */
 	static s4u::Host *byName(std::string name);
 	/** Retrieves the host on which the current actor is running */
 	static s4u::Host *current();
 
-	const char* getName();
+	const char* name();
 
 	/** Turns that host on if it was previously off
 	 *
@@ -50,16 +57,25 @@ public:
 
 
 	/** Allows to store user data on that host */
-	void setData(void *data) {p_userdata = data;}
+	void set_userdata(void *data) {p_userdata = data;}
 	/** Retrieves the previously stored data */
-	void* getData() {return p_userdata;}
+	void* userdata() {return p_userdata;}
+
+	/** Get an associative list [mount point]->[Storage] off all local mount points.
+	 *
+	 *	This is defined in the platform file, and cannot be modified programatically (yet).
+	 *
+	 *	Do not change the returned value in any way.
+	 */
+	boost::unordered_map<std::string, Storage&> &mountedStorages();
+private:
+	boost::unordered_map<std::string, Storage&> *mounts = NULL; // caching
 
 protected:
-	friend Actor;
-	sg_host_t getInferior() {return p_sghost;}
+	sg_host_t inferior() {return p_inferior;}
 private:
 	void*p_userdata=NULL;
-	sg_host_t p_sghost;
+	sg_host_t p_inferior;
 	static boost::unordered_map<std::string, s4u::Host *> *hosts;
 };
 
@@ -148,11 +164,6 @@ public class Host {
 	 * Change the value of a given host property. 
 	 */
 	public native void setProperty(String name, String value);
-
-	/** This methods returns the list of mount point names on an host
-	 * @return An array containing all mounted storages on the host
-	 */
-	public native Storage[] getMountedStorage();
 
 	/** This methods returns the list of storages attached to an host
 	 * @return An array containing all storages (name) attached to the host
