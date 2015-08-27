@@ -84,13 +84,6 @@ if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by
   enable_language(Fortran OPTIONAL)
 endif()
 
-if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
-  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
-    set (CMAKE_AR gcc-ar)
-    set (CMAKE_RANLIB gcc-ranlib)
-  endif()
-endif()
-
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #     Build the version number      #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
