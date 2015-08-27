@@ -26,7 +26,7 @@ do
   GREP="/^$i /d; $GREP"
   GREP2="-e '^$i ' $GREP2"
 done
-GREP="/^%\ /d; /^%E/d; $GREP"
+GREP="/^%\ /d; /^%	/d; /^%E/d; $GREP"
 
 cat $TRACE | eval grep $GREP2 > types
 /bin/sed -e "$GREP" $TRACE > events

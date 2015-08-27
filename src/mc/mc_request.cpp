@@ -650,7 +650,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
     break;
 
   case SIMCALL_MUTEX_LOCK:
-    label = bprintf("[(%lu)] Mutex LOCK", req->issuer->pid);
+    label = bprintf("[(%lu)] Mutex LOCK", issuer->pid);
     break;
 
   case SIMCALL_MC_RANDOM:

@@ -1,17 +1,19 @@
 cmake_minimum_required(VERSION 2.6)
 
+project(SimGrid C CXX)
+
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#     Check for the compiler        #
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
 ### Need to set rc ccompiler before enable language
 if(WIN32)
   SET(CMAKE_RC_COMPILER "windres")
 endif()
-project(SimGrid C)
 
 ## 
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
-
-enable_language(CXX)
-
 INCLUDE(CheckCCompilerFlag)
 CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
 
@@ -50,6 +52,12 @@ else()
           "Please use a decent C compiler "
           "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
 endif()
+if(APPLE AND ("4.6" GREATER COMPILER_C_VERSION_MAJOR_MINOR))
+    ### gcc 4.[1-5] cannot compile ucontext on OSX
+    message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
+    set(HAVE_UCONTEXT_H 0)
+endif()
+
 
 ### SMPI vs. Fortran
 if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by default
@@ -76,18 +84,16 @@ if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by
   enable_language(Fortran OPTIONAL)
 endif()
 
-## Mapping version number -> version name
-# 3.5.99 -> alpha1 (oops)
-# 3.5.9{1,2} -> beta{1,2}
-# 3.5.9{3,4,5} -> rc{1,2,3}
-# 3.6.{0,1,2} -> release 3.6, 3.6.1, 3.6.2
-# 3.7.{0,1} -> release 3.7, 3.7.1
-# 3.8.{0,1} -> release 3.8, 3.8.1
-# 3.9.0 -> release 3.9
-# 3.9.90 -> release 3.10pre1
-# 3.10.0 -> release 3.10
-# 3.11.0 -> release 3.11
-# 3.12.0 -> release 3.12
+if (CMAKE_COMPILER_IS_GNUCC)
+  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
+    set (CMAKE_AR gcc-ar)
+    set (CMAKE_RANLIB gcc-ranlib)
+  endif()
+endif()
+
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+#     Build the version number      #
+#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "12")
@@ -108,10 +114,8 @@ set(SIMGRID_VERSION_BANNER
 
 set(libsimgrid_version "${release_version}")
 set(libsimgrid-java_version "${release_version}")
-set(GCC_NEED_VERSION "4.0")
-set(APPLE_NEED_GCC_VERSION "4.6")
 
-### SET THE LIBRARY EXTENSION AND GCC VERSION
+### SET THE LIBRARY EXTENSION 
 if(APPLE) #MAC
   set(LIB_EXE "dylib")
 else()
@@ -130,17 +134,7 @@ if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
   string(REGEX MATCH "[0-9].[0-9].[0-9]" COMPILER_CXX_VERSION "${COMPILER_CXX_VERSION}")
 
   string(REGEX MATCH "^[0-9].[0-9]" COMPILER_C_VERSION_MAJOR_MINOR "${COMPILER_C_VERSION}")
-  string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH "${COMPILER_C_VERSION}")
-
-  if(${GCC_NEED_VERSION} GREATER  COMPILER_C_VERSION_MAJOR_MINOR)
-    message(FATAL_ERROR "Gcc must be to version ${GCC_NEED_VERSION} current version ${COMPILER_C_VERSION_MAJOR_MINOR}")
-  endif()
-  
-  if(COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
-    set (CMAKE_AR gcc-ar)
-    set (CMAKE_RANLIB gcc-ranlib)
-  endif()
-  
+  string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH "${COMPILER_C_VERSION}")  
 endif()
 
 exec_program("${CMAKE_LINKER} --version" OUTPUT_VARIABLE "LINKER_VERSION")
@@ -220,12 +214,6 @@ if(WIN32)
     message("You REALLY should use MinGW to compile SimGrid on Windows!")
   endif()
 
-  if(ARCH_32_BITS)      ### Arch 32bits
-    set(_WIN32 1)
-  else()        ### Arch 64bits
-    set(_WIN64 1)
-  endif()
-
   set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITEW6432})
   if(NSIS_WIN_VERSION MATCHES "")
     set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITECTURE})
@@ -236,8 +224,8 @@ if(WIN32)
 
   set(_XBT_WIN32 1)
 
-  message(STATUS "C_COMPILER                    ${CMAKE_C_COMPILER} ${COMPILER_C_VERSION}")
-  message(STATUS "CXX_COMPILER                  ${CMAKE_CXX_COMPILER} ${COMPILER_CXX_VERSION}")
+  message(STATUS "C_COMPILER                    ${CMAKE_C_COMPILER} ${COMPILER_C_VERSION_MAJOR_MINOR}")
+  message(STATUS "CXX_COMPILER                  ${CMAKE_CXX_COMPILER} ${COMPILER_CXX_VERSION_MAJOR_MINOR}")
   message(STATUS "CMAKE_RC_COMPILER             ${CMAKE_RC_COMPILER}")
   message(STATUS "INCLUDE                       ${CMAKE_INCLUDE_WIN}")
   message(STATUS "LIB                           ${CMAKE_LIB_WIN}")

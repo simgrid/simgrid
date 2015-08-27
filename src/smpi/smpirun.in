@@ -45,7 +45,11 @@ Options:
   -trace-viva                # generate configuration for Viva's GraphView
   -trace-file <tracefile>    # name of the tracefile (simgrid_smpi.trace)
   -ext <value>               # additional parameter (reserved)
-  
+  -foreground                # run the child process in the foreground:
+                             # - it can access the terminal;
+                             # - but we cannot stop it when we receive a signal.
+                             # This is useful with -wrapper "gdb --args".
+
   -version                   # Displays the SimGrid version (human readable)
   -git-version               # Displays the git hash of SimGrid
 
@@ -65,6 +69,58 @@ fi
 EXTOPT=""
 WRAPPER=""
 HOSTFILE=""
+HOSTFILETMP=0
+
+unset pid
+unset foreground ; foreground=0
+
+trapped_signals="HUP INT QUIT ILL ABRT SEGV FPE ALRM TERM USR1 USR2 BUS"
+
+smpirun_cleanup()
+{
+  if [ -z "${KEEP}" ] ; then
+      if [ -z "${PLATFORM}" -a -n "$PLATFORMTMP" ]; then
+        rm -f ${PLATFORMTMP}
+        PLATFORMTMP=""
+      fi
+      if [ ${HOSTFILETMP} = 1 -a -n "$HOSTFILE" ] ; then
+          rm -f ${HOSTFILE}
+          HOSTFILE=""
+      fi
+      if [ ${UNROLLEDHOSTFILETMP} = 1 -a -n "$UNROLLEDHOSTFILE" ] ; then
+          rm -f ${UNROLLEDHOSTFILE}
+          UNROLLEDHOSTFILE=""
+      fi
+      if [ -n ${APPLICATIONTMP} ]; then
+        rm -f ${APPLICATIONTMP}
+        APPLICATIONTMP=""
+      fi
+  fi
+}
+
+smpirun_trap() {
+  local sig
+  sig="$1"
+
+  # Cleanup and kill the child process:
+  smpirun_cleanup
+  if ! [ -z "$pid" ]; then
+    kill -TERM $pid
+  fi
+  unset pid
+
+  # Raise the same signal again (remove the traps first):
+  trap - $trapped_signals
+  kill -$sig $$
+
+  # This should never happen:
+  kill -ABRT $$
+  kill -TERM $$
+}
+
+for s in $trapped_signals; do
+  trap "smpirun_trap $s" $s
+done
 
 while true; do
     case "$1" in
@@ -189,6 +245,10 @@ while true; do
             done
             shift 1
             ;;
+        "-foreground")
+            foreground=1
+            shift 1
+            ;;
         *)
             break
             ;;
@@ -229,7 +289,6 @@ if [ -z "${HOSTFILE}" ] && [ -z "${PLATFORM}" ] ; then
     exit 1
 fi
 
-HOSTFILETMP=0
 if [ -z "${HOSTFILE}" ] ; then
     HOSTFILETMP=1
     HOSTFILE="$(mktemp tmphostXXXXXX)"
@@ -458,20 +517,17 @@ if [ -n "${KEEP}" ] ; then
         echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} keeped." 
     fi
 fi
-${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
-status=$?
-
-if [ -z "${KEEP}" ] ; then
-    if [ -z "${PLATFORM}" ]; then
-	rm ${PLATFORMTMP}
-    fi
-    if [ ${HOSTFILETMP} = 1 ] ; then
-        rm ${HOSTFILE}
-    fi
-    if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
-        rm ${UNROLLEDHOSTFILE}
-    fi
-    rm ${APPLICATIONTMP}
+if [ "$foreground" = 1 ]; then
+  ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+  status=$?
+else
+  ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP} &
+  pid=$!
+  wait $pid
+  status=$?
+  pid=""
 fi
+
+smpirun_cleanup
 
 exit $status
