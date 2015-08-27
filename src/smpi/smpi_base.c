@@ -348,7 +348,7 @@ void smpi_mpi_start(MPI_Request request)
     if (async_small_thres != 0 ||request->flags & RMA)
       xbt_mutex_acquire(mut);
 
-    if (async_small_thres == 0 && !request->flags & RMA) {
+    if (async_small_thres == 0 && !(request->flags & RMA)) {
       mailbox = smpi_process_mailbox();
     }
     else if (request->flags & RMA || request->size < async_small_thres){
@@ -428,10 +428,10 @@ void smpi_mpi_start(MPI_Request request)
 
     xbt_mutex_t mut=smpi_process_remote_mailboxes_mutex(receiver);
 
-    if (async_small_thres != 0 ||request->flags & RMA)
+    if (async_small_thres != 0 || request->flags & RMA)
       xbt_mutex_acquire(mut);
 
-    if (!(async_small_thres != 0 ||request->flags & RMA)) {
+    if (!(async_small_thres != 0 || request->flags & RMA)) {
       mailbox = smpi_process_remote_mailbox(receiver);
     }
     else if (request->flags & RMA || request->size < async_small_thres) { // eager mode
