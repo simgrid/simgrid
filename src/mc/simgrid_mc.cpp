@@ -68,6 +68,11 @@ static int do_child(int socket, char** argv)
   // Set environment:
   setenv(MC_ENV_VARIABLE, "1", 1);
 
+  // Disable lazy relocation in the model-ched process.
+  // We don't want the model-checked process to modify its .got.plt during
+  // snapshot.
+  setenv("LC_BIND_NOW", "1", 1);
+
   char buffer[64];
   res = std::snprintf(buffer, sizeof(buffer), "%i", socket);
   if ((size_t) res >= sizeof(buffer) || res == -1)
