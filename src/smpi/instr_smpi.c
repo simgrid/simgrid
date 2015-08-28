@@ -584,9 +584,12 @@ void TRACE_Iteration_in(int rank, instr_extra_data extra)
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   const char *color = instr_find_color (operation);
   val_t value = PJ_value_get_or_new (operation, color, type);
-  new_pajePushStateWithExtra(SIMIX_get_clock(), container, type, value,
+  if(extra != NULL){
+    new_pajePushStateWithExtra(SIMIX_get_clock(), container, type, value,
       (void *)extra);
-
+  }else{
+    new_pajePushState(SIMIX_get_clock(), container, type, value);
+  }
 }
 
 void TRACE_Iteration_out(int rank)

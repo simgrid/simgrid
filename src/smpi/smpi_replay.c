@@ -1385,6 +1385,30 @@ static void action_migrate(const char *const *action)
 /**************** End of migration and load balancing code. ******************/ 
 
 
+/*
+ * Code to include the duration of iterations in the trace.
+ */
+
+
+void action_iteration_in(const char *const *action)
+{
+  CHECK_ACTION_PARAMS(action, 0, 0);
+#ifdef HAVE_TRACING
+  TRACE_Iteration_in(smpi_process_index(), NULL);
+#endif
+}
+
+void action_iteration_out(const char *const *action)
+{
+  CHECK_ACTION_PARAMS(action, 0, 0);
+#ifdef HAVE_TRACING
+  TRACE_Iteration_out(smpi_process_index());
+#endif
+}
+
+
+/*****************************************************************************/
+
 void smpi_replay_init(int *argc, char***argv){
   smpi_process_init(argc, argv);
   smpi_process_mark_as_initialized();
@@ -1436,6 +1460,8 @@ void smpi_replay_init(int *argc, char***argv){
     xbt_replay_action_register("reducescatter",  action_reducescatter);
     xbt_replay_action_register("compute",    action_compute);
     xbt_replay_action_register("migrate",    action_migrate);
+    xbt_replay_action_register("iteration_in",    action_iteration_in);
+    xbt_replay_action_register("iteration_out",    action_iteration_out);
   }
   
   //if we have a delayed start, sleep here.
