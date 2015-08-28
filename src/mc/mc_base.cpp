@@ -142,6 +142,9 @@ int MC_request_is_enabled(smx_simcall_t req)
     return FALSE;
   }
 
+  case SIMCALL_MUTEX_TRYLOCK:
+    return TRUE;
+
   case SIMCALL_MUTEX_LOCK: {
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
 #ifdef HAVE_MC
@@ -179,6 +182,7 @@ int MC_request_is_visible(smx_simcall_t req)
       || req->call == SIMCALL_COMM_TESTANY
       || req->call == SIMCALL_MC_RANDOM
       || req->call == SIMCALL_MUTEX_LOCK
+      || req->call == SIMCALL_MUTEX_TRYLOCK
 #ifdef HAVE_MC
       || req->call == SIMCALL_MC_SNAPSHOT
       || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS

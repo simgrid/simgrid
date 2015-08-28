@@ -401,12 +401,20 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
     }
     break;
 
+  case SIMCALL_MUTEX_TRYLOCK:
   case SIMCALL_MUTEX_LOCK: {
-    type = "Mutex LOCK";
+    if (req->call == SIMCALL_MUTEX_LOCK)
+      type = "Mutex LOCK";
+    else
+      type = "Mutex TRYLOCK";
 
     s_smx_mutex_t mutex;
     mc_model_checker->process().read_bytes(&mutex, sizeof(mutex),
-      remote(simcall_mutex_lock__get__mutex(req)));
+      remote(
+        req->call == SIMCALL_MUTEX_LOCK
+        ? simcall_mutex_lock__get__mutex(req)
+        : simcall_mutex_trylock__get__mutex(req)
+      ));
     s_xbt_swag_t mutex_sleeping;
     mc_model_checker->process().read_bytes(&mutex_sleeping, sizeof(mutex_sleeping),
       remote(mutex.sleeping));
@@ -647,6 +655,10 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
                     value + 1,
                     xbt_dynar_length(simcall_comm_testany__get__comms(req)));
     }
+    break;
+
+  case SIMCALL_MUTEX_TRYLOCK:
+    label = bprintf("[(%lu)] Mutex TRYLOCK", issuer->pid);
     break;
 
   case SIMCALL_MUTEX_LOCK:
