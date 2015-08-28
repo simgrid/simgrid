@@ -23,17 +23,30 @@ option(enable_compile_warnings "Whether compilation warnings should be turned in
 option(enable_maintainer_mode "Whether flex and flexml files should be rebuilt." off)
 option(enable_tracing "Tracing simulations for visualization." on)
 option(enable_latency_bound_tracking "" off)
-option(enable_coverage "Whether coverage should be enabled." off)
+
 option(enable_ust "Enable userspace static tracepoint (lttng-ust)." off)
+if(enable_sdt)
+  add_definitions(-DUSE_SDT)
+endif()
+  
 option(enable_sdt "Enable statically defined tracepoint (strace/systemtap)." off)
+if(enable_ust)
+  add_definitions(-DUSE_UST)
+endif()
+    
+option(enable_coverage "Whether coverage should be enabled." off)
 mark_as_advanced(enable_coverage)
+mark_as_advanced(enable_memcheck)
+
 option(enable_memcheck "Enable memcheck." off)
 option(enable_memcheck_xml "Enable memcheck with xml output." off)
-mark_as_advanced(enable_memcheck)
 mark_as_advanced(enable_memcheck_xml)
+
 option(enable_mallocators "Enable mallocators (disable only for debugging purpose)." on)
+
 option(enable_print_message "Enable print message during config." off)
 mark_as_advanced(enable_print_message)
+
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker (hinders the simulation's performance even if turned off at runtime)" off)
 option(enable_lib_static "" off)
 option(enable_lib_in_jar "Whether the native libraries are bundled in a Java jar file" on)
