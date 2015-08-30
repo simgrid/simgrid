@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(master_worker_vm "master_worker_vm.c")

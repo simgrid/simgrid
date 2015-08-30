@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(example scala_master_slave_kill)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/FinalizeTask.scala

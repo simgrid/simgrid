@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(example java_cloud_migration)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/Daemon.java

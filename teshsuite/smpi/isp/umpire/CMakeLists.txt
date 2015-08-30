@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(umpire_src
   abort1.c
   abort2.c

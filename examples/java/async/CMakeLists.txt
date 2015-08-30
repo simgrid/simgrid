@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(example java_async)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/AsyncTest.java

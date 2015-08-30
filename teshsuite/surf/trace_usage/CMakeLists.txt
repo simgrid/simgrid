@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(trace_usage ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/trace_usage/trace_usage.c)

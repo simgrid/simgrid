@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 if(enable_smpi)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")

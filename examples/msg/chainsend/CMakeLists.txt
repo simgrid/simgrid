@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(chainsend chainsend.c iterator.c common.c messages.c broadcaster.c peer.c)

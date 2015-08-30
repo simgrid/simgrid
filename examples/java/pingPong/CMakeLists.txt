@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(example java_pingPong)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/PingPongTask.java

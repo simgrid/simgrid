@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(example java_kademlia)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/Answer.java

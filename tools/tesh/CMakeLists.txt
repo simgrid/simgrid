@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.pl"
   "${CMAKE_BINARY_DIR}/bin/tesh" @ONLY IMMEDIATE)
 

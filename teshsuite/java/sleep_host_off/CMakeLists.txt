@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(example java_sleep_host_off)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/Main.java

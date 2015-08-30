@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 if(HAVE_MC)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 endif()

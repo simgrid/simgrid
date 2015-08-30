@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 set(example java_chord)
 set(sources
   ${CMAKE_CURRENT_SOURCE_DIR}/Chord.java
