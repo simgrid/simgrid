@@ -16,10 +16,6 @@ if(enable_ust)
   ADD_DEPENDENCIES(simgrid simgrid_ust)
 endif()
 
-if(enable_java)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeJava.cmake)
-endif()
-
 add_dependencies(simgrid maintainer_files)
 
 if(enable_model-checking)

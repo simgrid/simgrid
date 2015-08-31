@@ -1,10 +1,6 @@
 ### Make Libs
 #>gcc c:\simgrid-trunk\examples\msg\icomms\peer.c -static -Lc:\simgrid-trunk\lib -lsimgrid -Ic:\simgrid-trunk\include -lwsock32
 
-if(enable_java)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeJava.cmake)
-endif()
-
 add_library(simgrid SHARED ${simgrid_sources})
 
 set_target_properties(simgrid  PROPERTIES COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" LINK_FLAGS "-shared" VERSION ${libsimgrid_version} PREFIX "lib" SUFFIX ".dll" IMPORT_PREFIX "lib" IMPORT_SUFFIX ".dll")

@@ -256,6 +256,10 @@ else()
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeLibWin.cmake)
 endif()
 
+if(enable_java)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeJava.cmake)
+endif()
+
 ### Make Exes
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeExe.cmake)
 
