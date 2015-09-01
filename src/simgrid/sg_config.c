@@ -377,17 +377,6 @@ static void _sg_cfg_cb_model_check_replay(const char *name, int pos)
   MC_record_path = xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
-static void _sg_cfg_cb_model_check(const char *name, int pos)
-{
-#ifdef HAVE_MC
-  _sg_do_model_check = xbt_cfg_get_boolean(_sg_cfg_set, name);
-#else
-  if (xbt_cfg_get_boolean(_sg_cfg_set, name)) {
-    xbt_die("You tried to activate the model-checking from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
-  }
-#endif
-}
-
 static void _sg_cfg_cb_model_check_record(const char *name, int pos)
 {
 #ifdef HAVE_MC
@@ -615,12 +604,6 @@ void sg_config_init(int *argc, char **argv)
       xbt_cfgelm_string, 0, 1, _sg_cfg_cb_model_check_replay, NULL);
 
 #ifdef HAVE_MC
-    /* do model-checking */
-    xbt_cfg_register(&_sg_cfg_set, "model-check",
-                     "Verify the system through model-checking instead of simulating it (EXPERIMENTAL)",
-                     xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_model_check, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check", "no");
-
     /* do model-checking-record */
     xbt_cfg_register(&_sg_cfg_set, "model-check/record",
                      "Record the model-checking paths",

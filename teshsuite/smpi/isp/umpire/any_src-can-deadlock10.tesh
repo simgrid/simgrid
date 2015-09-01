@@ -2,7 +2,7 @@
 
 ! expect return 3
 ! output display
-$ ${bindir:=.}/../../../../bin/smpirun -wrapper "${bindir:=.}/../../../../bin/simgrid-mc" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml -np 3 --log=xbt_cfg.thresh:warning --cfg=model-check:1 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich ${bindir:=.}/any_src-can-deadlock10 --log=smpi_coll.thresh:error
+$ ${bindir:=.}/../../../../bin/smpirun -wrapper "${bindir:=.}/../../../../bin/simgrid-mc" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml -np 3 --log=xbt_cfg.thresh:warning --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich ${bindir:=.}/any_src-can-deadlock10 --log=smpi_coll.thresh:error
 > [0.000000] [mc_safety/INFO] Check a safety property
 > (0) is alive on Tremblay
 > (1) is alive on Jupiter

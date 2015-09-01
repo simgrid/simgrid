@@ -316,10 +316,10 @@ in NS3. The only valid values (enforced on the SimGrid side) are
 
 \section options_modelchecking Configuring the Model-Checking
 
-To enable the experimental SimGrid model-checking support the program should
-be executed with the command line argument
+To enable the SimGrid model-checking support the program should
+be executed using the simgrid-mc wrapper:
 \verbatim
---cfg=model-check:1
+simgrid-mc ./my_program
 \endverbatim
 
 Safety properties are expressed as assertions using the function
@@ -338,10 +338,6 @@ ltl2ba program.
 --cfg=model-check/property:<filename>
 \endverbatim
 
-Of course, specifying a liveness property enables the model-checking
-so that you don't have to give <tt>--cfg=model-check:1</tt> in
-addition.
-
 \subsection options_modelchecking_steps Going for stateful verification
 
 By default, the system is backtracked to its initial state to explore
@@ -358,9 +354,6 @@ setting for your specific system.
 \verbatim
 --cfg=model-check/checkpoint:1
 \endverbatim
-
-Of course, specifying this option enables the model-checking so that
-you don't have to give <tt>--cfg=model-check:1</tt> in addition.
 
 \subsection options_modelchecking_reduction Specifying the kind of reduction
 
@@ -381,10 +374,6 @@ For now, this configuration variable can take 2 values:
    liveness properties)
  * dpor: Apply Dynamic Partial Ordering Reduction. Only valid if you
    verify local safety properties.
-
-Of course, specifying a reduction technique enables the model-checking
-so that you don't have to give <tt>--cfg=model-check:1</tt> in
-addition.
 
 \subsection options_modelchecking_visited model-check/visited, Cycle detection
 

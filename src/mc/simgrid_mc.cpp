@@ -119,6 +119,8 @@ static char** argvdup(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+  _sg_do_model_check = 1;
+
   // We need to keep the original parameters in order to pass them to the
   // model-checked process:
   int argc_copy = argc;

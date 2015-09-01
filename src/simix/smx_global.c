@@ -21,6 +21,12 @@
 #include "mc/mc_protocol.h"
 #include "mc/mc_client.h"
 #endif
+
+#ifdef HAVE_MC
+#include <stdlib.h>
+#include "mc/mc_protocol.h"
+#endif 
+
 #include "mc/mc_record.h"
 
 #ifdef HAVE_SMPI
@@ -151,6 +157,10 @@ XBT_INLINE double SIMIX_timer_next(void)
  */
 void SIMIX_global_init(int *argc, char **argv)
 {
+#ifdef HAVE_MC
+  _sg_do_model_check = getenv(MC_ENV_VARIABLE) != NULL;
+#endif
+
   s_smx_process_t proc;
 
   if (!simix_global) {
