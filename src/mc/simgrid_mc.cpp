@@ -129,25 +129,6 @@ int main(int argc, char** argv)
   if (argc < 2)
     xbt_die("Missing arguments.\n");
 
-  bool server_mode = true;
-  char* env = std::getenv("SIMGRID_MC_MODE");
-  if (env) {
-    if (std::strcmp(env, "server") == 0)
-      server_mode = true;
-    else if (std::strcmp(env, "standalone") == 0)
-      server_mode = false;
-    else
-      xbt_die("Unrecognised value for SIMGRID_MC_MODE (server/standalone)");
-  }
-
-  if (!server_mode) {
-    setenv(MC_ENV_VARIABLE, "1", 1);
-    execvp(argv[1], argv+1);
-
-    std::perror("simgrid-mc");
-    return 127;
-  }
-
   // Create a AF_LOCAL socketpair:
   int res;
 
