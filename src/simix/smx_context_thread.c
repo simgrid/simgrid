@@ -166,6 +166,11 @@ static void *smx_ctx_thread_wrapper(void *param)
   if (smx_ctx_thread_sem)       /* parallel run */
     xbt_os_sem_acquire(smx_ctx_thread_sem);
 
+  smx_process_t self=SIMIX_process_self();
+  if(SMPI_switch_data_segment && self->segment_index != -1){
+    SMPI_switch_data_segment(self->segment_index);
+  }
+
   (context->super.code) (context->super.argc, context->super.argv);
 
   smx_ctx_thread_stop((smx_context_t) context);
