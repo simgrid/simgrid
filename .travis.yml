@@ -24,10 +24,10 @@ addons:
 # Install libboost-chrono1.48-dev to get boost 1.48 on Ubuntu Precise. What we really want is libboost-dev libboost-all-dev
 # Still need sudo for update-alternatives
 before_install:
-   - sudo apt-get update  -qq
-   - sudo apt-get install -y cmake valgrind default-jdk gfortran liblua5.1-dev lua5.1 libboost-chrono1.48-dev
-   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 50
-   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 50
+   - test -e /usr/bin/apt-get && sudo apt-get update  -qq
+   - test -e /usr/bin/apt-get && sudo apt-get install -y cmake valgrind default-jdk gfortran liblua5.1-dev lua5.1 libboost-chrono1.48-dev
+   - test -e /usr/bin/apt-get && sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 50
+   - test -e /usr/bin/apt-get && sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 50
 script:
    - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=ON -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_compile_warnings=ON . && make VERBOSE=1 && ctest --output-on-failure --timeout 100
 branches:
