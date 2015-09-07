@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Copyright (c) 2013-2015. The SimGrid Team.
 # All rights reserved.
@@ -13,6 +13,7 @@
 # Copyright 2003, Dan Kegel.  Licensed under GPL.  See the file ../COPYING for details.
 
 use strict;
+use warnings;
 
 die "Please install iamerican to use that script." 
   unless (-r "/usr/lib/ispell/american.hash");

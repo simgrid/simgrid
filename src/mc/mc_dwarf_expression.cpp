@@ -38,10 +38,10 @@ static int mc_dwarf_push_value(mc_expression_state_t state, Dwarf_Off value)
  */
 static int mc_dwarf_register_to_libunwind(int dwarf_register)
 {
-#if defined(UNW_TARGET_X86_64)
+#if defined(__x86_64__)
   // It seems for this arch, DWARF and libunwind agree in the numbering:
   return dwarf_register;
-#elif defined(UNW_TARGET_X86)
+#elif defined(__i386__)
   // Could't find the authoritative source of information for this.
   // This is inspired from http://source.winehq.org/source/dlls/dbghelp/cpu_i386.c#L517.
   switch (dwarf_register) {
@@ -170,7 +170,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         unw_step(&cursor);
 
         unw_word_t res;
-        unw_get_reg(&cursor, UNW_TDEP_SP, &res);
+        unw_get_reg(&cursor, UNW_REG_SP, &res);
         error = mc_dwarf_push_value(state, res);
         break;
       }

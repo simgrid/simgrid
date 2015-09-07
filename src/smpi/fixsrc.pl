@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Copyright (c) 2011, 2014. The SimGrid Team.
 # All rights reserved.

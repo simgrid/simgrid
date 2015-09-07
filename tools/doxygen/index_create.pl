@@ -1,10 +1,12 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 
 # Copyright (c) 2005, 2012-2014. The SimGrid Team.
 # All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
+
+use warnings;
 
 ($#ARGV >= 1) or die "Usage: index_create.pl <input-tag-file> <output-doc-file>";
 

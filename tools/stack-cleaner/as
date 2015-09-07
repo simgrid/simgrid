@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 # Wrapper around the real `as` which adds filtering capabilities.
 
 require "tempfile"

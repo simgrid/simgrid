@@ -276,30 +276,26 @@ static const char *MC_dwarf_at_linkage_name(Dwarf_Die * die)
 static Dwarf_Off MC_dwarf_attr_dieoffset(Dwarf_Die * die, int attribute)
 {
   Dwarf_Attribute attr;
-  if (dwarf_hasattr_integrate(die, attribute)) {
-    dwarf_attr_integrate(die, attribute, &attr);
-    Dwarf_Die subtype_die;
-    if (dwarf_formref_die(&attr, &subtype_die) == NULL) {
-      xbt_die("Could not find DIE");
-    }
-    return dwarf_dieoffset(&subtype_die);
-  } else
+  if (dwarf_hasattr_integrate(die, attribute) == 0)
     return 0;
+  dwarf_attr_integrate(die, attribute, &attr);
+  Dwarf_Die subtype_die;
+  if (dwarf_formref_die(&attr, &subtype_die) == NULL)
+    xbt_die("Could not find DIE");
+  return dwarf_dieoffset(&subtype_die);
 }
 
 static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die * die,
                                                    int attribute)
 {
   Dwarf_Attribute attr;
-  if (dwarf_hasattr_integrate(die, attribute)) {
-    dwarf_attr_integrate(die, DW_AT_type, &attr);
-    Dwarf_Die subtype_die;
-    if (dwarf_formref_die(&attr, &subtype_die) == NULL) {
-      xbt_die("Could not find DIE");
-    }
-    return dwarf_dieoffset(&subtype_die);
-  } else
+  if (dwarf_hasattr_integrate(die, attribute) == 0)
     return 0;
+  dwarf_attr_integrate(die, DW_AT_type, &attr);
+  Dwarf_Die subtype_die;
+  if (dwarf_formref_die(&attr, &subtype_die) == NULL)
+    xbt_die("Could not find DIE");
+  return dwarf_dieoffset(&subtype_die);
 }
 
 /** \brief Find the type/subtype (DW_AT_type) for a DIE
@@ -404,24 +400,22 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die * die,
              MC_dwarf_die_tagname(die));
 
   // Use DW_TAG_count if present:
-  if (dwarf_hasattr_integrate(die, DW_AT_count)) {
+  if (dwarf_hasattr_integrate(die, DW_AT_count))
     return MC_dwarf_attr_integrate_uint(die, DW_AT_count, 0);
-  }
   // Otherwise compute DW_TAG_upper_bound-DW_TAG_lower_bound + 1:
 
-  if (!dwarf_hasattr_integrate(die, DW_AT_upper_bound)) {
+  if (!dwarf_hasattr_integrate(die, DW_AT_upper_bound))
     // This is not really 0, but the code expects this (we do not know):
     return 0;
-  }
+
   uint64_t upper_bound =
       MC_dwarf_attr_integrate_uint(die, DW_AT_upper_bound, -1);
 
   uint64_t lower_bound = 0;
-  if (dwarf_hasattr_integrate(die, DW_AT_lower_bound)) {
+  if (dwarf_hasattr_integrate(die, DW_AT_lower_bound))
     lower_bound = MC_dwarf_attr_integrate_uint(die, DW_AT_lower_bound, -1);
-  } else {
+  else
     lower_bound = MC_dwarf_default_lower_bound(dwarf_srclang(unit));
-  }
   return upper_bound - lower_bound + 1;
 }
 
@@ -447,9 +441,8 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
        res = dwarf_siblingof(&child, &child)) {
     int child_tag = dwarf_tag(&child);
     if (child_tag == DW_TAG_subrange_type
-        || child_tag == DW_TAG_enumeration_type) {
+        || child_tag == DW_TAG_enumeration_type)
       result *= MC_dwarf_subrange_element_count(&child, unit);
-    }
   }
   return result;
 }
@@ -484,19 +477,16 @@ static bool MC_compare_variable(
 static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::Type* member,
                                           Dwarf_Die * child)
 {
-  if (dwarf_hasattr(child, DW_AT_data_bit_offset)) {
+  if (dwarf_hasattr(child, DW_AT_data_bit_offset))
     xbt_die("Can't groke DW_AT_data_bit_offset.");
-  }
 
   if (!dwarf_hasattr_integrate(child, DW_AT_data_member_location)) {
-    if (type->type != DW_TAG_union_type) {
-      xbt_die
-          ("Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%"
-           PRIx64 ">%s", member->name.c_str(),
-           (uint64_t) type->id, type->name.c_str());
-    } else {
+    if (type->type == DW_TAG_union_type)
       return;
-    }
+    xbt_die
+        ("Missing DW_AT_data_member_location field in DW_TAG_member %s of type <%"
+         PRIx64 ">%s", member->name.c_str(),
+         (uint64_t) type->id, type->name.c_str());
   }
 
   Dwarf_Attribute attr;
@@ -510,12 +500,11 @@ static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::
     {
       Dwarf_Op *expr;
       size_t len;
-      if (dwarf_getlocation(&attr, &expr, &len)) {
+      if (dwarf_getlocation(&attr, &expr, &len))
         xbt_die
             ("Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%"
              PRIx64 ">%s", MC_dwarf_attr_integrate_string(child, DW_AT_name),
              (uint64_t) type->id, type->name.c_str());
-      }
       simgrid::mc::DwarfExpression(expr, expr+len);
       break;
     }
@@ -585,17 +574,15 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die
       member.element_count = -1;
       member.type_id = MC_dwarf_at_type(&child);
 
-      if (dwarf_hasattr(&child, DW_AT_data_bit_offset)) {
+      if (dwarf_hasattr(&child, DW_AT_data_bit_offset))
         xbt_die("Can't groke DW_AT_data_bit_offset.");
-      }
 
       MC_dwarf_fill_member_location(type, &member, &child);
 
-      if (!member.type_id) {
+      if (!member.type_id)
         xbt_die("Missing type for member %s of <%" PRIx64 ">%s",
                 member.name.c_str(),
                 (uint64_t) type->id, type->name.c_str());
-      }
 
       type->members.push_back(std::move(member));
     }
@@ -660,9 +647,8 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
            || type.type == DW_TAG_structure_type
            || type.type == DW_TAG_class_type) {
     Dwarf_Word size;
-    if (dwarf_aggregate_size(die, &size) == 0) {
+    if (dwarf_aggregate_size(die, &size) == 0)
       type.byte_size = size;
-    }
   }
 
   switch (type.type) {
@@ -717,10 +703,9 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     return nullptr;
 
   Dwarf_Attribute attr_location;
-  if (dwarf_attr(die, DW_AT_location, &attr_location) == NULL) {
+  if (dwarf_attr(die, DW_AT_location, &attr_location) == NULL)
     // No location: do not add it ?
     return nullptr;
-  }
 
   std::unique_ptr<simgrid::mc::Variable> variable =
     std::unique_ptr<simgrid::mc::Variable>(new simgrid::mc::Variable());
@@ -1008,20 +993,12 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
   Dwarf_Off offset = 0;
   Dwarf_Off next_offset = 0;
   size_t length;
+
   while (dwarf_nextcu(dwarf, offset, &next_offset, &length, NULL, NULL, NULL) ==
          0) {
     Dwarf_Die unit_die;
-    if (dwarf_offdie(dwarf, offset + length, &unit_die) != NULL) {
-
-      // For each child DIE:
-      Dwarf_Die child;
-      int res;
-      for (res = dwarf_child(&unit_die, &child); res == 0;
-           res = dwarf_siblingof(&child, &child)) {
-        MC_dwarf_handle_die(info, &child, &unit_die, NULL, NULL);
-      }
-
-    }
+    if (dwarf_offdie(dwarf, offset + length, &unit_die) != NULL)
+      MC_dwarf_handle_children(info, &unit_die, &unit_die, NULL, NULL);
     offset = next_offset;
   }
 
@@ -1073,10 +1050,9 @@ static void MC_post_process_variables(simgrid::mc::ObjectInformation* info)
     MC_compare_variable);
 
   for(simgrid::mc::Variable& variable : info->global_variables)
-    if (variable.type_id) {
+    if (variable.type_id)
       variable.type = simgrid::util::find_map_ptr(
         info->types, variable.type_id);
-    }
 }
 
 static void mc_post_process_scope(simgrid::mc::ObjectInformation* info, simgrid::mc::Frame* scope)
@@ -1093,10 +1069,9 @@ static void mc_post_process_scope(simgrid::mc::ObjectInformation* info, simgrid:
 
   // Direct:
   for (simgrid::mc::Variable& variable : scope->variables)
-    if (variable.type_id) {
+    if (variable.type_id)
       variable.type = simgrid::util::find_map_ptr(
         info->types, variable.type_id);
-    }
 
   // Recursive post-processing of nested-scopes:
   for (simgrid::mc::Frame& nested_scope : scope->scopes)
@@ -1162,13 +1137,13 @@ void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::Obj
 
     simgrid::mc::Type* type = &(i.second);
     simgrid::mc::Type* subtype = type;
-    while (subtype->type == DW_TAG_typedef || subtype->type == DW_TAG_volatile_type
-      || subtype->type == DW_TAG_const_type) {
+    while (subtype->type == DW_TAG_typedef
+        || subtype->type == DW_TAG_volatile_type
+        || subtype->type == DW_TAG_const_type)
       if (subtype->subtype)
         subtype = subtype->subtype;
       else
         break;
-    }
 
     // Resolve full_type:
     if (!subtype->name.empty() && subtype->byte_size == 0) {

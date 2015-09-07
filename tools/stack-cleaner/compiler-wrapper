@@ -1,6 +1,8 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 # Compiler wrapper with stack-cleaner support (enabled by default).
 # Usage: ./compiler-wrapper target-compiler args [-f[no-]stack-cleaner]
+
+use warnings;
 
 use File::Basename;
 
