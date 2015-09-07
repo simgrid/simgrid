@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/env perl
 # -*- Mode: perl; -*-
 #
 # This script is the beginnings of a script to run a sequence of test
