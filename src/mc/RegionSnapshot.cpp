@@ -18,6 +18,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc,
 namespace simgrid {
 namespace mc {
 
+static inline
+const char* to_cstr(RegionType region)
+{
+  switch (region) {
+  case RegionType::Unknown:
+    return "unknown";
+  case RegionType::Heap:
+    return "Heap";
+  case RegionType::Data:
+    return "Data";
+  default:
+    return "?";
+  }
+}
+
 RegionSnapshot dense_region(
   RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
@@ -31,8 +46,8 @@ RegionSnapshot dense_region(
     region_type, start_addr, permanent_addr, size);
   region.flat_data(std::move(data));
 
-  XBT_DEBUG("New region : type : %d, data : %p (real addr %p), size : %zu",
-            region_type, region.flat_data().data(), permanent_addr, size);
+  XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
+            to_cstr(region_type), region.flat_data().data(), permanent_addr, size);
   return std::move(region);
 }
 

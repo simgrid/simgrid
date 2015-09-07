@@ -30,27 +30,51 @@ if(enable_compile_warnings)
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 endif()
 
+# Se the optimisation flags
+# NOTE, we should CMAKE_BUILD_TYPE for this
 if(enable_compile_optimizations)
   set(optCFLAGS "-O3 -funroll-loops -fno-strict-aliasing ")
-  if(CMAKE_COMPILER_IS_GNUCC AND (NOT enable_model-checking))
-    set(optCFLAGS "${optCFLAGS} -finline-functions ")
-    if(WIN32)
-      if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
+else()
+  set(optCFLAGS "-O0 ")
+endif()
+if(enable_compile_optimizations AND CMAKE_COMPILER_IS_GNUCC
+    AND (NOT enable_model-checking))
+  # This is redundant (already in -03):
+  set(optCFLAGS "${optCFLAGS} -finline-functions ")
+endif()
+
+# Configure LTO
+# TODO, provide an option to manually choose whether to use LTO
+# NOTE, cmake 3.0 has a INTERPROCEDURAL_OPTIMIZATION target
+#       property for this (http://www.cmake.org/cmake/help/v3.0/prop_tgt/INTERPROCEDURAL_OPTIMIZATION.html)
+set(enable_lto OFF)
+if(enable_compile_optimizations
+    AND CMAKE_COMPILER_IS_GNUCC
+    AND (NOT enable_model-checking))
+  if(WIN32)
+    if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
       # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
       #
       # We are experiencing assertion failures even with 4.8 on MinGW.
       # Push the support forward: will see if 4.9 works when we test it.
-      set(optCFLAGS "${optCFLAGS} -flto ")
-      endif()
-    else()    
-      # On non-windows, 4.6 is enough for that
-      if(LINKER_VERSION STRGREATER "2.22")
-        set(optCFLAGS "${optCFLAGS} -flto ")
-      endif()
+      set(enable_lto ON)
     endif()
+  elseif(LINKER_VERSION STRGREATER "2.22")
+    set(enable_lto ON)
   endif()
-else()
-  set(optCFLAGS "-O0 ")
+endif()
+if(enable_lto)
+  set(optCFLAGS "${optCFLAGS} -flto ")
+  # See https://gcc.gnu.org/wiki/LinkTimeOptimizationFAQ#ar.2C_nm_and_ranlib:
+  # "Since version 4.9 gcc produces slim object files that only contain
+  # the intermediate representation. In order to handle archives of
+  # these objects you have to use the gcc wrappers:
+  # gcc-ar, gcc-nm and gcc-ranlib."
+  if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU"
+      AND COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
+    set (CMAKE_AR gcc-ar)
+    set (CMAKE_RANLIB gcc-ranlib)
+  endif()
 endif()
 
 if(enable_model-checking AND enable_compile_optimizations)
