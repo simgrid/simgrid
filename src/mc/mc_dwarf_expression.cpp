@@ -170,7 +170,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         unw_step(&cursor);
 
         unw_word_t res;
-        unw_get_reg(&cursor, UNW_TDEP_SP, &res);
+        unw_get_reg(&cursor, UNW_REG_SP, &res);
         error = mc_dwarf_push_value(state, res);
         break;
       }
