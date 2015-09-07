@@ -29,7 +29,7 @@ install:
 build_script:
 #- '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd"'
 #- bash -lc "echo \"C:/MinGW /mingw\" > /etc/fstab"
-#- bash -lc "printenv"
+- bash -lc "ls -lR /mingw64"
 - bash -lc "cd /c/projects/simgrid && cmake -G \"MSYS Makefiles\" -DBOOST_ROOT=\"%BOOST_ROOT%\" -DBOOST_LIBRARYDIR=\"%BOOST_LIBRARYDIR%\" -DBoost_USE_STATIC_LIBS=ON -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=OFF -Denable_model-checking=OFF ."
 - bash -lc "cd /c/projects/simgrid; echo XXX simgrid_config.h; cat include/simgrid_config.h"
 - bash -lc "cd /c/projects/simgrid; echo XXX src/internal_config.h; cat src/internal_config.h"
