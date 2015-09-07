@@ -12,16 +12,29 @@ platform:
 environment:
   BOOST_ROOT: c:\Libraries\boost
   BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
-    
+
+install:
+#- ps: |
+#      if ($env:Compiler -eq "mingw" -AND -Not (Test-Path "C:\mingw64")) {
+#        # Install MinGW64
+#	$file = "x86_64-4.9.2-release-win32-seh-rt_v4-rev3.7z"
+#	$url  = "https://bintray.com/artifact/download/drewwells/generic/"
+#        $url += $file
+#	Invoke-WebRequest -UserAgent wget -Uri $url -OutFile $file
+#	&7z x -oC:\ $file > $null
+#      }
+- set PATH=C:\mingw64\bin;%PATH%
+- set CC=gcc
+
 build_script:
-- '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd"'
-- C:\MinGW\msys\1.0\bin\bash -lc "echo \"C:/MinGW /mingw\" > /etc/fstab"
-- C:\MinGW\msys\1.0\bin\bash -lc "printenv"
-- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && cmake -G \"MSYS Makefiles\" -DBOOST_ROOT=\"%BOOST_ROOT%\" -DBOOST_LIBRARYDIR=\"%BOOST_LIBRARYDIR%\" -DBoost_USE_STATIC_LIBS=ON -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=OFF -Denable_model-checking=OFF ."
-- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX simgrid_config.h; cat include/simgrid_config.h"
-- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX src/internal_config.h; cat src/internal_config.h"
+#- '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\VsDevCmd"'
+- bash -lc "echo \"C:/MinGW /mingw\" > /etc/fstab"
+- bash -lc "printenv"
+- bash -lc "cd /c/projects/simgrid && cmake -G \"MSYS Makefiles\" -DBOOST_ROOT=\"%BOOST_ROOT%\" -DBOOST_LIBRARYDIR=\"%BOOST_LIBRARYDIR%\" -DBoost_USE_STATIC_LIBS=ON -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=OFF -Denable_model-checking=OFF ."
+- bash -lc "cd /c/projects/simgrid; echo XXX simgrid_config.h; cat include/simgrid_config.h"
+- bash -lc "cd /c/projects/simgrid; echo XXX src/internal_config.h; cat src/internal_config.h"
 #- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid; echo XXX Internal builtins; gcc -dM -E - < /dev/null"
-- C:\MinGW\msys\1.0\bin\bash -lc "cd /c/projects/simgrid && make VERBOSE=1"
+- bash -lc "cd /c/projects/simgrid && make VERBOSE=1"
 
 test_script:
   cmd: ctest -VV
@@ -33,3 +46,5 @@ test_script:
 # https://github.com/osmcode/libosmium/blob/master/appveyor.yml
 # https://github.com/polysquare/cmake-unit/blob/master/appveyor.yml
 # https://github.com/openvswitch/ovs/blob/master/appveyor.yml
+# https://github.com/sass/libsass/blob/master/appveyor.yml <- install mingw-w64
+# https://github.com/sympy/symengine/blob/master/appveyor.yml <- use provided mingw-w64
