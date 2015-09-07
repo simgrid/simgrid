@@ -1008,20 +1008,12 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
   Dwarf_Off offset = 0;
   Dwarf_Off next_offset = 0;
   size_t length;
+
   while (dwarf_nextcu(dwarf, offset, &next_offset, &length, NULL, NULL, NULL) ==
          0) {
     Dwarf_Die unit_die;
-    if (dwarf_offdie(dwarf, offset + length, &unit_die) != NULL) {
-
-      // For each child DIE:
-      Dwarf_Die child;
-      int res;
-      for (res = dwarf_child(&unit_die, &child); res == 0;
-           res = dwarf_siblingof(&child, &child)) {
-        MC_dwarf_handle_die(info, &child, &unit_die, NULL, NULL);
-      }
-
-    }
+    if (dwarf_offdie(dwarf, offset + length, &unit_die) != NULL)
+      MC_dwarf_handle_children(info, &unit_die, &unit_die, NULL, NULL);
     offset = next_offset;
   }
 
