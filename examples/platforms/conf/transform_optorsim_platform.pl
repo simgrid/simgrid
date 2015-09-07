@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 
 # Copyright (c) 2011, 2014. The SimGrid Team.
 # All rights reserved.
@@ -7,6 +7,7 @@
 # under the terms of the license (GNU LGPL) which comes with this package.
 
 use strict;
+use warnings;
 
 if($#ARGV!=0) {
     die "Usage: perl transfrom_optorsim_platform.pl <file.conf>\n";

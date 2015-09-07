@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # Copyright (c) 2012, 2014. The SimGrid Team.
 # All rights reserved.

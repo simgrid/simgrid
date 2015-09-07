@@ -1,9 +1,10 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 # Transform assembly in order to clean each stack frame for X86_64.
 
 use strict;
-$SIG{__WARN__} = sub { die @_ };
+use warnings;
 
+$SIG{__WARN__} = sub { die @_ };
 
 # Whether we are still scanning the content of a function:
 our $scanproc = 0;
