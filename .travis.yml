@@ -47,4 +47,3 @@ notifications:
 os:
   - linux
   - osx
-  - windows
