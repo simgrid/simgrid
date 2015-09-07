@@ -206,7 +206,7 @@ void TRACE_smpi_init(int rank)
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
 
-  container_t father;
+  container_t father, me;
   if (TRACE_smpi_is_grouped()){
     father = PJ_container_get (SIMIX_host_self_get_name());
   }else{
@@ -214,7 +214,10 @@ void TRACE_smpi_init(int rank)
   }
   xbt_assert(father!=NULL,
       "Could not find a parent for mpi rank %s at function %s", str, __FUNCTION__);
-  PJ_container_new(str, INSTR_SMPI, father);
+  me = PJ_container_new(str, INSTR_SMPI, father);
+  type_t eventype = PJ_type_event_new("MPI_Migrate", me->type);
+
+  val_t val = PJ_value_new ("migrate", "0 0 0", eventype);
 }
 
 void TRACE_smpi_finalize(int rank)
@@ -604,4 +607,16 @@ void TRACE_Iteration_out(int rank)
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
+void TRACE_migration_call(int rank)
+{
+  if (!TRACE_smpi_is_enabled()) return;
+
+  char str[INSTR_DEFAULT_STR_SIZE];
+  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
+  container_t container = PJ_container_get (str);
+  type_t type = PJ_type_get ("MPI_Migrate", container->type);
+  val_t val = PJ_value_get ("migrate", type); 
+
+  new_pajeNewEvent (SIMIX_get_clock(), container, type, val);
+}
 #endif /* HAVE_TRACING */

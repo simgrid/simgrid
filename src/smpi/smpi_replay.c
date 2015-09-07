@@ -1262,6 +1262,12 @@ static void action_allToAllv(const char *const *action) {
 
 smx_host_t load_balancer(void)
 {
+  return SIMIX_host_self();
+}
+
+/********************* Random LB*********************************************
+smx_host_t load_balancer(void)
+{
   unsigned int cursor;
   unsigned int host_index;
   //smx_host_t *host;
@@ -1271,15 +1277,14 @@ smx_host_t load_balancer(void)
   if(host_index < 0){
     return SIMIX_host_self();
   }
-  
-/*    
-  xbt_dynar_foreach(hosts, cursor, host){
-    if(smpi_process_index() == 0){
-      printf("%d: Host %d: %s\n", smpi_process_index(), cursor,
-	      SIMIX_host_get_name((smx_host_t) host));
-    }
-  }
-*/
+
+
+//  xbt_dynar_foreach(hosts, cursor, host){
+//    if(smpi_process_index() == 0){
+//      printf("%d: Host %d: %s\n", smpi_process_index(), cursor,
+//	      SIMIX_host_get_name((smx_host_t) host));
+//    }
+//  }
 
   static unsigned int seed = 0;
   if(!seed){
@@ -1299,7 +1304,7 @@ smx_host_t load_balancer(void)
   
   return new_host;
 }
-
+*/
 
 /* Based on MSG_process_migrate [src/msg/msg_process.c] */
 void process_migrate(smx_process_t process, smx_host_t new_host, int size)
@@ -1364,6 +1369,11 @@ static void action_migrate(const char *const *action)
   printf("%s: Task %d will call the LB.\n",
 	  SIMIX_host_self_get_name(), smpi_process_index());
   */
+  
+#ifdef HAVE_TRACING
+  TRACE_migration_call(smpi_process_index());
+#endif
+
   new_host = load_balancer();
 /*  printf("%s, Task %d; new host: %s.\n", SIMIX_host_self_get_name(), rank,
 	  SIMIX_host_get_name(new_host));*/
