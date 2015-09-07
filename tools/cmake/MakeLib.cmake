@@ -33,27 +33,6 @@ if (HAVE_BOOST_CONTEXT)
   set(SIMGRID_DEP "${SIMGRID_DEP} ${Boost_CONTEXT_LIBRARY}")
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
-    AND NOT ${CMAKE_SYSTEM_VERSION} VERSION_LESS 10.0
-    AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-  # FreeBSD from 10.0 provide a internal C++ stack (unused by gcc)
-  # see https://wiki.freebsd.org/NewC%2B%2BStack
-  set(SIMGRID_DEP "${SIMGRID_DEP} -lc++")
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "FreeBSD"
-    AND ${CMAKE_SYSTEM_VERSION} VERSION_LESS 10.0
-    AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-  # FreeBSD prior to 10.0 does not necessarily have a compiler
-  # installed that is capable of c++11! Hence, we just assume
-  # here that libc++ was compiled.
-  # FIXME: We should change this behavior; we may want to include
-  # an option of whether libc++ (clang++) or libstdc++ (g++)
-  # should be used.
-  include_directories( "/usr/local/include/c++/v1")
-  set(SIMGRID_DEP "${SIMGRID_DEP} -lc++ -L/usr/local/lib ")
-else()
-  set(SIMGRID_DEP "${SIMGRID_DEP} -lstdc++")
-endif()
-
 if(HAVE_PTHREAD AND ${CONTEXT_THREADS} AND NOT APPLE)
   # Clang on recent Mac OS X is not happy about -pthread.
   SET(SIMGRID_DEP "${SIMGRID_DEP} -pthread")
