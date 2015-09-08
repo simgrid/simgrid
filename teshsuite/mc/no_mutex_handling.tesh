@@ -1,4 +1,0 @@
-#!/usr/bin/env tesh
-! expect return 1
-! output ignore
-$ ${bindir:=.}/../../bin/simgrid-mc ${bindir:=.}/no_mutex_handling ../../examples/platforms/platform.xml mutex_handling.xml

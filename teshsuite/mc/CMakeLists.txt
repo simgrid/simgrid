@@ -2,17 +2,17 @@ if(HAVE_MC)
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
 
-add_executable(mutex_handling mutex_handling.c)
-target_link_libraries(mutex_handling simgrid)
+add_executable(with_mutex_handling mutex_handling.c)
+target_link_libraries(with_mutex_handling simgrid)
 
-add_executable(no_mutex_handling mutex_handling.c)
-target_link_libraries(no_mutex_handling simgrid)
-set_target_properties(no_mutex_handling PROPERTIES COMPILE_FLAGS -DDISABLE_THE_MUTEX=1)
+add_executable(without_mutex_handling mutex_handling.c)
+target_link_libraries(without_mutex_handling simgrid)
+set_target_properties(without_mutex_handling PROPERTIES COMPILE_FLAGS -DDISABLE_THE_MUTEX=1)
 
 set(tesh_files
   ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/mutex_handling.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/no_mutex_handling.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/with_mutex_handling.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/without_mutex_handling.tesh
   PARENT_SCOPE
   )
 set(testsuite_src
