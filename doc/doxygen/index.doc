@@ -1,5 +1,5 @@
 /*!  
-@mainpage SimGrid Documentation
+@mainpage SimGrid User Documentation
 
 @image html simgrid_logo_2011.png  "Versatile Simulation of Distributed Systems, for Grids, Clouds, P2P and HPC systems"
 @image latex simgrid_logo_2011.png "Versatile Simulation of Distributed Systems, for Grids, Clouds, P2P and HPC systems"
@@ -10,21 +10,20 @@
 <tr><td width="50%">
 @endhtmlonly
 
-- @subpage getting_started
 - @subpage introduction
-- @subpage install
 - @subpage use
-  - @ref platform
-  - @ref deployment
-  - @ref tracing
-  - @ref options
   - @ref help
+- @subpage platform
+- @subpage options
+- @subpage deployment
 - @subpage advanced
   - @ref bindings
   - @ref pls
+  - @ref tracing
   - @ref contributing
-  - @ref internals
 - @subpage FAQ
+- @subpage internals
+- @subpage contributing
 
 @htmlonly
 </td><td width="50%" align="center">

@@ -1,4 +1,4 @@
-/*! \page platform Step 1: %Model the computation platform
+/*! \page platform Step 1: %Model the underlying platform
 
 @tableofcontents
 
@@ -1380,11 +1380,10 @@ A route in the \ref pf_routing_model_shortest_path "Shortest-Path routing model"
 
 \subsubsection pf_routing_tag_bypassasroute bypassASroute
 
-<b>Note : bypassASroute and bypassRoute are under rewriting to perform
-better ; so you may not use it yet</b> %As said before, once you choose
-a model, it (if so) calculates routes for you. But maybe you want to
+%As said before, once you choose
+a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
-to bypass some routes defined in lower level AS at an upper stage :
+to bypass some routes defined in lower level AS at an upper stage:
 <b>bypassASroute</b> is the tag you're looking for. It allows to
 bypass routes defined between already defined between AS (if you want
 to bypass route for a specific host, you should just use byPassRoute).
@@ -1418,9 +1417,8 @@ attribute was not given, this route is presumed to be symmetrical.
 
 \subsubsection pf_routing_tag_bypassroute bypassRoute
 
-<b>Note : bypassASRoute and bypassRoute are under rewriting to perform
-better ; so you may not use it yet</b> %As said before, once you choose
-a model, it (if so) calculates routes for you. But maybe you want to
+%As said before, once you choose
+a model, it (most likely; the constant network model, for example, doesn't) calculates routes for you. But maybe you want to
 define some of your routes, which will be specific. You may also want
 to bypass some routes defined in lower level AS at an upper stage :
 <b>bypassRoute</b> is the tag you're looking for. It allows to bypass

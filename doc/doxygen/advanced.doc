@@ -8,7 +8,6 @@ tutorials.
 
 - @subpage bindings
 - @subpage pls
-- @subpage internals
-- @subpage contributing
+- @subpage tracing
 
 */

@@ -1,9 +1,71 @@
-/*! @page getting_started SimGrid in 30mn
+/*! @page getting_started Getting started with SimGrid!
 
-This page does not exist yet. In the meanwhile, please refer to the
-<a href="http://simgrid.gforge.inria.fr/tutorials.html">tutorials</a>
-on the project web page, looking for the 
-<a href="http://simgrid.gforge.inria.fr/tutorials/simgrid-use-101.pdf">SimGrid
-User 101</a> tutorial.
+\tableofcontents
+
+Welcome to SimGrid's documentation! %As you may know, SimGrid is (actively
+developed) research software and contains many features. This documentation is
+\c "work in progress" (and we need the community's help to improve this
+documentation! If you're ready to step up and help us, see Section \ref
+contributing "Contributing"), but many features are already well described.
+
+%As for many projects, our documentation consists mostly of documentation
+for \ref gs_new_users "new" and \ref gs_experienced_users "experienced" users, but
+we also have several pages plus a technical documentation; in addition to that, we have
+also written many \ref gs_examples "examples" that you can easily adapt to your
+own needs. This page gives you a brief overview of available resources.
+
+\section gs_introduction Introduction, Installation and how we can help
+
+| Document name     | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| \ref introduction | Introduces the user to basic features of SimGrid. |
+| \ref install      | Explains how SimGrid can be installed; this covers Windows as well as Linux; plus, it shows how to install from a package or how to install from source. |
+| \ref FAQ          | Our FAQ                                           |
+| \ref help         | There are many ways to find answers to your questions. This document lists them. |
+
+\section gs_new_users Documentation for new users
+
+| Document name     | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| \ref introduction | Introduces the user to basic features of SimGrid. |
+| \ref install      | Explains how SimGrid can be installed; this covers Windows as well as Linux; plus, it shows how to install from a package or how to install from source. |
+| [Tutorials](http://simgrid.gforge.inria.fr/tutorials.html) | These tutorials cover most of the basics and might be valuable for what you want to do, especially the [SimGrid User 101](http://simgrid.gforge.inria.fr/tutorials/simgrid-use-101.pdf). |
+| \ref MSG_examples | This document explains several tests that we wrote for MSG; these tests are working simulations and you may learn something from looking at them. |
+
+In order to actually use SimGrid, three steps are necessary:
+
+\li \ref platform
+\li \ref options
+\li \ref deployment
+
+\section gs_experienced_users Documentation for experienced users
+
+| Document name     | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| \ref tracing      | Shows how the behavior of a program can be written to a file so that it can be analyzed. |
+| \ref bindings     | SimGrid supports many different bindings for languages such as Lua, Ruby, Java, ... You can run your simulations with those! |
+| \ref pls          | Although SimGrid is not a packet level simulator, it does have bindings to two such simulators. |
+| \ref internals    | If you want to contribute or obtain a deeper understanding of SimGrid, this is the right location. |
+
+\section gs_examples Examples shipped with SimGrid
+
+SimGrid ships with many examples. You can find them in the folder
+\c examples/. Especially when you're looking for examples on how to
+use a specific XML-tag, this will prove valuable, as you can easily
+search through all the files with tools like \c grep.
+
+
+Here is the output of a quick search for examples for \ref pf_trace "trace_connect":
+
+\verbatim
+% grep -R -i -n --include="*.xml" "trace_connect" .
+./simdag/two_hosts.xml:22:   <trace_connect trace="Tremblay_power" element="Tremblay" kind="POWER"/>
+./platforms/two_hosts_platform_with_availability_included.xml:24:<trace_connect kind="POWER" trace="A" element="Cpu A"/>
+./platforms/two_hosts_platform_with_availability_included.xml:25:<trace_connect kind="HOST_AVAIL" trace="A_failure" element="Cpu A"/>
+./platforms/two_hosts_platform_with_availability_included.xml:26:<trace_connect kind="POWER" trace="B" element="Cpu B"/>
+\endverbatim
+
+\note
+    There's also a Section on \ref MSG_examples "examples for MSG".
 
 */

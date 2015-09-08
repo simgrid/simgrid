@@ -644,6 +644,7 @@ WARN_LOGFILE           =
 
 INPUT                  = doxygen/index.doc \
                          doxygen/getting_started.doc \
+                         doxygen/getting_started_index.doc \
                          doxygen/introduction.doc \
                          doxygen/install.doc \
                          doxygen/use.doc \   
@@ -779,7 +780,8 @@ EXCLUDE_SYMBOLS        =
 EXAMPLE_PATH           = ./ \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/examples
+                         @top_srcdir@/examples \
+                         @top_srcdir@/doc/example_lists
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp

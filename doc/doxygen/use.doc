@@ -2,16 +2,12 @@
 
 This page is under work -- sorry for the inconvinience (FIXME).
 
-- @subpage platform
-- @subpage deployment
-- @subpage tracing
-- @subpage options
-- @subpage help
+- @ref help
 
 \tableofcontents
 
 SimGrid comes with many examples provided in the examples/ directory.
-Those examples are described in section \ref MSG_examples . Those
+Those examples are described in section \ref MSG_examples. Those
 examples are commented and should be easy to understand. for a first
 step into SimGrid we also provide some more detailed examples in the
 sections below. 
@@ -61,9 +57,9 @@ an external description of the deployment.
 
 \paragraph MSG_ext_icomms_Sender Sender function
 
-The sender send to a receiver an asynchronous message with the function "MSG_task_isend()". Cause this function is non-blocking
-we have to make "MSG_comm_test()" to know   if the communication is finished for finally destroy it with function "MSG_comm_destroy()".
-It also available to "make MSG_comm_wait()" which make both of them.
+A host can send an an asynchronous message with \c MSG_task_isend(). %As this function is non-blocking,
+we have to call \c MSG_comm_test() to know if the communication has finished and finally destroy it with a call to \c MSG_comm_destroy().
+It is also possible to call \c MSG_comm_wait() which, is provides a shortcut.
 
   C style arguments (argc/argv) are interpreted as:
    - the number of tasks to distribute
@@ -80,8 +76,8 @@ It also available to "make MSG_comm_wait()" which make both of them.
 
 \paragraph MSG_ext_icomms_Receiver Receiver function
 
-This function executes tasks when it receives them. As the receiving is asynchronous we have to test the communication to know
-if it is completed or not with "MSG_comm_test()" or wait for the completion "MSG_comm_wait()".
+This function executes tasks when it receives them. %As the receiving is asynchronous we have to test the communication to know
+if it is completed or not with \c MSG_comm_test() or wait for the completion \c MSG_comm_wait().
 
   C style arguments (argc/argv) are interpreted as:
    - the id to use for received the communication.
@@ -169,7 +165,7 @@ and an external description of the deployment.
 
 \paragraph MSG_ext_ms_master Master code
 
-This function has to be assigned to a msg_process_t that will behave as
+This function has to be assigned to a #msg_process_t that will behave as
 the master. It should not be called directly but either given as a
 parameter to #MSG_process_create() or registered as a public function
 through #MSG_function_register() and then automatically assigned to a
@@ -188,7 +184,7 @@ Tasks are dumbly sent in a round-robin style.
 \paragraph MSG_ext_ms_slave Slave code
 
 This function has to be assigned to a #msg_process_t that has to behave
-as a slave. Just like the master fuction (described in \ref
+as a slave. Just like the master function (described in \ref
 MSG_ext_ms_master), it should not be called directly.
 
 This function keeps waiting for tasks and executes them as it receives them.
@@ -201,10 +197,10 @@ This function has to be assigned to a #msg_process_t that has to behave
 as a forwarder. Just like the master function (described in \ref
 MSG_ext_ms_master), it should not be called directly.
 
-C style arguments (argc/argv) are interpreted as a list of host that
+C style arguments (argc/argv) are interpreted as a list of hosts that
 will accept those tasks.
 
-This function keeps waiting for tasks and dispathes them to its slaves.
+This function keeps waiting for tasks and dispatches them to its slaves.
 
 \until end_of_forwarder
 
@@ -232,11 +228,13 @@ This initializes MSG, runs a simulation, and free all data-structures created by
 
 \subsubsection MSG_ext_ms_helping Helping files
 
-\paragraph MSG_ext_ms_application Example of application file
+\paragraph MSG_ext_ms_application Example of a deployment file
 
-\include msg/masterslave/deployment_masterslave.xml
+The following listing can be found in \c examples/msg/masterslave/deployment_masterslave_forwarder.xml:
 
-\paragraph MSG_ext_ms_platform Example of platform file
+\include msg/masterslave/deployment_masterslave_forwarder.xml
+
+\paragraph MSG_ext_ms_platform Example of a platform file
 
 \include platforms/small_platform.xml
 

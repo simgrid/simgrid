@@ -70,6 +70,17 @@ if(DOXYGEN_FOUND)
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Generate list of files in examples/ for routing models"
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh Floyd > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_floyd
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh Dijkstra > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_dijkstra
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh DijkstraCache > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_dijkstra_cache
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh 'routing="None"' > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_none
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh 'routing="Cluster"' > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_cluster
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh 'routing="Vivaldi"' > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_vivaldi
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh 'routing="Full"' > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_full
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Generate list of files in examples/ for XML tags"
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh '<mount ' > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_xmltag_mount
+    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh '<link_ctn ' > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_xmltag_linkctn
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen again"
     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map

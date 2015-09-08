@@ -1,0 +1,13 @@
+/*! 
+@page getting_started_index Getting Started 
+
+- @subpage getting_started
+- @subpage install
+    - @ref help
+- @subpage advanced
+  - @ref bindings
+  - @ref pls
+  - @ref tracing
+  - @ref contributing
+
+*/

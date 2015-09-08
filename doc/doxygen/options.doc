@@ -1,4 +1,4 @@
-/*! \page options Simgrid options and configurations
+/*! \page options Step 2: Configure SimGrid
 
 A number of options can be given at runtime to change the default
 SimGrid behavior. For a complete list of all configuration options
@@ -92,7 +92,7 @@ described in
   - \b LV08 (default one): Realistic network analytic model
     (slow-start modeled by multiplying latency by 10.4, bandwidth by
     .92; bottleneck sharing uses a payload of S=8775 for evaluating RTT)
-  - \b Constant: Simplistic network model where all communication
+  - \anchor options_model_select_network_constant \b Constant: Simplistic network model where all communication
     take a constant time (one second). This model provides the lowest
     realism, but is (marginally) faster.
   - \b SMPI: Realistic network model specifically tailored for HPC
@@ -271,7 +271,8 @@ Note that with the default host model this option is activated by default.
 \subsubsection options_model_network_coord Coordinated-based network models
 
 When you want to use network coordinates, as it happens when you use
-an \<AS\> in your platform file with \c Vivaldi as a routing, you must
+an \<AS\> in your platform file with \c Vivaldi as a routing (see also
+Section \ref pf_routing_model_vivaldi "Vivaldi Routing Model"), you must
 set the \b network/coordinates to \c yes so that all mandatory
 initialization are done in the simulator.
 
