@@ -201,7 +201,7 @@ void MC_modelcheck_safety(void)
           req = MC_state_get_internal_request(state);
           if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
             xbt_die("Mutex is currently not supported with DPOR, "
-              "use --cfg=model-check/reduction:dpor");
+              "use --cfg=model-check/reduction:none");
           const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
           xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
             if (MC_request_depend(req, MC_state_get_internal_request(prev_state))) {
