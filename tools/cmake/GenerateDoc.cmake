@@ -71,6 +71,7 @@ if(DOXYGEN_FOUND)
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
     COMMAND ${CMAKE_COMMAND} -E echo "XX Generate list of files in examples/ for routing models"
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/doc/example_lists/
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh Floyd > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_floyd
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh Dijkstra > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_dijkstra
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh DijkstraCache > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_routing_dijkstra_cache
