@@ -13,7 +13,7 @@ const char* mailbox = "mailbox";
 #define task_comp_size 1000
 #define task_comm_size 100000
 
-static int onexit(smx_process_exit_status_t status, int *pid){
+static int my_onexit(smx_process_exit_status_t status, int *pid){
   XBT_INFO("Process \"%d\" killed.", *pid);
   return 0;
 }
@@ -21,7 +21,7 @@ static int onexit(smx_process_exit_status_t status, int *pid){
 static int sendpid(int argc, char *argv[])
 {
   int pid = MSG_process_self_PID();
-  MSG_process_on_exit((int_f_pvoid_pvoid_t)onexit, &pid);
+  MSG_process_on_exit((int_f_pvoid_pvoid_t)my_onexit, &pid);
   msg_task_t task = MSG_task_create("pid", task_comp_size, task_comm_size, &pid);
   XBT_INFO("Sending pid of \"%d\".", pid);
   MSG_task_send(task, mailbox);
