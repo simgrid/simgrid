@@ -25,13 +25,13 @@ install:
 #- set CC=gcc
 
 build_script:
-- msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER; PATH=$PATH:/mingw64/bin:/mingw32/bin; exec 0</dev/null; cmake -G \"MSYS Makefiles\" -DBOOST_ROOT=\"%BOOST_ROOT%\" -DBOOST_LIBRARYDIR=\"%BOOST_LIBRARYDIR%\" -DBoost_USE_STATIC_LIBS=ON -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=OFF -Denable_model-checking=OFF ."
+- msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER; PATH=$PATH:/mingw64/bin:/mingw32/bin; cmake -G \"MSYS Makefiles\" -DBOOST_ROOT=\"%BOOST_ROOT%\" -DBOOST_LIBRARYDIR=\"%BOOST_LIBRARYDIR%\" -DBoost_USE_STATIC_LIBS=ON -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF -Denable_tracing=ON -Denable_java=OFF -Denable_model-checking=OFF ."
 - msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER; echo XXX simgrid_config.h; cat include/simgrid_config.h"
 - msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER; echo XXX src/internal_config.h; cat src/internal_config.h"
-- msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER; PATH=$PATH:/mingw64/bin:/mingw32/bin; exec 0</dev/null; make VERBOSE=1"
+- msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER; PATH=$PATH:/mingw64/bin:/mingw32/bin; make VERBOSE=1"
 
 test_script:
-- msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER; PATH=$PATH:/mingw64/bin:/mingw32/bin; exec 0</dev/null; ctest -VV"
+- msys64\usr\bin\bash -lc "cd $APPVEYOR_BUILD_FOLDER; PATH=$PATH:/mingw64/bin:/mingw32/bin; ctest -VV"
 
 # notifications:
 # - irc: "irc.debian.org#simgrid" # Not implemented by AppVeyor yet :(
