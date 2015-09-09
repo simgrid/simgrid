@@ -703,22 +703,22 @@ id              | yes       | string | Name of the link that is supposed to act 
 \subsection pf_storage Storage
 
 \note
-  This is a prototype version that should evolve quickly, this
-  is just some doc valuable only at the time of writing this doc
+  This is a prototype version that should evolve quickly, hence this
+  is just some doc valuable only at the time of writing.
   This section describes the storage management under SimGrid ; nowadays
   it's only usable with MSG. It relies basically on linux-like concepts.
   You also may want to have a look to its corresponding section in \ref
-  msg_file_management ; functions access are organized as a POSIX-like
+  msg_file_management ; access functions are organized as a POSIX-like
   interface.
 
 \subsubsection pf_sto_conc Storage Main concepts
 Basically there are 3 different entities available in SimGrid that
-can be used to model storages:
+can be used to model storage:
 
 Entity name     | Description
 --------------- | -----------
-\ref pf_storage_entity_storage_type "storage_type"    | Defines a template for a particular kind of storage (such as a hard-drive) and specifies important features of the storage, such as capacity, performance (read/write), content, ... Different models of hard-drives use different storage_types (because the difference between an SSD and an HDD does matter), as they differ in some specifications (e.g., different size or read/write performance).
-\ref pf_storage_entity_storage "storage"        | Defines an actual instance of a storage (disk, RAM, ...); uses a ``storage_type`` template (see line above) so that you don't need to re-specify the same details over and over again.
+\ref pf_storage_entity_storage_type "storage_type"    | Defines a template for a particular kind of storage (such as a hard-drive) and specifies important features of the storage, such as capacity, performance (read/write), contents, ... Different models of hard-drives use different storage_types (because the difference between an SSD and an HDD does matter), as they differ in some specifications (e.g., different sizes or read/write performance).
+\ref pf_storage_entity_storage "storage"        | Defines an actual instance of a storage type (disk, RAM, ...); uses a ``storage_type`` template (see line above) so that you don't need to re-specify the same details over and over again.
 \ref pf_storage_entity_mount "mount"          | Must be wrapped by a \ref pf_host tag; declares which storage(s) this host has mounted and where (i.e., the mountpoint).
 
 
@@ -726,7 +726,7 @@ Entity name     | Description
 ### %Storage Content File ###
 
 In order to assess exactly how much time is spent reading from the storage,
-SimGrid needs to know what is stored in the storage device (identified by distinct (file-)name, like in a file system)
+SimGrid needs to know what is stored on the storage device (identified by distinct (file-)name, like in a file system)
 and what size this content has.
 
 \note
@@ -735,9 +735,9 @@ and what size this content has.
     storage changes, only the internal SimGrid data structures change.
 
 \anchor pf_storage_content_file_structure
-#### Structure of a %Storage File ####
+#### Structure of a %Storage Content File ####
 
-Here is an excerpt from two storage file; if you want to see the whole file, check
+Here is an excerpt from two storage content file; if you want to see the whole file, check
 the file ``examples/platforms/content/storage_content.txt`` that comes with the
 SimGrid source code.
 
@@ -780,7 +780,7 @@ If you want to generate a storage content file based on your own filesystem (or 
 try running this command (works only on unix systems):
 
 \verbatim
-find /path/you/want -type f -exec ls -l {} \; 2>/dev/null > ./content.txt
+find . -type f -exec ls -1s --block=1 {} \; 2>/dev/null | awk '{ print $2 " " $1}' > ./content.txt
 \endverbatim
 
 \subsubsection pf_storage_entities The Storage Entities
@@ -834,7 +834,7 @@ Attribute name | Mandatory | Values | Description
 -------------- | --------- | ------ | -----------
 id             | yes       | string | Identifier of this ``storage``; used when referring to it
 typeId         | yes       | string | Here you need to refer to an already existing \ref pf_storage_entity_storage_type "\<storage_type\>"; the storage entity defined by this tag will then inherit the properties defined there.
-attach         | yes       | string | Name of a host (see Section \ref pf_host) that this storage is <i>physically</i> attached to (e.g., a harddrive in a computer)
+attach         | yes       | string | Name of a host (see Section \ref pf_host) to which this storage is <i>physically</i> attached to (e.g., a hard drive in a computer)
 content        | no        | string | When specified, overwrites the content attribute of \ref pf_storage_entity_storage_type "\<storage_type\>"
 content_type   | no        | string | When specified, overwrites the content_type attribute of \ref pf_storage_entity_storage_type "\<storage_type\>"
 
@@ -853,7 +853,7 @@ of type "single_HDD" (shown as an example of \ref pf_storage_entity_storage_type
 to a host called "bob" (the definition of this host is omitted here).
 
 The second storage is called "Disk2", is still of the same type as Disk1 but
-now specifies a new content file (so the content will be different from Disk1)
+now specifies a new content file (so the contents will be different from Disk1)
 and the filesystem uses the windows style; finally, it is attached to a second host,
 called alice (which is again not defined here).
 
@@ -898,7 +898,7 @@ Here is a simple example, taken from the file ``examples/platform/storage.xml``:
 This example is quite interesting, as the same device, called "Disk2", is mounted by
 two hosts at the same time! Note, however, that the host called ``alice`` is actually
 attached to this storage, as can be seen in the \ref pf_storage_entity_storage "&lt;storage&gt;"
-tag. This means that ``denise`` must access this storage via network, but SimGrid automatically takes
+tag. This means that ``denise`` must access this storage through the network, but SimGrid automatically takes
 care of that for you.
 
 Furthermore, this example shows that ``denise`` has mounted two storages with different
