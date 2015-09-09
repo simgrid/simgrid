@@ -19,7 +19,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    - Sanitize the interface in MSG_task_ module:
      - Merge two functions that were close enough but misleading:
        set_compute_duration(t)      -> set_flops_amount(t)
-       get_remaining_computation(t) -> set_flops_amount(t)
+       get_remaining_computation(t) -> get_flops_amount(t)
      - set_data_size(t) -> set_bytes_amount(t)
        get_data_size(t) -> get_bytes_amount(t)
    - Massive cleanups in the functions related to the energy
