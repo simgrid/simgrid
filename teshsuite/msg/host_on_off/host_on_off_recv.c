@@ -45,6 +45,7 @@ int master(int argc, char *argv[])
 
     if (comm) {
       MSG_comm_wait(comm, -1);
+      MSG_comm_destroy(comm);
     }
     XBT_INFO("Master has finished");
   }

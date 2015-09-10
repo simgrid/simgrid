@@ -254,6 +254,7 @@ int main(int argc, char *argv[])
      sscanf(xbt_dynar_get_as(s_tests, iter, char *), "%d", &tmp_test);
      xbt_dynar_set_as(tests, iter, int, tmp_test);
   }
+  xbt_dynar_free(&s_tests);
 
   platform_file = argv[1];
   application_file = argv[2];

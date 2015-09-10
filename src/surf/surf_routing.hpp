@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf_interface.hpp"
-#include <float.h>
-
 #ifndef NETWORK_ROUTING_HPP_
 #define NETWORK_ROUTING_HPP_
+
+#include "surf_interface.hpp"
+#include <float.h>
 
 XBT_PUBLIC(void) routing_model_create( void *loopback);
 
@@ -25,6 +25,21 @@ class As;
 class RoutingModelDescription;
 class Onelink;
 class RoutingPlatf;
+
+/** @ingroup SURF_routing_interface
+ * @brief A routing edge
+ * @details [long description]
+ */
+struct RoutingEdge {
+public:
+  virtual ~RoutingEdge(){};
+  virtual int getId()=0;
+  virtual int *getIdPtr()=0;
+  virtual void setId(int id)=0;
+  virtual char *getName()=0;
+  virtual As *getRcComponent()=0;
+  virtual e_surf_network_element_type_t getRcType()=0;
+};
 
 /** @ingroup SURF_routing_interface
  * @brief The Autonomous System (AS) routing interface
@@ -52,6 +67,8 @@ public:
    */
   virtual ~As(){
 	xbt_free(p_name);
+	if (p_netElem)
+		delete p_netElem;
   };
 
   /**
@@ -77,21 +94,6 @@ public:
   virtual void parseRoute(sg_platf_route_cbarg_t route)=0;
   virtual void parseASroute(sg_platf_route_cbarg_t route)=0;
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
-};
-
-/** @ingroup SURF_routing_interface
- * @brief A routing edge
- * @details [long description]
- */
-struct RoutingEdge {
-public:
-  virtual ~RoutingEdge(){};
-  virtual int getId()=0;
-  virtual int *getIdPtr()=0;
-  virtual void setId(int id)=0;
-  virtual char *getName()=0;
-  virtual As *getRcComponent()=0;
-  virtual e_surf_network_element_type_t getRcType()=0;
 };
 
 struct RoutingEdgeImpl : public RoutingEdge {

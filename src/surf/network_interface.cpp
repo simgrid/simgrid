@@ -79,6 +79,7 @@ Link **Link::linksList() {
 void Link::linksExit() {
 	for (auto kv : *links)
 		delete (kv.second);
+	delete links;
 }
 /*************
  * Callbacks *
