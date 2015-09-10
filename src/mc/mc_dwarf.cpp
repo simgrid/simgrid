@@ -987,7 +987,9 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
     xbt_die("Could not open file %s", info->file_name.c_str());
   Dwarf *dwarf = dwarf_begin(fd, DWARF_C_READ);
   if (dwarf == NULL)
-    xbt_die("Your program must be compiled with -g (%s)",
+    xbt_die("Missing debugging information in %s\n"
+      "Your program and its dependencies must have debugging information.\n"
+      "You might want to recompile with -g or install the suitable debugging package.\n",
       info->file_name.c_str());
   // For each compilation unit:
   Dwarf_Off offset = 0;
