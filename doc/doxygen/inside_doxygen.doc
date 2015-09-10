@@ -193,12 +193,11 @@ distribution. It will also be copied automatically to the documentation.
 
 \section inside_doxygen_website Working on the website
 
-Actually, the website is very different from doxygen. It uses a tool
-called jekyll to turn markup-formated text into nice static web pages.
-Jekyll is less annoying than doxygen since it's written in a scripting
-language: you can dynamically add (or change) parts of the tool to
-make it fit your needs. Get the sources, and start improving the
-website now (there is a README in the repo with more details).
+Our website is generated/exported via [orgmode](http://www.orgmode.org), a tool that we use to facilitate our reproducible research.
+
+Get the sources, and start improving the
+website now! (There is a README in the repo with more details, 
+but it might be outdated. Contact us if you really want to help.)
 
 @verbatim
 git clone git://scm.gforge.inria.fr/simgrid/website.git
