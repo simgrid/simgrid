@@ -149,7 +149,3 @@ if(NOT $ENV{LDFLAGS} STREQUAL "")
   message(STATUS "Add LDFLAGS: \"$ENV{LDFLAGS}\" to CMAKE_C_LINK_FLAGS")
   set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} $ENV{LDFLAGS}")
 endif()
-
-if(MINGW)
-  add_definitions(-D__USE_MINGW_ANSI_STDIO=1)
-endif()
