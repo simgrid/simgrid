@@ -683,11 +683,9 @@ kicks in. It then loops back, starting at 100µs (the initial value) for one sec
 
 #### The ``<prop/>`` tag ####
 
-Similar to ``\<host\>``, the link may also contain the ``<prop/>`` tag; see the host
+Similar to the ``<host>`` tag, a link may also contain the ``<prop/>`` tag; see the host
 documentation (Section \ref pf_host) for an example.
 
-
-TODO
 
 \subsubsection pf_backbone <backbone/>
 
@@ -940,7 +938,7 @@ available in the directory ``examples/msg/io/`` useful.
 \subsubsection pf_storage_examples_modelling Modelling different situations
 
 The storage functionality of SimGrid is type-agnostic, that is, the implementation
-does not presume any type of storagei, such as HDDs/SSDs, RAM,
+does not presume any type of storage, such as HDDs/SSDs, RAM,
 CD/DVD devices, USB sticks etc.
 
 This allows the user to apply the simulator for a wide variety of scenarios; one
