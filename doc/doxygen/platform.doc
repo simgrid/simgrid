@@ -690,7 +690,7 @@ documentation (Section \ref pf_host) for an example.
 \subsubsection pf_backbone <backbone/>
 
 \note
-  This tag is <b>only available</b> when the containing AS uses the "Cluster" mode!
+  This tag is <b>only available</b> when the containing AS uses the "Cluster" routing mode!
 
 Using this tag, you can designate an already existing link to be a backbone.
 
@@ -709,9 +709,23 @@ id              | yes       | string | Name of the link that is supposed to act 
   msg_file_management ; access functions are organized as a POSIX-like
   interface.
 
-\subsubsection pf_sto_conc Storage Main concepts
-Basically there are 3 different entities available in SimGrid that
-can be used to model storage:
+\subsubsection pf_sto_conc Storage - Main Concepts
+
+The storage facilities implemented in SimGrid help to model (and account for) 
+storage devices, such as tapes, hard-drives, CD or DVD devices etc. 
+A typical situation is depicted in the figure below:
+
+\image html ./images/storage_sample_scenario.png
+\image latex ./images/storage_sample_scenario.png "storage_sample_scenario" width=\textwidth
+
+In this figure, two hosts called Bob and Alice are interconnected via a network
+and each host is physically attached to a disk; it is not only possible for each host to
+mount the disk they are attached to directly, but they can also mount disks
+that are in a remote location. In this example, Bob mounts Alice's disk remotely
+and accesses the storage via the network.
+
+SimGrid provides 3 different entities that can be used to model setups
+that include storage facilities:
 
 Entity name     | Description
 --------------- | -----------
