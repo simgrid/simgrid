@@ -18,12 +18,33 @@
 
 /* Attributes are only in recent versions of GCC */
 #if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4))
-# define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
+
+/* On MinGW, stdio.h defines __MINGW_PRINTF_FORMAT and __MINGW_SCANF_FORMAT
+   which are the suitable format style (either gnu_printf or ms_printf)
+   depending on which version is available (__USE_MINGW_ANSI_STDIO): */
+#ifdef __MINGW32__
+  #include <stdio.h>
+#endif
+
+#if defined(__MINGW32__) && defined(__MINGW_PRINTF_FORMAT)
+  # define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
+     __attribute__((__format__ (__MINGW_PRINTF_FORMAT, format_idx, arg_idx)))
+#else
+  # define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
      __attribute__((__format__ (__printf__, format_idx, arg_idx)))
-# define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
+#endif
+
+#if defined(__MINGW32__) && defined(__MINGW_SCANF_FORMAT)
+  # define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
+         __attribute__((__MINGW_SCANF_FORMAT (__scanf__, format_idx, arg_idx)))
+#else
+  # define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
          __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
+#endif
+
 # define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
 # define _XBT_GNUC_UNUSED  __attribute__((__unused__))
+
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
  * supported on Macs. */
 # if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)) && !defined(__APPLE__)
