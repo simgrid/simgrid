@@ -16,6 +16,7 @@
 - @subpage platform
 - @subpage options
 - @subpage deployment
+- @subpage examples
 - @subpage advanced
   - @ref bindings
   - @ref pls
