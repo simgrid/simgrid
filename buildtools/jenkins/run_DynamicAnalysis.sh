@@ -18,6 +18,27 @@ do_cleanup() {
   find $WORKSPACE -name "memcheck_test_*.memcheck" -exec rm {} \;
 }
 
+### Check the node installation
+
+for pkg in xsltproc valgrind 
+do
+   if dpkg -l |grep -q $pkg 
+   then 
+      echo "$pkg is installed. Good."
+   else 
+      die "please install $pkg before proceeding" 
+   fi
+done
+
+if [ -e /usr/local/gcovr-3.1/scripts/gcovr ] 
+then
+  echo "gcovr is installed, good."
+else
+  die "Please install /usr/local/gcovr-3.1/scripts/gcovr"
+fi
+
+### Cleanup previous runs
+
 ! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
 [ -d "$WORKSPACE" ] || die "WORKSPACE ($WORKSPACE) does not exist"
 
@@ -29,6 +50,8 @@ do
 done
 
 cd $WORKSPACE/build
+
+### Proceed with the tests
 
 cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON -Denable_lib_static=OFF \
