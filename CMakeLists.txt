@@ -17,7 +17,7 @@ endif()
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
 if (MSVC)
   message("MicroSoft Visual C detected.")
-else # gcc or clang
+else() # gcc or clang
   INCLUDE(CheckCCompilerFlag)
   CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
 
@@ -61,7 +61,7 @@ else # gcc or clang
       message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
       set(HAVE_UCONTEXT_H 0)
   endif()
-endif# NOT MSVC
+endif() # NOT MSVC
 
 ### SMPI vs. Fortran
 if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by default
