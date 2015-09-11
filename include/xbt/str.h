@@ -11,6 +11,8 @@
 
 #include <stdint.h> /* ssize_t */
 #include <stdarg.h>             /* va_* */
+#include <stdio.h>  /* FILE */
+#include <stdlib.h> /* size_t, ssize_t */
 #include "xbt/misc.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
@@ -27,8 +29,6 @@ SG_BEGIN_DECL()
  * @{
  */
 /* Our own implementation of getline, mainly useful on the platforms not enjoying this function */
-#include <stdio.h>  /* FILE */
-#include <stdlib.h> /* size_t, ssize_t */
 XBT_PUBLIC(ssize_t) xbt_getline(char **lineptr, size_t * n, FILE * stream);
 
 /* Trim related functions */
