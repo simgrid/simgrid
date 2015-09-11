@@ -27,7 +27,7 @@ typedef struct xbt_os_thread_ *xbt_os_thread_t;
 
 
 #ifdef _XBT_WIN32 /* defined if this is a windows system, 32bits or 64bits) */
-#include <windef.h>
+#include <windows.h>
 typedef DWORD xbt_os_thread_key_t;
 #else /* assume that every non-windows system is POSIX-compatible */
 
