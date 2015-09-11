@@ -165,22 +165,22 @@
  *     by default.
  *
  *
- * Rational of XBT_EXPORT_NO_IMPORT: (windows-only cruft)
+ * Rational of XBT_EXPORT_NO_IMPORT: (windows-only)
  *   * Symbols which must be exported in the DLL, but not imported from it.
  *
  *   * This is obviously useful for initialized globals (which cannot be
  *     extern or similar).
- *   * This is also used in the log mecanism where a macro creates the
+ *   * This is also used in the log mechanism where a macro creates the
  *     variable automatically. When the macro is called from within SimGrid,
  *     the symbol must be exported, but when called  from within the client
  *     code, it must not try to retrieve the symbol from the DLL since it's
  *      not in there.
  *
- * Rational of XBT_IMPORT_NO_EXPORT: (windows-only cruft)
- *   * Symbols which must be imported from the DLL, but not explicitely
+ * Rational of XBT_IMPORT_NO_EXPORT: (windows-only)
+ *   * Symbols which must be imported from the DLL, but not explicitly
  *     exported from it.
  *
- *   * The root log category is already exported, but not imported explicitely
+ *   * The root log category is already exported, but not imported explicitly
  *     when creating a subcategory since we cannot import the parent category
  *     to deal with the fact that the parent may be in application space, not
  *     DLL space.
