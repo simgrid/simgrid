@@ -25,7 +25,7 @@ environment:
 build_script:
 - if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"  .
 - if [%PLATFORM%]==[x64] cmake -G "Visual Studio 14 2015 Win64" .
-- msbuild ALL_BUILD.vcxproj /verbosity:details
+- msbuild ALL_BUILD.vcxproj /verbosity:detailed
 
 test_script:
 - ctest --output-on-failure
