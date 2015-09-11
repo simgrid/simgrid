@@ -249,8 +249,10 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MaintainerMode.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/UnitTesting.cmake)
 
-### Setup gcc flags
-include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
+### Setup gcc & clang flags
+if (NOT MSVC)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
+endif()
 
 ### Make Libs
 if(NOT WIN32)

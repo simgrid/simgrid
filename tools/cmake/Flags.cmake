@@ -1,6 +1,8 @@
 ##
 ## This file is in charge of setting our paranoid flags with regard to warnings and optimization.
 ##
+##   It is only used for gcc and clang. MSVC builds don't load this file.
+##
 ##   These flags do break some classical CMake tests, so you don't
 ##   want to do so before the very end of the configuration.
 ## 
