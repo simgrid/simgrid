@@ -5,8 +5,15 @@ os: Visual Studio 2015
 version: "{build}"
 clone_depth: 1
 
+# scripts that are called at very beginning, before repo cloning
+init:
+- cmake --version
+- msbuild /version
+- git config --global core.longpaths true
+- git config --global core.autocrlf input
+
 platform: 
-  - Win32 # This is Windows 32bits (don't activate since we dont compile properly anyway)
+  - Win32 # This is Windows 32bits
 #  - x64   # This is Windows 64bits
 
 environment:
