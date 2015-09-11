@@ -1110,15 +1110,15 @@ div.toc li.level1 {
 }
 
 div.toc li.level2 {
-        margin-left: 15px;
+        /*margin-left: 15px;*/
 }
 
 div.toc li.level3 {
-        margin-left: 30px;
+        /*margin-left: 30px;*/
 }
 
 div.toc li.level4 {
-        margin-left: 45px;
+        /*margin-left: 45px;*/
 }
 
 .inherit_header {
