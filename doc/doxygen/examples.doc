@@ -239,23 +239,6 @@ The following listing can be found in \c examples/msg/masterslave/deployment_mas
 
 \include platforms/small_platform.xml
 
-\section using_smpi Using SMPI
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
-
-\section using_MC Using Model Checking
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
-
-\section using_trace Using Trace
-Check out the \ref tracing section.
-
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
-
-\section using_simdag Using SimDag
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
-
-\section using_simix Using SIMIX
-You should check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
-
 */
 
 

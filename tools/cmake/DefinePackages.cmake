@@ -890,7 +890,7 @@ set(DOC_SOURCES
   doc/doxygen/pls.doc
   doc/doxygen/stylesheet.css
   doc/doxygen/tracing.doc
-  doc/doxygen/use.doc
+  doc/doxygen/examples.doc
 
   doc/manpage/smpicc.1
   doc/manpage/smpicxx.1

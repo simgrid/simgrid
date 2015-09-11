@@ -11,8 +11,7 @@
 @endhtmlonly
 
 - @subpage introduction
-- @subpage use
-  - @ref help
+- @subpage understanding
 - @subpage platform
 - @subpage options
 - @subpage deployment

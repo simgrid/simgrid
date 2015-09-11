@@ -4,23 +4,27 @@
 \tableofcontents
 
 \section simgrid_dev_guide_model How to add a new model in surf?
-The figure below show the architecture of the SURF layer. This layer is composed
-of different kind of models representing the differents systems we want to
-modelize (i.e.cpu, network, storage, workstation, virtual machine).
+The figure below shows the architecture of the SURF layer. This layer is composed
+of different kinds of models representing the different systems we want to
+model (i.e., cpu, network, storage, workstation, virtual machine).
 
 A model in simgrid is composed of three classes: Model, Resource and Action
-(surf_interface.hpp).
+(\ref SURF_interface "surf_interface.hpp").
 
 \image html surf++.png
 \image latex surf++.pdf "surf++" width=\textwidth
 
 Actually there are five kind of models: CpuModel, NetworkModel, WorkstationModel,
 WorkstationVMModel and StorageModel. For each kind of model, there is an
-interface (e.g.: cpu_interface.hpp) and some implementations (e.g.: cpu_cas01.hpp,
+interface (e.g.: \ref SURF_cpu_interface "cpu_interface.hpp") and some implementations (e.g.: cpu_cas01.hpp,
 cpu_ti.hpp).
 
-init function:
-void surf_cpu_model_init_Cas01()
+The CPU model Cas01, for instance, is initialized by the function
+    void surf_cpu_model_init_Cas01()
+
+The different network models that are offered by simgrid are stored in the array
+that is defined as follows:
+
 s_surf_model_description_t surf_network_model_description[] = {
 
 \subsection simgrid_dev_guide_model_implem How to add a new model implementation in surf?
