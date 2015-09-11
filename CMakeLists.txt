@@ -15,50 +15,53 @@ endif()
 ## 
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
-INCLUDE(CheckCCompilerFlag)
-CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
+if (MSVC)
+  message("MicroSoft Visual C detected.")
+else # gcc or clang
+  INCLUDE(CheckCCompilerFlag)
+  CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
 
-## Request full debugging flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
+  ## Request full debugging flags
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
+  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 
-if (CMAKE_COMPILER_IS_GNUCC)
-  if (COMPILER_CXX_VERSION_MAJOR_MINOR STRLESS "4.7")
-    message(FATAL_ERROR
-            "SimGrid needs at least g++ version 4.7 to compile "
-	    "(c++11 support of previous versions is too limited).")
+  if (CMAKE_COMPILER_IS_GNUCC)
+    if (COMPILER_CXX_VERSION_MAJOR_MINOR STRLESS "4.7")
+      message(FATAL_ERROR
+              "SimGrid needs at least g++ version 4.7 to compile "
+  	      "(c++11 support of previous versions is too limited).")
+    endif()
   endif()
-endif()
 
-## We need a decent support of the c++11 standard
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=gnu++11" COMPILER_SUPPORTS_CXX11)
-if(COMPILER_SUPPORTS_CXX11)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-else() 
-  message(FATAL_ERROR 
-          "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
-          "Please use a decent C++ compiler.")
-endif()
+  ## We need a decent support of the c++11 standard
+  include(CheckCXXCompilerFlag)
+  CHECK_CXX_COMPILER_FLAG("-std=gnu++11" COMPILER_SUPPORTS_CXX11)
+  if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+  else() 
+    message(FATAL_ERROR 
+            "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
+            "Please use a decent C++ compiler.")
+  endif()
 
-### And we need C11 standard, too
-include(CheckCCompilerFlag)
-CHECK_C_COMPILER_FLAG("-std=gnu11" COMPILER_SUPPORTS_C11)
-if(COMPILER_SUPPORTS_C11)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
-else()
-  message(FATAL_ERROR 
-          "The compiler ${CMAKE_C_COMPILER} has no C11 support. "
-          "Please use a decent C compiler "
-          "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
-endif()
-if(APPLE AND ("4.6" GREATER COMPILER_C_VERSION_MAJOR_MINOR))
-    ### gcc 4.[1-5] cannot compile ucontext on OSX
-    message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
-    set(HAVE_UCONTEXT_H 0)
-endif()
-
+  ### And we need C11 standard, too
+  include(CheckCCompilerFlag)
+  CHECK_C_COMPILER_FLAG("-std=gnu11" COMPILER_SUPPORTS_C11)
+  if(COMPILER_SUPPORTS_C11)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
+  else()
+    message(FATAL_ERROR 
+            "The compiler ${CMAKE_C_COMPILER} has no C11 support. "
+            "Please use a decent C compiler "
+            "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
+  endif()
+  if(APPLE AND ("4.6" GREATER COMPILER_C_VERSION_MAJOR_MINOR))
+      ### gcc 4.[1-5] cannot compile ucontext on OSX
+      message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
+      set(HAVE_UCONTEXT_H 0)
+  endif()
+endif# NOT MSVC
 
 ### SMPI vs. Fortran
 if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by default
