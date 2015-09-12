@@ -87,7 +87,6 @@ set(EXTRA_DIST
   src/surf/host_clm03.hpp
   src/surf/host_interface.hpp
   src/surf/host_ptask_L07.hpp
-  src/win32/config.h
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
   src/xbt/automaton/parserPromela.tab.cacc

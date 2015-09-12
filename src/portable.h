@@ -12,11 +12,7 @@
 
 #include "internal_config.h"
 #include "xbt/misc.h"
-/* 
- * win32 or win64 (__XBT_WIN32 is defined for win32 and win64 applications, __TOS_WIN__ is defined by xlC).
-*/
 #ifdef _XBT_WIN32
-# include "win32/config.h"
 # include <windows.h>
 #endif
 
@@ -43,6 +39,30 @@
  ****/
 
 #include <fcntl.h>
+
+#ifdef _XBT_WIN32
+  #ifndef EWOULDBLOCK
+  #define EWOULDBLOCK WSAEWOULDBLOCK
+  #endif
+
+  #ifndef EINPROGRESS
+  #define EINPROGRESS WSAEINPROGRESS
+  #endif
+
+  #ifndef ETIMEDOUT
+  #define ETIMEDOUT   WSAETIMEDOUT
+  #endif
+
+  #ifdef S_IRGRP
+    #undef S_IRGRP
+  #endif
+  #define S_IRGRP 0
+
+  #ifdef S_IWGRP
+    #undef S_IWGRP
+  #endif
+  #define S_IWGRP 0
+#endif
 
 #ifdef HAVE_SYS_STAT_H
 #  include <sys/stat.h>
