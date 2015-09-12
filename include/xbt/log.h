@@ -461,7 +461,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_CDEBUG(categ, ...) \
 		  do {                                                                  \
-		    if (_XBT_LOG_ISENABLEDV(_XBT_LOGV(categ), xbt_log_priority_debug)) {\
+		    if (XBT_LOG_ISENABLED (categ, xbt_log_priority_debug)) {            \
 		      s_xbt_log_event_t _log_ev;                                        \
 		      _log_ev.cat = &(_XBT_LOGV(categ));                                \
 		      _log_ev.priority = xbt_log_priority_debug;                        \
@@ -478,10 +478,10 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_CVERB(categ, ...)  \
 		  do {                                                                  \
-		    if (_XBT_LOG_ISENABLEDV(_XBT_LOGV(categ), xbt_log_priority_verbose)) {                        \
+		    if (XBT_LOG_ISENABLED (categ, xbt_log_priority_verbose)) {          \
 		      s_xbt_log_event_t _log_ev;                                        \
-		      _log_ev.cat = &(_XBT_LOGV(categ));                                        \
-		      _log_ev.priority = xbt_log_priority_verbose;                                        \
+		      _log_ev.cat = &(_XBT_LOGV(categ));                                \
+		      _log_ev.priority = xbt_log_priority_verbose;                      \
 		      _log_ev.fileName = __FILE__;                                      \
 		      _log_ev.functionName = _XBT_FUNCTION;                             \
 		      _log_ev.lineNum = __LINE__;                                       \
@@ -495,10 +495,10 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_CINFO(categ, ...) \
 		  do {                                                                  \
-		    if (_XBT_LOG_ISENABLEDV(_XBT_LOGV(categ), xbt_log_priority_info)) {                        \
+		    if (XBT_LOG_ISENABLED (categ, xbt_log_priority_info)) {             \
 		      s_xbt_log_event_t _log_ev;                                        \
-		      _log_ev.cat = &(_XBT_LOGV(categ));                                        \
-		      _log_ev.priority = xbt_log_priority_info;                                        \
+		      _log_ev.cat = &(_XBT_LOGV(categ));                                \
+		      _log_ev.priority = xbt_log_priority_info;                         \
 		      _log_ev.fileName = __FILE__;                                      \
 		      _log_ev.functionName = _XBT_FUNCTION;                             \
 		      _log_ev.lineNum = __LINE__;                                       \
@@ -513,10 +513,10 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_CWARN(categ, ...) \
 		  do {                                                                  \
-		    if (_XBT_LOG_ISENABLEDV(_XBT_LOGV(categ), xbt_log_priority_warning)) {                        \
+		    if (XBT_LOG_ISENABLED (categ, xbt_log_priority_warning)) {          \
 		      s_xbt_log_event_t _log_ev;                                        \
-		      _log_ev.cat = &(_XBT_LOGV(categ));                                        \
-		      _log_ev.priority = xbt_log_priority_warning;                                        \
+		      _log_ev.cat = &(_XBT_LOGV(categ));                                \
+		      _log_ev.priority = xbt_log_priority_warning;                      \
 		      _log_ev.fileName = __FILE__;                                      \
 		      _log_ev.functionName = _XBT_FUNCTION;                             \
 		      _log_ev.lineNum = __LINE__;                                       \
@@ -531,10 +531,10 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_CERROR(categ, ...) \
 		  do {                                                                  \
-		    if (_XBT_LOG_ISENABLEDV(_XBT_LOGV(categ), xbt_log_priority_error)) {                        \
+		    if (XBT_LOG_ISENABLED (categ, xbt_log_priority_error)) {            \
 		      s_xbt_log_event_t _log_ev;                                        \
-		      _log_ev.cat = &(_XBT_LOGV(categ));                                        \
-		      _log_ev.priority = xbt_log_priority_error;                                        \
+		      _log_ev.cat = &(_XBT_LOGV(categ));                                \
+		      _log_ev.priority = xbt_log_priority_error;                        \
 		      _log_ev.fileName = __FILE__;                                      \
 		      _log_ev.functionName = _XBT_FUNCTION;                             \
 		      _log_ev.lineNum = __LINE__;                                       \
@@ -548,10 +548,10 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_CCRITICAL(categ, ...) \
 		  do {                                                                  \
-		    if (_XBT_LOG_ISENABLEDV(_XBT_LOGV(categ), xbt_log_priority_critical)) {                        \
+		    if (XBT_LOG_ISENABLED (categ, xbt_log_priority_critical)) {         \
 		      s_xbt_log_event_t _log_ev;                                        \
-		      _log_ev.cat = &(_XBT_LOGV(categ));                                        \
-		      _log_ev.priority = xbt_log_priority_critical;                                        \
+		      _log_ev.cat = &(_XBT_LOGV(categ));                                \
+		      _log_ev.priority = xbt_log_priority_critical;                     \
 		      _log_ev.fileName = __FILE__;                                      \
 		      _log_ev.functionName = _XBT_FUNCTION;                             \
 		      _log_ev.lineNum = __LINE__;                                       \
