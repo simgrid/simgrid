@@ -13,17 +13,21 @@
 /* 
  * config selection. 
 */
-#if defined(__GNUC__)
-        /* data comes from autoconf when using gnuc (cross-compiling?) */
+#if defined(__GNUC__) /* either MinGW or cross-compiling */
   # include "internal_config.h"
   #ifndef _XBT_WIN32
     typedef unsigned int uint32_t;
   #endif
-# else
-  # error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
+#else
+  #ifdef _MSC_VER /* MSVC */
+    /* Here come the HAVE_* macro that are manually defined when using MSVC */
+    /*    (none for now)    */
+  # else
+    # error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
+  #endif
 #endif
 
-#ifndef _XBT_VISUALC_COMPILER
+#ifndef _MSC_VER
   #ifndef EWOULDBLOCK
   #define EWOULDBLOCK WSAEWOULDBLOCK
   #endif

@@ -16,7 +16,7 @@ endif()
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
 if (MSVC)
-  message("MicroSoft Visual C detected.")
+  message("-- MicroSoft Visual C detected. Good luck.")
 else() # gcc or clang
   INCLUDE(CheckCCompilerFlag)
   CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
@@ -137,11 +137,6 @@ endif()
 exec_program("${CMAKE_LINKER} --version" OUTPUT_VARIABLE "LINKER_VERSION")
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
-string(REGEX MATCH "cl.exe" VBC "${CMAKE_C_COMPILER}")
-if(VBC)
-  message("VB is not yet supported by Simgrid. Proceed with extrem caution")
-endif()
-
 ### Find programs and paths
 FIND_PROGRAM(GCOV_PATH gcov)
 include(FindPerl)
@@ -207,8 +202,6 @@ if(WIN32)
     if(COMPILER_C_MINOR_VERSION)
       # set(__GNUC_MINOR__ ${COMPILER_C_MINOR_VERSION})
     endif()
-  else()
-    message("You REALLY should use MinGW to compile SimGrid on Windows!")
   endif()
 
   set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITEW6432})
