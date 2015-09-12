@@ -20,8 +20,10 @@
   #endif
 #else
   #ifdef _MSC_VER /* MSVC */
-    /* Here come the HAVE_* macro that are manually defined when using MSVC */
-    /*    (none for now)    */
+
+    /* Manually define the HAVE_* corresponding to the MSVC development environment */
+    #define HAVE_VA_COPY
+
   # else
     # error "Unknown compiler - please report the problems to the main simgrid mailing list (http://gforge.inria.fr/mail/?group_id=12)"
   #endif
