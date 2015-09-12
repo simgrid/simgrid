@@ -5,7 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "internal_config.h"
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 #ifndef _XBT_WIN32
 #include <sys/syscall.h>
