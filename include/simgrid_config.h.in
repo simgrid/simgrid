@@ -58,6 +58,13 @@
 	#endif
 #endif
 
+#ifdef _MSC_VER /* MSVC has no ssize_t, and I fail to use the SSIZE_T declared in BaseTsd.h */
+	#if defined(_WIN64)
+		typedef __int64 ssize_t; 
+	#else
+		typedef long ssize_t;
+	#endif
+#endif
 
 /* Define to 1 if mmalloc is compiled in. */
 #cmakedefine HAVE_MMALLOC @HAVE_MMALLOC@
