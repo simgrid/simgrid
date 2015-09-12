@@ -52,6 +52,7 @@
 	#ifndef __GNUC__
 		#cmakedefine __GNUC__ @__GNUC__@
 	#endif
+	#define HAVE_VA_COPY
 #endif
 /* Set to true if enable_model-checking is true */
 #cmakedefine MMALLOC_WANT_OVERRIDE_LEGACY @MMALLOC_WANT_OVERRIDE_LEGACY@
