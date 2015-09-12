@@ -89,12 +89,18 @@
 #        define XBT_INLINE
 #    endif
 #  else
-#     if defined (__VISUALC__)
+#     if defined (_MSC_VER)
 #       define XBT_INLINE __inline
 #     else
 #       define XBT_INLINE  inline
 #     endif
 #  endif /* __cplusplus */
+#endif
+
+#if defined(__GNUC__)
+#   define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
+#else
+#   define XBT_ALWAYS_INLINE XBT_INLINE
 #endif
 
 /* improvable on gcc (by evaluating arguments only once), but wouldn't be portable */

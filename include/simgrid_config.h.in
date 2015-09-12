@@ -64,6 +64,8 @@
 	#else
 		typedef long ssize_t;
 	#endif
+	#define snprintf _snprintf
+	#define strdup   _strdup
 #endif
 
 /* Define to 1 if mmalloc is compiled in. */
