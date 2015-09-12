@@ -71,6 +71,12 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
  *  @{
  */
 
+#ifdef _MSC_VER
+/* warning C4996: '_strdup': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strdup. */
+/* Blah blah blah */
+# define strdup _strdup
+#endif
+
 /** @brief Like strdup, but xbt_die() on error */
 static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
   char *res = NULL;
