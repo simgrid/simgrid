@@ -879,6 +879,7 @@ set(DOC_SOURCES
   doc/doxygen/deployment.doc
   doc/doxygen/footer.html
   doc/doxygen/getting_started.doc
+  doc/doxygen/getting_started_index.doc
   doc/doxygen/header.html
   doc/doxygen/help.doc
   doc/doxygen/index.doc
@@ -939,6 +940,7 @@ set(DOC_TOOLS
   tools/doxygen/fig2dev_postprocessor.pl
   tools/doxygen/index_create.pl
   tools/doxygen/xbt_log_extract_hierarchy.pl
+  tools/doxygen/list_routing_models_examples.sh
   )
 
 # these files get copied automatically to the html documentation
