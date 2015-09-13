@@ -84,7 +84,7 @@ char *xbt_dirname(const char *path) {
 char *xbt_basename(const char *path) {
 #if _MSC_VER
 	  char file[1024];
-	  char ext[1024]
+	  char ext[1024];
 	  errno_t err;
 	  err = _splitpath_s(path, NULL,0, NULL,0, file,1024, ext,1024);
 	  return bprintf("%s%s",drive,dir);
