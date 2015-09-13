@@ -1,5 +1,6 @@
 /*! @page introduction Introduction to SimGrid
 
+
 [SimGrid](http://simgrid.gforge.inria.fr/) is a toolkit
 that provides core functionalities for the simulation of distributed
 applications in heterogeneous distributed environments.
@@ -9,7 +10,9 @@ distributed and parallel application scheduling on distributed computing
 platforms ranging from simple network of workstations to Computational
 Grids.
 
-# Scenario
+\tableofcontents
+
+\section  Scenario
 The goal of this practical session is to illustrate various usage of
 the MSG interface. To this end we will use the following simple setting:
 
@@ -92,7 +95,7 @@ usage over a long period of time.
 
 ![Test](./sc3-description.png)
 
-# Prerequisites
+\section Prerequisites
 
 Of course, you need to install SimGrid before taking this tutorial.
 Please refer to the relevant Section: \ref install.
@@ -106,7 +109,7 @@ provided by the [online documentation][fn:4] and by several tutorials:
 - http://simgrid.gforge.inria.fr/tutorials/simgrid-tracing-101.pdf
 - http://simgrid.gforge.inria.fr/tutorials/simgrid-platf-101.pdf
 
-# Recommended Steps
+\section intro_recommendation Recommended Steps
 
 ## Installing Viva
 
@@ -146,7 +149,7 @@ This software provides a [Gantt-chart visualization][fn:6].
 sudo apt-get install vite
 ~~~~
 
-# Let's get Started
+\section intro_start Let's get started
 
 \anchor intro_setup
 ## Setting up and Compiling
@@ -457,7 +460,7 @@ What is the largest number of tasks requiring 50e6 flops and 1e5
 bytes that you manage to distribute and process in one hour on
 `g5k.xml` (you should use `deployment_general.xml`)?
 
-# TODO: Points to improve for the next time
+\section intro_todo TODO: Points to improve for the next time
 
 - Propose equivalent exercises and skeleton in java.
 - Propose a virtualbox image with everything (simgrid, paje, viva,

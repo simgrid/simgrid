@@ -901,7 +901,7 @@ set(DOC_SOURCES
   doc/doxygen/pls.doc
   doc/doxygen/stylesheet.css
   doc/doxygen/tracing.doc
-  doc/doxygen/use.doc
+  doc/doxygen/examples.doc
 
   doc/manpage/smpicc.1
   doc/manpage/smpicxx.1
@@ -952,6 +952,7 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/storage_sample_scenario.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png

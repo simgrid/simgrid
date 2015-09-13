@@ -22,21 +22,46 @@ order in which the \c argument tags are given is important and depends on the ap
 
 #### Attribute list ####
 
-
-\section process_tag Process
-There are optional attributes to the process tag, here is a list of all attributes of process: 
+As already written above, the \c process tag is the tag that defines which host
+executes which function (from your application). Hence, the \c host and \c function
+attributes are mandatory; however, there are some optional attributes to the process tag. Here is a list of all attributes of this tag:
 
 | Attribute name  | Mandatory | Values                 | Description                                                                                                               |
 | --------------- | --------- | ---------------------- | -----------                                                                                                               |
 | host            | yes       | String                 | Describes which host will be used to run this process. The host must be defined in the platform file!                     |
-| process         | yes       | String                 | Name of a function that will be executed on this host. This is any function that was registered by #MSG_register_function |
-| start_time      | no        | int (Default: 0)       | The simulated time when this function will start to be computed.                                                          |
-| kill_time       | no        | int                    | The simulated time when this function will end to be computed. By default, it stops only when it's done.                  |
+| function        | yes       | String                 | Name of a function that will be executed on this host; this function is written in userland code, for instance, C code. Valid values are functions that were registered by MSG_function_register() |
+| start_time      | no        | int (Default: -1.0)    | The simulated time when this function will start to be computed.                                                          |
+| kill_time       | no        | int (Default: -1.0)    | The simulated time when this function will end to be computed. By default, it stops only when it's done.                  |
+| on_failure      | no        | DIE\|RESTART (Default: "DIE")   | What should be done when the process fails.                  |
 
-### An example ###
+#### An example ####
 
 A complete example including a \ref MSG_ext_ms_application "deployment file" can be found 
 in the Section \ref MSG_ex_basics "MSG basics".
 
+See also files such as \c examples/msg/masterslave/deployment_masterslave.xml.
+
+### The argument tag ###
+
+This tag must always be contained by a \c process tag - it doesn't make sense
+without it.
+
+The way this works is that the order of arguments must be pre-defined <i>by the user</i>:
+It is totally up to you what <i>your</i> code expects as arguments and in which
+order. The arguments will be passed to your code (that is: to the function 
+executed by this process) in the order you declare them.
+
+#### Attribute list ####
+
+| Attribute name  | Mandatory | Values                 | Description                                                                                                               |
+| --------------- | --------- | ---------------------- | -----------                                                                                                               |
+| value           | yes       | String                 | Contains the value for this parameter |
+
+#### An example ####
+
+A complete example including a \ref MSG_ext_ms_application "deployment file" can be found 
+in the Section \ref MSG_ex_basics "MSG basics".
+
+See also files such as \c examples/msg/masterslave/deployment_masterslave.xml.
 
 */

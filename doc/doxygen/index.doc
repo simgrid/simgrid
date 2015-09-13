@@ -11,11 +11,10 @@
 @endhtmlonly
 
 - @subpage introduction
-- @subpage use
-  - @ref help
 - @subpage platform
 - @subpage options
 - @subpage deployment
+- @subpage examples
 - @subpage advanced
   - @ref bindings
   - @ref pls

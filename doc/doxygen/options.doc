@@ -9,6 +9,8 @@ report so that we can fix it. Note that some of the options presented
 here may not be available in your simulators, depending on the
 @ref install_src_config "compile-time options" that you used.
 
+\tableofcontents
+
 \section options_using Passing configuration options to the simulators
 
 There is several way to pass configuration options to the simulators.
