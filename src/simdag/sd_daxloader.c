@@ -367,8 +367,7 @@ xbt_dynar_t SD_daxload(const char *filename)
   }
 
   if (!acyclic_graph_detail(result)){
-    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.",
-              basename((char*)filename));
+    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", filename);
     xbt_dynar_foreach(result, cpt, file)
       SD_task_destroy(file);
      xbt_dynar_free_container(&result);
