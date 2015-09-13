@@ -8,7 +8,6 @@
 #include "simgrid/simdag.h"
 #include "xbt/misc.h"
 #include "xbt/log.h"
-#include <libgen.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
