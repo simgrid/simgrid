@@ -8,6 +8,7 @@
 #include "simgrid/simdag.h"
 #include "xbt/misc.h"
 #include "xbt/log.h"
+#include "xbt/file.h" /* xbt_basename() */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
@@ -367,7 +368,8 @@ xbt_dynar_t SD_daxload(const char *filename)
   }
 
   if (!acyclic_graph_detail(result)){
-    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", filename);
+    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", 
+	      xbt_basename(filename));
     xbt_dynar_foreach(result, cpt, file)
       SD_task_destroy(file);
      xbt_dynar_free_container(&result);
