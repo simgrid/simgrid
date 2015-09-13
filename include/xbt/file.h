@@ -23,7 +23,7 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_file
  *  @brief File manipulation functions
  *
- * This module redefine some quite classical functions (such as xbt_getline() or xbt_dirname()) for the platforms
+ * This module redefine some quite classical functions such as xbt_getline() or xbt_dirname() for the platforms
  * lacking them.
  * @{
  */
@@ -32,6 +32,8 @@ XBT_PUBLIC(ssize_t) xbt_getline(char **lineptr, size_t * n, FILE * stream);
 
 /* Our own implementation of dirname, that does not exist on windows */
 XBT_PUBLIC(char *) xbt_dirname(const char *path);
+XBT_PUBLIC(char *) xbt_basename(const char *path);
+
 
 /**@}*/
 
