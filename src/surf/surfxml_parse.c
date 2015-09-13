@@ -1029,6 +1029,7 @@ void surf_parse_open(const char *file)
   if (!surf_parsed_filename_stack)
     surf_parsed_filename_stack = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 
+  surf_parsed_filename = xbt_strdup(file);
   char *dir = xbt_dirname(file);
   xbt_dynar_push(surf_path, &dir);
 
