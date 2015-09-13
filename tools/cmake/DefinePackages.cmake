@@ -352,7 +352,6 @@ set(SIMIX_SRC
   src/simix/libsmx.c
   src/simix/smx_context.c
   src/simix/smx_context_base.c
-  src/simix/smx_context_raw.c
   src/simix/smx_deployment.c
   src/simix/smx_environment.c
   src/simix/smx_global.c
@@ -367,6 +366,18 @@ set(SIMIX_SRC
   ${SIMIX_GENERATED_SRC}
   )
 
+# Don't try to compile our inline assembly with MSVC
+if (MSVC)
+  set(EXTRA_DIST
+      ${EXTRA_DIST}
+      src/simix/smx_context_raw.c)
+else()
+  set(SIMIX_SRC
+      ${SIMIX_SRC}
+      src/simix/smx_context_raw.c)
+endif()
+
+# Boost context may not be available
 if (HAVE_BOOST_CONTEXT)
   set(SIMIX_SRC
       ${SIMIX_SRC}
