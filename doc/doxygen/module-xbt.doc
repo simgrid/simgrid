@@ -4,6 +4,7 @@
     - Portability support
       - \ref XBT_syscall
       - \ref XBT_str
+      - \ref XBT_file
     - Grounding features
       - \ref XBT_ex
       - \ref XBT_log

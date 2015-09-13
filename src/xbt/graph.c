@@ -16,7 +16,7 @@
 #include "xbt/dict.h"
 #include "xbt/heap.h"
 #include "xbt/str.h"
-
+#include "xbt/file.h"
 
 
 

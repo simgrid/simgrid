@@ -9,6 +9,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
+#include "xbt/file.h"
 #include "xbt/replay.h"
 #include <ctype.h>
 #include <wchar.h>

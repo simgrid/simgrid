@@ -9,27 +9,22 @@
 #ifndef XBT_STR_H
 #define XBT_STR_H
 
-#include <stdint.h> /* ssize_t */
 #include <stdarg.h>             /* va_* */
 #include <stdio.h>  /* FILE */
-#include <stdlib.h> /* size_t, ssize_t */
 #include "xbt/misc.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
-#include "simgrid_config.h"     /* FILE for getline */
 
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_str
  *  @brief String manipulation functions
  *
- * This module defines several string related functions. We redefine some quite classical
- * functions on the platforms were they are not nativaly defined (such as xbt_getline() or
- * asprintf()), while some other are a bit more exotic.
+ * This module defines several string related functions. Looking at the diversity of string
+ * manipulation functions that are provided, you can see that several SimGrid core developers
+ * actually like Perl.
  * @{
  */
-/* Our own implementation of getline, mainly useful on the platforms not enjoying this function */
-XBT_PUBLIC(ssize_t) xbt_getline(char **lineptr, size_t * n, FILE * stream);
 
 /* Trim related functions */
 XBT_PUBLIC(void) xbt_str_rtrim(char *s, const char *char_list);
