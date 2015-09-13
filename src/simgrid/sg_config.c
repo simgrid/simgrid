@@ -18,7 +18,9 @@
 #include "instr/instr_interface.h"
 #include "simgrid/simix.h"
 #include "simgrid/sg_config.h"
+#ifdef HAVE_SMPI
 #include "smpi/smpi_interface.h"
+#endif
 #include "mc/mc.h"
 #include "mc/mc_record.h"
 #include "simgrid/instr.h"

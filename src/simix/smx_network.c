@@ -9,7 +9,6 @@
 #include "mc/mc.h"
 #include "mc/mc_replay.h"
 #include "xbt/dict.h"
-#include "smpi/private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix,
                                 "SIMIX network-related synchronization");
