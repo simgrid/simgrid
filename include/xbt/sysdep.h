@@ -72,7 +72,10 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
  */
 
 #ifdef _MSC_VER /* Microsoft wants to improve the code quality blah blah blah */
+/* See: https://msdn.microsoft.com/en-us/library/8ef0s5kh.aspx */
+
 /* warning C4996: '_strdup': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strdup. */
+# define _CRT_NONSTDC_NO_WARNINGS
 # define strdup _strdup
 /* warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. */
 # define _CRT_SECURE_NO_WARNINGS
