@@ -604,7 +604,7 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
 {
   sg_size_t sent = 0;
   char *task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
-  msg_task_t task = MSG_task_create(task_name, 0, size, NULL);
+  msg_task_t task = MSG_task_create(task_name, 0, (double)size, NULL);
 
   /* TODO: clean up */
 
@@ -621,7 +621,7 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
   if (ret == MSG_OK) {
     sent = size;
   } else if (ret == MSG_TIMEOUT) {
-    sg_size_t remaining = MSG_task_get_remaining_communication(task);
+    sg_size_t remaining = (sg_size_t)MSG_task_get_remaining_communication(task);
     sent = size - remaining;
     XBT_INFO("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu",
         timeout, remaining, size);
@@ -714,7 +714,7 @@ static int migration_tx_fun(int argc, char *argv[])
 #define MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME 10000000.0
   double mig_timeout = MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME;
 
-  double remaining_size = ramsize + devsize;
+  double remaining_size = (double) (ramsize + devsize);
   double threshold = 0.0;
 
   /* check parameters */
@@ -851,7 +851,7 @@ stage3:
 
   TRY {
     XBT_DEBUG("Stage 3: Gonna send %f", remaining_size);
-    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, remaining_size, ms->mbox, 3, 0, mig_speed, -1);
+    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, (sg_size_t)remaining_size, ms->mbox, 3, 0, mig_speed, -1);
   } CATCH_ANONYMOUS {
     //hostfailure (if you want to know whether this is the SRC or the DST please check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
@@ -1115,7 +1115,7 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
  */
 void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {
-  return simcall_vm_set_bound(vm, bound);
+  simcall_vm_set_bound(vm, bound);
 }
 
 
