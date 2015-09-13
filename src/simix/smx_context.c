@@ -18,6 +18,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <malloc.h>
 #else
 #include <sys/mman.h>
 #endif
@@ -26,10 +27,6 @@
 #define _aligned_malloc __mingw_aligned_malloc 
 #define _aligned_free  __mingw_aligned_free 
 #endif //MINGW
-
-#if defined(_XBT_WIN32)
-#include <malloc.h>
-#endif
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
 # include <valgrind/valgrind.h>
@@ -45,7 +42,7 @@ int smx_context_stack_size_was_set = 0;
 int smx_context_guard_size;
 int smx_context_guard_size_was_set = 0;
 #ifdef HAVE_THREAD_LOCAL_STORAGE
-static __thread smx_context_t smx_current_context_parallel;
+static XBT_THREAD_LOCAL smx_context_t smx_current_context_parallel;
 #else
 static xbt_os_thread_key_t smx_current_context_key = 0;
 #endif

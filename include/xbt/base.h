@@ -103,6 +103,14 @@
 #   define XBT_ALWAYS_INLINE XBT_INLINE
 #endif
 
+#if defined(__GNUC__)
+#   define XBT_THREAD_LOCAL __thread
+#elif defined(_MSC_VER)
+#   define XBT_THREAD_LOCAL __declspec(thread)
+#else
+#   define XBT_THREAD_LOCAL No thread local on this architecture
+#endif
+
 /* improvable on gcc (by evaluating arguments only once), but wouldn't be portable */
 #ifdef MIN
 # undef MIN
