@@ -5,6 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 %{
+#include "simgrid_config.h"
+#ifndef HAVE_UNISTD_H
+#define YY_NO_UNISTD_H /* hello Windows */
+#endif
 
 #include "automaton_lexer.yy.c"
 #include <xbt/automaton.h>

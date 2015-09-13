@@ -8,6 +8,10 @@
 
 %{
 
+#include "simgrid_config.h"
+#ifndef HAVE_UNISTD_H
+#define YY_NO_UNISTD_H /* hello Windows */
+#endif
 
 #include <stdio.h>
 #include "parserPromela.tab.hacc"
