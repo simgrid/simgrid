@@ -16,7 +16,7 @@ endif()
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
 if (MSVC)
-  message("-- MicroSoft Visual C detected. Good luck.")
+  message("-- You are compiling SimGrid with MicroSoft Visual C. Good luck.")
 else() # gcc or clang
   INCLUDE(CheckCCompilerFlag)
   CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
