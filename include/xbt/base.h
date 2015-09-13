@@ -229,6 +229,23 @@
 
 #endif
 
+#ifdef _MSC_VER /* MSVC has no ssize_t, and I fail to use the SSIZE_T declared in BaseTsd.h */
+	#if defined(_WIN64)
+		typedef __int64 ssize_t;
+	#else
+		typedef long ssize_t;
+	#endif
+
+/* Microsoft wants to improve the code quality blah blah blah */
+/* See: https://msdn.microsoft.com/en-us/library/8ef0s5kh.aspx */
+	/* warning C4996: '_strdup': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strdup. */
+	# define _CRT_NONSTDC_NO_WARNINGS
+	/* warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. */
+	# define _CRT_SECURE_NO_WARNINGS
+#endif
+
+
+
 #ifdef _XBT_WIN32
 #define XBT_INTERNAL
 #else
