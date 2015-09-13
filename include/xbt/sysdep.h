@@ -54,7 +54,11 @@ XBT_PUBLIC(void) xbt_abort(void) _XBT_GNUC_NORETURN;
   } while (0)
 /** @} */
 
+#ifdef XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL
+XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
+#else
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
+#endif
 
 /* these ones live in str.h, but redeclare them here so that we do
    not need to load the whole str.h and its heavy dependencies */
