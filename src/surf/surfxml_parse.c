@@ -7,13 +7,11 @@
 #include <errno.h>
 #include <math.h>
 #include <stdarg.h> /* va_arg */
-#ifndef _MSC_VER
-#include <libgen.h>
-#endif
 
 #include "xbt/misc.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
+#include "xbt/file.h"
 #include "xbt/dict.h"
 #include "surf/surfxml_parse.h"
 #include "surf/surf_private.h"
@@ -1031,17 +1029,7 @@ void surf_parse_open(const char *file)
   if (!surf_parsed_filename_stack)
     surf_parsed_filename_stack = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 
-#ifdef _MSC_VER
-  /* There is no dirname on windows... */
-  char drive[_MAX_DRIVE];
-  char dir[_MAX_DIR];
-  errno_t err;
-  err = _splitpath_s(file, drive, _MAX_DRIVE, dir, _MAX_DIR, NULL,0, NULL,0);
-  char *dir = bprintf("%s%s",drive,dir);
-#else
-  surf_parsed_filename = xbt_strdup(file);
-  char *dir = dirname(surf_parsed_filename);
-#endif
+  char *dir = xbt_dirname(file);
   xbt_dynar_push(surf_path, &dir);
 
   surf_file_to_parse = surf_fopen(file, "r");

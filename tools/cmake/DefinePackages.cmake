@@ -276,6 +276,7 @@ set(XBT_SRC
   src/xbt/xbt_main.c
   src/xbt/xbt_matrix.c
   src/xbt/xbt_os_time.c
+  src/xbt/xbt_os_file.c
   src/xbt/xbt_peer.c
   src/xbt/xbt_queue.c
   src/xbt/xbt_replay.c
@@ -712,6 +713,7 @@ set(headers_to_install
   include/xbt/dynar.h
   include/xbt/ex.h
   include/xbt/fifo.h
+  include/xbt/file.h
   include/xbt/function_types.h
   include/xbt/graph.h
   include/xbt/graphxml.h
