@@ -371,7 +371,6 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
   timer->elapse.tv_usec = 0;
   gettimeofday(&(timer->start), NULL);
 #elif defined(_XBT_WIN32)
-  struct timeval tv;
 #  if defined(WIN32_WCE) || (_WIN32_WINNT < 0x0400)
   THROW_UNIMPLEMENTED;
 #  else
