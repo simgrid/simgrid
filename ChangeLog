@@ -106,6 +106,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
    - Add a xbt_heap_update function, to avoid costly xbt_heap_remove+xbt_heap_insert use
    - Add a xbt wrapper for simcall_mutex_trylock (asked in [#17878])
    - Add two new log appenders : rollfile and splitfile. Patch by Fabien Chaix.
+   - xbt_dirname and xbt_basename for non-POSIX systems
  MC
   * The model checker now runs as a separate process.
   * The model checker runs must now be launched with the new simgrid-mc program.
