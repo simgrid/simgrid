@@ -71,6 +71,10 @@ XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
  *  @{
  */
 
+#if defined(_MSC_VER) && !defined(strdup)
+#  define strdup _strdup /* POSIX name is not ANSI complient blabla */
+#endif
+
 /** @brief Like strdup, but xbt_die() on error */
 static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
   char *res = NULL;
