@@ -265,7 +265,7 @@ set(XBT_SRC
   src/xbt/lib.c
   src/xbt/log.c
   src/xbt/mallocator.c
-  src/xbt/parmap.c
+  src/xbt/parmap.cpp
   src/xbt/set.c
   src/xbt/setset.c
   src/xbt/snprintf.c

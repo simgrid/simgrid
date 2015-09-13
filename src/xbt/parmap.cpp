@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <atomic>
+
 #include "internal_config.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -73,7 +75,7 @@ typedef struct s_xbt_parmap {
   xbt_os_thread_t *workers;        /**< worker thread handlers */
   void_f_pvoid_t fun;              /**< function to run in parallel on each element of data */
   xbt_dynar_t data;                /**< parameters to pass to fun in parallel */
-  unsigned int index;              /**< index of the next element of data to pick */
+  std::atomic<unsigned int> index; /**< index of the next element of data to pick */
 
 #ifdef HAVE_MC
   int finish;
@@ -304,7 +306,7 @@ void xbt_parmap_apply(xbt_parmap_t parmap, void_f_pvoid_t fun, xbt_dynar_t data)
  */
 void* xbt_parmap_next(xbt_parmap_t parmap)
 {
-  unsigned int index = __sync_fetch_and_add(&parmap->index, 1);
+  unsigned int index = parmap->index++;
   if (index < xbt_dynar_length(parmap->data)) {
     return xbt_dynar_get_as(parmap->data, index, void*);
   }
@@ -314,7 +316,7 @@ void* xbt_parmap_next(xbt_parmap_t parmap)
 static void xbt_parmap_work(xbt_parmap_t parmap)
 {
   unsigned index;
-  while ((index = __sync_fetch_and_add(&parmap->index, 1))
+  while ((index = parmap->index++)
          < xbt_dynar_length(parmap->data))
     parmap->fun(xbt_dynar_get_as(parmap->data, index, void*));
 }
