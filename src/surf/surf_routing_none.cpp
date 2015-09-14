@@ -17,7 +17,7 @@ xbt_dynar_t AsNone::getOneLinkRoutes() {
   return NULL;
 }
 
-void AsNone::getRouteAndLatency(RoutingEdge */*src*/, RoutingEdge */*dst*/,
+void AsNone::getRouteAndLatency(RoutingEdge * /*src*/, RoutingEdge * /*dst*/,
                                 sg_platf_route_cbarg_t /*res*/, double *lat)
 {
   *lat = 0.0;
@@ -28,7 +28,7 @@ void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*
 	XBT_INFO("No routing no graph");
 }
 
-sg_platf_route_cbarg_t AsNone::getBypassRoute(RoutingEdge */*src*/, RoutingEdge */*dst*/, double */*lat*/) {
+sg_platf_route_cbarg_t AsNone::getBypassRoute(RoutingEdge * /*src*/, RoutingEdge * /*dst*/, double * /*lat*/) {
   return NULL;
 }
 
