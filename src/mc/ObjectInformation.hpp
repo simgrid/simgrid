@@ -88,7 +88,11 @@ public:
 
   bool privatized() const
   {
+#ifdef HAVE_SMPI
     return this->executable() && smpi_privatize_global_variables;
+#else
+    return false;
+#endif
   }
 
   void* base_address() const;

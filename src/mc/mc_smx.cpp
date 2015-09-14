@@ -212,6 +212,7 @@ const char* MC_smx_process_get_name(smx_process_t p)
   return info->name;
 }
 
+#ifdef HAVE_SMPI
 int MC_smpi_process_count(void)
 {
   if (mc_mode == MC_MODE_CLIENT)
@@ -223,6 +224,7 @@ int MC_smpi_process_count(void)
     return res;
   }
 }
+#endif
 
 unsigned long MC_smx_get_maxpid(void)
 {

@@ -83,6 +83,7 @@ static void MC_region_restore(mc_mem_region_t region)
 namespace simgrid {
 namespace mc {
 
+#ifdef HAVE_SMPI
 simgrid::mc::RegionSnapshot privatized_region(
     RegionType region_type, void *start_addr, void* permanent_addr, size_t size
     )
@@ -112,6 +113,7 @@ simgrid::mc::RegionSnapshot privatized_region(
   region.privatized_data(std::move(data));
   return std::move(region);
 }
+#endif
 
 }
 }
@@ -128,12 +130,14 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
   else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(!object_info, "Unexpected object info for heap region.");
 
-  const bool privatization_aware = object_info && object_info->privatized();
-
   simgrid::mc::RegionSnapshot region;
+
+#ifdef HAVE_SMPI
+  const bool privatization_aware = object_info && object_info->privatized();
   if (privatization_aware && MC_smpi_process_count())
     region = simgrid::mc::privatized_region(type, start_addr, permanent_addr, size);
   else
+#endif
     region = simgrid::mc::region(type, start_addr, permanent_addr, size);
 
   region.object_info(object_info);
@@ -535,8 +539,10 @@ static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)
     }
     link[res] = '\0';
 
+#ifdef HAVE_SMPI
     if(smpi_is_privatisation_file(link))
       continue;
+#endif
 
     // This is (probably) the DIR* we are reading:
     // TODO, read all the file entries at once and close the DIR.*
