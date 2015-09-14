@@ -12,20 +12,35 @@ init:
 - git config --global core.longpaths true
 - git config --global core.autocrlf input
 
-platform: 
-  - Win32 # This is Windows 32bits
+#platform: 
+#  - Win32 # This is Windows 32bits
 #  - x64   # This is Windows 64bits
 
 environment:
-  BOOST_ROOT: c:\Libraries\boost_1_59_0
-  BOOST_LIBRARYDIR: c:\Libraries\boost_1_59_0\stage\lib
-#  BOOST_ROOT: c:\Libraries\boost
-#  BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
-  
+  global:
+    BOOST_ROOT: c:\Libraries\boost_1_59_0
+    BOOST_LIBRARYDIR: c:\Libraries\boost_1_59_0\stage\lib
+    #  BOOST_ROOT: c:\Libraries\boost
+    #  BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
+    
+  matrix:
+    - COMPILER: MSVC15
+      PLATFORM: Win32
+    - COMPILER: MSVC15
+      PLATFORM: x64
+    - COMPILER: MSYS2
+      
+install:
+- if [%COMPILER%]==[MinGW]     set PATH=C:\MinGW\bin;%PATH%
+- if [%COMPILER%]==[MinGW-w64] set PATH=C:\mingw64\bin;%PATH%
+- if [%COMPILER%]==[MSYS2]     set PATH=C:\msys64\bin,%PATH%
+
 build_script:
-- if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"     -Denable_smpi=OFF -Denable_mallocators=OFF .
-- if [%PLATFORM%]==[x64] cmake -G "Visual Studio 14 2015 Win64" -Denable_smpi=OFF -Denable_mallocators=OFF .
-- msbuild ALL_BUILD.vcxproj /verbosity:normal
+- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"       -Denable_smpi=OFF -Denable_mallocators=OFF .
+- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[x64]   cmake -G "Visual Studio 14 2015 Win64" -Denable_smpi=OFF -Denable_mallocators=OFF .
+- if not [%COMPILER%]==[MSVC15]                      cmake -G "MinGW Makefiles"             -Denable_smpi=OFF -Denable_mallocators=OFF .
+- if [%COMPILER%]==[MSVC15]     msbuild ALL_BUILD.vcxproj /verbosity:normal
+- if not [%COMPILER%]==[MSVC15] mingw32-make && mingw32-make install
 
 test_script:
 - ctest --output-on-failure
