@@ -11,6 +11,9 @@
 #include "simgrid_config.h"
 #ifndef HAVE_UNISTD_H
 #define YY_NO_UNISTD_H /* hello Windows */
+static int isatty(int fd) {
+  return 0;
+}
 #endif
 
 #include <stdio.h>
