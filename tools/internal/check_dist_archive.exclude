@@ -11,9 +11,6 @@
 
 + \.classpath
 + \.cproject
-+ \.gitignore
-+ examples/simdag/dot/.gitignore
-+ examples/smpi/mc/.gitignore
 + \.project
 + \.travis.yml
 + appveyor.yml
