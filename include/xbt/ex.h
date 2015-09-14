@@ -429,7 +429,7 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
   _throw_ctx->exception.bt_strings = NULL;                              \
   xbt_backtrace_current((xbt_ex_t *)&(_throw_ctx->exception));
 
-#define _THROW(c, v, m)                                        \
+#define _XBT_THROW(c, v, m)                                        \
   do { /* change this sequence into one block */               \
     xbt_running_ctx_t *_throw_ctx = __xbt_running_ctx_fetch(); \
     THROW_PREPARE(_throw_ctx, c, v, m);                        \
@@ -438,11 +438,11 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
 
 /** @brief Builds and throws an exception
     @hideinitializer */
-#define THROW(c, v)             _THROW(c, v, NULL)
+#define THROW(c, v)             _XBT_THROW(c, v, NULL)
 
 /** @brief Builds and throws an exception with a printf-like formatted message
     @hideinitializer */
-#define THROWF(c, v, ...)       _THROW(c, v, bprintf(__VA_ARGS__))
+#define THROWF(c, v, ...)       _XBT_THROW(c, v, bprintf(__VA_ARGS__))
 
 #define THROW_IMPOSSIBLE \
   THROWF(unknown_error, 0, "The Impossible Did Happen (yet again)")
