@@ -73,7 +73,7 @@ extern int xbt_automaton_parser_debug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 16 "parserPromela.yacc" /* yacc.c:1909  */
+#line 20 "parserPromela.yacc" /* yacc.c:1909  */
 
   double real;
   int integer;
