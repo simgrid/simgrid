@@ -9,11 +9,16 @@
 #ifndef XBT_STR_H
 #define XBT_STR_H
 
-#include <stdarg.h>             /* va_* */
-#include <stdio.h>  /* FILE */
 #include "xbt/misc.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
+
+#include <stdarg.h>             /* va_* */
+#include <stdio.h>  /* FILE */
+
+#ifdef _MSC_VER
+#define strcasecmp _stricmp
+#endif
 
 SG_BEGIN_DECL()
 
