@@ -17,8 +17,10 @@ platform:
 #  - x64   # This is Windows 64bits
 
 environment:
-  BOOST_ROOT: c:\Libraries\boost
-  BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
+  BOOST_ROOT: c:\Libraries\boost_1_59_0
+  BOOST_LIBRARYDIR: c:\Libraries\boost_1_59_0\stage\lib
+#  BOOST_ROOT: c:\Libraries\boost
+#  BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
   
 build_script:
 - if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"     -Denable_smpi=OFF -Denable_mallocators=OFF .
