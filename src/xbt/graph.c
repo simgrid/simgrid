@@ -6,8 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <errno.h>
-#include <stdlib.h>
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/graph.h"
@@ -18,6 +16,8 @@
 #include "xbt/str.h"
 #include "xbt/file.h"
 
+#include <errno.h>
+#include <stdlib.h>
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_graph, xbt, "Graph");

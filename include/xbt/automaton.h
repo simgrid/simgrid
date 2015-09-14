@@ -7,11 +7,11 @@
 #ifndef _XBT_AUTOMATON_H
 #define _XBT_AUTOMATON_H
 
-#include <stdlib.h>
-#include <string.h>
 #include <xbt/dynar.h>
 #include <xbt/sysdep.h>
 #include <xbt/graph.h>
+#include <stdlib.h>
+#include <string.h>
 
 SG_BEGIN_DECL()
 
