@@ -109,7 +109,7 @@ public:
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties)=0;
 
-  virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction */*action*/) {};
+  virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
 
   /**
    * @brief Create a communication between two hosts.
