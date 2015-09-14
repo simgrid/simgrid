@@ -21,8 +21,8 @@ environment:
   BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
   
 build_script:
-- if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015" -Denable_smpi=OFF .
-- if [%PLATFORM%]==[x64] cmake -G "Visual Studio 14 2015 Win64" -Denable_smpi=OFF .
+- if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"     -Denable_smpi=OFF -Denable_mallocators=OFF .
+- if [%PLATFORM%]==[x64] cmake -G "Visual Studio 14 2015 Win64" -Denable_smpi=OFF -Denable_mallocators=OFF .
 - msbuild ALL_BUILD.vcxproj /verbosity:normal
 
 test_script:
