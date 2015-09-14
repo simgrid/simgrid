@@ -11,8 +11,8 @@
 #ifndef _XBT_CONFIG_H_
 #define _XBT_CONFIG_H_
 
-#include <stdarg.h>
 #include "xbt/dynar.h"
+#include <stdarg.h>
 
 SG_BEGIN_DECL()
 
