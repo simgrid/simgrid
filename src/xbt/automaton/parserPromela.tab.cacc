@@ -72,6 +72,10 @@
 /* Copy the first part of user declarations.  */
 #line 7 "parserPromela.yacc" /* yacc.c:339  */
 
+#include "simgrid_config.h"
+#ifndef HAVE_UNISTD_H
+#define YY_NO_UNISTD_H /* hello Windows */
+#endif
 
 #include "automaton_lexer.yy.c"
 #include <xbt/automaton.h>
@@ -79,7 +83,7 @@
 void yyerror(const char *s);
 
 
-#line 83 "parserPromela.tab.cacc" /* yacc.c:339  */
+#line 87 "parserPromela.tab.cacc" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -142,14 +146,14 @@ extern int xbt_automaton_parser_debug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 16 "parserPromela.yacc" /* yacc.c:355  */
+#line 20 "parserPromela.yacc" /* yacc.c:355  */
 
   double real;
   int integer;
   char* string;
   xbt_automaton_exp_label_t label;
 
-#line 153 "parserPromela.tab.cacc" /* yacc.c:355  */
+#line 157 "parserPromela.tab.cacc" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -164,7 +168,7 @@ int xbt_automaton_parser_parse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 168 "parserPromela.tab.cacc" /* yacc.c:358  */
+#line 172 "parserPromela.tab.cacc" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -463,8 +467,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    53,    53,    56,    57,    57,    60,    61,    64,    65,
-      66,    67,    68,    69
+       0,    57,    57,    60,    61,    61,    64,    65,    68,    69,
+      70,    71,    72,    73
 };
 #endif
 
@@ -1250,55 +1254,55 @@ yyreduce:
   switch (yyn)
     {
         case 4:
-#line 57 "parserPromela.yacc" /* yacc.c:1646  */
+#line 61 "parserPromela.yacc" /* yacc.c:1646  */
     { new_state((yyvsp[-1].string), 1);}
-#line 1256 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1260 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 61 "parserPromela.yacc" /* yacc.c:1646  */
+#line 65 "parserPromela.yacc" /* yacc.c:1646  */
     { new_transition((yyvsp[-1].string), (yyvsp[-4].label));}
-#line 1262 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1266 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 64 "parserPromela.yacc" /* yacc.c:1646  */
+#line 68 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = (yyvsp[-1].label); }
-#line 1268 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1272 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 65 "parserPromela.yacc" /* yacc.c:1646  */
+#line 69 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(0, (yyvsp[-2].label), (yyvsp[0].label)); }
-#line 1274 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1278 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 66 "parserPromela.yacc" /* yacc.c:1646  */
+#line 70 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(1, (yyvsp[-2].label), (yyvsp[0].label)); }
-#line 1280 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1284 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 67 "parserPromela.yacc" /* yacc.c:1646  */
+#line 71 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(2, (yyvsp[0].label)); }
-#line 1286 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1290 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 68 "parserPromela.yacc" /* yacc.c:1646  */
+#line 72 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(4); }
-#line 1292 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1296 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 69 "parserPromela.yacc" /* yacc.c:1646  */
+#line 73 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(3, (yyvsp[0].string)); }
-#line 1298 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1302 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
 
-#line 1302 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1306 "parserPromela.tab.cacc" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1526,7 +1530,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 72 "parserPromela.yacc" /* yacc.c:1906  */
+#line 76 "parserPromela.yacc" /* yacc.c:1906  */
 
 
 
