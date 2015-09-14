@@ -65,12 +65,12 @@ int makecontext(ucontext_t * ucp, void (*func) (), int argc, ...)
   }
   
       /* Set the instruction and the stack pointer */
-  #if defined(_I_X86_) || defined(__i386) || defined(__i386__)
+  #if defined(_I_X86_) || defined(__i386) || defined(__i386__) || defined(_WIN32)
   ucp->uc_mcontext.Eip = (DWORD) func;
   ucp->uc_mcontext.Esp = (DWORD) sp - sizeof(void*);
   #elif defined(_IA64_) || defined(__ia64) || defined(__ia64__)
   #  error "_IA64_"
-  #elif defined _AMD64_ || defined(__x86_64) || defined(__x86_64__)
+  #elif defined _AMD64_ || defined(__x86_64) || defined(__x86_64__) || defined(_WIN64)
   ucp->uc_mcontext.Rip = (DWORD64) func;
   ucp->uc_mcontext.Rsp = (DWORD64) sp - sizeof(void*);
   #else
