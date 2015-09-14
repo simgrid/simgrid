@@ -9,11 +9,11 @@
 #ifndef XBT_MISC_H
 #define XBT_MISC_H
 
-#include <stdarg.h>
-
 #include "simgrid_config.h"
 #include "base.h"
 #include "dynar.h"
+
+#include <stdarg.h>
 
 SG_BEGIN_DECL()
 
