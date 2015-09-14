@@ -122,7 +122,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
   XBT_DEBUG("Create new parmap (%u workers)", num_workers);
 
   /* Initialize the thread pool data structure */
-  xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
+  xbt_parmap_t parmap = new s_xbt_parmap_t();
   parmap->workers = xbt_new(xbt_os_thread_t, num_workers);
 
   parmap->num_workers = num_workers;
@@ -167,7 +167,7 @@ xbt_parmap_t xbt_parmap_mc_new(unsigned int num_workers, e_xbt_parmap_mode_t mod
   XBT_DEBUG("Create new parmap (%u workers)", num_workers);
 
   /* Initialize the thread pool data structure */
-  xbt_parmap_t parmap = xbt_new0(s_xbt_parmap_t, 1);
+  xbt_parmap_t parmap = new s_xbt_parmap_t();
   parmap->workers = xbt_new(xbt_os_thread_t, num_workers);
 
   parmap->num_workers = num_workers;
@@ -211,7 +211,7 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
   xbt_os_mutex_destroy(parmap->done_mutex);
 
   xbt_free(parmap->workers);
-  xbt_free(parmap);
+  delete parmap;
 }
 
 /**
