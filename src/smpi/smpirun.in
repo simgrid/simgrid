@@ -511,10 +511,10 @@ export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
     echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
     if [ ${HOSTFILETMP} = 1 ] ; then
-        echo "Generated hostfile ${HOSTFILE} keeped."
+        echo "Generated hostfile ${HOSTFILE} kept."
     fi
     if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
-        echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} keeped." 
+        echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept." 
     fi
 fi
 if [ "$foreground" = 1 ]; then
