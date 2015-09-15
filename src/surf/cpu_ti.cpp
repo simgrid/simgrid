@@ -881,7 +881,7 @@ int CpuTiAction::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-	if (actionHook::is_linked())
+	if (action_hook.is_linked())
 	  getStateSet()->erase(getStateSet()->iterator_to(*this));
     /* remove from action_set */
     if (action_ti_hook.is_linked())

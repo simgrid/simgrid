@@ -656,7 +656,7 @@ int L07Action::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-    if (actionHook::is_linked())
+    if (action_hook.is_linked())
 	  p_stateSet->erase(p_stateSet->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(ptask_maxmin_system, getVariable());
