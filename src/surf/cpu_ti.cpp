@@ -836,11 +836,11 @@ CpuAction *CpuTi::sleep(double duration)
 void CpuTi::modified(bool modified){
   CpuTiList *modifiedCpu = static_cast<CpuTiModel*>(getModel())->p_modifiedCpu;
   if (modified) {
-    if (!is_linked()) {
+    if (!cpu_ti_hook.is_linked()) {
       modifiedCpu->push_back(*this);
     }
   } else {
-    if (is_linked()) {
+    if (cpu_ti_hook.is_linked()) {
       modifiedCpu->erase(modifiedCpu->iterator_to(*this));
     }
   }
@@ -884,7 +884,7 @@ int CpuTiAction::unref()
 	if (actionHook::is_linked())
 	  getStateSet()->erase(getStateSet()->iterator_to(*this));
     /* remove from action_set */
-    if (actionTiHook::is_linked())
+    if (action_ti_hook.is_linked())
       p_cpu->p_actionSet->erase(p_cpu->p_actionSet->iterator_to(*this));
     /* remove from heap */
     xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->p_tiActionHeap, this->m_indexHeap);
