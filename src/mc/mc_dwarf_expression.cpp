@@ -10,7 +10,7 @@
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
-#include "mc_object_info.h"
+#include "mc_dwarf.hpp"
 #include "mc_private.h"
 #include "mc_location.h"
 #include "mc/AddressSpace.hpp"
@@ -101,12 +101,12 @@ static int mc_dwarf_register_to_libunwind(int dwarf_register)
 #endif
 }
 
-int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
+int mc_dwarf_execute_expression(size_t n, const simgrid::mc::DwarfInstruction* ops,
                                 mc_expression_state_t state)
 {
   for (size_t i = 0; i != n; ++i) {
     int error = 0;
-    const Dwarf_Op *op = ops + i;
+    const simgrid::mc::DwarfInstruction *op = ops + i;
     uint8_t atom = op->atom;
 
     switch (atom) {
@@ -538,38 +538,6 @@ void *mc_find_frame_base(simgrid::mc::Frame* frame, simgrid::mc::ObjectInformati
     xbt_die("Cannot handle non-address frame base");
     return NULL; // Unreachable
   }
-}
-
-void mc_dwarf_location_list_init(
-  simgrid::mc::LocationList* list, simgrid::mc::ObjectInformation* info,
-  Dwarf_Die * die, Dwarf_Attribute * attr)
-{
-  list->clear();
-
-  ptrdiff_t offset = 0;
-  Dwarf_Addr base, start, end;
-  Dwarf_Op *ops;
-  size_t len;
-
-  while (1) {
-
-    offset = dwarf_getlocations(attr, offset, &base, &start, &end, &ops, &len);
-    if (offset == 0)
-      return;
-    else if (offset == -1)
-      xbt_die("Error while loading location list");
-
-    simgrid::mc::LocationListEntry entry;
-    entry.expression = simgrid::mc::DwarfExpression(ops, ops + len);
-
-    void *base = info->base_address();
-    // If start == 0, this is not a location list:
-    entry.lowpc = start == 0 ? NULL : (char *) base + start;
-    entry.highpc = start == 0 ? NULL : (char *) base + end;
-
-    list->push_back(std::move(entry));
-  }
-
 }
 
 }

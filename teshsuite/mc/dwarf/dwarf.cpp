@@ -15,7 +15,7 @@
 #include <mc/mc.h>
 
 #include "mc/datatypes.h"
-#include "mc/mc_object_info.h"
+#include "mc/mc_dwarf.hpp"
 #include "mc/mc_private.h"
 #include "mc/mc_process.h"
 

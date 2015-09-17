@@ -11,7 +11,7 @@
 #include <xbt/sysdep.h>
 
 #include "internal_config.h"
-#include "mc_object_info.h"
+#include "mc_dwarf.hpp"
 #include "mc_safety.h"
 #include "mc_liveness.h"
 #include "mc_private.h"
