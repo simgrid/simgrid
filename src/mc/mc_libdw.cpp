@@ -12,6 +12,7 @@
 #include <utility>
 
 #include <dwarf.h>
+#include <elfutils/libdw.h>
 
 #include <xbt/log.h>
 
