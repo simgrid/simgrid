@@ -126,7 +126,7 @@ void MCer_ignore_global_variable(const char *name)
     while (start <= end) {
       unsigned int cursor = (start + end) / 2;
       simgrid::mc::Variable* current_var = &info->global_variables[cursor];
-      int cmp = strcmp(current_var->name.c_str(), name);
+      int cmp = current_var->name.compare(name);
       if (cmp == 0) {
         info->global_variables.erase(
           info->global_variables.begin() + cursor);
@@ -202,7 +202,7 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
       int cursor = (start + end) / 2;
       simgrid::mc::Variable* current_var = &scope->variables[cursor];
 
-      int compare = strcmp(current_var->name.c_str(), var_name);
+      int compare = current_var->name.compare(var_name);
       if (compare == 0) {
         // Variable found, remove it:
         scope->variables.erase(scope->variables.begin() + cursor);
