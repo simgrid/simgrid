@@ -97,7 +97,7 @@ int sender(int argc, char *argv[])
 int receiver(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  _XBT_GNUC_UNUSED msg_error_t res;
+  XBT_ATTRIB_UNUSED msg_error_t res;
   int id = -1;
   char mailbox[80];
   msg_comm_t res_irecv;
@@ -106,7 +106,7 @@ int receiver(int argc, char *argv[])
   XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time,
         sleep_test_time);
 
-  _XBT_GNUC_UNUSED int read;
+  XBT_ATTRIB_UNUSED int read;
   read = sscanf(argv[1], "%d", &id);
   xbt_assert(read,
               "Invalid argument %s\n", argv[1]);

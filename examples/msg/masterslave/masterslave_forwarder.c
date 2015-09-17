@@ -43,7 +43,7 @@ int master(int argc, char *argv[])
 
   int i;
 
-  _XBT_GNUC_UNUSED int res = sscanf(argv[1], "%d", &number_of_tasks);
+  XBT_ATTRIB_UNUSED int res = sscanf(argv[1], "%d", &number_of_tasks);
   xbt_assert(res,"Invalid argument %s\n", argv[1]);
   res = sscanf(argv[2], "%lg", &task_comp_size);
   xbt_assert(res, "Invalid argument %s\n", argv[2]);
@@ -107,7 +107,7 @@ int master(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  _XBT_GNUC_UNUSED int res;
+  XBT_ATTRIB_UNUSED int res;
   while (1) {
     res = MSG_task_receive(&(task),MSG_host_get_name(MSG_host_self()));
     xbt_assert(res == MSG_OK, "MSG_task_get failed");

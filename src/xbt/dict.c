@@ -824,7 +824,7 @@ static void count_check_get_key(xbt_dict_t dict, int length)
 {
   xbt_dict_cursor_t cursor;
   char *key;
-  _XBT_GNUC_UNUSED char *key2;
+  XBT_ATTRIB_UNUSED char *key2;
   void *data;
   int effective = 0;
 

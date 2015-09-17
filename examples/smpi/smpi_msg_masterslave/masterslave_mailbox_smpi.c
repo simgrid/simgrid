@@ -113,10 +113,10 @@ int alltoall_mpi(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  _XBT_GNUC_UNUSED int res;
+  XBT_ATTRIB_UNUSED int res;
   int id = -1;
   char mailbox[80];
-  _XBT_GNUC_UNUSED int read;
+  XBT_ATTRIB_UNUSED int read;
 
   read = sscanf(argv[1], "%d", &id);
   xbt_assert(read, "Invalid argument %s\n", argv[1]);

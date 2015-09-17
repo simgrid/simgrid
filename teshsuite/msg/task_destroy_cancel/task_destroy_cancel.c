@@ -94,7 +94,7 @@ static int worker_main(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   msg_task_t task;
-  _XBT_GNUC_UNUSED int res;
+  XBT_ATTRIB_UNUSED int res;
   int id = -1;
   char mailbox[80];
   double start, end;

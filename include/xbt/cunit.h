@@ -124,12 +124,12 @@ XBT_PUBLIC(void) xbt_test_exit(void);
 
 /* test operations */
 XBT_PUBLIC(void) _xbt_test_add(const char *file, int line, const char *fmt,
-                               ...) _XBT_GNUC_PRINTF(3, 4);
+                               ...) XBT_ATTRIB_PRINTF(3, 4);
 XBT_PUBLIC(void) _xbt_test_fail(const char *file, int line,
-                                const char *fmt, ...) _XBT_GNUC_PRINTF(3,
+                                const char *fmt, ...) XBT_ATTRIB_PRINTF(3,
                                                                        4);
 XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt,
-                               ...) _XBT_GNUC_PRINTF(3, 4);
+                               ...) XBT_ATTRIB_PRINTF(3, 4);
 /** @brief Declare that a new test begins (printf-like parameters, describing the test) 
  *  @hideinitializer */
 #define xbt_test_add(...)       _xbt_test_add(__FILE__, __LINE__, __VA_ARGS__)

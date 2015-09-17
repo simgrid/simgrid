@@ -32,7 +32,7 @@ static int sendpid(int argc, char *argv[])
 
 static int killall(int argc, char *argv[]){
   msg_task_t task = NULL;
-  _XBT_GNUC_UNUSED int res;
+  XBT_ATTRIB_UNUSED int res;
   int i;
   for (i=0; i<3;i++) {
     res = MSG_task_receive(&(task), mailbox);

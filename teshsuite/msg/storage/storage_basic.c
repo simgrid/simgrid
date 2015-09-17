@@ -168,7 +168,7 @@ int client(int argc, char *argv[])
 int server(int argc, char *argv[])
 {
   msg_task_t to_execute = NULL;
-  _XBT_GNUC_UNUSED int res;
+  XBT_ATTRIB_UNUSED int res;
 
   storage_info(MSG_host_self());
 

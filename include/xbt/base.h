@@ -27,23 +27,23 @@
 #endif
 
 #if defined(__MINGW32__) && defined(__MINGW_PRINTF_FORMAT)
-  # define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
+  # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
      __attribute__((__format__ (__MINGW_PRINTF_FORMAT, format_idx, arg_idx)))
 #else
-  # define _XBT_GNUC_PRINTF( format_idx, arg_idx )    \
+  # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
      __attribute__((__format__ (__printf__, format_idx, arg_idx)))
 #endif
 
 #if defined(__MINGW32__) && defined(__MINGW_SCANF_FORMAT)
-  # define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
+  # define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
          __attribute__((__MINGW_SCANF_FORMAT (__scanf__, format_idx, arg_idx)))
 #else
-  # define _XBT_GNUC_SCANF( format_idx, arg_idx )     \
+  # define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
          __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
 #endif
 
-# define _XBT_GNUC_NORETURN __attribute__((__noreturn__))
-# define _XBT_GNUC_UNUSED  __attribute__((__unused__))
+# define XBT_ATTRIB_NORETURN __attribute__((__noreturn__))
+# define XBT_ATTRIB_UNUSED  __attribute__((__unused__))
 
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
  * supported on Macs. */
@@ -57,10 +57,10 @@
 # undef _XBT_NEED_INIT_PRAGMA
 
 #else                           /* !__GNUC__ */
-# define _XBT_GNUC_PRINTF( format_idx, arg_idx )
-# define _XBT_GNUC_SCANF( format_idx, arg_idx )
-# define _XBT_GNUC_NORETURN
-# define _XBT_GNUC_UNUSED
+# define XBT_ATTRIB_PRINTF( format_idx, arg_idx )
+# define XBT_ATTRIB_SCANF( format_idx, arg_idx )
+# define XBT_ATTRIB_NORETURN
+# define XBT_ATTRIB_UNUSED
 # define _XBT_GNUC_CONSTRUCTOR(prio)
 # define _XBT_GNUC_DESTRUCTOR(prio)
 # define  _XBT_NEED_INIT_PRAGMA 1

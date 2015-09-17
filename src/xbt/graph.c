@@ -627,7 +627,7 @@ xbt_graph_t xbt_graph_read(const char *filename,
   ETag_graphxml_edge_fun = __parse_edge;
 
   xbt_graph_parse_open(filename);
-  _XBT_GNUC_UNUSED int res;
+  XBT_ATTRIB_UNUSED int res;
   res = xbt_graph_parse();
   xbt_assert(!res, "Parse error in %s", filename);
   xbt_graph_parse_close();

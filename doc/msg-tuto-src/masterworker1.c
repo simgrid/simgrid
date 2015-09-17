@@ -44,7 +44,7 @@ int master(int argc, char *argv[])
 
   int i;
 
-  _XBT_GNUC_UNUSED int res = sscanf(argv[1], "%d", &number_of_tasks);
+  XBT_ATTRIB_UNUSED int res = sscanf(argv[1], "%d", &number_of_tasks);
   xbt_assert(res,"Invalid argument %s\n", argv[1]);
   res = sscanf(argv[2], "%lg", &task_comp_size);
   xbt_assert(res, "Invalid argument %s\n", argv[2]);
@@ -110,7 +110,7 @@ int master(int argc, char *argv[])
 int worker(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  _XBT_GNUC_UNUSED int res;
+  XBT_ATTRIB_UNUSED int res;
   char channel[1024];
 
   build_channel_name(channel,MSG_process_get_data(MSG_process_self()),

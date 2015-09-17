@@ -465,7 +465,7 @@ static void sglua_copy_function(lua_State* src, lua_State* dst) {
     buffer.data = xbt_new(char, buffer.capacity);
 
     /* copy the binary chunk from src into a buffer */
-    _XBT_GNUC_UNUSED int error = lua_dump(src, sglua_memory_writer, &buffer);
+    XBT_ATTRIB_UNUSED int error = lua_dump(src, sglua_memory_writer, &buffer);
     xbt_assert(!error, "Failed to dump the function from the source state: error %d",
         error);
     XBT_DEBUG("Fonction dumped: %zu bytes", buffer.size);

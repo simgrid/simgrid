@@ -114,7 +114,7 @@ void SIMIX_init_application(void){
  */
 void SIMIX_launch_application(const char *file)
 {
-  _XBT_GNUC_UNUSED int parse_status;
+  XBT_ATTRIB_UNUSED int parse_status;
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_launch_application.");
 

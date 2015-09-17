@@ -30,7 +30,7 @@ int host(int argc, char *argv[])
   int host_number = atoi(MSG_process_get_name(MSG_process_self()));
   char mailbox[256];
   msg_task_t task = NULL;
-  _XBT_GNUC_UNUSED int res;
+  XBT_ATTRIB_UNUSED int res;
   if (host_number == 0){ //master  send then receive
     sprintf(mailbox, "%d", host_number+1);
     task = MSG_task_create("Token", task_comp_size, task_comm_size, NULL);

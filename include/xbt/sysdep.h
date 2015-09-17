@@ -35,7 +35,7 @@ SG_BEGIN_DECL()
  * @{
  */
 /** @brief Kill the program in silence */
-XBT_PUBLIC(void) xbt_abort(void) _XBT_GNUC_NORETURN;
+XBT_PUBLIC(void) xbt_abort(void) XBT_ATTRIB_NORETURN;
 
 /**
  * @brief Kill the program with an error message
@@ -64,10 +64,10 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt);
    not need to load the whole str.h and its heavy dependencies */
 #ifndef __USE_GNU               /* do not redeclare existing headers */
 XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt,   /*args */
-                         ...) _XBT_GNUC_PRINTF(2, 3);
+                         ...) XBT_ATTRIB_PRINTF(2, 3);
 XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
-XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
+XBT_PUBLIC(char *) bprintf(const char *fmt, ...) XBT_ATTRIB_PRINTF(1, 2);
 
 /** @addtogroup XBT_syscall
  *  @brief Malloc and associated functions, killing the program on error (with \ref XBT_ex)

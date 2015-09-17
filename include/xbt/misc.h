@@ -51,7 +51,7 @@ XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
  */
 #if defined(SIMGRID_NEED_ASPRINTF)||defined(DOXYGEN)
 XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt,   /*args */
-                         ...) _XBT_GNUC_PRINTF(2, 3);
+                         ...) XBT_ATTRIB_PRINTF(2, 3);
 #endif
 /** @brief print to allocated string (reimplemented when not provided by the system)
  *
@@ -72,7 +72,7 @@ XBT_PUBLIC(char *) bvprintf(const char *fmt, va_list ap);
  * Works just like asprintf(), but returns a pointer to the newly
  * created string, or aborts on error.
  */
-XBT_PUBLIC(char *) bprintf(const char *fmt, ...) _XBT_GNUC_PRINTF(1, 2);
+XBT_PUBLIC(char *) bprintf(const char *fmt, ...) XBT_ATTRIB_PRINTF(1, 2);
 /** @} */
 
 SG_END_DECL()

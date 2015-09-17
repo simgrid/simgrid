@@ -43,7 +43,7 @@ int execute(int argc, char *argv[])
                 "Unknown host %s. Stopping Now! ", argv[i]);
   }
 
-  _XBT_GNUC_UNUSED int read;
+  XBT_ATTRIB_UNUSED int read;
   read = sscanf(argv[argc - 2], "%lg", &computation_amount);
   xbt_assert(read, "Invalid argument %s\n", argv[argc - 2]);
   read = sscanf(argv[argc - 1], "%lg", &communication_amount);
@@ -99,7 +99,7 @@ int redistribute(int argc, char *argv[])
                 "Unknown host %s. Stopping Now! ", argv[i]);
   }
 
-  _XBT_GNUC_UNUSED int read;
+  XBT_ATTRIB_UNUSED int read;
   read = sscanf(argv[argc - 1], "%lg", &communication_amount);
   xbt_assert(read, "Invalid argument %s\n", argv[argc - 1]);
   computation_duration = (double *) calloc(host_list_size, sizeof(double));

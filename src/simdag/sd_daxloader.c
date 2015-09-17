@@ -381,7 +381,7 @@ xbt_dynar_t SD_daxload(const char *filename)
 
 void STag_dax__adag(void)
 {
-  _XBT_GNUC_UNUSED double version;
+  XBT_ATTRIB_UNUSED double version;
   version = dax_parse_double(A_dax__adag_version);
 
   xbt_assert(version == 2.1,

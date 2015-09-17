@@ -62,10 +62,10 @@ double VMHL13Model::shareResources(double now)
   /* 0. Make sure that we already calculated the resource share at the physical
    * machine layer. */
   {
-    _XBT_GNUC_UNUSED Model *ws_model = surf_host_model;
-    _XBT_GNUC_UNUSED Model *vm_ws_model = surf_vm_model;
-    _XBT_GNUC_UNUSED unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &ws_model);
-    _XBT_GNUC_UNUSED unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &vm_ws_model);
+    XBT_ATTRIB_UNUSED Model *ws_model = surf_host_model;
+    XBT_ATTRIB_UNUSED Model *vm_ws_model = surf_vm_model;
+    XBT_ATTRIB_UNUSED unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &ws_model);
+    XBT_ATTRIB_UNUSED unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &vm_ws_model);
     xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_host_model comes before");
 
     /* Another option is that we call sub_ws->share_resource() here. The
@@ -260,7 +260,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
 VMHL13::~VMHL13()
 {
   /* Free the cpu_action of the VM. */
-  _XBT_GNUC_UNUSED int ret = p_action->unref();
+  XBT_ATTRIB_UNUSED int ret = p_action->unref();
   xbt_assert(ret == 1, "Bug: some resource still remains");
 }
 
@@ -369,7 +369,7 @@ void VMHL13::migrate(surf_resource_t ind_dst_pm)
        new_cpu_action->setBound(old_bound);
      }
 
-     _XBT_GNUC_UNUSED int ret = p_action->unref();
+     XBT_ATTRIB_UNUSED int ret = p_action->unref();
      xbt_assert(ret == 1, "Bug: some resource still remains");
 
      p_action = new_cpu_action;

@@ -67,7 +67,7 @@ int master(int argc, char *argv[])
 int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  _XBT_GNUC_UNUSED int res;
+  XBT_ATTRIB_UNUSED int res;
 
   XBT_DEBUG("mailbox: %s",MSG_process_get_name(MSG_process_self()));
   while (1) {
