@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdint.h>
+#include <cinttypes>
+#include <cstdint>
 
 #include <algorithm>
 #include <memory>
@@ -86,7 +87,7 @@ static void mc_post_process_scope(
     auto i = info->subprograms.find(scope->abstract_origin_id);
     xbt_assert(i != info->subprograms.end(),
       "Could not lookup abstract origin %" PRIx64,
-      (uint64_t) scope->abstract_origin_id);
+      (std::uint64_t) scope->abstract_origin_id);
     scope->name = i->second.name;
   }
 
