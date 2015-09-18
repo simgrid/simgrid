@@ -748,7 +748,7 @@ be simulated using SMPI by calling internal smpi_execute*() functions.
 
 To disable the benchmarking/simulation of computation in the simulated
 application, the variable \b
-smpi/simulation_computation should be set to no
+smpi/simulate_computation should be set to no
 
 \subsection options_model_smpi_bw_factor smpi/bw_factor: Bandwidth factors
 
@@ -1118,7 +1118,7 @@ silently overflow on other parts of the memory.
 - \c smpi/privatize_global_variables: \ref options_smpi_global
 - \c smpi/running_power: \ref options_smpi_bench
 - \c smpi/send_is_detached_thresh: \ref options_model_smpi_detached
-- \c smpi/simulation_computation: \ref options_smpi_bench
+- \c smpi/simulate_computation: \ref options_smpi_bench
 - \c smpi/test: \ref options_model_smpi_test
 - \c smpi/use_shared_malloc: \ref options_model_smpi_use_shared_malloc
 - \c smpi/wtime: \ref options_model_smpi_wtime
