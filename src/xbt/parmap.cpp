@@ -53,10 +53,12 @@ static void futex_wait(unsigned *uaddr, unsigned val);
 static void futex_wake(unsigned *uaddr, unsigned val);
 #endif
 
+#ifndef _MSC_VER
 static void xbt_parmap_busy_master_wait(xbt_parmap_t parmap);
 static void xbt_parmap_busy_worker_signal(xbt_parmap_t parmap);
 static void xbt_parmap_busy_master_signal(xbt_parmap_t parmap);
 static void xbt_parmap_busy_worker_wait(xbt_parmap_t parmap, unsigned round);
+#endif
 
 #ifdef HAVE_MC
 static void xbt_parmap_mc_work(xbt_parmap_t parmap, int worker_id);
@@ -262,6 +264,7 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
 #endif
 
     case XBT_PARMAP_BUSY_WAIT:
+#ifndef _MSV_VER
       parmap->master_wait_f = xbt_parmap_busy_master_wait;
       parmap->worker_signal_f = xbt_parmap_busy_worker_signal;
       parmap->master_signal_f = xbt_parmap_busy_master_signal;
@@ -272,6 +275,9 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
       xbt_os_cond_destroy(parmap->done_cond);
       xbt_os_mutex_destroy(parmap->done_mutex);
       break;
+#else
+      xbt_die("Busy waiting not implemented on Windows yet.");
+#endif
 
     case XBT_PARMAP_DEFAULT:
       THROW_IMPOSSIBLE;
@@ -593,6 +599,7 @@ static void xbt_parmap_futex_worker_wait(xbt_parmap_t parmap, unsigned round)
 }
 #endif
 
+#ifndef _MSC_VER
 /**
  * \brief Starts the parmap: waits for all workers to be ready and returns.
  *
@@ -648,3 +655,4 @@ static void xbt_parmap_busy_worker_wait(xbt_parmap_t parmap, unsigned round)
     xbt_os_thread_yield();
   }
 }
+#endif /* ! _MSC_VER */
