@@ -56,7 +56,7 @@
 # endif
 # undef _XBT_NEED_INIT_PRAGMA
 
-#elif define(_MSC_VER) /* Microsoft Visual Thing */
+#elif defined(_MSC_VER) /* Microsoft Visual Thing */
 # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )
 # define XBT_ATTRIB_SCANF( format_idx, arg_idx )
 # define XBT_ATTRIB_NORETURN __declspec(noreturn)
