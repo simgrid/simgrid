@@ -29,8 +29,10 @@ environment:
       
 install:
 - if [%COMPILER%]==[MinGW]     set PATH=C:\MinGW\bin;%PATH%
+- if [%COMPILER%]==[MinGW]     mingw-get update
 - if [%COMPILER%]==[MinGW-w64] set PATH=C:\mingw64\bin;%PATH%
 - if [%COMPILER%]==[MinGW-w64] rename "C:\Program Files (x86)\Git\bin\sh.exe" "sh2.exe"
+- if [%COMPILER%]==[MinGW-w64] mingw-get update
 - if [%COMPILER%]==[MSYS2]     set PATH=C:\msys64\bin,%PATH%
 
 build_script:
