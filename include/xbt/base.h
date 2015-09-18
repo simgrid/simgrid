@@ -56,7 +56,15 @@
 # endif
 # undef _XBT_NEED_INIT_PRAGMA
 
-#else                           /* !__GNUC__ */
+#elif define(_MSC_VER) /* Microsoft Visual Thing */
+# define XBT_ATTRIB_PRINTF( format_idx, arg_idx )
+# define XBT_ATTRIB_SCANF( format_idx, arg_idx )
+# define XBT_ATTRIB_NORETURN __declspec(noreturn)
+# define XBT_ATTRIB_UNUSED
+# define _XBT_GNUC_CONSTRUCTOR(prio)
+# define _XBT_GNUC_DESTRUCTOR(prio)
+# define  _XBT_NEED_INIT_PRAGMA 1
+#else
 # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )
 # define XBT_ATTRIB_SCANF( format_idx, arg_idx )
 # define XBT_ATTRIB_NORETURN
@@ -65,7 +73,7 @@
 # define _XBT_GNUC_DESTRUCTOR(prio)
 # define  _XBT_NEED_INIT_PRAGMA 1
 
-#endif                          /* !__GNUC__ */
+#endif                          /* gcc or MSVC else */
 
 /* inline and __FUNCTION__ are only in GCC when -ansi is off */
 
