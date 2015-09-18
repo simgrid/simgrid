@@ -26,7 +26,7 @@ XBT_PUBLIC(void) surf_parse_close(void);
 XBT_PUBLIC(void) surf_parse_init_callbacks(void);
 XBT_PUBLIC(void) surf_parse_reset_callbacks(void);
 XBT_PUBLIC(void) surf_parse_free_callbacks(void);
-XBT_PUBLIC(void) surf_parse_error(const char *msg,...) XBT_ATTRIB_PRINTF(1,2) XBT_ATTRIB_NORETURN;
+XBT_PUBLIC(void) XBT_ATTRIB_NORETURN surf_parse_error(const char *msg,...) XBT_ATTRIB_PRINTF(1,2);
 XBT_PUBLIC(void) surf_parse_warn(const char *msg,...) XBT_ATTRIB_PRINTF(1,2);
 XBT_PUBLIC(double) surf_parse_get_double(const char *string);
 XBT_PUBLIC(int) surf_parse_get_int(const char *string);
