@@ -264,7 +264,7 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
 #endif
 
     case XBT_PARMAP_BUSY_WAIT:
-#ifndef _MSV_VER
+#ifndef _MSC_VER
       parmap->master_wait_f = xbt_parmap_busy_master_wait;
       parmap->worker_signal_f = xbt_parmap_busy_worker_signal;
       parmap->master_signal_f = xbt_parmap_busy_master_signal;
