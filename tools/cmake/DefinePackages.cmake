@@ -622,7 +622,7 @@ set(MC_SRC
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
   src/mc/mc_mmalloc.h
-  src/mc/mc_object_info.h
+  src/mc/mc_dwarf.hpp
   src/mc/mc_checkpoint.cpp
   src/mc/mc_snapshot.h
   src/mc/mc_snapshot.cpp
@@ -633,6 +633,9 @@ set(MC_SRC
   src/mc/mc_compare.cpp
   src/mc/mc_diff.cpp
   src/mc/mc_dwarf.cpp
+  src/mc/mc_dwarf.hpp
+  src/mc/mc_libdw.cpp
+  src/mc/mc_libdw.hpp
   src/mc/mc_dwarf_attrnames.cpp
   src/mc/mc_dwarf_expression.cpp
   src/mc/mc_dwarf_tagnames.cpp

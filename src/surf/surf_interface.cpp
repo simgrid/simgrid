@@ -871,7 +871,7 @@ void Action::setPriority(double priority)
 void Action::cancel(){
   setState(SURF_ACTION_FAILED);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
-    if (actionLmmHook::is_linked())
+    if (action_lmm_hook.is_linked())
       getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
     heapRemove(getModel()->getActionHeap());
   }
@@ -880,14 +880,14 @@ void Action::cancel(){
 int Action::unref(){
   m_refcount--;
   if (!m_refcount) {
-    if (actionHook::is_linked())
+    if (action_hook.is_linked())
       p_stateSet->erase(p_stateSet->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
     if (getModel()->getUpdateMechanism() == UM_LAZY) {
       /* remove from heap */
       heapRemove(getModel()->getActionHeap());
-      if (actionLmmHook::is_linked())
+      if (action_lmm_hook.is_linked())
         getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
     }
     delete this;

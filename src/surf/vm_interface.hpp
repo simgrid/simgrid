@@ -38,34 +38,6 @@ extern surf_callback(void, VM*) VMDestructedCallbacks;
  */
 extern surf_callback(void, VM*) VMStateChangedCallbacks;
 
-/*********
- * Model *
- *********/
-/** @ingroup SURF_vm_interface
- * @brief SURF VM model interface class
- * @details A model is an object which handle the interactions between its Resources and its Actions
- */
-class VMModel : public HostModel {
-public:
-  VMModel() :HostModel(){}
-  ~VMModel(){};
-
-  Host *createHost(const char *name){DIE_IMPOSSIBLE;}
-
-  /**
-   * @brief Create a new VM
-   *
-   * @param name The name of the new VM
-   * @param host_PM The real machine hosting the VM
-   *
-   */
-  virtual VM *createVM(const char *name, surf_resource_t host_PM)=0;
-  void adjustWeightOfDummyCpuActions() {};
-
-  typedef boost::intrusive::list<VM, boost::intrusive::constant_time_size<false> > vm_list_t;
-  static vm_list_t ws_vms;
-};
-
 /************
  * Resource *
  ************/
@@ -74,8 +46,7 @@ public:
  * @brief SURF VM interface class
  * @details A VM represent a virtual machine
  */
-class VM : public Host,
-           public boost::intrusive::list_base_hook<> {
+class VM : public Host {
 public:
   /**
    * @brief Constructor
@@ -119,6 +90,38 @@ public:
   CpuAction *p_action;
   Host *p_subWs;  // Pointer to the ''host'' OS
   e_surf_vm_state_t p_currentState;
+public:
+  boost::intrusive::list_member_hook<> vm_hook;
+};
+
+/*********
+ * Model *
+ *********/
+/** @ingroup SURF_vm_interface
+ * @brief SURF VM model interface class
+ * @details A model is an object which handle the interactions between its Resources and its Actions
+ */
+class VMModel : public HostModel {
+public:
+  VMModel() :HostModel(){}
+  ~VMModel(){};
+
+  Host *createHost(const char *name){DIE_IMPOSSIBLE;}
+
+  /**
+   * @brief Create a new VM
+   *
+   * @param name The name of the new VM
+   * @param host_PM The real machine hosting the VM
+   *
+   */
+  virtual VM *createVM(const char *name, surf_resource_t host_PM)=0;
+  void adjustWeightOfDummyCpuActions() {};
+
+  typedef boost::intrusive::member_hook<
+    VM, boost::intrusive::list_member_hook<>, &VM::vm_hook> VmOptions;
+  typedef boost::intrusive::list<VM, VmOptions, boost::intrusive::constant_time_size<false> > vm_list_t;
+  static vm_list_t ws_vms;
 };
 
 /**********

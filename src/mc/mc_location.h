@@ -13,7 +13,6 @@
 
 #include <libunwind.h>
 #include <dwarf.h>
-#include <elfutils/libdw.h>
 
 #include <simgrid_config.h>
 #include "mc_base.h"
@@ -23,8 +22,15 @@
 namespace simgrid {
 namespace mc {
 
-typedef std::vector<Dwarf_Op> DwarfExpression;
+typedef struct
+{
+  uint8_t atom;
+  std::uint64_t number;
+  std::uint64_t number2;
+  std::uint64_t offset;
+} DwarfInstruction;
 
+typedef std::vector<DwarfInstruction> DwarfExpression;
 
 /** \brief A DWARF expression with optional validity contraints */
 class LocationListEntry {
@@ -101,10 +107,6 @@ MC_SHOULD_BE_INTERNAL void mc_dwarf_resolve_locations(
   void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
   int process_index);
 
-XBT_INTERNAL void mc_dwarf_location_list_init(
-  simgrid::mc::LocationList*, simgrid::mc::ObjectInformation* info, Dwarf_Die* die,
-  Dwarf_Attribute* attr);
-
 #define MC_EXPRESSION_STACK_SIZE 64
 
 #define MC_EXPRESSION_OK 0
@@ -127,7 +129,7 @@ typedef struct s_mc_expression_state {
 } s_mc_expression_state_t, *mc_expression_state_t;
 
 MC_SHOULD_BE_INTERNAL int mc_dwarf_execute_expression(
-  size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
+  size_t n, const simgrid::mc::DwarfInstruction* ops, mc_expression_state_t state);
 
 MC_SHOULD_BE_INTERNAL void* mc_find_frame_base(
   simgrid::mc::Frame* frame, simgrid::mc::ObjectInformation* object_info, unw_cursor_t* unw_cursor);

@@ -12,7 +12,7 @@
 #include "xbt/virtu.h"
 
 #include "mc/mc.h"
-#include "mc_object_info.h"
+#include "mc_dwarf.hpp"
 #include "mc_private.h"
 
 extern "C" {

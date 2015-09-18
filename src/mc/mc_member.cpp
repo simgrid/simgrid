@@ -6,7 +6,7 @@
 
 #include <xbt/misc.h>
 
-#include "mc_object_info.h"
+#include "mc_dwarf.hpp"
 #include "mc_private.h"
 #include "mc/Type.hpp"
 
