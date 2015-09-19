@@ -15,6 +15,12 @@
 #include "mc/mc.h"
 #include "vm_interface.hpp"
 
+#ifdef _MSC_VER
+#pragma warning(disable: 4251)
+// warning C4251: 'Action::action_hook': class 'boost::intrusive::list_member_hook<void,void,void>' needs to have dll-interface to be used by clients of class 'Action'
+// No worry, compiler. Nobody will use those hooks from outside the DLL (or they will pay the price for it)
+#endif
+
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
                                 "Logging specific to SURF (kernel)");
