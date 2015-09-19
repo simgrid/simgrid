@@ -105,7 +105,7 @@ static void append2_file(xbt_log_appender_t this_, char *str) {
    fputs(str, d->file);
    if(d->count<0){
           fputs(APPEND2_END_TOKEN,d->file);
-          fseek(d->file,-strlen(APPEND2_END_TOKEN),SEEK_CUR);
+          fseek(d->file,-((signed long)strlen(APPEND2_END_TOKEN)),SEEK_CUR);
    }
 }
 
