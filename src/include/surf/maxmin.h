@@ -87,8 +87,8 @@
  * to consrtaint and the communications to variables.
  */
 
-extern double sg_maxmin_precision;
-extern double sg_surf_precision;
+XBT_EXPORT_NO_IMPORT(double) sg_maxmin_precision;
+XBT_EXPORT_NO_IMPORT(double) sg_surf_precision;
  
 static XBT_INLINE void double_update(double *variable, double value, double precision)
 {
