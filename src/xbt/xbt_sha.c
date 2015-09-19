@@ -58,7 +58,7 @@ void xbt_sha_reset(xbt_sha_t sha)
 /* @brief Add some more data to the buffer */
 void xbt_sha_feed(xbt_sha_t sha, const unsigned char *data, size_t len)
 {
-  int i;
+  unsigned int i;
 
   for (i = 0; i < len; i++) {
     sha->buf[sha->blen / 4] <<= 8;
