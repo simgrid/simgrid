@@ -48,10 +48,7 @@
 #cmakedefine __VISUALC__ @__VISUALC__@
 #cmakedefine __BORLANDC__ @__BORLANDC__@
 #cmakedefine APPLE @APPLE@
-#ifdef _XBT_WIN32
-	#ifndef __GNUC__
-		#cmakedefine __GNUC__ @__GNUC__@
-	#endif
+#ifdef _MSC_VER
 	#define HAVE_VA_COPY
 #endif
 /* Set to true if enable_model-checking is true */
