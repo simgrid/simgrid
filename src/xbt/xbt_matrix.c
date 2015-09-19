@@ -185,7 +185,7 @@ xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
 /** \brief Checks whether the matrix contains the sequence of numbers */
 int xbt_matrix_double_is_seq(xbt_matrix_t mat)
 {
-  int i;
+  unsigned int i;
 
   for (i = 0; i < mat->lines * mat->rows; i++) {
     double val = xbt_matrix_get_as(mat, i, 0, double);

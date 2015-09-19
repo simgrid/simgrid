@@ -861,7 +861,7 @@ char *xbt_str_from_file(FILE * file)
  */
 int xbt_str_start_with(const char* str, const char* start)
 {
-  int i;
+  unsigned int i;
   size_t l_str = strlen(str);
   size_t l_start = strlen(start);
 

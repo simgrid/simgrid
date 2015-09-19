@@ -201,7 +201,7 @@ void xbt_setset_set_reset(xbt_setset_set_t set)
  */
 void *xbt_setset_set_choose(xbt_setset_set_t set)
 {
-  int i;
+  unsigned int i;
   /* Traverse the set and return the first element */
   for (i = 0; i < set->size; i++)
     if (set->bitmap[i] != 0)
@@ -243,7 +243,8 @@ int xbt_setset_set_belongs(xbt_setset_set_t set, void *obj)
 
 int xbt_setset_set_size(xbt_setset_set_t set)
 {
-  int i, count = 0;
+  unsigned int i;
+  int count = 0;
 
   for (i = 0; i < set->size; i++)
     count += bitcount(set->bitmap[i]);
@@ -260,7 +261,7 @@ int xbt_setset_set_size(xbt_setset_set_t set)
  */
 void xbt_setset_add(xbt_setset_set_t set1, xbt_setset_set_t set2)
 {
-  int i;
+  unsigned int i;
 
   /* Increase the size of set1 if necessary */
   if (set1->size < set2->size) {
@@ -283,7 +284,7 @@ void xbt_setset_add(xbt_setset_set_t set1, xbt_setset_set_t set2)
  */
 void xbt_setset_substract(xbt_setset_set_t set1, xbt_setset_set_t set2)
 {
-  int i;
+  unsigned int i;
 
   for (i = 0; i < MIN(set1->size, set2->size); i++)
     if (set2->bitmap[i] != 0)
@@ -300,7 +301,7 @@ void xbt_setset_substract(xbt_setset_set_t set1, xbt_setset_set_t set2)
  */
 void xbt_setset_intersect(xbt_setset_set_t set1, xbt_setset_set_t set2)
 {
-  int i;
+  unsigned int i;
 
   for (i = 0; i < MIN(set1->size, set2->size); i++)
     if (set1->bitmap[i] && set2->bitmap[i])
@@ -313,7 +314,7 @@ void xbt_setset_intersect(xbt_setset_set_t set1, xbt_setset_set_t set2)
 void xbt_setset_cursor_first(xbt_setset_set_t set,
                              xbt_setset_cursor_t * cursor)
 {
-  int i;
+  unsigned int i;
   (*cursor) = xbt_new0(s_xbt_setset_cursor_t, 1);
   (*cursor)->set = set;
 

@@ -27,7 +27,7 @@ static XBT_INLINE void _sanity_check_idx(int idx)
 
 static XBT_INLINE void _check_inbound_idx(xbt_dynar_t dynar, int idx)
 {
-  if (idx < 0 || idx >= dynar->used) {
+  if (idx < 0 || idx >= (int)dynar->used) {
     THROWF(bound_error, idx,
            "dynar is not that long. You asked %d, but it's only %lu long",
            (int) (idx), (unsigned long) dynar->used);
