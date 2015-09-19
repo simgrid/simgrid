@@ -202,6 +202,14 @@ CHECK_SYMBOL_EXISTS(vsnprintf stdio.h HAVE_VSNPRINTF)
 CHECK_SYMBOL_EXISTS(asprintf stdio.h HAVE_ASPRINTF)
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 
+if(MINGW) 
+  # The detection of asprintf fails on MinGW, assumingly because it's
+  # defined as an inline function in stdio.h instead of a regular
+  # function. So force the result to be 1 despite of the test.
+  set(HAVE_ASPRINTF 1)
+  set(HAVE_VASPRINTF 1)
+endif()
+
 CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
