@@ -12,7 +12,6 @@
 #include "xbt/asserts.h"
 #include "surf/datatypes.h"
 #include <math.h>
-//#include <float.h>
 
 
 /** @addtogroup SURF_lmm 
@@ -87,8 +86,8 @@
  * to consrtaint and the communications to variables.
  */
 
-XBT_EXPORT_NO_IMPORT(double) sg_maxmin_precision;
-XBT_EXPORT_NO_IMPORT(double) sg_surf_precision;
+XBT_PUBLIC_DATA(double) sg_maxmin_precision;
+XBT_PUBLIC_DATA(double) sg_surf_precision;
  
 static XBT_INLINE void double_update(double *variable, double value, double precision)
 {

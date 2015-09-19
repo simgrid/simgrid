@@ -20,8 +20,8 @@ typedef struct s_dyn_light {
   int size;
 } s_dyn_light_t, *dyn_light_t;
 
-XBT_EXPORT_NO_IMPORT(double) sg_maxmin_precision = 0.00001;
-XBT_EXPORT_NO_IMPORT(double) sg_surf_precision   = 0.00001;
+double sg_maxmin_precision = 0.00001;
+double sg_surf_precision   = 0.00001;
 
 static void *lmm_variable_mallocator_new_f(void);
 static void lmm_variable_mallocator_free_f(void *var);
