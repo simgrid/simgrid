@@ -157,6 +157,7 @@
 
 /*
  * Function calling convention (not used for now)
+ * http://unixwiz.net/techtips/win32-callconv.html <-- good documentation
  */
 
 #ifdef _XBT_WIN32
