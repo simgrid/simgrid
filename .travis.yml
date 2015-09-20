@@ -20,10 +20,11 @@ addons:
       packages:
       - gcc-4.7
       - g++-4.7
-      - clang
+#      - clang
 # Install libboost-chrono1.48-dev to get boost 1.48 on Ubuntu Precise. What we really want is libboost-dev libboost-all-dev
 # Still need sudo for update-alternatives
 before_install:
+   - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo add-apt-repository --yes ppa:kubuntu-ppa/backports ; fi # cmake higher than 2.8.7
    - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo apt-get update  -qq ; fi
    - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo apt-get install -y cmake valgrind default-jdk gfortran liblua5.1-dev lua5.1 libboost-chrono1.48-dev ; fi
    - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 50 ; fi
