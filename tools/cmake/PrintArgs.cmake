@@ -102,6 +102,7 @@ message("")
 message("        CFlags ......................: ${CMAKE_C_FLAGS}")
 message("        CXXFlags ....................: ${CMAKE_CXX_FLAGS}")
 message("        LDFlags .....................: ${CMAKE_C_LINK_FLAGS}")
+message("        with LTO ....................: ${enable_lto}")
 message("")
 
 if (HAVE_NS3)

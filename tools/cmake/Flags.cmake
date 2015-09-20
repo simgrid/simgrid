@@ -46,26 +46,42 @@ if(enable_compile_optimizations AND CMAKE_COMPILER_IS_GNUCC
 endif()
 
 # Configure LTO
-# TODO, provide an option to manually choose whether to use LTO
 # NOTE, cmake 3.0 has a INTERPROCEDURAL_OPTIMIZATION target
 #       property for this (http://www.cmake.org/cmake/help/v3.0/prop_tgt/INTERPROCEDURAL_OPTIMIZATION.html)
-set(enable_lto OFF)
-if(enable_compile_optimizations
-    AND CMAKE_COMPILER_IS_GNUCC
-    AND (NOT enable_model-checking))
-  if(WIN32)
-    if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
-      # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
-      #
-      # We are experiencing assertion failures even with 4.8 on MinGW.
-      # Push the support forward: will see if 4.9 works when we test it.
+if(enable_lto) # User wants LTO. Try if we can do that
+  set(enable_lto OFF)
+  if(enable_compile_optimizations
+      AND CMAKE_COMPILER_IS_GNUCC
+      AND (NOT enable_model-checking))
+    if(WIN32)
+      if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
+        # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
+        #
+        # We are experiencing assertion failures even with 4.8 on MinGW.
+        # Push the support forward: will see if 4.9 works when we test it.
+        set(enable_lto ON)
+      endif()
+    elseif(LINKER_VERSION STRGREATER "2.22")
       set(enable_lto ON)
     endif()
-  elseif(LINKER_VERSION STRGREATER "2.22")
-    set(enable_lto ON)
   endif()
+  if(enable_lto)
+    message("-- LTO seems usable.")
+  else()
+    if(NOT enable_compile_optimizations)
+      message("-- LTO disabled: Compile-time optimizations turned off.")
+    else() 
+      if(enable_model-checking)
+        message("-- LTO disabled when compiling with model-checking.")
+      else()
+        message("-- LTO does not seem usable -- try updating your build chain.")
+      endif() 
+    endif()
+  endif()
+else()
+  message("-- LTO disabled on the command line.")
 endif()
-if(enable_lto)
+if(enable_lto) # User wants LTO, and it seems usable. Go for it
   set(optCFLAGS "${optCFLAGS} -flto ")
   # See https://gcc.gnu.org/wiki/LinkTimeOptimizationFAQ#ar.2C_nm_and_ranlib:
   # "Since version 4.9 gcc produces slim object files that only contain
