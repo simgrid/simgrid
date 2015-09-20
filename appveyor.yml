@@ -39,9 +39,9 @@ install:
 - if [%COMPILER%]==[MSYS2]     set PATH=C:\msys64\bin,%PATH%
 
 build_script:
-- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"       -Denable_smpi=OFF -Denable_mallocators=OFF .
-- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[x64]   cmake -G "Visual Studio 14 2015 Win64" -Denable_smpi=OFF -Denable_mallocators=OFF .
-- if not [%COMPILER%]==[MSVC15]                      cmake -G "MinGW Makefiles"             -Denable_smpi=OFF -Denable_mallocators=OFF .
+- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"       -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF .
+- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[x64]   cmake -G "Visual Studio 14 2015 Win64" -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF .
+- if not [%COMPILER%]==[MSVC15]                      cmake -G "MinGW Makefiles"             -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF .
 - if [%COMPILER%]==[MSVC15]     msbuild ALL_BUILD.vcxproj /verbosity:normal
 - if not [%COMPILER%]==[MSVC15] mingw32-make && mingw32-make install
 
