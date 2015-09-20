@@ -33,6 +33,11 @@
 #define surf_callback_emit(callback, ...) callback(__VA_ARGS__)
 #endif
 
+#ifdef _MSC_VER
+#pragma warning( disable : 4251)
+// 4251: needs to have dll-interface to be used by clients of class
+#endif
+
 extern tmgr_history_t history;
 #define NO_MAX_DURATION -1.0
 
