@@ -172,7 +172,11 @@ endif()
 
 ### Check 32bits or 64bits
 INCLUDE (CheckTypeSize)
+CHECK_TYPE_SIZE("int" SIZEOF_INT)
+CHECK_TYPE_SIZE("long" SIZEOF_LONG)
+CHECK_TYPE_SIZE("long long" SIZEOF_LONGLONG)
 CHECK_TYPE_SIZE("void*" SIZEOF_VOIDSTAR)
+message ("   Data model: (int)=${SIZEOF_INT} (long)=${SIZEOF_LONG} (long long)=${SIZEOF_LONGLONG} (void*)=${SIZEOF_VOIDSTAR}")
 IF(SIZEOF_VOIDSTAR EQUAL 4)
   SET(ARCH_32_BITS 1)
 ELSE()
