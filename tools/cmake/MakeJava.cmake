@@ -28,8 +28,7 @@ if(WIN32)
   endif()
 
   set_target_properties(simgrid-java PROPERTIES
-    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at"
-    PREFIX "")
+    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at")
   find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
   message(STATUS "pexports: ${PEXPORTS_PATH}")
   if(PEXPORTS_PATH)
