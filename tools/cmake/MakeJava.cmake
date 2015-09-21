@@ -81,7 +81,7 @@ else()
   add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
 endif()
 
-set(JAVA_BUNDLE "${CMAKE_HOME_DIRECTORY}/tools/cmake/Scripts/java_bundle.sh")
+set(JAVA_BUNDLE "${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/java_bundle.sh")
 set(JAVA_BUNDLE_SO_FILES
   ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
   ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}

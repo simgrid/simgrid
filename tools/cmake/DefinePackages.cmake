@@ -1206,15 +1206,15 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Option.cmake
   tools/cmake/Pipol.cmake
   tools/cmake/PrintArgs.cmake
-  tools/cmake/Scripts/Diff.pm
-  tools/cmake/Scripts/Makefile.default
-  tools/cmake/Scripts/SimGrid.packproj
-  tools/cmake/Scripts/generate_memcheck_tests.pl
-  tools/cmake/Scripts/java_bundle.sh
-  tools/cmake/Scripts/my_valgrind.pl
-  tools/cmake/Scripts/postinstall.sh
-  tools/cmake/Scripts/preinstall.sh
-  tools/cmake/Scripts/update_tesh.pl
+  tools/cmake/scripts/Diff.pm
+  tools/cmake/scripts/Makefile.default
+  tools/cmake/scripts/SimGrid.packproj
+  tools/cmake/scripts/generate_memcheck_tests.pl
+  tools/cmake/scripts/java_bundle.sh
+  tools/cmake/scripts/my_valgrind.pl
+  tools/cmake/scripts/postinstall.sh
+  tools/cmake/scripts/preinstall.sh
+  tools/cmake/scripts/update_tesh.pl
   tools/cmake/UnitTesting.cmake
   tools/cmake/src/internal_config.h.in
   tools/cmake/src/simgrid.nsi.in
