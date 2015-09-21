@@ -34,11 +34,11 @@ void jas_unref(JNIEnv * env, jobject jas) {
 }
 
 void jas_bind(jobject jas, msg_as_t as, JNIEnv * env) {
-  (*env)->SetLongField(env, jas, jas_field_As_bind, (jlong) (long) (as));
+  (*env)->SetLongField(env, jas, jas_field_As_bind, (jlong) (uintptr_t) (as));
 }
 
 msg_as_t jas_get_native(JNIEnv * env, jobject jas) {
-  return (msg_as_t) (long) (*env)->GetLongField(env, jas, jas_field_As_bind);
+  return (msg_as_t) (uintptr_t) (*env)->GetLongField(env, jas, jas_field_As_bind);
 }
 
 JNIEXPORT void JNICALL

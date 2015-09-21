@@ -482,8 +482,8 @@ Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass cls, jstring jmailbox) {
 
 	comm = MSG_task_irecv(task,mailbox);
 
-	(*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (long)(comm));
-	(*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (long)(task));
+	(*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
+	(*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (uintptr_t)(task));
 	(*env)->SetBooleanField(env, jcomm, jtask_field_Comm_receiving, JNI_TRUE);
 
 	(*env)->ReleaseStringUTFChars(env, jmailbox, mailbox);
@@ -564,8 +564,8 @@ Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, jclass cls,
 
 	comm = MSG_task_irecv_bounded(task,mailbox, (double) rate);
 
-	(*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (long)(comm));
-	(*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (long)(task));
+	(*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
+	(*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (uintptr_t)(task));
 	(*env)->SetBooleanField(env, jcomm, jtask_field_Comm_receiving, JNI_TRUE);
 
 	(*env)->ReleaseStringUTFChars(env, jmailbox, mailbox);
@@ -603,8 +603,8 @@ Java_org_simgrid_msg_Task_isend(JNIEnv *env, jobject jtask, jstring jmailbox) {
 MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
   comm = MSG_task_isend(task,mailbox);
 
-  (*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (long)(comm));
-  (*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (long)(NULL));
+  (*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
+  (*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (uintptr_t)(NULL));
   (*env)->SetBooleanField(env, jcomm, jtask_field_Comm_receiving, JNI_FALSE);
 
   (*env)->ReleaseStringUTFChars(env, jmailbox, mailbox);
@@ -642,8 +642,8 @@ Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jobject jtask, jstring jmail
 MSG_task_set_data(task, (void *) (*env)->NewGlobalRef(env, jtask));
   comm = MSG_task_isend_bounded(task,mailbox,maxrate);
 
-  (*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (long)(comm));
-  (*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (long)(NULL));
+  (*env)->SetLongField(env, jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
+  (*env)->SetLongField(env, jcomm, jtask_field_Comm_taskBind, (jlong) (uintptr_t)(NULL));
   (*env)->SetBooleanField(env, jcomm, jtask_field_Comm_receiving, JNI_FALSE);
 
   (*env)->ReleaseStringUTFChars(env, jmailbox, mailbox);

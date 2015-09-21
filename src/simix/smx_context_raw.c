@@ -552,7 +552,7 @@ static void smx_ctx_raw_suspend_parallel(smx_context_t context)
     XBT_DEBUG("No more processes to run");
 
     unsigned long worker_id =
-        (unsigned long) xbt_os_thread_get_specific(raw_worker_id_key);
+        (unsigned long)(uintptr_t) xbt_os_thread_get_specific(raw_worker_id_key);
 
     next_context = (smx_context_t)raw_workers_context[worker_id];
     XBT_DEBUG("Restoring worker stack %lu (working threads = %lu)",
@@ -574,7 +574,7 @@ static void smx_ctx_raw_resume_parallel(smx_process_t first_process)
 {
 #ifdef CONTEXT_THREADS
   unsigned long worker_id = __sync_fetch_and_add(&raw_threads_working, 1);
-  xbt_os_thread_set_specific(raw_worker_id_key, (void*) worker_id);
+  xbt_os_thread_set_specific(raw_worker_id_key, (void*)(uintptr_t) worker_id);
   smx_ctx_raw_t worker_context = (smx_ctx_raw_t)SIMIX_context_self();
   raw_workers_context[worker_id] = worker_context;
   XBT_DEBUG("Saving worker stack %lu", worker_id);

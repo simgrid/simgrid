@@ -81,7 +81,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
                                                        1.0, -1.0);
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
-      unsigned long affinity_mask = (unsigned long) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host, sizeof(msg_host_t));
+      unsigned long affinity_mask = (unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host, sizeof(msg_host_t));
       XBT_DEBUG("execute %s@%s with affinity(0x%04lx)", MSG_task_get_name(task), MSG_host_get_name(p_simdata->m_host), affinity_mask);
 
       simdata->compute = simcall_process_execute(task->name,

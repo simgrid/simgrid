@@ -34,11 +34,11 @@ void jhost_unref(JNIEnv * env, jobject jhost) {
 }
 
 void jhost_bind(jobject jhost, msg_host_t host, JNIEnv * env) {
-  (*env)->SetLongField(env, jhost, jhost_field_Host_bind, (jlong) (long) (host));
+  (*env)->SetLongField(env, jhost, jhost_field_Host_bind, (jlong) (uintptr_t) (host));
 }
 
 msg_host_t jhost_get_native(JNIEnv * env, jobject jhost) {
-  return (msg_host_t) (long) (*env)->GetLongField(env, jhost, jhost_field_Host_bind);
+  return (msg_host_t) (uintptr_t) (*env)->GetLongField(env, jhost, jhost_field_Host_bind);
 }
 
 const char *jhost_get_name(jobject jhost, JNIEnv * env) {

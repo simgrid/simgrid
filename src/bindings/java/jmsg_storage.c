@@ -24,7 +24,7 @@ jobject jstorage_new_instance(JNIEnv * env) {
 }
 
 msg_storage_t jstorage_get_native(JNIEnv * env, jobject jstorage) {
-  return (msg_storage_t) (long) (*env)->GetLongField(env, jstorage, jstorage_field_Storage_bind);
+  return (msg_storage_t) (uintptr_t) (*env)->GetLongField(env, jstorage, jstorage_field_Storage_bind);
 }
 
 JNIEXPORT void JNICALL
@@ -39,7 +39,7 @@ Java_org_simgrid_msg_Storage_nativeInit(JNIEnv *env, jclass cls) {
 }
 
 void jstorage_bind(jobject jstorage, msg_storage_t storage, JNIEnv * env) {
-  (*env)->SetLongField(env, jstorage, jstorage_field_Storage_bind, (jlong) (long) (storage));
+  (*env)->SetLongField(env, jstorage, jstorage_field_Storage_bind, (jlong) (uintptr_t) (storage));
 }
 
 jobject jstorage_ref(JNIEnv * env, jobject jstorage) {

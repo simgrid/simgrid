@@ -489,7 +489,7 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
         xbt_dict_remove_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host));
     }
   } else
-    xbt_dict_set_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host), (void *) mask, NULL);
+    xbt_dict_set_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host), (void *)(uintptr_t) mask, NULL);
 
   /* We set affinity data of this task. If the task is being executed, we
    * actually change the affinity setting of the task. Otherwise, this change
@@ -513,7 +513,7 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
     /* task is being executed on this host. so change the affinity now */
     {
       /* check it works. remove me if it works. */
-      xbt_assert((unsigned long) xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(msg_host_t)) == mask);
+      xbt_assert((unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(msg_host_t)) == mask);
     }
 
     XBT_INFO("set affinity(0x%04lx@%s) for %s", mask, MSG_host_get_name(host), MSG_task_get_name(task));
