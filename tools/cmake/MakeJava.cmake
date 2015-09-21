@@ -64,14 +64,6 @@ set(LIBSIMGRID_JAVA_SO
 set(LIBSURF_JAVA_SO
   ${CMAKE_SHARED_LIBRARY_PREFIX}surf-java${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-## Don't strip libraries if not in release mode
-##
-if(release)
-  set(STRIP_COMMAND "${CMAKE_STRIP}")
-else()
-  set(STRIP_COMMAND "true")
-endif()
-
 ## Here is how to build simgrid.jar
 ##
 if(CMAKE_VERSION VERSION_LESS "2.8.12")
@@ -87,29 +79,32 @@ set(JAVA_BUNDLE_SO_FILES
   ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
   ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}
   )
-set(JAVA_BUNDLE_TXT_FILES
-  ${CMAKE_HOME_DIRECTORY}/COPYING
-  ${CMAKE_HOME_DIRECTORY}/ChangeLog
-  ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
-  ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
-  )
 add_custom_command(
   COMMENT "Finalize simgrid.jar..."
   OUTPUT ${SIMGRID_JAR}_finalized
   DEPENDS simgrid simgrid-java simgrid-java_pre_jar
           ${SIMGRID_JAR} ${MANIFEST_IN_FILE}
-          ${JAVA_BUNDLE_SO_FILES} ${JAVA_BUNDLE_TXT_FILES}
-  COMMAND sh ${JAVA_BUNDLE} "${SIMGRID_JAR}" "${Java_JAVA_EXECUTABLE}" "${STRIP_COMMAND}" -so ${JAVA_BUNDLE_SO_FILES} -txt ${JAVA_BUNDLE_TXT_FILES}
+          ${JAVA_BUNDLE_SO_FILES}
+	  ${CMAKE_HOME_DIRECTORY}/COPYING
+	  ${CMAKE_HOME_DIRECTORY}/ChangeLog
+	  ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
+	  ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
+	  
+  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR} -C ${CMAKE_HOME_DIRECTORY} COPYING ChangeLog ChangeLog.SimGrid-java LICENSE-LGPL-2.1
+  
   COMMAND ${CMAKE_COMMAND} -E copy ${MANIFEST_IN_FILE} ${MANIFEST_FILE}
   COMMAND ${CMAKE_COMMAND} -E echo "Specification-Version: \\\"${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}\\\"" >> ${MANIFEST_FILE}
   COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
   COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR}
+
   COMMAND ${CMAKE_COMMAND} -E copy ${SIMGRID_JAR} ${SIMGRID_FULL_JAR}
+  COMMAND sh ${JAVA_BUNDLE} "${Java_JAVA_EXECUTABLE}" "${SIMGRID_JAR}" ${JAVA_BUNDLE_SO_FILES}
   COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} "NATIVE"
-  COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
-  COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
   COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
   COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} doc/javadoc
+  
+  COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
+  COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
   )
 add_custom_target(simgrid-java_jar ALL DEPENDS ${SIMGRID_JAR}_finalized)
 
@@ -122,7 +117,6 @@ if(enable_maintainer_mode)
   set_source_files_properties(${JSURF_SWIG_SRC} PROPERTIES CPLUSPLUS 1)
 
   swig_add_module(surf-java java ${JSURF_SWIG_SRC} ${JSURF_JAVA_C_SRC})
-
   swig_link_libraries(surf-java simgrid)
 else()
   add_library(surf-java SHARED ${JSURF_C_SRC})
