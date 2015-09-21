@@ -14,13 +14,13 @@ step into SimGrid we also provide some more detailed examples in the
 sections below. 
 
 \htmlonly
-You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a generic tutorial about using SimGrid. 
+You should also check our online <a href="http://simgrid.gforge.inria.fr/documentation.html"> tutorial section</a> that contains a generic tutorial about using SimGrid. 
 \endhtmlonly
 
 \section using_msg Using MSG
 
 \htmlonly
-You should also check our online <a href="http://simgrid.gforge.inria.fr/tutorials.html"> tutorial section</a> that contains a dedicated tutorial. 
+You should also check our online <a href="http://simgrid.gforge.inria.fr/documentation.html"> tutorial section</a> that contains a dedicated tutorial. 
 \endhtmlonly
 
 Here are some examples on how to use MSG, the most used API.
