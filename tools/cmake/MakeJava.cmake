@@ -56,7 +56,6 @@ set(SIMGRID_FULL_JAR "${CMAKE_BINARY_DIR}/simgrid_full.jar")
 set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF.in")
 set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
 
-
 set(LIBSIMGRID_SO
   libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(LIBSIMGRID_JAVA_SO
@@ -73,18 +72,15 @@ else()
   add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
 endif()
 
-set(JAVA_BUNDLE "${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/java_bundle.sh")
-set(JAVA_BUNDLE_SO_FILES
-  ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
-  ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
-  ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}
-  )
 add_custom_command(
   COMMENT "Finalize simgrid.jar..."
   OUTPUT ${SIMGRID_JAR}_finalized
   DEPENDS simgrid simgrid-java simgrid-java_pre_jar
-          ${SIMGRID_JAR} ${MANIFEST_IN_FILE}
-          ${JAVA_BUNDLE_SO_FILES}
+          ${SIMGRID_JAR} 
+	  ${MANIFEST_IN_FILE}
+	  ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
+	  ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
+	  ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}
 	  ${CMAKE_HOME_DIRECTORY}/COPYING
 	  ${CMAKE_HOME_DIRECTORY}/ChangeLog
 	  ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
@@ -98,10 +94,17 @@ add_custom_command(
   COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR}
 
   COMMAND ${CMAKE_COMMAND} -E copy ${SIMGRID_JAR} ${SIMGRID_FULL_JAR}
-  COMMAND sh ${JAVA_BUNDLE} "${Java_JAVA_EXECUTABLE}" "${SIMGRID_JAR}" ${JAVA_BUNDLE_SO_FILES}
-  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} "NATIVE"
+  COMMAND ${CMAKE_COMMAND} -E make_directory                                     NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}
+  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}    NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}
+
+  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR}  NATIVE
   COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
   COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} doc/javadoc
+  
+  COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}"
+  COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
   
   COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
   COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized

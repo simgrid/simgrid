@@ -118,11 +118,7 @@ public final class NativeLib {
 
 
 	public static void main(String[] args) {
-		if (args.length >= 1 && args[0].equals("--quiet"))
-			/* be careful, this execution path is used in tools/cmake/scripts/java_bundle.sh to determine where to put the libs */
-			System.out.println(getPath());
-		else 
-			System.out.println("This java library will try to load the native code under the following name:\n" +getPath());
+		System.out.println("This jarfile searches the native code under: " +getPath());
 	}
 }
 

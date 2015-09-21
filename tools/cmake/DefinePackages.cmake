@@ -1210,7 +1210,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/Makefile.default
   tools/cmake/scripts/SimGrid.packproj
   tools/cmake/scripts/generate_memcheck_tests.pl
-  tools/cmake/scripts/java_bundle.sh
   tools/cmake/scripts/my_valgrind.pl
   tools/cmake/scripts/postinstall.sh
   tools/cmake/scripts/preinstall.sh
