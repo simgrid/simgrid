@@ -409,7 +409,7 @@ static int migration_rx_fun(int argc, char *argv[])
   /* install the affinity setting of the VM on the destination pm */
   {
 
-    unsigned long affinity_mask = (unsigned long) xbt_dict_get_or_null_ext(priv->affinity_mask_db, (char *)dst_pm, sizeof(msg_host_t));
+    unsigned long affinity_mask = (unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(priv->affinity_mask_db, (char *)dst_pm, sizeof(msg_host_t));
     simcall_vm_set_affinity(vm, dst_pm, affinity_mask);
     XBT_DEBUG("set affinity(0x%04lx@%s) for %s", affinity_mask, MSG_host_get_name(dst_pm), MSG_host_get_name(vm));
   }
@@ -1132,7 +1132,7 @@ void MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask)
   if (mask == 0)
     xbt_dict_remove_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm));
   else
-    xbt_dict_set_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm), (void *) mask, NULL);
+    xbt_dict_set_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm), (void *)(uintptr_t) mask, NULL);
 
   msg_host_t pm_now = MSG_vm_get_pm(vm);
   if (pm_now == pm) {
