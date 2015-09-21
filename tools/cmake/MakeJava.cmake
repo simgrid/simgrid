@@ -144,8 +144,7 @@ add_dependencies(simgrid-java_pre_jar surf-java)
 
 if(WIN32)
   set_target_properties(surf-java PROPERTIES
-    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at"
-    PREFIX "")
+    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at")
   if(PEXPORTS_PATH)
     add_custom_command(TARGET surf-java POST_BUILD
       COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/surf-java.dll > ${CMAKE_BINARY_DIR}/lib/surf-java.def)
