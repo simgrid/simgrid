@@ -17,6 +17,9 @@ endif()
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
 if (MSVC)
   message("-- You are compiling SimGrid with MicroSoft Visual C. Good luck.")
+
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_SCL_SECURE_NO_WARNINGS")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS")
 else() # gcc or clang
   INCLUDE(CheckCCompilerFlag)
   CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
