@@ -24,7 +24,6 @@ my($srcdir)=".";
 my($timeout)=0;
 my($time_to_wait)=0;
 my $path = $0;
-my $OS;
 my $enable_coverage=0;
 my $diff_tool=0;
 my $diff_tool_tmp_fh=0;
@@ -47,15 +46,23 @@ use Text::ParseWords;
 use IPC::Open3;
 use IO::File;
 
-if($^O eq "linux" || $^O eq "MacOS" || $^O eq "darwin"){
-    $OS = "UNIX";
-} elsif ($^O eq "MSWin32") {
-    $OS = "WIN";
-    $ENV{"PRINTF_EXPONENT_DIGITS"} = "2";
-} else {
-    die "Tesh: Unknown operating system: $^O\n";
+## 
+## Portability bits for windows
+##
+
+use constant RUNNING_ON_WINDOWS => ($^O =~ /^(?:mswin|dos|os2)/oi);
+use POSIX qw(:sys_wait_h WIFEXITED WIFSIGNALED WIFSTOPPED WEXITSTATUS WTERMSIG WSTOPSIG
+             :signal_h SIGINT SIGTERM SIGKILL SIGABRT SIGSEGV);
+# These are not implemented on windows (see bug 6798 and 6470)
+BEGIN {
+    if (RUNNING_ON_WINDOWS) {
+	*WIFEXITED   = sub { not $_[0] & 127 };
+	*WEXITSTATUS = sub { $_[0] >> 8 };
+	*WIFSIGNALED = sub { ($_[0] & 127) && ($_[0] & 127 != 127) };
+	*WTERMSIG    = sub { $_[0] & 127 };
+    }
 }
-use if $^O eq 'MSWin32', 'Win32::Job';
+
 
 ##
 ## Command line option handling
@@ -77,23 +84,23 @@ sub var_subst {
 
 # option handling helper subs
 sub cd_cmd {
-  my $directory=$_[1];
-  my $failure=1;
-  if (-e $directory && -d $directory) {
-    chdir("$directory");
-    print "[Tesh/INFO] change directory to $directory\n";
-  $failure=0;
-  } elsif (-e $directory) {
-    print "Cannot change directory to '$directory': it is not a directory\n";
-  } else {
-    print "Chdir to $directory failed: No such file or directory\n";
-  }
-  if($failure==1){
-  $error=1;
-  $exitcode=4;
-  print "Test suite `$tesh_file': NOK (system error)\n";
-  exit 4;
-  }
+    my $directory=$_[1];
+    my $failure=1;
+    if (-e $directory && -d $directory) {
+	chdir("$directory");
+	print "[Tesh/INFO] change directory to $directory\n";
+	$failure=0;
+    } elsif (-e $directory) {
+	print "Cannot change directory to '$directory': it is not a directory\n";
+    } else {
+	print "Chdir to $directory failed: No such file or directory\n";
+    }
+    if($failure==1){
+	$error=1;
+	$exitcode=4;
+	print "Test suite `$tesh_file': NOK (system error)\n";
+	exit 4;
+    }
 }
 
 sub setenv_cmd {
@@ -192,33 +199,25 @@ my($config)="";
 my($tesh_command)=0;
 my(@buffer_tesh)=();
 
-#eval {
-  use POSIX;
+###########################################################################
 
-  sub exit_status {
+sub exit_status {
     my $status = shift;
-    if (POSIX::WIFEXITED($status)) {
-      $exitcode=POSIX::WEXITSTATUS($status)+40;
-      return "returned code ".POSIX::WEXITSTATUS($status);
-    } elsif (POSIX::WIFSIGNALED($status)) {
-      my $code;
-      if (POSIX::WTERMSIG($status) == SIGINT){$code="SIGINT"; }
-      elsif  (POSIX::WTERMSIG($status) == SIGTERM) {$code="SIGTERM"; }
-      elsif  (POSIX::WTERMSIG($status) == SIGKILL) {$code= "SIGKILL"; }
-      elsif  (POSIX::WTERMSIG($status) == SIGABRT) {$code="SIGABRT"; }
-      elsif  (POSIX::WTERMSIG($status) == SIGSEGV) {$code="SIGSEGV" ;}
-      $exitcode=POSIX::WTERMSIG($status)+4;
-      return "got signal $code";
+    if (WIFEXITED($status)) {
+	$exitcode=WEXITSTATUS($status)+40;
+	return "returned code ".WEXITSTATUS($status);
+    } elsif (WIFSIGNALED($status)) {
+	my $code;
+	if (WTERMSIG($status) == SIGINT){$code="SIGINT"; }
+	elsif  (WTERMSIG($status) == SIGTERM) {$code="SIGTERM"; }
+	elsif  (WTERMSIG($status) == SIGKILL) {$code= "SIGKILL"; }
+	elsif  (WTERMSIG($status) == SIGABRT) {$code="SIGABRT"; }
+	elsif  (WTERMSIG($status) == SIGSEGV) {$code="SIGSEGV" ;}
+	$exitcode=WTERMSIG($status)+4;
+	return "got signal $code";
     }
     return "Unparsable status. Is the process stopped?";
-  }
-#};
-#if ($@) { # no POSIX available?
-#  warn "POSIX not usable to parse the return value of forked child: $@\n";
-#  sub exit_status {
-#    return "returned code -1 $@ ";
-#  }
-#}
+}
 
 sub exec_cmd {
   my %cmd = %{$_[0]};
@@ -233,7 +232,7 @@ sub exec_cmd {
   }
 
   # cleanup the command line
-  if($OS eq "WIN") {
+  if(RUNNING_ON_WINDOWS) {
       var_subst($cmd{'cmd'}, "EXEEXT", ".exe");
   } else {
       var_subst($cmd{'cmd'}, "EXEEXT", "");
@@ -282,16 +281,16 @@ sub exec_cmd {
     die "fork() failed: $!" unless defined $forked;
     if ( $forked == 0 ) { # child
       sleep $time_to_wait;
-      if ($OS eq "UNIX") {
-	  kill(SIGTERM, $cmd{'pid'});
+#      if (RUNNING_ON_WINDOWS) {
+#	  system("TASKKILL /F /T /PID $cmd{'pid'}"); 
+#          # /F: Forcefully
+#	  # /T: Tree kill
+#	  # /PID: poor soul
+#      } else {
+	  kill('TERM', $cmd{'pid'});
 	  sleep 1;
-	  kill(SIGKILL, $cmd{'pid'});
-      } elsif ($OS eq "WIN") {
-	  system("TASKKILL /F /T /PID $cmd{'pid'}"); 
-          # /F: Forcefully
-	  # /T: Tree kill
-	  # /PID: poor soul
-      }
+	  kill('KILL', $cmd{'pid'});
+#      }
       exit $time_to_wait;
     }
   }
