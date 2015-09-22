@@ -47,12 +47,14 @@ use Text::ParseWords;
 use IPC::Open3;
 use IO::File;
 
-if($^O eq "linux"){
+# Existing OSes: https://metacpan.org/source/SMUELLER/PathTools-3.47/lib/File/Spec.pm
+if($^O eq "linux" || $^O eq "MacOS"){
     $OS = "UNIX";
-}
-else{
+} elsif ($^O eq "MSWin32") {
     $OS = "WIN";
     $ENV{"PRINTF_EXPONENT_DIGITS"} = "2";
+} else {
+    die "Tesh: Unknown operating system: $^O\n";
 }
 
 ##
@@ -280,9 +282,16 @@ sub exec_cmd {
     die "fork() failed: $!" unless defined $forked;
     if ( $forked == 0 ) { # child
       sleep $time_to_wait;
-      kill(SIGTERM, $cmd{'pid'});
-      sleep 1;
-      kill(SIGKILL, $cmd{'pid'});
+      if ($OS eq "UNIX") {
+	  kill(SIGTERM, $cmd{'pid'});
+	  sleep 1;
+	  kill(SIGKILL, $cmd{'pid'});
+      } elsif ($OS eq "WIN") {
+	  system("TASKKILL /F /T /PID $cmd{'pid'}"); 
+          # /F: Forcefully
+	  # /T: Tree kill
+	  # /PID: poor soul
+      }
       exit $time_to_wait;
     }
   }
