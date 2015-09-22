@@ -56,6 +56,7 @@ if($^O eq "linux" || $^O eq "MacOS"){
 } else {
     die "Tesh: Unknown operating system: $^O\n";
 }
+use if $^O eq 'MSWin32', 'Win32::Job';
 
 ##
 ## Command line option handling
