@@ -311,7 +311,7 @@ sub exec_cmd {
     push @bg_cmds, \%cmd;
     # no timeout for background commands
     if($forked){
-       kill(SIGKILL, $forked);
+       kill('KILL', $forked);
        $timeout=0;
        $forked=0;
     }
@@ -627,7 +627,7 @@ print "hey\n";
     die "[TESH/CRITICAL] parse error: $line\n";
   }
   if($forked){
-   kill(SIGKILL, $forked);
+   kill('KILL', $forked);
    $timeout=0;
   }
 
@@ -643,7 +643,7 @@ if (defined($cmd{'cmd'})) {
 
 
 if($forked){
-   kill(SIGKILL, $forked);
+   kill('KILL', $forked);
    $timeout=0;
 }
 
