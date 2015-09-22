@@ -290,7 +290,7 @@ sub exec_cmd {
   close CHILD_IN;
 
   # if timeout specified, fork and kill executing child at the end of timeout
-  if (defined($cmd{'timeout'}) or defined($opts{'timeout'})){
+  if (not $cmd{'background'} and (defined($cmd{'timeout'}) or defined($opts{'timeout'}))){
     $time_to_wait= defined($cmd{'timeout'}) ? $cmd{'timeout'} : $opts{'timeout'};
     $forked = fork();
     $timeout=-1;
@@ -302,19 +302,13 @@ sub exec_cmd {
 
   # Cleanup the executing child, and kill the timeouter brother on need
   $cmd{'return'} = 0 unless defined($cmd{'return'});
-  if($cmd{'background'} != 1){
+  if ($cmd{'background'} != 1) {
     waitpid ($cmd{'pid'}, 0);
     $cmd{'gotret'} = exit_status($?);
     parse_out(\%cmd);
-  }else{
+  } else {
     # & commands, which will be handled at the end
     push @bg_cmds, \%cmd;
-    # no timeout for background commands
-    if($forked){
-       kill('KILL', $forked);
-       $timeout=0;
-       $forked=0;
-    }
   }
 }
 
