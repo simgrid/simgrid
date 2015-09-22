@@ -47,8 +47,7 @@ use Text::ParseWords;
 use IPC::Open3;
 use IO::File;
 
-# Existing OSes: https://metacpan.org/source/SMUELLER/PathTools-3.47/lib/File/Spec.pm
-if($^O eq "linux" || $^O eq "MacOS"){
+if($^O eq "linux" || $^O eq "MacOS" || $^O eq "darwin"){
     $OS = "UNIX";
 } elsif ($^O eq "MSWin32") {
     $OS = "WIN";
