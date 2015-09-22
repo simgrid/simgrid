@@ -11,7 +11,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific to this example");
 
 
-static int send(int argc, char *argv[])
+static int sender_fun(int argc, char *argv[])
 {
   XBT_INFO("Sending");
   MSG_task_send(MSG_task_create("Blah", 0.0, 0.0, NULL), MSG_host_get_name(MSG_host_self()));
@@ -20,7 +20,7 @@ static int send(int argc, char *argv[])
   return 0;
 }
 
-static int receive(int argc, char *argv[])
+static int receiver_fun(int argc, char *argv[])
 {
   XBT_INFO("Receiving");
   msg_task_t task = NULL;
@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   /*   Application deployment */
-  MSG_function_register("send", &send);
-  MSG_function_register("receive", &receive);
+  MSG_function_register("send", &sender_fun);
+  MSG_function_register("receive", &receiver_fun);
 
   MSG_create_environment(argv[1]);
   MSG_launch_application(argv[2]);
