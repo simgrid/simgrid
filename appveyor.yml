@@ -20,10 +20,10 @@ environment:
     #  BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
 
   matrix:
-    - COMPILER: MSVC15
-      PLATFORM: Win32
     - COMPILER: MinGW-w64
 
+#    - COMPILER: MSVC15
+#      PLATFORM: Win32
 #    - COMPILER: MSVC15
 #      PLATFORM: x64
       
