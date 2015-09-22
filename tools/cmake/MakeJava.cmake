@@ -100,7 +100,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}    NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}
 
   COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR}  NATIVE
-  COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
+  COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.msg org.simgrid.surf org.simgrid.trace
   COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} doc/javadoc
   
   COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}"
