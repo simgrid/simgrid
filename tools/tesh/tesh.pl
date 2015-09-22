@@ -45,6 +45,7 @@ use Term::ANSIColor;
 use Text::ParseWords;
 use IPC::Open3;
 use IO::File;
+use English;
 
 ## 
 ## Portability bits for windows
@@ -67,6 +68,21 @@ BEGIN {
 ##
 ## Command line option handling
 ##
+
+if ($ARGV[0] eq "--internal-killer-process") {
+    # We fork+exec a waiter process in charge of killing the command after timeout
+    # If the command stops earlier, that's fine: the killer sends a signal to an already stopped process, fails, and quits. 
+    #    Nobody cares about the killer issues. 
+    #    The only problem could arise if another process is given the same PID than cmd. We bet it won't happen :)
+    my $time_to_wait = $ARGV[1];
+    my $pid = $ARGV[2];
+    sleep $time_to_wait;
+    kill('TERM', $pid);
+    sleep 1;
+    kill('KILL', $pid);
+    exit $time_to_wait;
+}
+
 
 sub var_subst {
     my ($text, $name, $value) = @_;
@@ -280,21 +296,9 @@ sub exec_cmd {
     $timeout=-1;
     die "fork() failed: $!" unless defined $forked;
     if ( $forked == 0 ) { # child
-      sleep $time_to_wait;
-#      if (RUNNING_ON_WINDOWS) {
-#	  system("TASKKILL /F /T /PID $cmd{'pid'}"); 
-#          # /F: Forcefully
-#	  # /T: Tree kill
-#	  # /PID: poor soul
-#      } else {
-	  kill('TERM', $cmd{'pid'});
-	  sleep 1;
-	  kill('KILL', $cmd{'pid'});
-#      }
-      exit $time_to_wait;
+	exec("$PROGRAM_NAME --internal-killer-process $time_to_wait $cmd{'pid'}");
     }
   }
-
 
   # Cleanup the executing child, and kill the timeouter brother on need
   $cmd{'return'} = 0 unless defined($cmd{'return'});
