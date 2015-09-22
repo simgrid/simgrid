@@ -54,7 +54,7 @@ use English;
 use constant RUNNING_ON_WINDOWS => ($^O =~ /^(?:mswin|dos|os2)/oi);
 use POSIX qw(:sys_wait_h WIFEXITED WIFSIGNALED WIFSTOPPED WEXITSTATUS WTERMSIG WSTOPSIG
              :signal_h SIGINT SIGTERM SIGKILL SIGABRT SIGSEGV);
-# These are not implemented on windows (see bug 6798 and 6470)
+# These are not implemented on windows
 BEGIN {
     if (RUNNING_ON_WINDOWS) {
 	*WIFEXITED   = sub { not $_[0] & 127 };
@@ -141,7 +141,6 @@ sub get_options {
   $tesh_file = pop @ARGV;
 
   # temporary arrays for GetOption
-  my @verbose = ();
   my @cfg;
   my $log; # ignored
 
@@ -149,7 +148,6 @@ sub get_options {
   my %opt = (
     "help"  => 0,
     "debug"   => 0,
-    "verbose" => 0
     );
 
   Getopt::Long::config('bundling', 'no_getopt_compat', 'no_auto_abbrev');
@@ -157,7 +155,6 @@ sub get_options {
   GetOptions(
     'help|h'   => \$opt{'help'},
 
-    'verbose|v'  => \@verbose,
     'debug|d'  => \$opt{"debug"},
 
     'difftool=s' => \$diff_tool,
@@ -189,7 +186,6 @@ sub get_options {
     print "Test suite `$tesh_name'\n";
   }
 
-  $opt{'verbose'} = scalar @verbose;
   foreach (@cfg) {
     $opt{'cfg'} .= " --cfg=$_";
   }
@@ -201,18 +197,9 @@ my %opts = get_options(@ARGV);
 ##
 ## File parsing
 ##
-my($nb_arg)=0;
-my($old_buffer);
-my($linebis);
-my($SIGABRT)=0;
-my($verbose)=0;
 my($return)=-1;
-my($pid);
-my($result);
-my($result_err);
 my($forked);
 my($config)="";
-my($tesh_command)=0;
 my(@buffer_tesh)=();
 
 ###########################################################################
