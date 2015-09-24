@@ -60,19 +60,19 @@ public final class NativeLib {
 		if (in == null) {
 			filename = "lib"+name+".so";
 			in = NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
-		} 
+		}
 		if (in == null) {
 			filename = name+".dll";
 			in =  NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
-		}  
+		}
 		if (in == null) {
 			filename = "lib"+name+".dll";
 			in =  NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
-		}  
+		}
 		if (in == null) {
 			filename = "lib"+name+".dylib";
 			in =  NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
-		}  
+		}
 		if (in == null) {
 			throw new SimGridLibNotFoundException("Cannot find library "+name+" in path "+Path+". Sorry, but this jar does not seem to be usable on your machine.");
 		}
@@ -94,8 +94,9 @@ public final class NativeLib {
 			in.close();
 			out.close();
 			System.load(fileOut.getAbsolutePath());
-
 		} catch (Exception e) {
+			System.err.println("Error while extracting the native library from the jar: ");
+			e.printStackTrace();
 			throw new SimGridLibNotFoundException("Cannot load the bindings to the "+name+" library in path "+getPath(),   e);
 		}
 	}
