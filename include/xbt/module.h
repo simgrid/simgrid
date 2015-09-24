@@ -15,8 +15,6 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC(void) xbt_init(int *argc, char **argv);
 XBT_PUBLIC(void) xbt_exit(void);
-XBT_PUBLIC_DATA(int) smx_cleaned;
-XBT_PUBLIC_DATA(int) xbt_initialized;
 
 SG_END_DECL()
 

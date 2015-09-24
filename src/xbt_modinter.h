@@ -31,6 +31,10 @@ void xbt_os_thread_mod_postexit(void);
 void *mmalloc_preinit(void);
 void mmalloc_postexit(void);
 
+extern int smx_cleaned;
+extern int xbt_initialized;
+
+
 SG_END_DECL()
 
 #endif                          /* XBT_MODINTER_H */
