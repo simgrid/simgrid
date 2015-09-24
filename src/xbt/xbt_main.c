@@ -124,6 +124,7 @@ static void xbt_preinit(void) {
 static void xbt_postexit(void)
 {
   if(!_sg_do_clean_atexit) return;
+  xbt_initialized--;
   xbt_backtrace_postexit();
   xbt_fifo_postexit();
   xbt_dict_postexit();

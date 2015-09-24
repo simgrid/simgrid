@@ -238,6 +238,7 @@ void SIMIX_global_init(int *argc, char **argv)
     exit(0);
 }
 
+int smx_cleaned = 0;
 /**
  * \ingroup SIMIX_API
  * \brief Clean the SIMIX simulation
@@ -246,12 +247,11 @@ void SIMIX_global_init(int *argc, char **argv)
  */
 void SIMIX_clean(void)
 {
-  static int cleaned = 0;
 #ifdef TIME_BENCH_PER_SR
   smx_ctx_raw_new_sr();
 #endif
-  if (cleaned) return; // to avoid double cleaning by java and C
-  cleaned = 1;
+  if (smx_cleaned) return; // to avoid double cleaning by java and C
+  smx_cleaned = 1;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
   if (!xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() == 0.0) {
 	  XBT_CRITICAL("   ");
