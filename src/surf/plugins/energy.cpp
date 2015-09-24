@@ -144,8 +144,8 @@ void sg_energy_plugin_init() {
  *
  */
 CpuEnergy::CpuEnergy(Cpu *ptr)
- : cpu(ptr)
 {
+  cpu = ptr;
   total_energy = 0;
   power_range_watts_list = getWattsRangeList();
   last_updated = surf_get_clock();
