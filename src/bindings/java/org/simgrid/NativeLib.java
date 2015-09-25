@@ -20,13 +20,12 @@ public final class NativeLib {
 
 		if (arch.matches("^i[3-6]86$"))
 			arch = "x86";
-		else if (arch.equalsIgnoreCase("amd64"))
-			arch = "x86_64";
+		else if (arch.equalsIgnoreCase("x86_64"))
+			arch = "amd64";
 
 		if (os.toLowerCase().startsWith("win")){
 			os = "Windows";
-			arch = "x86";
-		}else if (os.contains("OS X"))
+		} else if (os.contains("OS X"))
 			os = "Darwin";
 
 		os = os.replace(' ', '_');
