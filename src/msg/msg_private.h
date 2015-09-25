@@ -66,6 +66,9 @@ typedef struct simdata_file {
   smx_file_t smx_file;
 } s_simdata_file_t;
 
+int __MSG_host_get_file_descriptor_id(msg_host_t host);
+void __MSG_host_release_file_descriptor_id(msg_host_t host, int id);
+
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task {
   double flops_amount;    /* Computation size */
