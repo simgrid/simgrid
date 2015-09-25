@@ -18,6 +18,7 @@ $ ${bindir:=.}/io/storage$EXEEXT ${srcdir:=.}/examples/platforms/storage/storage
 > 		Storage Id: 'Disk4'
 > 		Storage Type: 'single_SSD'
 > 		Content Type: 'txt_unix'
+> 		File Descriptor Id: 0
 > [  0.003333] (1:(null)@denise) Free size: 536857490006 bytes
 > [  0.003333] (1:(null)@denise) Used size: 13421994 bytes
 > [  0.004333] (1:(null)@denise) Read 200000 bytes on /home/tmp/data.txt
@@ -29,6 +30,7 @@ $ ${bindir:=.}/io/storage$EXEEXT ${srcdir:=.}/examples/platforms/storage/storage
 > 		Storage Id: 'Disk4'
 > 		Storage Type: 'single_SSD'
 > 		Content Type: 'txt_unix'
+> 		File Descriptor Id: 0
 > [  0.006000] (1:(null)@denise) *** Move '/tmp/data.txt' into '/tmp/simgrid.readme'
 > [  0.006000] (1:(null)@denise) User data attached to the file: 777
 > [  0.006000] (1:(null)@denise) *** Get/set data for storage element: Disk4 ***
