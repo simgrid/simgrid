@@ -22,6 +22,8 @@ public final class NativeLib {
 			arch = "x86";
 		else if (arch.equalsIgnoreCase("x86_64"))
 			arch = "amd64";
+		else if (arch.equalsIgnoreCase("AMD64"))
+			arch = "amd64";
 
 		if (os.toLowerCase().startsWith("win")){
 			os = "Windows";
