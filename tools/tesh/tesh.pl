@@ -19,8 +19,6 @@ tesh -- testing shell
 B<tesh> [I<options>] I<tesh_file>
 
 =cut
-my($bindir)=".";
-my($srcdir)=".";
 my($timeout)=0;
 my($time_to_wait)=0;
 my $path = $0;
@@ -51,7 +49,7 @@ use English;
 ## Portability bits for windows
 ##
 
-use constant RUNNING_ON_WINDOWS => ($^O =~ /^(?:mswin|dos|os2)/oi);
+use constant RUNNING_ON_WINDOWS => ($OSNAME =~ /^(?:mswin|dos|os2)/oi);
 use POSIX qw(:sys_wait_h WIFEXITED WIFSIGNALED WIFSTOPPED WEXITSTATUS WTERMSIG WSTOPSIG
              :signal_h SIGINT SIGTERM SIGKILL SIGABRT SIGSEGV);
 # These are not implemented on windows
