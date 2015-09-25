@@ -332,10 +332,8 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
 
       action->p_storage->m_usedSize += incr; // disk usage
       action->p_file->current_position+= incr; // current_position
-      //  which becomes the new file size only if it's greater than the current
-      // file size
-      if (action->p_file->current_position > action->p_file->size)
-        action->p_file->size = action->p_file->current_position ;
+      //  which becomes the new file size
+      action->p_file->size = action->p_file->current_position ;
 
       sg_size_t *psize = xbt_new(sg_size_t,1);
       *psize = action->p_file->size;
