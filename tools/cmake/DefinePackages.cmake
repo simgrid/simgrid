@@ -1204,7 +1204,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindSimGrid.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
-  tools/cmake/Pipol.cmake
   tools/cmake/PrintArgs.cmake
   tools/cmake/scripts/Diff.pm
   tools/cmake/scripts/Makefile.default

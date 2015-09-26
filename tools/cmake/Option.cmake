@@ -9,9 +9,6 @@ else()
   set(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE PATH "Path where this project should be installed")
 endif()
 
-set(pipol_user ${pipol_user} CACHE INTERNAL "pipol_user" FORCE)
-mark_as_advanced(pipol_user)
-
 option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
 option(enable_compile_optimizations "Whether to produce efficient code for the SimGrid library" on)
 option(enable_documentation "Whether to produce documentation" on)

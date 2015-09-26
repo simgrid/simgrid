@@ -279,9 +279,6 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestConfig.cmake)
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
 
-### Pipol compilation
-include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Pipol.cmake)
-
 ### Build the doc
 if(NOT WIN32)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GenerateDoc.cmake)
