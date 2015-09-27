@@ -100,7 +100,7 @@ sub var_subst {
 
 # option handling helper subs
 sub cd_cmd {
-    my $directory = $_[1];
+    my $directory = shift;
     my $failure   = 1;
     if ( -e $directory && -d $directory ) {
         chdir("$directory");
@@ -118,17 +118,14 @@ sub cd_cmd {
 }
 
 sub setenv_cmd {
-    my ( $var, $ctn );
-    if ( $_[0] =~ /^(.*)=(.*)$/ ) {
-        ( $var, $ctn ) = ( $1, $2 );
-    } elsif ( $_[1] =~ /^(.*)=(.*)$/ ) {
-        ( $var, $ctn ) = ( $1, $2 );
+    my $arg = shift;
+    if ( $arg =~ /^(.*)=(.*)$/ ) {
+        my ( $var, $ctn ) = ( $1, $2 );
+	print "[Tesh/INFO] setenv $var=$ctn\n";
+	$environ{$var} = $ctn;
     } else {
-        die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$_[1]'\n";
+        die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$arg'\n";
     }
-
-    print "[Tesh/INFO] setenv $var=$ctn\n";
-    $environ{$var} = $ctn;
 }
 
 # Main option parsing sub
@@ -157,9 +154,9 @@ sub get_options {
 
         'difftool=s' => \$diff_tool,
 
-        'cd=s'             => \&cd_cmd,
+        'cd=s'             => sub { cd_cmd($_[1]) },
         'timeout=s'        => \$opt{'timeout'},
-        'setenv=s'         => \&setenv_cmd,
+        'setenv=s'         => sub { setenv_cmd($_[1]) },
         'cfg=s'            => \@cfg,
         'log=s'            => \$log,
         'enable-coverage+' => \$enable_coverage,
@@ -519,7 +516,7 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
               if scalar @{ cmd { 'out' } };
 
             $arg =~ s/^ *cd //;
-            cd_cmd( "", $arg );
+            cd_cmd( $arg );
             %cmd = ();
 
         } else {    # regular command
