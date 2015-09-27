@@ -110,8 +110,6 @@ sub cd_cmd {
 	print "Chdir to $directory failed: No such file or directory\n";
     }
     if($failure==1){
-	$error=1;
-	$exitcode=4;
 	print "Test suite `$tesh_file': NOK (system error)\n";
 	exit 4;
     }
@@ -175,13 +173,13 @@ sub get_options {
     print "New tesh: $diff_tool_tmp_filename\n";
   }
 
-  unless($tesh_file=~/(.*)\.tesh/){
+  if ($tesh_file =~ m/(.*)\.tesh/) {
+    $tesh_name=$1;
+    print "Test suite `$tesh_name'\n";
+  } else {
     $tesh_file="(stdin)";
     $tesh_name="(stdin)";
     print "Test suite from stdin\n";
-  }else{
-    $tesh_name=$1;
-    print "Test suite `$tesh_name'\n";
   }
 
   foreach (@cfg) {
@@ -389,14 +387,13 @@ sub parse_out {
   # Check the result of execution
   ###
   my $diff;
-  if (defined($cmd{'output display'})){
+  if (defined($cmd{'output display'})) {
     print "[Tesh/INFO] Here is the (ignored) command output:\n";
-    map { print "||$_\n" } @got;
-  }
-  elsif (!defined($cmd{'output ignore'})){
-    $diff = build_diff(\@{$cmd{'out'}}, \@got);
-  }else{
+    map { print "||$_\n" } @got;      
+  } elsif (defined($cmd{'output ignore'})) {
     print "(ignoring the output of <$cmd{'file'}:$cmd{'line'}> as requested)\n"
+  } else {
+    $diff = build_diff(\@{$cmd{'out'}}, \@got);
   }
   if (length $diff) {
     print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch".($cmd{'sort'}?" (even after sorting)":"").":\n";
@@ -412,8 +409,7 @@ sub parse_out {
     }
 
     print "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> output mismatch)\n";
-    $error=1;
-    $exitcode=2;
+    exit 2;
   }
 }
 
@@ -435,7 +431,7 @@ if($tesh_file eq "(stdin)"){
   $infh = *STDIN;
 } else {
   open $infh, $tesh_file 
-      or die "[Tesh/CRITICAL] Unable to open $tesh_file $!\n";
+      or die "[Tesh/CRITICAL] Unable to open $tesh_file: $!\n";
 }
 
 my %cmd; # everything about the next command to run
@@ -631,11 +627,11 @@ if ($diff_tool) {
   unlink $diff_tool_tmp_filename;
 }
 
-if($error !=0){
+if ($error !=0){
     exit $exitcode;
-}elsif($tesh_file eq "(stdin)"){
+} elsif($tesh_file eq "(stdin)") {
     print "Test suite from stdin OK\n";
-}else{
+} else {
     print "Test suite `$tesh_name' OK\n";
 }
 
