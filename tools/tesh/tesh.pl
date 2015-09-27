@@ -430,36 +430,26 @@ sub mkfile_cmd {
 }
 
 # parse tesh file
-#my $teshfile=$tesh_file;
-#$teshfile=~ s{\.[^.]+$}{};
-
-unless($tesh_file eq "(stdin)"){
-  open TESH_FILE, $tesh_file or die "[Tesh/CRITICAL] Unable to open $tesh_file $!\n";
+my $infh; # The file descriptor from which we should read the teshfile
+if($tesh_file eq "(stdin)"){
+  $infh = *STDIN;
+} else {
+  open $infh, $tesh_file 
+      or die "[Tesh/CRITICAL] Unable to open $tesh_file $!\n";
 }
 
 my %cmd; # everything about the next command to run
 my $line_num=0;
-my $finished =0;
-LINE: while (not $finished and not $error) {
-  my $line;
-
-
-  if ($tesh_file ne "(stdin)" and !defined($line=<TESH_FILE>)){
-    $finished=1;
-    next LINE;
-  }elsif ($tesh_file eq "(stdin)" and !defined($line=<>)){
-    $finished=1;
-    next LINE;
-  }
-
-  $line_num++;
+LINE: while (defined(my $line=<$infh>) and not $error) {
   chomp $line;
   $line =~ s/\r//g;
+
+  $line_num++;
   print "[TESH/debug] $line_num: $line\n" if $opts{'debug'};
   my $next;
   # deal with line continuations
   while ($line =~ /^(.*?)\\$/) {
-    $next=<TESH_FILE>;
+    $next=<$infh>;
     die "[TESH/CRITICAL] Continued line at end of file\n"
       unless defined($next);
     $line_num++;
@@ -609,10 +599,10 @@ print "hey\n";
    kill('KILL', $forked);
    $timeout=0;
   }
-
 }
 
-
+# We're done reading the input file
+close $infh unless ($tesh_file eq "(stdin)");
 
 # Deal with last command
 if (defined($cmd{'cmd'})) {
