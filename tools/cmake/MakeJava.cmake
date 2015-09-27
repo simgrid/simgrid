@@ -52,7 +52,6 @@ endif()
 ## Files to include in simgrid.jar
 ##
 set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
-set(SIMGRID_FULL_JAR "${CMAKE_BINARY_DIR}/simgrid_full.jar")
 set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF.in")
 set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
 
@@ -67,29 +66,15 @@ set(LIBSURF_JAVA_SO
 ##
 if(CMAKE_VERSION VERSION_LESS "2.8.12")
   set(CMAKE_JAVA_TARGET_OUTPUT_NAME simgrid)
-  add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC})
+  add_jar(simgrid-java_jar ${JMSG_JAVA_SRC})
 else()
-  add_jar(simgrid-java_pre_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
-endif()
-
-set(JAVA_NATIVE_PATH NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR})
-if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^i[3-6]86$")
-  set(JAVA_NATIVE_PATH NATIVE/${CMAKE_SYSTEM_NAME}/x86)
-endif()
-if(  (${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64") OR
-     (${CMAKE_SYSTEM_PROCESSOR} MATCHES "AMD64")     )
-  set(JAVA_NATIVE_PATH NATIVE/${CMAKE_SYSTEM_NAME}/amd64)
+  add_jar(simgrid-java_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
 endif()
 
 add_custom_command(
-  COMMENT "Finalize simgrid.jar..."
-  OUTPUT ${SIMGRID_JAR}_finalized
-  DEPENDS simgrid simgrid-java simgrid-java_pre_jar
-          ${SIMGRID_JAR} 
-	  ${MANIFEST_IN_FILE}
-	  ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
-	  ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
-	  ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}
+  TARGET simgrid-java_jar POST_BUILD
+  COMMENT "Add the documentation into simgrid.jar..."
+  DEPENDS ${MANIFEST_IN_FILE}
 	  ${CMAKE_HOME_DIRECTORY}/COPYING
 	  ${CMAKE_HOME_DIRECTORY}/ChangeLog
 	  ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
@@ -102,23 +87,46 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
   COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR}
 
-  COMMAND ${CMAKE_COMMAND} -E copy ${SIMGRID_JAR} ${SIMGRID_FULL_JAR}
-  COMMAND ${CMAKE_COMMAND} -E make_directory                                     ${JAVA_NATIVE_PATH}
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}    ${JAVA_NATIVE_PATH}
-
-  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR}  NATIVE
   COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.msg org.simgrid.surf org.simgrid.trace
-  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_FULL_JAR} doc/javadoc
-  
-  COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in ${JAVA_NATIVE_PATH}"
-  COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
-  
-  COMMAND ${CMAKE_COMMAND} -E remove ${SIMGRID_JAR}_finalized
-  COMMAND ${CMAKE_COMMAND} -E touch ${SIMGRID_JAR}_finalized
+  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR} doc/javadoc  
   )
-add_custom_target(simgrid-java_jar ALL DEPENDS ${SIMGRID_JAR}_finalized)
+
+###
+### Pack the java libraries into the jarfile if asked to do so
+###
+
+if(enable_lib_in_jar)
+
+  set(JAVA_NATIVE_PATH NATIVE/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR})
+  if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^i[3-6]86$")
+    set(JAVA_NATIVE_PATH NATIVE/${CMAKE_SYSTEM_NAME}/x86)
+  endif()
+  if(  (${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64") OR
+       (${CMAKE_SYSTEM_PROCESSOR} MATCHES "AMD64")     )
+    set(JAVA_NATIVE_PATH NATIVE/${CMAKE_SYSTEM_NAME}/amd64)
+  endif()
+
+  add_custom_command(
+    TARGET simgrid-java_jar POST_BUILD
+    COMMENT "Add the native libs into simgrid.jar..."
+    DEPENDS simgrid-java 
+	    ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
+	    ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
+	    ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}
+	  
+    COMMAND ${CMAKE_COMMAND} -E remove_directory NATIVE
+    COMMAND ${CMAKE_COMMAND} -E make_directory                                     ${JAVA_NATIVE_PATH}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}    ${JAVA_NATIVE_PATH}
+
+    COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  NATIVE
+    COMMAND ${CMAKE_COMMAND} -E remove_directory NATIVE
+    
+    COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in ${JAVA_NATIVE_PATH}"
+    COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
+    )
+endif(enable_lib_in_jar)
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
 
@@ -139,7 +147,7 @@ set_target_properties(surf-java PROPERTIES SKIP_BUILD_RPATH ON)
 set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
 
 add_dependencies(simgrid-java surf-java)
-add_dependencies(simgrid-java_pre_jar surf-java)
+add_dependencies(simgrid-java_jar surf-java)
 
 if(WIN32)
   set_target_properties(surf-java PROPERTIES

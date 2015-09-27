@@ -14,11 +14,11 @@ import zipfile
 import tempfile
 import os, sys, re
 
-dists = ['https://ci.inria.fr/simgrid/job/SimGrid-Multi/build_mode=Debug,label=%s/lastSuccessfulBuild/artifact/build/SimGrid-3.11/simgrid_full.jar'%dist
+dists = ['https://ci.inria.fr/simgrid/job/SimGrid-Multi/build_mode=Debug,label=%s/lastSuccessfulBuild/artifact/build/SimGrid-3.11/simgrid.jar'%dist
          for dist in ["small-debian-32"
                      ,"small-debian-64"
                      ,"small-freebsd-64-clang"]]
-dists.append('https://ci.inria.fr/simgrid/job/Simgrid-Mult-Win7/build_mode=Debug,label=windows-64/lastSuccessfulBuild/artifact/build/simgrid_full.jar')
+dists.append('https://ci.inria.fr/simgrid/job/Simgrid-Mult-Win7/build_mode=Debug,label=windows-64/lastSuccessfulBuild/artifact/build/simgrid.jar')
 
 class SimJar(object):
   def __init__(self, filename='simgrid.jar'):
