@@ -43,7 +43,6 @@ push @INC, $path;
 
 use Getopt::Long qw(GetOptions);
 use strict;
-use Term::ANSIColor;
 use Text::ParseWords;
 use IPC::Open3;
 use IO::File;
@@ -528,7 +527,7 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
             $cmd{'file'} = $tesh_file;
             $cmd{'line'} = $line_num;
         }
-    } elsif ( $cmd eq '&' ) {    # parallel command line
+    } elsif ( $cmd eq '&' ) {    # background command line
 
         if ( defined( $cmd{'cmd'} ) ) {
             exec_cmd( \%cmd );
@@ -538,6 +537,7 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
         $cmd{'cmd'}        = $arg;
         $cmd{'file'}       = $tesh_file;
         $cmd{'line'}       = $line_num;
+	
     } elsif ( $line =~ /^!\s*output sort/ ) {    #output sort
         if ( defined( $cmd{'cmd'} ) ) {
             exec_cmd( \%cmd );
@@ -582,14 +582,6 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
         $line =~ s/^! setenv //g;
         $line =~ s/\r//g;
         setenv_cmd($line);
-    } elsif ( $line =~ /^!\s*include/ ) {                #include
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
-        print color("red"),   "[Tesh/CRITICAL] need include";
-        print color("reset"), "\n";
-        die;
     } elsif ( $line =~ /^!\s*timeout/ ) {                #timeout
         if ( defined( $cmd{'cmd'} ) ) {
             exec_cmd( \%cmd );
