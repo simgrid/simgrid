@@ -12,6 +12,7 @@ $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage/storage.xml "--lo
 > 		Storage Id: 'Disk4'
 > 		Storage Type: 'single_SSD'
 > 		Content Type: 'txt_unix'
+> 		File Descriptor Id: 0
 > [  0.000000] (1:0@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
 > [  0.000000] (2:1@alice) 	Capacity of the storage element 'c:\Windows\setupact.log' is stored on: 2391537133 / 536870912000
 > [  0.000000] (3:2@carl) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' is stored on: 36946053 / 536870912000

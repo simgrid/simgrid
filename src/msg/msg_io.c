@@ -18,6 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
  *  \see #msg_file_t
  */
 
+
 /********************************* File **************************************/
 void __MSG_file_get_info(msg_file_t fd){
 
@@ -79,10 +80,11 @@ void MSG_file_dump (msg_file_t fd){
            "\t\tMount point: '%s'\n"
            "\t\tStorage Id: '%s'\n"
            "\t\tStorage Type: '%s'\n"
-           "\t\tContent Type: '%s'",
+           "\t\tContent Type: '%s'\n"
+           "\t\tFile Descriptor Id: %d",
            priv->fullpath, priv->size, priv->mount_point,
            priv->storageId, priv->storage_type,
-           priv->content_type);
+           priv->content_type, priv->desc_id);
 }
 
 /** \ingroup msg_file_management
@@ -195,11 +197,16 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
   priv->fullpath = xbt_strdup(fullpath);
   priv->simdata = xbt_new0(s_simdata_file_t,1);
   priv->simdata->smx_file = simcall_file_open(fullpath, MSG_host_self());
-  name = bprintf("%s:%i:%s",MSG_host_get_name(MSG_host_self()),MSG_process_self_PID(),fullpath);
+  priv->desc_id = __MSG_host_get_file_descriptor_id(MSG_host_self());
+
+  name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_get_name(MSG_host_self()),
+                             priv->desc_id);
+
   xbt_lib_set(file_lib, name, MSG_FILE_LEVEL, priv);
   msg_file_t fd = (msg_file_t) xbt_lib_get_elm_or_null(file_lib, name);
   __MSG_file_get_info(fd);
   xbt_free(name);
+
   return fd;
 }
 
@@ -217,7 +224,9 @@ int MSG_file_close(msg_file_t fd)
     xbt_free(priv->data);
 
   int res = simcall_file_close(priv->simdata->smx_file, MSG_host_self());
-  name = bprintf("%s:%i:%s",MSG_host_get_name(MSG_host_self()),MSG_process_self_PID(),priv->fullpath);
+  name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_get_name(MSG_host_self()),
+                             priv->desc_id);
+  __MSG_host_release_file_descriptor_id(MSG_host_self(), priv->desc_id);
   xbt_lib_unset(file_lib, name, MSG_FILE_LEVEL, 1);
   xbt_free(name);
   return res;

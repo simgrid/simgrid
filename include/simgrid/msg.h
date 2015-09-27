@@ -52,6 +52,7 @@ typedef struct s_msg_host_priv {
   int        is_migrating;
 
   xbt_dict_t affinity_mask_db;
+  xbt_dynar_t file_descriptor_table;
 
 #ifdef MSG_USE_DEPRECATED
   msg_mailbox_t *mailboxes;     /**< the channels  */
@@ -102,6 +103,7 @@ typedef struct msg_file_priv  {
   char* storageId;
   char* storage_type;
   char* content_type;
+  int desc_id;
   void *data;
   simdata_file_t simdata;
 } s_msg_file_priv_t, *msg_file_priv_t;

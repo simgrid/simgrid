@@ -54,6 +54,10 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
 
   priv->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
 
+  priv->file_descriptor_table = xbt_dynar_new(sizeof(int), NULL);
+  for (int i=1023; i>=0;i--)
+    xbt_dynar_push_as(priv->file_descriptor_table, int, i);
+
   sg_host_msg_set(host,priv);
   
   return host;
@@ -153,7 +157,7 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
     XBT_WARN("dp_objs: %u pending task?", size);
   xbt_dict_free(&priv->dp_objs);
   xbt_dict_free(&priv->affinity_mask_db);
-
+  xbt_dynar_free(&priv->file_descriptor_table);
 #ifdef MSG_USE_DEPRECATED
   free(priv->mailboxes);
 #endif
@@ -474,4 +478,16 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
   }
   xbt_dict_free(&storage_list);
   return contents;
+}
+
+int __MSG_host_get_file_descriptor_id(msg_host_t host){
+  msg_host_priv_t priv = sg_host_msg(host);
+  xbt_assert(!xbt_dynar_is_empty(priv->file_descriptor_table),
+    "Too much files are opened! Some have to be closed.");
+  return xbt_dynar_pop_as(priv->file_descriptor_table, int);
+}
+
+void __MSG_host_release_file_descriptor_id(msg_host_t host, int id){
+  msg_host_priv_t priv = sg_host_msg(host);
+  xbt_dynar_push_as(priv->file_descriptor_table, int, id);
 }
