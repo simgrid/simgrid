@@ -76,13 +76,17 @@ public:
     return pagenos_[i];
   }
 
+  const std::size_t* pagenos() const { return pagenos_.data(); }
+  std::size_t*       pagenos()       { return pagenos_.data(); }
+
   const void* page(std::size_t i) const
   {
     return store_->get_page(pagenos_[i]);
   }
 
   PerPageCopy(PageStore& store, AddressSpace& as,
-    remote_ptr<void> addr, std::size_t page_count);
+    remote_ptr<void> addr, std::size_t page_count,
+    const size_t* ref_page_numbers, const std::uint64_t* pagemap);
 };
 
 enum class RegionType {
@@ -131,6 +135,7 @@ public:
  *      each type.
  */
 class RegionSnapshot {
+public:
   static const RegionType UnknownRegion = RegionType::Unknown;
   static const RegionType HeapRegion = RegionType::Heap;
   static const RegionType DataRegion = RegionType::Data;
@@ -293,10 +298,12 @@ RegionSnapshot privatized_region(
 RegionSnapshot dense_region(
   RegionType type, void *start_addr, void* data_addr, size_t size);
 simgrid::mc::RegionSnapshot sparse_region(
-  RegionType type, void *start_addr, void* data_addr, size_t size);
+  RegionType type, void *start_addr, void* data_addr, size_t size,
+  RegionSnapshot const* ref_region);
 simgrid::mc::RegionSnapshot region(
-  RegionType type, void *start_addr, void* data_addr, size_t size);
-  
+  RegionType type, void *start_addr, void* data_addr, size_t size,
+  RegionSnapshot const* ref_region);
+
 }
 }
 

@@ -117,6 +117,8 @@ XBT_PRIVATE void MC_report_assertion_error(void);
 
 XBT_PRIVATE void MC_invalidate_cache(void);
 
+XBT_PRIVATE int MC_important_snapshot(mc_snapshot_t snapshot);
+
 SG_END_DECL()
 
 #endif

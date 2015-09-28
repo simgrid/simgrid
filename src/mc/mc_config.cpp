@@ -50,6 +50,7 @@ int _sg_do_model_check = 0;
 int _sg_do_model_check_record = 0;
 int _sg_mc_checkpoint = 0;
 int _sg_mc_sparse_checkpoint = 0;
+int _sg_mc_soft_dirty = 0;
 int _sg_mc_ksm = 0;
 char *_sg_mc_property_file = NULL;
 int _sg_mc_hash = 0;
@@ -94,6 +95,15 @@ void _mc_cfg_cb_sparse_checkpoint(const char *name, int pos) {
     xbt_die("You are specifying a checkpointing value after the initialization (through MSG_config?), but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
   }
   _sg_mc_sparse_checkpoint = xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
+void _mc_cfg_cb_soft_dirty(const char *name, int pos) {
+  if (_sg_cfg_init_status && !_sg_do_model_check)
+    xbt_die("You are specifying a soft dirty value after the initialization "
+            "(through MSG_config?), but model-checking was not activated "
+            "at config time (through --cfg=model-check:1). "
+            "This won't work, sorry.");
+  _sg_mc_soft_dirty = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
 void _mc_cfg_cb_ksm(const char *name, int pos)

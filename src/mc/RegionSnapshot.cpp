@@ -87,19 +87,25 @@ RegionSnapshot dense_region(
  * @param size         Size of the data*
  */
 RegionSnapshot region(
-  RegionType type, void *start_addr, void* permanent_addr, size_t size)
+  RegionType type, void *start_addr, void* permanent_addr, size_t size,
+  RegionSnapshot const* ref_region)
 {
   if (_sg_mc_sparse_checkpoint) {
-    return sparse_region(type, start_addr, permanent_addr, size);
+    return sparse_region(type, start_addr, permanent_addr, size, ref_region);
   } else  {
     return dense_region(type, start_addr, permanent_addr, size);
   }
 }
 
 RegionSnapshot sparse_region(RegionType region_type,
-  void *start_addr, void* permanent_addr, size_t size)
+  void *start_addr, void* permanent_addr, size_t size,
+  RegionSnapshot const* ref_region)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
+
+  bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty
+    && ref_region != nullptr
+    && ref_region->storage_type() == simgrid::mc::StorageType::Chunked;
 
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
@@ -107,8 +113,19 @@ RegionSnapshot sparse_region(RegionType region_type,
     "Not at the beginning of a page");
   size_t page_count = mc_page_count(size);
 
-  simgrid::mc::PerPageCopy page_data(mc_model_checker->page_store(), *process,
-      permanent_addr, page_count);
+  std::vector<std::uint64_t> pagemap;
+  const size_t* ref_page_numbers = nullptr;
+  if (use_soft_dirty) {
+    pagemap.resize(page_count);
+    process->read_pagemap(pagemap.data(),
+      mc_page_number(nullptr, permanent_addr), page_count);
+    ref_page_numbers = ref_region->page_data().pagenos();
+  }
+
+  simgrid::mc::PerPageCopy page_data(
+    mc_model_checker->page_store(), *process, permanent_addr, page_count,
+    ref_page_numbers,
+    use_soft_dirty ? pagemap.data() : nullptr);
 
   simgrid::mc::RegionSnapshot region(
     region_type, start_addr, permanent_addr, size);

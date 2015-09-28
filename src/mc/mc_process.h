@@ -158,6 +158,9 @@ public:
     return MC_receive_message(this->socket_, &m, sizeof(M), 0);
   }
 
+  void reset_soft_dirty();
+  void read_pagemap(uint64_t* pagemap, size_t start_page, size_t page_count);
+
 private:
   void init_memory_map_info();
   void refresh_heap();
@@ -172,7 +175,8 @@ private:
   remote_ptr<void> maestro_stack_start_, maestro_stack_end_;
   int memory_file;
   std::vector<IgnoredRegion> ignored_regions_;
-
+  int clear_refs_fd_;
+  int pagemap_fd_;
 public: // object info
   // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)
   std::vector<std::shared_ptr<simgrid::mc::ObjectInformation>> object_infos;
