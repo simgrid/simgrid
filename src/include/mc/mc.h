@@ -37,6 +37,7 @@
 SG_BEGIN_DECL()
 
 /********************************** Configuration of MC **************************************/	
+
 extern XBT_PUBLIC(int) _sg_do_model_check;
 extern XBT_PRIVATE int _sg_do_model_check_record;
 extern XBT_PRIVATE int _sg_mc_checkpoint;
@@ -58,6 +59,7 @@ extern XBT_PRIVATE xbt_dynar_t mc_heap_comparison_ignore;
 extern XBT_PRIVATE xbt_dynar_t stacks_areas;
 
 /********************************* Global *************************************/
+
 XBT_PRIVATE void _mc_cfg_cb_reduce(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_checkpoint(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_sparse_checkpoint(const char *name, int pos);

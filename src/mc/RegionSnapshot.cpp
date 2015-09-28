@@ -51,10 +51,24 @@ RegionSnapshot dense_region(
   RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  simgrid::mc::RegionSnapshot::flat_data_ptr data((char*) malloc(size));
+  simgrid::mc::RegionSnapshot::flat_data_ptr data;
+  if (!_sg_mc_ksm)
+    data = simgrid::mc::RegionSnapshot::flat_data_ptr((char*) malloc(size));
+  else {
+    char* ptr = (char*) mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+    if (ptr == MAP_FAILED)
+      throw std::bad_alloc();
+    simgrid::mc::data_deleter deleter(
+      simgrid::mc::data_deleter::Munmap, size);
+    data = simgrid::mc::RegionSnapshot::flat_data_ptr(ptr, deleter);
+  }
   mc_model_checker->process().read_bytes(data.get(), size,
     remote(permanent_addr),
     simgrid::mc::ProcessIndexDisabled);
+  if (_sg_mc_ksm)
+    // Mark the region as mergeable *after* we have written into it.
+    // There no point to let KSM do the hard work before that.
+    madvise(data.get(), size, MADV_MERGEABLE);
 
   simgrid::mc::RegionSnapshot region(
     region_type, start_addr, permanent_addr, size);
