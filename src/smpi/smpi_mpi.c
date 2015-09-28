@@ -1177,3 +1177,9 @@ int MPI_Iteration_out(MPI_Comm comm)//implemented on instr_smpi.c
 {	
   return PMPI_Iteration_out(comm);
 }
+
+void MPI_Migrate(void)
+{
+  PMPI_Migrate();
+}
+

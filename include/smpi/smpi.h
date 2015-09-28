@@ -597,6 +597,15 @@ MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Op_c2f,(MPI_Op op));
 MPI_CALL(XBT_PUBLIC(MPI_Comm), MPI_Comm_f2c,(MPI_Fint comm));
 MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Comm_c2f,(MPI_Comm comm));
 
+/***************** Calls to trace iteraction times ***************************/
+MPI_CALL(XBT_PUBLIC(int), MPI_Loop_init, (const char *loopid));
+MPI_CALL(XBT_PUBLIC(int), MPI_Iteration_in, (MPI_Comm comm));
+MPI_CALL(XBT_PUBLIC(int), MPI_Iteration_out, (MPI_Comm comm));
+/*****************************************************************************/
+MPI_CALL(XBT_PUBLIC(void), MPI_Migrate, (void));
+
+
+
 //FIXME: these are not yet implemented
 
 typedef void MPI_Handler_function(MPI_Comm*, int*, ...);
@@ -834,12 +843,6 @@ XBT_PUBLIC(int) smpi_replay_finalize(void);
 XBT_PUBLIC(void) SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes);
 XBT_PUBLIC(void) SMPI_init(void);
 XBT_PUBLIC(void) SMPI_finalize(void);
-
-/***************** Calls to trace iteraction times ***************************/
-MPI_CALL(XBT_PUBLIC(int), MPI_Loop_init, (const char *loopid));
-MPI_CALL(XBT_PUBLIC(int), MPI_Iteration_in, (MPI_Comm comm));
-MPI_CALL(XBT_PUBLIC(int), MPI_Iteration_out, (MPI_Comm comm));
-
 
 SG_END_DECL()
 #endif

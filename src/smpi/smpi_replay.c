@@ -1357,7 +1357,9 @@ static void action_migrate(const char *const *action)
   int rank = smpi_process_index();
 
   CHECK_ACTION_PARAMS(action, 1, 0);
-  sscanf(action[2], "%lu", &mem_size);
+  if(action[2]){
+    sscanf(action[2], "%lu", &mem_size);
+  }
 
   /* You should have at least one process per host. In the future, we may
    * change this to one process per core. */
@@ -1371,7 +1373,7 @@ static void action_migrate(const char *const *action)
   */
   
 #ifdef HAVE_TRACING
-  TRACE_migration_call(smpi_process_index());
+  TRACE_migration_call(smpi_process_index(), NULL);
 #endif
 
   new_host = load_balancer();

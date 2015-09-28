@@ -3677,6 +3677,7 @@ int PMPI_Win_wait(MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
 
+
 /*********** Experimental code to trace the duration of iteractions **********/
 
 int PMPI_Loop_init(const char *loop)
@@ -3707,5 +3708,13 @@ int PMPI_Iteration_out(MPI_Comm comm)
 #endif
   smpi_bench_begin();
  return 1;
+}
+
+void PMPI_Migrate(void)
+{
+  instr_extra_data extra = xbt_new0(s_instr_extra_data_t, 1);
+  extra->type = TRACING_MIGRATION_CALL;
+  extra->send_size = 0;
+  TRACE_migration_call(smpi_process_index(), extra);
 }
 
