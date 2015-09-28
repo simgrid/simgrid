@@ -67,24 +67,11 @@ BEGIN {
 }
 
 ##
-## Command line option handling
+## Helper functions
 ##
 
-if ( $ARGV[0] eq "--internal-killer-process" ) {
-
-    # We fork+exec a waiter process in charge of killing the command after timeout
-    # If the command stops earlier, that's fine: the killer sends a signal to an already stopped process, fails, and quits.
-    #    Nobody cares about the killer issues.
-    #    The only problem could arise if another process is given the same PID than cmd. We bet it won't happen :)
-    my $time_to_wait = $ARGV[1];
-    my $pid          = $ARGV[2];
-    sleep $time_to_wait;
-    kill( 'TERM', $pid );
-    sleep 1;
-    kill( 'KILL', $pid );
-    exit $time_to_wait;
-}
-
+# Helper function replacing any occurence of variable '$name' by its '$value'
+# As in Bash, ${$value:=BLABLA} is rewritten to $value if set or to BLABLA if $value is not set
 sub var_subst {
     my ( $text, $name, $value ) = @_;
     if ($value) {
@@ -98,7 +85,7 @@ sub var_subst {
     return $text;
 }
 
-# option handling helper subs
+# Command CD. Just change to the provided directory
 sub cd_cmd {
     my $directory = shift;
     my $failure   = 1;
@@ -117,6 +104,7 @@ sub cd_cmd {
     }
 }
 
+# Command setenv. Gets "variable=content", and update the environment accordingly
 sub setenv_cmd {
     my $arg = shift;
     if ( $arg =~ /^(.*)=(.*)$/ ) {
@@ -128,7 +116,24 @@ sub setenv_cmd {
     }
 }
 
-# Main option parsing sub
+##
+## Command line option handling
+##
+
+if ( $ARGV[0] eq "--internal-killer-process" ) {
+
+    # We fork+exec a waiter process in charge of killing the command after timeout
+    # If the command stops earlier, that's fine: the killer sends a signal to an already stopped process, fails, and quits.
+    #    Nobody cares about the killer issues.
+    #    The only problem could arise if another process is given the same PID than cmd. We bet it won't happen :)
+    my $time_to_wait = $ARGV[1];
+    my $pid          = $ARGV[2];
+    sleep $time_to_wait;
+    kill( 'TERM', $pid );
+    sleep 1;
+    kill( 'KILL', $pid );
+    exit $time_to_wait;
+}
 
 sub get_options {
 
@@ -261,7 +266,6 @@ sub exec_cmd {
 
     ###
     # exec the command line
-    ###  $line =~ s/\r//g;
 
     $cmd{'got'} = IO::File->new_tmpfile;
     $cmd{'got'}->autoflush(1);
@@ -292,7 +296,7 @@ sub exec_cmd {
     if ( $cmd{'background'} != 1 ) {
         waitpid( $cmd{'pid'}, 0 );
         $cmd{'gotret'} = exit_status($?);
-        parse_out( \%cmd );
+        parse_result( \%cmd );
     } else {
 
         # & commands, which will be handled at the end
@@ -300,7 +304,7 @@ sub exec_cmd {
     }
 }
 
-sub parse_out {
+sub parse_result {
     my %cmd    = %{ $_[0] };
     my $gotret = $cmd{'gotret'};
 
@@ -614,7 +618,7 @@ foreach (@bg_cmds) {
     my %test = %{$_};
     waitpid( $test{'pid'}, 0 );
     $test{'gotret'} = exit_status($?);
-    parse_out( \%test );
+    parse_result( \%test );
 }
 
 @bg_cmds = ();
