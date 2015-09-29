@@ -47,6 +47,8 @@
 #ifndef _FLEXML_dax_H
 #define _FLEXML_dax_H
 
+#include <xbt/base.h>
+
 /* XML application entry points. */
 XBT_PUBLIC(void) STag_dax__adag(void);
 XBT_PUBLIC(void) ETag_dax__adag(void);
@@ -194,5 +196,5 @@ XBT_PUBLIC(int) dax__element_context(int);
 XBT_PUBLIC(int) yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
-const char * dax__parse_err_msg(void);
+XBT_PRIVATE const char * dax__parse_err_msg(void);
 #endif

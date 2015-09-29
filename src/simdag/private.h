@@ -7,6 +7,7 @@
 #ifndef SIMDAG_PRIVATE_H
 #define SIMDAG_PRIVATE_H
 
+#include "xbt/base.h"
 #include "xbt/dict.h"
 #include "xbt/dynar.h"
 #include "xbt/fifo.h"
@@ -47,7 +48,7 @@ typedef struct SD_global {
 
 } s_SD_global_t, *SD_global_t;
 
-extern SD_global_t sd_global;
+extern XBT_PRIVATE SD_global_t sd_global;
 
 /* Workstation */
 typedef s_xbt_dictelm_t s_SD_workstation_t;
@@ -121,21 +122,21 @@ typedef struct SD_dependency {
 XBT_PUBLIC(xbt_swag_t) SD_simulate_swag(double how_long); /* could be public, but you need to see the internals of the SD_task_t to use it */
 
 
-SD_workstation_t __SD_workstation_create(void *surf_workstation,
+XBT_PRIVATE SD_workstation_t __SD_workstation_create(void *surf_workstation,
                                          void *data);
-void __SD_workstation_destroy(void *workstation);
-int __SD_workstation_is_busy(SD_workstation_t workstation);
+XBT_PRIVATE void __SD_workstation_destroy(void *workstation);
+XBT_PRIVATE int __SD_workstation_is_busy(SD_workstation_t workstation);
 
-void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
-void __SD_task_really_run(SD_task_t task);
-int __SD_task_try_to_run(SD_task_t task);
-void __SD_task_just_done(SD_task_t task);
-bool acyclic_graph_detail(xbt_dynar_t dag);
+XBT_PRIVATE void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
+XBT_PRIVATE void __SD_task_really_run(SD_task_t task);
+XBT_PRIVATE void __SD_task_just_done(SD_task_t task);
+XBT_PRIVATE int __SD_task_try_to_run(SD_task_t task);
+XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
 
 /* Task mallocator functions */
-void* SD_task_new_f(void);
-void SD_task_recycle_f(void *t);
-void SD_task_free_f(void *t);
+XBT_PRIVATE void* SD_task_new_f(void);
+XBT_PRIVATE void SD_task_recycle_f(void *t);
+XBT_PRIVATE void SD_task_free_f(void *t);
 
 /* Functions to test if the task is in a given state. */
 
@@ -197,15 +198,15 @@ static XBT_INLINE int __SD_task_is_running(SD_task_t task)
 }
 
 /********** Storage **********/
-SD_storage_t __SD_storage_create(void *surf_storage, void *data);
-void __SD_storage_destroy(void *storage);
+XBT_PRIVATE SD_storage_t __SD_storage_create(void *surf_storage, void *data);
+XBT_PRIVATE void __SD_storage_destroy(void *storage);
 
 /********** Tracing **********/
 /* declaration of instrumentation functions from sd_task_instr.c */
-void TRACE_sd_task_create(SD_task_t task);
-void TRACE_sd_task_execute_start(SD_task_t task);
-void TRACE_sd_task_execute_end(SD_task_t task);
-void TRACE_sd_task_destroy(SD_task_t task);
+XBT_PRIVATE void TRACE_sd_task_create(SD_task_t task);
+XBT_PRIVATE void TRACE_sd_task_execute_start(SD_task_t task);
+XBT_PRIVATE void TRACE_sd_task_execute_end(SD_task_t task);
+XBT_PRIVATE void TRACE_sd_task_destroy(SD_task_t task);
 
 SG_END_DECL()
 
