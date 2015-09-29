@@ -1183,8 +1183,8 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/CompleteInFiles.cmake
   tools/cmake/DefinePackages.cmake
   tools/cmake/Distrib.cmake
-  tools/cmake/Flags.cmake
-  tools/cmake/GenerateDoc.cmake
+  tools/cmake/GCCFlags.cmake
+  tools/cmake/Documentation.cmake
   tools/cmake/MaintainerMode.cmake
   tools/cmake/MakeExe.cmake
   tools/cmake/MakeJava.cmake

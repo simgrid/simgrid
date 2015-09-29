@@ -14,7 +14,7 @@ endif()
 
 ## 
 ## Check the C/C++ standard that we need
-##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
+##   See also tools/cmake/GCCFlags.cmake that sets our paranoid warning flags
 if (MSVC)
   message("-- You are compiling SimGrid with MicroSoft Visual C. Good luck.")
 
@@ -251,7 +251,7 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/UnitTesting.cmake)
 
 ### Setup gcc & clang flags
 if (NOT MSVC)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Flags.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GCCFlags.cmake)
 endif()
 
 ### Make Libs
@@ -282,7 +282,7 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
 ### Build the doc (Windows downloads the doc instead of regenerating)
 #
 if(NOT WIN32)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GenerateDoc.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Documentation.cmake)
 else()
   find_program(WGET_PROGRAM  NAMES wget)
   message(STATUS "wget: ${WGET_PROGRAM}")
