@@ -109,8 +109,8 @@ sub setenv_cmd {
     my $arg = shift;
     if ( $arg =~ /^(.*)=(.*)$/ ) {
         my ( $var, $ctn ) = ( $1, $2 );
-	print "[Tesh/INFO] setenv $var=$ctn\n";
-	$environ{$var} = $ctn;
+        print "[Tesh/INFO] setenv $var=$ctn\n";
+        $environ{$var} = $ctn;
     } else {
         die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$arg'\n";
     }
@@ -135,51 +135,42 @@ if ( $ARGV[0] eq "--internal-killer-process" ) {
     exit $time_to_wait;
 }
 
-sub get_options {
+my %opts = ( "debug" => 0 );
 
-    my %opt = (
-        "debug" => 0,
-    );
+Getopt::Long::config( 'bundling', 'no_getopt_compat', 'no_auto_abbrev' );
 
-    Getopt::Long::config( 'bundling', 'no_getopt_compat', 'no_auto_abbrev' );
+GetOptions(
+    'debug|d' => \$opts{"debug"},
 
-    GetOptions(
-        'debug|d' => \$opt{"debug"},
+    'difftool=s' => \$diff_tool,
 
-        'difftool=s' => \$diff_tool,
+    'cd=s'      => sub { cd_cmd( $_[1] ) },
+    'timeout=s' => \$opts{'timeout'},
+    'setenv=s'  => sub { setenv_cmd( $_[1] ) },
+    'cfg=s' => sub { $opts{'cfg'} .= " --cfg=$_[1]" },
+    'enable-coverage+' => \$enable_coverage,
+);
 
-        'cd=s'             => sub { cd_cmd($_[1]) },
-        'timeout=s'        => \$opt{'timeout'},
-        'setenv=s'         => sub { setenv_cmd($_[1]) },
-        'cfg=s'            => sub { $opt{'cfg'} .= " --cfg=$_[1]" },
-        'enable-coverage+' => \$enable_coverage,
-    );
+$tesh_file = pop @ARGV;
 
-    $tesh_file = pop @ARGV;
-
-    if ($enable_coverage) {
-        print "Enable coverage\n";
-    }
-
-    if ($diff_tool) {
-        use File::Temp qw/ tempfile /;
-        ( $diff_tool_tmp_fh, $diff_tool_tmp_filename ) = tempfile();
-        print "New tesh: $diff_tool_tmp_filename\n";
-    }
-
-    if ( $tesh_file =~ m/(.*)\.tesh/ ) {
-        $tesh_name = $1;
-        print "Test suite `$tesh_name'\n";
-    } else {
-        $tesh_file = "(stdin)";
-        $tesh_name = "(stdin)";
-        print "Test suite from stdin\n";
-    }
-
-    return %opt;
+if ($enable_coverage) {
+    print "Enable coverage\n";
 }
 
-my %opts = get_options();
+if ($diff_tool) {
+    use File::Temp qw/ tempfile /;
+    ( $diff_tool_tmp_fh, $diff_tool_tmp_filename ) = tempfile();
+    print "New tesh: $diff_tool_tmp_filename\n";
+}
+
+if ( $tesh_file =~ m/(.*)\.tesh/ ) {
+    $tesh_name = $1;
+    print "Test suite `$tesh_name'\n";
+} else {
+    $tesh_file = "(stdin)";
+    $tesh_name = "(stdin)";
+    print "Test suite from stdin\n";
+}
 
 ##
 ## File parsing
@@ -507,7 +498,7 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
               if scalar @{ cmd { 'out' } };
 
             $arg =~ s/^ *cd //;
-            cd_cmd( $arg );
+            cd_cmd($arg);
             %cmd = ();
 
         } else {    # regular command
@@ -525,7 +516,7 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
         $cmd{'cmd'}        = $arg;
         $cmd{'file'}       = $tesh_file;
         $cmd{'line'}       = $line_num;
-	
+
     } elsif ( $line =~ /^!\s*output sort/ ) {    #output sort
         if ( defined( $cmd{'cmd'} ) ) {
             exec_cmd( \%cmd );
