@@ -11,6 +11,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <xbt/base.h>
+
 #include "mc/mc_forward.h"
 #include "mc/Type.hpp"
 #include "mc/Frame.hpp"

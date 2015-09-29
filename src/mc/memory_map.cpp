@@ -10,6 +10,8 @@
 
 #include <sys/types.h>
 
+#include <xbt/base.h>
+
 #include "mc_memory_map.h"
 #include "mc_private.h"
 
@@ -23,7 +25,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory_map, mc,
 namespace simgrid {
 namespace mc {
 
-std::vector<VmMap> get_memory_map(pid_t pid)
+XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 {
   /* Open the actual process's proc maps file and create the memory_map_t */
   /* to be returned. */

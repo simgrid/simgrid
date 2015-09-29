@@ -7,13 +7,15 @@
 #ifndef SIMGRID_MC_STATE_H
 #define SIMGRID_MC_STATE_H
 
+#include <xbt/base.h>
+
 #include <simgrid_config.h>
 #include "../simix/smx_private.h"
 #include "mc_snapshot.h"
 
 SG_BEGIN_DECL()
 
-extern XBT_INTERNAL mc_global_t initial_global_state;
+extern XBT_PRIVATE mc_global_t initial_global_state;
 
 /* Possible exploration status of a process in a state */
 typedef enum {
@@ -36,7 +38,7 @@ typedef struct mc_procstate{
  *  For example WAITANY is transformes into a WAIT and TESTANY into TEST.
  *  See `MC_state_set_executed_request()`.
  */
-typedef struct mc_state {
+typedef struct XBT_PRIVATE mc_state {
   unsigned long max_pid;            /* Maximum pid at state's creation time */
   mc_procstate_t proc_status;       /* State's exploration status by process */
   s_smx_synchro_t internal_comm;     /* To be referenced by the internal_req */
@@ -52,16 +54,16 @@ typedef struct mc_state {
   xbt_dynar_t index_comm; // comm determinism verification
 } s_mc_state_t, *mc_state_t;
 
-XBT_INTERNAL mc_state_t MC_state_new(void);
-XBT_INTERNAL void MC_state_delete(mc_state_t state, int free_snapshot);
-XBT_INTERNAL void MC_state_interleave_process(mc_state_t state, smx_process_t process);
-XBT_INTERNAL unsigned int MC_state_interleave_size(mc_state_t state);
-XBT_INTERNAL int MC_state_process_is_done(mc_state_t state, smx_process_t process);
-XBT_INTERNAL void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int value);
-XBT_INTERNAL smx_simcall_t MC_state_get_executed_request(mc_state_t state, int *value);
-XBT_INTERNAL smx_simcall_t MC_state_get_internal_request(mc_state_t state);
-XBT_INTERNAL smx_simcall_t MC_state_get_request(mc_state_t state, int *value);
-XBT_INTERNAL void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process);
+XBT_PRIVATE mc_state_t MC_state_new(void);
+XBT_PRIVATE void MC_state_delete(mc_state_t state, int free_snapshot);
+XBT_PRIVATE void MC_state_interleave_process(mc_state_t state, smx_process_t process);
+XBT_PRIVATE unsigned int MC_state_interleave_size(mc_state_t state);
+XBT_PRIVATE int MC_state_process_is_done(mc_state_t state, smx_process_t process);
+XBT_PRIVATE void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int value);
+XBT_PRIVATE smx_simcall_t MC_state_get_executed_request(mc_state_t state, int *value);
+XBT_PRIVATE smx_simcall_t MC_state_get_internal_request(mc_state_t state);
+XBT_PRIVATE smx_simcall_t MC_state_get_request(mc_state_t state, int *value);
+XBT_PRIVATE void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process);
 
 SG_END_DECL()
 

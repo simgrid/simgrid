@@ -96,12 +96,12 @@ enum mc_location_type mc_get_location_type(mc_location_t location) {
   }
 }
 
-XBT_INTERNAL void mc_dwarf_resolve_location(
+XBT_PRIVATE void mc_dwarf_resolve_location(
   mc_location_t location, simgrid::mc::DwarfExpression* expression,
   simgrid::mc::ObjectInformation* object_info, unw_cursor_t* c,
   void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
   int process_index);
-MC_SHOULD_BE_INTERNAL void mc_dwarf_resolve_locations(
+void mc_dwarf_resolve_locations(
   mc_location_t location, simgrid::mc::LocationList* locations,
   simgrid::mc::ObjectInformation* object_info, unw_cursor_t* c,
   void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
@@ -128,10 +128,10 @@ typedef struct s_mc_expression_state {
   int process_index;
 } s_mc_expression_state_t, *mc_expression_state_t;
 
-MC_SHOULD_BE_INTERNAL int mc_dwarf_execute_expression(
+int mc_dwarf_execute_expression(
   size_t n, const simgrid::mc::DwarfInstruction* ops, mc_expression_state_t state);
 
-MC_SHOULD_BE_INTERNAL void* mc_find_frame_base(
+void* mc_find_frame_base(
   simgrid::mc::Frame* frame, simgrid::mc::ObjectInformation* object_info, unw_cursor_t* unw_cursor);
 
 SG_END_DECL()
@@ -139,7 +139,7 @@ SG_END_DECL()
 namespace simgrid {
 namespace mc {
 
-inline
+static inline
 int execute(DwarfExpression const& expression, mc_expression_state_t state)
 {
   return mc_dwarf_execute_expression(

@@ -17,6 +17,7 @@
 #include "simgrid_config.h"
 #include <sys/types.h>
 
+#include <xbt/base.h>
 #include <xbt/mmalloc.h>
 
 #ifdef HAVE_MC
@@ -238,14 +239,14 @@ public: // Libunwind-data
 
 /** Open a FD to a remote process memory (`/dev/$pid/mem`)
  */
-int open_vm(pid_t pid, int flags);
+XBT_PRIVATE int open_vm(pid_t pid, int flags);
 
 }
 }
 
 SG_BEGIN_DECL()
 
-XBT_INTERNAL void MC_invalidate_cache(void);
+XBT_PRIVATE void MC_invalidate_cache(void);
 
 SG_END_DECL()
 

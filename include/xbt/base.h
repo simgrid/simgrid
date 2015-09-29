@@ -267,14 +267,6 @@
 	#define _CRT_SECURE_NO_WARNINGS
 #endif
 
-
-
-#ifdef _XBT_WIN32
-#define XBT_INTERNAL
-#else
-#define XBT_INTERNAL __attribute__((visibility ("hidden")))
-#endif
-
 #if !defined (max) && !defined(__cplusplus)
 #  define max(a,b)  (((a) > (b)) ? (a) : (b))
 #endif
