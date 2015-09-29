@@ -11,6 +11,7 @@
 #define SIMGRID_PORTABLE_H
 
 #include "internal_config.h"
+#include "xbt/base.h"
 #include "xbt/misc.h"
 #ifdef _XBT_WIN32
 # include <windows.h>
@@ -109,9 +110,9 @@ XBT_PUBLIC(int) vsnprintf(char *, size_t, const char *, va_list);
 
 /* use internal functions when OS provided ones are borken */
 #if defined(HAVE_SNPRINTF) && defined(PREFER_PORTABLE_SNPRINTF)
-extern int portable_snprintf(char *str, size_t str_m, const char *fmt,
+XBT_PRIVATE int portable_snprintf(char *str, size_t str_m, const char *fmt,
                              /*args */ ...);
-extern int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
+XBT_PRIVATE int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
                               va_list ap);
 #define snprintf  portable_snprintf
 #define vsnprintf portable_vsnprintf

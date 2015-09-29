@@ -246,6 +246,12 @@
 
 #endif
 
+#ifdef __ELF__
+#define XBT_PRIVATE __attribute__((visibility("hidden")))
+#else
+#define XBT_PRIVATE
+#endif
+
 #ifdef _MSC_VER /* MSVC has no ssize_t, and I fail to use the SSIZE_T declared in BaseTsd.h */
 	#if defined(_WIN64)
 		typedef __int64 ssize_t;

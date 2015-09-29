@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/base.h"
 #include "xbt/dict.h"
 #include "xbt/dynar.h"
 #include "xbt/setset.h"
@@ -44,16 +45,16 @@ typedef struct s_xbt_setset_cursor {
 
 /* Some internal functions */
 
-int bitcount(int);
+XBT_PRIVATE int bitcount(int);
 
 /* Get the object associated to a given index */
-void *_xbt_setset_idx_to_obj(xbt_setset_t setset, unsigned long idx);
+XBT_PRIVATE void *_xbt_setset_idx_to_obj(xbt_setset_t setset, unsigned long idx);
 
 /* Check if the nth bit of an integer is set or not*/
-unsigned int _is_bit_set(unsigned int bit, unsigned int integer);
+XBT_PRIVATE unsigned int _is_bit_set(unsigned int bit, unsigned int integer);
 
 /* Set the nth bit of an array of integers */
-void _set_bit(unsigned int bit, unsigned int *bitmap);
+XBT_PRIVATE void _set_bit(unsigned int bit, unsigned int *bitmap);
 
 /* Unset the nth bit of an array of integers */
-void _unset_bit(unsigned int bit, unsigned int *bitmap);
+XBT_PRIVATE void _unset_bit(unsigned int bit, unsigned int *bitmap);
