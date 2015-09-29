@@ -8,11 +8,13 @@
 #ifndef SURF_ROUTING_CLUSTER_TORUS_HPP_
 #define SURF_ROUTING_CLUSTER_TORUS_HPP_
 
+#include <xbt/base.h>
+
 #include "surf_routing_none.hpp"
 #include "network_interface.hpp"
 #include "surf_routing_cluster.hpp"
 
-class AsClusterTorus: public AsCluster {
+class XBT_PRIVATE AsClusterTorus: public AsCluster {
 public:
    AsClusterTorus();
    virtual ~AsClusterTorus();

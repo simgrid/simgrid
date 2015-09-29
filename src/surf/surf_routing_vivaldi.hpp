@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/swag.h"
+
 #include "surf_routing_generic.hpp"
 
 #ifndef SURF_ROUTING_VIVALDI_HPP_
@@ -11,7 +13,7 @@
 
 /* ************************************************** */
 /* **************  Vivaldi ROUTING   **************** */
-AS_t model_vivaldi_create(void);      /* create structures for vivaldi routing model */
+XBT_PRIVATE AS_t model_vivaldi_create(void);      /* create structures for vivaldi routing model */
 #define HOST_PEER(peername) bprintf("peer_%s", peername)
 #define ROUTER_PEER(peername) bprintf("router_%s", peername)
 #define LINK_PEER(peername) bprintf("link_%s", peername)
@@ -19,7 +21,7 @@ AS_t model_vivaldi_create(void);      /* create structures for vivaldi routing m
 /***********
  * Classes *
  ***********/
-class AsVivaldi;
+class XBT_PRIVATE AsVivaldi;
 
 class AsVivaldi: public AsGeneric {
 public:

@@ -7,6 +7,8 @@
 #ifndef SURF_NETWORK_INTERFACE_HPP_
 #define SURF_NETWORK_INTERFACE_HPP_
 
+#include <xbt/base.h>
+
 #include <boost/unordered_map.hpp>
 
 #include "xbt/fifo.h"

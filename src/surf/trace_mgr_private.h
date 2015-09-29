@@ -7,6 +7,7 @@
 #ifndef _SURF_TMGR_PRIVATE_H
 #define _SURF_TMGR_PRIVATE_H
 
+#include "xbt/base.h"
 #include "xbt/swag.h"
 #include "xbt/heap.h"
 #include "surf/trace_mgr.h"
@@ -70,6 +71,6 @@ typedef struct tmgr_history {
   xbt_heap_t heap;
 } s_tmgr_history_t;
 
-double tmgr_event_generator_next_value(probabilist_event_generator_t generator);
+XBT_PRIVATE double tmgr_event_generator_next_value(probabilist_event_generator_t generator);
 
 #endif                          /* _SURF_TMGR_PRIVATE_H */

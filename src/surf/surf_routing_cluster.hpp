@@ -7,13 +7,15 @@
 #ifndef SURF_ROUTING_CLUSTER_HPP_
 #define SURF_ROUTING_CLUSTER_HPP_
 
+#include <xbt/base.h>
+
 #include "surf_routing_none.hpp"
 #include "network_interface.hpp"
 
 /***********
  * Classes *
  ***********/
-class AsCluster;
+class XBT_PRIVATE AsCluster;
 
 
 /* ************************************************** */

@@ -4,16 +4,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "surf_routing_none.hpp"
 
 #ifndef SURF_ROUTING_GENERIC_HPP_
 #define SURF_ROUTING_GENERIC_HPP_
 
-class AsGeneric;
+class XBT_PRIVATE AsGeneric;
 
-void generic_free_route(sg_platf_route_cbarg_t route);
+XBT_PRIVATE void generic_free_route(sg_platf_route_cbarg_t route);
 
-class AsGeneric : public AsNone {
+class XBT_PRIVATE AsGeneric : public AsNone {
 public:
   AsGeneric();
   ~AsGeneric();

@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "surf_routing_generic.hpp"
 
 #ifndef SURF_ROUTING_DIJKSTRA_HPP_
@@ -26,7 +28,7 @@ typedef struct route_cache_element {
 /***********
  * Classes *
  ***********/
-class AsDijkstra;
+class XBT_PRIVATE AsDijkstra;
 
 class AsDijkstra : public AsGeneric {
 public:

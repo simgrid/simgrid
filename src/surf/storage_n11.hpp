@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "storage_interface.hpp"
 
 #ifndef STORAGE_N11_HPP_
@@ -13,9 +15,9 @@
  * Classes *
  ***********/
 
-class StorageN11Model;
-class StorageN11;
-class StorageN11Action;
+class XBT_PRIVATE StorageN11Model;
+class XBT_PRIVATE StorageN11;
+class XBT_PRIVATE StorageN11Action;
 
 /*********
  * Model *

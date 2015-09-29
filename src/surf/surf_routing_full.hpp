@@ -7,12 +7,14 @@
 #ifndef SURF_ROUTING_FULL_HPP_
 #define SURF_ROUTING_FULL_HPP_
 
+#include <xbt/base.h>
+
 #include "surf_routing_generic.hpp"
 
 /***********
  * Classes *
  ***********/
-class AsFull;
+class XBT_PRIVATE AsFull;
 
 class AsFull: public AsGeneric {
 public:

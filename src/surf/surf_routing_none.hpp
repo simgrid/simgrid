@@ -4,12 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "surf_routing.hpp"
 
 #ifndef SURF_ROUTING_NONE_HPP_
 #define SURF_ROUTING_NONE_HPP_
 
-class AsNone : public As {
+class XBT_PRIVATE AsNone : public As {
 public:
   AsNone();
   ~AsNone();

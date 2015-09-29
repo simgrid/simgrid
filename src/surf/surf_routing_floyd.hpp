@@ -8,12 +8,14 @@
 #ifndef SURF_ROUTING_FLOYD_HPP_
 #define SURF_ROUTING_FLOYD_HPP_
 
+#include <xbt/base.h>
+
 #include "surf_routing_generic.hpp"
 
 /***********
  * Classes *
  ***********/
-class AsFloyd;
+class XBT_PRIVATE AsFloyd;
 
 class AsFloyd: public AsGeneric {
 public:

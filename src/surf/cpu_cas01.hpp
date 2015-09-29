@@ -4,14 +4,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "cpu_interface.hpp"
 
 /***********
  * Classes *
  ***********/
-class CpuCas01Model;
-class CpuCas01;
-class CpuCas01Action;
+class XBT_PRIVATE CpuCas01Model;
+class XBT_PRIVATE CpuCas01;
+class XBT_PRIVATE CpuCas01Action;
 
 /*********
  * Model *

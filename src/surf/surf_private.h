@@ -7,6 +7,8 @@
 #ifndef _SURF_SURF_PRIVATE_H
 #define _SURF_SURF_PRIVATE_H
 
+#include <xbt/base.h>
+
 #include "surf/surf.h"
 #include "surf/maxmin.h"
 #include "surf/trace_mgr.h"
@@ -22,7 +24,7 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC_DATA(xbt_dict_t) watched_hosts_lib;
 
-extern const char *surf_action_state_names[6];
+extern XBT_PRIVATE const char *surf_action_state_names[6];
 
 /** @ingroup SURF_interface
  * @brief Possible update mechanisms
@@ -35,15 +37,15 @@ typedef enum {
 
 /* Generic functions common to all models */
 
-FILE *surf_fopen(const char *name, const char *mode);
+XBT_PRIVATE FILE *surf_fopen(const char *name, const char *mode);
 
-extern tmgr_history_t history;
+extern XBT_PRIVATE tmgr_history_t history;
 
 /* The __surf_is_absolute_file_path() returns 1 if
  * file_path is a absolute file path, in the other
  * case the function returns 0.
  */
-int __surf_is_absolute_file_path(const char *file_path);
+XBT_PRIVATE int __surf_is_absolute_file_path(const char *file_path);
 
 /**
  * Routing logic

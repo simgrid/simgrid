@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/base.h"
+
 #include "host_clm03.hpp"
 #include "vm_interface.hpp"
 
@@ -17,8 +19,8 @@
  * Classes *
  ***********/
 
-class VMHL13Model;
-class VMHL13;
+class XBT_PRIVATE VMHL13Model;
+class XBT_PRIVATE VMHL13;
 
 /*********
  * Model *

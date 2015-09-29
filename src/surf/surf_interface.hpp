@@ -38,7 +38,7 @@
 // 4251: needs to have dll-interface to be used by clients of class
 #endif
 
-extern tmgr_history_t history;
+extern XBT_PRIVATE tmgr_history_t history;
 #define NO_MAX_DURATION -1.0
 
 using namespace std;
@@ -48,23 +48,23 @@ using namespace std;
  *********/
 
 /* user-visible parameters */
-extern double sg_tcp_gamma;
-extern double sg_sender_gap;
-extern double sg_latency_factor;
-extern double sg_bandwidth_factor;
-extern double sg_weight_S_parameter;
-extern int sg_network_crosstraffic;
-extern xbt_dynar_t surf_path;
+extern XBT_PRIVATE double sg_tcp_gamma;
+extern XBT_PRIVATE double sg_sender_gap;
+extern XBT_PRIVATE double sg_latency_factor;
+extern XBT_PRIVATE double sg_bandwidth_factor;
+extern XBT_PRIVATE double sg_weight_S_parameter;
+extern XBT_PRIVATE int sg_network_crosstraffic;
+extern XBT_PRIVATE xbt_dynar_t surf_path;
 
 extern "C" {
 XBT_PUBLIC(double) surf_get_clock(void);
 }
 
-extern double sg_sender_gap;
+extern XBT_PRIVATE double sg_sender_gap;
 
-extern surf_callback(void, void) surfExitCallbacks;
+extern XBT_PRIVATE surf_callback(void, void) surfExitCallbacks;
 
-int __surf_is_absolute_file_path(const char *file_path);
+int XBT_PRIVATE __surf_is_absolute_file_path(const char *file_path);
 
 /***********
  * Classes *
@@ -91,7 +91,7 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 /**********
  * Action *
  **********/
-void surf_action_lmm_update_index_heap(void *action, int i);
+XBT_PRIVATE void surf_action_lmm_update_index_heap(void *action, int i);
 
 /** @ingroup SURF_interface
  * @brief SURF action interface class

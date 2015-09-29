@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "host_interface.hpp"
 
 #ifndef VM_INTERFACE_HPP_
@@ -16,8 +18,8 @@
  * Classes *
  ***********/
 
-class VMModel;
-class VM;
+class XBT_PRIVATE VMModel;
+class XBT_PRIVATE VM;
 
 /*************
  * Callbacks *
@@ -26,17 +28,17 @@ class VM;
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM creation. Signature: `void(VM*)`
  */
-extern surf_callback(void, VM*) VMCreatedCallbacks;
+extern XBT_PRIVATE surf_callback(void, VM*) VMCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM destruction. Signature: `void(VM*)`
  */
-extern surf_callback(void, VM*) VMDestructedCallbacks;
+extern XBT_PRIVATE surf_callback(void, VM*) VMDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks after VM State changes. Signature: `void(VMAction*)`
  */
-extern surf_callback(void, VM*) VMStateChangedCallbacks;
+extern XBT_PRIVATE surf_callback(void, VM*) VMStateChangedCallbacks;
 
 /************
  * Resource *

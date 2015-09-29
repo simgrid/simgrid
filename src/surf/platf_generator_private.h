@@ -7,15 +7,17 @@
 #ifndef SG_PLATF_GEN_PRIVATE_H
 #define SG_PLATF_GEN_PRIVATE_H
 
+#include <xbt/base.h>
+
 #include "xbt/graph.h"
 #include "simgrid/platf.h"
 
-void platf_graph_init(unsigned long node_count);
+XBT_PRIVATE void platf_graph_init(unsigned long node_count);
 
-void platf_node_connect(xbt_node_t node1, xbt_node_t node2);
+XBT_PRIVATE void platf_node_connect(xbt_node_t node1, xbt_node_t node2);
 
-double platf_node_distance(xbt_node_t node1, xbt_node_t node2);
+XBT_PRIVATE double platf_node_distance(xbt_node_t node1, xbt_node_t node2);
 
-double random_pareto(double min, double max, double K, double P, double ALPHA);
+XBT_PRIVATE double random_pareto(double min, double max, double K, double P, double ALPHA);
 
 #endif      /* SG_PLATF_GEN_PRIVATE_H */

@@ -7,6 +7,8 @@
 #ifndef NETWORK_ROUTING_HPP_
 #define NETWORK_ROUTING_HPP_
 
+#include <xbt/base.h>
+
 #include "surf_interface.hpp"
 #include <float.h>
 
@@ -14,17 +16,17 @@ XBT_PUBLIC(void) routing_model_create( void *loopback);
 
 /* ************************************************************************** */
 /* ************************* GRAPH EXPORTING FUNCTIONS ********************** */
-xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_dict_t nodes);
-xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges);
+XBT_PRIVATE xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_dict_t nodes);
+XBT_PRIVATE xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges);
 
 /***********
  * Classes *
  ***********/
 
-class As;
-class RoutingModelDescription;
-class Onelink;
-class RoutingPlatf;
+class XBT_PRIVATE As;
+class XBT_PRIVATE RoutingModelDescription;
+class XBT_PRIVATE Onelink;
+class XBT_PRIVATE RoutingPlatf;
 
 /** @ingroup SURF_routing_interface
  * @brief A routing edge
@@ -96,7 +98,7 @@ public:
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
 };
 
-struct RoutingEdgeImpl : public RoutingEdge {
+struct XBT_PRIVATE RoutingEdgeImpl : public RoutingEdge {
 public:
   RoutingEdgeImpl(char *name, int id, e_surf_network_element_type_t rcType, As *rcComponent)
   : p_rcComponent(rcComponent), p_rcType(rcType), m_id(id), p_name(name) {}

@@ -7,11 +7,12 @@
 #ifndef SURF_NETWORK_IB_HPP_
 #define SURF_NETWORK_IB_HPP_
 
+#include <xbt/base.h>
+
 #include "network_smpi.hpp"
-class IBNode;
+class XBT_PRIVATE IBNode;
 
-
-class ActiveComm{
+class XBT_PRIVATE ActiveComm{
 public :
   //IBNode* origin;
   IBNode* destination;
@@ -34,7 +35,7 @@ public :
   ~IBNode(){};
 };
 
-class NetworkIBModel : public NetworkSmpiModel {
+class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {
 private:
   void updateIBfactors_rec(IBNode *root, bool* updatedlist);
   void computeIBfactors(IBNode *root);

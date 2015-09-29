@@ -4,13 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "network_cm02.hpp"
 
 /***********
  * Classes *
  ***********/
 
-class NetworkSmpiModel;
+class XBT_PRIVATE NetworkSmpiModel;
 
 /*********
  * Tools *
