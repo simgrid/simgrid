@@ -7,6 +7,7 @@
 #ifndef MSG_MAILBOX_H
 #define MSG_MAILBOX_H
 
+#include <xbt/base.h>
 #include "xbt/fifo.h"
 #include "simgrid/simix.h"
 #include "simgrid/msg.h"
@@ -27,7 +28,7 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(msg_mailbox_t)
     MSG_mailbox_new(const char *alias);
 
-void MSG_mailbox_free(void *mailbox);
+XBT_PRIVATE void MSG_mailbox_free(void *mailbox);
 
 /* \brief MSG_mailbox_free - release a mailbox from the memory.
  *
@@ -38,7 +39,7 @@ void MSG_mailbox_free(void *mailbox);
  *
  * \see      MSG_mailbox_destroy.
  */
-void MSG_mailbox_free(void *mailbox);
+XBT_PRIVATE void MSG_mailbox_free(void *mailbox);
 
 /* \brief MSG_mailbox_get_by_alias - get a mailbox from its alias.
  *

@@ -10,6 +10,7 @@
 #include "simgrid/msg.h"
 #include "simgrid/simix.h"
 #include "surf/surf.h"
+#include "xbt/base.h"
 #include "xbt/fifo.h"
 #include "xbt/dynar.h"
 #include "xbt/swag.h"
@@ -66,8 +67,8 @@ typedef struct simdata_file {
   smx_file_t smx_file;
 } s_simdata_file_t;
 
-int __MSG_host_get_file_descriptor_id(msg_host_t host);
-void __MSG_host_release_file_descriptor_id(msg_host_t host, int id);
+XBT_PRIVATE int __MSG_host_get_file_descriptor_id(msg_host_t host);
+XBT_PRIVATE void __MSG_host_release_file_descriptor_id(msg_host_t host, int id);
 
 /*************** Begin GPU ***************/
 typedef struct simdata_gpu_task {
@@ -157,66 +158,66 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 #  define MSG_RETURN(val) return(val)
 #endif
 
-msg_host_t __MSG_host_create(sg_host_t host);
-msg_storage_t __MSG_storage_create(smx_storage_t storage);
-void __MSG_host_destroy(msg_host_t host);
-void __MSG_host_priv_free(msg_host_priv_t priv);
-void __MSG_storage_destroy(msg_storage_priv_t host);
-void __MSG_file_destroy(msg_file_priv_t host);
+XBT_PRIVATE msg_host_t __MSG_host_create(sg_host_t host);
+XBT_PRIVATE msg_storage_t __MSG_storage_create(smx_storage_t storage);
+XBT_PRIVATE void __MSG_host_destroy(msg_host_t host);
+XBT_PRIVATE void __MSG_host_priv_free(msg_host_priv_t priv);
+XBT_PRIVATE void __MSG_storage_destroy(msg_storage_priv_t host);
+XBT_PRIVATE void __MSG_file_destroy(msg_file_priv_t host);
 
-void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
-smx_process_t MSG_process_create_from_SIMIX(const char *name,
+XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
+XBT_PRIVATE smx_process_t MSG_process_create_from_SIMIX(const char *name,
                                    xbt_main_func_t code, void *data,
                                    const char *hostname, double kill_time,
                                    int argc, char **argv,
                                    xbt_dict_t properties, int auto_restart,
                                    smx_process_t parent_process);
-void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size);
+XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size);
 
-void MSG_post_create_environment(void);
+XBT_PRIVATE void MSG_post_create_environment(void);
 
-void MSG_host_add_task(msg_host_t host, msg_task_t task);
-void MSG_host_del_task(msg_host_t host, msg_task_t task);
+XBT_PRIVATE void MSG_host_add_task(msg_host_t host, msg_task_t task);
+XBT_PRIVATE void MSG_host_del_task(msg_host_t host, msg_task_t task);
 
 /********** Tracing **********/
 /* declaration of instrumentation functions from msg_task_instr.c */
-void TRACE_msg_set_task_category(msg_task_t task, const char *category);
-void TRACE_msg_task_create(msg_task_t task);
-void TRACE_msg_task_execute_start(msg_task_t task);
-void TRACE_msg_task_execute_end(msg_task_t task);
-void TRACE_msg_task_destroy(msg_task_t task);
-void TRACE_msg_task_get_start(void);
-void TRACE_msg_task_get_end(double start_time, msg_task_t task);
-int TRACE_msg_task_put_start(msg_task_t task);    //returns TRUE if the task_put_end must be called
-void TRACE_msg_task_put_end(void);
+XBT_PRIVATE void TRACE_msg_set_task_category(msg_task_t task, const char *category);
+XBT_PRIVATE void TRACE_msg_task_create(msg_task_t task);
+XBT_PRIVATE void TRACE_msg_task_execute_start(msg_task_t task);
+XBT_PRIVATE void TRACE_msg_task_execute_end(msg_task_t task);
+XBT_PRIVATE void TRACE_msg_task_destroy(msg_task_t task);
+XBT_PRIVATE void TRACE_msg_task_get_end(double start_time, msg_task_t task);
+XBT_PRIVATE void TRACE_msg_task_get_start(void);
+XBT_PRIVATE int TRACE_msg_task_put_start(msg_task_t task);    //returns TRUE if the task_put_end must be called
+XBT_PRIVATE void TRACE_msg_task_put_end(void);
 
 /* declaration of instrumentation functions from msg_process_instr.c */
-char *instr_process_id (msg_process_t proc, char *str, int len);
-char *instr_process_id_2 (const char *process_name, int process_pid, char *str, int len);
-void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host,
+XBT_PRIVATE char *instr_process_id (msg_process_t proc, char *str, int len);
+XBT_PRIVATE char *instr_process_id_2 (const char *process_name, int process_pid, char *str, int len);
+XBT_PRIVATE void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host,
                                    msg_host_t new_host);
-void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host);
-void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_host_t host);
-void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
-void TRACE_msg_process_suspend(msg_process_t process);
-void TRACE_msg_process_resume(msg_process_t process);
-void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c
-void TRACE_msg_process_sleep_out(msg_process_t process);
-void TRACE_msg_process_end(msg_process_t process);
+XBT_PRIVATE void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host);
+XBT_PRIVATE void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_host_t host);
+XBT_PRIVATE void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
+XBT_PRIVATE void TRACE_msg_process_suspend(msg_process_t process);
+XBT_PRIVATE void TRACE_msg_process_resume(msg_process_t process);
+XBT_PRIVATE void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c
+XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
+XBT_PRIVATE void TRACE_msg_process_end(msg_process_t process);
 
 /* declaration of instrumentation functions from instr_msg_vm.c */
-char *instr_vm_id(msg_vm_t vm, char *str, int len);
-char *instr_vm_id_2(const char *vm_name, char *str, int len);
-void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host,
+XBT_PRIVATE char *instr_vm_id(msg_vm_t vm, char *str, int len);
+XBT_PRIVATE char *instr_vm_id_2(const char *vm_name, char *str, int len);
+XBT_PRIVATE void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host,
                                    msg_host_t new_host);
-void TRACE_msg_vm_start(msg_vm_t vm);
-void TRACE_msg_vm_create(const char *vm_name, msg_host_t host);
-void TRACE_msg_vm_kill(msg_vm_t process);
-void TRACE_msg_vm_suspend(msg_vm_t vm);
-void TRACE_msg_vm_resume(msg_vm_t vm);
-void TRACE_msg_vm_save(msg_vm_t vm);
-void TRACE_msg_vm_restore(msg_vm_t vm);
-void TRACE_msg_vm_end(msg_vm_t vm);
+XBT_PRIVATE void TRACE_msg_vm_start(msg_vm_t vm);
+XBT_PRIVATE void TRACE_msg_vm_create(const char *vm_name, msg_host_t host);
+XBT_PRIVATE void TRACE_msg_vm_kill(msg_vm_t process);
+XBT_PRIVATE void TRACE_msg_vm_suspend(msg_vm_t vm);
+XBT_PRIVATE void TRACE_msg_vm_resume(msg_vm_t vm);
+XBT_PRIVATE void TRACE_msg_vm_save(msg_vm_t vm);
+XBT_PRIVATE void TRACE_msg_vm_restore(msg_vm_t vm);
+XBT_PRIVATE void TRACE_msg_vm_end(msg_vm_t vm);
 
 SG_END_DECL()
 #endif
