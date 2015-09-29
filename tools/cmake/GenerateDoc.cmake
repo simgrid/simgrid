@@ -7,11 +7,6 @@ else()
   find_package(Doxygen)
 endif()
 
-if (HAVE_Java)
-  find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
-  mark_as_advanced(JAVADOC_PATH)
-endif()
-
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
 
@@ -87,15 +82,6 @@ if(DOXYGEN_FOUND)
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
-    
-   if (HAVE_Java)
-      ADD_CUSTOM_COMMAND(TARGET doc
-        COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
-        COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
-        WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
-      )
-   endif()
-       
 
 
 
@@ -122,6 +108,41 @@ add_custom_target(sync-gforge-dtd
   COMMAND ${RSYNC_CMD} src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
+
+endif() # Doxygen found
+
+
+if (HAVE_Java)
+  find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
+  mark_as_advanced(JAVADOC_PATH)
+  
+  ADD_CUSTOM_COMMAND(TARGET doc
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
+    COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
+    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
+  )
+endif()
+       
+#### Generate the manpages
+if(NOT WIN32)
+  if( NOT MANPAGE_DIR)
+    set( MANPAGE_DIR ${CMAKE_BINARY_DIR}/manpages )
+  endif()
+
+  add_custom_target(manpages ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${MANPAGE_DIR}
+    COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
+    COMMENT "Generating manpages"
+    )
+  install(FILES
+    ${MANPAGE_DIR}/simgrid_update_xml.1
+    ${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.1
+    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpicc.1
+    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpicxx.1
+    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpif90.1
+    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpiff.1
+    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpirun.1
+    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)
 
 endif()
 

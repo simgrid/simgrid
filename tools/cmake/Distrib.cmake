@@ -9,29 +9,6 @@ install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
 install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/HelloWorld/"
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/HelloWorld/)
 
-#### Generate the manpages
-if(NOT WIN32)
-  if( NOT MANPAGE_DIR)
-    set( MANPAGE_DIR ${CMAKE_BINARY_DIR}/manpages )
-  endif()
-
-  add_custom_target(manpages ALL
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${MANPAGE_DIR}
-    COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
-    COMMENT "Generating manpages"
-    )
-  install(FILES
-    ${MANPAGE_DIR}/simgrid_update_xml.1
-    ${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.1
-    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpicc.1
-    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpicxx.1
-    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpif90.1
-    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpiff.1
-    ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpirun.1
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)
-
-endif()
-
 # binaries
 if(enable_smpi)
   install(PROGRAMS
