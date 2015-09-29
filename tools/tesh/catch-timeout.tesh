@@ -12,4 +12,4 @@
 > <(stdin):2> timeouted. Kill the process.
 > <(stdin):2> No output before timeout
 > Test suite `(stdin)': NOK (<(stdin):2> timeout after 1 sec)
-$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage

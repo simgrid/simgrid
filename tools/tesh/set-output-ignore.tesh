@@ -6,7 +6,7 @@ p This tests whether TESH accepts to ignore command output
 < > TOTO
 < < TUTU
 < $ cat
-$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage
 > Enable coverage
 > Test suite from stdin
 > [(stdin):4] cat

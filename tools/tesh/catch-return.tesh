@@ -16,7 +16,7 @@ $ cc -o return1 return1.c
 
 ! expect return 41
 < $ ./return1
-$ ../tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
+$ ../tesh --enable-coverage
 > Enable coverage
 > Test suite from stdin
 > [(stdin):1] ./return1

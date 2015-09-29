@@ -17,7 +17,7 @@ $ cc -o segfault segfault.c
 
 ! expect return 15
 < $ ./segfault
-$ ../tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
+$ ../tesh --enable-coverage
 > Enable coverage
 > Test suite from stdin
 > [(stdin):1] ./segfault

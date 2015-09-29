@@ -6,7 +6,7 @@ p This tests whether TESH detects wrong outputs
 < > TOTO
 < < TUTU
 < $ cat
-$ ./tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
+$ ./tesh --enable-coverage
 > Enable coverage
 > Test suite from stdin
 > [(stdin):3] cat

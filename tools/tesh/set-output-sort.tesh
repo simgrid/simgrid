@@ -2,7 +2,7 @@
 
 p This tests whether TESH correctly sorts command output
 
-$ ${bindir:=.}/tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n' set-output-sort-1.tesh
+$ ${bindir:=.}/tesh --enable-coverage set-output-sort-1.tesh
 > Enable coverage
 > Test suite `set-output-sort-1'
 > [set-output-sort-1:1] Test sorting and filtering of output
