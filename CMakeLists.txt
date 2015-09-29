@@ -279,11 +279,20 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestConfig.cmake)
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
 
-### Build the doc
+### Build the doc (Windows downloads the doc instead of regenerating)
+#
 if(NOT WIN32)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GenerateDoc.cmake)
 else()
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/GenerateDocWin.cmake)
+  find_program(WGET_PROGRAM  NAMES wget)
+  message(STATUS "wget: ${WGET_PROGRAM}")
+  if(WGET_PROGRAM)
+    ADD_CUSTOM_TARGET(simgrid_documentation
+      COMMENT "Downloading the SimGrid documentation..."
+      COMMAND ${WGET_PROGRAM} -r -np -nH -nd http://simgrid.gforge.inria.fr/simgrid/${release_version}/doc/
+      WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html
+    )
+  endif()
 endif()
 
 ### Print ARGS

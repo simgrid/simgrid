@@ -1185,7 +1185,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Distrib.cmake
   tools/cmake/Flags.cmake
   tools/cmake/GenerateDoc.cmake
-  tools/cmake/GenerateDocWin.cmake
   tools/cmake/MaintainerMode.cmake
   tools/cmake/MakeExe.cmake
   tools/cmake/MakeJava.cmake
