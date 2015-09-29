@@ -137,20 +137,13 @@ if ( $ARGV[0] eq "--internal-killer-process" ) {
 
 sub get_options {
 
-    # temporary arrays for GetOption
-    my @cfg;
-    my $log;    # ignored
-
     my %opt = (
-        "help"  => 0,
         "debug" => 0,
     );
 
     Getopt::Long::config( 'bundling', 'no_getopt_compat', 'no_auto_abbrev' );
 
     GetOptions(
-        'help|h' => \$opt{'help'},
-
         'debug|d' => \$opt{"debug"},
 
         'difftool=s' => \$diff_tool,
@@ -158,8 +151,7 @@ sub get_options {
         'cd=s'             => sub { cd_cmd($_[1]) },
         'timeout=s'        => \$opt{'timeout'},
         'setenv=s'         => sub { setenv_cmd($_[1]) },
-        'cfg=s'            => \@cfg,
-        'log=s'            => \$log,
+        'cfg=s'            => sub { $opt{'cfg'} .= " --cfg=$_[1]" },
         'enable-coverage+' => \$enable_coverage,
     );
 
@@ -184,9 +176,6 @@ sub get_options {
         print "Test suite from stdin\n";
     }
 
-    foreach (@cfg) {
-        $opt{'cfg'} .= " --cfg=$_";
-    }
     return %opt;
 }
 
