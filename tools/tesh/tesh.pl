@@ -41,6 +41,10 @@ $SIG{'PIPE'} = 'IGNORE';
 $path =~ s|[^/]*$||;
 push @INC, $path;
 
+use lib "@CMAKE_BINARY_DIR@/bin";
+
+use Diff qw(diff);    # postpone a bit to have time to change INC
+
 use Getopt::Long qw(GetOptions);
 use strict;
 use Text::ParseWords;
@@ -48,17 +52,16 @@ use IPC::Open3;
 use IO::File;
 use English;
 
-##
-## Portability bits for windows
-##
+####
+#### Portability bits for windows
+####
 
 use constant RUNNING_ON_WINDOWS => ( $OSNAME =~ /^(?:mswin|dos|os2)/oi );
 use POSIX qw(:sys_wait_h WIFEXITED WIFSIGNALED WIFSTOPPED WEXITSTATUS WTERMSIG WSTOPSIG
   :signal_h SIGINT SIGTERM SIGKILL SIGABRT SIGSEGV);
 
-# These are not implemented on windows
 BEGIN {
-    if (RUNNING_ON_WINDOWS) {
+    if (RUNNING_ON_WINDOWS) { # Missing on windows
         *WIFEXITED   = sub { not $_[0] & 127 };
         *WEXITSTATUS = sub { $_[0] >> 8 };
         *WIFSIGNALED = sub { ( $_[0] & 127 ) && ( $_[0] & 127 != 127 ) };
@@ -66,59 +69,10 @@ BEGIN {
     }
 }
 
-##
-## Helper functions
-##
 
-# Helper function replacing any occurence of variable '$name' by its '$value'
-# As in Bash, ${$value:=BLABLA} is rewritten to $value if set or to BLABLA if $value is not set
-sub var_subst {
-    my ( $text, $name, $value ) = @_;
-    if ($value) {
-        $text =~ s/\${$name(?::[=-][^}]*)?}/$value/g;
-        $text =~ s/\$$name(\W|$)/$value$1/g;
-    } else {
-        $text =~ s/\${$name:=([^}]*)}/$1/g;
-        $text =~ s/\${$name}//g;
-        $text =~ s/\$$name(\W|$)/$1/g;
-    }
-    return $text;
-}
-
-# Command CD. Just change to the provided directory
-sub cd_cmd {
-    my $directory = shift;
-    my $failure   = 1;
-    if ( -e $directory && -d $directory ) {
-        chdir("$directory");
-        print "[Tesh/INFO] change directory to $directory\n";
-        $failure = 0;
-    } elsif ( -e $directory ) {
-        print "Cannot change directory to '$directory': it is not a directory\n";
-    } else {
-        print "Chdir to $directory failed: No such file or directory\n";
-    }
-    if ( $failure == 1 ) {
-        print "Test suite `$tesh_file': NOK (system error)\n";
-        exit 4;
-    }
-}
-
-# Command setenv. Gets "variable=content", and update the environment accordingly
-sub setenv_cmd {
-    my $arg = shift;
-    if ( $arg =~ /^(.*)=(.*)$/ ) {
-        my ( $var, $ctn ) = ( $1, $2 );
-        print "[Tesh/INFO] setenv $var=$ctn\n";
-        $environ{$var} = $ctn;
-    } else {
-        die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$arg'\n";
-    }
-}
-
-##
-## Command line option handling
-##
+####
+#### Command line option handling
+####
 
 if ( $ARGV[0] eq "--internal-killer-process" ) {
 
@@ -138,7 +92,6 @@ if ( $ARGV[0] eq "--internal-killer-process" ) {
 my %opts = ( "debug" => 0 );
 
 Getopt::Long::config( 'bundling', 'no_getopt_compat', 'no_auto_abbrev' );
-
 GetOptions(
     'debug|d' => \$opts{"debug"},
 
@@ -404,19 +357,6 @@ sub parse_result {
     }
 }
 
-sub mkfile_cmd {
-    my %cmd  = %{ $_[0] };
-    my $file = $cmd{'arg'};
-    print "[Tesh/INFO] mkfile $file\n";
-
-    unlink($file);
-    open( FILE, ">$file" )
-      or die "[Tesh/CRITICAL] Unable to create file $file: $!\n";
-    print FILE join( "\n", @{ $cmd{'in'} } );
-    print FILE "\n" if ( scalar @{ $cmd{'in'} } > 0 );
-    close(FILE);
-}
-
 # parse tesh file
 my $infh;    # The file descriptor from which we should read the teshfile
 if ( $tesh_file eq "(stdin)" ) {
@@ -599,8 +539,6 @@ foreach (@bg_cmds) {
     parse_result( \%test );
 }
 
-@bg_cmds = ();
-
 if ($diff_tool) {
     close $diff_tool_tmp_fh;
     system("$diff_tool $diff_tool_tmp_filename $tesh_file");
@@ -615,31 +553,9 @@ if ( $error != 0 ) {
     print "Test suite `$tesh_name' OK\n";
 }
 
-#my (@a,@b);
-#push @a,"bl1";   push @b,"bl1";
-#push @a,"bl2";   push @b,"bl2";
-#push @a,"bl3";   push @b,"bl3";
-#push @a,"bl4";   push @b,"bl4";
-#push @a,"bl5";   push @b,"bl5";
-#push @a,"bl6";   push @b,"bl6";
-#push @a,"bl7";   push @b,"bl7";
-##push @a,"Perl";  push @b,"ruby";
-#push @a,"END1";   push @b,"END1";
-#push @a,"END2";   push @b,"END2";
-#push @a,"END3";   push @b,"END3";
-#push @a,"END4";   push @b,"END4";
-#push @a,"END5";   push @b,"END5";
-#push @a,"END6";   push @b,"END6";
-#push @a,"END7";   push @b,"END7";
-#print "Identical:\n". build_diff(\@a,\@b);
-
-#@a = (); @b =();
-#push @a,"AZE"; push @b,"EZA";
-#print "Different:\n".build_diff(\@a,\@b);
-
-use lib "@CMAKE_BINARY_DIR@/bin";
-
-use Diff qw(diff);    # postpone a bit to have time to change INC
+####
+#### Helper functions
+####
 
 sub build_diff {
     my $res;
@@ -672,3 +588,63 @@ sub build_diff {
     return $res;
 }
 
+# Helper function replacing any occurence of variable '$name' by its '$value'
+# As in Bash, ${$value:=BLABLA} is rewritten to $value if set or to BLABLA if $value is not set
+sub var_subst {
+    my ( $text, $name, $value ) = @_;
+    if ($value) {
+        $text =~ s/\${$name(?::[=-][^}]*)?}/$value/g;
+        $text =~ s/\$$name(\W|$)/$value$1/g;
+    } else {
+        $text =~ s/\${$name:=([^}]*)}/$1/g;
+        $text =~ s/\${$name}//g;
+        $text =~ s/\$$name(\W|$)/$1/g;
+    }
+    return $text;
+}
+
+################################  The possible commands  ################################
+
+sub mkfile_cmd($) {
+    my %cmd  = %{ $_[0] };
+    my $file = $cmd{'arg'};
+    print "[Tesh/INFO] mkfile $file\n";
+
+    unlink($file);
+    open( FILE, ">$file" )
+      or die "[Tesh/CRITICAL] Unable to create file $file: $!\n";
+    print FILE join( "\n", @{ $cmd{'in'} } );
+    print FILE "\n" if ( scalar @{ $cmd{'in'} } > 0 );
+    close(FILE);
+}
+
+# Command CD. Just change to the provided directory
+sub cd_cmd($) {
+    my $directory = shift;
+    my $failure   = 1;
+    if ( -e $directory && -d $directory ) {
+        chdir("$directory");
+        print "[Tesh/INFO] change directory to $directory\n";
+        $failure = 0;
+    } elsif ( -e $directory ) {
+        print "Cannot change directory to '$directory': it is not a directory\n";
+    } else {
+        print "Chdir to $directory failed: No such file or directory\n";
+    }
+    if ( $failure == 1 ) {
+        print "Test suite `$tesh_file': NOK (system error)\n";
+        exit 4;
+    }
+}
+
+# Command setenv. Gets "variable=content", and update the environment accordingly
+sub setenv_cmd($) {
+    my $arg = shift;
+    if ( $arg =~ /^(.*)=(.*)$/ ) {
+        my ( $var, $ctn ) = ( $1, $2 );
+        print "[Tesh/INFO] setenv $var=$ctn\n";
+        $environ{$var} = $ctn;
+    } else {
+        die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$arg'\n";
+    }
+}
