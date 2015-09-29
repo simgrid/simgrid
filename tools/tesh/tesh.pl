@@ -137,10 +137,6 @@ if ( $ARGV[0] eq "--internal-killer-process" ) {
 
 sub get_options {
 
-    # remove the tesh file from the ARGV used
-    my @ARGV = @_;
-    $tesh_file = pop @ARGV;
-
     # temporary arrays for GetOption
     my @cfg;
     my $log;    # ignored
@@ -167,6 +163,8 @@ sub get_options {
         'enable-coverage+' => \$enable_coverage,
     );
 
+    $tesh_file = pop @ARGV;
+
     if ($enable_coverage) {
         print "Enable coverage\n";
     }
@@ -192,7 +190,7 @@ sub get_options {
     return %opt;
 }
 
-my %opts = get_options(@ARGV);
+my %opts = get_options();
 
 ##
 ## File parsing
