@@ -7,6 +7,8 @@
 #ifndef _POPPING_PRIVATE_H
 #define _POPPING_PRIVATE_H
 
+#include <xbt/base.h>
+
 SG_BEGIN_DECL()
 
 /********************************* Simcalls *********************************/
@@ -59,10 +61,10 @@ typedef struct s_smx_simcall {
 
 /******************************** General *************************************/
 
-void SIMIX_simcall_answer(smx_simcall_t);
-void SIMIX_simcall_handle(smx_simcall_t, int);
-void SIMIX_simcall_exit(smx_synchro_t);
-const char *SIMIX_simcall_name(e_smx_simcall_t kind);
+XBT_PRIVATE void SIMIX_simcall_answer(smx_simcall_t);
+XBT_PRIVATE void SIMIX_simcall_handle(smx_simcall_t, int);
+XBT_PRIVATE void SIMIX_simcall_exit(smx_synchro_t);
+XBT_PRIVATE const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 
 SG_END_DECL()
 
