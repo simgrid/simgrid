@@ -79,16 +79,14 @@ add_custom_command(
 	  ${CMAKE_HOME_DIRECTORY}/ChangeLog
 	  ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
 	  ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
-	  
-  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR} -C ${CMAKE_HOME_DIRECTORY} COPYING ChangeLog ChangeLog.SimGrid-java LICENSE-LGPL-2.1
-  
+	    
   COMMAND ${CMAKE_COMMAND} -E copy ${MANIFEST_IN_FILE} ${MANIFEST_FILE}
   COMMAND ${CMAKE_COMMAND} -E echo "Specification-Version: \\\"${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}\\\"" >> ${MANIFEST_FILE}
   COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
-  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR}
 
   COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.msg org.simgrid.surf org.simgrid.trace
-  COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR} doc/javadoc  
+  
+  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} doc/javadoc -C ${CMAKE_HOME_DIRECTORY} COPYING ChangeLog ChangeLog.SimGrid-java LICENSE-LGPL-2.1
   )
 
 ###
