@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 if($#ARGV!=1) {
-    die "Usage: perl make_tesh.pl <directory> <old.tesh>\n";
+    die "Usage: perl update_tesh.pl <directory> <old.tesh>\n";
 }
 
 my($directory)=$ARGV[0];
