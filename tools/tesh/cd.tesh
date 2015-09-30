@@ -15,7 +15,7 @@ $ ls
 > Test suite from stdin
 > Chdir to toto failed: No such file or directory
 > Test suite `(stdin)': NOK (system error)
-$ ${bindir:=.}/tesh
+$ perl ${bindir:=.}/tesh
 
 # The next command checks that there is a testdir_temp-cd in the upper directory,
 # ie that mkdir and cd both worked.

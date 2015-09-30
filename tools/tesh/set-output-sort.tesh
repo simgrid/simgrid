@@ -70,7 +70,7 @@ p This tests whether TESH correctly sorts command output
 < > b
 < > c
 < > d
-$ ${bindir:=.}/tesh --enable-coverage
+$ perl ${bindir:=.}/tesh --enable-coverage
 > Enable coverage
 > Test suite from stdin
 > [(stdin):1] Test sorting and filtering of output
@@ -113,7 +113,7 @@ $ cat
 < $ cat
 < > 123456789012345678 A line
 < > 123456789012345678 B line
-$ ${bindir:=.}/tesh 
+$ perl ${bindir:=.}/tesh 
 
 p Check user-defined prefix length for "output sort"
 ! output sort 5
@@ -138,4 +138,4 @@ $ cat
 < $ cat
 < > 000 A line
 < > 000 B line
-$ ${bindir:=.}/tesh
+$ perl ${bindir:=.}/tesh

@@ -6,7 +6,7 @@ p This tests whether TESH detects wrong outputs
 < > TOTO
 < < TUTU
 < $ cat
-$ ${bindir:=.}/tesh
+$ perl ${bindir:=.}/tesh
 > Test suite from stdin
 > [(stdin):3] cat
 > Output of <(stdin):3> mismatch:
