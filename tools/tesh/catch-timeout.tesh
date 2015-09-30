@@ -6,10 +6,9 @@
 ! expect return 3
 < ! timeout 1
 < $ sleep 6
-> Enable coverage
 > Test suite from stdin
 > [(stdin):2] sleep 6
 > <(stdin):2> timeouted. Kill the process.
 > Test suite `(stdin)': NOK (<(stdin):2> timeout after 1 sec)
 > <(stdin):2> No output so far.
-$ ./tesh --enable-coverage
+$ ${bindir:=.}/tesh

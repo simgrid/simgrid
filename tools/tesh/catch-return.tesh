@@ -4,7 +4,7 @@
 
 ! expect return 41
 < $ perl -e "exit 1"
-$ ./tesh
+$ ${bindir:=.}/tesh
 > Test suite from stdin
 > [(stdin):1] perl -e "exit 1"
 > Test suite `(stdin)': NOK (<(stdin):1> returned code 1)

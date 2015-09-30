@@ -6,8 +6,7 @@ p This tests whether TESH accepts to ignore command output
 < > TOTO
 < < TUTU
 < $ cat
-$ ./tesh --enable-coverage
-> Enable coverage
+$ ${bindir:=.}/tesh
 > Test suite from stdin
 > [(stdin):4] cat
 > (ignoring the output of <(stdin):4> as requested)

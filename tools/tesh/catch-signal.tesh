@@ -16,8 +16,7 @@ $ perl segfault.pl
 p Check that we return the expected return value on SEGV
 ! expect return 15
 < $ perl segfault.pl
-$ ../tesh --enable-coverage
-> Enable coverage
+$ ${bindir:=.}/tesh
 > Test suite from stdin
 > [(stdin):1] perl segfault.pl
 > Test suite `(stdin)': NOK (<(stdin):1> got signal SIGSEGV)

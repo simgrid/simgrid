@@ -5,58 +5,52 @@ p Order: in, out, cmd
 < < TOTO
 < > TOTO
 < $ cat
-> Enable coverage
 > Test suite from stdin
 > [(stdin):3] cat
 > Test suite from stdin OK
-$ ./tesh --enable-coverage
+$ ${bindir:=.}/tesh
 
 p Order: out, in, cmd
 < > TOTO
 < < TOTO
 < $ cat
-> Enable coverage
 > Test suite from stdin
 > [(stdin):3] cat
 > Test suite from stdin OK
-$ ./tesh --enable-coverage
+$ ${bindir:=.}/tesh
 
 p Order: out, cmd, in
 < > TOTO
 < $ cat
 < < TOTO
-> Enable coverage
 > Test suite from stdin
 > [(stdin):2] cat
 > Test suite from stdin OK
-$ ./tesh --enable-coverage
+$ ${bindir:=.}/tesh
 
 p Order: in, cmd, out
 < < TOTO
 < $ cat
 < > TOTO
-> Enable coverage
 > Test suite from stdin
 > [(stdin):2] cat
 > Test suite from stdin OK
-$ ./tesh --enable-coverage
+$ ${bindir:=.}/tesh
 
 p Order: cmd, out, in
 < $ cat
 < > TOTO
 < < TOTO
-> Enable coverage
 > Test suite from stdin
 > [(stdin):1] cat
 > Test suite from stdin OK
-$ ./tesh --enable-coverage
+$ ${bindir:=.}/tesh
 
 p Order: cmd, in, out
 < $ cat
 < < TOTO
 < > TOTO
-> Enable coverage
 > Test suite from stdin
 > [(stdin):1] cat
 > Test suite from stdin OK
-$ ./tesh --enable-coverage
+$ ${bindir:=.}/tesh
