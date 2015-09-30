@@ -1208,6 +1208,9 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/IPC/Run/Debug.pm
   tools/cmake/scripts/IPC/Run/IO.pm
   tools/cmake/scripts/IPC/Run/Timer.pm
+  tools/cmake/scripts/IPC/Run/Win32Helper.pm
+  tools/cmake/scripts/IPC/Run/Win32IO.pm
+  tools/cmake/scripts/IPC/Run/Win32Pump.pm
   tools/cmake/scripts/Diff.pm
   tools/cmake/scripts/Makefile.default
   tools/cmake/scripts/SimGrid.packproj
