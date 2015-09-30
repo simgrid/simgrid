@@ -80,11 +80,8 @@ IF(NOT enable_memcheck)
   ADD_TESH(tesh-self-catch-wrong-output          --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-wrong-output.tesh)
   ADD_TESH(tesh-self-bg-basic                    --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/bg-basic.tesh)
   ADD_TESH(tesh-self-background                  --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/background.tesh)
-  IF(NOT WIN32)
-    ADD_TESH(tesh-self-set-signal                --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/set-signal.tesh)
-    ADD_TESH(tesh-self-bg-set-signal             --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/bg-set-signal.tesh)
-    ADD_TESH(tesh-self-catch-signal              --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-signal.tesh)
-  ENDIF()
+  ADD_TESH(tesh-self-bg-set-signal               --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/bg-set-signal.tesh)
+  ADD_TESH(tesh-self-catch-signal                --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/catch-signal.tesh)
 
   ### GENERIC  ###
   # BEGIN TESH TESTS

@@ -9,9 +9,11 @@ $ cd temp_testdir-catch-signal
 < kill 'SEGV', $$;
 $ mkfile segfault.pl
 
+p Check that we notice when SEGV is raised
 ! expect signal SIGSEGV
 $ perl segfault.pl
 
+p Check that we return the expected return value on SEGV
 ! expect return 15
 < $ perl segfault.pl
 $ ../tesh --enable-coverage
