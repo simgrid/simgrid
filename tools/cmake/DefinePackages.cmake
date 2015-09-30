@@ -1204,6 +1204,10 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
   tools/cmake/PrintArgs.cmake
+  tools/cmake/scripts/IPC/Run.pm
+  tools/cmake/scripts/IPC/Run/Debug.pm
+  tools/cmake/scripts/IPC/Run/IO.pm
+  tools/cmake/scripts/IPC/Run/Timer.pm
   tools/cmake/scripts/Diff.pm
   tools/cmake/scripts/Makefile.default
   tools/cmake/scripts/SimGrid.packproj
