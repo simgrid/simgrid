@@ -5,58 +5,77 @@
 # father), so we do the test a bunch of times.
 #
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 01
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 02
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 03
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 04
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 05
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 06
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 07
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 08
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 09
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 10
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 11
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 12
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 13
 $ echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
+< blablablablablablablablablablablablablablablablablablablabla 14
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 15
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 16
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 17
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 18
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 19
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 20
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 21
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 22
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 23
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 24
+$ echo
+
+< blablablablablablablablablablablablablablablablablablablabla 25
 $ echo

@@ -23,6 +23,12 @@ B<tesh> [I<options>] I<tesh_file>
 
 =cut
 
+BEGIN {
+    # Disabling IPC::Run::Debug saves tons of useless calls.
+    $ENV{'IPCRUNDEBUG'} = 'none'
+      unless exists $ENV{'IPCRUNDEBUG'};
+}
+
 my ($timeout)              = 0;
 my ($time_to_wait)         = 0;
 my $path                   = $0;
@@ -48,7 +54,7 @@ use Diff qw(diff);    # postpone a bit to have time to change INC
 use Getopt::Long qw(GetOptions);
 use strict;
 use Text::ParseWords;
-use IPC::Open3;
+use IPC::Run qw(start run timeout finish);
 use IO::File;
 use English;
 
@@ -89,7 +95,9 @@ if ( $ARGV[0] eq "--internal-killer-process" ) {
     exit $time_to_wait;
 }
 
-my %opts = ( "debug" => 0 );
+my %opts = ( "debug" => 0,
+             "timeout" => 120, # No command should run any longer than 2 minutes by default
+           );
 
 Getopt::Long::config( 'bundling', 'no_getopt_compat', 'no_auto_abbrev' );
 GetOptions(
@@ -156,12 +164,8 @@ sub exit_status {
 sub exec_cmd {
     my %cmd = %{ $_[0] };
     if ( $opts{'debug'} ) {
-        print "IN BEGIN\n";
-        map { print "  $_" } @{ $cmd{'in'} };
-        print "IN END\n";
-        print "OUT BEGIN\n";
-        map { print "  $_" } @{ $cmd{'out'} };
-        print "OUT END\n";
+        map { print "IN: $_\n" } @{ $cmd{'in'} };
+        map { print "OUT: $_\n" } @{ $cmd{'out'} };
         print "CMD: $cmd{'cmd'}\n";
     }
 
@@ -189,76 +193,71 @@ sub exec_cmd {
     $cmd{'cmd'} .= " $opts{'cfg'}"
       if ( defined( $opts{'cfg'} ) && length( $opts{'cfg'} ) );
 
-    # final cleanup
+    # finally trim any remaining space chars
     $cmd{'cmd'} =~ s/^\s+//;
     $cmd{'cmd'} =~ s/\s+$//;
 
     print "[$tesh_name:$cmd{'line'}] $cmd{'cmd'}\n";
 
+    $cmd{'return'} ||= 0;
+    $cmd{'timeout'} ||= $opts{'timeout'};
+    
+
     ###
     # exec the command line
 
-    $cmd{'got'} = IO::File->new_tmpfile;
-    $cmd{'got'}->autoflush(1);
-    local *E = $cmd{'got'};
-    $cmd{'pid'} =
-      open3( \*CHILD_IN, ">&E", ">&E", quotewords( '\s+', 0, $cmd{'cmd'} ) );
+    my @cmdline = quotewords( '\s+', 0, $cmd{'cmd'} );
+    my $input = defined($cmd{'in'})? join("\n",@{$cmd{'in'}}) : "";
+    my $output = " " x 10240; $output = ""; # Preallocate 10kB, and reset length to 0
+    $cmd{'got'} = \$output;
+    $cmd{'job'} = start \@cmdline, '<', \$input, '>&', \$output, timeout($cmd{'timeout'});
 
-    # push all provided input to executing child
-    map { print CHILD_IN "$_\n"; } @{ $cmd{'in'} };
-    close CHILD_IN;
-
-    # if timeout specified, fork and kill executing child at the end of timeout
-    if ( not $cmd{'background'}
-        and ( defined( $cmd{'timeout'} ) or defined( $opts{'timeout'} ) ) )
-    {
-        $time_to_wait =
-          defined( $cmd{'timeout'} ) ? $cmd{'timeout'} : $opts{'timeout'};
-        $forked  = fork();
-        $timeout = -1;
-        die "fork() failed: $!" unless defined $forked;
-        if ( $forked == 0 ) {    # child
-            exec("$PROGRAM_NAME --internal-killer-process $time_to_wait $cmd{'pid'}");
-        }
-    }
-
-    # Cleanup the executing child, and kill the timeouter brother on need
-    $cmd{'return'} = 0 unless defined( $cmd{'return'} );
-    if ( $cmd{'background'} != 1 ) {
-        waitpid( $cmd{'pid'}, 0 );
-        $cmd{'gotret'} = exit_status($?);
-        parse_result( \%cmd );
-    } else {
-
-        # & commands, which will be handled at the end
+    if ( $cmd{'background'} ) {
+	# Just enqueue the job. It will be dealed with at the end
         push @bg_cmds, \%cmd;
+    } else {
+	# Deal with its ending conditions right away
+        analyze_result( \%cmd );
     }
 }
 
-sub parse_result {
+sub analyze_result {
     my %cmd    = %{ $_[0] };
-    my $gotret = $cmd{'gotret'};
+    
+    eval {
+	finish( $cmd{'job'} );
+    };
+    if ($@) {
+	if ($@ =~ /timeout/) {
+	    $cmd{'job'}->kill_kill;
+	    $cmd{'timeouted'} = 1;
+	} elsif ($@ =~ /^ack / and $@ =~ /pipe/) {
+	    print STDERR "Tesh: Broken pipe (ignored).\n";
+	} else {
+	    die $@; # Don't know what it is, so let it go.
+	}
+    } 
+    $cmd{'timeouted'} ||= 0;
+    
+    my $gotret = $cmd{'gotret'} = exit_status($?); 
 
     my $wantret;
 
     if ( defined( $cmd{'expect'} ) and ( $cmd{'expect'} ne "" ) ) {
         $wantret = "got signal $cmd{'expect'}";
     } else {
-        $wantret =
-          "returned code " . ( defined( $cmd{'return'} ) ? $cmd{'return'} : 0 );
+        $wantret = "returned code " . ( defined( $cmd{'return'} ) ? $cmd{'return'} : 0 );
     }
-
-    local *got = $cmd{'got'};
-    seek( got, 0, 0 );
 
     # pop all output from executing child
     my @got;
-    while ( defined( my $got = <got> ) ) {
+    map { print "GOT: $_\n" } ${$cmd{'got'}} if $opts{'debug'};
+    foreach my $got ( split("\n", ${$cmd{'got'}}) ) {
         $got =~ s/\r//g;
         chomp $got;
         print $diff_tool_tmp_fh "> $got\n" if ($diff_tool);
 
-        if ( !( $enable_coverage and $got =~ /^profiling:/ ) ) {
+        unless ( $enable_coverage and $got =~ /^profiling:/ ) {
             push @got, $got;
         }
     }
@@ -296,33 +295,21 @@ sub parse_result {
 
     # Did we timeout ? If yes, handle it. If not, kill the forked process.
 
-    if ( $timeout == -1
-        and ( $gotret eq "got signal SIGTERM" or $gotret eq "got signal SIGKILL" ) )
-    {
-        $gotret   = "return code 0";
-        $timeout  = 1;
-        $gotret   = "timeout after $time_to_wait sec";
+    if ( $cmd{'timeouted'} ) {
+        $gotret   = "timeout after $cmd{'timeout'} sec";
         $error    = 1;
         $exitcode = 3;
         print STDERR "<$cmd{'file'}:$cmd{'line'}> timeouted. Kill the process.\n";
-    } else {
-        $timeout = 0;
     }
     if ( $gotret ne $wantret ) {
         $error = 1;
         my $msg = "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> $gotret)\n";
-        if ( $timeout != 1 ) {
+        if ( scalar @got ) {
             $msg = $msg . "Output of <$cmd{'file'}:$cmd{'line'}> so far:\n";
-        }
-        map { $msg .= "|| $_\n" } @got;
-        if ( !@got ) {
-            if ( $timeout == 1 ) {
-                print STDERR "<$cmd{'file'}:$cmd{'line'}> No output before timeout\n";
-            } else {
-                $msg .= "||\n";
-            }
-        }
-        $timeout = 0;
+	    map { $msg .= "|| $_\n" } @got;
+        } else {
+	    $msg .= "<$cmd{'file'}:$cmd{'line'}> No output so far.\n";
+	}
         print STDERR "$msg";
     }
 
@@ -534,9 +521,7 @@ if ($forked) {
 
 foreach (@bg_cmds) {
     my %test = %{$_};
-    waitpid( $test{'pid'}, 0 );
-    $test{'gotret'} = exit_status($?);
-    parse_result( \%test );
+    analyze_result( \%test );
 }
 
 if ($diff_tool) {
@@ -608,7 +593,8 @@ sub var_subst {
 sub mkfile_cmd($) {
     my %cmd  = %{ $_[0] };
     my $file = $cmd{'arg'};
-    print "[Tesh/INFO] mkfile $file\n";
+    print STDERR "[Tesh/INFO] mkfile $file. Ctn: >>".join( '\n', @{ $cmd{'in'} })."<<\n"
+      if $opts{'debug'};
 
     unlink($file);
     open( FILE, ">$file" )

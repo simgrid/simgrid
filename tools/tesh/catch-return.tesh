@@ -21,8 +21,7 @@ $ ../tesh --enable-coverage
 > Test suite from stdin
 > [(stdin):1] ./return1
 > Test suite `(stdin)': NOK (<(stdin):1> returned code 1)
-> Output of <(stdin):1> so far:
-> ||
+> <(stdin):1> No output so far.
 
 $ cd ..
 $ rm -rf temp_testdir-catch-return

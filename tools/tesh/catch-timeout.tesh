@@ -10,6 +10,6 @@
 > Test suite from stdin
 > [(stdin):2] sleep 6
 > <(stdin):2> timeouted. Kill the process.
-> <(stdin):2> No output before timeout
 > Test suite `(stdin)': NOK (<(stdin):2> timeout after 1 sec)
+> <(stdin):2> No output so far.
 $ ./tesh --enable-coverage
