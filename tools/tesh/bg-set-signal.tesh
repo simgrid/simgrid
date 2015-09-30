@@ -5,17 +5,12 @@
 $ rm -rf temp_testdir-bg-set-signal
 $ mkdir temp_testdir-bg-set-signal
 
-$ cd temp_testdir-bg-set-signal
-< #include <stdlib.h>
-< int main(void) {
-<   char *A=NULL;
-<   *A = 1;
-< }
-$ mkfile segfault.c
+$ cd temp_testdir-catch-signal
+< kill 'SEGV', $$;
+$ mkfile segfault.pl
 
-$ cc -o segfault segfault.c
 ! expect signal SIGSEGV
-& ./segfault
-$ sleep 1
+& perl segfault.pl
+
 $ cd ..
 $ rm -rf temp_testdir-bg-set-signal

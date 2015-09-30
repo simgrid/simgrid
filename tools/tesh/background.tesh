@@ -3,49 +3,18 @@ $ rm -rf temp_testdir_background
 $ mkdir temp_testdir_background
 $ cd temp_testdir_background
 
-< #include <unistd.h>
-< #include <stdlib.h>
-< #include <stdio.h>
-< #include <sys/types.h>
-< #include <sys/stat.h>
-< #include <fcntl.h>
-< #ifdef WIN32 
-<   #include "windows.h"
-< #endif
-<		     
-< int main() {
-<   char buff[2048];
-<   int got;
-<   int in;
+< use strict; 
+< sleep(2);
+< open (FILE, "<tmp_fich") || die "Cannot open tmp_fich: $!\n";
 < 
-< #ifndef WIN32 
-<   sleep(1);
-< #else
-<   Sleep(1000);
-< #endif
-<   in = open("tmp_fich",O_RDONLY|O_CREAT);
-<   if (in == -1) {
-<     perror("Cannot open tmp_fich: ");
-<     exit(1);
-<   }
-<   while ((got = read(in,&buff,2048))>0) {
-<      int w = write(1,&buff,got);
-<      if (w<0) {
-<        perror("Error while writing:");
-<        exit(1);
-<      }
-<   }
-<   if (got < 0) {
-<     perror("Error while reading:");
-<     exit(1);
-<   }
-<   return 0;
+< while (<FILE>) {
+<   print;
 < }
-$ mkfile delayed_cat.c
+< exit 0;
+<
+$ mkfile delayed_cat.pl
 
-$ cc -Wall -o delayed_cat delayed_cat.c
-
-& ./delayed_cat
+& perl delayed_cat.pl
 > TOTO
 
 < TOTO

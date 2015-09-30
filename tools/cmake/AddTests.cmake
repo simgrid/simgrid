@@ -67,6 +67,7 @@ IF(NOT enable_memcheck)
   ### TESH ###
   ADD_TESH(tesh-self-basic                       --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/basic.tesh)
   ADD_TESH(tesh-self-cd                          --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/cd.tesh)
+  ADD_TESH(tesh-self-setenv                      --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/setenv.tesh)
   ADD_TESH(tesh-self-IO-broken-pipe              --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/IO-broken-pipe.tesh)
   ADD_TESH(tesh-self-IO-orders                   --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/IO-orders.tesh)
   ADD_TESH(tesh-self-IO-bigsize                  --cd "${CMAKE_BINARY_DIR}/bin" ${CMAKE_HOME_DIRECTORY}/tools/tesh/IO-bigsize.tesh)

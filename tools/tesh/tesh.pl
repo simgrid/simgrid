@@ -470,7 +470,6 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
             exec_cmd( \%cmd );
             %cmd = ();
         }
-        print "hey\n";
         $cmd{'expect'} = "$1";
     } elsif ( $line =~ /^!\s*expect return/ ) {          #expect return
         if ( defined( $cmd{'cmd'} ) ) {
@@ -630,6 +629,7 @@ sub setenv_cmd($) {
         my ( $var, $ctn ) = ( $1, $2 );
         print "[Tesh/INFO] setenv $var=$ctn\n";
         $environ{$var} = $ctn;
+	$ENV{$var} = $ctn;
     } else {
         die "[Tesh/CRITICAL] Malformed argument to setenv: expected 'name=value' but got '$arg'\n";
     }

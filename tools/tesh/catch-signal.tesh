@@ -6,21 +6,18 @@ $ rm -rf temp_testdir-catch-signal
 $ mkdir temp_testdir-catch-signal
 
 $ cd temp_testdir-catch-signal
-< #include <stdlib.h>
-< int main(void) {
-<   char *A=NULL;
-<   *A = 1;
-< }
-$ mkfile segfault.c
+< kill 'SEGV', $$;
+$ mkfile segfault.pl
 
-$ cc -o segfault segfault.c
+! expect signal SIGSEGV
+$ perl segfault.pl
 
 ! expect return 15
-< $ ./segfault
+< $ perl segfault.pl
 $ ../tesh --enable-coverage
 > Enable coverage
 > Test suite from stdin
-> [(stdin):1] ./segfault
+> [(stdin):1] perl segfault.pl
 > Test suite `(stdin)': NOK (<(stdin):1> got signal SIGSEGV)
 > <(stdin):1> No output so far.
 

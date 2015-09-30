@@ -2,30 +2,16 @@
 # This suite builds and uses a program returning 1.
 # tesh is instructed of this return code and must not whine.
 
-$ rm -rf temp_testdir-setenv
-$ mkdir temp_testdir-setenv
+$ rm -rf temp_testdir_setenv
+$ mkdir temp_testdir_setenv
+$ cd temp_testdir_setenv
 
-$ cd temp_testdir-setenv
-
-< #include <string.h>
-< #include <stdio.h>
-< extern char **environ;
-< int main(void) {
-<   char **env_iter=environ;
-<   while (*env_iter) {
-<     if (!strncmp(*env_iter,"tesh_test_toto=",strlen("tesh_test_toto=")))
-<       printf("%s\n",*env_iter);
-<     env_iter++;
-<   }
-<   return 0;
-< }
-$ mkfile getenv.c
-
-$ cc -o getenv getenv.c -g
+< print "tesh_test_toto=$ENV{tesh_test_toto}";
+$ mkfile testenv.pl
 
 ! setenv tesh_test_toto=blah
-$ ./getenv
+$ perl testenv.pl
 > tesh_test_toto=blah
 
 $ cd ..
-$ rm -rf temp_testdir-setenv
+$ rm -rf temp_testdir_setenv

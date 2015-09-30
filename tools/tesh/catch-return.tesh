@@ -2,26 +2,10 @@
 # This suite builds and uses a program returning 1.
 # tesh must detect this condition and report the issue.
 
-$ rm -rf temp_testdir-catch-return
-$ mkdir temp_testdir-catch-return
-
-$ cd temp_testdir-catch-return
-< #include <stdlib.h>
-< int main(void) {
-<   exit(1);
-< }
-$ mkfile return1.c
-
-$ cc -o return1 return1.c
-
 ! expect return 41
-< $ ./return1
-$ ../tesh --enable-coverage
-> Enable coverage
+< $ perl -e "exit 1"
+$ ./tesh
 > Test suite from stdin
-> [(stdin):1] ./return1
+> [(stdin):1] perl -e "exit 1"
 > Test suite `(stdin)': NOK (<(stdin):1> returned code 1)
 > <(stdin):1> No output so far.
-
-$ cd ..
-$ rm -rf temp_testdir-catch-return
