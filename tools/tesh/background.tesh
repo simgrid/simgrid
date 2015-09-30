@@ -1,5 +1,5 @@
 
-$ rm -rf temp_testdir_background
+$ cmake -E remove_directory temp_testdir_background
 $ mkdir temp_testdir_background
 $ cd temp_testdir_background
 
@@ -22,4 +22,4 @@ $ mkfile tmp_fich
 
 $ sleep 2
 $ cd ..
-$ rm -rf temp_testdir_background
+$ cmake -E remove_directory temp_testdir_background

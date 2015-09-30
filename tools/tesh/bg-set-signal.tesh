@@ -2,7 +2,7 @@
 # This suite builds and uses a program raising a segfault, ie a program dying
 # of SIGSEV. tesh must detect this condition and report the issue.
 
-$ rm -rf temp_testdir-bg-set-signal
+$ cmake -E remove_directory temp_testdir-bg-set-signal
 $ mkdir temp_testdir-bg-set-signal
 
 $ cd temp_testdir-bg-set-signal
@@ -13,4 +13,4 @@ $ mkfile segfault.pl
 & perl segfault.pl
 
 $ cd ..
-$ rm -rf temp_testdir-bg-set-signal
+$ cmake -E remove_directory temp_testdir-bg-set-signal

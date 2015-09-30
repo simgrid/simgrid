@@ -2,7 +2,7 @@
 
 # This example uses the cd command
 
-$ rm -rf testdir_temp-cd
+$ cmake -E remove_directory testdir_temp-cd
 $ mkdir testdir_temp-cd
 $ cd testdir_temp-cd
 
@@ -22,4 +22,4 @@ $ perl ${bindir:=.}/tesh
 $ test -e ../testdir_temp-cd
 
 $ cd ..
-$ rmdir testdir_temp-cd
+$ cmake -E remove_directory testdir_temp-cd

@@ -2,7 +2,7 @@
 # This suite builds and uses a program raising a segfault, ie a program dying
 # of SIGSEV. tesh must detect this condition and report the issue.
 
-$ rm -rf temp_testdir-catch-signal
+$ cmake -E remove_directory temp_testdir-catch-signal
 $ mkdir temp_testdir-catch-signal
 
 $ cd temp_testdir-catch-signal
@@ -23,4 +23,4 @@ $ perl ${bindir:=.}/tesh
 > <(stdin):1> No output so far.
 
 $ cd ..
-$ rm -rf temp_testdir-catch-signal
+$ cmake -E remove_directory temp_testdir-catch-signal
