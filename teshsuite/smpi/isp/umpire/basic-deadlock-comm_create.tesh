@@ -1,5 +1,6 @@
 #! ./tesh
 
+! timeout 30
 ! expect return 3
 ! output display
 $ ${bindir:=.}/../../../../bin/smpirun -wrapper "${bindir:=.}/../../../../bin/simgrid-mc" --log=xbt_cfg.thresh:warning -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml -np 3 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich ${bindir:=.}/basic-deadlock-comm_create --log=smpi_coll.thresh:error
