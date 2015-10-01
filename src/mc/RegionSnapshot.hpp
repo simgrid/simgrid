@@ -99,6 +99,21 @@ enum class StorageType {
   Privatized = 3
 };
 
+class data_deleter {
+public:
+  enum Type {
+    Free,
+    Munmap
+  };
+private:
+  Type type_;
+  std::size_t size_;
+public:
+  data_deleter() : type_(Free) {}
+  data_deleter(Type type, std::size_t size) : type_(type), size_(size) {}
+  void operator()(void* p) const;
+};
+
 /** @brief Copy/snapshot of a given memory region
  *
  *  Different types of region snapshot storage types exist:
@@ -123,6 +138,8 @@ class RegionSnapshot {
   static const StorageType FlatData = StorageType::Flat;
   static const StorageType ChunkedData = StorageType::Chunked;
   static const StorageType PrivatizedData = StorageType::Privatized;
+public:
+  typedef std::unique_ptr<char[], data_deleter> flat_data_ptr;
 private:
   RegionType region_type_;
   StorageType storage_type_;
@@ -145,7 +162,7 @@ private:
    * */
   void *permanent_addr_;
 
-  std::vector<char> flat_data_;
+  flat_data_ptr flat_data_;
   PerPageCopy page_numbers_;
   std::vector<RegionSnapshot> privatized_regions_;
 public:
@@ -204,7 +221,7 @@ public:
     storage_type_ = NoData;
     privatized_regions_.clear();
     page_numbers_.clear();
-    flat_data_.clear();
+    flat_data_.reset();
     object_info_ = nullptr;
     start_addr_ = nullptr;
     size_ = 0;
@@ -214,24 +231,24 @@ public:
   void clear_data()
   {
     storage_type_ = NoData;
-    flat_data_.clear();
+    flat_data_.reset();
     page_numbers_.clear();
     privatized_regions_.clear();
   }
   
-  void flat_data(std::vector<char> data)
+  void flat_data(flat_data_ptr data)
   {
     storage_type_ = FlatData;
     flat_data_ = std::move(data);
     page_numbers_.clear();
     privatized_regions_.clear();
   }
-  std::vector<char> const& flat_data() const { return flat_data_; }
+  const char* flat_data() const { return flat_data_.get(); }
 
   void page_data(PerPageCopy page_data)
   {
     storage_type_ = ChunkedData;
-    flat_data_.clear();
+    flat_data_.reset();
     page_numbers_ = std::move(page_data);
     privatized_regions_.clear();
   }
@@ -240,7 +257,7 @@ public:
   void privatized_data(std::vector<RegionSnapshot> data)
   {
     storage_type_ = PrivatizedData;
-    flat_data_.clear();
+    flat_data_.reset();
     page_numbers_.clear();
     privatized_regions_ = std::move(data);
   }

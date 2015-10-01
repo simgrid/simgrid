@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <sys/mman.h>
+
 #include "mc/mc.h"
 #include "mc_snapshot.h"
 #include "RegionSnapshot.hpp"
@@ -33,12 +35,24 @@ const char* to_cstr(RegionType region)
   }
 }
 
+void data_deleter::operator()(void* p) const
+{
+  switch(type_) {
+  case Free:
+    free(p);
+    break;
+  case Munmap:
+    munmap(p, size_);
+    break;
+  }
+}
+
 RegionSnapshot dense_region(
   RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  std::vector<char> data(size);
-  mc_model_checker->process().read_bytes(data.data(), size,
+  simgrid::mc::RegionSnapshot::flat_data_ptr data((char*) malloc(size));
+  mc_model_checker->process().read_bytes(data.get(), size,
     remote(permanent_addr),
     simgrid::mc::ProcessIndexDisabled);
 
@@ -47,7 +61,7 @@ RegionSnapshot dense_region(
   region.flat_data(std::move(data));
 
   XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
-            to_cstr(region_type), region.flat_data().data(), permanent_addr, size);
+            to_cstr(region_type), region.flat_data(), permanent_addr, size);
   return std::move(region);
 }
 

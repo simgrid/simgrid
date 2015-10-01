@@ -54,7 +54,7 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
   case simgrid::mc::StorageType::Flat:
     {
       uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start().address();
-      return (void *) ((uintptr_t) region->flat_data().data() + offset);
+      return (void *) ((uintptr_t) region->flat_data() + offset);
     }
 
   case simgrid::mc::StorageType::Chunked:
@@ -227,7 +227,7 @@ const void* MC_region_read(mc_mem_region_t region, void* target, const void* add
     xbt_die("Storage type not supported");
 
   case simgrid::mc::StorageType::Flat:
-    return (char*) region->flat_data().data() + offset;
+    return (char*) region->flat_data() + offset;
 
   case simgrid::mc::StorageType::Chunked:
     {
