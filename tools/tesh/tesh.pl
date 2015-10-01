@@ -29,9 +29,6 @@ BEGIN {
       unless exists $ENV{'IPCRUNDEBUG'};
 }
 
-my ($timeout)              = 0;
-my ($time_to_wait)         = 0;
-my $path                   = $0;
 my $enable_coverage        = 0;
 my $diff_tool              = 0;
 my $diff_tool_tmp_fh       = 0;
@@ -44,6 +41,8 @@ my $exitcode = 0;
 my @bg_cmds;
 my (%environ);
 $SIG{'PIPE'} = 'IGNORE';
+
+my $path = $0;
 $path =~ s|[^/]*$||;
 push @INC, $path;
 
@@ -80,21 +79,6 @@ BEGIN {
 #### Command line option handling
 ####
 
-if ( $ARGV[0] eq "--internal-killer-process" ) {
-
-    # We fork+exec a waiter process in charge of killing the command after timeout
-    # If the command stops earlier, that's fine: the killer sends a signal to an already stopped process, fails, and quits.
-    #    Nobody cares about the killer issues.
-    #    The only problem could arise if another process is given the same PID than cmd. We bet it won't happen :)
-    my $time_to_wait = $ARGV[1];
-    my $pid          = $ARGV[2];
-    sleep $time_to_wait;
-    kill( 'TERM', $pid );
-    sleep 1;
-    kill( 'KILL', $pid );
-    exit $time_to_wait;
-}
-
 my %opts = ( "debug" => 0,
              "timeout" => 120, # No command should run any longer than 2 minutes by default
            );
@@ -114,9 +98,7 @@ GetOptions(
 
 $tesh_file = pop @ARGV;
 
-if ($enable_coverage) {
-    print "Enable coverage\n";
-}
+print "Enable coverage\n" if ($enable_coverage);
 
 if ($diff_tool) {
     use File::Temp qw/ tempfile /;
@@ -132,14 +114,6 @@ if ( $tesh_file =~ m/(.*)\.tesh/ ) {
     $tesh_name = "(stdin)";
     print "Test suite from stdin\n";
 }
-
-##
-## File parsing
-##
-my ($return) = -1;
-my ($forked);
-my ($config)      = "";
-my (@buffer_tesh) = ();
 
 ###########################################################################
 
@@ -293,7 +267,7 @@ sub analyze_result {
         }
     }
 
-    # Did we timeout ? If yes, handle it. If not, kill the forked process.
+    # Did we timeout?
 
     if ( $cmd{'timeouted'} ) {
         $gotret   = "timeout after $cmd{'timeout'} sec";
@@ -313,9 +287,7 @@ sub analyze_result {
         print STDERR "$msg";
     }
 
-    ###
-    # Check the result of execution
-    ###
+    # Does the output match?
     my $diff;
     if ( defined( $cmd{'output display'} ) ) {
         print "[Tesh/INFO] Here is the (ignored) command output:\n";
@@ -361,11 +333,10 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
 
     $line_num++;
     print "[TESH/debug] $line_num: $line\n" if $opts{'debug'};
-    my $next;
 
     # deal with line continuations
     while ( $line =~ /^(.*?)\\$/ ) {
-        $next = <$infh>;
+        my $next = <$infh>;
         die "[TESH/CRITICAL] Continued line at end of file\n"
           unless defined($next);
         $line_num++;
@@ -498,10 +469,6 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
     } else {
         die "[TESH/CRITICAL] parse error: $line\n";
     }
-    if ($forked) {
-        kill( 'KILL', $forked );
-        $timeout = 0;
-    }
 }
 
 # We're done reading the input file
@@ -511,11 +478,6 @@ close $infh unless ( $tesh_file eq "(stdin)" );
 if ( defined( $cmd{'cmd'} ) ) {
     exec_cmd( \%cmd );
     %cmd = ();
-}
-
-if ($forked) {
-    kill( 'KILL', $forked );
-    $timeout = 0;
 }
 
 foreach (@bg_cmds) {
@@ -536,6 +498,8 @@ if ( $error != 0 ) {
 } else {
     print "Test suite `$tesh_name' OK\n";
 }
+
+exit 0;
 
 ####
 #### Helper functions
