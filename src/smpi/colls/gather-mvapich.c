@@ -140,7 +140,7 @@ int smpi_coll_tuned_gather_mvapich2_two_level(void *sendbuf,
     int leader_root, leader_of_root;
     MPI_Status status;
     MPI_Aint sendtype_extent = 0, recvtype_extent = 0;  /* Datatype extent */
-    MPI_Aint true_lb, sendtype_true_extent, recvtype_true_extent;
+    MPI_Aint true_lb = 0, sendtype_true_extent = 0, recvtype_true_extent = 0;
     MPI_Comm shmem_comm, leader_comm;
     void* tmp_buf = NULL;
     
