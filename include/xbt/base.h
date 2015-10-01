@@ -237,7 +237,7 @@
 
 
 /* UNIX build */
-#elsif defined(__ELF__)
+#elif defined(__ELF__) 
 
 #  define XBT_PUBLIC(type)            type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
