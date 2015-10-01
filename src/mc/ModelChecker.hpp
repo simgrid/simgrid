@@ -11,6 +11,7 @@
 
 #include <simgrid_config.h>
 #include <xbt/dict.h>
+#include <xbt/base.h>
 
 #include "mc_forward.hpp"
 #include "mc_process.h"

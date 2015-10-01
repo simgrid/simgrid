@@ -47,7 +47,7 @@ typedef struct s_mc_record_item {
 
 /** Convert a string representation of the path into a array of `s_mc_record_item_t`
  */
-XBT_INTERNAL xbt_dynar_t MC_record_from_string(const char* data);
+XBT_PRIVATE xbt_dynar_t MC_record_from_string(const char* data);
 
 /** Generate a string representation
 *
@@ -55,11 +55,11 @@ XBT_INTERNAL xbt_dynar_t MC_record_from_string(const char* data);
 * "pid0,value0;pid2,value2;pid3,value3". The value can be
 * omitted is it is null.
 */
-XBT_INTERNAL char* MC_record_stack_to_string(xbt_fifo_t stack);
+XBT_PRIVATE char* MC_record_stack_to_string(xbt_fifo_t stack);
 
 /** Dump the path represented by a given stack in the log
  */
-XBT_INTERNAL void MC_record_dump_path(xbt_fifo_t stack);
+XBT_PRIVATE void MC_record_dump_path(xbt_fifo_t stack);
 
 // ***** Replay
 
@@ -68,15 +68,15 @@ XBT_INTERNAL void MC_record_dump_path(xbt_fifo_t stack);
  *  \param start Array of record item
  *  \item  count Number of record items
  */
-XBT_INTERNAL void MC_record_replay(mc_record_item_t start, size_t count);
+XBT_PRIVATE void MC_record_replay(mc_record_item_t start, size_t count);
 
 /** Replay a path represented by a string
  *
  *  \param data String representation of the path
  */
-XBT_INTERNAL void MC_record_replay_from_string(const char* data);
+XBT_PRIVATE void MC_record_replay_from_string(const char* data);
 
-XBT_INTERNAL void MC_record_replay_init(void);
+XBT_PRIVATE void MC_record_replay_init(void);
 
 SG_END_DECL()
 

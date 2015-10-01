@@ -13,6 +13,8 @@
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 
+#include <xbt/base.h>
+
 #include "mc_mmu.h"
 #include "mc_forward.hpp"
 

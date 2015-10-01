@@ -237,13 +237,27 @@
 
 
 /* UNIX build */
-#else
+#elsif defined(__ELF__)
+
 #  define XBT_PUBLIC(type)            type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
 #  define XBT_PUBLIC_CLASS            class
 
+#else
+#  define XBT_PUBLIC(type)            __attribute__((visibility("default"))) type
+#  define XBT_EXPORT_NO_IMPORT(type)  __attribute__((visibility("default"))) type
+#  define XBT_IMPORT_NO_EXPORT(type)  __attribute__((visibility("default"))) type
+#  define XBT_PUBLIC_DATA(type)       extern __attribute__((visibility("default"))) type
+#  define XBT_PUBLIC_CLASS            class __attribute__((visibility("default")))
+
+#endif
+
+#ifdef __ELF__
+#define XBT_PRIVATE __attribute__((visibility("hidden")))
+#else
+#define XBT_PRIVATE
 #endif
 
 #ifdef _MSC_VER /* MSVC has no ssize_t, and I fail to use the SSIZE_T declared in BaseTsd.h */
@@ -259,14 +273,6 @@
 	#define _CRT_NONSTDC_NO_WARNINGS
 	/* warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. */
 	#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-
-
-#ifdef _XBT_WIN32
-#define XBT_INTERNAL
-#else
-#define XBT_INTERNAL __attribute__((visibility ("hidden")))
 #endif
 
 #if !defined (max) && !defined(__cplusplus)

@@ -177,7 +177,7 @@ class Simcall(object):
       
   def handler_prototype(self):
       if self.need_handler:
-          return "%s simcall_HANDLER_%s(smx_simcall_t simcall%s);"%(self.res.rettype() if self.call_kind == 'Func' else 'void', 
+          return "XBT_PRIVATE %s simcall_HANDLER_%s(smx_simcall_t simcall%s);"%(self.res.rettype() if self.call_kind == 'Func' else 'void', 
                                                                     self.name, 
                                                                     ''.join(', %s %s'%(arg.rettype(), arg.name) 
                     for i, arg in enumerate(self.args)))
@@ -279,6 +279,7 @@ if __name__=='__main__':
   
   fd = header("popping_generated.c")
   
+  fd.write('#include <xbt/base.h>\n');
   fd.write('#include "smx_private.h"\n');
   fd.write('#ifdef HAVE_MC\n');
   fd.write('#include "mc/mc_forward.h"\n');

@@ -30,8 +30,8 @@ XBT_PUBLIC(int) MC_random(int min, int max);
 /* Internal variable used to check if we're running under the MC
  *
  * Please don't use directly: you should use MC_is_active. */
-extern int _sg_do_model_check;
-extern int _sg_mc_visited;
+extern XBT_PUBLIC(int) _sg_do_model_check;
+extern XBT_PUBLIC(int) _sg_mc_visited;
 
 #define MC_is_active()                  _sg_do_model_check
 #define MC_visited_reduction()          _sg_mc_visited

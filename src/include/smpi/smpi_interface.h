@@ -119,8 +119,8 @@ XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t * table,
                                       char *name, const char *desc);
 
 
-extern double smpi_wtime_sleep;
-extern double smpi_iprobe_sleep;
-extern double smpi_test_sleep;
+extern XBT_PRIVATE double smpi_wtime_sleep;
+extern XBT_PRIVATE double smpi_iprobe_sleep;
+extern XBT_PRIVATE double smpi_test_sleep;
 
 #endif                          /* _SMPI_INTERFAC_H */

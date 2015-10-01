@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "internal_config.h"
 #include "mc_dwarf.hpp"
 #include "mc/mc_private.h"
@@ -24,20 +26,20 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mcer_ignore, mc,
 
 // ***** Ignore heap chunks
 
-extern xbt_dynar_t mc_heap_comparison_ignore;
+extern XBT_PRIVATE xbt_dynar_t mc_heap_comparison_ignore;
 
-void heap_ignore_region_free(mc_heap_ignore_region_t r)
+static void heap_ignore_region_free(mc_heap_ignore_region_t r)
 {
   xbt_free(r);
 }
 
-void heap_ignore_region_free_voidp(void *r)
+static void heap_ignore_region_free_voidp(void *r)
 {
   heap_ignore_region_free((mc_heap_ignore_region_t) * (void **) r);
 }
 
 
-void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
+XBT_PRIVATE void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
 {
   if (mc_heap_comparison_ignore == NULL) {
     mc_heap_comparison_ignore =
@@ -76,7 +78,7 @@ void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
     xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
 }
 
-void MC_heap_region_ignore_remove(void *address, size_t size)
+XBT_PRIVATE void MC_heap_region_ignore_remove(void *address, size_t size)
 {
   unsigned int cursor = 0;
   int start = 0;
@@ -113,7 +115,7 @@ void MC_heap_region_ignore_remove(void *address, size_t size)
 
 // ***** Ignore global variables
 
-void MCer_ignore_global_variable(const char *name)
+XBT_PRIVATE void MCer_ignore_global_variable(const char *name)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
   xbt_assert(!process->object_infos.empty(), "MC subsystem not initialized");
@@ -231,9 +233,9 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
   }
 }
 
-extern xbt_dynar_t stacks_areas;
+extern XBT_PRIVATE xbt_dynar_t stacks_areas;
 
-void MC_stack_area_add(stack_region_t stack_area)
+XBT_PRIVATE void MC_stack_area_add(stack_region_t stack_area)
 {
   if (stacks_areas == NULL)
     stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);

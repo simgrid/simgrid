@@ -13,6 +13,7 @@
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
  */
 
+#include <xbt/base.h>
 #include "smx_private.h"
 #ifdef HAVE_MC
 #include "mc/mc_forward.h"

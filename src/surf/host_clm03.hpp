@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "storage_interface.hpp"
 #include "cpu_interface.hpp"
 #include "host_interface.hpp"
@@ -16,9 +18,9 @@
  * Classes *
  ***********/
 
-class HostCLM03Model;
-class HostCLM03;
-class HostCLM03Action;
+class XBT_PRIVATE HostCLM03Model;
+class XBT_PRIVATE HostCLM03;
+class XBT_PRIVATE HostCLM03Action;
 
 /*********
  * Model *

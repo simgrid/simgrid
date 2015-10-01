@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "host_interface.hpp"
 
 #ifndef HOST_L07_HPP_
@@ -13,15 +15,15 @@
  * Classes *
  ***********/
 
-class HostL07Model;
-class CpuL07Model;
-class NetworkL07Model;
+class XBT_PRIVATE HostL07Model;
+class XBT_PRIVATE CpuL07Model;
+class XBT_PRIVATE NetworkL07Model;
 
-class HostL07;
-class CpuL07;
-class LinkL07;
+class XBT_PRIVATE HostL07;
+class XBT_PRIVATE CpuL07;
+class XBT_PRIVATE LinkL07;
 
-class L07Action;
+class XBT_PRIVATE L07Action;
 
 /*********
  * Tools *

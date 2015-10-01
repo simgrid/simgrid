@@ -14,6 +14,7 @@
 #ifndef __MMPRIVATE_H
 #define __MMPRIVATE_H 1
 
+#include <xbt/base.h>
 #include <xbt/misc.h>
 
 #include "portable.h"
@@ -323,14 +324,14 @@ static inline int mmalloc_get_increment(malloc_info* heapinfo) {
   }
 }
 
-void mmcheck(xbt_mheap_t heap);
+XBT_PRIVATE void mmcheck(xbt_mheap_t heap);
 
-int malloc_use_mmalloc(void);
+XBT_PRIVATE int malloc_use_mmalloc(void);
 
-int mmalloc_exec_using_mm(int argc, const char** argv);
-void mmalloc_ensure_using_mm(int argc, const char** argv);
+XBT_PRIVATE int mmalloc_exec_using_mm(int argc, const char** argv);
+XBT_PRIVATE void mmalloc_ensure_using_mm(int argc, const char** argv);
 
-size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo);
+XBT_PRIVATE size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo);
 
 SG_END_DECL()
 

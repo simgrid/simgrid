@@ -34,14 +34,14 @@ struct VmMap {
   std::string pathname;         /* Path name of the mapped file */
 };
 
-std::vector<VmMap> get_memory_map(pid_t pid);
+XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid);
 
 }
 }
 
 extern "C" {
 
-XBT_INTERNAL void MC_find_object_address(
+XBT_PRIVATE void MC_find_object_address(
   std::vector<simgrid::mc::VmMap> const& maps, simgrid::mc::ObjectInformation* result);
 
 }

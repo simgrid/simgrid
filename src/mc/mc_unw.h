@@ -26,6 +26,8 @@
  *  much here.
  */
 
+#include <xbt/base.h>
+
 #include "mc_process.h"
 
 SG_BEGIN_DECL()
@@ -43,7 +45,7 @@ SG_BEGIN_DECL()
  *
  *  It works with `void*` contexts allocated with `_UPT_create(pid)`.
  */
-extern unw_accessors_t mc_unw_vmread_accessors;
+extern XBT_PRIVATE unw_accessors_t mc_unw_vmread_accessors;
 
 /** Virtual table for our `libunwind` implementation
  *
@@ -52,26 +54,26 @@ extern unw_accessors_t mc_unw_vmread_accessors;
  *
  *  It works with the `s_mc_unw_context_t` context.
  */
-extern XBT_INTERNAL unw_accessors_t mc_unw_accessors;
+extern XBT_PRIVATE unw_accessors_t mc_unw_accessors;
 
 // ***** Libunwind context
 
 /** A `libunwind` context
  */
-typedef struct s_mc_unw_context {
+typedef struct XBT_PRIVATE s_mc_unw_context {
   simgrid::mc::AddressSpace* address_space;
   simgrid::mc::Process*       process;
   unw_context_t      context;
 } s_mc_unw_context_t, *mc_unw_context_t;
 
 /** Initialises an already allocated context */
-XBT_INTERNAL int mc_unw_init_context(
+XBT_PRIVATE int mc_unw_init_context(
   mc_unw_context_t context, simgrid::mc::Process* process, unw_context_t* c);
 
 // ***** Libunwind cursor
 
 /** Initialises a `libunwind` cursor */
-XBT_INTERNAL int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context);
+XBT_PRIVATE int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context);
 
 SG_END_DECL()
 

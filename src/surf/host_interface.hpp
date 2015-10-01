@@ -9,6 +9,8 @@
 #include "cpu_interface.hpp"
 #include "network_interface.hpp"
 
+#include <xbt/base.h>
+
 #ifndef SURF_HOST_INTERFACE_HPP_
 #define SURF_HOST_INTERFACE_HPP_
 
@@ -16,9 +18,9 @@
  * Classes *
  ***********/
 
-class HostModel;
-class Host;
-class HostAction;
+class XBT_PRIVATE HostModel;
+class XBT_PRIVATE Host;
+class XBT_PRIVATE HostAction;
 
 /*************
  * Callbacks *

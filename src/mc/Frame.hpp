@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include <xbt/base.h>
+
 #include "mc_forward.h"
 #include "mc_location.h"
 #include "mc/Variable.hpp"

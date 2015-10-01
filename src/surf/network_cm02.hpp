@@ -7,6 +7,8 @@
 #ifndef SURF_NETWORK_CM02_HPP_
 #define SURF_NETWORK_CM02_HPP_
 
+#include <xbt/base.h>
+
 #include "network_interface.hpp"
 #include "xbt/fifo.h"
 #include "xbt/graph.h"
@@ -14,14 +16,14 @@
 /***********
  * Classes *
  ***********/
-class NetworkCm02Model;
-class NetworkCm02Action;
+class XBT_PRIVATE NetworkCm02Model;
+class XBT_PRIVATE NetworkCm02Action;
 
 /*********
  * Tools *
  *********/
 
-void net_define_callbacks(void);
+XBT_PRIVATE void net_define_callbacks(void);
 
 /*********
  * Model *

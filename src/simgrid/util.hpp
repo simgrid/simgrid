@@ -9,12 +9,14 @@
 
 #include <algorithm>
 
+#include <xbt/base.h>
+
 namespace simgrid {
 namespace util {
 
 /** Find a pointer to a value stores in a map (or nullptr) */
 template<typename C, typename K>
-inline
+inline XBT_PRIVATE
 typename C::mapped_type* find_map_ptr(C& c, K const& k)
 {
   typename C::iterator i = c.find(k);
@@ -25,7 +27,7 @@ typename C::mapped_type* find_map_ptr(C& c, K const& k)
 }
 
 template<typename C, typename K>
-inline
+inline XBT_PRIVATE
 typename C::mapped_type const* find_map_ptr(C const& c, K const& k)
 {
   typename C::const_iterator i = c.find(k);

@@ -18,6 +18,7 @@
 #include "../xbt/mmalloc/mmprivate.h"
 #include <xbt/asserts.h>
 #include <xbt/dynar.h>
+#include <xbt/base.h>
 
 #include "mc_forward.hpp"
 #include "ModelChecker.hpp"
@@ -31,7 +32,7 @@ SG_BEGIN_DECL()
 
 // ***** Snapshot region
 
-XBT_INTERNAL void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_region_t reg);
+XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_region_t reg);
 
 static inline __attribute__((always_inline))
 void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
@@ -71,7 +72,7 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
   }
 }
 
-XBT_INTERNAL mc_mem_region_t mc_get_snapshot_region(
+XBT_PRIVATE mc_mem_region_t mc_get_snapshot_region(
   const void* addr, const simgrid::mc::Snapshot *snapshot, int process_index);
 
 }
@@ -118,7 +119,7 @@ typedef struct s_local_variable{
   int region;
 } s_local_variable_t, *local_variable_t;
 
-typedef struct s_mc_snapshot_stack {
+typedef struct XBT_PRIVATE s_mc_snapshot_stack {
   std::vector<s_local_variable> local_variables;
   s_mc_unw_context_t context;
   std::vector<s_mc_stack_frame_t> stack_frames;
@@ -139,7 +140,7 @@ typedef struct s_mc_global_t {
 namespace simgrid {
 namespace mc {
 
-class Snapshot : public AddressSpace {
+class XBT_PRIVATE Snapshot : public AddressSpace {
 public:
   Snapshot();
   ~Snapshot();
@@ -177,20 +178,20 @@ mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int pro
 
 static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
-XBT_INTERNAL mc_snapshot_t MC_take_snapshot(int num_state);
-XBT_INTERNAL void MC_restore_snapshot(mc_snapshot_t);
+XBT_PRIVATE mc_snapshot_t MC_take_snapshot(int num_state);
+XBT_PRIVATE void MC_restore_snapshot(mc_snapshot_t);
 
-XBT_INTERNAL void mc_restore_page_snapshot_region(
+XBT_PRIVATE void mc_restore_page_snapshot_region(
   simgrid::mc::Process* process,
   void* start_addr, simgrid::mc::PerPageCopy const& pagenos);
 
-MC_SHOULD_BE_INTERNAL const void* MC_region_read_fragmented(
+const void* MC_region_read_fragmented(
   mc_mem_region_t region, void* target, const void* addr, size_t size);
 
-MC_SHOULD_BE_INTERNAL int MC_snapshot_region_memcmp(
+int MC_snapshot_region_memcmp(
   const void* addr1, mc_mem_region_t region1,
   const void* addr2, mc_mem_region_t region2, size_t size);
-XBT_INTERNAL int MC_snapshot_memcmp(
+XBT_PRIVATE int MC_snapshot_memcmp(
   const void* addr1, mc_snapshot_t snapshot1,
   const void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size);
 
@@ -257,7 +258,7 @@ void* MC_region_read_pointer(mc_mem_region_t region, const void* addr)
 
 SG_END_DECL()
 
-XBT_INTERNAL int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
+XBT_PRIVATE int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
                           std::vector<s_mc_heap_ignore_region_t>* i1,
                           std::vector<s_mc_heap_ignore_region_t>* i2);
 

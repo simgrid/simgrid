@@ -7,6 +7,8 @@
 #ifndef SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 #define SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 
+#include <xbt/base.h>
+
 #include "surf_routing_cluster.hpp"
 
 
@@ -17,8 +19,8 @@
  * address real world constraints, which are not currently enforced. 
  */
 
-class FatTreeNode;
-class FatTreeLink;
+class XBT_PRIVATE FatTreeNode;
+class XBT_PRIVATE FatTreeLink;
 
 /** \brief A node in a fat tree.
  * A FatTreeNode can either be a switch or a processing node. Switches are
@@ -107,7 +109,7 @@ public:
  *
  * Routing is made using a destination-mod-k scheme.
  */
-class AsClusterFatTree : public AsCluster {
+class XBT_PRIVATE AsClusterFatTree : public AsCluster {
 public:
   AsClusterFatTree();
   ~AsClusterFatTree();

@@ -199,17 +199,17 @@ bool MC_compare_variable(
     return a.address < b.address;
 }
 
-XBT_INTERNAL std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
+XBT_PRIVATE std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
   std::vector<simgrid::mc::VmMap> const& maps, const char* name, int executable);
-XBT_INTERNAL void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info);
+XBT_PRIVATE void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info);
 
-XBT_INTERNAL void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info);
-XBT_INTERNAL void MC_dwarf_get_variables_libdw(simgrid::mc::ObjectInformation* info);
+XBT_PRIVATE void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info);
+XBT_PRIVATE void MC_dwarf_get_variables_libdw(simgrid::mc::ObjectInformation* info);
 
-XBT_INTERNAL const char* MC_dwarf_attrname(int attr);
-XBT_INTERNAL const char* MC_dwarf_tagname(int tag);
+XBT_PRIVATE const char* MC_dwarf_attrname(int attr);
+XBT_PRIVATE const char* MC_dwarf_tagname(int tag);
 
-XBT_INTERNAL void* mc_member_resolve(
+XBT_PRIVATE void* mc_member_resolve(
   const void* base, simgrid::mc::Type* type, simgrid::mc::Type* member,
   simgrid::mc::AddressSpace* snapshot, int process_index);
 

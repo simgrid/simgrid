@@ -10,6 +10,8 @@
 #include <cstddef>
 #include <utility>
 
+#include <xbt/base.h>
+
 #include "PageStore.hpp"
 #include "AddressSpace.hpp"
 

@@ -7,6 +7,8 @@
 #ifndef _SURF_MAXMIN_PRIVATE_H
 #define _SURF_MAXMIN_PRIVATE_H
 
+#include <xbt/base.h>
+
 #include "surf/maxmin.h"
 #include "xbt/swag.h"
 #include "xbt/mallocator.h"
@@ -119,10 +121,10 @@ typedef struct lmm_system {
  * 
  * @param sys A lmm system
  */
-void lmm_print(lmm_system_t sys);
+XBT_PRIVATE void lmm_print(lmm_system_t sys);
 
-extern double (*func_f_def) (lmm_variable_t, double);
-extern double (*func_fp_def) (lmm_variable_t, double);
-extern double (*func_fpi_def) (lmm_variable_t, double);
+extern XBT_PRIVATE double (*func_f_def) (lmm_variable_t, double);
+extern XBT_PRIVATE double (*func_fp_def) (lmm_variable_t, double);
+extern XBT_PRIVATE double (*func_fpi_def) (lmm_variable_t, double);
 
 #endif                          /* _SURF_MAXMIN_PRIVATE_H */

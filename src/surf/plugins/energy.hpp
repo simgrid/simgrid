@@ -4,15 +4,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "../cpu_interface.hpp"
 #include <map>
 
 #ifndef CALLBACK_HPP_
 #define CALLBACK_HPP_
 
-class CpuEnergy;
+class XBT_PRIVATE CpuEnergy;
 
-extern std::map<Cpu*, CpuEnergy*> *surf_energy;
+extern XBT_PRIVATE std::map<Cpu*, CpuEnergy*> *surf_energy;
 
 class CpuEnergy {
 public:

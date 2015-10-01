@@ -15,7 +15,7 @@
  *  \param tag tag code (see the DWARF specification)
  *  \return name of the tag
  */
-XBT_INTERNAL
+XBT_PRIVATE
 const char *MC_dwarf_tagname(int tag)
 {
   switch (tag) {

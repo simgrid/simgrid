@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "network_interface.hpp"
 #include "surf/ns3/ns3_interface.h"
 
@@ -13,14 +15,14 @@
 /***********
  * Classes *
  ***********/
-class NetworkNS3Model;
-class NetworkNS3Action;
+class XBT_PRIVATE NetworkNS3Model;
+class XBT_PRIVATE NetworkNS3Action;
 
 /*********
  * Tools *
  *********/
 
-void net_define_callbacks(void);
+XBT_PRIVATE void net_define_callbacks(void);
 
 /*********
  * Model *

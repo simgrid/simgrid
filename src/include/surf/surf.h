@@ -25,13 +25,13 @@ SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
 
 /* user-visible parameters */
-extern double sg_tcp_gamma;
-extern double sg_sender_gap;
-extern double sg_latency_factor;
-extern double sg_bandwidth_factor;
-extern double sg_weight_S_parameter;
-extern int sg_network_crosstraffic;
-extern xbt_dynar_t surf_path;
+extern XBT_PRIVATE double sg_tcp_gamma;
+extern XBT_PRIVATE double sg_sender_gap;
+extern XBT_PRIVATE double sg_latency_factor;
+extern XBT_PRIVATE double sg_bandwidth_factor;
+extern XBT_PRIVATE double sg_weight_S_parameter;
+extern XBT_PRIVATE int sg_network_crosstraffic;
+extern XBT_PRIVATE xbt_dynar_t surf_path;
 
 typedef enum {
   SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */

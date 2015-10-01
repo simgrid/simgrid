@@ -103,13 +103,13 @@ typedef struct s_mc_register_symbol_message {
   void* data;
 } s_mc_register_symbol_message_t, * mc_register_symbol_message_t;
 
-XBT_INTERNAL int MC_protocol_send(int socket, const void* message, size_t size);
-XBT_INTERNAL int MC_protocol_send_simple_message(int socket, e_mc_message_type type);
-XBT_INTERNAL int MC_protocol_hello(int socket);
-XBT_INTERNAL ssize_t MC_receive_message(int socket, void* message, size_t size, int options);
+XBT_PRIVATE int MC_protocol_send(int socket, const void* message, size_t size);
+XBT_PRIVATE int MC_protocol_send_simple_message(int socket, e_mc_message_type type);
+XBT_PRIVATE int MC_protocol_hello(int socket);
+XBT_PRIVATE ssize_t MC_receive_message(int socket, void* message, size_t size, int options);
 
-XBT_INTERNAL const char* MC_message_type_name(e_mc_message_type type);
-XBT_INTERNAL const char* MC_mode_name(e_mc_mode_t mode);
+XBT_PRIVATE const char* MC_message_type_name(e_mc_message_type type);
+XBT_PRIVATE const char* MC_mode_name(e_mc_mode_t mode);
 
 SG_END_DECL()
 

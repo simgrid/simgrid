@@ -144,7 +144,7 @@ static int compare_backtrace(int b1, int f1, int b2, int f2)
 
 typedef char *type_name;
 
-struct s_mc_diff {
+struct XBT_PRIVATE s_mc_diff {
   s_xbt_mheap_t std_heap_copy;
   size_t heaplimit;
   // Number of blocks in the heaps:

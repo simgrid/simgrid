@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+
 #include "cpu_interface.hpp"
 #include "trace_mgr_private.h"
 #include "surf/surf_routing.h"
@@ -14,11 +16,11 @@
 /***********
  * Classes *
  ***********/
-class CpuTiTrace;
-class CpuTiTgmr;
-class CpuTiModel;
-class CpuTi;
-class CpuTiAction;
+class XBT_PRIVATE CpuTiTrace;
+class XBT_PRIVATE CpuTiTgmr;
+class XBT_PRIVATE CpuTiModel;
+class XBT_PRIVATE CpuTi;
+class XBT_PRIVATE CpuTiAction;
 
 struct tiTag;
 

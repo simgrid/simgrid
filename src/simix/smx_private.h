@@ -9,6 +9,7 @@
 
 #include "simgrid/simix.h"
 #include "surf/surf.h"
+#include "xbt/base.h"
 #include "xbt/fifo.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
@@ -34,7 +35,7 @@ SG_BEGIN_DECL()
 //#define TIME_BENCH_ENTIRE_SRS /* more general benchmark than TIME_BENCH_PER_SR. It aims to measure the total time spent in a whole scheduling round (including synchro costs)*/
 
 #ifdef TIME_BENCH_PER_SR
-void smx_ctx_raw_new_sr(void);
+XBT_PRIVATE void smx_ctx_raw_new_sr(void);
 #endif
 /********************************** Simix Global ******************************/
 typedef struct s_smx_global {
@@ -61,7 +62,7 @@ typedef struct s_smx_global {
 } s_smx_global_t, *smx_global_t;
 
 XBT_PUBLIC_DATA(smx_global_t) simix_global;
-extern unsigned long simix_process_maxpid;
+extern XBT_PRIVATE unsigned long simix_process_maxpid;
 
 XBT_PUBLIC(void) SIMIX_clean(void);
 
@@ -193,8 +194,8 @@ typedef struct s_smx_synchro {
   char *category;                     /* simix action category for instrumentation */
 } s_smx_synchro_t;
 
-void SIMIX_context_mod_init(void);
-void SIMIX_context_mod_exit(void);
+XBT_PRIVATE void SIMIX_context_mod_init(void);
+XBT_PRIVATE void SIMIX_context_mod_exit(void);
 
 #ifndef WIN32
 XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
@@ -210,18 +211,18 @@ XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
 # define smx_context_usable_stack_size smx_context_stack_size
 #endif
 
-void *SIMIX_context_stack_new(void);
-void SIMIX_context_stack_delete(void *stack);
+XBT_PRIVATE void *SIMIX_context_stack_new(void);
+XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
 
-void SIMIX_context_set_current(smx_context_t context);
-smx_context_t SIMIX_context_get_current(void);
+XBT_PRIVATE void SIMIX_context_set_current(smx_context_t context);
+XBT_PRIVATE smx_context_t SIMIX_context_get_current(void);
 
 /* All factories init */
 
-void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
-void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
-void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
-void SIMIX_ctx_boost_factory_init(smx_context_factory_t *factory);
+XBT_PRIVATE void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
+XBT_PRIVATE void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
+XBT_PRIVATE void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
+XBT_PRIVATE void SIMIX_ctx_boost_factory_init(smx_context_factory_t *factory);
 
 /* ****************************** */
 /* context manipulation functions */
@@ -327,7 +328,7 @@ static XBT_INLINE smx_process_t SIMIX_context_get_process(smx_context_t context)
 
 XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
 
-void SIMIX_post_create_environment(void);
+XBT_PRIVATE void SIMIX_post_create_environment(void);
 
 SG_END_DECL()
 

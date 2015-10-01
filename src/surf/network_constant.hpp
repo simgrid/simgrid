@@ -7,13 +7,15 @@
 #ifndef NETWORK_CONSTANT_HPP_
 #define NETWORK_CONSTANT_HPP_
 
+#include <xbt/base.h>
+
 #include "network_interface.hpp"
 
 /***********
  * Classes *
  ***********/
-class NetworkConstantModel;
-class NetworkConstantAction;
+class XBT_PRIVATE NetworkConstantModel;
+class XBT_PRIVATE NetworkConstantAction;
 
 /*********
  * Model *
