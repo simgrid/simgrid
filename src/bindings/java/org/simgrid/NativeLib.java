@@ -110,7 +110,7 @@ public final class NativeLib {
 		}
 		public void run() {
 			try {
-				new File(target).delete();
+				//new File(target).delete();
 			} catch(Exception e) {
 				System.out.println("Unable to clean temporary file "+target+" during shutdown.");
 				e.printStackTrace();
