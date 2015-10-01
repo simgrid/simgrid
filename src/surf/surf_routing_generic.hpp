@@ -13,7 +13,7 @@
 
 class XBT_PRIVATE AsGeneric;
 
-XBT_PRIVATE void generic_free_route(sg_platf_route_cbarg_t route);
+void generic_free_route(sg_platf_route_cbarg_t route);
 
 class XBT_PRIVATE AsGeneric : public AsNone {
 public:

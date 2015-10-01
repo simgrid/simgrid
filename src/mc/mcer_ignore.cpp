@@ -153,7 +153,7 @@ static void MC_ignore_local_variable_in_object(const char *var_name,
                                                const char *subprogram_name,
                                                simgrid::mc::ObjectInformation* info);
 
-XBT_PRIVATE void MC_ignore_local_variable(const char *var_name, const char *frame_name)
+void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
   if (strcmp(frame_name, "*") == 0)

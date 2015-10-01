@@ -23,10 +23,10 @@ XBT_PRIVATE xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_
  * Classes *
  ***********/
 
-class XBT_PRIVATE As;
+class As;
 class XBT_PRIVATE RoutingModelDescription;
 class XBT_PRIVATE Onelink;
-class XBT_PRIVATE RoutingPlatf;
+class RoutingPlatf;
 
 /** @ingroup SURF_routing_interface
  * @brief A routing edge

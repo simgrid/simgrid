@@ -237,12 +237,20 @@
 
 
 /* UNIX build */
-#else
+#elsif defined(__ELF__)
+
 #  define XBT_PUBLIC(type)            type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
 #  define XBT_PUBLIC_CLASS            class
+
+#else
+#  define XBT_PUBLIC(type)            __attribute__((visibility("default"))) type
+#  define XBT_EXPORT_NO_IMPORT(type)  __attribute__((visibility("default"))) type
+#  define XBT_IMPORT_NO_EXPORT(type)  __attribute__((visibility("default"))) type
+#  define XBT_PUBLIC_DATA(type)       extern __attribute__((visibility("default"))) type
+#  define XBT_PUBLIC_CLASS            class __attribute__((visibility("default")))
 
 #endif
 
