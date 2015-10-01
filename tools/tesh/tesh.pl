@@ -19,7 +19,212 @@ tesh -- testing shell
 
 =head1 SYNOPSIS
 
-B<tesh> [I<options>] I<tesh_file>
+B<tesh> [I<options>]... I<testsuite>
+
+=head1 DESCRIPTION
+
+Tesh is the testing shell, a specialized shell for running tests. It
+provides the specified input to the tested commands, and check that
+they produce the expected output and return the expected value.
+
+=head1 OPTIONS
+
+  --cd some/directory : ask tesh to switch the working directory before
+                        launching the tests
+  --setenv var=value  : set a specific environment variable
+  --cfg arg           : add parameter --cfg=arg to each command line
+  --enable-coverage   : ignore output lines starting with "profiling:"
+
+=head1 TEST SUITE FILE SYTAX
+
+A test suite is composed of one or several I<command blocks> separated
+by empty lines, each of them being composed of a command to run, its
+input text and the expected output.
+
+The first char of each line specifies the type of line according to
+the following list. The second char of each line is ignored.
+
+ `$' command to run in foreground
+ `&' command to run in background
+
+ `<' input to pass to the command
+ `>' output expected from the command
+
+ `!' metacommand, which can be one of:
+     `timeout' <integer>|no
+     `expect signal' <signal name>
+     `expect return' <integer>
+     `output' <ignore|display>
+     `setenv <key>=<val>'
+
+ `p' an informative message to print
+
+If the expected output do not match the produced output, or if the
+command did not end as expected, Tesh provides an error message (see
+the OUTPUT section below) and stops.
+
+=head2 Command blocks examples
+
+In a given command block, you can declare the command, its input and
+its expected output in the order that you see fit.
+
+    $ cat
+    < TOTO
+    > TOTO
+
+    > TOTO
+    $ cat
+    < TOTO
+
+    > TOTO
+    < TOTO
+    $ cat
+
+You can group several commands together, provided that they don't have
+any input nor output.
+
+    $ mkdir testdir
+    $ cd testdir
+
+=head2 Enforcing the command return code
+
+By default, Tesh enforces that the tested command returns 0. If not,
+it fails with an appropriate message and returns I<code+40> itself.
+
+You specify that a given command block is expected to return another
+code as follows:
+
+    # This command MUST return 42
+    ! expect return 42
+    $ sh -e "exit 42"
+
+The I<expect return> construct applies only to the next command block.
+
+=head2 Commands that are expected to raise signals
+
+By default, Tesh detects when the command is killed by a signal (such
+as SEGV on segfaults). This is usually unexpected and unfortunate. But
+if not, you can specify that a given command block is expected to fail
+with a signal as follows:
+
+    # This command MUST raise a segfault
+    ! expect signal SIGSEGV
+    $ ./some_failing_code
+
+The I<expect signal> construct applies only to the next command block.
+
+=head2 Timeouts
+
+By default, no command is allowed to run more than 5 seconds. You can
+change this value as follows:
+
+    # Allow some more time to the command
+    ! timeout 60
+    $ ./some_longer_command
+
+You can also disable the timeout completely by passing "no" as a value:
+
+    # This command will never timeout
+    ! timeout no
+    $ ./some_very_long_but_safe_command
+
+=head2 Setting environment variables
+
+You can modify the environment of the tested commands as follows:
+
+    ! setenv PATH=/bin
+    $ my_command
+
+=head2 Not enforcing the expected output 
+
+By default, the commands output is matched against the one expected,
+and an error is raised on discrepancy. Metacommands to change this:
+
+=over 4
+
+=item output ignore
+
+The output is completely discarded.
+
+=item output display
+
+The output is displayed, but no error is issued if it differs from the
+expected output.
+
+=item output sort
+
+The output is sorted before comparison (see next section).
+
+=back
+
+=head2 Sorting output
+
+If the order of the command output changes between runs, you want to
+sort it before enforcing that it is exactly what you expect. In
+SimGrid for example, this happens when parallel execution is
+activated: User processes are run in parallel at each timestamp, and
+the output is not reproducible anymore. Until you sort the lines.
+
+You can sort the command output as follows:
+
+    ! output sort
+    $ ./some_multithreaded_command
+
+Sorting lines this ways often makes the tesh output very intricate,
+complicating the error analysis: the process logical order is defeated
+by the lexicographical sort.
+
+The solution is to prefix each line of your output with temporal
+information so that lines can be grouped by timestamps. The
+lexicographical sort then only applies to lines that occured at the
+same timestamp. Here is a SimGrid example:
+
+    # Sort only lines depending on the first 19 chars
+    ! output sort 19
+    $ ./some_simgrid_simulator --log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n
+
+This approach may seem surprizing at the first glance but it does its job:
+
+=over 4
+
+=item Every timestamps remain separated, as it should; 
+
+=item In each timestamp, the output order of processes become
+   reproducible: that's the lexicographical order of their name;
+
+=item For each process, the order of its execution is preserved: its
+   messages within a given timestamp are not reordered.
+
+=back
+
+That way, tesh can do its job (no false positive, no false negative)
+despite the unpredictable order of executions of processes within a
+timestamp, and reported errors remain easy to analyze (execution of a
+given process preserved).
+
+This example is very SimGrid oriented, but the feature could even be
+usable by others, who knows?
+
+
+=head1 BUILTIN COMMANDS
+
+=head2 mkfile: creating a file
+
+This command creates a file of the name provided as argument, and adds
+the content it gets as input.
+
+  $ mkfile myFile
+  > some content
+  > to the file
+
+It is not possible to use the cat command, as one would expect,
+because stream redirections are currently not implemented in Tesh.
+
+=head1 BUGS AND LIMITATIONS
+
+The main limitation is the lack of stream redirections in the commands
+(">", "<" and "|" shell constructs and friends). The B<mkfile> builtin
+command makes this situation bearable.
 
 =cut
 
@@ -80,7 +285,7 @@ BEGIN {
 ####
 
 my %opts = ( "debug" => 0,
-             "timeout" => 120, # No command should run any longer than 2 minutes by default
+             "timeout" => 5, # No command should run any longer than 5 seconds by default
            );
 
 Getopt::Long::config( 'bundling', 'no_getopt_compat', 'no_auto_abbrev' );
@@ -184,7 +389,8 @@ sub exec_cmd {
     my $input = defined($cmd{'in'})? join("\n",@{$cmd{'in'}}) : "";
     my $output = " " x 10240; $output = ""; # Preallocate 10kB, and reset length to 0
     $cmd{'got'} = \$output;
-    $cmd{'job'} = start \@cmdline, '<', \$input, '>&', \$output, timeout($cmd{'timeout'});
+    $cmd{'job'} = start \@cmdline, '<', \$input, '>&', \$output, 
+                  ($cmd{'timeout'} eq 'no' ? () : timeout($cmd{'timeout'}));
 
     if ( $cmd{'background'} ) {
 	# Just enqueue the job. It will be dealed with at the end
