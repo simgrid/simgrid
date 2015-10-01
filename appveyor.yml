@@ -47,6 +47,10 @@ build_script:
 #test_script:
 #- ctest --output-on-failure
 
+artifacts:
+- path: C:\projects\simgrid\simgrid.jar
+  name: jarfile
+
 # notifications:
 # - irc: "irc.debian.org#simgrid" # Not implemented by AppVeyor yet :(
 # Some source of inspiration:
