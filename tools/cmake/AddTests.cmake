@@ -63,6 +63,7 @@ INCLUDE(CTest)
 ENABLE_TESTING()
 
 IF(NOT enable_memcheck)
+IF(NOT WIN32)
   ## CORE ##
   ### TESH ###
   IF(NOT WIN32)
@@ -503,6 +504,7 @@ IF(NOT enable_memcheck)
   ENDIF()
   # END TESH TESTS
 
+endif(NOT WIN32)
 
   ### JAVA ###
   IF(enable_java)
