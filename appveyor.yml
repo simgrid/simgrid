@@ -48,7 +48,7 @@ build_script:
 #- ctest --output-on-failure
 
 artifacts:
-- path: C:\projects\simgrid\simgrid.jar
+- path: simgrid.jar
   name: jarfile
 
 # notifications:
