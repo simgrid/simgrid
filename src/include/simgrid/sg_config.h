@@ -23,7 +23,7 @@ XBT_PUBLIC(int) sg_cfg_get_boolean(const char* name);
 XBT_PUBLIC(void) sg_cfg_get_peer(const char *name, char **peer, int *port);
 XBT_PUBLIC(xbt_dynar_t) sg_cfg_get_dynar(const char* name);
 
-void sg_config_init(int *argc, char **argv);
-void sg_config_finalize(void);
+XBT_PUBLIC(void) sg_config_init(int *argc, char **argv);
+XBT_PUBLIC(void) sg_config_finalize(void);
 
 SG_END_DECL()
