@@ -44,8 +44,8 @@ build_script:
 - if [%COMPILER%]==[MSVC15]     msbuild ALL_BUILD.vcxproj /verbosity:normal
 - if not [%COMPILER%]==[MSVC15] mingw32-make
 
-test_script:
-- ctest --output-on-failure
+#test_script:
+#- ctest --output-on-failure
 
 # notifications:
 # - irc: "irc.debian.org#simgrid" # Not implemented by AppVeyor yet :(
