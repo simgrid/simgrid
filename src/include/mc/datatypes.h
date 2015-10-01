@@ -39,10 +39,6 @@ typedef struct s_stack_region{
   int process_index;
 }s_stack_region_t, *stack_region_t;
 
-void heap_ignore_region_free(mc_heap_ignore_region_t r);
-void heap_ignore_region_free_voidp(void *r);
-
-
 /************ DWARF structures *************/
 
 SG_END_DECL()

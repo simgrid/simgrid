@@ -28,12 +28,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mcer_ignore, mc,
 
 extern XBT_PRIVATE xbt_dynar_t mc_heap_comparison_ignore;
 
-XBT_PRIVATE void heap_ignore_region_free(mc_heap_ignore_region_t r)
+static void heap_ignore_region_free(mc_heap_ignore_region_t r)
 {
   xbt_free(r);
 }
 
-XBT_PRIVATE void heap_ignore_region_free_voidp(void *r)
+static void heap_ignore_region_free_voidp(void *r)
 {
   heap_ignore_region_free((mc_heap_ignore_region_t) * (void **) r);
 }
