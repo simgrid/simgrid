@@ -6,76 +6,76 @@
 #
 
 < blablablablablablablablablablablablablablablablablablablabla 01
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 02
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 03
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 04
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 05
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 06
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 07
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 08
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 09
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 10
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 11
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 12
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 13
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 14
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 15
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 16
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 17
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 18
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 19
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 20
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 21
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 22
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 23
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 24
-$ echo
+$ cmake -E echo
 
 < blablablablablablablablablablablablablablablablablablablabla 25
-$ echo
+$ cmake -E echo
