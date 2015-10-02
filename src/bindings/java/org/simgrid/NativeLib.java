@@ -10,8 +10,46 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public final class NativeLib {
+	/* Statically load the library which contains all native functions used in here */
+	static private boolean isNativeInited = false;
+	public static void nativeInit() {
+		if (isNativeInited)
+			return;
+	        
+		if (System.getProperty("os.name").toLowerCase().startsWith("win"))
+			NativeLib.nativeInit("winpthread-1");
+
+		NativeLib.nativeInit("simgrid");
+		NativeLib.nativeInit("surf-java");
+		NativeLib.nativeInit("simgrid-java");      
+		isNativeInited = true;
+	}
+
+	static {
+		nativeInit();
+	}
+
+
+	public static void nativeInit(String name) {
+		try {
+			/* Prefer the version of the library bundled into the jar file and use it */
+			loadLib(name);
+		} catch (SimGridLibNotFoundException e) {
+			/* If not found, try to see if we can find a version on disk */
+			try {
+				System.loadLibrary(name);
+			} catch (UnsatisfiedLinkError e2) {
+				System.err.println("Cannot load the bindings to the "+name+" library in path "+getPath());
+				e.printStackTrace();
+				System.err.println("This jar file does not seem to fit your system, and I cannot find an installation of SimGrid.");
+				System.exit(1);
+			}
+		}
+	}
 
 	public static String getPath() {
 		String prefix = "NATIVE";
@@ -35,23 +73,7 @@ public final class NativeLib {
 
 		return prefix + "/" + os + "/" + arch + "/";
 	}
-	public static void nativeInit(String name) {
-		try {
-			/* Prefer the version of the library bundled into the jar file and use it */
-			loadLib(name);
-		} catch (SimGridLibNotFoundException e) {
-			/* If not found, try to see if we can find a version on disk */
-			try {
-				System.loadLibrary(name);
-			} catch (UnsatisfiedLinkError e2) {
-				System.err.println("Cannot load the bindings to the "+name+" library in path "+getPath());
-				e.printStackTrace();
-				System.err.println("This jar file does not seem to fit your system, and I cannot find an installation of SimGrid.");
-				System.exit(1);
-			}
-		}
-	}
-
+	static Path tempDir = null;
 	private static void loadLib (String name) throws SimGridLibNotFoundException {
 		String Path = NativeLib.getPath();
 
@@ -79,13 +101,15 @@ public final class NativeLib {
 		}
 		try {
 			// We must write the lib onto the disk before loading it -- stupid operating systems
-			File fileOut = new File(filename);
-			fileOut = File.createTempFile(name+"-", ".tmp");
-			// don't leak the file on disk, but remove it on JVM shutdown
-			Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(fileOut.getAbsolutePath())));
-			OutputStream out = new FileOutputStream(fileOut);
+			if (tempDir == null) {
+				tempDir = Files.createTempDirectory("simgrid-java");
+				// don't leak the files on disk, but remove it on JVM shutdown
+				Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(tempDir.toFile())));
+			}
+			File fileOut = new File(tempDir.toFile().getAbsolutePath() + File.separator + filename);
 
 			/* copy the library in position */  
+			OutputStream out = new FileOutputStream(fileOut);
 			byte[] buffer = new byte[4096]; 
 			int bytes_read; 
 			while ((bytes_read = in.read(buffer)) != -1)     // Read until EOF
@@ -104,15 +128,17 @@ public final class NativeLib {
 
 	/* A hackish mechanism used to remove the file containing our library when the JVM shuts down */
 	private static class FileCleaner implements Runnable {
-		private String target;
-		public FileCleaner(String name) {
-			target = name;
+		private File dir;
+		public FileCleaner(File dir) {
+			this.dir = dir;
 		}
 		public void run() {
 			try {
-				new File(target).delete();
+			    for (File f : dir.listFiles())
+			        f.delete();
+				dir.delete();
 			} catch(Exception e) {
-				System.out.println("Unable to clean temporary file "+target+" during shutdown.");
+				System.out.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown.");
 				e.printStackTrace();
 			}
 		}    

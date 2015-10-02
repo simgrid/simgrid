@@ -45,12 +45,10 @@ public class File {
 	 */
 	public native void close();
 
-	/**
-	 * Class initializer, to initialize various JNI stuff
-	 */
+	/** Class initializer, to initialize various JNI stuff */
 	public static native void nativeInit();
 	static {
-		Msg.nativeInit();
+		org.simgrid.NativeLib.nativeInit();
 		nativeInit();
 	}	
 }

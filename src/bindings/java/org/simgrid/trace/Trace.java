@@ -8,12 +8,12 @@
 
 package org.simgrid.trace;
 
-import org.simgrid.msg.Msg;
+import org.simgrid.NativeLib;
 
 public final class Trace {
 	/* Statically load the library which contains all native functions used in here */
 	static {
-		Msg.nativeInit();
+		NativeLib.nativeInit();
 	}
 
 	// TODO complete the binding of the tracing API 

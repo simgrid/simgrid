@@ -11,23 +11,6 @@ import org.simgrid.NativeLib;
 
 
 public final class Msg {
-	/* Statically load the library which contains all native functions used in here */
-	static private boolean isNativeInited = false;
-	public static void nativeInit() {
-		if (isNativeInited)
-			return;
-	        
-		if (System.getProperty("os.name").toLowerCase().startsWith("win"))
-			NativeLib.nativeInit("winpthread-1");
-
-		NativeLib.nativeInit("simgrid");
-		NativeLib.nativeInit("simgrid-java");      
-		isNativeInited = true;
-	}
-
-	static {
-		nativeInit();
-	}
 
 	/** Retrieve the simulation time
 	 * @return The simulation time.
@@ -125,5 +108,10 @@ public final class Msg {
 		Msg.deployApplication(args[1]);
 		/* Execute the simulation */
 		Msg.run();
+	}
+	
+	/* Class initializer, to initialize various JNI stuff */
+	static {
+		org.simgrid.NativeLib.nativeInit();
 	}
 }

@@ -363,7 +363,7 @@ public abstract class Process implements Runnable {
 	 */
 	private static native void nativeInit();
 	static {
-		Msg.nativeInit();
+		org.simgrid.NativeLib.nativeInit();
 		nativeInit();
 	}
 	/**

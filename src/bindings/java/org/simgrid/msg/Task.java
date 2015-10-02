@@ -363,7 +363,7 @@ public class Task {
 	 */
 	public static native void nativeInit();
 	static {
-		Msg.nativeInit();
+		org.simgrid.NativeLib.nativeInit();
 		nativeInit();
 	}
 
