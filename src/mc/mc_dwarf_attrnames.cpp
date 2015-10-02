@@ -9,6 +9,8 @@
 #include <xbt/base.h>
 #include <dwarf.h>
 
+#include "mc_object_info.h"
+
 /** \brief Get the name of an attribute (DW_AT_*) from its code
  *
  *  \param attr attribute code (see the DWARF specification)

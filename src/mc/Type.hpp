@@ -61,7 +61,7 @@ public:
 
   void offset(int new_offset)
   {
-    DwarfInstruction op;
+    Dwarf_Op op;
     op.atom = DW_OP_plus_uconst;
     op.number = new_offset;
     this->location_expression = { op };

@@ -28,7 +28,7 @@
 #include <xbt/mmalloc.h>
 
 #include "mc_process.h"
-#include "mc_dwarf.hpp"
+#include "mc_object_info.h"
 #include "mc_unw.h"
 #include "mc_snapshot.h"
 #include "mc_ignore.h"

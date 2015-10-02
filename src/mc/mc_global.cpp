@@ -31,7 +31,7 @@
 #include <libunwind.h>
 #include <xbt/mmalloc.h>
 #include "../xbt/mmalloc/mmprivate.h"
-#include "mc_dwarf.hpp"
+#include "mc_object_info.h"
 #include "mc_comm_pattern.h"
 #include "mc_request.h"
 #include "mc_safety.h"

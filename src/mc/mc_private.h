@@ -16,6 +16,7 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
+#include <elfutils/libdw.h>
 
 #include "mc/mc.h"
 #include "mc_base.h"

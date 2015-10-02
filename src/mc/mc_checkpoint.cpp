@@ -29,7 +29,7 @@
 #include <mc/mc.h>
 
 #include "mc_snapshot.h"
-#include "mc_dwarf.hpp"
+#include "mc_object_info.h"
 #include "mc_mmu.h"
 #include "mc_unw.h"
 #include "mc_protocol.h"

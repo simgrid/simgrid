@@ -14,7 +14,7 @@
 
 #include "mc/mc_process.h"
 #include "mc/mc_private.h"
-#include "mc/mc_dwarf.hpp"
+#include "mc/mc_object_info.h"
 
 #include "mc/Type.hpp"
 #include "mc/ObjectInformation.hpp"
@@ -26,7 +26,7 @@ static
 uintptr_t eval_binary_operation(mc_expression_state_t state, int op, uintptr_t a, uintptr_t b) {
   state->stack_size = 0;
 
-  simgrid::mc::DwarfInstruction ops[15];
+  Dwarf_Op ops[15];
   ops[0].atom = DW_OP_const8u;
   ops[0].number = a;
   ops[1].atom = DW_OP_const8u;
@@ -40,7 +40,7 @@ uintptr_t eval_binary_operation(mc_expression_state_t state, int op, uintptr_t a
 
 static
 void basic_test(mc_expression_state_t state) {
-  simgrid::mc::DwarfInstruction ops[60];
+  Dwarf_Op ops[60];
 
   uintptr_t a = rand();
   uintptr_t b = rand();
@@ -108,7 +108,7 @@ static
 void test_deref(mc_expression_state_t state) {
   uintptr_t foo = 42;
 
-  simgrid::mc::DwarfInstruction ops[60];
+  Dwarf_Op ops[60];
   ops[0].atom = DW_OP_const8u;
   ops[0].number = (uintptr_t) &foo;
   ops[1].atom = DW_OP_deref;
