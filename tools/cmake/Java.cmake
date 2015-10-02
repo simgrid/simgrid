@@ -121,9 +121,12 @@ if(enable_lib_in_jar)
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}    ${JAVA_NATIVE_PATH}
-    COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
-    COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
-    COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSURF_JAVA_SO}
+    
+    # strip seems to fail on Mac on binaries that are already stripped.
+    # It then spits: "symbols referenced by indirect symbol table entries that can't be stripped"
+    COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}      || true
+    COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO} || true
+    COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSURF_JAVA_SO}    || true
 
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  NATIVE
     COMMAND ${CMAKE_COMMAND} -E remove_directory NATIVE
