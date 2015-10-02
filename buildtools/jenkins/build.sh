@@ -7,6 +7,10 @@
 
 set -e
 
+# Cleanup previous attempts
+rm -rf /tmp/simgrid*tmp
+rm -rf /tmp/surf-java*tmp
+
 # usage: die status message...
 die () {
   local status=${1:-1}
