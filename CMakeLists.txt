@@ -262,7 +262,7 @@ else()
 endif()
 
 if(enable_java)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeJava.cmake)
+  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
 endif()
 
 ### Make Exes
