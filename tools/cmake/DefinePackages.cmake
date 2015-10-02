@@ -632,6 +632,7 @@ set(MC_SRC
   src/mc/mc_comm_determinism.cpp
   src/mc/mc_compare.cpp
   src/mc/mc_diff.cpp
+  src/mc/mc_dwarf.hpp
   src/mc/mc_dwarf.cpp
   src/mc/mc_dwarf_attrnames.cpp
   src/mc/mc_dwarf_expression.cpp
@@ -642,6 +643,7 @@ set(MC_SRC
   src/mc/mcer_ignore.cpp
   src/mc/mcer_ignore.h
   src/mc/mc_ignore.h
+  src/mc/mc_libdw.cpp
   src/mc/mc_liveness.h
   src/mc/mc_location.h
   src/mc/mc_liveness.cpp
@@ -1230,7 +1232,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/test_prog/prog_stacksetup.c
   tools/cmake/test_prog/prog_thread_storage.c
   tools/cmake/test_prog/prog_vsnprintf.c
-  buildtools/Cross/Mingw.cmake
+  tools/cmake/cross-mingw.cmake
   tools/stack-cleaner/as
   tools/stack-cleaner/cc
   tools/stack-cleaner/c++
