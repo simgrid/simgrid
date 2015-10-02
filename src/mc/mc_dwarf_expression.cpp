@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdint.h>
-#include <stdarg.h>
+#include <cstdint>
+#include <cstdarg>
 
 #include <dwarf.h>
 #include <elfutils/libdw.h>
@@ -107,7 +107,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
   for (size_t i = 0; i != n; ++i) {
     int error = 0;
     const Dwarf_Op *op = ops + i;
-    uint8_t atom = op->atom;
+    std::uint8_t atom = op->atom;
 
     switch (atom) {
 
@@ -181,7 +181,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       {
         if (!state->frame_base)
           return MC_EXPRESSION_E_MISSING_FRAME_BASE;
-        uintptr_t fb = ((uintptr_t) state->frame_base) + op->number;
+        std::uintptr_t fb = ((std::uintptr_t) state->frame_base) + op->number;
         error = mc_dwarf_push_value(state, fb);
         break;
       }
@@ -233,7 +233,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         return MC_EXPRESSION_E_NO_BASE_ADDRESS;
       if (state->stack_size == MC_EXPRESSION_STACK_SIZE)
         return MC_EXPRESSION_E_STACK_OVERFLOW;
-      Dwarf_Off addr = (Dwarf_Off) (uintptr_t)
+      Dwarf_Off addr = (Dwarf_Off) (std::uintptr_t)
         state->object_info->base_address() + op->number;
       error = mc_dwarf_push_value(state, addr);
       break;
@@ -279,7 +279,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       if (state->stack_size < 2)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
       {
-        uintptr_t temp = state->stack[state->stack_size - 2];
+        std::uintptr_t temp = state->stack[state->stack_size - 2];
         state->stack[state->stack_size - 2] =
             state->stack[state->stack_size - 1];
         state->stack[state->stack_size - 1] = temp;
@@ -302,7 +302,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       if (state->stack_size < 2)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
       {
-        uintptr_t result =
+        std::uintptr_t result =
             state->stack[state->stack_size - 2] +
             state->stack[state->stack_size - 1];
         state->stack[state->stack_size - 2] = result;
@@ -314,7 +314,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       if (state->stack_size < 2)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
       {
-        uintptr_t result =
+        std::uintptr_t result =
             state->stack[state->stack_size - 2] -
             state->stack[state->stack_size - 1];
         state->stack[state->stack_size - 2] = result;
@@ -350,7 +350,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       if (state->stack_size < 2)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
       {
-        uintptr_t result =
+        std::uintptr_t result =
             state->stack[state->stack_size - 2] -
             state->stack[state->stack_size - 1];
         state->stack[state->stack_size - 2] = result;
@@ -362,7 +362,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       if (state->stack_size < 2)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
       {
-        uintptr_t result =
+        std::uintptr_t result =
             state->stack[state->stack_size -
                          2] & state->stack[state->stack_size - 1];
         state->stack[state->stack_size - 2] = result;
@@ -374,7 +374,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       if (state->stack_size < 2)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
       {
-        uintptr_t result =
+        std::uintptr_t result =
             state->stack[state->stack_size -
                          2] | state->stack[state->stack_size - 1];
         state->stack[state->stack_size - 2] = result;
@@ -386,7 +386,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       if (state->stack_size < 2)
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
       {
-        uintptr_t result =
+        std::uintptr_t result =
             state->stack[state->stack_size -
                          2] ^ state->stack[state->stack_size - 1];
         state->stack[state->stack_size - 2] = result;
@@ -407,7 +407,7 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         return MC_EXPRESSION_E_STACK_UNDERFLOW;
       {
         // Computed address:
-        uintptr_t address = (uintptr_t) state->stack[state->stack_size - 1];
+        std::uintptr_t address = (std::uintptr_t) state->stack[state->stack_size - 1];
         if (!state->address_space)
           xbt_die("Missing address space");
         state->address_space->read_bytes(
@@ -546,10 +546,10 @@ void mc_dwarf_location_list_init(
 {
   list->clear();
 
-  ptrdiff_t offset = 0;
+  std::ptrdiff_t offset = 0;
   Dwarf_Addr base, start, end;
   Dwarf_Op *ops;
-  size_t len;
+  std::size_t len;
 
   while (1) {
 

@@ -7,12 +7,11 @@
 #ifndef SIMGRID_MC_ADDRESS_SPACE_H
 #define SIMGRID_MC_ADDRESS_SPACE_H
 
+#include <cstddef>
 #include <cstdint>
 #include <type_traits>
 
 #include <xbt/misc.h>
-
-#include <stdint.h>
 
 #include "mc_forward.hpp"
 

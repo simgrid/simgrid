@@ -9,7 +9,6 @@
 
 #include <poll.h>
 
-#include <stdint.h>
 #include <stdbool.h>
 
 #include <sys/signalfd.h>

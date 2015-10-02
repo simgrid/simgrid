@@ -6,8 +6,7 @@
 
 #include <cinttypes>
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <cstdint>
 
 #include "mc_private.h"
 #include "mc/datatypes.h"
@@ -25,7 +24,7 @@ namespace mc {
 template<class T>
 static void hash_update(hash_type& hash, T const& value)
 {
-  hash = (hash << 5) + hash + (uint64_t) value;
+  hash = (hash << 5) + hash + (std::uint64_t) value;
 }
 
 // ***** Hash state

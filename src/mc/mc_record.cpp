@@ -4,8 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 
 #include <xbt.h>
 #include <simgrid/simix.h>
@@ -26,9 +27,9 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
   " Logging specific to MC record/replay facility");
 
-char* MC_record_path = NULL;
+char* MC_record_path = nullptr;
 
-void MC_record_replay(mc_record_item_t start, size_t len)
+void MC_record_replay(mc_record_item_t start, std::size_t len)
 {
   MC_wait_for_requests();
   mc_record_item_t end = start + len;
@@ -62,9 +63,9 @@ xbt_dynar_t MC_record_from_string(const char* data)
 {
   XBT_INFO("path=%s", data);
   if (!data || !data[0])
-    return NULL;
+    return nullptr;
 
-  xbt_dynar_t dynar = xbt_dynar_new(sizeof(s_mc_record_item_t), NULL);
+  xbt_dynar_t dynar = xbt_dynar_new(sizeof(s_mc_record_item_t), nullptr);
 
   const char* current = data;
   while (*current) {
@@ -76,8 +77,8 @@ xbt_dynar_t MC_record_from_string(const char* data)
     xbt_dynar_push(dynar, &item);
 
     // Find next chunk:
-    const char* end = strchr(current, ';');
-    if(end==NULL)
+    const char* end = std::strchr(current, ';');
+    if(end == nullptr)
       break;
     else
       current = end + 1;
@@ -87,15 +88,15 @@ xbt_dynar_t MC_record_from_string(const char* data)
 
 fail:
   xbt_dynar_free(&dynar);
-  return NULL;
+  return nullptr;
 }
 
 #ifdef HAVE_MC
 static char* MC_record_stack_to_string_liveness(xbt_fifo_t stack)
 {
   char* buffer;
-  size_t size;
-  FILE* file = open_memstream(&buffer, &size);
+  std::size_t size;
+  std::FILE* file = open_memstream(&buffer, &size);
 
   xbt_fifo_item_t item;
   xbt_fifo_item_t start = xbt_fifo_get_last_item(stack);
@@ -110,13 +111,13 @@ static char* MC_record_stack_to_string_liveness(xbt_fifo_t stack)
       // Serialization the (pid, value) pair:
       const char* sep = (item!=start) ? ";" : "";
       if (value)
-        fprintf(file, "%s%u/%u", sep, pid, value);
+        std::fprintf(file, "%s%u/%u", sep, pid, value);
       else
-        fprintf(file, "%s%u", sep, pid);
+        std::fprintf(file, "%s%u", sep, pid);
     }
   }
 
-  fclose(file);
+  std::fclose(file);
   return buffer;
 }
 
@@ -134,8 +135,8 @@ char* MC_record_stack_to_string(xbt_fifo_t stack)
   }
 
   char* buffer;
-  size_t size;
-  FILE* file = open_memstream(&buffer, &size);
+  std::size_t size;
+  std::FILE* file = open_memstream(&buffer, &size);
 
   xbt_fifo_item_t item;
   for (item = start; item; item = xbt_fifo_get_prev_item(item)) {
@@ -150,12 +151,12 @@ char* MC_record_stack_to_string(xbt_fifo_t stack)
     // Serialization the (pid, value) pair:
     const char* sep = (item!=start) ? ";" : "";
     if (value)
-      fprintf(file, "%s%u/%u", sep, pid, value);
+      std::fprintf(file, "%s%u/%u", sep, pid, value);
     else
-      fprintf(file, "%s%u", sep, pid);
+      std::fprintf(file, "%s%u", sep, pid);
   }
 
-  fclose(file);
+  std::fclose(file);
   return buffer;
 }
 
@@ -164,7 +165,7 @@ void MC_record_dump_path(xbt_fifo_t stack)
   if (MC_record_is_active()) {
     char* path = MC_record_stack_to_string(stack);
     XBT_INFO("Path = %s", path);
-    free(path);
+    std::free(path);
   }
 }
 #endif
