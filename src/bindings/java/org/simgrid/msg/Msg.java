@@ -18,7 +18,7 @@ public final class Msg {
 			return;
 	        
 		if (System.getProperty("os.name").toLowerCase().startsWith("win"))
-			NativeLib.nativeInit("winpthread");
+			NativeLib.nativeInit("winpthread-1");
 
 		NativeLib.nativeInit("simgrid");
 		NativeLib.nativeInit("simgrid-java");      
