@@ -8,7 +8,7 @@
 
 #define CkPrintf printf
 
-
+#include "ckgraph.h"
 
 
 //TODO We need class ProcInfo
@@ -86,7 +86,7 @@ public:
 //    int n_migrateobjs;		// total number of migratable objects
     CkVec<LDObjData> objData;	// LDObjData and LDCommData defined in lbdb.h
     CkVec<int> from_proc;	// current pe an object is on
-//    CkVec<int> to_proc;		// new pe you want the object to be on
+    CkVec<int> to_proc;		// new pe you want the object to be on
 //
 //    int n_comm;			// number of edges in the vector "commData"
 //    CkVec<LDCommData> commData;	// communication data - edge list representation

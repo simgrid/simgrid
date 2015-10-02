@@ -74,14 +74,14 @@ void GreedyLB::work(LDStats* stats)
 
   // Add the overhead to the total load 
   for (pe = 0; pe<procs.size(); pe++) {
-    procs[pe].totalLoad() +=  procs[pe].overhead();//TODO needs class ProcInfo
+    procs[pe].totalLoad() +=  procs[pe].overhead();//needs class ProcInfo
   }
 
   // build object array
-  std::vector<Vertex> objs; //TODO What is Vertex?
+  std::vector<Vertex> objs; //Vertex is declared on ckgraph.h
 
   for(int obj = 0; obj < stats->n_objs; obj++) {
-    LDObjData &oData = stats->objData[obj]; //TODO Needs struct LDObjData
+    LDObjData &oData = stats->objData[obj]; //Needs struct LDObjData
     int pe = stats->from_proc[obj];
     if (!oData.migratable) {
       if (!stats->procs[pe].available) 
@@ -119,8 +119,8 @@ void GreedyLB::work(LDStats* stats)
     if (dest != pe) {
       stats->to_proc[id] = dest;
       nmoves ++;
-      if (_lb_args.debug()>2) 
-        CkPrintf("[%d] Obj %d migrating from %d to %d\n", CkMyPe(),objs[obj].getVertexId(),pe,dest);
+//      if (_lb_args.debug()>2) 
+//        CkPrintf("[%d] Obj %d migrating from %d to %d\n", CkMyPe(),objs[obj].getVertexId(),pe,dest);
     }
 
     //Insert the least loaded processor with load updated back into the heap
@@ -128,36 +128,36 @@ void GreedyLB::work(LDStats* stats)
     push_heap(procs.begin(), procs.end(), ProcLoadGreater());
   }
 
-  if (_lb_args.debug()>0) 
-    CkPrintf("[%d] %d objects migrating.\n", CkMyPe(), nmoves);
-
-  if (_lb_args.debug()>1)  {
-    CkPrintf("CharmLB> Min obj: %f  Max obj: %f\n", objs[objs.size()-1].getVertexLoad(), objs[0].getVertexLoad());
-    CkPrintf("CharmLB> PE speed:\n");
-    for (pe = 0; pe<procs.size(); pe++)
-      CkPrintf("%f ", procs[pe].pe_speed());
-    CkPrintf("\n");
-    CkPrintf("CharmLB> PE Load:\n");
-    for (pe = 0; pe<procs.size(); pe++)
-      CkPrintf("%f (%f)  ", procs[pe].totalLoad(), procs[pe].overhead());
-    CkPrintf("\n");
-  }
-
-  if (_lb_args.metaLbOn()) {
-    double max_load = 0;
-    double avg_load = 0;
-    for (pe = 0; pe<procs.size(); pe++) {
-      if (procs[pe].totalLoad() > max_load) {
-        max_load = procs[pe].totalLoad();
-      }
-      avg_load += procs[pe].totalLoad();
-    }
-
-    stats->after_lb_max = max_load;
-    stats->after_lb_avg = avg_load/procs.size();
-    stats->is_prev_lb_refine = 0;
-    if (_lb_args.debug() > 0)
-      CkPrintf("GreedyLB> After lb max load: %lf avg load: %lf\n", max_load, avg_load/procs.size());
-  }
+//  if (_lb_args.debug()>0) 
+//    CkPrintf("[%d] %d objects migrating.\n", CkMyPe(), nmoves);
+//
+//  if (_lb_args.debug()>1)  {
+//    CkPrintf("CharmLB> Min obj: %f  Max obj: %f\n", objs[objs.size()-1].getVertexLoad(), objs[0].getVertexLoad());
+//    CkPrintf("CharmLB> PE speed:\n");
+//    for (pe = 0; pe<procs.size(); pe++)
+//      CkPrintf("%f ", procs[pe].pe_speed());
+//    CkPrintf("\n");
+//    CkPrintf("CharmLB> PE Load:\n");
+//    for (pe = 0; pe<procs.size(); pe++)
+//      CkPrintf("%f (%f)  ", procs[pe].totalLoad(), procs[pe].overhead());
+//    CkPrintf("\n");
+//  }
+//
+//  if (_lb_args.metaLbOn()) {
+//    double max_load = 0;
+//    double avg_load = 0;
+//    for (pe = 0; pe<procs.size(); pe++) {
+//      if (procs[pe].totalLoad() > max_load) {
+//        max_load = procs[pe].totalLoad();
+//      }
+//      avg_load += procs[pe].totalLoad();
+//    }
+//
+//    stats->after_lb_max = max_load;
+//    stats->after_lb_avg = avg_load/procs.size();
+//    stats->is_prev_lb_refine = 0;
+//    if (_lb_args.debug() > 0)
+//      CkPrintf("GreedyLB> After lb max load: %lf avg load: %lf\n", max_load, avg_load/procs.size());
+//  }
 }
 
