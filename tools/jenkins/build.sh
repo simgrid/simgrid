@@ -116,7 +116,7 @@ echo "XX"
 
 ctest -T test --output-on-failure --no-compress-output || true
 if [ -f Testing/TAG ] ; then
-   xsltproc $WORKSPACE/buildtools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults.xml
+   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults.xml
    mv CTestResults.xml $WORKSPACE
 fi
 

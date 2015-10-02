@@ -88,7 +88,7 @@ ctest -D ExperimentalCoverage || true
 
 if [ -f Testing/TAG ] ; then
    /usr/local/gcovr-3.1/scripts/gcovr -r .. --xml-pretty -o $WORKSPACE/xml_coverage.xml
-   xsltproc $WORKSPACE/buildtools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults_memcheck.xml
+   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults_memcheck.xml
    mv CTestResults_memcheck.xml $WORKSPACE
 fi
 
