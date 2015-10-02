@@ -127,7 +127,7 @@ if(enable_lib_in_jar)
   if(MINGW)
     find_library(WINPTHREAD_DLL
       NAME winpthread winpthread-1
-      PATHS C:\MinGW C:\MinGW64 C:\MinGW\bin C:\MinGW64\bin
+      PATHS C:\\MinGW C:\\MinGW64 C:\\MinGW\\bin C:\\MinGW64\\bin
     )
     add_custom_command(
       TARGET simgrid-java_jar POST_BUILD
