@@ -1,4 +1,4 @@
-# cmake -DCMAKE_TOOLCHAIN_FILE=buildtools/Cross/Mingw.cmake ..
+# cmake -DCMAKE_TOOLCHAIN_FILE=tools/cmake/cross-mingw.cmake ..
 
 set (CMAKE_SYSTEM_NAME Windows)
 set (CMAKE_SYSTEM_PROCESSOR x86_64)
