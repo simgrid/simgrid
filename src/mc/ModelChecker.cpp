@@ -17,7 +17,8 @@ namespace mc {
 ModelChecker::ModelChecker(pid_t pid, int socket) :
   hostnames_(xbt_dict_new()),
   page_store_(500),
-  process_(pid, socket)
+  process_(pid, socket),
+  parent_snapshot_(nullptr)
 {
 }
 

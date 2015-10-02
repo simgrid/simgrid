@@ -31,7 +31,7 @@
 #include <libunwind.h>
 #include <xbt/mmalloc.h>
 #include "../xbt/mmalloc/mmprivate.h"
-#include "mc_dwarf.hpp"
+#include "mc_object_info.h"
 #include "mc_comm_pattern.h"
 #include "mc_request.h"
 #include "mc_safety.h"
@@ -507,6 +507,8 @@ void MC_print_statistics(mc_stats_t stats)
     if (_sg_mc_comms_determinism)
       XBT_INFO("Recv-deterministic : %s", !initial_global_state->recv_deterministic ? "No" : "Yes");
   }
+  if (getenv("SIMGRID_MC_SYSTEM_STATISTICS"))
+    system("free");
 }
 
 void MC_automaton_load(const char *file)

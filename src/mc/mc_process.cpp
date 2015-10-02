@@ -28,7 +28,7 @@
 #include <xbt/mmalloc.h>
 
 #include "mc_process.h"
-#include "mc_dwarf.hpp"
+#include "mc_object_info.h"
 #include "mc_unw.h"
 #include "mc_snapshot.h"
 #include "mc_ignore.h"
@@ -131,6 +131,7 @@ static ssize_t pread_whole(int fd, void *buf, size_t count, std::uint64_t offset
     } else if (res==0) {
       return -1;
     } else if (errno != EINTR) {
+      perror("pread_whole");
       return -1;
     }
   }
@@ -169,6 +170,14 @@ static void MC_zero_buffer_init(void)
   if (zero_buffer == MAP_FAILED)
     xbt_die("Could not map the zero buffer");
   close(fd);
+}
+
+static
+int open_process_file(pid_t pid, const char* file, int flags)
+{
+  char buff[50];
+  snprintf(buff, sizeof(buff), "/proc/%li/%s", (long) pid, file);
+  return open(buff, flags);
 }
 
 }
@@ -213,6 +222,8 @@ Process::Process(pid_t pid, int sockfd)
   process->heap = NULL;
   process->heap_info = NULL;
   process->init_memory_map_info();
+  process->clear_refs_fd_ = -1;
+  process->pagemap_fd_ = -1;
 
   // Open the memory file
   if (process->is_self())
@@ -284,6 +295,11 @@ Process::~Process()
 
   free(process->heap_info);
   process->heap_info = NULL;
+
+  if (process->clear_refs_fd_ >= 0)
+    close(process->clear_refs_fd_);
+  if (process->pagemap_fd_ >= 0)
+    close(process->pagemap_fd_);
 }
 
 /** Refresh the information about the process
@@ -640,6 +656,30 @@ void Process::ignore_region(std::uint64_t addr, std::size_t size)
   }
   ignored_regions_.insert(
     ignored_regions_.begin() + position, region);
+}
+
+void Process::reset_soft_dirty()
+{
+  if (this->clear_refs_fd_ < 0) {
+    this->clear_refs_fd_ = open_process_file(pid_, "clear_refs", O_WRONLY|O_CLOEXEC);
+    if (this->clear_refs_fd_ < 0)
+      xbt_die("Could not open clear_refs file for soft-dirty tracking. Run as root?");
+  }
+  if(::write(this->clear_refs_fd_, "4\n", 2) != 2)
+    xbt_die("Could not reset softdirty bits");
+}
+
+void Process::read_pagemap(uint64_t* pagemap, size_t page_start, size_t page_count)
+{
+  if (pagemap_fd_ < 0) {
+    pagemap_fd_ = open_process_file(pid_, "pagemap", O_RDONLY|O_CLOEXEC);
+    if (pagemap_fd_ < 0)
+      xbt_die("Could not open pagemap file for soft-dirty tracking. Run as root?");
+  }
+  ssize_t bytesize = sizeof(uint64_t) * page_count;
+  off_t offset = sizeof(uint64_t) * page_start;
+  if (pread_whole(pagemap_fd_, pagemap, bytesize, offset) != bytesize)
+    xbt_die("Could not read pagemap");
 }
 
 }

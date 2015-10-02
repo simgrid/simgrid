@@ -625,6 +625,17 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_sparse_checkpoint, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/sparse-checkpoint", "no");
 
+    /* do stateful model-checking */
+    xbt_cfg_register(&_sg_cfg_set, "model-check/soft-dirty",
+                     "Use sparse per-page snapshots.",
+                     xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_soft_dirty, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/soft-dirty", "no");
+
+    xbt_cfg_register(&_sg_cfg_set, "model-check/ksm",
+                     "Kernel same-page merging",
+                     xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_ksm, NULL);
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/ksm", "no");
+
     /* do liveness model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/property",
                      "Specify the name of the file containing the property. It must be the result of the ltl2ba program.",

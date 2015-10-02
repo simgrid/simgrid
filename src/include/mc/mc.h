@@ -37,10 +37,13 @@
 SG_BEGIN_DECL()
 
 /********************************** Configuration of MC **************************************/	
+
 extern XBT_PUBLIC(int) _sg_do_model_check;
 extern XBT_PRIVATE int _sg_do_model_check_record;
 extern XBT_PRIVATE int _sg_mc_checkpoint;
 extern XBT_PUBLIC(int) _sg_mc_sparse_checkpoint;
+extern XBT_PUBLIC(int) _sg_mc_ksm;
+extern XBT_PUBLIC(int) _sg_mc_soft_dirty;
 extern XBT_PUBLIC(char*) _sg_mc_property_file;
 extern XBT_PRIVATE int _sg_mc_timeout;
 extern XBT_PRIVATE int _sg_mc_hash;
@@ -58,9 +61,12 @@ extern XBT_PRIVATE xbt_dynar_t mc_heap_comparison_ignore;
 extern XBT_PRIVATE xbt_dynar_t stacks_areas;
 
 /********************************* Global *************************************/
+
 XBT_PRIVATE void _mc_cfg_cb_reduce(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_checkpoint(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_sparse_checkpoint(const char *name, int pos);
+XBT_PRIVATE void _mc_cfg_cb_ksm(const char *name, int pos);
+XBT_PRIVATE void _mc_cfg_cb_soft_dirty(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_property(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_timeout(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_snapshot_fds(const char *name, int pos);
@@ -71,6 +77,26 @@ XBT_PRIVATE void _mc_cfg_cb_dot_output(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_comms_determinism(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_send_determinism(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_termination(const char *name, int pos);
+
+extern xbt_dynar_t mc_heap_comparison_ignore;
+extern xbt_dynar_t stacks_areas;
+
+/********************************* Global *************************************/
+void _mc_cfg_cb_reduce(const char *name, int pos);
+void _mc_cfg_cb_checkpoint(const char *name, int pos);
+void _mc_cfg_cb_sparse_checkpoint(const char *name, int pos);
+void _mc_cfg_cb_soft_dirty(const char *name, int pos);
+void _mc_cfg_cb_ksm(const char *name, int pos);
+void _mc_cfg_cb_property(const char *name, int pos);
+void _mc_cfg_cb_timeout(const char *name, int pos);
+void _mc_cfg_cb_hash(const char *name, int pos);
+void _mc_cfg_cb_snapshot_fds(const char *name, int pos);
+void _mc_cfg_cb_max_depth(const char *name, int pos);
+void _mc_cfg_cb_visited(const char *name, int pos);
+void _mc_cfg_cb_dot_output(const char *name, int pos);
+void _mc_cfg_cb_comms_determinism(const char *name, int pos);
+void _mc_cfg_cb_send_determinism(const char *name, int pos);
+void _mc_cfg_cb_termination(const char *name, int pos);
 
 XBT_PUBLIC(void) MC_run(void);
 XBT_PUBLIC(void) MC_init(void);

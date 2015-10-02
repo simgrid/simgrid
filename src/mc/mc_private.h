@@ -16,6 +16,7 @@
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
+#include <elfutils/libdw.h>
 
 #include "mc/mc.h"
 #include "mc_base.h"
@@ -116,6 +117,8 @@ XBT_PRIVATE void MC_dump_stacks(FILE* file);
 XBT_PRIVATE void MC_report_assertion_error(void);
 
 XBT_PRIVATE void MC_invalidate_cache(void);
+
+XBT_PRIVATE int MC_important_snapshot(mc_snapshot_t snapshot);
 
 SG_END_DECL()
 

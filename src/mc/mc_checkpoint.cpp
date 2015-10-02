@@ -29,7 +29,7 @@
 #include <mc/mc.h>
 
 #include "mc_snapshot.h"
-#include "mc_dwarf.hpp"
+#include "mc_object_info.h"
 #include "mc_mmu.h"
 #include "mc_unw.h"
 #include "mc_protocol.h"
@@ -50,6 +50,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
+int MC_important_snapshot(mc_snapshot_t snapshot)
+{
+  // We need this snapshot in order to know which
+  // pages needs to be stored in the next snapshot.
+  // This field is only non-NULL when using soft-dirty
+  // page tracking.
+  if (snapshot == mc_model_checker->parent_snapshot_)
+    return true;
+
+  return false;
+}
+
 /** @brief Restore a region from a snapshot
  *
  *  @param reg     Target region
@@ -63,7 +75,7 @@ static void MC_region_restore(mc_mem_region_t region)
     break;
 
   case simgrid::mc::StorageType::Flat:
-    mc_model_checker->process().write_bytes(region->flat_data().data(),
+    mc_model_checker->process().write_bytes(region->flat_data(),
       region->size(), region->permanent_address());
     break;
 
@@ -85,7 +97,8 @@ namespace mc {
 
 #ifdef HAVE_SMPI
 simgrid::mc::RegionSnapshot privatized_region(
-    RegionType region_type, void *start_addr, void* permanent_addr, size_t size
+    RegionType region_type, void *start_addr, void* permanent_addr, size_t size,
+    const simgrid::mc::RegionSnapshot* ref_region
     )
 {
   size_t process_count = MC_smpi_process_count();
@@ -102,11 +115,13 @@ simgrid::mc::RegionSnapshot privatized_region(
 
   std::vector<simgrid::mc::RegionSnapshot> data;
   data.reserve(process_count);
-  for (size_t i = 0; i < process_count; i++)
-    data.push_back(
-      simgrid::mc::region(region_type, start_addr,
-        privatisation_regions[i].address, size)
-      );
+  for (size_t i = 0; i < process_count; i++) {
+    const simgrid::mc::RegionSnapshot* ref_privatized_region = nullptr;
+    if (ref_region && ref_region->storage_type() == StorageType::Privatized)
+      ref_privatized_region = &ref_region->privatized_data()[i];
+    data.push_back(simgrid::mc::region(region_type, start_addr,
+      privatisation_regions[i].address, size, ref_privatized_region));
+  }
 
   simgrid::mc::RegionSnapshot region = simgrid::mc::RegionSnapshot(
     region_type, start_addr, permanent_addr, size);
@@ -130,15 +145,19 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
   else if (type == simgrid::mc::RegionType::Heap)
     xbt_assert(!object_info, "Unexpected object info for heap region.");
 
-  simgrid::mc::RegionSnapshot region;
+  simgrid::mc::RegionSnapshot const* ref_region = nullptr;
+  if (mc_model_checker->parent_snapshot_)
+    ref_region = mc_model_checker->parent_snapshot_->snapshot_regions[index].get();
 
+  simgrid::mc::RegionSnapshot region;
 #ifdef HAVE_SMPI
   const bool privatization_aware = object_info && object_info->privatized();
   if (privatization_aware && MC_smpi_process_count())
-    region = simgrid::mc::privatized_region(type, start_addr, permanent_addr, size);
+    region = simgrid::mc::privatized_region(
+      type, start_addr, permanent_addr, size, ref_region);
   else
 #endif
-    region = simgrid::mc::region(type, start_addr, permanent_addr, size);
+    region = simgrid::mc::region(type, start_addr, permanent_addr, size, ref_region);
 
   region.object_info(object_info);
   snapshot->snapshot_regions[index]
@@ -595,8 +614,12 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   if (_sg_mc_snapshot_fds)
     snapshot->current_fds = MC_get_current_fds(process->pid);
 
+  const bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty;
+
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   MC_get_memory_regions(mc_process, snapshot);
+  if (use_soft_dirty)
+    mc_process->reset_soft_dirty();
 
   snapshot->to_ignore = MC_take_snapshot_ignore();
 
@@ -613,6 +636,8 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   }
 
   MC_snapshot_ignore_restore(snapshot);
+  if (use_soft_dirty)
+    mc_model_checker->parent_snapshot_ = snapshot;
   return snapshot;
 }
 
@@ -663,11 +688,16 @@ void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
 void MC_restore_snapshot(mc_snapshot_t snapshot)
 {
   XBT_DEBUG("Restore snapshot %i", snapshot->num_state);
+  const bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty;
   MC_restore_snapshot_regions(snapshot);
   if (_sg_mc_snapshot_fds)
     MC_restore_snapshot_fds(snapshot);
+  if (use_soft_dirty)
+    mc_model_checker->process().reset_soft_dirty();
   MC_snapshot_ignore_restore(snapshot);
   mc_model_checker->process().cache_flags = 0;
+  if (use_soft_dirty)
+    mc_model_checker->parent_snapshot_ = snapshot;
 }
 
 mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)

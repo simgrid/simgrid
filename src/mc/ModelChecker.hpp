@@ -36,6 +36,9 @@ class ModelChecker {
   PageStore page_store_;
   Process process_;
 public:
+  mc_snapshot_t parent_snapshot_;
+
+public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
   ModelChecker(pid_t pid, int socket);
