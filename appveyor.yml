@@ -45,7 +45,7 @@ build_script:
 - if not [%COMPILER%]==[MSVC15] mingw32-make
 
 test_script:
-- ctest --output-on-failure
+- ctest --verbose || true
 
 artifacts:
 - path: simgrid.jar
