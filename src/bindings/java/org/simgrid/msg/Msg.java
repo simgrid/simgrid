@@ -16,14 +16,9 @@ public final class Msg {
 	public static void nativeInit() {
 		if (isNativeInited)
 			return;
-	        try {
+	        
+		if (System.getProperty("os.name").toLowerCase().startsWith("win"))
 			NativeLib.nativeInit("winpthread");
-		} catch (Exception e)  {
-			if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
-				System.err.println("Cannot load winpthread.dll:");
-				e.printStackTrace();
-			}
-		}
 
 		NativeLib.nativeInit("simgrid");
 		NativeLib.nativeInit("simgrid-java");      
