@@ -29,11 +29,6 @@ public final class NativeLib {
 		isNativeInited = true;
 	}
 
-	static {
-		nativeInit();
-	}
-
-
 	public static void nativeInit(String name) {
 		try {
 			/* Prefer the version of the library bundled into the jar file and use it */
