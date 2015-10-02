@@ -244,12 +244,6 @@
 /* Define to 1 if you have the <windows.h> header file. */
 #cmakedefine HAVE_WINDOWS_H @HAVE_WINDOWS_H@
 
-/* Define to 1 if you have the <winsock2.h> header file. */
-#cmakedefine HAVE_WINSOCK2_H @HAVE_WINSOCK2_H@
-
-/* Define to 1 if you have the <winsock.h> header file. */
-#cmakedefine HAVE_WINSOCK_H @HAVE_WINSOCK_H@
-
 /* Define to the sub-directory in which libtool stores uninstalled libraries.*/
 #cmakedefine LT_OBJDIR @LT_OBJDIR@
 
