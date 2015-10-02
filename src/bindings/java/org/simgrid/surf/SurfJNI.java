@@ -13,6 +13,9 @@ import org.simgrid.NativeLib;
 public class SurfJNI {
 
   static {
+    try {
+      NativeLib.nativeInit("winpthread");
+    } catch (Exception e) {}
     NativeLib.nativeInit("simgrid");
     NativeLib.nativeInit("surf-java");
     Runtime.getRuntime().addShutdownHook(
