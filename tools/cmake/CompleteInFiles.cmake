@@ -17,7 +17,7 @@ IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
     message(STATUS "System processor: x86_64 (${CMAKE_SYSTEM_PROCESSOR}, 64 bits)")
     set(PROCESSOR_x86_64 1)
   ENDIF()
-  if (NOT MSVC)
+  if (MSVC)
     message(STATUS "Disable fast raw contextes on Microsoft Visual.")
   else()
     set(HAVE_RAWCTX 1)
@@ -65,8 +65,6 @@ if(ARCH_32_BITS)
 else()
   set(MPI_ADDRESS_SIZE 8)
 endif()
-
-message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
 
 include(CheckFunctionExists)
 include(CheckTypeSize)
@@ -208,10 +206,9 @@ if(MINGW)
 endif()
 
 CHECK_FUNCTION_EXISTS(makecontext HAVE_MAKECONTEXT)
-CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
-CHECK_FUNCTION_EXISTS(strdup SIMGRID_HAVE_STRDUP)
-CHECK_FUNCTION_EXISTS(_strdup SIMGRID_HAVE__STRDUP)
+
+CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 
 #Check if __thread is defined
 execute_process(
@@ -227,7 +224,11 @@ else()
 endif()
 
 # Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
-IF(NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
+IF(HAVE_MMAP AND
+   NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND 
+   NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND 
+   NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND 
+   NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
   SET(HAVE_MMAP 0)
   message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
 ENDIF()
@@ -239,7 +240,7 @@ else()
 endif()
 
 
-if(WIN32) #THOSE FILES ARE FUNCTIONS ARE NOT DETECTED BUT THEY SHOULD...
+if(WIN32) # Those files are not detected despite being present
   set(HAVE_UCONTEXT_H 1)
   set(HAVE_MAKECONTEXT 1)
   set(HAVE_SNPRINTF 1)
@@ -336,12 +337,6 @@ endif()
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
-
-if(HAVE_PTHREAD)
-  set(pthread 1)
-elseif(pthread)
-  set(pthread 0)
-endif()
 
 if(HAVE_PTHREAD)
   ### Test that we have a way to create semaphores

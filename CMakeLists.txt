@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 # Java requires 2.8.6
+message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
 
 project(SimGrid C CXX)
 
@@ -168,7 +169,6 @@ set(INCLUDES
 if(WIN32)
   set(INCLUDES ${INCLUDES} ${CMAKE_HOME_DIRECTORY}/include/xbt ${CMAKE_HOME_DIRECTORY}/src/xbt) #for win32_ucontext.[ch]
 endif()
-set(CMAKE_SOURCE_DIR ${PROJECT_SOURCE_DIRECTORY})
 
 if(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
   set(INCLUDES ${INCLUDES} /usr/include/)
