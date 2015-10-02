@@ -4,12 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <cstdint>
-
 #include <stdint.h>
 #include <stdarg.h>
 
 #include <dwarf.h>
+#include <elfutils/libdw.h>
 
 #include "mc_dwarf.hpp"
 #include "mc_private.h"
@@ -22,7 +21,7 @@ using simgrid::mc::remote;
 
 extern "C" {
 
-static int mc_dwarf_push_value(mc_expression_state_t state, std::uint64_t value)
+static int mc_dwarf_push_value(mc_expression_state_t state, Dwarf_Off value)
 {
   if (state->stack_size >= MC_EXPRESSION_STACK_SIZE)
     return MC_EXPRESSION_E_STACK_OVERFLOW;
@@ -234,7 +233,7 @@ int mc_dwarf_execute_expression(size_t n, const simgrid::mc::DwarfInstruction* o
         return MC_EXPRESSION_E_NO_BASE_ADDRESS;
       if (state->stack_size == MC_EXPRESSION_STACK_SIZE)
         return MC_EXPRESSION_E_STACK_OVERFLOW;
-      std::uint64_t addr = (std::uint64_t) (uintptr_t)
+      Dwarf_Off addr = (Dwarf_Off) (uintptr_t)
         state->object_info->base_address() + op->number;
       error = mc_dwarf_push_value(state, addr);
       break;

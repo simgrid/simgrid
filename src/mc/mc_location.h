@@ -13,6 +13,7 @@
 
 #include <libunwind.h>
 #include <dwarf.h>
+#include <elfutils/libdw.h>
 
 #include <simgrid_config.h>
 #include "mc_base.h"
