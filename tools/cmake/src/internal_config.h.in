@@ -27,9 +27,6 @@
 	#endif
 #endif
 
-#cmakedefine SIZEOF_INT @SIZEOF_INT@
-#cmakedefine SIZEOF_VOIDP @SIZEOF_VOIDP@
-
 /* If __thread is available */
 #cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@
 
@@ -155,9 +152,6 @@
 /* Indicates that we have NS3 support */
 #cmakedefine HAVE_NS3 @HAVE_NS3@
 
-/* Define to 1 if you have the <inttypes.h> header file. */
-#cmakedefine HAVE_INTTYPES_H @HAVE_INTTYPES_H@
-
 /* defines whether Lua bindings must be compiled or not */
 #cmakedefine HAVE_LUA @HAVE_LUA@
 
@@ -166,9 +160,6 @@
 
 /* Define to 1 if you have the `makecontext' function. */
 #cmakedefine HAVE_MAKECONTEXT @HAVE_MAKECONTEXT@
-
-/* Define to 1 if you have the <memory.h> header file. */
-#cmakedefine HAVE_MEMORY_H @HAVE_MEMORY_H@
 
 /* Define if pthread_mutex_timedlock() is avaible or not (part of XPG6
    standard only?) */
@@ -201,20 +192,11 @@
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H @HAVE_STDINT_H@
 
-/* Define to 1 if you have the <stdlib.h> header file. */
-#cmakedefine HAVE_STDLIB_H @HAVE_STDLIB_H@
-
-/* Define to 1 if you have the <strings.h> header file. */
-#cmakedefine HAVE_STRINGS_H @HAVE_STRINGS_H@
-
 /* Define to 1 if you have the <string.h> header file. */
 #cmakedefine HAVE_STRING_H @HAVE_STRING_H@
 
 /* Define to 1 if you have the `sysconf' function. */
 #cmakedefine HAVE_SYSCONF @HAVE_SYSCONF@
-
-/* Define to 1 if you have the <sys/socket.h> header file. */
-#cmakedefine HAVE_SYS_SOCKET_H @HAVE_SYS_SOCKET_H@
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #cmakedefine HAVE_SYS_STAT_H @HAVE_SYS_STAT_H@
@@ -285,9 +267,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #cmakedefine STDC_HEADERS @STDC_HEADERS@
-
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-#cmakedefine TIME_WITH_SYS_TIME @TIME_WITH_SYS_TIME@
 
 /* Tracking of latency bound */
 #cmakedefine HAVE_LATENCY_BOUND_TRACKING @HAVE_LATENCY_BOUND_TRACKING@

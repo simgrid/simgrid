@@ -158,12 +158,10 @@ else()
   set(CMAKE_REQUIRED_DEFINITIONS "-D_GNU_SOURCE")
 endif()
 
-CHECK_INCLUDE_FILES("time.h;sys/time.h" TIME_WITH_SYS_TIME)
 CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
 CHECK_INCLUDE_FILE("pthread.h" HAVE_PTHREAD_H)
 CHECK_INCLUDE_FILE("valgrind/valgrind.h" HAVE_VALGRIND_VALGRIND_H)
 CHECK_INCLUDE_FILE("socket.h" HAVE_SOCKET_H)
-CHECK_INCLUDE_FILE("sys/socket.h" HAVE_SYS_SOCKET_H)
 CHECK_INCLUDE_FILE("stat.h" HAVE_STAT_H)
 CHECK_INCLUDE_FILE("sys/stat.h" HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILE("windows.h" HAVE_WINDOWS_H)
@@ -175,10 +173,6 @@ CHECK_INCLUDE_FILE("sys/time.h" HAVE_SYS_TIME_H)
 CHECK_INCLUDE_FILE("sys/param.h" HAVE_SYS_PARAM_H)
 CHECK_INCLUDE_FILE("sys/sysctl.h" HAVE_SYS_SYSCTL_H)
 CHECK_INCLUDE_FILE("time.h" HAVE_TIME_H)
-CHECK_INCLUDE_FILE("inttypes.h" HAVE_INTTYPES_H)
-CHECK_INCLUDE_FILE("memory.h" HAVE_MEMORY_H)
-CHECK_INCLUDE_FILE("stdlib.h" HAVE_STDLIB_H)
-CHECK_INCLUDE_FILE("strings.h" HAVE_STRINGS_H)
 CHECK_INCLUDE_FILE("string.h" HAVE_STRING_H)
 CHECK_INCLUDE_FILE("ucontext.h" HAVE_UCONTEXT_H)
 CHECK_INCLUDE_FILE("stdio.h" HAVE_STDIO_H)
@@ -292,11 +286,6 @@ if(enable_smpi)
     SET(HAVE_PRIVATIZATION 0)
   endif()
 endif()
-
-#--------------------------------------------------------------------------------------------------
-### Check for some architecture dependent values
-CHECK_TYPE_SIZE(int SIZEOF_INT)
-CHECK_TYPE_SIZE(void* SIZEOF_VOIDP)
 
 #--------------------------------------------------------------------------------------------------
 ### Check for GNU dynamic linker
