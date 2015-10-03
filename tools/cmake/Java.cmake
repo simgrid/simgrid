@@ -44,12 +44,6 @@ if(WIN32)
 
   set_target_properties(simgrid-java PROPERTIES
     LINK_FLAGS "-Wl,--subsystem,windows,--kill-at")
-  find_path(PEXPORTS_PATH NAMES pexports.exe PATHS NO_DEFAULT_PATHS)
-  message(STATUS "pexports: ${PEXPORTS_PATH}")
-  if(PEXPORTS_PATH)
-    add_custom_command(TARGET simgrid-java POST_BUILD
-      COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/simgrid-java.dll > ${CMAKE_BINARY_DIR}/lib/simgrid-java.def)
-  endif(PEXPORTS_PATH)
 endif()
 
 # Rules to build simgrid.jar
@@ -188,8 +182,4 @@ add_dependencies(simgrid-java_jar surf-java)
 if(WIN32)
   set_target_properties(surf-java PROPERTIES
     LINK_FLAGS "-Wl,--subsystem,windows,--kill-at")
-  if(PEXPORTS_PATH)
-    add_custom_command(TARGET surf-java POST_BUILD
-      COMMAND ${PEXPORTS_PATH}/pexports.exe ${CMAKE_BINARY_DIR}/lib/surf-java.dll > ${CMAKE_BINARY_DIR}/lib/surf-java.def)
-  endif(PEXPORTS_PATH)
 endif()
