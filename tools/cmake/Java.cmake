@@ -5,7 +5,7 @@
 
 cmake_minimum_required(VERSION 2.8.6)
 
-find_package(Java 1.7)
+find_package(Java 1.7 REQUIRED)
 include(UseJava)
 
 # Rules to build libsimgrid-java
