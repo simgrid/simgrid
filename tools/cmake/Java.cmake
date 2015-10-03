@@ -83,6 +83,7 @@ add_custom_command(
   DEPENDS ${MANIFEST_IN_FILE}
 	  ${CMAKE_HOME_DIRECTORY}/COPYING
 	  ${CMAKE_HOME_DIRECTORY}/ChangeLog
+	  ${CMAKE_HOME_DIRECTORY}/NEWS
 	  ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
 	  ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
 	    
@@ -92,7 +93,7 @@ add_custom_command(
 
   COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.msg org.simgrid.surf org.simgrid.trace
   
-  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} doc/javadoc -C ${CMAKE_HOME_DIRECTORY} COPYING ChangeLog ChangeLog.SimGrid-java LICENSE-LGPL-2.1
+  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} doc/javadoc -C ${CMAKE_HOME_DIRECTORY} COPYING ChangeLog ChangeLog.SimGrid-java LICENSE-LGPL-2.1 NEWS
   )
 
 ###
