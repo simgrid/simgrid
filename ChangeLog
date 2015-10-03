@@ -3,6 +3,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
  Build System
   * Require g++ v4.7 at least to not speak prehistorical C++.
   * Require Boost 1.48 (for signal2 component).
+  * Java must be version 7 at least when activated.
   * Tracing is now always enabled (no way to turn it out)
   * Remove GTNetS. It was not working anyway.
   * Move headers around to sort them out on installed systems:

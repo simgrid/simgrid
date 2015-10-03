@@ -1,5 +1,11 @@
+##
+## The Cmake definitions for the use of Java (and Scala)
+##   This file is loaded only if the Java option is activated
+##
+
 cmake_minimum_required(VERSION 2.8.6)
 
+find_package(Java 1.7)
 include(UseJava)
 
 # Rules to build libsimgrid-java
