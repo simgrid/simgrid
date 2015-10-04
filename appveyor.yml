@@ -43,9 +43,10 @@ build_script:
 - if not [%COMPILER%]==[MSVC15]                      cmake -G "MinGW Makefiles"             -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
 - if [%COMPILER%]==[MSVC15]     msbuild ALL_BUILD.vcxproj /verbosity:normal
 - if not [%COMPILER%]==[MSVC15] mingw32-make
+- cd examples/java ; java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml --log=root.thres:verbose --log=xbt.thres:info || true
 
-test_script:
-- ctest --verbose || true
+#test_script:
+#- ctest --verbose || true
 
 artifacts:
 - path: simgrid.jar

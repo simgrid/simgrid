@@ -275,15 +275,7 @@ endif()
 
 INCLUDE(CTest)
 ENABLE_TESTING()
-if(WIN32)
-  add_test(
-      NAME basic-java
-      COMMAND java -classpath ".;${CMAKE_HOME_DIRECTORY}\\simgrid.jar" masterslave.Masterslave ..\\platforms\\platform.xml masterslave\\masterslaveDeployment.xml
-      WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}\\examples\\java
-  )
-else()
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/AddTests.cmake)
-endif()
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/AddTests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestConfig.cmake)
 
 ### Setup the distrib
