@@ -550,42 +550,6 @@ IF(NOT enable_memcheck)
 
 ENDIF()
 
-if(enable_smpi AND enable_smpi_ISP_testsuite)
-FOREACH (tesh
-    any_src-can-deadlock10
-    any_src-can-deadlock4
-    any_src-can-deadlock5
-    any_src-can-deadlock6
-    any_src-waitall-deadlock2
-    any_src-waitall-deadlock3
-    any_src-waitany-deadlock2
-    any_src-waitany-deadlock
-    any_src-wait-deadlock
-    basic-deadlock-comm_create
-    basic-deadlock-comm_dup
-    basic-deadlock-comm_split
-    basic-deadlock
-    bcast-deadlock
-    collective-misorder-allreduce
-    collective-misorder
-    complex-deadlock
-    deadlock-config
-    finalize-deadlock
-    irecv-deadlock
-    no-error2
-    no-error3-any_src
-    no-error3
-    no-error
-    )
-  IF(HAVE_MC)
-    ADD_TESH(mc-umpire-${tesh}
-      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire
-      --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/isp/umpire
-      --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire
-      ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/isp/umpire/${tesh}.tesh)
-  ENDIF()
-ENDFOREACH()
-endif()
 
   ## OTHER ##
 ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/src/testall)

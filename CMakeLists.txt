@@ -265,9 +265,6 @@ if(enable_java)
   include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Java.cmake)
 endif()
 
-### Make Exes
-include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeExe.cmake)
-
 ### Make tests
 if(enable_memcheck_xml)
   set(enable_memcheck true)
@@ -277,6 +274,9 @@ INCLUDE(CTest)
 ENABLE_TESTING()
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/AddTests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestConfig.cmake)
+
+### Define subdirectories
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeExe.cmake)
 
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
