@@ -13,52 +13,23 @@
 ### Ongoing stuff
 ###
 
-* Switch to tesh.pl, and kill the now unused parts of xbt that seem fragile
-
-* Clean up CMake files (may need a full rewrite).
+* Clean up CMake files
    Non exhaustive list of subgoals:
    - Use genuine cmake mechanisms and variables when available,
      instead of reinventing the wheel.
    - Correctly determine system and architecture (e.g. x32).
    - Correctly determine compiler type and version (e.g. clang).
-   - Correctly set compiler flags according to compiler type and version.
-   - Correctly set compiler flags for C++, Java, and Fortran compilers too.
    - Use git to generate the dist archive.  Either use git-archive to
      generate the tarball, or keep using cmake -E tar, but use git-ls-files
      to get the list of files to pack.
-
-* Document host module
 
 * /* FIXME: better place? */
   int vasprintf  (char **ptr, const char *fmt, va_list ap);
   char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
 
-###
-### Planned
-###
+* Replace XBT with the C++ standard library, once everything is ported
+  to C++
 
-*
-* XBT
-*****
-
-[errors/exception]
-  * Better split casual errors from programming errors.
-    The first ones should be reported to the user, the second should kill
-    the program (or, yet better, only the msg handler)
-  * Allows the use of an error handler depending on the current module (ie,
-    the same philosophy as log4c using GSL's error functions)
-
-[logs]
-  * Hijack message from a given category to another for a while (to mask
-    initializations, and more)
-  * Allow each actor to have its own setting
-  * more logging appenders (take those from Ralf in l2)
-
-[modules]
-  * Add configuration and dependencies to our module definition
-
-[other modules]
-  * we may need a round-robin database module, and a statistical one
-  * Some of the datacontainer modules seem to overlap. Kill some of them?
+* Some XBT datacontainers seem to overlap. Kill some of them?
     - replace fifo with dynars
     - replace set with SWAG
