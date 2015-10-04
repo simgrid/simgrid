@@ -11,6 +11,12 @@ set -e
 rm -rf /tmp/simgrid*tmp
 rm -rf /tmp/surf-java*tmp
 
+# Help older cmakes
+if [ -e /usr/lib/jvm/java-7-openjdk-amd64 ] ; 
+then
+  export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+fi
+
 # usage: die status message...
 die () {
   local status=${1:-1}
