@@ -168,8 +168,8 @@
 /* Define to 1 if you have the `popen' function. */
 #cmakedefine HAVE_POPEN @HAVE_POPEN@
 
-/* Define to 1 if you have the <pthread.h> header file. */
-#cmakedefine HAVE_PTHREAD_H @HAVE_PTHREAD_H@
+/* Define to 1 if threads are usable . */
+#cmakedefine HAVE_PTHREAD @HAVE_PTHREAD@
 
 /* Define to 1 if you have the `readv' function. */
 #cmakedefine HAVE_READV @HAVE_READV@

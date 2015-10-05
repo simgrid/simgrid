@@ -22,7 +22,7 @@
 
 #ifndef CONTEXT_THREADS
 #ifndef WIN32
-#ifdef HAVE_PTHREAD_H
+#ifdef HAVE_PTHREAD
 /* xbt_threads is loaded in libsimgrid when they are used to implement the xbt_context.
  * The decision (and the loading) is made in xbt/context.c.
  */
