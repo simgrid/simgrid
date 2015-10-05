@@ -35,18 +35,11 @@ target_link_libraries(simgrid-java simgrid)
 
 
 if(WIN32)
-  exec_program("java -d32 -version"
-                OUTPUT_VARIABLE IS_32_BITS_JVM)
+  exec_program("java -d32 -version" OUTPUT_VARIABLE IS_32_BITS_JVM)
   STRING( FIND ${IS_32_BITS_JVM} "Error" POSITION )
   if(NOT ${POSITION} GREATER -1)
     message(fatal_error "SimGrid can only use Java 64 bits")
   endif()
-
-# Already passed to all targets in GCCFlags.cmake
-#  set_target_properties(simgrid-java PROPERTIES
-#    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at")
-#  set_target_properties(surf-java PROPERTIES
-#    LINK_FLAGS "-Wl,--subsystem,windows,--kill-at")
 endif()
 
 # Rules to build simgrid.jar

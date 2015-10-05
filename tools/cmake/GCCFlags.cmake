@@ -177,4 +177,13 @@ if(MINGW)
   # JNI searches for stdcalls
   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wl,--add-stdcall-alias")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--add-stdcall-alias")
+  
+  # Specify the data model that we are using (yeah it helps. eg Java)
+  if(ARCH_32_BITS) 
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -m32")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+  else()
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -m64")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
+  endif()  
 endif()
