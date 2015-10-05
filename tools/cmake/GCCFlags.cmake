@@ -168,12 +168,13 @@ if(NOT $ENV{LDFLAGS} STREQUAL "")
   set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} $ENV{LDFLAGS}")
 endif()
 
-# We don't want to ship libgcc_s_seh-1.dll nor libstdc++-6.dll
-#  This will probably be troublesome if someone wants to use the lib in
-#  its own project, but we only want to have java working on Windows.
 if(MINGW)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static-libgcc")
+  # http://stackoverflow.com/questions/10452262/create-64-bit-jni-under-windows
+  # We don't want to ship libgcc_s_seh-1.dll nor libstdc++-6.dll
+  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -static-libgcc")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
-  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS} -static-libgcc -s")
-  set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS} -static-libgcc -static-libstdc++ -s")
+  
+  # JNI searches for stdcalls
+  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wl,--add-stdcall-alias")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--add-stdcall-alias")
 endif()
