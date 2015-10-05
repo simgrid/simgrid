@@ -210,7 +210,7 @@ static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t s
 void MC_find_object_address(
   std::vector<simgrid::mc::VmMap> const& maps, simgrid::mc::ObjectInformation* result)
 {
-  const char* file_name = xbt_strdup(result->file_name.c_str());
+  char* file_name = xbt_strdup(result->file_name.c_str());
   const char *name = basename(file_name);
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::mc::VmMap const& reg = maps[i];
@@ -258,6 +258,7 @@ void MC_find_object_address(
 
   xbt_assert(result->start_rw);
   xbt_assert(result->start_exec);
+  free(file_name);
 }
 
 /************************************* Take Snapshot ************************************/
