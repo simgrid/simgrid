@@ -14,6 +14,7 @@
 #ifndef _CKGRAPH_H_
 #define _CKGRAPH_H_
 
+#include <stdlib.h>
 #include <vector>
 //#include "BaseLB.h"
 

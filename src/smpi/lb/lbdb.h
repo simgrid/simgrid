@@ -10,6 +10,7 @@
 //#include "charm.h"
 //#include "middle.h"
 
+#include <stdlib.h>
 #include <list>
 
 //class LBDatabase;//Forward declaration
@@ -34,6 +35,12 @@ typedef void* cvoid; /* To eliminate warnings, because a C void* is not
 
   /*  User-defined object ID is 4 ints long (as defined in converse.h) */
   /*  as OBJ_ID_SZ */
+
+//By rktesser: We need to define OBJ_ID_SZ, since we are not including
+//converse.h
+
+#define OBJ_ID_SZ 4
+
 
 //#if CMK_LBDB_ON
 //typedef struct {
@@ -185,8 +192,8 @@ typedef struct {
 //  CmiUInt2 pupSize;
 //  inline const LDOMHandle &omHandle() const { return handle.omhandle; }
  // inline const LDOMid &omID() const { return handle.omhandle.id; }
-  inline const LDObjid &objID() const { return handle.id; }
-  inline const LDObjid &id() const { return handle.id; }
+//  inline const LDObjid &objID() const { return handle.id; }
+//  inline const LDObjid &id() const { return handle.id; }
 //  inline void pup(PUP::er &p);
 #if CMK_LB_USER_DATA
 //  void* getUserData(int idx)  { return userData.getData(idx); }
@@ -425,7 +432,7 @@ typedef struct {
 //int LDMemusage(LDHandle _db);
 //
 //#ifdef __cplusplus
-//}
+}
 //#endif /* _cplusplus */
 //
 //const LDObjHandle &LDGetObjHandle(LDHandle h, int idx);

@@ -1,11 +1,13 @@
-//#include <algorithm>
+#include <algorithm>
+#include <stdio.h>
 
 //#include "charm++.h"
 
-
-//#include "ckgraph.h"
+#include "ckgraph.h"
 //#include "cklists.h"
 #include "GreedyLB.h"
+
+
 
 using namespace std;
 
@@ -97,8 +99,8 @@ void GreedyLB::work(LDStats* stats)
   // min heap of processors
   make_heap(procs.begin(), procs.end(), ProcLoadGreater());
 
-  if (_lb_args.debug()>1) 
-    CkPrintf("[%d] In GreedyLB strategy\n",CkMyPe());
+  //if (_lb_args.debug()>1) 
+  //  CkPrintf("[%d] In GreedyLB strategy\n",CkMyPe());
 
 
     // greedy algorithm
@@ -159,5 +161,7 @@ void GreedyLB::work(LDStats* stats)
 //    if (_lb_args.debug() > 0)
 //      CkPrintf("GreedyLB> After lb max load: %lf avg load: %lf\n", max_load, avg_load/procs.size());
 //  }
+
 }
+
 
