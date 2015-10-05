@@ -42,7 +42,7 @@ build_script:
 - if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[x64]   cmake -G "Visual Studio 14 2015 Win64" -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF .
 - if not [%COMPILER%]==[MSVC15]                      cmake -G "MinGW Makefiles"             -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
 - if [%COMPILER%]==[MSVC15]     msbuild ALL_BUILD.vcxproj /verbosity:normal
-- if not [%COMPILER%]==[MSVC15] mingw32-make
+- if not [%COMPILER%]==[MSVC15] mingw32-make VERBOSE=1
 - cd examples/java ; java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml --log=root.thres:verbose --log=xbt.thres:info || true
 
 #test_script:
