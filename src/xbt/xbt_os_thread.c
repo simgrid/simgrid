@@ -730,15 +730,13 @@ void xbt_os_thread_mod_preinit(void)
 {
   xbt_self_thread_key = TlsAlloc();
 
-  main_thread = xbt_new(s_xbt_os_thread_t, 1);
+  xbt_os_thread_t main_thread = xbt_new0(s_xbt_os_thread_t, 1);
   main_thread->name = (char *) "main";
   main_thread->start_routine = NULL;
   main_thread->param = NULL;
-  main_thread->running_ctx = xbt_new(xbt_running_ctx_t, 1);
-  XBT_RUNNING_CTX_INITIALIZE(main_thread->running_ctx);
 
   if (!TlsSetValue(xbt_self_thread_key, main_thread))
-    THROWF(system_error, errcode,
+    THROWF(system_error, (int)GetLastError(),
            "Impossible to set the SimGrid identity descriptor to the main thread (TlsSetValue() failed)");
 
 }
