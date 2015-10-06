@@ -6,13 +6,16 @@
 //BaseLB * AllocateGreedyLB();
 
 
+
 #define CkPrintf printf
+#define CmiAbort(message) \
+	fprintf(stderr, message);\
+	exit(-1)
 
-#include "ckgraph.h"
+//For now, we will substitute CkVec for std::vector
+#define CkVec std::vector
 
-
-//TODO We need class ProcInfo
-//TODO Find out where is Vertex declared
+#include "lbdb.h"
 
 //class GreedyLB : public CBase_GreedyLB {
 class GreedyLB{
@@ -140,19 +143,21 @@ public:
 //    void pup(PUP::er &p);
 //    int useMem();
   };
+
   //GreedyLB(const CkLBOptions &);
-  GreedyLB();
+  GreedyLB() {}
   //GreedyLB(CkMigrateMessage *m):CBase_GreedyLB(m) { lbname = "GreedyLB"; }
   void work(LDStats* stats);
-private:
-	enum           HeapCmp {GT = '>', LT = '<'};
-    	void           Heapify(HeapData*, int, int, HeapCmp);
-	void           HeapSort(HeapData*, int, HeapCmp);
-	void           BuildHeap(HeapData*, int, HeapCmp);
-	bool        Compare(double, double, HeapCmp);
-	HeapData*      BuildCpuArray(BaseLB::LDStats*, int, int *);  
-	HeapData*      BuildObjectArray(BaseLB::LDStats*, int, int *);      
-	bool        QueryBalanceNow(int step);
+
+//  private:
+//	enum           HeapCmp {GT = '>', LT = '<'};
+//    	void           Heapify(HeapData*, int, int, HeapCmp);
+//	void           HeapSort(HeapData*, int, HeapCmp);
+//	void           BuildHeap(HeapData*, int, HeapCmp);
+//	bool        Compare(double, double, HeapCmp);
+//	HeapData*      BuildCpuArray(BaseLB::LDStats*, int, int *);  
+//	HeapData*      BuildObjectArray(BaseLB::LDStats*, int, int *);      
+//	bool        QueryBalanceNow(int step);
 };
 
 #endif 
