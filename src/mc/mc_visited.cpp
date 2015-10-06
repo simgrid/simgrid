@@ -60,13 +60,9 @@ static mc_visited_state_t visited_state_new()
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
-  if (mc_model_checker->process().is_self()) {
-    new_state->nb_processes = xbt_swag_size(simix_global->process_list);
-  } else {
-    MC_process_smx_refresh(&mc_model_checker->process());
-    new_state->nb_processes = xbt_dynar_length(
-      mc_model_checker->process().smx_process_infos);
-  }
+  MC_process_smx_refresh(&mc_model_checker->process());
+  new_state->nb_processes = xbt_dynar_length(
+    mc_model_checker->process().smx_process_infos);
 
   new_state->system_state = MC_take_snapshot(mc_stats->expanded_states);
   new_state->num = mc_stats->expanded_states;
@@ -85,13 +81,11 @@ mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automa
   pair->heap_bytes_used = mmalloc_get_bytes_used_remote(
     process->get_heap()->heaplimit,
     process->get_malloc_info());
-  if (mc_model_checker->process().is_self()) {
-    pair->nb_processes = xbt_swag_size(simix_global->process_list);
-  } else {
-    MC_process_smx_refresh(&mc_model_checker->process());
-    pair->nb_processes = xbt_dynar_length(
-      mc_model_checker->process().smx_process_infos);
-  }
+
+  MC_process_smx_refresh(&mc_model_checker->process());
+  pair->nb_processes = xbt_dynar_length(
+    mc_model_checker->process().smx_process_infos);
+
   pair->automaton_state = automaton_state;
   pair->num = pair_num;
   pair->other_num = -1;

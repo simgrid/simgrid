@@ -35,10 +35,6 @@
 #include "AddressSpace.hpp"
 #include "mc_protocol.h"
 
-typedef int mc_process_flags_t;
-#define MC_PROCESS_NO_FLAG 0
-#define MC_PROCESS_SELF_FLAG 1
-
 // Those flags are used to track down which cached information
 // is still up to date and which information needs to be updated.
 typedef int mc_process_cache_flags_t;
@@ -61,12 +57,6 @@ class Process : public AddressSpace {
 public:
   Process(pid_t pid, int sockfd);
   ~Process();
-
-
-  bool is_self() const
-  {
-    return this->process_flags & MC_PROCESS_SELF_FLAG;
-  }
 
   // Read memory:
   const void* read_bytes(void* buffer, std::size_t size,
@@ -164,7 +154,6 @@ private:
   void refresh_heap();
   void refresh_malloc_info();
 private:
-  mc_process_flags_t process_flags;
   pid_t pid_;
   int socket_;
   int status_;
