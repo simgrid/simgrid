@@ -18,33 +18,17 @@
 namespace simgrid {
 namespace mc {
 
-/** Represents a type in the program
- *
- *  It is currently used to represent members of structs and unions as well.
- */
-class Type {
+/** Represent a member of  a structure (or inheritance) */
+class Member {
 public:
-  Type();
-  Type(Type const& type) = default;
-  Type& operator=(Type const&) = default;
-  Type(Type&& type) = default;
-  Type& operator=(Type&&) = default;
+  Member() : inheritance(false), byte_size(0), type_id(0) {}
 
-  /** The DWARF TAG of the type (e.g. DW_TAG_array_type) */
-  int type;
-  unsigned id; /* Offset in the section (in hexadecimal form) */
-  std::string name; /* Name of the type */
-  int byte_size; /* Size in bytes */
-  int element_count; /* Number of elements for array type */
-  unsigned type_id; /* DW_AT_type id */
-  std::vector<Type> members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
-  int is_pointer_type;
-
-  // Location (for members) is either of:
+  bool inheritance;
+  std::string name;
   simgrid::mc::DwarfExpression location_expression;
-
-  simgrid::mc::Type* subtype; // DW_AT_type
-  simgrid::mc::Type* full_type; // The same (but more complete) type
+  std::size_t byte_size; // Do we really need this?
+  unsigned type_id;
+  simgrid::mc::Type* type;
 
   bool has_offset_location() const
   {
@@ -66,6 +50,32 @@ public:
     op.number = new_offset;
     this->location_expression = { op };
   }
+};
+
+/** Represents a type in the program
+ *
+ *  It is currently used to represent members of structs and unions as well.
+ */
+class Type {
+public:
+  Type();
+  Type(Type const& type) = default;
+  Type& operator=(Type const&) = default;
+  Type(Type&& type) = default;
+  Type& operator=(Type&&) = default;
+
+  /** The DWARF TAG of the type (e.g. DW_TAG_array_type) */
+  int type;
+  unsigned id; /* Offset in the section (in hexadecimal form) */
+  std::string name; /* Name of the type */
+  int byte_size; /* Size in bytes */
+  int element_count; /* Number of elements for array type */
+  unsigned type_id; /* DW_AT_type id */
+  std::vector<Member> members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
+  int is_pointer_type;
+
+  simgrid::mc::Type* subtype; // DW_AT_type
+  simgrid::mc::Type* full_type; // The same (but more complete) type
 };
 
 inline

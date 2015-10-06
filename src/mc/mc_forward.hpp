@@ -21,6 +21,7 @@ class AddressSpace;
 class Process;
 class Snapshot;
 class ObjectInformation;
+class Member;
 class Type;
 class Variable;
 class Frame;

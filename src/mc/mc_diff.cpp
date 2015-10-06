@@ -14,6 +14,7 @@
 #include "mc/datatypes.h"
 #include "mc/mc_private.h"
 #include "mc/mc_snapshot.h"
+#include "mc/mc_dwarf.hpp"
 #include "mc/Type.hpp"
 
 using simgrid::mc::remote;
@@ -929,7 +930,7 @@ top:
         return -1;
       }
     } else {
-      for(simgrid::mc::Type& member : type->members) {
+      for(simgrid::mc::Member& member : type->members) {
         // TODO, optimize this? (for the offset case)
         void *real_member1 =
             mc_member_resolve(real_area1, type, &member, (simgrid::mc::AddressSpace*) snapshot1, process_index);
@@ -938,7 +939,7 @@ top:
         res =
             compare_heap_area_with_type(state, process_index, real_member1, real_member2,
                                         snapshot1, snapshot2,
-                                        previous, member.subtype, -1,
+                                        previous, member.type, -1,
                                         check_ignore, 0);
         if (res == 1) {
           return res;
@@ -990,18 +991,18 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
       else
         return NULL;
     } else {
-      for(simgrid::mc::Type& member : type->members) {
+      for(simgrid::mc::Member& member : type->members) {
 
         if (member.has_offset_location()) {
           // We have the offset, use it directly (shortcut):
           if (member.offset() == offset)
-            return member.subtype;
+            return member.type;
         } else {
           void *real_member =
             mc_member_resolve(real_base_address, type, &member,
               snapshot, process_index);
           if ((char*) real_member - (char *) real_base_address == offset)
-            return member.subtype;
+            return member.type;
         }
 
       }

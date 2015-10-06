@@ -25,8 +25,4 @@ XBT_PRIVATE  void MC_dwarf_get_variables_libdw(simgrid::mc::ObjectInformation* i
 XBT_PRIVATE  const char* MC_dwarf_attrname(int attr);
 XBT_PRIVATE  const char* MC_dwarf_tagname(int tag);
 
-XBT_PRIVATE  void* mc_member_resolve(
-  const void* base, simgrid::mc::Type* type, simgrid::mc::Type* member,
-  simgrid::mc::AddressSpace* snapshot, int process_index);
-
 #endif

@@ -18,8 +18,9 @@
  * @param snapshot Snapshot (or NULL)
  * @return Process address of the given member of the 'object' struct/class
  */
-void *mc_member_resolve(const void *base, simgrid::mc::Type* type, simgrid::mc::Type* member,
-                        simgrid::mc::AddressSpace* address_space, int process_index)
+void *mc_member_resolve(
+    const void *base, simgrid::mc::Type* type, simgrid::mc::Member* member,
+    simgrid::mc::AddressSpace* address_space, int process_index)
 {
   // TODO, get rid of this?
   if (!member->has_offset_location())

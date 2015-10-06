@@ -475,8 +475,8 @@ static bool MC_compare_variable(
  *  \param  member the member of the type
  *  \param  child  DIE of the member (DW_TAG_member)
  */
-static void MC_dwarf_fill_member_location(simgrid::mc::Type* type, simgrid::mc::Type* member,
-                                          Dwarf_Die * child)
+static void MC_dwarf_fill_member_location(
+  simgrid::mc::Type* type, simgrid::mc::Member* member, Dwarf_Die * child)
 {
   if (dwarf_hasattr(child, DW_AT_data_bit_offset))
     xbt_die("Can't groke DW_AT_data_bit_offset.");
@@ -561,18 +561,14 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die
         continue;
 
       // TODO, we should use another type (because is is not a type but a member)
-      simgrid::mc::Type member;
-      member.type = tag;
-
-      // Global Offset:
-      member.id = dwarf_dieoffset(&child);
+      simgrid::mc::Member member;
+      member.inheritance = tag == DW_TAG_inheritance;
 
       const char *name = MC_dwarf_attr_integrate_string(&child, DW_AT_name);
       if (name)
         member.name = name;
       member.byte_size =
           MC_dwarf_attr_integrate_uint(&child, DW_AT_byte_size, 0);
-      member.element_count = -1;
       member.type_id = MC_dwarf_at_type(&child);
 
       if (dwarf_hasattr(&child, DW_AT_data_bit_offset))
@@ -1082,34 +1078,40 @@ static void mc_post_process_scope(simgrid::mc::ObjectInformation* info, simgrid:
 
 }
 
-/** \brief Fill/lookup the "subtype" field.
- */
-static void MC_resolve_subtype(simgrid::mc::ObjectInformation* info, simgrid::mc::Type* type)
+static
+simgrid::mc::Type* MC_resolve_type(
+  simgrid::mc::ObjectInformation* info, unsigned type_id)
 {
-  if (!type->type_id)
-    return;
-  type->subtype = simgrid::util::find_map_ptr(info->types, type->type_id);
-  if (type->subtype == nullptr)
-    return;
-  if (type->subtype->byte_size != 0)
-    return;
-  if (type->subtype->name.empty())
-    return;
+  if (!type_id)
+    return nullptr;
+  simgrid::mc::Type* type = simgrid::util::find_map_ptr(info->types, type_id);
+  if (type == nullptr)
+    return nullptr;
+
+  // We already have the information on the type:
+  if (type->byte_size != 0)
+    return type;
+
+  // Don't have a name, we can't find a more complete version:
+  if (type->name.empty())
+    return type;
+
   // Try to find a more complete description of the type:
   // We need to fix in order to support C++.
   simgrid::mc::Type** subtype = simgrid::util::find_map_ptr(
-    info->full_types_by_name, type->subtype->name);
+    info->full_types_by_name, type->name);
   if (subtype)
-    type->subtype = *subtype;
+    type = *subtype;
+  return type;
 }
 
 static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 {
   // Lookup "subtype" field:
   for(auto& i : info->types) {
-    MC_resolve_subtype(info, &(i.second));
-    for (simgrid::mc::Type& member : i.second.members)
-      MC_resolve_subtype(info, &member);
+    i.second.subtype = MC_resolve_type(info, i.second.type_id);
+    for (simgrid::mc::Member& member : i.second.members)
+      member.type = MC_resolve_type(info, member.type_id);
   }
 }
 
