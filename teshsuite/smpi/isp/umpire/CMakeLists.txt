@@ -169,27 +169,12 @@ set(umpire_src_other
   type-no-free-exhaustive.c
   )
 
-# Add every file to the archive
-###############################
-
-set(sources "")
-foreach(s ${umpire_src_other})
-  set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${s})
-endforeach()
-
-foreach(file ${umpire_tests_passing} ${umpire_tests_failing} ${umpire_tests_problematic}  ) 
-  set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
-endforeach()
-
 
 # Build the tests
 #################
 
 set(umpire_tesh "")
-# set(examples_src ${examples_src} ${sources} PARENT_SCOPE)
 set(txt_files ${txt_files} ${CMAKE_CURRENT_SOURCE_DIR}/README PARENT_SCOPE)
-# set(EXTRA_DIST ${EXTRA_DIST} ${CMAKE_CURRENT_SOURCE_DIR}/no-error-wait2.c PARENT_SCOPE)
-# set(tesh_files ${tesh_files} ${umpire_tesh} PARENT_SCOPE)
 
 if(enable_smpi AND enable_smpi_ISP_testsuite)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
@@ -219,6 +204,21 @@ if(enable_smpi AND enable_smpi_ISP_testsuite)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display"  APPEND)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
   endforeach()
+else()
+
+  # If the tests are disabled, still add their files in the archive
+  #################################################################
+
+  set(sources "")
+  foreach(file ${umpire_src_other})
+    set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
+  endforeach()
+
+  foreach(file ${umpire_tests_passing} ${umpire_tests_failing} ${umpire_tests_problematic}  ) 
+    set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
+  endforeach()
+
+  set(txt_files ${txt_files} ${sources} PARENT_SCOPE)
 endif()
 
 # Erase all tesh files on cleanup: they are generated anyway
