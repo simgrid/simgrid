@@ -14,7 +14,7 @@
 
 #include "smpi/private.h"
 
-#include "mc_process.h"
+#include "mc/Process.hpp"
 #include "mc_protocol.h"
 
 /** @file

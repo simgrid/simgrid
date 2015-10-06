@@ -16,8 +16,8 @@
 #include "mc_protocol.h"
 
 #ifdef HAVE_MC
-#include "mc_process.h"
-#include "ModelChecker.hpp"
+#include "mc/Process.hpp"
+#include "mc/ModelChecker.hpp"
 #include "mc_smx.h"
 #include "mc_server.h"
 #endif

@@ -616,8 +616,8 @@ set(MC_SRC
 
   src/mc/mc_forward.h
   src/mc/mc_forward.hpp
-  src/mc/mc_process.h
-  src/mc/mc_process.cpp
+  src/mc/Process.hpp
+  src/mc/Process.cpp
   src/mc/mc_unw.h
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp

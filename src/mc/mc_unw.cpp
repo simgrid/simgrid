@@ -19,7 +19,7 @@
 #include <libunwind.h>
 
 #include "mc_object_info.h"
-#include "mc_process.h"
+#include "mc/Process.hpp"
 #include "mc_unw.h"
 #include "mc/Frame.hpp"
 

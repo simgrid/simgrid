@@ -17,8 +17,8 @@
 #include "mc/datatypes.h"
 #include "mc/mc_object_info.h"
 #include "mc/mc_private.h"
-#include "mc/mc_process.h"
 
+#include "mc/Process.hpp"
 #include "mc/Type.hpp"
 #include "mc/ObjectInformation.hpp"
 #include "mc/Variable.hpp"

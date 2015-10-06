@@ -14,8 +14,8 @@
 #include <xbt/base.h>
 
 #include "mc_forward.hpp"
-#include "mc_process.h"
-#include "PageStore.hpp"
+#include "mc/Process.hpp"
+#include "mc/PageStore.hpp"
 #include "mc_protocol.h"
 
 namespace simgrid {
