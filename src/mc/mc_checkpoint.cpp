@@ -487,7 +487,7 @@ static std::vector<s_mc_heap_ignore_region_t> MC_take_snapshot_ignore()
 
 static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 {
-  xbt_assert(snapshot->process);
+  xbt_assert(snapshot->process());
   
   // Copy the memory:
   for (auto const& region : mc_model_checker->process().ignored_regions()) {
@@ -495,7 +495,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
     ignored_data.start = (void*)region.addr;
     ignored_data.data.resize(region.size);
     // TODO, we should do this once per privatization segment:
-    snapshot->process->read_bytes(
+    snapshot->process()->read_bytes(
       ignored_data.data.data(), region.size, remote(region.addr),
       simgrid::mc::ProcessIndexDisabled);
     snapshot->ignored_data.push_back(std::move(ignored_data));
@@ -503,7 +503,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 
   // Zero the memory:
   for(auto const& region : mc_model_checker->process().ignored_regions()) {
-    snapshot->process->clear_bytes(remote(region.addr), region.size);
+    snapshot->process()->clear_bytes(remote(region.addr), region.size);
   }
 
 }
@@ -511,7 +511,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
 {
   for (auto const& ignored_data : snapshot->ignored_data)
-    snapshot->process->write_bytes(
+    snapshot->process()->write_bytes(
       ignored_data.data.data(), ignored_data.data.size(),
       remote(ignored_data.start));
 }
@@ -601,9 +601,8 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   simgrid::mc::Process* mc_process = &mc_model_checker->process();
 
-  mc_snapshot_t snapshot = new simgrid::mc::Snapshot();
+  mc_snapshot_t snapshot = new simgrid::mc::Snapshot(mc_process);
 
-  snapshot->process = mc_process;
   snapshot->num_state = num_state;
 
   smx_process_t process;

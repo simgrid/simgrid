@@ -58,6 +58,11 @@ public:
   Process(pid_t pid, int sockfd);
   ~Process();
 
+  Process(Process const&) = delete;
+  Process(Process &&) = delete;
+  Process& operator=(Process const&) = delete;
+  Process& operator=(Process &&) = delete;
+
   // Read memory:
   const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,

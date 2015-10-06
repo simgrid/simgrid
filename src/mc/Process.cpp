@@ -206,7 +206,7 @@ int open_vm(pid_t pid, int flags)
 namespace simgrid {
 namespace mc {
 
-Process::Process(pid_t pid, int sockfd)
+Process::Process(pid_t pid, int sockfd) : AddressSpace(this)
 {
   Process* process = this;
   process->socket_ = sockfd;

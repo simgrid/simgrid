@@ -153,8 +153,8 @@ int MC_snapshot_memcmp(
 namespace simgrid {
 namespace mc {
 
-Snapshot::Snapshot() :
-  process(nullptr),
+Snapshot::Snapshot(Process* process) :
+  AddressSpace(process),
   num_state(0),
   heap_bytes_used(0),
   enabled_processes(),
