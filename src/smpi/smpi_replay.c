@@ -11,6 +11,8 @@
 #include <xbt/replay.h>
 #include "surf/surf.h" //needed by the function hosts_as_dynar.
 
+#include "lb/GreedyLBWrapper.h"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
 extern xbt_lib_t host_lib;
@@ -29,6 +31,9 @@ static int sendbuffer_size=0;
 char* sendbuffer=NULL;
 static int recvbuffer_size=0;
 char* recvbuffer=NULL;
+
+GreedyLB *lb;
+
 
 /******************************************************************************
  * This code manages the request dictionaries which are used by the
@@ -1475,7 +1480,11 @@ void smpi_replay_init(int *argc, char***argv){
     xbt_replay_action_register("iteration_in",    action_iteration_in);
     xbt_replay_action_register("iteration_out",    action_iteration_out);
   }
-  
+ 
+  //Initialize the load balancer.
+  lb = new_GreedyLB();
+
+
   //if we have a delayed start, sleep here.
   if(*argc>2){
     char *endptr;
