@@ -627,7 +627,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks =
         MC_take_snapshot_stacks(&snapshot);
-    if (_sg_mc_hash && !snapshot->stacks.empty()) {
+    if (_sg_mc_hash) {
       snapshot->hash = simgrid::mc::hash(*snapshot);
     } else {
       snapshot->hash = 0;
