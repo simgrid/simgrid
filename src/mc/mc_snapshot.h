@@ -140,7 +140,7 @@ typedef struct s_mc_global_t {
 namespace simgrid {
 namespace mc {
 
-class XBT_PRIVATE Snapshot : public AddressSpace {
+class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   Snapshot();
   ~Snapshot();

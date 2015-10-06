@@ -53,7 +53,7 @@ struct IgnoredRegion {
 
 /** Representation of a process
  */
-class Process : public AddressSpace {
+class Process final : public AddressSpace {
 public:
   Process(pid_t pid, int sockfd);
   ~Process();
