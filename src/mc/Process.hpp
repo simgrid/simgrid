@@ -47,8 +47,6 @@ typedef int mc_process_cache_flags_t;
 #define MC_PROCESS_CACHE_FLAG_MALLOC_INFO 2
 #define MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES 4
 
-typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
-
 namespace simgrid {
 namespace mc {
 
