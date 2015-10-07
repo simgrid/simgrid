@@ -18,8 +18,7 @@ environment:
     BOOST_LIBRARYDIR: c:\Libraries\boost_1_59_0\stage\lib
     #  BOOST_ROOT: c:\Libraries\boost
     #  BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
-    SGROOT: C:/projects/simgrid
-    TESH_ARGS: %SGROOT%/bin/tesh --setenv srcdir=%SGROOT%/examples/java --setenv classpath=%SGROOT%/examples/java;%SGROOT%/teshsuite/java;%SGROOT%/simgrid.jar --cd %SGROOT%/examples/java
+    TESH_ARGS: C:/projects/simgrid/bin/tesh --setenv srcdir=C:/projects/simgrid/examples/java --setenv classpath=C:/projects/simgrid/examples/java;C:/projects/simgrid/teshsuite/java;C:/projects/simgrid/simgrid.jar --cd C:/projects/simgrid/examples/java
   matrix:
     - COMPILER: MinGW-w64
 
@@ -55,26 +54,26 @@ build_script:
 #- bash -c "cd C:/projects/simgrid; exec 0<&-; ctest --output-on-failure" < nul || true
 
 test_script:
-- perl %TESH_ARGS% %SGROOT%/examples/java/async/async.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/bittorrent/bittorrent.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/master_slave_bypass/bypass.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/chord/chord.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/cloud/cloud.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/cloud/migration/migration.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/commTime/commtime.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/kademlia/kademlia.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/master_slave_kill/kill.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/masterslave/masterslave.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/migration/migration.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/mutualExclusion/mutualexclusion.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/pingPong/pingpong.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/priority/priority.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/startKillTime/startKillTime.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/surfCpuModel/surf_cpu_model.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/surfPlugin/surf_plugin.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/reservationSurfPlugin/reservation_surf_plugin.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/suspend/suspend.tesh
-- perl %TESH_ARGS% %SGROOT%/examples/java/tracing/tracingPingPong.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/async/async.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/bittorrent/bittorrent.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/master_slave_bypass/bypass.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/chord/chord.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/cloud.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/migration/migration.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/commTime/commtime.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/kademlia/kademlia.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/master_slave_kill/kill.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/masterslave/masterslave.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/migration/migration.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/mutualExclusion/mutualexclusion.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/pingPong/pingpong.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/priority/priority.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/startKillTime/startKillTime.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfCpuModel/surf_cpu_model.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfPlugin/surf_plugin.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/reservationSurfPlugin/reservation_surf_plugin.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/suspend/suspend.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/tracing/tracingPingPong.tesh
 
 artifacts:
 - path: simgrid.jar
