@@ -52,7 +52,7 @@ build_script:
 #   ^CTerminate batch job (Y/N)?
 # How dafuq am I supposed to press N on appveyor??
 test_script:
-- bash -c "cd C:/projects/simgrid; exec 0</dev/null; ctest --output-on-failure" || true
+- bash -c "cd C:/projects/simgrid; exec 0<&-; ctest --output-on-failure" < nul || true
 
 artifacts:
 - path: simgrid.jar
