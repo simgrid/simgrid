@@ -45,8 +45,14 @@ build_script:
 - if not [%COMPILER%]==[MSVC15] mingw32-make VERBOSE=1
 - cd C:/projects/simgrid/examples/java && java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml || true
 
+
+# Using bash explicitely and closing STDIN is an attempt to avoid this error:
+#   Test project C:/projects/simgrid
+#        Start   1: mc-replay-random-bug
+#   ^CTerminate batch job (Y/N)?
+# How dafuq am I supposed to press N on appveyor??
 test_script:
-- cd C:/projects/simgrid && ctest --output-on-failure || true
+- bash -c "cd C:/projects/simgrid; exec 0</dev/null; ctest --output-on-failure" || true
 
 artifacts:
 - path: simgrid.jar
