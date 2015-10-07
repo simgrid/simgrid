@@ -18,7 +18,8 @@ environment:
     BOOST_LIBRARYDIR: c:\Libraries\boost_1_59_0\stage\lib
     #  BOOST_ROOT: c:\Libraries\boost
     #  BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
-
+    SGROOT: C:/projects/simgrid
+    TESH_ARGS: %SGROOT%/bin/tesh --setenv srcdir=%SGROOT%/examples/java --setenv classpath=%SGROOT%/examples/java;%SGROOT%/teshsuite/java;%SGROOT%/simgrid.jar --cd %SGROOT%/examples/java
   matrix:
     - COMPILER: MinGW-w64
 
@@ -46,13 +47,34 @@ build_script:
 - cd C:/projects/simgrid/examples/java && java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml || true
 
 
-# Using bash explicitely and closing STDIN is an attempt to avoid this error:
+# I cant use the cmake test because of the following error:
 #   Test project C:/projects/simgrid
 #        Start   1: mc-replay-random-bug
 #   ^CTerminate batch job (Y/N)?
-# How dafuq am I supposed to press N on appveyor??
+# How dafuq am I supposed to press N on appveyor?? I tried closing stdin, in vain
+#- bash -c "cd C:/projects/simgrid; exec 0<&-; ctest --output-on-failure" < nul || true
+
 test_script:
-- bash -c "cd C:/projects/simgrid; exec 0<&-; ctest --output-on-failure" < nul || true
+- perl %TESH_ARGS% %SGROOT%/examples/java/async/async.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/bittorrent/bittorrent.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/master_slave_bypass/bypass.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/chord/chord.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/cloud/cloud.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/cloud/migration/migration.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/commTime/commtime.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/kademlia/kademlia.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/master_slave_kill/kill.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/masterslave/masterslave.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/migration/migration.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/mutualExclusion/mutualexclusion.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/pingPong/pingpong.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/priority/priority.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/startKillTime/startKillTime.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/surfCpuModel/surf_cpu_model.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/surfPlugin/surf_plugin.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/reservationSurfPlugin/reservation_surf_plugin.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/suspend/suspend.tesh
+- perl %TESH_ARGS% %SGROOT%/examples/java/tracing/tracingPingPong.tesh
 
 artifacts:
 - path: simgrid.jar
