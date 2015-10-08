@@ -242,6 +242,20 @@ void replace_state(
     state_test->num, new_state->num);
 }
 
+static
+bool some_dommunications_are_not_finished()
+{
+  for (size_t current_process = 1; current_process < MC_smx_get_maxpid(); current_process++) {
+    xbt_dynar_t pattern = xbt_dynar_get_as(
+      incomplete_communications_pattern, current_process, xbt_dynar_t);
+    if (!xbt_dynar_is_empty(pattern)) {
+      XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
+      return true;
+    }
+  }
+  return false;
+}
+
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
@@ -255,16 +269,8 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
   /* If comm determinism verification, we cannot stop the exploration if some 
      communications are not finished (at least, data are transfered). These communications 
      are incomplete and they cannot be analyzed and compared with the initial pattern. */
-  int partial_comm = 0;
-  if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    for (size_t current_process = 1; current_process < MC_smx_get_maxpid(); current_process++) {
-      if (!xbt_dynar_is_empty((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t))){
-        XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
-        partial_comm = 1;
-        break;
-      }
-    }
-  }
+  int partial_comm = (_sg_mc_comms_determinism || _sg_mc_send_determinism) &&
+    some_dommunications_are_not_finished();
 
   mc_visited_state_t new_state = visited_state_new();
   graph_state->system_state = new_state->system_state;
