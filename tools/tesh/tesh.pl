@@ -220,11 +220,14 @@ the content it gets as input.
 It is not possible to use the cat command, as one would expect,
 because stream redirections are currently not implemented in Tesh.
 
-=head1 BUGS AND LIMITATIONS
+=head1 BUGS, LIMITATIONS AND POSSIBLE IMPROVEMENTS
 
 The main limitation is the lack of stream redirections in the commands
 (">", "<" and "|" shell constructs and friends). The B<mkfile> builtin
 command makes this situation bearable.
+
+It would be nice if we could replace the tesh file completely with
+command line flags when the output is not to be verified.
 
 =cut
 
