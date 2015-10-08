@@ -279,6 +279,9 @@ BEGIN {
         *WEXITSTATUS = sub { $_[0] >> 8 };
         *WIFSIGNALED = sub { ( $_[0] & 127 ) && ( $_[0] & 127 != 127 ) };
         *WTERMSIG    = sub { $_[0] & 127 };
+
+	# used on the command lines
+	$environ{'EXEEXT'} = ".exe";
     }
 }
 
@@ -325,24 +328,6 @@ if ( $tesh_file =~ m/(.*)\.tesh/ ) {
 
 ###########################################################################
 
-sub exit_status {
-    my $status = shift;
-    if ( WIFEXITED($status) ) {
-        $exitcode = WEXITSTATUS($status) + 40;
-        return "returned code " . WEXITSTATUS($status);
-    } elsif ( WIFSIGNALED($status) ) {
-        my $code;
-        if    ( WTERMSIG($status) == SIGINT )  { $code = "SIGINT"; }
-        elsif ( WTERMSIG($status) == SIGTERM ) { $code = "SIGTERM"; }
-        elsif ( WTERMSIG($status) == SIGKILL ) { $code = "SIGKILL"; }
-        elsif ( WTERMSIG($status) == SIGABRT ) { $code = "SIGABRT"; }
-        elsif ( WTERMSIG($status) == SIGSEGV ) { $code = "SIGSEGV"; }
-        $exitcode = WTERMSIG($status) + 4;
-        return "got signal $code";
-    }
-    return "Unparsable status. Is the process stopped?";
-}
-
 sub exec_cmd {
     my %cmd = %{ $_[0] };
     if ( $opts{'debug'} ) {
@@ -351,14 +336,7 @@ sub exec_cmd {
         print "CMD: $cmd{'cmd'}\n";
     }
 
-    # cleanup the command line
-    if (RUNNING_ON_WINDOWS) {
-        var_subst( $cmd{'cmd'}, "EXEEXT", ".exe" );
-    } else {
-        var_subst( $cmd{'cmd'}, "EXEEXT", "" );
-    }
-
-    # substitute environ variables
+    # substitute environment variables
     foreach my $key ( keys %environ ) {
         $cmd{'cmd'} = var_subst( $cmd{'cmd'}, $key, $environ{$key} );
     }
@@ -406,32 +384,27 @@ sub exec_cmd {
 
 sub analyze_result {
     my %cmd    = %{ $_[0] };
-    
+    $cmd{'timeouted'} = 0; # initialization
+
+    # Wait for the end of the child process
+    #####
     eval {
 	finish( $cmd{'job'} );
     };
-    if ($@) {
+    if ($@) { # deal with the errors that occured in the child process
 	if ($@ =~ /timeout/) {
 	    $cmd{'job'}->kill_kill;
 	    $cmd{'timeouted'} = 1;
-	} elsif ($@ =~ /^ack / and $@ =~ /pipe/) {
+	} elsif ($@ =~ /^ack / and $@ =~ /pipe/) { # IPC::Run is not very expressive about the pipes that it gets :(
 	    print STDERR "Tesh: Broken pipe (ignored).\n";
 	} else {
 	    die $@; # Don't know what it is, so let it go.
 	}
     } 
-    $cmd{'timeouted'} ||= 0;
+
+    # Gather information
+    ####
     
-    my $gotret = $cmd{'gotret'} = exit_status($?); 
-
-    my $wantret;
-
-    if ( defined( $cmd{'expect'} ) and ( $cmd{'expect'} ne "" ) ) {
-        $wantret = "got signal $cmd{'expect'}";
-    } else {
-        $wantret = "returned code " . ( defined( $cmd{'return'} ) ? $cmd{'return'} : 0 );
-    }
-
     # pop all output from executing child
     my @got;
     map { print "GOT: $_\n" } ${$cmd{'got'}} if $opts{'debug'};
@@ -445,11 +418,53 @@ sub analyze_result {
         }
     }
 
+    # How did the child process terminate?
+    my $status = $?;
+    $cmd{'gotret'} = "Unparsable status. Please report this tesh bug.";
+    if ( $cmd{'timeouted'} ) {
+        $cmd{'gotret'} = "timeout after $cmd{'timeout'} sec";
+        $error    = 1;
+        $exitcode = 3;
+    } elsif ( WIFEXITED($status) ) {
+        $exitcode = WEXITSTATUS($status) + 40;
+	$cmd{'gotret'} = "returned code " . WEXITSTATUS($status);
+    } elsif ( WIFSIGNALED($status) ) {
+        my $code;
+        if    ( WTERMSIG($status) == SIGINT )  { $code = "SIGINT"; }
+        elsif ( WTERMSIG($status) == SIGTERM ) { $code = "SIGTERM"; }
+        elsif ( WTERMSIG($status) == SIGKILL ) { $code = "SIGKILL"; }
+        elsif ( WTERMSIG($status) == SIGABRT ) { $code = "SIGABRT"; }
+        elsif ( WTERMSIG($status) == SIGSEGV ) { $code = "SIGSEGV"; }
+        $exitcode = WTERMSIG($status) + 4;
+        $cmd{'gotret'} = "got signal $code";
+    }
+
+    # How was it supposed to terminate?
+    my $wantret;
+    if ( defined( $cmd{'expect'} ) and ( $cmd{'expect'} ne "" ) ) {
+        $wantret = "got signal $cmd{'expect'}";
+    } else {
+        $wantret = "returned code " . ( defined( $cmd{'return'} ) ? $cmd{'return'} : 0 );
+    }
+
+    # Enforce the outcome
+    ####
+    
+    # Did it end as expected?
+    if ( $cmd{'gotret'} ne $wantret ) {
+        $error = 1;
+        my $msg = "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> $cmd{'gotret'})\n";
+        if ( scalar @got ) {
+            $msg = $msg . "Output of <$cmd{'file'}:$cmd{'line'}> so far:\n";
+	    map { $msg .= "|| $_\n" } @got;
+        } else {
+	    $msg .= "<$cmd{'file'}:$cmd{'line'}> No output so far.\n";
+	}
+        print STDERR "$msg";
+    }
+
+    # Does the output match?
     if ( $cmd{'sort'} ) {
-
-        # Save the unsorted observed output to report it on error.
-        map { push @{ $cmd{'unsorted got'} }, $_ } @got;
-
         sub mysort {
             substr( $a, 0, $sort_prefix ) cmp substr( $b, 0, $sort_prefix );
         }
@@ -463,7 +478,7 @@ sub analyze_result {
             shift @got;
         }
 
-        # Sort the expected output to make it easier to write for humans
+        # Sort the expected output too, to make tesh files easier to write for humans
         if ( defined( $cmd{'out'} ) ) {
             if ( $sort_prefix > 0 ) {
                 @{ $cmd{'out'} } = sort mysort @{ $cmd{'out'} };
@@ -476,52 +491,32 @@ sub analyze_result {
         }
     }
 
-    # Did we timeout?
-
-    if ( $cmd{'timeouted'} ) {
-        $gotret   = "timeout after $cmd{'timeout'} sec";
-        $error    = 1;
-        $exitcode = 3;
-        print STDERR "<$cmd{'file'}:$cmd{'line'}> timeouted. Kill the process.\n";
-    }
-    if ( $gotret ne $wantret ) {
-        $error = 1;
-        my $msg = "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> $gotret)\n";
-        if ( scalar @got ) {
-            $msg = $msg . "Output of <$cmd{'file'}:$cmd{'line'}> so far:\n";
-	    map { $msg .= "|| $_\n" } @got;
-        } else {
-	    $msg .= "<$cmd{'file'}:$cmd{'line'}> No output so far.\n";
-	}
-        print STDERR "$msg";
-    }
-
-    # Does the output match?
-    my $diff;
+    # Report the output if asked so or if it differs
     if ( defined( $cmd{'output display'} ) ) {
         print "[Tesh/INFO] Here is the (ignored) command output:\n";
         map { print "||$_\n" } @got;
     } elsif ( defined( $cmd{'output ignore'} ) ) {
         print "(ignoring the output of <$cmd{'file'}:$cmd{'line'}> as requested)\n";
     } else {
-        $diff = build_diff( \@{ $cmd{'out'} }, \@got );
-    }
-    if ( length $diff ) {
-        print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch" . ( $cmd{'sort'} ? " (even after sorting)" : "" ) . ":\n";
-        map { print "$_\n" } split( /\n/, $diff );
-        if ( $cmd{'sort'} ) {
-            print "WARNING: Both the observed output and expected output were sorted as requested.\n";
-            print "WARNING: Output were only sorted using the $sort_prefix first chars.\n"
-              if ( $sort_prefix > 0 );
-            print "WARNING: Use <! output sort 19> to sort by simulated date and process ID only.\n";
+        my $diff = build_diff( \@{ $cmd{'out'} }, \@got );
+    
+	if ( length $diff ) {
+	    print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch" . ( $cmd{'sort'} ? " (even after sorting)" : "" ) . ":\n";
+	    map { print "$_\n" } split( /\n/, $diff );
+	    if ( $cmd{'sort'} ) {
+		print "WARNING: Both the observed output and expected output were sorted as requested.\n";
+		print "WARNING: Output were only sorted using the $sort_prefix first chars.\n"
+		    if ( $sort_prefix > 0 );
+		print "WARNING: Use <! output sort 19> to sort by simulated date and process ID only.\n";
 
-            # print "----8<---------------  Begin of unprocessed observed output (as it should appear in file):\n";
-            # map {print "> $_\n"} @{$cmd{'unsorted got'}};
-            # print "--------------->8----  End of the unprocessed observed output.\n";
-        }
-
-        print "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> output mismatch)\n";
-        exit 2;
+		# print "----8<---------------  Begin of unprocessed observed output (as it should appear in file):\n";
+		# map {print "> $_\n"} @{$cmd{'unsorted got'}};
+		# print "--------------->8----  End of the unprocessed observed output.\n";
+	    }
+	    
+	    print "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> output mismatch)\n";
+	    exit 2;
+	}
     }
 }
 
