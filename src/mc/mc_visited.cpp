@@ -252,20 +252,17 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
   if (_sg_mc_visited == 0)
     return NULL;
 
-  int partial_comm = 0;
-
   /* If comm determinism verification, we cannot stop the exploration if some 
      communications are not finished (at least, data are transfered). These communications 
      are incomplete and they cannot be analyzed and compared with the initial pattern. */
+  int partial_comm = 0;
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    size_t current_process = 1;
-    while (current_process < MC_smx_get_maxpid()) {
+    for (size_t current_process = 1; current_process < MC_smx_get_maxpid(); current_process++) {
       if (!xbt_dynar_is_empty((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, current_process, xbt_dynar_t))){
         XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
         partial_comm = 1;
         break;
       }
-      current_process++;
     }
   }
 
@@ -282,9 +279,6 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
   } else {
 
     int min = -1, max = -1, index;
-    //int res;
-    mc_visited_state_t state_test;
-    int cursor;
 
     index = get_search_interval(visited_states, new_state, &min, &max);
 
@@ -293,7 +287,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
       // Parallell implementation
       /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_states, min), (max-min)+1, new_state);
          if(res != -1){
-         state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, (min+res)-1, mc_visited_state_t);
+         mc_visited_state_t state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, (min+res)-1, mc_visited_state_t);
          if(state_test->other_num == -1)
          new_state->other_num = state_test->num;
          else
@@ -310,9 +304,9 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
       if (_sg_mc_safety || (!partial_comm
         && initial_global_state->initial_communications_pattern_done)) {
 
-        cursor = min;
+        int cursor = min;
         while (cursor <= max) {
-          state_test = (mc_visited_state_t) xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
+          mc_visited_state_t state_test = (mc_visited_state_t) xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
           if (snapshot_compare(state_test, new_state) == 0) {
             // The state has been visited:
 
@@ -329,7 +323,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
     } else {
 
       // The state has not been visited: insert the state in the dynamic array.
-      state_test = (mc_visited_state_t) xbt_dynar_get_as(visited_states, index, mc_visited_state_t);
+      mc_visited_state_t state_test = (mc_visited_state_t) xbt_dynar_get_as(visited_states, index, mc_visited_state_t);
       if (state_test->nb_processes < new_state->nb_processes) {
         xbt_dynar_insert_at(visited_states, index + 1, &new_state);
       } else {
@@ -352,6 +346,8 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
       int min2 = mc_stats->expanded_states;
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
+
+      mc_visited_state_t state_test;
       xbt_dynar_foreach(visited_states, cursor2, state_test){
         if (!MC_important_snapshot(state_test->system_state) && state_test->num < min2) {
           index2 = cursor2;
