@@ -216,6 +216,31 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
   return cursor;
 }
 
+static
+void replace_state(
+  mc_visited_state_t state_test, mc_visited_state_t new_state, int cursor)
+{
+  if (state_test->other_num == -1)
+    new_state->other_num = state_test->num;
+  else
+    new_state->other_num = state_test->other_num;
+
+  if (dot_output == NULL)
+    XBT_DEBUG("State %d already visited ! (equal to state %d)",
+      new_state->num, state_test->num);
+  else
+    XBT_DEBUG(
+      "State %d already visited ! (equal to state %d (state %d in dot_output))",
+      new_state->num, state_test->num, new_state->other_num);
+
+  /* Replace the old state with the new one (with a bigger num)
+     (when the max number of visited states is reached,  the oldest
+     one is removed according to its number (= with the min number) */
+  xbt_dynar_remove_at(visited_states, cursor, NULL);
+  xbt_dynar_insert_at(visited_states, cursor, &new_state);
+  XBT_DEBUG("Replace visited state %d with the new visited state %d",
+    state_test->num, new_state->num);
+}
 
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
@@ -291,22 +316,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
           if (snapshot_compare(state_test, new_state) == 0) {
             // The state has been visited:
 
-            if (state_test->other_num == -1)
-              new_state->other_num = state_test->num;
-            else
-              new_state->other_num = state_test->other_num;
-            if (dot_output == NULL)
-              XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
-            else
-              XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
-
-            /* Replace the old state with the new one (with a bigger num) 
-               (when the max number of visited states is reached,  the oldest 
-               one is removed according to its number (= with the min number) */
-            xbt_dynar_remove_at(visited_states, cursor, NULL);
-            xbt_dynar_insert_at(visited_states, cursor, &new_state);
-            XBT_DEBUG("Replace visited state %d with the new visited state %d", state_test->num, new_state->num);
-
+            replace_state(state_test, new_state, cursor);
             return state_test;
           }
           cursor++;
