@@ -33,7 +33,7 @@ static int recvbuffer_size=0;
 char* recvbuffer=NULL;
 
 GreedyLB *lb;
-
+void *statsLD;
 
 /******************************************************************************
  * This code manages the request dictionaries which are used by the
@@ -1483,7 +1483,10 @@ void smpi_replay_init(int *argc, char***argv){
  
   //Initialize the load balancer.
   lb = new_GreedyLB();
-
+  statsLD = new_LDStats(0, 1);
+  
+  //FIXME  Since statsLD is of type "void *" we can access its elements.
+  //statsLD->n_objs = smpi_process_count();
 
   //if we have a delayed start, sleep here.
   if(*argc>2){

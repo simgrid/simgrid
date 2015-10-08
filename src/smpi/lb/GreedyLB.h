@@ -17,6 +17,9 @@
 
 #include "lbdb.h"
 
+//TODO Implement this.
+#define CkNumPes() 10
+
 //class GreedyLB : public CBase_GreedyLB {
 class GreedyLB{
 
@@ -52,9 +55,9 @@ public:
     int pe;			// processor id
     bool available;
     ProcStats(): n_objs(0), pe_speed(1), total_walltime(0.0), idletime(0.0),
-//#if CMK_LB_CPUTIMER
-//		 total_cputime(0.0), bg_cputime(0.0),
-//#endif
+#if CMK_LB_CPUTIMER
+		 total_cputime(0.0), bg_cputime(0.0),
+#endif
 	   	 bg_walltime(0.0), pe(-1), available(true) {}
 //    inline void clearBgLoad() {
 //      idletime = bg_walltime = 
@@ -99,14 +102,14 @@ public:
 //				// LDObjId to the index in the vector "objData"
 //    int  hashSize;
 //
-//    int complete_flag;		// if this ocg is complete, eg in HybridLB,
+    int complete_flag;		// if this ocg is complete, eg in HybridLB,
 //    // this LDStats may not be complete
 //
 //    int is_prev_lb_refine;
 //    double after_lb_max;
 //    double after_lb_avg;
 //
-//    LDStats(int c=0, int complete_flag=1);
+    LDStats(int c=0, int complete_flag=1);
 //    /// the functions below should be used to obtain the number of processors
 //    /// instead of accessing count directly
     inline int nprocs() const { return count; }

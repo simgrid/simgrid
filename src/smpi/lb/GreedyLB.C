@@ -164,4 +164,19 @@ void GreedyLB::work(LDStats* stats)
 
 }
 
+/*By rktesser: Originally BaselB::LDStats::LDStats
+BaseLB::LDStats::LDStats(int c, int complete)
+  : n_objs(0), n_migrateobjs(0), n_comm(0), 
+          objHash(NULL), complete_flag(complete)
+*/
+
+
+GreedyLB::LDStats::LDStats(int c, int complete)
+    : n_objs(0) , complete_flag(complete)
+{
+  count = c;
+  if (count == 0) count = CkNumPes();
+  procs = new ProcStats[count];
+}
+
 

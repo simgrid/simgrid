@@ -17,6 +17,10 @@ extern "C"{
     LB->work(s);
   }
 
+  void *new_LDStats(int count, int complete){
+    return new GreedyLB::LDStats(count, complete);
+  }
+
 #ifdef __cplusplus
 } //extern "C"
 #endif

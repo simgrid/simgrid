@@ -12,6 +12,8 @@ extern "C"{
   
   void GreedyLB_work(GreedyLB *LB, void *stats);
 
+  void *new_LDStats(int count, int complete);
+
 #ifdef __cplusplus
 }
 #endif
