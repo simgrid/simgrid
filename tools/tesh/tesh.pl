@@ -531,7 +531,7 @@ if ( $tesh_file eq "(stdin)" ) {
 
 my %cmd;     # everything about the next command to run
 my $line_num = 0;
-LINE: while ( defined( my $line = <$infh> ) and not $error ) {
+LINE: while ( not $error and defined( my $line = <$infh> )) {
     chomp $line;
     $line =~ s/\r//g;
 
@@ -549,7 +549,7 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
         $line = $1 . $next;
     }
 
-    # Push delayed commands on empty lines
+    # If the line is empty, run any previously defined block and proceed to next line
     unless ( $line =~ m/^(.)(.*)$/ ) {
         if ( defined( $cmd{'cmd'} ) ) {
             exec_cmd( \%cmd );
@@ -565,31 +565,40 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
     $arg =~ s/\r//g;
     $arg =~ s/\\\\/\\/g;
 
-    # handle the commands
+    # Deal with the lines that can contribute to the current command block
     if ( $cmd =~ /^#/ ) {    # comment
+	next LINE;
     } elsif ( $cmd eq '>' ) {    # expected result line
         print "[TESH/debug] push expected result\n" if $opts{'debug'};
         push @{ $cmd{'out'} }, $arg;
+	next LINE;
 
     } elsif ( $cmd eq '<' ) {    # provided input
         print "[TESH/debug] push provided input\n" if $opts{'debug'};
         push @{ $cmd{'in'} }, $arg;
+	next LINE;
 
     } elsif ( $cmd eq 'p' ) {    # comment
         print "[$tesh_name:$line_num] $arg\n";
+	next LINE;
 
-    } elsif ( $cmd eq '$' ) {    # Command
-                                 # if we have something buffered, run it now
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
-        if ( $arg =~ /^\s*mkfile / ) {    # "mkfile" command line
+    } 
+
+    # We dealt with all sort of lines that can contribute to a command block, so we have something else here.
+    # If we have something buffered, run it now and start a new block
+    if ( defined( $cmd{'cmd'} ) ) {
+	exec_cmd( \%cmd );
+	%cmd = ();
+    }
+
+    # Deal with the lines that must be placed before a command block
+    if ( $cmd eq '$' ) {    # Command
+        if ( $arg =~ /^mkfile / ) {    # "mkfile" command line
             die "[TESH/CRITICAL] Output expected from mkfile command!\n"
               if scalar @{ cmd { 'out' } };
 
             $cmd{'arg'} = $arg;
-            $cmd{'arg'} =~ s/\s*mkfile //;
+            $cmd{'arg'} =~ s/mkfile //;
             mkfile_cmd( \%cmd );
             %cmd = ();
 
@@ -608,77 +617,55 @@ LINE: while ( defined( my $line = <$infh> ) and not $error ) {
             $cmd{'file'} = $tesh_file;
             $cmd{'line'} = $line_num;
         }
-    } elsif ( $cmd eq '&' ) {    # background command line
 
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
+    } elsif ( $cmd eq '&' ) {    # background command line
+	die "[TESH/CRITICAL] mkfile cannot be run in background\n"
+	    if ($arg =~ /^mkfile/);
+	die "[TESH/CRITICAL] cd cannot be run in background\n"
+	    if ($arg =~ /^cd/);
+	
         $cmd{'background'} = 1;
         $cmd{'cmd'}        = $arg;
         $cmd{'file'}       = $tesh_file;
         $cmd{'line'}       = $line_num;
 
-    } elsif ( $line =~ /^!\s*output sort/ ) {    #output sort
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
-        $cmd{'sort'} = 1;
-        if ( $line =~ /^!\s*output sort\s+(\d+)/ ) {
-            $sort_prefix = $1;
-        }
-    } elsif ( $line =~ /^!\s*output ignore/ ) {    #output ignore
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
-        $cmd{'output ignore'} = 1;
-    } elsif ( $line =~ /^!\s*output display/ ) {    #output display
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
-        $cmd{'output display'} = 1;
-    } elsif ( $line =~ /^!\s*expect signal (\w*)/ ) {    #expect signal SIGABRT
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
-        $cmd{'expect'} = "$1";
-    } elsif ( $line =~ /^!\s*expect return/ ) {          #expect return
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
-        $line =~ s/^! expect return //g;
-        $line =~ s/\r//g;
-        $cmd{'return'} = $line;
-    } elsif ( $line =~ /^!\s*setenv/ ) {                 #setenv
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
-        $line =~ s/^! setenv //g;
-        $line =~ s/\r//g;
-        setenv_cmd($line);
-    } elsif ( $line =~ /^!\s*timeout/ ) {                #timeout
-        if ( defined( $cmd{'cmd'} ) ) {
-            exec_cmd( \%cmd );
-            %cmd = ();
-        }
-        $line =~ s/^! timeout //;
-        $line =~ s/\r//g;
-        $cmd{'timeout'} = $line;
+    # Deal with the meta-commands
+    } elsif ( $line =~ /^! (.*)/) {
+	$line = $1;
+
+	if ( $line =~ /^output sort/ ) {
+	    $cmd{'sort'} = 1;
+	    if ( $line =~ /^output sort\s+(\d+)/ ) {
+		$sort_prefix = $1;
+	    }
+	} elsif ($line =~ /^output ignore/ ) {
+	    $cmd{'output ignore'} = 1;
+	} elsif ( $line =~ /^output display/ ) {
+	    $cmd{'output display'} = 1;
+	} elsif ( $line =~ /^expect signal (\w*)/ ) {
+	    $cmd{'expect'} = $1;
+	} elsif ( $line =~ /^expect return/ ) {
+	    $line =~ s/^expect return //g;
+	    $line =~ s/\r//g;
+	    $cmd{'return'} = $line;
+	} elsif ( $line =~ /^setenv/ ) {
+	    $line =~ s/^setenv //g;
+	    $line =~ s/\r//g;
+	    setenv_cmd($line);
+	} elsif ( $line =~ /^timeout/ ) {
+	    $line =~ s/^timeout //;
+	    $line =~ s/\r//g;
+	    $cmd{'timeout'} = $line;
+	}
     } else {
         die "[TESH/CRITICAL] parse error: $line\n";
     }
 }
 
-# We're done reading the input file
+# We are done reading the input file
 close $infh unless ( $tesh_file eq "(stdin)" );
 
-# Deal with last command
+# Deal with last command, if any
 if ( defined( $cmd{'cmd'} ) ) {
     exec_cmd( \%cmd );
     %cmd = ();
