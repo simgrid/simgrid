@@ -1171,7 +1171,9 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
   //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
   if(status!=MPI_STATUS_IGNORE){
     src_traced = smpi_group_index(smpi_comm_group(comm), status->MPI_SOURCE);
-    TRACE_smpi_recv(rank, src_traced, rank);
+    if (!TRACE_smpi_view_internals()) {
+      TRACE_smpi_recv(rank, src_traced, rank);
+    }
   }
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   }
@@ -1216,7 +1218,9 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
     dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = count*dt_size_send;
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-  TRACE_smpi_send(rank, rank, dst_traced,count*smpi_datatype_size(datatype));
+  if (!TRACE_smpi_view_internals()) {
+    TRACE_smpi_send(rank, rank, dst_traced,count*smpi_datatype_size(datatype));
+  }
 
     smpi_mpi_send(buf, count, datatype, dst, tag, comm);
     retval = MPI_SUCCESS;
