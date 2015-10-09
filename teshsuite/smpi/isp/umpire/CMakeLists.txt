@@ -1,10 +1,6 @@
 # See http://formalverification.cs.utah.edu/ISP_Tests/
 
 set(umpire_tests_passing
-  any_src-can-deadlock
-  any_src-can-deadlock2
-  any_src-can-deadlock3
-  any_src-deadlock
   change-send-buffer
   comm-dup-no-error
   comm-dup-no-free
@@ -35,12 +31,21 @@ set(umpire_tests_passing
   partial-recv
   sendrecv-deadlock
   send-recv-ok
-  waitall-deadlock
-  waitany-deadlock
-  wait-deadlock
+  irecv-isend-ok
+  irecv-isend-ok2
+  lost-request-waitall
  ) # Passing (no deadlock) tests
- 
-set(umpire_tests_failing
+
+# These are supposed to deadlock but ISP does not find deadlock
+# and we don't either. What should be test here?
+set(umpire_tests_missed_deadlock
+  any_src-deadlock
+  any_src-can-deadlock
+  any_src-can-deadlock2
+  any_src-can-deadlock3
+  )
+
+set(umpire_tests_deadlock
   any_src-can-deadlock10
   any_src-can-deadlock10_mod
   any_src-can-deadlock11
@@ -74,10 +79,9 @@ set(umpire_tests_failing
   dropped-req
   finalize-deadlock
   irecv-deadlock
-  irecv-isend-ok
-  irecv-isend-ok2
-  lost-request-waitall
-
+  waitall-deadlock
+  waitany-deadlock
+  wait-deadlock
  ) # failing (deadlocking) tests
  
 set(umpire_tests_problematic
@@ -169,7 +173,6 @@ set(umpire_src_other
   type-no-free-exhaustive.c
   )
 
-
 # Build the tests
 #################
 
@@ -184,7 +187,7 @@ if(enable_smpi AND enable_smpi_ISP_testsuite)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  foreach (test ${umpire_tests_passing} ${umpire_tests_failing} ${umpire_tests_problematic} )
+  foreach (test ${umpire_tests_passing} ${umpire_tests_deadlock} ${umpire_tests_problematic} )
     add_executable(${test} ${test}.c)
     target_link_libraries(${test} simgrid)
     set_source_files_properties(${test}.c PROPERTIES COMPILE_FLAGS "-Wno-error")
@@ -192,13 +195,15 @@ if(enable_smpi AND enable_smpi_ISP_testsuite)
     set(files_to_clean ${files_to_clean} ${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh)
   endforeach(test)
   
-  foreach (test ${umpire_tests_passing} )
+  # TODO, what should we do about ${umpire_tests_missed_deadlock}?
+
+  foreach (test ${umpire_tests_passing})
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! timeout 30")
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display" APPEND)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
   endforeach()
 
-  foreach (test ${umpire_tests_failing} ${umpire_tests_problematic} )
+  foreach (test ${umpire_tests_deadlock} ${umpire_tests_problematic} )
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! timeout 30"     )
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! expect return 3" APPEND)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display"  APPEND)
@@ -214,7 +219,7 @@ else()
     set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
   endforeach()
 
-  foreach(file ${umpire_tests_passing} ${umpire_tests_failing} ${umpire_tests_problematic}  ) 
+  foreach(file ${umpire_tests_passing} ${umpire_tests_deadlock} ${umpire_tests_missed_deadlock} ${umpire_tests_problematic}  ) 
     set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
   endforeach()
 
