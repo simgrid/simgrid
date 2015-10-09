@@ -243,6 +243,7 @@ my $diff_tool_tmp_fh       = 0;
 my $diff_tool_tmp_filename = 0;
 my $sort_prefix            = -1;
 my $tesh_file;
+my $tesh_name;
 my $error    = 0;
 my $exitcode = 0;
 my @bg_cmds;
@@ -307,6 +308,8 @@ GetOptions(
 );
 
 $tesh_file = pop @ARGV;
+$tesh_name = $tesh_file;
+$tesh_name =~ s|^.*?/([^/]*)$|$1|;
 
 print "Enable coverage\n" if ($enable_coverage);
 
@@ -319,7 +322,7 @@ if ($diff_tool) {
 if ( $tesh_file =~ m/(.*)\.tesh/ ) {
     print "Test suite `$tesh_file'\n";
 } else {
-    $tesh_file = "(stdin)";
+    $tesh_name = "(stdin)";
     print "Test suite from stdin\n";
 }
 
@@ -354,7 +357,7 @@ sub exec_cmd {
     $cmd{'cmd'} =~ s/^\s+//;
     $cmd{'cmd'} =~ s/\s+$//;
 
-    print "[$cmd{'file'}:$cmd{'line'}] $cmd{'cmd'}\n";
+    print "[$tesh_name:$cmd{'line'}] $cmd{'cmd'}\n";
 
     $cmd{'return'} ||= 0;
     $cmd{'timeout'} ||= $opts{'timeout'};
@@ -450,12 +453,12 @@ sub analyze_result {
     # Did it end as expected?
     if ( $cmd{'gotret'} ne $wantret ) {
         $error = 1;
-        my $msg = "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> $cmd{'gotret'})\n";
+        my $msg = "Test suite `$tesh_name': NOK (<$tesh_name:$cmd{'line'}> $cmd{'gotret'})\n";
         if ( scalar @got ) {
-            $msg = $msg . "Output of <$cmd{'file'}:$cmd{'line'}> so far:\n";
+            $msg = $msg . "Output of <$tesh_name:$cmd{'line'}> so far:\n";
 	    map { $msg .= "|| $_\n" } @got;
         } else {
-	    $msg .= "<$cmd{'file'}:$cmd{'line'}> No output so far.\n";
+	    $msg .= "<$tesh_name:$cmd{'line'}> No output so far.\n";
 	}
         print STDERR "$msg";
     }
@@ -493,12 +496,12 @@ sub analyze_result {
         print "[Tesh/INFO] Here is the (ignored) command output:\n";
         map { print "||$_\n" } @got;
     } elsif ( defined( $cmd{'output ignore'} ) ) {
-        print "(ignoring the output of <$cmd{'file'}:$cmd{'line'}> as requested)\n";
+        print "(ignoring the output of <$tesh_name:$cmd{'line'}> as requested)\n";
     } else {
         my $diff = build_diff( \@{ $cmd{'out'} }, \@got );
     
 	if ( length $diff ) {
-	    print "Output of <$cmd{'file'}:$cmd{'line'}> mismatch" . ( $cmd{'sort'} ? " (even after sorting)" : "" ) . ":\n";
+	    print "Output of <$tesh_name:$cmd{'line'}> mismatch" . ( $cmd{'sort'} ? " (even after sorting)" : "" ) . ":\n";
 	    map { print "$_\n" } split( /\n/, $diff );
 	    if ( $cmd{'sort'} ) {
 		print "WARNING: Both the observed output and expected output were sorted as requested.\n";
@@ -511,7 +514,7 @@ sub analyze_result {
 		# print "--------------->8----  End of the unprocessed observed output.\n";
 	    }
 	    
-	    print "Test suite `$cmd{'file'}': NOK (<$cmd{'file'}:$cmd{'line'}> output mismatch)\n";
+	    print "Test suite `$tesh_name': NOK (<$tesh_name:$cmd{'line'}> output mismatch)\n";
 	    exit 2;
 	}
     }
@@ -519,7 +522,7 @@ sub analyze_result {
 
 # parse tesh file
 my $infh;    # The file descriptor from which we should read the teshfile
-if ( $tesh_file eq "(stdin)" ) {
+if ( $tesh_name eq "(stdin)" ) {
     $infh = *STDIN;
 } else {
     open $infh, $tesh_file
@@ -527,8 +530,6 @@ if ( $tesh_file eq "(stdin)" ) {
 }
 
 my %cmd;     # everything about the next command to run
-my $tesh_name = $tesh_file;
-$tesh_name =~ s|^.*?/([^/]*)$|$1|;
 my $line_num = 0;
 LINE: while ( not $error and defined( my $line = <$infh> )) {
     chomp $line;
@@ -613,7 +614,6 @@ LINE: while ( not $error and defined( my $line = <$infh> )) {
 
         } else {    # regular command
             $cmd{'cmd'}  = $arg;
-            $cmd{'file'} = $tesh_name;
             $cmd{'line'} = $line_num;
         }
 
@@ -625,7 +625,6 @@ LINE: while ( not $error and defined( my $line = <$infh> )) {
 	
         $cmd{'background'} = 1;
         $cmd{'cmd'}        = $arg;
-        $cmd{'file'}       = $tesh_name;
         $cmd{'line'}       = $line_num;
 
     # Deal with the meta-commands
@@ -662,7 +661,7 @@ LINE: while ( not $error and defined( my $line = <$infh> )) {
 }
 
 # We are done reading the input file
-close $infh unless ( $tesh_file eq "(stdin)" );
+close $infh unless ( $tesh_name eq "(stdin)" );
 
 # Deal with last command, if any
 if ( defined( $cmd{'cmd'} ) ) {
@@ -683,7 +682,7 @@ if ($diff_tool) {
 
 if ( $error != 0 ) {
     exit $exitcode;
-} elsif ( $tesh_file eq "(stdin)" ) {
+} elsif ( $tesh_name eq "(stdin)" ) {
     print "Test suite from stdin OK\n";
 } else {
     print "Test suite `$tesh_name' OK\n";
@@ -771,7 +770,7 @@ sub cd_cmd($) {
         print "Chdir to $directory failed: No such file or directory\n";
     }
     if ( $failure == 1 ) {
-        print "Test suite `$cmd{'filefile'}': NOK (system error)\n";
+        print "Test suite `$tesh_name': NOK (system error)\n";
         exit 4;
     }
 }
