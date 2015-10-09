@@ -243,7 +243,6 @@ my $diff_tool_tmp_fh       = 0;
 my $diff_tool_tmp_filename = 0;
 my $sort_prefix            = -1;
 my $tesh_file;
-my $tesh_name;
 my $error    = 0;
 my $exitcode = 0;
 my @bg_cmds;
@@ -318,11 +317,9 @@ if ($diff_tool) {
 }
 
 if ( $tesh_file =~ m/(.*)\.tesh/ ) {
-    $tesh_name = $1;
-    print "Test suite `$tesh_name'\n";
+    print "Test suite `$tesh_file'\n";
 } else {
     $tesh_file = "(stdin)";
-    $tesh_name = "(stdin)";
     print "Test suite from stdin\n";
 }
 
@@ -357,7 +354,7 @@ sub exec_cmd {
     $cmd{'cmd'} =~ s/^\s+//;
     $cmd{'cmd'} =~ s/\s+$//;
 
-    print "[$tesh_name:$cmd{'line'}] $cmd{'cmd'}\n";
+    print "[$cmd{'file'}:$cmd{'line'}] $cmd{'cmd'}\n";
 
     $cmd{'return'} ||= 0;
     $cmd{'timeout'} ||= $opts{'timeout'};
@@ -530,6 +527,8 @@ if ( $tesh_file eq "(stdin)" ) {
 }
 
 my %cmd;     # everything about the next command to run
+my $tesh_name = $tesh_file;
+$tesh_name =~ s|^.*?/([^/]*)$|$1|;
 my $line_num = 0;
 LINE: while ( not $error and defined( my $line = <$infh> )) {
     chomp $line;
@@ -614,7 +613,7 @@ LINE: while ( not $error and defined( my $line = <$infh> )) {
 
         } else {    # regular command
             $cmd{'cmd'}  = $arg;
-            $cmd{'file'} = $tesh_file;
+            $cmd{'file'} = $tesh_name;
             $cmd{'line'} = $line_num;
         }
 
@@ -626,7 +625,7 @@ LINE: while ( not $error and defined( my $line = <$infh> )) {
 	
         $cmd{'background'} = 1;
         $cmd{'cmd'}        = $arg;
-        $cmd{'file'}       = $tesh_file;
+        $cmd{'file'}       = $tesh_name;
         $cmd{'line'}       = $line_num;
 
     # Deal with the meta-commands
@@ -772,7 +771,7 @@ sub cd_cmd($) {
         print "Chdir to $directory failed: No such file or directory\n";
     }
     if ( $failure == 1 ) {
-        print "Test suite `$tesh_file': NOK (system error)\n";
+        print "Test suite `$cmd{'filefile'}': NOK (system error)\n";
         exit 4;
     }
 }
