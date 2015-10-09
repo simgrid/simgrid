@@ -17,8 +17,8 @@
 #include "mc/datatypes.h"
 #include "mc/mc_object_info.h"
 #include "mc/mc_private.h"
-#include "mc/mc_process.h"
 
+#include "mc/Process.hpp"
 #include "mc/Type.hpp"
 #include "mc/ObjectInformation.hpp"
 #include "mc/Variable.hpp"
@@ -100,9 +100,9 @@ static simgrid::mc::Variable* test_global_variable(simgrid::mc::Process* process
   return variable;
 }
 
-static simgrid::mc::Type* find_member(simgrid::mc::ObjectInformation* info, const char* name, simgrid::mc::Type* type)
+static simgrid::mc::Member* find_member(simgrid::mc::Type& type, const char* name)
 {
-  for (simgrid::mc::Type& member : type->members)
+  for (simgrid::mc::Member& member : type.members)
     if(member.name == name)
       return &member;
   return nullptr;
@@ -146,8 +146,10 @@ int main(int argc, char** argv)
   i = process->binary_info->types.find(var->type_id);
   xbt_assert(i != process->binary_info->types.end(), "Missing type");
   type = &i->second;
-  assert(find_member(process->binary_info.get(), "first", type)->offset() == 0);
-  assert(find_member(process->binary_info.get(), "second", type)->offset()
+
+  assert(type);
+  assert(find_member(*type, "first")->offset() == 0);
+  assert(find_member(*type, "second")->offset()
       == ((const char*)&test_some_struct.second) - (const char*)&test_some_struct);
 
   unw_context_t context;

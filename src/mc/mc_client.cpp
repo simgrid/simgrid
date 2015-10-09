@@ -4,9 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
-#include <errno.h>
-#include <error.h>
+#include <cstdlib>
+#include <cerrno>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -37,7 +36,7 @@ void MC_client_init(void)
     return;
   }
 
-  char* fd_env = getenv(MC_ENV_SOCKET_FD);
+  char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
   if (!fd_env)
     xbt_die("MC socket not found");
 

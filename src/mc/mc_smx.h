@@ -14,7 +14,7 @@
 
 #include "smpi/private.h"
 
-#include "mc_process.h"
+#include "mc/Process.hpp"
 #include "mc_protocol.h"
 
 /** @file
@@ -48,6 +48,8 @@ struct s_mc_smx_process_info {
   const char* hostname;
   char* name;
 };
+
+typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
 
 XBT_PRIVATE xbt_dynar_t MC_smx_process_info_list_new(void);
 

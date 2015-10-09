@@ -9,7 +9,6 @@
 
 #include <poll.h>
 
-#include <stdint.h>
 #include <stdbool.h>
 
 #include <sys/signalfd.h>
@@ -18,7 +17,7 @@
 #include <xbt/misc.h>
 #include <xbt/base.h>
  
-#include "mc_process.h"
+#include "mc/Process.hpp"
 #include "mc_exit.h"
 
 SG_BEGIN_DECL()

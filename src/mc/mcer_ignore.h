@@ -10,7 +10,7 @@
 #include <xbt/dynar.h>
 
 #include "mc/datatypes.h"
-#include "mc/mc_process.h"
+#include "mc/Process.hpp"
 
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 

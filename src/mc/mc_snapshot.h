@@ -140,15 +140,14 @@ typedef struct s_mc_global_t {
 namespace simgrid {
 namespace mc {
 
-class XBT_PRIVATE Snapshot : public AddressSpace {
+class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
-  Snapshot();
+  Snapshot(Process* process);
   ~Snapshot();
   const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
     ReadMode mode = Normal) const override;
 public: // To be private
-  simgrid::mc::Process* process;
   int num_state;
   size_t heap_bytes_used;
   std::vector<std::unique_ptr<s_mc_mem_region_t>> snapshot_regions;

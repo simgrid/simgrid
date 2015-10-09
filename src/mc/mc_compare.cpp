@@ -16,6 +16,7 @@
 #include "mc_liveness.h"
 #include "mc_private.h"
 #include "mc_smx.h"
+#include "mc_dwarf.hpp"
 
 #include "mc/Frame.hpp"
 #include "mc/ObjectInformation.hpp"
@@ -236,7 +237,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   }
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
-    for(simgrid::mc::Type& member : type->members) {
+    for(simgrid::mc::Member& member : type->members) {
       void *member1 =
         mc_member_resolve(real_area1, type, &member, snapshot1, process_index);
       void *member2 =
@@ -247,7 +248,7 @@ static int compare_areas_with_type(struct mc_compare_state& state,
           compare_areas_with_type(state, process_index,
                                   member1, snapshot1, subregion1,
                                   member2, snapshot2, subregion2,
-                                  member.subtype, pointer_level);
+                                  member.type, pointer_level);
       if (res == 1)
         return res;
     }

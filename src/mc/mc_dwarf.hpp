@@ -210,7 +210,7 @@ XBT_PRIVATE const char* MC_dwarf_attrname(int attr);
 XBT_PRIVATE const char* MC_dwarf_tagname(int tag);
 
 XBT_PRIVATE void* mc_member_resolve(
-  const void* base, simgrid::mc::Type* type, simgrid::mc::Type* member,
+  const void* base, simgrid::mc::Type* type, simgrid::mc::Member* member,
   simgrid::mc::AddressSpace* snapshot, int process_index);
 
 #endif

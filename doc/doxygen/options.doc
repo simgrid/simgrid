@@ -776,10 +776,10 @@ Here, MAX_BANDWIDTH denotes the bandwidth of the link.
 
 \b Default: 0 (false)
 
-Most of the time, you run MPI code through SMPI to compute the time it
-would take to run it on a platform that you don't have. But since the
+Most of the time, you run MPI code with SMPI to compute the time it
+would take to run it on a platform. But since the
 code is run through the \c smpirun script, you don't have any control
-on the launcher code, making difficult to report the simulated time
+on the launcher code, making it difficult to report the simulated time
 when the simulation ends. If you set the \b smpi/display_timing item
 to 1, \c smpirun will display this information when the simulation ends. \verbatim
 Simulation time: 1e3 seconds.

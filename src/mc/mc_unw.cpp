@@ -19,7 +19,7 @@
 #include <libunwind.h>
 
 #include "mc_object_info.h"
-#include "mc_process.h"
+#include "mc/Process.hpp"
 #include "mc_unw.h"
 #include "mc/Frame.hpp"
 
@@ -224,12 +224,6 @@ int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context)
 {
   if (!context->process || !context->address_space)
     return -UNW_EUNSPEC;
-  simgrid::mc::AddressSpace* as = context->address_space;
-
-  simgrid::mc::Process* process = dynamic_cast<simgrid::mc::Process*>(as);
-  if (process && process->is_self())
-    return unw_init_local(cursor, &context->context);
-
   return unw_init_remote(cursor, context->process->unw_addr_space, context);
 }
 

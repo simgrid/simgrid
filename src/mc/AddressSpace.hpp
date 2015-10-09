@@ -7,12 +7,11 @@
 #ifndef SIMGRID_MC_ADDRESS_SPACE_H
 #define SIMGRID_MC_ADDRESS_SPACE_H
 
+#include <cstddef>
 #include <cstdint>
 #include <type_traits>
 
 #include <xbt/misc.h>
-
-#include <stdint.h>
 
 #include "mc_forward.hpp"
 
@@ -128,6 +127,8 @@ const int ProcessIndexDisabled = -2;
 const int ProcessIndexAny = 0;
 
 class AddressSpace {
+private:
+  Process* process_;
 public:
   enum ReadMode {
     Normal,
@@ -136,7 +137,10 @@ public:
      */
     Lazy
   };
+  AddressSpace(Process* process) : process_(process) {}
   virtual ~AddressSpace();
+
+  simgrid::mc::Process* process() { return process_; }
   virtual const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
     ReadMode mode = Normal) const = 0;

@@ -27,7 +27,6 @@
 
 #include <xbt/mmalloc.h>
 
-#include "mc_process.h"
 #include "mc_object_info.h"
 #include "mc_unw.h"
 #include "mc_snapshot.h"
@@ -35,6 +34,7 @@
 #include "mc_smx.h"
 #include "mc_server.h"
 
+#include "mc/Process.hpp"
 #include "mc/AddressSpace.hpp"
 #include "mc/ObjectInformation.hpp"
 #include "mc/Variable.hpp"
@@ -206,15 +206,11 @@ int open_vm(pid_t pid, int flags)
 namespace simgrid {
 namespace mc {
 
-Process::Process(pid_t pid, int sockfd)
+Process::Process(pid_t pid, int sockfd) : AddressSpace(this)
 {
   Process* process = this;
-
-  process->process_flags = MC_PROCESS_NO_FLAG;
   process->socket_ = sockfd;
   process->pid_ = pid;
-  if (pid==getpid())
-    process->process_flags |= MC_PROCESS_SELF_FLAG;
   process->running_ = true;
   process->status_ = 0;
   process->memory_map_ = get_memory_map(pid);
@@ -225,15 +221,10 @@ Process::Process(pid_t pid, int sockfd)
   process->clear_refs_fd_ = -1;
   process->pagemap_fd_ = -1;
 
-  // Open the memory file
-  if (process->is_self())
-    process->memory_file = -1;
-  else {
-    int fd = open_vm(process->pid_, O_RDWR);
-    if (fd<0)
-      xbt_die("Could not open file for process virtual address space");
-    process->memory_file = fd;
-  }
+  int fd = open_vm(process->pid_, O_RDWR);
+  if (fd<0)
+    xbt_die("Could not open file for process virtual address space");
+  process->memory_file = fd;
 
   // Read std_heap (is a struct mdesc*):
   simgrid::mc::Variable* std_heap_var = process->find_variable("__mmalloc_default_mdp");
@@ -247,15 +238,9 @@ Process::Process(pid_t pid, int sockfd)
 
   process->smx_process_infos = MC_smx_process_info_list_new();
   process->smx_old_process_infos = MC_smx_process_info_list_new();
-
   process->unw_addr_space = unw_create_addr_space(&mc_unw_accessors  , __BYTE_ORDER);
-  if (process->process_flags & MC_PROCESS_SELF_FLAG) {
-    process->unw_underlying_addr_space = unw_local_addr_space;
-    process->unw_underlying_context = NULL;
-  } else {
-    process->unw_underlying_addr_space = unw_create_addr_space(&mc_unw_vmread_accessors, __BYTE_ORDER);
-    process->unw_underlying_context = _UPT_create(pid);
-  }
+  process->unw_underlying_addr_space = unw_create_addr_space(&mc_unw_vmread_accessors, __BYTE_ORDER);
+  process->unw_underlying_context = _UPT_create(pid);
 }
 
 Process::~Process()
@@ -265,7 +250,6 @@ Process::~Process()
   if (this->socket_ >= 0 && close(this->socket_) < 0)
     xbt_die("Could not close communication socket");
 
-  process->process_flags = MC_PROCESS_NO_FLAG;
   process->pid_ = 0;
 
   process->maestro_stack_start_ = nullptr;
@@ -310,7 +294,6 @@ Process::~Process()
 void Process::refresh_heap()
 {
   xbt_assert(mc_mode == MC_MODE_SERVER);
-  xbt_assert(!this->is_self());
   // Read/dereference/refresh the std_heap pointer:
   if (!this->heap) {
     this->heap = (struct mdesc*) malloc(sizeof(struct mdesc));
@@ -328,7 +311,6 @@ void Process::refresh_heap()
 void Process::refresh_malloc_info()
 {
   xbt_assert(mc_mode == MC_MODE_SERVER);
-  xbt_assert(!this->is_self());
   if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
     this->refresh_heap();
   // Refresh process->heapinfo:
@@ -503,8 +485,6 @@ char* Process::read_string(remote_ptr<void> address) const
 {
   if (!address)
     return NULL;
-  if (this->is_self())
-    return xbt_strdup((char*) address.address());
 
   off_t len = 128;
   char* res = (char*) malloc(len);
@@ -564,18 +544,9 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
 #endif
   }
 
-  if (this->is_self()) {
-    if (mode == simgrid::mc::AddressSpace::Lazy)
-      return (void*)address.address();
-    else {
-      memcpy(buffer, (void*)address.address(), size);
-      return buffer;
-    }
-  } else {
-    if (pread_whole(this->memory_file, buffer, size, address.address()) < 0)
-      xbt_die("Read from process %lli failed", (long long) this->pid_);
-    return buffer;
-  }
+  if (pread_whole(this->memory_file, buffer, size, address.address()) < 0)
+    xbt_die("Read from process %lli failed", (long long) this->pid_);
+  return buffer;
 }
 
 /** Write data to a process memory
@@ -587,26 +558,18 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
  */
 void Process::write_bytes(const void* buffer, size_t len, remote_ptr<void> address)
 {
-  if (this->is_self()) {
-    memcpy((void*)address.address(), buffer, len);
-  } else {
-    if (pwrite_whole(this->memory_file, buffer, len, address.address()) < 0)
-      xbt_die("Write to process %lli failed", (long long) this->pid_);
-  }
+  if (pwrite_whole(this->memory_file, buffer, len, address.address()) < 0)
+    xbt_die("Write to process %lli failed", (long long) this->pid_);
 }
 
 void Process::clear_bytes(remote_ptr<void> address, size_t len)
 {
-  if (this->is_self()) {
-    memset((void*)address.address(), 0, len);
-  } else {
-    pthread_once(&zero_buffer_flag, MC_zero_buffer_init);
-    while (len) {
-      size_t s = len > zero_buffer_size ? zero_buffer_size : len;
-      this->write_bytes(zero_buffer, s, address);
-      address = remote((char*) address.address() + s);
-      len -= s;
-    }
+  pthread_once(&zero_buffer_flag, MC_zero_buffer_init);
+  while (len) {
+    size_t s = len > zero_buffer_size ? zero_buffer_size : len;
+    this->write_bytes(zero_buffer, s, address);
+    address = remote((char*) address.address() + s);
+    len -= s;
   }
 }
 

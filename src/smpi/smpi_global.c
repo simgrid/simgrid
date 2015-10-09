@@ -676,7 +676,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
     xbt_os_walltimer_stop(global_timer);
     if (sg_cfg_get_boolean("smpi/display_timing")){
       double global_time = xbt_os_timer_elapsed(global_timer);
-      XBT_INFO("Simulated time: %g seconds. \n "
+      XBT_INFO("Simulated time: %g seconds. \n\n"
           "The simulation took %g seconds (after parsing and platform setup)\n"
           "%g seconds were actual computation of the application"
           , SIMIX_get_clock(), global_time , smpi_total_benched_time);

@@ -14,8 +14,8 @@
 #include <xbt/base.h>
 
 #include "mc_forward.hpp"
-#include "mc_process.h"
-#include "PageStore.hpp"
+#include "mc/Process.hpp"
+#include "mc/PageStore.hpp"
 #include "mc_protocol.h"
 
 namespace simgrid {
@@ -52,6 +52,11 @@ public:
     return page_store_;
   }
   const char* get_host_name(const char* name);
+
+  bool is_important_snapshot(Snapshot const& snapshot) const
+  {
+    return &snapshot == mc_model_checker->parent_snapshot_;
+  }
 };
 
 }

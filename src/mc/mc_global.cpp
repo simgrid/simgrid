@@ -6,9 +6,10 @@
 
 #include <cinttypes>
 
-#include <assert.h>
-#include <string.h>
-#include <stdint.h>
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 
 #include "mc_base.h"
 
@@ -542,7 +543,7 @@ void MC_dump_stacks(FILE* file)
       unw_get_reg(&c, UNW_X86_64_RIP, &rip);
       unw_get_reg(&c, UNW_X86_64_RSP, &rsp);
       fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n",
-        nframe, name, rip, rsp);
+        nframe, name, (std::uint64_t) rip, (std::uint64_t) rsp);
 #else
       fprintf(file, "  %i: %s\n", nframe, name);
 #endif

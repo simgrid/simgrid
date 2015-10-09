@@ -14,6 +14,7 @@
 #include "mc/datatypes.h"
 #include "mc/mc_private.h"
 #include "mc/mc_snapshot.h"
+#include "mc/mc_dwarf.hpp"
 #include "mc/Type.hpp"
 
 using simgrid::mc::remote;
@@ -25,119 +26,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
 
 xbt_dynar_t mc_heap_comparison_ignore;
 xbt_dynar_t stacks_areas;
-
-
-
-/********************************* Backtrace ***********************************/
-/******************************************************************************/
-
-static void mmalloc_backtrace_block_display(void *heapinfo, int block)
-{
-
-  /* xbt_ex_t e; */
-
-  /* if (((malloc_info *)heapinfo)[block].busy_block.bt_size == 0) { */
-  /*   fprintf(stderr, "No backtrace available for that block, sorry.\n"); */
-  /*   return; */
-  /* } */
-
-  /* memcpy(&e.bt,&(((malloc_info *)heapinfo)[block].busy_block.bt),sizeof(void*)*XBT_BACKTRACE_SIZE); */
-  /* e.used = ((malloc_info *)heapinfo)[block].busy_block.bt_size; */
-
-  /* xbt_ex_setup_backtrace(&e); */
-  /* if (e.used == 0) { */
-  /*   fprintf(stderr, "(backtrace not set)\n"); */
-  /* } else if (e.bt_strings == NULL) { */
-  /*   fprintf(stderr, "(backtrace not ready to be computed. %s)\n",xbt_binary_name?"Dunno why":"xbt_binary_name not setup yet"); */
-  /* } else { */
-  /*   int i; */
-
-  /*   fprintf(stderr, "Backtrace of where the block %d was malloced (%d frames):\n", block ,e.used); */
-  /*   for (i = 0; i < e.used; i++)       /\* no need to display "xbt_backtrace_display" *\/{ */
-  /*     fprintf(stderr, "%d ---> %s\n",i, e.bt_strings[i] + 4); */
-  /*   } */
-  /* } */
-}
-
-static void mmalloc_backtrace_fragment_display(void *heapinfo, int block,
-                                               int frag)
-{
-
-  /* xbt_ex_t e; */
-
-  /* memcpy(&e.bt,&(((malloc_info *)heapinfo)[block].busy_frag.bt[frag]),sizeof(void*)*XBT_BACKTRACE_SIZE); */
-  /* e.used = XBT_BACKTRACE_SIZE; */
-
-  /* xbt_ex_setup_backtrace(&e); */
-  /* if (e.used == 0) { */
-  /*   fprintf(stderr, "(backtrace not set)\n"); */
-  /* } else if (e.bt_strings == NULL) { */
-  /*   fprintf(stderr, "(backtrace not ready to be computed. %s)\n",xbt_binary_name?"Dunno why":"xbt_binary_name not setup yet"); */
-  /* } else { */
-  /*   int i; */
-
-  /*   fprintf(stderr, "Backtrace of where the fragment %d in block %d was malloced (%d frames):\n", frag, block ,e.used); */
-  /*   for (i = 0; i < e.used; i++)       /\* no need to display "xbt_backtrace_display" *\/{ */
-  /*     fprintf(stderr, "%d ---> %s\n",i, e.bt_strings[i] + 4); */
-  /*   } */
-  /* } */
-
-}
-
-static void mmalloc_backtrace_display(void *addr)
-{
-
-  /* size_t block, frag_nb; */
-  /* int type; */
-
-  /* block = (((char*) (addr) - (char*) heap -> heapbase) / BLOCKSIZE + 1); */
-
-  /* type = heap->heapinfo[block].type; */
-
-  /* switch(type){ */
-  /* case MMALLOC_TYPE_HEAPINFO :  */
-  /* case MMALLOC_TYPE_FREE : /\* Free block *\/ */
-  /*   fprintf(stderr, "Asked to display the backtrace of a block that is free. I'm puzzled\n"); */
-  /*   xbt_abort(); */
-  /*   break;  */
-  /* case 0: /\* Large block *\/ */
-  /*   mmalloc_backtrace_block_display(heap->heapinfo, block); */
-  /*   break; */
-  /* default: /\* Fragmented block *\/ */
-  /*   frag_nb = RESIDUAL(addr, BLOCKSIZE) >> type; */
-  /*   if(heap->heapinfo[block].busy_frag.frag_size[frag_nb] == -1){ */
-  /*     fprintf(stderr , "Asked to display the backtrace of a fragment that is free. I'm puzzled\n"); */
-  /*     xbt_abort(); */
-  /*   } */
-  /*   mmalloc_backtrace_fragment_display(heap->heapinfo, block, frag_nb); */
-  /*   break; */
-  /* } */
-}
-
-
-static int compare_backtrace(int b1, int f1, int b2, int f2)
-{
-  /*int i = 0;
-     if(f1 != -1){
-     for(i=0; i< XBT_BACKTRACE_SIZE; i++){
-     if(heapinfo1[b1].busy_frag.bt[f1][i] != heapinfo2[b2].busy_frag.bt[f2][i]){
-     //mmalloc_backtrace_fragment_display((void*)heapinfo1, b1, f1);
-     //mmalloc_backtrace_fragment_display((void*)heapinfo2, b2, f2);
-     return 1;
-     }
-     }
-     }else{
-     for(i=0; i< heapinfo1[b1].busy_block.bt_size; i++){
-     if(heapinfo1[b1].busy_block.bt[i] != heapinfo2[b2].busy_block.bt[i]){
-     //mmalloc_backtrace_block_display((void*)heapinfo1, b1);
-     //mmalloc_backtrace_block_display((void*)heapinfo2, b2);
-     return 1;
-     }
-     }
-     } */
-  return 0;
-}
-
 
 /*********************************** Heap comparison ***********************************/
 /***************************************************************************************/
@@ -461,7 +349,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   const malloc_info* heapinfos2 = snapshot2->read<malloc_info*>(
     (std::uint64_t)heapinfo_address, simgrid::mc::ProcessIndexMissing);
 
-  while (i1 <= state->heaplimit) {
+  while (i1 < state->heaplimit) {
 
     const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(heap_region1, &heapinfo_temp1, &heapinfos1[i1], sizeof(malloc_info));
     const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(heap_region2, &heapinfo_temp2, &heapinfos2[i1], sizeof(malloc_info));
@@ -525,7 +413,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
       }
 
-      while (i2 <= state->heaplimit && !equal) {
+      while (i2 < state->heaplimit && !equal) {
 
         addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE +
                        (char *) state->std_heap_copy.heapbase;
@@ -610,7 +498,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
         }
 
-        while (i2 <= state->heaplimit && !equal) {
+        while (i2 < state->heaplimit && !equal) {
 
           const malloc_info* heapinfo2b = (const malloc_info*) MC_region_read(
             heap_region2, &heapinfo_temp2b, &heapinfos2[i2],
@@ -684,7 +572,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   /* All blocks/fragments are equal to another block/fragment ? */
   size_t i = 1, j = 0;
 
-  for(i = 1; i <= state->heaplimit; i++) {
+  for(i = 1; i < state->heaplimit; i++) {
     const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(
       heap_region1, &heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {
@@ -726,7 +614,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   if (i1 == state->heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap1 : %d", nb_diff1);
 
-  for (i=1; i <= state->heaplimit; i++) {
+  for (i=1; i < state->heaplimit; i++) {
     const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(
       heap_region2, &heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
     if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED) {
@@ -1042,7 +930,7 @@ top:
         return -1;
       }
     } else {
-      for(simgrid::mc::Type& member : type->members) {
+      for(simgrid::mc::Member& member : type->members) {
         // TODO, optimize this? (for the offset case)
         void *real_member1 =
             mc_member_resolve(real_area1, type, &member, (simgrid::mc::AddressSpace*) snapshot1, process_index);
@@ -1051,7 +939,7 @@ top:
         res =
             compare_heap_area_with_type(state, process_index, real_member1, real_member2,
                                         snapshot1, snapshot2,
-                                        previous, member.subtype, -1,
+                                        previous, member.type, -1,
                                         check_ignore, 0);
         if (res == 1) {
           return res;
@@ -1103,18 +991,18 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
       else
         return NULL;
     } else {
-      for(simgrid::mc::Type& member : type->members) {
+      for(simgrid::mc::Member& member : type->members) {
 
         if (member.has_offset_location()) {
           // We have the offset, use it directly (shortcut):
           if (member.offset() == offset)
-            return member.subtype;
+            return member.type;
         } else {
           void *real_member =
             mc_member_resolve(real_base_address, type, &member,
               snapshot, process_index);
           if ((char*) real_member - (char *) real_base_address == offset)
-            return member.subtype;
+            return member.type;
         }
 
       }

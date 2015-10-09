@@ -50,18 +50,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
-int MC_important_snapshot(mc_snapshot_t snapshot)
-{
-  // We need this snapshot in order to know which
-  // pages needs to be stored in the next snapshot.
-  // This field is only non-NULL when using soft-dirty
-  // page tracking.
-  if (snapshot == mc_model_checker->parent_snapshot_)
-    return true;
-
-  return false;
-}
-
 /** @brief Restore a region from a snapshot
  *
  *  @param reg     Target region
@@ -210,7 +198,7 @@ static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t s
 void MC_find_object_address(
   std::vector<simgrid::mc::VmMap> const& maps, simgrid::mc::ObjectInformation* result)
 {
-  const char* file_name = xbt_strdup(result->file_name.c_str());
+  char* file_name = xbt_strdup(result->file_name.c_str());
   const char *name = basename(file_name);
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::mc::VmMap const& reg = maps[i];
@@ -258,6 +246,7 @@ void MC_find_object_address(
 
   xbt_assert(result->start_rw);
   xbt_assert(result->start_exec);
+  free(file_name);
 }
 
 /************************************* Take Snapshot ************************************/
@@ -486,7 +475,7 @@ static std::vector<s_mc_heap_ignore_region_t> MC_take_snapshot_ignore()
 
 static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 {
-  xbt_assert(snapshot->process);
+  xbt_assert(snapshot->process());
   
   // Copy the memory:
   for (auto const& region : mc_model_checker->process().ignored_regions()) {
@@ -494,7 +483,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
     ignored_data.start = (void*)region.addr;
     ignored_data.data.resize(region.size);
     // TODO, we should do this once per privatization segment:
-    snapshot->process->read_bytes(
+    snapshot->process()->read_bytes(
       ignored_data.data.data(), region.size, remote(region.addr),
       simgrid::mc::ProcessIndexDisabled);
     snapshot->ignored_data.push_back(std::move(ignored_data));
@@ -502,7 +491,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 
   // Zero the memory:
   for(auto const& region : mc_model_checker->process().ignored_regions()) {
-    snapshot->process->clear_bytes(remote(region.addr), region.size);
+    snapshot->process()->clear_bytes(remote(region.addr), region.size);
   }
 
 }
@@ -510,7 +499,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
 {
   for (auto const& ignored_data : snapshot->ignored_data)
-    snapshot->process->write_bytes(
+    snapshot->process()->write_bytes(
       ignored_data.data.data(), ignored_data.data.size(),
       remote(ignored_data.start));
 }
@@ -600,9 +589,8 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   simgrid::mc::Process* mc_process = &mc_model_checker->process();
 
-  mc_snapshot_t snapshot = new simgrid::mc::Snapshot();
+  mc_snapshot_t snapshot = new simgrid::mc::Snapshot(mc_process);
 
-  snapshot->process = mc_process;
   snapshot->num_state = num_state;
 
   smx_process_t process;
@@ -626,7 +614,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks =
         MC_take_snapshot_stacks(&snapshot);
-    if (_sg_mc_hash && !snapshot->stacks.empty()) {
+    if (_sg_mc_hash) {
       snapshot->hash = simgrid::mc::hash(*snapshot);
     } else {
       snapshot->hash = 0;

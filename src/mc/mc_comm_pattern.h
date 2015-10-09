@@ -7,7 +7,7 @@
 #ifndef SIMGRID_MC_COMM_PATTERN_H
 #define SIMGRID_MC_COMM_PATTERN_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include <simgrid_config.h>
 #include <xbt/dynar.h>
