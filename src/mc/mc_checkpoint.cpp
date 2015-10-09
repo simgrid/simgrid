@@ -50,18 +50,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
-int MC_important_snapshot(mc_snapshot_t snapshot)
-{
-  // We need this snapshot in order to know which
-  // pages needs to be stored in the next snapshot.
-  // This field is only non-NULL when using soft-dirty
-  // page tracking.
-  if (snapshot == mc_model_checker->parent_snapshot_)
-    return true;
-
-  return false;
-}
-
 /** @brief Restore a region from a snapshot
  *
  *  @param reg     Target region
