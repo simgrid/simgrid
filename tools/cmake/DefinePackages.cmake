@@ -1175,7 +1175,7 @@ set(TOOLS_CMAKEFILES_TXT
 
 set(CMAKE_SOURCE_FILES
   CMakeLists.txt
-  tools/cmake/AddTests.cmake
+  tools/cmake/Tests.cmake
   tools/cmake/CTestConfig.cmake
   tools/cmake/CTestCustom.cmake
   tools/cmake/CompleteInFiles.cmake

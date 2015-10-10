@@ -502,7 +502,7 @@ Example: adding a "pair" version of the Alltoall collective.
 
  - To register the new version of the algorithm, simply add a line to the corresponding macro in src/smpi/colls/cools.h ( add a "COLL_APPLY(action, COLL_ALLTOALL_SIG, pair)" to the COLL_ALLTOALLS macro ). The algorithm should now be compiled and be selected when using --cfg=smpi/alltoall:pair at runtime.
 
- - To add a test for the algorithm inside Simgrid's test suite, juste add the new algorithm name in the ALLTOALL_COLL list found inside buildtools/cmake/AddTests.cmake . When running ctest, a test for the new algorithm should be generated and executed. If it does not pass, please check your code or contact us.
+ - To add a test for the algorithm inside Simgrid's test suite, juste add the new algorithm name in the ALLTOALL_COLL list found inside buildtools/cmake/Tests.cmake . When running ctest, a test for the new algorithm should be generated and executed. If it does not pass, please check your code or contact us.
 
  - Feel free to push this new algorithm to the SMPI repository using Git.
 

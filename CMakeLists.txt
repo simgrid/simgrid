@@ -272,7 +272,7 @@ endif()
 
 INCLUDE(CTest)
 ENABLE_TESTING()
-include(${CMAKE_HOME_DIRECTORY}/tools/cmake/AddTests.cmake)
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Tests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestConfig.cmake)
 
 ### Define subdirectories

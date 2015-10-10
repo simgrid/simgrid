@@ -207,7 +207,7 @@ machine.
 
 Then you have to request cmake to run your test when "ctest" is
 launched. For that, you have to modify source
-<project/directory>/tools/cmake/AddTests.cmake. Make sure to pick
+<project/directory>/tools/cmake/Tests.cmake. Make sure to pick
 a wise name for your test. It is often useful to check a category of
 tests together. The only way to do so in ctest is to use the -R
 argument that specifies a regular expression that the test names must

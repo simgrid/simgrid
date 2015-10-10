@@ -9,10 +9,10 @@
 use strict;
 use warnings;
 
-# input file = AddTest.txt
+# input file = Test.txt
 
 if ( $#ARGV != 1 ) {
-    die "Usage: generate_memcheck_tests.pl <CMAKE_HOME_DIRECTORY> AddTests.cmake\n";
+    die "Usage: generate_memcheck_tests.pl <CMAKE_HOME_DIRECTORY> Tests.cmake\n";
 }
 
 my ($proj_dir) = $ARGV[0];
