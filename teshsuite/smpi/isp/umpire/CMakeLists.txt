@@ -140,7 +140,7 @@ set(umpire_src_other
   no-error-probe-any_tag.c
   no-error-probe.c
   
-  # no-error-wait2.c # Does not compile.
+  no-error-wait2.c # Does not compile.
   no-error-waitall-any_src2.c
   no-error-waitall-any_src3.c
   no-error-waitall-any_src.c
@@ -173,11 +173,21 @@ set(umpire_src_other
   type-no-free-exhaustive.c
   )
 
-# Build the tests
+# Add these files to the archive
 #################
 
-set(umpire_tesh "")
-set(txt_files ${txt_files} ${CMAKE_CURRENT_SOURCE_DIR}/README PARENT_SCOPE)
+set(sources "${CMAKE_CURRENT_SOURCE_DIR}/README")
+foreach(file ${umpire_src_other})
+  set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
+endforeach()
+
+foreach(file ${umpire_tests_passing} ${umpire_tests_deadlock} ${umpire_tests_missed_deadlock} ${umpire_tests_problematic}  ) 
+  set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
+endforeach()
+set(txt_files ${txt_files} ${sources} PARENT_SCOPE)
+
+# Build the tests
+#################
 
 if(enable_smpi AND enable_smpi_ISP_testsuite)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
@@ -209,21 +219,6 @@ if(enable_smpi AND enable_smpi_ISP_testsuite)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display"  APPEND)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
   endforeach()
-else()
-
-  # If the tests are disabled, still add their files in the archive
-  #################################################################
-
-  set(sources "")
-  foreach(file ${umpire_src_other})
-    set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
-  endforeach()
-
-  foreach(file ${umpire_tests_passing} ${umpire_tests_deadlock} ${umpire_tests_missed_deadlock} ${umpire_tests_problematic}  ) 
-    set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
-  endforeach()
-
-  set(txt_files ${txt_files} ${sources} PARENT_SCOPE)
 endif()
 
 # Erase all tesh files on cleanup: they are generated anyway
