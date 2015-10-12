@@ -24,6 +24,7 @@
 
 #include "mc_object_info.h"
 #include "mc_private.h"
+#include "mc_dwarf.hpp"
 
 #include "mc/Process.hpp"
 #include "mc/ObjectInformation.hpp"
@@ -133,8 +134,7 @@ enum class FormClass {
   RangeListPtr
 };
 
-namespace {
-
+XBT_PRIVATE
 TagClass classify_tag(int tag)
 {
   switch (tag) {
@@ -193,6 +193,7 @@ TagClass classify_tag(int tag)
  *  \param form The form (values taken from the DWARF spec)
  *  \return An internal representation for the corresponding class
  * */
+XBT_PRIVATE
 FormClass classify_form(int form)
 {
   switch (form) {
@@ -232,18 +233,18 @@ FormClass classify_form(int form)
   }
 }
 
-}
-}
-}
-
 /** \brief Get the name of the tag of a given DIE
  *
  *  \param die DIE
  *  \return name of the tag of this DIE
  */
-static inline const char *MC_dwarf_die_tagname(Dwarf_Die * die)
+inline XBT_PRIVATE
+const char *tagname(Dwarf_Die * die)
 {
-  return MC_dwarf_tagname(dwarf_tag(die));
+  return simgrid::dwarf::tagname(dwarf_tag(die));
+}
+
+}
 }
 
 // ***** Attributes
@@ -351,7 +352,8 @@ static bool MC_dwarf_attr_flag(Dwarf_Die * die, int attribute, bool integrate)
 
   bool result;
   if (dwarf_formflag(&attr, &result))
-    xbt_die("Unexpected form for attribute %s", MC_dwarf_attrname(attribute));
+    xbt_die("Unexpected form for attribute %s",
+      simgrid::dwarf::attrname(attribute));
   return result;
 }
 
@@ -407,7 +409,7 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die * die,
   xbt_assert(dwarf_tag(die) == DW_TAG_enumeration_type
              || dwarf_tag(die) == DW_TAG_subrange_type,
              "MC_dwarf_subrange_element_count called with DIE of type %s",
-             MC_dwarf_die_tagname(die));
+             simgrid::dwarf::tagname(die));
 
   // Use DW_TAG_count if present:
   if (dwarf_hasattr_integrate(die, DW_AT_count))
@@ -442,7 +444,7 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
 {
   xbt_assert(dwarf_tag(die) == DW_TAG_array_type,
              "MC_dwarf_array_element_count called with DIE of type %s",
-             MC_dwarf_die_tagname(die));
+             simgrid::dwarf::tagname(die));
 
   int result = 1;
   Dwarf_Die child;

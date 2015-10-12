@@ -10,7 +10,9 @@
 #include <elfutils/libdw.h>
 
 #include <xbt/base.h>
-#include "mc_object_info.h"
+
+namespace simgrid {
+namespace dwarf {
 
 /** \brief Get the name of a dwarf tag (DW_TAG_*) from its code
  *
@@ -18,7 +20,7 @@
  *  \return name of the tag
  */
 XBT_PRIVATE
-const char *MC_dwarf_tagname(int tag)
+const char *tagname(int tag)
 {
   switch (tag) {
   case 0x01: return "DW_TAG_array_type";
@@ -100,4 +102,7 @@ const char *MC_dwarf_tagname(int tag)
   default:
     return "DW_TAG_unknown";
   }
+}
+
+}
 }
