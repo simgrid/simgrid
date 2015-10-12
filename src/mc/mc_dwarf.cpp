@@ -988,6 +988,19 @@ static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die 
   }
 }
 
+static
+Elf64_Half MC_dwarf_elf_type(Dwarf* dwarf)
+{
+  Elf* elf = dwarf_getelf(dwarf);
+  Elf64_Ehdr* ehdr64 = elf64_getehdr(elf);
+  if (ehdr64)
+    return ehdr64->e_type;
+  Elf32_Ehdr* ehdr32 = elf32_getehdr(elf);
+  if (ehdr32)
+    return ehdr32->e_type;
+  xbt_die("Could not get ELF heeader");
+}
+
 /** \brief Populate the debugging informations of the given ELF object
  *
  *  Read the DWARf information of the EFFL object and populate the
@@ -1005,6 +1018,11 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
       "Your program and its dependencies must have debugging information.\n"
       "You might want to recompile with -g or install the suitable debugging package.\n",
       info->file_name.c_str());
+
+  Elf64_Half elf_type = MC_dwarf_elf_type(dwarf);
+  if (elf_type == ET_EXEC)
+    info->flags |= simgrid::mc::ObjectInformation::Executable;
+
   // For each compilation unit:
   Dwarf_Off offset = 0;
   Dwarf_Off next_offset = 0;
@@ -1134,12 +1152,10 @@ static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 
 /** \brief Finds informations about a given shared object/executable */
 std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
-  std::vector<simgrid::mc::VmMap> const& maps, const char *name, int executable)
+  std::vector<simgrid::mc::VmMap> const& maps, const char *name)
 {
   std::shared_ptr<simgrid::mc::ObjectInformation> result =
     std::make_shared<simgrid::mc::ObjectInformation>();
-  if (executable)
-    result->flags |= simgrid::mc::ObjectInformation::Executable;
   result->file_name = name;
   MC_find_object_address(maps, result.get());
   MC_dwarf_get_variables(result.get());
