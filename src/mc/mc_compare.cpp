@@ -74,19 +74,9 @@ static void stack_region_free(stack_region_t s)
   }
 }
 
-static void stack_region_free_voidp(void *s)
-{
-  stack_region_free((stack_region_t) * (void **) s);
-}
-
 static void pointers_pair_free(pointers_pair_t p)
 {
   xbt_free(p);
-}
-
-static void pointers_pair_free_voidp(void *p)
-{
-  pointers_pair_free((pointers_pair_t) * (void **) p);
 }
 
 /************************** Snapshot comparison *******************************/
