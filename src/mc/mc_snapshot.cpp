@@ -184,7 +184,8 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
     }
   }
   else
-    return this->read_bytes(buffer, size, address, process_index, mode);
+    return this->process()->read_bytes(
+      buffer, size, address, process_index, mode);
 }
 
 }
