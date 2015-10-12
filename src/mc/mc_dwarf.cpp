@@ -993,6 +993,7 @@ static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die 
  *  Read the DWARf information of the EFFL object and populate the
  *  lists of types, variables, functions.
  */
+static
 void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
 {
   int fd = open(info->file_name.c_str(), O_RDONLY);

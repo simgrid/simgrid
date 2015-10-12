@@ -32,6 +32,4 @@ XBT_PRIVATE void* resolve_member(
 }
 }
 
-XBT_PRIVATE void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info);
-
 #endif
