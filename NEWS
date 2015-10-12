@@ -8,6 +8,7 @@ The Facelift Release. Major changes:
 
  * Many interface glitches addressed, everywhere.
    - Require g++-4.7, Java 7 and boost 1.48
+   - Builds on Linux, OS X, Windows and FreeBSD
    - See ChangeLog for renamed functions and options.
 
  * Energy plugin: major cleanups/rewrites.
