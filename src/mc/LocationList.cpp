@@ -71,5 +71,44 @@ Location resolve(
           frame_pointer_address, address_space, process_index);
 }
 
+simgrid::dwarf::LocationList location_list(
+  simgrid::mc::ObjectInformation& info,
+  Dwarf_Attribute& attr)
+{
+  simgrid::dwarf::LocationList locations;
+  std::ptrdiff_t offset = 0;
+  while (1) {
+
+    Dwarf_Addr base, start, end;
+    Dwarf_Op *ops;
+    std::size_t len;
+
+    offset = dwarf_getlocations(
+      &attr, offset, &base, &start, &end, &ops, &len);
+
+    if (offset == 0)
+      return std::move(locations);
+    else if (offset == -1)
+      xbt_die("Error while loading location list");
+
+    simgrid::dwarf::LocationListEntry entry;
+    entry.expression = simgrid::dwarf::DwarfExpression(ops, ops + len);
+
+    void *base_address = info.base_address();
+
+    // If start == 0, this is not a location list:
+    if (start == 0) {
+      entry.lowpc  = nullptr;
+      entry.highpc = nullptr;
+    } else {
+      entry.lowpc  = (char *) base_address + start;
+      entry.highpc = (char *) base_address + end;
+    }
+
+    locations.push_back(std::move(entry));
+  }
+}
+
+
 }
 }

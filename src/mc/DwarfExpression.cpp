@@ -267,39 +267,3 @@ void execute(
 
 }
 }
-
-extern "C" {
-
-void mc_dwarf_location_list_init(
-  simgrid::dwarf::LocationList* list, simgrid::mc::ObjectInformation* info,
-  Dwarf_Die * die, Dwarf_Attribute * attr)
-{
-  list->clear();
-
-  std::ptrdiff_t offset = 0;
-  Dwarf_Addr base, start, end;
-  Dwarf_Op *ops;
-  std::size_t len;
-
-  while (1) {
-
-    offset = dwarf_getlocations(attr, offset, &base, &start, &end, &ops, &len);
-    if (offset == 0)
-      return;
-    else if (offset == -1)
-      xbt_die("Error while loading location list");
-
-    simgrid::dwarf::LocationListEntry entry;
-    entry.expression = simgrid::dwarf::DwarfExpression(ops, ops + len);
-
-    void *base = info->base_address();
-    // If start == 0, this is not a location list:
-    entry.lowpc = start == 0 ? NULL : (char *) base + start;
-    entry.highpc = start == 0 ? NULL : (char *) base + end;
-
-    list->push_back(std::move(entry));
-  }
-
-}
-
-}

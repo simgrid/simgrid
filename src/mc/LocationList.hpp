@@ -82,15 +82,12 @@ Location resolve(
   simgrid::mc::AddressSpace* address_space,
   int process_index);
 
+XBT_PRIVATE
+simgrid::dwarf::LocationList location_list(
+  simgrid::mc::ObjectInformation& info,
+  Dwarf_Attribute& attr);
+
 }
 }
-
-SG_BEGIN_DECL()
-
-XBT_PRIVATE void mc_dwarf_location_list_init(
-  simgrid::dwarf::LocationList*, simgrid::mc::ObjectInformation* info,
-  Dwarf_Die* die, Dwarf_Attribute* attr);
-
-SG_END_DECL()
 
 #endif

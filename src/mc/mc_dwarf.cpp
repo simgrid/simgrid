@@ -764,9 +764,8 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
   case simgrid::dwarf::FormClass::LocListPtr:
   case simgrid::dwarf::FormClass::Constant:
     // Reference to location list:
-    mc_dwarf_location_list_init(
-      &variable->location_list, info, die,
-      &attr_location);
+    variable->location_list = simgrid::dwarf::location_list(
+      *info, attr_location);
     break;
 
   default:
@@ -909,8 +908,8 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   if (klass == simgrid::dwarf::TagClass::Subprogram) {
     Dwarf_Attribute attr_frame_base;
     if (dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
-      mc_dwarf_location_list_init(&frame.frame_base_location, info, die,
-                                  &attr_frame_base);
+      frame.frame_base_location = simgrid::dwarf::location_list(*info,
+                                  attr_frame_base);
   }
 
   // Handle children:
