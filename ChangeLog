@@ -1,4 +1,4 @@
-SimGrid (3.12) NOT RELEASED; urgency=low
+SimGrid (3.12) stable; urgency=low
 
  The Facelift Release.
 
@@ -118,7 +118,7 @@ SimGrid (3.12) NOT RELEASED; urgency=low
   * Record/Replay: the MC can display a textual representation of a path in the
     execution graph. It can then be replayed outside of the model checker.
 
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Mon Oct 12 06:02:41 CEST 2015 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.11) stable; urgency=low
 
