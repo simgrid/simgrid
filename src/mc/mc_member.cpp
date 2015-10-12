@@ -29,22 +29,16 @@ void *resolve_member(
   if (!member->has_offset_location())
     return ((char *) base) + member->offset();
 
-  s_mc_expression_state_t state;
-  memset(&state, 0, sizeof(s_mc_expression_state_t));
+  ExpressionContext state;
   state.frame_base = NULL;
   state.cursor = NULL;
   state.address_space = address_space;
-  state.stack_size = 1;
-  state.stack[0] = (uintptr_t) base;
   state.process_index = process_index;
 
-  if (simgrid::mc::execute(
-      member->location_expression, &state))
-    xbt_die("Error evaluating DWARF expression");
-  if (state.stack_size == 0)
-    xbt_die("No value on the stack");
-  else
-    return (void *) state.stack[state.stack_size - 1];
+  ExpressionStack stack;
+  stack.push((ExpressionStack::value_type) base);
+  simgrid::dwarf::execute(member->location_expression, state, stack);
+  return (void*) stack.top();
 }
 
 }

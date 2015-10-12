@@ -16,19 +16,19 @@
 #include "mc/AddressSpace.hpp"
 #include "mc/Frame.hpp"
 #include "mc/ObjectInformation.hpp"
+#include "mc/DwarfExpression.hpp"
 
 using simgrid::mc::remote;
 
-extern "C" {
+namespace simgrid {
+namespace dwarf {
 
-static int mc_dwarf_push_value(mc_expression_state_t state, Dwarf_Off value)
-{
-  if (state->stack_size >= MC_EXPRESSION_STACK_SIZE)
-    return MC_EXPRESSION_E_STACK_OVERFLOW;
+evaluation_error::~evaluation_error() {}
 
-  state->stack[state->stack_size++] = value;
-  return 0;
 }
+}
+
+extern "C" {
 
 /** Convert a DWARF register into a libunwind register
  *
@@ -101,11 +101,16 @@ static int mc_dwarf_register_to_libunwind(int dwarf_register)
 #endif
 }
 
-int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
-                                mc_expression_state_t state)
+}
+
+namespace simgrid {
+namespace dwarf {
+
+void execute(
+  const Dwarf_Op* ops, std::size_t n,
+  const ExpressionContext& context, ExpressionStack& stack)
 {
   for (size_t i = 0; i != n; ++i) {
-    int error = 0;
     const Dwarf_Op *op = ops + i;
     std::uint8_t atom = op->atom;
 
@@ -148,10 +153,10 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         int register_id =
             mc_dwarf_register_to_libunwind(op->atom - DW_OP_breg0);
         unw_word_t res;
-        if (!state->cursor)
-          return MC_EXPRESSION_E_MISSING_STACK_CONTEXT;
-        unw_get_reg(state->cursor, register_id, &res);
-        error = mc_dwarf_push_value(state, res + op->number);
+        if (!context.cursor)
+          throw evaluation_error("Missin stack context");
+        unw_get_reg(context.cursor, register_id, &res);
+        stack.push(res + op->number);
         break;
       }
 
@@ -162,30 +167,24 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
         // (it is a synonym for UNW_X86_64_RSP) so copy the cursor,
         // unwind it once in order to find the parent SP:
 
-        if (!state->cursor)
-          return MC_EXPRESSION_E_MISSING_STACK_CONTEXT;
+        if (!context.cursor)
+          throw evaluation_error("Missint cursor");
 
         // Get frame:
-        unw_cursor_t cursor = *(state->cursor);
+        unw_cursor_t cursor = *(context.cursor);
         unw_step(&cursor);
 
         unw_word_t res;
         unw_get_reg(&cursor, UNW_REG_SP, &res);
-        error = mc_dwarf_push_value(state, res);
+        stack.push(res);
         break;
       }
 
       // Frame base:
 
     case DW_OP_fbreg:
-      {
-        if (!state->frame_base)
-          return MC_EXPRESSION_E_MISSING_FRAME_BASE;
-        std::uintptr_t fb = ((std::uintptr_t) state->frame_base) + op->number;
-        error = mc_dwarf_push_value(state, fb);
-        break;
-      }
-
+      stack.push((std::uintptr_t) context.frame_base + op->number);
+      break;
 
       // ***** Constants:
 
@@ -223,19 +222,17 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
     case DW_OP_lit29:
     case DW_OP_lit30:
     case DW_OP_lit31:
-      error = mc_dwarf_push_value(state, atom - DW_OP_lit0);
+      stack.push(atom - DW_OP_lit0);
       break;
 
       // Address from the base address of this ELF object.
       // Push the address on the stack (base_address + argument).
     case DW_OP_addr: {
-      if (!state->object_info)
-        return MC_EXPRESSION_E_NO_BASE_ADDRESS;
-      if (state->stack_size == MC_EXPRESSION_STACK_SIZE)
-        return MC_EXPRESSION_E_STACK_OVERFLOW;
+      if (!context.object_info)
+        throw evaluation_error("No base address");
       Dwarf_Off addr = (Dwarf_Off) (std::uintptr_t)
-        state->object_info->base_address() + op->number;
-      error = mc_dwarf_push_value(state, addr);
+        context.object_info->base_address() + op->number;
+      stack.push(addr);
       break;
     }
 
@@ -251,46 +248,29 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
     case DW_OP_const8s:
     case DW_OP_constu:
     case DW_OP_consts:
-      if (state->stack_size == MC_EXPRESSION_STACK_SIZE)
-        return MC_EXPRESSION_E_STACK_OVERFLOW;
-      error = mc_dwarf_push_value(state, op->number);
+      stack.push(op->number);
       break;
 
       // ***** Stack manipulation:
 
       // Push another copy/duplicate the value at the top of the stack:
     case DW_OP_dup:
-      if (state->stack_size == 0)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      else
-        error = mc_dwarf_push_value(state, state->stack[state->stack_size - 1]);
+      stack.dup();
       break;
 
       // Pop/drop the top of the stack:
     case DW_OP_drop:
-      if (state->stack_size == 0)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      else
-        state->stack_size--;
+      stack.pop();
       break;
 
       // Swap the two top-most value of the stack:
     case DW_OP_swap:
-      if (state->stack_size < 2)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      {
-        std::uintptr_t temp = state->stack[state->stack_size - 2];
-        state->stack[state->stack_size - 2] =
-            state->stack[state->stack_size - 1];
-        state->stack[state->stack_size - 1] = temp;
-      }
+      std::swap(stack.top(), stack.top(1));
       break;
 
       // Duplicate the value under the top of the stack:
     case DW_OP_over:
-      if (state->stack_size < 2)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      error = mc_dwarf_push_value(state, state->stack[state->stack_size - 2]);
+      stack.push(stack.top(1));
       break;
 
       // ***** Operations:
@@ -299,99 +279,39 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       // (stack.top() += stack.before_top()).
 
     case DW_OP_plus:
-      if (state->stack_size < 2)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      {
-        std::uintptr_t result =
-            state->stack[state->stack_size - 2] +
-            state->stack[state->stack_size - 1];
-        state->stack[state->stack_size - 2] = result;
-        state->stack_size--;
-      }
+      stack.push(stack.pop() + stack.pop());
       break;
 
     case DW_OP_mul:
-      if (state->stack_size < 2)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      {
-        std::uintptr_t result =
-            state->stack[state->stack_size - 2] -
-            state->stack[state->stack_size - 1];
-        state->stack[state->stack_size - 2] = result;
-        state->stack_size--;
-      }
+      stack.push(stack.pop() * stack.pop());
       break;
 
     case DW_OP_plus_uconst:
-      if (state->stack_size == 0)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      state->stack[state->stack_size - 1] += op->number;
+      stack.top() += op->number;
       break;
 
     case DW_OP_not:
-      if (state->stack_size == 0)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      state->stack[state->stack_size - 1] =
-          ~state->stack[state->stack_size - 1];
+      stack.top() = ~stack.top();
       break;
 
     case DW_OP_neg:
-      if (state->stack_size == 0)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      {
-        intptr_t value = state->stack[state->stack_size - 1];
-        if (value < 0)
-          value = -value;
-        state->stack[state->stack_size - 1] = value;
-      }
+      stack.top() = - (intptr_t) stack.top();
       break;
 
     case DW_OP_minus:
-      if (state->stack_size < 2)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      {
-        std::uintptr_t result =
-            state->stack[state->stack_size - 2] -
-            state->stack[state->stack_size - 1];
-        state->stack[state->stack_size - 2] = result;
-        state->stack_size--;
-      }
+      stack.push(stack.pop() - stack.pop());
       break;
 
     case DW_OP_and:
-      if (state->stack_size < 2)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      {
-        std::uintptr_t result =
-            state->stack[state->stack_size -
-                         2] & state->stack[state->stack_size - 1];
-        state->stack[state->stack_size - 2] = result;
-        state->stack_size--;
-      }
+      stack.push(stack.pop() & stack.pop());
       break;
 
     case DW_OP_or:
-      if (state->stack_size < 2)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      {
-        std::uintptr_t result =
-            state->stack[state->stack_size -
-                         2] | state->stack[state->stack_size - 1];
-        state->stack[state->stack_size - 2] = result;
-        state->stack_size--;
-      }
+      stack.push(stack.pop() | stack.pop());
       break;
 
     case DW_OP_xor:
-      if (state->stack_size < 2)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      {
-        std::uintptr_t result =
-            state->stack[state->stack_size -
-                         2] ^ state->stack[state->stack_size - 1];
-        state->stack[state->stack_size - 2] = result;
-        state->stack_size--;
-      }
+      stack.push(stack.pop() ^ stack.pop());
       break;
 
     case DW_OP_nop:
@@ -400,31 +320,23 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
       // ***** Deference (memory fetch)
 
     case DW_OP_deref_size:
-      return MC_EXPRESSION_E_UNSUPPORTED_OPERATION;
+      throw evaluation_error("Unsupported operation");
 
     case DW_OP_deref:
-      if (state->stack_size == 0)
-        return MC_EXPRESSION_E_STACK_UNDERFLOW;
-      {
-        // Computed address:
-        std::uintptr_t address = (std::uintptr_t) state->stack[state->stack_size - 1];
-        if (!state->address_space)
-          xbt_die("Missing address space");
-        state->address_space->read_bytes(
-          &state->stack[state->stack_size - 1], sizeof(uintptr_t),
-          remote(address), state->process_index);
-      }
+      // Computed address:
+      if (!context.address_space)
+        throw evaluation_error("Missing address space");
+      context.address_space->read_bytes(
+        &stack.top(), sizeof(uintptr_t), remote(stack.top()),
+        context.process_index);
       break;
 
       // Not handled:
     default:
-      return MC_EXPRESSION_E_UNSUPPORTED_OPERATION;
+      throw evaluation_error("Unsupported operation");
     }
 
-    if (error)
-      return error;
   }
-  return 0;
 }
 
 // ***** Location
@@ -432,25 +344,24 @@ int mc_dwarf_execute_expression(size_t n, const Dwarf_Op * ops,
 /** \brief Resolve a location expression
  *  \deprecated Use mc_dwarf_resolve_expression
  */
-void mc_dwarf_resolve_location(mc_location_t location,
-                               simgrid::mc::DwarfExpression* expression,
-                               simgrid::mc::ObjectInformation* object_info,
-                               unw_cursor_t * c,
-                               void *frame_pointer_address,
-                               simgrid::mc::AddressSpace* address_space, int process_index)
+void resolve_location(mc_location_t location,
+                      simgrid::dwarf::DwarfExpression const& expression,
+                      simgrid::mc::ObjectInformation* object_info,
+                      unw_cursor_t * c,
+                      void *frame_pointer_address,
+                      simgrid::mc::AddressSpace* address_space, int process_index)
 {
-  s_mc_expression_state_t state;
-  memset(&state, 0, sizeof(s_mc_expression_state_t));
-  state.frame_base = frame_pointer_address;
-  state.cursor = c;
-  state.address_space = address_space;
-  state.object_info = object_info;
-  state.process_index = process_index;
+  simgrid::dwarf::ExpressionContext context;
+  context.frame_base = frame_pointer_address;
+  context.cursor = c;
+  context.address_space = address_space;
+  context.object_info = object_info;
+  context.process_index = process_index;
 
-  if (expression->size() >= 1
-      && (*expression)[0].atom >=DW_OP_reg0
-      && (*expression)[0].atom <= DW_OP_reg31) {
-    int dwarf_register = (*expression)[0].atom - DW_OP_reg0;
+  if (!expression.empty()
+      && expression[0].atom >= DW_OP_reg0
+      && expression[0].atom <= DW_OP_reg31) {
+    int dwarf_register = expression[0].atom - DW_OP_reg0;
     xbt_assert(c,
       "Missing frame context for register operation DW_OP_reg%i",
       dwarf_register);
@@ -460,20 +371,19 @@ void mc_dwarf_resolve_location(mc_location_t location,
     return;
   }
 
-  if (mc_dwarf_execute_expression(
-      expression->size(), expression->data(), &state))
-    xbt_die("Error evaluating DWARF expression");
-  if (state.stack_size == 0)
-    xbt_die("No value on the stack");
-  else {
-    location->memory_location = (void*) state.stack[state.stack_size - 1];
-    location->cursor = NULL;
-    location->register_id = 0;
-  }
+  simgrid::dwarf::ExpressionStack stack;
+  simgrid::dwarf::execute(expression, context, stack);
+
+  location->memory_location = (void*) stack.top();
+  location->cursor = NULL;
+  location->register_id = 0;
+}
+
+}
 }
 
 // TODO, move this in a method of LocationList
-static simgrid::mc::DwarfExpression* mc_find_expression(
+static simgrid::dwarf::DwarfExpression* mc_find_expression(
     simgrid::mc::LocationList* locations, unw_word_t ip)
 {
   for (simgrid::mc::LocationListEntry& entry : *locations)
@@ -481,6 +391,8 @@ static simgrid::mc::DwarfExpression* mc_find_expression(
       return &entry.expression;
   return nullptr;
 }
+
+extern "C" {
 
 void mc_dwarf_resolve_locations(mc_location_t location,
                                 simgrid::mc::LocationList* locations,
@@ -497,10 +409,11 @@ void mc_dwarf_resolve_locations(mc_location_t location,
       xbt_die("Could not resolve IP");
   }
 
-  simgrid::mc::DwarfExpression* expression = mc_find_expression(locations, ip);
+  simgrid::dwarf::DwarfExpression* expression =
+    mc_find_expression(locations, ip);
   if (expression) {
-    mc_dwarf_resolve_location(location,
-                              expression, object_info, c,
+    simgrid::dwarf::resolve_location(location,
+                              *expression, object_info, c,
                               frame_pointer_address, address_space, process_index);
   } else {
     xbt_die("Could not resolve location");
@@ -560,7 +473,7 @@ void mc_dwarf_location_list_init(
       xbt_die("Error while loading location list");
 
     simgrid::mc::LocationListEntry entry;
-    entry.expression = simgrid::mc::DwarfExpression(ops, ops + len);
+    entry.expression = simgrid::dwarf::DwarfExpression(ops, ops + len);
 
     void *base = info->base_address();
     // If start == 0, this is not a location list:

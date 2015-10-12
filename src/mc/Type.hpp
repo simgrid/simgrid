@@ -25,7 +25,7 @@ public:
 
   bool inheritance;
   std::string name;
-  simgrid::mc::DwarfExpression location_expression;
+  simgrid::dwarf::DwarfExpression location_expression;
   std::size_t byte_size; // Do we really need this?
   unsigned type_id;
   simgrid::mc::Type* type;

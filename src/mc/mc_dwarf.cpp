@@ -517,7 +517,7 @@ static void MC_dwarf_fill_member_location(
             ("Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%"
              PRIx64 ">%s", MC_dwarf_attr_integrate_string(child, DW_AT_name),
              (uint64_t) type->id, type->name.c_str());
-      member->location_expression = simgrid::mc::DwarfExpression(expr, expr+len);
+      member->location_expression = simgrid::dwarf::DwarfExpression(expr, expr+len);
       break;
     }
   case simgrid::dwarf::FormClass::Constant:

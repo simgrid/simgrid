@@ -646,7 +646,8 @@ set(MC_SRC
   src/mc/mc_dwarf.hpp
   src/mc/mc_dwarf.cpp
   src/mc/mc_dwarf_attrnames.cpp
-  src/mc/mc_dwarf_expression.cpp
+  src/mc/DwarfExpression.hpp
+  src/mc/DwarfExpression.cpp
   src/mc/mc_dwarf_tagnames.cpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp

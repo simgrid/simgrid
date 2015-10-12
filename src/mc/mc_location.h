@@ -18,18 +18,17 @@
 #include <simgrid_config.h>
 #include "mc_base.h"
 #include "mc_forward.hpp"
-#include "AddressSpace.hpp"
+#include "mc/AddressSpace.hpp"
+#include "mc/DwarfExpression.hpp"
 
 namespace simgrid {
 namespace mc {
-
-typedef std::vector<Dwarf_Op> DwarfExpression;
 
 
 /** \brief A DWARF expression with optional validity contraints */
 class LocationListEntry {
 public:
-  DwarfExpression expression;
+  simgrid::dwarf::DwarfExpression expression;
   void* lowpc, *highpc;
 
   LocationListEntry() : lowpc(nullptr), highpc(nullptr) {}
@@ -90,11 +89,22 @@ enum mc_location_type mc_get_location_type(mc_location_t location) {
   }
 }
 
-XBT_PRIVATE void mc_dwarf_resolve_location(
-  mc_location_t location, simgrid::mc::DwarfExpression* expression,
+SG_END_DECL()
+
+namespace simgrid {
+namespace dwarf {
+
+XBT_PRIVATE void resolve_location(
+  mc_location_t location, simgrid::dwarf::DwarfExpression const& expression,
   simgrid::mc::ObjectInformation* object_info, unw_cursor_t* c,
   void* frame_pointer_address, simgrid::mc::AddressSpace* address_space,
   int process_index);
+
+}
+}
+
+SG_BEGIN_DECL()
+
 void mc_dwarf_resolve_locations(
   mc_location_t location, simgrid::mc::LocationList* locations,
   simgrid::mc::ObjectInformation* object_info, unw_cursor_t* c,
@@ -105,45 +115,9 @@ XBT_PRIVATE void mc_dwarf_location_list_init(
   simgrid::mc::LocationList*, simgrid::mc::ObjectInformation* info, Dwarf_Die* die,
   Dwarf_Attribute* attr);
 
-#define MC_EXPRESSION_STACK_SIZE 64
-
-#define MC_EXPRESSION_OK 0
-#define MC_EXPRESSION_E_UNSUPPORTED_OPERATION 1
-#define MC_EXPRESSION_E_STACK_OVERFLOW 2
-#define MC_EXPRESSION_E_STACK_UNDERFLOW 3
-#define MC_EXPRESSION_E_MISSING_STACK_CONTEXT 4
-#define MC_EXPRESSION_E_MISSING_FRAME_BASE 5
-#define MC_EXPRESSION_E_NO_BASE_ADDRESS 6
-
-typedef struct s_mc_expression_state {
-  uintptr_t stack[MC_EXPRESSION_STACK_SIZE];
-  size_t stack_size;
-
-  unw_cursor_t* cursor;
-  void* frame_base;
-  simgrid::mc::AddressSpace* address_space;
-  simgrid::mc::ObjectInformation* object_info;
-  int process_index;
-} s_mc_expression_state_t, *mc_expression_state_t;
-
-XBT_PUBLIC(int) mc_dwarf_execute_expression(
-  size_t n, const Dwarf_Op* ops, mc_expression_state_t state);
 void* mc_find_frame_base(
   simgrid::mc::Frame* frame, simgrid::mc::ObjectInformation* object_info, unw_cursor_t* unw_cursor);
 
 SG_END_DECL()
-
-namespace simgrid {
-namespace mc {
-
-static inline
-int execute(DwarfExpression const& expression, mc_expression_state_t state)
-{
-  return mc_dwarf_execute_expression(
-    expression.size(), expression.data(), state);
-}
-
-}
-}
 
 #endif
