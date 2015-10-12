@@ -25,13 +25,13 @@ namespace dwarf {
 XBT_PRIVATE const char* attrname(int attr);
 XBT_PRIVATE const char* tagname(int tag);
 
+XBT_PRIVATE void* resolve_member(
+  const void* base, simgrid::mc::Type* type, simgrid::mc::Member* member,
+  simgrid::mc::AddressSpace* snapshot, int process_index);
+
 }
 }
 
 XBT_PRIVATE void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info);
-
-XBT_PRIVATE void* mc_member_resolve(
-  const void* base, simgrid::mc::Type* type, simgrid::mc::Member* member,
-  simgrid::mc::AddressSpace* snapshot, int process_index);
 
 #endif

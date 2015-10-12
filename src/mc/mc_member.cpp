@@ -10,6 +10,9 @@
 #include "mc_private.h"
 #include "mc/Type.hpp"
 
+namespace simgrid {
+namespace dwarf {
+
 /** Resolve snapshot in the process address space
  *
  * @param object   Process address of the struct/class
@@ -18,7 +21,7 @@
  * @param snapshot Snapshot (or NULL)
  * @return Process address of the given member of the 'object' struct/class
  */
-void *mc_member_resolve(
+void *resolve_member(
     const void *base, simgrid::mc::Type* type, simgrid::mc::Member* member,
     simgrid::mc::AddressSpace* address_space, int process_index)
 {
@@ -42,4 +45,7 @@ void *mc_member_resolve(
     xbt_die("No value on the stack");
   else
     return (void *) state.stack[state.stack_size - 1];
+}
+
+}
 }

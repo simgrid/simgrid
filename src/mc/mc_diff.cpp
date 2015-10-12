@@ -932,10 +932,10 @@ top:
     } else {
       for(simgrid::mc::Member& member : type->members) {
         // TODO, optimize this? (for the offset case)
-        void *real_member1 =
-            mc_member_resolve(real_area1, type, &member, (simgrid::mc::AddressSpace*) snapshot1, process_index);
-        void *real_member2 =
-            mc_member_resolve(real_area2, type, &member, (simgrid::mc::AddressSpace*) snapshot2, process_index);
+        void *real_member1 = simgrid::dwarf::resolve_member(
+          real_area1, type, &member, (simgrid::mc::AddressSpace*) snapshot1, process_index);
+        void *real_member2 = simgrid::dwarf::resolve_member(
+            real_area2, type, &member, (simgrid::mc::AddressSpace*) snapshot2, process_index);
         res =
             compare_heap_area_with_type(state, process_index, real_member1, real_member2,
                                         snapshot1, snapshot2,
@@ -998,9 +998,8 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
           if (member.offset() == offset)
             return member.type;
         } else {
-          void *real_member =
-            mc_member_resolve(real_base_address, type, &member,
-              snapshot, process_index);
+          void *real_member = simgrid::dwarf::resolve_member(
+            real_base_address, type, &member, snapshot, process_index);
           if ((char*) real_member - (char *) real_base_address == offset)
             return member.type;
         }

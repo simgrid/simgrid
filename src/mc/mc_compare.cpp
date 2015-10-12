@@ -238,10 +238,10 @@ static int compare_areas_with_type(struct mc_compare_state& state,
   case DW_TAG_structure_type:
   case DW_TAG_class_type:
     for(simgrid::mc::Member& member : type->members) {
-      void *member1 =
-        mc_member_resolve(real_area1, type, &member, snapshot1, process_index);
-      void *member2 =
-        mc_member_resolve(real_area2, type, &member, snapshot2, process_index);
+      void *member1 = simgrid::dwarf::resolve_member(
+        real_area1, type, &member, snapshot1, process_index);
+      void *member2 = simgrid::dwarf::resolve_member(
+        real_area2, type, &member, snapshot2, process_index);
       mc_mem_region_t subregion1 = mc_get_region_hinted(member1, snapshot1, process_index, region1);
       mc_mem_region_t subregion2 = mc_get_region_hinted(member2, snapshot2, process_index, region2);
       res =
