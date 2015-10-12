@@ -305,22 +305,17 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     if (current_variable.address != NULL) {
       new_var.address = current_variable.address;
     } else if (!current_variable.location_list.empty()) {
-      s_mc_location_t location;
-      mc_dwarf_resolve_locations(
-        &location, &current_variable.location_list,
-        current_variable.object_info,
-        &(stack_frame->unw_cursor),
-        (void *) stack_frame->frame_base,
-        &mc_model_checker->process(), process_index);
+      simgrid::dwarf::Location location =
+        simgrid::dwarf::resolve(
+          current_variable.location_list,
+          current_variable.object_info,
+          &(stack_frame->unw_cursor),
+          (void *) stack_frame->frame_base,
+          &mc_model_checker->process(), process_index);
 
-      switch(mc_get_location_type(&location)) {
-      case MC_LOCATION_TYPE_ADDRESS:
-        new_var.address = location.memory_location;
-        break;
-      case MC_LOCATION_TYPE_REGISTER:
-      default:
+      if (!location.in_memory())
         xbt_die("Cannot handle non-address variable");
-      }
+      new_var.address = location.address();
 
     } else {
       xbt_die("No address");

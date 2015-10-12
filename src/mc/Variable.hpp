@@ -12,7 +12,7 @@
 #include <xbt/base.h>
 
 #include "mc_forward.h"
-#include "mc_location.h"
+#include "mc/LocationList.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -28,7 +28,7 @@ public:
   simgrid::mc::Type* type;
 
   // Use either of:
-  simgrid::mc::LocationList location_list;
+  simgrid::dwarf::LocationList location_list;
   void* address;
 
   size_t start_scope;

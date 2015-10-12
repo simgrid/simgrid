@@ -12,7 +12,7 @@
 #include <xbt/base.h>
 
 #include "mc_forward.h"
-#include "mc_location.h"
+#include "mc/LocationList.hpp"
 #include "mc/Variable.hpp"
 #include "mc/Frame.hpp"
 
@@ -27,7 +27,7 @@ public:
   std::string name;
   void *low_pc;
   void *high_pc;
-  simgrid::mc::LocationList frame_base;
+  simgrid::dwarf::LocationList frame_base;
   std::vector<Variable> variables;
   unsigned long int id; /* DWARF offset of the subprogram */
   std::vector<Frame> scopes;

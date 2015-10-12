@@ -12,11 +12,12 @@
 
 #include "mc_object_info.h"
 #include "mc_private.h"
-#include "mc_location.h"
+#include "mc/LocationList.hpp"
 #include "mc/AddressSpace.hpp"
 #include "mc/Frame.hpp"
 #include "mc/ObjectInformation.hpp"
 #include "mc/DwarfExpression.hpp"
+#include "mc_dwarf.hpp"
 
 using simgrid::mc::remote;
 
@@ -26,81 +27,6 @@ namespace dwarf {
 evaluation_error::~evaluation_error() {}
 
 }
-}
-
-extern "C" {
-
-/** Convert a DWARF register into a libunwind register
- *
- *  DWARF and libunwind does not use the same convention for numbering the
- *  registers on some architectures. The function makes the necessary
- *  convertion.
- */
-static int mc_dwarf_register_to_libunwind(int dwarf_register)
-{
-#if defined(__x86_64__)
-  // It seems for this arch, DWARF and libunwind agree in the numbering:
-  return dwarf_register;
-#elif defined(__i386__)
-  // Could't find the authoritative source of information for this.
-  // This is inspired from http://source.winehq.org/source/dlls/dbghelp/cpu_i386.c#L517.
-  switch (dwarf_register) {
-  case 0:
-    return UNW_X86_EAX;
-  case 1:
-    return UNW_X86_ECX;
-  case 2:
-    return UNW_X86_EDX;
-  case 3:
-    return UNW_X86_EBX;
-  case 4:
-    return UNW_X86_ESP;
-  case 5:
-    return UNW_X86_EBP;
-  case 6:
-    return UNW_X86_ESI;
-  case 7:
-    return UNW_X86_EDI;
-  case 8:
-    return UNW_X86_EIP;
-  case 9:
-    return UNW_X86_EFLAGS;
-  case 10:
-    return UNW_X86_CS;
-  case 11:
-    return UNW_X86_SS;
-  case 12:
-    return UNW_X86_DS;
-  case 13:
-    return UNW_X86_ES;
-  case 14:
-    return UNW_X86_FS;
-  case 15:
-    return UNW_X86_GS;
-  case 16:
-    return UNW_X86_ST0;
-  case 17:
-    return UNW_X86_ST1;
-  case 18:
-    return UNW_X86_ST2;
-  case 19:
-    return UNW_X86_ST3;
-  case 20:
-    return UNW_X86_ST4;
-  case 21:
-    return UNW_X86_ST5;
-  case 22:
-    return UNW_X86_ST6;
-  case 23:
-    return UNW_X86_ST7;
-  default:
-    xbt_die("Bad/unknown register number.");
-  }
-#else
-#error This architecture is not supported yet for DWARF expression evaluation.
-#endif
-}
-
 }
 
 namespace simgrid {
@@ -150,8 +76,8 @@ void execute(
     case DW_OP_breg29:
     case DW_OP_breg30:
     case DW_OP_breg31:{
-        int register_id =
-            mc_dwarf_register_to_libunwind(op->atom - DW_OP_breg0);
+        int register_id = simgrid::dwarf::dwarf_register_to_libunwind(
+          op->atom - DW_OP_breg0);
         unw_word_t res;
         if (!context.cursor)
           throw evaluation_error("Missin stack context");
@@ -339,86 +265,10 @@ void execute(
   }
 }
 
-// ***** Location
-
-/** \brief Resolve a location expression
- *  \deprecated Use mc_dwarf_resolve_expression
- */
-void resolve_location(mc_location_t location,
-                      simgrid::dwarf::DwarfExpression const& expression,
-                      simgrid::mc::ObjectInformation* object_info,
-                      unw_cursor_t * c,
-                      void *frame_pointer_address,
-                      simgrid::mc::AddressSpace* address_space, int process_index)
-{
-  simgrid::dwarf::ExpressionContext context;
-  context.frame_base = frame_pointer_address;
-  context.cursor = c;
-  context.address_space = address_space;
-  context.object_info = object_info;
-  context.process_index = process_index;
-
-  if (!expression.empty()
-      && expression[0].atom >= DW_OP_reg0
-      && expression[0].atom <= DW_OP_reg31) {
-    int dwarf_register = expression[0].atom - DW_OP_reg0;
-    xbt_assert(c,
-      "Missing frame context for register operation DW_OP_reg%i",
-      dwarf_register);
-    location->memory_location = NULL;
-    location->cursor = c;
-    location->register_id = mc_dwarf_register_to_libunwind(dwarf_register);
-    return;
-  }
-
-  simgrid::dwarf::ExpressionStack stack;
-  simgrid::dwarf::execute(expression, context, stack);
-
-  location->memory_location = (void*) stack.top();
-  location->cursor = NULL;
-  location->register_id = 0;
 }
-
-}
-}
-
-// TODO, move this in a method of LocationList
-static simgrid::dwarf::DwarfExpression* mc_find_expression(
-    simgrid::mc::LocationList* locations, unw_word_t ip)
-{
-  for (simgrid::mc::LocationListEntry& entry : *locations)
-    if (entry.valid_for_ip(ip))
-      return &entry.expression;
-  return nullptr;
 }
 
 extern "C" {
-
-void mc_dwarf_resolve_locations(mc_location_t location,
-                                simgrid::mc::LocationList* locations,
-                                simgrid::mc::ObjectInformation* object_info,
-                                unw_cursor_t * c,
-                                void *frame_pointer_address,
-                                simgrid::mc::AddressSpace* address_space,
-                                int process_index)
-{
-
-  unw_word_t ip = 0;
-  if (c) {
-    if (unw_get_reg(c, UNW_REG_IP, &ip))
-      xbt_die("Could not resolve IP");
-  }
-
-  simgrid::dwarf::DwarfExpression* expression =
-    mc_find_expression(locations, ip);
-  if (expression) {
-    simgrid::dwarf::resolve_location(location,
-                              *expression, object_info, c,
-                              frame_pointer_address, address_space, process_index);
-  } else {
-    xbt_die("Could not resolve location");
-  }
-}
 
 /** \brief Find the frame base of a given frame
  *
@@ -428,33 +278,27 @@ void mc_dwarf_resolve_locations(mc_location_t location,
 void *mc_find_frame_base(simgrid::mc::Frame* frame, simgrid::mc::ObjectInformation* object_info,
                          unw_cursor_t * unw_cursor)
 {
-  s_mc_location_t location;
-  mc_dwarf_resolve_locations(&location,
-                             &frame->frame_base, object_info,
+  simgrid::dwarf::Location location = simgrid::dwarf::resolve(
+                             frame->frame_base, object_info,
                              unw_cursor, NULL, NULL, -1);
-  switch(mc_get_location_type(&location)) {
-  case MC_LOCATION_TYPE_ADDRESS:
-    return location.memory_location;
-
-  case MC_LOCATION_TYPE_REGISTER: {
-      // This is a special case.
-      // The register if not the location of the frame base
-      // (a frame base cannot be located in a register)
-      // Instead, DWARF defines this to mean that the register
-      // contains the address of the frame base.
-      unw_word_t word;
-      unw_get_reg(location.cursor, location.register_id, &word);
-      return (void*) word;
-    }
-
-  default:
-    xbt_die("Cannot handle non-address frame base");
-    return NULL; // Unreachable
+  if (location.in_memory())
+    return location.address();
+  else if (location.in_register()) {
+    // This is a special case.
+    // The register if not the location of the frame base
+    // (a frame base cannot be located in a register)
+    // Instead, DWARF defines this to mean that the register
+    // contains the address of the frame base.
+    unw_word_t word;
+    unw_get_reg(unw_cursor, location.register_id(), &word);
+    return (void*) word;
   }
+  else xbt_die("Unexpected location type");
+
 }
 
 void mc_dwarf_location_list_init(
-  simgrid::mc::LocationList* list, simgrid::mc::ObjectInformation* info,
+  simgrid::dwarf::LocationList* list, simgrid::mc::ObjectInformation* info,
   Dwarf_Die * die, Dwarf_Attribute * attr)
 {
   list->clear();
@@ -472,7 +316,7 @@ void mc_dwarf_location_list_init(
     else if (offset == -1)
       xbt_die("Error while loading location list");
 
-    simgrid::mc::LocationListEntry entry;
+    simgrid::dwarf::LocationListEntry entry;
     entry.expression = simgrid::dwarf::DwarfExpression(ops, ops + len);
 
     void *base = info->base_address();

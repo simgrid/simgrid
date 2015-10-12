@@ -29,6 +29,9 @@ XBT_PRIVATE void* resolve_member(
   const void* base, simgrid::mc::Type* type, simgrid::mc::Member* member,
   simgrid::mc::AddressSpace* snapshot, int process_index);
 
+XBT_PRIVATE
+int dwarf_register_to_libunwind(int dwarf_register);
+
 }
 }
 

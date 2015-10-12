@@ -656,7 +656,8 @@ set(MC_SRC
   src/mc/mcer_ignore.h
   src/mc/mc_ignore.h
   src/mc/mc_liveness.h
-  src/mc/mc_location.h
+  src/mc/LocationList.hpp
+  src/mc/LocationList.cpp
   src/mc/mc_liveness.cpp
   src/mc/mc_record.cpp
   src/mc/mc_member.cpp

@@ -753,7 +753,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
         uintptr_t base = (uintptr_t) info->base_address();
         variable->address = (void *) (base + offset);
       } else {
-        simgrid::mc::LocationListEntry entry;
+        simgrid::dwarf::LocationListEntry entry;
         entry.expression = {expr, expr + len};
         variable->location_list = { std::move(entry) };
       }
@@ -1196,4 +1196,81 @@ void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::Obj
     } else type->full_type = subtype;
 
   }
+}
+
+namespace simgrid {
+namespace dwarf {
+
+/** Convert a DWARF register into a libunwind register
+ *
+ *  DWARF and libunwind does not use the same convention for numbering the
+ *  registers on some architectures. The function makes the necessary
+ *  convertion.
+ */
+int dwarf_register_to_libunwind(int dwarf_register)
+{
+#if defined(__x86_64__)
+  // It seems for this arch, DWARF and libunwind agree in the numbering:
+  return dwarf_register;
+#elif defined(__i386__)
+  // Could't find the authoritative source of information for this.
+  // This is inspired from http://source.winehq.org/source/dlls/dbghelp/cpu_i386.c#L517.
+  switch (dwarf_register) {
+  case 0:
+    return UNW_X86_EAX;
+  case 1:
+    return UNW_X86_ECX;
+  case 2:
+    return UNW_X86_EDX;
+  case 3:
+    return UNW_X86_EBX;
+  case 4:
+    return UNW_X86_ESP;
+  case 5:
+    return UNW_X86_EBP;
+  case 6:
+    return UNW_X86_ESI;
+  case 7:
+    return UNW_X86_EDI;
+  case 8:
+    return UNW_X86_EIP;
+  case 9:
+    return UNW_X86_EFLAGS;
+  case 10:
+    return UNW_X86_CS;
+  case 11:
+    return UNW_X86_SS;
+  case 12:
+    return UNW_X86_DS;
+  case 13:
+    return UNW_X86_ES;
+  case 14:
+    return UNW_X86_FS;
+  case 15:
+    return UNW_X86_GS;
+  case 16:
+    return UNW_X86_ST0;
+  case 17:
+    return UNW_X86_ST1;
+  case 18:
+    return UNW_X86_ST2;
+  case 19:
+    return UNW_X86_ST3;
+  case 20:
+    return UNW_X86_ST4;
+  case 21:
+    return UNW_X86_ST5;
+  case 22:
+    return UNW_X86_ST6;
+  case 23:
+    return UNW_X86_ST7;
+  default:
+    xbt_die("Bad/unknown register number.");
+  }
+#else
+#error This architecture is not supported yet for DWARF expression evaluation.
+#endif
+}
+
+}
 }
