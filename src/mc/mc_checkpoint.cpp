@@ -380,7 +380,7 @@ static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t s
       if (frame) {
         stack_frame.frame_name = frame->name;
         stack_frame.frame_base =
-            (unw_word_t) mc_find_frame_base(frame, frame->object_info, &c);
+            (unw_word_t) frame->frame_base(c);
       } else {
         stack_frame.frame_base = 0;
         stack_frame.frame_name = std::string();

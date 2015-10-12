@@ -91,9 +91,6 @@ XBT_PRIVATE void mc_dwarf_location_list_init(
   simgrid::dwarf::LocationList*, simgrid::mc::ObjectInformation* info,
   Dwarf_Die* die, Dwarf_Attribute* attr);
 
-void* mc_find_frame_base(
-  simgrid::mc::Frame* frame, simgrid::mc::ObjectInformation* object_info, unw_cursor_t* unw_cursor);
-
 SG_END_DECL()
 
 #endif

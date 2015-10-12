@@ -909,7 +909,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   if (klass == simgrid::dwarf::TagClass::Subprogram) {
     Dwarf_Attribute attr_frame_base;
     if (dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
-      mc_dwarf_location_list_init(&frame.frame_base, info, die,
+      mc_dwarf_location_list_init(&frame.frame_base_location, info, die,
                                   &attr_frame_base);
   }
 

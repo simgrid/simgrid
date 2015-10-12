@@ -68,7 +68,7 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
   simgrid::mc::Variable* var = find_local_variable(subprogram, variable);
   assert(var);
 
-  void* frame_base = mc_find_frame_base(subprogram, info, cursor);
+  void* frame_base = subprogram->frame_base(*cursor);
   simgrid::dwarf::Location location = simgrid::dwarf::resolve(
     var->location_list, info, cursor, frame_base, NULL, -1);
 
