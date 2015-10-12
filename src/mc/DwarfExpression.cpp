@@ -26,12 +26,6 @@ namespace dwarf {
 
 evaluation_error::~evaluation_error() {}
 
-}
-}
-
-namespace simgrid {
-namespace dwarf {
-
 void execute(
   const Dwarf_Op* ops, std::size_t n,
   const ExpressionContext& context, ExpressionStack& stack)
