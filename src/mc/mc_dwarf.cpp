@@ -105,18 +105,21 @@ static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, D
  */
 static std::uint64_t MC_dwarf_at_type(Dwarf_Die * die);
 
-/** \brief A class of DWARF tags (DW_TAG_*)
- */
-typedef enum mc_tag_class {
-  mc_tag_unknown,
-  mc_tag_type,
-  mc_tag_subprogram,
-  mc_tag_variable,
-  mc_tag_scope,
-  mc_tag_namespace
-} mc_tag_class;
+namespace simgrid {
+namespace dwarf {
 
-static mc_tag_class MC_dwarf_tag_classify(int tag)
+enum class TagClass {
+  Unknown,
+  Type,
+  Subprogram,
+  Variable,
+  Scope,
+  Namespace
+};
+
+namespace {
+
+TagClass classify_tag(int tag)
 {
   switch (tag) {
 
@@ -143,29 +146,32 @@ static mc_tag_class MC_dwarf_tag_classify(int tag)
   case DW_TAG_interface_type:
   case DW_TAG_unspecified_type:
   case DW_TAG_shared_type:
-    return mc_tag_type;
+    return TagClass::Type;
 
   case DW_TAG_subprogram:
-    return mc_tag_subprogram;
+    return TagClass::Subprogram;
 
   case DW_TAG_variable:
   case DW_TAG_formal_parameter:
-    return mc_tag_variable;
+    return TagClass::Variable;
 
   case DW_TAG_lexical_block:
   case DW_TAG_try_block:
   case DW_TAG_catch_block:
   case DW_TAG_inlined_subroutine:
   case DW_TAG_with_stmt:
-    return mc_tag_scope;
+    return TagClass::Scope;
 
   case DW_TAG_namespace:
-    return mc_tag_namespace;
+    return TagClass::Namespace;
 
   default:
-    return mc_tag_unknown;
-
+    return TagClass::Unknown;
   }
+}
+
+}
+}
 }
 
 #define MC_DW_CLASS_UNKNOWN 0
@@ -820,14 +826,14 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
 {
   // TODO, handle DW_TAG_type/DW_TAG_location for DW_TAG_with_stmt
   int tag = dwarf_tag(die);
-  mc_tag_class klass = MC_dwarf_tag_classify(tag);
+  simgrid::dwarf::TagClass klass = simgrid::dwarf::classify_tag(tag);
 
   // (Template) Subprogram declaration:
-  if (klass == mc_tag_subprogram
+  if (klass == simgrid::dwarf::TagClass::Subprogram
       && MC_dwarf_attr_flag(die, DW_AT_declaration, false))
     return;
 
-  if (klass == mc_tag_scope)
+  if (klass == simgrid::dwarf::TagClass::Scope)
     xbt_assert(parent_frame, "No parent scope for this scope");
 
   simgrid::mc::Frame frame;
@@ -836,7 +842,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   frame.id = dwarf_dieoffset(die);
   frame.object_info = info;
 
-  if (klass == mc_tag_subprogram) {
+  if (klass == simgrid::dwarf::TagClass::Subprogram) {
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
     if(ns)
       frame.name  = std::string(ns) + "::" + name;
@@ -890,7 +896,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     }
   }
 
-  if (klass == mc_tag_subprogram) {
+  if (klass == simgrid::dwarf::TagClass::Subprogram) {
     Dwarf_Attribute attr_frame_base;
     if (dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
       mc_dwarf_location_list_init(&frame.frame_base, info, die,
@@ -905,9 +911,9 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     MC_compare_variable);
 
   // Register it:
-  if (klass == mc_tag_subprogram)
+  if (klass == simgrid::dwarf::TagClass::Subprogram)
     info->subprograms[frame.id] = frame;
-  else if (klass == mc_tag_scope)
+  else if (klass == simgrid::dwarf::TagClass::Scope)
     parent_frame->scopes.push_back(std::move(frame));
 }
 
@@ -943,26 +949,26 @@ static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die 
                                 const char *ns)
 {
   int tag = dwarf_tag(die);
-  mc_tag_class klass = MC_dwarf_tag_classify(tag);
+  simgrid::dwarf::TagClass klass = simgrid::dwarf::classify_tag(tag);
   switch (klass) {
 
     // Type:
-  case mc_tag_type:
+  case simgrid::dwarf::TagClass::Type:
     MC_dwarf_handle_type_die(info, die, unit, frame, ns);
     break;
 
     // Subprogram or scope:
-  case mc_tag_subprogram:
-  case mc_tag_scope:
+  case simgrid::dwarf::TagClass::Subprogram:
+  case simgrid::dwarf::TagClass::Scope:
     MC_dwarf_handle_scope_die(info, die, unit, frame, ns);
     return;
 
     // Variable:
-  case mc_tag_variable:
+  case simgrid::dwarf::TagClass::Variable:
     MC_dwarf_handle_variable_die(info, die, unit, frame, ns);
     break;
 
-  case mc_tag_namespace:
+  case simgrid::dwarf::TagClass::Namespace:
     mc_dwarf_handle_namespace_die(info, die, unit, frame, ns);
     break;
 
