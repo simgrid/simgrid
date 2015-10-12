@@ -117,6 +117,22 @@ enum class TagClass {
   Namespace
 };
 
+/*** Class of forms defined in the DWARF standard */
+enum class FormClass {
+  Unknown,
+  Address,   // Location in the program's address space
+  Block,     // Arbitrary block of bytes
+  Constant,
+  String,
+  Flag,      // Boolean value
+  Reference, // Reference to another DIE
+  ExprLoc,   // DWARF expression/location description
+  LinePtr,
+  LocListPtr,
+  MacPtr,
+  RangeListPtr
+};
+
 namespace {
 
 TagClass classify_tag(int tag)
@@ -170,23 +186,6 @@ TagClass classify_tag(int tag)
   }
 }
 
-}
-}
-}
-
-#define MC_DW_CLASS_UNKNOWN 0
-#define MC_DW_CLASS_ADDRESS 1   // Location in the address space of the program
-#define MC_DW_CLASS_BLOCK 2     // Arbitrary block of bytes
-#define MC_DW_CLASS_CONSTANT 3
-#define MC_DW_CLASS_STRING 3    // String
-#define MC_DW_CLASS_FLAG 4      // Boolean
-#define MC_DW_CLASS_REFERENCE 5 // Reference to another DIE
-#define MC_DW_CLASS_EXPRLOC 6   // DWARF expression/location description
-#define MC_DW_CLASS_LINEPTR 7
-#define MC_DW_CLASS_LOCLISTPTR 8
-#define MC_DW_CLASS_MACPTR 9
-#define MC_DW_CLASS_RANGELISTPTR 10
-
 /** \brief Find the DWARF data class for a given DWARF data form
  *
  *  This mapping is defined in the DWARF spec.
@@ -194,43 +193,47 @@ TagClass classify_tag(int tag)
  *  \param form The form (values taken from the DWARF spec)
  *  \return An internal representation for the corresponding class
  * */
-static int MC_dwarf_form_get_class(int form)
+FormClass classify_form(int form)
 {
   switch (form) {
   case DW_FORM_addr:
-    return MC_DW_CLASS_ADDRESS;
+    return FormClass::Address;
   case DW_FORM_block2:
   case DW_FORM_block4:
   case DW_FORM_block:
   case DW_FORM_block1:
-    return MC_DW_CLASS_BLOCK;
+    return FormClass::Block;
   case DW_FORM_data1:
   case DW_FORM_data2:
   case DW_FORM_data4:
   case DW_FORM_data8:
   case DW_FORM_udata:
   case DW_FORM_sdata:
-    return MC_DW_CLASS_CONSTANT;
+    return FormClass::Constant;
   case DW_FORM_string:
   case DW_FORM_strp:
-    return MC_DW_CLASS_STRING;
+    return FormClass::String;
   case DW_FORM_ref_addr:
   case DW_FORM_ref1:
   case DW_FORM_ref2:
   case DW_FORM_ref4:
   case DW_FORM_ref8:
   case DW_FORM_ref_udata:
-    return MC_DW_CLASS_REFERENCE;
+    return FormClass::Reference;
   case DW_FORM_flag:
   case DW_FORM_flag_present:
-    return MC_DW_CLASS_FLAG;
+    return FormClass::Flag;
   case DW_FORM_exprloc:
-    return MC_DW_CLASS_EXPRLOC;
+    return FormClass::ExprLoc;
     // TODO sec offset
     // TODO indirect
   default:
-    return MC_DW_CLASS_UNKNOWN;
+    return FormClass::Unknown;
   }
+}
+
+}
+}
 }
 
 /** \brief Get the name of the tag of a given DIE
@@ -499,10 +502,10 @@ static void MC_dwarf_fill_member_location(
   Dwarf_Attribute attr;
   dwarf_attr_integrate(child, DW_AT_data_member_location, &attr);
   int form = dwarf_whatform(&attr);
-  int klass = MC_dwarf_form_get_class(form);
-  switch (klass) {
-  case MC_DW_CLASS_EXPRLOC:
-  case MC_DW_CLASS_BLOCK:
+  simgrid::dwarf::FormClass form_class = simgrid::dwarf::classify_form(form);
+  switch (form_class) {
+  case simgrid::dwarf::FormClass::ExprLoc:
+  case simgrid::dwarf::FormClass::Block:
     // Location expression:
     {
       Dwarf_Op *expr;
@@ -515,7 +518,7 @@ static void MC_dwarf_fill_member_location(
       member->location_expression = simgrid::mc::DwarfExpression(expr, expr+len);
       break;
     }
-  case MC_DW_CLASS_CONSTANT:
+  case simgrid::dwarf::FormClass::Constant:
     // Offset from the base address of the object:
     {
       Dwarf_Word offset;
@@ -527,15 +530,15 @@ static void MC_dwarf_fill_member_location(
                 (uint64_t) type->id, type->name.c_str());
       break;
     }
-  case MC_DW_CLASS_LOCLISTPTR:
+  case simgrid::dwarf::FormClass::LocListPtr:
     // Reference to a location list:
     // TODO
-  case MC_DW_CLASS_REFERENCE:
+  case simgrid::dwarf::FormClass::Reference:
     // It's supposed to be possible in DWARF2 but I couldn't find its semantic
     // in the spec.
   default:
     xbt_die("Can't handle form class (%i) / form 0x%x as DW_AT_member_location",
-            klass, form);
+            (int) form_class, form);
   }
 
 }
@@ -722,12 +725,14 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
   variable->type_id = MC_dwarf_at_type(die);
 
   int form = dwarf_whatform(&attr_location);
-  int klass =
-      form ==
-      DW_FORM_sec_offset ? MC_DW_CLASS_CONSTANT : MC_dwarf_form_get_class(form);
-  switch (klass) {
-  case MC_DW_CLASS_EXPRLOC:
-  case MC_DW_CLASS_BLOCK:
+  simgrid::dwarf::FormClass form_class;
+  if (form == DW_FORM_sec_offset)
+    form_class = simgrid::dwarf::FormClass::Constant;
+  else
+    form_class = simgrid::dwarf::classify_form(form);
+  switch (form_class) {
+  case simgrid::dwarf::FormClass::ExprLoc:
+  case simgrid::dwarf::FormClass::Block:
     // Location expression:
     {
       Dwarf_Op *expr;
@@ -753,17 +758,19 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
 
       break;
     }
-  case MC_DW_CLASS_LOCLISTPTR:
-  case MC_DW_CLASS_CONSTANT:
+
+  case simgrid::dwarf::FormClass::LocListPtr:
+  case simgrid::dwarf::FormClass::Constant:
     // Reference to location list:
     mc_dwarf_location_list_init(
       &variable->location_list, info, die,
       &attr_location);
     break;
+
   default:
     xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location "
             "in <%" PRIx64 ">%s",
-            form, form, klass, klass,
+            form, form, (int) form_class, (int) form_class,
             (uint64_t) variable->dwarf_offset,
             variable->name.c_str());
   }
@@ -773,20 +780,21 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     Dwarf_Attribute attr;
     dwarf_attr(die, DW_AT_start_scope, &attr);
     int form = dwarf_whatform(&attr);
-    int klass = MC_dwarf_form_get_class(form);
-    switch (klass) {
-    case MC_DW_CLASS_CONSTANT:
+    simgrid::dwarf::FormClass form_class = simgrid::dwarf::classify_form(form);
+    switch (form_class) {
+    case simgrid::dwarf::FormClass::Constant:
       {
         Dwarf_Word value;
         variable->start_scope =
             dwarf_formudata(&attr, &value) == 0 ? (size_t) value : 0;
         break;
       }
-    case MC_DW_CLASS_RANGELISTPTR:     // TODO
+
+    case simgrid::dwarf::FormClass::RangeListPtr:     // TODO
     default:
       xbt_die
           ("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s",
-           form, klass, name == NULL ? "?" : name);
+           form, (int) form_class, name == NULL ? "?" : name);
     }
   }
 
@@ -873,10 +881,10 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     Dwarf_Sword offset;
     Dwarf_Addr high_pc;
 
-    switch (MC_dwarf_form_get_class(dwarf_whatform(&attr))) {
+    switch (simgrid::dwarf::classify_form(dwarf_whatform(&attr))) {
 
       // DW_AT_high_pc if an offset from the low_pc:
-    case MC_DW_CLASS_CONSTANT:
+    case simgrid::dwarf::FormClass::Constant:
 
       if (dwarf_formsdata(&attr, &offset) != 0)
         xbt_die("Could not read constant");
@@ -884,7 +892,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
       break;
 
       // DW_AT_high_pc is a relocatable address:
-    case MC_DW_CLASS_ADDRESS:
+    case simgrid::dwarf::FormClass::Address:
       if (dwarf_formaddr(&attr, &high_pc) != 0)
         xbt_die("Could not read address");
       frame.high_pc = ((char *) base) + high_pc;
