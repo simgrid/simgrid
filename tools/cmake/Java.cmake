@@ -100,9 +100,6 @@ if(enable_lib_in_jar)
   if(${SG_SYSTEM_NAME} MATCHES "kFreeBSD")
     set(SG_SYSTEM_NAME GNU/kFreeBSD)
   endif()
-  if(${SG_SYSTEM_NAME} MATCHES "armv7l")
-    set(SG_SYSTEM_NAME arm) # Default arm (soft-float ABI)
-  endif()
 
   set(JAVA_NATIVE_PATH NATIVE/${SG_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR})
   if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "^i[3-6]86$")
@@ -111,6 +108,9 @@ if(enable_lib_in_jar)
   if(  (${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86_64") OR
        (${CMAKE_SYSTEM_PROCESSOR} MATCHES "AMD64")     )
     set(JAVA_NATIVE_PATH NATIVE/${SG_SYSTEM_NAME}/amd64)
+  endif()
+  if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "armv7l")
+    set(JAVA_NATIVE_PATH NATIVE/${SG_SYSTEM_NAME}/arm) # Default arm (soft-float ABI)
   endif()
 
   add_custom_command(

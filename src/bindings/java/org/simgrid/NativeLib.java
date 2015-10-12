@@ -47,6 +47,7 @@ public final class NativeLib {
 	}
 
 	public static String getPath() {
+		// Inspiration: https://github.com/xerial/snappy-java/blob/develop/src/main/java/org/xerial/snappy/OSInfo.java
 		String prefix = "NATIVE";
 		String os = System.getProperty("os.name");
 		String arch = System.getProperty("os.arch");
