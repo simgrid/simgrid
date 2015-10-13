@@ -97,9 +97,9 @@ endif()
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "12")
+set(SIMGRID_VERSION_MINOR "13")
 set(SIMGRID_VERSION_PATCH "0")
-# set(SIMGRID_VERSION_EXTRA "-devel") # Extra words to add to version string (e.g. -rc1)
+set(SIMGRID_VERSION_EXTRA "-devel") # Extra words to add to version string (e.g. -rc1)
 
 set(SIMGRID_VERSION_DATE  "2015") # Year for copyright information
 
