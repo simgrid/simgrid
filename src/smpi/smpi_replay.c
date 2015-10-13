@@ -11,8 +11,6 @@
 #include <xbt/replay.h>
 #include "surf/surf.h" //needed by the function hosts_as_dynar.
 
-#include "lb/GreedyLBWrapper.h"
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
 extern xbt_lib_t host_lib;
@@ -31,9 +29,6 @@ static int sendbuffer_size=0;
 char* sendbuffer=NULL;
 static int recvbuffer_size=0;
 char* recvbuffer=NULL;
-
-GreedyLB *lb;
-void *statsLD;
 
 /******************************************************************************
  * This code manages the request dictionaries which are used by the
@@ -205,6 +200,9 @@ const char* encode_datatype(MPI_Datatype datatype)
   return "-1";
 }
 
+
+//TODO should we move this macro to a public header, so it can be used
+//by actions implemented outside SimGrid?
 #define CHECK_ACTION_PARAMS(action, mandatory, optional) {\
     int i=0;\
     while(action[i]!=NULL)\
@@ -1263,56 +1261,9 @@ static void action_allToAllv(const char *const *action) {
   xbt_free(recvdisps);
 }
 
-/********************* Migration and load balancing code *********************/
-
-smx_host_t load_balancer(void)
-{
-  return SIMIX_host_self();
-}
-
-/********************* Random LB*********************************************
-smx_host_t load_balancer(void)
-{
-  unsigned int cursor;
-  unsigned int host_index;
-  //smx_host_t *host;
-  smx_host_t new_host;
-  xbt_dynar_t hosts = hosts_as_dynar();
-  host_index = xbt_dynar_search_or_negative(hosts, SIMIX_host_self());
-  if(host_index < 0){
-    return SIMIX_host_self();
-  }
-
-
-//  xbt_dynar_foreach(hosts, cursor, host){
-//    if(smpi_process_index() == 0){
-//      printf("%d: Host %d: %s\n", smpi_process_index(), cursor,
-//	      SIMIX_host_get_name((smx_host_t) host));
-//    }
-//  }
-
-  static unsigned int seed = 0;
-  if(!seed){
-    //fprintf(stdout, "Seeding.\n");
-    seed = time(NULL) + smpi_process_index();
-    //seed=smpi_process_index();
-    srand(seed);
-  }
-  do{
-    cursor = (unsigned int)round(((double)rand()) / RAND_MAX 
-	    * (xbt_dynar_length(hosts) - 1));
-  }while(cursor == host_index);
-  xbt_dynar_get_cpy(hosts, cursor, &new_host);
-  
-  //printf("%d: LB chose host #%u from %lu hosts.\n", smpi_process_index(),
-  //      cursor, xbt_dynar_length(hosts));
-  
-  return new_host;
-}
-*/
-
 /* Based on MSG_process_migrate [src/msg/msg_process.c] */
-void process_migrate(smx_process_t process, smx_host_t new_host, int size)
+void smpi_replay_process_migrate(smx_process_t process, smx_host_t new_host,
+    int size)
 {
   /*This does not seem to be needed for smpi. It does not store the host in
    * the process data
@@ -1320,14 +1271,25 @@ void process_migrate(smx_process_t process, smx_host_t new_host, int size)
   simdata->m_host = host;
   */
 
+  // First, we call smpi_send_process_data (implemented on smpi_base.c).
+  smpi_send_process_data(size, new_host);
+
 #ifdef HAVE_TRACING
+  //Update the traces to reflect the migration.
   smx_host_t host = SIMIX_host_self();
   TRACE_smpi_process_change_host(smpi_process_index(), host, new_host, size);
 #endif
+  
+  // Now, we change the host to which this rank is mapped.
   simcall_process_change_host(process, new_host);
+
   return;
 }
 
+
+/* 
+ * Alternative implementation of send_process_data. Not used in our code.
+ */
 void send_process_data(double data_size, smx_host_t host){
   smx_synchro_t synchro;
   smx_host_t host_list[2];
@@ -1354,77 +1316,6 @@ void send_process_data(double data_size, smx_host_t host){
   TRACE_smpi_send_process_data_out(smpi_process_index());
 #endif
 }
-
-static void action_migrate(const char *const *action)
-{
-  unsigned long mem_size;
-  smx_host_t new_host;
-  int rank = smpi_process_index();
-
-  CHECK_ACTION_PARAMS(action, 1, 0);
-  if(action[2]){
-    sscanf(action[2], "%lu", &mem_size);
-  }
-
-  /* You should have at least one process per host. In the future, we may
-   * change this to one process per core. */
-  if(xbt_swag_size(simcall_host_get_process_list(SIMIX_host_self())) == 1){
-    return;
-  }
-
-  /*
-  printf("%s: Task %d will call the LB.\n",
-	  SIMIX_host_self_get_name(), smpi_process_index());
-  */
-  
-#ifdef HAVE_TRACING
-  TRACE_migration_call(smpi_process_index(), NULL);
-#endif
-
-  new_host = load_balancer();
-/*  printf("%s, Task %d; new host: %s.\n", SIMIX_host_self_get_name(), rank,
-	  SIMIX_host_get_name(new_host));*/
-  if(strcmp(SIMIX_host_self_get_name(), SIMIX_host_get_name(new_host)) != 0){
-    double before = smpi_process_simulated_elapsed();
-    smpi_send_process_data(mem_size, new_host);
-    //send_process_data((double) mem_size, new_host);
-    //printf("Data migration:%lu bytes in %lf seconds.\n", mem_size,
-    //		smpi_process_simulated_elapsed() - before);
-    //printf("%s: Migrating task %d with size %lu to %s.\n",
-    //        SIMIX_host_self_get_name(), rank, mem_size,
-    //        SIMIX_host_get_name(new_host));
-    process_migrate(SIMIX_process_self(), new_host, (int) mem_size);
-    //printf("%s: Received task %d.\n",
-    //        SIMIX_host_self_get_name(), smpi_process_index());
-  }
-}
-
-/**************** End of migration and load balancing code. ******************/ 
-
-
-/*
- * Code to include the duration of iterations in the trace.
- */
-
-
-void action_iteration_in(const char *const *action)
-{
-  CHECK_ACTION_PARAMS(action, 0, 0);
-#ifdef HAVE_TRACING
-  TRACE_Iteration_in(smpi_process_index(), NULL);
-#endif
-}
-
-void action_iteration_out(const char *const *action)
-{
-  CHECK_ACTION_PARAMS(action, 0, 0);
-#ifdef HAVE_TRACING
-  TRACE_Iteration_out(smpi_process_index());
-#endif
-}
-
-
-/*****************************************************************************/
 
 void smpi_replay_init(int *argc, char***argv){
   smpi_process_init(argc, argv);
@@ -1476,17 +1367,7 @@ void smpi_replay_init(int *argc, char***argv){
     xbt_replay_action_register("reduceScatter",  action_reducescatter);
     xbt_replay_action_register("reducescatter",  action_reducescatter);
     xbt_replay_action_register("compute",    action_compute);
-    xbt_replay_action_register("migrate",    action_migrate);
-    xbt_replay_action_register("iteration_in",    action_iteration_in);
-    xbt_replay_action_register("iteration_out",    action_iteration_out);
   }
- 
-  //Initialize the load balancer.
-  lb = new_GreedyLB();
-  statsLD = new_LDStats(0, 1);
-  
-  //FIXME  Since statsLD is of type "void *" we can access its elements.
-  //statsLD->n_objs = smpi_process_count();
 
   //if we have a delayed start, sleep here.
   if(*argc>2){

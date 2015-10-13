@@ -250,8 +250,6 @@ set(SMPI_SRC
   src/smpi/smpi_rma.c
   src/smpi/smpi_topo.c
   src/smpi/smpi_f77.c
-  src/smpi/lb/GreedyLB.C
-  src/smpi/lb/GreedyLBWrapper.C
   )
 
 set(XBT_SRC
