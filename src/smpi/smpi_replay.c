@@ -1317,7 +1317,7 @@ void send_process_data(double data_size, smx_host_t host){
 #endif
 }
 
-void smpi_replay_init(int *argc, char***argv){
+void smpi_replay_initialize(int *argc, char***argv){
   smpi_process_init(argc, argv);
   smpi_process_mark_as_initialized();
   smpi_process_set_replaying(1);
@@ -1378,6 +1378,34 @@ void smpi_replay_init(int *argc, char***argv){
     XBT_VERB("Delayed start for instance - Sleeping for %f flops ",value );
     smpi_execute_flops(value);
   }
+}
+
+/* Does the same as the original smpi_replay_init: initializes and runs the
+ * replay. Provided for retrocompatibility purposes.
+ */
+void smpi_replay_init(int *argc, char ***argv)
+{
+  smpi_replay_initialize(argc, argv);
+  xbt_replay_action_runner(*argc, *argv);
+}
+
+/*
+ * This function only initializes smpi_replay. It does not start the replay.
+ * You should call this one if you want to be able to register new actions
+ * from your code.
+ * To really start the replay you must call smpi_replay_run.
+ */
+void smpi_replay_init_only(int *argc, char ***argv)
+{
+  smpi_replay_initialize(argc, argv);
+}
+
+/*
+ * This function starts the replay of the traces. Your custom actions must be
+ * registered before calling this function.  
+ */
+void smpi_replay_run(int *argc, char ***argv)
+{
   xbt_replay_action_runner(*argc, *argv);
 }
 
