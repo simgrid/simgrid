@@ -179,6 +179,7 @@ set(source_to_pack
   ${MC_SRC}
   ${MC_SIMGRID_MC_SRC}
   ${MSG_SRC}
+  ${S4U_SRC}
   ${NS3_SRC}
   ${RNGSTREAM_SRC}
   ${SIMDAG_SRC}

@@ -58,6 +58,8 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/suspend)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing)
 
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/s4u)
+
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_bypass)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_kill)

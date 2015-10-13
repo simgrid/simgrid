@@ -283,6 +283,10 @@ IF(NOT enable_memcheck)
   ADD_TEST(msg-icomms-waitany                      ${CMAKE_BINARY_DIR}/examples/msg/icomms/peer3 ${CMAKE_HOME_DIRECTORY}/examples/platforms/small_platform.xml ${CMAKE_HOME_DIRECTORY}/examples/msg/icomms/deployment_peer05.xml)
   # END TESH TESTS
 
+  ### S4U ###
+  ADD_TESH_FACTORIES(s4u-dumb "thread;ucontext;raw;boost" --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/dumb s4u_test.tesh)
+  ADD_TESH_FACTORIES(s4u-io "thread;ucontext;raw;boost" --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/io s4u_io_test.tesh)
+
 
   ### SIMDAG ###
   # BEGIN TESH TESTS

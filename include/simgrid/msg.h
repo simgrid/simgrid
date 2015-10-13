@@ -266,7 +266,7 @@ XBT_PUBLIC(msg_error_t) MSG_file_seek(msg_file_t fd, sg_offset_t offset, int ori
 XBT_PUBLIC(sg_size_t) MSG_file_tell (msg_file_t fd);
 XBT_PUBLIC(void) __MSG_file_get_info(msg_file_t fd);
 XBT_PUBLIC(void) __MSG_file_priv_free(msg_file_priv_t priv);
-XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t storage);
+XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);
 XBT_PUBLIC(msg_error_t) MSG_file_move(msg_file_t fd, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
 XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);

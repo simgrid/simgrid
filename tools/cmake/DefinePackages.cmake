@@ -389,6 +389,17 @@ else()
       src/simix/smx_context_boost.cpp)
 endif()
 
+set(S4U_SRC
+  src/s4u/s4u_actor.cpp
+  src/s4u/s4u_async.cpp
+  src/s4u/s4u_comm.cpp
+  src/s4u/s4u_engine.cpp  
+  src/s4u/s4u_file.cpp  
+  src/s4u/s4u_host.cpp  
+  src/s4u/s4u_mailbox.cpp
+  src/s4u/s4u_storage.cpp
+)
+
 set(SIMGRID_SRC
   src/simgrid/sg_config.c
   src/simgrid/host.cpp
@@ -695,6 +706,15 @@ set(headers_to_install
   include/simgrid/simix.h
   include/simgrid/host.h
   include/simgrid/link.h
+  include/simgrid/s4u/actor.hpp
+  include/simgrid/s4u/async.hpp
+  include/simgrid/s4u/comm.hpp
+  include/simgrid/s4u/engine.hpp  
+  include/simgrid/s4u/file.hpp  
+  include/simgrid/s4u/host.hpp  
+  include/simgrid/s4u/mailbox.hpp  
+  include/simgrid/s4u/storage.hpp  
+  include/simgrid/s4u.h
   include/smpi/mpi.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h
@@ -779,6 +799,7 @@ endif()
 ### Simgrid Lib sources
 set(simgrid_sources
   ${BINDINGS_SRC}
+  ${S4U_SRC}
   ${MSG_SRC}
   ${SIMDAG_SRC}
   ${SIMGRID_SRC}
@@ -1052,6 +1073,8 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/suspend/CMakeLists.txt
   examples/msg/token_ring/CMakeLists.txt
   examples/msg/tracing/CMakeLists.txt
+  examples/s4u/CMakeLists.txt
+  examples/s4u/dumb/CMakeLists.txt
   examples/scala/CMakeLists.txt
   examples/scala/master_slave_bypass/CMakeLists.txt
   examples/scala/master_slave_kill/CMakeLists.txt
