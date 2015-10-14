@@ -9,8 +9,6 @@
 
 #include <sys/mman.h>
 
-#include <boost/foreach.hpp>
-
 #include <xbt.h>
 
 #include "PageStore.hpp"
@@ -137,7 +135,7 @@ std::size_t PageStore::store_page(void* page)
 
   // Try to find a duplicate in set of pages with the same hash:
   page_set_type& page_set = this->hash_index_[hash];
-  BOOST_FOREACH (size_t pageno, page_set) {
+  for (size_t pageno : page_set) {
     const void* snapshot_page = this->get_page(pageno);
     if (memcmp(page, snapshot_page, xbt_pagesize) == 0) {
 
