@@ -35,12 +35,12 @@ my_node = {
 -- - the id of a guy I know in the system (except for the first node)
 function node(...)
 
-  simgrid.info("Hi! This is my first message; I just entered the program!")
+  simgrid.debug("Hi! This is my first message; I just entered the program!")
   -- TODO simplify the deployment file
   local known_id
   local args = {...}
   my_node.id = math.tointeger(args[1])
-  simgrid.info("My id is now " .. my_node.id)
+  simgrid.debug("My id is now " .. my_node.id)
   if #args == 4 then
     known_id = math.tointeger(args[2])
     simgrid.info("Updated my known_id to " .. known_id)
@@ -62,11 +62,11 @@ function node(...)
   if known_id == nil then
     -- only the first node ("Jacqueline") will enter here
     -- as configured in file ../../msg/chord/chord.xml
-    simgrid.info("First node here. Going to create everything.")
+    simgrid.debug("I'm the node that is in charge. Going to create everything.")
     create()
     join_success = true
   else
-    -- Communicate to the first node and join the ring there
+    -- Communicate to the first node and join the ring 
     -- This will also initialize
     -- my_node.predecessor and my_node.successor
     join_success = join(known_id)
@@ -79,7 +79,6 @@ function node(...)
 
   -- TODO Remove this, but make sure my_node.predecessor is initialized somewhere
   --if my_node.id == 1 then
-      --simgrid.info("YUHU!")
       --my_node.predecessor = 1
   --end
 
@@ -134,9 +133,9 @@ function node(...)
 
         else
           ---- nothing to do: sleep for a while
-          --simgrid.debug("Didn't have to stabilize, update my fingers, check my predecessors or do a random lookup; hence, I'm starting to sleep now...")
+          simgrid.debug("Didn't have to stabilize, update my fingers, check my predecessors or do a random lookup; hence, I'm starting to sleep now...")
           simgrid.process.sleep(5)
-          --simgrid.debug("Slept for 5s")
+          simgrid.debug("Slept for 5s")
         end
       end
       now = simgrid.get_clock()
@@ -267,10 +266,6 @@ end
 -- 24 belongs to [21, 29].
 -- 24 does not belong to [29, 21].
 function is_in_interval(id, a, b)
-  id= math.tointeger(id)
-  a = math.tointeger(a)
-  b = math.tointeger(b)
-
   -- normalize the parameters
   -- TODO: Currently, nb_bits = 24; so a,b,id < 24! Really?
   id = id % nb_bits
@@ -569,4 +564,3 @@ end
 simgrid.platform(arg[1] or "../../msg/msg_platform.xml")
 simgrid.application(arg[2] or "../../msg/chord/chord90.xml")
 simgrid.run()
-
