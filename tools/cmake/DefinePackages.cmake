@@ -1074,7 +1074,8 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/token_ring/CMakeLists.txt
   examples/msg/tracing/CMakeLists.txt
   examples/s4u/CMakeLists.txt
-  examples/s4u/dumb/CMakeLists.txt
+  examples/s4u/basic/CMakeLists.txt
+  examples/s4u/io/CMakeLists.txt
   examples/scala/CMakeLists.txt
   examples/scala/master_slave_bypass/CMakeLists.txt
   examples/scala/master_slave_kill/CMakeLists.txt
