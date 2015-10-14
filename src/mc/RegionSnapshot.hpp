@@ -12,8 +12,8 @@
 
 #include <xbt/base.h>
 
-#include "PageStore.hpp"
-#include "AddressSpace.hpp"
+#include <mc/PageStore.hpp>
+#include <mc/AddressSpace.hpp>
 
 namespace simgrid {
 namespace mc {
@@ -118,21 +118,25 @@ public:
   void operator()(void* p) const;
 };
 
-/** @brief Copy/snapshot of a given memory region
+typedef std::unique_ptr<char[], data_deleter> unique_data_ptr;
+
+/** A copy/snapshot of a given memory region
  *
  *  Different types of region snapshot storage types exist:
- *  <ul>
- *    <li>flat/dense snapshots are a simple copy of the region;</li>
- *    <li>sparse/per-page snapshots are snaapshots which shared
- *    identical pages.</li>
- *    <li>privatized (SMPI global variable privatisation).
- *  </ul>
+ *
+ *  * flat/dense snapshots are a simple copy of the region;
+ *
+ *  * sparse/per-page snapshots are snaapshots which shared
+ *    identical pages.
+ *
+ *  * privatized (SMPI global variable privatisation).
  *
  *  This is handled with a variant based approch:
  *
- *    * `storage_type` identified the type of storage;
- *    * an anonymous enum is used to distinguish the relevant types for
- *      each type.
+ *  * `storage_type` identified the type of storage;
+ *
+ *  * an anonymous enum is used to distinguish the relevant types for
+ *    each type.
  */
 class RegionSnapshot {
 public:
@@ -144,7 +148,7 @@ public:
   static const StorageType ChunkedData = StorageType::Chunked;
   static const StorageType PrivatizedData = StorageType::Privatized;
 public:
-  typedef std::unique_ptr<char[], data_deleter> flat_data_ptr;
+  typedef unique_data_ptr flat_data_ptr;
 private:
   RegionType region_type_;
   StorageType storage_type_;

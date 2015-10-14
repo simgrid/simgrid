@@ -17,6 +17,7 @@
 namespace simgrid {
 namespace mc {
 
+/** A variable (global or local) in the model-checked program */
 class Variable {
 public:
   Variable();

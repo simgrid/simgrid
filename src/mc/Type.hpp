@@ -18,7 +18,10 @@
 namespace simgrid {
 namespace mc {
 
-/** Represent a member of  a structure (or inheritance) */
+/** A member of a structure, union
+ *
+ *  Inheritance is seen as a special member as well.
+ */
 class Member {
 public:
   Member() : inheritance(false), byte_size(0), type_id(0) {}
@@ -52,10 +55,7 @@ public:
   }
 };
 
-/** Represents a type in the program
- *
- *  It is currently used to represent members of structs and unions as well.
- */
+/** A type in the model-checked program */
 class Type {
 public:
   Type();
