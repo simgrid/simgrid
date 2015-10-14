@@ -127,7 +127,7 @@ int console_add_backbone(lua_State *L) {
   }
 
   sg_platf_new_link(&link);
-  routing_cluster_add_backbone(xbt_lib_get_or_null(link_lib, link.id, SURF_LINK_LEVEL));
+  routing_cluster_add_backbone(sg_link_by_name(link.id));
 
   return 0;
 }
@@ -182,7 +182,7 @@ int console_add_host(lua_State *L) {
   // we get values from the table passed as argument
   if (!lua_istable(L, -1)) {
     XBT_ERROR
-        ("Bad Arguments to create host, Should be a table with named arguments");
+        ("Bad Arguments to create host. Should be a table with named arguments");
     return -1;
   }
 
