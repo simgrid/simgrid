@@ -284,7 +284,7 @@ IF(NOT enable_memcheck)
   # END TESH TESTS
 
   ### S4U ###
-  ADD_TESH_FACTORIES(s4u-dumb "thread;ucontext;raw;boost" --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/dumb s4u_test.tesh)
+  ADD_TESH_FACTORIES(s4u-basic "thread;ucontext;raw;boost" --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/basic s4u_basic.tesh)
   ADD_TESH_FACTORIES(s4u-io "thread;ucontext;raw;boost" --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/io s4u_io_test.tesh)
 
 

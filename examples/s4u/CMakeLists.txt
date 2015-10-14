@@ -22,5 +22,5 @@ set(txt_files
   PARENT_SCOPE
   )
 
-add_subdirectory(dumb)
+add_subdirectory(basic)
 add_subdirectory(io)
