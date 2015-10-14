@@ -6,7 +6,9 @@
 
 #define __STDC_FORMAT_MACROS
 #include <cinttypes>
-#include <boost/unordered_set.hpp>
+
+#include <utility>
+#include <unordered_set>
 
 #include <xbt/sysdep.h>
 
@@ -33,69 +35,47 @@
 
 using simgrid::mc::remote;
 
-typedef struct s_pointers_pair {
-  void *p1;
-  void *p2;
-  bool operator==(s_pointers_pair const& x) const {
-    return this->p1 == x.p1 && this->p2 == x.p2;
-  }
-  bool operator<(s_pointers_pair const& x) const {
-    return this->p1 < x.p1 || (this->p1 == x.p1 && this->p2 < x.p2);
-  }
-} s_pointers_pair_t, *pointers_pair_t;
-
-namespace boost {
-  template<>
-  struct hash<s_pointers_pair> {
-    typedef uintptr_t result_type;
-    result_type operator()(s_pointers_pair const& x) const {
-      return (result_type) x.p1 ^
-        ((result_type) x.p2 << 8 | (result_type) x.p2 >> (8*sizeof(uintptr_t) - 8));
-    }
-  };
-}
-
-struct mc_compare_state {
-  boost::unordered_set<s_pointers_pair> compared_pointers;
-};
-
 extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt,
                                 "Logging specific to mc_compare in mc");
 
-/************************** Free functions ****************************/
-/********************************************************************/
+}
 
-static void stack_region_free(stack_region_t s)
-{
-  if (s) {
-    xbt_free(s);
+namespace simgrid {
+namespace mc {
+
+/** A hash which works with more stuff
+ *
+ *  It can hash pairs: the standard hash currently doesn't include this.
+ */
+template<class X> struct hash : public std::hash<X> {};
+
+template<class X, class Y>
+struct hash<std::pair<X,Y>> {
+  std::size_t operator()(std::pair<X,Y>const& x) const
+  {
+    struct hash<X> h1;
+    struct hash<X> h2;
+    return h1(x.first) ^ h2(x.second);
   }
+};
+
+struct ComparisonState {
+  std::unordered_set<std::pair<void*, void*>, hash<std::pair<void*, void*>>> compared_pointers;
+};
+
+}
 }
 
-static void pointers_pair_free(pointers_pair_t p)
-{
-  xbt_free(p);
-}
+using simgrid::mc::ComparisonState;
+
+extern "C" {
 
 /************************** Snapshot comparison *******************************/
 /******************************************************************************/
 
-/** \brief Try to add a pair a compared pointers to the set of compared pointers
- *
- *  \result !=0 if the pointers were added (they were not in the set),
- *      0 otherwise (they were already in the set)
- */
-static int add_compared_pointers(mc_compare_state& state, void *p1, void *p2)
-{
-  s_pointers_pair_t new_pair;
-  new_pair.p1 = p1;
-  new_pair.p2 = p2;
-  return state.compared_pointers.insert(new_pair).second ? 1 : 0;
-}
-
-static int compare_areas_with_type(struct mc_compare_state& state,
+static int compare_areas_with_type(ComparisonState& state,
                                    int process_index,
                                    void* real_area1, mc_snapshot_t snapshot1, mc_mem_region_t region1,
                                    void* real_area2, mc_snapshot_t snapshot2, mc_mem_region_t region2,
@@ -181,7 +161,8 @@ static int compare_areas_with_type(struct mc_compare_state& state,
         return 0;
       if (addr_pointed1 == NULL || addr_pointed2 == NULL)
         return 1;
-      if (!add_compared_pointers(state, addr_pointed1, addr_pointed2))
+      if (!state.compared_pointers.insert(
+          std::make_pair(addr_pointed1, addr_pointed2)).second)
         return 0;
 
       pointer_level++;
@@ -288,7 +269,7 @@ static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
 #endif
   xbt_assert(r2->storage_type() != simgrid::mc::StorageType::Privatized);
 
-  struct mc_compare_state state;
+  ComparisonState state;
 
   std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
 
@@ -327,7 +308,7 @@ static int compare_local_variables(int process_index,
                                    mc_snapshot_stack_t stack1,
                                    mc_snapshot_stack_t stack2)
 {
-  struct mc_compare_state state;
+  ComparisonState state;
 
   if (stack1->local_variables.size() != stack2->local_variables.size()) {
     XBT_VERB("Different number of local variables");
