@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ./s4u_basic
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_basic
 > [host0:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to serve
 > [host1:master:(0) 0.000000] [s4u_test/INFO] Hello s4u, I have something to send
 > [host0:worker:(0) 0.001301] [s4u_test/INFO] I received 'GaBuZoMeu'
