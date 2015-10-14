@@ -197,7 +197,7 @@ public:
   void addTraces(void);
   int m_core;
   double m_powerPeak;            /*< CPU power peak */
-  double m_powerScale;           /*< Percentage of CPU disponible */
+  double m_powerScale;           /*< Percentage of CPU available */
 
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore;
