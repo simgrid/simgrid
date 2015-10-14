@@ -182,7 +182,7 @@ XBT_PRIVATE void MC_restore_snapshot(mc_snapshot_t);
 
 XBT_PRIVATE void mc_restore_page_snapshot_region(
   simgrid::mc::Process* process,
-  void* start_addr, simgrid::mc::PerPageCopy const& pagenos);
+  void* start_addr, simgrid::mc::ChunkedData const& pagenos);
 
 const void* MC_region_read_fragmented(
   mc_mem_region_t region, void* target, const void* addr, size_t size);

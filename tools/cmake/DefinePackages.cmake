@@ -620,6 +620,8 @@ set(MC_SRC
   src/mc/ObjectInformation.cpp
   src/mc/PageStore.hpp
   src/mc/PageStore.cpp
+  src/mc/ChunkedData.hpp
+  src/mc/ChunkedData.cpp
   src/mc/RegionSnapshot.cpp
   src/mc/RegionSnapshot.hpp
   src/mc/Type.hpp

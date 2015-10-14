@@ -16,6 +16,7 @@ namespace simgrid {
 namespace mc {
 
 class PageStore;
+class ChunkedData;
 class ModelChecker;
 class AddressSpace;
 class Process;
