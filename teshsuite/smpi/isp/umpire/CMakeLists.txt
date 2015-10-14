@@ -189,7 +189,7 @@ set(txt_files ${txt_files} ${sources} PARENT_SCOPE)
 # Build the tests
 #################
 
-if(enable_smpi AND enable_smpi_ISP_testsuite)
+if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
 
@@ -224,7 +224,7 @@ endif()
 # Erase all tesh files on cleanup: they are generated anyway
 set_directory_properties ( PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${files_to_clean}" )
 
-if(enable_smpi AND enable_smpi_ISP_testsuite)
+if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
   foreach (tesh ${umpire_tesh})
     ADD_TESH(mc-umpire-${tesh}
       --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}
