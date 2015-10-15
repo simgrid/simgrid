@@ -34,15 +34,15 @@ typedef char *type_name;
 
 struct XBT_PRIVATE s_mc_diff {
   s_xbt_mheap_t std_heap_copy;
-  size_t heaplimit;
+  std::size_t heaplimit;
   // Number of blocks in the heaps:
-  size_t heapsize1, heapsize2;
+  std::size_t heapsize1, heapsize2;
   std::vector<s_mc_heap_ignore_region_t>* to_ignore1;
   std::vector<s_mc_heap_ignore_region_t>* to_ignore2;
   s_heap_area_t *equals_to1, *equals_to2;
   simgrid::mc::Type **types1;
   simgrid::mc::Type **types2;
-  size_t available;
+  std::size_t available;
 };
 
 #define equals_to1_(i,j) equals_to1[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]

@@ -19,7 +19,7 @@ extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_protocol, mc, "Generic MC protocol logic");
 
-int MC_protocol_send(int socket, const void* message, size_t size)
+int MC_protocol_send(int socket, const void* message, std::size_t size)
 {
   XBT_DEBUG("Protocol [%s] send %s",
     MC_mode_name(mc_mode),

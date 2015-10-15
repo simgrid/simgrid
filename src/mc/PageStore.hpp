@@ -131,10 +131,10 @@ public: // Methods
    * changed since the previous cnapshot/restoration and we can avoid
    * hashing the page, comparing byte-per-byte to candidates.
    * */
-  void ref_page(std::size_t pageno);
+  void ref_page(size_t pageno);
 
   /** @brief Store a page in the page store */
-  size_t store_page(void* page);
+  std::size_t store_page(void* page);
 
   /** @brief Get a page from its page number
    *
@@ -184,7 +184,7 @@ std::size_t PageStore::get_ref(std::size_t pageno)
 }
 
 inline __attribute__((always_inline))
-size_t PageStore::size() {
+std::size_t PageStore::size() {
   return this->top_index_ - this->free_pages_.size();
 }
 
