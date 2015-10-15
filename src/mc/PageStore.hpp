@@ -10,8 +10,8 @@
 #include <cstdint>
 #include <vector>
 
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <xbt/base.h>
 
@@ -80,8 +80,8 @@ private: // Types
   // We are using a cheap hash to index a page.
   // We should expect collision and we need to associate multiple page indices
   // to the same hash.
-  typedef boost::unordered_set<std::size_t> page_set_type;
-  typedef boost::unordered_map<hash_type, page_set_type> pages_map_type;
+  typedef std::unordered_set<std::size_t> page_set_type;
+  typedef std::unordered_map<hash_type, page_set_type> pages_map_type;
 
 private: // Fields:
   /** First page */
@@ -131,7 +131,7 @@ public: // Methods
    * changed since the previous cnapshot/restoration and we can avoid
    * hashing the page, comparing byte-per-byte to candidates.
    * */
-  void ref_page(size_t pageno);
+  void ref_page(std::size_t pageno);
 
   /** @brief Store a page in the page store */
   size_t store_page(void* page);
