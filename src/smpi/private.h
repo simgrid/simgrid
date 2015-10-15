@@ -783,6 +783,10 @@ int smpi_process_index_of_smx_process(smx_process_t process) {
   return SIMIX_process_get_PID(process) -1;
 }
 
+/************************ Process migration **********************************/
+void smpi_replay_process_migrate(smx_process_t process, smx_host_t new_host, int size);
+/*****************************************************************************/
+
 SG_END_DECL()
 
 #endif
