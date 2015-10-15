@@ -217,7 +217,9 @@ function handle_task(task)
     else
       -- FIXME: This is completely wrong here. Fix this;
       --        we need to figure out what to send if we don't know our
-      --        predecessor yet
+      --        predecessor yet (this DOES happen and this means that task.answer 
+      --        is initialised with nil and when task.answer is accessed (not here), it will 
+      --        break in Lua 5.3 (because it is nil).    
       simgrid.critical("Don't know my predecessor yet!")
       my_node.predecessor = remote_get_predecessor(my_node.fingers[1])
       task.answer = my_node.predecessor
