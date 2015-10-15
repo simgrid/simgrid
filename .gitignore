@@ -34,6 +34,7 @@ src/bindings/ruby/libsimgrid.so
 examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
 examples/lua/console/simgrid.so
+SimGrid-*.tar.gz
 simgrid.jar
 ### Unit files
 src/simgrid_units_main.c
