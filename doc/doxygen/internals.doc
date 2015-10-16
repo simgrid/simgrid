@@ -3,6 +3,11 @@
 This page does not exist yet, sorry. We are currently refurbishing the
 user documentation -- the internal documentation will follow (FIXME).
 
+All we can say for now is that once you learn a bit about the SimGrid
+internals, you will probably look a bit like this:
+
+@image html DiscoveringSimgrid.gif Discovering SimGrid's Internals.
+
 There is two main things you want to know about the internals of
 SimGrid. First, you need to understand the component organization, as
 SimGrid is heavily layered, with each level being rather highly
