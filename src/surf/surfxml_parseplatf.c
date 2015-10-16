@@ -11,12 +11,15 @@
 #include "simgrid/platf.h"
 #include "surf/surfxml_parse.h"
 #include "surf/surf_private.h"
+
+#ifdef HAVE_LUA
 #include "bindings/lua/simgrid_lua.h"
 #include "bindings/lua/lua_state_cloner.h"
 
 #include <lua.h>                /* Always include this when calling Lua */
 #include <lauxlib.h>            /* Always include this when calling Lua */
 #include <lualib.h>             /* Prototype for luaL_openlibs(), */
+#endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
@@ -94,11 +97,14 @@ void parse_after_config() {
 /* This function acts as a main in the parsing area. */
 void parse_platform_file(const char *file)
 {
+#ifdef HAVE_LUA
   int is_lua = (file != NULL && strlen(file) > 3 && file[strlen(file)-3] == 'l' && file[strlen(file)-2] == 'u'
         && file[strlen(file)-1] == 'a');
+#endif
 
   surf_parse_init_callbacks();
 
+#ifdef HAVE_LUA
   /* Check if file extension is "lua". If so, we will use
    * the lua bindings to parse the platform file (since it is
    * written in lua). If not, we will use the (old?) XML parser
@@ -139,7 +145,9 @@ void parse_platform_file(const char *file)
     }
 
   }
-  else { // Use XML parser
+  else
+#endif
+  { // Use XML parser
 
     int parse_status;
 
