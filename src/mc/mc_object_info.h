@@ -16,13 +16,7 @@
 #include "mc_memory_map.h"
 
 XBT_PRIVATE std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
-  std::vector<simgrid::mc::VmMap> const& maps, const char* name, int executable);
+  std::vector<simgrid::mc::VmMap> const& maps, const char* name);
 XBT_PRIVATE  void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info);
-
-XBT_PRIVATE  void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info);
-XBT_PRIVATE  void MC_dwarf_get_variables_libdw(simgrid::mc::ObjectInformation* info);
-
-XBT_PRIVATE  const char* MC_dwarf_attrname(int attr);
-XBT_PRIVATE  const char* MC_dwarf_tagname(int tag);
 
 #endif

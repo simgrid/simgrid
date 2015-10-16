@@ -7,11 +7,11 @@
 -- Slave Function ---------------------------------------------------------
 function Slave(...)
 
-  if #arg ~= 1 then
+  if select("#", ...) ~= 1 then
     error("Wrong number of arguments (got " .. #arg .. ", expected 1: slave_id)")
   end
 
-  local my_mailbox = "slave " .. arg[1]
+  local my_mailbox = "slave " .. select(1, ...)
   simgrid.info("Hello from lua, I'm a poor slave with mbox: " .. my_mailbox)
 
   while true do
@@ -23,7 +23,7 @@ function Slave(...)
       simgrid.info("Slave '" .. my_mailbox .. "' got finalize msg");
       break
     end
-    --local tk_name = simgrid.task.get_name(tk) 
+    --local tk_name = simgrid.task.get_name(tk)
     simgrid.info("Slave '" .. my_mailbox .. "' processing " .. task:get_name())
     simgrid.task.execute(task)
     simgrid.info("Slave '"  .. my_mailbox .. "': task " .. task:get_name() .. " done")
@@ -31,5 +31,5 @@ function Slave(...)
 
   simgrid.info("Slave '" .. my_mailbox .. "': I'm Done . See You !!");
 
-end 
+end
 -- end_of_slave

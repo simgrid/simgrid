@@ -10,6 +10,9 @@
 #include "mc_private.h"
 #include "mc/Type.hpp"
 
+namespace simgrid {
+namespace dwarf {
+
 /** Resolve snapshot in the process address space
  *
  * @param object   Process address of the struct/class
@@ -18,7 +21,7 @@
  * @param snapshot Snapshot (or NULL)
  * @return Process address of the given member of the 'object' struct/class
  */
-void *mc_member_resolve(
+void *resolve_member(
     const void *base, simgrid::mc::Type* type, simgrid::mc::Member* member,
     simgrid::mc::AddressSpace* address_space, int process_index)
 {
@@ -26,20 +29,17 @@ void *mc_member_resolve(
   if (!member->has_offset_location())
     return ((char *) base) + member->offset();
 
-  s_mc_expression_state_t state;
-  memset(&state, 0, sizeof(s_mc_expression_state_t));
+  ExpressionContext state;
   state.frame_base = NULL;
   state.cursor = NULL;
   state.address_space = address_space;
-  state.stack_size = 1;
-  state.stack[0] = (uintptr_t) base;
   state.process_index = process_index;
 
-  if (simgrid::mc::execute(
-      member->location_expression, &state))
-    xbt_die("Error evaluating DWARF expression");
-  if (state.stack_size == 0)
-    xbt_die("No value on the stack");
-  else
-    return (void *) state.stack[state.stack_size - 1];
+  ExpressionStack stack;
+  stack.push((ExpressionStack::value_type) base);
+  simgrid::dwarf::execute(member->location_expression, state, stack);
+  return (void*) stack.top();
+}
+
+}
 }

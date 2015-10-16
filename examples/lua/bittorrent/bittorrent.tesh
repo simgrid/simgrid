@@ -23,13 +23,12 @@ $ lua bittorrent.lua
 > [iRMX:peer:(7) 15.043659] [lua/INFO] Received an answer from the tracker with 5 peers inside
 > [iRMX:peer:(7) 15.043659] [lua/INFO] Start downloading.
 > [McGee:peer:(8) 16.609414] [lua/INFO] Starting main leech loop
-> [iRMX:peer:(7) 24.873510] [lua/INFO] Starting main leech loop
+> [iRMX:peer:(7) 17.228855] [lua/INFO] Starting main leech loop
 > [Jacquelin:tracker:(1) 3000.000000] [lua/INFO] Tracker is leaving
 > [Geoff:peer:(5) 5000.005341] [lua/INFO] My status is now 1111111111
 > [Boivin:peer:(2) 5000.048882] [lua/INFO] My status is now 1111111111
+> [iRMX:peer:(7) 5000.228855] [lua/INFO] My status is now 1111111111
 > [McGee:peer:(8) 5000.609414] [lua/INFO] My status is now 1111111111
 > [TeX:peer:(4) 5000.619837] [lua/INFO] My status is now 1111111111
 > [Disney:peer:(6) 5000.644339] [lua/INFO] My status is now 1111111111
-> [iRMX:peer:(7) 5000.873506] [lua/INFO] My status is now 1111111111
 > [Jean_Yves:peer:(3) 5000.925088] [lua/INFO] My status is now 1111111111
-

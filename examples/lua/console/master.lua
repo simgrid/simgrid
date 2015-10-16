@@ -5,28 +5,28 @@
 -- under the terms of the license (GNU LGPL) which comes with this package.
 
 --Master Function
-function Master(...) 
+function Master(...)
 
-  if #arg ~= 4 then
-    error("Wrong number of arguments (got " .. #arg ..
-          ", expected 4: nb_tasks comp_size comm_size slave_count)")
+  if select("#", ...) ~= 4 then
+    error("Wrong number of arguments (got " .. select("#", ...) ..
+        ", expected 4: nb_tasks comp_size comm_size slave_count)")
   end
 
   simgrid.info("Hello from lua, I'm the master")
-  for i,v in ipairs(arg) do
+  for i,v in ipairs({...}) do
       simgrid.info("Got " .. v)
   end
 
-  local nb_task, comp_size, comm_size, slave_count = unpack(arg)
+  local nb_task, comp_size, comm_size, slave_count = select(1, ...)
 
-  simgrid.info("Argc=" .. (#arg) .. " (should be 4)")
+  simgrid.info("Argc=" .. select("#", ...) .. " (should be 4)")
 
   -- Dispatch the tasks
 
   for i = 1, nb_task do
     task = simgrid.task.new("Task " .. i, comp_size, comm_size);
     local task_name = simgrid.task.get_name(task)
-    alias = "slave " .. (i%slave_count);
+    alias = "slave " .. string.format("%d",i%slave_count);
     simgrid.info("Master sending  '" .. task_name .. "' To '" .. alias .. "'");
     simgrid.task.send(task, alias); -- C user data set to NULL
     simgrid.info("Master done sending '" .. task_name .. "' To '" .. alias .. "'");

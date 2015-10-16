@@ -24,6 +24,7 @@
 
 #include "mc_object_info.h"
 #include "mc_private.h"
+#include "mc_dwarf.hpp"
 
 #include "mc/Process.hpp"
 #include "mc/ObjectInformation.hpp"
@@ -105,18 +106,36 @@ static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, D
  */
 static std::uint64_t MC_dwarf_at_type(Dwarf_Die * die);
 
-/** \brief A class of DWARF tags (DW_TAG_*)
- */
-typedef enum mc_tag_class {
-  mc_tag_unknown,
-  mc_tag_type,
-  mc_tag_subprogram,
-  mc_tag_variable,
-  mc_tag_scope,
-  mc_tag_namespace
-} mc_tag_class;
+namespace simgrid {
+namespace dwarf {
 
-static mc_tag_class MC_dwarf_tag_classify(int tag)
+enum class TagClass {
+  Unknown,
+  Type,
+  Subprogram,
+  Variable,
+  Scope,
+  Namespace
+};
+
+/*** Class of forms defined in the DWARF standard */
+enum class FormClass {
+  Unknown,
+  Address,   // Location in the program's address space
+  Block,     // Arbitrary block of bytes
+  Constant,
+  String,
+  Flag,      // Boolean value
+  Reference, // Reference to another DIE
+  ExprLoc,   // DWARF expression/location description
+  LinePtr,
+  LocListPtr,
+  MacPtr,
+  RangeListPtr
+};
+
+XBT_PRIVATE
+TagClass classify_tag(int tag)
 {
   switch (tag) {
 
@@ -143,43 +162,29 @@ static mc_tag_class MC_dwarf_tag_classify(int tag)
   case DW_TAG_interface_type:
   case DW_TAG_unspecified_type:
   case DW_TAG_shared_type:
-    return mc_tag_type;
+    return TagClass::Type;
 
   case DW_TAG_subprogram:
-    return mc_tag_subprogram;
+    return TagClass::Subprogram;
 
   case DW_TAG_variable:
   case DW_TAG_formal_parameter:
-    return mc_tag_variable;
+    return TagClass::Variable;
 
   case DW_TAG_lexical_block:
   case DW_TAG_try_block:
   case DW_TAG_catch_block:
   case DW_TAG_inlined_subroutine:
   case DW_TAG_with_stmt:
-    return mc_tag_scope;
+    return TagClass::Scope;
 
   case DW_TAG_namespace:
-    return mc_tag_namespace;
+    return TagClass::Namespace;
 
   default:
-    return mc_tag_unknown;
-
+    return TagClass::Unknown;
   }
 }
-
-#define MC_DW_CLASS_UNKNOWN 0
-#define MC_DW_CLASS_ADDRESS 1   // Location in the address space of the program
-#define MC_DW_CLASS_BLOCK 2     // Arbitrary block of bytes
-#define MC_DW_CLASS_CONSTANT 3
-#define MC_DW_CLASS_STRING 3    // String
-#define MC_DW_CLASS_FLAG 4      // Boolean
-#define MC_DW_CLASS_REFERENCE 5 // Reference to another DIE
-#define MC_DW_CLASS_EXPRLOC 6   // DWARF expression/location description
-#define MC_DW_CLASS_LINEPTR 7
-#define MC_DW_CLASS_LOCLISTPTR 8
-#define MC_DW_CLASS_MACPTR 9
-#define MC_DW_CLASS_RANGELISTPTR 10
 
 /** \brief Find the DWARF data class for a given DWARF data form
  *
@@ -188,42 +193,43 @@ static mc_tag_class MC_dwarf_tag_classify(int tag)
  *  \param form The form (values taken from the DWARF spec)
  *  \return An internal representation for the corresponding class
  * */
-static int MC_dwarf_form_get_class(int form)
+XBT_PRIVATE
+FormClass classify_form(int form)
 {
   switch (form) {
   case DW_FORM_addr:
-    return MC_DW_CLASS_ADDRESS;
+    return FormClass::Address;
   case DW_FORM_block2:
   case DW_FORM_block4:
   case DW_FORM_block:
   case DW_FORM_block1:
-    return MC_DW_CLASS_BLOCK;
+    return FormClass::Block;
   case DW_FORM_data1:
   case DW_FORM_data2:
   case DW_FORM_data4:
   case DW_FORM_data8:
   case DW_FORM_udata:
   case DW_FORM_sdata:
-    return MC_DW_CLASS_CONSTANT;
+    return FormClass::Constant;
   case DW_FORM_string:
   case DW_FORM_strp:
-    return MC_DW_CLASS_STRING;
+    return FormClass::String;
   case DW_FORM_ref_addr:
   case DW_FORM_ref1:
   case DW_FORM_ref2:
   case DW_FORM_ref4:
   case DW_FORM_ref8:
   case DW_FORM_ref_udata:
-    return MC_DW_CLASS_REFERENCE;
+    return FormClass::Reference;
   case DW_FORM_flag:
   case DW_FORM_flag_present:
-    return MC_DW_CLASS_FLAG;
+    return FormClass::Flag;
   case DW_FORM_exprloc:
-    return MC_DW_CLASS_EXPRLOC;
+    return FormClass::ExprLoc;
     // TODO sec offset
     // TODO indirect
   default:
-    return MC_DW_CLASS_UNKNOWN;
+    return FormClass::Unknown;
   }
 }
 
@@ -232,9 +238,13 @@ static int MC_dwarf_form_get_class(int form)
  *  \param die DIE
  *  \return name of the tag of this DIE
  */
-static inline const char *MC_dwarf_die_tagname(Dwarf_Die * die)
+inline XBT_PRIVATE
+const char *tagname(Dwarf_Die * die)
 {
-  return MC_dwarf_tagname(dwarf_tag(die));
+  return simgrid::dwarf::tagname(dwarf_tag(die));
+}
+
+}
 }
 
 // ***** Attributes
@@ -342,7 +352,8 @@ static bool MC_dwarf_attr_flag(Dwarf_Die * die, int attribute, bool integrate)
 
   bool result;
   if (dwarf_formflag(&attr, &result))
-    xbt_die("Unexpected form for attribute %s", MC_dwarf_attrname(attribute));
+    xbt_die("Unexpected form for attribute %s",
+      simgrid::dwarf::attrname(attribute));
   return result;
 }
 
@@ -398,7 +409,7 @@ static uint64_t MC_dwarf_subrange_element_count(Dwarf_Die * die,
   xbt_assert(dwarf_tag(die) == DW_TAG_enumeration_type
              || dwarf_tag(die) == DW_TAG_subrange_type,
              "MC_dwarf_subrange_element_count called with DIE of type %s",
-             MC_dwarf_die_tagname(die));
+             simgrid::dwarf::tagname(die));
 
   // Use DW_TAG_count if present:
   if (dwarf_hasattr_integrate(die, DW_AT_count))
@@ -433,7 +444,7 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit)
 {
   xbt_assert(dwarf_tag(die) == DW_TAG_array_type,
              "MC_dwarf_array_element_count called with DIE of type %s",
-             MC_dwarf_die_tagname(die));
+             simgrid::dwarf::tagname(die));
 
   int result = 1;
   Dwarf_Die child;
@@ -493,10 +504,10 @@ static void MC_dwarf_fill_member_location(
   Dwarf_Attribute attr;
   dwarf_attr_integrate(child, DW_AT_data_member_location, &attr);
   int form = dwarf_whatform(&attr);
-  int klass = MC_dwarf_form_get_class(form);
-  switch (klass) {
-  case MC_DW_CLASS_EXPRLOC:
-  case MC_DW_CLASS_BLOCK:
+  simgrid::dwarf::FormClass form_class = simgrid::dwarf::classify_form(form);
+  switch (form_class) {
+  case simgrid::dwarf::FormClass::ExprLoc:
+  case simgrid::dwarf::FormClass::Block:
     // Location expression:
     {
       Dwarf_Op *expr;
@@ -506,10 +517,10 @@ static void MC_dwarf_fill_member_location(
             ("Could not read location expression DW_AT_data_member_location in DW_TAG_member %s of type <%"
              PRIx64 ">%s", MC_dwarf_attr_integrate_string(child, DW_AT_name),
              (uint64_t) type->id, type->name.c_str());
-      member->location_expression = simgrid::mc::DwarfExpression(expr, expr+len);
+      member->location_expression = simgrid::dwarf::DwarfExpression(expr, expr+len);
       break;
     }
-  case MC_DW_CLASS_CONSTANT:
+  case simgrid::dwarf::FormClass::Constant:
     // Offset from the base address of the object:
     {
       Dwarf_Word offset;
@@ -521,15 +532,15 @@ static void MC_dwarf_fill_member_location(
                 (uint64_t) type->id, type->name.c_str());
       break;
     }
-  case MC_DW_CLASS_LOCLISTPTR:
+  case simgrid::dwarf::FormClass::LocListPtr:
     // Reference to a location list:
     // TODO
-  case MC_DW_CLASS_REFERENCE:
+  case simgrid::dwarf::FormClass::Reference:
     // It's supposed to be possible in DWARF2 but I couldn't find its semantic
     // in the spec.
   default:
     xbt_die("Can't handle form class (%i) / form 0x%x as DW_AT_member_location",
-            klass, form);
+            (int) form_class, form);
   }
 
 }
@@ -716,12 +727,14 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
   variable->type_id = MC_dwarf_at_type(die);
 
   int form = dwarf_whatform(&attr_location);
-  int klass =
-      form ==
-      DW_FORM_sec_offset ? MC_DW_CLASS_CONSTANT : MC_dwarf_form_get_class(form);
-  switch (klass) {
-  case MC_DW_CLASS_EXPRLOC:
-  case MC_DW_CLASS_BLOCK:
+  simgrid::dwarf::FormClass form_class;
+  if (form == DW_FORM_sec_offset)
+    form_class = simgrid::dwarf::FormClass::Constant;
+  else
+    form_class = simgrid::dwarf::classify_form(form);
+  switch (form_class) {
+  case simgrid::dwarf::FormClass::ExprLoc:
+  case simgrid::dwarf::FormClass::Block:
     // Location expression:
     {
       Dwarf_Op *expr;
@@ -740,24 +753,25 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
         uintptr_t base = (uintptr_t) info->base_address();
         variable->address = (void *) (base + offset);
       } else {
-        simgrid::mc::LocationListEntry entry;
+        simgrid::dwarf::LocationListEntry entry;
         entry.expression = {expr, expr + len};
         variable->location_list = { std::move(entry) };
       }
 
       break;
     }
-  case MC_DW_CLASS_LOCLISTPTR:
-  case MC_DW_CLASS_CONSTANT:
+
+  case simgrid::dwarf::FormClass::LocListPtr:
+  case simgrid::dwarf::FormClass::Constant:
     // Reference to location list:
-    mc_dwarf_location_list_init(
-      &variable->location_list, info, die,
-      &attr_location);
+    variable->location_list = simgrid::dwarf::location_list(
+      *info, attr_location);
     break;
+
   default:
     xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location "
             "in <%" PRIx64 ">%s",
-            form, form, klass, klass,
+            form, form, (int) form_class, (int) form_class,
             (uint64_t) variable->dwarf_offset,
             variable->name.c_str());
   }
@@ -767,20 +781,21 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     Dwarf_Attribute attr;
     dwarf_attr(die, DW_AT_start_scope, &attr);
     int form = dwarf_whatform(&attr);
-    int klass = MC_dwarf_form_get_class(form);
-    switch (klass) {
-    case MC_DW_CLASS_CONSTANT:
+    simgrid::dwarf::FormClass form_class = simgrid::dwarf::classify_form(form);
+    switch (form_class) {
+    case simgrid::dwarf::FormClass::Constant:
       {
         Dwarf_Word value;
         variable->start_scope =
             dwarf_formudata(&attr, &value) == 0 ? (size_t) value : 0;
         break;
       }
-    case MC_DW_CLASS_RANGELISTPTR:     // TODO
+
+    case simgrid::dwarf::FormClass::RangeListPtr:     // TODO
     default:
       xbt_die
           ("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s",
-           form, klass, name == NULL ? "?" : name);
+           form, (int) form_class, name == NULL ? "?" : name);
     }
   }
 
@@ -820,14 +835,14 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
 {
   // TODO, handle DW_TAG_type/DW_TAG_location for DW_TAG_with_stmt
   int tag = dwarf_tag(die);
-  mc_tag_class klass = MC_dwarf_tag_classify(tag);
+  simgrid::dwarf::TagClass klass = simgrid::dwarf::classify_tag(tag);
 
   // (Template) Subprogram declaration:
-  if (klass == mc_tag_subprogram
+  if (klass == simgrid::dwarf::TagClass::Subprogram
       && MC_dwarf_attr_flag(die, DW_AT_declaration, false))
     return;
 
-  if (klass == mc_tag_scope)
+  if (klass == simgrid::dwarf::TagClass::Scope)
     xbt_assert(parent_frame, "No parent scope for this scope");
 
   simgrid::mc::Frame frame;
@@ -836,7 +851,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   frame.id = dwarf_dieoffset(die);
   frame.object_info = info;
 
-  if (klass == mc_tag_subprogram) {
+  if (klass == simgrid::dwarf::TagClass::Subprogram) {
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
     if(ns)
       frame.name  = std::string(ns) + "::" + name;
@@ -867,10 +882,10 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     Dwarf_Sword offset;
     Dwarf_Addr high_pc;
 
-    switch (MC_dwarf_form_get_class(dwarf_whatform(&attr))) {
+    switch (simgrid::dwarf::classify_form(dwarf_whatform(&attr))) {
 
       // DW_AT_high_pc if an offset from the low_pc:
-    case MC_DW_CLASS_CONSTANT:
+    case simgrid::dwarf::FormClass::Constant:
 
       if (dwarf_formsdata(&attr, &offset) != 0)
         xbt_die("Could not read constant");
@@ -878,7 +893,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
       break;
 
       // DW_AT_high_pc is a relocatable address:
-    case MC_DW_CLASS_ADDRESS:
+    case simgrid::dwarf::FormClass::Address:
       if (dwarf_formaddr(&attr, &high_pc) != 0)
         xbt_die("Could not read address");
       frame.high_pc = ((char *) base) + high_pc;
@@ -890,11 +905,11 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     }
   }
 
-  if (klass == mc_tag_subprogram) {
+  if (klass == simgrid::dwarf::TagClass::Subprogram) {
     Dwarf_Attribute attr_frame_base;
     if (dwarf_attr_integrate(die, DW_AT_frame_base, &attr_frame_base))
-      mc_dwarf_location_list_init(&frame.frame_base, info, die,
-                                  &attr_frame_base);
+      frame.frame_base_location = simgrid::dwarf::location_list(*info,
+                                  attr_frame_base);
   }
 
   // Handle children:
@@ -905,9 +920,9 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     MC_compare_variable);
 
   // Register it:
-  if (klass == mc_tag_subprogram)
+  if (klass == simgrid::dwarf::TagClass::Subprogram)
     info->subprograms[frame.id] = frame;
-  else if (klass == mc_tag_scope)
+  else if (klass == simgrid::dwarf::TagClass::Scope)
     parent_frame->scopes.push_back(std::move(frame));
 }
 
@@ -943,26 +958,26 @@ static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die 
                                 const char *ns)
 {
   int tag = dwarf_tag(die);
-  mc_tag_class klass = MC_dwarf_tag_classify(tag);
+  simgrid::dwarf::TagClass klass = simgrid::dwarf::classify_tag(tag);
   switch (klass) {
 
     // Type:
-  case mc_tag_type:
+  case simgrid::dwarf::TagClass::Type:
     MC_dwarf_handle_type_die(info, die, unit, frame, ns);
     break;
 
     // Subprogram or scope:
-  case mc_tag_subprogram:
-  case mc_tag_scope:
+  case simgrid::dwarf::TagClass::Subprogram:
+  case simgrid::dwarf::TagClass::Scope:
     MC_dwarf_handle_scope_die(info, die, unit, frame, ns);
     return;
 
     // Variable:
-  case mc_tag_variable:
+  case simgrid::dwarf::TagClass::Variable:
     MC_dwarf_handle_variable_die(info, die, unit, frame, ns);
     break;
 
-  case mc_tag_namespace:
+  case simgrid::dwarf::TagClass::Namespace:
     mc_dwarf_handle_namespace_die(info, die, unit, frame, ns);
     break;
 
@@ -972,11 +987,25 @@ static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die 
   }
 }
 
+static
+Elf64_Half MC_dwarf_elf_type(Dwarf* dwarf)
+{
+  Elf* elf = dwarf_getelf(dwarf);
+  Elf64_Ehdr* ehdr64 = elf64_getehdr(elf);
+  if (ehdr64)
+    return ehdr64->e_type;
+  Elf32_Ehdr* ehdr32 = elf32_getehdr(elf);
+  if (ehdr32)
+    return ehdr32->e_type;
+  xbt_die("Could not get ELF heeader");
+}
+
 /** \brief Populate the debugging informations of the given ELF object
  *
  *  Read the DWARf information of the EFFL object and populate the
  *  lists of types, variables, functions.
  */
+static
 void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
 {
   int fd = open(info->file_name.c_str(), O_RDONLY);
@@ -988,6 +1017,11 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
       "Your program and its dependencies must have debugging information.\n"
       "You might want to recompile with -g or install the suitable debugging package.\n",
       info->file_name.c_str());
+
+  Elf64_Half elf_type = MC_dwarf_elf_type(dwarf);
+  if (elf_type == ET_EXEC)
+    info->flags |= simgrid::mc::ObjectInformation::Executable;
+
   // For each compilation unit:
   Dwarf_Off offset = 0;
   Dwarf_Off next_offset = 0;
@@ -1117,12 +1151,10 @@ static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 
 /** \brief Finds informations about a given shared object/executable */
 std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
-  std::vector<simgrid::mc::VmMap> const& maps, const char *name, int executable)
+  std::vector<simgrid::mc::VmMap> const& maps, const char *name)
 {
   std::shared_ptr<simgrid::mc::ObjectInformation> result =
     std::make_shared<simgrid::mc::ObjectInformation>();
-  if (executable)
-    result->flags |= simgrid::mc::ObjectInformation::Executable;
   result->file_name = name;
   MC_find_object_address(maps, result.get());
   MC_dwarf_get_variables(result.get());
@@ -1163,4 +1195,81 @@ void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::Obj
     } else type->full_type = subtype;
 
   }
+}
+
+namespace simgrid {
+namespace dwarf {
+
+/** Convert a DWARF register into a libunwind register
+ *
+ *  DWARF and libunwind does not use the same convention for numbering the
+ *  registers on some architectures. The function makes the necessary
+ *  convertion.
+ */
+int dwarf_register_to_libunwind(int dwarf_register)
+{
+#if defined(__x86_64__)
+  // It seems for this arch, DWARF and libunwind agree in the numbering:
+  return dwarf_register;
+#elif defined(__i386__)
+  // Could't find the authoritative source of information for this.
+  // This is inspired from http://source.winehq.org/source/dlls/dbghelp/cpu_i386.c#L517.
+  switch (dwarf_register) {
+  case 0:
+    return UNW_X86_EAX;
+  case 1:
+    return UNW_X86_ECX;
+  case 2:
+    return UNW_X86_EDX;
+  case 3:
+    return UNW_X86_EBX;
+  case 4:
+    return UNW_X86_ESP;
+  case 5:
+    return UNW_X86_EBP;
+  case 6:
+    return UNW_X86_ESI;
+  case 7:
+    return UNW_X86_EDI;
+  case 8:
+    return UNW_X86_EIP;
+  case 9:
+    return UNW_X86_EFLAGS;
+  case 10:
+    return UNW_X86_CS;
+  case 11:
+    return UNW_X86_SS;
+  case 12:
+    return UNW_X86_DS;
+  case 13:
+    return UNW_X86_ES;
+  case 14:
+    return UNW_X86_FS;
+  case 15:
+    return UNW_X86_GS;
+  case 16:
+    return UNW_X86_ST0;
+  case 17:
+    return UNW_X86_ST1;
+  case 18:
+    return UNW_X86_ST2;
+  case 19:
+    return UNW_X86_ST3;
+  case 20:
+    return UNW_X86_ST4;
+  case 21:
+    return UNW_X86_ST5;
+  case 22:
+    return UNW_X86_ST6;
+  case 23:
+    return UNW_X86_ST7;
+  default:
+    xbt_die("Bad/unknown register number.");
+  }
+#else
+#error This architecture is not supported yet for DWARF expression evaluation.
+#endif
+}
+
+}
 }

@@ -167,7 +167,7 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
   sglua_stack_dump("my_checkudata: ", L);
 
   if (p == NULL || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
-    luaL_typerror(L, ud, tname);
+    XBT_ERROR("Error: Userdata is NULL, couldn't find metatable or top of stack does not equal element below it.");
   lua_pop(L, 2);
   return p;
 }

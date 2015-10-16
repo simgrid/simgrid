@@ -232,6 +232,10 @@ void sglua_copy_value(lua_State* src, lua_State* dst) {
     case LUA_TTHREAD:
       sglua_copy_thread(src, dst);
       break;
+
+    case LUA_TNONE:
+        XBT_ERROR("This index is acceptable but non-valid");
+      break;
   }
 
   XBT_DEBUG("%sData copied", sglua_get_spaces(indent));
@@ -255,7 +259,12 @@ static void sglua_copy_nil(lua_State* src, lua_State* dst) {
  * @param dst destination state
  */
 static void sglua_copy_number(lua_State* src, lua_State* dst) {
-  lua_pushnumber(dst, lua_tonumber(src, -1));
+  lua_Number n = lua_tonumber(src, -1);
+  if ( ((lua_Integer) n) == n) {
+    lua_pushinteger(dst, lua_tointeger(src, -1));
+  }
+  else
+    lua_pushnumber(dst, lua_tonumber(src, -1));
 }
 
 /**
@@ -464,8 +473,12 @@ static void sglua_copy_function(lua_State* src, lua_State* dst) {
     buffer.size = 0;
     buffer.data = xbt_new(char, buffer.capacity);
 
-    /* copy the binary chunk from src into a buffer */
-    XBT_ATTRIB_UNUSED int error = lua_dump(src, sglua_memory_writer, &buffer);
+    /* copy the binary chunk from src into a buffer
+     * c.heinrich: Added parameter TRUE for Lua 5.3 - this strips all debug
+     * information from the function.
+     */
+    // Was before merge: XBT_GNUC_UNUSED and was replaced with XBT_ATTRIB_UNUSED
+    XBT_ATTRIB_UNUSED int error = lua_dump(src, sglua_memory_writer, &buffer, TRUE);
     xbt_assert(!error, "Failed to dump the function from the source state: error %d",
         error);
     XBT_DEBUG("Fonction dumped: %zu bytes", buffer.size);
@@ -506,7 +519,7 @@ static void sglua_copy_userdata(lua_State* src, lua_State* dst) {
   /* copy the data */
                                   /* src: ... udata
                                      dst: ... */
-  size_t size = lua_objlen(src, -1);
+  size_t size = lua_rawlen(src, -1);
   void* src_block = lua_touserdata(src, -1);
   void* dst_block = lua_newuserdata(dst, size);
                                   /* dst: ... udata */
@@ -574,27 +587,23 @@ static int l_get_from_maestro(lua_State *L) {
                                   /* L:      table key */
   XBT_DEBUG("__index of '%s' begins", key);
 
-  /* want a global or a registry value? */
-  int pseudo_index;
-  if (lua_equal(L, 1, LUA_REGISTRYINDEX)) {
-    /* registry */
-    pseudo_index = LUA_REGISTRYINDEX;
+  /* get the father */
+  lua_State* maestro = sglua_get_maestro(); /* maestro: */
+
+  /* want a global or a registry value?
+     get the value from maestro         */
+  if (lua_compare(L, 1, LUA_REGISTRYINDEX, LUA_OPEQ)) {
+    /* case: registry */
+    lua_getfield(maestro, LUA_REGISTRYINDEX, key); /* maestro: ... value */
     XBT_DEBUG("Will get the value from the registry of maestro");
   }
-  else {
-    /* global */
-    pseudo_index = LUA_GLOBALSINDEX;
+  else { /* case: global */
+    lua_getglobal(maestro, key);                   /* maestro: ... value */
     XBT_DEBUG("Will get the value from the globals of maestro");
   }
 
-  /* get the father */
-  lua_State* maestro = sglua_get_maestro();
+  /* L:      table key */
 
-                                  /* L:      table key */
-
-  /* get the value from maestro */
-  lua_getfield(maestro, pseudo_index, key);
-                                  /* maestro: ... value */
 
   /* push the value onto the stack of L */
   sglua_move_value(maestro, L);
@@ -655,8 +664,10 @@ lua_State* sglua_clone_maestro(void) {
   lua_setmetatable(L, -2);                  /* thread newenv mt reg */
   lua_pop(L, 1);                            /* thread newenv mt */
   lua_setmetatable(L, -2);                  /* thread newenv */
-  lua_setfenv(L, -2);                       /* thread */
-  lua_pop(L, 1);                            /* -- */
+  lua_pushvalue(L, LUA_REGISTRYINDEX);      /* thread newenv reg */
+  lua_insert(L, -2);                        /* thread reg newenv */
+  lua_seti(L, -2, LUA_RIDX_GLOBALS);        /* thread reg */
+  lua_pop(L, 2);                            /* -- */
 
   /* create the table of known tables from maestro */
   lua_pushstring(L, "simgrid.maestro_tables");

@@ -98,32 +98,32 @@ function leech_loop()
 	simgrid.info("Starting main leech loop")
 	local task, err
 	while now < data.deadline and data.pieces < common.FILE_PIECES do
-		task, err = data.comm_received:test()
-		if task then
-			handle_message(task)
-			data.comm_received = simgrid.task.irecv(data.mailbox)
-			now = simgrid.get_clock()
-		elseif err then
-			data.comm_received = simgrid.task.irecv(data.mailbox)		
-		else
-			-- If the user has a pending interesting
-			if data.current_piece ~= -1 then
-				send_interested_to_peers()
-			else
-				if table.getn(data.current_pieces) < common.MAX_PIECES then
-					update_current_piece()
-				end
-			end
-			-- We don't execute the choke algorithm if we don't already have a piece
-			if now >= next_choked_update and data.pieces > 0 then
-				update_choked_peers()
-				next_choked_update = next_choked_update + common.UPDATE_CHOKED_INTERVAL
-				now = simgrid.get_clock()
-			else
-				simgrid.process.sleep(1)
-				now = simgrid.get_clock()
-			end
-		end		
+        task, err = data.comm_received:test()
+        if task then
+            handle_message(task)
+            data.comm_received = simgrid.task.irecv(data.mailbox)
+            now = simgrid.get_clock()
+        elseif err then
+            data.comm_received = simgrid.task.irecv(data.mailbox)
+        else
+            -- If the user has a pending interesting
+            if data.current_piece ~= -1 then
+                send_interested_to_peers()
+            else
+                if #data.current_pieces < common.MAX_PIECES then
+                    update_current_piece()
+                end
+            end
+            -- We don't execute the choke algorithm if we don't already have a piece
+            if now >= next_choked_update and data.pieces > 0 then
+                update_choked_peers()
+                next_choked_update = next_choked_update + common.UPDATE_CHOKED_INTERVAL
+                now = simgrid.get_clock()
+            else
+                simgrid.process.sleep(1)
+                now = simgrid.get_clock()
+            end
+        end
 	end
 end
 -- Peer main loop when it is seeding
@@ -416,6 +416,7 @@ function send_interested(mailbox)
 end
 -- Send a "not interested" message to a peer.
 function send_not_interested(mailbox)
+    simgrid.debug("Sending a send_not_interested")
 	local task = new_task("NOTINTERESTED")
 	task:dsend(mailbox)
 end
@@ -446,6 +447,7 @@ function send_unchoked(mailbox)
 end
 -- Send a "HAVE" message to all peers we are connected to
 function send_have(piece)
+      simgrid.debug("Sending a HAVE message")
 	for i,v in pairs(data.peers) do
 		local task = new_task("HAVE")
 		task.piece = piece
@@ -454,6 +456,7 @@ function send_have(piece)
 end
 -- Send request messages to a peer that have unchoked us	
 function send_requests_to_peer(remote_peer)
+    simgrid.debug("Sending a request to peer " .. remote_peer.mailbox)
 	for i,v in pairs(data.current_pieces) do
 		send_request(remote_peer.mailbox,i)
 	end
@@ -481,7 +484,7 @@ function send_piece(mailbox, piece, stalled)
 	task:dsend(mailbox)	
 end
 function new_task(type)
-	local task = simgrid.task.new("", 0, common.MESSAGE_SIZE)
+	local task = simgrid.task.new(type, 0, common.MESSAGE_SIZE)
 	task.type = type
 	task.mailbox = data.mailbox
 	task.peer_id = data.id	

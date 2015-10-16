@@ -149,14 +149,14 @@ public:
     ReadMode mode = Normal) const override;
 public: // To be private
   int num_state;
-  size_t heap_bytes_used;
+  std::size_t heap_bytes_used;
   std::vector<std::unique_ptr<s_mc_mem_region_t>> snapshot_regions;
   std::set<pid_t> enabled_processes;
   int privatization_index;
-  std::vector<size_t> stack_sizes;
+  std::vector<std::size_t> stack_sizes;
   std::vector<s_mc_snapshot_stack_t> stacks;
   std::vector<s_mc_heap_ignore_region_t> to_ignore;
-  uint64_t hash;
+  std::uint64_t hash;
   std::vector<s_mc_snapshot_ignored_data> ignored_data;
   std::vector<s_fd_infos_t> current_fds;
 };
@@ -182,17 +182,17 @@ XBT_PRIVATE void MC_restore_snapshot(mc_snapshot_t);
 
 XBT_PRIVATE void mc_restore_page_snapshot_region(
   simgrid::mc::Process* process,
-  void* start_addr, simgrid::mc::PerPageCopy const& pagenos);
+  void* start_addr, simgrid::mc::ChunkedData const& pagenos);
 
 const void* MC_region_read_fragmented(
-  mc_mem_region_t region, void* target, const void* addr, size_t size);
+  mc_mem_region_t region, void* target, const void* addr, std::size_t size);
 
 int MC_snapshot_region_memcmp(
   const void* addr1, mc_mem_region_t region1,
-  const void* addr2, mc_mem_region_t region2, size_t size);
+  const void* addr2, mc_mem_region_t region2, std::size_t size);
 XBT_PRIVATE int MC_snapshot_memcmp(
   const void* addr1, mc_snapshot_t snapshot1,
-  const void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size);
+  const void* addr2, mc_snapshot_t snapshot2, int process_index, std::size_t size);
 
 static inline __attribute__ ((always_inline))
 const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot)
@@ -211,11 +211,13 @@ const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot)
  *  @return Pointer where the data is located (target buffer of original location)
  */
 static inline __attribute__((always_inline))
-const void* MC_region_read(mc_mem_region_t region, void* target, const void* addr, size_t size)
+const void* MC_region_read(
+  mc_mem_region_t region, void* target, const void* addr, std::size_t size)
 {
   xbt_assert(region);
 
-  uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start().address();
+  std::uintptr_t offset =
+    (std::uintptr_t) addr - (std::uintptr_t) region->start().address();
 
   xbt_assert(region->contain(simgrid::mc::remote(addr)),
     "Trying to read out of the region boundary.");

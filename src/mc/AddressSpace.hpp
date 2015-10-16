@@ -140,7 +140,7 @@ public:
   AddressSpace(Process* process) : process_(process) {}
   virtual ~AddressSpace();
 
-  simgrid::mc::Process* process() { return process_; }
+  simgrid::mc::Process* process() const { return process_; }
   virtual const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
     ReadMode mode = Normal) const = 0;

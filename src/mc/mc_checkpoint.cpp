@@ -85,8 +85,8 @@ namespace mc {
 
 #ifdef HAVE_SMPI
 simgrid::mc::RegionSnapshot privatized_region(
-    RegionType region_type, void *start_addr, void* permanent_addr, size_t size,
-    const simgrid::mc::RegionSnapshot* ref_region
+    RegionType region_type, void *start_addr, void* permanent_addr,
+    std::size_t size, const simgrid::mc::RegionSnapshot* ref_region
     )
 {
   size_t process_count = MC_smpi_process_count();
@@ -126,7 +126,8 @@ extern "C" {
 static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
                                   simgrid::mc::RegionType type,
                                   simgrid::mc::ObjectInformation* object_info,
-                                  void *start_addr, void* permanent_addr, size_t size)
+                                  void *start_addr, void* permanent_addr,
+                                  std::size_t size)
 {
   if (type == simgrid::mc::RegionType::Data)
     xbt_assert(object_info, "Missing object info for object.");
@@ -196,7 +197,8 @@ static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t s
  *  `dl_iterate_phdr` would be more robust but would not work in cross-process.
  * */
 void MC_find_object_address(
-  std::vector<simgrid::mc::VmMap> const& maps, simgrid::mc::ObjectInformation* result)
+  std::vector<simgrid::mc::VmMap> const& maps,
+  simgrid::mc::ObjectInformation* result)
 {
   char* file_name = xbt_strdup(result->file_name.c_str());
   const char *name = basename(file_name);
@@ -261,7 +263,8 @@ void MC_find_object_address(
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
-static bool mc_valid_variable(simgrid::mc::Variable* var, simgrid::mc::Frame* scope,
+static bool mc_valid_variable(simgrid::mc::Variable* var,
+                              simgrid::mc::Frame* scope,
                               const void *ip)
 {
   // The variable is not yet valid:
@@ -272,7 +275,8 @@ static bool mc_valid_variable(simgrid::mc::Variable* var, simgrid::mc::Frame* sc
 }
 
 static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
-                                           simgrid::mc::Frame* scope, int process_index,
+                                           simgrid::mc::Frame* scope,
+                                           int process_index,
                                            std::vector<s_local_variable>& result)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
@@ -305,22 +309,17 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     if (current_variable.address != NULL) {
       new_var.address = current_variable.address;
     } else if (!current_variable.location_list.empty()) {
-      s_mc_location_t location;
-      mc_dwarf_resolve_locations(
-        &location, &current_variable.location_list,
-        current_variable.object_info,
-        &(stack_frame->unw_cursor),
-        (void *) stack_frame->frame_base,
-        &mc_model_checker->process(), process_index);
+      simgrid::dwarf::Location location =
+        simgrid::dwarf::resolve(
+          current_variable.location_list,
+          current_variable.object_info,
+          &(stack_frame->unw_cursor),
+          (void *) stack_frame->frame_base,
+          &mc_model_checker->process(), process_index);
 
-      switch(mc_get_location_type(&location)) {
-      case MC_LOCATION_TYPE_ADDRESS:
-        new_var.address = location.memory_location;
-        break;
-      case MC_LOCATION_TYPE_REGISTER:
-      default:
+      if (!location.in_memory())
         xbt_die("Cannot handle non-address variable");
-      }
+      new_var.address = location.address();
 
     } else {
       xbt_die("No address");
@@ -385,7 +384,7 @@ static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t s
       if (frame) {
         stack_frame.frame_name = frame->name;
         stack_frame.frame_base =
-            (unw_word_t) mc_find_frame_base(frame, frame->object_info, &c);
+            (unw_word_t) frame->frame_base(c);
       } else {
         stack_frame.frame_base = 0;
         stack_frame.frame_name = std::string();

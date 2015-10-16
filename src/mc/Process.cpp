@@ -383,7 +383,7 @@ void Process::init_memory_map_info()
     }
 
     std::shared_ptr<simgrid::mc::ObjectInformation> info =
-      MC_find_object_info(this->memory_map_, pathname, is_executable);
+      MC_find_object_info(this->memory_map_, pathname);
     this->object_infos.push_back(info);
     if (is_executable)
       this->binary_info = info;

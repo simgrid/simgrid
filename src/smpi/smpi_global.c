@@ -431,20 +431,20 @@ void smpi_global_init(void)
   for (i = 0; i < process_count; i++) {
     process_data[i] = xbt_new(s_smpi_process_data_t, 1);
     //process_data[i]->index = i;
-    process_data[i]->argc = NULL;
-    process_data[i]->argv = NULL;
+    process_data[i]->argc    = NULL;
+    process_data[i]->argv    = NULL;
     process_data[i]->mailbox = simcall_rdv_create(get_mailbox_name(name, i));
     process_data[i]->mailbox_small =
         simcall_rdv_create(get_mailbox_name_small(name, i));
-    process_data[i]->mailboxes_mutex=xbt_mutex_init();
-    process_data[i]->timer = xbt_os_timer_new();
+    process_data[i]->mailboxes_mutex = xbt_mutex_init();
+    process_data[i]->timer           = xbt_os_timer_new();
     if (MC_is_active())
       MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
-    process_data[i]->comm_self = MPI_COMM_NULL;
-    process_data[i]->comm_intra = MPI_COMM_NULL;
-    process_data[i]->comm_world = NULL;
-    process_data[i]->state = SMPI_UNINITIALIZED;
-    process_data[i]->sampling = 0;
+    process_data[i]->comm_self            = MPI_COMM_NULL;
+    process_data[i]->comm_intra           = MPI_COMM_NULL;
+    process_data[i]->comm_world           = NULL;
+    process_data[i]->state                = SMPI_UNINITIALIZED;
+    process_data[i]->sampling             = 0;
     process_data[i]->finalization_barrier = NULL;
   }
   //if the process was launched through smpirun script

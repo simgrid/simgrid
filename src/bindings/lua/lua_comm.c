@@ -139,7 +139,7 @@ static int l_comm_test(lua_State* L) {
   }
 }
 
-static const luaL_reg comm_functions[] = {
+static const luaL_Reg comm_functions[] = {
   {"wait", l_comm_wait},
   {"test", l_comm_test},
   /* TODO waitany, testany */
@@ -164,7 +164,7 @@ static int l_comm_gc(lua_State* L)
 /**
  * \brief Metamethods of the comm userdata.
  */
-static const luaL_reg comm_meta[] = {
+static const luaL_Reg comm_meta[] = {
   {"__gc", l_comm_gc},
   {NULL, NULL}
 };
@@ -178,25 +178,30 @@ static const luaL_reg comm_meta[] = {
  */
 void sglua_register_comm_functions(lua_State* L)
 {
-  /* create a table simgrid.com and fill it with com functions */
-  luaL_openlib(L, COMM_MODULE_NAME, comm_functions, 0);
-                                  /* simgrid.comm */
+  /* create a table simgrid.comm and fill it with com functions */
+  lua_getglobal(L, "simgrid");    /* simgrid */
+  luaL_newlib(L, comm_functions); /* simgrid simgrid.comm */
 
-  /* create the metatable for comms, add it to the Lua registry */
-  luaL_newmetatable(L, COMM_MODULE_NAME);
-                                  /* simgrid.comm mt */
+  /* create the metatable for comm, add it to the Lua registry */
+  luaL_newmetatable(L, COMM_MODULE_NAME); /* simgrid simgrid.comm mt */
+
   /* fill the metatable */
-  luaL_openlib(L, NULL, comm_meta, 0);
-                                  /* simgrid.comm mt */
-  lua_pushvalue(L, -2);
-                                  /* simgrid.comm mt simgrid.comm */
+  luaL_setfuncs(L, comm_meta, 0);         /* simgrid simgrid.comm mt */
+
+  /**
+   * Copy the table and push it onto the stack.
+   * Required for the lua_setfield call below.
+   */
+  lua_pushvalue(L, -2);            /* simgrid simgrid.comm mt simgrid.comm */
+
   /* metatable.__index = simgrid.comm
-   * we put the comm functions inside the comm itself:
+   * we put the comm functions inside the comm userdata itself:
    * this allows to write my_comm:method(args) for
    * simgrid.comm.method(my_comm, args) */
-  lua_setfield(L, -2, "__index");
-                                  /* simgrid.comm mt */
-  lua_pop(L, 2);
-                                  /* -- */
+  lua_setfield(L, -2, "__index");         /* simgrid simgrid.comm mt */
+
+  lua_setmetatable(L, -2);                /* simgrid simgrid.comm */
+  lua_setfield(L, -1, "comm");            /* simgrid */
+  lua_pop(L, 1);                          /* -- */
 }
 

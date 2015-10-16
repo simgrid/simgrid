@@ -68,16 +68,14 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
   simgrid::mc::Variable* var = find_local_variable(subprogram, variable);
   assert(var);
 
-  void* frame_base = mc_find_frame_base(subprogram, info, cursor);
-  s_mc_location_t location;
+  void* frame_base = subprogram->frame_base(*cursor);
+  simgrid::dwarf::Location location = simgrid::dwarf::resolve(
+    var->location_list, info, cursor, frame_base, NULL, -1);
 
-  mc_dwarf_resolve_locations(&location,
-    &var->location_list, info, cursor, frame_base, NULL, -1);
-
-  xbt_assert(mc_get_location_type(&location)==MC_LOCATION_TYPE_ADDRESS,
-    "Unexpected location type for variable %s of %s", variable, function);
-
-  xbt_assert(location.memory_location == address,
+  xbt_assert(location.in_memory(),
+    "Expected the variable %s of function %s to be in memory",
+    variable, function);
+  xbt_assert(location.address() == address,
     "Bad resolution of local variable %s of %s", variable, function);
 
 }

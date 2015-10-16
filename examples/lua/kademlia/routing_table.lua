@@ -52,7 +52,7 @@ function routing_table_update(id)
 		simgrid.debug("Updating " .. id .. " in my routing table")
 		-- If the element is already in the bucket, we update it.
 		table.remove(bucket.list,index_of(bucket.list,id))
-		table.insert(bucket.list,0,id)
+		table.insert(bucket.list,id)
 	else	
 		simgrid.debug("Insert " .. id .. " in my routing table in bucket " .. bucket.id)
 		table.insert(bucket.list,id)

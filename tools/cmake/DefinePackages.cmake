@@ -613,12 +613,15 @@ set(MC_SRC
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
   src/mc/Frame.hpp
+  src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
   src/mc/ModelChecker.cpp
   src/mc/ObjectInformation.hpp
   src/mc/ObjectInformation.cpp
   src/mc/PageStore.hpp
   src/mc/PageStore.cpp
+  src/mc/ChunkedData.hpp
+  src/mc/ChunkedData.cpp
   src/mc/RegionSnapshot.cpp
   src/mc/RegionSnapshot.hpp
   src/mc/Type.hpp
@@ -646,7 +649,8 @@ set(MC_SRC
   src/mc/mc_dwarf.hpp
   src/mc/mc_dwarf.cpp
   src/mc/mc_dwarf_attrnames.cpp
-  src/mc/mc_dwarf_expression.cpp
+  src/mc/DwarfExpression.hpp
+  src/mc/DwarfExpression.cpp
   src/mc/mc_dwarf_tagnames.cpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
@@ -655,7 +659,8 @@ set(MC_SRC
   src/mc/mcer_ignore.h
   src/mc/mc_ignore.h
   src/mc/mc_liveness.h
-  src/mc/mc_location.h
+  src/mc/LocationList.hpp
+  src/mc/LocationList.cpp
   src/mc/mc_liveness.cpp
   src/mc/mc_record.cpp
   src/mc/mc_member.cpp

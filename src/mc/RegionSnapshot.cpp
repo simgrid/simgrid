@@ -8,7 +8,9 @@
 
 #include "mc/mc.h"
 #include "mc_snapshot.h"
-#include "RegionSnapshot.hpp"
+
+#include <mc/ChunkedData.hpp>
+#include <mc/RegionSnapshot.hpp>
 
 extern "C" {
 
@@ -122,7 +124,7 @@ RegionSnapshot sparse_region(RegionType region_type,
     ref_page_numbers = ref_region->page_data().pagenos();
   }
 
-  simgrid::mc::PerPageCopy page_data(
+  simgrid::mc::ChunkedData page_data(
     mc_model_checker->page_store(), *process, permanent_addr, page_count,
     ref_page_numbers,
     use_soft_dirty ? pagemap.data() : nullptr);

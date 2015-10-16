@@ -7,8 +7,8 @@
 function Receiver(...)
 
   simgrid.info("Hello From Receiver")
-  local sender = simgrid.host.get_by_name(arg[1])
-  local send_alias = arg[2]
+  local sender = simgrid.host.get_by_name(select(1, ...))
+  local send_alias = select(2, ...)
   local recv_alias = "Receiver"
   simgrid.info("Receiving Task from " .. simgrid.host.name(sender))
   local task = simgrid.task.recv(recv_alias)

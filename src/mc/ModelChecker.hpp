@@ -55,7 +55,7 @@ public:
 
   bool is_important_snapshot(Snapshot const& snapshot) const
   {
-    return &snapshot == mc_model_checker->parent_snapshot_;
+    return &snapshot == this->parent_snapshot_;
   }
 };
 

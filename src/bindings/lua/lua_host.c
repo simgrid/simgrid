@@ -30,7 +30,7 @@ msg_host_t sglua_check_host(lua_State * L, int index)
   lua_getfield(L, index, "__simgrid_host");
   pi = (msg_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
   if (pi == NULL)
-    luaL_typerror(L, index, HOST_MODULE_NAME);
+    XBT_ERROR("luaL_checkudata() returned NULL");
   ht = *pi;
   if (!ht)
     luaL_error(L, "null Host");
@@ -52,7 +52,7 @@ static int l_host_get_by_name(lua_State * L)
   XBT_DEBUG("Getting Host from name...");
   msg_host_t msg_host = MSG_host_by_name(name);
   if (!msg_host) {
-    luaL_error(L, "null Host : MSG_get_host_by_name failed");
+    XBT_ERROR("MSG_get_host_by_name failed, requested hostname: %s", name);
   }
   lua_newtable(L);              /* create a table, put the userdata on top of it */
   msg_host_t *lua_host = (msg_host_t *) lua_newuserdata(L, sizeof(msg_host_t));
@@ -90,7 +90,7 @@ static int l_host_get_name(lua_State * L)
 static int l_host_number(lua_State * L)
 {
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
-  lua_pushnumber(L, xbt_dynar_length(hosts));
+  lua_pushinteger(L, xbt_dynar_length(hosts));
   xbt_dynar_free(&hosts);
   return 1;
 }
@@ -169,7 +169,7 @@ static int l_host_get_property_value(lua_State * L)
  */
 static int l_host_sleep(lua_State *L)
 {
-  int time = luaL_checknumber(L, 1);
+  int time = luaL_checkinteger(L, 1);
   MSG_process_sleep(time);
   return 0;
 }
@@ -188,7 +188,7 @@ static int l_host_destroy(lua_State *L)
   return 0;
 }
 
-static const luaL_reg host_functions[] = {
+static const luaL_Reg host_functions[] = {
   {"get_by_name", l_host_get_by_name},
   {"name", l_host_get_name},
   {"number", l_host_number},
@@ -217,7 +217,7 @@ static int l_host_tostring(lua_State * L)
   return 1;
 }
 
-static const luaL_reg host_meta[] = {
+static const luaL_Reg host_meta[] = {
   {"__tostring", l_host_tostring},
   {0, 0}
 };
@@ -232,24 +232,30 @@ static const luaL_reg host_meta[] = {
 void sglua_register_host_functions(lua_State* L)
 {
   /* create a table simgrid.host and fill it with host functions */
-  luaL_openlib(L, HOST_MODULE_NAME, host_functions, 0);
-                                  /* simgrid.host */
+  lua_getglobal(L, "simgrid"); /* simgrid */
+  luaL_newlib(L, host_functions); /* simgrid simgrid.host */
+  lua_setfield(L, -2, "host"); /* simgrid */
+  lua_getfield(L, -1, "host");    /* simgrid simgrid.host */
 
   /* create the metatable for host, add it to the Lua registry */
-  luaL_newmetatable(L, HOST_MODULE_NAME);
-                                  /* simgrid.host mt */
+  luaL_newmetatable(L, HOST_MODULE_NAME); /* simgrid simgrid.host mt */
+
   /* fill the metatable */
-  luaL_openlib(L, NULL, host_meta, 0);
-                                  /* simgrid.host mt */
-  lua_pushvalue(L, -2);
-                                  /* simgrid.host mt simgrid.host */
+  luaL_setfuncs(L, host_meta, 0);         /* simgrid simgrid.host mt */
+
+  /**
+   * Copy the table and push it onto the stack.
+   * Required for the lua_setfield call below.
+   */
+  lua_getfield(L, -3, "host");                   /* simgrid simgrid.host mt simgrid.host */
+
   /* metatable.__index = simgrid.host
    * we put the host functions inside the host userdata itself:
    * this allows to write my_host:method(args) for
    * simgrid.host.method(my_host, args) */
-  lua_setfield(L, -2, "__index");
-                                  /* simgrid.host mt */
-  lua_pop(L, 2);
-                                  /* -- */
+  lua_setfield(L, -2, "__index");         /* simgrid simgrid.host mt */
+
+  lua_setmetatable(L, -2);                /* simgrid simgrid.host */
+  lua_pop(L, 2);                          /* -- */
 }
 

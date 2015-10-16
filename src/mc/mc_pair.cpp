@@ -31,9 +31,4 @@ void MC_pair_delete(mc_pair_t p)
   p = NULL;
 }
 
-void mc_pair_free_voidp(void *p)
-{
-  MC_pair_delete((mc_pair_t) * (void **) p);
-}
-
 }

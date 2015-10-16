@@ -15,6 +15,7 @@
 #include "surf/surfxml_parse.h"
 #include <lauxlib.h>
 
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
 static lua_State* sglua_maestro_state;
@@ -41,6 +42,7 @@ static int launch_application(lua_State* L) {
   MSG_launch_application(file);
   return 0;
 }
+
 
 /**
  * \brief Creates the platform.
@@ -82,6 +84,20 @@ static int info(lua_State* L) {
 
   const char* str = luaL_checkstring(L, 1);
   XBT_INFO("%s", str);
+  return 0;
+}
+
+static int error(lua_State* L) {
+
+  const char* str = luaL_checkstring(L, 1);
+  XBT_ERROR("%s", str);
+  return 0;
+}
+
+static int critical(lua_State* L) {
+
+  const char* str = luaL_checkstring(L, 1);
+  XBT_CRITICAL("%s", str);
   return 0;
 }
 
@@ -170,6 +186,8 @@ static const luaL_Reg simgrid_functions[] = {
   {"launch_application", launch_application},
   {"debug", debug},
   {"info", info},
+  {"critical", critical},
+  {"error", error},
   {"run", run},
   {"get_clock", get_clock},
   /* short names */
@@ -197,6 +215,7 @@ static const luaL_Reg simgrid_functions[] = {
  *
  * \param L the Lua state
  */
+
 int luaopen_simgrid(lua_State *L)
 {
   XBT_DEBUG("luaopen_simgrid *****");
@@ -232,10 +251,10 @@ int luaopen_simgrid(lua_State *L)
     argv[argc--] = NULL;
 
     /* Initialize the MSG core */
-    MSG_init(&argc, argv);
-    MSG_process_set_data_cleanup((void_f_pvoid_t) lua_close);
     XBT_DEBUG("Still %d arguments on command line", argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
   }
+  MSG_init(&argc, argv);
+  MSG_process_set_data_cleanup((void_f_pvoid_t) lua_close);
 
   /* Keep the context mechanism informed of our lua world today */
   sglua_maestro_state = L;
@@ -273,25 +292,19 @@ lua_State* sglua_get_maestro(void) {
 static void sglua_register_core_functions(lua_State *L)
 {
   /* register the core C functions to lua */
-  luaL_register(L, "simgrid", simgrid_functions);
-                                  /* simgrid */
+  luaL_newlib(L, simgrid_functions); /* simgrid */
+  lua_pushvalue(L, -1);              /* simgrid simgrid */
+  lua_setglobal(L, "simgrid");       /* simgrid */
 
   /* set a finalizer that cleans simgrid, by adding to the simgrid module a
    * dummy userdata whose __gc metamethod calls MSG_clean() */
-  lua_newuserdata(L, sizeof(void*));
-                                  /* simgrid udata */
-  lua_newtable(L);
-                                  /* simgrid udata mt */
-  lua_pushcfunction(L, simgrid_gc);
-                                  /* simgrid udata mt simgrid_gc */
-  lua_setfield(L, -2, "__gc");
-                                  /* simgrid udata mt */
-  lua_setmetatable(L, -2);
-                                  /* simgrid udata */
-  lua_setfield(L, -2, "__simgrid_loaded");
-                                  /* simgrid */
-  lua_pop(L, 1);
-                                  /* -- */
+  lua_newuserdata(L, sizeof(void*)); /* simgrid udata */
+  lua_newtable(L);                   /* simgrid udata mt */
+  lua_pushcfunction(L, simgrid_gc);  /* simgrid udata mt simgrid_gc */
+  lua_setfield(L, -2, "__gc");       /* simgrid udata mt */
+  lua_setmetatable(L, -2);           /* simgrid udata */
+  lua_setfield(L, -2, "__simgrid_loaded"); /* simgrid */
+  lua_pop(L, 1);                     /* -- */
 }
 
 /**
@@ -341,7 +354,7 @@ static int run_lua_code(int argc, char **argv)
   /* retrieve result */
   int res = 1;
   if (lua_isnumber(L, -1)) {
-    res = lua_tonumber(L, -1);
+    res = lua_tointeger(L, -1);
     lua_pop(L, 1);              /* pop returned value */
   }
 
