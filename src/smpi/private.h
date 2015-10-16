@@ -757,9 +757,9 @@ void TRACE_smpi_send_process_data_in(int rank);
 void TRACE_smpi_send_process_data_out(int rank);
 
 void TRACE_Loop_init(const char *loopid);
-void TRACE_Iteration_in(int rank, instr_extra_data extra);
-void TRACE_Iteration_out(int rank);
-void TRACE_migration_call(int rank, instr_extra_data extra);
+//void TRACE_Iteration_in(int rank, instr_extra_data extra);
+//void TRACE_Iteration_out(int rank);
+//void TRACE_migration_call(int rank, instr_extra_data extra);
 
 #endif
 

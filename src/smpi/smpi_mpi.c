@@ -1157,29 +1157,3 @@ MPI_Fint MPI_Errhandler_c2f(MPI_Errhandler errhandler){
   return PMPI_Errhandler_c2f(errhandler);
 }
 
-
-
-/*********** Experimental code to trace the duration of iterations **********/
-
-
-
-int MPI_Loop_init(const char *loopid)
-{ 
-  return PMPI_Loop_init(loopid);
-}
-
-int MPI_Iteration_in(MPI_Comm comm)
-{
-  return PMPI_Iteration_in(comm);
-}
-
-int MPI_Iteration_out(MPI_Comm comm)//implemented on instr_smpi.c
-{	
-  return PMPI_Iteration_out(comm);
-}
-
-void MPI_Migrate(void)
-{
-  PMPI_Migrate();
-}
-

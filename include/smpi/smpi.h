@@ -597,14 +597,6 @@ MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Op_c2f,(MPI_Op op));
 MPI_CALL(XBT_PUBLIC(MPI_Comm), MPI_Comm_f2c,(MPI_Fint comm));
 MPI_CALL(XBT_PUBLIC(MPI_Fint), MPI_Comm_c2f,(MPI_Comm comm));
 
-/***************** Calls to trace iteraction times ***************************/
-MPI_CALL(XBT_PUBLIC(int), MPI_Loop_init, (const char *loopid));
-MPI_CALL(XBT_PUBLIC(int), MPI_Iteration_in, (MPI_Comm comm));
-MPI_CALL(XBT_PUBLIC(int), MPI_Iteration_out, (MPI_Comm comm));
-/*****************************************************************************/
-MPI_CALL(XBT_PUBLIC(void), MPI_Migrate, (void));
-
-
 
 //FIXME: these are not yet implemented
 

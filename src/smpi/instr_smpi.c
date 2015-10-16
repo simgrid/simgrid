@@ -55,8 +55,6 @@ static const char *smpi_colors[] ={
     "accumulate",       "1 0.3 0",
     "fence",       "1 0 0.3",
     "migration",	"0.2 0.5 0.2",
-    "migrate",	"0 0.5 0",
-    "iteration", "0.5 0 0.5",
     NULL, NULL,
 };
 
@@ -568,79 +566,6 @@ void TRACE_smpi_process_change_host(int rank, smx_host_t host,
 
 }
 
-
-/*********** Experimental code to trace the duration of iterations **********/
-
-void TRACE_loop_init(const char *loop)
-{
-}
-
-void TRACE_Iteration_in(int rank, instr_extra_data extra)
-{
-  if (!TRACE_smpi_is_enabled()) {
-      cleanup_extra_data(extra);
-      return;
-  }
-  char *operation = "iteration";
-  char str[INSTR_DEFAULT_STR_SIZE];
-  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  container_t container = PJ_container_get (str);
-  type_t type = PJ_type_get ("MPI_STATE", container->type);
-  const char *color = instr_find_color (operation);
-  val_t value = PJ_value_get_or_new (operation, color, type);
-  if(extra != NULL){
-    new_pajePushStateWithExtra(SIMIX_get_clock(), container, type, value,
-      (void *)extra);
-  }else{
-    new_pajePushState(SIMIX_get_clock(), container, type, value);
-  }
-}
-
-void TRACE_Iteration_out(int rank)
-{
-  if (!TRACE_smpi_is_enabled()) return;
-
-  char str[INSTR_DEFAULT_STR_SIZE];
-  smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-  container_t container = PJ_container_get (str);
-  type_t type = PJ_type_get ("MPI_STATE", container->type);
-
-  new_pajePopState (SIMIX_get_clock(), container, type);
-}
-
-void TRACE_migration_call(int rank, instr_extra_data extra)
-{
-  if (!TRACE_smpi_is_enabled()) return;
-  
-    char str[INSTR_DEFAULT_STR_SIZE];
-    smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-    container_t container = PJ_container_get (str);
-    type_t type = PJ_type_get ("MPI_Migrate", container->type);
-  
-  if(smpi_process_get_replaying()){//When replaying, we register an event.
-    char str[INSTR_DEFAULT_STR_SIZE];
-    smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
-    container_t container = PJ_container_get (str);
-    type_t type = PJ_type_get ("MPI_Migrate", container->type);
-    val_t val = PJ_value_get ("migrate", type); 
-    new_pajeNewEvent (SIMIX_get_clock(), container, type, val);
-  }else{
-    // Ugly workaround!
-    // TI tracing uses states as events, and does not support printing events.
-    // So, we need a different code than for replay in order to be able to
-    // generate ti_traces for the migration calls.
-    if (!TRACE_smpi_is_enabled()) {
-      cleanup_extra_data(extra);
-      return;
-    }
-    char *operation = "migrate";
-    const char *color = instr_find_color (operation);
-    val_t value = PJ_value_get_or_new (operation, color, type);
-    new_pajePushStateWithExtra(SIMIX_get_clock(), container, type, value,
-	(void *)extra);
-    new_pajePopState(SIMIX_get_clock(), container, type);
-  }
-}
 
 #endif /* HAVE_TRACING */
 
