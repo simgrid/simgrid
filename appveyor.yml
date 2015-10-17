@@ -36,8 +36,8 @@ install:
 - if [%COMPILER%]==[MinGW-w64] appveyor DownloadFile "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z || appveyor DownloadFile "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z
 - if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ mw64.7z > NUL
 - if [%COMPILER%]==[MinGW-w64] appveyor DownloadFile "http://www.lua.org/ftp/lua-5.3.0.tar.gz" -FileName lua-5.3.0.tar.gz || appveyor DownloadFile "http://www.lua.org/ftp/lua-5.3.0.tar.gz" -FileName lua-5.3.0.tar.gz
-- if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ lua-5.3.0.tar.gz  > NUL
-- if [%COMPILER%]==[MinGW-w64] cd C:/lua-5.3.0 && make 
+- if [%COMPILER%]==[MinGW-w64] 7z x lua-5.3.0.tar.gz -tgzip | 7z x -si -ttar -olua-5.3.0
+- if [%COMPILER%]==[MinGW-w64] cd lua-5.3.0 && make mingw && make INSTALL_TOP=C:/mingw64
 - if [%COMPILER%]==[MSYS2]     set PATH=C:\msys64\bin,%PATH%
 
 build_script:
