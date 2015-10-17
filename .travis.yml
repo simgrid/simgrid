@@ -33,11 +33,11 @@ before_install:
    - curl http://www.lua.org/ftp/lua-5.3.0.tar.gz | tar xz
    - cd lua-5.3.0 
    -   if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then make linux ; else make macosx ; fi
-   -   make INSTALL_TOP=/opt install
+   -   make INSTALL_TOP=$TRAVIS_BUILD_DIR/LuaInstall install
    - cd ..
-   - ls -lR /opt
+   - ls -lR $TRAVIS_BUILD_DIR/LuaInstall
 script:
-   - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=ON -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . && make VERBOSE=1 && ctest --output-on-failure --timeout 100
+   - LUA_DIR=$TRAVIS_BUILD_DIR/LuaInstall cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=ON -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . && make VERBOSE=1 && ctest --output-on-failure --timeout 100
 branches:
   only:
      - master
