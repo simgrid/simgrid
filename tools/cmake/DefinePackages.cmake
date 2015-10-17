@@ -1222,7 +1222,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindLibSigc++.cmake
   tools/cmake/Modules/FindLibdw.cmake
   tools/cmake/Modules/FindLibunwind.cmake
-  tools/cmake/Modules/FindLua51Simgrid.cmake
+  tools/cmake/Modules/FindLuaSimgrid.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindRngStream.cmake
   tools/cmake/Modules/FindRubySimgrid.cmake
