@@ -37,7 +37,7 @@ before_install:
    - cd ..
    - ls -lR $TRAVIS_BUILD_DIR/LuaInstall
 script:
-   - LUA_DIR=$TRAVIS_BUILD_DIR/LuaInstall cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=ON -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . && make VERBOSE=1 && ctest --output-on-failure --timeout 100
+   - LUA_HINT=$TRAVIS_BUILD_DIR/LuaInstall cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=ON -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . && make VERBOSE=1 && ctest --output-on-failure --timeout 100
 branches:
   only:
      - master
