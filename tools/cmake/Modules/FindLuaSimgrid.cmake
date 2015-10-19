@@ -23,7 +23,12 @@ find_path(LUA_INCLUDE_DIR lua.h
 )
 
 find_library(LUA_LIBRARY
-  NAMES lua53 lua5.3 lua-5.3 lua
+  NAMES # I don't want a lua.a
+    lua53.so     lua5.3.so     lua-5.3.so
+    lua53.dynlib lua5.3.dynlib lua-5.3.dynlib
+    lua53.dll    lua5.3.dll    lua-5.3.dll
+    lua.so lua.dynlib lua.dll
+    lua53 lua5.3 lua-5.3 lua
   HINTS
     ENV LUA_HINT
   PATH_SUFFIXES lib
