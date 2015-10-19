@@ -267,8 +267,6 @@ include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
 include(CheckSymbolExists)
-include(TestBigEndian)
-TEST_BIG_ENDIAN(BIGENDIAN)
 
 include(FindGraphviz)
 include(FindLibSigc++)
