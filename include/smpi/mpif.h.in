@@ -114,6 +114,9 @@
       parameter(MPI_GROUP_NULL=-1)
       parameter(MPI_GROUP_EMPTY=-2)
 
+      integer MPI_WIN_NULL
+      parameter(MPI_WIN_NULL=-1)
+
       integer MPI_ERRORS_RETURN, MPI_ERRORS_ARE_FATAL
       integer MPI_ERRHANDLER_NULL
       parameter(MPI_ERRORS_RETURN=0)

@@ -89,7 +89,7 @@ int smpi_mpi_win_free( MPI_Win* win){
     MPI_Info_free(&(*win)->info);
   }
   xbt_free(*win);
-  win = MPI_WIN_NULL;
+  *win = MPI_WIN_NULL;
   return MPI_SUCCESS;
 }
 

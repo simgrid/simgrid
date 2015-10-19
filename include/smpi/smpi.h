@@ -178,7 +178,7 @@ SG_BEGIN_DECL()
 #define MPI_ROOT 0
 #define MPI_INFO_NULL NULL
 #define MPI_COMM_TYPE_SHARED    1
-#define MPI_WIN_NULL NULL
+#define MPI_WIN_NULL ((MPI_Win)NULL)
 
 #define MPI_VERSION 1
 #define MPI_SUBVERSION 1
