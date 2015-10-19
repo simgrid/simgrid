@@ -8,10 +8,6 @@
 add_library(simgrid SHARED ${simgrid_sources})
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 
-if(enable_lib_static)
-  add_library(simgrid_static STATIC ${simgrid_sources})
-endif()
-
 if(enable_ust)
   ADD_DEPENDENCIES(simgrid simgrid_ust)
 endif()
@@ -124,14 +120,6 @@ if(enable_smpi AND APPLE)
 endif()
 
 target_link_libraries(simgrid 	${SIMGRID_DEP})
-
-# Pass dependencies to static libs
-##################################
-if(enable_lib_static)
-  target_link_libraries(simgrid_static 	${SIMGRID_DEP})
-  add_dependencies(simgrid_static maintainer_files)
-  set_target_properties(simgrid_static PROPERTIES OUTPUT_NAME simgrid)
-endif()
 
 # Dependencies from maintainer mode
 ###################################

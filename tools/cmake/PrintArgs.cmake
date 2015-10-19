@@ -115,7 +115,6 @@ message("        Compile MPI testsuite .......: ${enable_smpi_MPICH3_testsuite}"
 message("        Compile Smpi f77 ............: ${SMPI_FORTRAN}")
 message("        Compile Smpi f90 ............: ${SMPI_FORTRAN}")
 message("        Compile Boost.Context support: ${HAVE_BOOST_CONTEXT}")
-message("        Compile Static ..............: ${enable_lib_static}")
 message("")
 message("        Maintainer mode .............: ${enable_maintainer_mode}")
 message("        Documentation................: ${enable_documentation}")

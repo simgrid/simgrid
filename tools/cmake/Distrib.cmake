@@ -52,11 +52,6 @@ add_custom_target(simgrid_update_xml ALL
 install(TARGETS simgrid
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 
-if(enable_lib_static AND NOT WIN32)
-  install(TARGETS simgrid_static
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
-endif()
-
 if(enable_java)
   set(SIMGRID_JAR_TO_INSTALL "${SIMGRID_JAR}")
   install(TARGETS simgrid-java

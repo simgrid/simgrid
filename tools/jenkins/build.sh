@@ -103,7 +103,7 @@ cmake -G"$GENERATOR"\
   -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
-  -Denable_compile_warnings=ON -Denable_smpi=ON -Denable_lib_static=OFF \
+  -Denable_compile_warnings=ON -Denable_smpi=ON \
   -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF \
   -Denable_tracing=ON -Denable_java=ON
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1

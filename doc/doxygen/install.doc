@@ -201,10 +201,6 @@ accepts several options, as listed below.
       ensure the code quality, but as a user, that option will only
       bring you issues.
 
-  @li <b>enable_lib_static</b> (ON/OFF): enable this if you want to
-      compile the static library (but you should consider enjoying
-      this new century instead).
-
   @li <b>enable_maintainer_mode</b> (ON/OFF): you only need to set
       this option if you modify very specific parts of SimGrid itself
       (the XML parsers and other related elements). Adds an extra
