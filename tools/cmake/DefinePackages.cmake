@@ -1207,7 +1207,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Tests.cmake
   tools/cmake/CTestConfig.cmake
   tools/cmake/CTestCustom.cmake
-  tools/cmake/CompleteInFiles.cmake
   tools/cmake/DefinePackages.cmake
   tools/cmake/Distrib.cmake
   tools/cmake/GCCFlags.cmake
