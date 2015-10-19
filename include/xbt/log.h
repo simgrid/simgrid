@@ -455,7 +455,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
 
 /** @ingroup XBT_log
  *  @hideinitializer
- * \param c the category on which to log
+ * \param categ the category on which to log
  * \param ... the format string and its arguments
  *  @brief Log an event at the DEBUG priority on the specified category with these args.
  */
