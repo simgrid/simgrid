@@ -164,20 +164,25 @@ int MSG_vm_is_restoring(msg_vm_t vm)
 
 /** @brief Create a new VM with specified parameters.
  *  @ingroup msg_VMs*
- *  All parameters are in MBytes
+ *  @param pm        Physical machine that will host the VM
+ *  @param net_cap   Maximal bandwidth that the VM can consume (in MByte/s)
+ *  @param disk_path (unused) Path to the image that boots
+ *  @param disksize  (unused) will represent the size of the VM (will be used during migrations)
+ *  @param mig_netspeed Amount of Mbyte/s allocated to the migration (cannot be larger than net_cap). Use 0 if unsure.
+ *  @param dp_intensity Dirty page percentage according to migNetSpeed, [0-100]. Use 0 if unsure.
  *
  */
-msg_vm_t MSG_vm_create(msg_host_t ind_pm, const char *name,
+msg_vm_t MSG_vm_create(msg_host_t pm, const char *name,
                        int ncpus, int ramsize,
                        int net_cap, char *disk_path, int disksize,
                        int mig_netspeed, int dp_intensity)
 {
   /* For the moment, intensity_rate is the percentage against the migration
    * bandwidth */
-  double host_speed = MSG_get_host_speed(ind_pm);
+  double host_speed = MSG_get_host_speed(pm);
   double update_speed = ((double)dp_intensity/100) * mig_netspeed;
 
-  msg_vm_t vm = MSG_vm_create_core(ind_pm, name);
+  msg_vm_t vm = MSG_vm_create_core(pm, name);
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
   params.ramsize = (sg_size_t)ramsize * 1024 * 1024;
