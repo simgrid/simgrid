@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 # Java requires 2.8.6
-message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
+message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}$")
 
 project(SimGrid C CXX)
 
@@ -156,6 +156,7 @@ endif()
 ### Set some variables for Cmake
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
+### Compute the include paths
 set(INCLUDES
   ${CMAKE_HOME_DIRECTORY}
   ${CMAKE_HOME_DIRECTORY}/include
@@ -197,12 +198,6 @@ if(WIN32)
     string(REGEX MATCH "^[0-9]" COMPILER_C_MAJOR_VERSION "${COMPILER_C_VERSION}")
     string(REGEX MATCH "^[0-9].[0-9]" COMPILER_C_MINOR_VERSION "${COMPILER_C_VERSION}")
     string(REGEX REPLACE "^${COMPILER_C_MAJOR_VERSION}." "" COMPILER_C_MINOR_VERSION "${COMPILER_C_MINOR_VERSION}")
-    if(COMPILER_C_MAJOR_VERSION)
-      # set(__GNUC__ ${COMPILER_C_MAJOR_VERSION})
-    endif()
-    if(COMPILER_C_MINOR_VERSION)
-      # set(__GNUC_MINOR__ ${COMPILER_C_MINOR_VERSION})
-    endif()
   endif()
 
   set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITEW6432})
@@ -238,10 +233,6 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules
   )
 
-# x86_64
-# x86
-# i.86
-
 ### Determine the assembly flavor that we need today
 include(CMakeDetermineSystem)
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
@@ -257,41 +248,6 @@ IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
   else()
     set(HAVE_RAWCTX 1)
   endif()
-
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^alpha")
-  message(STATUS "System processor: alpha")
-
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^arm")
-  # Subdir is "arm" for both big-endian (arm) and little-endian (armel).
-  message(STATUS "System processor: arm")
-
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^mips")
-  # mips* machines are bi-endian mostly so processor does not tell
-  # endianess of the underlying system.
-  message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}" "mips" "mipsel" "mipseb")
-
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc|ppc)64")
-  message(STATUS "System processor: ppc64")
-
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(powerpc|ppc)")
-  message(STATUS "System processor: ppc")
-
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^sparc")
-  # Both flavours can run on the same processor
-  message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}" "sparc" "sparcv9")
-
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^(parisc|hppa)")
-  message(STATUS "System processor: parisc" "parisc64")
-
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^s390")
-  # s390 binaries can run on s390x machines
-  message(STATUS "System processor: ${CMAKE_SYSTEM_PROCESSOR}" "s390" "s390x")
-
-ELSEIF(CMAKE_SYSTEM_PROCESSOR MATCHES "^sh")
-  message(STATUS "System processor: sh")
-
-ELSE() #PROCESSOR NOT FOUND
-  message(STATUS "PROCESSOR NOT FOUND: ${CMAKE_SYSTEM_PROCESSOR}")
 
 ENDIF()
 
@@ -429,6 +385,8 @@ if(MINGW)
   # The detection of asprintf fails on MinGW, assumingly because it's
   # defined as an inline function in stdio.h instead of a regular
   # function. So force the result to be 1 despite of the test.
+  set(HAVE_SNPRINTF 1)
+  set(HAVE_VSNPRINTF 1)
   set(HAVE_ASPRINTF 1)
   set(HAVE_VASPRINTF 1)
 endif()
@@ -471,15 +429,13 @@ endif()
 if(WIN32) # Those files are not detected despite being present
   set(HAVE_UCONTEXT_H 1)
   set(HAVE_MAKECONTEXT 1)
-  set(HAVE_SNPRINTF 1)
-  set(HAVE_VSNPRINTF 1)
 endif()
 
 set(CONTEXT_UCONTEXT 0)
-SET(CONTEXT_THREADS 0)
+set(CONTEXT_THREADS 0)
 
 if(enable_jedule)
-  SET(HAVE_JEDULE 1)
+  set(HAVE_JEDULE 1)
 endif()
 
 if(enable_latency_bound_tracking)

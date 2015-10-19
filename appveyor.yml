@@ -8,21 +8,18 @@ clone_depth: 1
 
 # scripts that are called at very beginning, before repo cloning
 init:
-- cmake --version
 - git config --global core.longpaths true
 - git config --global core.autocrlf input
 
 environment:
   global:
-    #  BOOST_ROOT: c:\Libraries\boost_1_59_0 # Mandatory for MSVC15 right now, but not good on the long term
-    #  BOOST_LIBRARYDIR: c:\Libraries\boost_1_59_0\stage\lib
     BOOST_ROOT: c:\Libraries\boost
     BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
     TESH_ARGS: C:/projects/simgrid/bin/tesh --setenv srcdir=C:/projects/simgrid/examples/java --setenv classpath=C:/projects/simgrid/examples/java;C:/projects/simgrid/teshsuite/java;C:/projects/simgrid/simgrid.jar --cd C:/projects/simgrid/examples/java
   matrix:
     - COMPILER: MinGW-w64
 
-# MSCV15 is too hard for me: I fail to get the lib to link on that platf.
+# MSCV15 is too hard for me: I fail to get the lib to link on that platf (even with c:\Libraries\boost_1_59_0)
 #    - COMPILER: MSVC15
 #      PLATFORM: Win32 # That's actually an appveyor parameter of MSVC15, it's useless with MinGW-w64
 #    - COMPILER: MSVC15
