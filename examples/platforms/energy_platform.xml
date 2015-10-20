@@ -14,9 +14,15 @@
         <prop id="watt_per_state" value="95.0:200.0, 93.0:170.0, 90.0:150.0" />
         <prop id="watt_off" value="10" />
   </host>
+  <host id="MyHost3" power="100.0Mf,50.0Mf,20.0Mf" pstate="0" >
+        <prop id="watt_per_state" value="95.0:200.0, 93.0:170.0, 90.0:150.0" />
+        <prop id="watt_off" value="10" />
+  </host>
 
-  <link id="link1" bandwidth="100kBps" latency="0"/>
-  <route src="MyHost1" dst="MyHost2"><link_ctn id="link1"/></route>
+  <link id="bus" bandwidth="100kBps" latency="0"/>
+  <route src="MyHost1" dst="MyHost2"><link_ctn id="bus"/></route>
+  <route src="MyHost1" dst="MyHost3"><link_ctn id="bus"/></route>
+  <route src="MyHost2" dst="MyHost3"><link_ctn id="bus"/></route>
   
 </AS>
 </platform>
