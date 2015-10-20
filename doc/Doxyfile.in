@@ -647,8 +647,7 @@ INPUT                  = doxygen/index.doc \
                          doxygen/getting_started_index.doc \
                          doxygen/introduction.doc \
                          doxygen/install.doc \
-                         doxygen/examples.doc \   
-                         doxygen/understanding_simgrid.doc \   
+                         doxygen/examples.doc \
                            doxygen/platform.doc \
                            doxygen/deployment.doc \
                            doxygen/options.doc \
