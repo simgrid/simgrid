@@ -94,13 +94,19 @@ static void energyCpuDestructedCallback(Cpu *cpu){
   else
 	  update_consumption_running(cpu, cpu_energy);
 
-  XBT_INFO("Total energy of host %s: %f Joules", cpu->getName(), cpu_energy->getConsumedEnergy());
-  delete cpu_energy_it->second;
-  surf_energy->erase(cpu_energy_it);
+  // Adrien - October 2015, Changes related to VM energy extensions
+  // Only report/delete and erase if the cpu_energy is related to a physical one
+  if(cpu->isVirtual() == NULL){
+    XBT_INFO("Total energy of host %s: %f Joules", cpu->getName(), cpu_energy->getConsumedEnergy());
+    delete cpu_energy_it->second;
+    surf_energy->erase(cpu_energy_it);
+  }
+
 }
 
 static void energyCpuActionStateChangedCallback(CpuAction *action, e_surf_action_state_t old, e_surf_action_state_t cur){
   Cpu *cpu  = getActionCpu(action);
+
   CpuEnergy *cpu_energy = (*surf_energy)[cpu];
 
   if(cpu_energy->last_updated < surf_get_clock()) {
@@ -212,7 +218,8 @@ double CpuEnergy::getCurrentWattsValue(double cpu_load)
 
 double CpuEnergy::getConsumedEnergy()
 {
-	if(last_updated < surf_get_clock()) {
+	
+   if(last_updated < surf_get_clock()) {
 		if (cpu->getState() == SURF_RESOURCE_OFF)
 			update_consumption_off(cpu, this);
 		else
