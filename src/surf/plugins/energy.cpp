@@ -56,13 +56,22 @@ static void energyCpuCreatedCallback(Cpu *cpu){
   (*surf_energy)[cpu] = new CpuEnergy(cpu);
 }
 
-static void update_consumption_running(Cpu *cpu, CpuEnergy *cpu_energy) {
+
+/* Computes the consumption so far.  Called lazily on need. */
+static void update_consumption(Cpu *cpu, CpuEnergy *cpu_energy) {
 	double cpu_load = lmm_constraint_get_usage(cpu->getConstraint()) / cpu->m_powerPeak;
 	double start_time = cpu_energy->last_updated;
 	double finish_time = surf_get_clock();
 
 	double previous_energy = cpu_energy->total_energy;
-	double energy_this_step = cpu_energy->getCurrentWattsValue(cpu_load)*(finish_time-start_time);
+
+	double instantaneous_consumption;
+	if (cpu->getState() == SURF_RESOURCE_OFF)
+		instantaneous_consumption = cpu_energy->watts_off;
+	else
+		instantaneous_consumption = cpu_energy->getCurrentWattsValue(cpu_load);
+
+	double energy_this_step = instantaneous_consumption*(finish_time-start_time);
 
 	cpu_energy->total_energy = previous_energy + energy_this_step;
 	cpu_energy->last_updated = finish_time;
@@ -70,29 +79,13 @@ static void update_consumption_running(Cpu *cpu, CpuEnergy *cpu_energy) {
 	XBT_DEBUG("[cpu_update_energy] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
   		  start_time, finish_time, cpu->m_powerPeak, previous_energy, energy_this_step);
 }
-static void update_consumption_off(Cpu *cpu, CpuEnergy *cpu_energy) {
-	double start_time = cpu_energy->last_updated;
-	double finish_time = surf_get_clock();
-
-	double previous_energy = cpu_energy->total_energy;
-	double energy_this_step = cpu_energy->watts_off*(finish_time-start_time);
-
-	cpu_energy->total_energy = previous_energy + energy_this_step;
-	cpu_energy->last_updated = finish_time;
-
-	XBT_DEBUG("[cpu_update_energy] off period=[%.2f-%.2f]; consumption change: %.2f J -> %.2f J",
-  		  start_time, finish_time, previous_energy, energy_this_step);
-}
 
 static void energyCpuDestructedCallback(Cpu *cpu){
   std::map<Cpu*, CpuEnergy*>::iterator cpu_energy_it = surf_energy->find(cpu);
   xbt_assert(cpu_energy_it != surf_energy->end(), "The cpu is not in surf_energy.");
 
   CpuEnergy *cpu_energy = cpu_energy_it->second;
-  if (cpu->getState() == SURF_RESOURCE_OFF)
-	  update_consumption_off(cpu, cpu_energy);
-  else
-	  update_consumption_running(cpu, cpu_energy);
+  update_consumption(cpu, cpu_energy);
 
   // Adrien - October 2015, Changes related to VM energy extensions
   // Only report/delete and erase if the cpu_energy is related to a physical one
@@ -109,20 +102,15 @@ static void energyCpuActionStateChangedCallback(CpuAction *action, e_surf_action
 
   CpuEnergy *cpu_energy = (*surf_energy)[cpu];
 
-  if(cpu_energy->last_updated < surf_get_clock()) {
-	  update_consumption_running(cpu, cpu_energy);
-  }
+  if(cpu_energy->last_updated < surf_get_clock())
+	  update_consumption(cpu, cpu_energy);
 }
 
 static void energyStateChangedCallback(Cpu *cpu, e_surf_resource_state_t oldState, e_surf_resource_state_t newState){
   CpuEnergy *cpu_energy = (*surf_energy)[cpu];
 
-  if(cpu_energy->last_updated < surf_get_clock()) {
-	  if (oldState == SURF_RESOURCE_OFF)
-		  update_consumption_off(cpu, cpu_energy);
-	  else
-		  update_consumption_running(cpu, cpu_energy);
-  }
+  if(cpu_energy->last_updated < surf_get_clock())
+	  update_consumption(cpu, cpu_energy);
 }
 
 static void sg_energy_plugin_exit()
@@ -218,14 +206,11 @@ double CpuEnergy::getCurrentWattsValue(double cpu_load)
 
 double CpuEnergy::getConsumedEnergy()
 {
-	
-   if(last_updated < surf_get_clock()) {
-		if (cpu->getState() == SURF_RESOURCE_OFF)
-			update_consumption_off(cpu, this);
-		else
-			update_consumption_running(cpu, this);
-	}
-  return total_energy;
+
+	if(last_updated < surf_get_clock())
+		update_consumption(cpu, this);
+	return total_energy;
+
 }
 
 xbt_dynar_t CpuEnergy::getWattsRangeList()

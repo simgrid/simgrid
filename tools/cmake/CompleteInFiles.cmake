@@ -96,7 +96,7 @@ if(enable_scala)
   set(HAVE_Scala 1)
 endif()
 if(enable_lua)
-  include(FindLua51Simgrid)
+  include(FindLuaSimgrid)
 endif()
 
 set(HAVE_NS3 0)
