@@ -20,12 +20,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 static msg_host_t host1 = NULL;
 static msg_host_t host2 = NULL;
 static msg_vm_t vm1 = NULL;
-static double start;
 
 int dvfs(int argc, char *argv[]);
-int shutdown_vm(void *ignored1, void *ignored2);
 
-int worker_func() {
+static int worker_func() {
 	//MSG_process_on_exit(shutdown_vm, NULL);
 
 	msg_task_t task1 = MSG_task_create("t1", 300E6, 0, NULL);
@@ -35,27 +33,10 @@ int worker_func() {
 	return 0;
 }
 
-/*
-int shutdown_vm(void *ignored1, void *ignored2) {
-  start = MSG_get_clock();
-  XBT_INFO("Shutting down the VM");
-	MSG_vm_shutdown(vm1);
-
-
-  XBT_INFO("VM is now down (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
-		  MSG_get_clock()-start,
-		  MSG_host_get_current_power_peak(host), MSG_host_get_consumed_energy(host));
-
-	return 0;
-}
-*/
-
 int dvfs(int argc, char *argv[])
 {
   host1 = MSG_host_by_name("MyHost1");
   host2 = MSG_host_by_name("MyHost2");
-
-  double start = MSG_get_clock();
 
   /* Host 1 */
   XBT_INFO("Creating and starting a VM");
@@ -64,7 +45,7 @@ int dvfs(int argc, char *argv[])
                       4, /* number of cpus */
                       2048, /* ram size */
                       100, /* net cap */
-                      "", /* disk path */
+                      NULL, /* disk path */
                       1024 * 20, /* disk size */
                       10, /* mig netspeed */
                       50 /* dp intensity */
@@ -72,14 +53,14 @@ int dvfs(int argc, char *argv[])
 
   // on Host1 create two tasks, one inside a VM  the other one  directly on the host 
 	MSG_vm_start(vm1);
-  msg_process_t p11 = MSG_process_create("p11", worker_func, NULL, vm1); 
-  msg_process_t p12 = MSG_process_create("p12", worker_func, NULL, host1);
+  MSG_process_create("p11", worker_func, NULL, vm1);
+  MSG_process_create("p12", worker_func, NULL, host1);
   //XBT_INFO("Task on Host started");
 
 
-  // on Host2, create two tasks directlu on the host: Energy of host 1 and host 2 should be the same. 
-  msg_process_t p21 = MSG_process_create("p21", worker_func, NULL, host2);
-  msg_process_t p22 = MSG_process_create("p22", worker_func, NULL, host2);
+  // on Host2, create two tasks directly on the host: Energy of host 1 and host 2 should be the same.
+  MSG_process_create("p21", worker_func, NULL, host2);
+  MSG_process_create("p22", worker_func, NULL, host2);
 
   /* Wait and see */
 	MSG_process_sleep(5);
