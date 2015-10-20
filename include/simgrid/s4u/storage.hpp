@@ -8,12 +8,13 @@
 #define INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 
 #include <boost/unordered_map.hpp>
+#include "xbt/base.h"
 #include "simgrid/simix.h"
 
 namespace simgrid {
 namespace s4u {
 
-class Storage {
+XBT_PUBLIC_CLASS Storage {
 private:
 	Storage(std::string name, smx_storage_t inferior);
 	virtual ~Storage();

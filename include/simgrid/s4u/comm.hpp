@@ -7,8 +7,9 @@
 #ifndef SIMGRID_S4U_COMM_HPP
 #define SIMGRID_S4U_COMM_HPP
 
-#include "simgrid/s4u/async.hpp"
-#include "simgrid/s4u/mailbox.hpp"
+#include <xbt/base.h>
+#include <simgrid/s4u/async.hpp>
+#include <simgrid/s4u/mailbox.hpp>
 
 namespace simgrid {
 namespace s4u {
@@ -19,7 +20,7 @@ class Mailbox;
  *
  * Represents all asynchronous communications, that you can test or wait onto.
  */
-class Comm : public Async {
+XBT_PUBLIC_CLASS Comm : public Async {
 	Comm() : Async() {}
 public:
 	virtual ~Comm();

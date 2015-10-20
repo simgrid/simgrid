@@ -8,6 +8,7 @@
 #define SIMGRID_S4U_ASYNC_HPP
 
 #include <stdlib.h>
+#include <xbt/base.h>
 #include <xbt/misc.h>
 
 SG_BEGIN_DECL();
@@ -27,7 +28,7 @@ class Comm;
  *
  * This class is the ancestor of every asynchronous actions, that is, of actions that do take time in the simulated world.
  */
-class Async {
+XBT_PUBLIC_CLASS Async {
 	friend Comm;
 protected:
 	Async();

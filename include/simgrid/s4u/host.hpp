@@ -9,6 +9,7 @@
 #include <boost/unordered_map.hpp>
 #include <vector>
 
+#include "xbt/base.h"
 #include "simgrid/simix.h"
 
 namespace simgrid {
@@ -29,7 +30,7 @@ class File;
  * You can retrieve a particular host using @link{simgrid::s4u::Host.byName()},
  * and actors can retrieve the host on which they run using @link{simgrid::s4u::Host.current()}.
  */
-class Host {
+XBT_PUBLIC_CLASS Host {
 	friend Actor;
 	friend File;
 private:

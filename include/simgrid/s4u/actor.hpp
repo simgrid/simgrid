@@ -6,7 +6,8 @@
 #ifndef SIMGRID_S4U_ACTOR_HPP
 #define SIMGRID_S4U_ACTOR_HPP
 
-#include "simgrid/simix.h"
+#include <xbt/base.h>
+#include <simgrid/simix.h>
 
 namespace simgrid {
 namespace s4u {
@@ -39,7 +40,7 @@ class Mailbox;
  * \endverbatim
  *
  */
-class Actor {
+XBT_PUBLIC_CLASS Actor {
 	friend Comm;
 	Actor(smx_process_t smx_proc);
 public:

@@ -6,13 +6,15 @@
 #ifndef SIMGRID_S4U_ENGINE_HPP
 #define SIMGRID_S4U_ENGINE_HPP
 
+#include <xbt/base.h>
+
 namespace simgrid {
 namespace s4u {
 /** @brief Simulation engine
  *
  * This class is an interface to the simulation engine.
  */
-class Engine {
+XBT_PUBLIC_CLASS Engine {
 public:
 	/** Constructor, taking the command line parameters of your main function */
 	Engine(int *argc, char **argv);

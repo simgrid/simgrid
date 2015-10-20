@@ -8,7 +8,8 @@
 
 #include <boost/unordered_map.hpp>
 
-#include "actor.hpp"
+#include <xbt/base.h>
+#include <simgrid/s4u/actor.hpp>
 
 namespace simgrid {
 namespace s4u {
@@ -22,7 +23,7 @@ class Comm;
  * You can access any mailbox without any latency. The network delay are only related to the location of the
  * sender and receiver.
  */
-class Mailbox {
+XBT_PUBLIC_CLASS Mailbox {
 	friend Comm;
 
 private:

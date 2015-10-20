@@ -9,7 +9,8 @@
 #include <boost/unordered_map.hpp>
 #include <vector>
 
-#include "simgrid/simix.h"
+#include <xbt/base.h>
+#include <simgrid/simix.h>
 
 namespace simgrid {
 namespace s4u {
@@ -24,7 +25,7 @@ class Storage;
  * They are located on @link{simgrid::s4u::Storage}, that are accessed from a given @link{simgrid::s4u::Host} through mountpoints.
  * For now, you cannot change the mountpoints programatically, and must declare them from your platform file.
  */
-class File {
+XBT_PUBLIC_CLASS File {
 public:
 	File(const char *fullpath, void* userdata);
 	~File();
