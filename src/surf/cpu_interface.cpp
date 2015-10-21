@@ -230,6 +230,8 @@ void Cpu::setState(e_surf_resource_state_t state)
 
 void Cpu::setVirtual(Cpu *physCpu)
 {
+  if (!surf_energy)
+	  return;
   this->physCpu = physCpu;
   XBT_DEBUG("The CPU is virtual so associate the cpu energy to the physical cpu instead of creating a new one");
   std::map<Cpu*, CpuEnergy*>::iterator cpu_energy_it = surf_energy->find(physCpu);
