@@ -1,24 +1,31 @@
 p Test smpi bindings for dvfs functions (Fortran 77 example)
-! output sort 1
+
 $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platform ${srcdir:=.}/../../platforms/energy_platform.xml --cfg=smpi/cpu_threshold:-1 ${bindir:=.}/f77/sef --cfg=plugin:Energy --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'Energy'
-> [80.000000] [surf_energy/INFO] Total energy of host MyHost1: 12900.000000 Joules
-> [80.000000] [surf_energy/INFO] Total energy of host MyHost2: 9000.000000 Joules
 >  [   0.0000000000000000      ] [rank            0 ]           3  pstates available
->  [   0.0000000000000000      ] [rank            1 ]           1  pstates available
+>  [   0.0000000000000000      ] [rank            1 ]           3  pstates available
 >  [   0.0000000000000000      ] [rank            0 ] Power:    100000000.00000000     
 >  [   0.0000000000000000      ] [rank            1 ] Power:    100000000.00000000     
 >  [   0.0000000000000000      ] [rank            0 ] Power:    50000000.000000000     
+>  [   0.0000000000000000      ] [rank            1 ] Power:    50000000.000000000     
 >  [   0.0000000000000000      ] [rank            0 ] Power:    20000000.000000000     
->  [   0.0000000000000000      ] [rank            1 ] Current pstate:            0 ; Current power:    100000000.00000000     
+>  [   0.0000000000000000      ] [rank            1 ] Power:    20000000.000000000     
 >  [   0.0000000000000000      ] [rank            0 ] Current pstate:            0 ; Current power:    100000000.00000000     
->  [   10.000000000000000      ] [rank            1 ] Energy consumed (Joules):    2000.0000000000000     
+>  [   0.0000000000000000      ] [rank            1 ] Current pstate:            0 ; Current power:    100000000.00000000     
 >  [   10.000000000000000      ] [rank            0 ] Energy consumed (Joules):    2000.0000000000000     
+>  [   10.000000000000000      ] [rank            1 ] Energy consumed (Joules):    2000.0000000000000     
 >  [   10.000000000000000      ] [rank            0 ] Current pstate:            1 ; Current power:    50000000.000000000     
+>  [   10.000000000000000      ] [rank            1 ] Current pstate:            1 ; Current power:    50000000.000000000     
 >  [   30.000000000000000      ] [rank            0 ] Energy consumed (Joules):    5400.0000000000000     
+>  [   30.000000000000000      ] [rank            1 ] Energy consumed (Joules):    5400.0000000000000     
 >  [   30.000000000000000      ] [rank            0 ] Current pstate:            2 ; Current power:    20000000.000000000     
+>  [   30.000000000000000      ] [rank            1 ] Current pstate:            2 ; Current power:    20000000.000000000     
 >  [   80.000000000000000      ] [rank            0 ] Energy consumed (Joules):    12900.000000000000     
+>  [   80.000000000000000      ] [rank            1 ] Energy consumed (Joules):    12900.000000000000     
+> [80.000000] [surf_energy/INFO] Total energy of host MyHost1: 12900.000000 Joules
+> [80.000000] [surf_energy/INFO] Total energy of host MyHost2: 12900.000000 Joules
+> [80.000000] [surf_energy/INFO] Total energy of host MyHost3: 8000.000000 Joules

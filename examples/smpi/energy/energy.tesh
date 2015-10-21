@@ -5,15 +5,20 @@ $ ../../../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile  -platf
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'Energy'
-> [0.000000] [rank 1] Pstates: 1; Powers: 100000000
 > [0.000000] [rank 0] Pstates: 3; Powers: 100000000, 50000000, 20000000
-> [0.000000] [rank 1] Current pstate: 0; Current power: 100000000
+> [0.000000] [rank 1] Pstates: 3; Powers: 100000000, 50000000, 20000000
 > [0.000000] [rank 0] Current pstate: 0; Current power: 100000000
-> [10.000000] [rank 1] Energy consumed: 2000 Joules.
+> [0.000000] [rank 1] Current pstate: 0; Current power: 100000000
 > [10.000000] [rank 0] Energy consumed: 2000 Joules.
+> [10.000000] [rank 1] Energy consumed: 2000 Joules.
 > [10.000000] [rank 0] Current pstate: 1; Current power: 50000000
+> [10.000000] [rank 1] Current pstate: 1; Current power: 50000000
 > [30.000000] [rank 0] Energy consumed: 5400 Joules.
+> [30.000000] [rank 1] Energy consumed: 5400 Joules.
 > [30.000000] [rank 0] Current pstate: 2; Current power: 20000000
+> [30.000000] [rank 1] Current pstate: 2; Current power: 20000000
 > [80.000000] [rank 0] Energy consumed: 12900 Joules.
+> [80.000000] [rank 1] Energy consumed: 12900 Joules.
 > [80.000000] [surf_energy/INFO] Total energy of host MyHost1: 12900.000000 Joules
-> [80.000000] [surf_energy/INFO] Total energy of host MyHost2: 9000.000000 Joules
+> [80.000000] [surf_energy/INFO] Total energy of host MyHost2: 12900.000000 Joules
+> [80.000000] [surf_energy/INFO] Total energy of host MyHost3: 8000.000000 Joules
