@@ -360,9 +360,6 @@ add_custom_target(maintainer-clean
   )
 
 if(WIN32)
-  find_program(NSIS_PROGRAM NAMES makensi)
-  message(STATUS "nsis: ${NSIS_PROGRAM}")
-
   if(NSIS_PROGRAM)
     ADD_CUSTOM_TARGET(nsis
       COMMENT "Generating the SimGrid installer for Windows..."

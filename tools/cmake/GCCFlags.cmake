@@ -54,7 +54,7 @@ if(enable_lto) # User wants LTO. Try if we can do that
       AND CMAKE_COMPILER_IS_GNUCC
       AND (NOT enable_model-checking))
     if(WIN32)
-      if (COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
+      if (CMAKE_C_COMPILER_VERSION VERSION_GREATER "4.8")
         # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
         #
         # We are experiencing assertion failures even with 4.8 on MinGW.
@@ -89,7 +89,7 @@ if(enable_lto) # User wants LTO, and it seems usable. Go for it
   # these objects you have to use the gcc wrappers:
   # gcc-ar, gcc-nm and gcc-ranlib."
   if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU"
-      AND COMPILER_C_VERSION_MAJOR_MINOR STRGREATER "4.8")
+      AND CMAKE_C_COMPILER_VERSION VERSION_GREATER "4.8")
     set (CMAKE_AR gcc-ar)
     set (CMAKE_RANLIB gcc-ranlib)
   endif()

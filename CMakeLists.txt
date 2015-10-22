@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.6)
-# Java requires 2.8.6
-message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}$")
+cmake_minimum_required(VERSION 2.6) # Java requires 2.8.6
+message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
 
 project(SimGrid C CXX)
 
@@ -30,8 +30,8 @@ else() # gcc or clang
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 
-  if (CMAKE_COMPILER_IS_GNUCC)
-    if (COMPILER_CXX_VERSION_MAJOR_MINOR STRLESS "4.7")
+  if (CMAKE_COMPILER_IS_GNUCC)    
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
       message(FATAL_ERROR
               "SimGrid needs at least g++ version 4.7 to compile "
   	      "(c++11 support of previous versions is too limited).")
@@ -60,7 +60,7 @@ else() # gcc or clang
             "Please use a decent C compiler "
             "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
   endif()
-  if(APPLE AND ("4.6" GREATER COMPILER_C_VERSION_MAJOR_MINOR))
+  if(APPLE AND (CMAKE_C_COMPILER_VERSION VERSION_LESS "4.6"))
       ### gcc 4.[1-5] cannot compile ucontext on OSX
       message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
       set(HAVE_UCONTEXT_H 0)
@@ -132,16 +132,6 @@ else()
   endif()
 endif()
 
-if(${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
-  exec_program("${CMAKE_C_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_C_VERSION")
-  exec_program("${CMAKE_CXX_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_CXX_VERSION")
-  string(REGEX MATCH "[0-9].[0-9].[0-9]" COMPILER_C_VERSION "${COMPILER_C_VERSION}")
-  string(REGEX MATCH "[0-9].[0-9].[0-9]" COMPILER_CXX_VERSION "${COMPILER_CXX_VERSION}")
-
-  string(REGEX MATCH "^[0-9].[0-9]" COMPILER_C_VERSION_MAJOR_MINOR "${COMPILER_C_VERSION}")
-  string(REPLACE "${COMPILER_C_VERSION_MAJOR_MINOR}." "" COMPILER_C_VERSION_PATCH "${COMPILER_C_VERSION}")  
-endif()
-
 exec_program("${CMAKE_LINKER} --version" OUTPUT_VARIABLE "LINKER_VERSION")
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
@@ -194,16 +184,9 @@ if(WIN32)
   string(REGEX REPLACE "/bin/gcc.*" "/include"  CMAKE_INCLUDE_WIN "${CMAKE_INCLUDE_WIN}")
   string(REGEX REPLACE "/bin/gcc.*" "/lib"  CMAKE_LIB_WIN "${CMAKE_LIB_WIN}")
   set(INCLUDES ${INCLUDES} ${CMAKE_INCLUDE_WIN})
+  unset(CMAKE_INCLUDE_WIN)
 
-  if(CMAKE_COMPILER_IS_GNUCC)
-    set(__GNUC__ 1)
-    exec_program("${CMAKE_C_COMPILER} --version" OUTPUT_VARIABLE "COMPILER_C_VERSION")
-    string(REGEX MATCH "[0-9].[0-9].[0-9]" COMPILER_C_VERSION "${COMPILER_C_VERSION}")
-    string(REGEX MATCH "^[0-9]" COMPILER_C_MAJOR_VERSION "${COMPILER_C_VERSION}")
-    string(REGEX MATCH "^[0-9].[0-9]" COMPILER_C_MINOR_VERSION "${COMPILER_C_VERSION}")
-    string(REGEX REPLACE "^${COMPILER_C_MAJOR_VERSION}." "" COMPILER_C_MINOR_VERSION "${COMPILER_C_MINOR_VERSION}")
-  endif()
-
+  find_program(NSIS_PROGRAM NAMES makensi)
   set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITEW6432})
   if(NSIS_WIN_VERSION MATCHES "")
     set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITECTURE})
@@ -214,10 +197,9 @@ if(WIN32)
 
   set(_XBT_WIN32 1)
 
-  message(STATUS "C_COMPILER                    ${CMAKE_C_COMPILER} ${COMPILER_C_VERSION_MAJOR_MINOR}")
-  message(STATUS "CXX_COMPILER                  ${CMAKE_CXX_COMPILER} ${COMPILER_CXX_VERSION_MAJOR_MINOR}")
+  message(STATUS "C_COMPILER                    ${CMAKE_C_COMPILER} ${CMAKE_C_COMPILER_VERSION}")
+  message(STATUS "CXX_COMPILER                  ${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_VERSION}")
   message(STATUS "CMAKE_RC_COMPILER             ${CMAKE_RC_COMPILER}")
-  message(STATUS "INCLUDE                       ${CMAKE_INCLUDE_WIN}")
   message(STATUS "LIB                           ${CMAKE_LIB_WIN}")
   message(STATUS "MAKE_PROGRAM                  ${CMAKE_MAKE_PROGRAM}")
   message(STATUS "CMAKE_BUILD_TOOL              ${CMAKE_BUILD_TOOL}")
@@ -231,11 +213,6 @@ include_directories(${INCLUDES})
 
 ### Setup Options
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
-
-set(CMAKE_MODULE_PATH
-  ${CMAKE_MODULE_PATH}
-  ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules
-  )
 
 ### Determine the assembly flavor that we need today
 include(CMakeDetermineSystem)
