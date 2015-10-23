@@ -33,8 +33,8 @@ else() # gcc or clang
   if (CMAKE_COMPILER_IS_GNUCC)    
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
       message(FATAL_ERROR
-              "SimGrid needs at least g++ version 4.7 to compile "
-  	      "(c++11 support of previous versions is too limited).")
+              "SimGrid needs at least g++ version 4.7 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
+  	      "You need a sufficient support of c++11 to compile SimGrid.")
     endif()
   endif()
 
@@ -45,7 +45,7 @@ else() # gcc or clang
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
   else() 
     message(FATAL_ERROR 
-            "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
+            "The compiler ${CMAKE_CXX_COMPILER} (v${CMAKE_CXX_COMPILER_VERSION}) has no C++11 support. "
             "Please use a decent C++ compiler.")
   endif()
 
@@ -56,7 +56,7 @@ else() # gcc or clang
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
   else()
     message(FATAL_ERROR 
-            "The compiler ${CMAKE_C_COMPILER} has no C11 support. "
+            "The compiler ${CMAKE_C_COMPILER} (v${CMAKE_C_COMPILER_VERSION}) has no C11 support. "
             "Please use a decent C compiler "
             "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
   endif()
