@@ -1056,6 +1056,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/cloud/CMakeLists.txt
   examples/msg/energy/consumption/CMakeLists.txt
   examples/msg/energy/onoff/CMakeLists.txt
+  examples/msg/energy/vm/CMakeLists.txt
   examples/msg/energy/pstate/CMakeLists.txt
   examples/msg/exception/CMakeLists.txt
   examples/msg/gpu/CMakeLists.txt
