@@ -564,6 +564,7 @@ list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
 list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
 
 set(LUA_SRC
+  src/bindings/lua/factories/host.lua
   src/bindings/lua/lua_comm.c
   src/bindings/lua/lua_host.c
   src/bindings/lua/lua_platf.c
@@ -981,6 +982,7 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/DiscoveringSimgrid.gif
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/storage_sample_scenario.png
@@ -1015,6 +1017,7 @@ set(txt_files
   COPYING
   README
   README.java
+  README.lua
   ChangeLog
   ChangeLog.SimGrid-java
   INSTALL
@@ -1108,6 +1111,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/bug-17132/CMakeLists.txt
   teshsuite/java/CMakeLists.txt
   teshsuite/java/sleep_host_off/CMakeLists.txt
+  teshsuite/lua/lua_platforms.tesh
   teshsuite/mc/CMakeLists.txt
   teshsuite/mc/dwarf/CMakeLists.txt
   teshsuite/mc/dwarf_expression/CMakeLists.txt
@@ -1276,6 +1280,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/cloud.xml
   examples/platforms/cluster.xml
   examples/platforms/cluster_and_one_host.xml
+  examples/platforms/cluster_prototype.lua
   examples/platforms/cluster_no_backbone.xml
   examples/platforms/clusters_routing_full.xml
   examples/platforms/crosstraffic.xml
@@ -1300,9 +1305,11 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
+  examples/platforms/platform.lua
   examples/platforms/platform.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
+  examples/platforms/routing_cluster.lua
   examples/platforms/routing_none.xml
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
@@ -1311,6 +1318,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/storage/remote_io.xml
   examples/platforms/storage/storage.xml
   examples/platforms/small_platform.xml
+  examples/platforms/small_platform.lua
   examples/platforms/small_platform_fatpipe.xml
   examples/platforms/small_platform_one_link_routes.xml
   examples/platforms/small_platform_with_failures.xml
