@@ -36,6 +36,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/kademlia/kademlia.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/kademlia/routing_table.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/kademlia/tools.lua
+  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/master.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/master_slave.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/slave.lua
   ${CMAKE_CURRENT_SOURCE_DIR}/multi_matrix/mult_matrix.lua

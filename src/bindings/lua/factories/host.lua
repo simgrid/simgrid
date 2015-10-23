@@ -1,7 +1,7 @@
 
 hostFactory = function(host_args)
     if type(host_args.power) ~= "number" then
-        error("FUCK")
+        error("OOPS")
     end
     return function(more_args)
     end
