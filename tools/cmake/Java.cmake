@@ -92,6 +92,7 @@ add_custom_command(
 
 if(enable_lib_in_jar)
   find_program(STRIP_COMMAND strip)
+  mark_as_advanced(STRIP_COMMAND)
   if(NOT STRIP_COMMAND)
     set(STRIP_COMMAND "cmake -E echo (strip not found)")
   endif()
