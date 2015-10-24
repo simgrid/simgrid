@@ -100,12 +100,14 @@ cmake -G"$GENERATOR"\
   -Denable_smpi_ISP_testsuite=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_compile_optimizations=$(onoff test "$build_mode" = "Debug") \
   -Denable_smpi_MPICH3_testsuite=$(onoff test "$build_mode" != "DynamicAnalysis") \
-  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=ON -Denable_smpi=ON \
   -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF \
-  -Denable_tracing=ON -Denable_java=ON
+  -Denable_tracing=ON -Denable_java=ON -Denable_lua=OFF
+#  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
+
+
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
 if test "$(uname -o)" != "Msys"; then
