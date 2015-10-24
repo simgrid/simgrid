@@ -232,12 +232,6 @@ IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
 
 ENDIF()
 
-if(ARCH_32_BITS)
-  set(MPI_ADDRESS_SIZE 4)
-else()
-  set(MPI_ADDRESS_SIZE 8)
-endif()
-
 include(CheckFunctionExists)
 include(CheckTypeSize)
 include(CheckIncludeFile)
