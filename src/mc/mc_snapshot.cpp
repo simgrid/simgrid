@@ -6,8 +6,8 @@
 
 #include <stdbool.h>
 
-#include "internal_config.h"
-#include "smpi/private.h"
+#include "src/internal_config.h"
+#include "src/smpi/private.h"
 
 #include "mc_snapshot.h"
 #include "mc_private.h"

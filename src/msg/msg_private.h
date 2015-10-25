@@ -9,14 +9,14 @@
 
 #include "simgrid/msg.h"
 #include "simgrid/simix.h"
-#include "surf/surf.h"
+#include "src/include/surf/surf.h"
 #include "xbt/base.h"
 #include "xbt/fifo.h"
 #include "xbt/dynar.h"
 #include "xbt/swag.h"
 #include "xbt/dict.h"
 #include "xbt/config.h"
-#include "instr/instr_private.h"
+#include "src/instr/instr_private.h"
 SG_BEGIN_DECL()
 
 /**************** datatypes **********************************/

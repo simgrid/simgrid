@@ -9,7 +9,7 @@
 
 #include <math.h>
 #include "smpi/mpi.h"
-#include "smpi/private.h"
+#include "src/smpi/private.h"
 #include "xbt/ex.h"
 #include "xbt.h"
 

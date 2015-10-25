@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
-#include "simix/smx_private.h"
+#include "src/simix/smx_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 

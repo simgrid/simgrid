@@ -8,7 +8,7 @@
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "fifo_private.h"
-#include "xbt_modinter.h"
+#include "src/xbt_modinter.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_fifo, xbt, "FIFO");
 

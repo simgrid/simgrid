@@ -10,8 +10,8 @@
 
 #include "xbt/parmap.h"
 #include "smx_private.h"
-#include "internal_config.h"
-#include "context_sysv_config.h"        /* loads context system definitions */
+#include "src/internal_config.h"
+#include "src/context_sysv_config.h"        /* loads context system definitions */
 #include "mc/mc.h"
 
 #ifdef _XBT_WIN32

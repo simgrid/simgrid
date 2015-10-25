@@ -13,7 +13,7 @@
 #include <xbt/base.h>
 
 #include "mc_forward.h"
-#include "mc/LocationList.hpp"
+#include "src/mc/LocationList.hpp"
 
 namespace simgrid {
 namespace mc {

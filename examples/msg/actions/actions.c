@@ -6,10 +6,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
+#include "simgrid/msg.h"        /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
 #include "simgrid/simix.h"      /* semaphores for the barrier */
 #include "xbt.h"                /* calloc, printf */
-#include "instr/instr_private.h"
 #include <xbt/replay.h>
 
 /** @addtogroup MSG_examples

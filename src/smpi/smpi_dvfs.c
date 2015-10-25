@@ -7,7 +7,7 @@
 #include "xbt/log.h"
 #include "simgrid/simix.h"
 #include "smpi/smpi.h"
-#include "internal_config.h"
+#include "src/internal_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_dvfs, smpi,
                                 "Logging specific to SMPI (experimental DVFS support)");

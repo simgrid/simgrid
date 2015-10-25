@@ -8,7 +8,7 @@
 
 /* This is partially inspirated from the OSSP ts (Test Suite Library)       */
 
-#include "portable.h"
+#include "src/portable.h"
 
 #include "xbt/sysdep.h"         /* bvprintf */
 #include "xbt/cunit.h"

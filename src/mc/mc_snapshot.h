@@ -24,7 +24,7 @@
 #include "ModelChecker.hpp"
 #include "PageStore.hpp"
 #include "mc_mmalloc.h"
-#include "mc/AddressSpace.hpp"
+#include "src/mc/AddressSpace.hpp"
 #include "mc_unw.h"
 #include "RegionSnapshot.hpp"
 

@@ -146,19 +146,14 @@ if (APPLE)
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
-
-### Set some variables for Cmake
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 ### Compute the include paths
 set(INCLUDES
   ${CMAKE_HOME_DIRECTORY}
   ${CMAKE_HOME_DIRECTORY}/include
-  ${CMAKE_HOME_DIRECTORY}/src
   ${CMAKE_HOME_DIRECTORY}/src/include
-  ${CMAKE_BINARY_DIR}
   ${CMAKE_BINARY_DIR}/include
-  ${CMAKE_BINARY_DIR}/src
   )
 
 if(WIN32)

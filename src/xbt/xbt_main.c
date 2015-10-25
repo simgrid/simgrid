@@ -10,8 +10,8 @@
 
 #include "xbt/misc.h"
 #include "simgrid_config.h"     /* _XBT_WIN32 */
-#include "internal_config.h"    /* MMALLOC_WANT_OVERRIDE_LEGACY */
-#include "portable.h"
+#include "src/internal_config.h" /* MMALLOC_WANT_OVERRIDE_LEGACY */
+#include "src/portable.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"
@@ -19,7 +19,7 @@
 
 #include "xbt/module.h"         /* this module */
 
-#include "xbt_modinter.h"       /* prototype of other module's init/exit in XBT */
+#include "src/xbt_modinter.h"       /* prototype of other module's init/exit in XBT */
 
 #include "simgrid/sg_config.h"
 

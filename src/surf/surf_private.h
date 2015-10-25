@@ -15,7 +15,7 @@
 #include "xbt/log.h"
 #include "surf/surfxml_parse.h"
 #include "surf/random_mgr.h"
-#include "instr/instr_private.h"
+#include "src/instr/instr_private.h"
 #include "surf/surfxml_parse_values.h"
 
 #define NO_MAX_DURATION -1.0

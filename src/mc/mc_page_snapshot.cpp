@@ -14,7 +14,7 @@
 #include "mc_snapshot.h"
 
 #include <xbt/mmalloc.h>
-#include <mc/ChunkedData.hpp>
+#include "src/mc/ChunkedData.hpp"
 
 using simgrid::mc::remote;
 

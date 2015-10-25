@@ -14,7 +14,7 @@
 #include "xbt/file.h"
 #include "xbt/dict.h"
 #include "surf/surfxml_parse.h"
-#include "surf/surf_private.h"
+#include "src/surf/surf_private.h"
 #include "surf/random_mgr.h"
 #include "simgrid/sg_config.h"
 

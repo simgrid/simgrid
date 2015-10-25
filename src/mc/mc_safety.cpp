@@ -15,7 +15,7 @@
 #include "mc_client.h"
 #include "mc_exit.h"
 
-#include "xbt/mmalloc/mmprivate.h"
+#include "src/xbt/mmalloc/mmprivate.h"
 
 extern "C" {
 

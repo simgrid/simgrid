@@ -1,6 +1,6 @@
-#include "mc/Frame.hpp"
-#include "mc/ObjectInformation.hpp"
-#include "mc/Variable.hpp"
+#include "src/mc/Frame.hpp"
+#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/Variable.hpp"
 
 namespace simgrid {
 namespace mc {

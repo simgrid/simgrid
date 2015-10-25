@@ -18,8 +18,8 @@
 #include "surf/surf_routing.h"
 #include "simgrid/platf_interface.h"
 #include "surf/surf.h"
-#include "surf/surf_private.h"
-#include "internal_config.h"
+#include "src/surf/surf_private.h"
+#include "src/internal_config.h"
 
 #ifdef LIBSIGC
 #include <sigc++/sigc++.h>

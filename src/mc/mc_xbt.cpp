@@ -6,7 +6,7 @@
 
 #include <xbt/sysdep.h>
 
-#include "mc/AddressSpace.hpp"
+#include "src/mc/AddressSpace.hpp"
 #include "mc_xbt.hpp"
 
 namespace simgrid {

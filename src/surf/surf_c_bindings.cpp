@@ -8,7 +8,7 @@
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
 #include "surf_routing_cluster.hpp"
-#include "instr/instr_private.h"
+#include "src/instr/instr_private.h"
 #include "plugins/energy.hpp"
 #include "vm_interface.hpp"
 

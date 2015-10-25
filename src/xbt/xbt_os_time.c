@@ -9,7 +9,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/xbt_os_time.h"    /* this module */
 #include "xbt/log.h"
-#include "portable.h"
+#include "src/portable.h"
 #include <math.h>               /* floor */
 
 #ifdef _XBT_WIN32

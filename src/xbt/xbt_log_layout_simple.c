@@ -8,12 +8,12 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/strbuff.h"        /* For dynamic version when the static one fails */
-#include "xbt/log_private.h"
+#include "src/xbt/log_private.h"
 
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
-#include "portable.h"
+#include "src/portable.h"
 
 extern const char *xbt_log_priority_names[8];
 extern int xbt_log_no_loc;

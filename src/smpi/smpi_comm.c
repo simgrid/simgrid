@@ -10,7 +10,7 @@
 #include "xbt/dict.h"
 #include "smpi_mpi_dt_private.h"
 #include "limits.h"
-#include "simix/smx_private.h"
+#include "src/simix/smx_private.h"
 #include "colls/colls.h"
 #include "xbt/ex.h"
 

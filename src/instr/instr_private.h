@@ -11,7 +11,7 @@
 
 #include "simgrid/instr.h"
 #include "instr/instr_interface.h"
-#include "internal_config.h"
+#include "src/internal_config.h"
 #include "simgrid_config.h"
 
 SG_BEGIN_DECL()

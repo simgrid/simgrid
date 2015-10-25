@@ -22,7 +22,7 @@
 
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
-#include "mc/mc_forward.h"
+#include "src/mc/mc_forward.h"
 
 SG_BEGIN_DECL()
 

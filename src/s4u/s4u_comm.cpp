@@ -5,8 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
-#include "msg/msg_private.h"
-#include "msg/msg_mailbox.h"
+#include "src/msg/msg_private.h"
+#include "src/msg/msg_mailbox.h"
 
 #include "simgrid/s4u/comm.hpp"
 

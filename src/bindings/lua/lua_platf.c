@@ -14,9 +14,9 @@
 #include <ctype.h>
 #include <lauxlib.h>
 
-#include <msg/msg_private.h>
-#include <simix/smx_host_private.h>
-#include <surf/surf_private.h>
+#include "src/msg/msg_private.h"
+#include "src/simix/smx_host_private.h"
+#include "src/surf/surf_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_platf, bindings, "Lua bindings (platform module)");
 

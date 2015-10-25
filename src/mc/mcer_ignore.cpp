@@ -6,18 +6,18 @@
 
 #include <xbt/base.h>
 
-#include "internal_config.h"
+#include "src/internal_config.h"
 #include "mc_object_info.h"
-#include "mc/mc_private.h"
-#include "smpi/private.h"
-#include "mc/mc_snapshot.h"
-#include "mc/mc_ignore.h"
-#include "mc/mc_protocol.h"
-#include "mc/mc_client.h"
+#include "src/mc/mc_private.h"
+#include "src/smpi/private.h"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_client.h"
 
-#include "mc/Frame.hpp"
-#include "mc/Variable.hpp"
-#include "mc/ObjectInformation.hpp"
+#include "src/mc/Frame.hpp"
+#include "src/mc/Variable.hpp"
+#include "src/mc/ObjectInformation.hpp"
 
 extern "C" {
 

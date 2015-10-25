@@ -11,7 +11,7 @@
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
-#include "xbt_modinter.h"
+#include "src/xbt_modinter.h"
 #include "xbt/str.h"
 #include "dict_private.h"
 

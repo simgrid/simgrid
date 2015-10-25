@@ -15,11 +15,11 @@
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
-#include <simgrid_config.h>
+#include "simgrid_config.h"
 #include "mc_base.h"
 #include "mc_forward.hpp"
-#include "mc/AddressSpace.hpp"
-#include "mc/DwarfExpression.hpp"
+#include "src/mc/AddressSpace.hpp"
+#include "src/mc/DwarfExpression.hpp"
 
 namespace simgrid {
 namespace dwarf {

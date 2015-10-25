@@ -6,9 +6,9 @@
 
 #include <vector>
 
-#include <mc/mc_forward.hpp>
-#include <mc/AddressSpace.hpp>
-#include <mc/PageStore.hpp>
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/AddressSpace.hpp"
+#include "src/mc/PageStore.hpp"
 
 namespace simgrid {
 namespace mc {

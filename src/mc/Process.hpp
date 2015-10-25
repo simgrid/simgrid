@@ -21,12 +21,12 @@
 #include <xbt/mmalloc.h>
 
 #ifdef HAVE_MC
-#include "xbt/mmalloc/mmprivate.h"
+#include "src/xbt/mmalloc/mmprivate.h"
 #endif
 
 #include <simgrid/simix.h>
-#include "simix/popping_private.h"
-#include "simix/smx_private.h"
+#include "src/simix/popping_private.h"
+#include "src/simix/smx_private.h"
 
 #include "mc_forward.hpp"
 #include "mc_base.h"

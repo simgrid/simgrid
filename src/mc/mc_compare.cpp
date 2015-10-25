@@ -12,7 +12,7 @@
 
 #include <xbt/sysdep.h>
 
-#include "internal_config.h"
+#include "src/internal_config.h"
 #include "mc_object_info.h"
 #include "mc_safety.h"
 #include "mc_liveness.h"
@@ -20,18 +20,18 @@
 #include "mc_smx.h"
 #include "mc_dwarf.hpp"
 
-#include "mc/Frame.hpp"
-#include "mc/ObjectInformation.hpp"
-#include "mc/Variable.hpp"
+#include "src/mc/Frame.hpp"
+#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/Variable.hpp"
 
 #ifdef HAVE_SMPI
-#include "smpi/private.h"
+#include "src/smpi/private.h"
 #endif
 
 #include "xbt/mmalloc.h"
-#include "xbt/mmalloc/mmprivate.h"
+#include "src/xbt/mmalloc/mmprivate.h"
 
-#include <xbt/probes.h>
+#include "src/xbt/probes.h"
 
 using simgrid::mc::remote;
 

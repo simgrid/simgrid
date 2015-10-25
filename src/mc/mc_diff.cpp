@@ -6,16 +6,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/ex_interface.h"   /* internals of backtrace setup */
+#include "src/xbt/ex_interface.h"   /* internals of backtrace setup */
 #include "xbt/str.h"
 #include "mc/mc.h"
 #include "xbt/mmalloc.h"
 #include "mc_object_info.h"
 #include "mc/datatypes.h"
-#include "mc/mc_private.h"
-#include "mc/mc_snapshot.h"
-#include "mc/mc_dwarf.hpp"
-#include "mc/Type.hpp"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_dwarf.hpp"
+#include "src/mc/Type.hpp"
 
 using simgrid::mc::remote;
 

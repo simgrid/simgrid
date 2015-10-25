@@ -321,7 +321,7 @@
 #define LINUX_COMPATIBLE
 #endif
 
-#include "portable.h"           /* to get a working stdarg.h */
+#include "src/portable.h"           /* to get a working stdarg.h */
 
 #include <sys/types.h>
 #include <string.h>

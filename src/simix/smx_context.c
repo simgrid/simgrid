@@ -6,13 +6,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "portable.h"
+#include "src/portable.h"
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
 #include "smx_private.h"
 #include "simgrid/sg_config.h"
-#include "internal_config.h"
+#include "src/internal_config.h"
 #include "simgrid/modelchecker.h"
 
 

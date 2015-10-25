@@ -10,7 +10,7 @@
 #include "xbt.h"
 #include "xbt/ex.h"
 #include "xbt/xbt_os_time.h"
-#include "internal_config.h"
+#include "src/internal_config.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(parmap_test, "Test for parmap");
 

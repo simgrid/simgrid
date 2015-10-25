@@ -17,7 +17,7 @@
 #include <xbt/base.h>
 #include <xbt/misc.h>
 
-#include "portable.h"
+#include "src/portable.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
 #include "xbt/ex.h"

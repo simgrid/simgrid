@@ -9,7 +9,7 @@
 
 #include <xbt/base.h>
 
-#include "mc/AddressSpace.hpp"
+#include "src/mc/AddressSpace.hpp"
 
 namespace simgrid {
 namespace mc {

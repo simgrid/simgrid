@@ -15,13 +15,13 @@
 #include <mc/mc.h>
 
 #include "mc/datatypes.h"
-#include "mc/mc_object_info.h"
-#include "mc/mc_private.h"
+#include "src/mc/mc_object_info.h"
+#include "src/mc/mc_private.h"
 
-#include "mc/Process.hpp"
-#include "mc/Type.hpp"
-#include "mc/ObjectInformation.hpp"
-#include "mc/Variable.hpp"
+#include "src/mc/Process.hpp"
+#include "src/mc/Type.hpp"
+#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/Variable.hpp"
 
 int test_some_array[4][5][6];
 struct some_struct { int first; int second[4][5]; } test_some_struct;

@@ -5,7 +5,7 @@
 
 #include <stdexcept>
 
-#include <mc/AddressSpace.hpp>
+#include "src/mc/AddressSpace.hpp"
 
 namespace simgrid {
 namespace dwarf {

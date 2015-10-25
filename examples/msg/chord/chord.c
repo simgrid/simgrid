@@ -10,7 +10,7 @@
 #include "xbt/asserts.h"
 #include "simgrid/modelchecker.h"
 #include <xbt/RngStream.h>
-#include "mc/mc_replay.h"
+#include "src/mc/mc_replay.h" // FIXME: this is an internal header
 
 /** @addtogroup MSG_examples
  *

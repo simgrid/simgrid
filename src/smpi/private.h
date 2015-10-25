@@ -7,16 +7,16 @@
 #ifndef SMPI_PRIVATE_H
 #define SMPI_PRIVATE_H
 
-#include "internal_config.h"
+#include "src/internal_config.h"
 #include "xbt.h"
 #include "xbt/base.h"
 #include "xbt/xbt_os_time.h"
 #include "xbt/synchro_core.h"
 #include "simgrid/simix.h"
-#include "smpi/smpi_interface.h"
+#include "src/include/smpi/smpi_interface.h"
 #include "smpi/smpi.h"
 #include "smpi/smpi_cocci.h"
-#include "instr/instr_private.h"
+#include "src/instr/instr_private.h"
 
 SG_BEGIN_DECL()
 

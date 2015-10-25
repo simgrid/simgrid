@@ -13,24 +13,24 @@
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
-#include "mc/mc_replay.h"
+#include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
 
 #ifdef HAVE_MC
-#include "mc/mc_private.h"
-#include "mc/mc_protocol.h"
-#include "mc/mc_client.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_client.h"
 #endif
 
 #ifdef HAVE_MC
 #include <stdlib.h>
-#include "mc/mc_protocol.h"
+#include "src/mc/mc_protocol.h"
 #endif 
 
-#include "mc/mc_record.h"
+#include "src/mc/mc_record.h"
 
 #ifdef HAVE_SMPI
-#include "smpi/private.h"
+#include "src/smpi/private.h"
 #endif
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");

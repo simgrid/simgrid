@@ -9,8 +9,8 @@
 #include "mc/mc.h"
 #include "mc_snapshot.h"
 
-#include <mc/ChunkedData.hpp>
-#include <mc/RegionSnapshot.hpp>
+#include "src/mc/ChunkedData.hpp"
+#include "src/mc/RegionSnapshot.hpp"
 
 extern "C" {
 

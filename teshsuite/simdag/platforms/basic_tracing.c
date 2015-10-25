@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "simgrid/msg.h"
-#include "surf/surf_private.h"
 
 int host(int argc, char *argv[]);
 

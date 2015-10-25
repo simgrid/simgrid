@@ -6,7 +6,7 @@
 
 #include <atomic>
 
-#include "internal_config.h"
+#include "src/internal_config.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -26,7 +26,7 @@
 #include "xbt/dynar.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/sysdep.h"
-#include "simix/smx_private.h"
+#include "src/simix/smx_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_parmap, xbt, "parmap: parallel map");
 

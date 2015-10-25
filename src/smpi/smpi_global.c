@@ -7,12 +7,12 @@
 #include "private.h"
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
-#include "mc/mc_record.h"
+#include "src/mc/mc_record.h"
 #include "xbt/replay.h"
 #include "surf/surf.h"
-#include "simix/smx_private.h"
+#include "src/simix/smx_private.h"
 #include "simgrid/sg_config.h"
-#include "mc/mc_replay.h"
+#include "src/mc/mc_replay.h"
 
 #include <float.h>              /* DBL_MAX */
 #include <stdint.h>

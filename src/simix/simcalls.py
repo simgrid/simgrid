@@ -282,7 +282,7 @@ if __name__=='__main__':
   fd.write('#include <xbt/base.h>\n');
   fd.write('#include "smx_private.h"\n');
   fd.write('#ifdef HAVE_MC\n');
-  fd.write('#include "mc/mc_forward.h"\n');
+  fd.write('#include "src/mc/mc_forward.h"\n');
   fd.write('#endif\n');
   fd.write('\n');
   fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n');
@@ -329,7 +329,7 @@ if __name__=='__main__':
   ###
   fd = header('popping_bodies.c')
   fd.write('#include "smx_private.h"\n')
-  fd.write('#include "mc/mc_forward.h"\n')
+  fd.write('#include "src/mc/mc_forward.h"\n')
   fd.write('#include "xbt/ex.h"\n')
   handle(fd, Simcall.body, simcalls, simcalls_dict)
   fd.close()

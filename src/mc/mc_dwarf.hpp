@@ -16,8 +16,8 @@
 #define DW_LANG_Objc DW_LANG_ObjC       /* fix spelling error in older dwarf.h */
 #include <dwarf.h>
 
-#include "mc/Variable.hpp"
-#include "mc/mc_memory_map.h"
+#include "src/mc/Variable.hpp"
+#include "src/mc/mc_memory_map.h"
 
 namespace simgrid {
 namespace dwarf {

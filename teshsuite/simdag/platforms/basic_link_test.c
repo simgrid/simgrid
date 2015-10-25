@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "simgrid/simdag.h"
-#include "surf/surf_private.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic_link_test, sd,

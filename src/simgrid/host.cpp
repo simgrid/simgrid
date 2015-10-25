@@ -45,11 +45,11 @@ int ROUTING_HOST_LEVEL;
 int SURF_CPU_LEVEL;
 
 
-#include "msg/msg_private.h" // MSG_host_priv_free. FIXME: killme
-#include "simdag/private.h" // __SD_workstation_destroy. FIXME: killme
-#include "simix/smx_host_private.h" // SIMIX_host_destroy. FIXME: killme
-#include "surf/cpu_interface.hpp"
-#include "surf/surf_routing.hpp"
+#include "src/msg/msg_private.h" // MSG_host_priv_free. FIXME: killme
+#include "src/simdag/private.h" // __SD_workstation_destroy. FIXME: killme
+#include "src/simix/smx_host_private.h" // SIMIX_host_destroy. FIXME: killme
+#include "src/surf/cpu_interface.hpp"
+#include "src/surf/surf_routing.hpp"
 
 static XBT_INLINE void surf_cpu_free(void *r) {
   delete static_cast<Cpu*>(r);

@@ -8,7 +8,7 @@
 
 #include "mc_object_info.h"
 #include "mc_private.h"
-#include "mc/Type.hpp"
+#include "src/mc/Type.hpp"
 
 namespace simgrid {
 namespace dwarf {

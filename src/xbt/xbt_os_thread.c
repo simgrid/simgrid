@@ -17,14 +17,14 @@
 #include <unistd.h>
 #endif
 
-#include "internal_config.h"
+#include "src/internal_config.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
-#include "xbt/ex_interface.h"   /* We play crude games with exceptions */
-#include "portable.h"
+#include "src/xbt/ex_interface.h"   /* We play crude games with exceptions */
+#include "src/portable.h"
 #include "xbt/xbt_os_time.h"    /* Portable time facilities */
 #include "xbt/xbt_os_thread.h"  /* This module */
-#include "xbt_modinter.h"       /* Initialization/finalization of this module */
+#include "src/xbt_modinter.h"       /* Initialization/finalization of this module */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
                                 "Synchronization mechanism (OS-level)");

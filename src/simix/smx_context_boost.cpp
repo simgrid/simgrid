@@ -12,7 +12,7 @@
 
 #include "xbt/log.h"
 #include "smx_private.h"
-#include "internal_config.h"
+#include "src/internal_config.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 

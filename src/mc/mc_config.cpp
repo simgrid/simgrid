@@ -9,7 +9,7 @@
 #include <xbt/config.h>
 
 #include <mc/mc.h>
-#include "mc/mc_replay.h"
+#include "src/mc/mc_replay.h"
 
 #include <simgrid/sg_config.h>
 

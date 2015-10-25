@@ -15,7 +15,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/module.h"         /* xbt_binary_name */
-#include "xbt_modinter.h"       /* backtrace initialization headers */
+#include "src/xbt_modinter.h"       /* backtrace initialization headers */
 #ifdef HAVE_MC
 #define UNW_LOCAL_ONLY
 #include <libunwind.h>

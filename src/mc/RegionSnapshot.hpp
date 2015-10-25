@@ -12,9 +12,9 @@
 
 #include <xbt/base.h>
 
-#include <mc/PageStore.hpp>
-#include <mc/AddressSpace.hpp>
-#include <mc/ChunkedData.hpp>
+#include "src/mc/PageStore.hpp"
+#include "src/mc/AddressSpace.hpp"
+#include "src/mc/ChunkedData.hpp"
 
 namespace simgrid {
 namespace mc {

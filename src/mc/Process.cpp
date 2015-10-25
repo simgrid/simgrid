@@ -34,10 +34,10 @@
 #include "mc_smx.h"
 #include "mc_server.h"
 
-#include "mc/Process.hpp"
-#include "mc/AddressSpace.hpp"
-#include "mc/ObjectInformation.hpp"
-#include "mc/Variable.hpp"
+#include "src/mc/Process.hpp"
+#include "src/mc/AddressSpace.hpp"
+#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/Variable.hpp"
 
 using simgrid::mc::remote;
 

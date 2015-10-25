@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "instr/instr_private.h"
+#include "src/instr/instr_private.h"
 #include "xbt/virtu.h" /* sg_cmdline */
 #include "xbt/xbt_os_time.h"
 #include "simgrid/sg_config.h"

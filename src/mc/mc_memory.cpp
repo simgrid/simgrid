@@ -30,7 +30,7 @@ void MC_memory_init()
 }
 
 /* Finalize the memory subsystem */
-#include "xbt_modinter.h"
+#include "src/xbt_modinter.h"
 void MC_memory_exit(void)
 {
 }

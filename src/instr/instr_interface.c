@@ -6,9 +6,9 @@
 
 #include "simgrid_config.h"
 
-#include "instr/instr_private.h"
+#include "src/instr/instr_private.h"
 #include "surf/surf.h"
-#include "surf/surf_private.h"
+#include "src/surf/surf_private.h"
 
 typedef enum {
   INSTR_US_DECLARE,

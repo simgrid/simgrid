@@ -26,7 +26,7 @@
 #include <xbt/log.h>
 
 #include "simgrid/sg_config.h"
-#include "xbt_modinter.h"
+#include "src/xbt_modinter.h"
 
 #include "mc_base.h"
 #include "mc_private.h"

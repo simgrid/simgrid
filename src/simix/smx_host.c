@@ -9,7 +9,7 @@
 #include "xbt/log.h"
 #include "xbt/dict.h"
 #include "mc/mc.h"
-#include "mc/mc_replay.h"
+#include "src/mc/mc_replay.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
                                 "SIMIX hosts");

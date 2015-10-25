@@ -6,12 +6,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "portable.h"           /* execinfo when available */
+#include "src/portable.h"       /* execinfo when available */
 #include "xbt/synchro_core.h"   /* xbt_thread_self_name */
-#include "xbt/ex_interface.h"
+#include "src/xbt/ex_interface.h"
 #include "xbt/sysdep.h"
 #include "xbt/strbuff.h"
-#include "xbt/log_private.h"
+#include "src/xbt/log_private.h"
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>

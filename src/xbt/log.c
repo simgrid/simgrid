@@ -11,15 +11,15 @@
 #include <stdio.h>              /* snprintf */
 #include <stdlib.h>             /* snprintf */
 
-#include "portable.h"           /* to get a working stdarg.h */
+#include "src/portable.h"           /* to get a working stdarg.h */
 
-#include "xbt_modinter.h"
+#include "src/xbt_modinter.h"
 
 #include "xbt/misc.h"
 #include "xbt/ex.h"
 #include "xbt/str.h"
 #include "xbt/sysdep.h"
-#include "xbt/log_private.h"
+#include "src/xbt/log_private.h"
 #include "xbt/dynar.h"
 #include "xbt/xbt_os_thread.h"
 

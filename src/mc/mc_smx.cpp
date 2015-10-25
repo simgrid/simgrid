@@ -8,7 +8,7 @@
 
 #include <xbt/log.h>
 
-#include "simix/smx_private.h"
+#include "src/simix/smx_private.h"
 
 #include "mc_smx.h"
 #include "ModelChecker.hpp"

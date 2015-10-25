@@ -10,8 +10,8 @@
 #include <xbt/misc.h>
 #include <simgrid/simix.h>
 #include "simgrid_config.h"
-#include "internal_config.h"
-#include "../simix/smx_private.h"
+#include "src/internal_config.h"
+#include "src/simix/smx_private.h"
 
 SG_BEGIN_DECL()
 

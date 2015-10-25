@@ -11,7 +11,7 @@
 #include "mc_safety.h"
 #include "mc_liveness.h"
 #include "mc_private.h"
-#include "mc/Process.hpp"
+#include "src/mc/Process.hpp"
 #include "mc_smx.h"
 
 extern "C" {

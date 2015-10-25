@@ -7,7 +7,7 @@
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "simix/smx_process_private.h"
+#include "src/simix/smx_process_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
                                 "Logging specific to MSG (process)");

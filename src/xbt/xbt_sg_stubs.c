@@ -15,10 +15,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt_modinter.h"
+#include "src/xbt_modinter.h"
 #include "xbt/sysdep.h"
 #include "xbt/xbt_os_thread.h"
-#include "portable.h"           /* CONTEXT_THREADS */
+#include "src/portable.h"           /* CONTEXT_THREADS */
 
 #ifndef CONTEXT_THREADS
 #ifndef WIN32

@@ -6,7 +6,7 @@
 
 #include "colls_private.h"
 #ifdef HAVE_MC
-#include "mc/mc_private.h"
+#include "src/mc/mc_private.h"
 #endif
 #include <float.h>
 

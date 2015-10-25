@@ -10,11 +10,11 @@
 #include "xbt/dict.h"
 #include "simgrid/platf.h"
 #include "surf/surfxml_parse.h"
-#include "surf/surf_private.h"
+#include "src/surf/surf_private.h"
 
 #ifdef HAVE_LUA
-#include "bindings/lua/simgrid_lua.h"
-#include "bindings/lua/lua_state_cloner.h"
+#include "src/bindings/lua/simgrid_lua.h"
+#include "src/bindings/lua/lua_state_cloner.h"
 
 #include <lua.h>                /* Always include this when calling Lua */
 #include <lauxlib.h>            /* Always include this when calling Lua */

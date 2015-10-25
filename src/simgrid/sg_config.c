@@ -22,9 +22,9 @@
 #include "smpi/smpi_interface.h"
 #endif
 #include "mc/mc.h"
-#include "mc/mc_record.h"
+#include "src/mc/mc_record.h"
 #include "simgrid/instr.h"
-#include "mc/mc_replay.h"
+#include "src/mc/mc_replay.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
                                 "About the configuration of simgrid");
@@ -367,7 +367,7 @@ static void _sg_cfg_cb__surf_path(const char *name, int pos)
 }
 
 /* callback to decide if we want to use the model-checking */
-#include "xbt_modinter.h"
+#include "src/xbt_modinter.h"
 
 #ifdef HAVE_MC
 extern int _sg_do_model_check;   /* this variable lives in xbt_main until I find a right location for it */

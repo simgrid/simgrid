@@ -12,11 +12,11 @@
 
 #include "mc_object_info.h"
 #include "mc_private.h"
-#include "mc/LocationList.hpp"
-#include "mc/AddressSpace.hpp"
-#include "mc/Frame.hpp"
-#include "mc/ObjectInformation.hpp"
-#include "mc/DwarfExpression.hpp"
+#include "src/mc/LocationList.hpp"
+#include "src/mc/AddressSpace.hpp"
+#include "src/mc/Frame.hpp"
+#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/DwarfExpression.hpp"
 #include "mc_dwarf.hpp"
 
 using simgrid::mc::remote;

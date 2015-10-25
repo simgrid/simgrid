@@ -7,10 +7,10 @@
 #include "private.h"
 #include "xbt/virtu.h"
 #include "mc/mc.h"
-#include "mc/mc_replay.h"
+#include "src/mc/mc_replay.h"
 #include "xbt/replay.h"
 #include <errno.h>
-#include "simix/smx_private.h"
+#include "src/simix/smx_private.h"
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
 #include "colls/colls.h"

@@ -24,7 +24,7 @@
 #include "mc_ignore.h"
 #include "mcer_ignore.h"
 #include "mc_exit.h"
-#include "mc/mc_liveness.h"
+#include "src/mc/mc_liveness.h"
 
 using simgrid::mc::remote;
 

@@ -5,8 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
-#include "msg/msg_private.h"
-#include "simix/smx_process_private.h"
+#include "src/msg/msg_private.h"
+#include "src/simix/smx_process_private.h"
 
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"

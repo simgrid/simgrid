@@ -36,7 +36,7 @@
 #endif
 #include "mmprivate.h"
 #include "xbt/ex.h"
-#include "xbt_modinter.h" /* declarations of mmalloc_preinit and friends that live here */
+#include "src/xbt_modinter.h" /* declarations of mmalloc_preinit and friends that live here */
 
 #ifndef SEEK_SET
 #define SEEK_SET 0

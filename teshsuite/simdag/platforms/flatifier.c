@@ -21,7 +21,7 @@
 #include "xbt/ex.h"
 #include "xbt/xbt_os_time.h"
 #include "surf/surf.h"
-#include "surf/surf_private.h"
+#include "src/surf/surf_private.h"
 
 static const char link_ctn_v2[] =  "link:ctn";
 static const char link_ctn_v3[] = "link_ctn";

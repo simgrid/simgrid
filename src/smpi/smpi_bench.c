@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "internal_config.h"
+#include "src/internal_config.h"
 #include "private.h"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
@@ -13,7 +13,7 @@
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
 #include "simgrid/modelchecker.h"
-#include "mc/mc_replay.h"
+#include "src/mc/mc_replay.h"
 
 #ifndef WIN32
 #include <sys/mman.h>

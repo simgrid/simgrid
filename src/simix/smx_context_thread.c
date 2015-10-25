@@ -8,10 +8,10 @@
 
 #include "xbt/function_types.h"
 #include "smx_private.h"
-#include "portable.h"           /* loads context system definitions */
+#include "src/portable.h"           /* loads context system definitions */
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
-#include "xbt_modinter.h"       /* prototype of os thread module's init/exit in XBT */
+#include "src/xbt_modinter.h"       /* prototype of os thread module's init/exit in XBT */
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 

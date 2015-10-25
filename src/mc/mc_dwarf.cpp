@@ -16,19 +16,17 @@
 #include <elfutils/libdw.h>
 
 #include <simgrid_config.h>
-#include <simgrid/util.hpp>
+#include "src/simgrid/util.hpp"
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
-
-#include <simgrid/util.hpp>
 
 #include "mc_object_info.h"
 #include "mc_private.h"
 #include "mc_dwarf.hpp"
 
-#include "mc/Process.hpp"
-#include "mc/ObjectInformation.hpp"
-#include "mc/Variable.hpp"
+#include "src/mc/Process.hpp"
+#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/Variable.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
 

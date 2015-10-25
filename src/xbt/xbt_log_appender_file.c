@@ -7,9 +7,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/sysdep.h"
-#include "xbt/log_private.h"
+#include "src/xbt/log_private.h"
 #ifdef HAVE_SMPI
-#include "smpi/private.h" // to access bench_begin/end. Not ultraclean, I confess
+#include "src/smpi/private.h" // to access bench_begin/end. Not ultraclean, I confess
 #endif
 #include <stdio.h>
 

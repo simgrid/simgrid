@@ -17,7 +17,7 @@
 #include <xbt/misc.h>
 #include <xbt/base.h>
  
-#include "mc/Process.hpp"
+#include "src/mc/Process.hpp"
 #include "mc_exit.h"
 
 SG_BEGIN_DECL()

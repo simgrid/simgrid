@@ -8,7 +8,7 @@
 #include "simgrid/simdag.h"
 #include "xbt/sysdep.h"
 #include "xbt/dynar.h"
-#include "instr/instr_private.h"
+#include "src/instr/instr_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd,
                                 "Logging specific to SimDag (task)");

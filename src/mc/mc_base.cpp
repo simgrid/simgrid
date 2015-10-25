@@ -9,15 +9,15 @@
 #include <simgrid/simix.h>
 
 #include "mc_base.h"
-#include "../simix/smx_private.h"
-#include "mc/mc_record.h"
-#include "mc/mc_replay.h"
+#include "src/simix/smx_private.h"
+#include "src/mc/mc_record.h"
+#include "src/mc/mc_replay.h"
 #include "mc/mc.h"
 #include "mc_protocol.h"
 
 #ifdef HAVE_MC
-#include "mc/Process.hpp"
-#include "mc/ModelChecker.hpp"
+#include "src/mc/Process.hpp"
+#include "src/mc/ModelChecker.hpp"
 #include "mc_smx.h"
 #include "mc_server.h"
 #endif

@@ -8,7 +8,7 @@
 #define _SURF_SURF_ROUTING_PRIVATE_H
 
 #include <float.h>
-#include "internal_config.h"
+#include "src/internal_config.h"
 
 #include "surf_interface.hpp"
 #include "xbt/base.h"

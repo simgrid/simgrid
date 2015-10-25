@@ -13,11 +13,11 @@
 
 #include <xbt/base.h>
 
-#include "mc/mc_forward.h"
-#include "mc/Type.hpp"
-#include "mc/Frame.hpp"
+#include "src/mc/mc_forward.h"
+#include "src/mc/Type.hpp"
+#include "src/mc/Frame.hpp"
 
-#include "smpi/private.h"
+#include "src/smpi/private.h"
 
 namespace simgrid {
 namespace mc {

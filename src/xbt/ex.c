@@ -45,13 +45,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "portable.h"           /* execinfo when available */
+#include "src/portable.h"           /* execinfo when available */
 #include "xbt/ex.h"
 #include "xbt/str.h"
 #include "xbt/synchro_core.h"
-#include "xbt_modinter.h"       /* backtrace initialization headers */
+#include "src/xbt_modinter.h"       /* backtrace initialization headers */
 
-#include "xbt/ex_interface.h"
+#include "src/xbt/ex_interface.h"
 #include "simgrid/sg_config.h"  /* Configuration mechanism of SimGrid */
 
 
@@ -124,11 +124,11 @@ void xbt_backtrace_display_current(void)
 }
 
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
-# include "backtrace_linux.c"
+# include "src/xbt/backtrace_linux.c"
 #elif (defined(_XBT_WIN32) && defined (_M_IX86)) && !defined(__GNUC__)
-# include "backtrace_windows.c"
+# include "src/xbt/backtrace_windows.c"
 #else
-# include "backtrace_dummy.c"
+# include "src/xbt/backtrace_dummy.c"
 #endif
 
 /** @brief shows an exception content and the associated stack if available */

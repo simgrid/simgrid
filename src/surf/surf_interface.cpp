@@ -9,7 +9,7 @@
 #include "network_interface.hpp"
 #include "cpu_interface.hpp"
 #include "host_interface.hpp"
-#include "simix/smx_host_private.h"
+#include "src/simix/smx_host_private.h"
 #include "surf_routing.hpp"
 #include "simgrid/sg_config.h"
 #include "mc/mc.h"

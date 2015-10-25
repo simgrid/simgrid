@@ -9,7 +9,7 @@
 #include <xbt/dynar.h>
 #include <xbt/parmap.h>
 #include <xbt/sysdep.h>
-#include <internal_config.h>        /* HAVE_FUTEX_H */
+#include "src/internal_config.h"        /* HAVE_FUTEX_H */
 #include "simgrid/simix.h"
 #include "xbt/xbt_os_time.h"
 

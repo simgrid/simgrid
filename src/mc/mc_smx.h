@@ -12,9 +12,9 @@
 #include <xbt/log.h>
 #include <simgrid/simix.h>
 
-#include "smpi/private.h"
+#include "src/smpi/private.h"
 
-#include "mc/Process.hpp"
+#include "src/mc/Process.hpp"
 #include "mc_protocol.h"
 
 /** @file

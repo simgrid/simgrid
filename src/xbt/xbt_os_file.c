@@ -9,7 +9,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/file.h"    /* this module */
 #include "xbt/log.h"
-#include "portable.h"
+#include "src/portable.h"
 
 #ifndef _MSC_VER
 #include "libgen.h" /* POSIX dirname */

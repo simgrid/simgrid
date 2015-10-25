@@ -6,7 +6,7 @@
 
 #include "host_interface.hpp"
 
-#include "simix/smx_private.h"
+#include "src/simix/smx_private.h"
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.h"
 

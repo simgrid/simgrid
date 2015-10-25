@@ -10,17 +10,17 @@
 #include <link.h>
 #include <dirent.h>
 
-#include "internal_config.h"
+#include "src/internal_config.h"
 #include "mc_memory_map.h"
 #include "mc_private.h"
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
-#include "../smpi/private.h"
+#include "src/smpi/private.h"
 #include <alloca.h>
 
-#include "xbt/mmalloc/mmprivate.h"
+#include "src/xbt/mmalloc/mmprivate.h"
 
-#include "../simix/smx_private.h"
+#include "src/simix/smx_private.h"
 
 #include <libunwind.h>
 #include <libelf.h>
@@ -36,9 +36,9 @@
 #include "mc_smx.h"
 #include "mc_hash.hpp"
 
-#include "mc/ObjectInformation.hpp"
-#include "mc/Frame.hpp"
-#include "mc/Variable.hpp"
+#include "src/mc/ObjectInformation.hpp"
+#include "src/mc/Frame.hpp"
+#include "src/mc/Variable.hpp"
 
 using simgrid::mc::remote;
 

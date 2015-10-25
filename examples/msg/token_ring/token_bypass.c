@@ -6,8 +6,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "surf/surfxml_parse.h"
 #include "simgrid/msg.h"
-#include "surf/surf_private.h"
 
 int host(int argc, char *argv[]);
 unsigned int task_comp_size = 50000000;
@@ -92,7 +92,6 @@ static int surf_parse_bypass_platform(void)
 
   sg_platf_new_AS_end();
   sg_platf_end();
-  sg_platf_exit();
   return 0;
 }
 
