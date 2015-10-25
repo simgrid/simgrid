@@ -446,7 +446,8 @@ typedef enum{
   TRACING_SCAN,
   TRACING_EXSCAN,
   TRACING_ITERATION,
-  TRACING_MIGRATION_CALL
+  TRACING_MIGRATION_CALL,
+  TRACING_CUSTOM
 } e_caller_type ;
 
 
@@ -466,6 +467,8 @@ typedef struct s_instr_extra_data {
   int * sendcounts;
   int * recvcounts;
   int num_processes;
+  int (*print_push)(FILE *trace_file, char *process_id, instr_extra_data extra);
+  int (*print_pop)(FILE *trace_file, char *process_id, instr_extra_data extra);
 } s_instr_extra_data_t;
 
 SG_END_DECL()

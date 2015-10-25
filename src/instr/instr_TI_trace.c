@@ -34,7 +34,7 @@ void TRACE_TI_init(void)
 
 void TRACE_TI_start(void)
 {
-  state_tracker = xbt_dynar_new(sizeof(e_caller_type), NULL);
+  state_tracker = xbt_dynar_new(sizeof(instr_extra_data), NULL);
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
   if (tracing_file == NULL) {
@@ -231,6 +231,10 @@ void print_TIPushState(paje_event_t event)
   case TRACING_MIGRATION_CALL: //call to MPI_Migrate using smpicc/smpirun.
     fprintf(trace_file, "%s migrate %d\n", process_id, extra->send_size);
     break;
+  case TRACING_CUSTOM:
+    if(extra->print_push)
+      extra->print_push(trace_file, process_id, extra);
+    break;
   case TRACING_WAITANY:
   case TRACING_SENDRECV:
   case TRACING_SCATTER:
@@ -253,28 +257,26 @@ void print_TIPushState(paje_event_t event)
  
   //We need to keep track of the current state, so we can register when the
   //current iteration (TRACING_ITERATION) ends. 
-  xbt_dynar_push(state_tracker, &(extra->type));
+  // We will push the whole 'extra', because we need access to the printing
+  // function when the state is popped.
+  xbt_dynar_push(state_tracker, &extra);
 
-  if (extra->recvcounts != NULL)
-    xbt_free(extra->recvcounts);
-  if (extra->sendcounts != NULL)
-    xbt_free(extra->sendcounts);
   xbt_free(process_id);
-  xbt_free(extra);
+  //'extra' will be freed in print_TIPopState
 }
 
 void print_TIPopState(paje_event_t event)
 {
   char *process_id;
-  e_caller_type event_type;
+  instr_extra_data extra;
   FILE *trace_file;
 
   //What is the current state?
-  xbt_dynar_pop(state_tracker, &event_type);
+  xbt_dynar_pop(state_tracker, &extra);
   
   //This function is actually only usefull for tracing the iterations of the
   //application.
-  if(event_type != TRACING_ITERATION){
+  if(extra->type != TRACING_CUSTOM){
     return;
   }
 
@@ -286,8 +288,15 @@ void print_TIPopState(paje_event_t event)
   trace_file = (FILE *)xbt_dict_get(tracing_files,
       ((pushState_t) event->data)->container->name);
   
-  fprintf(trace_file, "%s iteration_out\n", process_id); 
+  if(extra->print_pop)
+    extra->print_pop(trace_file, process_id, extra);
   
+  if (extra->recvcounts != NULL)
+    xbt_free(extra->recvcounts);
+  if (extra->sendcounts != NULL)
+    xbt_free(extra->sendcounts);
+  xbt_free(extra);
+
   return;
 }
 
