@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/ex.h"
-#include "xbt_modinter.h"
+#include "src/xbt_modinter.h"
 
 /* Module creation/destruction */
 void xbt_backtrace_preinit(void)
