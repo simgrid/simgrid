@@ -225,6 +225,12 @@ void print_TIPushState(paje_event_t event)
       fprintf(trace_file, "%d ", extra->recvcounts[i]);
     fprintf(trace_file, "%d %s %s\n", extra->root, extra->datatype1, extra->datatype2);
     break;
+  case TRACING_ITERATION:
+    fprintf(trace_file, "%s iteration_in\n", process_id);
+    break;
+  case TRACING_MIGRATION_CALL: //call to MPI_Migrate using smpicc/smpirun.
+    fprintf(trace_file, "%s migrate %d\n", process_id, extra->send_size);
+    break;
   case TRACING_WAITANY:
   case TRACING_SENDRECV:
   case TRACING_SCATTER:
@@ -237,12 +243,6 @@ void print_TIPushState(paje_event_t event)
   case TRACING_COMM_DUP:
   case TRACING_SSEND:
   case TRACING_ISSEND:
-  case TRACING_ITERATION:
-    fprintf(trace_file, "%s iteration_in\n", process_id);
-    break;
-  case TRACING_MIGRATION_CALL: //call to MPI_Migrate using smpicc/smpirun.
-    fprintf(trace_file, "%s migrate %d\n", process_id, extra->send_size);
-    break;
   default:
 
     XBT_WARN
