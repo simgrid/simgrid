@@ -104,7 +104,7 @@ if(enable_model-checking AND enable_compile_optimizations)
       src/xbt/log.c src/xbt/xbt_log_appender_file.c
       src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
       src/xbt/dict.c src/xbt/dict_elm.c src/xbt/dict_multi.c src/xbt/dict_cursor.c
-      src/xbt/set.c src/xbt/setset.c
+      src/xbt/set.c 
       src/xbt/dynar.c src/xbt/fifo.c src/xbt/heap.c src/xbt/swag.c
       src/xbt/str.c src/xbt/strbuff.c src/xbt/snprintf.c
       src/xbt/queue.c

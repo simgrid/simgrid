@@ -117,7 +117,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
   src/xbt/probes.h
-  src/xbt/setset_private.h
   src/xbt/win32_ucontext.c
   tools/tesh/generate_tesh
   examples/smpi/mc/only_send_deterministic.tesh
@@ -267,7 +266,6 @@ set(XBT_SRC
   src/xbt/mallocator.c
   src/xbt/parmap.cpp
   src/xbt/set.c
-  src/xbt/setset.c
   src/xbt/snprintf.c
   src/xbt/swag.c
   src/xbt/xbt_log_appender_file.c
@@ -759,7 +757,6 @@ set(headers_to_install
   include/xbt/queue.h
   include/xbt/replay.h
   include/xbt/set.h
-  include/xbt/setset.h
   include/xbt/str.h
   include/xbt/strbuff.h
   include/xbt/swag.h

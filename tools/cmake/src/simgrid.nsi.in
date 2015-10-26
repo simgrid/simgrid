@@ -86,7 +86,6 @@ Section "Libraries and Headers" LibSection
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\graphxml.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\synchro_core.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\queue.h
-	file @CMAKE_HOME_DIRECTORY@\include\xbt\setset.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\mmalloc.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\parmap.h
 	file @CMAKE_HOME_DIRECTORY@\include\xbt\automaton.h
@@ -320,7 +319,6 @@ section "Uninstall"
 	delete $INSTDIR\include\xbt\synchro.h
 	delete $INSTDIR\include\xbt\synchro_core.h
 	delete $INSTDIR\include\xbt\queue.h
-	delete $INSTDIR\include\xbt\setset.h
 	delete $INSTDIR\include\xbt\mmalloc.h
 	delete $INSTDIR\include\xbt\replay_trace_reader.h
 	delete $INSTDIR\include\xbt\parmap.h

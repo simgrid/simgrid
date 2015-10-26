@@ -1,5 +1,8 @@
 SimGrid (3.13) UNRELEASED; urgency=low
 
+ XBT
+ * Kill the setset datacontainer: it's unused since a while.
+
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.12) stable; urgency=low
