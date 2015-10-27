@@ -337,16 +337,6 @@ void VMHL13::migrate(surf_resource_t ind_dst_pm)
 
    /* Update vcpu's action for the new pm */
    {
-#if 0
-     XBT_INFO("cpu_action->remains %g", p_action->remains);
-     XBT_INFO("cost %f remains %f start %f finish %f", p_action->cost,
-         p_action->remains,
-         p_action->start,
-         p_action->finish
-         );
-     XBT_INFO("cpu_action state %d", surf_action_get_state(p_action));
-#endif
-
      /* create a cpu action bound to the pm model at the destination. */
      CpuAction *new_cpu_action = static_cast<CpuAction*>(
     		                            static_cast<Cpu*>(sg_host_surfcpu(ind_dst_pm))->execute(0));
