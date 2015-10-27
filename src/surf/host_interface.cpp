@@ -11,7 +11,7 @@
 #include "simgrid/sg_config.h"
 
 #include "network_interface.hpp"
-#include "vm_interface.hpp"
+#include "virtual_machine.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf,
                                 "Logging specific to the SURF host module");
@@ -50,7 +50,7 @@ void HostModel::adjustWeightOfDummyCpuActions()
          VMModel::ws_vms.begin();
        iter !=  VMModel::ws_vms.end(); ++iter) {
 
-    VM *ws_vm = &*iter;
+    VirtualMachine *ws_vm = &*iter;
     CpuCas01 *cpu_cas01 = static_cast<CpuCas01*>(ws_vm->p_cpu);
     xbt_assert(cpu_cas01, "cpu-less host");
 
@@ -322,14 +322,14 @@ int Host::fileMove(surf_file_t fd, const char* fullpath){
 
 xbt_dynar_t Host::getVms()
 {
-  xbt_dynar_t dyn = xbt_dynar_new(sizeof(VM*), NULL);
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(VirtualMachine*), NULL);
 
   /* iterate for all virtual machines */
   for (VMModel::vm_list_t::iterator iter =
          VMModel::ws_vms.begin();
        iter !=  VMModel::ws_vms.end(); ++iter) {
 
-    VM *ws_vm = &*iter;
+    VirtualMachine *ws_vm = &*iter;
     if (this == ws_vm->p_subWs)
       xbt_dynar_push(dyn, &ws_vm);
   }

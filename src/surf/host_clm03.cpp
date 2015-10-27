@@ -8,7 +8,7 @@
 
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.h"
-#include "vm_interface.hpp"
+#include "virtual_machine.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 

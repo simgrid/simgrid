@@ -7,7 +7,7 @@
 #include "xbt/base.h"
 
 #include "host_clm03.hpp"
-#include "vm_interface.hpp"
+#include "virtual_machine.hpp"
 
 #ifndef SURF_VM_HPP_
 #define SURF_VM_HPP_
@@ -30,7 +30,7 @@ public:
   VMHL13Model();
   ~VMHL13Model(){};
 
-  VM *createVM(const char *name, surf_resource_t host_PM);
+  VirtualMachine *createVM(const char *name, surf_resource_t host_PM);
   double shareResources(double now);
   void adjustWeightOfDummyCpuActions() {};
   Action *executeParallelTask(int host_nb,
@@ -45,7 +45,7 @@ public:
  * Resource *
  ************/
 
-class VMHL13 : public VM {
+class VMHL13 : public VirtualMachine {
 public:
   VMHL13(VMModel *model, const char* name, xbt_dict_t props, surf_resource_t host_PM);
   ~VMHL13();

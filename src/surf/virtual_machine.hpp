@@ -19,7 +19,7 @@
  ***********/
 
 class XBT_PRIVATE VMModel;
-class XBT_PRIVATE VM;
+class XBT_PRIVATE VirtualMachine;
 
 /*************
  * Callbacks *
@@ -28,17 +28,17 @@ class XBT_PRIVATE VM;
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM creation. Signature: `void(VM*)`
  */
-extern XBT_PRIVATE surf_callback(void, VM*) VMCreatedCallbacks;
+extern XBT_PRIVATE surf_callback(void, VirtualMachine*) VMCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM destruction. Signature: `void(VM*)`
  */
-extern XBT_PRIVATE surf_callback(void, VM*) VMDestructedCallbacks;
+extern XBT_PRIVATE surf_callback(void, VirtualMachine*) VMDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks after VM State changes. Signature: `void(VMAction*)`
  */
-extern XBT_PRIVATE surf_callback(void, VM*) VMStateChangedCallbacks;
+extern XBT_PRIVATE surf_callback(void, VirtualMachine*) VMStateChangedCallbacks;
 
 /************
  * Resource *
@@ -48,7 +48,7 @@ extern XBT_PRIVATE surf_callback(void, VM*) VMStateChangedCallbacks;
  * @brief SURF VM interface class
  * @details A VM represent a virtual machine
  */
-class VM : public Host {
+class VirtualMachine : public Host {
 public:
   /**
    * @brief Constructor
@@ -59,11 +59,11 @@ public:
    * @param netElm The RoutingEdge associated to this VM
    * @param cpu The Cpu associated to this VM
    */
-  VM(Model *model, const char *name, xbt_dict_t props,
+  VirtualMachine(Model *model, const char *name, xbt_dict_t props,
 		        RoutingEdge *netElm, Cpu *cpu);
 
   /** @brief Destructor */
-  ~VM();
+  ~VirtualMachine();
 
   void setState(e_surf_resource_state_t state);
 
@@ -117,12 +117,12 @@ public:
    * @param host_PM The real machine hosting the VM
    *
    */
-  virtual VM *createVM(const char *name, surf_resource_t host_PM)=0;
+  virtual VirtualMachine *createVM(const char *name, surf_resource_t host_PM)=0;
   void adjustWeightOfDummyCpuActions() {};
 
   typedef boost::intrusive::member_hook<
-    VM, boost::intrusive::list_member_hook<>, &VM::vm_hook> VmOptions;
-  typedef boost::intrusive::list<VM, VmOptions, boost::intrusive::constant_time_size<false> > vm_list_t;
+    VirtualMachine, boost::intrusive::list_member_hook<>, &VirtualMachine::vm_hook> VmOptions;
+  typedef boost::intrusive::list<VirtualMachine, VmOptions, boost::intrusive::constant_time_size<false> > vm_list_t;
   static vm_list_t ws_vms;
 };
 

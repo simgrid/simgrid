@@ -10,7 +10,7 @@
 #include "surf_routing_cluster.hpp"
 #include "src/instr/instr_private.h"
 #include "plugins/energy.hpp"
-#include "vm_interface.hpp"
+#include "virtual_machine.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
@@ -22,8 +22,8 @@ static Host *get_casted_host(surf_resource_t resource){
   return static_cast<Host*>(surf_host_resource_priv(resource));
 }
 
-static VM *get_casted_vm(surf_resource_t resource){
-  return static_cast<VM*>(surf_host_resource_priv(resource));
+static VirtualMachine *get_casted_vm(surf_resource_t resource){
+  return static_cast<VirtualMachine*>(surf_host_resource_priv(resource));
 }
 
 extern double NOW;
@@ -374,7 +374,7 @@ xbt_dynar_t surf_host_get_vms(surf_resource_t host){
   xbt_dynar_t vms = get_casted_host(host)->getVms();
   xbt_dynar_t vms_ = xbt_dynar_new(sizeof(sg_host_t), NULL);
   unsigned int cpt;
-  VM *vm;
+  VirtualMachine *vm;
   xbt_dynar_foreach(vms, cpt, vm) {
     sg_host_t vm_ = xbt_lib_get_elm_or_null(host_lib, vm->getName());
     xbt_dynar_push(vms_, &vm_);
@@ -393,7 +393,7 @@ void surf_host_set_params(surf_resource_t host, vm_params_t params){
 
 void surf_vm_destroy(surf_resource_t resource){
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  VM *vm = get_casted_vm(resource);
+  VirtualMachine *vm = get_casted_vm(resource);
   char* name = xbt_dict_get_elm_key(resource);
   /* We deregister objects from host_lib, without invoking the freeing callback
    * of each level.

@@ -30,16 +30,8 @@ void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
  * structure (i.e not on the surf_resource_private infos) */
 
-VM *VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
-{
-  VMHL13 *ws = new VMHL13(this, name, NULL, host_PM);
-
-  xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, ws);
-
-  /* TODO:
-   * - check how network requests are scheduled between distinct processes competing for the same card.
-   */
-  return ws;
+VirtualMachine *VMHL13Model::createVM(const char *name, surf_resource_t host_PM) {
+  return new VMHL13(this, name, NULL, host_PM);
 }
 
 static inline double get_solved_value(CpuAction *cpu_action)
@@ -56,7 +48,7 @@ const double virt_overhead = 1;
 
 double VMHL13Model::shareResources(double now)
 {
-  /* TODO: udpate action's cost with the total cost of processes on the VM. */
+  /* TODO: update action's cost with the total cost of processes on the VM. */
 
 
   /* 0. Make sure that we already calculated the resource share at the physical
@@ -103,7 +95,7 @@ double VMHL13Model::shareResources(double now)
          VMModel::ws_vms.begin();
        iter !=  VMModel::ws_vms.end(); ++iter) {
 
-    VM *ws_vm = &*iter;
+    VirtualMachine *ws_vm = &*iter;
     Cpu *cpu = ws_vm->p_cpu;
     xbt_assert(cpu, "cpu-less host");
 
@@ -211,7 +203,7 @@ Action *VMHL13Model::executeParallelTask(int host_nb,
 
 VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
 		                                   surf_resource_t host_PM)
- : VM(model, name, props, NULL, NULL)
+ : VirtualMachine(model, name, props, NULL, NULL)
 {
   Host *sub_ws = static_cast<Host*>(surf_host_resource_priv(host_PM));
 
@@ -253,6 +245,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
   p_action = sub_cpu->execute(0);
 
   XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, sub_ws->getName(), xbt_dynar_length(p_storage));
+
 }
 
 /*

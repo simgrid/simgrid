@@ -13,7 +13,7 @@
 #include "surf_routing.hpp"
 #include "simgrid/sg_config.h"
 #include "mc/mc.h"
-#include "vm_interface.hpp"
+#include "virtual_machine.hpp"
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
