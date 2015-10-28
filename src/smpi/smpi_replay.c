@@ -214,7 +214,7 @@ const char* encode_datatype(MPI_Datatype datatype)
   }
 
 
-static void action_init(const char *const *action)
+void action_init(const char *const *action)
 {
   int i;
   XBT_DEBUG("Initialize the counters");
@@ -244,11 +244,11 @@ static void action_init(const char *const *action)
 //}
 }
 
-static void action_finalize(const char *const *action)
+void action_finalize(const char *const *action)
 {
 }
 
-static void action_comm_size(const char *const *action)
+void action_comm_size(const char *const *action)
 {
   double clock = smpi_process_simulated_elapsed();
 
@@ -256,21 +256,21 @@ static void action_comm_size(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_comm_split(const char *const *action)
+void action_comm_split(const char *const *action)
 {
   double clock = smpi_process_simulated_elapsed();
 
   log_timed_action (action, clock);
 }
 
-static void action_comm_dup(const char *const *action)
+void action_comm_dup(const char *const *action)
 {
   double clock = smpi_process_simulated_elapsed();
 
   log_timed_action (action, clock);
 }
 
-static void action_compute(const char *const *action)
+void action_compute(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 1, 1);
   double clock = smpi_process_simulated_elapsed();
@@ -302,7 +302,7 @@ static void action_compute(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_send(const char *const *action)
+void action_send(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 3, 1);
   int to = atoi(action[2]);
@@ -346,7 +346,7 @@ static void action_send(const char *const *action)
 
 }
 
-static void action_Isend(const char *const *action)
+void action_Isend(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 3, 1);
   int to = atoi(action[2]);
@@ -387,7 +387,7 @@ static void action_Isend(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_recv(const char *const *action) {
+void action_recv(const char *const *action) {
   CHECK_ACTION_PARAMS(action, 3, 1);
   int from = atoi(action[2]);
   int tag = atoi(action[3]);
@@ -431,7 +431,7 @@ static void action_recv(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_Irecv(const char *const *action)
+void action_Irecv(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 3, 1);
   int from = atoi(action[2]);
@@ -476,7 +476,7 @@ static void action_Irecv(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_test(const char *const *action){
+void action_test(const char *const *action){
   CHECK_ACTION_PARAMS(action, 3, 0);
   int src = atoi(action[2]);
   int dst = atoi(action[3]);
@@ -527,7 +527,7 @@ static void action_test(const char *const *action){
   log_timed_action (action, clock);
 }
 
-static void action_wait(const char *const *action){
+void action_wait(const char *const *action){
   CHECK_ACTION_PARAMS(action, 3, 0);
   int src = atoi(action[2]);
   int dst = atoi(action[3]);
@@ -585,7 +585,7 @@ static void action_wait(const char *const *action){
   log_timed_action (action, clock);
 }
 
-static void action_waitall(const char *const *action){
+void action_waitall(const char *const *action){
   CHECK_ACTION_PARAMS(action, 0, 0);
   double clock = smpi_process_simulated_elapsed();
   int count_requests=0;
@@ -674,7 +674,7 @@ static void action_waitall(const char *const *action){
   log_timed_action (action, clock);
 }
 
-static void action_barrier(const char *const *action){
+void action_barrier(const char *const *action){
   double clock = smpi_process_simulated_elapsed();
 #ifdef HAVE_TRACING
   int rank = smpi_process_index();
@@ -691,7 +691,7 @@ static void action_barrier(const char *const *action){
 }
 
 
-static void action_bcast(const char *const *action)
+void action_bcast(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 1, 2);
   double size = parse_double(action[2]);
@@ -730,7 +730,7 @@ static void action_bcast(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_reduce(const char *const *action)
+void action_reduce(const char *const *action)
 {
   CHECK_ACTION_PARAMS(action, 2, 2);
   double comm_size = parse_double(action[2]);
@@ -770,7 +770,7 @@ static void action_reduce(const char *const *action)
   log_timed_action (action, clock);
 }
 
-static void action_allReduce(const char *const *action) {
+void action_allReduce(const char *const *action) {
   CHECK_ACTION_PARAMS(action, 2, 1);
   double comm_size = parse_double(action[2]);
   double comp_size = parse_double(action[3]);
@@ -799,7 +799,7 @@ static void action_allReduce(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_allToAll(const char *const *action) {
+void action_allToAll(const char *const *action) {
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   int send_size = parse_double(action[2]);
@@ -839,7 +839,7 @@ static void action_allToAll(const char *const *action) {
 }
 
 
-static void action_gather(const char *const *action) {
+void action_gather(const char *const *action) {
   /*
  The structure of the gather action for the rank 0 (total 4 processes) 
  is the following:   
@@ -899,7 +899,7 @@ static void action_gather(const char *const *action) {
 
 
 
-static void action_gatherv(const char *const *action) {
+void action_gatherv(const char *const *action) {
   /*
  The structure of the gatherv action for the rank 0 (total 4 processes)
  is the following:
@@ -970,7 +970,7 @@ smpi_mpi_gatherv(send, send_size, MPI_CURRENT_TYPE,
   xbt_free(disps);
 }
 
-static void action_reducescatter(const char *const *action) {
+void action_reducescatter(const char *const *action) {
 
     /*
  The structure of the reducescatter action for the rank 0 (total 4 processes) 
@@ -1035,7 +1035,7 @@ static void action_reducescatter(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_allgather(const char *const *action) {
+void action_allgather(const char *const *action) {
   /*
  The structure of the allgather action for the rank 0 (total 4 processes) 
  is the following:   
@@ -1089,7 +1089,7 @@ static void action_allgather(const char *const *action) {
   log_timed_action (action, clock);
 }
 
-static void action_allgatherv(const char *const *action) {
+void action_allgatherv(const char *const *action) {
 
   /*
  The structure of the allgatherv action for the rank 0 (total 4 processes) 
@@ -1156,7 +1156,7 @@ static void action_allgatherv(const char *const *action) {
   xbt_free(disps);
 }
 
-static void action_allToAllv(const char *const *action) {
+void action_allToAllv(const char *const *action) {
   /*
  The structure of the allToAllV action for the rank 0 (total 4 processes) 
  is the following:   

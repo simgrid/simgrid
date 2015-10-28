@@ -787,6 +787,48 @@ int smpi_process_index_of_smx_process(smx_process_t process) {
 void smpi_replay_process_migrate(smx_process_t process, smx_host_t new_host, int size);
 /*****************************************************************************/
 
+/*************************** Actions for SMPI replay *************************/
+
+/*
+ * We need to have these functions in a header, in order to allow them
+ * to be customized. The custom action should be able to call the original one.
+ */
+
+void action_init(const char *const *action);
+void action_finalize(const char *const *action);
+void action_comm_size(const char *const *action);
+void action_comm_split(const char *const *action);
+void action_comm_dup(const char *const *action);
+void action_send(const char *const *action);
+void action_Isend(const char *const *action);
+void action_Isend(const char *const *action);
+void action_recv(const char *const *action);
+void action_Irecv(const char *const *action);
+void action_Irecv(const char *const *action);
+void action_test(const char *const *action);
+void action_wait(const char *const *action);
+void action_waitall(const char *const *action);
+void action_waitall(const char *const *action);
+void action_barrier(const char *const *action);
+void action_bcast(const char *const *action);
+void action_reduce(const char *const *action);
+void action_allReduce(const char *const *action);
+void action_allReduce(const char *const *action);
+void action_allToAll(const char *const *action);
+void action_allToAll(const char *const *action);
+void action_allToAllv(const char *const *action);
+void action_allToAllv(const char *const *action);
+void action_gather(const char *const *action);
+void action_gatherv(const char *const *action);
+void action_gatherv(const char *const *action);
+void action_allgather(const char *const *action);
+void action_allgather(const char *const *action);
+void action_allgatherv(const char *const *action);
+void action_allgatherv(const char *const *action);
+void action_reducescatter(const char *const *action);
+void action_reducescatter(const char *const *action);
+void action_compute(const char *const *action);
+
 SG_END_DECL()
 
 #endif
