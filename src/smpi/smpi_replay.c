@@ -9,7 +9,6 @@
 #include <math.h>
 #include <xbt.h>
 #include <xbt/replay.h>
-#include "surf/surf.h" //needed by the function hosts_as_dynar.
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
@@ -213,30 +212,6 @@ const char* encode_datatype(MPI_Datatype datatype)
           "This action needs after them %d mandatory arguments, and accepts %d optional ones. \n" \
           "Please contact the Simgrid team if support is needed", __FUNCTION__, i, mandatory, optional);\
   }
-
-/* Function that returns a dynar containing all hosts that have processes 
- * assigned to them. */
-xbt_dynar_t hosts_as_dynar(void)
-{
-  xbt_lib_cursor_t cursor;
-  char *key;
-  char **data;
-  xbt_dictelm_t elm;
-  xbt_dynar_t hosts = xbt_dynar_new(sizeof(smx_host_t), NULL);
-
-  xbt_lib_foreach(host_lib, cursor, key, data){
-    if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST){
-      elm = xbt_dict_cursor_get_elm(cursor);
-      
-      /* host_lib contains all hosts listed in the hostfile. We only want the
-       * ones that have processes assigned to them. */
-      if(xbt_swag_size(simcall_host_get_process_list((smx_host_t) elm))){
-	xbt_dynar_push(hosts, &elm);
-      }
-    }
-  }
-  return hosts;
-}
 
 
 static void action_init(const char *const *action)
