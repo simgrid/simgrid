@@ -23,7 +23,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {
-  [SIMCALL_HOST_GET_NAME] = "SIMCALL_HOST_GET_NAME",
   [SIMCALL_HOST_ON] = "SIMCALL_HOST_ON",
   [SIMCALL_HOST_OFF] = "SIMCALL_HOST_OFF",
   [SIMCALL_HOST_GET_PROPERTIES] = "SIMCALL_HOST_GET_PROPERTIES",
@@ -168,11 +167,6 @@ void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
     return;
   switch (simcall->call) {
-case SIMCALL_HOST_GET_NAME:
-      simcall->result.cc = SIMIX_host_get_name((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_HOST_ON:
        SIMIX_host_on((sg_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);

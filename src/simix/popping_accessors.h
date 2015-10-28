@@ -14,19 +14,6 @@
  */
 
 
-static inline sg_host_t simcall_host_get_name__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[0].dp;
-}
-static inline void simcall_host_get_name__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline const char* simcall_host_get_name__get__result(smx_simcall_t simcall){
-    return  simcall->result.cc;
-}
-static inline void simcall_host_get_name__set__result(smx_simcall_t simcall, const char* result){
-    simcall->result.cc = result;
-}
-
 static inline sg_host_t simcall_host_on__get__host(smx_simcall_t simcall) {
   return (sg_host_t) simcall->args[0].dp;
 }

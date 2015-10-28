@@ -46,7 +46,6 @@
 # ./include/simgrid/simix.h (otherwise you will get a warning at the
 # compilation time)
 
-Func - host_get_name (const char*) (host, void*, sg_host_t)
 Proc - host_on (void) (host, void*, sg_host_t)
 Proc H host_off (void) (host, void*, sg_host_t)
 Func - host_get_properties (void*, xbt_dict_t) (host, void*, sg_host_t)

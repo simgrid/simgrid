@@ -298,7 +298,6 @@ XBT_PUBLIC(void) SIMIX_comm_finish(smx_synchro_t synchro);
 
 /******************************* Host simcalls ********************************/
 /* TODO use handlers and keep sg_host_t hidden from higher levels */
-XBT_PUBLIC(const char *) simcall_host_get_name(sg_host_t host);
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_properties(sg_host_t host);
 XBT_PUBLIC(void) simcall_host_on(sg_host_t host);
 XBT_PUBLIC(void) simcall_host_off(sg_host_t host);

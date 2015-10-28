@@ -24,18 +24,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 /**
  * \ingroup simix_host_management
- * \brief Returns the name of a host.
- *
- * \param host A SIMIX host
- * \return The name of this host
- */
-const char* simcall_host_get_name(sg_host_t host)
-{
-  return simcall_BODY_host_get_name(host);
-}
-
-/**
- * \ingroup simix_host_management
  * \brief Start the host if it is off
  *
  * \param host A SIMIX host
