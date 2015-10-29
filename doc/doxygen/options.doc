@@ -254,7 +254,7 @@ deployment of processes on nodes.
 
 \subsubsection options_model_network_crosstraffic Simulating cross-traffic
 
-As of SimGrid v3.7, cross-traffic effects can be taken into account in
+%As of SimGrid v3.7, cross-traffic effects can be taken into account in
 analytical simulations. It means that ongoing and incoming
 communication flows are treated independently. In addition, the LV08
 model adds 0.05 of usage on the opposite direction for each new
