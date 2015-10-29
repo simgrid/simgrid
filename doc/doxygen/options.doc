@@ -534,8 +534,8 @@ phase.
 
 \subsection options_virt_factory Selecting the virtualization factory
 
-In SimGrid, the user code is virtualized in a specific mecanism
-allowing the simulation kernel to control its execution: when a user
+In SimGrid, the user code is virtualized in a specific mechanism
+that allows the simulation kernel to control its execution: when a user
 process requires a blocking action (such as sending a message), it is
 interrupted, and only gets released when the simulated clock reaches
 the point where the blocking operation is done.
@@ -555,6 +555,10 @@ to the most effient:
  - \b raw: amazingly fast factory using a context switching mecanism
    of our own, directly implemented in assembly (only available for x86
    and amd64 platforms for now)
+ - \b boost: This uses the [context implementation](http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html)
+             of the boost library; you must have this library installed before
+             you compile SimGrid. (On Debian GNU/Linux based systems, this is
+             provided by the libboost-contexts-dev package.)
 
 The only reason to change this setting is when the debugging tools get
 fooled by the optimized context factories. Threads are the most
