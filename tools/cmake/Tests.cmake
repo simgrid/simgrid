@@ -11,16 +11,6 @@ IF(enable_smpi AND NOT WIN32)
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun" OUTPUT_VARIABLE "OKITOKI")
 ENDIF()
 
-### For code coverage
-### Set some variables
-SET(UPDATE_TYPE "svn")
-SET(DROP_METHOD "http")
-SET(DROP_SITE "cdash.inria.fr/CDash")
-SET(DROP_LOCATION "/submit.php?project=${PROJECT_NAME}")
-SET(DROP_SITE_CDASH TRUE)
-SET(TRIGGER_SITE "http://cdash.inria.fr/CDash/cgi-bin/Submit-Random-TestingResults.cgi")
-#If you use the --read-var-info option Memcheck will run more slowly but may give a more detailed description of any illegal address.
-
 SET(TESH_COMMAND ${PERL_EXECUTABLE} ${CMAKE_BINARY_DIR}/bin/tesh)
 IF(CMAKE_HOST_WIN32)
   SET(TESH_OPTION $TESH_OPTION --timeout 50)
