@@ -96,12 +96,17 @@ void SIMIX_context_mod_init(void)
 #ifdef HAVE_RAWCTX
         XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
 #else
-        XBT_ERROR("  (raw contexts are disabled at compilation time on this machine -- check configure logs for details)");
+        XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
 #endif
 #ifdef CONTEXT_UCONTEXT
         XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
 #else
-        XBT_ERROR("  (ucontext is disabled at compilation time on this machine -- check configure logs for details)");
+        XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
+#endif
+#ifdef HAVE_BOOST_CONTEXT
+        XBT_ERROR("  boost: this uses the boost libraries context implementation");
+#else
+        XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you install the libboost-context-dev package?)");
 #endif
         XBT_ERROR("  thread: slow portability layer using system threads (pthreads on UNIX, CreateThread() on windows)");
         xbt_die("Please use a valid factory.");
