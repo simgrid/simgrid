@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6) # Java requires 2.8.6
+cmake_minimum_required(VERSION 2.8.8)
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
 
