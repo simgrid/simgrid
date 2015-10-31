@@ -717,8 +717,8 @@ void routing_model_create( void *loopback)
 void routing_cluster_add_backbone(void* bb) {
   xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER],
         "You have to be in model Cluster to use tag backbone!");
-  xbt_assert(!surf_as_cluster_get_backbone(current_routing), "The backbone link is already defined!");
-  surf_as_cluster_set_backbone(current_routing, bb);
+  xbt_assert(!static_cast<AsCluster*>(current_routing)->p_backbone, "The backbone link is already defined!");
+  static_cast<AsCluster*>(current_routing)->p_backbone = static_cast<Link*>(bb);
   XBT_DEBUG("Add a backbone to AS '%s'", current_routing->p_name);
 }
 

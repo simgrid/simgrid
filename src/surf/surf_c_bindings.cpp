@@ -177,14 +177,6 @@ surf_model_t surf_resource_model(const void *host, int level) {
   return ws->getModel();
 }
 
-void *surf_as_cluster_get_backbone(AS_t as){
-  return static_cast<AsCluster*>(as)->p_backbone;
-}
-
-void surf_as_cluster_set_backbone(AS_t as, void* backbone){
-  static_cast<AsCluster*>(as)->p_backbone = static_cast<Link*>(backbone);
-}
-
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
   if (model->getDoneActionSet()->empty())
 	return NULL;

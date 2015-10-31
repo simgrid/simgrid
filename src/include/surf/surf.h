@@ -187,9 +187,6 @@ static inline void *surf_storage_resource_by_name(const char *name){
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
 
-XBT_PUBLIC(void *) surf_as_cluster_get_backbone(AS_t as);
-XBT_PUBLIC(void) surf_as_cluster_set_backbone(AS_t as, void* backbone);
-
 /** @{ @ingroup SURF_c_bindings */
 
 /**
