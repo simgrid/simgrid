@@ -23,67 +23,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
  * Utils *
  *********/
 
-/* This function is a pimple that we ought to fix. But it won't be easy.
- *
- * The surf_solve() function does properly return the set of actions that
- * changed. Instead, each model change a global data, and then the caller of
- * surf_solve must pick into these sets of action_failed and action_done.
- *
- * This was not clean but ok as long as we didn't had to restart the processes
- * when the resource comes back up.
- * We worked by putting sentinel actions on every resources we are interested
- * in, so that surf informs us if/when the corresponding resource fails.
- *
- * But this does not work to get Simix informed of when a resource comes back
- * up, and this is where this pimple comes. We have a set of resources that are
- * currently down and for which simix needs to know when it comes back up.
- * And the current function is called *at every simulation step* to sweep over
- * that set, searching for a resource that was turned back up in the meanwhile.
- * This is UGLY and slow.
- *
- * The proper solution would be to not rely on globals for the action_failed and
- * action_done swags. They must be passed as parameter by the caller (the
- * handling of these actions in simix may let you think that these two sets can
- * be merged, but their handling in SimDag induce the contrary unless this
- * simdag code can check by itself whether the action is done of failed -- seems
- * very doable, but yet more cleanup to do).
- *
- * Once surf_solve() is passed the set of actions that changed, you want to add
- * a new set of resources back up as parameter to this function. You also want
- * to add a boolean field "restart_watched" to each resource, and make sure that
- * whenever a resource with this field enabled comes back up, it's added to that
- * set so that Simix sees it and react accordingly. This would kill that need
- * for surf to call simix.
- *
- */
-
-/*static void remove_watched_host(void *key)
-{
-  xbt_dict_remove(watched_hosts_lib, *(char**)key);
-}*/
-
-/*void surf_watched_hosts(void)
-{
-  char *key;
-  void *host;
-  xbt_dict_cursor_t cursor;
-  xbt_dynar_t hosts = xbt_dynar_new(sizeof(char*), NULL);
-
-  XBT_DEBUG("Check for host SURF_RESOURCE_ON on watched_hosts_lib");
-  xbt_dict_foreach(watched_hosts_lib, cursor, key, host)
-  {
-    if(SIMIX_host_get_state((smx_host_t)host) == SURF_RESOURCE_ON){
-      XBT_INFO("Restart processes on host: %s", SIMIX_host_get_name((smx_host_t)host));
-      SIMIX_host_autorestart((smx_host_t)host);
-      xbt_dynar_push_as(hosts, char*, key);
-    }
-    else
-      XBT_DEBUG("See SURF_RESOURCE_OFF on host: %s",key);
-  }
-  xbt_dynar_map(hosts, remove_watched_host);
-  xbt_dynar_free(&hosts);
-}*/
-
 /* model_list_invoke contains only surf_host and surf_vm.
  * The callback functions of cpu_model and network_model will be called from
  * those of these host models. */
