@@ -192,12 +192,6 @@ XBT_PUBLIC(void) surf_as_cluster_set_backbone(AS_t as, void* backbone);
 
 /** @{ @ingroup SURF_c_bindings */
 
-/** @brief Get the name of a surf model (dont rely on exact value)
- *
- * This is implemented using typeid(), so it may change with the compiler
- */
-XBT_PUBLIC(const char *) surf_model_name(surf_model_t model);
-
 /**
  * @brief Pop an action from the done actions set
  *

@@ -73,7 +73,7 @@ void test(char *platform)
     XBT_DEBUG("Next Event : %g", now);
 
     xbt_dynar_foreach(model_list, iter, model) {
-      XBT_DEBUG("\t %s actions", surf_model_name(model));
+      XBT_DEBUG("\t Actions");
       while ((action = surf_model_extract_failed_action_set((surf_model_t)model))) {
         XBT_DEBUG("\t * Failed : %p", action);
         surf_action_unref(action);
@@ -83,7 +83,7 @@ void test(char *platform)
         surf_action_unref(action);
       }
       if (surf_model_running_action_set_size((surf_model_t)model)) {
-        XBT_DEBUG("running %s", surf_model_name(model));
+        XBT_DEBUG("running that model");
         running = 1;
       }
     }

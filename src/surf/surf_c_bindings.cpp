@@ -185,10 +185,6 @@ void surf_as_cluster_set_backbone(AS_t as, void* backbone){
   static_cast<AsCluster*>(as)->p_backbone = static_cast<Link*>(backbone);
 }
 
-const char *surf_model_name(surf_model_t model){
-  return typeid(model).name();
-}
-
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
   if (model->getDoneActionSet()->empty())
 	return NULL;
