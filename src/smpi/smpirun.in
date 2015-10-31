@@ -291,7 +291,7 @@ fi
 
 if [ -z "${HOSTFILE}" ] ; then
     HOSTFILETMP=1
-    HOSTFILE="$(mktemp tmphostXXXXXX)"
+    HOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
     perl -ne 'print "$1\n" if /.*<host.*?id="(.*?)".*?\/>.*/' ${PLATFORM} > ${HOSTFILE}
     perl -ne 'if (/.*<cluster.*?prefix="(.*?)".*?radical="(.*?)".*?suffix="(.*?)".*/) { 
                 my ($pre,$rad,$post)=($1,$2,$3); 
@@ -314,7 +314,7 @@ UNROLLEDHOSTFILETMP=0
 multiple_processes=`grep -c ":" $HOSTFILE`
 if [ "${multiple_processes}" -gt 0 ] ; then
     UNROLLEDHOSTFILETMP=1
-    UNROLLEDHOSTFILE="$(mktemp tmphostXXXXXX)"
+    UNROLLEDHOSTFILE="$(mktemp smpitmp-hostfXXXXXX)"
     perl -ne ' do{ for ( 1 .. $2 ) { print "$1\n" } } if /(.*?):(\d+).*/'  ${HOSTFILE}  > ${UNROLLEDHOSTFILE}
     if [ ${HOSTFILETMP} = 1 ] ; then
         rm ${HOSTFILE}
@@ -343,7 +343,7 @@ fi
 
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
 if [ -z "${PLATFORM}" ]; then
-    PLATFORMTMP="$(mktemp tmpXXXXXX)"
+    PLATFORMTMP="$(mktemp smpitmp-platfXXXXXX)"
 
     cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
@@ -385,7 +385,7 @@ fi
 ##-------------------------------- end DEFAULT or SPECIFIED PLATFORM --------------------------------------
 
 ##-------------------------------- DEFAULT APPLICATION --------------------------------------
-APPLICATIONTMP="$(mktemp tmpXXXXXX)"
+APPLICATIONTMP="$(mktemp smpitmp-appXXXXXX)"
 #APPLICATIONTMP="app.xml"
 
 
