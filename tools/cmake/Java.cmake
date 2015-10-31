@@ -3,8 +3,6 @@
 ##   This file is loaded only if the Java option is activated
 ##
 
-cmake_minimum_required(VERSION 2.8.6)
-
 find_package(Java 1.7 REQUIRED)
 include(UseJava)
 
@@ -12,23 +10,17 @@ include(UseJava)
 #
 add_library(simgrid-java SHARED ${JMSG_C_SRC})
 set_target_properties(simgrid-java PROPERTIES VERSION ${libsimgrid-java_version})
-if (CMAKE_VERSION VERSION_LESS "2.8.8")
-  include_directories(${JNI_INCLUDE_DIRS})
 
-  message("[Java] Try to workaround missing feature in older CMake. You should better update CMake to version 2.8.8 or above.")
-  get_directory_property(CHECK_INCLUDES INCLUDE_DIRECTORIES)
+get_target_property(COMMON_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
+if (COMMON_INCLUDES)
+  set_target_properties(simgrid-java PROPERTIES
+    INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
 else()
-  get_target_property(COMMON_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
-  if (COMMON_INCLUDES)
-    set_target_properties(simgrid-java PROPERTIES
-      INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
-  else()
-    set_target_properties(simgrid-java PROPERTIES
-      INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
-  endif()
-
-  get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
+  set_target_properties(simgrid-java PROPERTIES
+    INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
 endif()
+
+get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
 message("-- [Java] simgrid-java includes: ${CHECK_INCLUDES}")
 
 target_link_libraries(simgrid-java simgrid)
