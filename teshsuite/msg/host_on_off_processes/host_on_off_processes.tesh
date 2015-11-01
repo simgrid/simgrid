@@ -7,7 +7,8 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Jupiter:process_daemon:(2) 1.000000] [msg_test/INFO]   Execute daemon
 > [Jupiter:process_daemon:(2) 2.000000] [msg_test/INFO]   Execute daemon
 > [Tremblay:test_launcher:(1) 3.000000] [msg_test/INFO]   Turn off Jupiter
-> [Tremblay:test_launcher:(1) 13.000000] [msg_test/INFO] Test 1 seems ok, cool !(number of Process : 1, it should be 1 (i.e. the Test one))
+> [Jupiter:process_daemon:(2) 3.000000] [msg_test/INFO]   Execute daemon
+> [Tremblay:test_launcher:(1) 13.000000] [msg_test/INFO] Test 1 seems ok, cool !(#Processes: 1, it should be 1; #tasks: 3)
 > [Tremblay:test_launcher:(1) 13.000000] [msg_test/INFO]   Test done. See you!
 > [13.000000] [msg_test/INFO] Simulation time 13
 

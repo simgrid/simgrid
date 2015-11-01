@@ -21,6 +21,7 @@ int commRX(int argc, char *argv[]);
 int commTX(int argc, char *argv[]);
 
 xbt_dynar_t tests;
+int tasks_done = 0;
 
 int test_launcher(int argc, char *argv[])
 {
@@ -42,7 +43,7 @@ int test_launcher(int argc, char *argv[])
     XBT_INFO("  Turn off Jupiter");
     MSG_host_off(jupiter);
     MSG_process_sleep(10);
-    XBT_INFO("Test 1 seems ok, cool !(number of Process : %d, it should be 1 (i.e. the Test one))", MSG_process_get_number());
+    XBT_INFO("Test 1 seems ok, cool !(#Processes: %d, it should be 1; #tasks: %d)", MSG_process_get_number(), tasks_done);
   }
 
   test = 2;
@@ -172,7 +173,6 @@ int test_launcher(int argc, char *argv[])
   return 0;
 }
 
-// adsein: Is this really a daemon ? it ran only one task ? I just added a stupid loop
 int process_daemon(int argc, char *argv[])
 {
   msg_task_t task = NULL;
@@ -182,6 +182,7 @@ int process_daemon(int argc, char *argv[])
     XBT_INFO("  Execute daemon");
     MSG_task_execute(task);
     MSG_task_destroy(task);
+    tasks_done ++;
   }
   XBT_INFO("  daemon done. See you!");
   return 0;
