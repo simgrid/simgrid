@@ -236,7 +236,7 @@ double MSG_get_host_speed(msg_host_t h)
 {
   xbt_assert((h != NULL), "Invalid parameters");
 
-  return (simcall_host_get_speed(h));
+  return (sg_host_get_speed(h));
 }
 
 

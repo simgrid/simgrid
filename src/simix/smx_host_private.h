@@ -40,8 +40,6 @@ XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 XBT_PRIVATE xbt_dict_t SIMIX_host_get_properties(sg_host_t host);
 XBT_PRIVATE int SIMIX_host_get_core(sg_host_t host);
 XBT_PRIVATE xbt_swag_t SIMIX_host_get_process_list(sg_host_t host);
-XBT_PRIVATE double SIMIX_host_get_speed(sg_host_t host);
-XBT_PRIVATE double SIMIX_host_get_available_speed(sg_host_t host);
 XBT_PRIVATE int SIMIX_host_get_state(sg_host_t host);
 XBT_PRIVATE double SIMIX_host_get_current_power_peak(sg_host_t host);
 XBT_PRIVATE double SIMIX_host_get_power_peak_at(sg_host_t host, int pstate_index);

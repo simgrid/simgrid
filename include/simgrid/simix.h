@@ -303,8 +303,6 @@ XBT_PUBLIC(void) simcall_host_on(sg_host_t host);
 XBT_PUBLIC(void) simcall_host_off(sg_host_t host);
 XBT_PUBLIC(int) simcall_host_get_core(sg_host_t host);
 XBT_PUBLIC(xbt_swag_t) simcall_host_get_process_list(sg_host_t host);
-XBT_PUBLIC(double) simcall_host_get_speed(sg_host_t host);
-XBT_PUBLIC(double) simcall_host_get_available_speed(sg_host_t host);
 /* Two possible states, 1 - CPU ON and 0 CPU OFF */
 XBT_PUBLIC(int) simcall_host_get_state(sg_host_t host);
 XBT_PUBLIC(void *) simcall_host_get_data(sg_host_t host);

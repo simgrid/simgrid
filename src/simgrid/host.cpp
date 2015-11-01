@@ -122,14 +122,12 @@ void sg_host_edge_destroy(sg_host_t host, int do_callback) {
 }
 
 
-
-/*
-host::host() {
-	// TODO Auto-generated constructor stub
-
+// =========== user-level functions ===============
+// ================================================
+double sg_host_get_speed(sg_host_t host){
+  return surf_host_get_speed(host, 1.0);
 }
 
-host::~host() {
-	// TODO Auto-generated destructor stub
-}*/
-
+double sg_host_get_available_speed(sg_host_t host){
+  return surf_host_get_available_speed(host);
+}

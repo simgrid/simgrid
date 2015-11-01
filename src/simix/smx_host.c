@@ -166,9 +166,6 @@ xbt_dict_t SIMIX_host_get_properties(sg_host_t host){
   return surf_host_get_properties(surf_host_resource_priv(host));
 }
 
-double SIMIX_host_get_speed(sg_host_t host){
-  return surf_host_get_speed(host, 1.0);
-}
 
 int SIMIX_host_get_core(sg_host_t host){
   return surf_host_get_core(host);
@@ -180,10 +177,6 @@ xbt_swag_t SIMIX_host_get_process_list(sg_host_t host){
   return host_priv->process_list;
 }
 
-
-double SIMIX_host_get_available_speed(sg_host_t host){
-  return surf_host_get_available_speed(host);
-}
 
 double SIMIX_host_get_current_power_peak(sg_host_t host) {
 	  return surf_host_get_current_power_peak(host);
@@ -354,7 +347,7 @@ smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
      * surf layer should not be zero (i.e., unlimited). It should be the
      * capacity of a CPU core. */
     if (bound == 0)
-      surf_cpu_action_set_bound(synchro->execution.surf_exec, SIMIX_host_get_speed(issuer->host));
+      surf_cpu_action_set_bound(synchro->execution.surf_exec, sg_host_get_speed(issuer->host));
     else
       surf_cpu_action_set_bound(synchro->execution.surf_exec, bound);
 

@@ -28,8 +28,6 @@ const char* simcall_names[] = {
   [SIMCALL_HOST_GET_PROPERTIES] = "SIMCALL_HOST_GET_PROPERTIES",
   [SIMCALL_HOST_GET_CORE] = "SIMCALL_HOST_GET_CORE",
   [SIMCALL_HOST_GET_PROCESS_LIST] = "SIMCALL_HOST_GET_PROCESS_LIST",
-  [SIMCALL_HOST_GET_SPEED] = "SIMCALL_HOST_GET_SPEED",
-  [SIMCALL_HOST_GET_AVAILABLE_SPEED] = "SIMCALL_HOST_GET_AVAILABLE_SPEED",
   [SIMCALL_HOST_GET_STATE] = "SIMCALL_HOST_GET_STATE",
   [SIMCALL_HOST_GET_CURRENT_POWER_PEAK] = "SIMCALL_HOST_GET_CURRENT_POWER_PEAK",
   [SIMCALL_HOST_GET_POWER_PEAK_AT] = "SIMCALL_HOST_GET_POWER_PEAK_AT",
@@ -189,16 +187,6 @@ case SIMCALL_HOST_GET_CORE:
 
 case SIMCALL_HOST_GET_PROCESS_LIST:
       simcall->result.dp = SIMIX_host_get_process_list((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_SPEED:
-      simcall->result.d = SIMIX_host_get_speed((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_AVAILABLE_SPEED:
-      simcall->result.d = SIMIX_host_get_available_speed((sg_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

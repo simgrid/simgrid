@@ -68,20 +68,6 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
   return simcall_BODY_asr_get_properties(name);
 }
 
-
-/**
- * \ingroup simix_host_management
- * \brief Returns the speed of the processor.
- *
- * The speed returned does not take into account the current load on the machine.
- * \param host A SIMIX host
- * \return The speed of this host (in Mflop/s)
- */
-double simcall_host_get_speed(sg_host_t host)
-{
-  return simcall_BODY_host_get_speed(host);
-}
-
 /**
  * \ingroup simix_host_management
  * \brief Returns the number of core of the processor.
@@ -104,18 +90,6 @@ int simcall_host_get_core(sg_host_t host)
 xbt_swag_t simcall_host_get_process_list(sg_host_t host)
 {
   return simcall_BODY_host_get_process_list(host);
-}
-
-
-/**
- * \ingroup simix_host_management
- * \brief Returns the available speed of the processor.
- *
- * \return Speed currently available (in Mflop/s)
- */
-double simcall_host_get_available_speed(sg_host_t host)
-{
-  return simcall_BODY_host_get_available_speed(host);
 }
 
 /**

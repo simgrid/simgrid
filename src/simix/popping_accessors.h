@@ -67,32 +67,6 @@ static inline void simcall_host_get_process_list__set__result(smx_simcall_t simc
     simcall->result.dp = result;
 }
 
-static inline sg_host_t simcall_host_get_speed__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[0].dp;
-}
-static inline void simcall_host_get_speed__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline double simcall_host_get_speed__get__result(smx_simcall_t simcall){
-    return  simcall->result.d;
-}
-static inline void simcall_host_get_speed__set__result(smx_simcall_t simcall, double result){
-    simcall->result.d = result;
-}
-
-static inline sg_host_t simcall_host_get_available_speed__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[0].dp;
-}
-static inline void simcall_host_get_available_speed__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline double simcall_host_get_available_speed__get__result(smx_simcall_t simcall){
-    return  simcall->result.d;
-}
-static inline void simcall_host_get_available_speed__set__result(smx_simcall_t simcall, double result){
-    simcall->result.d = result;
-}
-
 static inline sg_host_t simcall_host_get_state__get__host(smx_simcall_t simcall) {
   return (sg_host_t) simcall->args[0].dp;
 }
