@@ -178,12 +178,12 @@ int process_daemon(int argc, char *argv[])
   msg_task_t task = NULL;
   XBT_INFO("  Start daemon on %s (%f)",  MSG_host_get_name(MSG_host_self()), MSG_get_host_speed(MSG_host_self()));
   for(;;){
-    task = MSG_task_create("deamon", MSG_get_host_speed(MSG_host_self()), 0, NULL);
-    XBT_INFO("  Execute deamon");
+    task = MSG_task_create("daemon", MSG_get_host_speed(MSG_host_self()), 0, NULL);
+    XBT_INFO("  Execute daemon");
     MSG_task_execute(task);
     MSG_task_destroy(task);
   }
-  XBT_INFO("  Deamon done. See you!");
+  XBT_INFO("  daemon done. See you!");
   return 0;
 }
 
