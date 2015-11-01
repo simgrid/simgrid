@@ -131,3 +131,13 @@ double sg_host_get_speed(sg_host_t host){
 double sg_host_get_available_speed(sg_host_t host){
   return surf_host_get_available_speed(host);
 }
+/** @brief Returns the number of core of the processor. */
+int sg_host_get_core(sg_host_t host) {
+	return surf_host_get_core(host);
+}
+/** @brief Returns the state of a host.
+ *  @return 1 if the host is active or 0 if it has crashed.
+ */
+int sg_host_get_state(sg_host_t host) {
+  return surf_host_get_state(surf_host_resource_priv(host));
+}

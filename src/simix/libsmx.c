@@ -70,18 +70,6 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
 
 /**
  * \ingroup simix_host_management
- * \brief Returns the number of core of the processor.
- *
- * \param host A SIMIX host
- * \return The number of core
- */
-int simcall_host_get_core(sg_host_t host)
-{
-  return simcall_BODY_host_get_core(host);
-}
-
-/**
- * \ingroup simix_host_management
  * \brief Returns the list of processes attached to the host.
  *
  * \param host A SIMIX host
@@ -90,19 +78,6 @@ int simcall_host_get_core(sg_host_t host)
 xbt_swag_t simcall_host_get_process_list(sg_host_t host)
 {
   return simcall_BODY_host_get_process_list(host);
-}
-
-/**
- * \ingroup simix_host_management
- * \brief Returns the state of a host.
- *
- * Two states are possible: 1 if the host is active or 0 if it has crashed.
- * \param host A SIMIX host
- * \return 1 if the host is available, 0 otherwise
- */
-int simcall_host_get_state(sg_host_t host)
-{
-  return simcall_BODY_host_get_state(host);
 }
 
 /**
