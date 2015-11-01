@@ -67,6 +67,7 @@ static const char *const FILTERED_LIBS[] = {
   "libelf",
   "libgcc_s",
   "liblua5.1",
+  "liblua5.3",
   "liblzma",
   "libm",
   "libpthread",
