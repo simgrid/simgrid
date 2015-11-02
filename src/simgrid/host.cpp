@@ -139,5 +139,15 @@ int sg_host_get_core(sg_host_t host) {
  *  @return 1 if the host is active or 0 if it has crashed.
  */
 int sg_host_get_state(sg_host_t host) {
-  return surf_host_get_state(surf_host_resource_priv(host));
+	return surf_host_get_state(surf_host_resource_priv(host));
+}
+
+/** @brief Returns the total energy consumed by the host (in Joules) */
+double sg_host_get_consumed_energy(sg_host_t host) {
+	return surf_host_get_consumed_energy(host);
+}
+
+/** @brief Gets the pstate at which that host currently runs */
+int sg_host_get_pstate(sg_host_t host) {
+	return surf_host_get_pstate(host);
 }

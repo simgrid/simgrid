@@ -167,10 +167,6 @@ xbt_dict_t SIMIX_host_get_properties(sg_host_t host){
 }
 
 
-int SIMIX_host_get_core(sg_host_t host){
-  return surf_host_get_core(host);
-}
-
 xbt_swag_t SIMIX_host_get_process_list(sg_host_t host){
   smx_host_priv_t host_priv = sg_host_simix(host);
 
@@ -194,22 +190,11 @@ int SIMIX_host_get_nb_pstates(sg_host_t host) {
 void SIMIX_host_set_pstate(sg_host_t host, int pstate_index) {
 	  surf_host_set_pstate(host, pstate_index);
 }
-int SIMIX_host_get_pstate(sg_host_t host) {
-	  return surf_host_get_pstate(host);
-}
-
-double SIMIX_host_get_consumed_energy(sg_host_t host) {
-	  return surf_host_get_consumed_energy(host);
-}
 double SIMIX_host_get_wattmin_at(sg_host_t host,int pstate) {
 	  return surf_host_get_wattmin_at(host,pstate);
 }
 double SIMIX_host_get_wattmax_at(sg_host_t host,int pstate) {
 	  return surf_host_get_wattmax_at(host,pstate);
-}
-
-int SIMIX_host_get_state(sg_host_t host){
-  return surf_host_get_state(surf_host_resource_priv(host));
 }
 
 void _SIMIX_host_free_process_arg(void *data)
@@ -261,7 +246,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
-  if( SIMIX_host_get_state(host) == SURF_RESOURCE_OFF
+  if( sg_host_get_state(host) == SURF_RESOURCE_OFF
       && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_name(host))){
     xbt_dict_set(watched_hosts_lib,sg_host_name(host),host,NULL);
     XBT_DEBUG("Have pushed host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_name(host));

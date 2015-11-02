@@ -150,32 +150,6 @@ static inline void simcall_host_set_pstate__set__pstate_index(smx_simcall_t simc
     simcall->args[1].i = arg;
 }
 
-static inline sg_host_t simcall_host_get_pstate__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[0].dp;
-}
-static inline void simcall_host_get_pstate__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline int simcall_host_get_pstate__get__result(smx_simcall_t simcall){
-    return  simcall->result.i;
-}
-static inline void simcall_host_get_pstate__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
-
-static inline sg_host_t simcall_host_get_consumed_energy__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[0].dp;
-}
-static inline void simcall_host_get_consumed_energy__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline double simcall_host_get_consumed_energy__get__result(smx_simcall_t simcall){
-    return  simcall->result.d;
-}
-static inline void simcall_host_get_consumed_energy__set__result(smx_simcall_t simcall, double result){
-    simcall->result.d = result;
-}
-
 static inline sg_host_t simcall_host_get_mounted_storage_list__get__host(smx_simcall_t simcall) {
   return (sg_host_t) simcall->args[0].dp;
 }

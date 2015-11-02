@@ -163,7 +163,7 @@ void SIMIX_process_stop(smx_process_t arg) {
   /* Add the process to the list of process to restart, only if
    * the host is down
    */
-  if (arg->auto_restart && !SIMIX_host_get_state(arg->host)) {
+  if (arg->auto_restart && !sg_host_get_state(arg->host)) {
     SIMIX_host_add_auto_restart_process(arg->host,arg->name,arg->code, arg->data,
                                         sg_host_name(arg->host),
                                         SIMIX_timer_get_date(arg->kill_timer),
@@ -236,7 +236,7 @@ smx_process_t SIMIX_process_create(
 
   XBT_DEBUG("Start process %s on host '%s'", name, hostname);
 
-  if (!SIMIX_host_get_state(host)) {
+  if (!sg_host_get_state(host)) {
     int i;
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name,
           hostname);

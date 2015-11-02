@@ -33,8 +33,6 @@ const char* simcall_names[] = {
   [SIMCALL_HOST_GET_WATTMIN_AT] = "SIMCALL_HOST_GET_WATTMIN_AT",
   [SIMCALL_HOST_GET_WATTMAX_AT] = "SIMCALL_HOST_GET_WATTMAX_AT",
   [SIMCALL_HOST_SET_PSTATE] = "SIMCALL_HOST_SET_PSTATE",
-  [SIMCALL_HOST_GET_PSTATE] = "SIMCALL_HOST_GET_PSTATE",
-  [SIMCALL_HOST_GET_CONSUMED_ENERGY] = "SIMCALL_HOST_GET_CONSUMED_ENERGY",
   [SIMCALL_HOST_GET_MOUNTED_STORAGE_LIST] = "SIMCALL_HOST_GET_MOUNTED_STORAGE_LIST",
   [SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST] = "SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST",
   [SIMCALL_HOST_GET_PARAMS] = "SIMCALL_HOST_GET_PARAMS",
@@ -210,16 +208,6 @@ case SIMCALL_HOST_GET_WATTMAX_AT:
 
 case SIMCALL_HOST_SET_PSTATE:
        SIMIX_host_set_pstate((sg_host_t) simcall->args[0].dp, simcall->args[1].i);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_PSTATE:
-      simcall->result.i = SIMIX_host_get_pstate((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_CONSUMED_ENERGY:
-      simcall->result.d = SIMIX_host_get_consumed_energy((sg_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

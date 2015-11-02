@@ -56,8 +56,6 @@ Func - host_get_nb_pstates (int) (host, void*, sg_host_t)
 Func - host_get_wattmin_at (double) (host, void*, sg_host_t) (pstate_index, int)
 Func - host_get_wattmax_at (double) (host, void*, sg_host_t) (pstate_index, int)
 Proc - host_set_pstate (void) (host, void*, sg_host_t) (pstate_index, int)
-Func - host_get_pstate (int) (host, void*, sg_host_t)
-Func - host_get_consumed_energy (double) (host, void*, sg_host_t)
 
 Func - host_get_mounted_storage_list (void*, xbt_dict_t) (host, void*, sg_host_t)
 Func - host_get_attached_storage_list (void*, xbt_dynar_t) (host, void*, sg_host_t)

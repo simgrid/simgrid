@@ -128,28 +128,7 @@ void simcall_host_set_pstate(sg_host_t host, int pstate_index)
 {
 	simcall_BODY_host_set_pstate(host, pstate_index);
 }
-/**
- * \ingroup simix_host_management
- * \brief Gets the pstate at which that host currently runs.
- *
- * \param host A SIMIX host
- */
-int simcall_host_get_pstate(sg_host_t host)
-{
-	return simcall_BODY_host_get_pstate(host);
-}
 
-/**
- * \ingroup simix_host_management
- * \brief Returns the total energy consumed by the host (in Joules)
- *
- * \param host A SIMIX host
- * \return the energy consumed by the host (double)
- */
-double simcall_host_get_consumed_energy(sg_host_t host)
-{
-  return simcall_BODY_host_get_consumed_energy(host);
-}
 /** \ingroup simix_host_management
  * \brief Returns the amount of watt dissipated at the given pstate when the host is idling
  */

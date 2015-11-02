@@ -55,9 +55,8 @@ void smpi_set_host_pstate(int pstate_index)
  *
  * \param pstate_index pstate to switch to
  */
-int smpi_get_host_pstate()
-{
-  return simcall_host_get_pstate(SIMIX_host_self());
+int smpi_get_host_pstate() {
+  return sg_host_get_pstate(SIMIX_host_self());
 }
 
 /**
@@ -65,9 +64,8 @@ int smpi_get_host_pstate()
  *
  * \return Returns the consumed energy
  */
-double smpi_get_host_consumed_energy(void)
-{
-  return simcall_host_get_consumed_energy(SIMIX_host_self());
+double smpi_get_host_consumed_energy(void) {
+  return sg_host_get_consumed_energy(SIMIX_host_self());
 }
 
 

@@ -405,7 +405,7 @@ void MSG_host_set_pstate(msg_host_t host, int pstate_index) {
  * \param  host host to test
  */
 int MSG_host_get_pstate(msg_host_t host) {
-	  return simcall_host_get_pstate(host);
+	  return sg_host_get_pstate(host);
 }
 
 /** \ingroup m_host_management
@@ -416,7 +416,7 @@ int MSG_host_get_pstate(msg_host_t host) {
  */
 double MSG_host_get_consumed_energy(msg_host_t host) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-	  return simcall_host_get_consumed_energy(host);
+	  return sg_host_get_consumed_energy(host);
 }
 /** \ingroup m_host_management
  * \brief Returns the amount of watt dissipated at the given pstate when the host is idling

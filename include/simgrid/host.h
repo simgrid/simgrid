@@ -67,6 +67,9 @@ XBT_PUBLIC(double) sg_host_get_available_speed(sg_host_t host);
 XBT_PUBLIC(int) sg_host_get_core(sg_host_t host);
 XBT_PUBLIC(int) sg_host_get_state(sg_host_t host);
 
+XBT_PUBLIC(int) sg_host_get_pstate(sg_host_t host);
+XBT_PUBLIC(double) sg_host_get_consumed_energy(sg_host_t host);
+
 
 SG_END_DECL()
 
