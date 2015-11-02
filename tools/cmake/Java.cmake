@@ -154,7 +154,7 @@ endif(enable_lib_in_jar)
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
 
-if(enable_maintainer_mode)
+if(SWIG_FOUND)
   set(CMAKE_SWIG_FLAGS "-package" "org.simgrid.surf")
   set(CMAKE_SWIG_OUTDIR "${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/surf")
 
