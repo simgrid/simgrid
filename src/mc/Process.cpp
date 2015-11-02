@@ -216,7 +216,6 @@ Process::Process(pid_t pid, int sockfd) : AddressSpace(this)
   process->status_ = 0;
   process->memory_map_ = get_memory_map(pid);
   process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
-  process->heap = NULL;
   process->heap_info = NULL;
   process->init_memory_map_info();
   process->clear_refs_fd_ = -1;
@@ -275,9 +274,6 @@ Process::~Process()
 
   process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
 
-  free(process->heap);
-  process->heap = NULL;
-
   free(process->heap_info);
   process->heap_info = NULL;
 
@@ -296,11 +292,10 @@ void Process::refresh_heap()
 {
   xbt_assert(mc_mode == MC_MODE_SERVER);
   // Read/dereference/refresh the std_heap pointer:
-  if (!this->heap) {
-    this->heap = (struct mdesc*) malloc(sizeof(struct mdesc));
-  }
-  this->read_bytes(this->heap, sizeof(struct mdesc), remote(this->heap_address),
-    simgrid::mc::ProcessIndexDisabled);
+  if (!this->heap)
+    this->heap = std::unique_ptr<s_xbt_mheap_t>(new s_xbt_mheap_t());
+  this->read_bytes(this->heap.get(), sizeof(struct mdesc),
+    remote(this->heap_address), simgrid::mc::ProcessIndexDisabled);
   this->cache_flags |= MC_PROCESS_CACHE_FLAG_HEAP;
 }
 
