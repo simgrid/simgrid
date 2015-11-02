@@ -158,7 +158,7 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
     return simcall_comm_irecv__get__rdv(r1) == simcall_comm_irecv__get__rdv(r2);
   case SIMCALL_COMM_WAIT:
     if (synchro1->comm.src_buff == synchro2->comm.src_buff
-        && synchro2->comm.dst_buff == synchro2->comm.dst_buff)
+        && synchro1->comm.dst_buff == synchro2->comm.dst_buff)
       return FALSE;
     else if (synchro1->comm.src_buff != NULL
         && synchro1->comm.dst_buff != NULL
