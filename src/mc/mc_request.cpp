@@ -22,21 +22,36 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
 static char *pointer_to_string(void *pointer);
 static char *buff_size_to_string(size_t size);
 
-// Those are MC_state_get_internal_request(state)
-int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
+static inline
+smx_synchro_t MC_get_comm(smx_simcall_t r)
 {
-  if (mc_reduce_kind == e_mc_reduce_none)
-    return TRUE;
+  switch (r->call ) {
+  case SIMCALL_COMM_WAIT:
+    return simcall_comm_wait__get__comm(r);
+  case SIMCALL_COMM_TEST:
+    return simcall_comm_test__get__comm(r);
+  default:
+    return nullptr;
+  }
+}
 
-  if (r1->issuer == r2->issuer)
-    return FALSE;
+static inline
+smx_rdv_t MC_get_rdv(smx_simcall_t r)
+{
+  switch(r->call) {
+  case SIMCALL_COMM_ISEND:
+    return simcall_comm_isend__get__rdv(r);
+  case SIMCALL_COMM_IRECV:
+    return simcall_comm_irecv__get__rdv(r);
+  default:
+    return nullptr;
+  }
+}
 
-  /* Wait with timeout transitions are not considered by the independance theorem, thus we consider them as dependant with all other transitions */
-  if ((r1->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r1) > 0)
-      || (r2->call == SIMCALL_COMM_WAIT
-          && simcall_comm_wait__get__timeout(r2) > 0))
-    return TRUE;
-
+// Does half the job
+static inline
+int MC_request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
+{
   if (r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_IRECV)
     return FALSE;
 
@@ -45,27 +60,13 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
 
   // Those are internal requests, we do not need indirection
   // because those objects are copies:
-  smx_synchro_t synchro1 = NULL, synchro2 = NULL;
-  if (r1->call == SIMCALL_COMM_WAIT) {
-    synchro1 = simcall_comm_wait__get__comm(r1);
-  }
-  if (r2->call == SIMCALL_COMM_WAIT) {
-    synchro2 = simcall_comm_wait__get__comm(r2);
-  }
-  if (r1->call == SIMCALL_COMM_TEST) {
-    synchro1 = simcall_comm_test__get__comm(r1);
-  }
-  if (r2->call == SIMCALL_COMM_TEST) {
-    synchro2 = simcall_comm_test__get__comm(r2);
-  }
+  smx_synchro_t synchro1 = MC_get_comm(r1);
+  smx_synchro_t synchro2 = MC_get_comm(r2);
 
   if ((r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
       && r2->call == SIMCALL_COMM_WAIT) {
 
-    smx_rdv_t rdv =
-        r1->call ==
-        SIMCALL_COMM_ISEND ? simcall_comm_isend__get__rdv(r1) :
-        simcall_comm_irecv__get__rdv(r1);
+    smx_rdv_t rdv = MC_get_rdv(r1);
 
     if (rdv != synchro2->comm.rdv_cpy
         && simcall_comm_wait__get__timeout(r2) <= 0)
@@ -90,38 +91,6 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
       return FALSE;
   }
 
-  if ((r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
-      && r1->call == SIMCALL_COMM_WAIT) {
-
-    smx_rdv_t rdv =
-        r2->call ==
-        SIMCALL_COMM_ISEND ? simcall_comm_isend__get__rdv(r2) :
-        simcall_comm_irecv__get__rdv(r2);
-
-    if (rdv != synchro1->comm.rdv_cpy
-        && simcall_comm_wait__get__timeout(r1) <= 0)
-      return FALSE;
-
-    if ((r2->issuer != synchro1->comm.src_proc)
-        && (r2->issuer != synchro1->comm.dst_proc)
-        && simcall_comm_wait__get__timeout(r1) <= 0)
-      return FALSE;
-
-    if ((r2->call == SIMCALL_COMM_ISEND)
-        && (synchro1->comm.type == SIMIX_COMM_SEND)
-        && (synchro1->comm.src_buff !=
-            simcall_comm_isend__get__src_buff(r2))
-        && simcall_comm_wait__get__timeout(r1) <= 0)
-      return FALSE;
-
-    if ((r2->call == SIMCALL_COMM_IRECV)
-        && (synchro1->comm.type == SIMIX_COMM_RECEIVE)
-        && (synchro1->comm.dst_buff !=
-            simcall_comm_irecv__get__dst_buff(r2))
-        && simcall_comm_wait__get__timeout(r1) <= 0)
-      return FALSE;
-  }
-
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
    * test call. */
@@ -129,44 +98,9 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
      &&  r2->call == SIMCALL_COMM_TEST)
      return FALSE; */
 
-  /* FIXME: the following rule assumes that the result of the
-   * isend/irecv call is not stored in a buffer used in the
-   * test call.*/
-  /*if(   (r2->call == SIMCALL_COMM_ISEND || r2->call == SIMCALL_COMM_IRECV)
-     && r1->call == SIMCALL_COMM_TEST)
-     return FALSE; */
-
-  if (r1->call == SIMCALL_COMM_ISEND && r2->call == SIMCALL_COMM_ISEND
-      && simcall_comm_isend__get__rdv(r1) != simcall_comm_isend__get__rdv(r2))
-    return FALSE;
-
-  if (r1->call == SIMCALL_COMM_IRECV && r2->call == SIMCALL_COMM_IRECV
-      && simcall_comm_irecv__get__rdv(r1) != simcall_comm_irecv__get__rdv(r2))
-    return FALSE;
-
   if (r1->call == SIMCALL_COMM_WAIT
       && (r2->call == SIMCALL_COMM_WAIT || r2->call == SIMCALL_COMM_TEST)
       && (synchro1->comm.src_proc == NULL || synchro1->comm.dst_proc == NULL))
-    return FALSE;
-
-  if (r2->call == SIMCALL_COMM_WAIT
-      && (r1->call == SIMCALL_COMM_WAIT || r1->call == SIMCALL_COMM_TEST)
-      && (synchro2->comm.src_proc == NULL || synchro2->comm.dst_proc == NULL))
-      return FALSE;
-
-  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_WAIT
-      && synchro1->comm.src_buff == synchro2->comm.src_buff
-      && synchro2->comm.dst_buff == synchro2->comm.dst_buff)
-    return FALSE;
-
-  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_WAIT
-      && synchro1->comm.src_buff != NULL
-      && synchro1->comm.dst_buff != NULL
-      && synchro2->comm.src_buff != NULL
-      && synchro2->comm.dst_buff != NULL
-      && synchro1->comm.dst_buff != synchro2->comm.src_buff
-      && synchro1->comm.dst_buff != synchro2->comm.dst_buff
-      && synchro2->comm.dst_buff != synchro1->comm.src_buff)
     return FALSE;
 
   if (r1->call == SIMCALL_COMM_TEST &&
@@ -175,33 +109,12 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
        || synchro1->comm.dst_buff == NULL))
     return FALSE;
 
-  if (r2->call == SIMCALL_COMM_TEST &&
-      (simcall_comm_test__get__comm(r2) == NULL
-       || synchro2->comm.src_buff == NULL
-       || synchro2->comm.dst_buff == NULL))
-    return FALSE;
-
   if (r1->call == SIMCALL_COMM_TEST && r2->call == SIMCALL_COMM_WAIT
       && synchro1->comm.src_buff == synchro2->comm.src_buff
       && synchro1->comm.dst_buff == synchro2->comm.dst_buff)
     return FALSE;
 
   if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_TEST
-      && synchro1->comm.src_buff == synchro2->comm.src_buff
-      && synchro1->comm.dst_buff == synchro2->comm.dst_buff)
-    return FALSE;
-
-  if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_TEST
-      && synchro1->comm.src_buff != NULL
-      && synchro1->comm.dst_buff != NULL
-      && synchro2->comm.src_buff != NULL
-      && synchro2->comm.dst_buff != NULL
-      && synchro1->comm.dst_buff != synchro2->comm.src_buff
-      && synchro1->comm.dst_buff != synchro2->comm.dst_buff
-      && synchro2->comm.dst_buff != synchro1->comm.src_buff)
-    return FALSE;
-
-  if (r1->call == SIMCALL_COMM_TEST && r2->call == SIMCALL_COMM_WAIT
       && synchro1->comm.src_buff != NULL
       && synchro1->comm.dst_buff != NULL
       && synchro2->comm.src_buff != NULL
@@ -212,6 +125,54 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
     return FALSE;
 
   return TRUE;
+}
+
+// Those are MC_state_get_internal_request(state)
+int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
+{
+  if (mc_reduce_kind == e_mc_reduce_none)
+    return TRUE;
+
+  if (r1->issuer == r2->issuer)
+    return FALSE;
+
+  /* Wait with timeout transitions are not considered by the independance theorem, thus we consider them as dependant with all other transitions */
+  if ((r1->call == SIMCALL_COMM_WAIT && simcall_comm_wait__get__timeout(r1) > 0)
+      || (r2->call == SIMCALL_COMM_WAIT
+          && simcall_comm_wait__get__timeout(r2) > 0))
+    return TRUE;
+
+  if (r1->call != r2->call)
+    return MC_request_depend_asymmetric(r1, r2)
+      && MC_request_depend_asymmetric(r2, r1);
+
+  // Those are internal requests, we do not need indirection
+  // because those objects are copies:
+  smx_synchro_t synchro1 = MC_get_comm(r1);
+  smx_synchro_t synchro2 = MC_get_comm(r2);
+
+  switch(r1->call) {
+  case SIMCALL_COMM_ISEND:
+    return simcall_comm_isend__get__rdv(r1) == simcall_comm_isend__get__rdv(r2);
+  case SIMCALL_COMM_IRECV:
+    return simcall_comm_irecv__get__rdv(r1) == simcall_comm_irecv__get__rdv(r2);
+  case SIMCALL_COMM_WAIT:
+    if (synchro1->comm.src_buff == synchro2->comm.src_buff
+        && synchro1->comm.dst_buff == synchro2->comm.dst_buff)
+      return FALSE;
+    else if (synchro1->comm.src_buff != NULL
+        && synchro1->comm.dst_buff != NULL
+        && synchro2->comm.src_buff != NULL
+        && synchro2->comm.dst_buff != NULL
+        && synchro1->comm.dst_buff != synchro2->comm.src_buff
+        && synchro1->comm.dst_buff != synchro2->comm.dst_buff
+        && synchro2->comm.dst_buff != synchro1->comm.src_buff)
+      return FALSE;
+    else
+      return TRUE;
+  default:
+    return TRUE;
+  }
 }
 
 static char *pointer_to_string(void *pointer)

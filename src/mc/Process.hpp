@@ -94,13 +94,13 @@ public:
   {
     if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
       this->refresh_heap();
-    return this->heap;
+    return this->heap.get();
   }
   malloc_info* get_malloc_info()
   {
     if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_MALLOC_INFO))
       this->refresh_malloc_info();
-    return this->heap_info;
+    return this->heap_info.data();
   }
 
   std::vector<IgnoredRegion> const& ignored_regions() const
@@ -200,7 +200,7 @@ public: // Copies of MCed SMX data structures
    *  This is not used if the process is the current one:
    *  use `get_heap_info()` in order to use it.
    */
-   xbt_mheap_t heap;
+   std::unique_ptr<s_xbt_mheap_t> heap;
 
   /** Copy of the allocation info structure
    *
@@ -208,7 +208,7 @@ public: // Copies of MCed SMX data structures
    *  This is not used if the process is the current one:
    *  use `get_malloc_info()` in order to use it.
    */
-  malloc_info* heap_info;
+  std::vector<malloc_info> heap_info;
 
 public: // Libunwind-data
 
