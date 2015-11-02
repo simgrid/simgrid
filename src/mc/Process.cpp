@@ -216,7 +216,6 @@ Process::Process(pid_t pid, int sockfd) : AddressSpace(this)
   process->status_ = 0;
   process->memory_map_ = get_memory_map(pid);
   process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
-  process->heap_info = NULL;
   process->init_memory_map_info();
   process->clear_refs_fd_ = -1;
   process->pagemap_fd_ = -1;
@@ -274,9 +273,6 @@ Process::~Process()
 
   process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
 
-  free(process->heap_info);
-  process->heap_info = NULL;
-
   if (process->clear_refs_fd_ >= 0)
     close(process->clear_refs_fd_);
   if (process->pagemap_fd_ >= 0)
@@ -310,10 +306,10 @@ void Process::refresh_malloc_info()
   if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
     this->refresh_heap();
   // Refresh process->heapinfo:
-  size_t malloc_info_bytesize =
-    (this->heap->heaplimit + 1) * sizeof(malloc_info);
-  this->heap_info = (malloc_info*) realloc(this->heap_info, malloc_info_bytesize);
-  this->read_bytes(this->heap_info, malloc_info_bytesize,
+  size_t count = this->heap->heaplimit + 1;
+  if (this->heap_info.size() < count)
+    this->heap_info.resize(count);
+  this->read_bytes(this->heap_info.data(), count * sizeof(malloc_info),
     remote(this->heap->heapinfo), simgrid::mc::ProcessIndexDisabled);
   this->cache_flags |= MC_PROCESS_CACHE_FLAG_MALLOC_INFO;
 }
