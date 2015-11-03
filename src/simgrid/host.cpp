@@ -6,7 +6,6 @@
 
 #include "xbt/dict.h"
 #include "simgrid/host.h"
-#include "surf/surf_routing.h" // SIMIX_HOST_LEVEL and friends FIXME: make private here
 #include "surf/surf.h" // routing_get_network_element_type FIXME:killme
 
 sg_host_t sg_host_by_name(const char *name){
