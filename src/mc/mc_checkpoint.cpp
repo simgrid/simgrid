@@ -11,7 +11,6 @@
 #include <dirent.h>
 
 #include "src/internal_config.h"
-#include "mc_memory_map.h"
 #include "mc_private.h"
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
@@ -197,13 +196,13 @@ static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t s
  *  `dl_iterate_phdr` would be more robust but would not work in cross-process.
  * */
 void MC_find_object_address(
-  std::vector<simgrid::mc::VmMap> const& maps,
+  std::vector<simgrid::xbt::VmMap> const& maps,
   simgrid::mc::ObjectInformation* result)
 {
   char* file_name = xbt_strdup(result->file_name.c_str());
   const char *name = basename(file_name);
   for (size_t i = 0; i < maps.size(); ++i) {
-    simgrid::mc::VmMap const& reg = maps[i];
+    simgrid::xbt::VmMap const& reg = maps[i];
     if (maps[i].pathname.empty()
         || strcmp(basename(maps[i].pathname.c_str()), name)) {
       // Nothing to do
@@ -214,7 +213,7 @@ void MC_find_object_address(
       result->start_rw = (char*) reg.start_addr;
       result->end_rw = (char*) reg.end_addr;
       // .bss is usually after the .data:
-      simgrid::mc::VmMap const& next = maps[i + 1];
+      simgrid::xbt::VmMap const& next = maps[i + 1];
       if (next.pathname.empty() && (next.prot & PROT_WRITE)
           && next.start_addr == reg.end_addr) {
         result->end_rw = (char*) maps[i + 1].end_addr;

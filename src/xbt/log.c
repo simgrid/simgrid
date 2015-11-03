@@ -644,7 +644,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mcer_ignore);
   XBT_LOG_CONNECT(mc_liveness);
   XBT_LOG_CONNECT(mc_memory);
-  XBT_LOG_CONNECT(mc_memory_map);
   XBT_LOG_CONNECT(mc_page_snapshot);
   XBT_LOG_CONNECT(mc_request);
   XBT_LOG_CONNECT(mc_safety);

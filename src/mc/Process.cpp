@@ -214,7 +214,7 @@ Process::Process(pid_t pid, int sockfd) : AddressSpace(this)
   process->pid_ = pid;
   process->running_ = true;
   process->status_ = 0;
-  process->memory_map_ = get_memory_map(pid);
+  process->memory_map_ = simgrid::xbt::get_memory_map(pid);
   process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
   process->init_memory_map_info();
   process->clear_refs_fd_ = -1;
@@ -329,14 +329,14 @@ void Process::init_memory_map_info()
   if(regcomp(&res.so_re, SO_RE, 0) || regcomp(&res.version_re, VERSION_RE, 0))
     xbt_die(".so regexp did not compile");
 
-  std::vector<simgrid::mc::VmMap> const& maps = this->memory_map_;
+  std::vector<simgrid::xbt::VmMap> const& maps = this->memory_map_;
 
   const char* current_name = NULL;
 
   this->object_infos.resize(0);
 
   for (size_t i=0; i < maps.size(); i++) {
-    simgrid::mc::VmMap const& reg = maps[i];
+    simgrid::xbt::VmMap const& reg = maps[i];
     const char* pathname = maps[i].pathname.c_str();
 
     // Nothing to do

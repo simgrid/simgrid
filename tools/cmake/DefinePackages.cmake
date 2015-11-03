@@ -105,6 +105,7 @@ set(EXTRA_DIST
   src/xbt/heap_private.h
   src/xbt/log_private.h
   src/xbt/mallocator_private.h
+
   src/xbt/mmalloc/mfree.c
   src/xbt/mmalloc/mm.c
   src/xbt/mmalloc/mm_legacy.c
@@ -229,6 +230,7 @@ set(SMPI_SRC
   src/smpi/instr_smpi.c
   src/smpi/smpi_base.c
   src/smpi/smpi_bench.c
+  src/smpi/smpi_memory.cpp
   src/smpi/smpi_c99.c
   src/smpi/smpi_coll.c
   src/smpi/smpi_comm.c
@@ -264,6 +266,8 @@ set(XBT_SRC
   src/xbt/lib.c
   src/xbt/log.c
   src/xbt/mallocator.c
+  src/xbt/memory_map.cpp
+  src/xbt/memory_map.hpp
   src/xbt/parmap.cpp
   src/xbt/set.c
   src/xbt/snprintf.c
@@ -284,6 +288,7 @@ set(XBT_SRC
   src/xbt/xbt_strbuff.c
   src/xbt/xbt_virtu.c
   src/xbt_modinter.h
+
   )
 
 if(HAVE_MMALLOC)
@@ -673,8 +678,6 @@ set(MC_SRC
   src/mc/mc_state.h
   src/mc/mc_state.cpp
   src/mc/mc_visited.cpp
-  src/mc/mc_memory_map.h
-  src/mc/memory_map.cpp
   src/mc/mc_client.cpp
   src/mc/mc_client_api.cpp
   src/mc/mc_client.h

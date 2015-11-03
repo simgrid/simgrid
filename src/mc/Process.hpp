@@ -28,10 +28,11 @@
 #include "src/simix/popping_private.h"
 #include "src/simix/smx_private.h"
 
+#include "../xbt/memory_map.hpp"
+
 #include "mc_forward.hpp"
 #include "mc_base.h"
 #include "mc_mmalloc.h" // std_heap
-#include "mc_memory_map.h"
 #include "AddressSpace.hpp"
 #include "mc_protocol.h"
 
@@ -163,7 +164,7 @@ private:
   int socket_;
   int status_;
   bool running_;
-  std::vector<VmMap> memory_map_;
+  std::vector<simgrid::xbt::VmMap> memory_map_;
   remote_ptr<void> maestro_stack_start_, maestro_stack_end_;
   int memory_file;
   std::vector<IgnoredRegion> ignored_regions_;

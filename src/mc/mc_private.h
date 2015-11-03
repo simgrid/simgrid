@@ -24,6 +24,10 @@
 #include "xbt/fifo.h"
 #include "xbt/config.h"
 
+#ifdef __cplusplus
+#include "../xbt/memory_map.hpp"
+#endif
+
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
 #include "../simix/smx_private.h"
@@ -117,6 +121,13 @@ XBT_PRIVATE void MC_dump_stacks(FILE* file);
 XBT_PRIVATE void MC_report_assertion_error(void);
 
 XBT_PRIVATE void MC_invalidate_cache(void);
+
+#ifdef __cplusplus
+
+XBT_PRIVATE void MC_find_object_address(
+  std::vector<simgrid::xbt::VmMap> const& maps, simgrid::mc::ObjectInformation* result);
+
+#endif
 
 SG_END_DECL()
 

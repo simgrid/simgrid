@@ -1149,7 +1149,7 @@ static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 
 /** \brief Finds informations about a given shared object/executable */
 std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
-  std::vector<simgrid::mc::VmMap> const& maps, const char *name)
+  std::vector<simgrid::xbt::VmMap> const& maps, const char *name)
 {
   std::shared_ptr<simgrid::mc::ObjectInformation> result =
     std::make_shared<simgrid::mc::ObjectInformation>();
