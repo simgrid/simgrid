@@ -10,7 +10,7 @@
 #ifndef SIMGRID_PORTABLE_H
 #define SIMGRID_PORTABLE_H
 
-#include "internal_config.h"
+#include "src/internal_config.h"
 #include "xbt/base.h"
 #include "xbt/misc.h"
 #ifdef _XBT_WIN32

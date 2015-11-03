@@ -177,7 +177,7 @@ static void sha_calculate(xbt_sha_t sha)
 /* ************* */
 #ifdef SIMGRID_TEST
 #include "xbt/hash.h"
-#include "portable.h"           /* hexa_str */
+#include "src/portable.h"           /* hexa_str */
 
 static char *mycmp(const char *p1, const char *p2, size_t n)
 {

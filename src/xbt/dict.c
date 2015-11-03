@@ -676,7 +676,7 @@ void xbt_dict_postexit(void)
 #ifdef SIMGRID_TEST
 #include "xbt.h"
 #include "xbt/ex.h"
-#include "portable.h"
+#include "src/portable.h"
 
 #define PRINTF_STR(a) (a)?:"(null)"
 
