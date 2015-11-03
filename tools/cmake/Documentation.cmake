@@ -122,7 +122,7 @@ add_custom_target(sync-gforge-dtd
 endif() # Doxygen found
 
 
-if (HAVE_Java)
+if (Java_FOUND)
   find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
   mark_as_advanced(JAVADOC_PATH)
   

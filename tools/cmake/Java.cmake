@@ -3,8 +3,26 @@
 ##   This file is loaded only if the Java option is activated
 ##
 
-find_package(Java 1.7 REQUIRED)
+find_package(Java 1.7 COMPONENTS Runtime Development)
+if (not ${Java_FOUND})
+  message(FATAL_ERROR "Java not found (need at least Java7). Please install the JDK or disable that option")
+endif()
+set(Java_FOUND 1)
 include(UseJava)
+
+find_package(JNI REQUIRED)
+message("-- [Java] JNI found: ${JNI_FOUND}")
+message("-- [Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
+
+find_package(SWIG)
+if(${SWIG_FOUND})
+  include(UseSWIG)
+  message("-- [Java] Swig found: version ${SWIG_VERSION}")
+else()
+  message("-- [Java] Swig NOT FOUND. Surf java bindings won't get refreshed. That's fine unless you work on this part yourself.")
+endif()
+mark_as_advanced(SWIG_EXECUTABLE)
+
 
 # Rules to build libsimgrid-java
 #
@@ -154,7 +172,7 @@ endif(enable_lib_in_jar)
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
 
-if(SWIG_FOUND)
+if(${SWIG_FOUND})
   set(CMAKE_SWIG_FLAGS "-package" "org.simgrid.surf")
   set(CMAKE_SWIG_OUTDIR "${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/surf")
 
