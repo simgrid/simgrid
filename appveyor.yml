@@ -40,7 +40,8 @@ environment:
 #- if [%COMPILER%]==[MSYS2]     set PATH=C:\msys64\bin,%PATH%
 install:
 - if [%COMPILER%]==[MinGW-w64] set PATH=C:\mingw64\bin;%PATH%
-- if [%COMPILER%]==[MinGW-w64] rename "C:\Program Files (x86)\Git\bin\sh.exe" "sh2.exe"
+- if [%COMPILER%]==[MinGW-w64] rename "C:\Program Files (x86)\Git\bin\sh.exe" "sh2.exe" # MinGW cannot stand having a sh.exe in the path
+- if [%COMPILER%]==[MinGW-w64] rename "C:\Program Files\Git\usr\bin\sh.exe" "sh3.exe"
 - if [%COMPILER%]==[MinGW-w64] appveyor DownloadFile "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z || appveyor DownloadFile "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z
 - if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ mw64.7z > NUL
 
