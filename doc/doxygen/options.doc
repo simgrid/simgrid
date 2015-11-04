@@ -294,7 +294,7 @@ to wait 10 microseconds (1e-5 seconds) between emissions.
 It is possible to specify that messages below a certain size will be sent
 as soon as the call to MPI_Send is issued, without waiting for the
 correspondant receive. This threshold can be configured through the
-\b smpi/async_small_thres item. The default value is 0. This behavior can also be
+\b smpi/async_small_thresh item. The default value is 0. This behavior can also be
 manually set for MSG mailboxes, by setting the receiving mode of the mailbox
 with a call to \ref MSG_mailbox_set_async . For MSG, all messages sent to this
 mailbox will have this behavior, so consider using two mailboxes if needed.
@@ -1108,7 +1108,7 @@ silently overflow on other parts of the memory.
 - \c surf/precision: \ref options_model_precision
 
 - \c <b>For collective operations of SMPI, please refer to Section \ref options_index_smpi_coll</b>
-- \c smpi/async_small_thres: \ref options_model_network_asyncsend
+- \c smpi/async_small_thresh: \ref options_model_network_asyncsend
 - \c smpi/bw_factor: \ref options_model_smpi_bw_factor
 - \c smpi/coll_selector: \ref options_model_smpi_collectives
 - \c smpi/cpu_threshold: \ref options_smpi_bench

@@ -154,7 +154,7 @@ foreach $_ (@ARGV) {
     elsif (/--?maxnp=(.*)/) { $np_max = $1; }
     elsif (/--?tests=(.*)/) { $listfiles = $1; }
     elsif (/--?srcdir=(.*)/) { $srcdir = $1;
-	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/platforms/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile_coll --log=root.thr:critical --cfg=smpi/running_power:1e9  --cfg=smpi/async_small_thres:65536"; }
+	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/platforms/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile_coll --log=root.thr:critical --cfg=smpi/running_power:1e9  --cfg=smpi/async_small_thresh:65536"; }
     elsif (/--?verbose/) { $verbose = 1; }
     elsif (/--?showprogress/) { $showProgress = 1; }
     elsif (/--?debug/) { $debug = 1; }

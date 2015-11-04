@@ -396,7 +396,7 @@ void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm,
 static void smpi_check_options(){
   //check correctness of MPI parameters
 
-   xbt_assert(sg_cfg_get_int("smpi/async_small_thres") <=
+   xbt_assert(sg_cfg_get_int("smpi/async_small_thresh") <=
               sg_cfg_get_int("smpi/send_is_detached_thres"));
 
    if (sg_cfg_is_default_value("smpi/running_power")) {
