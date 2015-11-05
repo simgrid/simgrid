@@ -107,18 +107,6 @@ double simcall_host_get_power_peak_at(sg_host_t host, int pstate_index)
 
 /**
  * \ingroup simix_host_management
- * \brief Returns the number of power states for a host.
- *
- * \param host A SIMIX host
- * \return the number of power states
- */
-int simcall_host_get_nb_pstates(sg_host_t host)
-{
-  return simcall_BODY_host_get_nb_pstates(host);
-}
-
-/**
- * \ingroup simix_host_management
  * \brief Sets the pstate at which the host should run
  *
  * \param host A SIMIX host

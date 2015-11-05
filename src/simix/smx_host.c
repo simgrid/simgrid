@@ -182,11 +182,6 @@ double SIMIX_host_get_power_peak_at(sg_host_t host, int pstate_index) {
 	  return surf_host_get_power_peak_at(host, pstate_index);
 }
 
-int SIMIX_host_get_nb_pstates(sg_host_t host) {
-	  return surf_host_get_nb_pstates(host);
-}
-
-
 void SIMIX_host_set_pstate(sg_host_t host, int pstate_index) {
 	  surf_host_set_pstate(host, pstate_index);
 }

@@ -29,7 +29,6 @@ const char* simcall_names[] = {
   [SIMCALL_HOST_GET_PROCESS_LIST] = "SIMCALL_HOST_GET_PROCESS_LIST",
   [SIMCALL_HOST_GET_CURRENT_POWER_PEAK] = "SIMCALL_HOST_GET_CURRENT_POWER_PEAK",
   [SIMCALL_HOST_GET_POWER_PEAK_AT] = "SIMCALL_HOST_GET_POWER_PEAK_AT",
-  [SIMCALL_HOST_GET_NB_PSTATES] = "SIMCALL_HOST_GET_NB_PSTATES",
   [SIMCALL_HOST_GET_WATTMIN_AT] = "SIMCALL_HOST_GET_WATTMIN_AT",
   [SIMCALL_HOST_GET_WATTMAX_AT] = "SIMCALL_HOST_GET_WATTMAX_AT",
   [SIMCALL_HOST_SET_PSTATE] = "SIMCALL_HOST_SET_PSTATE",
@@ -188,11 +187,6 @@ case SIMCALL_HOST_GET_CURRENT_POWER_PEAK:
 
 case SIMCALL_HOST_GET_POWER_PEAK_AT:
       simcall->result.d = SIMIX_host_get_power_peak_at((sg_host_t) simcall->args[0].dp, simcall->args[1].i);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_NB_PSTATES:
-      simcall->result.i = SIMIX_host_get_nb_pstates((sg_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

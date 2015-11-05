@@ -41,7 +41,6 @@ XBT_PRIVATE xbt_dict_t SIMIX_host_get_properties(sg_host_t host);
 XBT_PRIVATE xbt_swag_t SIMIX_host_get_process_list(sg_host_t host);
 XBT_PRIVATE double SIMIX_host_get_current_power_peak(sg_host_t host);
 XBT_PRIVATE double SIMIX_host_get_power_peak_at(sg_host_t host, int pstate_index);
-XBT_PRIVATE int SIMIX_host_get_nb_pstates(sg_host_t host);
 XBT_PRIVATE double SIMIX_host_get_wattmin_at(sg_host_t host,int pstate);
 XBT_PRIVATE double SIMIX_host_get_wattmax_at(sg_host_t host,int pstate);
 XBT_PRIVATE void SIMIX_host_set_pstate(sg_host_t host, int pstate_index);

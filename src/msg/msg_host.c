@@ -383,9 +383,7 @@ double MSG_host_get_current_power_peak(msg_host_t host) {
  * \param  host host to test
  */
 int MSG_host_get_nb_pstates(msg_host_t host) {
-
-	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-	  return (simcall_host_get_nb_pstates(host));
+	  return sg_host_get_nb_pstates(host);
 }
 
 /** \ingroup m_host_management

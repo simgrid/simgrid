@@ -141,12 +141,26 @@ int sg_host_get_state(sg_host_t host) {
 	return surf_host_get_state(surf_host_resource_priv(host));
 }
 
-/** @brief Returns the total energy consumed by the host (in Joules) */
+/** @brief Returns the total energy consumed by the host (in Joules).
+ *
+ *  See also @ref SURF_plugin_energy.
+ */
 double sg_host_get_consumed_energy(sg_host_t host) {
 	return surf_host_get_consumed_energy(host);
 }
 
-/** @brief Gets the pstate at which that host currently runs */
+/** @brief Returns the number of power states for a host.
+ *
+ *  See also @ref SURF_plugin_energy.
+ */
+int sg_host_get_nb_pstates(sg_host_t host) {
+	return surf_host_get_nb_pstates(host);
+}
+
+/** @brief Gets the pstate at which that host currently runs.
+ *
+ *  See also @ref SURF_plugin_energy.
+ */
 int sg_host_get_pstate(sg_host_t host) {
 	return surf_host_get_pstate(host);
 }

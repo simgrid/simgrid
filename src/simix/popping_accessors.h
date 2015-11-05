@@ -86,19 +86,6 @@ static inline void simcall_host_get_power_peak_at__set__result(smx_simcall_t sim
     simcall->result.d = result;
 }
 
-static inline sg_host_t simcall_host_get_nb_pstates__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[0].dp;
-}
-static inline void simcall_host_get_nb_pstates__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline int simcall_host_get_nb_pstates__get__result(smx_simcall_t simcall){
-    return  simcall->result.i;
-}
-static inline void simcall_host_get_nb_pstates__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
-
 static inline sg_host_t simcall_host_get_wattmin_at__get__host(smx_simcall_t simcall) {
   return (sg_host_t) simcall->args[0].dp;
 }

@@ -34,11 +34,11 @@ double smpi_get_host_current_power_peak(void)
 }
 
 /**
- * \brief Return the number of pstates defined for host
+ * \brief Return the number of pstates defined for the current host
  */
 int smpi_get_host_nb_pstates(void)
 {
-  return simcall_host_get_nb_pstates(SIMIX_host_self());
+  return sg_host_get_nb_pstates(SIMIX_host_self());
 }
 
 /**

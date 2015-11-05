@@ -144,27 +144,6 @@ inline static double simcall_BODY_host_get_power_peak_at(sg_host_t host, int pst
     return self->simcall.result.d;
   }
   
-inline static int simcall_BODY_host_get_nb_pstates(sg_host_t host) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_host_get_nb_pstates(host);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_GET_NB_PSTATES;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) host;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return self->simcall.result.i;
-  }
-  
 inline static double simcall_BODY_host_get_wattmin_at(sg_host_t host, int pstate_index) {
     smx_process_t self = SIMIX_process_self();
 
