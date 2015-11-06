@@ -50,8 +50,8 @@ HostL07Model::HostL07Model() : HostModel() {
   if (!ptask_maxmin_system)
 	ptask_maxmin_system = lmm_system_new(1);
   surf_host_model = NULL;
-  surf_network_model = new NetworkL07Model();
-  surf_cpu_model_pm = new CpuL07Model();
+  surf_network_model = new NetworkL07Model(this);
+  surf_cpu_model_pm = new CpuL07Model(this);
 
   routing_model_create(surf_network_model->createLink("__loopback__",
 	                                                  498000000, NULL,

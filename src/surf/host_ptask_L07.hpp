@@ -24,7 +24,6 @@ class XBT_PRIVATE CpuL07;
 class XBT_PRIVATE LinkL07;
 
 class XBT_PRIVATE L07Action;
-
 /*********
  * Tools *
  *********/
@@ -52,7 +51,7 @@ public:
 
 class CpuL07Model : public CpuModel {
 public:
-  CpuL07Model() : CpuModel() {};
+  CpuL07Model(HostL07Model *hmodel) : CpuModel() {p_hostModel = hmodel;};
   ~CpuL07Model() {surf_cpu_model_pm = NULL;};
   Cpu *createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
@@ -67,7 +66,7 @@ public:
 
 class NetworkL07Model : public NetworkModel {
 public:
-  NetworkL07Model() : NetworkModel() {};
+  NetworkL07Model(HostL07Model *hmodel) : NetworkModel() {p_hostModel = hmodel;};
   ~NetworkL07Model() {surf_network_model = NULL;};
   Link* createLink(const char *name,
 		                                   double bw_initial,
