@@ -423,14 +423,12 @@ endif()
 
 if(enable_smpi)
   include(FindGFortran)
-  #really checks for objdump for privatization
-  find_package(BinUtils QUIET)
-  mark_as_advanced(BinUtils_DIR)
   SET(HAVE_SMPI 1)
-
-  if( NOT "${CMAKE_OBJDUMP}" MATCHES "CMAKE_OBJDUMP-NOTFOUND" AND HAVE_MMAP)
+  if("${CMAKE_SYSTEM}" MATCHES "Linux")
+    SET(USE_LIBUTIL 0)
     SET(HAVE_PRIVATIZATION 1)
-  else()
+  elseif("${CMAKE_SYSTEM}" MATCHES "^FreeBSD")
+    SET(USE_LIBUTIL 0)
     SET(HAVE_PRIVATIZATION 0)
   endif()
 endif()

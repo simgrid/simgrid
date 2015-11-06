@@ -9,24 +9,28 @@
 #include <cstring>
 
 #include <sys/types.h>
+#include <sys/mman.h>
 
+#include <xbt/sysdep.h>
 #include <xbt/base.h>
+#include <xbt/file.h>
+#include <xbt/log.h>
 
-#include "mc_memory_map.h"
-#include "mc_private.h"
+#include "memory_map.hpp"
 
 extern "C" {
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory_map, mc,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_memory_map, xbt,
                                 "Logging specific to algorithms for memory_map");
 
 }
 
 namespace simgrid {
-namespace mc {
+namespace xbt {
 
 XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 {
+#ifdef __linux__
   /* Open the actual process's proc maps file and create the memory_map_t */
   /* to be returned. */
   char* path = bprintf("/proc/%i/maps", (int) pid);
@@ -162,6 +166,11 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   std::free(line);
   std::fclose(fp);
   return std::move(ret);
+#else
+  /* On FreeBSD, kinfo_getvmmap() could be used but mmap() support is disabled
+     anyway. */
+  xbt_die("Could not get memory map from process %lli", (long long int) pid);
+#endif
 }
 
 }

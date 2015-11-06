@@ -13,10 +13,10 @@
 #include <xbt/base.h>
 
 #include "mc_forward.hpp"
-#include "mc_memory_map.h"
+#include "../xbt/memory_map.hpp"
 
 XBT_PRIVATE std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
-  std::vector<simgrid::mc::VmMap> const& maps, const char* name);
+  std::vector<simgrid::xbt::VmMap> const& maps, const char* name);
 XBT_PRIVATE  void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info);
 
 #endif

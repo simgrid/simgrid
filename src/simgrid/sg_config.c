@@ -837,10 +837,10 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "smpi/cpu_threshold", 1e-6);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/async_small_thres",
+    xbt_cfg_register(&_sg_cfg_set, "smpi/async_small_thresh",
                      "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver",
                      xbt_cfgelm_int, 1, 1, NULL, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "smpi/async_small_thres", 0);
+    xbt_cfg_setdefault_int(_sg_cfg_set, "smpi/async_small_thresh", 0);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/send_is_detached_thres",
                      "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend",

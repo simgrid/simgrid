@@ -17,7 +17,6 @@
 #include <dwarf.h>
 
 #include "src/mc/Variable.hpp"
-#include "src/mc/mc_memory_map.h"
 
 namespace simgrid {
 namespace dwarf {

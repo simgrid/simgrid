@@ -4,23 +4,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_MEMORY_MAP_H
-#define SIMGRID_MC_MEMORY_MAP_H
+#ifndef SIMGRID_XBT_MEMORY_MAP_HPP
+#define SIMGRID_XBT_MEMORY_MAP_HPP
 
 #include <cstdint>
-
 #include <string>
 #include <vector>
 
+#include <xbt/base.h>
 #include <sys/types.h>
 
-#include <xbt/base.h>
-
-#include <simgrid_config.h>
-#include "mc_forward.hpp"
-
 namespace simgrid {
-namespace mc {
+namespace xbt {
 
 /** An virtual memory map entry from /proc/$pid/maps */
 struct VmMap {
@@ -37,13 +32,6 @@ struct VmMap {
 XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid);
 
 }
-}
-
-extern "C" {
-
-XBT_PRIVATE void MC_find_object_address(
-  std::vector<simgrid::mc::VmMap> const& maps, simgrid::mc::ObjectInformation* result);
-
 }
 
 #endif
