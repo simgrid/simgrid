@@ -4,7 +4,7 @@
 ##
 
 find_package(Java 1.7 COMPONENTS Runtime Development)
-if (not ${Java_FOUND})
+if (NOT ${Java_FOUND})
   message(FATAL_ERROR "Java not found (need at least Java7). Please install the JDK or disable that option")
 endif()
 set(Java_FOUND 1)
