@@ -9,7 +9,9 @@
 #include <cstring>
 
 #include <sys/types.h>
-#include <sys/mman.h>
+#ifdef __linux__
+# include <sys/mman.h>
+#endif
 
 #include <xbt/sysdep.h>
 #include <xbt/base.h>
