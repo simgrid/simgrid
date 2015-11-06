@@ -41,34 +41,6 @@ int MC_protocol_send_simple_message(int socket, e_mc_message_type type)
   return MC_protocol_send(socket, &message, sizeof(message));
 }
 
-int MC_protocol_hello(int socket)
-{
-  int e;
-  if ((e = MC_protocol_send_simple_message(socket, MC_MESSAGE_HELLO)) != 0) {
-    XBT_ERROR("Could not send HELLO message");
-    return 1;
-  }
-
-  s_mc_message_t message;
-  message.type = MC_MESSAGE_NONE;
-
-  ssize_t s;
-  while ((s = MC_receive_message(socket, &message, sizeof(message), 0)) == -1) {
-    if (errno == EINTR)
-      continue;
-    else {
-      XBT_ERROR("Could not receive HELLO message");
-      return 2;
-    }
-  }
-  if ((size_t) s < sizeof(message) || message.type != MC_MESSAGE_HELLO) {
-    XBT_ERROR("Did not receive suitable HELLO message. Who are you?");
-    return 3;
-  }
-
-  return 0;
-}
-
 ssize_t MC_receive_message(int socket, void* message, size_t size, int options)
 {
   int res = recv(socket, message, size, options);
@@ -85,8 +57,6 @@ const char* MC_message_type_name(e_mc_message_type type)
   switch(type) {
   case MC_MESSAGE_NONE:
     return "NONE";
-  case MC_MESSAGE_HELLO:
-    return "HELLO";
   case MC_MESSAGE_CONTINUE:
     return "CONTINUE";
   case MC_MESSAGE_IGNORE_HEAP:

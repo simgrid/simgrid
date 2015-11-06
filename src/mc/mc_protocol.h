@@ -37,7 +37,6 @@ extern e_mc_mode_t mc_mode;
 
 typedef enum {
   MC_MESSAGE_NONE,
-  MC_MESSAGE_HELLO,
   MC_MESSAGE_CONTINUE,
   MC_MESSAGE_IGNORE_HEAP,
   MC_MESSAGE_UNIGNORE_HEAP,
@@ -105,7 +104,6 @@ typedef struct s_mc_register_symbol_message {
 
 XBT_PRIVATE int MC_protocol_send(int socket, const void* message, size_t size);
 XBT_PRIVATE int MC_protocol_send_simple_message(int socket, e_mc_message_type type);
-XBT_PRIVATE int MC_protocol_hello(int socket);
 XBT_PRIVATE ssize_t MC_receive_message(int socket, void* message, size_t size, int options);
 
 XBT_PRIVATE const char* MC_message_type_name(e_mc_message_type type);

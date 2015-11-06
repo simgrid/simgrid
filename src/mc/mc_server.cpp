@@ -12,6 +12,7 @@
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <sys/signalfd.h>
+#include <sys/ptrace.h>
 
 #include <xbt/log.h>
 #include <xbt/automaton.h>
@@ -38,21 +39,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_server, mc, "MC server logic");
 
 mc_server_t mc_server;
 
-s_mc_server::s_mc_server(pid_t pid, int socket)
-{
-  this->pid = pid;
-  this->socket = socket;
-}
+s_mc_server::s_mc_server(pid_t pid_, int socket_)
+  : pid(pid_), socket(socket_) {}
 
 void s_mc_server::start()
 {
-  /* Wait for the target process to initialize and exchange a HELLO messages
-   * before trying to look at its memory map.
-   */
-  int res = MC_protocol_hello(socket);
-  if (res != 0)
-    throw std::system_error(res, std::system_category());
-
   // Block SIGCHLD (this will be handled with accept/signalfd):
   sigset_t set;
   sigemptyset(&set);
@@ -78,6 +69,19 @@ void s_mc_server::start()
   signalfd_pollfd->fd = signal_fd;
   signalfd_pollfd->events = POLLIN;
   signalfd_pollfd->revents = 0;
+
+  XBT_DEBUG("Waiting for the model-checked process");
+  int status;
+
+  // The model-checked process SIGSTOP itself to signal it's ready:
+  pid_t res = waitpid(pid, &status, __WALL);
+  if (res < 0 || !WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
+    xbt_die("Could not wait model-checked process");
+
+  // The model-checked process is ready, we can read its memory layout:
+  MC_init_model_checker(pid, socket);
+
+  ptrace(PTRACE_CONT, pid, 0, 0);
 }
 
 void s_mc_server::shutdown()

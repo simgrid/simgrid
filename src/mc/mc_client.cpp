@@ -56,12 +56,6 @@ void MC_client_init(void)
   mc_client->active = 1;
 }
 
-void MC_client_hello(void)
-{
-  if (MC_protocol_hello(mc_client->fd) != 0)
-    xbt_die("Could not say hello the MC server");
-}
-
 void MC_client_send_message(void* message, size_t size)
 {
   if (MC_protocol_send(mc_client->fd, message, size))

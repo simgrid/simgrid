@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
+#include <sys/ptrace.h>
 
 #ifdef __linux__
 #include <sys/prctl.h>
@@ -80,7 +81,7 @@ static int do_child(int socket, char** argv)
   setenv(MC_ENV_SOCKET_FD, buffer, 1);
 
   execvp(argv[1], argv+1);
-  std::perror("simgrid-mc");
+  XBT_ERROR("Could not execute the child process");
   return MC_SERVER_ERROR;
 }
 
@@ -93,7 +94,6 @@ static int do_parent(int socket, pid_t child)
     mc_mode = MC_MODE_SERVER;
     mc_server = new s_mc_server(child, socket);
     mc_server->start();
-    MC_init_model_checker(child, socket);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
       MC_modelcheck_comm_determinism();
     else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0')
@@ -149,7 +149,9 @@ int main(int argc, char** argv)
     return MC_SERVER_ERROR;
   } else if (pid == 0) {
     close(sockets[1]);
-    return do_child(sockets[0], argv);
+    int res = do_child(sockets[0], argv);
+    XBT_DEBUG("Error in the child process creation");
+    return res;
   } else {
     close(sockets[0]);
     return do_parent(sockets[1], pid);

@@ -20,7 +20,6 @@ typedef struct s_mc_client {
 extern XBT_PRIVATE mc_client_t mc_client;
 
 XBT_PRIVATE void MC_client_init(void);
-XBT_PRIVATE void MC_client_hello(void);
 XBT_PRIVATE void MC_client_handle_messages(void);
 XBT_PRIVATE void MC_client_send_message(void* message, size_t size);
 XBT_PRIVATE void MC_client_send_simple_message(e_mc_message_type type);

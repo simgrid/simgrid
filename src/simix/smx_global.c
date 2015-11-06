@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
+#include <sys/ptrace.h>
 
 #include "smx_private.h"
 #include "xbt/heap.h"
@@ -226,9 +227,14 @@ void SIMIX_global_init(int *argc, char **argv)
   // We need to communicate  initialization of the different layers to the model-checker.
   if (mc_mode == MC_MODE_NONE) {
     if (getenv(MC_ENV_SOCKET_FD)) {
+
       mc_mode = MC_MODE_CLIENT;
       MC_client_init();
-      MC_client_hello();
+
+      // Waiting for the model-checker:
+      if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) == -1 || raise(SIGSTOP) != 0)
+        xbt_die("Could not wait for the model-checker");
+
       MC_client_handle_messages();
     }
   }
