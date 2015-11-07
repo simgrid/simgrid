@@ -342,7 +342,7 @@ sub exec_cmd {
     }
 
     # substitute remaining variables, if any
-    while ( $cmd{'cmd'} =~ /\${(\w+)(?::[=-][^}]*)?}/ ) {
+    while ( $cmd{'cmd'} =~ /\$\{(\w+)(?::[=-][^}]*)?\}/ ) {
         $cmd{'cmd'} = var_subst( $cmd{'cmd'}, $1, "" );
     }
     while ( $cmd{'cmd'} =~ /\$(\w+)/ ) {
@@ -730,11 +730,11 @@ sub build_diff {
 sub var_subst {
     my ( $text, $name, $value ) = @_;
     if ($value) {
-        $text =~ s/\${$name(?::[=-][^}]*)?}/$value/g;
+        $text =~ s/\$\{$name(?::[=-][^}]*)?\}/$value/g;
         $text =~ s/\$$name(\W|$)/$value$1/g;
     } else {
-        $text =~ s/\${$name:=([^}]*)}/$1/g;
-        $text =~ s/\${$name}//g;
+        $text =~ s/\$\{$name:=([^}]*)\}/$1/g;
+        $text =~ s/\$\{$name\}//g;
         $text =~ s/\$$name(\W|$)/$1/g;
     }
     return $text;
