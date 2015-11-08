@@ -33,7 +33,7 @@ void xbt_lib_free(xbt_lib_t *plib)
     xbt_dict_foreach (lib->dict, cursor, key, elts) {
       int i;
       for (i = 0 ; i < lib->levels ; i++)
-        if (elts[i])
+        if (elts[i] && lib->free_f[i])
           lib->free_f[i](elts[i]);
     }
     xbt_dict_free(&lib->dict);
@@ -65,7 +65,8 @@ void xbt_lib_set(xbt_lib_t lib, const char *key, int level, void *obj)
   if (elts[level]) {
     XBT_DEBUG("Replace %p by %p element under key '%s:%d'",
               elts[level], obj, key, level);
-    lib->free_f[level](elts[level]);
+    if (lib->free_f[level])
+    	lib->free_f[level](elts[level]);
   }
   elts[level] = obj;
 }
@@ -99,7 +100,7 @@ void xbt_lib_unset(xbt_lib_t lib, const char *key, int level, int invoke_callbac
     xbt_dict_remove(lib->dict, key);
   }
 
-  if (invoke_callback)
+  if (invoke_callback && lib->free_f[level])
     lib->free_f[level](obj);
 }
 
