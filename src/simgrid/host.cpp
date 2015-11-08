@@ -42,7 +42,7 @@ int SD_HOST_LEVEL;
 int SIMIX_HOST_LEVEL;
 int ROUTING_HOST_LEVEL;
 int SURF_CPU_LEVEL;
-
+int USER_HOST_LEVEL;
 
 #include "src/msg/msg_private.h" // MSG_host_priv_free. FIXME: killme
 #include "src/simdag/private.h" // __SD_workstation_destroy. FIXME: killme
@@ -57,14 +57,24 @@ static XBT_INLINE void routing_asr_host_free(void *p) {
   delete static_cast<RoutingEdge*>(p);
 }
 
-
-void sg_host_init() { // FIXME: only add the needed levels
+void sg_host_init() {
   MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_priv_free);
   SD_HOST_LEVEL = xbt_lib_add_level(host_lib,__SD_workstation_destroy);
 
   SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
   SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_cpu_free);
   ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
+  USER_HOST_LEVEL = xbt_lib_add_level(host_lib,NULL);
+}
+// ========== User data Layer ==========
+void *sg_host_user(sg_host_t host) {
+	return xbt_lib_get_level(host, USER_HOST_LEVEL);
+}
+void sg_host_user_set(sg_host_t host, void* userdata) {
+	xbt_lib_set(host_lib,host->key,USER_HOST_LEVEL,userdata);
+}
+void sg_host_user_destroy(sg_host_t host) {
+	xbt_lib_unset(host_lib,host->key,USER_HOST_LEVEL,1);
 }
 
 // ========== MSG Layer ==============

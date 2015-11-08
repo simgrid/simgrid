@@ -53,7 +53,6 @@ extern XBT_PRIVATE SD_global_t sd_global;
 /* Workstation */
 typedef s_xbt_dictelm_t s_SD_workstation_t;
 typedef struct SD_workstation {
-  void *data;                   /* user data */
   e_SD_workstation_access_mode_t access_mode;
 
   xbt_fifo_t task_fifo;         /* only used in sequential mode */

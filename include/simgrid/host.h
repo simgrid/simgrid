@@ -25,6 +25,10 @@ class Cpu;
 #else
 #define DEFINE_EXTERNAL_CLASS(klass) typedef struct klass klass;
 #endif
+// ========== User Data ==============
+XBT_PUBLIC(void*) sg_host_user(sg_host_t host);
+XBT_PUBLIC(void) sg_host_user_set(sg_host_t host, void* userdata);
+XBT_PUBLIC(void) sg_host_user_destroy(sg_host_t host);
 
 // ========== MSG Layer ==============
 typedef struct s_msg_host_priv *msg_host_priv_t;

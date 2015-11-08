@@ -25,7 +25,6 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation,
   const char *name;
 
   workstation = xbt_new(s_SD_workstation_priv_t, 1);
-  workstation->data = data;     /* user data */
   workstation->access_mode = SD_WORKSTATION_SHARED_ACCESS;      /* default mode is shared */
   workstation->task_fifo = NULL;
   workstation->current_task = NULL;
@@ -33,6 +32,7 @@ SD_workstation_t __SD_workstation_create(void *surf_workstation,
   name = surf_resource_name(surf_workstation);
   sg_host_t sg_host = sg_host_by_name(name);
   sg_host_sd_set(sg_host,workstation);
+  sg_host_user_set(sg_host,data);
   return sg_host;
 }
 
@@ -113,7 +113,7 @@ int SD_workstation_get_number(void)
  */
 void *SD_workstation_get_data(SD_workstation_t workstation)
 {
-  return sg_host_sd(workstation)->data;
+  return sg_host_user(workstation);
 }
 
 /**
@@ -128,7 +128,7 @@ void *SD_workstation_get_data(SD_workstation_t workstation)
  */
 void SD_workstation_set_data(SD_workstation_t workstation, void *data)
 {
-	sg_host_sd(workstation)->data = data;
+	sg_host_user_set(workstation, data);
 }
 
 /**
