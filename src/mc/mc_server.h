@@ -50,7 +50,8 @@ public:
   void resume(simgrid::mc::Process* process);
   void loop();
   bool handle_events();
-protected:
+private:
+  bool handle_message(char* buffer, ssize_t size);
   void handle_signals();
   void handle_waitpid();
   void on_signal(const struct signalfd_siginfo* info);

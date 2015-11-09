@@ -134,6 +134,100 @@ void throw_socket_error(int fd)
   throw std::system_error(error, std::system_category());
 }
 
+bool s_mc_server::handle_message(char* buffer, ssize_t size)
+{
+  s_mc_message_t base_message;
+  if (size < (ssize_t) sizeof(base_message))
+    xbt_die("Broken message");
+  memcpy(&base_message, buffer, sizeof(base_message));
+
+  switch(base_message.type) {
+
+  case MC_MESSAGE_IGNORE_HEAP:
+    {
+      s_mc_ignore_heap_message_t message;
+      if (size != sizeof(message))
+        xbt_die("Broken messsage");
+      memcpy(&message, buffer, sizeof(message));
+      mc_heap_ignore_region_t region = xbt_new(s_mc_heap_ignore_region_t, 1);
+      *region = message.region;
+      MC_heap_region_ignore_insert(region);
+      break;
+    }
+
+  case MC_MESSAGE_UNIGNORE_HEAP:
+    {
+      s_mc_ignore_memory_message_t message;
+      if (size != sizeof(message))
+        xbt_die("Broken messsage");
+      memcpy(&message, buffer, sizeof(message));
+      MC_heap_region_ignore_remove(
+        (void *)(std::uintptr_t) message.addr, message.size);
+      break;
+    }
+
+  case MC_MESSAGE_IGNORE_MEMORY:
+    {
+      s_mc_ignore_memory_message_t message;
+      if (size != sizeof(message))
+        xbt_die("Broken messsage");
+      memcpy(&message, buffer, sizeof(message));
+      mc_model_checker->process().ignore_region(
+        message.addr, message.size);
+      break;
+    }
+
+  case MC_MESSAGE_STACK_REGION:
+    {
+      s_mc_stack_region_message_t message;
+      if (size != sizeof(message))
+        xbt_die("Broken messsage");
+      memcpy(&message, buffer, sizeof(message));
+      stack_region_t stack_region = xbt_new(s_stack_region_t, 1);
+      *stack_region = message.stack_region;
+      MC_stack_area_add(stack_region);
+    }
+    break;
+
+  case MC_MESSAGE_REGISTER_SYMBOL:
+    {
+      s_mc_register_symbol_message_t message;
+      if (size != sizeof(message))
+        xbt_die("Broken message");
+      memcpy(&message, buffer, sizeof(message));
+      if (message.callback)
+        xbt_die("Support for client-side function proposition is not implemented.");
+      XBT_DEBUG("Received symbol: %s", message.name);
+
+      if (_mc_property_automaton == NULL)
+        _mc_property_automaton = xbt_automaton_new();
+
+      simgrid::mc::Process* process = &mc_model_checker->process();
+      simgrid::mc::remote_ptr<int> address
+        = simgrid::mc::remote((int*) message.data);
+      simgrid::xbt::add_proposition(_mc_property_automaton,
+        message.name,
+        [process, address]() { return process->read(address); }
+        );
+
+      break;
+    }
+
+  case MC_MESSAGE_WAITING:
+    return false;
+
+  case MC_MESSAGE_ASSERTION_FAILED:
+    MC_report_assertion_error();
+    ::exit(SIMGRID_EXIT_SAFETY);
+    break;
+
+  default:
+    xbt_die("Unexpected message from model-checked application");
+
+  }
+  return true;
+}
+
 bool s_mc_server::handle_events()
 {
   char buffer[MC_MESSAGE_LENGTH];
@@ -151,101 +245,10 @@ bool s_mc_server::handle_events()
 
   if (socket_pollfd->revents) {
     if (socket_pollfd->revents & POLLIN) {
-
       ssize_t size = MC_receive_message(socket_pollfd->fd, buffer, sizeof(buffer), MSG_DONTWAIT);
       if (size == -1 && errno != EAGAIN)
         throw std::system_error(errno, std::system_category());
-
-      s_mc_message_t base_message;
-      if (size < (ssize_t) sizeof(base_message))
-        xbt_die("Broken message");
-      memcpy(&base_message, buffer, sizeof(base_message));
-
-      switch(base_message.type) {
-
-      case MC_MESSAGE_IGNORE_HEAP:
-        {
-          s_mc_ignore_heap_message_t message;
-          if (size != sizeof(message))
-            xbt_die("Broken messsage");
-          memcpy(&message, buffer, sizeof(message));
-          mc_heap_ignore_region_t region = xbt_new(s_mc_heap_ignore_region_t, 1);
-          *region = message.region;
-          MC_heap_region_ignore_insert(region);
-          break;
-        }
-
-      case MC_MESSAGE_UNIGNORE_HEAP:
-        {
-          s_mc_ignore_memory_message_t message;
-          if (size != sizeof(message))
-            xbt_die("Broken messsage");
-          memcpy(&message, buffer, sizeof(message));
-          MC_heap_region_ignore_remove(
-            (void *)(std::uintptr_t) message.addr, message.size);
-          break;
-        }
-
-      case MC_MESSAGE_IGNORE_MEMORY:
-        {
-          s_mc_ignore_memory_message_t message;
-          if (size != sizeof(message))
-            xbt_die("Broken messsage");
-          memcpy(&message, buffer, sizeof(message));
-          mc_model_checker->process().ignore_region(
-            message.addr, message.size);
-          break;
-        }
-
-      case MC_MESSAGE_STACK_REGION:
-        {
-          s_mc_stack_region_message_t message;
-          if (size != sizeof(message))
-            xbt_die("Broken messsage");
-          memcpy(&message, buffer, sizeof(message));
-          stack_region_t stack_region = xbt_new(s_stack_region_t, 1);
-          *stack_region = message.stack_region;
-          MC_stack_area_add(stack_region);
-        }
-        break;
-
-      case MC_MESSAGE_REGISTER_SYMBOL:
-        {
-          s_mc_register_symbol_message_t message;
-          if (size != sizeof(message))
-            xbt_die("Broken message");
-          memcpy(&message, buffer, sizeof(message));
-          if (message.callback)
-            xbt_die("Support for client-side function proposition is not implemented.");
-          XBT_DEBUG("Received symbol: %s", message.name);
-
-          if (_mc_property_automaton == NULL)
-            _mc_property_automaton = xbt_automaton_new();
-
-          simgrid::mc::Process* process = &mc_model_checker->process();
-          simgrid::mc::remote_ptr<int> address
-            = simgrid::mc::remote((int*) message.data);
-          simgrid::xbt::add_proposition(_mc_property_automaton,
-            message.name,
-            [process, address]() { return process->read(address); }
-            );
-
-          break;
-        }
-
-      case MC_MESSAGE_WAITING:
-        return false;
-
-      case MC_MESSAGE_ASSERTION_FAILED:
-        MC_report_assertion_error();
-        ::exit(SIMGRID_EXIT_SAFETY);
-        break;
-
-      default:
-        xbt_die("Unexpected message from model-checked application");
-
-      }
-      return true;
+      return handle_message(buffer, size);
     }
     if (socket_pollfd->revents & POLLERR) {
       throw_socket_error(socket_pollfd->fd);
