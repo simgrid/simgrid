@@ -1236,35 +1236,7 @@ void action_allToAllv(const char *const *action) {
   xbt_free(recvdisps);
 }
 
-/* Based on MSG_process_migrate [src/msg/msg_process.c] */
-void smpi_replay_process_migrate(smx_process_t process, smx_host_t new_host,
-    int size)
-{
-  /*This does not seem to be needed for smpi. It does not store the host in
-   * the process data
-  simdata_process_t simdata = simcall_process_get_data(process);
-  simdata->m_host = host;
-  */
-
-  // First, we call smpi_send_process_data (implemented on smpi_base.c).
-  smpi_send_process_data(size, new_host);
-
-#ifdef HAVE_TRACING
-  //Update the traces to reflect the migration.
-  smx_host_t host = SIMIX_host_self();
-  TRACE_smpi_process_change_host(smpi_process_index(), host, new_host, size);
-#endif
-  
-  // Now, we change the host to which this rank is mapped.
-  simcall_process_change_host(process, new_host);
-
-  return;
-}
-
-
-/* 
- * Alternative implementation of send_process_data. Not used in our code.
- */
+/* Alternative implementation of send_process_data. */
 void send_process_data(double data_size, smx_host_t host){
   smx_synchro_t synchro;
   smx_host_t host_list[2];
@@ -1291,6 +1263,33 @@ void send_process_data(double data_size, smx_host_t host){
   TRACE_smpi_send_process_data_out(smpi_process_index());
 #endif
 }
+
+
+/* Based on MSG_process_migrate [src/msg/msg_process.c] */
+void smpi_replay_process_migrate(smx_process_t process, smx_host_t new_host,
+    unsigned long size)
+{
+  /*This does not seem to be needed for smpi. It does not store the host in
+   * the process data
+  simdata_process_t simdata = simcall_process_get_data(process);
+  simdata->m_host = host;
+  */
+
+  /*In previous versions, we called smpi_send_process_data (implemented on smpi_base.c). The problem is that that function needs to have at least one process in the destination host. This is not always true when using a centralized LB approach.*/
+  send_process_data((double)size, new_host);
+
+#ifdef HAVE_TRACING
+  //Update the traces to reflect the migration.
+  smx_host_t host = SIMIX_host_self();
+  TRACE_smpi_process_change_host(smpi_process_index(), host, new_host, size);
+#endif
+  
+  // Now, we change the host to which this rank is mapped.
+  simcall_process_change_host(process, new_host);
+
+  return;
+}
+
 
 void smpi_replay_initialize(int *argc, char***argv){
   smpi_process_init(argc, argv);

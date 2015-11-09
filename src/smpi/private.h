@@ -784,7 +784,7 @@ int smpi_process_index_of_smx_process(smx_process_t process) {
 }
 
 /************************ Process migration **********************************/
-void smpi_replay_process_migrate(smx_process_t process, smx_host_t new_host, int size);
+void smpi_replay_process_migrate(smx_process_t process, smx_host_t new_host, unsigned long size);
 /*****************************************************************************/
 
 /*************************** Actions for SMPI replay *************************/
