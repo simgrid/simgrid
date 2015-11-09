@@ -119,6 +119,7 @@ XBT_PRIVATE void print_comparison_times(void);
 XBT_PRIVATE void MC_dump_stacks(FILE* file);
 
 XBT_PRIVATE void MC_report_assertion_error(void);
+XBT_PRIVATE void MC_report_crash(int status);
 
 XBT_PRIVATE void MC_invalidate_cache(void);
 

@@ -81,6 +81,7 @@ void s_mc_server::start()
   // The model-checked process is ready, we can read its memory layout:
   MC_init_model_checker(pid, socket);
 
+  ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
   ptrace(PTRACE_CONT, pid, 0, 0);
 }
 
@@ -318,7 +319,25 @@ void s_mc_server::handle_waitpid()
     }
 
     if (pid == mc_model_checker->process().pid()) {
-      if (WIFEXITED(status) || WIFSIGNALED(status)) {
+
+      // From PTRACE_O_TRACEEXIT:
+      if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
+        if (ptrace(PTRACE_GETEVENTMSG, pid, 0, &status) == -1)
+          xbt_die("Could not get exit status");
+        if (WIFSIGNALED(status)) {
+          MC_report_crash(status);
+          ::exit(SIMGRID_PROGRAM_CRASH);
+        }
+      }
+
+      // We don't care about signals, just reinject them:
+      if (WIFSTOPPED(status)) {
+        XBT_DEBUG("Stopped with signal %i", (int) WSTOPSIG(status));
+        if (ptrace(PTRACE_CONT, pid, 0, WSTOPSIG(status)) == -1)
+          xbt_die("Could not PTRACE_CONT");
+      }
+
+      else if (WIFEXITED(status) || WIFSIGNALED(status)) {
         XBT_DEBUG("Child process is over");
         mc_model_checker->process().terminate(status);
       }
