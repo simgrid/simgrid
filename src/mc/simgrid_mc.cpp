@@ -47,7 +47,7 @@ static int do_child(int socket, char** argv)
   // Make sure we do not outlive our parent:
   if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0) {
     std::perror("simgrid-mc");
-    return SIMGRID_ERROR;
+    return SIMGRID_MC_EXIT_ERROR;
   }
 #endif
 
@@ -57,11 +57,11 @@ static int do_child(int socket, char** argv)
   int fdflags = fcntl(socket, F_GETFD, 0);
   if (fdflags == -1) {
     std::perror("simgrid-mc");
-    return SIMGRID_ERROR;
+    return SIMGRID_MC_EXIT_ERROR;
   }
   if (fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) == -1) {
     std::perror("simgrid-mc");
-    return SIMGRID_ERROR;
+    return SIMGRID_MC_EXIT_ERROR;
   }
 
   XBT_DEBUG("CLOEXEC removed on socket %i", socket);
@@ -77,12 +77,12 @@ static int do_child(int socket, char** argv)
   char buffer[64];
   res = std::snprintf(buffer, sizeof(buffer), "%i", socket);
   if ((size_t) res >= sizeof(buffer) || res == -1)
-    return SIMGRID_ERROR;
+    return SIMGRID_MC_EXIT_ERROR;
   setenv(MC_ENV_SOCKET_FD, buffer, 1);
 
   execvp(argv[1], argv+1);
   XBT_ERROR("Could not execute the child process");
-  return SIMGRID_ERROR;
+  return SIMGRID_MC_EXIT_ERROR;
 }
 
 static int do_parent(int socket, pid_t child)
@@ -106,7 +106,7 @@ static int do_parent(int socket, pid_t child)
   catch(std::exception& e) {
     XBT_ERROR("Exception: %s", e.what());
   }
-  exit(SIMGRID_ERROR);
+  exit(SIMGRID_MC_EXIT_ERROR);
 }
 
 static char** argvdup(int argc, char** argv)
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
   res = socketpair(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets);
   if (res == -1) {
     perror("simgrid-mc");
-    return SIMGRID_ERROR;
+    return SIMGRID_MC_EXIT_ERROR;
   }
 
   XBT_DEBUG("Created socketpair");
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
   pid_t pid = fork();
   if (pid < 0) {
     perror("simgrid-mc");
-    return SIMGRID_ERROR;
+    return SIMGRID_MC_EXIT_ERROR;
   } else if (pid == 0) {
     close(sockets[1]);
     int res = do_child(sockets[0], argv);

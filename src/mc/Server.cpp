@@ -224,7 +224,7 @@ bool Server::handle_message(char* buffer, ssize_t size)
 
   case MC_MESSAGE_ASSERTION_FAILED:
     MC_report_assertion_error();
-    ::exit(SIMGRID_EXIT_SAFETY);
+    ::exit(SIMGRID_MC_EXIT_SAFETY);
     break;
 
   default:
@@ -331,7 +331,7 @@ void Server::handle_waitpid()
           xbt_die("Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
-          ::exit(SIMGRID_PROGRAM_CRASH);
+          ::exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
         }
       }
 

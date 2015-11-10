@@ -126,7 +126,7 @@ void MC_modelcheck_safety(void)
 
       if(_sg_mc_termination && is_exploration_stack_state(next_state)){
           MC_show_non_termination();
-          exit(SIMGRID_EXIT_NON_TERMINATION);
+          exit(SIMGRID_MC_EXIT_NON_TERMINATION);
       }
 
       if ((visited_state = is_visited_state(next_state)) == NULL) {
@@ -186,7 +186,7 @@ void MC_modelcheck_safety(void)
       /* Check for deadlocks */
       if (MC_deadlock_check()) {
         MC_show_deadlock(NULL);
-        exit(SIMGRID_EXIT_DEADLOCK);
+        exit(SIMGRID_MC_EXIT_DEADLOCK);
       }
 
       /* Traverse the stack backwards until a state with a non empty interleave
@@ -259,7 +259,7 @@ void MC_modelcheck_safety(void)
 
   XBT_INFO("No property violation found.");
   MC_print_statistics(mc_stats);
-  exit(SIMGRID_EXIT_SUCCESS);
+  exit(SIMGRID_MC_EXIT_SUCCESS);
 }
 
 static void MC_modelcheck_safety_init(void)

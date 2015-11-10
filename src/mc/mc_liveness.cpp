@@ -252,7 +252,7 @@ static void MC_modelcheck_liveness_main(void)
           MC_dump_stack_liveness(mc_stack);
           MC_print_statistics(mc_stats);
           XBT_INFO("Counter-example depth : %d", counter_example_depth);
-          exit(SIMGRID_EXIT_LIVENESS);
+          exit(SIMGRID_MC_EXIT_LIVENESS);
         }
       }
 
