@@ -43,7 +43,7 @@ void MC_wait_for_requests(void)
 {
 #ifdef HAVE_MC
   if (mc_mode == MC_MODE_SERVER) {
-    MC_server_wait_client(&mc_model_checker->process());
+    mc_server->wait_client(mc_model_checker->process());
     return;
   }
 #endif
@@ -233,7 +233,8 @@ void MC_simcall_handle(smx_simcall_t req, int value)
 
   xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, i, pi) {
     if (req == &pi->copy.simcall) {
-      MC_server_simcall_handle(&mc_model_checker->process(), pi->copy.pid, value);
+      mc_server->simcall_handle(
+        mc_model_checker->process(), pi->copy.pid, value);
       return;
     }
   }

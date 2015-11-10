@@ -117,12 +117,12 @@ void s_mc_server::exit()
   }
 }
 
-void s_mc_server::resume(simgrid::mc::Process* process)
+void s_mc_server::resume(simgrid::mc::Process& process)
 {
-  int res = process->send_message(MC_MESSAGE_CONTINUE);
+  int res = process.send_message(MC_MESSAGE_CONTINUE);
   if (res)
     throw std::system_error(res, std::system_category());
-  process->cache_flags = (mc_process_cache_flags_t) 0;
+  process.cache_flags = (mc_process_cache_flags_t) 0;
 }
 
 static
@@ -356,33 +356,28 @@ void s_mc_server::on_signal(const struct signalfd_siginfo* info)
   }
 }
 
-void MC_server_wait_client(simgrid::mc::Process* process)
+void s_mc_server::wait_client(simgrid::mc::Process& process)
 {
-  mc_server->resume(process);
+  this->resume(process);
   while (mc_model_checker->process().running()) {
     if (!mc_server->handle_events())
       return;
   }
 }
 
-void MC_server_simcall_handle(simgrid::mc::Process* process, unsigned long pid, int value)
+void s_mc_server::simcall_handle(simgrid::mc::Process& process, unsigned long pid, int value)
 {
   s_mc_simcall_handle_message m;
   memset(&m, 0, sizeof(m));
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = pid;
   m.value = value;
-  mc_model_checker->process().send_message(m);
-  process->cache_flags = (mc_process_cache_flags_t) 0;
-  while (mc_model_checker->process().running()) {
+  process.send_message(m);
+  process.cache_flags = (mc_process_cache_flags_t) 0;
+  while (process.running()) {
     if (!mc_server->handle_events())
       return;
   }
-}
-
-void MC_server_loop(mc_server_t server)
-{
-  server->loop();
 }
 
 }
