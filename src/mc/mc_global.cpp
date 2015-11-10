@@ -28,7 +28,7 @@
 #include "mc_record.h"
 
 #ifdef HAVE_MC
-#include "mc_server.h"
+#include "src/mc/Server.hpp"
 #include <libunwind.h>
 #include <xbt/mmalloc.h>
 #include "../xbt/mmalloc/mmprivate.h"

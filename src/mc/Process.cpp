@@ -32,8 +32,8 @@
 #include "mc_snapshot.h"
 #include "mc_ignore.h"
 #include "mc_smx.h"
-#include "mc_server.h"
 
+#include "src/mc/Server.hpp"
 #include "src/mc/Process.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ObjectInformation.hpp"

@@ -18,8 +18,8 @@
 #ifdef HAVE_MC
 #include "src/mc/Process.hpp"
 #include "src/mc/ModelChecker.hpp"
+#include "src/mc/Server.hpp"
 #include "mc_smx.h"
-#include "mc_server.h"
 #endif
 
 #ifdef HAVE_MC
@@ -43,7 +43,7 @@ void MC_wait_for_requests(void)
 {
 #ifdef HAVE_MC
   if (mc_mode == MC_MODE_SERVER) {
-    mc_server->wait_client(mc_model_checker->process());
+    simgrid::mc::server->wait_client(mc_model_checker->process());
     return;
   }
 #endif
@@ -233,7 +233,7 @@ void MC_simcall_handle(smx_simcall_t req, int value)
 
   xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, i, pi) {
     if (req == &pi->copy.simcall) {
-      mc_server->simcall_handle(
+      simgrid::mc::server->simcall_handle(
         mc_model_checker->process(), pi->copy.pid, value);
       return;
     }

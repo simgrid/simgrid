@@ -683,8 +683,8 @@ set(MC_SRC
   src/mc/mc_client.h
   src/mc/mc_protocol.h
   src/mc/mc_protocol.cpp
-  src/mc/mc_server.cpp
-  src/mc/mc_server.h
+  src/mc/Server.cpp
+  src/mc/Server.hpp
   src/mc/mc_smx.h
   src/mc/mc_smx.cpp
   src/mc/mc_xbt.hpp

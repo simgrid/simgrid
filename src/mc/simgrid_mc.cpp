@@ -32,7 +32,7 @@
 #include "mc_base.h"
 #include "mc_private.h"
 #include "mc_protocol.h"
-#include "mc_server.h"
+#include "src/mc/Server.hpp"
 #include "mc_safety.h"
 #include "mc_comm_pattern.h"
 #include "mc_liveness.h"
@@ -47,7 +47,7 @@ static int do_child(int socket, char** argv)
   // Make sure we do not outlive our parent:
   if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0) {
     std::perror("simgrid-mc");
-    return MC_SERVER_ERROR;
+    return SIMGRID_ERROR;
   }
 #endif
 
@@ -57,11 +57,11 @@ static int do_child(int socket, char** argv)
   int fdflags = fcntl(socket, F_GETFD, 0);
   if (fdflags == -1) {
     std::perror("simgrid-mc");
-    return MC_SERVER_ERROR;
+    return SIMGRID_ERROR;
   }
   if (fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) == -1) {
     std::perror("simgrid-mc");
-    return MC_SERVER_ERROR;
+    return SIMGRID_ERROR;
   }
 
   XBT_DEBUG("CLOEXEC removed on socket %i", socket);
@@ -77,36 +77,36 @@ static int do_child(int socket, char** argv)
   char buffer[64];
   res = std::snprintf(buffer, sizeof(buffer), "%i", socket);
   if ((size_t) res >= sizeof(buffer) || res == -1)
-    return MC_SERVER_ERROR;
+    return SIMGRID_ERROR;
   setenv(MC_ENV_SOCKET_FD, buffer, 1);
 
   execvp(argv[1], argv+1);
   XBT_ERROR("Could not execute the child process");
-  return MC_SERVER_ERROR;
+  return SIMGRID_ERROR;
 }
 
 static int do_parent(int socket, pid_t child)
 {
   XBT_DEBUG("Inside the parent process");
-  if (mc_server)
+  if (simgrid::mc::server)
     xbt_die("MC server already present");
   try {
     mc_mode = MC_MODE_SERVER;
-    mc_server = new s_mc_server(child, socket);
-    mc_server->start();
+    simgrid::mc::server = new simgrid::mc::Server(child, socket);
+    simgrid::mc::server->start();
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
       MC_modelcheck_comm_determinism();
     else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0')
       MC_modelcheck_safety();
     else
       MC_modelcheck_liveness();
-    mc_server->shutdown();
-    mc_server->exit();
+    simgrid::mc::server->shutdown();
+    simgrid::mc::server->exit();
   }
   catch(std::exception& e) {
     XBT_ERROR("Exception: %s", e.what());
   }
-  exit(MC_SERVER_ERROR);
+  exit(SIMGRID_ERROR);
 }
 
 static char** argvdup(int argc, char** argv)
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
   res = socketpair(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets);
   if (res == -1) {
     perror("simgrid-mc");
-    return MC_SERVER_ERROR;
+    return SIMGRID_ERROR;
   }
 
   XBT_DEBUG("Created socketpair");
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
   pid_t pid = fork();
   if (pid < 0) {
     perror("simgrid-mc");
-    return MC_SERVER_ERROR;
+    return SIMGRID_ERROR;
   } else if (pid == 0) {
     close(sockets[1]);
     int res = do_child(sockets[0], argv);

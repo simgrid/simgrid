@@ -20,7 +20,7 @@
 
 #include "ModelChecker.hpp"
 #include "mc_protocol.h"
-#include "mc_server.h"
+#include "src/mc/Server.hpp"
 #include "mc_private.h"
 #include "mc_ignore.h"
 #include "mcer_ignore.h"
@@ -31,18 +31,23 @@ using simgrid::mc::remote;
 
 extern "C" {
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_server, mc, "MC server logic");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Server, mc, "MC server logic");
+
+}
 
 // HArdcoded index for now:
 #define SOCKET_FD_INDEX 0
 #define SIGNAL_FD_INDEX 1
 
-mc_server_t mc_server;
+namespace simgrid {
+namespace mc {
 
-s_mc_server::s_mc_server(pid_t pid_, int socket_)
+Server* server = nullptr;
+
+Server::Server(pid_t pid_, int socket_)
   : pid(pid_), socket(socket_) {}
 
-void s_mc_server::start()
+void Server::start()
 {
   // Block SIGCHLD (this will be handled with accept/signalfd):
   sigset_t set;
@@ -85,7 +90,7 @@ void s_mc_server::start()
   ptrace(PTRACE_CONT, pid, 0, 0);
 }
 
-void s_mc_server::shutdown()
+void Server::shutdown()
 {
   XBT_DEBUG("Shuting down model-checker");
 
@@ -101,7 +106,7 @@ void s_mc_server::shutdown()
   }
 }
 
-void s_mc_server::exit()
+void Server::exit()
 {
   // Finished:
   int status = mc_model_checker->process().status();
@@ -117,7 +122,7 @@ void s_mc_server::exit()
   }
 }
 
-void s_mc_server::resume(simgrid::mc::Process& process)
+void Server::resume(simgrid::mc::Process& process)
 {
   int res = process.send_message(MC_MESSAGE_CONTINUE);
   if (res)
@@ -135,7 +140,7 @@ void throw_socket_error(int fd)
   throw std::system_error(error, std::system_category());
 }
 
-bool s_mc_server::handle_message(char* buffer, ssize_t size)
+bool Server::handle_message(char* buffer, ssize_t size)
 {
   s_mc_message_t base_message;
   if (size < (ssize_t) sizeof(base_message))
@@ -229,7 +234,7 @@ bool s_mc_server::handle_message(char* buffer, ssize_t size)
   return true;
 }
 
-bool s_mc_server::handle_events()
+bool Server::handle_events()
 {
   char buffer[MC_MESSAGE_LENGTH];
   struct pollfd* socket_pollfd = &fds[SOCKET_FD_INDEX];
@@ -273,13 +278,13 @@ bool s_mc_server::handle_events()
   return true;
 }
 
-void s_mc_server::loop()
+void Server::loop()
 {
   while (mc_model_checker->process().running())
     this->handle_events();
 }
 
-void s_mc_server::handle_signals()
+void Server::handle_signals()
 {
   struct signalfd_siginfo info;
   struct pollfd* signalfd_pollfd = &fds[SIGNAL_FD_INDEX];
@@ -299,7 +304,7 @@ void s_mc_server::handle_signals()
   this->on_signal(&info);
 }
 
-void s_mc_server::handle_waitpid()
+void Server::handle_waitpid()
 {
   XBT_DEBUG("Check for wait event");
   int status;
@@ -345,7 +350,7 @@ void s_mc_server::handle_waitpid()
   }
 }
 
-void s_mc_server::on_signal(const struct signalfd_siginfo* info)
+void Server::on_signal(const struct signalfd_siginfo* info)
 {
   switch(info->ssi_signo) {
   case SIGCHLD:
@@ -356,16 +361,16 @@ void s_mc_server::on_signal(const struct signalfd_siginfo* info)
   }
 }
 
-void s_mc_server::wait_client(simgrid::mc::Process& process)
+void Server::wait_client(simgrid::mc::Process& process)
 {
   this->resume(process);
   while (mc_model_checker->process().running()) {
-    if (!mc_server->handle_events())
+    if (!simgrid::mc::server->handle_events())
       return;
   }
 }
 
-void s_mc_server::simcall_handle(simgrid::mc::Process& process, unsigned long pid, int value)
+void Server::simcall_handle(simgrid::mc::Process& process, unsigned long pid, int value)
 {
   s_mc_simcall_handle_message m;
   memset(&m, 0, sizeof(m));
@@ -375,9 +380,10 @@ void s_mc_server::simcall_handle(simgrid::mc::Process& process, unsigned long pi
   process.send_message(m);
   process.cache_flags = (mc_process_cache_flags_t) 0;
   while (process.running()) {
-    if (!mc_server->handle_events())
+    if (!simgrid::mc::server->handle_events())
       return;
   }
 }
 
+}
 }
