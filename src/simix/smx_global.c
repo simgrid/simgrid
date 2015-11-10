@@ -88,14 +88,6 @@ static void _XBT_CALL segvhandler(int signum, siginfo_t *siginfo, void *context)
     }
 #endif
   }
-#ifdef HAVE_MC
-  if (MC_is_active()) {
-    if (mc_stack) {
-      MC_dump_stack_safety(mc_stack);
-    }
-    MC_print_statistics(mc_stats);
-  }
-#endif
   raise(signum);
 }
 
