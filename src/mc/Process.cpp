@@ -219,6 +219,7 @@ Process::Process(pid_t pid, int sockfd) : AddressSpace(this)
   process->init_memory_map_info();
   process->clear_refs_fd_ = -1;
   process->pagemap_fd_ = -1;
+  process->privatized_ = false;
 
   int fd = open_vm(process->pid_, O_RDWR);
   if (fd<0)
@@ -514,7 +515,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
       this->find_object_info_rw((void*)address.address());
     // Segment overlap is not handled.
 #ifdef HAVE_SMPI
-    if (info.get() && info.get()->privatized()) {
+    if (info.get() && this->privatized(*info)) {
       if (process_index < 0)
         xbt_die("Missing process index");
       if (process_index >= (int) MC_smpi_process_count())

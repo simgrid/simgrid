@@ -88,15 +88,6 @@ public:
     return this->flags & simgrid::mc::ObjectInformation::Executable;
   }
 
-  bool privatized() const
-  {
-#ifdef HAVE_SMPI
-    return this->executable() && smpi_privatize_global_variables;
-#else
-    return false;
-#endif
-  }
-
   void* base_address() const;
 
   simgrid::mc::Frame* find_function(const void *ip) const;

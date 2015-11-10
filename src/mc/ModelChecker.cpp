@@ -6,6 +6,8 @@
 
 #include <cassert>
 
+#include "simgrid/sg_config.h" // sg_cfg_get_boolean
+
 #include "ModelChecker.hpp"
 #include "PageStore.hpp"
 
@@ -20,6 +22,8 @@ ModelChecker::ModelChecker(pid_t pid, int socket) :
   process_(pid, socket),
   parent_snapshot_(nullptr)
 {
+  // TODO, avoid direct dependency on sg_cfg
+  process_.privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
 }
 
 ModelChecker::~ModelChecker()

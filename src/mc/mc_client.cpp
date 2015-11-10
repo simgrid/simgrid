@@ -112,6 +112,16 @@ void MC_client_handle_messages(void)
       }
       break;
 
+    case MC_MESSAGE_RESTORE:
+      {
+        s_mc_restore_message_t message;
+        if (s != sizeof(message))
+          xbt_die("Unexpected size for SIMCALL_HANDLE");
+        memcpy(&message, message_buffer, sizeof(message));
+        smpi_really_switch_data_segment(message.index);
+      }
+      break;
+
     default:
       xbt_die("%s received unexpected message %s (%i)",
         MC_mode_name(mc_mode),

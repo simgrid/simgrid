@@ -48,6 +48,8 @@ typedef enum {
   MC_MESSAGE_WAITING,
   MC_MESSAGE_SIMCALL_HANDLE,
   MC_MESSAGE_ASSERTION_FAILED,
+  // MCer request to finish the restoration:
+  MC_MESSAGE_RESTORE,
 } e_mc_message_type;
 
 #define MC_MESSAGE_LENGTH 512
@@ -101,6 +103,11 @@ typedef struct s_mc_register_symbol_message {
   int (*callback)(void*);
   void* data;
 } s_mc_register_symbol_message_t, * mc_register_symbol_message_t;
+
+typedef struct s_mc_restore_message {
+  e_mc_message_type type;
+  int index;
+} s_mc_restore_message_t, *mc_restore_message_t;
 
 XBT_PRIVATE int MC_protocol_send(int socket, const void* message, size_t size);
 XBT_PRIVATE int MC_protocol_send_simple_message(int socket, e_mc_message_type type);
