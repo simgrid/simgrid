@@ -68,6 +68,10 @@ public:
   bool handle_events();
   void wait_client(simgrid::mc::Process& process);
   void simcall_handle(simgrid::mc::Process& process, unsigned long pid, int value);
+  void wait_for_requests()
+  {
+    mc_model_checker->wait_client(mc_model_checker->process());
+  }
 private:
   void setup_ignore();
   bool handle_message(char* buffer, ssize_t size);

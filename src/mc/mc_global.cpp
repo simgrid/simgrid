@@ -263,7 +263,7 @@ void MC_replay(xbt_fifo_t stack)
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         MC_handle_comm_pattern(call, req, value, NULL, 1);
 
-      MC_wait_for_requests();
+      mc_model_checker->wait_for_requests();
 
       count++;
     }
@@ -330,7 +330,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
         }
 
         MC_simcall_handle(req, value);
-        MC_wait_for_requests();
+        mc_model_checker->wait_for_requests();
       }
 
       /* Update statistics */

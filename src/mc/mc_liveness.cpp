@@ -174,7 +174,7 @@ static void MC_pre_modelcheck_liveness(void)
   mc_pair_t initial_pair = NULL;
   smx_process_t process;
 
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   acceptance_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
   if(_sg_mc_visited > 0)
@@ -298,7 +298,7 @@ static int MC_modelcheck_liveness_main(void)
          MC_simcall_handle(req, value);
          
          /* Wait for requests (schedules processes) */
-         MC_wait_for_requests();
+         mc_model_checker->wait_for_requests();
 
          current_pair->requests--;
          current_pair->exploration_started = 1;
@@ -381,7 +381,7 @@ int MC_modelcheck_liveness(void)
     mc_reduce_kind = e_mc_reduce_none;
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
   MC_automaton_load(_sg_mc_property_file);
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   XBT_DEBUG("Starting the liveness algorithm");
   _sg_mc_liveness = 1;

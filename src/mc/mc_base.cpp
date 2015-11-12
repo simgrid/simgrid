@@ -40,12 +40,7 @@ int MC_random(int min, int max)
 
 void MC_wait_for_requests(void)
 {
-#ifdef HAVE_MC
-  if (mc_mode == MC_MODE_SERVER) {
-    mc_model_checker->wait_client(mc_model_checker->process());
-    return;
-  }
-#endif
+  assert(mc_mode != MC_MODE_SERVER);
 
   smx_process_t process;
   smx_simcall_t req;

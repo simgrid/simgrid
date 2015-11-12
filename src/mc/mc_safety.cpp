@@ -54,7 +54,7 @@ static void MC_pre_modelcheck_safety()
   XBT_DEBUG("Initial state");
 
   /* Wait for requests (schedules processes) */
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   smx_process_t process;
@@ -119,7 +119,7 @@ int MC_modelcheck_safety(void)
 
       /* Answer the request */
       MC_simcall_handle(req, value);
-      MC_wait_for_requests();
+      mc_model_checker->wait_for_requests();
 
       /* Create the new expanded state */
       next_state = MC_state_new();
@@ -273,7 +273,7 @@ static void MC_modelcheck_safety_init(void)
     XBT_INFO("Check non progressive cycles");
   else
     XBT_INFO("Check a safety property");
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   XBT_DEBUG("Starting the safety algorithm");
 

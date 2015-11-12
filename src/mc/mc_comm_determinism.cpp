@@ -323,7 +323,7 @@ static void MC_pre_modelcheck_comm_determinism(void)
   XBT_DEBUG("********* Start communication determinism verification *********");
 
   /* Wait for requests (schedules processes) */
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   MC_EACH_SIMIX_PROCESS(process,
@@ -388,7 +388,7 @@ static int MC_modelcheck_comm_determinism_main(void)
         MC_handle_comm_pattern(call, req, value, NULL, 0);
 
       /* Wait for requests (schedules processes) */
-      MC_wait_for_requests();
+      mc_model_checker->wait_for_requests();
 
       /* Create the new expanded state */
       next_state = MC_state_new();
@@ -470,7 +470,7 @@ int MC_modelcheck_comm_determinism(void)
 {
   XBT_INFO("Check communication determinism");
   mc_reduce_kind = e_mc_reduce_none;
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   if (mc_mode == MC_MODE_CLIENT) {
     // This will move somehwere else:
