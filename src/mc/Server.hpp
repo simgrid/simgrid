@@ -30,7 +30,6 @@ public:
   Server(pid_t pid, int socket);
   void start();
   void shutdown();
-  void exit();
   void resume(simgrid::mc::Process& process);
   void loop();
   bool handle_events();

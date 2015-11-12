@@ -49,7 +49,7 @@ XBT_PRIVATE void MC_pair_delete(mc_pair_t);
 XBT_PRIVATE mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state);
 XBT_PRIVATE void MC_visited_pair_delete(mc_visited_pair_t p);
 
-void MC_modelcheck_liveness(void);
+int MC_modelcheck_liveness(void);
 XBT_PRIVATE void MC_show_stack_liveness(xbt_fifo_t stack);
 XBT_PRIVATE void MC_dump_stack_liveness(xbt_fifo_t stack);
 

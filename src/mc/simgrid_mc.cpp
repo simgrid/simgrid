@@ -94,19 +94,20 @@ static int do_parent(int socket, pid_t child)
     mc_mode = MC_MODE_SERVER;
     simgrid::mc::server = new simgrid::mc::Server(child, socket);
     simgrid::mc::server->start();
+    int res = 0;
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-      MC_modelcheck_comm_determinism();
+      res = MC_modelcheck_comm_determinism();
     else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0')
-      MC_modelcheck_safety();
+      res = MC_modelcheck_safety();
     else
-      MC_modelcheck_liveness();
+      res = MC_modelcheck_liveness();
     simgrid::mc::server->shutdown();
-    simgrid::mc::server->exit();
+    return res;
   }
   catch(std::exception& e) {
     XBT_ERROR("Exception: %s", e.what());
+    return SIMGRID_MC_EXIT_ERROR;
   }
-  exit(SIMGRID_MC_EXIT_ERROR);
 }
 
 static char** argvdup(int argc, char** argv)

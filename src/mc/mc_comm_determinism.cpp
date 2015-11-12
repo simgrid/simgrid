@@ -290,7 +290,7 @@ void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigne
 
 /************************ Main algorithm ************************/
 
-static void MC_modelcheck_comm_determinism_main(void);
+static int MC_modelcheck_comm_determinism_main(void);
 
 static void MC_pre_modelcheck_comm_determinism(void)
 {
@@ -335,7 +335,7 @@ static void MC_pre_modelcheck_comm_determinism(void)
   xbt_fifo_unshift(mc_stack, initial_state);
 }
 
-static void MC_modelcheck_comm_determinism_main(void)
+static int MC_modelcheck_comm_determinism_main(void)
 {
 
   char *req_str = NULL;
@@ -440,7 +440,7 @@ static void MC_modelcheck_comm_determinism_main(void)
       /* Check for deadlocks */
       if (MC_deadlock_check()) {
         MC_show_deadlock(NULL);
-        return;
+        return SIMGRID_MC_EXIT_DEADLOCK;
       }
 
       while ((state = (mc_state_t) xbt_fifo_shift(mc_stack)) != NULL) {
@@ -463,10 +463,10 @@ static void MC_modelcheck_comm_determinism_main(void)
   }
 
   MC_print_statistics(mc_stats);
-  exit(0);
+  return SIMGRID_MC_EXIT_SUCCESS;
 }
 
-void MC_modelcheck_comm_determinism(void)
+int MC_modelcheck_comm_determinism(void)
 {
   XBT_INFO("Check communication determinism");
   mc_reduce_kind = e_mc_reduce_none;
@@ -490,7 +490,7 @@ void MC_modelcheck_comm_determinism(void)
   initial_global_state->recv_diff = NULL;
   initial_global_state->send_diff = NULL;
 
-  MC_modelcheck_comm_determinism_main();
+  return MC_modelcheck_comm_determinism_main();
 }
 
 }

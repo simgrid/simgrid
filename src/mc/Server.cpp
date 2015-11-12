@@ -106,22 +106,6 @@ void Server::shutdown()
   }
 }
 
-void Server::exit()
-{
-  // Finished:
-  int status = mc_model_checker->process().status();
-  if (WIFEXITED(status))
-    ::exit(WEXITSTATUS(status));
-  else if (WIFSIGNALED(status)) {
-    // Try to uplicate the signal of the model-checked process.
-    // This is a temporary hack so we don't try too hard.
-    kill(mc_model_checker->process().pid(), WTERMSIG(status));
-    abort();
-  } else {
-    xbt_die("Unexpected status from model-checked process");
-  }
-}
-
 void Server::resume(simgrid::mc::Process& process)
 {
   int res = process.send_message(MC_MESSAGE_CONTINUE);

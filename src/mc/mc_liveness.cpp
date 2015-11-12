@@ -167,7 +167,7 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
   }
 }
 
-static void MC_modelcheck_liveness_main(void);
+static int MC_modelcheck_liveness_main(void);
 
 static void MC_pre_modelcheck_liveness(void)
 {
@@ -208,11 +208,9 @@ static void MC_pre_modelcheck_liveness(void)
       xbt_fifo_unshift(mc_stack, initial_pair);
     }
   }
-
-  MC_modelcheck_liveness_main();
 }
 
-static void MC_modelcheck_liveness_main(void)
+static int MC_modelcheck_liveness_main(void)
 {
   smx_process_t process = NULL;
   mc_pair_t current_pair = NULL;
@@ -252,7 +250,7 @@ static void MC_modelcheck_liveness_main(void)
           MC_dump_stack_liveness(mc_stack);
           MC_print_statistics(mc_stats);
           XBT_INFO("Counter-example depth : %d", counter_example_depth);
-          exit(SIMGRID_MC_EXIT_LIVENESS);
+          return SIMGRID_MC_EXIT_LIVENESS;
         }
       }
 
@@ -371,10 +369,13 @@ static void MC_modelcheck_liveness_main(void)
     } /* End of if (current_pair->requests > 0) else ... */
     
   } /* End of while(xbt_fifo_size(mc_stack) > 0) */
-  
+
+  XBT_INFO("No property violation found.");
+  MC_print_statistics(mc_stats);
+  return SIMGRID_MC_EXIT_SUCCESS;
 }
 
-void MC_modelcheck_liveness(void)
+int MC_modelcheck_liveness(void)
 {
   if (mc_reduce_kind == e_mc_reduce_unset)
     mc_reduce_kind = e_mc_reduce_none;
@@ -392,11 +393,12 @@ void MC_modelcheck_liveness(void)
   initial_global_state = xbt_new0(s_mc_global_t, 1);
 
   MC_pre_modelcheck_liveness();
+  int res = MC_modelcheck_liveness_main();
 
   /* We're done */
-  XBT_INFO("No property violation found.");
-  MC_print_statistics(mc_stats);
   xbt_free(mc_time);
+
+  return res;
 }
 
 }
