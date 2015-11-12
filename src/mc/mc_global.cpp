@@ -131,6 +131,9 @@ void MC_init_model_checker(pid_t pid, int socket)
 {
   mc_model_checker = new simgrid::mc::ModelChecker(pid, socket);
 
+  // TODO, avoid direct dependency on sg_cfg
+  mc_model_checker->process().privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
+
   mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
 
   /* Initialize statistics */
