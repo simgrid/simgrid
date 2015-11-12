@@ -124,15 +124,9 @@ public:
     return running_;
   }
 
-  void terminate(int status)
+  void terminate()
   {
-    status_ = status;
     running_ = false;
-  }
-
-  int status() const
-  {
-    return status_;
   }
 
   template<class M>
@@ -174,7 +168,6 @@ private:
 private:
   pid_t pid_;
   int socket_;
-  int status_;
   bool running_;
   std::vector<simgrid::xbt::VmMap> memory_map_;
   remote_ptr<void> maestro_stack_start_, maestro_stack_end_;

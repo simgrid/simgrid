@@ -213,7 +213,6 @@ Process::Process(pid_t pid, int sockfd) : AddressSpace(this)
   process->socket_ = sockfd;
   process->pid_ = pid;
   process->running_ = true;
-  process->status_ = 0;
   process->memory_map_ = simgrid::xbt::get_memory_map(pid);
   process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
   process->init_memory_map_info();

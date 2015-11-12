@@ -95,14 +95,10 @@ void Server::shutdown()
   XBT_DEBUG("Shuting down model-checker");
 
   simgrid::mc::Process* process = &mc_model_checker->process();
-  int status = process->status();
   if (process->running()) {
     XBT_DEBUG("Killing process");
     kill(process->pid(), SIGTERM);
-    if (waitpid(process->pid(), &status, 0) == -1)
-      throw std::system_error(errno, std::system_category());
-    // TODO, handle the case when the process does not want to die with a timeout
-    process->terminate(status);
+    process->terminate();
   }
 }
 
@@ -328,7 +324,7 @@ void Server::handle_waitpid()
 
       else if (WIFEXITED(status) || WIFSIGNALED(status)) {
         XBT_DEBUG("Child process is over");
-        mc_model_checker->process().terminate(status);
+        mc_model_checker->process().terminate();
       }
     }
   }
