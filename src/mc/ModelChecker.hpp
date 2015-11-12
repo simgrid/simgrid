@@ -9,9 +9,13 @@
 
 #include <sys/types.h>
 
+#include <poll.h>
+#include <memory>
+
 #include <simgrid_config.h>
 #include <xbt/dict.h>
 #include <xbt/base.h>
+#include <sys/types.h>
 
 #include "mc_forward.hpp"
 #include "src/mc/Process.hpp"
@@ -22,19 +26,17 @@ namespace simgrid {
 namespace mc {
 
 /** State of the model-checker (global variables for the model checker)
- *
- *  Each part of the state of the model chercker represented as a global
- *  variable prevents some sharing between snapshots and must be ignored.
- *  By moving as much state as possible in this structure allocated
- *  on the model-checker heap, we avoid those issues.
  */
 class ModelChecker {
+  pid_t pid_;
+  int socket_;
+  struct pollfd fds_[2];
   /** String pool for host names */
   // TODO, use std::unordered_set with heterogeneous comparison lookup (C++14)
   xbt_dict_t /* <hostname, NULL> */ hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_;
-  Process process_;
+  std::unique_ptr<Process> process_;
 public:
   mc_snapshot_t parent_snapshot_;
 
@@ -43,9 +45,10 @@ public:
   ModelChecker& operator=(ModelChecker const&) = delete;
   ModelChecker(pid_t pid, int socket);
   ~ModelChecker();
+
   Process& process()
   {
-    return process_;
+    return *process_;
   }
   PageStore& page_store()
   {
@@ -57,6 +60,21 @@ public:
   {
     return &snapshot == this->parent_snapshot_;
   }
+
+  void start();
+  void shutdown();
+  void resume(simgrid::mc::Process& process);
+  void loop();
+  bool handle_events();
+  void wait_client(simgrid::mc::Process& process);
+  void simcall_handle(simgrid::mc::Process& process, unsigned long pid, int value);
+private:
+  void setup_ignore();
+  bool handle_message(char* buffer, ssize_t size);
+  void handle_signals();
+  void handle_waitpid();
+  void on_signal(const struct signalfd_siginfo* info);
+
 };
 
 }

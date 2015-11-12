@@ -654,7 +654,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mc_process);
   XBT_LOG_CONNECT(mc_protocol);
   XBT_LOG_CONNECT(mc_RegionSnaphot);
-  XBT_LOG_CONNECT(mc_Server);
+  XBT_LOG_CONNECT(mc_ModelChecker);
   XBT_LOG_CONNECT(mc_state);
 #endif
   XBT_LOG_CONNECT(mc_global);

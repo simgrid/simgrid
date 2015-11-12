@@ -32,10 +32,10 @@
 #include "mc_base.h"
 #include "mc_private.h"
 #include "mc_protocol.h"
-#include "src/mc/Server.hpp"
 #include "mc_safety.h"
 #include "mc_comm_pattern.h"
 #include "mc_liveness.h"
+#include "mc_exit.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 
@@ -88,12 +88,12 @@ static int do_child(int socket, char** argv)
 static int do_parent(int socket, pid_t child)
 {
   XBT_DEBUG("Inside the parent process");
-  if (simgrid::mc::server)
+  if (mc_model_checker)
     xbt_die("MC server already present");
   try {
     mc_mode = MC_MODE_SERVER;
-    simgrid::mc::server = new simgrid::mc::Server(child, socket);
-    simgrid::mc::server->start();
+    mc_model_checker = new simgrid::mc::ModelChecker(child, socket);
+    mc_model_checker->start();
     int res = 0;
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
       res = MC_modelcheck_comm_determinism();
@@ -101,7 +101,7 @@ static int do_parent(int socket, pid_t child)
       res = MC_modelcheck_safety();
     else
       res = MC_modelcheck_liveness();
-    simgrid::mc::server->shutdown();
+    mc_model_checker->shutdown();
     return res;
   }
   catch(std::exception& e) {

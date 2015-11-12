@@ -33,7 +33,6 @@
 #include "mc_ignore.h"
 #include "mc_smx.h"
 
-#include "src/mc/Server.hpp"
 #include "src/mc/Process.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ObjectInformation.hpp"

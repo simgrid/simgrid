@@ -48,12 +48,7 @@ typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function
 
 /********************************* MC Global **********************************/
 
-/** Initialisation of the model-checker
- *
- * @param pid     PID of the target process
- * @param socket  FD for the communication socket **in server mode** (or -1 otherwise)
- */
-void MC_init_model_checker(pid_t pid, int socket);
+XBT_PRIVATE void MC_init_dot_output();
 
 XBT_PRIVATE extern FILE *dot_output;
 XBT_PRIVATE extern const char* colors[13];

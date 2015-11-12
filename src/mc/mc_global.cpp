@@ -28,7 +28,6 @@
 #include "mc_record.h"
 
 #ifdef HAVE_MC
-#include "src/mc/Server.hpp"
 #include <libunwind.h>
 #include <xbt/mmalloc.h>
 #include "../xbt/mmalloc/mmprivate.h"
@@ -80,7 +79,7 @@ const char *colors[13];
 /*******************************  Initialisation of MC *******************************/
 /*********************************************************************************/
 
-static void MC_init_dot_output()
+void MC_init_dot_output()
 {                               /* FIXME : more colors */
 
   colors[0] = "blue";
@@ -127,49 +126,6 @@ void MC_init()
   }
 }
 
-void MC_init_model_checker(pid_t pid, int socket)
-{
-  mc_model_checker = new simgrid::mc::ModelChecker(pid, socket);
-
-  // TODO, avoid direct dependency on sg_cfg
-  mc_model_checker->process().privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
-
-  mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
-
-  /* Initialize statistics */
-  mc_stats = xbt_new0(s_mc_stats_t, 1);
-  mc_stats->state_size = 1;
-
-  if ((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0] != '\0'))
-    MC_init_dot_output();
-
-  /* Init parmap */
-  //parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
-
-  /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
-  MC_ignore_local_variable("e", "*");
-  MC_ignore_local_variable("__ex_cleanup", "*");
-  MC_ignore_local_variable("__ex_mctx_en", "*");
-  MC_ignore_local_variable("__ex_mctx_me", "*");
-  MC_ignore_local_variable("__xbt_ex_ctx_ptr", "*");
-  MC_ignore_local_variable("_log_ev", "*");
-  MC_ignore_local_variable("_throw_ctx", "*");
-  MC_ignore_local_variable("ctx", "*");
-
-  MC_ignore_local_variable("self", "simcall_BODY_mc_snapshot");
-  MC_ignore_local_variable("next_cont"
-    "ext", "smx_ctx_sysv_suspend_serial");
-  MC_ignore_local_variable("i", "smx_ctx_sysv_suspend_serial");
-
-  /* Ignore local variable about time used for tracing */
-  MC_ignore_local_variable("start_time", "*");
-
-  /* Static variable used for tracing */
-  MCer_ignore_global_variable("counter");
-
-  /* SIMIX */
-  MCer_ignore_global_variable("smx_total_comms");
-}
 #endif
 
 /*******************************  Core of MC *******************************/
