@@ -62,8 +62,6 @@ int user_max_depth_reached = 0;
 mc_state_t mc_current_state = NULL;
 char mc_replay_mode = FALSE;
 
-__thread mc_comparison_times_t mc_comp_times = NULL;
-__thread double mc_snapshot_comparison_time;
 mc_stats_t mc_stats = NULL;
 mc_global_t initial_global_state = NULL;
 xbt_fifo_t mc_stack = NULL;

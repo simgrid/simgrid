@@ -91,20 +91,7 @@ XBT_PRIVATE void MC_print_statistics(mc_stats_t stats);
 
 /********************************** Snapshot comparison **********************************/
 
-typedef struct s_mc_comparison_times{
-  double nb_processes_comparison_time;
-  double bytes_used_comparison_time;
-  double stacks_sizes_comparison_time;
-  double global_variables_comparison_time;
-  double heap_comparison_time;
-  double stacks_comparison_time;
-}s_mc_comparison_times_t, *mc_comparison_times_t;
-
-extern XBT_PRIVATE __thread mc_comparison_times_t mc_comp_times;
-extern XBT_PRIVATE __thread double mc_snapshot_comparison_time;
-
 XBT_PRIVATE int snapshot_compare(void *state1, void *state2);
-XBT_PRIVATE void print_comparison_times(void);
 
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1

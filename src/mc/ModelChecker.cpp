@@ -115,8 +115,6 @@ void ModelChecker::start()
   // TODO, avoid direct dependency on sg_cfg
   process_->privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
 
-  mc_comp_times = xbt_new0(s_mc_comparison_times_t, 1);
-
   /* Initialize statistics */
   mc_stats = xbt_new0(s_mc_stats_t, 1);
   mc_stats->state_size = 1;

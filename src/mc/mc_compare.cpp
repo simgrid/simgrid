@@ -388,15 +388,6 @@ int snapshot_compare(void *state1, void *state2)
   int errors = 0;
   int res_init;
 
-  xbt_os_timer_t global_timer = xbt_os_timer_new();
-  xbt_os_timer_t timer = xbt_os_timer_new();
-
-  xbt_os_walltimer_start(global_timer);
-
-#ifdef MC_DEBUG
-  xbt_os_walltimer_start(timer);
-#endif
-
   int hash_result = 0;
   if (_sg_mc_hash) {
     hash_result = (s1->hash != s2->hash);
@@ -429,11 +420,6 @@ int snapshot_compare(void *state1, void *state2)
     size_used2 = s2->stack_sizes[i];
     if (size_used1 != size_used2) {
 #ifdef MC_DEBUG
-      if (is_diff == 0) {
-        xbt_os_walltimer_stop(timer);
-        mc_comp_times->stacks_sizes_comparison_time =
-            xbt_os_timer_elapsed(timer);
-      }
       XBT_DEBUG("(%d - %d) Different size used in stacks : %zu - %zu", num1,
                 num2, size_used1, size_used2);
       errors++;
@@ -444,24 +430,11 @@ int snapshot_compare(void *state1, void *state2)
                num2, size_used1, size_used2);
 #endif
       XBT_TRACE3(mc, state_diff, num1, num2, "Different stack size");
-
-      xbt_os_walltimer_stop(timer);
-      xbt_os_timer_free(timer);
-      xbt_os_walltimer_stop(global_timer);
-      mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-      xbt_os_timer_free(global_timer);
-
       return 1;
 #endif
     }
     i++;
   }
-
-#ifdef MC_DEBUG
-  if (is_diff == 0)
-    xbt_os_walltimer_stop(timer);
-  xbt_os_walltimer_start(timer);
-#endif
 
   /* Init heap information used in heap comparison algorithm */
   xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(
@@ -483,16 +456,9 @@ int snapshot_compare(void *state1, void *state2)
     XBT_VERB("(%d - %d) Different heap information", num1, num2);
 #endif
 
-    xbt_os_walltimer_stop(global_timer);
-    mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-    xbt_os_timer_free(global_timer);
-
     return 1;
 #endif
   }
-#ifdef MC_DEBUG
-  xbt_os_walltimer_start(timer);
-#endif
 
   /* Stacks comparison */
   unsigned cursor = 0;
@@ -515,10 +481,6 @@ int snapshot_compare(void *state1, void *state2)
     if (diff_local > 0) {
       XBT_TRACE3(mc, state_diff, num1, num2, "Different local variables");
 #ifdef MC_DEBUG
-      if (is_diff == 0) {
-        xbt_os_walltimer_stop(timer);
-        mc_comp_times->stacks_comparison_time = xbt_os_timer_elapsed(timer);
-      }
       XBT_DEBUG("(%d - %d) Different local variables between stacks %d", num1,
                 num2, cursor + 1);
       errors++;
@@ -531,11 +493,6 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
       reset_heap_information();
-      xbt_os_walltimer_stop(timer);
-      xbt_os_timer_free(timer);
-      xbt_os_walltimer_stop(global_timer);
-      mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-      xbt_os_timer_free(global_timer);
 
       return 1;
 #endif
@@ -546,8 +503,6 @@ int snapshot_compare(void *state1, void *state2)
   size_t regions_count = s1->snapshot_regions.size();
   // TODO, raise a difference instead?
   xbt_assert(regions_count == s2->snapshot_regions.size());
-
-  mc_comp_times->global_variables_comparison_time = 0;
 
   for (size_t k = 0; k != regions_count; ++k) {
     mc_mem_region_t region1 = s1->snapshot_regions[k].get();
@@ -563,12 +518,6 @@ int snapshot_compare(void *state1, void *state2)
 
     std::string const& name = region1->object_info()->file_name;
 
-#ifdef MC_DEBUG
-    if (is_diff == 0)
-      xbt_os_walltimer_stop(timer);
-    xbt_os_walltimer_start(timer);
-#endif
-
     /* Compare global variables */
     is_diff =
       compare_global_variables(region1->object_info(  ), simgrid::mc::AddressSpace::Normal,
@@ -578,9 +527,6 @@ int snapshot_compare(void *state1, void *state2)
     if (is_diff != 0) {
       XBT_TRACE3(mc, state_diff, num1, num2, "Different global variables");
 #ifdef MC_DEBUG
-      xbt_os_walltimer_stop(timer);
-      mc_comp_times->global_variables_comparison_time
-        += xbt_os_timer_elapsed(timer);
       XBT_DEBUG("(%d - %d) Different global variables in %s",
         num1, num2, name.c_str());
       errors++;
@@ -590,29 +536,16 @@ int snapshot_compare(void *state1, void *state2)
         num1, num2, name.c_str());
 #endif
 
-      reset_heap_information();
-      xbt_os_walltimer_stop(timer);
-      xbt_os_timer_free(timer);
-      xbt_os_walltimer_stop(global_timer);
-      mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-      xbt_os_timer_free(global_timer);
-
       return 1;
 #endif
     }
   }
-
-#ifdef MC_DEBUG
-  xbt_os_walltimer_start(timer);
-#endif
 
   /* Compare heap */
   if (mmalloc_compare_heap(s1, s2) > 0) {
     XBT_TRACE3(mc, state_diff, num1, num2, "Different heap");
 
 #ifdef MC_DEBUG
-    xbt_os_walltimer_stop(timer);
-    mc_comp_times->heap_comparison_time = xbt_os_timer_elapsed(timer);
     XBT_DEBUG("(%d - %d) Different heap (mmalloc_compare)", num1, num2);
     errors++;
 #else
@@ -621,36 +554,11 @@ int snapshot_compare(void *state1, void *state2)
     XBT_VERB("(%d - %d) Different heap (mmalloc_compare)", num1, num2);
 #endif
 
-    reset_heap_information();
-    xbt_os_walltimer_stop(timer);
-    xbt_os_timer_free(timer);
-    xbt_os_walltimer_stop(global_timer);
-    mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-    xbt_os_timer_free(global_timer);
-
     return 1;
-#endif
-  } else {
-#ifdef MC_DEBUG
-    xbt_os_walltimer_stop(timer);
 #endif
   }
 
   reset_heap_information();
-
-  xbt_os_walltimer_stop(timer);
-  xbt_os_timer_free(timer);
-
-#ifdef MC_VERBOSE
-  xbt_os_walltimer_stop(global_timer);
-  mc_snapshot_comparison_time = xbt_os_timer_elapsed(global_timer);
-#endif
-
-  xbt_os_timer_free(global_timer);
-
-#ifdef MC_DEBUG
-  print_comparison_times();
-#endif
 
 #ifdef MC_VERBOSE
   if (errors || hash_result)
@@ -672,20 +580,6 @@ int snapshot_compare(void *state1, void *state2)
 
   return errors > 0 || hash_result;
 
-}
-
-/***************************** Statistics *****************************/
-/*******************************************************************/
-
-void print_comparison_times()
-{
-  XBT_DEBUG("*** Comparison times ***");
-  XBT_DEBUG("- Nb processes : %f", mc_comp_times->nb_processes_comparison_time);
-  XBT_DEBUG("- Nb bytes used : %f", mc_comp_times->bytes_used_comparison_time);
-  XBT_DEBUG("- Stacks sizes : %f", mc_comp_times->stacks_sizes_comparison_time);
-  XBT_DEBUG("- GLobal variables : %f", mc_comp_times->global_variables_comparison_time);
-  XBT_DEBUG("- Heap : %f", mc_comp_times->heap_comparison_time);
-  XBT_DEBUG("- Stacks : %f", mc_comp_times->stacks_comparison_time);
 }
 
 }
