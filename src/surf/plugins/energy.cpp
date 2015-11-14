@@ -87,9 +87,8 @@ static void energyCpuDestructedCallback(Cpu *cpu){
   CpuEnergy *cpu_energy = cpu_energy_it->second;
   update_consumption(cpu, cpu_energy);
 
-  // Adrien - October 2015, Changes related to VM energy extensions
-  // Only report/delete and erase if the cpu_energy is related to a physical one
-  if(cpu->isVirtual() == NULL){
+  // Do nothing if that's a virtual CPU, only act for physical CPUs
+  if(cpu->getPhysicalCPU() == NULL){
     XBT_INFO("Total energy of host %s: %f Joules", cpu->getName(), cpu_energy->getConsumedEnergy());
     delete cpu_energy_it->second;
     surf_energy->erase(cpu_energy_it);

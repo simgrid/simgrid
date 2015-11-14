@@ -228,7 +228,7 @@ void Cpu::setState(e_surf_resource_state_t state)
   surf_callback_emit(cpuStateChangedCallbacks, this, old, state);
 }
 
-void Cpu::setVirtual(Cpu *physCpu)
+void Cpu::setPhysicalCPU(Cpu *physCpu)
 {
   if (!surf_energy)
 	  return;
@@ -239,7 +239,7 @@ void Cpu::setVirtual(Cpu *physCpu)
   (*surf_energy)[this] = cpu_energy_it->second;
 }
 
-Cpu* Cpu::isVirtual(void)
+Cpu* Cpu::getPhysicalCPU(void)
 {
    return physCpu;
 }

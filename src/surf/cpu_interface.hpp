@@ -207,8 +207,8 @@ public:
   // Adrien - Oct 2015. Additional code related to VM energy extensions
   /* TODO: 
      1./ create a VirtualCpuModel that inherits from CpuModel or create
-     a VirtualCpuCas01Model that inherist from CpuCas01Model
-	  => Question: not sure which one is really usefull :( The objective is to
+     a VirtualCpuCas01Model that inherit from CpuCas01Model
+	  => Question: not sure which one is really useful :( The objective is to
      be able to create a VirtualCpu instead of a Cpu (i.e. a CpuCas01 to be exact). 
      2. create VirtualCpu class that inherits from Cpu or create
      a VirtualCpuCas01 class that inherits from CpuCas01 (same issue as the one described above).	
@@ -221,19 +221,11 @@ public:
   */
   Cpu *physCpu = NULL;
 
-	/**
-	 * @brief Set the current Cpu as virtual or physical
-	 *
-	 * @param isVirtual true to indicate this Cpu is virtual, false otherwise
-	 */
-	void setVirtual(Cpu *physCpu);
+	/** @brief Specify the physical CPU of the current CPU (which is a vCPU) */
+	void setPhysicalCPU(Cpu *physCpu);
 
-	/**
-	 * @brief Learn if this Cpu is physical or virtual
-	 *
-	 * @return phys CPU  if the current Cpu is a VM, null otherwise
-	 */
-	Cpu* isVirtual(void);
+	/** @brief Get the physical if the current one is a vCPU, or NULL if it's already a physical CPU */
+	Cpu* getPhysicalCPU(void);
    
    // Adrien - Oct 2015. End of additional code related to VM energy extensions
    // ////

@@ -208,7 +208,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
       NULL,                       // host->state_trace,
       NULL);                       // host->properties,
 
-	p_cpu->setVirtual(sub_cpu);
+	p_cpu->setPhysicalCPU(sub_cpu);
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
