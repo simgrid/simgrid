@@ -46,7 +46,6 @@ To simulate the energy-related elements, first call the #sg_energy_plugin_init()
 and then use the following function to retrieve the consumption of a given host: #MSG_host_get_consumed_energy().
  */
 
-XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf,
                                 "Logging specific to the SURF energy plugin");
 
