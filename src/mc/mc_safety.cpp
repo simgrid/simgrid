@@ -54,7 +54,7 @@ static void MC_pre_modelcheck_safety()
   XBT_DEBUG("Initial state");
 
   /* Wait for requests (schedules processes) */
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   smx_process_t process;
@@ -73,7 +73,7 @@ static void MC_pre_modelcheck_safety()
 /** \brief Model-check the application using a DFS exploration
  *         with DPOR (Dynamic Partial Order Reductions)
  */
-void MC_modelcheck_safety(void)
+int MC_modelcheck_safety(void)
 {
   MC_modelcheck_safety_init();
 
@@ -119,14 +119,14 @@ void MC_modelcheck_safety(void)
 
       /* Answer the request */
       MC_simcall_handle(req, value);
-      MC_wait_for_requests();
+      mc_model_checker->wait_for_requests();
 
       /* Create the new expanded state */
       next_state = MC_state_new();
 
       if(_sg_mc_termination && is_exploration_stack_state(next_state)){
           MC_show_non_termination();
-          exit(SIMGRID_EXIT_NON_TERMINATION);
+          return SIMGRID_MC_EXIT_NON_TERMINATION;
       }
 
       if ((visited_state = is_visited_state(next_state)) == NULL) {
@@ -186,7 +186,7 @@ void MC_modelcheck_safety(void)
       /* Check for deadlocks */
       if (MC_deadlock_check()) {
         MC_show_deadlock(NULL);
-        exit(SIMGRID_EXIT_DEADLOCK);
+        return SIMGRID_MC_EXIT_DEADLOCK;
       }
 
       /* Traverse the stack backwards until a state with a non empty interleave
@@ -259,7 +259,7 @@ void MC_modelcheck_safety(void)
 
   XBT_INFO("No property violation found.");
   MC_print_statistics(mc_stats);
-  exit(SIMGRID_EXIT_SUCCESS);
+  return SIMGRID_MC_EXIT_SUCCESS;
 }
 
 static void MC_modelcheck_safety_init(void)
@@ -273,7 +273,7 @@ static void MC_modelcheck_safety_init(void)
     XBT_INFO("Check non progressive cycles");
   else
     XBT_INFO("Check a safety property");
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   XBT_DEBUG("Starting the safety algorithm");
 

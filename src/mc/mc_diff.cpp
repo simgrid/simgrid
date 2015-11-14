@@ -50,7 +50,7 @@ struct XBT_PRIVATE s_mc_diff {
 #define types1_(i,j) types1[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
 #define types2_(i,j) types2[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
 
-__thread struct s_mc_diff *mc_diff_info = NULL;
+static __thread struct s_mc_diff *mc_diff_info = nullptr;
 
 /*********************************** Free functions ************************************/
 

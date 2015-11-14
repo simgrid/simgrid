@@ -48,12 +48,7 @@ typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function
 
 /********************************* MC Global **********************************/
 
-/** Initialisation of the model-checker
- *
- * @param pid     PID of the target process
- * @param socket  FD for the communication socket **in server mode** (or -1 otherwise)
- */
-void MC_init_model_checker(pid_t pid, int socket);
+XBT_PRIVATE void MC_init_dot_output();
 
 XBT_PRIVATE extern FILE *dot_output;
 XBT_PRIVATE extern const char* colors[13];
@@ -96,20 +91,7 @@ XBT_PRIVATE void MC_print_statistics(mc_stats_t stats);
 
 /********************************** Snapshot comparison **********************************/
 
-typedef struct s_mc_comparison_times{
-  double nb_processes_comparison_time;
-  double bytes_used_comparison_time;
-  double stacks_sizes_comparison_time;
-  double global_variables_comparison_time;
-  double heap_comparison_time;
-  double stacks_comparison_time;
-}s_mc_comparison_times_t, *mc_comparison_times_t;
-
-extern XBT_PRIVATE __thread mc_comparison_times_t mc_comp_times;
-extern XBT_PRIVATE __thread double mc_snapshot_comparison_time;
-
 XBT_PRIVATE int snapshot_compare(void *state1, void *state2);
-XBT_PRIVATE void print_comparison_times(void);
 
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
@@ -119,6 +101,7 @@ XBT_PRIVATE void print_comparison_times(void);
 XBT_PRIVATE void MC_dump_stacks(FILE* file);
 
 XBT_PRIVATE void MC_report_assertion_error(void);
+XBT_PRIVATE void MC_report_crash(int status);
 
 XBT_PRIVATE void MC_invalidate_cache(void);
 

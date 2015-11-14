@@ -56,12 +56,6 @@ void MC_client_init(void)
   mc_client->active = 1;
 }
 
-void MC_client_hello(void)
-{
-  if (MC_protocol_hello(mc_client->fd) != 0)
-    xbt_die("Could not say hello the MC server");
-}
-
 void MC_client_send_message(void* message, size_t size)
 {
   if (MC_protocol_send(mc_client->fd, message, size))
@@ -115,6 +109,16 @@ void MC_client_handle_messages(void)
           xbt_die("Invalid pid %lu", (unsigned long) message.pid);
         SIMIX_simcall_handle(&process->simcall, message.value);
         MC_protocol_send_simple_message(mc_client->fd, MC_MESSAGE_WAITING);
+      }
+      break;
+
+    case MC_MESSAGE_RESTORE:
+      {
+        s_mc_restore_message_t message;
+        if (s != sizeof(message))
+          xbt_die("Unexpected size for SIMCALL_HANDLE");
+        memcpy(&message, message_buffer, sizeof(message));
+        smpi_really_switch_data_segment(message.index);
       }
       break;
 

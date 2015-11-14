@@ -19,7 +19,6 @@
 #include "src/mc/Process.hpp"
 #include "src/mc/ModelChecker.hpp"
 #include "mc_smx.h"
-#include "mc_server.h"
 #endif
 
 #ifdef HAVE_MC
@@ -41,12 +40,7 @@ int MC_random(int min, int max)
 
 void MC_wait_for_requests(void)
 {
-#ifdef HAVE_MC
-  if (mc_mode == MC_MODE_SERVER) {
-    MC_server_wait_client(&mc_model_checker->process());
-    return;
-  }
-#endif
+  assert(mc_mode != MC_MODE_SERVER);
 
   smx_process_t process;
   smx_simcall_t req;
@@ -233,7 +227,8 @@ void MC_simcall_handle(smx_simcall_t req, int value)
 
   xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, i, pi) {
     if (req == &pi->copy.simcall) {
-      MC_server_simcall_handle(&mc_model_checker->process(), pi->copy.pid, value);
+      mc_model_checker->simcall_handle(
+        mc_model_checker->process(), pi->copy.pid, value);
       return;
     }
   }

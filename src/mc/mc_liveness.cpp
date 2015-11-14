@@ -167,14 +167,14 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
   }
 }
 
-static void MC_modelcheck_liveness_main(void);
+static int MC_modelcheck_liveness_main(void);
 
 static void MC_pre_modelcheck_liveness(void)
 {
   mc_pair_t initial_pair = NULL;
   smx_process_t process;
 
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   acceptance_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
   if(_sg_mc_visited > 0)
@@ -208,11 +208,9 @@ static void MC_pre_modelcheck_liveness(void)
       xbt_fifo_unshift(mc_stack, initial_pair);
     }
   }
-
-  MC_modelcheck_liveness_main();
 }
 
-static void MC_modelcheck_liveness_main(void)
+static int MC_modelcheck_liveness_main(void)
 {
   smx_process_t process = NULL;
   mc_pair_t current_pair = NULL;
@@ -252,7 +250,7 @@ static void MC_modelcheck_liveness_main(void)
           MC_dump_stack_liveness(mc_stack);
           MC_print_statistics(mc_stats);
           XBT_INFO("Counter-example depth : %d", counter_example_depth);
-          exit(SIMGRID_EXIT_LIVENESS);
+          return SIMGRID_MC_EXIT_LIVENESS;
         }
       }
 
@@ -300,7 +298,7 @@ static void MC_modelcheck_liveness_main(void)
          MC_simcall_handle(req, value);
          
          /* Wait for requests (schedules processes) */
-         MC_wait_for_requests();
+         mc_model_checker->wait_for_requests();
 
          current_pair->requests--;
          current_pair->exploration_started = 1;
@@ -371,16 +369,19 @@ static void MC_modelcheck_liveness_main(void)
     } /* End of if (current_pair->requests > 0) else ... */
     
   } /* End of while(xbt_fifo_size(mc_stack) > 0) */
-  
+
+  XBT_INFO("No property violation found.");
+  MC_print_statistics(mc_stats);
+  return SIMGRID_MC_EXIT_SUCCESS;
 }
 
-void MC_modelcheck_liveness(void)
+int MC_modelcheck_liveness(void)
 {
   if (mc_reduce_kind == e_mc_reduce_unset)
     mc_reduce_kind = e_mc_reduce_none;
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
   MC_automaton_load(_sg_mc_property_file);
-  MC_wait_for_requests();
+  mc_model_checker->wait_for_requests();
 
   XBT_DEBUG("Starting the liveness algorithm");
   _sg_mc_liveness = 1;
@@ -392,11 +393,12 @@ void MC_modelcheck_liveness(void)
   initial_global_state = xbt_new0(s_mc_global_t, 1);
 
   MC_pre_modelcheck_liveness();
+  int res = MC_modelcheck_liveness_main();
 
   /* We're done */
-  XBT_INFO("No property violation found.");
-  MC_print_statistics(mc_stats);
   xbt_free(mc_time);
+
+  return res;
 }
 
 }

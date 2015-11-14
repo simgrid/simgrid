@@ -25,7 +25,7 @@ typedef enum {
 
 extern XBT_PRIVATE e_mc_reduce_t mc_reduce_kind;
 
-void MC_modelcheck_safety(void);
+int MC_modelcheck_safety(void);
 
 typedef struct XBT_PRIVATE s_mc_visited_state{
   mc_snapshot_t system_state;

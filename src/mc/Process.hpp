@@ -36,6 +36,8 @@
 #include "AddressSpace.hpp"
 #include "mc_protocol.h"
 
+#include "ObjectInformation.hpp"
+
 // Those flags are used to track down which cached information
 // is still up to date and which information needs to be updated.
 typedef int mc_process_cache_flags_t;
@@ -122,15 +124,9 @@ public:
     return running_;
   }
 
-  void terminate(int status)
+  void terminate()
   {
-    status_ = status;
     running_ = false;
-  }
-
-  int status() const
-  {
-    return status_;
   }
 
   template<class M>
@@ -155,6 +151,16 @@ public:
   void reset_soft_dirty();
   void read_pagemap(uint64_t* pagemap, size_t start_page, size_t page_count);
 
+  bool privatized(ObjectInformation const& info) const
+  {
+    return privatized_ && info.executable();
+  }
+  bool privatized() const
+  {
+    return privatized_;
+  }
+  void privatized(bool privatized) { privatized_ = privatized; }
+
 private:
   void init_memory_map_info();
   void refresh_heap();
@@ -162,7 +168,6 @@ private:
 private:
   pid_t pid_;
   int socket_;
-  int status_;
   bool running_;
   std::vector<simgrid::xbt::VmMap> memory_map_;
   remote_ptr<void> maestro_stack_start_, maestro_stack_end_;
@@ -170,6 +175,7 @@ private:
   std::vector<IgnoredRegion> ignored_regions_;
   int clear_refs_fd_;
   int pagemap_fd_;
+  bool privatized_;
 public: // object info
   // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)
   std::vector<std::shared_ptr<simgrid::mc::ObjectInformation>> object_infos;

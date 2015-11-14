@@ -139,7 +139,8 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
 
   simgrid::mc::RegionSnapshot region;
 #ifdef HAVE_SMPI
-  const bool privatization_aware = object_info && object_info->privatized();
+  const bool privatization_aware = object_info
+    && mc_model_checker->process().privatized(*object_info);
   if (privatization_aware && MC_smpi_process_count())
     region = simgrid::mc::privatized_region(
       type, start_addr, permanent_addr, size, ref_region);
@@ -179,7 +180,7 @@ static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t s
     process->get_malloc_info());
 
 #ifdef HAVE_SMPI
-  if (smpi_privatize_global_variables && MC_smpi_process_count()) {
+  if (mc_model_checker->process().privatized() && MC_smpi_process_count()) {
     // snapshot->privatization_index = smpi_loaded_page
     mc_model_checker->process().read_variable(
       "smpi_loaded_page", &snapshot->privatization_index,
@@ -639,13 +640,11 @@ void MC_restore_snapshot_regions(mc_snapshot_t snapshot)
 #ifdef HAVE_SMPI
   // TODO, send a message to implement this in the MCed process
   if(snapshot->privatization_index >= 0) {
-    // We just rewrote the global variables.
-    // The privatisation segment SMPI thinks
-    // is mapped might be inconsistent with the segment which
-    // is really mapped in memory (kernel state).
-    // We ask politely SMPI to map the segment anyway,
-    // even if it thinks it is the current one:
-    smpi_really_switch_data_segment(snapshot->privatization_index);
+    // Fix the privatization mmap:
+    s_mc_restore_message message;
+    message.type = MC_MESSAGE_RESTORE;
+    message.index = snapshot->privatization_index;
+    mc_model_checker->process().send_message(message);
   }
 #endif
 }
