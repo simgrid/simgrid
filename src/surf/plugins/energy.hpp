@@ -9,8 +9,8 @@
 #include "../cpu_interface.hpp"
 #include <map>
 
-#ifndef CALLBACK_HPP_
-#define CALLBACK_HPP_
+#ifndef ENERGY_CALLBACK_HPP_
+#define ENERGY_CALLBACK_HPP_
 
 class XBT_PRIVATE CpuEnergy;
 
@@ -34,4 +34,4 @@ public:
   Cpu *cpu;
 };
 
-#endif /* CALLBACK_HPP_ */
+#endif /* ENERGY_CALLBACK_HPP_ */
