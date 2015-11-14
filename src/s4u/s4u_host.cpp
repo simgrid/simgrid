@@ -44,11 +44,11 @@ Host *Host::current(){
 	if (smx_proc == NULL)
 		xbt_die("Cannot call Host::current() from the maestro context");
 
-	return Host::byName(SIMIX_host_get_name(SIMIX_process_get_host(smx_proc)));
+	return Host::byName(sg_host_get_name(SIMIX_process_get_host(smx_proc)));
 }
 
 const char* Host::name() {
-	return sg_host_name(p_inferior);
+	return sg_host_get_name(p_inferior);
 }
 
 void Host::turnOn() {

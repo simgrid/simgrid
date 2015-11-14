@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_private.h"
-//#include "surf/storage_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
@@ -64,7 +63,7 @@ smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
   /* check if the host is active */
   if (surf_host_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_name(host));
+           sg_host_get_name(host));
   }
 
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
@@ -96,7 +95,7 @@ smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
   /* check if the host is active */
   if (surf_host_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_name(host));
+           sg_host_get_name(host));
   }
 
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
@@ -128,7 +127,7 @@ smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host)
   /* check if the host is active */
   if (surf_host_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_name(host));
+           sg_host_get_name(host));
   }
 
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
@@ -160,7 +159,7 @@ smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
   /* check if the host is active */
   if (surf_host_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_name(host));
+           sg_host_get_name(host));
   }
 
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
@@ -184,7 +183,7 @@ int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
   /* check if the host is active */
   if (surf_host_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_name(host));
+           sg_host_get_name(host));
   }
 
   int res = surf_host_unlink(host, fd->surf_file);

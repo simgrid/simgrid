@@ -166,7 +166,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
- process = simcall_process_create(name, code, simdata, sg_host_name(host), -1,
+ process = simcall_process_create(name, code, simdata, sg_host_get_name(host), -1,
                            argc, argv, properties,0);
 
   TRACE_msg_process_create(name, SIMIX_process_get_PID(process), host);

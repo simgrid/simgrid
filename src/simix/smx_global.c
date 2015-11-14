@@ -646,12 +646,12 @@ void SIMIX_display_process_status(void)
         break;
       }
       XBT_INFO("Process %lu (%s@%s): waiting for %s synchro %p (%s) in state %d to finish",
-          process->pid, process->name, sg_host_name(process->host),
+          process->pid, process->name, sg_host_get_name(process->host),
           synchro_description, process->waiting_synchro,
           process->waiting_synchro->name, (int)process->waiting_synchro->state);
     }
     else {
-      XBT_INFO("Process %lu (%s@%s)", process->pid, process->name, sg_host_name(process->host));
+      XBT_INFO("Process %lu (%s@%s)", process->pid, process->name, sg_host_get_name(process->host));
     }
   }
 }

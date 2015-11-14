@@ -105,7 +105,7 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
       smx_process_t process = NULL;
       xbt_swag_foreach(process, host->process_list) {
         SIMIX_process_kill(process, issuer);
-        XBT_DEBUG("Killing %s on %s by %s", process->name,  sg_host_name(process->host), issuer->name);
+        XBT_DEBUG("Killing %s on %s by %s", process->name,  sg_host_get_name(process->host), issuer->name);
       }
     }
   }
@@ -242,9 +242,9 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
   arg->auto_restart = auto_restart;
 
   if( sg_host_get_state(host) == SURF_RESOURCE_OFF
-      && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_name(host))){
-    xbt_dict_set(watched_hosts_lib,sg_host_name(host),host,NULL);
-    XBT_DEBUG("Have pushed host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_name(host));
+      && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_get_name(host))){
+    xbt_dict_set(watched_hosts_lib,sg_host_get_name(host),host,NULL);
+    XBT_DEBUG("Have pushed host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_get_name(host));
   }
   xbt_dynar_push_as(sg_host_simix(host)->auto_restart_processes,smx_process_arg_t,arg);
 }
@@ -490,7 +490,7 @@ void SIMIX_execution_finish(smx_synchro_t synchro)
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", sg_host_name(simcall->issuer->host));
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", sg_host_get_name(simcall->issuer->host));
         simcall->issuer->context->iwannadie = 1;
         SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;

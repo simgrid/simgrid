@@ -139,7 +139,7 @@ void SD_workstation_set_data(SD_workstation_t workstation, void *data)
  */
 const char *SD_workstation_get_name(SD_workstation_t workstation)
 {
-  return sg_host_name(workstation);
+  return sg_host_get_name(workstation);
 }
 
 /**

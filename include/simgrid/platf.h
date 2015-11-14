@@ -82,10 +82,6 @@ XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_weibull(const
                                                                            double scale,
                                                                            double shape);
 
-static inline char* sg_host_name(sg_host_t host) {
-  return host->key;
-}
-
 typedef xbt_dictelm_t sg_storage_t;
 static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;

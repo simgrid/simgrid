@@ -830,8 +830,8 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
 
       XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
                 synchro,
-                synchro->comm.src_proc ? sg_host_name(synchro->comm.src_proc->host) : NULL,
-                synchro->comm.dst_proc ? sg_host_name(synchro->comm.dst_proc->host) : NULL,
+                synchro->comm.src_proc ? sg_host_get_name(synchro->comm.src_proc->host) : NULL,
+                synchro->comm.dst_proc ? sg_host_get_name(synchro->comm.dst_proc->host) : NULL,
                 simcall->issuer->name, simcall->issuer, synchro->comm.detached);
       if (synchro->comm.src_proc == simcall->issuer) {
         XBT_DEBUG("I'm source");
@@ -1090,9 +1090,9 @@ void SIMIX_comm_copy_data(smx_synchro_t comm)
 
   XBT_DEBUG("Copying comm %p data from %s (%p) -> %s (%p) (%zu bytes)",
             comm,
-            comm->comm.src_proc ? sg_host_name(comm->comm.src_proc->host) : "a finished process",
+            comm->comm.src_proc ? sg_host_get_name(comm->comm.src_proc->host) : "a finished process",
             comm->comm.src_buff,
-            comm->comm.dst_proc ? sg_host_name(comm->comm.dst_proc->host) : "a finished process",
+            comm->comm.dst_proc ? sg_host_get_name(comm->comm.dst_proc->host) : "a finished process",
             comm->comm.dst_buff, buff_size);
 
   /* Copy at most dst_buff_size bytes of the message to receiver's buffer */

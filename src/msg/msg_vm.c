@@ -238,7 +238,7 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
 void MSG_vm_destroy(msg_vm_t vm)
 {
   if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_name(vm));
+    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_get_name(vm));
 
   /* First, terminate all processes on the VM if necessary */
   if (MSG_vm_is_running(vm))
@@ -294,45 +294,45 @@ void MSG_vm_shutdown(msg_vm_t vm)
  * migration. The names of these mailboxes must not conflict with others. */
 static inline char *get_mig_mbox_src_dst(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  char *vm_name = sg_host_name(vm);
-  char *src_pm_name = sg_host_name(src_pm);
-  char *dst_pm_name = sg_host_name(dst_pm);
+  char *vm_name = sg_host_get_name(vm);
+  char *src_pm_name = sg_host_get_name(src_pm);
+  char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
 static inline char *get_mig_mbox_ctl(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  char *vm_name = sg_host_name(vm);
-  char *src_pm_name = sg_host_name(src_pm);
-  char *dst_pm_name = sg_host_name(dst_pm);
+  char *vm_name = sg_host_get_name(vm);
+  char *src_pm_name = sg_host_get_name(src_pm);
+  char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__mbox_mig_ctl:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
 static inline char *get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  char *vm_name = sg_host_name(vm);
-  char *src_pm_name = sg_host_name(src_pm);
-  char *dst_pm_name = sg_host_name(dst_pm);
+  char *vm_name = sg_host_get_name(vm);
+  char *src_pm_name = sg_host_get_name(src_pm);
+  char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__pr_mig_tx:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
 static inline char *get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  char *vm_name = sg_host_name(vm);
-  char *src_pm_name = sg_host_name(src_pm);
-  char *dst_pm_name = sg_host_name(dst_pm);
+  char *vm_name = sg_host_get_name(vm);
+  char *src_pm_name = sg_host_get_name(src_pm);
+  char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__pr_mig_rx:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
 static inline char *get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
 {
-  char *vm_name = sg_host_name(vm);
-  char *src_pm_name = sg_host_name(src_pm);
-  char *dst_pm_name = sg_host_name(dst_pm);
+  char *vm_name = sg_host_get_name(vm);
+  char *src_pm_name = sg_host_get_name(src_pm);
+  char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__task_mig_stage%d:%s(%s-%s)", stage, vm_name, src_pm_name, dst_pm_name);
 }
@@ -508,7 +508,7 @@ static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remai
   double duration = clock - dp->prev_clock;
 
   XBT_DEBUG("%s@%s: computed %f ops (remaining %f -> %f) in %f secs (%f -> %f)",
-      key, sg_host_name(vm), computed, dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
+      key, sg_host_get_name(vm), computed, dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
 
   return computed;
 }
@@ -567,7 +567,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
 
   xbt_assert(xbt_dict_get_or_null(priv->dp_objs, key) == NULL);
   xbt_dict_set(priv->dp_objs, key, dp, NULL);
-  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, sg_host_name(host), remaining, priv->dp_enabled);
+  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, sg_host_get_name(host), remaining, priv->dp_enabled);
 
   xbt_free(key);
 }
@@ -596,7 +596,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   xbt_dict_remove(priv->dp_objs, key);
   xbt_free(dp);
 
-  XBT_DEBUG("del %s on %s", key, sg_host_name(host));
+  XBT_DEBUG("del %s on %s", key, sg_host_get_name(host));
 
   xbt_free(key);
 }
@@ -636,11 +636,11 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
   if(ret == MSG_HOST_FAILURE){
     //XBT_INFO("SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
     MSG_task_destroy(task);
-    THROWF(host_error, 0, "SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+    THROWF(host_error, 0, "SRC host failed during migration of %s (stage %d)", sg_host_get_name(vm), stage);
   }else if(ret == MSG_TRANSFER_FAILURE){
     //XBT_INFO("DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
     MSG_task_destroy(task);
-    THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+    THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", sg_host_get_name(vm), stage);
   }
 
   double clock_end = MSG_get_clock();
@@ -973,16 +973,16 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   msg_host_t old_pm = simcall_vm_get_pm(vm);
 
   if(MSG_host_is_off(old_pm))
-    THROWF(vm_error, 0, "SRC host(%s) seems off, cannot start a migration", sg_host_name(old_pm));
+    THROWF(vm_error, 0, "SRC host(%s) seems off, cannot start a migration", sg_host_get_name(old_pm));
  
   if(MSG_host_is_off(new_pm))
-    THROWF(vm_error, 0, "DST host(%s) seems off, cannot start a migration", sg_host_name(new_pm));
+    THROWF(vm_error, 0, "DST host(%s) seems off, cannot start a migration", sg_host_get_name(new_pm));
   
   if (!MSG_vm_is_running(vm))
-    THROWF(vm_error, 0, "VM(%s) is not running", sg_host_name(vm));
+    THROWF(vm_error, 0, "VM(%s) is not running", sg_host_get_name(vm));
 
   if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is already migrating", sg_host_name(vm));
+    THROWF(vm_error, 0, "VM(%s) is already migrating", sg_host_get_name(vm));
 
   msg_host_priv_t priv = sg_host_msg(vm);
   priv->is_migrating = 1;
@@ -1018,7 +1018,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
 void MSG_vm_suspend(msg_vm_t vm)
 {
   if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_name(vm));
+    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_get_name(vm));
 
   simcall_vm_suspend(vm);
 
@@ -1054,7 +1054,7 @@ void MSG_vm_resume(msg_vm_t vm)
 void MSG_vm_save(msg_vm_t vm)
 {
   if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_name(vm));
+    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_get_name(vm));
 
   simcall_vm_save(vm);
   TRACE_msg_vm_save(vm);

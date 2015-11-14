@@ -165,12 +165,12 @@ void SIMIX_process_stop(smx_process_t arg) {
    */
   if (arg->auto_restart && !sg_host_get_state(arg->host)) {
     SIMIX_host_add_auto_restart_process(arg->host,arg->name,arg->code, arg->data,
-                                        sg_host_name(arg->host),
+                                        sg_host_get_name(arg->host),
                                         SIMIX_timer_get_date(arg->kill_timer),
                                         arg->argc,arg->argv,arg->properties,
                                         arg->auto_restart);
   }
-  XBT_DEBUG("Process %s (%s) is dead",arg->name,sg_host_name(arg->host));
+  XBT_DEBUG("Process %s (%s) is dead",arg->name,sg_host_get_name(arg->host));
   /* stop the context */
   SIMIX_context_stop(arg->context);
 }
@@ -289,12 +289,12 @@ smx_process_t SIMIX_process_create(
 
     /* Now insert it in the global process list and in the process to run list */
     xbt_swag_insert(process, simix_global->process_list);
-    XBT_DEBUG("Inserting %s(%s) in the to_run list", process->name, sg_host_name(host));
+    XBT_DEBUG("Inserting %s(%s) in the to_run list", process->name, sg_host_get_name(host));
     xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
 
     if (kill_time > SIMIX_get_clock() && simix_global->kill_process_function) {
       XBT_DEBUG("Process %s(%s) will be kill at time %f", process->name,
-          sg_host_name(process->host), kill_time);
+          sg_host_get_name(process->host), kill_time);
       process->kill_timer = SIMIX_timer_set(kill_time, simix_global->kill_process_function, process);
     }
   }
@@ -334,7 +334,7 @@ void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_process_t process) 
  */
 void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
-  XBT_DEBUG("Killing process %s on %s", process->name, sg_host_name(process->host));
+  XBT_DEBUG("Killing process %s on %s", process->name, sg_host_get_name(process->host));
 
   process->context->iwannadie = 1;
   process->blocked = 0;
@@ -745,7 +745,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   /* check if the host is active */
   if (surf_host_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_name(host));
+           sg_host_get_name(host));
   }
 
   synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
@@ -961,12 +961,12 @@ smx_process_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_process
 }
 /** @brief Restart a process, starting it again from the beginning. */
 smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer) {
-  XBT_DEBUG("Restarting process %s on %s", process->name, sg_host_name(process->host));
+  XBT_DEBUG("Restarting process %s on %s", process->name, sg_host_get_name(process->host));
   //retrieve the arguments of the old process
   //FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
   s_smx_process_arg_t arg;
   arg.code = process->code;
-  arg.hostname = sg_host_name(process->host);
+  arg.hostname = sg_host_get_name(process->host);
   arg.kill_time = SIMIX_timer_get_date(process->kill_timer);
   arg.argc = process->argc;
   arg.data = process->data;
