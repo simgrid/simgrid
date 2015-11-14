@@ -176,7 +176,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
 		                                   surf_resource_t host_PM)
  : VirtualMachine(model, name, props, NULL, NULL)
 {
-  Host *sub_ws = static_cast<Host*>(surf_host_resource_priv(host_PM));
+  Host *sub_ws = surf_host_resource_priv(host_PM);
 
   /* Currently, we assume a VM has no storage. */
   p_storage = NULL;
@@ -208,8 +208,6 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
       NULL,                       // host->state_trace,
       NULL);                       // host->properties,
 
-	p_cpu->setPhysicalCPU(sub_cpu);
-
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(host_PM, GUESTOS_NOISE);
@@ -217,6 +215,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
 
   XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, sub_ws->getName(), xbt_dynar_length(p_storage));
 
+  surf_callback_emit(VMCreatedCallbacks, this);
 }
 
 /*

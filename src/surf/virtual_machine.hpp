@@ -26,17 +26,17 @@ class XBT_PRIVATE VirtualMachine;
  *************/
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks fired after VM creation. Signature: `void(VM*)`
+ * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
  */
 extern XBT_PRIVATE surf_callback(void, VirtualMachine*) VMCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks fired after VM destruction. Signature: `void(VM*)`
+ * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
  */
 extern XBT_PRIVATE surf_callback(void, VirtualMachine*) VMDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks after VM State changes. Signature: `void(VMAction*)`
+ * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
  */
 extern XBT_PRIVATE surf_callback(void, VirtualMachine*) VMStateChangedCallbacks;
 
@@ -90,7 +90,7 @@ public:
 
   /* The vm object of the lower layer */
   CpuAction *p_action;
-  Host *p_subWs;  // Pointer to the ''host'' OS
+  Host *p_subWs;
   e_surf_vm_state_t p_currentState;
 public:
   boost::intrusive::list_member_hook<> vm_hook;

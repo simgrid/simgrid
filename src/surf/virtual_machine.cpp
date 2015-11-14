@@ -37,8 +37,6 @@ VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props,
   VMModel::ws_vms.push_back(*this);
 
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, this);
-
-  surf_callback_emit(VMCreatedCallbacks, this);
 }
 
 /*

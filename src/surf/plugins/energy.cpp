@@ -6,6 +6,7 @@
 
 #include "energy.hpp"
 #include "../cpu_cas01.hpp"
+#include "../virtual_machine.hpp"
 
 /** @addtogroup SURF_plugin_energy
 
@@ -55,6 +56,12 @@ static void energyCpuCreatedCallback(Cpu *cpu){
   (*surf_energy)[cpu] = new CpuEnergy(cpu);
 }
 
+static void energyVMCreatedCallback(VirtualMachine* vm) {
+  std::map<Cpu*, CpuEnergy*>::iterator cpu_energy_it = surf_energy->find(vm->p_subWs->p_cpu);
+  xbt_assert(cpu_energy_it != surf_energy->end(), "The cpu is not in surf_energy.");
+  (*surf_energy)[vm->p_cpu] = cpu_energy_it->second;
+  cpu_energy_it->second->ref(); // protect the CpuEnergy from getting deleted too early
+}
 
 /* Computes the consumption so far.  Called lazily on need. */
 static void update_consumption(Cpu *cpu, CpuEnergy *cpu_energy) {
@@ -86,13 +93,10 @@ static void energyCpuDestructedCallback(Cpu *cpu){
   CpuEnergy *cpu_energy = cpu_energy_it->second;
   update_consumption(cpu, cpu_energy);
 
-  // Do nothing if that's a virtual CPU, only act for physical CPUs
-  if(cpu->getPhysicalCPU() == NULL){
-    XBT_INFO("Total energy of host %s: %f Joules", cpu->getName(), cpu_energy->getConsumedEnergy());
-    delete cpu_energy_it->second;
-    surf_energy->erase(cpu_energy_it);
-  }
-
+  if (cpu_energy_it->second->refcount == 1) // Don't display anything for virtual CPUs
+	  XBT_INFO("Total energy of host %s: %f Joules", cpu->getName(), cpu_energy->getConsumedEnergy());
+  cpu_energy_it->second->unref();
+  surf_energy->erase(cpu_energy_it);
 }
 
 static void energyCpuActionStateChangedCallback(CpuAction *action, e_surf_action_state_t old, e_surf_action_state_t cur){
@@ -125,6 +129,7 @@ void sg_energy_plugin_init() {
   if (surf_energy == NULL) {
     surf_energy = new std::map<Cpu*, CpuEnergy*>();
     surf_callback_connect(cpuCreatedCallbacks, energyCpuCreatedCallback);
+    surf_callback_connect(VMCreatedCallbacks, energyVMCreatedCallback);
     surf_callback_connect(cpuDestructedCallbacks, energyCpuDestructedCallback);
     surf_callback_connect(cpuActionStateChangedCallbacks, energyCpuActionStateChangedCallback);
     surf_callback_connect(surfExitCallbacks, sg_energy_plugin_exit);

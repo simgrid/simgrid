@@ -32,6 +32,10 @@ public:
   double total_energy;					/*< Total energy consumed by the host */
   double last_updated;					/*< Timestamp of the last energy update event*/
   Cpu *cpu;
+
+  void unref() {if (--refcount == 0) delete this;}
+  void ref() {refcount++;}
+  int refcount = 1;
 };
 
 #endif /* ENERGY_CALLBACK_HPP_ */

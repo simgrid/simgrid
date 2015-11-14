@@ -144,7 +144,6 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 
 Cpu::Cpu(){
   surf_callback_emit(cpuCreatedCallbacks, this);
-  physCpu = NULL; 
 }
 
 Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
@@ -157,7 +156,6 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
  , p_constraintCoreId(NULL)
 {
   surf_callback_emit(cpuCreatedCallbacks, this);
-  physCpu = NULL; 
 }
 
 Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
@@ -185,7 +183,6 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
       p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], m_powerScale * m_powerPeak);
     }
   }
-  physCpu = NULL; 
 }
 
 Cpu::~Cpu(){
@@ -226,22 +223,6 @@ void Cpu::setState(e_surf_resource_state_t state)
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
   surf_callback_emit(cpuStateChangedCallbacks, this, old, state);
-}
-
-void Cpu::setPhysicalCPU(Cpu *physCpu)
-{
-  if (!surf_energy)
-	  return;
-  this->physCpu = physCpu;
-  XBT_DEBUG("The CPU is virtual so associate the cpu energy to the physical cpu instead of creating a new one");
-  std::map<Cpu*, CpuEnergy*>::iterator cpu_energy_it = surf_energy->find(physCpu);
-  xbt_assert(cpu_energy_it != surf_energy->end(), "The cpu is not in surf_energy.");
-  (*surf_energy)[this] = cpu_energy_it->second;
-}
-
-Cpu* Cpu::getPhysicalCPU(void)
-{
-   return physCpu;
 }
 
 /**********

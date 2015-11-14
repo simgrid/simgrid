@@ -61,7 +61,6 @@ XBT_PUBLIC(void) cpu_add_traces();
  */
 XBT_PUBLIC_CLASS CpuModel : public Model {
 public:
-  /** @brief Constructor */
   CpuModel() : Model() {};
 
   /**
@@ -197,38 +196,11 @@ public:
   void addTraces(void);
   int m_core;
   double m_powerPeak;            /*< CPU power peak */
-  double m_powerScale;           /*< Percentage of CPU disponible */
+  double m_powerScale;           /*< Percentage of CPU available */
 
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore;
   void **p_constraintCoreId;
-
-  // ////
-  // Adrien - Oct 2015. Additional code related to VM energy extensions
-  /* TODO: 
-     1./ create a VirtualCpuModel that inherits from CpuModel or create
-     a VirtualCpuCas01Model that inherit from CpuCas01Model
-	  => Question: not sure which one is really useful :( The objective is to
-     be able to create a VirtualCpu instead of a Cpu (i.e. a CpuCas01 to be exact). 
-     2. create VirtualCpu class that inherits from Cpu or create
-     a VirtualCpuCas01 class that inherits from CpuCas01 (same issue as the one described above).	
-	  Such modifications would enable us to remove the isVirtual method and
-     actually use the polymorphism feature of C++. It will also enable us 
-     to overwrite the cpu_energy hashmap in energyCpuCreateCallBack instead of invoking
-     setVirtual(). 
-     So to make a long story short, it will be cleaner from the software viewpoint 
-     and patches welcome ;) - Adrien October 20 2015 
-  */
-  Cpu *physCpu = NULL;
-
-	/** @brief Specify the physical CPU of the current CPU (which is a vCPU) */
-	void setPhysicalCPU(Cpu *physCpu);
-
-	/** @brief Get the physical if the current one is a vCPU, or NULL if it's already a physical CPU */
-	Cpu* getPhysicalCPU(void);
-   
-   // Adrien - Oct 2015. End of additional code related to VM energy extensions
-   // ////
 };
 
 /**********
