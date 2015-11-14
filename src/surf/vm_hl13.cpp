@@ -132,35 +132,6 @@ double VMHL13Model::shareResources(double now)
   if (min_by_sto >= 0.0 && min_by_sto < ret)
 	ret = min_by_sto;
 
-  /* FIXME: 3. do we have to re-initialize our cpu_action object? */
-#if 0
-  /* iterate for all virtual machines */
-  for (VMModel::vm_list_t::iterator iter =
-         VMModel::ws_vms.begin();
-       iter !=  VMModel::ws_vms.end(); ++iter) {
-
-    {
-#if 0
-      VM2013 *ws_vm2013 = static_cast<VM2013Ptr>(&*iter);
-      XBT_INFO("cost %f remains %f start %f finish %f", ws_vm2013->cpu_action->cost,
-          ws_vm2013->cpu_action->remains,
-          ws_vm2013->cpu_action->start,
-          ws_vm2013->cpu_action->finish
-          );
-#endif
-#if 0
-      void *ind_sub_host = xbt_lib_get_elm_or_null(host_lib, ws_vm2013->sub_ws->generic_resource.getName);
-      surf_cpu_model_pm->action_unref(ws_vm2013->cpu_action);
-      /* FIXME: this means busy loop? */
-      // ws_vm2013->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_sub_host, GUESTOS_NOISE);
-      ws_vm2013->cpu_action = surf_cpu_model_pm->extension.cpu.execute(ind_sub_host, 0);
-#endif
-
-    }
-  }
-#endif
-
-
   return ret;
 }
 
@@ -400,10 +371,3 @@ Action *VMHL13::execute(double size)
 Action *VMHL13::sleep(double duration) {
   return p_cpu->sleep(duration);
 }
-
-/**********
- * Action *
- **********/
-
-//FIME:: handle action cancel
-
