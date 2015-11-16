@@ -83,9 +83,17 @@ void execute(
       // Push the CFA (Canonical Frame Addresse):
     case DW_OP_call_frame_cfa:
       {
-        // UNW_X86_64_CFA does not return the CFA DWARF expects
-        // (it is a synonym for UNW_X86_64_RSP) so copy the cursor,
-        // unwind it once in order to find the parent SP:
+        /* See 6.4 of DWARF4 (http://dwarfstd.org/doc/DWARF4.pdf#page=140):
+         *
+         * > Typically, the CFA is defined to be the value of the stack
+         * > pointer at the call site in the previous frame (which may be
+         * > different from its value on entry to the current frame).
+         *
+         * We need to unwind the frame in order to get the SP of the parent
+         * frame.
+         *
+         * Warning: the CFA returned by libunwind (UNW_X86_64_RSP, etc.)
+         * is the SP of the *current* frame. */
 
         if (!context.cursor)
           throw evaluation_error("Missint cursor");
