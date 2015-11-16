@@ -5,7 +5,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
-#include <sys/ptrace.h>
+#include "src/portable.h"
+#ifdef HAVE_SYS_PTRACE_H
+# include <sys/types.h>
+# include <sys/ptrace.h>
+#endif
 
 #include "smx_private.h"
 #include "xbt/heap.h"
