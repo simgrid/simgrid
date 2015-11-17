@@ -8,6 +8,7 @@
 #include <cerrno>
 
 #include <sys/types.h>
+#include <sys/ptrace.h>
 #include <sys/socket.h>
 
 #include <xbt/log.h>
@@ -31,6 +32,12 @@ mc_client_t mc_client;
 
 void MC_client_init(void)
 {
+  if (mc_mode != MC_MODE_NONE)
+    return;
+  if (!getenv(MC_ENV_SOCKET_FD))
+    return;
+  mc_mode = MC_MODE_CLIENT;
+
   if (mc_client) {
     XBT_WARN("MC_client_init called more than once.");
     return;
@@ -54,6 +61,11 @@ void MC_client_init(void)
   mc_client = xbt_new0(s_mc_client_t, 1);
   mc_client->fd = fd;
   mc_client->active = 1;
+
+  // Waiting for the model-checker:
+  if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) == -1 || raise(SIGSTOP) != 0)
+    xbt_die("Could not wait for the model-checker");
+  MC_client_handle_messages();
 }
 
 void MC_client_send_message(void* message, size_t size)

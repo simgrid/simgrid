@@ -221,19 +221,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #ifdef HAVE_MC
   // The communication initialization is done ASAP.
   // We need to communicate  initialization of the different layers to the model-checker.
-  if (mc_mode == MC_MODE_NONE) {
-    if (getenv(MC_ENV_SOCKET_FD)) {
-
-      mc_mode = MC_MODE_CLIENT;
-      MC_client_init();
-
-      // Waiting for the model-checker:
-      if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) == -1 || raise(SIGSTOP) != 0)
-        xbt_die("Could not wait for the model-checker");
-
-      MC_client_handle_messages();
-    }
-  }
+  MC_client_init();
 #endif
 
   if (_sg_cfg_exit_asap)
