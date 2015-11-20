@@ -698,5 +698,14 @@ void Process::unignore_heap(void *address, size_t size)
   }
 }
 
+void Process::ignore_local_variable(const char *var_name, const char *frame_name)
+{
+  if (frame_name != nullptr && strcmp(frame_name, "*") == 0)
+    frame_name = nullptr;
+  for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info :
+      this->object_infos)
+    info->remove_local_variable(var_name, frame_name);
+}
+
 }
 }

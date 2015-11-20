@@ -133,5 +133,71 @@ void ObjectInformation::remove_global_variable(const char* name)
   }
 }
 
+/** \brief Ignore a local variable in a scope
+ *
+ *  Ignore all instances of variables with a given name in
+ *  any (possibly inlined) subprogram with a given namespaced
+ *  name.
+ *
+ *  \param var_name        Name of the local variable (or parameter to ignore)
+ *  \param subprogram_name Name of the subprogram fo ignore (NULL for any)
+ *  \param subprogram      (possibly inlined) Subprogram of the scope
+ *  \param scope           Current scope
+ */
+static void remove_local_variable(simgrid::mc::Frame& scope,
+                            const char *var_name,
+                            const char *subprogram_name,
+                            simgrid::mc::Frame const& subprogram)
+{
+  typedef std::vector<Variable>::size_type size_type;
+
+  // If the current subprogram matches the given name:
+  if ((subprogram_name == nullptr ||
+      (!subprogram.name.empty()
+        && subprogram.name == subprogram_name))
+      && !scope.variables.empty()) {
+
+    // Try to find the variable and remove it:
+    size_type start = 0;
+    size_type end = scope.variables.size() - 1;
+
+    // Binary search:
+    while (start <= end) {
+      size_type cursor = start + (end - start) / 2;
+      simgrid::mc::Variable& current_var = scope.variables[cursor];
+      int compare = current_var.name.compare(var_name);
+      if (compare == 0) {
+        // Variable found, remove it:
+        scope.variables.erase(scope.variables.begin() + cursor);
+        break;
+      } else if (compare < 0)
+        start = cursor + 1;
+      else if (cursor != 0)
+        end = cursor - 1;
+      else
+        break;
+    }
+  }
+
+  // And recursive processing in nested scopes:
+  for (simgrid::mc::Frame& nested_scope : scope.scopes) {
+    // The new scope may be an inlined subroutine, in this case we want to use its
+    // namespaced name in recursive calls:
+    simgrid::mc::Frame const& nested_subprogram =
+        nested_scope.tag ==
+        DW_TAG_inlined_subroutine ? nested_scope : subprogram;
+    remove_local_variable(nested_scope, var_name, subprogram_name,
+                          nested_subprogram);
+  }
+}
+
+void ObjectInformation::remove_local_variable(
+  const char* var_name, const char* subprogram_name)
+{
+  for (auto& entry : this->subprograms)
+    simgrid::mc::remove_local_variable(entry.second,
+      var_name, subprogram_name, entry.second);
+}
+
 }
 }

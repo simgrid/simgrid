@@ -130,31 +130,36 @@ void ModelChecker::start()
   ptrace(PTRACE_CONT, pid_, 0, 0);
 }
 
-void ModelChecker::setup_ignore()
-{
-  /* Ignore some variables from xbt/ex.h used by exception e for stacks comparison */
-  MC_ignore_local_variable("e", "*");
-  MC_ignore_local_variable("__ex_cleanup", "*");
-  MC_ignore_local_variable("__ex_mctx_en", "*");
-  MC_ignore_local_variable("__ex_mctx_me", "*");
-  MC_ignore_local_variable("__xbt_ex_ctx_ptr", "*");
-  MC_ignore_local_variable("_log_ev", "*");
-  MC_ignore_local_variable("_throw_ctx", "*");
-  MC_ignore_local_variable("ctx", "*");
+static const std::pair<const char*, const char*> ignored_local_variables[] = {
+  std::pair<const char*, const char*>{  "e", "*" },
+  std::pair<const char*, const char*>{ "__ex_cleanup", "*" },
+  std::pair<const char*, const char*>{ "__ex_mctx_en", "*" },
+  std::pair<const char*, const char*>{ "__ex_mctx_me", "*" },
+  std::pair<const char*, const char*>{ "__xbt_ex_ctx_ptr", "*" },
+  std::pair<const char*, const char*>{ "_log_ev", "*" },
+  std::pair<const char*, const char*>{ "_throw_ctx", "*" },
+  std::pair<const char*, const char*>{ "ctx", "*" },
 
-  MC_ignore_local_variable("self", "simcall_BODY_mc_snapshot");
-  MC_ignore_local_variable("next_cont"
-    "ext", "smx_ctx_sysv_suspend_serial");
-  MC_ignore_local_variable("i", "smx_ctx_sysv_suspend_serial");
+  std::pair<const char*, const char*>{ "self", "simcall_BODY_mc_snapshot" },
+  std::pair<const char*, const char*>{ "next_context", "smx_ctx_sysv_suspend_serial" },
+  std::pair<const char*, const char*>{ "i", "smx_ctx_sysv_suspend_serial" },
 
   /* Ignore local variable about time used for tracing */
-  MC_ignore_local_variable("start_time", "*");
+  std::pair<const char*, const char*>{ "start_time", "*" },
+};
+
+void ModelChecker::setup_ignore()
+{
+  Process& process = this->process();
+  for (std::pair<const char*, const char*> const& var :
+      ignored_local_variables)
+    process.ignore_local_variable(var.first, var.second);
 
   /* Static variable used for tracing */
-  this->process().ignore_global_variable("counter");
+  process.ignore_global_variable("counter");
 
   /* SIMIX */
-  this->process().ignore_global_variable("smx_total_comms");
+  process.ignore_global_variable("smx_total_comms");
 }
 
 void ModelChecker::shutdown()

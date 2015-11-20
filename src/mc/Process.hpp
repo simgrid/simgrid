@@ -191,6 +191,8 @@ public:
   void ignore_heap(IgnoredHeapRegion const& region);
   void unignore_heap(void *address, size_t size);
 
+  void ignore_local_variable(const char *var_name, const char *frame_name);
+
 private:
   void init_memory_map_info();
   void refresh_heap();

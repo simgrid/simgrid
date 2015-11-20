@@ -93,8 +93,11 @@ public:
   simgrid::mc::Frame* find_function(const void *ip) const;
   simgrid::mc::Variable* find_variable(const char* name) const;
   void remove_global_variable(const char* name);
-
+  void remove_local_variable(
+    const char* name, const char* scope);
 };
+
+
 
 }
 }
