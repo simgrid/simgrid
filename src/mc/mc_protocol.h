@@ -77,7 +77,10 @@ typedef struct s_mc_int_message {
 
 typedef struct s_mc_ignore_heap_message {
   e_mc_message_type type;
-  s_mc_heap_ignore_region_t region;
+  int block;
+  int fragment;
+  void *address;
+  size_t size;
 } s_mc_ignore_heap_message_t, *mc_ignore_heap_message_t;
 
 typedef struct s_mc_ignore_memory_message {

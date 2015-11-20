@@ -27,26 +27,23 @@ void MC_ignore_heap(void *address, size_t size)
 
   xbt_mheap_t heap = mmalloc_get_current_heap();
 
-  s_mc_heap_ignore_region_t region;
-  memset(&region, 0, sizeof(region));
-  region.address = address;
-  region.size = size;
-  region.block =
-   ((char *) address -
-    (char *) heap->heapbase) / BLOCKSIZE + 1;
-  if (heap->heapinfo[region.block].type == 0) {
-    region.fragment = -1;
-    heap->heapinfo[region.block].busy_block.ignore++;
-  } else {
-    region.fragment =
-        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >>
-        heap->heapinfo[region.block].type;
-    heap->heapinfo[region.block].busy_frag.ignore[region.fragment]++;
-  }
-
   s_mc_ignore_heap_message_t message;
   message.type = MC_MESSAGE_IGNORE_HEAP;
-  message.region = region;
+  message.address = address;
+  message.size = size;
+  message.block =
+   ((char *) address -
+    (char *) heap->heapbase) / BLOCKSIZE + 1;
+  if (heap->heapinfo[message.block].type == 0) {
+    message.fragment = -1;
+    heap->heapinfo[message.block].busy_block.ignore++;
+  } else {
+    message.fragment =
+        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >>
+        heap->heapinfo[message.block].type;
+    heap->heapinfo[message.block].busy_frag.ignore[message.fragment]++;
+  }
+
   if (MC_protocol_send(mc_client->fd, &message, sizeof(message)))
     xbt_die("Could not send ignored region to MCer");
 }

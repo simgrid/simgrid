@@ -636,5 +636,67 @@ void Process::read_pagemap(uint64_t* pagemap, size_t page_start, size_t page_cou
     xbt_die("Could not read pagemap");
 }
 
+void Process::ignore_heap(IgnoredHeapRegion const& region)
+{
+  if (ignored_heap_.empty()) {
+    ignored_heap_.push_back(std::move(region));
+    return;
+  }
+
+  typedef std::vector<IgnoredHeapRegion>::size_type size_type;
+
+  size_type start = 0;
+  size_type end = ignored_heap_.size() - 1;
+
+  // Binary search the position of insertion:
+  size_type cursor;
+  while (start <= end) {
+    cursor = start + (end - start) / 2;
+    auto& current_region = ignored_heap_[cursor];
+    if (current_region.address == region.address)
+      return;
+    else if (current_region.address < region.address)
+      start = cursor + 1;
+    else if (cursor != 0)
+      end = cursor - 1;
+    // Avoid underflow:
+    else
+      break;
+  }
+
+  // Insert it mc_heap_ignore_region_t:
+  if (ignored_heap_[cursor].address < region.address)
+    ++cursor;
+  ignored_heap_.insert( ignored_heap_.begin() + cursor, region);
+}
+
+void Process::unignore_heap(void *address, size_t size)
+{
+  typedef std::vector<IgnoredHeapRegion>::size_type size_type;
+
+  size_type start = 0;
+  size_type end = ignored_heap_.size() - 1;
+
+  // Binary search:
+  size_type cursor;
+  while (start <= end) {
+    cursor = (start + end) / 2;
+    auto& region = ignored_heap_[cursor];
+    if (region.address == address) {
+      ignored_heap_.erase(ignored_heap_.begin() + cursor);
+      return;
+    } else if (region.address < address)
+      start = cursor + 1;
+    else if ((char *) region.address <= ((char *) address + size)) {
+      ignored_heap_.erase(ignored_heap_.begin() + cursor);
+      return;
+    } else if (cursor != 0)
+      end = cursor - 1;
+    // Avoid underflow:
+    else
+      break;
+  }
+}
+
 }
 }

@@ -24,93 +24,6 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mcer_ignore, mc,
                                 "Logging specific to MC ignore mechanism");
 
-// ***** Ignore heap chunks
-
-extern XBT_PRIVATE xbt_dynar_t mc_heap_comparison_ignore;
-
-static void heap_ignore_region_free(mc_heap_ignore_region_t r)
-{
-  xbt_free(r);
-}
-
-static void heap_ignore_region_free_voidp(void *r)
-{
-  heap_ignore_region_free((mc_heap_ignore_region_t) * (void **) r);
-}
-
-
-XBT_PRIVATE void MC_heap_region_ignore_insert(mc_heap_ignore_region_t region)
-{
-  if (mc_heap_comparison_ignore == NULL) {
-    mc_heap_comparison_ignore =
-        xbt_dynar_new(sizeof(mc_heap_ignore_region_t),
-                      heap_ignore_region_free_voidp);
-    xbt_dynar_push(mc_heap_comparison_ignore, &region);
-    return;
-  }
-
-  unsigned int cursor = 0;
-  mc_heap_ignore_region_t current_region = NULL;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-
-  // Find the position where we want to insert the mc_heap_ignore_region_t:
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    current_region =
-        (mc_heap_ignore_region_t) xbt_dynar_get_as(mc_heap_comparison_ignore,
-                                                   cursor,
-                                                   mc_heap_ignore_region_t);
-    if (current_region->address == region->address) {
-      heap_ignore_region_free(region);
-      return;
-    } else if (current_region->address < region->address) {
-      start = cursor + 1;
-    } else {
-      end = cursor - 1;
-    }
-  }
-
-  // Insert it mc_heap_ignore_region_t:
-  if (current_region->address < region->address)
-    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor + 1, &region);
-  else
-    xbt_dynar_insert_at(mc_heap_comparison_ignore, cursor, &region);
-}
-
-XBT_PRIVATE void MC_heap_region_ignore_remove(void *address, size_t size)
-{
-  unsigned int cursor = 0;
-  int start = 0;
-  int end = xbt_dynar_length(mc_heap_comparison_ignore) - 1;
-  mc_heap_ignore_region_t region;
-  int ignore_found = 0;
-
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    region =
-        (mc_heap_ignore_region_t) xbt_dynar_get_as(mc_heap_comparison_ignore,
-                                                   cursor,
-                                                   mc_heap_ignore_region_t);
-    if (region->address == address) {
-      ignore_found = 1;
-      break;
-    } else if (region->address < address) {
-      start = cursor + 1;
-    } else {
-      if ((char *) region->address <= ((char *) address + size)) {
-        ignore_found = 1;
-        break;
-      } else {
-        end = cursor - 1;
-      }
-    }
-  }
-
-  if (ignore_found == 1) {
-    xbt_dynar_remove_at(mc_heap_comparison_ignore, cursor, NULL);
-    MC_remove_ignore_heap(address, size);
-  }
 }
 
 // ***** Ignore local variables
@@ -123,6 +36,7 @@ static void MC_ignore_local_variable_in_object(const char *var_name,
                                                const char *subprogram_name,
                                                simgrid::mc::ObjectInformation* info);
 
+extern "C"
 void MC_ignore_local_variable(const char *var_name, const char *frame_name)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
@@ -201,6 +115,4 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
     mc_ignore_local_variable_in_scope(var_name, subprogram_name,
                                       nested_subprogram, &nested_scope);
   }
-}
-
 }

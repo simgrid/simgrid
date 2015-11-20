@@ -28,7 +28,6 @@
 #include "mc_protocol.h"
 #include "mc_private.h"
 #include "mc_ignore.h"
-#include "mcer_ignore.h"
 #include "mc_exit.h"
 #include "src/mc/mc_liveness.h"
 
@@ -203,9 +202,13 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
       if (size != sizeof(message))
         xbt_die("Broken messsage");
       memcpy(&message, buffer, sizeof(message));
-      mc_heap_ignore_region_t region = xbt_new(s_mc_heap_ignore_region_t, 1);
-      *region = message.region;
-      MC_heap_region_ignore_insert(region);
+
+      IgnoredHeapRegion region;
+      region.block = message.block;
+      region.fragment = message.fragment;
+      region.address = message.address;
+      region.size = message.size;
+      process().ignore_heap(region);
       break;
     }
 
@@ -215,7 +218,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
       if (size != sizeof(message))
         xbt_die("Broken messsage");
       memcpy(&message, buffer, sizeof(message));
-      MC_heap_region_ignore_remove(
+      process().unignore_heap(
         (void *)(std::uintptr_t) message.addr, message.size);
       break;
     }

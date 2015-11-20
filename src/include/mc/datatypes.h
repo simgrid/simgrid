@@ -24,13 +24,6 @@ typedef struct s_mc_transition *mc_transition_t;
 
 /*********** Structures for snapshot comparison **************************/
 
-typedef struct s_mc_heap_ignore_region{
-  int block;
-  int fragment;
-  void *address;
-  size_t size;
-}s_mc_heap_ignore_region_t, *mc_heap_ignore_region_t;
-
 typedef struct s_stack_region{
   void *address;
   void *context;

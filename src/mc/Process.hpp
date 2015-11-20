@@ -54,6 +54,13 @@ struct IgnoredRegion {
   size_t size;
 };
 
+struct IgnoredHeapRegion {
+  int block;
+  int fragment;
+  void *address;
+  size_t size;
+};
+
 /** Representation of a process
  */
 class Process final : public AddressSpace {
@@ -177,6 +184,13 @@ public:
     return stack_areas_;
   }
 
+  std::vector<IgnoredHeapRegion> const& ignored_heap() const
+  {
+    return ignored_heap_;
+  }
+  void ignore_heap(IgnoredHeapRegion const& region);
+  void unignore_heap(void *address, size_t size);
+
 private:
   void init_memory_map_info();
   void refresh_heap();
@@ -193,6 +207,7 @@ private:
   int pagemap_fd_;
   bool privatized_;
   std::vector<s_stack_region_t> stack_areas_;
+  std::vector<IgnoredHeapRegion> ignored_heap_;
 
 public: // object info
   // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)

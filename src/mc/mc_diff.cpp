@@ -24,8 +24,6 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
                                 "Logging specific to mc_diff in mc");
 
-xbt_dynar_t mc_heap_comparison_ignore;
-
 /*********************************** Heap comparison ***********************************/
 /***************************************************************************************/
 
@@ -36,8 +34,8 @@ struct XBT_PRIVATE s_mc_diff {
   std::size_t heaplimit;
   // Number of blocks in the heaps:
   std::size_t heapsize1, heapsize2;
-  std::vector<s_mc_heap_ignore_region_t>* to_ignore1;
-  std::vector<s_mc_heap_ignore_region_t>* to_ignore2;
+  std::vector<simgrid::mc::IgnoredHeapRegion>* to_ignore1;
+  std::vector<simgrid::mc::IgnoredHeapRegion>* to_ignore2;
   s_heap_area_t *equals_to1, *equals_to2;
   simgrid::mc::Type **types1;
   simgrid::mc::Type **types2;
@@ -119,15 +117,16 @@ static int add_heap_area_pair(xbt_dynar_t list, int block1, int fragment1,
   return 0;
 }
 
-static ssize_t heap_comparison_ignore_size(std::vector<s_mc_heap_ignore_region_t>* ignore_list,
-                                           const void *address)
+static ssize_t heap_comparison_ignore_size(
+  std::vector<simgrid::mc::IgnoredHeapRegion>* ignore_list,
+  const void *address)
 {
   int start = 0;
   int end = ignore_list->size() - 1;
 
   while (start <= end) {
     unsigned int cursor = (start + end) / 2;
-    s_mc_heap_ignore_region_t region = (*ignore_list)[cursor];
+    simgrid::mc::IgnoredHeapRegion const& region = (*ignore_list)[cursor];
     if (region.address == address)
       return region.size;
     if (region.address < address)
@@ -225,8 +224,8 @@ static int equal_fragments(struct s_mc_diff *state, int b1, int f1, int b2,
 }
 
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
-                          std::vector<s_mc_heap_ignore_region_t>* i1,
-                          std::vector<s_mc_heap_ignore_region_t>* i2)
+                          std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
+                          std::vector<simgrid::mc::IgnoredHeapRegion>* i2)
 {
   if (mc_diff_info == NULL) {
     mc_diff_info = xbt_new0(struct s_mc_diff, 1);

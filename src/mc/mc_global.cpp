@@ -40,7 +40,6 @@
 #include "mc_private.h"
 #include "mc_unw.h"
 #include "mc_smx.h"
-#include "mcer_ignore.h"
 #endif
 #include "mc_record.h"
 #include "mc_protocol.h"

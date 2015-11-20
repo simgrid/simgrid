@@ -446,28 +446,6 @@ static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t 
 
 }
 
-static std::vector<s_mc_heap_ignore_region_t> MC_take_snapshot_ignore()
-{
-  std::vector<s_mc_heap_ignore_region_t> res;
-
-  if (mc_heap_comparison_ignore == NULL)
-    return std::move(res);
-
-  unsigned int cursor = 0;
-  mc_heap_ignore_region_t current_region;
-
-  xbt_dynar_foreach(mc_heap_comparison_ignore, cursor, current_region) {
-    s_mc_heap_ignore_region_t new_region;
-    new_region.address = current_region->address;
-    new_region.size = current_region->size;
-    new_region.block = current_region->block;
-    new_region.fragment = current_region->fragment;
-    res.push_back(std::move(new_region));
-  }
-
-  return std::move(res);
-}
-
 static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 {
   xbt_assert(snapshot->process());
@@ -604,7 +582,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
   if (use_soft_dirty)
     mc_process->reset_soft_dirty();
 
-  snapshot->to_ignore = MC_take_snapshot_ignore();
+  snapshot->to_ignore = mc_model_checker->process().ignored_heap();
 
   if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks =

@@ -57,8 +57,6 @@ extern XBT_PRIVATE int _sg_mc_liveness;
 extern XBT_PRIVATE int _sg_mc_snapshot_fds;
 extern XBT_PRIVATE int _sg_mc_termination;
 
-extern XBT_PRIVATE xbt_dynar_t mc_heap_comparison_ignore;
-
 /********************************* Global *************************************/
 
 XBT_PRIVATE void _mc_cfg_cb_reduce(const char *name, int pos);
@@ -76,8 +74,6 @@ XBT_PRIVATE void _mc_cfg_cb_dot_output(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_comms_determinism(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_send_determinism(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_termination(const char *name, int pos);
-
-extern xbt_dynar_t mc_heap_comparison_ignore;
 
 XBT_PUBLIC(void) MC_run(void);
 XBT_PUBLIC(void) MC_init(void);
