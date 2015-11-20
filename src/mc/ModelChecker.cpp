@@ -152,10 +152,10 @@ void ModelChecker::setup_ignore()
   MC_ignore_local_variable("start_time", "*");
 
   /* Static variable used for tracing */
-  MCer_ignore_global_variable("counter");
+  this->process().ignore_global_variable("counter");
 
   /* SIMIX */
-  MCer_ignore_global_variable("smx_total_comms");
+  this->process().ignore_global_variable("smx_total_comms");
 }
 
 void ModelChecker::shutdown()

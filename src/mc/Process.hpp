@@ -161,6 +161,13 @@ public:
   }
   void privatized(bool privatized) { privatized_ = privatized; }
 
+  void ignore_global_variable(const char* name)
+  {
+    for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info :
+        this->object_infos)
+      info->remove_global_variable(name);
+  }
+
 private:
   void init_memory_map_info();
   void refresh_heap();

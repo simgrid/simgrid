@@ -113,36 +113,6 @@ XBT_PRIVATE void MC_heap_region_ignore_remove(void *address, size_t size)
   }
 }
 
-// ***** Ignore global variables
-
-XBT_PRIVATE void MCer_ignore_global_variable(const char *name)
-{
-  simgrid::mc::Process* process = &mc_model_checker->process();
-  xbt_assert(!process->object_infos.empty(), "MC subsystem not initialized");
-
-  for (std::shared_ptr<simgrid::mc::ObjectInformation> const& info : process->object_infos) {
-
-    // Binary search:
-    int start = 0;
-    int end = info->global_variables.size() - 1;
-    while (start <= end) {
-      unsigned int cursor = (start + end) / 2;
-      simgrid::mc::Variable* current_var = &info->global_variables[cursor];
-      int cmp = current_var->name.compare(name);
-      if (cmp == 0) {
-        info->global_variables.erase(
-          info->global_variables.begin() + cursor);
-        start = 0;
-        end = info->global_variables.size() - 1;
-      } else if (cmp < 0) {
-        start = cursor + 1;
-      } else {
-        end = cursor - 1;
-      }
-    }
-  }
-}
-
 // ***** Ignore local variables
 
 static void mc_ignore_local_variable_in_scope(const char *var_name,

@@ -94,5 +94,44 @@ simgrid::mc::Variable* ObjectInformation::find_variable(const char* name) const
   return nullptr;
 }
 
+void ObjectInformation::remove_global_variable(const char* name)
+{
+  typedef std::vector<Variable>::size_type size_type;
+
+  if (this->global_variables.empty())
+    return;
+
+  // Binary search:
+  size_type start = 0;
+  size_type end = this->global_variables.size() - 1;
+
+  while (start <= end) {
+    size_type cursor = start + (end - start) / 2;
+    simgrid::mc::Variable& current_var = this->global_variables[cursor];
+    int cmp = current_var.name.compare(name);
+
+    if (cmp == 0) {
+      // Find the whole range:
+      start = cursor;
+      while (start != 0 && this->global_variables[start - 1].name == name)
+        start--;
+      size_type size = this->global_variables.size();
+      end = cursor;
+      while (end != size - 1 && this->global_variables[end + 1].name == name)
+        end++;
+      // Remove the whole range:
+      this->global_variables.erase(
+        this->global_variables.begin() + cursor,
+        this->global_variables.begin() + end + 1);
+      return;
+    } else if (cmp < 0)
+      start = cursor + 1;
+    else if (cursor != 0)
+      end = cursor - 1;
+    else
+      break;
+  }
+}
+
 }
 }
