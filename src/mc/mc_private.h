@@ -103,8 +103,6 @@ XBT_PRIVATE void MC_dump_stacks(FILE* file);
 XBT_PRIVATE void MC_report_assertion_error(void);
 XBT_PRIVATE void MC_report_crash(int status);
 
-XBT_PRIVATE void MC_invalidate_cache(void);
-
 #ifdef __cplusplus
 
 XBT_PRIVATE void MC_find_object_address(

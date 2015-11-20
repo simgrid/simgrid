@@ -247,10 +247,4 @@ XBT_PRIVATE int open_vm(pid_t pid, int flags);
 }
 }
 
-SG_BEGIN_DECL()
-
-XBT_PRIVATE void MC_invalidate_cache(void);
-
-SG_END_DECL()
-
 #endif

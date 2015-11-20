@@ -561,11 +561,6 @@ void MC_report_crash(int status)
   MC_print_statistics(mc_stats);
 }
 
-void MC_invalidate_cache(void)
-{
-  if (mc_model_checker)
-    mc_model_checker->process().cache_flags = 0;
-}
 #endif
 
 }
