@@ -236,9 +236,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
       if (size != sizeof(message))
         xbt_die("Broken messsage");
       memcpy(&message, buffer, sizeof(message));
-      stack_region_t stack_region = xbt_new(s_stack_region_t, 1);
-      *stack_region = message.stack_region;
-      MC_stack_area_add(stack_region);
+      this->process().stack_areas().push_back(message.stack_region);
     }
     break;
 

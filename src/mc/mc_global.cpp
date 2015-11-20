@@ -482,10 +482,10 @@ void MC_automaton_load(const char *file)
 void MC_dump_stacks(FILE* file)
 {
   int nstack = 0;
-  stack_region_t current_stack;
-  unsigned cursor;
-  xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
-    unw_context_t * context = (unw_context_t *)current_stack->context;
+  for (auto const& stack : mc_model_checker->process().stack_areas()) {
+
+    xbt_die("Fix cross-process access to the context");
+    unw_context_t * context = (unw_context_t *)stack.context;
     fprintf(file, "Stack %i:\n", nstack);
 
     int nframe = 0;

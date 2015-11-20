@@ -98,8 +98,6 @@ XBT_PRIVATE int snapshot_compare(void *state1, void *state2);
 
 /********************************** Miscellaneous **********************************/
 
-XBT_PRIVATE void MC_dump_stacks(FILE* file);
-
 XBT_PRIVATE void MC_report_assertion_error(void);
 XBT_PRIVATE void MC_report_crash(int status);
 

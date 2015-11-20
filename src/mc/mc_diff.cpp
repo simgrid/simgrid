@@ -25,7 +25,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
                                 "Logging specific to mc_diff in mc");
 
 xbt_dynar_t mc_heap_comparison_ignore;
-xbt_dynar_t stacks_areas;
 
 /*********************************** Heap comparison ***********************************/
 /***************************************************************************************/
@@ -140,31 +139,21 @@ static ssize_t heap_comparison_ignore_size(std::vector<s_mc_heap_ignore_region_t
   return -1;
 }
 
-static int is_stack(const void *address)
+static bool is_stack(const void *address)
 {
-  unsigned int cursor = 0;
-  stack_region_t stack;
-
-  xbt_dynar_foreach(stacks_areas, cursor, stack) {
-    if (address == stack->address)
-      return 1;
-  }
-
-  return 0;
+  for (auto const& stack : mc_model_checker->process().stack_areas())
+    if (address == stack.address)
+      return true;
+  return false;
 }
 
 // TODO, this should depend on the snapshot?
-static int is_block_stack(int block)
+static bool is_block_stack(int block)
 {
-  unsigned int cursor = 0;
-  stack_region_t stack;
-
-  xbt_dynar_foreach(stacks_areas, cursor, stack) {
-    if (block == stack->block)
-      return 1;
-  }
-
-  return 0;
+  for (auto const& stack : mc_model_checker->process().stack_areas())
+    if (block == stack.block)
+      return true;
+  return false;
 }
 
 static void match_equals(struct s_mc_diff *state, xbt_dynar_t list)

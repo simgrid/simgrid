@@ -168,6 +168,15 @@ public:
       info->remove_global_variable(name);
   }
 
+  std::vector<s_stack_region_t>& stack_areas()
+  {
+    return stack_areas_;
+  }
+  std::vector<s_stack_region_t> const& stack_areas() const
+  {
+    return stack_areas_;
+  }
+
 private:
   void init_memory_map_info();
   void refresh_heap();
@@ -183,6 +192,8 @@ private:
   int clear_refs_fd_;
   int pagemap_fd_;
   bool privatized_;
+  std::vector<s_stack_region_t> stack_areas_;
+
 public: // object info
   // TODO, make private (first, objectify simgrid::mc::ObjectInformation*)
   std::vector<std::shared_ptr<simgrid::mc::ObjectInformation>> object_infos;

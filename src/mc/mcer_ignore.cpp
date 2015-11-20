@@ -203,13 +203,4 @@ static void mc_ignore_local_variable_in_scope(const char *var_name,
   }
 }
 
-extern XBT_PRIVATE xbt_dynar_t stacks_areas;
-
-XBT_PRIVATE void MC_stack_area_add(stack_region_t stack_area)
-{
-  if (stacks_areas == NULL)
-    stacks_areas = xbt_dynar_new(sizeof(stack_region_t), NULL);
-  xbt_dynar_push(stacks_areas, &stack_area);
-}
-
 }

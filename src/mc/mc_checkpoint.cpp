@@ -417,32 +417,28 @@ static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t 
 {
   std::vector<s_mc_snapshot_stack_t> res;
 
-  unsigned int cursor = 0;
-  stack_region_t current_stack;
-
-  // FIXME, cross-process support (stack_areas)
-  xbt_dynar_foreach(stacks_areas, cursor, current_stack) {
+  for (auto const& stack : mc_model_checker->process().stack_areas()) {
     s_mc_snapshot_stack_t st;
 
     // Read the context from remote process:
     unw_context_t context;
     mc_model_checker->process().read_bytes(
-      &context, sizeof(context), remote(current_stack->context));
+      &context, sizeof(context), remote(stack.context));
 
     if (mc_unw_init_context(&st.context, &mc_model_checker->process(),
       &context) < 0) {
       xbt_die("Could not initialise the libunwind context.");
     }
     st.stack_frames = MC_unwind_stack_frames(&st.context);
-    st.local_variables = MC_get_local_variables_values(st.stack_frames, current_stack->process_index);
-    st.process_index = current_stack->process_index;
+    st.local_variables = MC_get_local_variables_values(st.stack_frames, stack.process_index);
+    st.process_index = stack.process_index;
 
     unw_word_t sp = st.stack_frames[0].sp;
 
     res.push_back(std::move(st));
 
     size_t stack_size =
-      (char*) current_stack->address + current_stack->size - (char*) sp;
+      (char*) stack.address + stack.size - (char*) sp;
     (*snapshot)->stack_sizes.push_back(stack_size);
   }
 
