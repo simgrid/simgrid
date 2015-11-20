@@ -641,7 +641,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mc_dwarf);
   XBT_LOG_CONNECT(mc_hash);
   XBT_LOG_CONNECT(mc_ignore);
-  XBT_LOG_CONNECT(mcer_ignore);
   XBT_LOG_CONNECT(mc_liveness);
   XBT_LOG_CONNECT(mc_memory);
   XBT_LOG_CONNECT(mc_page_snapshot);

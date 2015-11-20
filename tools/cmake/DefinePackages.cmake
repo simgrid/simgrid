@@ -659,7 +659,6 @@ set(MC_SRC
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.cpp
-  src/mc/mcer_ignore.cpp
   src/mc/mc_ignore.h
   src/mc/mc_liveness.h
   src/mc/LocationList.hpp
