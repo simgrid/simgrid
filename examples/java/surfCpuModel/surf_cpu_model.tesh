@@ -16,16 +16,12 @@ $ java -classpath ${classpath:=.} surfCpuModel/TestCpuModel ${srcdir:=.}/../plat
 > [0.000000] [jmsg/INFO] Sleep action of duration -1.0 sleeping true
 > [0.000000] [jmsg/INFO] Sleep action of duration -1.0 sleeping true
 > [0.000000] [jmsg/INFO] ShareResources at time -1.0
-> [0.000000] [jmsg/INFO] ShareResources at time -1.0
 > [0.019014] [jmsg/INFO] UpdateActionState of 2 actions
-> [0.019014] [jmsg/INFO] ShareResources at time -1.0
 > [0.019014] [jmsg/INFO] ShareResources at time -1.0
 > [0.019014] [jmsg/INFO] UpdateActionState of 2 actions
 > [Tremblay:surfCpuModel.Sender:(1) 0.019014] [jmsg/INFO] Send duration: 0.019014479160788175
 > [Tremblay:surfCpuModel.Sender:(1) 0.019014] [jmsg/INFO] goodbye!
 > [0.019014] [jmsg/INFO] Execute action of size 1.0E9 sleeping false
-> [0.019014] [jmsg/INFO] Share action with new time 13.10684701688162
-> [0.019014] [jmsg/INFO] ShareResources at time 13.10684701688162
 > [0.019014] [jmsg/INFO] Share action with new time 13.10684701688162
 > [0.019014] [jmsg/INFO] ShareResources at time 13.10684701688162
 > [13.125861] [jmsg/INFO] UpdateActionState of 1 actions
