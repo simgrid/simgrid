@@ -135,39 +135,6 @@ static void test_one_task(msg_host_t hostA)
 
   XBT_INFO("### Test: with/without MSG_task_set_bound");
 
-#if 0
-  /* Easy-to-understand code (without calling MSG_task_set_bound) */
-  {
-    double clock_sta = MSG_get_clock();
-
-    msg_task_t task = MSG_task_create("Task", computation_amount, 0, NULL);
-    MSG_task_execute(task);
-    MSG_task_destroy(task);
-
-    double clock_end = MSG_get_clock();
-    double duration = clock_end - clock_sta;
-    double flops_per_sec = computation_amount / duration;
-
-    XBT_INFO("not bound => duration %f (%f flops/s)", duration, flops_per_sec);
-  }
-
-  /* Easy-to-understand code (with calling MSG_task_set_bound) */
-  {
-    double clock_sta = MSG_get_clock();
-
-    msg_task_t task = MSG_task_create("Task", computation_amount, 0, NULL);
-    MSG_task_set_bound(task, cpu_speed / 2);
-    MSG_task_execute(task);
-    MSG_task_destroy(task);
-
-    double clock_end = MSG_get_clock();
-    double duration = clock_end - clock_sta;
-    double flops_per_sec = computation_amount / duration;
-
-    XBT_INFO("bound to 0.5 => duration %f (%f flops/s)", duration, flops_per_sec);
-  }
-#endif
-
   {
     XBT_INFO("### Test: no bound for Task1@%s", hostA_name);
     launch_worker(hostA, "worker0", computation_amount, 0, 0);
