@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 /* model_list_invoke contains only surf_host and surf_vm.
  * The callback functions of cpu_model and network_model will be called from
  * those of these host models. */
-xbt_dynar_t model_list = NULL; /* for destroying all models correctly */
+xbt_dynar_t all_existing_models = NULL; /* to destroy models correctly */
 xbt_dynar_t model_list_invoke = NULL;  /* for invoking callbacks */
 
 tmgr_history_t history = NULL;
@@ -317,8 +317,8 @@ void surf_init(int *argc, char **argv)
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);
-  if (!model_list)
-    model_list = xbt_dynar_new(sizeof(Model*), NULL);
+  if (!all_existing_models)
+    all_existing_models = xbt_dynar_new(sizeof(Model*), NULL);
   if (!model_list_invoke)
     model_list_invoke = xbt_dynar_new(sizeof(Model*), NULL);
   if (!history)
@@ -354,9 +354,9 @@ void surf_exit(void)
   xbt_lib_free(&file_lib);
   xbt_dict_free(&watched_hosts_lib);
 
-  xbt_dynar_foreach(model_list, iter, model)
+  xbt_dynar_foreach(all_existing_models, iter, model)
     delete model;
-  xbt_dynar_free(&model_list);
+  xbt_dynar_free(&all_existing_models);
   xbt_dynar_free(&model_list_invoke);
   routing_exit();
 

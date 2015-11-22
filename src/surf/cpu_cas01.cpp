@@ -35,8 +35,8 @@ void surf_cpu_model_init_Cas01()
 
   Model *model_pm = surf_cpu_model_pm;
   Model *model_vm = surf_cpu_model_vm;
-  xbt_dynar_push(model_list, &model_pm);
-  xbt_dynar_push(model_list, &model_vm);
+  xbt_dynar_push(all_existing_models, &model_pm);
+  xbt_dynar_push(all_existing_models, &model_vm);
 }
 
 CpuCas01Model::CpuCas01Model() : CpuModel()

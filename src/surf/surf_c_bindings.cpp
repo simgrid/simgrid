@@ -51,7 +51,7 @@ void surf_presolve(void)
       }
     }
   }
-  xbt_dynar_foreach(model_list, iter, model)
+  xbt_dynar_foreach(all_existing_models, iter, model)
       model->updateActionsState(NOW, 0.0);
 }
 
@@ -152,7 +152,7 @@ double surf_solve(double max_date)
   NOW = NOW + surf_min;
   /* FIXME: model_list or model_list_invoke? revisit here later */
   /* sequential version */
-  xbt_dynar_foreach(model_list, iter, model) {
+  xbt_dynar_foreach(all_existing_models, iter, model) {
 	  model->updateActionsState(NOW, surf_min);
   }
 

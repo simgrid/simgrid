@@ -433,7 +433,7 @@ void SIMIX_run(void)
         }
       }
       /* Wake up all processes waiting for a Surf action to finish */
-      xbt_dynar_foreach(model_list, iter, model) {
+      xbt_dynar_foreach(all_existing_models, iter, model) {
         XBT_DEBUG("Handling process whose action failed");
         while ((action = surf_model_extract_failed_action_set(model))) {
           XBT_DEBUG("   Handling Action %p",action);
@@ -471,7 +471,7 @@ void SIMIX_run(void)
     }
 
     /* Wake up all processes waiting for a Surf action to finish */
-    xbt_dynar_foreach(model_list, iter, model) {
+    xbt_dynar_foreach(all_existing_models, iter, model) {
       XBT_DEBUG("Handling process whose action failed");
       while ((action = surf_model_extract_failed_action_set(model))) {
         XBT_DEBUG("   Handling Action %p",action);

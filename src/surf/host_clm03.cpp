@@ -28,7 +28,7 @@ void surf_host_model_init_current_default(void)
   surf_network_model_init_LegrandVelho();
 
   Model *model = surf_host_model;
-  xbt_dynar_push(model_list, &model);
+  xbt_dynar_push(all_existing_models, &model);
   xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(host_parse_init);
 }
@@ -41,7 +41,7 @@ void surf_host_model_init_compound()
   surf_host_model = new HostCLM03Model();
 
   Model *model = surf_host_model;
-  xbt_dynar_push(model_list, &model);
+  xbt_dynar_push(all_existing_models, &model);
   xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(host_parse_init);
 }

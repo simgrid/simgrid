@@ -72,7 +72,7 @@ void test(char *platform)
     now = surf_get_clock();
     XBT_DEBUG("Next Event : %g", now);
 
-    xbt_dynar_foreach(model_list, iter, model) {
+    xbt_dynar_foreach(all_existing_models, iter, model) {
       XBT_DEBUG("\t Actions");
       while ((action = surf_model_extract_failed_action_set((surf_model_t)model))) {
         XBT_DEBUG("\t * Failed : %p", action);

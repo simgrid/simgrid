@@ -270,7 +270,7 @@ void surf_network_model_init_NS3()
 
   surf_network_model = new NetworkNS3Model();
 
-  xbt_dynar_push(model_list, &surf_network_model);
+  xbt_dynar_push(all_existing_models, &surf_network_model);
 }
 
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {

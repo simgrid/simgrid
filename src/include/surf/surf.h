@@ -1036,7 +1036,7 @@ XBT_PUBLIC_DATA(s_surf_model_description_t)
 /** \ingroup SURF_models
  *  \brief List of initialized models
  */
-XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) all_existing_models;
 XBT_PUBLIC_DATA(xbt_dynar_t) model_list_invoke;
 
 /** \ingroup SURF_simulation

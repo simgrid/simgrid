@@ -32,7 +32,7 @@ void surf_network_model_init_Constant()
   sg_platf_link_add_cb(netcste_parse_nolink);
 
   Model *model = surf_network_model;
-  xbt_dynar_push(model_list, &model);
+  xbt_dynar_push(all_existing_models, &model);
 }
 
 double NetworkConstantModel::shareResources(double /*now*/)

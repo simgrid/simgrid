@@ -41,7 +41,7 @@ void surf_host_model_init_ptask_L07(void)
 
   surf_host_model = new HostL07Model();
   Model *model = surf_host_model;
-  xbt_dynar_push(model_list, &model);
+  xbt_dynar_push(all_existing_models, &model);
   xbt_dynar_push(model_list_invoke, &model);
 }
 

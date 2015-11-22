@@ -214,7 +214,7 @@ void surf_storage_model_init_default(void)
 {
   surf_storage_model = new StorageN11Model();
   storage_define_callbacks();
-  xbt_dynar_push(model_list, &surf_storage_model);
+  xbt_dynar_push(all_existing_models, &surf_storage_model);
 }
 
 StorageN11Model::StorageN11Model() : StorageModel() {

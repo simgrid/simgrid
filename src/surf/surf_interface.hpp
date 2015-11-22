@@ -273,7 +273,7 @@ typedef ActionLmmList* ActionLmmListPtr;
 /*********
  * Model *
  *********/
-XBT_PUBLIC_DATA(xbt_dynar_t) model_list;
+XBT_PUBLIC_DATA(xbt_dynar_t) all_existing_models;
 
 /** @ingroup SURF_interface
  * @brief SURF model interface class

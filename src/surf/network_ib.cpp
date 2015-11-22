@@ -82,7 +82,7 @@ void surf_network_model_init_IB(void)
     return;
   surf_network_model = new NetworkIBModel();
   net_define_callbacks();
-  xbt_dynar_push(model_list, &surf_network_model);
+  xbt_dynar_push(all_existing_models, &surf_network_model);
   surf_callback_connect(networkActionStateChangedCallbacks, IB_action_state_changed_callback);
   surf_callback_connect(networkCommunicateCallbacks, IB_action_init_callback);
 

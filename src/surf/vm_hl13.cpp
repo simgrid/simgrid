@@ -14,7 +14,7 @@ void surf_vm_model_init_HL13(void){
     surf_vm_model = new VMHL13Model();
     Model *model = surf_vm_model;
 
-    xbt_dynar_push(model_list, &model);
+    xbt_dynar_push(all_existing_models, &model);
     xbt_dynar_push(model_list_invoke, &model);
   }
 }

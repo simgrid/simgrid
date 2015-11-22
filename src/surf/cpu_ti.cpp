@@ -400,8 +400,8 @@ void surf_cpu_model_init_ti()
   cpu_ti_define_callbacks();
   Model *model_pm = static_cast<Model*>(surf_cpu_model_pm);
   Model *model_vm = static_cast<Model*>(surf_cpu_model_vm);
-  xbt_dynar_push(model_list, &model_pm);
-  xbt_dynar_push(model_list, &model_vm);
+  xbt_dynar_push(all_existing_models, &model_pm);
+  xbt_dynar_push(all_existing_models, &model_vm);
 }
 
 CpuTiModel::CpuTiModel() : CpuModel()
