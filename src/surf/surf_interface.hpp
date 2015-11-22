@@ -281,74 +281,40 @@ XBT_PUBLIC_DATA(xbt_dynar_t) all_existing_models;
  */
 XBT_PUBLIC_CLASS Model {
 public:
-  /** @brief Constructor */
   Model();
-  /** @brief Destructor */
   virtual ~Model();
 
   virtual void addTraces() =0;
 
-  /**
-   * @brief Get the set of [actions](@ref Action) in *ready* state
-   *
-   * @return The set of [actions](@ref Action) in *ready* state
-   */
+  /** @brief Get the set of [actions](@ref Action) in *ready* state */
   virtual ActionList* getReadyActionSet() {return p_readyActionSet;}
 
-  /**
-   * @brief Get the set of [actions](@ref Action) in *running* state
-   *
-   * @return The set of [actions](@ref Action) in *running* state
-   */
+  /** @brief Get the set of [actions](@ref Action) in *running* state */
   virtual ActionList* getRunningActionSet() {return p_runningActionSet;}
 
-  /**
-   * @brief Get the set of [actions](@ref Action) in *failed* state
-   *
-   * @return The set of [actions](@ref Action) in *failed* state
-   */
+  /** @brief Get the set of [actions](@ref Action) in *failed* state */
   virtual ActionList* getFailedActionSet() {return p_failedActionSet;}
 
-  /**
-   * @brief Get the set of [actions](@ref Action) in *done* state
-   *
-   * @return The set of [actions](@ref Action) in *done* state
-   */
+  /** @brief Get the set of [actions](@ref Action) in *done* state */
   virtual ActionList* getDoneActionSet() {return p_doneActionSet;}
 
-  /**
-   * @brief Get the set of modified [actions](@ref Action)
-   *
-   * @return The set of modified [actions](@ref Action)
-   */
+  /** @brief Get the set of modified [actions](@ref Action) */
   virtual ActionLmmListPtr getModifiedSet() {return p_modifiedSet;}
 
-  /**
-   * @brief Get the maxmin system of the current Model
-   *
-   * @return The maxmin system of the current Model
-   */
+  /** @brief Get the maxmin system of the current Model */
   lmm_system_t getMaxminSystem() {return p_maxminSystem;}
 
   /**
    * @brief Get the update mechanism of the current Model
    * @see e_UM_t
-   *
-   * @return [description]
    */
   e_UM_t getUpdateMechanism() {return p_updateMechanism;}
 
-  /**
-   * @brief Get Action heap
-   * @details [TODO]
-   *
-   * @return The Action heap
-   */
+  /** @brief Get Action heap */
   xbt_heap_t getActionHeap() {return p_actionHeap;}
 
   /**
-   * @brief share the resources
-   * @details Share the resources between the actions
+   * @brief Share the resources between the actions
    *
    * @param now The current time of the simulation
    * @return The delta of time till the next action will finish
@@ -361,8 +327,7 @@ public:
                                       void (*solve) (lmm_system_t));
 
   /**
-   * @brief Update state of actions
-   * @details Update action to the current time
+   * @brief Update action to the current time
    *
    * @param now The current time of the simulation
    * @param delta The delta of time since the last update
