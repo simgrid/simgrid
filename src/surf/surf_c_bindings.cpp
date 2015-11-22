@@ -73,19 +73,17 @@ double surf_solve(double max_date)
     surf_min = max_date - NOW;
   }
 
-  XBT_DEBUG("Looking for next action end for all models except NS3");
-  xbt_dynar_foreach(model_list_invoke, iter, model) {
-	  double next_action_end = -1.0;
-	  if (model->shareResourcesIsIdempotent()) {
-	    XBT_DEBUG("Running for Resource [%s]", typeid(model).name());
-	    next_action_end = model->shareResources(NOW);
-	    XBT_DEBUG("Resource [%s] : next action end = %f",
-	        typeid(model).name(), next_action_end);
-	  }
-	  if ((surf_min < 0.0 || next_action_end < surf_min)
-			  && next_action_end >= 0.0) {
-		  surf_min = next_action_end;
-	  }
+  /* Physical models MUST be resolved first */
+  XBT_DEBUG("Looking for next event in physical models");
+  double next_event_phy = surf_host_model->shareResources(NOW);
+  if ((surf_min < 0.0 || next_event_phy < surf_min) && next_event_phy >= 0.0) {
+	  surf_min = next_event_phy;
+  }
+  if (surf_vm_model != NULL) {
+	  XBT_DEBUG("Looking for next event in virtual models");
+	  double next_event_virt = surf_vm_model->shareResources(NOW);
+	  if ((surf_min < 0.0 || next_event_virt < surf_min) && next_event_virt >= 0.0)
+		  surf_min = next_event_virt;
   }
 
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value) : %f", surf_min);

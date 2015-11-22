@@ -1037,10 +1037,9 @@ XBT_PUBLIC_DATA(s_surf_model_description_t)
  *  \brief List of initialized models
  */
 XBT_PUBLIC_DATA(xbt_dynar_t) all_existing_models;
-XBT_PUBLIC_DATA(xbt_dynar_t) model_list_invoke;
 
 /** \ingroup SURF_simulation
- *  \brief List of hosts that have juste restarted and whose autorestart process should be restarted.
+ *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.
  */
 XBT_PUBLIC_DATA(xbt_dynar_t) host_that_restart;
 

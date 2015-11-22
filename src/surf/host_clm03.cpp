@@ -29,7 +29,6 @@ void surf_host_model_init_current_default(void)
 
   Model *model = surf_host_model;
   xbt_dynar_push(all_existing_models, &model);
-  xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(host_parse_init);
 }
 
@@ -42,7 +41,6 @@ void surf_host_model_init_compound()
 
   Model *model = surf_host_model;
   xbt_dynar_push(all_existing_models, &model);
-  xbt_dynar_push(model_list_invoke, &model);
   sg_platf_host_add_cb(host_parse_init);
 }
 

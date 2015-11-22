@@ -15,7 +15,6 @@ void surf_vm_model_init_HL13(void){
     Model *model = surf_vm_model;
 
     xbt_dynar_push(all_existing_models, &model);
-    xbt_dynar_push(model_list_invoke, &model);
   }
 }
 
@@ -49,22 +48,6 @@ const double virt_overhead = 1;
 double VMHL13Model::shareResources(double now)
 {
   /* TODO: update action's cost with the total cost of processes on the VM. */
-
-
-  /* 0. Make sure that we already calculated the resource share at the physical
-   * machine layer. */
-  {
-    XBT_ATTRIB_UNUSED Model *ws_model = surf_host_model;
-    XBT_ATTRIB_UNUSED Model *vm_ws_model = surf_vm_model;
-    XBT_ATTRIB_UNUSED unsigned int index_of_pm_ws_model = xbt_dynar_search(model_list_invoke, &ws_model);
-    XBT_ATTRIB_UNUSED unsigned int index_of_vm_ws_model = xbt_dynar_search(model_list_invoke, &vm_ws_model);
-    xbt_assert((index_of_pm_ws_model < index_of_vm_ws_model), "Cannot assume surf_host_model comes before");
-
-    /* Another option is that we call sub_ws->share_resource() here. The
-     * share_resource() function has no side-effect. We can call it here to
-     * ensure that. */
-  }
-
 
   /* 1. Now we know how many resource should be assigned to each virtual
    * machine. We update constraints of the virtual machine layer.
