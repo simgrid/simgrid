@@ -7,12 +7,11 @@
 #include "network_constant.hpp"
 #include "surf/random_mgr.h"
 
+#include "host_interface.hpp"
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static int host_number_int = 0;
 
-static void netcste_count_hosts(sg_platf_host_cbarg_t /*h*/) {
-  host_number_int++;
-}
 static void netcste_parse_nolink(sg_platf_link_cbarg_t link){
 	xbt_die("There is no link in the Constant network model. "
 			"Please remove any link from your platform (and switch to routing='None')");
@@ -28,7 +27,9 @@ void surf_network_model_init_Constant()
 
   routing_model_create(NULL);
 
-  sg_platf_host_add_cb(netcste_count_hosts);
+  hostCreatedCallbacks.connect([](Host*) {
+    host_number_int++;
+  });
   sg_platf_link_add_cb(netcste_parse_nolink);
 
   Model *model = surf_network_model;
