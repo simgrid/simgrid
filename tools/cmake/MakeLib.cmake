@@ -72,6 +72,7 @@ endif()
 
 if(HAVE_LIBSIGC++)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")
+  add_definitions(-DLIBSIGC)
 endif()
 
 if(HAVE_MC)

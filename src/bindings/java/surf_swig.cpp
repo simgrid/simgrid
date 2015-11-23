@@ -4,10 +4,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <functional>
+
 #include <boost/lambda/bind.hpp>
 #include "src/surf/surf_interface.hpp"
 #include "surf_swig.hpp"
 #include "src/simix/smx_private.h"
+
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
+using std::placeholders::_4;
+using std::placeholders::_5;
 
 double getClock() {
   return surf_get_clock();
@@ -48,40 +56,40 @@ LinkDynar getRoute(char *srcName, char *dstName) {
 }
 
 void Plugin::activateCpuCreatedCallback(){
-  surf_callback_connect(cpuCreatedCallbacks, boost::bind(&Plugin::cpuCreatedCallback, this, _1));
+  surf_callback_connect(cpuCreatedCallbacks, std::bind(&Plugin::cpuCreatedCallback, this, _1));
 }
 
 void Plugin::activateCpuDestructedCallback(){
-  surf_callback_connect(cpuDestructedCallbacks, boost::bind(&Plugin::cpuDestructedCallback, this, _1));
+  surf_callback_connect(cpuDestructedCallbacks, std::bind(&Plugin::cpuDestructedCallback, this, _1));
 }
 
 void Plugin::activateCpuStateChangedCallback(){
-  surf_callback_connect(cpuStateChangedCallbacks, boost::bind(&Plugin::cpuStateChangedCallback, this, _1, _2, _3));
+  surf_callback_connect(cpuStateChangedCallbacks, std::bind(&Plugin::cpuStateChangedCallback, this, _1, _2, _3));
 }
 
 void Plugin::activateCpuActionStateChangedCallback(){
-  surf_callback_connect(cpuActionStateChangedCallbacks, boost::bind(&Plugin::cpuActionStateChangedCallback, this, _1, _2, _3));
+  surf_callback_connect(cpuActionStateChangedCallbacks, std::bind(&Plugin::cpuActionStateChangedCallback, this, _1, _2, _3));
 }
 
 
 void Plugin::activateLinkCreatedCallback(){
-  surf_callback_connect(networkLinkCreatedCallbacks, boost::bind(&Plugin::networkLinkCreatedCallback, this, _1));
+  surf_callback_connect(networkLinkCreatedCallbacks, std::bind(&Plugin::networkLinkCreatedCallback, this, _1));
 }
 
 void Plugin::activateLinkDestructedCallback(){
-  surf_callback_connect(networkLinkDestructedCallbacks, boost::bind(&Plugin::networkLinkDestructedCallback, this, _1));
+  surf_callback_connect(networkLinkDestructedCallbacks, std::bind(&Plugin::networkLinkDestructedCallback, this, _1));
 }
 
 void Plugin::activateLinkStateChangedCallback(){
-  surf_callback_connect(networkLinkStateChangedCallbacks, boost::bind(&Plugin::networkLinkStateChangedCallback, this, _1, _2, _3));
+  surf_callback_connect(networkLinkStateChangedCallbacks, std::bind(&Plugin::networkLinkStateChangedCallback, this, _1, _2, _3));
 }
 
 void Plugin::activateNetworkActionStateChangedCallback(){
-  surf_callback_connect(networkActionStateChangedCallbacks, boost::bind(&Plugin::networkActionStateChangedCallback, this, _1, _2, _3));
+  surf_callback_connect(networkActionStateChangedCallbacks, std::bind(&Plugin::networkActionStateChangedCallback, this, _1, _2, _3));
 }
 
 void Plugin::activateNetworkCommunicateCallback(){
-  surf_callback_connect(networkCommunicateCallbacks, boost::bind(&Plugin::networkCommunicateCallback, this, _1, _2, _3, _4, _5));
+  surf_callback_connect(networkCommunicateCallbacks, std::bind(&Plugin::networkCommunicateCallback, this, _1, _2, _3, _4, _5));
 }
 
 
