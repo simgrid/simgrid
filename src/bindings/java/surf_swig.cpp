@@ -4,6 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+// Avoid ambiguity between boost and std placeholders
+// (the std placeholders are imported through boost::signals2):
+#ifndef BOOST_BIND_NO_PLACEHOLDERS
+  #define BOOST_BIND_NO_PLACEHOLDERS
+#endif
+
 #include <functional>
 
 #include <boost/lambda/bind.hpp>

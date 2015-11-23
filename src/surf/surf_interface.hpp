@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <utility>
+
 #include <boost/function.hpp>
 #include <boost/intrusive/list.hpp>
 #include "surf/trace_mgr.h"
@@ -23,15 +25,47 @@
 
 #ifdef LIBSIGC
 #include <sigc++/sigc++.h>
-#define surf_callback(arg1, ...)  sigc::signal<arg1,__VA_ARGS__>
-#define surf_callback_connect(callback, fun_ptr) callback.connect(sigc::ptr_fun(fun_ptr))
-#define surf_callback_emit(callback, ...) callback.emit(__VA_ARGS__)
+namespace simgrid {
+namespace surf {
+  // Wraps sigc++ signals with the interface of boost::signals2:
+  template<class T> class signal;
+  template<class R, class... P>
+  class signal<R(P...)> {
+  private:
+    sigc::signal<R, P...> sig_;
+  public:
+    template<class T> XBT_ALWAYS_INLINE
+    void connect(T&& slot)
+    {
+      sig_.connect(std::forward<T>(slot));
+    }
+    template<class Res, class... Args> XBT_ALWAYS_INLINE
+    void connect(Res(*slot)(Args...))
+    {
+      sig_.connect(sigc::ptr_fun(slot));
+    }
+    template<class... Args>
+    R operator()(Args&&... args) const
+    {
+      return sig_.emit(std::forward<Args>(args)...);
+    }
+  };
+}
+}
 #else
 #include <boost/signals2.hpp>
-#define surf_callback(arg1, ...)  boost::signals2::signal<arg1(__VA_ARGS__)>
+namespace simgrid {
+namespace surf {
+  template<class T>
+  using signal = ::boost::signals2::signal<T>;
+}
+}
+#endif
+
+// Deprecated:
+#define surf_callback(arg1, ...)  ::simgrid::surf::signal<arg1(__VA_ARGS__)>
 #define surf_callback_connect(callback, fun_ptr) callback.connect(fun_ptr)
 #define surf_callback_emit(callback, ...) callback(__VA_ARGS__)
-#endif
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4251)
