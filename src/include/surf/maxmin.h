@@ -16,15 +16,15 @@
 
 /** @addtogroup SURF_lmm 
  * @details 
- * A linear maxmin solver to resolves inequations systems.
+ * A linear maxmin solver to resolve inequations systems.
  * 
  * Most SimGrid model rely on a "fluid/steady-state" modeling that
- * samount to share resources between actions at relatively
+ * simulate the sharing of resources between actions at relatively
  * coarse-grain.  Such sharing is generally done by solving a set of
  * linear inequations. Let's take an example and assume we have the
  * variables \f$x_1\f$, \f$x_2\f$, \f$x_3\f$, and \f$x_4\f$ . Let's
  * say that \f$x_1\f$ and \f$x_2\f$ correspond to activities running
- * and the same CPU \f$A\f$ whose capacity is \f$C_A\f$ . In such a
+ * and the same CPU \f$A\f$ whose capacity is \f$C_A\f$. In such a
  * case, we need to enforce:
  *
  *   \f[ x_1 + x_2 \leq C_A \f]
@@ -53,10 +53,12 @@
  *  - bound (set)
  *  - shared (set)
  *  - usage (computed)
+ *
  * Variable:
  *  - weight (set)
  *  - bound (set)
  *  - value (computed)
+ *
  * Element:
  *  - value (set)
  * 
@@ -77,13 +79,17 @@
  *     var1.weight * var1.value * elem1.value + var2.weight * var2.value * elem2.value <= cons1.bound
  *     var2.weight * var2.value * elem3.value + var3.weight * var3.value * elem4.value <= cons2.bound
  * 
- * where `var1.value`, `var2.value` and `var3.value` are the unknown values
+ * where `var1.value`, `var2.value` and `var3.value` are the unknown values.
  * 
- * if a constraint is not shared the sum is replace by a max
+ * If a constraint is not shared, the sum is replaced by a max. 
+ * For example, a third non-shared constraint `cons3` and the associated elements `elem5` and `elem6` could write as: 
+ *
+ *     max( var1.weight * var1.value * elem5.value  ,  var3.weight * var3.value * elem6.value ) <= cons3.bound
+ *
+ * This is usefull for the sharing of resources for various models.
+ * For instance, for the network model, each link is associated 
+ * to a constraint and each communication to a variable. 
  * 
- * Its usefull for the sharing of resources for various models.
- * For instance for the network model the link are associated 
- * to consrtaint and the communications to variables.
  */
 
 XBT_PUBLIC_DATA(double) sg_maxmin_precision;
