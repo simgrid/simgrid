@@ -29,8 +29,11 @@ void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
  * structure (i.e not on the surf_resource_private infos) */
 
-VirtualMachine *VMHL13Model::createVM(const char *name, surf_resource_t host_PM) {
-  return new VMHL13(this, name, NULL, host_PM);
+VirtualMachine *VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
+{
+  VirtualMachine* vm = new VMHL13(this, name, NULL, host_PM);
+  surf_callback_emit(VMCreatedCallbacks, vm);
+  return vm;
 }
 
 static inline double get_solved_value(CpuAction *cpu_action)
@@ -197,8 +200,6 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
   p_action = sub_cpu->execute(0);
 
   XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, sub_ws->getName(), xbt_dynar_length(p_storage));
-
-  surf_callback_emit(VMCreatedCallbacks, this);
 }
 
 /*
