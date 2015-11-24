@@ -344,11 +344,13 @@ Link* NetworkL07Model::createLink(const char *name,
   xbt_assert(!Link::byName(name),
 	         "Link '%s' declared several times in the platform file.", name);
 
-  return new LinkL07(this, name, properties,
+  Link* link = new LinkL07(this, name, properties,
 		             bw_initial, bw_trace,
 					 lat_initial, lat_trace,
 					 state_initial, state_trace,
 					 policy);
+  surf_callback_emit(networkLinkCreatedCallbacks, link);
+  return link;
 }
 
 void HostL07Model::addTraces()

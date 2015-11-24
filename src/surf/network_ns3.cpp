@@ -305,7 +305,9 @@ Link* NetworkNS3Model::createLink(const char *name,
     XBT_INFO("The NS3 network model doesn't support latency state traces");
   if (state_trace)
     XBT_INFO("The NS3 network model doesn't support link state traces");
-  return new NetworkNS3Link(this, name, properties, bw_initial, lat_initial);
+  Link* link = new NetworkNS3Link(this, name, properties, bw_initial, lat_initial);
+  surf_callback_emit(networkLinkCreatedCallbacks, link);
+  return link;
 }
 
 xbt_dynar_t NetworkNS3Model::getRoute(RoutingEdge *src, RoutingEdge *dst)

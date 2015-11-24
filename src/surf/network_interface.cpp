@@ -181,7 +181,6 @@ Link::Link(NetworkModel *model, const char *name, xbt_dict_t props)
 : Resource(model, name, props)
 , p_latEvent(NULL)
 {
-  surf_callback_emit(networkLinkCreatedCallbacks, this);
   links->insert({name, this});
 
   XBT_DEBUG("Create link '%s'",name);
@@ -194,7 +193,6 @@ Link::Link(NetworkModel *model, const char *name, xbt_dict_t props,
 : Resource(model, name, props, constraint),
   p_latEvent(NULL)
 {
-  surf_callback_emit(networkLinkCreatedCallbacks, this);
   if (state_trace)
     p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
 
