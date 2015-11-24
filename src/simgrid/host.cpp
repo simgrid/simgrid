@@ -116,6 +116,12 @@ surf_cpu_t sg_host_surfcpu(sg_host_t host) {
 void sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu) {
 	xbt_lib_set(host_lib, host->key, SURF_CPU_LEVEL, cpu);
 }
+void sg_host_surfcpu_register(sg_host_t host, surf_cpu_t cpu)
+{
+  surf_callback_emit(cpuCreatedCallbacks, cpu);
+  surf_callback_emit(cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, cpu->getState());
+  sg_host_surfcpu_set(host, cpu);
+}
 void sg_host_surfcpu_destroy(sg_host_t host) {
 	xbt_lib_unset(host_lib,host->key,SURF_CPU_LEVEL,1);
 }

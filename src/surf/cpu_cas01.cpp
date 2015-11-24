@@ -114,10 +114,7 @@ Cpu *CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
 
   cpu = new CpuCas01(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
-  surf_callback_emit(cpuCreatedCallbacks, cpu);
-  surf_callback_emit(cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, state_initial);
-  sg_host_surfcpu_set(host, cpu);
-
+  sg_host_surfcpu_register(host, cpu);
   return cpu;
 }
 

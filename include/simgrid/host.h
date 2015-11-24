@@ -53,6 +53,7 @@ DEFINE_EXTERNAL_CLASS(Cpu);
 typedef Cpu *surf_cpu_t;
 XBT_PUBLIC(surf_cpu_t) sg_host_surfcpu(sg_host_t host);
 XBT_PUBLIC(void) sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu);
+XBT_PUBLIC(void) sg_host_surfcpu_register(sg_host_t host, surf_cpu_t cpu);
 XBT_PUBLIC(void) sg_host_surfcpu_destroy(sg_host_t host);
 
 // ========== RoutingEdge ============

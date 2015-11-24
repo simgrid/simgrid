@@ -327,10 +327,7 @@ Cpu *CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
   CpuL07 *cpu = new CpuL07(this, name, cpu_properties,
 		                     power_initial, power_scale, power_trace,
                          core, state_initial, state_trace);
-  surf_callback_emit(cpuCreatedCallbacks, cpu);
-  surf_callback_emit(cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, state_initial);
-  sg_host_surfcpu_set(sg_host, cpu);
-
+  sg_host_surfcpu_register(sg_host, cpu);
   return cpu;
 }
 

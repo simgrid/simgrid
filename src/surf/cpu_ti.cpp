@@ -442,9 +442,7 @@ Cpu *CpuTiModel::createCpu(const char *name,
       "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
   CpuTi *cpu = new CpuTi(this, name, powerPeak, pstate, powerScale, powerTrace,
 		           core, stateInitial, stateTrace, cpuProperties);
-  surf_callback_emit(cpuCreatedCallbacks, cpu);
-  surf_callback_emit(cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, stateInitial);
-  sg_host_surfcpu_set(host, cpu);
+  sg_host_surfcpu_register(host, cpu);
   return cpu;
 }
 
