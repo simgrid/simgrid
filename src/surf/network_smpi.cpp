@@ -104,10 +104,11 @@ NetworkSmpiModel::~NetworkSmpiModel(){
   }
 }
 
-void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *action)
+void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *act)
 {
   const char *src = link->getName();
   xbt_fifo_t fifo;
+  NetworkCm02Action *action= static_cast<NetworkCm02Action*>(act);
 
   if (sg_sender_gap > 0.0) {
     if (!gap_lookup) {

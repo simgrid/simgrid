@@ -18,6 +18,7 @@
  ***********/
 class XBT_PRIVATE NetworkCm02Model;
 class XBT_PRIVATE NetworkCm02Action;
+class XBT_PRIVATE NetworkSmpiModel;
 
 /*********
  * Tools *
@@ -34,8 +35,7 @@ private:
 public:
   NetworkCm02Model(int /*i*/) : NetworkModel() {};
   NetworkCm02Model();
-  ~NetworkCm02Model() {
-  }
+  ~NetworkCm02Model() { }
   Link* createLink(const char *name,
 		  double bw_initial,
 		  tmgr_trace_t bw_trace,
@@ -51,6 +51,8 @@ public:
   Action *communicate(RoutingEdge *src, RoutingEdge *dst,
 		                           double size, double rate);
   bool shareResourcesIsIdempotent() {return true;}
+  virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
+  bool m_haveGap = false;
 };
 
 /************
@@ -73,20 +75,25 @@ public:
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   void updateBandwidth(double value, double date=surf_get_clock());
   void updateLatency(double value, double date=surf_get_clock());
+  virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
+
+
 };
 
 
 /**********
  * Action *
  **********/
-
 class NetworkCm02Action : public NetworkAction {
   friend Action *NetworkCm02Model::communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate);
+  friend NetworkSmpiModel;
 
 public:
   NetworkCm02Action(Model *model, double cost, bool failed)
      : NetworkAction(model, cost, failed) {};
   void updateRemainingLazy(double now);
+protected:
+  double m_senderGap;
 };
 
 #endif /* SURF_NETWORK_CM02_HPP_ */

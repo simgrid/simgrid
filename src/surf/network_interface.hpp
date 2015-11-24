@@ -111,8 +111,6 @@ public:
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties)=0;
 
-  virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
-
   /**
    * @brief Create a communication between two hosts.
    * @details It makes calls to the routing part, and execute the communication
@@ -169,7 +167,6 @@ public:
    */
   virtual double bandwidthConstraint(double rate, double bound, double size);
   double shareResourcesFull(double now);
-  bool m_haveGap = false;
 };
 
 /************
@@ -304,7 +301,6 @@ public:
   double m_weight;
   double m_rate;
   const char* p_senderLinkName;
-  double m_senderGap;
   double m_senderSize;
   xbt_fifo_item_t p_senderFifoItem;
 #ifdef HAVE_LATENCY_BOUND_TRACKING
