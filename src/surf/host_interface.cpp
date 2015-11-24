@@ -83,7 +83,6 @@ Host::Host(Model *model, const char *name, xbt_dict_t props,
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
 {
   p_params.ramsize = 0;
-  surf_callback_emit(hostCreatedCallbacks, this);
 }
 
 Host::Host(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
@@ -92,7 +91,6 @@ Host::Host(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t co
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
 {
   p_params.ramsize = 0;
-  surf_callback_emit(hostCreatedCallbacks, this);
 }
 
 Host::~Host(){

@@ -50,6 +50,7 @@ Host *HostCLM03Model::createHost(const char *name){
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  sg_host_edge(sg_host),
 		  sg_host_surfcpu(sg_host));
+  surf_callback_emit(hostCreatedCallbacks, host);
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, host);
   return host;

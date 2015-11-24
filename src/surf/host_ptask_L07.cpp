@@ -277,7 +277,7 @@ Host *HostL07Model::createHost(const char *name)
   wk = new HostL07(this, name, NULL,
 		                  sg_host_edge(sg_host),
 						  sg_host_surfcpu(sg_host));
-
+  surf_callback_emit(hostCreatedCallbacks, wk);
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, wk);
 
   return wk;
