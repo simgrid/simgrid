@@ -770,10 +770,10 @@ static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
       link_id                      = bprintf("link_%s%d%s",cabinet->prefix,i,cabinet->suffix);
       host.id                      = host_id;
       link.id                      = link_id;
-      xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
-      xbt_dynar_push(power_state_list,&cabinet->power);
-      host.power_peak = power_state_list;
+      host.power_peak = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(host.power_peak,&cabinet->power);
       sg_platf_new_host(&host);
+      xbt_dynar_free(&host.power_peak);
       sg_platf_new_link(&link);
 
       char* link_up       = bprintf("%s_UP",link_id);
@@ -912,9 +912,8 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
         XBT_DEBUG("\tstate_file=\"\"");
       }
 
-      xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
-      xbt_dynar_push(power_state_list,&cluster->power);
-      host.power_peak = power_state_list;
+      host.power_peak = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(host.power_peak,&cluster->power);
       host.pstate = 0;
 
       //host.power_peak = cluster->power;
@@ -923,6 +922,7 @@ static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
       host.initial_state = SURF_RESOURCE_ON;
       host.coord = "";
       sg_platf_new_host(&host);
+      xbt_dynar_free(&host.power_peak);
       XBT_DEBUG("</host>");
 
       XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,
@@ -1076,9 +1076,8 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   host.initial_state = SURF_RESOURCE_ON;
   host.id = host_id;
 
-  xbt_dynar_t power_state_list = xbt_dynar_new(sizeof(double), NULL);
-  xbt_dynar_push(power_state_list,&peer->power);
-  host.power_peak = power_state_list;
+  host.power_peak = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push(host.power_peak,&peer->power);
   host.pstate = 0;
   //host.power_peak = peer->power;
   host.power_scale = 1.0;
@@ -1086,6 +1085,7 @@ static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
   sg_platf_new_host(&host);
+  xbt_dynar_free(&host.power_peak);
 
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link, 0, sizeof(link));

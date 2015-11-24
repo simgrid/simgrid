@@ -562,7 +562,6 @@ CpuTi::CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t powerPeak,
   m_lastUpdate = 0;
 
   xbt_dynar_get_cpy(powerPeak, 0, &m_powerPeak);
-  xbt_dynar_free(&powerPeak);  /* kill memory leak */
   XBT_DEBUG("CPU create: peak=%f", m_powerPeak);
 
   if (stateTrace)

@@ -317,7 +317,6 @@ Cpu *CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
                           xbt_dict_t cpu_properties)
 {
   double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
-  xbt_dynar_free(&powerPeak);   // kill memory leak
   sg_host_t sg_host = sg_host_by_name(name);
 
   xbt_assert(!surf_host_resource_priv(sg_host),

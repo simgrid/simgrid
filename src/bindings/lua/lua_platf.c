@@ -248,6 +248,7 @@ int console_add_host(lua_State *L) {
   lua_pop(L, 1);
 
   sg_platf_new_host(&host);
+  xbt_dynar_free(&host.power_peak);
 
   return 0;
 }

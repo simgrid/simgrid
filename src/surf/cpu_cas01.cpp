@@ -167,7 +167,15 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak
 	  core, xbt_dynar_get_as(powerPeak, pstate, double), powerScale,
     stateInitial) {
   p_powerEvent = NULL;
-  p_powerPeakList = powerPeak;
+
+  // Copy the power peak array:
+  p_powerPeakList = xbt_dynar_new(sizeof(double), nullptr);
+  unsigned long n = xbt_dynar_length(powerPeak);
+  for (unsigned long i = 0; i != n; ++i) {
+    double value = xbt_dynar_get_as(powerPeak, i, double);
+    xbt_dynar_push(p_powerPeakList, &value);
+  }
+
   m_pstate = pstate;
 
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_powerPeak, m_pstate);

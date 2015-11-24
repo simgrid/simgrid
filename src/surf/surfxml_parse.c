@@ -479,6 +479,7 @@ void ETag_surfxml_host(void)    {
   host.coord = A_surfxml_host_coordinates;
 
   sg_platf_new_host(&host);
+  xbt_dynar_free(&host.power_peak);
   current_property_set = NULL;
 }
 
