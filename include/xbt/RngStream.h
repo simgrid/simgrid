@@ -19,6 +19,7 @@ struct RngStream_InfoState {
    char *name;
 };
 
+SG_BEGIN_DECL();
 
 XBT_PUBLIC(int) RngStream_SetPackageSeed (unsigned long seed[6]);
 
@@ -67,6 +68,7 @@ XBT_PUBLIC(double) RngStream_RandU01 (RngStream g);
 
 XBT_PUBLIC(int) RngStream_RandInt (RngStream g, int i, int j);
 
+SG_END_DECL();
 
 #endif
 
