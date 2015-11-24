@@ -61,7 +61,6 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
  , p_typeId(xbt_strdup(type_id))
  , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL))
 {
-  surf_callback_emit(storageCreatedCallbacks, this);
   p_content = parseContent(content_name);
   setState(SURF_RESOURCE_ON);
 }
@@ -75,7 +74,6 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
  , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL)) {
-  surf_callback_emit(storageCreatedCallbacks, this);
   p_content = parseContent(content_name);
   p_attach = xbt_strdup(attach);
   setState(SURF_RESOURCE_ON);

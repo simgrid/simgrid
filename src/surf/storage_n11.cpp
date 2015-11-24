@@ -252,7 +252,7 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
   Storage *storage = new StorageN11(this, id, properties, p_maxminSystem,
       Bread, Bwrite, Bconnection, type_id, (char *)content_name,
       xbt_strdup(content_type), storage_type->size, (char *) attach);
-
+  surf_callback_emit(storageCreatedCallbacks, storage);
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tproperties '%p'\n\t\tBread '%f'\n",
