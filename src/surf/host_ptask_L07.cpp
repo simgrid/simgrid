@@ -327,7 +327,8 @@ Cpu *CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
   CpuL07 *cpu = new CpuL07(this, name, cpu_properties,
 		                     power_initial, power_scale, power_trace,
                          core, state_initial, state_trace);
-
+  surf_callback_emit(cpuCreatedCallbacks, cpu);
+  surf_callback_emit(cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, state_initial);
   sg_host_surfcpu_set(sg_host, cpu);
 
   return cpu;
@@ -452,7 +453,7 @@ CpuL07::CpuL07(CpuL07Model *model, const char* name, xbt_dict_t props,
 	             double power_initial, double power_scale, tmgr_trace_t power_trace,
 		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
  : Cpu(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, power_initial * power_scale),
-	   core, power_initial, power_scale)
+	   core, power_initial, power_scale, state_initial)
 {
   xbt_assert(m_powerScale > 0, "Power has to be >0");
 
@@ -461,7 +462,6 @@ CpuL07::CpuL07(CpuL07Model *model, const char* name, xbt_dict_t props,
   else
     p_powerEvent = NULL;
 
-  setState(state_initial);
   if (state_trace)
 	p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
 }

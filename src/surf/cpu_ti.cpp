@@ -442,6 +442,8 @@ Cpu *CpuTiModel::createCpu(const char *name,
       "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
   CpuTi *cpu = new CpuTi(this, name, powerPeak, pstate, powerScale, powerTrace,
 		           core, stateInitial, stateTrace, cpuProperties);
+  surf_callback_emit(cpuCreatedCallbacks, cpu);
+  surf_callback_emit(cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, stateInitial);
   sg_host_surfcpu_set(host, cpu);
   return cpu;
 }
@@ -545,11 +547,10 @@ void CpuTiModel::addTraces()
 CpuTi::CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t powerPeak,
         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
-	xbt_dict_t properties)
-: Cpu(model, name, properties, core, 0, powerScale)
+	      xbt_dict_t properties)
+  : Cpu(model, name, properties, core, 0, powerScale, stateInitial)
 {
   p_powerEvent = NULL;
-  setState(stateInitial);
   m_powerScale = powerScale;
   m_core = core;
   tmgr_trace_t empty_trace;

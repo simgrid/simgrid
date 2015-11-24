@@ -115,7 +115,8 @@ public:
    * @param powerScale The power scale of this Cpu
    */
   Cpu(Model *model, const char *name, xbt_dict_t props,
-	  lmm_constraint_t constraint, int core, double powerPeak, double powerScale);
+	  lmm_constraint_t constraint, int core, double powerPeak, double powerScale,
+    e_surf_resource_state_t stateInitial);
 
   /**
    * @brief Cpu constructor
@@ -127,6 +128,12 @@ public:
    * @param powerPeak The power peak of this Cpu in [TODO]
    * @param powerScale The power scale of this Cpu in [TODO]
    */
+  Cpu(Model *model, const char *name, xbt_dict_t props,
+	  int core, double powerPeak, double powerScale,
+    e_surf_resource_state_t stateInitial);
+
+  Cpu(Model *model, const char *name, xbt_dict_t props,
+	  lmm_constraint_t constraint, int core, double powerPeak, double powerScale);
   Cpu(Model *model, const char *name, xbt_dict_t props,
 	  int core, double powerPeak, double powerScale);
 

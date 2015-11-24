@@ -114,6 +114,8 @@ Cpu *CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
 
   cpu = new CpuCas01(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
+  surf_callback_emit(cpuCreatedCallbacks, cpu);
+  surf_callback_emit(cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, state_initial);
   sg_host_surfcpu_set(host, cpu);
 
   return cpu;
@@ -165,7 +167,8 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak
                          xbt_dict_t properties)
 : Cpu(model, name, properties,
 	  lmm_constraint_new(model->getMaxminSystem(), this, core * powerScale * xbt_dynar_get_as(powerPeak, pstate, double)),
-	  core, xbt_dynar_get_as(powerPeak, pstate, double), powerScale) {
+	  core, xbt_dynar_get_as(powerPeak, pstate, double), powerScale,
+    stateInitial) {
   p_powerEvent = NULL;
   p_powerPeakList = powerPeak;
   m_pstate = pstate;
@@ -173,7 +176,6 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_powerPeak, m_pstate);
 
   m_core = core;
-  setState(stateInitial);
   if (powerTrace)
     p_powerEvent = tmgr_history_add_trace(history, powerTrace, 0.0, 0, this);
 

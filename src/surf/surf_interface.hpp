@@ -433,6 +433,9 @@ public:
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
   Resource(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
+
+  Resource(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint, e_surf_resource_state_t stateInit);
+
   /**
    * @brief Resource constructor
    *

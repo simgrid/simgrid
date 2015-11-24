@@ -143,29 +143,30 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  ************/
 
 Cpu::Cpu(){
-  surf_callback_emit(cpuCreatedCallbacks, this);
 }
 
+
 Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
-		 int core, double powerPeak, double powerScale)
- : Resource(model, name, props)
+         int core, double powerPeak, double powerScale,
+         e_surf_resource_state_t stateInitial)
+ : Resource(model, name, props, stateInitial)
  , m_core(core)
  , m_powerPeak(powerPeak)
  , m_powerScale(powerScale)
  , p_constraintCore(NULL)
  , p_constraintCoreId(NULL)
 {
-  surf_callback_emit(cpuCreatedCallbacks, this);
+
 }
 
 Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
-		 lmm_constraint_t constraint, int core, double powerPeak, double powerScale)
- : Resource(model, name, props, constraint)
+        lmm_constraint_t constraint, int core, double powerPeak,
+        double powerScale, e_surf_resource_state_t stateInitial)
+ : Resource(model, name, props, constraint, stateInitial)
  , m_core(core)
  , m_powerPeak(powerPeak)
  , m_powerScale(powerScale)
 {
-  surf_callback_emit(cpuCreatedCallbacks, this);
   /* At now, we assume that a VM does not have a multicore CPU. */
   if (core > 1)
     xbt_assert(model == surf_cpu_model_pm);
@@ -184,6 +185,16 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
     }
   }
 }
+
+Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
+  lmm_constraint_t constraint, int core, double powerPeak, double powerScale)
+: Cpu(model, name, props, constraint, core, powerPeak, powerScale, SURF_RESOURCE_ON)
+{}
+
+Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
+  int core, double powerPeak, double powerScale)
+: Cpu(model, name, props, core, powerPeak, powerScale, SURF_RESOURCE_ON)
+{}
 
 Cpu::~Cpu(){
   surf_callback_emit(cpuDestructedCallbacks, this);
