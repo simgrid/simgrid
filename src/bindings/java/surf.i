@@ -165,17 +165,15 @@ JAVA_ARRAYSOFCLASSES(Link);
 %typemap(out) DoubleDynar {
   long l = xbt_dynar_length($1);
   $result = jenv->NewDoubleArray(l);
-  double *lout = (double *)xbt_dynar_to_array($1);
+  double *lout = (double *) xbt_dynar_get_ptr($1, 0);
   jenv->SetDoubleArrayRegion($result, 0, l, (jdouble*)lout);
-  free(:);
 }
 %typemap(javadirectorin) DoubleDynar "$jniinput"
 %typemap(directorin,descriptor="[D") DoubleDynar %{
   long l = xbt_dynar_length($1);
   $input = jenv->NewDoubleArray(l);
-  double *lout = (double *)xbt_dynar_to_array($1);
+  double *lout = (double *) xbt_dynar_get_ptr($1, 0);
   jenv->SetDoubleArrayRegion($input, 0, l, (jdouble*)lout);
-  free(lout);
 %}
 %typemap(javain) DoubleDynar "$javainput"
 %typemap(javaout) DoubleDynar {return  $jnicall}
