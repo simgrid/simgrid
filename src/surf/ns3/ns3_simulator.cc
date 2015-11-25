@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf/ns3/ns3_simulator.h"
+#include "src/surf/ns3/ns3_simulator.h"
 #include "xbt/dict.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"

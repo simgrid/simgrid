@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "network_ns3.hpp"
-#include "surf_private.h"
+#include "src/surf/network_ns3.hpp"
+#include "src/surf/surf_private.h"
 #include "simgrid/sg_config.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
@@ -473,7 +473,7 @@ int NetworkNS3Action::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-	if (actionHook::is_linked())
+	if (action_hook.is_linked())
 	  p_stateSet->erase(p_stateSet->iterator_to(*this));
     XBT_DEBUG ("Removing action %p", this);
 	delete this;
