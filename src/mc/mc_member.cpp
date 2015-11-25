@@ -6,8 +6,8 @@
 
 #include <xbt/misc.h>
 
-#include "mc_object_info.h"
-#include "mc_private.h"
+#include "src/mc/mc_object_info.h"
+#include "src/mc/mc_private.h"
 #include "src/mc/Type.hpp"
 
 namespace simgrid {

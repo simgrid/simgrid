@@ -31,19 +31,19 @@
 #include <libunwind.h>
 #include <xbt/mmalloc.h>
 #include "src/xbt/mmalloc/mmprivate.h"
-#include "mc_object_info.h"
-#include "mc_comm_pattern.h"
-#include "mc_request.h"
-#include "mc_safety.h"
-#include "mc_snapshot.h"
-#include "mc_liveness.h"
-#include "mc_private.h"
-#include "mc_unw.h"
-#include "mc_smx.h"
+#include "src/mc/mc_object_info.h"
+#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/mc_request.h"
+#include "src/mc/mc_safety.h"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_liveness.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_unw.h"
+#include "src/mc/mc_smx.h"
 #endif
-#include "mc_record.h"
-#include "mc_protocol.h"
-#include "mc_client.h"
+#include "src/mc/mc_record.h"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_client.h"
 
 extern "C" {
 

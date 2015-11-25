@@ -11,9 +11,9 @@
 
 #include <xbt.h>
 
-#include "PageStore.hpp"
+#include "src/mc/PageStore.hpp"
 
-#include "mc_mmu.h"
+#include "src/mc/mc_mmu.h"
 
 extern "C" {
 

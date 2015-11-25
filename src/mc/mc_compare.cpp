@@ -13,12 +13,12 @@
 #include <xbt/sysdep.h>
 
 #include "src/internal_config.h"
-#include "mc_object_info.h"
-#include "mc_safety.h"
-#include "mc_liveness.h"
-#include "mc_private.h"
-#include "mc_smx.h"
-#include "mc_dwarf.hpp"
+#include "src/mc/mc_object_info.h"
+#include "src/mc/mc_safety.h"
+#include "src/mc/mc_liveness.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_smx.h"
+#include "src/mc/mc_dwarf.hpp"
 
 #include "src/mc/Frame.hpp"
 #include "src/mc/ObjectInformation.hpp"

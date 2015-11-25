@@ -13,7 +13,7 @@
 #include <xbt/fifo.h>
 #include <xbt/dynar.h>
 #include <xbt/automaton.h>
-#include "mc_state.h"
+#include "src/mc/mc_state.h"
 
 SG_BEGIN_DECL()
 

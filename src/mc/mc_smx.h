@@ -15,7 +15,7 @@
 #include "src/smpi/private.h"
 
 #include "src/mc/Process.hpp"
-#include "mc_protocol.h"
+#include "src/mc/mc_protocol.h"
 
 /** @file
  *  @brief (Cross-process, MCer/MCed) Access to SMX structures

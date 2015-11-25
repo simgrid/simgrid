@@ -11,15 +11,15 @@
 #include <xbt.h>
 #include <simgrid/simix.h>
 
-#include "mc_replay.h"
-#include "mc_record.h"
-#include "mc_base.h"
+#include "src/mc/mc_replay.h"
+#include "src/mc/mc_record.h"
+#include "src/mc/mc_base.h"
 
 #ifdef HAVE_MC
-#include "mc_private.h"
-#include "mc_state.h"
-#include "mc_smx.h"
-#include "mc_liveness.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_state.h"
+#include "src/mc/mc_smx.h"
+#include "src/mc/mc_liveness.h"
 #endif
 
 extern "C" {

@@ -6,11 +6,11 @@
 
 #include <assert.h>
 
-#include "mc_request.h"
-#include "mc_safety.h"
-#include "mc_private.h"
-#include "mc_smx.h"
-#include "mc_xbt.hpp"
+#include "src/mc/mc_request.h"
+#include "src/mc/mc_safety.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_smx.h"
+#include "src/mc/mc_xbt.hpp"
 
 using simgrid::mc::remote;
 

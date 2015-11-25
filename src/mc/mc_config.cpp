@@ -14,11 +14,11 @@
 #include <simgrid/sg_config.h>
 
 #ifdef HAVE_MC
-#include "mc_safety.h"
-#include "mc_private.h"
+#include "src/mc/mc_safety.h"
+#include "src/mc/mc_private.h"
 #endif
 
-#include "mc_record.h"
+#include "src/mc/mc_record.h"
 
 extern "C" {
 

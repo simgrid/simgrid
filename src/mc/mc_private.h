@@ -19,7 +19,7 @@
 #include <elfutils/libdw.h>
 
 #include "mc/mc.h"
-#include "mc_base.h"
+#include "src/mc/mc_base.h"
 #include "mc/datatypes.h"
 #include "xbt/fifo.h"
 #include "xbt/config.h"
@@ -39,8 +39,8 @@
 #include "xbt/parmap.h"
 #include <xbt/base.h>
 
-#include "mc_forward.h"
-#include "mc_protocol.h"
+#include "src/mc/mc_forward.h"
+#include "src/mc/mc_protocol.h"
 
 SG_BEGIN_DECL()
 

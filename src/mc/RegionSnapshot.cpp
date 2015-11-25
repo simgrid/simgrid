@@ -7,7 +7,7 @@
 #include <sys/mman.h>
 
 #include "mc/mc.h"
-#include "mc_snapshot.h"
+#include "src/mc/mc_snapshot.h"
 
 #include "src/mc/ChunkedData.hpp"
 #include "src/mc/RegionSnapshot.hpp"

@@ -17,10 +17,10 @@
 #include <xbt/base.h>
 #include <sys/types.h>
 
-#include "mc_forward.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/Process.hpp"
 #include "src/mc/PageStore.hpp"
-#include "mc_protocol.h"
+#include "src/mc/mc_protocol.h"
 
 namespace simgrid {
 namespace mc {

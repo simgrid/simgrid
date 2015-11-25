@@ -8,17 +8,17 @@
 
 #include <simgrid/simix.h>
 
-#include "mc_base.h"
+#include "src/mc/mc_base.h"
 #include "src/simix/smx_private.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_replay.h"
 #include "mc/mc.h"
-#include "mc_protocol.h"
+#include "src/mc/mc_protocol.h"
 
 #ifdef HAVE_MC
 #include "src/mc/Process.hpp"
 #include "src/mc/ModelChecker.hpp"
-#include "mc_smx.h"
+#include "src/mc/mc_smx.h"
 #endif
 
 #ifdef HAVE_MC

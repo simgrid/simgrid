@@ -29,13 +29,13 @@
 #include "simgrid/sg_config.h"
 #include "src/xbt_modinter.h"
 
-#include "mc_base.h"
-#include "mc_private.h"
-#include "mc_protocol.h"
-#include "mc_safety.h"
-#include "mc_comm_pattern.h"
-#include "mc_liveness.h"
-#include "mc_exit.h"
+#include "src/mc/mc_base.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_safety.h"
+#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/mc_liveness.h"
+#include "src/mc/mc_exit.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 

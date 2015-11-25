@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "xbt/misc.h"
-#include "mc_snapshot.h"
+#include "src/mc/mc_snapshot.h"
 
 namespace simgrid {
 namespace mc {

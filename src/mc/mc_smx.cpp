@@ -10,7 +10,7 @@
 
 #include "src/simix/smx_private.h"
 
-#include "mc_smx.h"
+#include "src/mc/mc_smx.h"
 #include "ModelChecker.hpp"
 
 using simgrid::mc::remote;

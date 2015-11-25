@@ -22,13 +22,13 @@
 
 #include "simgrid/sg_config.h"
 
-#include "ModelChecker.hpp"
-#include "PageStore.hpp"
-#include "ModelChecker.hpp"
-#include "mc_protocol.h"
-#include "mc_private.h"
-#include "mc_ignore.h"
-#include "mc_exit.h"
+#include "src/mc/ModelChecker.hpp"
+#include "src/mc/PageStore.hpp"
+#include "src/mc/ModelChecker.hpp"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_exit.h"
 #include "src/mc/mc_liveness.h"
 
 extern "C" {

@@ -13,8 +13,8 @@
 
 #include <xbt/log.h>
 
-#include "mc_protocol.h"
-#include "mc_client.h"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_client.h"
 
 extern "C" {
 

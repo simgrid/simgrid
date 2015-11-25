@@ -30,13 +30,12 @@
 
 #include "src/xbt/memory_map.hpp"
 
-#include "mc_forward.hpp"
-#include "mc_base.h"
-#include "mc_mmalloc.h" // std_heap
-#include "AddressSpace.hpp"
-#include "mc_protocol.h"
-
-#include "ObjectInformation.hpp"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_base.h"
+#include "src/mc/mc_mmalloc.h" // std_heap
+#include "src/mc/AddressSpace.hpp"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/ObjectInformation.hpp"
 
 // Those flags are used to track down which cached information
 // is still up to date and which information needs to be updated.

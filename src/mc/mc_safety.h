@@ -12,8 +12,8 @@
 #include <simgrid_config.h>
 #include <xbt/base.h>
 #include <xbt/dict.h>
-#include "mc_forward.hpp"
-#include "mc_state.h"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_state.h"
 
 SG_BEGIN_DECL()
 

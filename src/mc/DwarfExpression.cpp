@@ -10,14 +10,14 @@
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
-#include "mc_object_info.h"
-#include "mc_private.h"
+#include "src/mc/mc_object_info.h"
+#include "src/mc/mc_private.h"
 #include "src/mc/LocationList.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/Frame.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/DwarfExpression.hpp"
-#include "mc_dwarf.hpp"
+#include "src/mc/mc_dwarf.hpp"
 
 using simgrid::mc::remote;
 

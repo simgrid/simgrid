@@ -10,15 +10,15 @@
 #include <xbt/dynar.h>
 #include <xbt/automaton.h>
 
-#include "mc_request.h"
-#include "mc_liveness.h"
-#include "mc_private.h"
-#include "mc_record.h"
-#include "mc_smx.h"
-#include "mc_client.h"
-#include "mc_replay.h"
-#include "mc_safety.h"
-#include "mc_exit.h"
+#include "src/mc/mc_request.h"
+#include "src/mc/mc_liveness.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_record.h"
+#include "src/mc/mc_smx.h"
+#include "src/mc/mc_client.h"
+#include "src/mc/mc_replay.h"
+#include "src/mc/mc_safety.h"
+#include "src/mc/mc_exit.h"
 
 extern "C" {
 

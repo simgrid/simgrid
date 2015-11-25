@@ -12,7 +12,7 @@
 
 #include <xbt/base.h>
 
-#include "mc_forward.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/xbt/memory_map.hpp"
 
 XBT_PRIVATE std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(

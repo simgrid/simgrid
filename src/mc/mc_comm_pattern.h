@@ -16,7 +16,7 @@
 #include "src/smpi/private.h"
 #include <smpi/smpi.h>
 
-#include "mc_state.h"
+#include "src/mc/mc_state.h"
 
 SG_BEGIN_DECL()
 

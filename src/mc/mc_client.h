@@ -8,7 +8,7 @@
 #define SIMGRID_MC_CLIENT_H
 
 #include <xbt/misc.h>
-#include "mc_protocol.h"
+#include "src/mc/mc_protocol.h"
 
 SG_BEGIN_DECL()
 

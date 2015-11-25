@@ -6,14 +6,14 @@
 
 #include <assert.h>
 
-#include "mc_state.h"
-#include "mc_request.h"
-#include "mc_safety.h"
-#include "mc_private.h"
-#include "mc_record.h"
-#include "mc_smx.h"
-#include "mc_client.h"
-#include "mc_exit.h"
+#include "src/mc/mc_state.h"
+#include "src/mc/mc_request.h"
+#include "src/mc/mc_safety.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_record.h"
+#include "src/mc/mc_smx.h"
+#include "src/mc/mc_client.h"
+#include "src/mc/mc_exit.h"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 

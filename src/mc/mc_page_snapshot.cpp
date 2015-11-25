@@ -8,10 +8,10 @@
 
 #include <unistd.h> // pread, pwrite
 
-#include "PageStore.hpp"
-#include "mc_mmu.h"
-#include "mc_private.h"
-#include "mc_snapshot.h"
+#include "src/mc/PageStore.hpp"
+#include "src/mc/mc_mmu.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_snapshot.h"
 
 #include <xbt/mmalloc.h>
 #include "src/mc/ChunkedData.hpp"

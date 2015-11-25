@@ -9,9 +9,9 @@
 #include <xbt/sysdep.h>
 #include <xbt/dynar.h>
 
-#include "mc_comm_pattern.h"
-#include "mc_smx.h"
-#include "mc_xbt.hpp"
+#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/mc_smx.h"
+#include "src/mc/mc_xbt.hpp"
 
 using simgrid::mc::remote;
 

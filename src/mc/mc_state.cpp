@@ -8,12 +8,12 @@
 
 #include "src/simix/smx_private.h"
 #include "xbt/fifo.h"
-#include "mc_state.h"
-#include "mc_request.h"
-#include "mc_private.h"
-#include "mc_comm_pattern.h"
-#include "mc_smx.h"
-#include "mc_xbt.hpp"
+#include "src/mc/mc_state.h"
+#include "src/mc/mc_request.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/mc_smx.h"
+#include "src/mc/mc_xbt.hpp"
 
 using simgrid::mc::remote;
 

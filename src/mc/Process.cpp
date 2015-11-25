@@ -27,11 +27,11 @@
 
 #include <xbt/mmalloc.h>
 
-#include "mc_object_info.h"
-#include "mc_unw.h"
-#include "mc_snapshot.h"
-#include "mc_ignore.h"
-#include "mc_smx.h"
+#include "src/mc/mc_object_info.h"
+#include "src/mc/mc_unw.h"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_smx.h"
 
 #include "src/mc/Process.hpp"
 #include "src/mc/AddressSpace.hpp"

@@ -11,7 +11,7 @@
 #include <dirent.h>
 
 #include "src/internal_config.h"
-#include "mc_private.h"
+#include "src/mc/mc_private.h"
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
 #include "src/smpi/private.h"
@@ -24,15 +24,15 @@
 #include <libunwind.h>
 #include <libelf.h>
 
-#include "mc_private.h"
+#include "src/mc/mc_private.h"
 #include <mc/mc.h>
 
-#include "mc_snapshot.h"
-#include "mc_object_info.h"
-#include "mc_mmu.h"
-#include "mc_unw.h"
-#include "mc_protocol.h"
-#include "mc_smx.h"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_object_info.h"
+#include "src/mc/mc_mmu.h"
+#include "src/mc/mc_unw.h"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_smx.h"
 #include "mc_hash.hpp"
 
 #include "src/mc/ObjectInformation.hpp"

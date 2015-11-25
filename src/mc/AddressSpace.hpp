@@ -13,7 +13,7 @@
 
 #include <xbt/misc.h>
 
-#include "mc_forward.hpp"
+#include "src/mc/mc_forward.hpp"
 
 namespace simgrid {
 namespace mc {

@@ -18,9 +18,9 @@
 
 #include <libunwind.h>
 
-#include "mc_object_info.h"
+#include "src/mc/mc_object_info.h"
 #include "src/mc/Process.hpp"
-#include "mc_unw.h"
+#include "src/mc/mc_unw.h"
 #include "src/mc/Frame.hpp"
 
 using simgrid::mc::remote;

@@ -15,14 +15,14 @@
 #include <xbt/sysdep.h>
 #include <xbt/mmalloc.h>
 
-#include "mc_protocol.h"
-#include "mc_client.h"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_client.h"
 
 // We won't need those once the separation MCer/MCed is complete:
-#include "mc_mmalloc.h"
-#include "mc_ignore.h"
-#include "mc_private.h" // MC_deadlock_check()
-#include "mc_smx.h"
+#include "src/mc/mc_mmalloc.h"
+#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_private.h" // MC_deadlock_check()
+#include "src/mc/mc_smx.h"
 
 extern "C" {
 

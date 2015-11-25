@@ -8,9 +8,9 @@
 
 #include <cstdint>
 
-#include "mc_private.h"
+#include "src/mc/mc_private.h"
 #include "mc/datatypes.h"
-#include "mc_hash.hpp"
+#include "src/mc/mc_hash.hpp"
 #include <mc/mc.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_hash, mc, "Logging specific to mc_hash");

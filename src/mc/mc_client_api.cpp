@@ -9,13 +9,13 @@
 #include <xbt/sysdep.h>
 #include <simgrid/modelchecker.h>
 
-#include "mc_record.h"
-#include "mc_private.h"
-#include "mc_mmalloc.h"
-#include "mc_ignore.h"
-#include "mc_protocol.h"
-#include "mc_client.h"
-#include "ModelChecker.hpp"
+#include "src/mc/mc_record.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_mmalloc.h"
+#include "src/mc/mc_ignore.h"
+#include "src/mc/mc_protocol.h"
+#include "src/mc/mc_client.h"
+#include "src/mc/ModelChecker.hpp"
 
 /** \file mc_client_api.cpp
  *

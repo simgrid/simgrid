@@ -11,7 +11,7 @@
 
 #include <xbt/base.h>
 
-#include "mc_forward.h"
+#include "src/mc/mc_forward.h"
 #include "src/mc/LocationList.hpp"
 #include "src/mc/Variable.hpp"
 #include "src/mc/Frame.hpp"

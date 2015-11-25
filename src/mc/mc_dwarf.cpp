@@ -20,9 +20,9 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
-#include "mc_object_info.h"
-#include "mc_private.h"
-#include "mc_dwarf.hpp"
+#include "src/mc/mc_object_info.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_dwarf.hpp"
 
 #include "src/mc/Process.hpp"
 #include "src/mc/ObjectInformation.hpp"

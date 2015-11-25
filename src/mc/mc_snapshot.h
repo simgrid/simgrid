@@ -20,13 +20,13 @@
 #include <xbt/dynar.h>
 #include <xbt/base.h>
 
-#include "mc_forward.hpp"
-#include "ModelChecker.hpp"
-#include "PageStore.hpp"
-#include "mc_mmalloc.h"
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/ModelChecker.hpp"
+#include "src/mc/PageStore.hpp"
+#include "src/mc/mc_mmalloc.h"
 #include "src/mc/AddressSpace.hpp"
-#include "mc_unw.h"
-#include "RegionSnapshot.hpp"
+#include "src/mc/mc_unw.h"
+#include "src/mc/RegionSnapshot.hpp"
 
 SG_BEGIN_DECL()
 

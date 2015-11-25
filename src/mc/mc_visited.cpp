@@ -7,12 +7,12 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#include "mc_comm_pattern.h"
-#include "mc_safety.h"
-#include "mc_liveness.h"
-#include "mc_private.h"
+#include "src/mc/mc_comm_pattern.h"
+#include "src/mc/mc_safety.h"
+#include "src/mc/mc_liveness.h"
+#include "src/mc/mc_private.h"
 #include "src/mc/Process.hpp"
-#include "mc_smx.h"
+#include "src/mc/mc_smx.h"
 
 extern "C" {
 

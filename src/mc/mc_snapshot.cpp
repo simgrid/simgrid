@@ -9,10 +9,10 @@
 #include "src/internal_config.h"
 #include "src/smpi/private.h"
 
-#include "mc_snapshot.h"
-#include "mc_private.h"
-#include "mc_mmu.h"
-#include "PageStore.hpp"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_mmu.h"
+#include "src/mc/PageStore.hpp"
 
 extern "C" {
 

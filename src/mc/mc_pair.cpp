@@ -5,8 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <xbt.h>
-#include "mc_liveness.h"
-#include "mc_private.h"
+#include "src/mc/mc_liveness.h"
+#include "src/mc/mc_private.h"
 
 extern "C" {
 
