@@ -93,11 +93,10 @@ public:
 class HostL07 : public Host {
 public:
   HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEdge *netElm, Cpu *cpu);
-  //bool isUsed();
   bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {DIE_IMPOSSIBLE;};
-  Action *execute(double size);
-  Action *sleep(double duration);
+  Action *execute(double size) {return p_cpu->execute(size);};
+  Action *sleep(double duration) {return p_cpu->sleep(duration);};
   e_surf_resource_state_t getState();
   double getPowerPeakAt(int pstate_index);
   int getNbPstates();
@@ -115,10 +114,9 @@ public:
 		 double power_scale, double power_initial, tmgr_trace_t power_trace,
      int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
   bool isUsed();
-  //bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t event_type, double value, double date);
-  CpuAction *execute(double /*size*/) {DIE_IMPOSSIBLE;};
-  CpuAction *sleep(double /*duration*/) {DIE_IMPOSSIBLE;};
+  Action *execute(double size);
+  Action *sleep(double duration);
 
   double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
   double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
@@ -159,8 +157,8 @@ public:
  * Action *
  **********/
 class L07Action : public HostAction {
-  friend Action *HostL07::execute(double size);
-  friend Action *HostL07::sleep(double duration);
+  friend Action *CpuL07::execute(double size);
+  friend Action *CpuL07::sleep(double duration);
   friend Action *HostL07Model::executeParallelTask(int host_nb,
                                                    sg_host_t*host_list,
                                                    double *flops_amount,

@@ -142,7 +142,7 @@ public:
    * @param size The value of the processing amount (in flop) needed to process
    * @return The CpuAction corresponding to the processing
    */
-  virtual CpuAction *execute(double size)=0;
+  virtual Action *execute(double size)=0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)
@@ -150,7 +150,7 @@ public:
    * @param duration The number of seconds to sleep
    * @return The CpuAction corresponding to the sleeping
    */
-  virtual CpuAction *sleep(double duration)=0;
+  virtual Action *sleep(double duration)=0;
 
   /** @brief Get the number of cores of the current Cpu */
   virtual int getCore();
