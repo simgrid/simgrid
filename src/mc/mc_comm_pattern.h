@@ -12,8 +12,8 @@
 #include <simgrid_config.h>
 #include <xbt/dynar.h>
 
-#include "../simix/smx_private.h"
-#include "../smpi/private.h"
+#include "src/simix/smx_private.h"
+#include "src/smpi/private.h"
 #include <smpi/smpi.h>
 
 #include "mc_state.h"

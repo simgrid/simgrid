@@ -20,8 +20,8 @@
 #endif
 
 #include "simgrid/sg_config.h"
-#include "../surf/surf_private.h"
-#include "../simix/smx_private.h"
+#include "src/surf/surf_private.h"
+#include "src/simix/smx_private.h"
 #include "xbt/fifo.h"
 #include "xbt/automaton.h"
 #include "xbt/dict.h"
@@ -30,7 +30,7 @@
 #ifdef HAVE_MC
 #include <libunwind.h>
 #include <xbt/mmalloc.h>
-#include "../xbt/mmalloc/mmprivate.h"
+#include "src/xbt/mmalloc/mmprivate.h"
 #include "mc_object_info.h"
 #include "mc_comm_pattern.h"
 #include "mc_request.h"

@@ -11,7 +11,7 @@
 
 #include <simgrid_config.h>
 
-#include "../simix/smx_private.h"
+#include "src/simix/smx_private.h"
 
 SG_BEGIN_DECL()
 

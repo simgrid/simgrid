@@ -28,7 +28,7 @@
 #include "src/simix/popping_private.h"
 #include "src/simix/smx_private.h"
 
-#include "../xbt/memory_map.hpp"
+#include "src/xbt/memory_map.hpp"
 
 #include "mc_forward.hpp"
 #include "mc_base.h"

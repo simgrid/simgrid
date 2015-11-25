@@ -25,13 +25,13 @@
 #include "xbt/config.h"
 
 #ifdef __cplusplus
-#include "../xbt/memory_map.hpp"
+#include "src/xbt/memory_map.hpp"
 #endif
 
 #include "xbt/function_types.h"
 #include "xbt/mmalloc.h"
-#include "../simix/smx_private.h"
-#include "../xbt/mmalloc/mmprivate.h"
+#include "src/simix/smx_private.h"
+#include "src/xbt/mmalloc/mmprivate.h"
 #include "xbt/automaton.h"
 #include "xbt/hash.h"
 #include <simgrid/msg.h>

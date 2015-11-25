@@ -6,7 +6,7 @@
 
 #include <assert.h>
 
-#include "../simix/smx_private.h"
+#include "src/simix/smx_private.h"
 #include "xbt/fifo.h"
 #include "mc_state.h"
 #include "mc_request.h"
