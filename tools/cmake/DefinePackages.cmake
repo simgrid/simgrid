@@ -323,7 +323,7 @@ set(SURF_SRC
   src/surf/platf_generator.c
   src/surf/plugins/energy.cpp
   src/surf/random_mgr.c
-  src/surf/sg_platf.c
+  src/surf/sg_platf.cpp
   src/surf/storage_interface.cpp
   src/surf/storage_n11.cpp
   src/surf/surf_c_bindings.cpp

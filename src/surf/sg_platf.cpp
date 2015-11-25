@@ -11,7 +11,10 @@
 #include "xbt/RngStream.h"
 #include "simgrid/platf_interface.h"
 
+extern "C" {
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
+}
+
 xbt_dynar_t sg_platf_host_cb_list = NULL;   // of sg_platf_host_cb_t
 xbt_dynar_t sg_platf_host_link_cb_list = NULL;   // of sg_platf_host_link_cb_t
 xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
@@ -46,7 +49,7 @@ xbt_dynar_t sg_platf_gpu_cb_list = NULL;
 /* ***************************************** */
 
 
-static int surf_parse_models_setup_already_called;
+static int surf_parse_models_setup_already_called = 0;
 
 /* one RngStream for the platform, to respect some statistic rules */
 static RngStream sg_platf_rng_stream = NULL;
@@ -298,8 +301,6 @@ void sg_platf_end() {
     fun();
   }
 }
-
-static int surf_parse_models_setup_already_called = 0;
 
 void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS) {
   unsigned int iterator;
