@@ -30,7 +30,6 @@ void surf_cpu_model_init_Cas01()
   surf_cpu_model_pm = new CpuCas01Model();
   surf_cpu_model_vm  = new CpuCas01Model();
 
-  sg_platf_host_add_cb(cpu_parse_init);
   sg_platf_postparse_add_cb(cpu_add_traces);
 
   Model *model_pm = surf_cpu_model_pm;

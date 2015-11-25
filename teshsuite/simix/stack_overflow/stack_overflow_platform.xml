@@ -2,8 +2,9 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
 
-  <!-- The master process (with some arguments) -->
-  <process host="Tremblay" function="master">
-  </process>
+  <!-- The hosts -->
+  <AS  id="AS0"  routing="Full">
+   <host id="Tremblay" power="98.095Mf"/>
+  </AS>
 
 </platform>

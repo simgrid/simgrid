@@ -29,7 +29,6 @@ void surf_host_model_init_current_default(void)
 
   Model *model = surf_host_model;
   xbt_dynar_push(all_existing_models, &model);
-  sg_platf_host_add_cb(host_parse_init);
 }
 
 void surf_host_model_init_compound()
@@ -41,7 +40,6 @@ void surf_host_model_init_compound()
 
   Model *model = surf_host_model;
   xbt_dynar_push(all_existing_models, &model);
-  sg_platf_host_add_cb(host_parse_init);
 }
 
 Host *HostCLM03Model::createHost(const char *name){

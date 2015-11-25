@@ -34,8 +34,6 @@ void surf_host_model_init_ptask_L07(void)
   xbt_assert(!surf_network_model, "network model type already defined");
 
   // Define the callbacks to parse the XML
-  sg_platf_host_add_cb(cpu_parse_init);
-  sg_platf_host_add_cb(host_parse_init);
   sg_platf_link_add_cb(ptask_netlink_parse_init);
   sg_platf_postparse_add_cb(host_add_traces);
 

@@ -1,5 +1,5 @@
 ! expect signal SIGSEGV
-$ ${bindir:=.}/stack_overflow --cfg=contexts/stack_size:96 stack_overflow.xml
+$ ${bindir:=.}/stack_overflow --cfg=contexts/stack_size:96 stack_overflow_platform.xml stack_overflow.xml
 > [Tremblay:master:(0) 0.000000] [test/INFO] Launching our nice bugged recursive function...
 > Access violation detected.
 > This can result from a programming error in your code or, although less likely,

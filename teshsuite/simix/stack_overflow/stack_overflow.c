@@ -44,14 +44,14 @@ int main(int argc, char *argv[])
 {
   SIMIX_global_init(&argc, argv);
 
-  if (argc != 2) {
-    printf("Usage: %s platform_and_deployment.xml\n", argv[0]);
+  if (argc != 3) {
+    printf("Usage: %s platform.xml deployment.xml\n", argv[0]);
     exit(EXIT_FAILURE);
   }
 
   SIMIX_function_register("master", master);
   SIMIX_create_environment(argv[1]);
-  SIMIX_launch_application(argv[1]);
+  SIMIX_launch_application(argv[2]);
   SIMIX_run();
 
   return 0;

@@ -381,7 +381,6 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
 
 static void cpu_ti_define_callbacks()
 {
-  sg_platf_host_add_cb(cpu_parse_init);
   sg_platf_postparse_add_cb(cpu_add_traces);
 }
 

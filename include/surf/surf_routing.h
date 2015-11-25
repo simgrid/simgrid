@@ -37,6 +37,7 @@ XBT_PUBLIC_DATA(int) ROUTING_STORAGE_TYPE_LEVEL;   //Routing storage_type level
 void routing_AS_begin(sg_platf_AS_cbarg_t AS);
 void routing_AS_end(sg_platf_AS_cbarg_t AS);
 
+void routing_parse_init(sg_platf_host_cbarg_t host);
 void routing_cluster_add_backbone(void* bb);
 
 SG_END_DECL()

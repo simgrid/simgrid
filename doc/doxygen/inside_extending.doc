@@ -44,7 +44,6 @@ void surf_cpu_model_init_plop()
 
   surf_cpu_model_pm = new CpuPlopModel();
 
-  sg_platf_host_add_cb(cpu_parse_init);
   sg_platf_postparse_add_cb(cpu_add_traces);
 
   xbt_dynar_push(model_list, &surf_cpu_model_pm);

@@ -10,11 +10,12 @@
 #include "xbt/dict.h"
 #include "xbt/RngStream.h"
 #include "simgrid/platf_interface.h"
+#include "surf/surf_routing.h"
 
-extern "C" {
+#include "cpu_interface.hpp"
+#include "host_interface.hpp"
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
-}
-
 xbt_dynar_t sg_platf_host_cb_list = NULL;   // of sg_platf_host_cb_t
 xbt_dynar_t sg_platf_host_link_cb_list = NULL;   // of sg_platf_host_link_cb_t
 xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
@@ -135,6 +136,10 @@ void sg_platf_exit(void) {
 }
 
 void sg_platf_new_host(sg_platf_host_cbarg_t h){
+  routing_parse_init(h);
+  cpu_parse_init(h);
+  host_parse_init(h);
+
   unsigned int iterator;
   sg_platf_host_cb_t fun;
   xbt_dynar_foreach(sg_platf_host_cb_list, iterator, fun) {

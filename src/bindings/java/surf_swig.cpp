@@ -39,7 +39,6 @@ CpuModel *java_cpu_model;
 static void java_cpu_model_init_preparse() {
   surf_cpu_model_pm = java_cpu_model;
   xbt_dynar_push(all_existing_models, &java_cpu_model);
-  sg_platf_host_add_cb(cpu_parse_init);
 }
 
 void setCpuModel(CpuModel *cpuModel){
