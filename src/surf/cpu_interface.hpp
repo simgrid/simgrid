@@ -98,9 +98,6 @@ public:
 */
 XBT_PUBLIC_CLASS Cpu : public Resource {
 public:
-  /**
-   * @brief Cpu constructor
-   */
   Cpu();
 
   /**
@@ -137,9 +134,6 @@ public:
   Cpu(Model *model, const char *name, xbt_dict_t props,
 	  int core, double powerPeak, double powerScale);
 
-  /**
-   * @brief Cpu destructor
-   */
   ~Cpu();
 
   /**
@@ -158,43 +152,21 @@ public:
    */
   virtual CpuAction *sleep(double duration)=0;
 
-  /**
-   * @brief Get the number of cores of the current Cpu
-   *
-   * @return The number of cores of the current Cpu
-   */
+  /** @brief Get the number of cores of the current Cpu */
   virtual int getCore();
 
-  /**
-   * @brief Get the speed of the current Cpu
-   * @details [TODO] load * m_powerPeak
-   *
-   * @param load [TODO]
-   *
-   * @return The speed of the current Cpu
-   */
+  /** @brief Get the speed of the current Cpu */
   virtual double getSpeed(double load);
 
-  /**
-   * @brief Get the available speed of the current Cpu
-   * @details [TODO]
-   *
-   * @return The available speed of the current Cpu
-   */
+  /** @brief Get the available speed of the current Cpu */
   virtual double getAvailableSpeed();
 
-  /**
-   * @brief Get the current Cpu power peak
-   *
-   * @return The current Cpu power peak
-   */
+  /** @brief Get the current Cpu power peak */
   virtual double getCurrentPowerPeak();
-
 
   virtual double getPowerPeakAt(int pstate_index)=0;
 
   virtual int getNbPstates()=0;
-
   virtual void setPstate(int pstate_index)=0;
   virtual int  getPstate()=0;
 
@@ -221,33 +193,17 @@ public:
 XBT_PUBLIC_CLASS CpuAction : public Action {
 friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 public:
-  /**
-   * @brief CpuAction constructor
-   *
-   * @param model The CpuModel associated to this CpuAction
-   * @param cost [TODO]
-   * @param failed [TODO]
-   */
+  /** @brief CpuAction constructor */
   CpuAction(Model *model, double cost, bool failed)
     : Action(model, cost, failed) {} //FIXME:REMOVE
 
-  /**
-   * @brief CpuAction constructor
-   *
-   * @param model The CpuModel associated to this CpuAction
-   * @param cost [TODO]
-   * @param failed [TODO]
-   * @param var The lmm variable associated to this CpuAction if it is part of a LMM component
-   */
+  /** @brief CpuAction constructor */
   CpuAction(Model *model, double cost, bool failed, lmm_variable_t var)
     : Action(model, cost, failed, var) {}
 
   /**
    * @brief Set the affinity of the current CpuAction
    * @details [TODO]
-   *
-   * @param cpu [TODO]
-   * @param mask [TODO]
    */
   virtual void setAffinity(Cpu *cpu, unsigned long mask);
 
