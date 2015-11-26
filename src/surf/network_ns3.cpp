@@ -6,6 +6,7 @@
 
 #include "src/surf/network_ns3.hpp"
 #include "src/surf/surf_private.h"
+#include "src/surf/host_interface.hpp"
 #include "simgrid/sg_config.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
@@ -39,13 +40,14 @@ static void replace_lat_ns3(char ** lat)
   xbt_free(temp);
 }
 
-static void parse_ns3_add_host(sg_platf_host_cbarg_t host)
+static void simgrid_ns3_add_host(Host* host)
 {
-  XBT_DEBUG("NS3_ADD_HOST '%s'",host->id);
+  const char* id = host->getName();
+  XBT_DEBUG("NS3_ADD_HOST '%s'", id);
   xbt_lib_set(host_lib,
-              host->id,
+              id,
               NS3_HOST_LEVEL,
-              ns3_add_host(host->id)
+              ns3_add_host(id)
     );
 }
 
@@ -240,7 +242,7 @@ static void parse_ns3_end_platform(void)
 
 static void define_callbacks_ns3(void)
 {
-  sg_platf_host_add_cb (&parse_ns3_add_host);
+  hostCreatedCallbacks.connect(simgrid_ns3_add_host);
   sg_platf_router_add_cb (&parse_ns3_add_router);
   sg_platf_link_add_cb (&parse_ns3_add_link);
   sg_platf_cluster_add_cb (&parse_ns3_add_cluster);
