@@ -311,7 +311,7 @@ set(SURF_SRC
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/fair_bottleneck.cpp
-  src/surf/instr_routing.c
+  src/surf/instr_routing.cpp
   src/surf/instr_surf.c
   src/surf/lagrange.cpp
   src/surf/maxmin.cpp
