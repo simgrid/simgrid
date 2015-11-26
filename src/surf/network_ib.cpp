@@ -7,10 +7,11 @@
 #include "network_ib.hpp"
 #include "simgrid/sg_config.h"
 #include "maxmin_private.hpp"
+#include "src/surf/host_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
-static void IB_create_host_callback(sg_platf_host_cbarg_t t){
+static void IB_create_host_callback(Host* host){
   
   static int id=0;
 // pour t->id -> rajouter une nouvelle struct dans le dict, pour stocker les comms actives
@@ -20,7 +21,8 @@ static void IB_create_host_callback(sg_platf_host_cbarg_t t){
   IBNode* act = new IBNode(id);
 
   id++;
-  xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes, t->id, act, NULL);
+  xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes,
+    host->getName(), act, NULL);
  
 }
 
@@ -86,7 +88,7 @@ void surf_network_model_init_IB(void)
   surf_callback_connect(networkActionStateChangedCallbacks, IB_action_state_changed_callback);
   surf_callback_connect(networkCommunicateCallbacks, IB_action_init_callback);
 
-  sg_platf_host_add_cb(IB_create_host_callback);
+  hostCreatedCallbacks.connect(IB_create_host_callback);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
   
 }
