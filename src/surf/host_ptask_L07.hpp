@@ -98,11 +98,6 @@ public:
   Action *execute(double size) {return p_cpu->execute(size);};
   Action *sleep(double duration) {return p_cpu->sleep(duration);};
   e_surf_resource_state_t getState();
-  double getPowerPeakAt(int pstate_index);
-  int getNbPstates();
-  void setPstate(int pstate_index);
-  int  getPstate();
-  double getConsumedEnergy();
 };
 
 class CpuL07 : public Cpu {

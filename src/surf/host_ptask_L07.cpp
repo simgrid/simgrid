@@ -420,31 +420,6 @@ HostL07::HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEd
 {
 }
 
-double HostL07::getPowerPeakAt(int /*pstate_index*/)
-{
-	THROW_UNIMPLEMENTED;
-}
-
-int HostL07::getNbPstates()
-{
-	THROW_UNIMPLEMENTED;
-}
-
-void HostL07::setPstate(int /*pstate_index*/)
-{
-	THROW_UNIMPLEMENTED;
-}
-
-int HostL07::getPstate()
-{
-	THROW_UNIMPLEMENTED;
-}
-
-double HostL07::getConsumedEnergy()
-{
-	THROW_UNIMPLEMENTED;
-}
-
 CpuL07::CpuL07(CpuL07Model *model, const char* name, xbt_dict_t props,
 	             double power_initial, double power_scale, tmgr_trace_t power_trace,
 		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
