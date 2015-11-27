@@ -16,6 +16,11 @@
 
 #include "surf/surfxml_parse_values.h"
 
+/*************
+ * Callbacks *
+ *************/
+
+surf_callback(void, RoutingEdge*) routingEdgeCreatedCallbacks;
 
 /**
  * @ingroup SURF_build_api
@@ -160,6 +165,7 @@ RoutingEdge *routing_add_host(As* current_routing, sg_platf_host_cbarg_t host)
   routingEdge->setId(current_routing->parsePU(routingEdge));
   sg_host_edge_set(sg_host_by_name_or_create(host->id), routingEdge);
   XBT_DEBUG("Having set name '%s' id '%d'", host->id, routingEdge->getId());
+  routingEdgeCreatedCallbacks(routingEdge);
 
   if(mount_list){
     xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
@@ -206,6 +212,7 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
   info->setId(current_routing->parsePU(info));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'", router->id, info->getId());
+  routingEdgeCreatedCallbacks(info);
 
   if (router->coord && strcmp(router->coord, "")) {
     unsigned int cursor;
@@ -408,10 +415,11 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
               (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'", new_as->p_name, info->getId());
 
+  routingEdgeCreatedCallbacks(info);
+
   /* set the new current component of the tree */
   current_routing = new_as;
   current_routing->p_netElem = info;
-
 }
 
 /**

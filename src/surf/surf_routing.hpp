@@ -157,4 +157,10 @@ public:
   void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, xbt_dynar_t * links, double *latency);
 };
 
+/*************
+ * Callbacks *
+ *************/
+
+XBT_PUBLIC_DATA(surf_callback(void, RoutingEdge*)) routingEdgeCreatedCallbacks;
+
 #endif /* NETWORK_ROUTING_HPP_ */
