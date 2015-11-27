@@ -31,19 +31,6 @@ surf_callback(void, Cpu*) cpuDestructedCallbacks;
 surf_callback(void, Cpu*, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
 surf_callback(void, CpuAction*, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
 
-void cpu_parse_init(sg_platf_host_cbarg_t host){
-  surf_cpu_model_pm->createCpu(
-        host->id,
-        host->power_peak,
-        host->pstate,
-        host->power_scale,
-        host->power_trace,
-        host->core_amount,
-        host->initial_state,
-        host->state_trace,
-        host->properties);
-}
-
 void cpu_add_traces(){
   surf_cpu_model_pm->addTraces();
 }

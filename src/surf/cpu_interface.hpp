@@ -47,8 +47,6 @@ XBT_PUBLIC_DATA( surf_callback(void, Cpu*, e_surf_resource_state_t, e_surf_resou
  */
 XBT_PUBLIC_DATA( surf_callback(void, CpuAction*, e_surf_action_state_t, e_surf_action_state_t)) cpuActionStateChangedCallbacks;
 
-XBT_PUBLIC(void) cpu_parse_init(sg_platf_host_cbarg_t host);
-
 XBT_PUBLIC(void) cpu_add_traces();
 
 /*********

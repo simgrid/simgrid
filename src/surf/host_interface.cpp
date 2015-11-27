@@ -27,11 +27,6 @@ surf_callback(void, Host*) hostDestructedCallbacks;
 surf_callback(void, Host*, e_surf_resource_state_t, e_surf_resource_state_t) hostStateChangedCallbacks;
 surf_callback(void, HostAction*, e_surf_action_state_t, e_surf_action_state_t) hostActionStateChangedCallbacks;
 
-void host_parse_init(sg_platf_host_cbarg_t host)
-{
-  surf_host_model->createHost(host->id);
-}
-
 void host_add_traces(){
   surf_host_model->addTraces();
 }

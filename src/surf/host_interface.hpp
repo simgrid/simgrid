@@ -50,7 +50,6 @@ XBT_PUBLIC_DATA(surf_callback(void, HostAction*, e_surf_action_state_t, e_surf_a
  * Tools *
  *********/
 XBT_PUBLIC_DATA(HostModel*) surf_host_model;
-XBT_PUBLIC(void) host_parse_init(sg_platf_host_cbarg_t host);
 XBT_PUBLIC(void) host_add_traces();
 
 /*********

@@ -135,15 +135,25 @@ void sg_platf_exit(void) {
   surf_parse_models_setup_already_called = 0;
 }
 
-void sg_platf_new_host(sg_platf_host_cbarg_t h){
-  routing_parse_init(h);
-  cpu_parse_init(h);
-  host_parse_init(h);
+void sg_platf_new_host(sg_platf_host_cbarg_t host)
+{
+  routing_parse_init(host);
+  surf_cpu_model_pm->createCpu(
+        host->id,
+        host->power_peak,
+        host->pstate,
+        host->power_scale,
+        host->power_trace,
+        host->core_amount,
+        host->initial_state,
+        host->state_trace,
+        host->properties);
+  surf_host_model->createHost(host->id);
 
   unsigned int iterator;
   sg_platf_host_cb_t fun;
   xbt_dynar_foreach(sg_platf_host_cb_list, iterator, fun) {
-    fun(h);
+    fun(host);
   }
 }
 void sg_platf_new_host_link(sg_platf_host_link_cbarg_t h){
