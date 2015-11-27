@@ -137,7 +137,9 @@ void sg_platf_exit(void) {
 
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
-  routing_parse_init(host);
+  As* current_routing = routing_get_current();
+  if (current_routing)
+    routing_add_host(current_routing, host);
   surf_cpu_model_pm->createCpu(
         host->id,
         host->power_peak,

@@ -56,12 +56,18 @@ RoutingEdge *sg_routing_edge_by_name_or_null(const char *name) {
 
 /* Global vars */
 RoutingPlatf *routing_platf = NULL;
-As *current_routing = NULL;
 
 /* global parse functions */
 extern xbt_dynar_t mount_list;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
+
+/** The current AS in the parsing */
+static As *current_routing = NULL;
+As* routing_get_current()
+{
+  return current_routing;
+}
 
 static void routing_parse_peer(sg_platf_peer_cbarg_t peer);     /* peer bypass */
 // static void routing_parse_Srandom(void);        /* random bypass */
@@ -140,11 +146,8 @@ static void parse_S_host(sg_platf_host_link_cbarg_t host)
 /**
  * \brief Add a "host" to the network element list
  */
-void routing_parse_init(sg_platf_host_cbarg_t host)
+void routing_add_host(As* current_routing, sg_platf_host_cbarg_t host)
 {
-  if (! current_routing)
-    return;
-
   if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
     current_routing->p_hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!sg_host_by_name(host->id),
