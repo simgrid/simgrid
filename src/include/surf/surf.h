@@ -1167,7 +1167,7 @@ void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *fi
 /********** Routing **********/
 void routing_AS_begin(sg_platf_AS_cbarg_t AS);
 void routing_AS_end(sg_platf_AS_cbarg_t AS);
-void routing_add_host(As* as, sg_platf_host_cbarg_t host);
+RoutingEdge *routing_add_host(As* as, sg_platf_host_cbarg_t host);
 void routing_cluster_add_backbone(void* bb);
 As* routing_get_current();
 

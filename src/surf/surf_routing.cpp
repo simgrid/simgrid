@@ -146,20 +146,20 @@ static void parse_S_host(sg_platf_host_link_cbarg_t host)
 /**
  * \brief Add a "host" to the network element list
  */
-void routing_add_host(As* current_routing, sg_platf_host_cbarg_t host)
+RoutingEdge *routing_add_host(As* current_routing, sg_platf_host_cbarg_t host)
 {
   if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
     current_routing->p_hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!sg_host_by_name(host->id),
 		     "Reading a host, processing unit \"%s\" already exists", host->id);
 
-  RoutingEdge *info = new RoutingEdgeImpl(xbt_strdup(host->id),
+  RoutingEdge *routingEdge = new RoutingEdgeImpl(xbt_strdup(host->id),
 		                                    -1,
 		                                    SURF_NETWORK_ELEMENT_HOST,
 		                                    current_routing);
-  info->setId(current_routing->parsePU(info));
-  sg_host_edge_set(sg_host_by_name_or_create(host->id), info);
-  XBT_DEBUG("Having set name '%s' id '%d'", host->id, info->getId());
+  routingEdge->setId(current_routing->parsePU(routingEdge));
+  sg_host_edge_set(sg_host_by_name_or_create(host->id), routingEdge);
+  XBT_DEBUG("Having set name '%s' id '%d'", host->id, routingEdge->getId());
 
   if(mount_list){
     xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
@@ -184,6 +184,8 @@ void routing_add_host(As* current_routing, sg_platf_host_cbarg_t host)
     xbt_lib_set(host_lib, host->id, COORD_HOST_LEVEL, (void *) ctn);
     XBT_DEBUG("Having set host coordinates for '%s'",host->id);
   }
+
+  return routingEdge;
 }
 
 /**
