@@ -263,7 +263,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
   return action;
 }
 
-Host *HostL07Model::createHost(const char *name)
+Host *HostL07Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu)
 {
   HostL07 *wk = NULL;
   sg_host_t sg_host = sg_host_by_name(name);
@@ -272,9 +272,8 @@ Host *HostL07Model::createHost(const char *name)
               "Host '%s' declared several times in the platform file.",
               name);
 
-  wk = new HostL07(this, name, NULL,
-		                  sg_host_edge(sg_host),
-						  sg_host_surfcpu(sg_host));
+  wk = new HostL07(this, name, NULL, netElm, cpu);
+
   surf_callback_emit(hostCreatedCallbacks, wk);
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, wk);
 

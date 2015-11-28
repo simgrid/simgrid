@@ -38,7 +38,7 @@ public:
 
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-  Host *createHost(const char *name);
+  Host *createHost(const char *name,RoutingEdge *netElm, Cpu *cpu);
   Action *executeParallelTask(int host_nb,
                               sg_host_t *host_list,
 							  double *flops_amount,

@@ -64,7 +64,7 @@ public:
   HostModel() : Model() {}
   ~HostModel() {}
 
-  virtual Host *createHost(const char *name)=0;
+  virtual Host *createHost(const char *name, RoutingEdge *net, Cpu *cpu)=0;
   void addTraces(){DIE_IMPOSSIBLE;}
 
   virtual void adjustWeightOfDummyCpuActions();

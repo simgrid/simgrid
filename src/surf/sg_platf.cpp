@@ -137,10 +137,12 @@ void sg_platf_exit(void) {
 
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
+  RoutingEdge *net = NULL;
   As* current_routing = routing_get_current();
   if (current_routing)
-    routing_add_host(current_routing, host);
-  surf_cpu_model_pm->createCpu(
+    net = routing_add_host(current_routing, host);
+
+  Cpu *cpu = surf_cpu_model_pm->createCpu(
         host->id,
         host->power_peak,
         host->pstate,
@@ -150,7 +152,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
         host->initial_state,
         host->state_trace,
         host->properties);
-  surf_host_model->createHost(host->id);
+  surf_host_model->createHost(host->id, net, cpu);
 
   unsigned int iterator;
   sg_platf_host_cb_t fun;

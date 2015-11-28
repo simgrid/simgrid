@@ -30,7 +30,7 @@ class HostCLM03Model : public HostModel {
 public:
   HostCLM03Model(): HostModel(){}
   ~HostCLM03Model() {}
-  Host *createHost(const char *name);
+  Host *createHost(const char *name, RoutingEdge *netElm, Cpu *cpu);
   double shareResources(double now);
 
   void updateActionsState(double now, double delta);
