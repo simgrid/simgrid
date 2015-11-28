@@ -434,9 +434,6 @@ Cpu *CpuTiModel::createCpu(const char *name,
 {
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   sg_host_t host = sg_host_by_name(name);
-  xbt_assert(!sg_host_surfcpu(host),
-              "Host '%s' declared several times in the platform file",
-              name);
   xbt_assert(xbt_dynar_getfirst_as(powerPeak, double) > 0.0,
       "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
   CpuTi *cpu = new CpuTi(this, name, powerPeak, pstate, powerScale, powerTrace,

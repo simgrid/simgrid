@@ -265,14 +265,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 
 Host *HostL07Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu)
 {
-  HostL07 *host = NULL;
-  sg_host_t sg_host = sg_host_by_name(name);
-
-  xbt_assert(!surf_host_resource_priv(sg_host),
-              "Host '%s' declared several times in the platform file.",
-              name);
-
-  host = new HostL07(this, name, NULL, netElm, cpu);
+  HostL07 *host = new HostL07(this, name, NULL, netElm, cpu);
 
   surf_callback_emit(hostCreatedCallbacks, host);
   xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, host);
@@ -315,10 +308,6 @@ Cpu *CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
 {
   double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
   sg_host_t sg_host = sg_host_by_name(name);
-
-  xbt_assert(!surf_host_resource_priv(sg_host),
-              "Host '%s' declared several times in the platform file.",
-              name);
 
   CpuL07 *cpu = new CpuL07(this, name, cpu_properties,
 		                     power_initial, power_scale, power_trace,

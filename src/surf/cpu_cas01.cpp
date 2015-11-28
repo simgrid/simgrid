@@ -105,9 +105,6 @@ Cpu *CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
 {
   Cpu *cpu = NULL;
   sg_host_t host = sg_host_by_name(name);
-  xbt_assert(!sg_host_surfcpu(host),
-             "Host '%s' declared several times in the platform file",
-             name);
   xbt_assert(xbt_dynar_getfirst_as(power_peak, double) > 0.0,
       "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);

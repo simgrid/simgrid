@@ -137,6 +137,10 @@ void sg_platf_exit(void) {
 
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
+
+  xbt_assert(! sg_host_by_name(host->id),
+		     "Refusing to create a second host named '%s'.", host->id);
+
   RoutingEdge *net = NULL;
   As* current_routing = routing_get_current();
   if (current_routing)
