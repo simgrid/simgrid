@@ -6,20 +6,20 @@
 
 #include <xbt/base.h>
 
-#include "../cpu_interface.hpp"
+#include "../host_interface.hpp"
 #include <map>
 
 #ifndef ENERGY_CALLBACK_HPP_
 #define ENERGY_CALLBACK_HPP_
 
-class XBT_PRIVATE CpuEnergy;
+class XBT_PRIVATE HostEnergy;
 
-extern XBT_PRIVATE std::map<Cpu*, CpuEnergy*> *surf_energy;
+extern XBT_PRIVATE std::map<Host*, HostEnergy*> *surf_energy;
 
-class CpuEnergy {
+class HostEnergy {
 public:
-  CpuEnergy(Cpu *ptr);
-  ~CpuEnergy();
+  HostEnergy(Host *ptr);
+  ~HostEnergy();
 
   double getCurrentWattsValue(double cpu_load);
   double getConsumedEnergy();
@@ -31,7 +31,7 @@ public:
   double watts_off;                      /*< Consumption when the machine is turned off (shutdown) */
   double total_energy;					/*< Total energy consumed by the host */
   double last_updated;					/*< Timestamp of the last energy update event*/
-  Cpu *cpu;
+  Host *host;
 
   void unref() {if (--refcount == 0) delete this;}
   void ref() {refcount++;}

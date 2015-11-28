@@ -50,69 +50,70 @@ and then use the following function to retrieve the consumption of a given host:
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf,
                                 "Logging specific to the SURF energy plugin");
 
-std::map<Cpu*, CpuEnergy*> *surf_energy=NULL;
+std::map<Host*, HostEnergy*> *surf_energy=NULL;
 
-static void energyCpuCreatedCallback(Cpu *cpu){
-  (*surf_energy)[cpu] = new CpuEnergy(cpu);
+static void energyHostCreatedCallback(Host *host){
+  (*surf_energy)[host] = new HostEnergy(host);
 }
 
 static void energyVMCreatedCallback(VirtualMachine* vm) {
-  std::map<Cpu*, CpuEnergy*>::iterator cpu_energy_it = surf_energy->find(vm->p_subWs->p_cpu);
-  xbt_assert(cpu_energy_it != surf_energy->end(), "The cpu is not in surf_energy.");
-  (*surf_energy)[vm->p_cpu] = cpu_energy_it->second;
-  cpu_energy_it->second->ref(); // protect the CpuEnergy from getting deleted too early
+  std::map<Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(vm->p_subWs);
+  xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
+  (*surf_energy)[vm] = host_energy_it->second;
+  host_energy_it->second->ref(); // protect the HostEnergy from getting deleted too early
 }
 
 /* Computes the consumption so far.  Called lazily on need. */
-static void update_consumption(Cpu *cpu, CpuEnergy *cpu_energy) {
-	double cpu_load = lmm_constraint_get_usage(cpu->getConstraint()) / cpu->m_powerPeak;
-	double start_time = cpu_energy->last_updated;
+static void update_consumption(Host *host, HostEnergy *host_energy) {
+	double cpu_load = lmm_constraint_get_usage(host->p_cpu->getConstraint()) / host->p_cpu->m_powerPeak;
+	double start_time = host_energy->last_updated;
 	double finish_time = surf_get_clock();
 
-	double previous_energy = cpu_energy->total_energy;
+	double previous_energy = host_energy->total_energy;
 
 	double instantaneous_consumption;
-	if (cpu->getState() == SURF_RESOURCE_OFF)
-		instantaneous_consumption = cpu_energy->watts_off;
+	if (host->getState() == SURF_RESOURCE_OFF)
+		instantaneous_consumption = host_energy->watts_off;
 	else
-		instantaneous_consumption = cpu_energy->getCurrentWattsValue(cpu_load);
+		instantaneous_consumption = host_energy->getCurrentWattsValue(cpu_load);
 
 	double energy_this_step = instantaneous_consumption*(finish_time-start_time);
 
-	cpu_energy->total_energy = previous_energy + energy_this_step;
-	cpu_energy->last_updated = finish_time;
+	host_energy->total_energy = previous_energy + energy_this_step;
+	host_energy->last_updated = finish_time;
 
 	XBT_DEBUG("[cpu_update_energy] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
-  		  start_time, finish_time, cpu->m_powerPeak, previous_energy, energy_this_step);
+  		  start_time, finish_time, host->p_cpu->m_powerPeak, previous_energy, energy_this_step);
 }
 
-static void energyCpuDestructedCallback(Cpu *cpu){
-  std::map<Cpu*, CpuEnergy*>::iterator cpu_energy_it = surf_energy->find(cpu);
-  xbt_assert(cpu_energy_it != surf_energy->end(), "The cpu is not in surf_energy.");
+static void energyHostDestructedCallback(Host *host){
+  std::map<Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(host);
+  xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
 
-  CpuEnergy *cpu_energy = cpu_energy_it->second;
-  update_consumption(cpu, cpu_energy);
+  HostEnergy *host_energy = host_energy_it->second;
+  update_consumption(host, host_energy);
 
-  if (cpu_energy_it->second->refcount == 1) // Don't display anything for virtual CPUs
-	  XBT_INFO("Total energy of host %s: %f Joules", cpu->getName(), cpu_energy->getConsumedEnergy());
-  cpu_energy_it->second->unref();
-  surf_energy->erase(cpu_energy_it);
+  if (host_energy_it->second->refcount == 1) // Don't display anything for virtual CPUs
+	  XBT_INFO("Total energy of host %s: %f Joules", host->getName(), host_energy->getConsumedEnergy());
+  host_energy_it->second->unref();
+  surf_energy->erase(host_energy_it);
 }
 
 static void energyCpuActionStateChangedCallback(CpuAction *action, e_surf_action_state_t old, e_surf_action_state_t cur){
-  Cpu *cpu  = getActionCpu(action);
+  const char *name = getActionCpu(action)->getName();
+  Host *host = static_cast<Host*>(surf_host_resource_priv(sg_host_by_name(name)));
 
-  CpuEnergy *cpu_energy = (*surf_energy)[cpu];
+  HostEnergy *host_energy = (*surf_energy)[host];
 
-  if(cpu_energy->last_updated < surf_get_clock())
-	  update_consumption(cpu, cpu_energy);
+  if(host_energy->last_updated < surf_get_clock())
+	  update_consumption(host, host_energy);
 }
 
-static void energyStateChangedCallback(Cpu *cpu, e_surf_resource_state_t oldState, e_surf_resource_state_t newState){
-  CpuEnergy *cpu_energy = (*surf_energy)[cpu];
+static void energyStateChangedCallback(Host *host, e_surf_resource_state_t oldState, e_surf_resource_state_t newState){
+  HostEnergy *host_energy = (*surf_energy)[host];
 
-  if(cpu_energy->last_updated < surf_get_clock())
-	  update_consumption(cpu, cpu_energy);
+  if(host_energy->last_updated < surf_get_clock())
+	  update_consumption(host, host_energy);
 }
 
 static void sg_energy_plugin_exit()
@@ -127,28 +128,28 @@ static void sg_energy_plugin_exit()
  */
 void sg_energy_plugin_init() {
   if (surf_energy == NULL) {
-    surf_energy = new std::map<Cpu*, CpuEnergy*>();
-    surf_callback_connect(cpuCreatedCallbacks, energyCpuCreatedCallback);
+    surf_energy = new std::map<Host*, HostEnergy*>();
+    surf_callback_connect(hostCreatedCallbacks, energyHostCreatedCallback);
     surf_callback_connect(VMCreatedCallbacks, energyVMCreatedCallback);
-    surf_callback_connect(cpuDestructedCallbacks, energyCpuDestructedCallback);
+    surf_callback_connect(hostDestructedCallbacks, energyHostDestructedCallback);
     surf_callback_connect(cpuActionStateChangedCallbacks, energyCpuActionStateChangedCallback);
     surf_callback_connect(surfExitCallbacks, sg_energy_plugin_exit);
-    surf_callback_connect(cpuStateChangedCallbacks, energyStateChangedCallback);
+    surf_callback_connect(hostStateChangedCallbacks, energyStateChangedCallback);
   }
 }
 
 /**
  *
  */
-CpuEnergy::CpuEnergy(Cpu *ptr)
+HostEnergy::HostEnergy(Host *ptr)
 {
-  cpu = ptr;
+  host = ptr;
   total_energy = 0;
   power_range_watts_list = getWattsRangeList();
   last_updated = surf_get_clock();
 
-  if (cpu->getProperties() != NULL) {
-	char* off_power_str = (char*)xbt_dict_get_or_null(cpu->getProperties(), "watt_off");
+  if (host->getProperties() != NULL) {
+	char* off_power_str = (char*)xbt_dict_get_or_null(host->getProperties(), "watt_off");
 	if (off_power_str != NULL)
 		watts_off = atof(off_power_str);
 	else
@@ -157,7 +158,7 @@ CpuEnergy::CpuEnergy(Cpu *ptr)
 
 }
 
-CpuEnergy::~CpuEnergy(){
+HostEnergy::~HostEnergy(){
   unsigned int iter;
   xbt_dynar_t power_tuple = NULL;
   xbt_dynar_foreach(power_range_watts_list, iter, power_tuple)
@@ -166,17 +167,17 @@ CpuEnergy::~CpuEnergy(){
 }
 
 
-double CpuEnergy::getWattMinAt(int pstate) {
+double HostEnergy::getWattMinAt(int pstate) {
   xbt_dynar_t power_range_list = power_range_watts_list;
-  xbt_assert(power_range_watts_list, "No power range properties specified for host %s", cpu->getName());
-  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01*>(cpu)->getPState(), xbt_dynar_t);
+  xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
+  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
   double min_power = xbt_dynar_get_as(current_power_values, 0, double);
   return min_power;
 }
-double CpuEnergy::getWattMaxAt(int pstate) {
+double HostEnergy::getWattMaxAt(int pstate) {
   xbt_dynar_t power_range_list = power_range_watts_list;
-  xbt_assert(power_range_watts_list, "No power range properties specified for host %s", cpu->getName());
-  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01*>(cpu)->getPState(), xbt_dynar_t);
+  xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
+  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
   double max_power = xbt_dynar_get_as(current_power_values, 1, double);
   return max_power;
 }
@@ -185,13 +186,13 @@ double CpuEnergy::getWattMaxAt(int pstate) {
  * Computes the power consumed by the host according to the current pstate and processor load
  *
  */
-double CpuEnergy::getCurrentWattsValue(double cpu_load)
+double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
 	xbt_dynar_t power_range_list = power_range_watts_list;
-	xbt_assert(power_range_watts_list, "No power range properties specified for host %s", cpu->getName());
+	xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
 
     /* retrieve the power values associated with the current pstate */
-    xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01*>(cpu)->getPState(), xbt_dynar_t);
+    xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
 
     /* min_power corresponds to the idle power (cpu load = 0) */
     /* max_power is the power consumed at 100% cpu load       */
@@ -207,16 +208,16 @@ double CpuEnergy::getCurrentWattsValue(double cpu_load)
 	return current_power;
 }
 
-double CpuEnergy::getConsumedEnergy()
+double HostEnergy::getConsumedEnergy()
 {
 
 	if(last_updated < surf_get_clock())
-		update_consumption(cpu, this);
+		update_consumption(host, this);
 	return total_energy;
 
 }
 
-xbt_dynar_t CpuEnergy::getWattsRangeList()
+xbt_dynar_t HostEnergy::getWattsRangeList()
 {
 	xbt_dynar_t power_range_list;
 	xbt_dynar_t power_tuple;
@@ -224,10 +225,10 @@ xbt_dynar_t CpuEnergy::getWattsRangeList()
 	xbt_dynar_t current_power_values;
 	double min_power, max_power;
 
-	if (cpu->getProperties() == NULL)
+	if (host->getProperties() == NULL)
 		return NULL;
 
-	char* all_power_values_str = (char*)xbt_dict_get_or_null(cpu->getProperties(), "watt_per_state");
+	char* all_power_values_str = (char*)xbt_dict_get_or_null(host->getProperties(), "watt_per_state");
 
 	if (all_power_values_str == NULL)
 		return NULL;
@@ -243,7 +244,7 @@ xbt_dynar_t CpuEnergy::getWattsRangeList()
 		current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
 		xbt_assert(xbt_dynar_length(current_power_values) > 1,
 				"Power properties incorrectly defined - could not retrieve min and max power values for host %s",
-				cpu->getName());
+				host->getName());
 
 		/* min_power corresponds to the idle power (cpu load = 0) */
 		/* max_power is the power consumed at 100% cpu load       */

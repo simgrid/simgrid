@@ -292,19 +292,19 @@ int surf_host_get_pstate(surf_resource_t host){
 }
 double surf_host_get_wattmin_at(surf_resource_t resource, int pstate){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<Cpu*, CpuEnergy*>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
-  return cpuIt->second->getWattMinAt(pstate);
+  std::map<Host*, HostEnergy*>::iterator hostIt = surf_energy->find(get_casted_host(resource));
+  return hostIt->second->getWattMinAt(pstate);
 }
 double surf_host_get_wattmax_at(surf_resource_t resource, int pstate){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<Cpu*, CpuEnergy*>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
-  return cpuIt->second->getWattMaxAt(pstate);
+  std::map<Host*, HostEnergy*>::iterator hostIt = surf_energy->find(get_casted_host(resource));
+  return hostIt->second->getWattMaxAt(pstate);
 }
 
 double surf_host_get_consumed_energy(surf_resource_t resource){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<Cpu*, CpuEnergy*>::iterator cpuIt = surf_energy->find(get_casted_host(resource)->p_cpu);
-  return cpuIt->second->getConsumedEnergy();
+  std::map<Host*, HostEnergy*>::iterator hostIt = surf_energy->find(get_casted_host(resource));
+  return hostIt->second->getConsumedEnergy();
 }
 
 xbt_dict_t surf_host_get_mounted_storage_list(surf_resource_t host){
