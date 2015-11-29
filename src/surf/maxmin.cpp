@@ -157,7 +157,7 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
 
   cnst->bound = bound_value;
   cnst->usage = 0;
-  cnst->shared = 1;
+  cnst->sharing_policy = 1; /* FIXME: don't hardcode the value */
   insert_constraint(sys, cnst);
 
   return cnst;
@@ -165,12 +165,13 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
 
 void lmm_constraint_shared(lmm_constraint_t cnst)
 {
-  cnst->shared = 0;
+  cnst->sharing_policy = 0;
 }
 
-int lmm_constraint_is_shared(lmm_constraint_t cnst)
+/** Return true if the constraint is shared, and false if it's FATPIPE */
+int lmm_constraint_sharing_policy(lmm_constraint_t cnst)
 {
-  return (cnst->shared);
+  return (cnst->sharing_policy);
 }
 
 XBT_INLINE void lmm_constraint_free(lmm_system_t sys,
@@ -382,7 +383,7 @@ void lmm_expand_add(lmm_system_t sys, lmm_constraint_t cnst,
       break;
 
   if (i < var->cnsts_number) {
-    if (cnst->shared)
+    if (cnst->sharing_policy)
       var->cnsts[i].value += value;
     else
       var->cnsts[i].value = MAX(var->cnsts[i].value, value);
@@ -556,7 +557,7 @@ void lmm_print(lmm_system_t sys)
     trace_buf = (char*)
         xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
     strcat(trace_buf, print_buf);
-    sprintf(print_buf, "%s(",(cnst->shared)?"":"max");
+    sprintf(print_buf, "%s(",(cnst->sharing_policy)?"":"max");
     trace_buf = (char*)
       xbt_realloc(trace_buf,
       strlen(trace_buf) + strlen(print_buf) + 1);
@@ -564,22 +565,22 @@ void lmm_print(lmm_system_t sys)
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
       sprintf(print_buf, "%f.'%d'(%f) %s ", elem->value,
-              elem->variable->id_int, elem->variable->value,(cnst->shared)?"+":",");
+              elem->variable->id_int, elem->variable->value,(cnst->sharing_policy)?"+":",");
       trace_buf = (char*)
           xbt_realloc(trace_buf,
                       strlen(trace_buf) + strlen(print_buf) + 1);
       strcat(trace_buf, print_buf);
-      if(cnst->shared) 
-  sum += elem->value * elem->variable->value;
+      if(cnst->sharing_policy)
+    	  sum += elem->value * elem->variable->value;
       else 
-  sum = MAX(sum,elem->value * elem->variable->value);
+    	  sum = MAX(sum,elem->value * elem->variable->value);
     }
     sprintf(print_buf, "0) <= %f ('%d')", cnst->bound, cnst->id_int);
     trace_buf = (char*)
         xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
     strcat(trace_buf, print_buf);
 
-    if (!cnst->shared) {
+    if (!cnst->sharing_policy) {
       sprintf(print_buf, " [MAX-Constraint]");
       trace_buf = (char*)
           xbt_realloc(trace_buf,
@@ -670,7 +671,7 @@ void lmm_solve(lmm_system_t sys)
       if (elem->variable->weight <= 0)
         break;
       if ((elem->value > 0)) {
-        if (cnst->shared)
+        if (cnst->sharing_policy)
           cnst->usage += elem->value / elem->variable->weight;
         else if (cnst->usage < elem->value / elem->variable->weight)
           cnst->usage = elem->value / elem->variable->weight;
@@ -753,7 +754,7 @@ void lmm_solve(lmm_system_t sys)
       for (i = 0; i < var->cnsts_number; i++) {
         elem = &var->cnsts[i];
         cnst = elem->constraint;
-        if (cnst->shared) {
+        if (cnst->sharing_policy) {
 	  //Remember: shared constraints require that sum(elem->value * var->value) < cnst->bound
           double_update(&(cnst->remaining),  elem->value * var->value, cnst->bound*sg_maxmin_precision);
           double_update(&(cnst->usage), elem->value / var->weight, sg_maxmin_precision);
@@ -1028,7 +1029,7 @@ double lmm_constraint_get_usage(lmm_constraint_t cnst) {
      if (elem->variable->weight <= 0)
        break;
      if ((elem->value > 0)) {
-       if (cnst->shared)
+       if (cnst->sharing_policy)
          usage += elem->value * elem->variable->value;
        else if (usage < elem->value * elem->variable->value)
          usage = elem->value * elem->variable->value;

@@ -49,7 +49,7 @@ typedef struct lmm_constraint {
   double remaining;
   double usage;
   double bound;
-  int shared;
+  int sharing_policy; /* see @e_surf_link_sharing_policy_t (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
   void *id;
   int id_int;
   double lambda;

@@ -566,9 +566,9 @@ void LinkL07::updateLatency(double value, double date)
 }
 
 
-bool LinkL07::isShared()
+int LinkL07::sharingPolicy()
 {
-  return lmm_constraint_is_shared(getConstraint());
+  return lmm_constraint_sharing_policy(getConstraint());
 }
 
 /**********

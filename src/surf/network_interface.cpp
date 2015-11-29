@@ -25,7 +25,7 @@ Link * sg_link_by_name(const char* name) {
 }
 
 int sg_link_is_shared(Link *link){
-  return link->isShared();
+  return link->sharingPolicy();
 }
 double sg_link_bandwidth(Link *link){
   return link->getBandwidth();
@@ -221,9 +221,9 @@ double Link::getBandwidth()
   return p_power.peak * p_power.scale;
 }
 
-bool Link::isShared()
+int Link::sharingPolicy()
 {
-  return lmm_constraint_is_shared(getConstraint());
+  return lmm_constraint_sharing_policy(getConstraint());
 }
 
 void Link::setState(e_surf_resource_state_t state){

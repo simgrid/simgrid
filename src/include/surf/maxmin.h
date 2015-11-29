@@ -157,7 +157,7 @@ XBT_PUBLIC(void) lmm_constraint_shared(lmm_constraint_t cnst);
  * @param cnst The constraint to share
  * @return 1 if shared, 0 otherwise
  */
-XBT_PUBLIC(int) lmm_constraint_is_shared(lmm_constraint_t cnst);
+XBT_PUBLIC(int) lmm_constraint_sharing_policy(lmm_constraint_t cnst);
 
 /**
  * @brief Free a constraint
