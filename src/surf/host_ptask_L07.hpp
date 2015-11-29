@@ -138,7 +138,6 @@ public:
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   double getBandwidth();
   double getLatency();
-  int sharingPolicy();
   void updateBandwidth(double value, double date=surf_get_clock());
   void updateLatency(double value, double date=surf_get_clock());
 

@@ -565,12 +565,6 @@ void LinkL07::updateLatency(double value, double date)
   }
 }
 
-
-int LinkL07::sharingPolicy()
-{
-  return lmm_constraint_sharing_policy(getConstraint());
-}
-
 /**********
  * Action *
  **********/
