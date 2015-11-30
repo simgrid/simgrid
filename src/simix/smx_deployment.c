@@ -15,8 +15,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
 
 extern int surf_parse_lineno;
 
-static void parse_process(sg_platf_process_cbarg_t process)
+void sg_platf_new_process(sg_platf_process_cbarg_t process)
 {
+  if (!simix_global)
+    xbt_die("Cannot create process without SIMIX.");
+
   sg_host_t host = sg_host_by_name(process->host);
   if (!host)
     THROWF(arg_error, 0, "Host '%s' unknown", process->host);
@@ -87,9 +90,9 @@ static void parse_process(sg_platf_process_cbarg_t process)
   current_property_set = NULL;
 }
 
-void SIMIX_init_application(void){
+void SIMIX_init_application(void)
+{
   surf_parse_reset_callbacks();
-  sg_platf_process_add_cb(parse_process);
 }
 
 /**
