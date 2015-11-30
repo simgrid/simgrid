@@ -130,8 +130,6 @@ typedef struct s_smx_context_factory *smx_context_factory_t;
 
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t) (smx_process_t);
-/* Process kill */
-typedef void (*void_pfn_smxprocess_t_smxprocess_t) (smx_process_t, smx_process_t);
 /* for auto-restart function */
 typedef void (*void_pfn_sghost_t) (sg_host_t);
 
@@ -225,7 +223,7 @@ XBT_PUBLIC(void) SIMIX_global_init(int *argc, char **argv);
 
 XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function);
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
-XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_pfn_smxprocess_t_smxprocess_t function);
+XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_pfn_smxprocess_t function);
 
 /* Simulation execution */
 XBT_PUBLIC(void) SIMIX_run(void);
@@ -234,7 +232,7 @@ XBT_PUBLIC(double) SIMIX_get_clock(void);
 /* Timer functions FIXME: should these be public? */
 typedef struct s_smx_timer* smx_timer_t;
 
-XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, void *function, void *arg);
+XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, void (*function)(void*), void *arg);
 XBT_PUBLIC(void) SIMIX_timer_remove(smx_timer_t timer);
 XBT_PUBLIC(double) SIMIX_timer_next(void);
 XBT_PUBLIC(double) SIMIX_timer_get_date(smx_timer_t timer);

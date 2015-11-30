@@ -45,6 +45,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
 smx_global_t simix_global = NULL;
 static xbt_heap_t simix_timers = NULL;
 
+/** @brief Timer datatype */
+typedef struct s_smx_timer {
+  double date;
+  void(* func)(void*);
+  void* args;
+} s_smx_timer_t;
+
 static void* SIMIX_synchro_mallocator_new_f(void);
 static void SIMIX_synchro_mallocator_free_f(void* synchro);
 static void SIMIX_synchro_mallocator_reset_f(void* synchro);
@@ -145,6 +152,11 @@ XBT_INLINE double SIMIX_timer_next(void)
   return xbt_heap_size(simix_timers) > 0 ? xbt_heap_maxkey(simix_timers) : -1.0;
 }
 
+static void kill_process(smx_process_t process)
+{
+  SIMIX_process_kill(process, NULL);
+}
+
 /**
  * \ingroup SIMIX_API
  * \brief Initialize SIMIX internal data.
@@ -179,7 +191,7 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->registered_functions = xbt_dict_new_homogeneous(NULL);
 
     simix_global->create_process_function = SIMIX_process_create;
-    simix_global->kill_process_function = SIMIX_process_kill;
+    simix_global->kill_process_function = kill_process;
     simix_global->cleanup_process_function = SIMIX_process_cleanup;
     simix_global->synchro_mallocator = xbt_mallocator_new(65536,
         SIMIX_synchro_mallocator_new_f, SIMIX_synchro_mallocator_free_f,
@@ -466,7 +478,7 @@ void SIMIX_run(void)
        // (i.e. provide dispatchers that read and expand the args)
        timer = xbt_heap_pop(simix_timers);
        if (timer->func)
-         ((void (*)(void*))timer->func)(timer->args);
+         timer->func(timer->args);
        xbt_free(timer);
     }
 
@@ -524,7 +536,7 @@ void SIMIX_run(void)
  *   \param arg Parameters of the function
  *
  */
-XBT_INLINE smx_timer_t SIMIX_timer_set(double date, void *function, void *arg)
+XBT_INLINE smx_timer_t SIMIX_timer_set(double date, void (*function)(void*), void *arg)
 {
   smx_timer_t timer = xbt_new0(s_smx_timer_t, 1);
 
@@ -566,7 +578,7 @@ XBT_INLINE void SIMIX_function_register_process_create(smx_creation_func_t
  *
  * \param function Kill process function
  */
-XBT_INLINE void SIMIX_function_register_process_kill(void_pfn_smxprocess_t_smxprocess_t
+XBT_INLINE void SIMIX_function_register_process_kill(void_pfn_smxprocess_t
                                                      function)
 {
   simix_global->kill_process_function = function;
