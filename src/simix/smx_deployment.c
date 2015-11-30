@@ -13,12 +13,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
                                 "Logging specific to SIMIX (deployment)");
 
-static xbt_main_func_t parse_code = NULL;
-static double start_time = 0.0;
-static double kill_time = -1.0;
-
-static int auto_restart = 0;
-
 extern int surf_parse_lineno;
 
 static void parse_process(sg_platf_process_cbarg_t process)
@@ -26,12 +20,12 @@ static void parse_process(sg_platf_process_cbarg_t process)
   sg_host_t host = sg_host_by_name(process->host);
   if (!host)
     THROWF(arg_error, 0, "Host '%s' unknown", process->host);
-  parse_code = SIMIX_get_registered_function(process->function);
+  xbt_main_func_t parse_code = SIMIX_get_registered_function(process->function);
   xbt_assert(parse_code, "Function '%s' unknown", process->function);
 
-  start_time = process->start_time;
-  kill_time  = process->kill_time;
-  auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
+  double start_time = process->start_time;
+  double kill_time  = process->kill_time;
+  int auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
 
   smx_process_arg_t arg = NULL;
   smx_process_t process_created = NULL;
@@ -212,7 +206,7 @@ void SIMIX_process_set_function(const char *process_host,
   }
   process.argv[process.argc] = NULL;
 
-  parse_code = SIMIX_get_registered_function(process_function);
+  xbt_main_func_t parse_code = SIMIX_get_registered_function(process_function);
   xbt_assert(parse_code, "Function '%s' unknown", process_function);
   process.function = process_function;
 
