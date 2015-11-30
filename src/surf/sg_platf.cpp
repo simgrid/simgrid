@@ -12,6 +12,8 @@
 #include "simgrid/platf_interface.h"
 #include "surf/surf_routing.h"
 
+#include "src/simix/smx_private.h"
+
 #include "cpu_interface.hpp"
 #include "host_interface.hpp"
 
@@ -277,6 +279,81 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect) {
   xbt_dynar_foreach(sg_platf_trace_connect_cb_list, iterator, fun) {
     fun(trace_connect);
   }
+}
+
+void sg_platf_new_process(sg_platf_process_cbarg_t process)
+{
+  if (!simix_global)
+    xbt_die("Cannot create process without SIMIX.");
+
+  sg_host_t host = sg_host_by_name(process->host);
+  if (!host)
+    THROWF(arg_error, 0, "Host '%s' unknown", process->host);
+  xbt_main_func_t parse_code = SIMIX_get_registered_function(process->function);
+  xbt_assert(parse_code, "Function '%s' unknown", process->function);
+
+  double start_time = process->start_time;
+  double kill_time  = process->kill_time;
+  int auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
+
+  smx_process_arg_t arg = NULL;
+  smx_process_t process_created = NULL;
+
+  arg = xbt_new0(s_smx_process_arg_t, 1);
+  arg->code = parse_code;
+  arg->data = NULL;
+  arg->hostname = sg_host_get_name(host);
+  arg->argc = process->argc;
+  arg->argv = xbt_new(char *,process->argc);
+  int i;
+  for (i=0; i<process->argc; i++)
+    arg->argv[i] = xbt_strdup(process->argv[i]);
+  arg->name = xbt_strdup(arg->argv[0]);
+  arg->kill_time = kill_time;
+  arg->properties = current_property_set;
+  if (!sg_host_simix(host)->boot_processes) {
+    sg_host_simix(host)->boot_processes = xbt_dynar_new(sizeof(smx_process_arg_t), _SIMIX_host_free_process_arg);
+  }
+  xbt_dynar_push_as(sg_host_simix(host)->boot_processes,smx_process_arg_t,arg);
+
+  if (start_time > SIMIX_get_clock()) {
+    arg = xbt_new0(s_smx_process_arg_t, 1);
+    arg->name = (char*)(process->argv)[0];
+    arg->code = parse_code;
+    arg->data = NULL;
+    arg->hostname = sg_host_get_name(host);
+    arg->argc = process->argc;
+    arg->argv = (char**)(process->argv);
+    arg->kill_time = kill_time;
+    arg->properties = current_property_set;
+
+    XBT_DEBUG("Process %s(%s) will be started at time %f", arg->name,
+           arg->hostname, start_time);
+    SIMIX_timer_set(start_time, (void*) SIMIX_process_create_from_wrapper, arg);
+  } else {                      // start_time <= SIMIX_get_clock()
+    XBT_DEBUG("Starting Process %s(%s) right now", process->argv[0], sg_host_get_name(host));
+
+    if (simix_global->create_process_function)
+      process_created = simix_global->create_process_function(
+                                            (char*)(process->argv)[0],
+                                            parse_code,
+                                            NULL,
+                                            sg_host_get_name(host),
+                                            kill_time,
+                                            process->argc,
+                                            (char**)(process->argv),
+                                            current_property_set,
+                                            auto_restart, NULL);
+    else
+      process_created = simcall_process_create((char*)(process->argv)[0], parse_code, NULL, sg_host_get_name(host), kill_time, process->argc,
+          (char**)process->argv, current_property_set,auto_restart);
+
+    /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
+    if (!process_created) {
+      return;
+    }
+  }
+  current_property_set = NULL;
 }
 
 void sg_platf_route_begin (sg_platf_route_cbarg_t route){
