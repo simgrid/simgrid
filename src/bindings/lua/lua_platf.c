@@ -56,23 +56,6 @@ int console_open(lua_State *L) {
 int console_close(lua_State *L) {
   sg_platf_end();
   sg_platf_exit();
-
-  xbt_lib_cursor_t cursor;
-  void **data;
-  char *name;
-
-  /* Initialize MSG and WKS hosts */
-  XBT_DEBUG("Initialize MSG and WKS hosts");
-  xbt_lib_foreach(host_lib, cursor, name, data) {
-    if(data[SURF_HOST_LEVEL]){
-      XBT_DEBUG("\tSee surf host %s",name);
-      SIMIX_host_create(name);
-      // THIS IS BRAINDEAD. There is no sg_host_t in that level, but a smx_host_priv. So commenting out for now.
-      // Lua is broken anyway. Christian will fix it
-      // __MSG_host_create((sg_host_t)data[SIMIX_HOST_LEVEL]);
-    }
-  }
-
   return 0;
 }
 

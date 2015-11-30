@@ -20,9 +20,8 @@ static void SIMIX_execution_finish(smx_synchro_t synchro);
  * \brief Internal function to create a SIMIX host.
  * \param name name of the host to create
  */
-void SIMIX_host_create(const char *name) // FIXME: braindead prototype. Take sg_host as parameter
+void SIMIX_host_create(sg_host_t host) // FIXME: braindead prototype. Take sg_host as parameter
 {
-  sg_host_t host = xbt_lib_get_elm_or_null(host_lib, name);
   smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
   s_smx_process_t proc;
 

@@ -103,7 +103,8 @@ smx_host_priv_t sg_host_simix(sg_host_t host){
   return (smx_host_priv_t) xbt_lib_get_level(host, SIMIX_HOST_LEVEL);
 }
 void sg_host_simix_set(sg_host_t host, smx_host_priv_t smx_host) {
-	xbt_lib_set(host_lib,host->key,SIMIX_HOST_LEVEL,smx_host);
+  xbt_assert(xbt_lib_get_or_null(host_lib,host->key,SIMIX_HOST_LEVEL) == NULL);
+  xbt_lib_set(host_lib,host->key,SIMIX_HOST_LEVEL,smx_host);
 }
 void sg_host_simix_destroy(sg_host_t host) {
 	xbt_lib_unset(host_lib,host->key,SIMIX_HOST_LEVEL,1);

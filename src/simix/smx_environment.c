@@ -43,18 +43,11 @@ void SIMIX_create_environment(const char *file)
 
 }
 
-void SIMIX_post_create_environment(void) {
-
-  void **host = NULL;
+void SIMIX_post_create_environment(void)
+{
   void **storage = NULL;
   xbt_lib_cursor_t cursor = NULL;
   char *name = NULL;
-
-  /* Create host at SIMIX level */
-  xbt_lib_foreach(host_lib, cursor, name, host) {
-    if(host[SURF_HOST_LEVEL])
-      SIMIX_host_create(name);
-  }
 
   /* Create storage at SIMIX level */
   xbt_lib_foreach(storage_lib, cursor, name, storage) {

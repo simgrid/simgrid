@@ -307,6 +307,8 @@ set(NS3_SRC
   )
 
 set(SURF_SRC
+  src/surf/callbacks.h
+  src/surf/callbacks.cpp
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp

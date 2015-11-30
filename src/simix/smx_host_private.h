@@ -22,7 +22,7 @@ typedef struct s_smx_host_priv {
 } s_smx_host_priv_t;
 
 XBT_PRIVATE void _SIMIX_host_free_process_arg(void *);
-XBT_PRIVATE void SIMIX_host_create(const char *name);
+XBT_PRIVATE void SIMIX_host_create(sg_host_t host);
 XBT_PRIVATE void SIMIX_host_destroy(void *host);
 
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,

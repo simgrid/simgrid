@@ -14,7 +14,7 @@
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "xbt/replay.h"
 #include "simgrid/sg_config.h" /* Configuration mechanism of SimGrid */
-
+#include "src/surf/callbacks.h"
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
@@ -28,6 +28,11 @@ static void MSG_exit(void);
 static void _sg_cfg_cb_msg_debug_multiple_use(const char *name, int pos)
 {
   msg_global->debug_multiple_use = xbt_cfg_get_boolean(_sg_cfg_set, name);
+}
+
+static void MSG_host_create_(sg_host_t host)
+{
+  __MSG_host_create(host);
 }
 
 /**
@@ -62,6 +67,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
 
     sg_platf_postparse_add_cb(MSG_post_create_environment);
+    surf_host_created_callback(MSG_host_create_);
   }
 
   if(MC_is_active()){

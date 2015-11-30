@@ -42,11 +42,6 @@ void MSG_post_create_environment(void) {
   void **data;
   char *name;
 
-  /* Initialize MSG hosts */
-  xbt_lib_foreach(host_lib, cursor, name, data) {
-	__MSG_host_create(xbt_dict_cursor_get_elm(cursor));
-  }
-
   /* Initialize MSG storages */
   xbt_lib_foreach(storage_lib, cursor, name, data) {
     if(data[SIMIX_STORAGE_LEVEL])

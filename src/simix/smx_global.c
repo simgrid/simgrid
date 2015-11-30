@@ -21,6 +21,8 @@
 #include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
 
+#include "src/surf/callbacks.h"
+
 #ifdef HAVE_MC
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_protocol.h"
@@ -219,6 +221,7 @@ void SIMIX_global_init(int *argc, char **argv)
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
     sg_platf_postparse_add_cb(SIMIX_post_create_environment);
+    surf_host_created_callback(SIMIX_host_create);
 
   }
   if (!simix_timers) {
