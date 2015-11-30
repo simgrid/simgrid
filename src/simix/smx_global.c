@@ -159,6 +159,12 @@ static void kill_process(smx_process_t process)
   SIMIX_process_kill(process, NULL);
 }
 
+static void SIMIX_storage_create_(smx_storage_t storage)
+{
+  const char* key = xbt_dict_get_elm_key(storage);
+  SIMIX_storage_create(key, storage, NULL);
+}
+
 /**
  * \ingroup SIMIX_API
  * \brief Initialize SIMIX internal data.
@@ -222,6 +228,7 @@ void SIMIX_global_init(int *argc, char **argv)
     sg_platf_init();
     sg_platf_postparse_add_cb(SIMIX_post_create_environment);
     surf_host_created_callback(SIMIX_host_create);
+    surf_storage_created_callback(SIMIX_storage_create_);
 
   }
   if (!simix_timers) {

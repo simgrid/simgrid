@@ -19,3 +19,14 @@ void surf_host_created_callback(void (*callback)(sg_host_t))
     callback(h);
   });
 }
+
+void surf_storage_created_callback(void (*callback)(sg_storage_t))
+{
+  storageCreatedCallbacks.connect([callback](Storage* storage) {
+    const char* id = storage->getName();
+    // TODO, create sg_storage_by_name
+    sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, id);
+    xbt_assert(s != NULL, "Storage not found for name %s", id);
+    callback(s);
+  });
+}

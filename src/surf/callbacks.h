@@ -14,10 +14,12 @@
 
 #include <xbt/base.h>
 #include "simgrid/host.h"
+#include "simgrid/msg.h"
 
 SG_BEGIN_DECL();
 
 XBT_PRIVATE void surf_host_created_callback(void (*callback)(sg_host_t));
+XBT_PRIVATE void surf_storage_created_callback(void (*callback)(sg_storage_t));
 
 SG_END_DECL();
 
