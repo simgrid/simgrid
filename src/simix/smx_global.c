@@ -227,8 +227,8 @@ void SIMIX_global_init(int *argc, char **argv)
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
     sg_platf_postparse_add_cb(SIMIX_post_create_environment);
-    surf_host_created_callback(SIMIX_host_create);
-    surf_storage_created_callback(SIMIX_storage_create_);
+    surf_on_host_created(SIMIX_host_create);
+    surf_on_storage_created(SIMIX_storage_create_);
 
   }
   if (!simix_timers) {

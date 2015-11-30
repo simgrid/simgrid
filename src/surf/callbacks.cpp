@@ -10,7 +10,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/host_interface.hpp"
 
-void surf_host_created_callback(void (*callback)(sg_host_t))
+void surf_on_host_created(void (*callback)(sg_host_t))
 {
   hostCreatedCallbacks.connect([callback](Host* host) {
     const char* id = host->getName();
@@ -20,7 +20,7 @@ void surf_host_created_callback(void (*callback)(sg_host_t))
   });
 }
 
-void surf_storage_created_callback(void (*callback)(sg_storage_t))
+void surf_on_storage_created(void (*callback)(sg_storage_t))
 {
   storageCreatedCallbacks.connect([callback](Storage* storage) {
     const char* id = storage->getName();
