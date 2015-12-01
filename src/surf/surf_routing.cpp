@@ -197,7 +197,7 @@ RoutingEdge *routing_add_host(As* current_routing, sg_platf_host_cbarg_t host)
 /**
  * \brief Add a "router" to the network element list
  */
-static void parse_S_router(sg_platf_router_cbarg_t router)
+void sg_platf_new_router(sg_platf_router_cbarg_t router)
 {
   if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
     current_routing->p_hierarchy = SURF_ROUTING_BASE;
@@ -231,6 +231,12 @@ static void parse_S_router(sg_platf_router_cbarg_t router)
     xbt_dynar_free(&ctn_str);
     xbt_lib_set(as_router_lib, router->id, COORD_ASR_LEVEL, (void *) ctn);
     XBT_DEBUG("Having set router coordinates for '%s'",router->id);
+  }
+
+  unsigned int iterator;
+  sg_platf_router_cb_t fun;
+  xbt_dynar_foreach(sg_platf_router_cb_list, iterator, fun) {
+    fun(router);
   }
 }
 

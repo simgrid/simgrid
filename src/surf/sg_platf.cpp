@@ -152,13 +152,7 @@ void sg_platf_new_host_link(sg_platf_host_link_cbarg_t h){
     fun(h);
   }
 }
-void sg_platf_new_router(sg_platf_router_cbarg_t router) {
-  unsigned int iterator;
-  sg_platf_router_cb_t fun;
-  xbt_dynar_foreach(sg_platf_router_cb_list, iterator, fun) {
-    fun(router);
-  }
-}
+
 void sg_platf_new_link(sg_platf_link_cbarg_t link){
   unsigned int iterator;
   sg_platf_link_cb_t fun;
