@@ -11,6 +11,7 @@
 #include "xbt/RngStream.h"
 #include "simgrid/platf_interface.h"
 #include "surf/surf_routing.h"
+#include "surf/surf.h"
 
 #include "src/simix/smx_private.h"
 
@@ -24,8 +25,6 @@ xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
 xbt_dynar_t sg_platf_peer_cb_list = NULL; // of sg_platf_peer_cb_t
 xbt_dynar_t sg_platf_cluster_cb_list = NULL; // of sg_platf_cluster_cb_t
 xbt_dynar_t sg_platf_cabinet_cb_list = NULL; // of sg_platf_cluster_cb_t
-xbt_dynar_t sg_platf_AS_begin_cb_list = NULL; //of sg_platf_AS_begin_cb_t
-xbt_dynar_t sg_platf_AS_end_cb_list = NULL; //of void_f_void_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
 xbt_dynar_t sg_platf_prop_cb_list = NULL; // of sg_platf_prop_cb_t
 
@@ -63,8 +62,6 @@ void sg_platf_init(void) {
   sg_platf_cluster_cb_list = xbt_dynar_new(sizeof(sg_platf_cluster_cb_t), NULL);
   sg_platf_cabinet_cb_list = xbt_dynar_new(sizeof(sg_platf_cabinet_cb_t), NULL);
   sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t),NULL);
-  sg_platf_AS_begin_cb_list = xbt_dynar_new(sizeof(sg_platf_AS_cb_t),NULL);
-  sg_platf_AS_end_cb_list = xbt_dynar_new(sizeof(sg_platf_AS_cb_t),NULL);
   sg_platf_prop_cb_list = xbt_dynar_new(sizeof(sg_platf_prop_cb_t),NULL);
 
   sg_platf_route_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
@@ -90,8 +87,6 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_peer_cb_list);
   xbt_dynar_free(&sg_platf_cluster_cb_list);
   xbt_dynar_free(&sg_platf_cabinet_cb_list);
-  xbt_dynar_free(&sg_platf_AS_begin_cb_list);
-  xbt_dynar_free(&sg_platf_AS_end_cb_list);
   xbt_dynar_free(&sg_platf_prop_cb_list);
 
   xbt_dynar_free(&sg_platf_trace_cb_list);
@@ -506,11 +501,9 @@ void sg_platf_end() {
   }
 }
 
-void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS) {
-  unsigned int iterator;
-  sg_platf_AS_cb_t fun;
-
-  if (!surf_parse_models_setup_already_called && !xbt_dynar_is_empty(sg_platf_AS_begin_cb_list)) {
+void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
+{
+  if (!surf_parse_models_setup_already_called) {
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
      * That is, after the last <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
      *
@@ -518,26 +511,30 @@ void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS) {
      * (FIXME: check it out by creating a file beginning with one of these tags)
      * but cluster and peer create ASes internally, so putting the code in there is ok.
      *
-     * We are also guarding against xbt_dynar_length(sg_platf_AS_begin_cb_list) because we don't
-     * want to initialize the models if we are parsing the file to get the deployment. That could happen if
-     * the same file would be used for platf and deploy: it'd contain AS tags even during the deploy parsing.
-     * Removing that guard would result of the models to get re-inited when parsing for deploy.
+     * TODO, There used to be a guard protecting here against
+     * xbt_dynar_length(sg_platf_AS_begin_cb_list) because we don't want to
+     * initialize the models if we are parsing the file to get the deployment.
+     * That could happen if the same file would be used for platf and deploy:
+     * it'd contain AS tags even during the deploy parsing. Removing that guard
+     * would result of the models to get re-inited when parsing for deploy.
+     * Currently using the same file for platform and deployment is broken
+     * however. This guard will have to ba adapted in order to make this feature
+     * work again.
      */
     surf_parse_models_setup_already_called = 1;
     surf_config_models_setup();
   }
 
-  xbt_dynar_foreach(sg_platf_AS_begin_cb_list, iterator, fun) {
-    fun(AS);
-  }
+  routing_AS_begin(AS);
+  if (TRACE_is_enabled())
+    sg_instr_AS_begin(AS);
 }
 
-void sg_platf_new_AS_end() {
-  unsigned int iterator;
-  void_f_void_t fun;
-  xbt_dynar_foreach(sg_platf_AS_end_cb_list, iterator, fun) {
-    fun();
-  }
+void sg_platf_new_AS_end()
+{
+  routing_AS_end();
+  if (TRACE_is_enabled())
+    sg_instr_AS_end();
 }
 
 /* ***************************************** */
@@ -578,12 +575,6 @@ void sg_platf_cabinet_add_cb(sg_platf_cabinet_cb_t fct) {
 }
 void sg_platf_postparse_add_cb(void_f_void_t fct) {
   xbt_dynar_push(sg_platf_postparse_cb_list, &fct);
-}
-void sg_platf_AS_begin_add_cb(sg_platf_AS_cb_t fct) {
-  xbt_dynar_push(sg_platf_AS_begin_cb_list, &fct);
-}
-void sg_platf_AS_end_add_cb(sg_platf_AS_cb_t fct) {
-  xbt_dynar_push(sg_platf_AS_end_cb_list, &fct);
 }
 void sg_platf_route_add_cb(sg_platf_route_cb_t fct) {
   xbt_dynar_push(sg_platf_route_cb_list, &fct);

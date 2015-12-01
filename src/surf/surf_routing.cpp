@@ -21,6 +21,7 @@
  *************/
 
 surf_callback(void, RoutingEdge*) routingEdgeCreatedCallbacks;
+surf_callback(void, As*) asCreatedCallbacks;
 
 /**
  * @ingroup SURF_build_api
@@ -375,11 +376,12 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
               (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'", new_as->p_name, info->getId());
 
-  routingEdgeCreatedCallbacks(info);
-
   /* set the new current component of the tree */
   current_routing = new_as;
   current_routing->p_netElem = info;
+
+  routingEdgeCreatedCallbacks(info);
+  asCreatedCallbacks(new_as);
 }
 
 /**
@@ -393,7 +395,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
  * even if you add stuff to a closed AS
  *
  */
-void routing_AS_end(sg_platf_AS_cbarg_t /*AS*/)
+void routing_AS_end()
 {
 
   if (current_routing == NULL) {
@@ -1261,10 +1263,6 @@ void routing_register_callbacks()
   sg_platf_peer_add_cb(routing_parse_peer);
   sg_platf_postparse_add_cb(routing_parse_postparse);
   sg_platf_postparse_add_cb(check_disk_attachment);
-
-  /* we care about the ASes while parsing the platf. Incredible, isnt it? */
-  sg_platf_AS_end_add_cb(routing_AS_end);
-  sg_platf_AS_begin_add_cb(routing_AS_begin);
 
   sg_platf_trace_add_cb(routing_parse_trace);
   sg_platf_trace_connect_add_cb(routing_parse_trace_connect);

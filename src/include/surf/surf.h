@@ -1164,11 +1164,9 @@ int instr_platform_traced (void);
 xbt_graph_t instr_routing_platform_graph (void);
 void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
-XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
-
 /********** Routing **********/
 void routing_AS_begin(sg_platf_AS_cbarg_t AS);
-void routing_AS_end(sg_platf_AS_cbarg_t AS);
+void routing_AS_end(void);
 RoutingEdge *routing_add_host(As* as, sg_platf_host_cbarg_t host);
 void routing_cluster_add_backbone(void* bb);
 As* routing_get_current();

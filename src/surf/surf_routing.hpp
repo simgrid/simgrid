@@ -162,5 +162,6 @@ public:
  *************/
 
 XBT_PUBLIC_DATA(surf_callback(void, RoutingEdge*)) routingEdgeCreatedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, As*)) asCreatedCallbacks;
 
 #endif /* NETWORK_ROUTING_HPP_ */

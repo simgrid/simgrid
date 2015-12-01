@@ -165,7 +165,7 @@ static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t
 /*
  * Callbacks
  */
-static void instr_routing_parse_start_AS (sg_platf_AS_cbarg_t AS)
+void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS)
 {
   const char*id = AS->id;
 
@@ -200,7 +200,7 @@ static void instr_routing_parse_start_AS (sg_platf_AS_cbarg_t AS)
   }
 }
 
-static void instr_routing_parse_end_AS (sg_platf_AS_cbarg_t)
+void sg_instr_AS_end()
 {
   if (TRACE_needs_platform()){
     xbt_dynar_pop_ptr (currentContainer);
@@ -342,8 +342,6 @@ void instr_routing_define_callbacks ()
   if (!TRACE_is_enabled()) return;
   //always need the call backs to ASes (we need only the root AS),
   //to create the rootContainer and the rootType properly
-  sg_platf_AS_begin_add_cb(instr_routing_parse_start_AS);
-  sg_platf_AS_end_add_cb(instr_routing_parse_end_AS);
   if (!TRACE_needs_platform()) return;
   sg_platf_link_add_cb(instr_routing_parse_start_link);
   sg_platf_host_add_cb(instr_routing_parse_start_host);

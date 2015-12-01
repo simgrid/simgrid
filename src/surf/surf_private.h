@@ -97,6 +97,12 @@ XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 void TRACE_surf_host_set_power(double date, const char *resource, double power);
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
 
+/********** Instr. **********/
+
+XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
+XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
+XBT_PRIVATE void sg_instr_AS_end(void);
+
 SG_END_DECL()
 
 #endif                          /* _SURF_SURF_PRIVATE_H */

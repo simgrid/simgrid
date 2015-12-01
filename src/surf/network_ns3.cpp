@@ -79,14 +79,11 @@ static void simgrid_ns3_add_router(RoutingEdge* router)
     );
 }
 
-static void parse_ns3_add_AS(sg_platf_AS_cbarg_t AS)
+static void parse_ns3_add_AS(As* as)
 {
-  XBT_DEBUG("NS3_ADD_AS '%s'",AS->id);
-  xbt_lib_set(as_router_lib,
-              AS->id,
-              NS3_ASR_LEVEL,
-              ns3_add_AS(AS->id)
-    );
+  const char* as_id = as->p_name;
+  XBT_DEBUG("NS3_ADD_AS '%s'", as_id);
+  xbt_lib_set(as_router_lib, as_id, NS3_ASR_LEVEL, ns3_add_AS(as_id) );
 }
 
 static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
@@ -247,7 +244,9 @@ static void define_callbacks_ns3(void)
   routingEdgeCreatedCallbacks.connect(simgrid_ns3_add_router);
   sg_platf_link_add_cb (&parse_ns3_add_link);
   sg_platf_cluster_add_cb (&parse_ns3_add_cluster);
-  sg_platf_AS_begin_add_cb (&parse_ns3_add_AS);
+
+  asCreatedCallbacks.connect(parse_ns3_add_AS);
+
   sg_platf_postparse_add_cb(&create_ns3_topology); //get_one_link_routes
   sg_platf_postparse_add_cb(&parse_ns3_end_platform); //InitializeRoutes
 }
