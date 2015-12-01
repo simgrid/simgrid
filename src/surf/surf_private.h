@@ -101,6 +101,7 @@ void TRACE_surf_link_set_bandwidth(double date, const char *resource, double ban
 
 XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
 XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
+XBT_PRIVATE void sg_instr_new_host(sg_platf_host_cbarg_t host);
 XBT_PRIVATE void sg_instr_AS_end(void);
 
 SG_END_DECL()

@@ -19,7 +19,6 @@
 #include "host_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
-xbt_dynar_t sg_platf_host_cb_list = NULL;   // of sg_platf_host_cb_t
 xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
 xbt_dynar_t sg_platf_peer_cb_list = NULL; // of sg_platf_peer_cb_t
 xbt_dynar_t sg_platf_cluster_cb_list = NULL; // of sg_platf_cluster_cb_t
@@ -51,10 +50,9 @@ static RngStream sg_platf_rng_stream = NULL;
 void sg_platf_init(void) {
 
   //FIXME : Ugly, but useful...
-  if(sg_platf_host_cb_list)
+  if (sg_platf_gpu_cb_list)
     return; //Already initialized, so do nothing...
 
-  sg_platf_host_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
   sg_platf_link_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t), NULL);
   sg_platf_peer_cb_list = xbt_dynar_new(sizeof(sg_platf_peer_cb_t), NULL);
   sg_platf_cluster_cb_list = xbt_dynar_new(sizeof(sg_platf_cluster_cb_t), NULL);
@@ -78,7 +76,6 @@ void sg_platf_init(void) {
 }
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
-  xbt_dynar_free(&sg_platf_host_cb_list);
   xbt_dynar_free(&sg_platf_link_cb_list);
   xbt_dynar_free(&sg_platf_postparse_cb_list);
   xbt_dynar_free(&sg_platf_peer_cb_list);
@@ -107,7 +104,6 @@ void sg_platf_exit(void) {
 
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
-
   xbt_assert(! sg_host_by_name(host->id),
 		     "Refusing to create a second host named '%s'.", host->id);
 
@@ -128,11 +124,8 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
         host->properties);
   surf_host_model->createHost(host->id, net, cpu);
 
-  unsigned int iterator;
-  sg_platf_host_cb_t fun;
-  xbt_dynar_foreach(sg_platf_host_cb_list, iterator, fun) {
-    fun(host);
-  }
+  if (TRACE_is_enabled() && TRACE_needs_platform())
+    sg_instr_new_host(host);
 }
 
 /**
@@ -544,10 +537,6 @@ void sg_platf_gpu_add_cb(sg_platf_gpu_cb_t fct) {
 
 /* ***************************************** */
 
-
-void sg_platf_host_add_cb(sg_platf_host_cb_t fct) {
-  xbt_dynar_push(sg_platf_host_cb_list, &fct);
-}
 void sg_platf_link_add_cb(sg_platf_link_cb_t fct) {
   xbt_dynar_push(sg_platf_link_cb_list, &fct);
 }

@@ -255,7 +255,7 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
   xbt_dynar_free (&links_to_create);
 }
 
-static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
+void sg_instr_new_host(sg_platf_host_cbarg_t host)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t container = PJ_container_new (host->id, INSTR_HOST, father);
@@ -344,8 +344,6 @@ void instr_routing_define_callbacks ()
   //to create the rootContainer and the rootType properly
   if (!TRACE_needs_platform()) return;
   sg_platf_link_add_cb(instr_routing_parse_start_link);
-  sg_platf_host_add_cb(instr_routing_parse_start_host);
-
   sg_platf_postparse_add_cb(instr_routing_parse_end_platform);
 }
 
