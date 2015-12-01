@@ -20,7 +20,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 xbt_dynar_t sg_platf_host_cb_list = NULL;   // of sg_platf_host_cb_t
-xbt_dynar_t sg_platf_host_link_cb_list = NULL;   // of sg_platf_host_link_cb_t
 xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
 xbt_dynar_t sg_platf_peer_cb_list = NULL; // of sg_platf_peer_cb_t
 xbt_dynar_t sg_platf_cluster_cb_list = NULL; // of sg_platf_cluster_cb_t
@@ -56,7 +55,6 @@ void sg_platf_init(void) {
     return; //Already initialized, so do nothing...
 
   sg_platf_host_cb_list = xbt_dynar_new(sizeof(sg_platf_host_cb_t), NULL);
-  sg_platf_host_link_cb_list = xbt_dynar_new(sizeof(sg_platf_host_link_cb_t), NULL);
   sg_platf_link_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t), NULL);
   sg_platf_peer_cb_list = xbt_dynar_new(sizeof(sg_platf_peer_cb_t), NULL);
   sg_platf_cluster_cb_list = xbt_dynar_new(sizeof(sg_platf_cluster_cb_t), NULL);
@@ -81,7 +79,6 @@ void sg_platf_init(void) {
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_host_cb_list);
-  xbt_dynar_free(&sg_platf_host_link_cb_list);
   xbt_dynar_free(&sg_platf_link_cb_list);
   xbt_dynar_free(&sg_platf_postparse_cb_list);
   xbt_dynar_free(&sg_platf_peer_cb_list);
@@ -135,13 +132,6 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   sg_platf_host_cb_t fun;
   xbt_dynar_foreach(sg_platf_host_cb_list, iterator, fun) {
     fun(host);
-  }
-}
-void sg_platf_new_host_link(sg_platf_host_link_cbarg_t h){
-  unsigned int iterator;
-  sg_platf_host_link_cb_t fun;
-  xbt_dynar_foreach(sg_platf_host_link_cb_list, iterator, fun) {
-    fun(h);
   }
 }
 
@@ -557,9 +547,6 @@ void sg_platf_gpu_add_cb(sg_platf_gpu_cb_t fct) {
 
 void sg_platf_host_add_cb(sg_platf_host_cb_t fct) {
   xbt_dynar_push(sg_platf_host_cb_list, &fct);
-}
-void sg_platf_host_link_add_cb(sg_platf_host_link_cb_t fct) {
-  xbt_dynar_push(sg_platf_host_link_cb_list, &fct);
 }
 void sg_platf_link_add_cb(sg_platf_link_cb_t fct) {
   xbt_dynar_push(sg_platf_link_cb_list, &fct);

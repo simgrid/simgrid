@@ -122,7 +122,7 @@ struct s_model_type routing_models[] = {
 /**
  * \brief Add a "host_link" to the network element list
  */
-static void parse_S_host(sg_platf_host_link_cbarg_t host)
+void sg_platf_new_host_link(sg_platf_host_link_cbarg_t host)
 {
   RoutingEdge *info = sg_host_edge(sg_host_by_name(host->id));
   xbt_assert(info, "Host '%s' not found!", host->id);
@@ -1251,7 +1251,6 @@ static void check_disk_attachment()
 
 void routing_register_callbacks()
 {
-  sg_platf_host_link_add_cb(parse_S_host);
   sg_platf_route_add_cb(parse_E_route);
   sg_platf_ASroute_add_cb(parse_E_ASroute);
   sg_platf_bypassRoute_add_cb(parse_E_bypassRoute);
