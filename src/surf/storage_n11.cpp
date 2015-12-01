@@ -42,16 +42,6 @@ static XBT_INLINE void routing_storage_host_free(void *r)
   xbt_dynar_free(&dyn);
 }
 
-static void parse_mstorage_init(sg_platf_mstorage_cbarg_t /*mstorage*/)
-{
-  XBT_DEBUG("parse_mstorage_init");
-}
-
-static void parse_mount_init(sg_platf_mount_cbarg_t /*mount*/)
-{
-  XBT_DEBUG("parse_mount_init");
-}
-
 static void storage_parse_mstorage(sg_platf_mstorage_cbarg_t /*mstorage*/)
 {
   THROW_UNIMPLEMENTED;
@@ -97,12 +87,6 @@ static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
   xbt_dynar_push(mount_list, &mnt);
 }
 
-static void storage_define_callbacks()
-{
-  sg_platf_mstorage_add_cb(parse_mstorage_init);
-  sg_platf_mount_add_cb(parse_mount_init);
-}
-
 void storage_register_callbacks() {
 
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
@@ -121,7 +105,6 @@ void storage_register_callbacks() {
 void surf_storage_model_init_default(void)
 {
   surf_storage_model = new StorageN11Model();
-  storage_define_callbacks();
   xbt_dynar_push(all_existing_models, &surf_storage_model);
 }
 
