@@ -38,8 +38,6 @@ xbt_dynar_t sg_platf_bypassASroute_cb_list = NULL; // of sg_platf_bypassASroute_
 xbt_dynar_t sg_platf_trace_cb_list = NULL;
 xbt_dynar_t sg_platf_trace_connect_cb_list = NULL;
 
-xbt_dynar_t sg_platf_mount_cb_list = NULL; // of sg_platf_storage_cb_t
-
 /* ***************************************** */
 /* TUTORIAL: New TAG                         */
 
@@ -79,8 +77,6 @@ void sg_platf_init(void) {
   sg_platf_trace_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_cb_t), NULL);
   sg_platf_trace_connect_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_connect_cb_t), NULL);
 
-  sg_platf_mount_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
-
   /* ***************************************** */
   /* TUTORIAL: New TAG                         */
 
@@ -108,8 +104,6 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_ASroute_cb_list);
   xbt_dynar_free(&sg_platf_bypassRoute_cb_list);
   xbt_dynar_free(&sg_platf_bypassASroute_cb_list);
-
-  xbt_dynar_free(&sg_platf_mount_cb_list);
 
   /* ***************************************** */
   /* TUTORIAL: New TAG                         */
@@ -289,13 +283,33 @@ void sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage)
 //  xbt_free(mnt);
 //  XBT_DEBUG("ROUTING Mount a storage name '%s' with type_id '%s'",mstorage->name, mstorage->id);
 }
-void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
-  unsigned int iterator;
-  sg_platf_mount_cb_t fun;
-  xbt_dynar_foreach(sg_platf_mount_cb_list, iterator, fun) {
-    fun(mount);
-  }
+
+static void mount_free(void *p)
+{
+  mount_t mnt = (mount_t) p;
+  xbt_free(mnt->name);
 }
+
+void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
+  // Verification of an existing storage
+#ifndef NDEBUG
+  void* storage = xbt_lib_get_or_null(storage_lib, mount->storageId, ROUTING_STORAGE_LEVEL);
+#endif
+  xbt_assert(storage,"Disk id \"%s\" does not exists", mount->storageId);
+
+  XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->storageId, mount->name);
+
+  s_mount_t mnt;
+  mnt.storage = surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId));
+  mnt.name = xbt_strdup(mount->name);
+
+  if(!mount_list){
+    XBT_DEBUG("Create a Mount list for %s",A_surfxml_host_id);
+    mount_list = xbt_dynar_new(sizeof(s_mount_t), mount_free);
+  }
+  xbt_dynar_push(mount_list, &mnt);
+}
+
 void sg_platf_new_route(sg_platf_route_cbarg_t route) {
   unsigned int iterator;
   sg_platf_route_cb_t fun;
@@ -537,9 +551,6 @@ void sg_platf_AS_begin_add_cb(sg_platf_AS_cb_t fct) {
 }
 void sg_platf_AS_end_add_cb(sg_platf_AS_cb_t fct) {
   xbt_dynar_push(sg_platf_AS_end_cb_list, &fct);
-}
-void sg_platf_mount_add_cb(sg_platf_mount_cb_t fct) {
-  xbt_dynar_push(sg_platf_mount_cb_list, &fct);
 }
 void sg_platf_route_add_cb(sg_platf_route_cb_t fct) {
   xbt_dynar_push(sg_platf_route_cb_list, &fct);

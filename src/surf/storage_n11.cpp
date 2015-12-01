@@ -42,41 +42,12 @@ static XBT_INLINE void routing_storage_host_free(void *r)
   xbt_dynar_free(&dyn);
 }
 
-static void mount_free(void *p)
+void storage_register_callbacks()
 {
-  mount_t mnt = (mount_t) p;
-  xbt_free(mnt->name);
-}
-
-static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
-{
-  // Verification of an existing storage
-#ifndef NDEBUG
-  void* storage = xbt_lib_get_or_null(storage_lib, mount->storageId, ROUTING_STORAGE_LEVEL);
-#endif
-  xbt_assert(storage,"Disk id \"%s\" does not exists", mount->storageId);
-
-  XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->storageId, mount->name);
-
-  s_mount_t mnt;
-  mnt.storage = surf_storage_resource_priv(surf_storage_resource_by_name(mount->storageId));
-  mnt.name = xbt_strdup(mount->name);
-
-  if(!mount_list){
-    XBT_DEBUG("Create a Mount list for %s",A_surfxml_host_id);
-    mount_list = xbt_dynar_new(sizeof(s_mount_t), mount_free);
-  }
-  xbt_dynar_push(mount_list, &mnt);
-}
-
-void storage_register_callbacks() {
-
   ROUTING_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, xbt_free_f);
   ROUTING_STORAGE_HOST_LEVEL = xbt_lib_add_level(storage_lib, routing_storage_host_free);
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, surf_storage_resource_free);
-
-  sg_platf_mount_add_cb(storage_parse_mount);
 }
 
 /*********
