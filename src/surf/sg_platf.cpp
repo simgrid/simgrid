@@ -38,7 +38,6 @@ xbt_dynar_t sg_platf_bypassASroute_cb_list = NULL; // of sg_platf_bypassASroute_
 xbt_dynar_t sg_platf_trace_cb_list = NULL;
 xbt_dynar_t sg_platf_trace_connect_cb_list = NULL;
 
-xbt_dynar_t sg_platf_storage_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_storage_type_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_mstorage_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_mount_cb_list = NULL; // of sg_platf_storage_cb_t
@@ -82,7 +81,6 @@ void sg_platf_init(void) {
   sg_platf_trace_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_cb_t), NULL);
   sg_platf_trace_connect_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_connect_cb_t), NULL);
 
-  sg_platf_storage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_storage_type_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_mstorage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_mount_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
@@ -115,7 +113,6 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_bypassRoute_cb_list);
   xbt_dynar_free(&sg_platf_bypassASroute_cb_list);
 
-  xbt_dynar_free(&sg_platf_storage_cb_list);
   xbt_dynar_free(&sg_platf_storage_type_cb_list);
   xbt_dynar_free(&sg_platf_mstorage_cb_list);
   xbt_dynar_free(&sg_platf_mount_cb_list);
@@ -203,12 +200,57 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet){
     fun(cabinet);
   }
 }
-void sg_platf_new_storage(sg_platf_storage_cbarg_t storage){
-  unsigned int iterator;
-  sg_platf_storage_cb_t fun;
-  xbt_dynar_foreach(sg_platf_storage_cb_list, iterator, fun) {
-    fun(storage);
+void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
+{
+  xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id,ROUTING_STORAGE_LEVEL),
+               "Reading a storage, processing unit \"%s\" already exists", storage->id);
+
+  // Verification of an existing type_id
+#ifndef NDEBUG
+  void* storage_type = xbt_lib_get_or_null(storage_type_lib, storage->type_id,ROUTING_STORAGE_TYPE_LEVEL);
+#endif
+  xbt_assert(storage_type,"Reading a storage, type id \"%s\" does not exists", storage->type_id);
+
+  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'",
+      storage->id,
+      storage->type_id,
+      storage->content);
+
+  xbt_lib_set(storage_lib,
+      storage->id,
+      ROUTING_STORAGE_LEVEL,
+      (void *) xbt_strdup(storage->type_id));
+
+  void* stype = xbt_lib_get_or_null(storage_type_lib,
+                                    storage->type_id,
+                                    ROUTING_STORAGE_TYPE_LEVEL);
+  if(!stype) xbt_die("No storage type '%s'",storage->type_id);
+
+  // if storage content is not specified use the content of storage_type if exist
+  if(!strcmp(storage->content,"") && strcmp(((storage_type_t) stype)->content,"")){
+    storage->content = ((storage_type_t) stype)->content;
+    storage->content_type = ((storage_type_t) stype)->content_type;
+    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s) from storage type '%s' ",
+        storage->id,((storage_type_t) stype)->content_type,
+        ((storage_type_t) stype)->type_id);
   }
+
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
+      "\n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tcontent_type '%s' "
+      "\n\t\tproperties '%p''\n",
+      storage->id,
+      ((storage_type_t) stype)->model,
+      ((storage_type_t) stype)->type_id,
+      storage->content,
+      storage->content_type,
+      storage->properties);
+
+  surf_storage_model->createStorage(storage->id,
+                                     ((storage_type_t) stype)->type_id,
+                                     storage->content,
+                                     storage->content_type,
+                                     storage->properties,
+                                     storage->attach);
 }
 void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){
   unsigned int iterator;
@@ -472,9 +514,6 @@ void sg_platf_AS_begin_add_cb(sg_platf_AS_cb_t fct) {
 }
 void sg_platf_AS_end_add_cb(sg_platf_AS_cb_t fct) {
   xbt_dynar_push(sg_platf_AS_end_cb_list, &fct);
-}
-void sg_platf_storage_add_cb(sg_platf_storage_cb_t fct) {
-  xbt_dynar_push(sg_platf_storage_cb_list, &fct);
 }
 void sg_platf_storage_type_add_cb(sg_platf_storage_type_cb_t fct) {
   xbt_dynar_push(sg_platf_storage_type_cb_list, &fct);

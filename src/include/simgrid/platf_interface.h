@@ -67,7 +67,6 @@ XBT_PUBLIC(void) sg_platf_bypassASroute_add_cb(sg_platf_route_cb_t);
 XBT_PUBLIC(void) sg_platf_trace_add_cb(sg_platf_trace_cb_t);
 XBT_PUBLIC(void) sg_platf_trace_connect_add_cb(sg_platf_trace_connect_cb_t);
 
-XBT_PUBLIC(void) sg_platf_storage_add_cb(sg_platf_storage_cb_t fct);
 XBT_PUBLIC(void) sg_platf_mstorage_add_cb(sg_platf_mstorage_cb_t fct);
 XBT_PUBLIC(void) sg_platf_storage_type_add_cb(sg_platf_storage_type_cb_t fct);
 XBT_PUBLIC(void) sg_platf_mount_add_cb(sg_platf_mount_cb_t fct);

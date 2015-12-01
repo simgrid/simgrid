@@ -42,40 +42,6 @@ static XBT_INLINE void routing_storage_host_free(void *r)
   xbt_dynar_free(&dyn);
 }
 
-static void parse_storage_init(sg_platf_storage_cbarg_t storage)
-{
-  void* stype = xbt_lib_get_or_null(storage_type_lib,
-                                    storage->type_id,
-                                    ROUTING_STORAGE_TYPE_LEVEL);
-  if(!stype) xbt_die("No storage type '%s'",storage->type_id);
-
-  // if storage content is not specified use the content of storage_type if exist
-  if(!strcmp(storage->content,"") && strcmp(((storage_type_t) stype)->content,"")){
-    storage->content = ((storage_type_t) stype)->content;
-    storage->content_type = ((storage_type_t) stype)->content_type;
-    XBT_DEBUG("For disk '%s' content is empty, inherit the content (of type %s) from storage type '%s' ",
-        storage->id,((storage_type_t) stype)->content_type,
-        ((storage_type_t) stype)->type_id);
-  }
-
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s' "
-      "\n\t\tmodel '%s' \n\t\tcontent '%s'\n\t\tcontent_type '%s' "
-      "\n\t\tproperties '%p''\n",
-      storage->id,
-      ((storage_type_t) stype)->model,
-      ((storage_type_t) stype)->type_id,
-      storage->content,
-      storage->content_type,
-      storage->properties);
-
-  surf_storage_model->createStorage(storage->id,
-                                     ((storage_type_t) stype)->type_id,
-                                     storage->content,
-                                     storage->content_type,
-                                     storage->properties,
-                                     storage->attach);
-}
-
 static void parse_mstorage_init(sg_platf_mstorage_cbarg_t /*mstorage*/)
 {
   XBT_DEBUG("parse_mstorage_init");
@@ -89,28 +55,6 @@ static void parse_storage_type_init(sg_platf_storage_type_cbarg_t /*storagetype_
 static void parse_mount_init(sg_platf_mount_cbarg_t /*mount*/)
 {
   XBT_DEBUG("parse_mount_init");
-}
-
-static void storage_parse_storage(sg_platf_storage_cbarg_t storage)
-{
-  xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id,ROUTING_STORAGE_LEVEL),
-               "Reading a storage, processing unit \"%s\" already exists", storage->id);
-
-  // Verification of an existing type_id
-#ifndef NDEBUG
-  void* storage_type = xbt_lib_get_or_null(storage_type_lib, storage->type_id,ROUTING_STORAGE_TYPE_LEVEL);
-#endif
-  xbt_assert(storage_type,"Reading a storage, type id \"%s\" does not exists", storage->type_id);
-
-  XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'",
-      storage->id,
-      storage->type_id,
-      storage->content);
-
-  xbt_lib_set(storage_lib,
-      storage->id,
-      ROUTING_STORAGE_LEVEL,
-      (void *) xbt_strdup(storage->type_id));
 }
 
 static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_type)
@@ -187,7 +131,6 @@ static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
 
 static void storage_define_callbacks()
 {
-  sg_platf_storage_add_cb(parse_storage_init);
   sg_platf_storage_type_add_cb(parse_storage_type_init);
   sg_platf_mstorage_add_cb(parse_mstorage_init);
   sg_platf_mount_add_cb(parse_mount_init);
@@ -200,7 +143,6 @@ void storage_register_callbacks() {
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, surf_storage_resource_free);
 
-  sg_platf_storage_add_cb(storage_parse_storage);
   sg_platf_mstorage_add_cb(storage_parse_mstorage);
   sg_platf_storage_type_add_cb(storage_parse_storage_type);
   sg_platf_mount_add_cb(storage_parse_mount);
