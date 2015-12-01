@@ -318,7 +318,7 @@ static void instr_routing_parse_start_host (sg_platf_host_cbarg_t host)
 
 }
 
-static void instr_routing_parse_start_router (sg_platf_router_cbarg_t router)
+void sg_instr_new_router(sg_platf_router_cbarg_t router)
 {
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   PJ_container_new (router->id, INSTR_ROUTER, father);
@@ -347,7 +347,6 @@ void instr_routing_define_callbacks ()
   if (!TRACE_needs_platform()) return;
   sg_platf_link_add_cb(instr_routing_parse_start_link);
   sg_platf_host_add_cb(instr_routing_parse_start_host);
-  sg_platf_router_add_cb(instr_routing_parse_start_router);
 
   sg_platf_postparse_add_cb(instr_routing_parse_end_platform);
 }
