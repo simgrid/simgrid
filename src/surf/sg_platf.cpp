@@ -38,7 +38,6 @@ xbt_dynar_t sg_platf_bypassASroute_cb_list = NULL; // of sg_platf_bypassASroute_
 xbt_dynar_t sg_platf_trace_cb_list = NULL;
 xbt_dynar_t sg_platf_trace_connect_cb_list = NULL;
 
-xbt_dynar_t sg_platf_mstorage_cb_list = NULL; // of sg_platf_storage_cb_t
 xbt_dynar_t sg_platf_mount_cb_list = NULL; // of sg_platf_storage_cb_t
 
 /* ***************************************** */
@@ -80,7 +79,6 @@ void sg_platf_init(void) {
   sg_platf_trace_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_cb_t), NULL);
   sg_platf_trace_connect_cb_list = xbt_dynar_new(sizeof(sg_platf_trace_connect_cb_t), NULL);
 
-  sg_platf_mstorage_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
   sg_platf_mount_cb_list = xbt_dynar_new(sizeof(sg_platf_storage_cb_t), NULL);
 
   /* ***************************************** */
@@ -111,7 +109,6 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_bypassRoute_cb_list);
   xbt_dynar_free(&sg_platf_bypassASroute_cb_list);
 
-  xbt_dynar_free(&sg_platf_mstorage_cb_list);
   xbt_dynar_free(&sg_platf_mount_cb_list);
 
   /* ***************************************** */
@@ -275,12 +272,22 @@ void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){
       ROUTING_STORAGE_TYPE_LEVEL,
       (void *) stype);
 }
-void sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage){
-  unsigned int iterator;
-  sg_platf_mstorage_cb_t fun;
-  xbt_dynar_foreach(sg_platf_mstorage_cb_list, iterator, fun) {
-    fun(mstorage);
-  }
+void sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage)
+{
+  THROW_UNIMPLEMENTED;
+//  mount_t mnt = xbt_new0(s_mount_t, 1);
+//  mnt->id = xbt_strdup(mstorage->type_id);
+//  mnt->name = xbt_strdup(mstorage->name);
+//
+//  if(!mount_list){
+//    XBT_DEBUG("Creata a Mount list for %s",A_surfxml_host_id);
+//    mount_list = xbt_dynar_new(sizeof(char *), NULL);
+//  }
+//  xbt_dynar_push(mount_list,(void *) mnt);
+//  free(mnt->id);
+//  free(mnt->name);
+//  xbt_free(mnt);
+//  XBT_DEBUG("ROUTING Mount a storage name '%s' with type_id '%s'",mstorage->name, mstorage->id);
 }
 void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
   unsigned int iterator;
@@ -530,9 +537,6 @@ void sg_platf_AS_begin_add_cb(sg_platf_AS_cb_t fct) {
 }
 void sg_platf_AS_end_add_cb(sg_platf_AS_cb_t fct) {
   xbt_dynar_push(sg_platf_AS_end_cb_list, &fct);
-}
-void sg_platf_mstorage_add_cb(sg_platf_mstorage_cb_t fct) {
-  xbt_dynar_push(sg_platf_mstorage_cb_list, &fct);
 }
 void sg_platf_mount_add_cb(sg_platf_mount_cb_t fct) {
   xbt_dynar_push(sg_platf_mount_cb_list, &fct);

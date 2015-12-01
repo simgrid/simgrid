@@ -42,24 +42,6 @@ static XBT_INLINE void routing_storage_host_free(void *r)
   xbt_dynar_free(&dyn);
 }
 
-static void storage_parse_mstorage(sg_platf_mstorage_cbarg_t /*mstorage*/)
-{
-  THROW_UNIMPLEMENTED;
-//  mount_t mnt = xbt_new0(s_mount_t, 1);
-//  mnt->id = xbt_strdup(mstorage->type_id);
-//  mnt->name = xbt_strdup(mstorage->name);
-//
-//  if(!mount_list){
-//    XBT_DEBUG("Creata a Mount list for %s",A_surfxml_host_id);
-//    mount_list = xbt_dynar_new(sizeof(char *), NULL);
-//  }
-//  xbt_dynar_push(mount_list,(void *) mnt);
-//  free(mnt->id);
-//  free(mnt->name);
-//  xbt_free(mnt);
-//  XBT_DEBUG("ROUTING Mount a storage name '%s' with type_id '%s'",mstorage->name, mstorage->id);
-}
-
 static void mount_free(void *p)
 {
   mount_t mnt = (mount_t) p;
@@ -94,7 +76,6 @@ void storage_register_callbacks() {
   ROUTING_STORAGE_TYPE_LEVEL = xbt_lib_add_level(storage_type_lib, routing_storage_type_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, surf_storage_resource_free);
 
-  sg_platf_mstorage_add_cb(storage_parse_mstorage);
   sg_platf_mount_add_cb(storage_parse_mount);
 }
 
