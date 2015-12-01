@@ -195,52 +195,6 @@ RoutingEdge *routing_add_host(As* current_routing, sg_platf_host_cbarg_t host)
 }
 
 /**
- * \brief Add a "router" to the network element list
- */
-void sg_platf_new_router(sg_platf_router_cbarg_t router)
-{
-  if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
-    current_routing->p_hierarchy = SURF_ROUTING_BASE;
-  xbt_assert(!xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
-             "Reading a router, processing unit \"%s\" already exists",
-             router->id);
-
-  RoutingEdge *info = new RoutingEdgeImpl(xbt_strdup(router->id),
-                                            -1,
-                                            SURF_NETWORK_ELEMENT_ROUTER,
-                                            current_routing);
-  info->setId(current_routing->parsePU(info));
-  xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
-  XBT_DEBUG("Having set name '%s' id '%d'", router->id, info->getId());
-  routingEdgeCreatedCallbacks(info);
-
-  if (router->coord && strcmp(router->coord, "")) {
-    unsigned int cursor;
-    char*str;
-
-    if (!COORD_ASR_LEVEL)
-      xbt_die ("To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
-    /* Pre-parse the host coordinates */
-    xbt_dynar_t ctn_str = xbt_str_split_str(router->coord, " ");
-    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
-    xbt_dynar_foreach(ctn_str,cursor, str) {
-      double val = atof(str);
-      xbt_dynar_push(ctn,&val);
-    }
-    xbt_dynar_shrink(ctn, 0);
-    xbt_dynar_free(&ctn_str);
-    xbt_lib_set(as_router_lib, router->id, COORD_ASR_LEVEL, (void *) ctn);
-    XBT_DEBUG("Having set router coordinates for '%s'",router->id);
-  }
-
-  unsigned int iterator;
-  sg_platf_router_cb_t fun;
-  xbt_dynar_foreach(sg_platf_router_cb_list, iterator, fun) {
-    fun(router);
-  }
-}
-
-/**
  * \brief Store the route by calling the set_route function of the current routing component
  */
 static void parse_E_route(sg_platf_route_cbarg_t route)
@@ -1295,7 +1249,6 @@ static void check_disk_attachment()
 
 void routing_register_callbacks()
 {
-  sg_platf_router_add_cb(parse_S_router);
   sg_platf_host_link_add_cb(parse_S_host);
   sg_platf_route_add_cb(parse_E_route);
   sg_platf_ASroute_add_cb(parse_E_ASroute);
