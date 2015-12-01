@@ -47,41 +47,9 @@ static void parse_mstorage_init(sg_platf_mstorage_cbarg_t /*mstorage*/)
   XBT_DEBUG("parse_mstorage_init");
 }
 
-static void parse_storage_type_init(sg_platf_storage_type_cbarg_t /*storagetype_*/)
-{
-  XBT_DEBUG("parse_storage_type_init");
-}
-
 static void parse_mount_init(sg_platf_mount_cbarg_t /*mount*/)
 {
   XBT_DEBUG("parse_mount_init");
-}
-
-static void storage_parse_storage_type(sg_platf_storage_type_cbarg_t storage_type)
-{
-  xbt_assert(!xbt_lib_get_or_null(storage_type_lib, storage_type->id,ROUTING_STORAGE_TYPE_LEVEL),
-               "Reading a storage type, processing unit \"%s\" already exists", storage_type->id);
-
-  storage_type_t stype = xbt_new0(s_storage_type_t, 1);
-  stype->model = xbt_strdup(storage_type->model);
-  stype->properties = storage_type->properties;
-  stype->content = xbt_strdup(storage_type->content);
-  stype->content_type = xbt_strdup(storage_type->content_type);
-  stype->type_id = xbt_strdup(storage_type->id);
-  stype->size = storage_type->size;
-  stype->model_properties = storage_type->model_properties;
-
-  XBT_DEBUG("ROUTING Create a storage type id '%s' with model '%s', "
-      "content '%s', and content_type '%s'",
-      stype->type_id,
-      stype->model,
-      storage_type->content,
-      storage_type->content_type);
-
-  xbt_lib_set(storage_type_lib,
-      stype->type_id,
-      ROUTING_STORAGE_TYPE_LEVEL,
-      (void *) stype);
 }
 
 static void storage_parse_mstorage(sg_platf_mstorage_cbarg_t /*mstorage*/)
@@ -131,7 +99,6 @@ static void storage_parse_mount(sg_platf_mount_cbarg_t mount)
 
 static void storage_define_callbacks()
 {
-  sg_platf_storage_type_add_cb(parse_storage_type_init);
   sg_platf_mstorage_add_cb(parse_mstorage_init);
   sg_platf_mount_add_cb(parse_mount_init);
 }
@@ -144,7 +111,6 @@ void storage_register_callbacks() {
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, surf_storage_resource_free);
 
   sg_platf_mstorage_add_cb(storage_parse_mstorage);
-  sg_platf_storage_type_add_cb(storage_parse_storage_type);
   sg_platf_mount_add_cb(storage_parse_mount);
 }
 
