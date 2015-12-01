@@ -64,8 +64,6 @@ XBT_PUBLIC(void) sg_platf_bypassASroute_add_cb(sg_platf_route_cb_t);
 XBT_PUBLIC(void) sg_platf_trace_add_cb(sg_platf_trace_cb_t);
 XBT_PUBLIC(void) sg_platf_trace_connect_add_cb(sg_platf_trace_connect_cb_t);
 
-XBT_PUBLIC(void) sg_platf_mount_add_cb(sg_platf_mount_cb_t fct);
-
 /** \brief Pick the right models for CPU, net and host, and call their model_init_preparse
  *
  * Must be called within parsing/creating the environment (after the <config>s, if any, and before <AS> or friends such as <cluster>)
