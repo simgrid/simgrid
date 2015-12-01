@@ -75,7 +75,6 @@ As* routing_get_current()
   return current_routing;
 }
 
-static void routing_parse_peer(sg_platf_peer_cbarg_t peer);     /* peer bypass */
 // static void routing_parse_Srandom(void);        /* random bypass */
 
 static void routing_parse_postparse(void);
@@ -1029,7 +1028,7 @@ static void routing_parse_postparse(void) {
   xbt_dict_free(&random_value);
 }
 
-static void routing_parse_peer(sg_platf_peer_cbarg_t peer)
+void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 {
   char *host_id = NULL;
   char *link_id = NULL;
@@ -1259,7 +1258,6 @@ void routing_register_callbacks()
   sg_platf_cluster_add_cb(routing_parse_cluster);
   sg_platf_cabinet_add_cb(routing_parse_cabinet);
 
-  sg_platf_peer_add_cb(routing_parse_peer);
   sg_platf_postparse_add_cb(routing_parse_postparse);
   sg_platf_postparse_add_cb(check_disk_attachment);
 

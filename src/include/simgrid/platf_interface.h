@@ -48,7 +48,6 @@ XBT_PUBLIC(void) sg_platf_gpu_add_cb(sg_platf_gpu_cb_t);
 /* ***************************************** */
 
 XBT_PUBLIC(void) sg_platf_link_add_cb(sg_platf_link_cb_t);
-XBT_PUBLIC(void) sg_platf_peer_add_cb(sg_platf_peer_cb_t fct);
 XBT_PUBLIC(void) sg_platf_cluster_add_cb(sg_platf_cluster_cb_t fct);
 XBT_PUBLIC(void) sg_platf_cabinet_add_cb(sg_platf_cabinet_cb_t fct);
 XBT_PUBLIC(void) sg_platf_postparse_add_cb(void_f_void_t fct);
