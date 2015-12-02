@@ -343,7 +343,6 @@ XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a rou
 XBT_PUBLIC(void) sg_platf_new_ASroute (sg_platf_route_cbarg_t ASroute); // Add an ASroute
 XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); // Add a bypassRoute
 XBT_PUBLIC(void) sg_platf_new_bypassASroute (sg_platf_route_cbarg_t bypassASroute); // Add an bypassASroute
-XBT_PUBLIC(void) sg_platf_new_prop (sg_platf_prop_cbarg_t prop); // Add a prop
 
 XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
 XBT_PUBLIC(void) sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);

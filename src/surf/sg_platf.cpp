@@ -23,7 +23,6 @@ xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
 xbt_dynar_t sg_platf_cluster_cb_list = NULL; // of sg_platf_cluster_cb_t
 xbt_dynar_t sg_platf_cabinet_cb_list = NULL; // of sg_platf_cluster_cb_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
-xbt_dynar_t sg_platf_prop_cb_list = NULL; // of sg_platf_prop_cb_t
 
 xbt_dynar_t sg_platf_ASroute_cb_list = NULL; // of sg_platf_ASroute_cb_t
 xbt_dynar_t sg_platf_bypassRoute_cb_list = NULL; // of sg_platf_bypassRoute_cb_t
@@ -55,7 +54,6 @@ void sg_platf_init(void) {
   sg_platf_cluster_cb_list = xbt_dynar_new(sizeof(sg_platf_cluster_cb_t), NULL);
   sg_platf_cabinet_cb_list = xbt_dynar_new(sizeof(sg_platf_cabinet_cb_t), NULL);
   sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t),NULL);
-  sg_platf_prop_cb_list = xbt_dynar_new(sizeof(sg_platf_prop_cb_t),NULL);
 
   sg_platf_ASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
   sg_platf_bypassRoute_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
@@ -76,7 +74,6 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_postparse_cb_list);
   xbt_dynar_free(&sg_platf_cluster_cb_list);
   xbt_dynar_free(&sg_platf_cabinet_cb_list);
-  xbt_dynar_free(&sg_platf_prop_cb_list);
 
   xbt_dynar_free(&sg_platf_trace_cb_list);
   xbt_dynar_free(&sg_platf_trace_connect_cb_list);
@@ -337,13 +334,6 @@ void sg_platf_new_bypassASroute(sg_platf_route_cbarg_t bypassASroute) {
     fun(bypassASroute);
   }
 }
-void sg_platf_new_prop(sg_platf_prop_cbarg_t prop) {
-  unsigned int iterator;
-  sg_platf_prop_cb_t fun;
-  xbt_dynar_foreach(sg_platf_prop_cb_list, iterator, fun) {
-    fun(prop);
-  }
-}
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace) {
   unsigned int iterator;
   sg_platf_trace_cb_t fun;
@@ -542,9 +532,6 @@ void sg_platf_bypassRoute_add_cb(sg_platf_route_cb_t fct) {
 }
 void sg_platf_bypassASroute_add_cb(sg_platf_route_cb_t fct) {
   xbt_dynar_push(sg_platf_bypassASroute_cb_list, &fct);
-}
-void sg_platf_prop_add_cb(sg_platf_prop_cb_t fct) {
-  xbt_dynar_push(sg_platf_prop_cb_list, &fct);
 }
 void sg_platf_trace_add_cb(sg_platf_trace_cb_t fct) {
   xbt_dynar_push(sg_platf_trace_cb_list, &fct);
