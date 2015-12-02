@@ -33,13 +33,11 @@ void surf_host_model_init_current_default(void)
 
 void surf_host_model_init_compound()
 {
-
   xbt_assert(surf_cpu_model_pm, "No CPU model defined yet!");
   xbt_assert(surf_network_model, "No network model defined yet!");
-  surf_host_model = new HostCLM03Model();
 
-  Model *model = surf_host_model;
-  xbt_dynar_push(all_existing_models, &model);
+  surf_host_model = new HostCLM03Model();
+  xbt_dynar_push(all_existing_models, &surf_host_model);
 }
 
 Host *HostCLM03Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu){
