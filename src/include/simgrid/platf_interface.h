@@ -56,7 +56,6 @@ XBT_PUBLIC(void) sg_platf_bypassRoute_add_cb(sg_platf_route_cb_t);
 XBT_PUBLIC(void) sg_platf_bypassASroute_add_cb(sg_platf_route_cb_t);
 
 XBT_PUBLIC(void) sg_platf_trace_add_cb(sg_platf_trace_cb_t);
-XBT_PUBLIC(void) sg_platf_trace_connect_add_cb(sg_platf_trace_connect_cb_t);
 
 /** \brief Pick the right models for CPU, net and host, and call their model_init_preparse
  *

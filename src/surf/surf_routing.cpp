@@ -243,7 +243,7 @@ static void routing_parse_trace(sg_platf_trace_cbarg_t trace)
   xbt_dict_set(traces_set_list, trace->id, (void *) tmgr_trace, NULL);
 }
 
-static void routing_parse_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
+void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
 {
   xbt_assert(xbt_dict_get_or_null
               (traces_set_list, trace_connect->trace),
@@ -1248,7 +1248,6 @@ void routing_register_callbacks()
   sg_platf_postparse_add_cb(check_disk_attachment);
 
   sg_platf_trace_add_cb(routing_parse_trace);
-  sg_platf_trace_connect_add_cb(routing_parse_trace_connect);
 
   instr_routing_define_callbacks();
 }
