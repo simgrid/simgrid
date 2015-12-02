@@ -195,18 +195,6 @@ RoutingEdge *routing_add_host(As* current_routing, sg_platf_host_cbarg_t host)
 }
 
 /**
- * \brief Store the route by calling the set_route function of the current routing component
- */
-static void parse_E_route(sg_platf_route_cbarg_t route)
-{
-  /*FIXME:REMOVE:xbt_assert(current_routing->parse_route,
-             "no defined method \"set_route\" in \"%s\"",
-             current_routing->name);*/
-
-  current_routing->parseRoute(route);
-}
-
-/**
  * \brief Store the ASroute by calling the set_ASroute function of the current routing component
  */
 static void parse_E_ASroute(sg_platf_route_cbarg_t ASroute)
@@ -1250,7 +1238,6 @@ static void check_disk_attachment()
 
 void routing_register_callbacks()
 {
-  sg_platf_route_add_cb(parse_E_route);
   sg_platf_ASroute_add_cb(parse_E_ASroute);
   sg_platf_bypassRoute_add_cb(parse_E_bypassRoute);
   sg_platf_bypassASroute_add_cb(parse_E_bypassASroute);
