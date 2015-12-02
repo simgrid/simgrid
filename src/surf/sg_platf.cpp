@@ -129,7 +129,10 @@ void sg_platf_new_link(sg_platf_link_cbarg_t link){
   }
 }
 
-void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster){
+void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
+{
+  routing_new_cluster(cluster);
+
   unsigned int iterator;
   sg_platf_cluster_cb_t fun;
   xbt_dynar_foreach(sg_platf_cluster_cb_list, iterator, fun) {

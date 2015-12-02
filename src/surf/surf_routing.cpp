@@ -736,7 +736,7 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
   xbt_dynar_free(&radical_elements);
 }
 
-static void routing_parse_cluster(sg_platf_cluster_cbarg_t cluster)
+void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   char *host_id, *groups, *link_id = NULL;
   xbt_dict_t patterns = NULL;
@@ -1215,8 +1215,6 @@ static void check_disk_attachment()
 
 void routing_register_callbacks()
 {
-  sg_platf_cluster_add_cb(routing_parse_cluster);
-
   sg_platf_postparse_add_cb(routing_parse_postparse);
   sg_platf_postparse_add_cb(check_disk_attachment);
 
