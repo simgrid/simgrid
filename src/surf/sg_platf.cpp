@@ -23,8 +23,6 @@ xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
 xbt_dynar_t sg_platf_cluster_cb_list = NULL; // of sg_platf_cluster_cb_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
 
-xbt_dynar_t sg_platf_ASroute_cb_list = NULL; // of sg_platf_ASroute_cb_t
-
 /* ***************************************** */
 /* TUTORIAL: New TAG                         */
 
@@ -48,8 +46,6 @@ void sg_platf_init(void) {
   sg_platf_cluster_cb_list = xbt_dynar_new(sizeof(sg_platf_cluster_cb_t), NULL);
   sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t),NULL);
 
-  sg_platf_ASroute_cb_list = xbt_dynar_new(sizeof(sg_platf_route_cb_t), NULL);
-
   /* ***************************************** */
   /* TUTORIAL: New TAG                         */
 
@@ -61,8 +57,6 @@ void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_link_cb_list);
   xbt_dynar_free(&sg_platf_postparse_cb_list);
   xbt_dynar_free(&sg_platf_cluster_cb_list);
-
-  xbt_dynar_free(&sg_platf_ASroute_cb_list);
 
   /* ***************************************** */
   /* TUTORIAL: New TAG                         */
@@ -291,11 +285,7 @@ void sg_platf_new_route(sg_platf_route_cbarg_t route)
 
 void sg_platf_new_ASroute(sg_platf_route_cbarg_t ASroute)
 {
-  unsigned int iterator;
-  sg_platf_route_cb_t fun;
-  xbt_dynar_foreach(sg_platf_ASroute_cb_list, iterator, fun) {
-    fun(ASroute);
-  }
+  routing_get_current()->parseASroute(ASroute);
 }
 
 void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
@@ -479,9 +469,6 @@ void sg_platf_cluster_add_cb(sg_platf_cluster_cb_t fct) {
 }
 void sg_platf_postparse_add_cb(void_f_void_t fct) {
   xbt_dynar_push(sg_platf_postparse_cb_list, &fct);
-}
-void sg_platf_ASroute_add_cb(sg_platf_route_cb_t fct) {
-  xbt_dynar_push(sg_platf_ASroute_cb_list, &fct);
 }
 
 void sg_platf_rng_stream_init(unsigned long seed[6]) {

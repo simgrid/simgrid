@@ -1215,8 +1215,6 @@ static void check_disk_attachment()
 
 void routing_register_callbacks()
 {
-  sg_platf_ASroute_add_cb(parse_E_ASroute);
-
   sg_platf_cluster_add_cb(routing_parse_cluster);
 
   sg_platf_postparse_add_cb(routing_parse_postparse);

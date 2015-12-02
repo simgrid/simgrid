@@ -51,8 +51,6 @@ XBT_PUBLIC(void) sg_platf_link_add_cb(sg_platf_link_cb_t);
 XBT_PUBLIC(void) sg_platf_cluster_add_cb(sg_platf_cluster_cb_t fct);
 XBT_PUBLIC(void) sg_platf_postparse_add_cb(void_f_void_t fct);
 
-XBT_PUBLIC(void) sg_platf_ASroute_add_cb(sg_platf_route_cb_t);
-
 XBT_PUBLIC(void) sg_platf_trace_add_cb(sg_platf_trace_cb_t);
 
 /** \brief Pick the right models for CPU, net and host, and call their model_init_preparse
