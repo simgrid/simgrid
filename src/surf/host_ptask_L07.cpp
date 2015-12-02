@@ -547,11 +547,6 @@ void LinkL07::updateBandwidth(double value, double date)
   lmm_update_constraint_bound(ptask_maxmin_system, getConstraint(), m_bwCurrent);
 }
 
-double LinkL07::getLatency()
-{
-  return m_latCurrent;
-}
-
 void LinkL07::updateLatency(double value, double date)
 {
   lmm_variable_t var = NULL;

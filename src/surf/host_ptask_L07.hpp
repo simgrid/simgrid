@@ -46,7 +46,6 @@ public:
 							  double rate);
   xbt_dynar_t getRoute(Host *src, Host *dst);
   void addTraces();
-  NetworkModel *p_networkModel;
 };
 
 class CpuL07Model : public CpuModel {
@@ -137,12 +136,9 @@ public:
   bool isUsed();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   double getBandwidth();
-  double getLatency();
   void updateBandwidth(double value, double date=surf_get_clock());
   void updateLatency(double value, double date=surf_get_clock());
 
-  double m_latCurrent;
-  tmgr_trace_event_t p_latEvent;
   double m_bwCurrent;
   tmgr_trace_event_t p_bwEvent;
 };
