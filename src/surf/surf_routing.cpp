@@ -205,29 +205,6 @@ static void parse_E_ASroute(sg_platf_route_cbarg_t ASroute)
   current_routing->parseASroute(ASroute);
 }
 
-/**
- * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
- */
-static void parse_E_bypassRoute(sg_platf_route_cbarg_t route)
-{
-  /*FIXME:REMOVE:xbt_assert(current_routing->parse_bypassroute,
-             "Bypassing mechanism not implemented by routing '%s'",
-             current_routing->name);*/
-
-  current_routing->parseBypassroute(route);
-}
-
-/**
- * \brief Store the bypass route by calling the set_bypassroute function of the current routing component
- */
-static void parse_E_bypassASroute(sg_platf_route_cbarg_t ASroute)
-{
-  /*FIXME:REMOVE:xbt_assert(current_routing->parse_bypassroute,
-             "Bypassing mechanism not implemented by routing '%s'",
-             current_routing->name);*/
-  current_routing->parseBypassroute(ASroute);
-}
-
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 {
   tmgr_trace_t tmgr_trace;
@@ -1239,8 +1216,6 @@ static void check_disk_attachment()
 void routing_register_callbacks()
 {
   sg_platf_ASroute_add_cb(parse_E_ASroute);
-  sg_platf_bypassRoute_add_cb(parse_E_bypassRoute);
-  sg_platf_bypassASroute_add_cb(parse_E_bypassASroute);
 
   sg_platf_cluster_add_cb(routing_parse_cluster);
 

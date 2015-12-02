@@ -52,8 +52,6 @@ XBT_PUBLIC(void) sg_platf_cluster_add_cb(sg_platf_cluster_cb_t fct);
 XBT_PUBLIC(void) sg_platf_postparse_add_cb(void_f_void_t fct);
 
 XBT_PUBLIC(void) sg_platf_ASroute_add_cb(sg_platf_route_cb_t);
-XBT_PUBLIC(void) sg_platf_bypassRoute_add_cb(sg_platf_route_cb_t);
-XBT_PUBLIC(void) sg_platf_bypassASroute_add_cb(sg_platf_route_cb_t);
 
 XBT_PUBLIC(void) sg_platf_trace_add_cb(sg_platf_trace_cb_t);
 
