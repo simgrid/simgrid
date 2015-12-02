@@ -23,13 +23,6 @@ xbt_dynar_t sg_platf_link_cb_list = NULL;   // of sg_platf_link_cb_t
 xbt_dynar_t sg_platf_cluster_cb_list = NULL; // of sg_platf_cluster_cb_t
 xbt_dynar_t sg_platf_postparse_cb_list = NULL; // of void_f_void_t
 
-/* ***************************************** */
-/* TUTORIAL: New TAG                         */
-
-xbt_dynar_t sg_platf_gpu_cb_list = NULL;
-/* ***************************************** */
-
-
 static int surf_parse_models_setup_already_called = 0;
 
 /* one RngStream for the platform, to respect some statistic rules */
@@ -39,31 +32,19 @@ static RngStream sg_platf_rng_stream = NULL;
 void sg_platf_init(void) {
 
   //FIXME : Ugly, but useful...
-  if (sg_platf_gpu_cb_list)
+  if (sg_platf_postparse_cb_list)
     return; //Already initialized, so do nothing...
 
   sg_platf_link_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t), NULL);
   sg_platf_cluster_cb_list = xbt_dynar_new(sizeof(sg_platf_cluster_cb_t), NULL);
   sg_platf_postparse_cb_list = xbt_dynar_new(sizeof(sg_platf_link_cb_t),NULL);
-
-  /* ***************************************** */
-  /* TUTORIAL: New TAG                         */
-
-  sg_platf_gpu_cb_list = xbt_dynar_new(sizeof(sg_platf_gpu_cb_t), NULL);
-  /* ***************************************** */
 }
+
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
   xbt_dynar_free(&sg_platf_link_cb_list);
   xbt_dynar_free(&sg_platf_postparse_cb_list);
   xbt_dynar_free(&sg_platf_cluster_cb_list);
-
-  /* ***************************************** */
-  /* TUTORIAL: New TAG                         */
-
-  xbt_dynar_free(&sg_platf_gpu_cb_list);
-
-  /* ***************************************** */
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
@@ -443,22 +424,6 @@ void sg_platf_new_AS_end()
   if (TRACE_is_enabled())
     sg_instr_AS_end();
 }
-
-/* ***************************************** */
-/* TUTORIAL: New TAG                         */
-
-void sg_platf_new_gpu(sg_platf_gpu_cbarg_t gpu) {
-  unsigned int iterator;
-  void_f_void_t fun;
-  xbt_dynar_foreach(sg_platf_gpu_cb_list, iterator, fun) {
-    fun();
-  }
-}
-
-void sg_platf_gpu_add_cb(sg_platf_gpu_cb_t fct) {
-  xbt_dynar_push(sg_platf_gpu_cb_list, &fct);
-}
-
 /* ***************************************** */
 
 void sg_platf_link_add_cb(sg_platf_link_cb_t fct) {

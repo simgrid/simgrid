@@ -68,13 +68,6 @@ xbt_dict_t trace_connect_list_link_avail = NULL;
 xbt_dict_t trace_connect_list_bandwidth = NULL;
 xbt_dict_t trace_connect_list_latency = NULL;
 
-/* ********************************************* */
-/* TUTORIAL: New TAG                             */
-/* This function should be in gpu.c              */
-/* because sg_platf_gpu_add_cb take a staic fct  */
-XBT_PUBLIC(void) gpu_register_callbacks(void){
-  sg_platf_gpu_add_cb(NULL);
-}
 /* ***************************************** */
 
 static int after_config_done;
@@ -85,11 +78,7 @@ void parse_after_config() {
     /* Register classical callbacks */
     storage_register_callbacks();
     routing_register_callbacks();
-    gpu_register_callbacks();
 
-    /* ***************************************** */
-    /* TUTORIAL: New TAG                         */
-    /* ***************************************** */
     after_config_done = 1;
   }
 }

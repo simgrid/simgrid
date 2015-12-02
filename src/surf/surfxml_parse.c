@@ -975,22 +975,8 @@ void STag_surfxml_model___prop(void){
   xbt_dict_set(current_model_property_set, A_surfxml_model___prop_id, xbt_strdup(A_surfxml_model___prop_value), NULL);
 }
 
-/* ***************************************** */
-/* TUTORIAL: New TAG                         */
-void STag_surfxml_gpu(void)
-{
-  XBT_DEBUG("STag_surfxml_gpu");
-}
-void ETag_surfxml_gpu(void)
-{
-  s_sg_platf_gpu_cbarg_t gpu = SG_PLATF_GPU_INITIALIZER;
-  memset(&gpu,0,sizeof(gpu));
-
-  gpu.name = A_surfxml_gpu_name;
-
-  sg_platf_new_gpu(&gpu);
-}
-/* ***************************************** */
+void STag_surfxml_gpu(void) {}
+void ETag_surfxml_gpu(void) {}
 
 /* nothing to do in those functions */
 void ETag_surfxml_prop(void){}

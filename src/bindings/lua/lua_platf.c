@@ -48,8 +48,6 @@ int console_open(lua_State *L) {
   storage_register_callbacks();
   routing_register_callbacks();
 
-  gpu_register_callbacks();
-
   return 0;
 }
 
