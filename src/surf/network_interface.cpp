@@ -179,7 +179,6 @@ double NetworkModel::shareResourcesFull(double now)
 
 Link::Link(NetworkModel *model, const char *name, xbt_dict_t props)
 : Resource(model, name, props)
-, p_latEvent(NULL)
 {
   links->insert({name, this});
 
@@ -190,8 +189,7 @@ Link::Link(NetworkModel *model, const char *name, xbt_dict_t props,
 		                 lmm_constraint_t constraint,
 	                     tmgr_history_t history,
 	                     tmgr_trace_t state_trace)
-: Resource(model, name, props, constraint),
-  p_latEvent(NULL)
+: Resource(model, name, props, constraint)
 {
   if (state_trace)
     p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);

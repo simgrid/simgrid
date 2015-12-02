@@ -227,8 +227,8 @@ public:
 
   /* Using this object with the public part of
     model does not make sense */
-  double m_latCurrent;
-  tmgr_trace_event_t p_latEvent;
+  double m_latCurrent = 0;
+  tmgr_trace_event_t p_latEvent = NULL;
 
   /* LMM */
   tmgr_trace_event_t p_stateEvent = NULL;
