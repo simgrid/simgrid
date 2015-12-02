@@ -687,7 +687,7 @@ void routing_cluster_add_backbone(void* bb) {
   XBT_DEBUG("Add a backbone to AS '%s'", current_routing->p_name);
 }
 
-static void routing_parse_cabinet(sg_platf_cabinet_cbarg_t cabinet)
+void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 {
   int start, end, i;
   char *groups , *host_id , *link_id = NULL;
@@ -1243,7 +1243,6 @@ void routing_register_callbacks()
   sg_platf_bypassASroute_add_cb(parse_E_bypassASroute);
 
   sg_platf_cluster_add_cb(routing_parse_cluster);
-  sg_platf_cabinet_add_cb(routing_parse_cabinet);
 
   sg_platf_postparse_add_cb(routing_parse_postparse);
   sg_platf_postparse_add_cb(check_disk_attachment);
