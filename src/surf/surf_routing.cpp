@@ -228,7 +228,7 @@ static void parse_E_bypassASroute(sg_platf_route_cbarg_t ASroute)
   current_routing->parseBypassroute(ASroute);
 }
 
-static void routing_parse_trace(sg_platf_trace_cbarg_t trace)
+void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 {
   tmgr_trace_t tmgr_trace;
   if (!trace->file || strcmp(trace->file, "") != 0) {
@@ -1246,8 +1246,6 @@ void routing_register_callbacks()
 
   sg_platf_postparse_add_cb(routing_parse_postparse);
   sg_platf_postparse_add_cb(check_disk_attachment);
-
-  sg_platf_trace_add_cb(routing_parse_trace);
 
   instr_routing_define_callbacks();
 }
