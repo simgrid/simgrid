@@ -38,6 +38,7 @@ set(EXTRA_DIST
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
   src/simix/smx_private.h
+  src/simix/smx_private.hpp
   src/simix/smx_process_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
@@ -357,7 +358,7 @@ set(SIMIX_GENERATED_SRC
 set(SIMIX_SRC
   src/simix/libsmx.cpp
   src/simix/smx_context.cpp
-  src/simix/smx_context_base.cpp
+  src/simix/Context.cpp
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
@@ -373,7 +374,7 @@ set(SIMIX_SRC
   )
 
 # Don't try to compile our inline assembly with MSVC
-if (MSVC)
+if (1)
   set(EXTRA_DIST
       ${EXTRA_DIST}
       src/simix/smx_context_raw.cpp)
@@ -387,11 +388,13 @@ endif()
 if (HAVE_BOOST_CONTEXT)
   set(SIMIX_SRC
       ${SIMIX_SRC}
-      src/simix/smx_context_boost.cpp)
+      src/simix/BoostContext.hpp
+      src/simix/BoostContext.cpp)
 else()
   set(EXTRA_DIST
       ${EXTRA_DIST}
-      src/simix/smx_context_boost.cpp)
+      src/simix/BoostContext.hpp
+      src/simix/BoostContext.cpp)
 endif()
 
 set(S4U_SRC
@@ -709,6 +712,7 @@ set(headers_to_install
   include/simgrid/platf_generator.h
   include/simgrid/plugins.h
   include/simgrid/simix.h
+  include/simgrid/simix.hpp
   include/simgrid/host.h
   include/simgrid/link.h
   include/simgrid/s4u/actor.hpp
@@ -774,16 +778,26 @@ set(source_of_generated_headers
 
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS CONTEXT_UCONTEXT
-if(${CONTEXT_THREADS}) #pthread
+if(0) #pthread
   set(SURF_SRC
     ${SURF_SRC}
     src/simix/smx_context_thread.cpp
-    src/xbt/xbt_os_thread.c
     )
 else() # NOT pthread
   set(EXTRA_DIST
     ${EXTRA_DIST}
     src/simix/smx_context_thread.cpp
+    )
+endif()
+
+if(${CONTEXT_THREADS}) #pthread
+  set(SURF_SRC
+    ${SURF_SRC}
+    src/xbt/xbt_os_thread.c
+    )
+else() # NOT pthread
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
     src/xbt/xbt_os_thread.c
     )
 endif()

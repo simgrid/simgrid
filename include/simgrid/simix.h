@@ -17,6 +17,26 @@
 #include "simgrid/datatypes.h"
 #include "simgrid/host.h"
 
+
+#ifdef __cplusplus
+
+namespace simgrid {
+namespace simix {
+  class Context;
+  class ContextFactory;
+}
+}
+
+typedef simgrid::simix::Context *smx_context_t;
+
+#else
+
+typedef struct s_smx_context *smx_context_t;
+
+#endif
+
+
+
 SG_BEGIN_DECL()
 
 /**************************** Scalar Values **********************************/
@@ -124,82 +144,16 @@ typedef struct s_smx_rvpoint *smx_rdv_t;
 XBT_PUBLIC(void*) SIMIX_comm_get_src_data(smx_synchro_t synchro);
 XBT_PUBLIC(void*) SIMIX_comm_get_dst_data(smx_synchro_t synchro);
 
-/******************************** Context *************************************/
-typedef struct s_smx_context *smx_context_t;
-typedef struct s_smx_context_factory *smx_context_factory_t;
-
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t) (smx_process_t);
 /* for auto-restart function */
 typedef void (*void_pfn_sghost_t) (sg_host_t);
 
-/* The following function pointer types describe the interface that any context
-   factory should implement */
-
-
-typedef smx_context_t (*smx_pfn_context_factory_create_context_t)(
-  xbt_main_func_t, int, char **, void_pfn_smxprocess_t, smx_process_t process);
-typedef int (*smx_pfn_context_factory_finalize_t) (smx_context_factory_t*);
-typedef void (*smx_pfn_context_free_t) (smx_context_t);
-typedef void (*smx_pfn_context_start_t) (smx_context_t);
-typedef void (*smx_pfn_context_stop_t) (smx_context_t);
-typedef void (*smx_pfn_context_suspend_t) (smx_context_t context);
-typedef void (*smx_pfn_context_runall_t) (void);
-typedef smx_context_t (*smx_pfn_context_self_t) (void);
-typedef smx_process_t (*smx_pfn_context_get_process_t) (smx_context_t context);
-
-/* interface of the context factories */
-typedef struct s_smx_context_factory {
-  const char *name;
-  smx_pfn_context_factory_create_context_t create_context;
-  smx_pfn_context_factory_finalize_t finalize;
-  smx_pfn_context_free_t free;
-  smx_pfn_context_stop_t stop;
-  smx_pfn_context_suspend_t suspend;
-  smx_pfn_context_runall_t runall;
-  smx_pfn_context_self_t self;
-  smx_pfn_context_get_process_t get_process;
-} s_smx_context_factory_t;
-
-/* Hack: let msg load directly the right factory */
-typedef void (*smx_ctx_factory_initializer_t)(smx_context_factory_t*);
-XBT_PUBLIC_DATA(smx_ctx_factory_initializer_t) smx_factory_initializer_to_use;
 extern char* smx_context_factory_name;
 extern int smx_context_stack_size;
 extern int smx_context_stack_size_was_set;
 extern int smx_context_guard_size;
 extern int smx_context_guard_size_was_set;
-
-/* *********************** */
-/* Context type definition */
-/* *********************** */
-/* the following function pointers types describe the interface that all context
-   concepts must implement */
-/* each context type derive from this structure, so they must contain this structure
- * at their beginning -- OOP in C :/ */
-typedef struct s_smx_context {
-  s_xbt_swag_hookup_t hookup;
-  xbt_main_func_t code;
-  void_pfn_smxprocess_t cleanup_func;
-  smx_process_t process;
-  char **argv;
-  int argc;
-  unsigned iwannadie:1;
-} s_smx_ctx_base_t;
-
-/* methods of this class */
-XBT_PUBLIC(void) smx_ctx_base_factory_init(smx_context_factory_t *factory);
-XBT_PUBLIC(int) smx_ctx_base_factory_finalize(smx_context_factory_t *factory);
-
-XBT_PUBLIC(smx_context_t)
-smx_ctx_base_factory_create_context_sized(size_t size, xbt_main_func_t code,
-                                          int argc, char **argv,
-                                          void_pfn_smxprocess_t cleanup,
-                                          smx_process_t process);
-XBT_PUBLIC(void) smx_ctx_base_free(smx_context_t context);
-XBT_PUBLIC(void) smx_ctx_base_stop(smx_context_t context);
-XBT_PUBLIC(smx_context_t) smx_ctx_base_self(void);
-XBT_PUBLIC(smx_process_t) smx_ctx_base_get_process(smx_context_t context);
 
 XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_from_PID(int PID);

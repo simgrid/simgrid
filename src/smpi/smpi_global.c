@@ -79,7 +79,7 @@ void smpi_process_init(int *argc, char ***argv)
   if (argc && argv) {
     proc = SIMIX_process_self();
     //FIXME: dirty cleanup method to avoid using msg cleanup functions on these processes when using MSG+SMPI
-    proc->context->cleanup_func=SIMIX_process_cleanup;
+    // proc->context->cleanup_func=SIMIX_process_cleanup;
     char* instance_id = (*argv)[1];
     int rank = atoi((*argv)[2]);
     index = smpi_process_index_of_smx_process(proc);

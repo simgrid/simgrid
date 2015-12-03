@@ -26,6 +26,31 @@
 #include "popping_private.h"
 #include "smx_synchro_private.h"
 
+#ifdef __cplusplus
+
+#include <simgrid/simix.hpp>
+
+namespace simgrid {
+namespace simix {
+
+/* Hack: let msg load directly the right factory
+ *
+ * This is a factory of factory! How nice is this?
+ */
+typedef ContextFactory* (*ContextFactoryInitializer)(void);
+XBT_PUBLIC_DATA(ContextFactoryInitializer) factory_initializer;
+
+}
+}
+
+typedef simgrid::simix::ContextFactory *smx_context_factory_t;
+
+#else
+
+typedef struct s_smx_context_factory *smx_context_factory_t;
+
+#endif
+
 SG_BEGIN_DECL()
 
 /* Define only for SimGrid benchmarking purposes */
@@ -37,6 +62,7 @@ SG_BEGIN_DECL()
 #ifdef TIME_BENCH_PER_SR
 XBT_PRIVATE void smx_ctx_raw_new_sr(void);
 #endif
+
 /********************************** Simix Global ******************************/
 typedef struct s_smx_global {
   smx_context_factory_t context_factory;
@@ -208,114 +234,9 @@ XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
 XBT_PRIVATE void SIMIX_context_set_current(smx_context_t context);
 XBT_PRIVATE smx_context_t SIMIX_context_get_current(void);
 
-/* All factories init */
-
-XBT_PRIVATE void SIMIX_ctx_thread_factory_init(smx_context_factory_t *factory);
-XBT_PRIVATE void SIMIX_ctx_sysv_factory_init(smx_context_factory_t *factory);
-XBT_PRIVATE void SIMIX_ctx_raw_factory_init(smx_context_factory_t *factory);
-XBT_PRIVATE void SIMIX_ctx_boost_factory_init(smx_context_factory_t *factory);
-
 /* ****************************** */
 /* context manipulation functions */
 /* ****************************** */
-
-/* Scenario for the end of a context:
- *
- * CASE 1: death after end of the main function
- *   the context_wrapper, called internally by the context module, calls
- *   SIMIX_context_stop after user code stops, smx_context_stop calls user
- *   cleanup_func if any (in context settings), add current process to trashbin
- *   and yields back to maestro.
- *   From time to time, maestro calls SIMIX_context_empty_trash, which destroy
- *   all the process and context data structures, and frees the memory
- *
- * CASE 2: brutal death
- *   SIMIX_process_kill (from any process) set process->iwannadie = 1 and then
- *   schedules the process. Then the process is awaken in the middle of the
- *   SIMIX_process_yield function, and at the end of it, it checks that
- *   iwannadie == 1, and call SIMIX_context_stop(same than first case afterward)
- */
-
-/**
- * \brief creates a new context for a user level process
- * \param code a main function
- * \param argc the number of arguments of the main function
- * \param argv the vector of arguments of the main function
- * \param cleanup_func the function to call when the context stops
- * \param cleanup_arg the argument of the cleanup_func function
- */
-static XBT_INLINE smx_context_t SIMIX_context_new(xbt_main_func_t code,
-                                                  int argc, char **argv,
-                                                  void_pfn_smxprocess_t cleanup_func,
-                                                  smx_process_t simix_process)
-{
-  if (!simix_global)
-    xbt_die("simix is not initialized, please call MSG_init first");
-  return simix_global->context_factory->create_context(code,
-                                                       argc, argv,
-                                                       cleanup_func,
-                                                       simix_process);
-}
-
-/**
- * \brief destroy a context
- * \param context the context to destroy
- * Argument must be stopped first -- runs in maestro context
- */
-static XBT_INLINE void SIMIX_context_free(smx_context_t context)
-{
-  simix_global->context_factory->free(context);
-}
-
-/**
- * \brief stops the execution of a context
- * \param context to stop
- */
-static XBT_INLINE void SIMIX_context_stop(smx_context_t context)
-{
-  simix_global->context_factory->stop(context);
-}
-
-/**
- \brief suspends a context and return the control back to the one which
-        scheduled it
- \param context the context to be suspended (it must be the running one)
- */
-static XBT_INLINE void SIMIX_context_suspend(smx_context_t context)
-{
-  simix_global->context_factory->suspend(context);
-}
-
-/**
- \brief Executes all the processes to run (in parallel if possible).
- */
-static XBT_INLINE void SIMIX_context_runall(void)
-{
-  if (!xbt_dynar_is_empty(simix_global->process_to_run)) {
-    simix_global->context_factory->runall();
-  }
-}
-
-/**
- \brief returns the current running context
- */
-static XBT_INLINE smx_context_t SIMIX_context_self(void)
-{
-  if (simix_global && simix_global->context_factory) {
-    return simix_global->context_factory->self();
-  }
-  return NULL;
-}
-
-/**
- \brief returns the SIMIX process associated to a context
- \param context The context
- \return The SIMIX process
- */
-static XBT_INLINE smx_process_t SIMIX_context_get_process(smx_context_t context)
-{
-  return simix_global->context_factory->get_process(context);
-}
 
 XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
 
