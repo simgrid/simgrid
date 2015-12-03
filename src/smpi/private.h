@@ -169,8 +169,9 @@ XBT_PRIVATE int smpi_mpi_dims_create(int nnodes, int ndims, int dims[]);
 
 XBT_PRIVATE smpi_process_data_t smpi_process_data(void);
 XBT_PRIVATE smpi_process_data_t smpi_process_remote_data(int index);
-XBT_PRIVATE void smpi_process_set_user_data(void *);
-XBT_PRIVATE void* smpi_process_get_user_data(void);
+// smpi_process_[set/get]_user_data must be public
+/* XBT_PRIVATE void smpi_process_set_user_data(void *); */
+/* XBT_PRIVATE void* smpi_process_get_user_data(void); */
 XBT_PRIVATE int smpi_process_count(void);
 XBT_PRIVATE MPI_Comm smpi_process_comm_world(void);
 XBT_PRIVATE MPI_Comm smpi_process_get_comm_intra(void);

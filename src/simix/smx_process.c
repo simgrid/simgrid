@@ -663,6 +663,10 @@ sg_host_t SIMIX_process_get_host(smx_process_t process)
   return process->host;
 }
 
+xbt_main_func_t SIMIX_process_get_code(void){
+  return SIMIX_process_self()->code;
+}
+
 /* needs to be public and without simcall because it is called
    by exceptions and logging events */
 const char* SIMIX_process_self_get_name(void) {
