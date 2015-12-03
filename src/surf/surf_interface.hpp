@@ -410,13 +410,10 @@ typedef struct {
  */
 XBT_PUBLIC_CLASS Resource {
 public:
-  /**
-   * @brief Resource constructor
-   */
   Resource();
 
   /**
-   * @brief Resource constructor
+   * @brief Constructor of non-LMM Resources
    *
    * @param model Model associated to this Resource
    * @param name The name of the Resource
@@ -425,7 +422,7 @@ public:
   Resource(Model *model, const char *name, xbt_dict_t props);
 
   /**
-   * @brief Resource constructor
+   * @brief Constructor of LMM Resources
    *
    * @param model Model associated to this Resource
    * @param name The name of the Resource
@@ -446,30 +443,15 @@ public:
    */
   Resource(Model *model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
 
-  /**
-   * @brief Resource destructor
-   */
   virtual ~Resource();
 
-  /**
-   * @brief Get the Model of the current Resource
-   *
-   * @return The Model of the current Resource
-   */
+  /** @brief Get the Model of the current Resource */
   Model *getModel();
 
-  /**
-   * @brief Get the name of the current Resource
-   *
-   * @return The name of the current Resource
-   */
+  /** @brief Get the name of the current Resource */
   const char *getName();
 
-  /**
-   * @brief Get the properties of the current Resource
-   *
-   * @return The properties of the current Resource
-   */
+  /** @brief Get the properties of the current Resource */
   virtual xbt_dict_t getProperties();
 
   /**
@@ -482,41 +464,19 @@ public:
    */
   virtual void updateState(tmgr_trace_event_t event_type, double value, double date)=0;
 
-  /**
-   * @brief Check if the current Resource is used
-   * @return true if the current Resource is used, false otherwise
-   */
+  /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool isUsed()=0;
 
-  /**
-   * @brief Check if the current Resource is active
-   *
-   * @return true if the current Resource is active, false otherwise
-   */
+  /** @brief Check if the current Resource is active */
   bool isOn();
-
-  /**
-   * @brief Turn on the current Resource
-   */
+  /** @brief Turn on the current Resource */
   void turnOn();
-
-  /**
-   * @brief Turn off the current Resource
-   */
+  /** @brief Turn off the current Resource */
   void turnOff();
 
-  /**
-   * @brief Get the [state](\ref e_surf_resource_state_t) of the current Resource
-   *
-   * @return The state of the currenrt Resource
-   */
+  /** @brief Get the [state](\ref e_surf_resource_state_t) of the current Resource */
   virtual e_surf_resource_state_t getState();
-
-  /**
-   * @brief Set the [state](\ref e_surf_resource_state_t) of the current Resource
-   *
-   * @param state The new state of the current Resource
-   */
+  /** @brief Set the [state](\ref e_surf_resource_state_t) of the current Resource */
   virtual void setState(e_surf_resource_state_t state);
 
 private:
@@ -526,13 +486,9 @@ private:
   bool m_running;
   e_surf_resource_state_t m_stateCurrent;
 
-  /* LMM */
-public:
-  /**
-   * @brief Get the lmm constraint associated to this Resource if it is part of a LMM component
-   *
-   * @return The lmm constraint associated to this Resource
-   */
+
+public: /* LMM */
+  /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component */
   lmm_constraint_t getConstraint();
 private:
   lmm_constraint_t p_constraint;
