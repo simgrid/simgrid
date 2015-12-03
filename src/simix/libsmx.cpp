@@ -20,7 +20,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
-#include "popping_bodies.c"
+#include "popping_bodies.cpp"
 
 /**
  * \ingroup simix_host_management
@@ -299,7 +299,7 @@ void simcall_process_execution_set_affinity(smx_synchro_t execution, sg_host_t h
  */
 e_smx_state_t simcall_process_execution_wait(smx_synchro_t execution)
 {
-  return simcall_BODY_process_execution_wait(execution);
+  return (e_smx_state_t) simcall_BODY_process_execution_wait(execution);
 }
 
 
@@ -766,7 +766,7 @@ XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int aut
  */
 XBT_PUBLIC(smx_process_t) simcall_process_restart(smx_process_t process)
 {
-  return simcall_BODY_process_restart(process);
+  return (smx_process_t) simcall_BODY_process_restart(process);
 }
 /**
  * \ingroup simix_process_management
@@ -783,7 +783,7 @@ e_smx_state_t simcall_process_sleep(double duration)
 {
   /* checking for infinite values */
   xbt_assert(isfinite(duration), "duration is not finite!");
-  return simcall_BODY_process_sleep(duration);
+  return (e_smx_state_t) simcall_BODY_process_sleep(duration);
 }
 
 /**

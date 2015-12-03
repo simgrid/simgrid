@@ -1,6 +1,6 @@
 /* context_base - Code factorization across context switching implementations */
 
-/* Copyright (c) 2010-2014. The SimGrid Team.
+/* Copyright (c) 2010-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ smx_ctx_base_factory_create_context_sized(size_t size, xbt_main_func_t code,
                                           void_pfn_smxprocess_t cleanup_func,
                                           smx_process_t process)
 {
-  smx_context_t context = xbt_malloc0(size);
+  smx_context_t context = (smx_context_t) xbt_malloc0(size);
 
   /* Store the address of the stack in heap to compare it apart of heap comparison */
   if(MC_is_active())

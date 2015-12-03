@@ -193,7 +193,7 @@ double SIMIX_host_get_wattmax_at(sg_host_t host,int pstate) {
 
 void _SIMIX_host_free_process_arg(void *data)
 {
-  smx_process_arg_t arg = *(void**)data;
+  smx_process_arg_t arg = *(smx_process_arg_t*)data;
   int i;
   for (i = 0; i < arg->argc; i++)
     xbt_free(arg->argv[i]);
@@ -274,7 +274,7 @@ void SIMIX_host_restart_processes(sg_host_t host)
                                             NULL);
     } else {
       simcall_process_create(arg->argv[0],
-                             arg->code,
+                             (xbt_main_func_t) arg->code,
                              NULL,
                              arg->hostname,
                              arg->kill_time,
@@ -308,7 +308,7 @@ smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
      double flops_amount, double priority, double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
-  smx_synchro_t synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  smx_synchro_t synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_EXECUTE;
   synchro->name = xbt_strdup(name);
   synchro->state = SIMIX_RUNNING;
@@ -351,7 +351,7 @@ smx_synchro_t SIMIX_process_parallel_execute(const char *name,
   int i;
 
   /* alloc structures and initialize */
-  smx_synchro_t synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  smx_synchro_t synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_PARALLEL_EXECUTE;
   synchro->name = xbt_strdup(name);
   synchro->state = SIMIX_RUNNING;

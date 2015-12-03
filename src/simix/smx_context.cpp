@@ -220,7 +220,7 @@ void SIMIX_context_stack_delete(void *stack)
  * for the user contexts.
  * \return 1 if parallelism is used
  */
-XBT_INLINE int SIMIX_context_is_parallel(void) {
+int SIMIX_context_is_parallel(void) {
   return smx_parallel_contexts > 1;
 }
 
@@ -229,7 +229,7 @@ XBT_INLINE int SIMIX_context_is_parallel(void) {
  * for the user contexts.
  * \return the number of threads (1 means no parallelism)
  */
-XBT_INLINE int SIMIX_context_get_nthreads(void) {
+int SIMIX_context_get_nthreads(void) {
   return smx_parallel_contexts;
 }
 
@@ -266,7 +266,7 @@ void SIMIX_context_set_nthreads(int nb_threads) {
  * \return when the number of user processes ready to run is above
  * this threshold, they are run in parallel
  */
-XBT_INLINE int SIMIX_context_get_parallel_threshold(void) {
+int SIMIX_context_get_parallel_threshold(void) {
   return smx_parallel_threshold;
 }
 
@@ -279,7 +279,7 @@ XBT_INLINE int SIMIX_context_get_parallel_threshold(void) {
  * \param threshold when the number of user processes ready to run is above
  * this threshold, they are run in parallel
  */
-XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold) {
+void SIMIX_context_set_parallel_threshold(int threshold) {
   smx_parallel_threshold = threshold;
 }
 
@@ -288,7 +288,7 @@ XBT_INLINE void SIMIX_context_set_parallel_threshold(int threshold) {
  * parallel.
  * \return how threads are synchronized if processes are run in parallel
  */
-XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void) {
+e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void) {
   return smx_parallel_synchronization_mode;
 }
 
@@ -297,7 +297,7 @@ XBT_INLINE e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void) {
  * parallel.
  * \param mode how to synchronize threads if processes are run in parallel
  */
-XBT_INLINE void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
+void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
   smx_parallel_synchronization_mode = mode;
 }
 
@@ -305,7 +305,7 @@ XBT_INLINE void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
  * \brief Returns the current context of this thread.
  * \return the current context of this thread
  */
-XBT_INLINE smx_context_t SIMIX_context_get_current(void)
+smx_context_t SIMIX_context_get_current(void)
 {
   if (SIMIX_context_is_parallel()) {
 #ifdef HAVE_THREAD_LOCAL_STORAGE
@@ -323,7 +323,7 @@ XBT_INLINE smx_context_t SIMIX_context_get_current(void)
  * \brief Sets the current context of this thread.
  * \param context the context to set
  */
-XBT_INLINE void SIMIX_context_set_current(smx_context_t context)
+void SIMIX_context_set_current(smx_context_t context)
 {
   if (SIMIX_context_is_parallel()) {
 #ifdef HAVE_THREAD_LOCAL_STORAGE

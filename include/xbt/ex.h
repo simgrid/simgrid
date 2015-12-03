@@ -291,7 +291,7 @@ typedef struct {
  * (that's where we get the process name for the logs and the exception storage)
  *  -- do not mess with it --
  */
-typedef struct {
+typedef struct xbt_running_ctx_t {
   __ex_mctx_t *ctx_mctx;        /* permanent machine context of enclosing try/catch */
   int ctx_caught;               /* temporary flag whether exception was caught */
   volatile xbt_ex_t exception;  /* temporary exception storage */
@@ -304,7 +304,21 @@ typedef struct {
                  /* backtrace */ 0, NULL, /* bt[] */ } }
 
 XBT_PUBLIC_DATA(const xbt_running_ctx_t) __xbt_ex_ctx_initializer;
-#define XBT_RUNNING_CTX_INITIALIZE(ctx) (*(ctx) = __xbt_ex_ctx_initializer)
+
+// #define XBT_RUNNING_CTX_INITIALIZE(ctx) (*(ctx) = __xbt_ex_ctx_initializer)
+
+#define XBT_RUNNING_CTX_INITIALIZE(ctx) \
+  (ctx)->ctx_mctx = NULL; \
+  (ctx)->ctx_caught = 0; \
+  (ctx)->exception.msg = NULL; \
+  (ctx)->exception.category = unknown_error; \
+  (ctx)->exception.value = 0; \
+  (ctx)->exception.procname = NULL; \
+  (ctx)->exception.pid = 0; \
+  (ctx)->exception.file = NULL; \
+  (ctx)->exception.line = 0; \
+  (ctx)->exception.used = 0; \
+  (ctx)->exception.bt_strings = NULL;
 
 /* the exception context */
 typedef xbt_running_ctx_t *(*xbt_running_ctx_fetcher_t) (void);

@@ -66,7 +66,7 @@ smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
            sg_host_get_name(host));
   }
 
-  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_IO;
   synchro->name = NULL;
   synchro->category = NULL;
@@ -98,7 +98,7 @@ smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
            sg_host_get_name(host));
   }
 
-  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_IO;
   synchro->name = NULL;
   synchro->category = NULL;
@@ -130,7 +130,7 @@ smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host)
            sg_host_get_name(host));
   }
 
-  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_IO;
   synchro->name = NULL;
   synchro->category = NULL;
@@ -162,7 +162,7 @@ smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
            sg_host_get_name(host));
   }
 
-  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_IO;
   synchro->name = NULL;
   synchro->category = NULL;
@@ -274,7 +274,8 @@ sg_size_t SIMIX_storage_get_used_size(smx_process_t process, smx_storage_t stora
 
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
   xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
-  return surf_resource_get_properties(surf_storage_resource_priv(storage));
+  return (xbt_dict_t) surf_resource_get_properties((surf_cpp_resource_t)
+    surf_storage_resource_priv(storage));
 }
 
 const char* SIMIX_storage_get_name(smx_storage_t storage){

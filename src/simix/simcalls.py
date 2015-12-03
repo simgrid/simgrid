@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2014. The SimGrid Team. All rights reserved.
+# Copyright (c) 2014-2015. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -58,7 +58,7 @@ class Simcall(object):
   def check(self):
       # libsmx.c  simcall_BODY_
       if self.simcalls_BODY is None:
-          f = open('libsmx.c')
+          f = open('libsmx.cpp')
           self.simcalls_BODY = set(re.findall('simcall_BODY_(.*?)\(', f.read()))
           f.close()
       if self.name not in self.simcalls_BODY:
@@ -98,7 +98,7 @@ class Simcall(object):
     return '  SIMCALL_%s,'%(self.name.upper())
 
   def string(self):
-    return '  [SIMCALL_%s] = "SIMCALL_%s",'%(self.name.upper(), self.name.upper())	
+    return '  "SIMCALL_%s",'% self.name.upper()
 
   def accessors(self):
     res = []
@@ -168,7 +168,8 @@ class Simcall(object):
       res.append('      SIMIX_simcall_handle(&self->simcall, 0);')
       res.append('    }    ')   
       if self.res.type != 'void':
-          res.append('    return self->simcall.result.%s;'%self.res.field())
+          res.append('    return (%s) self->simcall.result.%s;' % 
+              (self.res.rettype(), self.res.field()))
       else:
           res.append('    ')
       res.append('  }')
@@ -274,10 +275,10 @@ if __name__=='__main__':
   fd.close()
 
   ###
-  ### smx_popping_generated.c
+  ### smx_popping_generated.cpp
   ###
   
-  fd = header("popping_generated.c")
+  fd = header("popping_generated.cpp")
   
   fd.write('#include <xbt/base.h>\n');
   fd.write('#include "smx_private.h"\n');
@@ -290,9 +291,9 @@ if __name__=='__main__':
   fd.write('/** @brief Simcalls\' names (generated from src/simix/simcalls.in) */\n')
   fd.write('const char* simcall_names[] = {\n')
 
+  fd.write('   "SIMCALL_NONE",');
   handle(fd, Simcall.string, simcalls, simcalls_dict)
 
-  fd.write('[SIMCALL_NONE] = "NONE"\n')
   fd.write('};\n\n')
 
 
@@ -325,9 +326,9 @@ if __name__=='__main__':
   fd.close()
   
   ###
-  ### smx_popping_bodies.c
+  ### smx_popping_bodies.cpp
   ###
-  fd = header('popping_bodies.c')
+  fd = header('popping_bodies.cpp')
   fd.write('#include "smx_private.h"\n')
   fd.write('#include "src/mc/mc_forward.h"\n')
   fd.write('#include "xbt/ex.h"\n')

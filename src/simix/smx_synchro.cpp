@@ -25,7 +25,7 @@ static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
   XBT_IN("(%p, %f)",smx_host,timeout);
 
   smx_synchro_t sync;
-  sync = xbt_mallocator_get(simix_global->synchro_mallocator);
+  sync = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
   sync->type = SIMIX_SYNC_SYNCHRO;
   sync->name = xbt_strdup("synchro");
   sync->synchro.sleep = surf_host_sleep(smx_host, timeout);
@@ -93,7 +93,7 @@ void SIMIX_post_synchro(smx_synchro_t synchro)
 static void SIMIX_synchro_finish(smx_synchro_t synchro)
 {
   XBT_IN("(%p)",synchro);
-  smx_simcall_t simcall = xbt_fifo_shift(synchro->simcalls);
+  smx_simcall_t simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls);
 
   switch (synchro->state) {
 
@@ -208,7 +208,6 @@ void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex){
 void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
 {
   XBT_IN("(%p, %p)",mutex,issuer);
-  smx_process_t p;              /*process to wake up */
 
   /* If the mutex is not owned by the issuer, that's not good */
   if (issuer != mutex->owner)
@@ -216,7 +215,8 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
 			  SIMIX_process_get_name(mutex->owner),SIMIX_process_get_PID(mutex->owner));
 
   if (xbt_swag_size(mutex->sleeping) > 0) {
-    p = xbt_swag_extract(mutex->sleeping);
+    /*process to wake up */
+    smx_process_t p = (smx_process_t) xbt_swag_extract(mutex->sleeping);
     SIMIX_synchro_destroy(p->waiting_synchro);
     p->waiting_synchro = NULL;
     mutex->owner = p;
@@ -333,7 +333,7 @@ void SIMIX_cond_signal(smx_cond_t cond)
 
   /* If there are processes waiting for the condition choose one and try 
      to make it acquire the mutex */
-  if ((proc = xbt_swag_extract(cond->sleeping))) {
+  if ((proc = (smx_process_t) xbt_swag_extract(cond->sleeping))) {
 
     /* Destroy waiter's synchronization */
     SIMIX_synchro_destroy(proc->waiting_synchro);
@@ -435,7 +435,7 @@ void SIMIX_sem_release(smx_sem_t sem)
   smx_process_t proc;
 
   XBT_DEBUG("Sem release semaphore %p", sem);
-  if ((proc = xbt_swag_extract(sem->sleeping))) {
+  if ((proc = (smx_process_t) xbt_swag_extract(sem->sleeping))) {
     SIMIX_synchro_destroy(proc->waiting_synchro);
     proc->waiting_synchro = NULL;
     SIMIX_simcall_answer(&proc->simcall);
