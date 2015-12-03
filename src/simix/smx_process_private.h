@@ -61,6 +61,7 @@ typedef struct s_smx_process {
   int argc;
   char **argv;
   smx_timer_t kill_timer;
+  int segment_index;    /*Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 } s_smx_process_t;
 
 
@@ -107,6 +108,9 @@ XBT_PRIVATE void SIMIX_process_sleep_resume(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
 XBT_PRIVATE smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer);
+
+void SIMIX_segment_index_set(smx_process_t, int);
+extern void (*SMPI_switch_data_segment)(int);
 
 SG_END_DECL()
 

@@ -40,6 +40,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
 smx_global_t simix_global = NULL;
 static xbt_heap_t simix_timers = NULL;
 
+void (*SMPI_switch_data_segment)(int) = NULL;
+
 static void* SIMIX_synchro_mallocator_new_f(void);
 static void SIMIX_synchro_mallocator_free_f(void* synchro);
 static void SIMIX_synchro_mallocator_reset_f(void* synchro);

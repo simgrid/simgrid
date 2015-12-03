@@ -622,7 +622,7 @@ void smpi_really_switch_data_segment(int dest) {
 #ifdef HAVE_PRIVATIZATION
   int i;
   if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
-    for (i=0; i< SIMIX_process_count(); i++){
+    for (i=0; i< smpi_process_count(); i++){
       memcpy(smpi_privatisation_regions[i].address,
         TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
     }
@@ -741,7 +741,7 @@ void smpi_initialize_global_memory_segments(){
   smpi_privatisation_regions = (smpi_privatisation_region_t) malloc(
     smpi_process_count() * sizeof(struct s_smpi_privatisation_region));
 
-  for (i=0; i< SIMIX_process_count(); i++){
+  for (i=0; i< smpi_process_count(); i++){
       //create SIMIX_process_count() mappings of this size with the same data inside
       void *address = NULL;
       char path[] = "/dev/shm/my-buffer-XXXXXX";

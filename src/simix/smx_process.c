@@ -12,6 +12,10 @@
 #include "mc/mc_replay.h"
 #include "mc/mc_client.h"
 
+#ifdef HAVE_SMPI
+#include "smpi/private.h"
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
                                 "Logging specific to SIMIX (process)");
 
@@ -255,9 +259,20 @@ smx_process_t SIMIX_process_create(
     process->data = data;
     process->comms = xbt_fifo_new();
     process->simcall.issuer = process;
+    /* Initiliaze data segment to default value */
+    SIMIX_segment_index_set(process, -1);
 
-     if (parent_process) {
+     if (parent_process != NULL) {
        process->ppid = SIMIX_process_get_PID(parent_process);
+       /* SMPI process have their own data segment and
+          each other inherit from their father */
+       if(smpi_privatize_global_variables){
+         if( parent_process->pid != 0){
+           SIMIX_segment_index_set(process, parent_process->segment_index);
+         } else {
+           SIMIX_segment_index_set(process, process->pid - 1);
+         }
+       }
      } else {
        process->ppid = -1;
      }
@@ -869,6 +884,9 @@ void SIMIX_process_yield(smx_process_t self)
     SMX_THROW();
   }
 
+  if(SMPI_switch_data_segment && self->segment_index != -1){
+    SMPI_switch_data_segment(self->segment_index);
+  }
 }
 
 /* callback: context fetching */
@@ -1008,4 +1026,8 @@ smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer)
 
   }
   return new_process;
+}
+
+void SIMIX_segment_index_set(smx_process_t proc, int index){
+  proc->segment_index = index;
 }

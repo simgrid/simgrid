@@ -82,11 +82,18 @@ void smpi_process_init(int *argc, char ***argv)
     proc->context->cleanup_func=SIMIX_process_cleanup;
     char* instance_id = (*argv)[1];
     int rank = atoi((*argv)[2]);
-    index = smpi_process_index_of_smx_process(proc);
+    /* Now using segment index of the process */
+    index = proc->segment_index;
 
     if(!index_to_process_data){
       index_to_process_data=(int*)xbt_malloc(SIMIX_process_count()*sizeof(int));
     }
+
+    if(smpi_privatize_global_variables){
+      /* Done at the process's creation */
+      SMPI_switch_data_segment(index);
+    }
+
     MPI_Comm* temp_comm_world;
     xbt_bar_t temp_bar;
     smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world ,&temp_bar);
@@ -110,10 +117,6 @@ void smpi_process_init(int *argc, char ***argv)
     // set the process attached to the mailbox
     simcall_rdv_set_receiver(data->mailbox_small, proc);
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
-
-    if(smpi_privatize_global_variables){
-      smpi_switch_data_segment(index);
-    }
 
   }
   if (smpi_process_data() == NULL)
@@ -647,6 +650,9 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
   TRACE_add_end_function(TRACE_smpi_release);
 
   SIMIX_global_init(&argc, argv);
+  MSG_init(&argc,argv);
+
+  SMPI_switch_data_segment = smpi_switch_data_segment;
 
   smpi_init_options();
 
