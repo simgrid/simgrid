@@ -19,7 +19,7 @@ XBT_EXPORT_NO_IMPORT(unsigned long int) smx_total_comms = 0;
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_synchro_t comm);
 static smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type);
-static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_synchro_t comm);
+static inline void SIMIX_rdv_push(smx_rdv_t rdv, smx_synchro_t comm);
 static smx_synchro_t SIMIX_fifo_probe_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
                                         int (*match_fun)(void *, void *,smx_synchro_t),
                                         void *user_data, smx_synchro_t my_synchro);
@@ -46,7 +46,7 @@ void SIMIX_network_exit(void)
 smx_rdv_t SIMIX_rdv_create(const char *name)
 {
   /* two processes may have pushed the same rdv_create simcall at the same time */
-  smx_rdv_t rdv = name ? xbt_dict_get_or_null(rdv_points, name) : NULL;
+  smx_rdv_t rdv = name ? (smx_rdv_t) xbt_dict_get_or_null(rdv_points, name) : NULL;
 
   if (!rdv) {
     rdv = xbt_new0(s_smx_rvpoint_t, 1);
@@ -87,7 +87,7 @@ xbt_dict_t SIMIX_get_rdv_points()
 
 smx_rdv_t SIMIX_rdv_get_by_name(const char *name)
 {
-  return xbt_dict_get_or_null(rdv_points, name);
+  return (smx_rdv_t) xbt_dict_get_or_null(rdv_points, name);
 }
 
 int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host)
@@ -106,7 +106,8 @@ int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host)
 
 smx_synchro_t SIMIX_rdv_get_head(smx_rdv_t rdv)
 {
-  return xbt_fifo_get_item_content(xbt_fifo_get_first_item(rdv->comm_fifo));
+  return (smx_synchro_t) xbt_fifo_get_item_content(
+    xbt_fifo_get_first_item(rdv->comm_fifo));
 }
 
 /**
@@ -134,7 +135,7 @@ void SIMIX_rdv_set_receiver(smx_rdv_t rdv, smx_process_t process)
  *  \param rdv The rendez-vous point
  *  \param comm The communication synchro
  */
-static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_synchro_t comm)
+static inline void SIMIX_rdv_push(smx_rdv_t rdv, smx_synchro_t comm)
 {
   xbt_fifo_push(rdv->comm_fifo, comm);
   comm->comm.rdv = rdv;
@@ -145,7 +146,7 @@ static XBT_INLINE void SIMIX_rdv_push(smx_rdv_t rdv, smx_synchro_t comm)
  *  \param rdv The rendez-vous point
  *  \param comm The communication synchro
  */
-XBT_INLINE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_synchro_t comm)
+void SIMIX_rdv_remove(smx_rdv_t rdv, smx_synchro_t comm)
 {
   xbt_fifo_remove(rdv->comm_fifo, comm);
   comm->comm.rdv = NULL;
@@ -240,7 +241,7 @@ smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type)
   smx_synchro_t synchro;
 
   /* alloc structures */
-  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
 
   synchro->type = SIMIX_SYNC_COMMUNICATE;
   synchro->state = SIMIX_WAITING;
@@ -552,12 +553,16 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int type,
     //find a match in the already received fifo
       XBT_DEBUG("first try in the perm recv mailbox");
 
-    other_synchro = SIMIX_fifo_probe_comm(rdv->done_comm_fifo, smx_type, match_fun, data, this_synchro);
+    other_synchro = SIMIX_fifo_probe_comm(
+      rdv->done_comm_fifo, (e_smx_comm_type_t) smx_type,
+      match_fun, data, this_synchro);
   }
  // }else{
     if(!other_synchro){
         XBT_DEBUG("try in the normal mailbox");
-        other_synchro = SIMIX_fifo_probe_comm(rdv->comm_fifo, smx_type, match_fun, data, this_synchro);
+        other_synchro = SIMIX_fifo_probe_comm(
+          rdv->comm_fifo, (e_smx_comm_type_t) smx_type,
+          match_fun, data, this_synchro);
     }
 //  }
   if(other_synchro)other_synchro->comm.refcount--;
@@ -709,7 +714,7 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
  *  \brief Starts the simulation of a communication synchro.
  *  \param synchro the communication synchro
  */
-static XBT_INLINE void SIMIX_comm_start(smx_synchro_t synchro)
+static inline void SIMIX_comm_start(smx_synchro_t synchro)
 {
   /* If both the sender and the receiver are already there, start the communication */
   if (synchro->state == SIMIX_READY) {
@@ -764,7 +769,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
   unsigned int destroy_count = 0;
   smx_simcall_t simcall;
 
-  while ((simcall = xbt_fifo_shift(synchro->simcalls))) {
+  while ((simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls))) {
 
     /* If a waitany simcall is waiting for this synchro to finish, then remove
        it from the other synchros in the waitany list. Afterwards, get the

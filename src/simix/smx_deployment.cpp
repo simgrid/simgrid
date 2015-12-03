@@ -63,13 +63,12 @@ void SIMIX_launch_application(const char *file)
  * \param name the reference name of the function.
  * \param code the function
  */
-XBT_INLINE void SIMIX_function_register(const char *name,
+void SIMIX_function_register(const char *name,
                                         xbt_main_func_t code)
 {
   xbt_assert(simix_global,
-              "SIMIX_global_init has to be called before SIMIX_function_register.");
-
-  xbt_dict_set(simix_global->registered_functions, name, code, NULL);
+              "SIMIX_global_init has to be called before SIMIX_function_register."); 
+  xbt_dict_set(simix_global->registered_functions, name, (void*) code, NULL);
 }
 
 static xbt_main_func_t default_function = NULL;

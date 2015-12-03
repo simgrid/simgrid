@@ -149,7 +149,7 @@ static void install_segvhandler(void)
 #endif
 /********************************* SIMIX **************************************/
 
-XBT_INLINE double SIMIX_timer_next(void)
+double SIMIX_timer_next(void)
 {
   return xbt_heap_size(simix_timers) > 0 ? xbt_heap_maxkey(simix_timers) : -1.0;
 }
@@ -329,7 +329,7 @@ void SIMIX_clean(void)
  *
  * \return Return the clock.
  */
-XBT_INLINE double SIMIX_get_clock(void)
+double SIMIX_get_clock(void)
 {
   if(MC_is_active() || MC_record_replay_is_active()){
     return MC_process_clock_get(SIMIX_process_self());
@@ -486,7 +486,7 @@ void SIMIX_run(void)
     while (xbt_heap_size(simix_timers) > 0 && SIMIX_get_clock() >= SIMIX_timer_next()) {
        //FIXME: make the timers being real callbacks
        // (i.e. provide dispatchers that read and expand the args)
-       timer = xbt_heap_pop(simix_timers);
+       timer = (smx_timer_t) xbt_heap_pop(simix_timers);
        if (timer->func)
          timer->func(timer->args);
        xbt_free(timer);
@@ -546,7 +546,7 @@ void SIMIX_run(void)
  *   \param arg Parameters of the function
  *
  */
-XBT_INLINE smx_timer_t SIMIX_timer_set(double date, void (*function)(void*), void *arg)
+smx_timer_t SIMIX_timer_set(double date, void (*function)(void*), void *arg)
 {
   smx_timer_t timer = xbt_new0(s_smx_timer_t, 1);
 
@@ -557,12 +557,12 @@ XBT_INLINE smx_timer_t SIMIX_timer_set(double date, void (*function)(void*), voi
   return timer;
 }
 /** @brief cancels a timer that was added earlier */
-XBT_INLINE void SIMIX_timer_remove(smx_timer_t timer) {
+void SIMIX_timer_remove(smx_timer_t timer) {
 	xbt_heap_rm_elm(simix_timers, timer, timer->date);
 }
 
 /** @brief Returns the date at which the timer will trigger (or 0 if NULL timer) */
-XBT_INLINE double SIMIX_timer_get_date(smx_timer_t timer) {
+double SIMIX_timer_get_date(smx_timer_t timer) {
 	return timer?timer->date:0;
 }
 
@@ -574,7 +574,7 @@ XBT_INLINE double SIMIX_timer_get_date(smx_timer_t timer) {
  * to call SIMIX_process_create().
  * \param function create process function
  */
-XBT_INLINE void SIMIX_function_register_process_create(smx_creation_func_t
+void SIMIX_function_register_process_create(smx_creation_func_t
                                                        function)
 {
   simix_global->create_process_function = function;
@@ -588,7 +588,7 @@ XBT_INLINE void SIMIX_function_register_process_create(smx_creation_func_t
  *
  * \param function Kill process function
  */
-XBT_INLINE void SIMIX_function_register_process_kill(void_pfn_smxprocess_t
+void SIMIX_function_register_process_kill(void_pfn_smxprocess_t
                                                      function)
 {
   simix_global->kill_process_function = function;
@@ -602,7 +602,7 @@ XBT_INLINE void SIMIX_function_register_process_kill(void_pfn_smxprocess_t
  *
  * \param function cleanup process function
  */
-XBT_INLINE void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t
+void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t
                                                         function)
 {
   simix_global->cleanup_process_function = function;
@@ -693,5 +693,5 @@ xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char 
 }
 xbt_dict_t SIMIX_asr_get_properties(const char *name)
 {
-  return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
+  return (xbt_dict_t) xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
 }

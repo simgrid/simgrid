@@ -155,11 +155,11 @@ generates the following files:
 
 - smx_popping_accessors.h:
   Helper functions to get and set simcall arguments and results
-- smx_popping_bodies.c:
+- smx_popping_bodies.cpp:
   The BODY function of each simcall
 - smx_popping_enum.c:
   Definition of type `enum e_smx_simcall_t` (one value per existing simcall)
-- smx_popping_generated.c:
+- smx_popping_generated.cpp:
   Definitions of `simcall_names[]` (debug name of each simcall), and
   SIMIX_simcall_enter() that deals with the simcall from within the kernel
 

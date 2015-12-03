@@ -1,6 +1,6 @@
 /* context_raw - fast context switching inspired from System V ucontexts   */
 
-/* Copyright (c) 2009-2014. The SimGrid Team.
+/* Copyright (c) 2009-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -50,9 +50,9 @@ long long par_window=(long long)HUGE_VAL,seq_window=0;
 static unsigned long raw_process_index = 0;   /* index of the next process to run in the
                                                * list of runnable processes */
 static smx_ctx_raw_t raw_maestro_context;
-extern raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
+extern "C" raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
-extern void raw_swapcontext(raw_stack_t* old, raw_stack_t new);
+extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);
 
 #if PROCESSOR_x86_64
 __asm__ (
@@ -198,7 +198,7 @@ raw_stack_t raw_makecontext(char* malloced_stack, int stack_size,
    THROW_UNIMPLEMENTED;
 }
 
-void raw_swapcontext(raw_stack_t* old, raw_stack_t new) {
+void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context) {
    THROW_UNIMPLEMENTED;
 }
 
@@ -350,7 +350,7 @@ smx_ctx_raw_create_context(xbt_main_func_t code, int argc, char **argv,
   /* if the user provided a function for the process then use it,
      otherwise it is the context for maestro */
      if (code) {
-       context->malloced_stack = SIMIX_context_stack_new();
+       context->malloced_stack = (char*) SIMIX_context_stack_new();
        context->stack_top =
            raw_makecontext(context->malloced_stack,
                            smx_context_usable_stack_size,
@@ -537,7 +537,7 @@ static void smx_ctx_raw_suspend_parallel(smx_context_t context)
 {
 #ifdef CONTEXT_THREADS
   /* determine the next context */
-  smx_process_t next_work = xbt_parmap_next(raw_parmap);
+  smx_process_t next_work = (smx_process_t) xbt_parmap_next(raw_parmap);
   smx_context_t next_context;
   raw_stack_t next_stack;
 
@@ -691,7 +691,8 @@ static void smx_ctx_raw_runall(void)
   double elapsed = 0;
 #endif
   unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
-  if (SIMIX_context_is_parallel() && SIMIX_context_get_parallel_threshold()<nb_processes) {
+  if (SIMIX_context_is_parallel()
+    && (unsigned long) SIMIX_context_get_parallel_threshold() < nb_processes) {
         XBT_DEBUG("Runall // %lu", nb_processes);
         simix_global->context_factory->suspend = smx_ctx_raw_suspend_parallel;
 

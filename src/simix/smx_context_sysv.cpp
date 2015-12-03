@@ -122,7 +122,7 @@ smx_ctx_sysv_create_context(xbt_main_func_t code, int argc, char **argv,
      otherwise it is the context for maestro */
   if (code) {
 
-    context->stack = SIMIX_context_stack_new();
+    context->stack = (char*) SIMIX_context_stack_new();
     getcontext(&(context->uc));
 
     context->uc.uc_link = NULL;
@@ -179,9 +179,8 @@ static void smx_ctx_sysv_wrapper(int first, ...)
   ctx_addr[0] = first;
   if (CTX_ADDR_LEN > 1) {
     va_list ap;
-    int i;
     va_start(ap, first);
-    for (i = 1; i < CTX_ADDR_LEN; i++)
+    for (unsigned i = 1; i < CTX_ADDR_LEN; i++)
       ctx_addr[i] = va_arg(ap, int);
     va_end(ap);
   }
@@ -287,7 +286,7 @@ static void smx_ctx_sysv_resume_parallel(smx_process_t simulated_process_to_run)
 static void smx_ctx_sysv_suspend_parallel(smx_context_t context) {
 #ifdef CONTEXT_THREADS
   /* determine the next context */
-  smx_process_t next_work = xbt_parmap_next(sysv_parmap);  // get the next soul to embody now
+  smx_process_t next_work = (smx_process_t) xbt_parmap_next(sysv_parmap);  // get the next soul to embody now
   smx_context_t next_context;
   ucontext_t* next_stack;                                  // will contain the next soul to run, either simulated or initial minion's one
 

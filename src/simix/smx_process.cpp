@@ -24,7 +24,7 @@ unsigned long simix_process_maxpid = 0;
  *
  * \return The SIMIX process
  */
-XBT_INLINE smx_process_t SIMIX_process_self(void)
+smx_process_t SIMIX_process_self(void)
 {
   smx_context_t self_context = SIMIX_context_self();
 
@@ -58,7 +58,7 @@ void SIMIX_process_cleanup(smx_process_t process)
 
   /* cancel non-blocking communications */
   smx_synchro_t synchro;
-  while ((synchro = xbt_fifo_pop(process->comms))) {
+  while ((synchro = (smx_synchro_t) xbt_fifo_pop(process->comms))) {
 
     /* make sure no one will finish the comm after this process is destroyed,
      * because src_proc or dst_proc would be an invalid pointer */
@@ -113,7 +113,7 @@ void SIMIX_process_empty_trash(void)
 {
   smx_process_t process = NULL;
 
-  while ((process = xbt_swag_extract(simix_global->process_to_destroy))) {
+  while ((process = (smx_process_t) xbt_swag_extract(simix_global->process_to_destroy))) {
     XBT_DEBUG("Getting rid of %p",process);
 
     SIMIX_context_free(process->context);
@@ -143,7 +143,7 @@ void SIMIX_create_maestro_process()
   maestro->pid = simix_process_maxpid++;
   maestro->ppid = -1;
   maestro->name = (char *) "";
-  maestro->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+  maestro->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
   maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
   maestro->simcall.issuer = maestro;
@@ -214,7 +214,7 @@ void* simcall_HANDLER_process_create(smx_simcall_t simcall,
 
 static void kill_process(void* process)
 {
-  return simix_global->kill_process_function(process);
+  simix_global->kill_process_function((smx_process_t) process);
 }
 
 /**
@@ -278,7 +278,7 @@ smx_process_t SIMIX_process_create(
     XBT_VERB("Create context %s", process->name);
     process->context = SIMIX_context_new(code, argc, argv, simix_global->cleanup_process_function, process);
 
-    process->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+    process->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
     XBT_RUNNING_CTX_INITIALIZE(process->running_ctx);
 
     if(MC_is_active()){
@@ -453,7 +453,7 @@ void SIMIX_process_killall(smx_process_t issuer, int reset_pid)
 {
   smx_process_t p = NULL;
 
-  while ((p = xbt_swag_extract(simix_global->process_list))) {
+  while ((p = (smx_process_t) xbt_swag_extract(simix_global->process_list))) {
     if (p != issuer) {
       SIMIX_process_kill(p,issuer);
     }
@@ -704,7 +704,7 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synch
     surf_action_cancel(sync->sleep.surf_sleep);
 
     smx_simcall_t simcall;
-    while ((simcall = xbt_fifo_shift(sync->simcalls))) {
+    while ((simcall = (smx_simcall_t) xbt_fifo_shift(sync->simcalls))) {
       simcall_process_sleep__set__result(simcall, SIMIX_DONE);
       simcall->issuer->waiting_synchro = NULL;
       if (simcall->issuer->suspended) {
@@ -745,7 +745,6 @@ void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
 
 smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
 {
-  smx_synchro_t synchro;
   sg_host_t host = process->host;
 
   /* check if the host is active */
@@ -754,7 +753,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
            sg_host_get_name(host));
   }
 
-  synchro = xbt_mallocator_get(simix_global->synchro_mallocator);
+  smx_synchro_t synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
   synchro->type = SIMIX_SYNC_SLEEP;
   synchro->name = NULL;
   synchro->category = NULL;
@@ -774,7 +773,7 @@ void SIMIX_post_process_sleep(smx_synchro_t synchro)
   e_smx_state_t state;
   xbt_assert(synchro->type == SIMIX_SYNC_SLEEP || synchro->type == SIMIX_SYNC_JOIN);
 
-  while ((simcall = xbt_fifo_shift(synchro->simcalls))) {
+  while ((simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls))) {
 
     switch(surf_action_get_state(synchro->sleep.surf_sleep)){
       case SURF_ACTION_FAILED:
@@ -912,10 +911,9 @@ xbt_dynar_t SIMIX_process_get_runnable(void)
 smx_process_t SIMIX_process_from_PID(int PID)
 {
   smx_process_t proc;
-  xbt_swag_foreach(proc, simix_global->process_list)
-  {
-   if(proc->pid == PID)
-   return proc;
+  xbt_swag_foreach(proc, simix_global->process_list) {
+   if (proc->pid == (unsigned long) PID)
+    return proc;
   }
   return NULL;
 }

@@ -30,8 +30,8 @@ set(EXTRA_DIST
   src/simix/simcalls.in
   src/simix/simcalls.py
   src/simix/popping_private.h
-  src/simix/popping_bodies.c
-  src/simix/popping_generated.c
+  src/simix/popping_bodies.cpp
+  src/simix/popping_generated.cpp
   src/simix/popping_enum.h
   src/simix/popping_accessors.h
   src/simix/smx_host_private.h
@@ -352,22 +352,22 @@ set(SURF_SRC
   )
 
 set(SIMIX_GENERATED_SRC
-  src/simix/popping_generated.c
+  src/simix/popping_generated.cpp
   )
 set(SIMIX_SRC
-  src/simix/libsmx.c
-  src/simix/smx_context.c
-  src/simix/smx_context_base.c
-  src/simix/smx_deployment.c
-  src/simix/smx_environment.c
-  src/simix/smx_global.c
-  src/simix/smx_host.c
-  src/simix/smx_io.c
-  src/simix/smx_network.c
-  src/simix/smx_process.c
-  src/simix/smx_synchro.c
-  src/simix/smx_vm.c
-  src/simix/popping.c
+  src/simix/libsmx.cpp
+  src/simix/smx_context.cpp
+  src/simix/smx_context_base.cpp
+  src/simix/smx_deployment.cpp
+  src/simix/smx_environment.cpp
+  src/simix/smx_global.cpp
+  src/simix/smx_host.cpp
+  src/simix/smx_io.cpp
+  src/simix/smx_network.cpp
+  src/simix/smx_process.cpp
+  src/simix/smx_synchro.cpp
+  src/simix/smx_vm.cpp
+  src/simix/popping.cpp
 
   ${SIMIX_GENERATED_SRC}
   )
@@ -376,11 +376,11 @@ set(SIMIX_SRC
 if (MSVC)
   set(EXTRA_DIST
       ${EXTRA_DIST}
-      src/simix/smx_context_raw.c)
+      src/simix/smx_context_raw.cpp)
 else()
   set(SIMIX_SRC
       ${SIMIX_SRC}
-      src/simix/smx_context_raw.c)
+      src/simix/smx_context_raw.cpp)
 endif()
 
 # Boost context may not be available
@@ -777,13 +777,13 @@ set(source_of_generated_headers
 if(${CONTEXT_THREADS}) #pthread
   set(SURF_SRC
     ${SURF_SRC}
-    src/simix/smx_context_thread.c
+    src/simix/smx_context_thread.cpp
     src/xbt/xbt_os_thread.c
     )
 else() # NOT pthread
   set(EXTRA_DIST
     ${EXTRA_DIST}
-    src/simix/smx_context_thread.c
+    src/simix/smx_context_thread.cpp
     src/xbt/xbt_os_thread.c
     )
 endif()
@@ -791,12 +791,12 @@ endif()
 if(${CONTEXT_UCONTEXT}) #ucontext
   set(SURF_SRC
     ${SURF_SRC}
-    src/simix/smx_context_sysv.c
+    src/simix/smx_context_sysv.cpp
     )
 else() # NOT ucontext
   set(EXTRA_DIST
     ${EXTRA_DIST}
-    src/simix/smx_context_sysv.c
+    src/simix/smx_context_sysv.cpp
     )
 endif()
 
@@ -859,7 +859,7 @@ endif()
 if(WIN32)
   set(simgrid_sources
     ${simgrid_sources}
-    src/simix/smx_context_thread.c
+    src/simix/smx_context_thread.cpp
     src/xbt/win32_ucontext.c
     src/xbt/xbt_os_thread.c
     )
