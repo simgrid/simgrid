@@ -807,12 +807,12 @@ endif()
 if(${CONTEXT_UCONTEXT}) #ucontext
   set(SURF_SRC
     ${SURF_SRC}
-    src/simix/smx_context_sysv.cpp
+    src/simix/UContext.cpp
     )
 else() # NOT ucontext
   set(EXTRA_DIST
     ${EXTRA_DIST}
-    src/simix/smx_context_sysv.cpp
+    src/simix/UContext.cpp
     )
 endif()
 

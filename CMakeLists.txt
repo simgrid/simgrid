@@ -639,8 +639,6 @@ if(HAVE_PTHREAD)
 endif()
 
 # Temp hack to disable context:
-# set(CONTEXT_THREADS 0)
-set(CONTEXT_UCONTEXT 0)
 set(HAVE_RAWCTX 0)
 
 ###############

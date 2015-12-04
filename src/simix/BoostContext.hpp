@@ -49,6 +49,8 @@ public:
           smx_process_t process);
   ~BoostContext();
   void resume();
+private:
+  static void wrapper(int first, ...);
 };
 
 class BoostContextFactory : public ContextFactory {
