@@ -45,7 +45,7 @@ option(enable_print_message "Enable print message during config." off)
 mark_as_advanced(enable_print_message)
 
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker (hinders the simulation's performance even if turned off at runtime)" off)
-option(enable_lib_in_jar "Whether the native libraries are bundled in a Java jar file" on)
+option(enable_lib_in_jar "Whether the (stripped down) native libraries are bundled in a Java jar file" off)
 option(enable_lto "Whether we should try to activate the LTO (link time optimisation)" on)
 option(enable_jedule "Jedule output of SimDAG." off)
 option(enable_debug "Turn this off to remove all debug messages at compile time (faster, but no debug activatable)" on)
