@@ -349,7 +349,7 @@ public class Task {
 	 */
 	public native static int listenFrom(String mailbox);
 	/**
-	 * Listen whether there is a waiting task on the mailbox identified by the specified alias
+	 * Listen whether there is a task waiting (either for a send or a recv) on the mailbox identified by the specified alias
 	 */
 	public native static boolean listen(String mailbox);
 
