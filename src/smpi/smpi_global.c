@@ -13,6 +13,7 @@
 #include "simix/smx_private.h"
 #include "simgrid/sg_config.h"
 #include "mc/mc_replay.h"
+#include "msg/msg_private.h"
 
 #include <float.h>              /* DBL_MAX */
 #include <stdint.h>
@@ -103,8 +104,11 @@ void smpi_process_init(int *argc, char ***argv)
     data->index = index;
     data->instance_id = instance_id;
     data->replaying = 0;
-    xbt_free(simcall_process_get_data(proc));
-    simcall_process_set_data(proc, data);
+    //xbt_free(simcall_process_get_data(proc));
+
+  simdata_process_t simdata = simcall_process_get_data(proc);
+  simdata->data = data;
+
     if (*argc > 3) {
       free((*argv)[1]);
       memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
@@ -213,7 +217,8 @@ int smpi_global_size(void)
 
 smpi_process_data_t smpi_process_data(void)
 {
-  return SIMIX_process_self_get_data(SIMIX_process_self());
+  simdata_process_t simdata = SIMIX_process_self_get_data(SIMIX_process_self());
+  return simdata->data;
 }
 
 smpi_process_data_t smpi_process_remote_data(int index)
@@ -363,7 +368,7 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t comm,
       && ((char*)buff < smpi_start_data_exe + smpi_size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-       smpi_switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.src_proc))->index);
+       smpi_switch_data_segment(((smpi_process_data_t)(((simdata_process_t)SIMIX_process_get_data(comm->comm.src_proc))->data))->index);
        tmpbuff = (void*)xbt_malloc(buff_size);
        memcpy(tmpbuff, buff, buff_size);
   }
@@ -374,7 +379,7 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t comm,
       && ((char*)comm->comm.dst_buff < smpi_start_data_exe + smpi_size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-       smpi_switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.dst_proc))->index);
+       smpi_switch_data_segment(((smpi_process_data_t)(((simdata_process_t)SIMIX_process_get_data(comm->comm.dst_proc))->data))->index);
   }
 
 
