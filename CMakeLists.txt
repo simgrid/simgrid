@@ -268,29 +268,23 @@ else()
   endif()
 endif()
 
-# Try again to see if we have libboost-context, 
-# but only if the lib is not embeeded in the jar file to reduce the dependencies from the Java point of view
-if(enable_lib_in_jar)
-  message("   (do not check for boost-context as you are building a full jarfile)")
-  set(HAVE_BOOST_CONTEXT 0)
-else()
-  find_package(Boost 1.42 COMPONENTS context)
-  set(Boost_FOUND 1) # We don't care of whether this component is missing
+# Try again to see if we have libboost-context
+find_package(Boost 1.42 COMPONENTS context)
+set(Boost_FOUND 1) # We don't care of whether this component is missing
 
-  if(Boost_FOUND AND Boost_CONTEXT_FOUND)
-    # We should use feature detection for this instead:
-    if (Boost_VERSION LESS 105600)
-      message("Found Boost.Context API v1")
-      set(HAVE_BOOST_CONTEXT 1)
-    else()
-      message("Found Boost.Context API v2")
-      set(HAVE_BOOST_CONTEXT 2)
-    endif()
+if(Boost_FOUND AND Boost_CONTEXT_FOUND)
+  # We should use feature detection for this instead:
+  if (Boost_VERSION LESS 105600)
+    message("Found Boost.Context API v1")
+    set(HAVE_BOOST_CONTEXT 1)
   else()
-    message ("   boost        : found.")
-    message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
-    set(HAVE_BOOST_CONTEXT 0)
+    message("Found Boost.Context API v2")
+    set(HAVE_BOOST_CONTEXT 2)
   endif()
+else()
+  message ("   boost        : found.")
+  message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
+  set(HAVE_BOOST_CONTEXT 0)
 endif()
 
 # Checks for header libraries functions.
