@@ -168,7 +168,7 @@ double surf_parse_get_bandwidth(const char *string)
   return surf_parse_get_value_with_unit(string, units);
 }
 
-double surf_parse_get_power(const char *string)
+double surf_parse_get_speed(const char *string)
 {
   const struct unit_scale units[] = {
     { "yottaflops", 1e24 },
@@ -441,32 +441,31 @@ void ETag_surfxml_host(void)    {
 
   buf = A_surfxml_host_power;
   XBT_DEBUG("Buffer: %s", buf);
-  host.power_peak = xbt_dynar_new(sizeof(double), NULL);
+  host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
   if (strchr(buf, ',') == NULL){
-	  double power_value = get_cpu_power(A_surfxml_host_power);
-	  xbt_dynar_push_as(host.power_peak,double, power_value);
+	  double speed = get_cpu_speed(A_surfxml_host_power);
+	  xbt_dynar_push_as(host.speed_peak,double, speed);
   }
   else {
 	  xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
 	  int i;
 	  for (i = 0; i < xbt_dynar_length(pstate_list); i++) {
-		  double power_value;
-		  char* power_value_str;
+		  double speed;
+		  char* speed_str;
 
-		  xbt_dynar_get_cpy(pstate_list, i, &power_value_str);
-		  xbt_str_trim(power_value_str, NULL);
-		  power_value = get_cpu_power(power_value_str);
-		  xbt_dynar_push_as(host.power_peak, double, power_value);
-		  XBT_DEBUG("Power value: %f", power_value);
+		  xbt_dynar_get_cpy(pstate_list, i, &speed_str);
+		  xbt_str_trim(speed_str, NULL);
+		  speed = get_cpu_speed(speed_str);
+		  xbt_dynar_push_as(host.speed_peak, double, speed);
+		  XBT_DEBUG("Speed value: %f", speed);
 	  }
 	  xbt_dynar_free(&pstate_list);
   }
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
-  //host.power_peak = get_cpu_power(A_surfxml_host_power);
-  host.power_scale = surf_parse_get_double( A_surfxml_host_availability);
+  host.speed_scale = surf_parse_get_double( A_surfxml_host_availability);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
-  host.power_trace = tmgr_trace_new_from_file(A_surfxml_host_availability___file);
+  host.speed_trace = tmgr_trace_new_from_file(A_surfxml_host_availability___file);
   host.state_trace = tmgr_trace_new_from_file(A_surfxml_host_state___file);
   host.pstate      = surf_parse_get_int(A_surfxml_host_pstate);
 
@@ -479,7 +478,7 @@ void ETag_surfxml_host(void)    {
   host.coord = A_surfxml_host_coordinates;
 
   sg_platf_new_host(&host);
-  xbt_dynar_free(&host.power_peak);
+  xbt_dynar_free(&host.speed_peak);
   current_property_set = NULL;
 }
 
@@ -513,7 +512,7 @@ void ETag_surfxml_cluster(void){
   cluster.prefix      = A_surfxml_cluster_prefix;
   cluster.suffix      = A_surfxml_cluster_suffix;
   cluster.radical     = A_surfxml_cluster_radical;
-  cluster.power       = surf_parse_get_power(A_surfxml_cluster_power);
+  cluster.speed       = surf_parse_get_speed(A_surfxml_cluster_power);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
   cluster.bw          = surf_parse_get_bandwidth(A_surfxml_cluster_bw);
   cluster.lat         = surf_parse_get_time(A_surfxml_cluster_lat);
@@ -593,7 +592,7 @@ void STag_surfxml_cabinet(void){
   cabinet.id      = A_surfxml_cabinet_id;
   cabinet.prefix  = A_surfxml_cabinet_prefix;
   cabinet.suffix  = A_surfxml_cabinet_suffix;
-  cabinet.power   = surf_parse_get_power(A_surfxml_cabinet_power);
+  cabinet.speed   = surf_parse_get_speed(A_surfxml_cabinet_power);
   cabinet.bw      = surf_parse_get_bandwidth(A_surfxml_cabinet_bw);
   cabinet.lat     = surf_parse_get_time(A_surfxml_cabinet_lat);
   cabinet.radical = A_surfxml_cabinet_radical;
@@ -606,7 +605,7 @@ void STag_surfxml_peer(void){
   s_sg_platf_peer_cbarg_t peer = SG_PLATF_PEER_INITIALIZER;
   memset(&peer,0,sizeof(peer));
   peer.id                 = A_surfxml_peer_id;
-  peer.power              = surf_parse_get_power(A_surfxml_peer_power);
+  peer.speed              = surf_parse_get_speed(A_surfxml_peer_power);
   peer.bw_in              = surf_parse_get_bandwidth(A_surfxml_peer_bw___in);
   peer.bw_out             = surf_parse_get_bandwidth(A_surfxml_peer_bw___out);
   peer.lat                = surf_parse_get_time(A_surfxml_peer_lat);
@@ -1062,27 +1061,27 @@ int_f_void_t surf_parse = _surf_parse;
  * With XML parser
  */
 
-double get_cpu_power(const char *power)
+double get_cpu_speed(const char *str_speed)
 {
-  double power_scale = 0.0;
+  double speed = 0.0;
   const char *p, *q;
   char *generator;
   random_data_t random = NULL;
   /* randomness is inserted like this: power="$rand(my_random)" */
-  if (((p = strstr(power, "$rand(")) != NULL)
-      && ((q = strstr(power, ")")) != NULL)) {
+  if (((p = strstr(str_speed, "$rand(")) != NULL)
+      && ((q = strstr(str_speed, ")")) != NULL)) {
     if (p < q) {
       generator = xbt_malloc(q - (p + 6) + 1);
       memcpy(generator, p + 6, q - (p + 6));
       generator[q - (p + 6)] = '\0';
       random = xbt_dict_get_or_null(random_data_list, generator);
       xbt_assert(random, "Random generator %s undefined", generator);
-      power_scale = random_generate(random);
+      speed = random_generate(random);
     }
   } else {
-    power_scale = surf_parse_get_power(power);
+    speed = surf_parse_get_speed(str_speed);
   }
-  return power_scale;
+  return speed;
 }
 
 double random_min, random_max, random_mean, random_std_deviation;

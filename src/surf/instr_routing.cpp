@@ -260,19 +260,19 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
   container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
   container_t container = PJ_container_new (host->id, INSTR_HOST, father);
 
-  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_power())) {
-    type_t power = PJ_type_get_or_null ("power", container->type);
-    if (power == NULL){
-      power = PJ_type_variable_new ("power", NULL, container->type);
+  if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_speed())) {
+    type_t speed = PJ_type_get_or_null ("power", container->type);
+    if (speed == NULL){
+      speed = PJ_type_variable_new ("power", NULL, container->type);
     }
 
-    double current_power_state;
-    xbt_dynar_get_cpy(host->power_peak, host->pstate, &current_power_state);
-    new_pajeSetVariable (0, container, power, current_power_state);
+    double current_speed_state;
+    xbt_dynar_get_cpy(host->speed_peak, host->pstate, &current_speed_state);
+    new_pajeSetVariable (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){
-    type_t power_used = PJ_type_get_or_null ("power_used", container->type);
-    if (power_used == NULL){
+    type_t speed_used = PJ_type_get_or_null ("power_used", container->type);
+    if (speed_used == NULL){
       PJ_type_variable_new ("power_used", "0.5 0.5 0.5", container->type);
     }
   }

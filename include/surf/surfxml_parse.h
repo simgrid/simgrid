@@ -33,7 +33,7 @@ XBT_PUBLIC(int) surf_parse_get_int(const char *string);
 XBT_PUBLIC(double) surf_parse_get_time(const char *string);
 XBT_PUBLIC(double) surf_parse_get_size(const char *string);
 XBT_PUBLIC(double) surf_parse_get_bandwidth(const char *string);
-XBT_PUBLIC(double) surf_parse_get_power(const char *string);
+XBT_PUBLIC(double) surf_parse_get_speed(const char *string);
 
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex(void);

@@ -1133,7 +1133,7 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_bandwidth;
 XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 
 
-XBT_PUBLIC(double) get_cpu_power(const char *power);
+XBT_PUBLIC(double) get_cpu_speed(const char *power);
 
 XBT_PUBLIC(xbt_dict_t) get_as_router_properties(const char* name);
 

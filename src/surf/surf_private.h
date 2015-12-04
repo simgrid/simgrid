@@ -91,7 +91,7 @@ XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 
 /********** Tracing **********/
 /* from surf_instr.c */
-void TRACE_surf_host_set_power(double date, const char *resource, double power);
+void TRACE_surf_host_set_speed(double date, const char *resource, double power);
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
 
 /********** Instr. **********/

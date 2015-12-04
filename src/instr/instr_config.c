@@ -298,7 +298,7 @@ int TRACE_disable_link(void)
   return trace_disable_link && TRACE_is_enabled();
 }
 
-int TRACE_disable_power(void)
+int TRACE_disable_speed(void)
 {
   return trace_disable_power && TRACE_is_enabled();
 }

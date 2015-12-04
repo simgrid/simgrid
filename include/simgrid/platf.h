@@ -108,11 +108,11 @@ typedef long long sg_offset_t;
 
 typedef struct {
   const char* id;
-  xbt_dynar_t power_peak;
+  xbt_dynar_t speed_peak;
   int pstate;
   int core_amount;
-  double power_scale;
-  tmgr_trace_t power_trace;
+  double speed_scale;
+  tmgr_trace_t speed_trace;
   e_surf_resource_state_t initial_state;
   tmgr_trace_t state_trace;
   const char* coord;
@@ -159,7 +159,7 @@ typedef struct {
 typedef struct s_sg_platf_peer_cbarg *sg_platf_peer_cbarg_t;
 typedef struct s_sg_platf_peer_cbarg {
   const char* id;
-  double power;
+  double speed;
   double bw_in;
   double bw_out;
   double lat;
@@ -188,7 +188,7 @@ typedef struct s_sg_platf_cluster_cbarg {
   const char* prefix;
   const char* suffix;
   const char* radical;
-  double power;
+  double speed;
   int core_amount;
   double bw;
   double lat;
@@ -219,7 +219,7 @@ typedef struct s_sg_platf_cabinet_cbarg {
   const char* prefix;
   const char* suffix;
   const char* radical;
-  double power;
+  double speed;
   double bw;
   double lat;
 } s_sg_platf_cabinet_cbarg_t;

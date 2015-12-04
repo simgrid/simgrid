@@ -19,12 +19,12 @@ void TRACE_surf_release(void)
   TRACE_surf_resource_utilization_release();
 }
 
-void TRACE_surf_host_set_power(double date, const char *resource, double power)
+void TRACE_surf_host_set_speed(double date, const char *resource, double speed)
 {
   if (TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) {
     container_t container = PJ_container_get(resource);
     type_t type = PJ_type_get ("power", container->type);
-    new_pajeSetVariable(date, container, type, power);
+    new_pajeSetVariable(date, container, type, speed);
   }
 }
 

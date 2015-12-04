@@ -96,20 +96,20 @@ CpuCas01Model::~CpuCas01Model()
   delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
 
-Cpu *CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
-		                  int pstate, double power_scale,
-                          tmgr_trace_t power_trace, int core,
+Cpu *CpuCas01Model::createCpu(const char *name, xbt_dynar_t speedPeak,
+		                  int pstate, double speedScale,
+                          tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
                           xbt_dict_t cpu_properties)
 {
   Cpu *cpu = NULL;
   sg_host_t host = sg_host_by_name(name);
-  xbt_assert(xbt_dynar_getfirst_as(power_peak, double) > 0.0,
-      "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
+  xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
+      "Speed has to be >0.0. Did you forget to specify the mandatory power attribute?");
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
 
-  cpu = new CpuCas01(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
+  cpu = new CpuCas01(this, name, speedPeak, pstate, speedScale, speedTrace, core, state_initial, state_trace, cpu_properties);
   sg_host_surfcpu_register(host, cpu);
   return cpu;
 }
@@ -154,21 +154,21 @@ void CpuCas01Model::addTraces()
 /************
  * Resource *
  ************/
-CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak,
-                         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
+CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t speedPeak,
+                         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
                          e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
                          xbt_dict_t properties)
 : Cpu(model, name, properties,
-	  lmm_constraint_new(model->getMaxminSystem(), this, core * powerScale * xbt_dynar_get_as(powerPeak, pstate, double)),
-	  core, xbt_dynar_get_as(powerPeak, pstate, double), powerScale,
+	  lmm_constraint_new(model->getMaxminSystem(), this, core * speedScale * xbt_dynar_get_as(speedPeak, pstate, double)),
+	  core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
     stateInitial) {
   p_speedEvent = NULL;
 
   // Copy the power peak array:
   p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
-  unsigned long n = xbt_dynar_length(powerPeak);
+  unsigned long n = xbt_dynar_length(speedPeak);
   for (unsigned long i = 0; i != n; ++i) {
-    double value = xbt_dynar_get_as(powerPeak, i, double);
+    double value = xbt_dynar_get_as(speedPeak, i, double);
     xbt_dynar_push(p_speedPeakList, &value);
   }
 
@@ -177,8 +177,8 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_speedPeak, m_pstate);
 
   m_core = core;
-  if (powerTrace)
-    p_speedEvent = tmgr_history_add_trace(history, powerTrace, 0.0, 0, this);
+  if (speedTrace)
+    p_speedEvent = tmgr_history_add_trace(history, speedTrace, 0.0, 0, this);
 
   if (stateTrace)
     p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, this);
@@ -199,7 +199,7 @@ void CpuCas01::setPowerEvent(tmgr_trace_event_t powerEvent)
   p_speedEvent = powerEvent;
 }
 
-xbt_dynar_t CpuCas01::getPowerPeakList(){
+xbt_dynar_t CpuCas01::getSpeedPeakList(){
   return p_speedPeakList;
 }
 
@@ -220,13 +220,13 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
 
   if (event_type == p_speedEvent) {
 	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
-	xbt_assert(m_core == 1, "FIXME: add power scaling code also for constraint_core[i]");
+	xbt_assert(m_core == 1, "FIXME: add speed scaling code also for constraint_core[i]");
 
     m_speedScale = value;
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
                                 m_core * m_speedScale *
                                 m_speedPeak);
-    TRACE_surf_host_set_power(date, getName(),
+    TRACE_surf_host_set_speed(date, getName(),
                               m_core * m_speedScale *
                               m_speedPeak);
     while ((var = lmm_get_var_from_cnst
@@ -356,10 +356,10 @@ int CpuCas01::getPstate()
  * Action *
  **********/
 
-CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double power, lmm_constraint_t constraint)
+CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double speed, lmm_constraint_t constraint)
  : CpuAction(model, cost, failed,
 		     lmm_variable_new(model->getMaxminSystem(), this,
-		     1.0, power, 1))
+		     1.0, speed, 1))
 {
   m_suspended = 0;
   if (model->getUpdateMechanism() == UM_LAZY) {

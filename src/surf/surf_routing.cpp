@@ -694,7 +694,7 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     memset(&host, 0, sizeof(host));
     host.initial_state = SURF_RESOURCE_ON;
     host.pstate        = 0;
-    host.power_scale   = 1.0;
+    host.speed_scale   = 1.0;
     host.core_amount   = 1;
 
     s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
@@ -712,10 +712,10 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
       link_id                      = bprintf("link_%s%d%s",cabinet->prefix,i,cabinet->suffix);
       host.id                      = host_id;
       link.id                      = link_id;
-      host.power_peak = xbt_dynar_new(sizeof(double), NULL);
-      xbt_dynar_push(host.power_peak,&cabinet->power);
+      host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(host.speed_peak,&cabinet->speed);
       sg_platf_new_host(&host);
-      xbt_dynar_free(&host.power_peak);
+      xbt_dynar_free(&host.speed_peak);
       sg_platf_new_link(&link);
 
       char* link_up       = bprintf("%s_UP",link_id);
@@ -822,7 +822,7 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
           bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
       link_id = bprintf("%s_link_%d", cluster->id, i);
 
-      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, cluster->power);
+      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, cluster->speed);
 
       memset(&host, 0, sizeof(host));
       host.id = host_id;
@@ -839,7 +839,7 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
         xbt_dict_set(patterns, "radical", bprintf("%d", i), NULL);
         char *avail_file = xbt_str_varsubst(cluster->availability_trace, patterns);
         XBT_DEBUG("\tavailability_file=\"%s\"", avail_file);
-        host.power_trace = tmgr_trace_new_from_file(avail_file);
+        host.speed_trace = tmgr_trace_new_from_file(avail_file);
         xbt_free(avail_file);
       } else {
         XBT_DEBUG("\tavailability_file=\"\"");
@@ -854,17 +854,17 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
         XBT_DEBUG("\tstate_file=\"\"");
       }
 
-      host.power_peak = xbt_dynar_new(sizeof(double), NULL);
-      xbt_dynar_push(host.power_peak,&cluster->power);
+      host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(host.speed_peak,&cluster->speed);
       host.pstate = 0;
 
       //host.power_peak = cluster->power;
-      host.power_scale = 1.0;
+      host.speed_scale = 1.0;
       host.core_amount = cluster->core_amount;
       host.initial_state = SURF_RESOURCE_ON;
       host.coord = "";
       sg_platf_new_host(&host);
-      xbt_dynar_free(&host.power_peak);
+      xbt_dynar_free(&host.speed_peak);
       XBT_DEBUG("</host>");
 
       XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,
@@ -1012,22 +1012,22 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 
   current_routing->p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
-  XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->power);
+  XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->speed);
   s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
   memset(&host, 0, sizeof(host));
   host.initial_state = SURF_RESOURCE_ON;
   host.id = host_id;
 
-  host.power_peak = xbt_dynar_new(sizeof(double), NULL);
-  xbt_dynar_push(host.power_peak,&peer->power);
+  host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push(host.speed_peak,&peer->speed);
   host.pstate = 0;
   //host.power_peak = peer->power;
-  host.power_scale = 1.0;
-  host.power_trace = peer->availability_trace;
+  host.speed_scale = 1.0;
+  host.speed_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
   sg_platf_new_host(&host);
-  xbt_dynar_free(&host.power_peak);
+  xbt_dynar_free(&host.speed_peak);
 
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link, 0, sizeof(link));

@@ -276,7 +276,7 @@ XBT_PRIVATE int TRACE_msg_process_is_enabled(void);
 XBT_PRIVATE int TRACE_msg_vm_is_enabled(void);
 XBT_PRIVATE int TRACE_buffer (void);
 XBT_PRIVATE int TRACE_disable_link(void);
-XBT_PRIVATE int TRACE_disable_power(void);
+XBT_PRIVATE int TRACE_disable_speed(void);
 XBT_PRIVATE int TRACE_onelink_only (void);
 XBT_PRIVATE int TRACE_disable_destroy (void);
 XBT_PRIVATE int TRACE_basic (void);

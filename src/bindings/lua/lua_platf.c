@@ -182,8 +182,8 @@ int console_add_host(lua_State *L) {
   if (type != LUA_TSTRING && type != LUA_TNUMBER) {
     XBT_ERROR("Attribute 'power' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
   }
-  host.power_peak = xbt_dynar_new(sizeof(double), NULL);
-  xbt_dynar_push_as(host.power_peak, double, get_cpu_power(lua_tostring(L, -1)));
+  host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push_as(host.speed_peak, double, get_cpu_speed(lua_tostring(L, -1)));
   lua_pop(L, 1);
 
   // get core
@@ -200,14 +200,14 @@ int console_add_host(lua_State *L) {
   //get power_scale
   lua_pushstring(L, "availability");
   lua_gettable(L, -2);
-  if(!lua_isnumber(L,-1)) host.power_scale = 1;// Default value
-  else host.power_scale = lua_tonumber(L, -1);
+  if(!lua_isnumber(L,-1)) host.speed_scale = 1;// Default value
+  else host.speed_scale = lua_tonumber(L, -1);
   lua_pop(L, 1);
 
   //get power_trace
   lua_pushstring(L, "availability_file");
   lua_gettable(L, -2);
-  host.power_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  host.speed_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   //get state initial
@@ -229,7 +229,7 @@ int console_add_host(lua_State *L) {
   lua_pop(L, 1);
 
   sg_platf_new_host(&host);
-  xbt_dynar_free(&host.power_peak);
+  xbt_dynar_free(&host.speed_peak);
 
   return 0;
 }

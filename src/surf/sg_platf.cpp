@@ -62,10 +62,10 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
 
   Cpu *cpu = surf_cpu_model_pm->createCpu(
         host->id,
-        host->power_peak,
+        host->speed_peak,
         host->pstate,
-        host->power_scale,
-        host->power_trace,
+        host->speed_scale,
+        host->speed_trace,
         host->core_amount,
         host->initial_state,
         host->state_trace,

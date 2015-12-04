@@ -29,7 +29,7 @@ struct tiTag;
  *********/
 class CpuTiTrace {
 public:
-  CpuTiTrace(tmgr_trace_t powerTrace);
+  CpuTiTrace(tmgr_trace_t speedTrace);
   ~CpuTiTrace();
 
   double integrateSimple(double a, double b);
@@ -47,13 +47,13 @@ private:
 enum trace_type {
 
   TRACE_FIXED,                /*< Trace fixed, no availability file */
-  TRACE_DYNAMIC               /*< Dynamic, availability file disponible */
+  TRACE_DYNAMIC               /*< Dynamic, have an availability file */
 };
 
 class CpuTiTgmr {
 public:
   CpuTiTgmr(trace_type type, double value): m_type(type), m_value(value){};
-  CpuTiTgmr(tmgr_trace_t power_trace, double value);
+  CpuTiTgmr(tmgr_trace_t speedTrace, double value);
   ~CpuTiTgmr();
 
   double integrate(double a, double b);
@@ -62,7 +62,7 @@ public:
   double getPowerScale(double a);
 
   trace_type m_type;
-  double m_value;                 /*< Percentage of cpu power disponible. Value fixed between 0 and 1 */
+  double m_value;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
   /* Dynamic */
   double m_lastTime;             /*< Integral interval last point (discret time) */

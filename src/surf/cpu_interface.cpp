@@ -134,12 +134,12 @@ Cpu::Cpu(){
 
 
 Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
-         int core, double powerPeak, double powerScale,
+         int core, double speedPeak, double speedScale,
          e_surf_resource_state_t stateInitial)
  : Resource(model, name, props, stateInitial)
  , m_core(core)
- , m_speedPeak(powerPeak)
- , m_speedScale(powerScale)
+ , m_speedPeak(speedPeak)
+ , m_speedScale(speedScale)
  , p_constraintCore(NULL)
  , p_constraintCoreId(NULL)
 {

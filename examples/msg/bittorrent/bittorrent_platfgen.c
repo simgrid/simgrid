@@ -32,12 +32,12 @@ void promoter(context_node_t node)
     host_parameters.id = NULL;
 
     //Power from 3,000,000 to 10,000,000
-    host_parameters.power_peak = xbt_dynar_new(sizeof(double), NULL);
-    xbt_dynar_push_as(host_parameters.power_peak, double,
+    host_parameters.speed_peak = xbt_dynar_new(sizeof(double), NULL);
+    xbt_dynar_push_as(host_parameters.speed_peak, double,
     		7000000 * RngStream_RandU01(rng_stream) + 3000000.0);
     host_parameters.core_amount = 1;
-    host_parameters.power_scale = 1;
-    host_parameters.power_trace = NULL;
+    host_parameters.speed_scale = 1;
+    host_parameters.speed_trace = NULL;
     host_parameters.initial_state = SURF_RESOURCE_ON;
     host_parameters.state_trace = NULL;
     host_parameters.coord = NULL;

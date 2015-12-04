@@ -41,11 +41,11 @@ void promoter_1(context_node_t node) {
   static int master_choosen = FALSE;
 
   host_parameters.id = NULL;
-  host_parameters.power_peak = xbt_dynar_new(sizeof(double), NULL);
-  xbt_dynar_push_as(host_parameters.power_peak, double, 25000000.0);
+  host_parameters.speed_peak = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push_as(host_parameters.speed_peak, double, 25000000.0);
   host_parameters.core_amount = 1;
-  host_parameters.power_scale = 1;
-  host_parameters.power_trace = NULL;
+  host_parameters.speed_scale = 1;
+  host_parameters.speed_trace = NULL;
   host_parameters.initial_state = SURF_RESOURCE_ON;
   host_parameters.state_trace = NULL;
   host_parameters.coord = NULL;
@@ -62,7 +62,7 @@ void promoter_1(context_node_t node) {
                           tmgr_event_generator_new_uniform(pw_date_generator_id, 5, 10);
     probabilist_event_generator_t pw_value_generator =
                           tmgr_event_generator_new_uniform(pw_value_generator_id, 0.6, 1.0);
-    host_parameters.power_trace =
+    host_parameters.speed_trace =
               tmgr_trace_generator_value(bprintf("pw_host_%ld", node->id),
                                                 pw_date_generator,
                                                 pw_value_generator);

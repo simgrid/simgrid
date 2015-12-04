@@ -43,8 +43,8 @@ public:
 
 class CpuCas01 : public Cpu {
 public:
-  CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t power_peak,
-        int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
+  CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t speedPeak,
+        int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) ;
   ~CpuCas01();
@@ -60,7 +60,7 @@ public:
   bool isUsed();
   void setStateEvent(tmgr_trace_event_t stateEvent);
   void setPowerEvent(tmgr_trace_event_t stateEvent);
-  xbt_dynar_t getPowerPeakList();
+  xbt_dynar_t getSpeedPeakList();
 
   int getPState();
 
@@ -78,7 +78,7 @@ class CpuCas01Action: public CpuAction {
   friend CpuAction *CpuCas01::execute(double size);
   friend CpuAction *CpuCas01::sleep(double duration);
 public:
-  CpuCas01Action(Model *model, double cost, bool failed, double power,
+  CpuCas01Action(Model *model, double cost, bool failed, double speed,
                  lmm_constraint_t constraint);
 
   ~CpuCas01Action() {};
