@@ -148,11 +148,20 @@ if(enable_lib_in_jar)
     #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSURF_JAVA_SO}    || true
 
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  NATIVE
-    COMMAND ${CMAKE_COMMAND} -E remove_directory NATIVE
     
     COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in ${JAVA_NATIVE_PATH}"
     COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
     )
+    
+  if (HAVE_BOOST_CONTEXT)
+    add_custom_command(
+      TARGET simgrid-java_jar POST_BUILD
+      COMMENT "Add the boost_context lib into simgrid.jar..."
+      COMMAND ${CMAKE_COMMAND} -E copy ${Boost_CONTEXT_LIBRARY_RELEASE}  ${JAVA_NATIVE_PATH}
+      COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  NATIVE
+    )
+  endif()
+  
   if(MINGW)
     find_library(WINPTHREAD_DLL
       NAME winpthread winpthread-1
