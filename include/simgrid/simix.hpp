@@ -38,7 +38,7 @@ public:
   }
 private:
   void declare_context(void* T, std::size_t size);
-public:
+protected:
   template<class T, class... Args>
   T* new_context(Args&&... args)
   {

@@ -374,14 +374,14 @@ set(SIMIX_SRC
   )
 
 # Don't try to compile our inline assembly with MSVC
-if (1)
+if (MSVC)
   set(EXTRA_DIST
       ${EXTRA_DIST}
-      src/simix/smx_context_raw.cpp)
+      src/simix/RawContext.cpp)
 else()
   set(SIMIX_SRC
       ${SIMIX_SRC}
-      src/simix/smx_context_raw.cpp)
+      src/simix/RawContext.cpp)
 endif()
 
 # Boost context may not be available

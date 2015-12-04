@@ -638,9 +638,6 @@ if(HAVE_PTHREAD)
   message("-- Support for thread context factory")
 endif()
 
-# Temp hack to disable context:
-set(HAVE_RAWCTX 0)
-
 ###############
 ## GIT version check
 ##
