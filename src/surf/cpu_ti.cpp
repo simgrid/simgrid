@@ -517,7 +517,7 @@ void CpuTiModel::addTraces()
     if (cpu->p_availTrace)
       delete cpu->p_availTrace;
 
-    cpu->p_availTrace = new CpuTiTgmr(trace, cpu->m_powerScale);
+    cpu->p_availTrace = new CpuTiTgmr(trace, cpu->m_speedScale);
 
     /* add a fake trace event if periodicity == 0 */
     if (trace && xbt_dynar_length(trace->s_list.event_list) > 1) {
@@ -545,7 +545,7 @@ CpuTi::CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t powerPeak,
   : Cpu(model, name, properties, core, 0, powerScale, stateInitial)
 {
   p_powerEvent = NULL;
-  m_powerScale = powerScale;
+  m_speedScale = powerScale;
   m_core = core;
   tmgr_trace_t empty_trace;
   s_tmgr_event_t val;
@@ -557,8 +557,8 @@ CpuTi::CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t powerPeak,
 
   m_lastUpdate = 0;
 
-  xbt_dynar_get_cpy(powerPeak, 0, &m_powerPeak);
-  XBT_DEBUG("CPU create: peak=%f", m_powerPeak);
+  xbt_dynar_get_cpy(powerPeak, 0, &m_speedPeak);
+  XBT_DEBUG("CPU create: peak=%f", m_speedPeak);
 
   if (stateTrace)
     p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, this);
@@ -603,7 +603,7 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
                       xbt_dynar_length(power_trace->s_list.event_list) - 1, &val);
     /* free old trace */
     delete p_availTrace;
-    m_powerScale = val.value;
+    m_speedScale = val.value;
 
     trace = new CpuTiTgmr(TRACE_FIXED, val.value);
     XBT_DEBUG("value %f", val.value);
@@ -693,7 +693,7 @@ updateRemainingAmount(now);
           (action->getRemains()) * sum_priority *
            action->getPriority();
 
-      total_area /= m_powerPeak;
+      total_area /= m_speedPeak;
 
       action->setFinishTime(p_availTrace->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
@@ -735,7 +735,7 @@ bool CpuTi::isUsed()
 
 double CpuTi::getAvailableSpeed()
 {
-  m_powerScale = p_availTrace->getPowerScale(surf_get_clock());
+  m_speedScale = p_availTrace->getPowerScale(surf_get_clock());
   return Cpu::getAvailableSpeed();
 }
 
@@ -754,7 +754,7 @@ void CpuTi::updateRemainingAmount(double now)
     return;
 
 /* calcule the surface */
-  area_total = p_availTrace->integrate(m_lastUpdate, now) * m_powerPeak;
+  area_total = p_availTrace->integrate(m_lastUpdate, now) * m_speedPeak;
   XBT_DEBUG("Flops total: %f, Last update %f", area_total,
          m_lastUpdate);
 

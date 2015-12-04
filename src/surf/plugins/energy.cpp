@@ -65,7 +65,7 @@ static void energyVMCreatedCallback(VirtualMachine* vm) {
 
 /* Computes the consumption so far.  Called lazily on need. */
 static void update_consumption(Host *host, HostEnergy *host_energy) {
-	double cpu_load = lmm_constraint_get_usage(host->p_cpu->getConstraint()) / host->p_cpu->m_powerPeak;
+	double cpu_load = lmm_constraint_get_usage(host->p_cpu->getConstraint()) / host->p_cpu->m_speedPeak;
 	double start_time = host_energy->last_updated;
 	double finish_time = surf_get_clock();
 
@@ -83,7 +83,7 @@ static void update_consumption(Host *host, HostEnergy *host_energy) {
 	host_energy->last_updated = finish_time;
 
 	XBT_DEBUG("[cpu_update_energy] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
-  		  start_time, finish_time, host->p_cpu->m_powerPeak, previous_energy, energy_this_step);
+  		  start_time, finish_time, host->p_cpu->m_speedPeak, previous_energy, energy_this_step);
 }
 
 static void energyHostDestructedCallback(Host *host){

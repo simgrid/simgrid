@@ -414,7 +414,7 @@ CpuL07::CpuL07(CpuL07Model *model, const char* name, xbt_dict_t props,
  : Cpu(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, power_initial * power_scale),
 	   core, power_initial, power_scale, state_initial)
 {
-  xbt_assert(m_powerScale > 0, "Power has to be >0");
+  xbt_assert(m_speedScale > 0, "Power has to be >0");
 
   if (power_trace)
     p_powerEvent = tmgr_history_add_trace(history, power_trace, 0.0, 0, this);
@@ -489,8 +489,8 @@ bool LinkL07::isUsed(){
 void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*date*/){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
   if (event_type == p_powerEvent) {
-	  m_powerScale = value;
-    lmm_update_constraint_bound(ptask_maxmin_system, getConstraint(), m_powerPeak * m_powerScale);
+	  m_speedScale = value;
+    lmm_update_constraint_bound(ptask_maxmin_system, getConstraint(), m_speedPeak * m_speedScale);
     if (tmgr_trace_event_free(event_type))
       p_powerEvent = NULL;
   } else if (event_type == p_stateEvent) {

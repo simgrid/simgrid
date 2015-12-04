@@ -174,7 +174,7 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak
 
   m_pstate = pstate;
 
-  XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_powerPeak, m_pstate);
+  XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_speedPeak, m_pstate);
 
   m_core = core;
   if (powerTrace)
@@ -222,20 +222,20 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
 	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
 	xbt_assert(m_core == 1, "FIXME: add power scaling code also for constraint_core[i]");
 
-    m_powerScale = value;
+    m_speedScale = value;
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
-                                m_core * m_powerScale *
-                                m_powerPeak);
+                                m_core * m_speedScale *
+                                m_speedPeak);
     TRACE_surf_host_set_power(date, getName(),
-                              m_core * m_powerScale *
-                              m_powerPeak);
+                              m_core * m_speedScale *
+                              m_speedPeak);
     while ((var = lmm_get_var_from_cnst
             (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
       CpuCas01Action *action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
       lmm_update_variable_bound(getModel()->getMaxminSystem(),
                                 action->getVariable(),
-                                m_powerScale * m_powerPeak);
+                                m_speedScale * m_speedPeak);
     }
     if (tmgr_trace_event_free(event_type))
       p_powerEvent = NULL;
@@ -278,7 +278,7 @@ CpuAction *CpuCas01::execute(double size)
 
   XBT_IN("(%s,%g)", getName(), size);
   CpuCas01Action *action = new CpuCas01Action(getModel(), size, getState() != SURF_RESOURCE_ON,
-		                                              m_powerScale * m_powerPeak, getConstraint());
+		                                              m_speedScale * m_speedPeak, getConstraint());
 
   XBT_OUT();
   return action;
@@ -291,7 +291,7 @@ CpuAction *CpuCas01::sleep(double duration)
 
   XBT_IN("(%s,%g)", getName(), duration);
   CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, getState() != SURF_RESOURCE_ON,
-                                                      m_powerScale * m_powerPeak, getConstraint());
+                                                      m_speedScale * m_speedPeak, getConstraint());
 
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
@@ -321,7 +321,7 @@ CpuAction *CpuCas01::sleep(double duration)
 
 double CpuCas01::getCurrentPowerPeak()
 {
-  return m_powerPeak;
+  return m_speedPeak;
 }
 
 double CpuCas01::getPowerPeakAt(int pstate_index)
@@ -344,7 +344,7 @@ void CpuCas01::setPstate(int pstate_index)
 
   double new_pstate = xbt_dynar_get_as(plist, pstate_index, double);
   m_pstate = pstate_index;
-  m_powerPeak = new_pstate;
+  m_speedPeak = new_pstate;
 }
 
 int CpuCas01::getPstate()

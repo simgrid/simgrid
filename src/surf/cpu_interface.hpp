@@ -171,9 +171,9 @@ public:
   void setState(e_surf_resource_state_t state);
 
   void addTraces(void);
-  int m_core;
-  double m_powerPeak;            /*< CPU power peak */
-  double m_powerScale;           /*< Percentage of CPU available */
+  int m_core = 1;                /* Amount of cores */
+  double m_speedPeak;            /*< CPU speed peak, ie max value */
+  double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
 
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore;

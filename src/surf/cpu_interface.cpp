@@ -138,8 +138,8 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
          e_surf_resource_state_t stateInitial)
  : Resource(model, name, props, stateInitial)
  , m_core(core)
- , m_powerPeak(powerPeak)
- , m_powerScale(powerScale)
+ , m_speedPeak(powerPeak)
+ , m_speedScale(powerScale)
  , p_constraintCore(NULL)
  , p_constraintCoreId(NULL)
 {
@@ -151,8 +151,8 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
         double powerScale, e_surf_resource_state_t stateInitial)
  : Resource(model, name, props, constraint, stateInitial)
  , m_core(core)
- , m_powerPeak(powerPeak)
- , m_powerScale(powerScale)
+ , m_speedPeak(powerPeak)
+ , m_speedScale(powerScale)
 {
   /* At now, we assume that a VM does not have a multicore CPU. */
   if (core > 1)
@@ -168,7 +168,7 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
     for (i = 0; i < core; i++) {
       /* just for a unique id, never used as a string. */
       p_constraintCoreId[i] = bprintf("%s:%i", name, i);
-      p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], m_powerScale * m_powerPeak);
+      p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], m_speedScale * m_speedPeak);
     }
   }
 }
@@ -197,18 +197,18 @@ Cpu::~Cpu(){
 
 double Cpu::getCurrentPowerPeak()
 {
-  return m_powerPeak;
+  return m_speedPeak;
 }
 
 double Cpu::getSpeed(double load)
 {
-  return load * m_powerPeak;
+  return load * m_speedPeak;
 }
 
 double Cpu::getAvailableSpeed()
 {
 /* number between 0 and 1 */
-  return m_powerScale;
+  return m_speedScale;
 }
 
 int Cpu::getCore()
