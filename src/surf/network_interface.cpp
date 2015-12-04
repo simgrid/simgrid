@@ -216,7 +216,7 @@ double Link::getLatency()
 
 double Link::getBandwidth()
 {
-  return p_power.peak * p_power.scale;
+  return p_speed.peak * p_speed.scale;
 }
 
 int Link::sharingPolicy()

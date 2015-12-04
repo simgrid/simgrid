@@ -20,7 +20,7 @@ static void cpu_ti_action_update_index_heap(void *action, int i);
  * Trace *
  *********/
 
-CpuTiTrace::CpuTiTrace(tmgr_trace_t power_trace)
+CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
 {
   s_tmgr_event_t val;
   unsigned int cpt;
@@ -28,11 +28,11 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t power_trace)
   double time = 0;
   int i = 0;
   p_timePoints = (double*) xbt_malloc0(sizeof(double) *
-                  (xbt_dynar_length(power_trace->s_list.event_list) + 1));
+                  (xbt_dynar_length(speedTrace->s_list.event_list) + 1));
   p_integral = (double*) xbt_malloc0(sizeof(double) *
-                  (xbt_dynar_length(power_trace->s_list.event_list) + 1));
-  m_nbPoints = xbt_dynar_length(power_trace->s_list.event_list) + 1;
-  xbt_dynar_foreach(power_trace->s_list.event_list, cpt, val) {
+                  (xbt_dynar_length(speedTrace->s_list.event_list) + 1));
+  m_nbPoints = xbt_dynar_length(speedTrace->s_list.event_list) + 1;
+  xbt_dynar_foreach(speedTrace->s_list.event_list, cpt, val) {
     p_timePoints[i] = time;
     p_integral[i] = integral;
     integral += val.delta * val.value;
@@ -279,12 +279,12 @@ double CpuTiTrace::solveSimple(double a, double amount)
 }
 
 /**
-* \brief Auxiliary function to update the CPU power scale.
+* \brief Auxiliary function to update the CPU speed scale.
 *
-*  This function uses the trace structure to return the power scale at the determined time a.
-* \param trace    Trace structure to search the updated power scale
+*  This function uses the trace structure to return the speed scale at the determined time a.
+* \param trace    Trace structure to search the updated speed scale
 * \param a        Time
-* \return CPU power scale
+* \return CPU speed scale
 */
 double CpuTiTgmr::getPowerScale(double a)
 {
@@ -295,19 +295,19 @@ double CpuTiTgmr::getPowerScale(double a)
   reduced_a = a - floor(a / m_lastTime) * m_lastTime;
   point = p_trace->binarySearch(p_trace->p_timePoints, reduced_a, 0,
                                 p_trace->m_nbPoints - 1);
-  xbt_dynar_get_cpy(p_powerTrace->s_list.event_list, point, &val);
+  xbt_dynar_get_cpy(p_speedTrace->s_list.event_list, point, &val);
   return val.value;
 }
 
 /**
 * \brief Creates a new integration trace from a tmgr_trace_t
 *
-* \param  power_trace    CPU availability trace
-* \param  value          Percentage of CPU power available (useful to fixed tracing)
+* \param  speedTrace    CPU availability trace
+* \param  value          Percentage of CPU speed available (useful to fixed tracing)
 * \param  spacing        Initial spacing
 * \return  Integration trace structure
 */
-CpuTiTgmr::CpuTiTgmr(tmgr_trace_t power_trace, double value)
+CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)
 {
   double total_time = 0.0;
   s_tmgr_event_t val;
@@ -315,7 +315,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t power_trace, double value)
   p_trace = 0;
 
 /* no availability file, fixed trace */
-  if (!power_trace) {
+  if (!speedTrace) {
     m_type = TRACE_FIXED;
     m_value = value;
     XBT_DEBUG("No availability trace. Constant value = %f", value);
@@ -323,21 +323,21 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t power_trace, double value)
   }
 
   /* only one point available, fixed trace */
-  if (xbt_dynar_length(power_trace->s_list.event_list) == 1) {
-    xbt_dynar_get_cpy(power_trace->s_list.event_list, 0, &val);
+  if (xbt_dynar_length(speedTrace->s_list.event_list) == 1) {
+    xbt_dynar_get_cpy(speedTrace->s_list.event_list, 0, &val);
     m_type = TRACE_FIXED;
     m_value = val.value;
     return;
   }
 
   m_type = TRACE_DYNAMIC;
-  p_powerTrace = power_trace;
+  p_speedTrace = speedTrace;
 
   /* count the total time of trace file */
-  xbt_dynar_foreach(power_trace->s_list.event_list, cpt, val) {
+  xbt_dynar_foreach(speedTrace->s_list.event_list, cpt, val) {
     total_time += val.delta;
   }
-  p_trace = new CpuTiTrace(power_trace);
+  p_trace = new CpuTiTrace(speedTrace);
   m_lastTime = total_time;
   m_total = p_trace->integrateSimple(0, total_time);
 
@@ -423,10 +423,10 @@ CpuTiModel::~CpuTiModel()
 }
 
 Cpu *CpuTiModel::createCpu(const char *name,
-	                       xbt_dynar_t powerPeak,
+	                       xbt_dynar_t speedPeak,
 	                       int pstate,
-                           double powerScale,
-                           tmgr_trace_t powerTrace,
+                           double speedScale,
+                           tmgr_trace_t speedTrace,
                            int core,
                            e_surf_resource_state_t stateInitial,
                            tmgr_trace_t stateTrace,
@@ -434,9 +434,9 @@ Cpu *CpuTiModel::createCpu(const char *name,
 {
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   sg_host_t host = sg_host_by_name(name);
-  xbt_assert(xbt_dynar_getfirst_as(powerPeak, double) > 0.0,
-      "Power has to be >0.0. Did you forget to specify the mandatory power attribute?");
-  CpuTi *cpu = new CpuTi(this, name, powerPeak, pstate, powerScale, powerTrace,
+  xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
+      "Speed has to be >0.0. Did you forget to specify the mandatory speed attribute?");
+  CpuTi *cpu = new CpuTi(this, name, speedPeak, pstate, speedScale, speedTrace,
 		           core, stateInitial, stateTrace, cpuProperties);
   sg_host_surfcpu_register(host, cpu);
   return cpu;
@@ -513,7 +513,7 @@ void CpuTiModel::addTraces()
     xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    XBT_DEBUG("Add power trace: %s to CPU(%s)", trace_name, elm);
+    XBT_DEBUG("Add speed trace: %s to CPU(%s)", trace_name, elm);
     if (cpu->p_availTrace)
       delete cpu->p_availTrace;
 
@@ -527,7 +527,7 @@ void CpuTiModel::addTraces()
       if (val.delta == 0) {
         tmgr_trace_t empty_trace;
         empty_trace = tmgr_empty_trace_new();
-        cpu->p_powerEvent =
+        cpu->p_speedEvent =
             tmgr_history_add_trace(history, empty_trace,
                                    cpu->p_availTrace->m_lastTime, 0, cpu);
       }
@@ -538,37 +538,37 @@ void CpuTiModel::addTraces()
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t powerPeak,
-        int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
+CpuTi::CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t speedPeak,
+        int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	      xbt_dict_t properties)
-  : Cpu(model, name, properties, core, 0, powerScale, stateInitial)
+  : Cpu(model, name, properties, core, 0, speedScale, stateInitial)
 {
-  p_powerEvent = NULL;
-  m_speedScale = powerScale;
+  p_speedEvent = NULL;
+  m_speedScale = speedScale;
   m_core = core;
   tmgr_trace_t empty_trace;
   s_tmgr_event_t val;
   xbt_assert(core==1,"Multi-core not handled with this model yet");
-  XBT_DEBUG("power scale %f", powerScale);
-  p_availTrace = new CpuTiTgmr(powerTrace, powerScale);
+  XBT_DEBUG("speed scale %f", speedScale);
+  p_availTrace = new CpuTiTgmr(speedTrace, speedScale);
 
   p_actionSet = new ActionTiList();
 
   m_lastUpdate = 0;
 
-  xbt_dynar_get_cpy(powerPeak, 0, &m_speedPeak);
+  xbt_dynar_get_cpy(speedPeak, 0, &m_speedPeak);
   XBT_DEBUG("CPU create: peak=%f", m_speedPeak);
 
   if (stateTrace)
     p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, this);
-  if (powerTrace && xbt_dynar_length(powerTrace->s_list.event_list) > 1) {
+  if (speedTrace && xbt_dynar_length(speedTrace->s_list.event_list) > 1) {
     // add a fake trace event if periodicity == 0
-    xbt_dynar_get_cpy(powerTrace->s_list.event_list,
-                      xbt_dynar_length(powerTrace->s_list.event_list) - 1, &val);
+    xbt_dynar_get_cpy(speedTrace->s_list.event_list,
+                      xbt_dynar_length(speedTrace->s_list.event_list) - 1, &val);
     if (val.delta == 0) {
       empty_trace = tmgr_empty_trace_new();
-      p_powerEvent =
+      p_speedEvent =
         tmgr_history_add_trace(history, empty_trace,
                                p_availTrace->m_lastTime, 0, this);
     }
@@ -586,8 +586,8 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
 {
   CpuTiAction *action;
 
-  if (event_type == p_powerEvent) {
-    tmgr_trace_t power_trace;
+  if (event_type == p_speedEvent) {
+    tmgr_trace_t speedTrace;
     CpuTiTgmr *trace;
     s_tmgr_event_t val;
 
@@ -598,9 +598,9 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
 
     modified(true);
 
-    power_trace = p_availTrace->p_powerTrace;
-    xbt_dynar_get_cpy(power_trace->s_list.event_list,
-                      xbt_dynar_length(power_trace->s_list.event_list) - 1, &val);
+    speedTrace = p_availTrace->p_speedTrace;
+    xbt_dynar_get_cpy(speedTrace->s_list.event_list,
+                      xbt_dynar_length(speedTrace->s_list.event_list) - 1, &val);
     /* free old trace */
     delete p_availTrace;
     m_speedScale = val.value;
@@ -611,7 +611,7 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
     p_availTrace = trace;
 
     if (tmgr_trace_event_free(event_type))
-      p_powerEvent = NULL;
+      p_speedEvent = NULL;
 
   } else if (event_type == p_stateEvent) {
     if (value > 0) {

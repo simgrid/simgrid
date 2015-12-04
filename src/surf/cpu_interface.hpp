@@ -65,18 +65,18 @@ public:
    * @brief Create a Cpu
    *
    * @param name The name of the Cpu
-   * @param power_peak The power peak of this Cpu
+   * @param speedPeak The peak spead (max speed in Flops)
    * @param pstate [TODO]
-   * @param power_scale The power scale of this Cpu
-   * @param power_trace [TODO]
+   * @param speedScale The speed scale (in [O;1] available speed from peak)
+   * @param speedTrace Trace variations
    * @param core The number of core of this Cpu
    * @param state_initial [TODO]
    * @param state_trace [TODO]
    * @param cpu_properties Dictionary of properties associated to this Cpu
    */
-  virtual Cpu *createCpu(const char *name, xbt_dynar_t power_peak,
-                      int pstate, double power_scale,
-                          tmgr_trace_t power_trace, int core,
+  virtual Cpu *createCpu(const char *name, xbt_dynar_t speedPeak,
+                      int pstate, double speedScale,
+                          tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
                           xbt_dict_t cpu_properties)=0;
@@ -106,11 +106,11 @@ public:
    * @param props Dictionary of properties associated to this Cpu
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
    * @param core The number of core of this Cpu
-   * @param powerPeak The power peak of this Cpu
-   * @param powerScale The power scale of this Cpu
+   * @param speedPeak The speed peak of this Cpu
+   * @param speedScale The speed scale of this Cpu
    */
   Cpu(Model *model, const char *name, xbt_dict_t props,
-	  lmm_constraint_t constraint, int core, double powerPeak, double powerScale,
+	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale,
     e_surf_resource_state_t stateInitial);
 
   /**
@@ -120,17 +120,17 @@ public:
    * @param name The name of the Cpu
    * @param props Dictionary of properties associated to this Cpu
    * @param core The number of core of this Cpu
-   * @param powerPeak The power peak of this Cpu in [TODO]
-   * @param powerScale The power scale of this Cpu in [TODO]
+   * @param speedPeak The speed peak of this Cpu in flops (max speed)
+   * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    */
   Cpu(Model *model, const char *name, xbt_dict_t props,
-	  int core, double powerPeak, double powerScale,
+	  int core, double speedPeak, double speedScale,
     e_surf_resource_state_t stateInitial);
 
   Cpu(Model *model, const char *name, xbt_dict_t props,
-	  lmm_constraint_t constraint, int core, double powerPeak, double powerScale);
+	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale);
   Cpu(Model *model, const char *name, xbt_dict_t props,
-	  int core, double powerPeak, double powerScale);
+	  int core, double speedPeak, double speedScale);
 
   ~Cpu();
 
@@ -150,10 +150,10 @@ public:
    */
   virtual Action *sleep(double duration)=0;
 
-  /** @brief Get the number of cores of the current Cpu */
+  /** @brief Get the amount of cores */
   virtual int getCore();
 
-  /** @brief Get the speed of the current Cpu */
+  /** @brief Get the speed, accounting for the trace load and provided process load instead of the real current one */
   virtual double getSpeed(double load);
 
   /** @brief Get the available speed of the current Cpu */

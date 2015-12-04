@@ -232,7 +232,7 @@ public:
 
   /* LMM */
   tmgr_trace_event_t p_stateEvent = NULL;
-  s_surf_metric_t p_power;
+  s_surf_metric_t p_speed;
 
   /* User data */
 public:

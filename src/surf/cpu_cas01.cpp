@@ -162,14 +162,14 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak
 	  lmm_constraint_new(model->getMaxminSystem(), this, core * powerScale * xbt_dynar_get_as(powerPeak, pstate, double)),
 	  core, xbt_dynar_get_as(powerPeak, pstate, double), powerScale,
     stateInitial) {
-  p_powerEvent = NULL;
+  p_speedEvent = NULL;
 
   // Copy the power peak array:
-  p_powerPeakList = xbt_dynar_new(sizeof(double), nullptr);
+  p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
   unsigned long n = xbt_dynar_length(powerPeak);
   for (unsigned long i = 0; i != n; ++i) {
     double value = xbt_dynar_get_as(powerPeak, i, double);
-    xbt_dynar_push(p_powerPeakList, &value);
+    xbt_dynar_push(p_speedPeakList, &value);
   }
 
   m_pstate = pstate;
@@ -178,7 +178,7 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak
 
   m_core = core;
   if (powerTrace)
-    p_powerEvent = tmgr_history_add_trace(history, powerTrace, 0.0, 0, this);
+    p_speedEvent = tmgr_history_add_trace(history, powerTrace, 0.0, 0, this);
 
   if (stateTrace)
     p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, this);
@@ -186,7 +186,7 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t powerPeak
 
 CpuCas01::~CpuCas01(){
   if (getModel() == surf_cpu_model_pm)
-    xbt_dynar_free(&p_powerPeakList);
+    xbt_dynar_free(&p_speedPeakList);
 }
 
 void CpuCas01::setStateEvent(tmgr_trace_event_t stateEvent)
@@ -196,11 +196,11 @@ void CpuCas01::setStateEvent(tmgr_trace_event_t stateEvent)
 
 void CpuCas01::setPowerEvent(tmgr_trace_event_t powerEvent)
 {
-  p_powerEvent = powerEvent;
+  p_speedEvent = powerEvent;
 }
 
 xbt_dynar_t CpuCas01::getPowerPeakList(){
-  return p_powerPeakList;
+  return p_speedPeakList;
 }
 
 int CpuCas01::getPState()
@@ -218,7 +218,7 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
 
-  if (event_type == p_powerEvent) {
+  if (event_type == p_speedEvent) {
 	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
 	xbt_assert(m_core == 1, "FIXME: add power scaling code also for constraint_core[i]");
 
@@ -238,7 +238,7 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
                                 m_speedScale * m_speedPeak);
     }
     if (tmgr_trace_event_free(event_type))
-      p_powerEvent = NULL;
+      p_speedEvent = NULL;
   } else if (event_type == p_stateEvent) {
 	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
@@ -326,7 +326,7 @@ double CpuCas01::getCurrentPowerPeak()
 
 double CpuCas01::getPowerPeakAt(int pstate_index)
 {
-  xbt_dynar_t plist = p_powerPeakList;
+  xbt_dynar_t plist = p_speedPeakList;
   xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
 
   return xbt_dynar_get_as(plist, pstate_index, double);
@@ -334,12 +334,12 @@ double CpuCas01::getPowerPeakAt(int pstate_index)
 
 int CpuCas01::getNbPstates()
 {
-  return xbt_dynar_length(p_powerPeakList);
+  return xbt_dynar_length(p_speedPeakList);
 }
 
 void CpuCas01::setPstate(int pstate_index)
 {
-  xbt_dynar_t plist = p_powerPeakList;
+  xbt_dynar_t plist = p_speedPeakList;
   xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
 
   double new_pstate = xbt_dynar_get_as(plist, pstate_index, double);

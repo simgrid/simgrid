@@ -26,9 +26,9 @@ public:
   double (CpuCas01Model::*shareResources)(double now);
   void (CpuCas01Model::*updateActionsState)(double now, double delta);
 
-  Cpu *createCpu(const char *name, xbt_dynar_t power_peak, int pstate,
-                   double power_scale,
-                          tmgr_trace_t power_trace, int core,
+  Cpu *createCpu(const char *name, xbt_dynar_t speedPeak, int pstate,
+                   double speedScale,
+                          tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
                           xbt_dict_t cpu_properties);
@@ -66,9 +66,9 @@ public:
 
 private:
   tmgr_trace_event_t p_stateEvent;
-  tmgr_trace_event_t p_powerEvent;
-  xbt_dynar_t p_powerPeakList;       /*< List of supported CPU capacities */
-  int m_pstate;                      /*< Current pstate (index in the power_peak_list)*/
+  tmgr_trace_event_t p_speedEvent;
+  xbt_dynar_t p_speedPeakList;       /*< List of supported CPU capacities (pstate related) */
+  int m_pstate;                      /*< Current pstate (index in the speedPeakList)*/
 };
 
 /**********

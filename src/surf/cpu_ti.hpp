@@ -69,7 +69,7 @@ public:
   double m_total;                 /*< Integral total between 0 and last_pointn */
 
   CpuTiTrace *p_trace;
-  tmgr_trace_t p_powerTrace;
+  tmgr_trace_t p_speedTrace;
 };
 
 /**********
@@ -116,8 +116,8 @@ typedef boost::intrusive::list<
 class CpuTi : public Cpu {
 public:
   CpuTi() {};
-  CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t powerPeak,
-        int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
+  CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t speedPeak,
+        int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
 	xbt_dict_t properties) ;
   ~CpuTi();
@@ -139,7 +139,7 @@ public:
 
   CpuTiTgmr *p_availTrace;       /*< Structure with data needed to integrate trace file */
   tmgr_trace_event_t p_stateEvent;       /*< trace file with states events (ON or OFF) */
-  tmgr_trace_event_t p_powerEvent;       /*< trace file with availability events */
+  tmgr_trace_event_t p_speedEvent;       /*< trace file with availability events */
   ActionTiList *p_actionSet;        /*< set with all actions running on cpu */
   double m_sumPriority;          /*< the sum of actions' priority that are running on cpu */
   double m_lastUpdate;           /*< last update of actions' remaining amount done */
@@ -162,9 +162,9 @@ class CpuTiModel : public CpuModel {
 public:
   CpuTiModel();
   ~CpuTiModel();
-  Cpu *createCpu(const char *name,  xbt_dynar_t powerPeak,
-                          int pstate, double power_scale,
-                          tmgr_trace_t power_trace, int core,
+  Cpu *createCpu(const char *name,  xbt_dynar_t speedPeak,
+                          int pstate, double speedScale,
+                          tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace,
                           xbt_dict_t cpu_properties);

@@ -364,7 +364,7 @@ void HostL07Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_powerEvent = tmgr_history_add_trace(history, trace, 0.0, 0, host);
+    host->p_speedEvent = tmgr_history_add_trace(history, trace, 0.0, 0, host);
   }
 
   /* Connect traces relative to network */
@@ -409,17 +409,17 @@ HostL07::HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEd
 }
 
 CpuL07::CpuL07(CpuL07Model *model, const char* name, xbt_dict_t props,
-	             double power_initial, double power_scale, tmgr_trace_t power_trace,
+	             double speedInitial, double speedScale, tmgr_trace_t speedTrace,
 		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
- : Cpu(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, power_initial * power_scale),
-	   core, power_initial, power_scale, state_initial)
+ : Cpu(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, speedInitial * speedScale),
+	   core, speedInitial, speedScale, state_initial)
 {
   xbt_assert(m_speedScale > 0, "Power has to be >0");
 
-  if (power_trace)
-    p_powerEvent = tmgr_history_add_trace(history, power_trace, 0.0, 0, this);
+  if (speedTrace)
+    p_speedEvent = tmgr_history_add_trace(history, speedTrace, 0.0, 0, this);
   else
-    p_powerEvent = NULL;
+    p_speedEvent = NULL;
 
   if (state_trace)
 	p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
@@ -488,11 +488,11 @@ bool LinkL07::isUsed(){
 
 void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*date*/){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
-  if (event_type == p_powerEvent) {
+  if (event_type == p_speedEvent) {
 	  m_speedScale = value;
     lmm_update_constraint_bound(ptask_maxmin_system, getConstraint(), m_speedPeak * m_speedScale);
     if (tmgr_trace_event_free(event_type))
-      p_powerEvent = NULL;
+      p_speedEvent = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
       setState(SURF_RESOURCE_ON);

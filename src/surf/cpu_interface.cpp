@@ -147,12 +147,12 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
 }
 
 Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
-        lmm_constraint_t constraint, int core, double powerPeak,
-        double powerScale, e_surf_resource_state_t stateInitial)
+        lmm_constraint_t constraint, int core, double speedPeak,
+        double speedScale, e_surf_resource_state_t stateInitial)
  : Resource(model, name, props, constraint, stateInitial)
  , m_core(core)
- , m_speedPeak(powerPeak)
- , m_speedScale(powerScale)
+ , m_speedPeak(speedPeak)
+ , m_speedScale(speedScale)
 {
   /* At now, we assume that a VM does not have a multicore CPU. */
   if (core > 1)
@@ -174,13 +174,13 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
 }
 
 Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
-  lmm_constraint_t constraint, int core, double powerPeak, double powerScale)
-: Cpu(model, name, props, constraint, core, powerPeak, powerScale, SURF_RESOURCE_ON)
+  lmm_constraint_t constraint, int core, double speedPeak, double speedScale)
+: Cpu(model, name, props, constraint, core, speedPeak, speedScale, SURF_RESOURCE_ON)
 {}
 
 Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
-  int core, double powerPeak, double powerScale)
-: Cpu(model, name, props, core, powerPeak, powerScale, SURF_RESOURCE_ON)
+  int core, double speedPeak, double speedScale)
+: Cpu(model, name, props, core, speedPeak, speedScale, SURF_RESOURCE_ON)
 {}
 
 Cpu::~Cpu(){
