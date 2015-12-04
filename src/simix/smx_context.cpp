@@ -66,7 +66,7 @@ void SIMIX_context_mod_init(void)
     if (simgrid::simix::factory_initializer)
       simix_global->context_factory = simgrid::simix::factory_initializer();
     else { /* use the factory specified by --cfg=contexts/factory:value */
-#if defined(CONTEXT_THREADS) && 0
+#if defined(CONTEXT_THREADS)
       if (!strcmp(smx_context_factory_name, "thread"))
         simix_global->context_factory = simgrid::simix::thread_factory();
 #else

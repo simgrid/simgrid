@@ -778,15 +778,17 @@ set(source_of_generated_headers
 
 ### depend of some variables setted upper
 # -->CONTEXT_THREADS CONTEXT_UCONTEXT
-if(0) #pthread
+if(${CONTEXT_THREADS}) #pthread
   set(SURF_SRC
     ${SURF_SRC}
-    src/simix/smx_context_thread.cpp
+    src/simix/ThreadContext.cpp
+    src/simix/ThreadContext.hpp
     )
 else() # NOT pthread
   set(EXTRA_DIST
     ${EXTRA_DIST}
-    src/simix/smx_context_thread.cpp
+    src/simix/ThreadContext.cpp
+    src/simix/ThreadContext.hpp
     )
 endif()
 
@@ -873,7 +875,8 @@ endif()
 if(WIN32)
   set(simgrid_sources
     ${simgrid_sources}
-    src/simix/smx_context_thread.cpp
+    src/simix/src/simix/ThreadContext.cpp
+    src/simix/src/simix/ThreadContext.hpp
     src/xbt/win32_ucontext.c
     src/xbt/xbt_os_thread.c
     )
