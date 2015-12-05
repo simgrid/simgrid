@@ -405,37 +405,6 @@ static char *mallocex(int size)
 #define SMALLAMOUNT 10
 #define TOOBIG 100000000
 
-#if 0                           /* this contains syntax errors, actually */
-static void bad_example(void)
-{
-  struct {
-    char *first;
-  } *globalcontext;
-  ex_t ex;
-
-  /* BAD_EXAMPLE */
-  TRY {
-    char *cp1, *cp2, *cp3;
-
-    cp1 = mallocex(SMALLAMOUNT);
-    globalcontext->first = cp1;
-    cp2 = mallocex(TOOBIG);
-    cp3 = mallocex(SMALLAMOUNT);
-    strcpy(cp1, "foo");
-    strcpy(cp2, "bar");
-  }
-  TRY_CLEANUP {
-    free(cp3);
-    free(cp2);
-    free(cp1);
-  }
-  CATCH_ANONYMOUS {
-    printf("cp3=%s", cp3);
-    RETHROW;
-  }
-  /* end_of_bad_example */
-}
-#endif
 typedef struct {
   char *first;
 } global_context_t;
