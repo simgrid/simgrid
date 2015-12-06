@@ -65,7 +65,7 @@ public:
   double m_value;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
   /* Dynamic */
-  double m_lastTime;             /*< Integral interval last point (discret time) */
+  double m_lastTime;             /*< Integral interval last point (discrete time) */
   double m_total;                 /*< Integral total between 0 and last_pointn */
 
   CpuTiTrace *p_trace;
@@ -78,10 +78,6 @@ public:
 
 class CpuTiAction: public CpuAction {
   friend class CpuTi;
-  // friend CpuAction *CpuTi::execute(double size);
-  // friend CpuAction *CpuTi::sleep(double duration);
-  // friend void CpuTi::updateActionsFinishTime(double now);//FIXME
-  // friend void CpuTi::updateRemainingAmount(double now);//FIXME
 public:
   CpuTiAction(CpuTiModel *model, double cost, bool failed,
                    CpuTi *cpu);
