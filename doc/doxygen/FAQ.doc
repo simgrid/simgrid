@@ -608,6 +608,19 @@ of the root tag. Currently, it should read:
 If your files are too old, you can use the simgrid_update_xml.pl
 script which can be found in the tools directory of the archive.
 
+\subsection faq_trouble_debug Debugging SMPI applications
+
+In order to debug SMPI programs, you can use the following options:
+
+- <b>-wrapper 'gdb --args'</b>: this option is used to use a wrapper
+  in order to call the SMPI process. Good candidates for this options
+  are "gdb --args", "valgrind", "rr record", "strace", etc;
+
+- <b>-foreground</b>: this options gives the debugger access to the terminal
+  which is needed in order to use an interactive debugger.
+
+Both options are needed in order to run the SMPI process under GDB.
+
 \subsection faq_trouble_valgrind Valgrind-related and other debugger issues
 
 If you don't, you really should use valgrind to debug your code, it's
