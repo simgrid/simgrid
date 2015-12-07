@@ -106,12 +106,13 @@ public:
    * @param props Dictionary of properties associated to this Cpu
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
    * @param core The number of core of this Cpu
-   * @param speedPeak The speed peak of this Cpu
-   * @param speedScale The speed scale of this Cpu
+   * @param speedPeak The speed peak of this Cpu in flops (max speed)
+   * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
+   * @param stateInitial whether it is created running or crashed
    */
   Cpu(Model *model, const char *name, xbt_dict_t props,
 	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale,
-    e_surf_resource_state_t stateInitial);
+	  e_surf_resource_state_t stateInitial);
 
   /**
    * @brief Cpu constructor
@@ -122,10 +123,11 @@ public:
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
+   * @param stateInitial whether it is created running or crashed
    */
   Cpu(Model *model, const char *name, xbt_dict_t props,
 	  int core, double speedPeak, double speedScale,
-    e_surf_resource_state_t stateInitial);
+	  e_surf_resource_state_t stateInitial);
 
   Cpu(Model *model, const char *name, xbt_dict_t props,
 	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale);
