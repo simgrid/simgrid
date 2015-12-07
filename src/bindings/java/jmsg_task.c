@@ -8,8 +8,6 @@
 
 #include "jmsg.h"
 
-#include "smx_context_java.h"
-
 #include "jmsg_host.h"
 #include "jmsg_task.h"
 
@@ -18,6 +16,8 @@
 #include <simgrid/msg.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+
+jobject native_to_java_process(msg_process_t process);
 
 static jmethodID jtask_method_Comm_constructor;
 

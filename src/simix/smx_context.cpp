@@ -11,6 +11,7 @@
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
 #include "smx_private.h"
+#include "smx_private.hpp"
 #include "simgrid/sg_config.h"
 #include "src/internal_config.h"
 #include "simgrid/modelchecker.h"
@@ -36,7 +37,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
                                 "Context switching mechanism");
 
 char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contexts/factory:value */
-smx_ctx_factory_initializer_t smx_factory_initializer_to_use = NULL;
 int smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
 int smx_context_guard_size;
@@ -63,33 +63,26 @@ void SIMIX_context_mod_init(void)
 #endif
   if (!simix_global->context_factory) {
     /* select the context factory to use to create the contexts */
-    if (smx_factory_initializer_to_use) {
-      smx_factory_initializer_to_use(&simix_global->context_factory);
-    }
+    if (simgrid::simix::factory_initializer)
+      simix_global->context_factory = simgrid::simix::factory_initializer();
     else { /* use the factory specified by --cfg=contexts/factory:value */
-
-
-      if (!strcmp(smx_context_factory_name, "thread")) {
-        /* use os threads (either pthreads or windows ones) */
-        SIMIX_ctx_thread_factory_init(&simix_global->context_factory);
-      }
+#if defined(CONTEXT_THREADS)
+      if (!strcmp(smx_context_factory_name, "thread"))
+        simix_global->context_factory = simgrid::simix::thread_factory();
+#else
+      if (0);
+#endif
 #ifdef CONTEXT_UCONTEXT
-      else if (!strcmp(smx_context_factory_name, "ucontext")) {
-        /* use ucontext */
-        SIMIX_ctx_sysv_factory_init(&simix_global->context_factory);
-      }
+      else if (!strcmp(smx_context_factory_name, "ucontext"))
+        simix_global->context_factory = simgrid::simix::sysv_factory();
 #endif
 #ifdef HAVE_RAWCTX
-      else if (!strcmp(smx_context_factory_name, "raw")) {
-        /* use raw contexts */
-        SIMIX_ctx_raw_factory_init(&simix_global->context_factory);
-      }
+      else if (!strcmp(smx_context_factory_name, "raw"))
+        simix_global->context_factory = simgrid::simix::raw_factory();
 #endif
 #ifdef HAVE_BOOST_CONTEXT
-      else if (!strcmp(smx_context_factory_name, "boost")) {
-        /* use Boost.Context */
-        SIMIX_ctx_boost_factory_init(&simix_global->context_factory);
-      }
+      else if (!strcmp(smx_context_factory_name, "boost"))
+        simix_global->context_factory = simgrid::simix::boost_factory();
 #endif
       else {
         XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
@@ -120,13 +113,8 @@ void SIMIX_context_mod_init(void)
  */
 void SIMIX_context_mod_exit(void)
 {
-  if (simix_global->context_factory) {
-    smx_pfn_context_factory_finalize_t finalize_factory;
-
-    /* finalize the context factory */
-    finalize_factory = simix_global->context_factory->finalize;
-    finalize_factory(&simix_global->context_factory);
-  }
+  delete simix_global->context_factory;
+  simix_global->context_factory = nullptr;
   xbt_dict_remove((xbt_dict_t) _sg_cfg_set,"contexts/factory");
 }
 

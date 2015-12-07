@@ -12,6 +12,8 @@
 #include <jni.h>
 #include "simgrid/msg.h"
 
+SG_BEGIN_DECL()
+
 /**
  * This function returns a new java host instance.
  *
@@ -224,3 +226,4 @@ Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject 
 
 #endif                          /*!MSG_JHOST_H */
 
+SG_END_DECL()

@@ -12,6 +12,7 @@
 #endif
 
 #include "smx_private.h"
+#include "smx_private.hpp"
 #include "xbt/heap.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"

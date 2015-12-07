@@ -27,6 +27,7 @@
 #include "xbt/xbt_os_thread.h"
 #include "xbt/sysdep.h"
 #include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_parmap, xbt, "parmap: parallel map");
 

@@ -38,6 +38,7 @@ set(EXTRA_DIST
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
   src/simix/smx_private.h
+  src/simix/smx_private.hpp
   src/simix/smx_process_private.h
   src/simix/smx_synchro_private.h
   src/smpi/README
@@ -357,7 +358,7 @@ set(SIMIX_GENERATED_SRC
 set(SIMIX_SRC
   src/simix/libsmx.cpp
   src/simix/smx_context.cpp
-  src/simix/smx_context_base.cpp
+  src/simix/Context.cpp
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
@@ -376,22 +377,24 @@ set(SIMIX_SRC
 if (MSVC)
   set(EXTRA_DIST
       ${EXTRA_DIST}
-      src/simix/smx_context_raw.cpp)
+      src/simix/RawContext.cpp)
 else()
   set(SIMIX_SRC
       ${SIMIX_SRC}
-      src/simix/smx_context_raw.cpp)
+      src/simix/RawContext.cpp)
 endif()
 
 # Boost context may not be available
 if (HAVE_BOOST_CONTEXT)
   set(SIMIX_SRC
       ${SIMIX_SRC}
-      src/simix/smx_context_boost.cpp)
+      src/simix/BoostContext.hpp
+      src/simix/BoostContext.cpp)
 else()
   set(EXTRA_DIST
       ${EXTRA_DIST}
-      src/simix/smx_context_boost.cpp)
+      src/simix/BoostContext.hpp
+      src/simix/BoostContext.cpp)
 endif()
 
 set(S4U_SRC
@@ -492,7 +495,7 @@ set(JSURF_JAVA_GENERATED_SRC
 )
 
 set(JMSG_C_SRC
-  src/bindings/java/jmsg.c
+  src/bindings/java/jmsg.cpp
   src/bindings/java/jmsg.h
   src/bindings/java/jmsg_as.c
   src/bindings/java/jmsg_as.h
@@ -502,7 +505,7 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_file.h
   src/bindings/java/jmsg_host.c
   src/bindings/java/jmsg_host.h
-  src/bindings/java/jmsg_process.c
+  src/bindings/java/jmsg_process.cpp
   src/bindings/java/jmsg_process.h
   src/bindings/java/jmsg_rngstream.c
   src/bindings/java/jmsg_rngstream.h
@@ -514,10 +517,8 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_vm.h
   src/bindings/java/jxbt_utilities.c
   src/bindings/java/jxbt_utilities.h
-  src/bindings/java/smx_context_cojava.c
-  src/bindings/java/smx_context_cojava.h
-  src/bindings/java/smx_context_java.c
-  src/bindings/java/smx_context_java.h
+  src/bindings/java/JavaContext.cpp
+  src/bindings/java/JavaContext.hpp
   src/bindings/java/jmsg_storage.c
   src/bindings/java/jmsg_storage.h
 )
@@ -709,6 +710,7 @@ set(headers_to_install
   include/simgrid/platf_generator.h
   include/simgrid/plugins.h
   include/simgrid/simix.h
+  include/simgrid/simix.hpp
   include/simgrid/host.h
   include/simgrid/link.h
   include/simgrid/s4u/actor.hpp
@@ -777,13 +779,25 @@ set(source_of_generated_headers
 if(${CONTEXT_THREADS}) #pthread
   set(SURF_SRC
     ${SURF_SRC}
-    src/simix/smx_context_thread.cpp
+    src/simix/ThreadContext.cpp
+    src/simix/ThreadContext.hpp
+    )
+else() # NOT pthread
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
+    src/simix/ThreadContext.cpp
+    src/simix/ThreadContext.hpp
+    )
+endif()
+
+if(${CONTEXT_THREADS}) #pthread
+  set(SURF_SRC
+    ${SURF_SRC}
     src/xbt/xbt_os_thread.c
     )
 else() # NOT pthread
   set(EXTRA_DIST
     ${EXTRA_DIST}
-    src/simix/smx_context_thread.cpp
     src/xbt/xbt_os_thread.c
     )
 endif()
@@ -791,12 +805,12 @@ endif()
 if(${CONTEXT_UCONTEXT}) #ucontext
   set(SURF_SRC
     ${SURF_SRC}
-    src/simix/smx_context_sysv.cpp
+    src/simix/UContext.cpp
     )
 else() # NOT ucontext
   set(EXTRA_DIST
     ${EXTRA_DIST}
-    src/simix/smx_context_sysv.cpp
+    src/simix/UContext.cpp
     )
 endif()
 
@@ -859,7 +873,8 @@ endif()
 if(WIN32)
   set(simgrid_sources
     ${simgrid_sources}
-    src/simix/smx_context_thread.cpp
+    src/simix/src/simix/ThreadContext.cpp
+    src/simix/src/simix/ThreadContext.hpp
     src/xbt/win32_ucontext.c
     src/xbt/xbt_os_thread.c
     )

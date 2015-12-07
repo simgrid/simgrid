@@ -4,7 +4,7 @@
 ! timeout 15
 
 $ java -classpath ${classpath:=.} bittorrent/Bittorrent ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/bittorrent/bittorrent.xml
-> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Using regular java threads.
 > [5000.832370] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:bittorrent.Peer:(2) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 2
 > [Boivin:bittorrent.Peer:(2) 5000.048881] [jmsg/INFO] Here is my current status: 1111111111

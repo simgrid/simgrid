@@ -11,10 +11,6 @@
 #ifndef _XBT_SYSDEP_H
 #define _XBT_SYSDEP_H
 
-#ifdef __cplusplus
-#include <type_traits>
-#endif
-
 #include "xbt/log.h"
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
@@ -148,41 +144,10 @@ XBT_PUBLIC(void) xbt_free_ref(void *d);
 
 SG_END_DECL()
 
-/** @brief like calloc, but xbt_die() on error and don't memset to 0
-    @hideinitializer */
-#ifndef __cplusplus
-
 #define xbt_new(type, count)  ((type*)xbt_malloc (sizeof (type) * (count)))
 /** @brief like calloc, but xbt_die() on error
     @hideinitializer */
 #define xbt_new0(type, count) ((type*)xbt_malloc0 (sizeof (type) * (count)))
-
-#else
-
-/** C++ wrapper for xtb_new
- *
- *  This ensures that we do not xbt_new things that need a constructor.
- */
-template<typename T> inline
-T* xbt_new_(size_t count)
-{
-  static_assert(std::is_trivial<T>(),
-    "Cannot xbt_new this type");
-  return (T*) xbt_malloc(sizeof(T) * count);
-}
-
-template<typename T> inline
-T* xbt_new0_(size_t count)
-{
-  static_assert(std::is_trivial<T>(),
-    "Cannot xbt_new0 this type");
-  return (T*) xbt_malloc0(sizeof(T) * count);
-}
-
-#define xbt_new(type, count)  ::xbt_new_<type>(count)
-#define xbt_new0(type, count) ::xbt_new0_<type>(count)
-
-#endif
 
 /** @} */
 

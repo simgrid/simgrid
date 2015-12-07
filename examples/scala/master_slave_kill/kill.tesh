@@ -3,7 +3,7 @@
 ! output sort 19
 
 $ java -classpath ${classpath:=.} master_slave_kill/MsKill ${srcdir:=.}/../platforms/small_platform.xml
-> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Using regular java threads.
 > [Jupiter:master:(1) 0.000000] [jmsg/INFO] Master Hello!
 > [Jupiter:master:(1) 0.000000] [jmsg/INFO] Create process on host 'alice'
 > [Tremblay:slave:(2) 0.000000] [jmsg/INFO] Slave Hello!

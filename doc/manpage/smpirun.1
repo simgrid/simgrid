@@ -23,7 +23,12 @@ Print the usage and a résumé of the available options
 Do not remove the generated files after execution.
 .TP
 \fB\-wrapper\fR <command>
-Use command to run the program (e.g. "valgrind").
+Use command to run the program (e.g. "valgrind", "gdb --args", "rr record").
+You usually want to use the "-foreground" option as well in order to have a TTY.
+.TP
+\fB\-foreground\fR
+Run the child process in the foreground.
+This gives the child process access to the TTY.
 .TP
 \fB\-map\fR
 Display the machine on which each process rank is mapped.

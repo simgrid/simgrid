@@ -1,7 +1,7 @@
 #! tesh
 
 $ java -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../platforms/two_hosts_platform.xml ${srcdir:=.}/cloud/migration/deploy_simple.xml
-> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Using regular java threads.
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] This example evaluates the migration time of a VM in presence of collocated VMs on the source and the dest nodes
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] The migrated VM has a memory intensity rate of 70% of the network BW and a cpu load of 90% "(see cloudcom 2013 paper "Adding a Live Migration Model Into SimGrid" for further information) 
 > [host0:cloud/migration/Test:(1) 0.000000] [jmsg/INFO] Load of collocated VMs fluctuate between 0 and 90% in order to create a starvation issue and see whether it impacts or not the migration time

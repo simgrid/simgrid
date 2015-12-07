@@ -11,6 +11,7 @@
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "src/mc/mc_client.h"
+#include "src/simix/smx_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix,
                                 "Logging specific to SIMIX (process)");

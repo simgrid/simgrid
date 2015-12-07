@@ -12,7 +12,7 @@
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
 #include "jmsg_storage.h"
-
+#include <surf/surf_routing.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 

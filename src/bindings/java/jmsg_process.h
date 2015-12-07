@@ -13,6 +13,8 @@
 #include <simgrid/msg.h>
 #include <simgrid/simix.h>
 
+SG_BEGIN_DECL();
+
 //Cached java fields
 extern jfieldID jprocess_field_Process_bind;
 extern jfieldID jprocess_field_Process_host;
@@ -264,5 +266,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_setKillTime
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls);
 
+SG_END_DECL();
 
 #endif                          /* !MSG_JPROCESS_H */

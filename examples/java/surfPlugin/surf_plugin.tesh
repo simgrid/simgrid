@@ -9,7 +9,7 @@
 ! output sort
 #
 $ java -classpath ${classpath:=.} surfPlugin/TestPlugin ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/surfPlugin/surfPluginDeployment.xml
-> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Using regular java threads.
 > [0.000000] [jmsg/INFO] Trace: Link created __loopback__
 > [0.000000] [jmsg/INFO] Trace: Link state changed __loopback__
 > [0.000000] [jmsg/INFO] Trace: Cpu created Tremblay

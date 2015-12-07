@@ -11,10 +11,11 @@
 #include "jmsg.h"
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
-#include "smx_context_java.h"
-#include "smx_context_cojava.h"
+#include "JavaContext.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
+
+extern "C" {
 
 jfieldID jprocess_field_Process_bind;
 jfieldID jprocess_field_Process_host;
@@ -26,59 +27,57 @@ jfieldID jprocess_field_Process_ppid;
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject jprocess) {
-  if (smx_factory_initializer_to_use == SIMIX_ctx_cojava_factory_init) {
-    msg_process_t process = jprocess_to_native_process(jprocess, env);
-    smx_context_t context = MSG_process_get_smx_ctx(process);
-    smx_ctx_cojava_stop(context);
-  }
+
 }
 
 jobject native_to_java_process(msg_process_t process)
 {
-  return ((smx_ctx_java_t)MSG_process_get_smx_ctx(process))->jprocess;
+  simgrid::java::JavaContext* context =
+    (simgrid::java::JavaContext*) MSG_process_get_smx_ctx(process);
+  return context->jprocess;
 }
 
 jobject jprocess_new_global_ref(jobject jprocess, JNIEnv * env)
 {
-  return (*env)->NewGlobalRef(env, jprocess);
+  return env->NewGlobalRef(jprocess);
 }
 
 void jprocess_delete_global_ref(jobject jprocess, JNIEnv * env)
 {
-  (*env)->DeleteGlobalRef(env, jprocess);
+  env->DeleteGlobalRef(jprocess);
 }
 
 void jprocess_join(jobject jprocess, JNIEnv * env)
 {
 	msg_process_t process = jprocess_to_native_process(jprocess,env);
-	smx_ctx_java_t context = (smx_ctx_java_t)MSG_process_get_smx_ctx(process);
+	simgrid::java::JavaContext* context =
+    (simgrid::java::JavaContext*) MSG_process_get_smx_ctx(process);
 	xbt_os_thread_join(context->thread,NULL);
 }
 
 msg_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
 {
   return
-    (msg_process_t)(intptr_t)(*env)->GetLongField(env, jprocess,
+    (msg_process_t)(intptr_t)env->GetLongField(jprocess,
                                                   jprocess_field_Process_bind);
 }
 
 void jprocess_bind(jobject jprocess, msg_process_t process, JNIEnv * env)
 {
-  (*env)->SetLongField(env, jprocess, jprocess_field_Process_bind,
+  env->SetLongField(jprocess, jprocess_field_Process_bind,
                        (intptr_t)process);
 }
 
 jlong jprocess_get_id(jobject jprocess, JNIEnv * env)
 {
   return
-    (intptr_t)(*env)->GetLongField(env, jprocess, jprocess_field_Process_id);
+    (intptr_t)env->GetLongField(jprocess, jprocess_field_Process_id);
 }
 
 jstring jprocess_get_name(jobject jprocess, JNIEnv * env)
 {
-  jstring jname = (jstring) (*env)->GetObjectField(env, jprocess, jprocess_field_Process_name);
-  return (*env)->NewGlobalRef(env, jname);
-
+  jstring jname = (jstring) env->GetObjectField(jprocess, jprocess_field_Process_name);
+  return (jstring) env->NewGlobalRef(jname);
 }
 
 jboolean jprocess_is_valid(jobject jprocess, JNIEnv * env)
@@ -88,11 +87,11 @@ jboolean jprocess_is_valid(jobject jprocess, JNIEnv * env)
   if (!id)
     return JNI_FALSE;
 
-  return (*env)->GetLongField(env, jprocess, id) ? JNI_TRUE : JNI_FALSE;
+  return env->GetLongField(jprocess, id) ? JNI_TRUE : JNI_FALSE;
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
-  jclass jprocess_class_Process = (*env)->FindClass(env, "org/simgrid/msg/Process");
+  jclass jprocess_class_Process = env->FindClass("org/simgrid/msg/Process");
 
   jprocess_field_Process_name = jxbt_get_jfield(env, jprocess_class_Process, "name", "Ljava/lang/String;");
   jprocess_field_Process_bind = jxbt_get_jfield(env, jprocess_class_Process, "bind", "J");
@@ -120,7 +119,7 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
   msg_process_t process;          /* the native process to create                         */
   msg_host_t host;                /* Where that process lives */
 
-  hostname = (*env)->GetStringUTFChars(env, jhostname, 0);
+  hostname = env->GetStringUTFChars((jstring) jhostname, 0);
 
   /* get the name of the java process */
   jname = jprocess_get_name(jprocess_arg, env);
@@ -146,11 +145,11 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
   }
 
   /* build the C name of the process */
-  name = (*env)->GetStringUTFChars(env, jname, 0);
+  name = env->GetStringUTFChars(jname, 0);
   name = xbt_strdup(name);
 
   /* Retrieve the kill time from the process */
-  jdouble jkill = (*env)->GetDoubleField(env, jprocess, jprocess_field_Process_killTime);
+  jdouble jkill = env->GetDoubleField(jprocess, jprocess_field_Process_killTime);
   /* Actually build the MSG process */
   process = MSG_process_create_with_environment(name,
 						(xbt_main_func_t) jprocess,
@@ -164,16 +163,16 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
 
   /* release our reference to the process name (variable name becomes invalid) */
   //FIXME : This line should be uncommented but with mac it doesn't work. BIG WARNING
-  //(*env)->ReleaseStringUTFChars(env, jname, name);
-  (*env)->ReleaseStringUTFChars(env, jhostname, hostname);
+  //env->ReleaseStringUTFChars(jname, name);
+  env->ReleaseStringUTFChars((jstring) jhostname, hostname);
 
   /* sets the PID and the PPID of the process */
-  (*env)->SetIntField(env, jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
-  (*env)->SetIntField(env, jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
+  env->SetIntField(jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
+  env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
   /* sets the Host of the process */
-  jobject jhost = Java_org_simgrid_msg_Host_getByName(env,NULL,jhostname);
+  jobject jhost = Java_org_simgrid_msg_Host_getByName(env,NULL, (jstring)jhostname);
 
-  (*env)->SetObjectField(env, jprocess, jprocess_field_Process_host, jhost);
+  env->SetObjectField(jprocess, jprocess_field_Process_host, jhost);
 }
 
 JNIEXPORT jint JNICALL
@@ -211,16 +210,16 @@ Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, jobject jprocess, jobject 
     jxbt_throw_notbound(env, "process", jprocess);
     return NULL;
   }
-  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+  const char *name = env->GetStringUTFChars((jstring)jname, 0);
 
   const char *property = MSG_process_get_property_value(process, name);
   if (!property) {
     return NULL;
   }
 
-  jobject jproperty = (*env)->NewStringUTF(env, property);
+  jobject jproperty = env->NewStringUTF(property);
 
-  (*env)->ReleaseStringUTFChars(env, jname, name);
+  env->ReleaseStringUTFChars((jstring)jname, name);
 
   return jproperty;
 }
@@ -344,7 +343,7 @@ Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cls, jlong jmillis, jint 
 
     //jmsg_throw_status(env,rv);
 
-    // adsein, the code above as been replaced by the code below. Indeed, according to the documentation, a sleep can only 
+    // adsein, the code above as been replaced by the code below. Indeed, according to the documentation, a sleep can only
     // trigger a host_failure exception. When the sleep crashes due to a host shutdown, the exception thrown by smx_context_java.c
     // is a cancelled_error, see bindings/java/smx_context_java.c, function void smx_ctx_java_stop(smx_context_t context) and src/msg/msg_gos.c
     // function  msg_error_t MSG_process_sleep(double nb_sec)
@@ -358,7 +357,7 @@ Java_org_simgrid_msg_Process_waitFor(JNIEnv * env, jobject jprocess,
 {
   msg_error_t rv;
   rv = MSG_process_sleep((double)jseconds);
-  if ((*env)->ExceptionOccurred(env))
+  if (env->ExceptionOccurred())
     return;
   if (rv != MSG_OK) {
     XBT_DEBUG("Status NOK");
@@ -404,7 +403,7 @@ Java_org_simgrid_msg_Process_migrate(JNIEnv * env,
     return;
   }
   /* change the host java side */
-  (*env)->SetObjectField(env, jprocess, jprocess_field_Process_host, jhost);
+  env->SetObjectField(jprocess, jprocess_field_Process_host, jhost);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , jobject jprocess, jdouble jkilltime) {
@@ -415,4 +414,6 @@ Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , jobject jprocess, jdoubl
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclass cls) {
   return (jint) MSG_process_get_number();
+}
+
 }
