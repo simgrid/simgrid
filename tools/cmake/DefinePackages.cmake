@@ -517,8 +517,6 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_vm.h
   src/bindings/java/jxbt_utilities.c
   src/bindings/java/jxbt_utilities.h
-  src/bindings/java/smx_context_cojava.c
-  src/bindings/java/smx_context_cojava.h
   src/bindings/java/smx_context_java.c
   src/bindings/java/smx_context_java.h
   src/bindings/java/jmsg_storage.c

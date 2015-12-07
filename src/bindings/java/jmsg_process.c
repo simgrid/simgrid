@@ -12,7 +12,6 @@
 #include "jmsg_host.h"
 #include "jxbt_utilities.h"
 #include "smx_context_java.h"
-#include "smx_context_cojava.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
@@ -26,11 +25,7 @@ jfieldID jprocess_field_Process_ppid;
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject jprocess) {
-  if (smx_factory_initializer_to_use == SIMIX_ctx_cojava_factory_init) {
-    msg_process_t process = jprocess_to_native_process(jprocess, env);
-    smx_context_t context = MSG_process_get_smx_ctx(process);
-    smx_ctx_cojava_stop(context);
-  }
+
 }
 
 jobject native_to_java_process(msg_process_t process)
