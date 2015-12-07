@@ -16,12 +16,14 @@
 /* JNI GETTERS */
 /* *********** */
 
+SG_BEGIN_DECL()
+
 /* Search a class and throw an exception if not found */
 jclass jxbt_get_class(JNIEnv * env, const char *name);
 
 /* Search a method in a class and throw an exception if not found
    (it's ok to to pass a NULL class: it's a noop) */
-jmethodID jxbt_get_jmethod(JNIEnv * env, jclass class,
+jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls,
                            const char *name, const char *signature);
 
 /* Like the jxbt_get_class() but get a static method */
@@ -30,7 +32,7 @@ jmethodID jxbt_get_static_jmethod(JNIEnv * env, jclass cls,
 
 /* Search a field in a class and throw an exception if not found
    (it's ok to to pass a NULL class: it's a noop) */
-jfieldID jxbt_get_jfield(JNIEnv * env, jclass class,
+jfieldID jxbt_get_jfield(JNIEnv * env, jclass cls,
                          const char *name, const char *signature);
 
 
@@ -96,3 +98,5 @@ void jxbt_throw_task_cancelled(JNIEnv * env, char *details);
 /** Thrown when looking for a storage from name does not lead to anything */
 void jxbt_throw_storage_not_found(JNIEnv * env, const char *invalid_name);
 #endif                          /* ! JXBT_UTILITY_H */
+
+SG_END_DECL()

@@ -3,7 +3,7 @@
 ! output sort 19
 
 $ java -classpath ${classpath:=.} chord/Chord ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/chord/chord.xml
-> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Using regular java threads.
 > [652.540924] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:chord.Node:(7) 0.000000] [jmsg/INFO] Joining the ring with id 8 knowing node 1
 > [Gatien:chord.Node:(1) 0.000000] [jmsg/INFO] Joining the ring with id 48 knowing node 1

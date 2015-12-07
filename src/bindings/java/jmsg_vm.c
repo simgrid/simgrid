@@ -12,6 +12,8 @@
 #include "jmsg_process.h"
 #include "jxbt_utilities.h"
 #include "simgrid/msg.h"
+#include <surf/surf_routing.h>
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 static jfieldID jvm_field_bind;

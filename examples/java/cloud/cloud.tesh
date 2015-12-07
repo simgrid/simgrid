@@ -3,7 +3,7 @@
 ! output sort 19
 
 $ java -classpath ${classpath:=.} cloud/Cloud ${srcdir:=.}/../platforms/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Using regular java threads. Coroutines could speed your simulation up.
+> [  0.000000] (0:@) Using regular java threads.
 > [  0.000000] (0:@) Start2  hosts
 > [  0.000000] (0:@) Create VM(VM00)@PM(Intel) with 0 mounted disks
 > [  0.000000] (0:@) Create VM(VM01)@PM(Provost) with 0 mounted disks

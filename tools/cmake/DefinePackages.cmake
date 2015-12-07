@@ -495,7 +495,7 @@ set(JSURF_JAVA_GENERATED_SRC
 )
 
 set(JMSG_C_SRC
-  src/bindings/java/jmsg.c
+  src/bindings/java/jmsg.cpp
   src/bindings/java/jmsg.h
   src/bindings/java/jmsg_as.c
   src/bindings/java/jmsg_as.h
@@ -505,7 +505,7 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_file.h
   src/bindings/java/jmsg_host.c
   src/bindings/java/jmsg_host.h
-  src/bindings/java/jmsg_process.c
+  src/bindings/java/jmsg_process.cpp
   src/bindings/java/jmsg_process.h
   src/bindings/java/jmsg_rngstream.c
   src/bindings/java/jmsg_rngstream.h
@@ -517,8 +517,8 @@ set(JMSG_C_SRC
   src/bindings/java/jmsg_vm.h
   src/bindings/java/jxbt_utilities.c
   src/bindings/java/jxbt_utilities.h
-  src/bindings/java/smx_context_java.c
-  src/bindings/java/smx_context_java.h
+  src/bindings/java/JavaContext.cpp
+  src/bindings/java/JavaContext.hpp
   src/bindings/java/jmsg_storage.c
   src/bindings/java/jmsg_storage.h
 )

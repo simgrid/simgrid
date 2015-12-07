@@ -49,10 +49,11 @@ protected:
 };
 
 class Context {
-private:
+protected:
   xbt_main_func_t code_ = nullptr;
   int argc_ = 0;
   char **argv_ = nullptr;
+private:
   void_pfn_smxprocess_t cleanup_func_ = nullptr;
   smx_process_t process_ = nullptr;
 public:

@@ -3,7 +3,7 @@
 ! output sort 19
 
 $ java -classpath ${classpath:=.} master_slave_bypass/MsBypass ${srcdir:=.}/../platforms/platform.xml
-> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Using regular java threads.
 > [Boivin:process1:(1) 0.000000] [jmsg/INFO] Master Hello!
 > [Boivin:process1:(1) 0.000000] [jmsg/INFO] Create process on host 'Jacquelin'
 > [Jacquelin:process2:(2) 0.000000] [jmsg/INFO] Slave Hello!

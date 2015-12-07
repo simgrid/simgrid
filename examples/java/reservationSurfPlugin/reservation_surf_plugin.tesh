@@ -1,7 +1,7 @@
 #! tesh
 
 $ java -classpath ${classpath:=.} reservationSurfPlugin/TestPlugin ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/reservationSurfPlugin/reservationSurfPluginDeployment.xml
-> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Using regular java threads.
 > [Tremblay:reservationSurfPlugin.Sender:(1) 0.000000] [jmsg/INFO] helloo!
 > [Ginette:reservationSurfPlugin.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
 > [0.000000] [jmsg/INFO] Trace: Communicate message of size 1.0 with rate -1.0 and bound 1.648342855615789E9 from Tremblay to Ginette

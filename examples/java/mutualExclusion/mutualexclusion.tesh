@@ -3,7 +3,7 @@
 ! output sort 19
 
 $ java -classpath ${classpath:=.} mutualExclusion/MutexCentral ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/mutualExclusion/mutex_centralized_deployment.xml
-> [0.000000] [jmsg/INFO] Using regular java threads. Coroutines could speed your simulation up.
+> [0.000000] [jmsg/INFO] Using regular java threads.
 > [Jupiter:mutualExclusion.Node:(2) 0.000000] [jmsg/INFO] Send a request to the coordinator
 > [Fafard:mutualExclusion.Node:(3) 0.000000] [jmsg/INFO] Send a request to the coordinator
 > [Tremblay:mutualExclusion.Coordinator:(1) 0.019014] [jmsg/INFO] Got a request from mutualExclusion.Node. Queue empty: grant it

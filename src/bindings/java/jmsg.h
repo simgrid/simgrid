@@ -11,11 +11,10 @@
 #include <simgrid/msg.h>
 #include <jni.h>
 
-extern int JAVA_HOST_LEVEL;
-extern xbt_lib_t host_lib;
+SG_BEGIN_DECL()
 
+extern int JAVA_HOST_LEVEL;
 extern int JAVA_STORAGE_LEVEL;
-extern xbt_lib_t storage_lib;
 
 JavaVM *get_java_VM(void);
 JNIEnv *get_current_thread_env(void);
@@ -67,5 +66,7 @@ Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
                                        jstring jdeploymentFile);
+
+SG_END_DECL()
 
 #endif                          /* !MSG4JAVA_H */
