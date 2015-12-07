@@ -21,8 +21,7 @@ class ThreadContextFactory;
 class ThreadContext : public Context {
 public:
   friend ThreadContextFactory;
-  ThreadContext(xbt_main_func_t code,
-          int argc, char **argv,
+  ThreadContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
           smx_process_t process);
   ~ThreadContext();
@@ -43,10 +42,8 @@ class ThreadContextFactory : public ContextFactory {
 public:
   ThreadContextFactory();
   ~ThreadContextFactory();
-  virtual ThreadContext* create_context(
-    xbt_main_func_t, int, char **, void_pfn_smxprocess_t,
-    smx_process_t process
-    ) override;
+  virtual ThreadContext* create_context(std::function<void()> code,
+    void_pfn_smxprocess_t cleanup_func,  smx_process_t process) override;
   void run_all() override;
   ThreadContext* self() override;
 };

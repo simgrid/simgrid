@@ -11,25 +11,6 @@
 #include "smx_private.h"
 
 /**
- * \brief creates a new context for a user level process
- * \param code a main function
- * \param argc the number of arguments of the main function
- * \param argv the vector of arguments of the main function
- * \param cleanup_func the function to call when the context stops
- * \param cleanup_arg the argument of the cleanup_func function
- */
-static inline smx_context_t SIMIX_context_new(xbt_main_func_t code,
-                                                  int argc, char **argv,
-                                                  void_pfn_smxprocess_t cleanup_func,
-                                                  smx_process_t simix_process)
-{
-  if (!simix_global)
-    xbt_die("simix is not initialized, please call MSG_init first");
-  return simix_global->context_factory->create_context(
-    code, argc, argv, cleanup_func, simix_process);
-}
-
-/**
  * \brief destroy a context
  * \param context the context to destroy
  * Argument must be stopped first -- runs in maestro context

@@ -4,6 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <vector>
+#include <string>
+#include <cstring>
+#include <memory>
+
 #include <simgrid/simix.hpp>
 
 #include "mc/mc.h"
@@ -14,6 +19,88 @@ void SIMIX_process_set_cleanup_function(
   smx_process_t process, void_pfn_smxprocess_t cleanup)
 {
   process->context->set_cleanup(cleanup);
+}
+
+namespace simgrid {
+namespace simix {
+
+class XBT_PRIVATE args {
+private:
+  int argc_;
+  char** argv_;
+public:
+
+  // Main constructors
+  args() : argc_(0), argv_(nullptr) {}
+  args(int argc, char** argv) : argc_(argc), argv_(argv) {}
+
+  // Free
+  void clear()
+  {
+    for (int i = 0; i < this->argc_; i++)
+      free(this->argv_[i]);
+    free(this->argv_);
+    this->argc_ = 0;
+    this->argv_ = nullptr;
+  }
+  ~args() { clear(); }
+
+  // Copy
+  args(args const& that) = delete;
+  args& operator=(args const& that) = delete;
+
+  // Move:
+  args(args&& that) : argc_(that.argc_), argv_(that.argv_)
+  {
+    that.argc_ = 0;
+    that.argv_ = nullptr;
+  }
+  args& operator=(args&& that)
+  {
+    this->argc_ = that.argc_;
+    this->argv_ = that.argv_;
+    that.argc_ = 0;
+    that.argv_ = nullptr;
+    return *this;
+  }
+
+  int    argc()            const { return argc_; }
+  char** argv()                  { return argv_; }
+  const char*const* argv() const { return argv_; }
+  char* operator[](std::size_t i) { return argv_[i]; }
+};
+
+}
+}
+
+static
+std::function<void()> wrap_main(xbt_main_func_t code, int argc, char **argv)
+{
+  if (code) {
+    auto arg = std::make_shared<simgrid::simix::args>(argc, argv);
+    return [=]() {
+      code(arg->argc(), arg->argv());
+    };
+  } else return std::function<void()>();
+}
+
+/**
+ * \brief creates a new context for a user level process
+ * \param code a main function
+ * \param argc the number of arguments of the main function
+ * \param argv the vector of arguments of the main function
+ * \param cleanup_func the function to call when the context stops
+ * \param cleanup_arg the argument of the cleanup_func function
+ */
+smx_context_t SIMIX_context_new(
+  xbt_main_func_t code, int argc, char **argv,
+  void_pfn_smxprocess_t cleanup_func,
+  smx_process_t simix_process)
+{
+  if (!simix_global)
+    xbt_die("simix is not initialized, please call MSG_init first");
+  return simix_global->context_factory->create_context(
+    wrap_main(code, argc, argv), cleanup_func, simix_process);
 }
 
 namespace simgrid {
@@ -37,32 +124,21 @@ void ContextFactory::declare_context(void* context, std::size_t size)
 #endif
 }
 
-Context::Context(xbt_main_func_t code,
-        int argc, char **argv,
-        void_pfn_smxprocess_t cleanup_func,
-        smx_process_t process)
-  : process_(process), iwannadie(false)
+Context::Context(std::function<void()> code,
+    void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+  : code_(std::move(code)), process_(process), iwannadie(false)
 {
   /* If the user provided a function for the process then use it.
      Otherwise, it is the context for maestro and we should set it as the
      current context */
-  if (code) {
+  if (has_code())
     this->cleanup_func_ = cleanup_func;
-    this->argc_ = argc;
-    this->argv_ = argv;
-    this->code_ = code;
-  } else {
+  else
     SIMIX_context_set_current(this);
-  }
 }
 
 Context::~Context()
 {
-  if (this->argv_) {
-    for (int i = 0; i < this->argc_; i++)
-      free(this->argv_[i]);
-    free(this->argv_);
-  }
 }
 
 void Context::stop()

@@ -9,6 +9,7 @@
 
 #include <utility>
 #include <memory>
+#include <functional>
 
 #include <xbt/function_types.h>
 #include <simgrid/simix.h>
@@ -26,10 +27,8 @@ public:
 
   ContextFactory(std::string name) : name_(std::move(name)) {}
   virtual ~ContextFactory();
-  virtual Context* create_context(
-    xbt_main_func_t, int, char **, void_pfn_smxprocess_t,
-    smx_process_t process
-    ) = 0;
+  virtual Context* create_context(std::function<void()> code,
+    void_pfn_smxprocess_t cleanup, smx_process_t process) = 0;
   virtual void run_all() = 0;
   virtual Context* self();
   std::string const& name() const
@@ -49,23 +48,23 @@ protected:
 };
 
 class Context {
-protected:
-  xbt_main_func_t code_ = nullptr;
-  int argc_ = 0;
-  char **argv_ = nullptr;
 private:
+  std::function<void()> code_;
   void_pfn_smxprocess_t cleanup_func_ = nullptr;
   smx_process_t process_ = nullptr;
 public:
   bool iwannadie;
 public:
-  Context(xbt_main_func_t code,
-          int argc, char **argv,
+  Context(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
           smx_process_t process);
-  int operator()()
+  void operator()()
   {
-    return code_(argc_, argv_);
+    code_();
+  }
+  bool has_code() const
+  {
+    return (bool) code_;
   }
   smx_process_t process()
   {

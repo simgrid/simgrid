@@ -45,22 +45,19 @@ ThreadContextFactory::~ThreadContextFactory()
 }
 
 ThreadContext* ThreadContextFactory::create_context(
-    xbt_main_func_t code, int argc, char ** argv,
-    void_pfn_smxprocess_t cleanup,
-    smx_process_t process)
+    std::function<void()> code,
+    void_pfn_smxprocess_t cleanup, smx_process_t process)
 {
-  return this->new_context<ThreadContext>(code, argc, argv, cleanup, process);
+  return this->new_context<ThreadContext>(std::move(code), cleanup, process);
 }
 
-ThreadContext::ThreadContext(xbt_main_func_t code,
-    int argc, char **argv,
-    void_pfn_smxprocess_t cleanup,
-    smx_process_t process)
-  : Context(code, argc, argv, cleanup, process)
+ThreadContext::ThreadContext(std::function<void()> code,
+    void_pfn_smxprocess_t cleanup, smx_process_t process)
+  : Context(std::move(code), cleanup, process)
 {
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
-  if (code) {
+  if (has_code()) {
     this->begin_ = xbt_os_sem_init(0);
     this->end_ = xbt_os_sem_init(0);
     if (smx_context_stack_size_was_set)

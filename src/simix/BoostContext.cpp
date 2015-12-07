@@ -25,11 +25,10 @@ namespace simix {
 
 class BoostSerialContext : public BoostContext {
 public:
-  BoostSerialContext(xbt_main_func_t code,
-      int argc, char **argv,
+  BoostSerialContext(std::function<void()> code,
       void_pfn_smxprocess_t cleanup_func,
       smx_process_t process)
-    : BoostContext(code, argc, argv, cleanup_func, process) {}
+    : BoostContext(std::move(code), cleanup_func, process) {}
   void stop() override;
   void suspend() override;
   void resume();
@@ -38,11 +37,10 @@ public:
 #ifdef CONTEXT_THREADS
 class BoostParallelContext : public BoostContext {
 public:
-  BoostParallelContext(xbt_main_func_t code,
-      int argc, char **argv,
+  BoostParallelContext(std::function<void()> code,
       void_pfn_smxprocess_t cleanup_func,
       smx_process_t process)
-    : BoostContext(code, argc, argv, cleanup_func, process) {}
+    : BoostContext(std::move(code), cleanup_func, process) {}
   void stop() override;
   void suspend() override;
   void resume();
@@ -88,21 +86,20 @@ BoostContextFactory::~BoostContextFactory()
 #endif
 }
 
-smx_context_t BoostContextFactory::create_context(
-  xbt_main_func_t code, int argc, char ** argv,
+smx_context_t BoostContextFactory::create_context(std::function<void()>  code,
   void_pfn_smxprocess_t cleanup_func, smx_process_t process)
 {
   BoostContext* context = nullptr;
   if (BoostContext::parallel_)
 #ifdef CONTEXT_THREADS
     context = this->new_context<BoostParallelContext>(
-      code, argc, argv, cleanup_func, process);
+      std::move(code), cleanup_func, process);
 #else
     xbt_die("No support for parallel execution");
 #endif
   else
     context = this->new_context<BoostSerialContext>(
-      code, argc, argv, cleanup_func, process);
+      std::move(code), cleanup_func, process);
   return context;
 }
 
@@ -139,16 +136,14 @@ static void smx_ctx_boost_wrapper(std::intptr_t arg)
   context->stop();
 }
 
-BoostContext::BoostContext(xbt_main_func_t code,
-    int argc, char **argv,
-    void_pfn_smxprocess_t cleanup_func,
-    smx_process_t process)
-  : Context(code, argc, argv, cleanup_func, process)
+BoostContext::BoostContext(std::function<void()> code,
+    void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+  : Context(std::move(code), cleanup_func, process)
 {
 
   /* if the user provided a function for the process then use it,
      otherwise it is the context for maestro */
-  if (code) {
+  if (has_code()) {
     this->stack_ = SIMIX_context_stack_new();
     // We need to pass the bottom of the stack to make_fcontext,
     // depending on the stack direction it may be the lower or higher address:

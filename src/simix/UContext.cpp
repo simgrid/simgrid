@@ -83,10 +83,8 @@ protected:
   char *stack_ = nullptr; /* the thread stack */
 public:
   friend UContextFactory;
-  UContext(xbt_main_func_t code,
-          int argc, char **argv,
-          void_pfn_smxprocess_t cleanup_func,
-          smx_process_t process);
+  UContext(std::function<void()>  code,
+    void_pfn_smxprocess_t cleanup_func, smx_process_t process);
   ~UContext();
 protected:
   static void wrapper(int first, ...);
@@ -94,11 +92,9 @@ protected:
 
 class SerialUContext : public UContext {
 public:
-  SerialUContext(xbt_main_func_t code,
-          int argc, char **argv,
-          void_pfn_smxprocess_t cleanup_func,
-          smx_process_t process)
-    : UContext(code, argc, argv, cleanup_func, process)
+  SerialUContext(std::function<void()>  code,
+      void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+    : UContext(std::move(code), cleanup_func, process)
   {}
   void stop() override;
   void suspend() override;
@@ -107,11 +103,9 @@ public:
 
 class ParallelUContext : public UContext {
 public:
-  ParallelUContext(xbt_main_func_t code,
-          int argc, char **argv,
-          void_pfn_smxprocess_t cleanup_func,
-          smx_process_t process)
-    : UContext(code, argc, argv, cleanup_func, process)
+  ParallelUContext(std::function<void()>  code,
+      void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+    : UContext(std::move(code), cleanup_func, process)
   {}
   void stop() override;
   void suspend() override;
@@ -126,10 +120,8 @@ public:
 
   UContextFactory();
   virtual ~UContextFactory();
-  virtual Context* create_context(
-    xbt_main_func_t, int, char **, void_pfn_smxprocess_t,
-    smx_process_t process
-    ) override;
+  virtual Context* create_context(std::function<void()> code,
+    void_pfn_smxprocess_t, smx_process_t process) override;
   void run_all() override;
 };
 
@@ -207,27 +199,22 @@ void UContextFactory::run_all()
   }
 }
 
-Context* UContextFactory::create_context(
-  xbt_main_func_t code, int argc, char ** argv,
-  void_pfn_smxprocess_t cleanup,
-  smx_process_t process
-  )
+Context* UContextFactory::create_context(std::function<void()> code,
+  void_pfn_smxprocess_t cleanup, smx_process_t process)
 {
   if (sysv_parallel)
-    return new_context<ParallelUContext>(code, argc, argv, cleanup, process);
+    return new_context<ParallelUContext>(std::move(code), cleanup, process);
   else
-    return new_context<SerialUContext>(code, argc, argv, cleanup, process);
+    return new_context<SerialUContext>(std::move(code), cleanup, process);
 }
 
-UContext::UContext(xbt_main_func_t code,
-        int argc, char **argv,
-        void_pfn_smxprocess_t cleanup_func,
-        smx_process_t process)
-  : Context(code, argc, argv, cleanup_func, process)
+UContext::UContext(std::function<void()> code,
+    void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+  : Context(std::move(code), cleanup_func, process)
 {
   /* if the user provided a function for the process then use it,
      otherwise it is the context for maestro */
-  if (code) {
+  if (has_code()) {
     this->stack_ = (char*) SIMIX_context_stack_new();
     getcontext(&this->uc_);
     this->uc_.uc_link = nullptr;

@@ -38,8 +38,7 @@ protected:
   void* stack_top_ = nullptr;
 public:
   friend class RawContextFactory;
-  RawContext(xbt_main_func_t code,
-          int argc, char **argv,
+  RawContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
           smx_process_t process);
   ~RawContext();
@@ -59,10 +58,8 @@ class RawContextFactory : public ContextFactory {
 public:
   RawContextFactory();
   ~RawContextFactory();
-  RawContext* create_context(
-    xbt_main_func_t, int, char **, void_pfn_smxprocess_t,
-    smx_process_t process
-    ) override;
+  RawContext* create_context(std::function<void()> code,
+    void_pfn_smxprocess_t, smx_process_t process) override;
   void run_all() override;
 private:
   void run_all_adaptative();
@@ -311,12 +308,10 @@ RawContextFactory::~RawContextFactory()
 #endif
 }
 
-RawContext* RawContextFactory::create_context(
-    xbt_main_func_t code, int argc, char ** argv,
-    void_pfn_smxprocess_t cleanup,
-    smx_process_t process)
+RawContext* RawContextFactory::create_context(std::function<void()> code,
+    void_pfn_smxprocess_t cleanup, smx_process_t process)
 {
-  return this->new_context<RawContext>(code, argc, argv,
+  return this->new_context<RawContext>(std::move(code),
     cleanup, process);
 }
 
@@ -327,13 +322,11 @@ void RawContext::wrapper(void* arg)
   context->stop();
 }
 
-RawContext::RawContext(
-    xbt_main_func_t code, int argc, char ** argv,
-    void_pfn_smxprocess_t cleanup,
-    smx_process_t process)
-  : Context(code, argc, argv, cleanup, process)
+RawContext::RawContext(std::function<void()> code,
+    void_pfn_smxprocess_t cleanup, smx_process_t process)
+  : Context(std::move(code), cleanup, process)
 {
-   if (code) {
+   if (has_code()) {
      this->stack_ = SIMIX_context_stack_new();
      this->stack_top_ = raw_makecontext(this->stack_,
                          smx_context_usable_stack_size,

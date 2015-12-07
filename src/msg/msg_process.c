@@ -82,7 +82,7 @@ msg_process_t MSG_process_create(const char *name,
                                xbt_main_func_t code, void *data,
                                msg_host_t host)
 {
-  return MSG_process_create_with_environment(name, code, data, host, -1,
+  return MSG_process_create_with_environment(name, code, data, host, 0,
                                              NULL, NULL);
 }
 

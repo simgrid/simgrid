@@ -41,10 +41,10 @@ JavaContext* JavaContextFactory::self()
 }
 
 JavaContext* JavaContextFactory::create_context(
-  xbt_main_func_t code, int argc, char ** argv,
+  std::function<void()> code,
   void_pfn_smxprocess_t cleanup, smx_process_t process)
 {
-  return this->new_context<JavaContext>(code, argc, argv, cleanup, process);
+  return this->new_context<JavaContext>(std::move(code), cleanup, process);
 }
 
 void JavaContextFactory::run_all()
@@ -58,18 +58,17 @@ void JavaContextFactory::run_all()
 }
 
 
-JavaContext::JavaContext(xbt_main_func_t code,
-        int argc, char **argv,
+JavaContext::JavaContext(std::function<void()> code,
         void_pfn_smxprocess_t cleanup_func,
         smx_process_t process)
-  : Context(code, argc, argv, cleanup_func, process)
+  : Context(std::move(code), cleanup_func, process)
 {
   static int thread_amount=0;
   thread_amount++;
 
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
-  if (code) {
+  if (has_code()) {
     this->jprocess = nullptr;
     this->begin = xbt_os_sem_init(0);
     this->end = xbt_os_sem_init(0);

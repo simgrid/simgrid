@@ -43,8 +43,7 @@ protected:
   void* stack_ = nullptr;
 public:
   friend BoostContextFactory;
-  BoostContext(xbt_main_func_t code,
-          int argc, char **argv,
+  BoostContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
           smx_process_t process);
   ~BoostContext();
@@ -61,10 +60,8 @@ public:
 
   BoostContextFactory();
   virtual ~BoostContextFactory();
-  virtual Context* create_context(
-    xbt_main_func_t, int, char **, void_pfn_smxprocess_t,
-    smx_process_t process
-    ) override;
+  virtual Context* create_context(std::function<void()> code,
+    void_pfn_smxprocess_t, smx_process_t process) override;
   void run_all() override;
 };
 

@@ -37,8 +37,7 @@ public:
   xbt_os_sem_t end = nullptr;
 public:
   friend class JavaContextFactory;
-  JavaContext(xbt_main_func_t code,
-          int argc, char **argv,
+  JavaContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
           smx_process_t process);
   ~JavaContext() override;
@@ -54,10 +53,8 @@ public:
   JavaContextFactory();
   ~JavaContextFactory() override;
   JavaContext* self() override;
-  JavaContext* create_context(
-    xbt_main_func_t, int, char **, void_pfn_smxprocess_t,
-    smx_process_t process
-    ) override;
+  JavaContext* create_context(std::function<void()> code,
+    void_pfn_smxprocess_t, smx_process_t process) override;
   void run_all() override;
 };
 
