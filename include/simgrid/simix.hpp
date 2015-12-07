@@ -71,6 +71,10 @@ public:
   {
     return this->process_;
   }
+  void set_cleanup(void_pfn_smxprocess_t cleanup)
+  {
+    cleanup_func_ = cleanup;
+  }
 
   // Virtual methods
   virtual ~Context();

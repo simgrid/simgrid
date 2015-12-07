@@ -10,6 +10,12 @@
 
 #include <src/simix/smx_private.h>
 
+void SIMIX_process_set_cleanup_function(
+  smx_process_t process, void_pfn_smxprocess_t cleanup)
+{
+  process->context->set_cleanup(cleanup);
+}
+
 namespace simgrid {
 namespace simix {
 

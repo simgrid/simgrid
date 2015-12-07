@@ -242,6 +242,10 @@ XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
 
 XBT_PRIVATE void SIMIX_post_create_environment(void);
 
+// FIXME, Dirty hack for SMPI+MSG
+XBT_PRIVATE void SIMIX_process_set_cleanup_function(
+  smx_process_t process, void_pfn_smxprocess_t cleanup);
+
 SG_END_DECL()
 
 #endif
