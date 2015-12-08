@@ -12,7 +12,6 @@
 
 if (enable_documentation)
   find_package(Doxygen REQUIRED)
-  set(DocAll "ALL")
 else()
   find_package(Doxygen)
 endif()
@@ -22,7 +21,7 @@ find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
 if(DOXYGEN_FOUND)
 
-  ADD_CUSTOM_TARGET(documentation ${DocAll}
+  ADD_CUSTOM_TARGET(documentation 
     COMMENT "Generating the SimGrid documentation..."
     DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
