@@ -8,6 +8,8 @@
 
 #include <stdarg.h>
 
+#include <functional>
+
 #include "xbt/parmap.h"
 #include "smx_private.h"
 #include "smx_private.hpp"

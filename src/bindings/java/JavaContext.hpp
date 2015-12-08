@@ -7,6 +7,8 @@
 #ifndef SIMGRID_JAVA_JAVA_CONTEXT_HPP
 #define SIMGRID_JAVA_JAVA_CONTEXT_HPP
 
+#include <functional>
+
 #include <jni.h>
 
 #include <xbt/misc.h>

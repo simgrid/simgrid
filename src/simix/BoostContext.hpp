@@ -10,6 +10,7 @@
 #ifndef SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 #define SIMGRID_SIMIX_BOOST_CONTEXT_HPP
 
+#include <functional>
 #include <vector>
 
 #include <xbt/parmap.h>

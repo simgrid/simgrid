@@ -7,6 +7,9 @@
 #ifndef SIMGRID_SIMIX_HPP
 #define SIMGRID_SIMIX_HPP
 
+#include <cstddef>
+
+#include <string>
 #include <utility>
 #include <memory>
 #include <functional>

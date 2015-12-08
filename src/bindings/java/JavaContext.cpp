@@ -6,6 +6,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <functional>
+#include <utility>
+
 #include <xbt/function_types.h>
 #include <simgrid/simix.h>
 #include <xbt/ex.h>

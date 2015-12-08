@@ -13,6 +13,9 @@
 
 #include <math.h>
 
+#include <utility>
+#include <functional>
+
 #include <xbt/log.h>
 #include <xbt/parmap.h>
 #include <xbt/dynar.h>

@@ -8,6 +8,10 @@
 
 #include <cstdint>
 
+#include <functional>
+#include <utility>
+#include <vector>
+
 #include <boost/context/all.hpp>
 
 #include <xbt/log.h>
