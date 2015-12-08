@@ -1180,7 +1180,7 @@ else()
   find_program(WGET_PROGRAM  NAMES wget)
   message(STATUS "wget: ${WGET_PROGRAM}")
   if(WGET_PROGRAM)
-    ADD_CUSTOM_TARGET(simgrid_documentation
+    ADD_CUSTOM_TARGET(documentation
       COMMENT "Downloading the SimGrid documentation..."
       COMMAND ${WGET_PROGRAM} -r -np -nH -nd http://simgrid.gforge.inria.fr/simgrid/${release_version}/doc/
       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html

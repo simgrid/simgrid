@@ -22,7 +22,7 @@ find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
 if(DOXYGEN_FOUND)
 
-  ADD_CUSTOM_TARGET(doc ${DocAll}
+  ADD_CUSTOM_TARGET(documentation ${DocAll}
     COMMENT "Generating the SimGrid documentation..."
     DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_HOME_DIRECTORY}/doc/html
@@ -46,7 +46,7 @@ if(DOXYGEN_FOUND)
       COMMAND false
     )
 
-    add_dependencies(doc error_doxygen)
+    add_dependencies(documentation error_doxygen)
   endif()
 
   configure_file(${CMAKE_HOME_DIRECTORY}/doc/Doxyfile.in ${CMAKE_HOME_DIRECTORY}/doc/Doxyfile @ONLY)
@@ -54,19 +54,19 @@ if(DOXYGEN_FOUND)
   foreach(file ${DOC_FIGS})
     string(REPLACE ".fig" ".png" tmp_file ${file})
     string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/shared/fig/" "${CMAKE_HOME_DIRECTORY}/doc/html/" tmp_file ${tmp_file})
-    ADD_CUSTOM_COMMAND(TARGET doc
+    ADD_CUSTOM_COMMAND(TARGET documentation
       COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file}
       )
   endforeach()
 
   foreach(file ${DOC_IMG})
     ADD_CUSTOM_COMMAND(
-      TARGET doc
+      TARGET documentation
       COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/
     )
   endforeach()
 
-  ADD_CUSTOM_COMMAND(TARGET doc
+  ADD_CUSTOM_COMMAND(TARGET documentation
     COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     COMMAND pwd
     COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
@@ -111,7 +111,7 @@ add_custom_target(sync-gforge-doc
 
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
-add_dependencies(sync-gforge-doc doc)
+add_dependencies(sync-gforge-doc documentation)
 
 add_custom_target(sync-gforge-dtd
   COMMAND ${RSYNC_CMD} src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
@@ -126,7 +126,7 @@ if (Java_FOUND)
   find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
   mark_as_advanced(JAVADOC_PATH)
   
-  ADD_CUSTOM_COMMAND(TARGET doc
+  ADD_CUSTOM_COMMAND(TARGET documentation
     COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
     COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_HOME_DIRECTORY}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
