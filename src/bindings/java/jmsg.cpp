@@ -148,10 +148,8 @@ JNIEXPORT void JNICALL
     JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
 {
   msg_error_t rv;
-  int index;
   xbt_dynar_t hosts, storages;
   jobject jhost, jstorage;
-
 
   /* Run everything */
   XBT_DEBUG("Ready to run MSG_MAIN");
@@ -163,7 +161,7 @@ JNIEXPORT void JNICALL
   XBT_INFO("MSG_main finished; Cleaning up the simulation...");
   /* Cleanup java hosts */
   hosts = MSG_hosts_as_dynar();
-  for (index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
+  for (unsigned long index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
     jhost = (jobject) xbt_lib_get_level(xbt_dynar_get_as(hosts,index,msg_host_t), JAVA_HOST_LEVEL);
     if (jhost)
       jhost_unref(env, jhost);
@@ -174,7 +172,7 @@ JNIEXPORT void JNICALL
   /* Cleanup java storages */
   storages = MSG_storages_as_dynar();
   if(!xbt_dynar_is_empty(storages)){
-    for (index = 0; index < xbt_dynar_length(storages) - 1; index++) {
+    for (unsigned long index = 0; index < xbt_dynar_length(storages) - 1; index++) {
       jstorage = (jobject) xbt_lib_get_level(xbt_dynar_get_as(storages,index,msg_storage_t), JAVA_STORAGE_LEVEL);
       if (jstorage)
         jstorage_unref(env, jstorage);
