@@ -250,6 +250,9 @@ Java_org_simgrid_msg_Msg_critical(JNIEnv * env, jclass cls, jstring js)
   XBT_CRITICAL("%s", s);
   env->ReleaseStringUTFChars(js, s);
 }
+
+static int java_main(int argc, char *argv[]);
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
                                        jstring jdeploymentFile)
@@ -258,16 +261,39 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
   const char *deploymentFile =
       env->GetStringUTFChars(jdeploymentFile, 0);
 
-  SIMIX_function_register_default(simgrid::java::java_main);
+  SIMIX_function_register_default(java_main);
   MSG_launch_application(deploymentFile);
 }
-/**
- * Function called when there is the need to create the java Process object
- * (when we are using deployement files).
- * it HAS to be executed on the process context, else really bad things will happen.
+
+SG_END_DECL()
+
+/** Run a Java org.simgrid.msg.Process
+ *
+ *  If needed, this waits for the process starting time.
+ *  Then it calls the Process.run() method.
  */
-static int create_jprocess(int argc, char *argv[]) {
+static void run_jprocess(JNIEnv *env, jobject jprocess)
+{
+  xbt_assert(jprocess != nullptr, "Process not created...");
+  //wait for the process to be able to begin
+  //TODO: Cache it
+  jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
+  jdouble startTime = env->GetDoubleField(jprocess, jprocess_field_Process_startTime);
+  if (startTime > MSG_get_clock())
+    MSG_process_sleep(startTime - MSG_get_clock());
+  //Execution of the "run" method.
+  jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
+  xbt_assert( (id != nullptr), "Method not found...");
+  env->CallVoidMethod(jprocess, id);
+}
+
+/** Create a Java org.simgrid.msg.Process with the arguments and run it */
+static int java_main(int argc, char *argv[])
+{
   JNIEnv *env = get_current_thread_env();
+  simgrid::java::JavaContext* context =
+    (simgrid::java::JavaContext*) SIMIX_context_self();
+
   //Change the "." in class name for "/".
   xbt_str_subst(argv[0],'.','/',0);
   jclass class_Process = env->FindClass(argv[0]);
@@ -296,56 +322,36 @@ static int create_jprocess(int argc, char *argv[]) {
   jprocess = env->NewGlobalRef(jprocess);
   //bind the process to the context
   msg_process_t process = MSG_process_self();
-  simgrid::java::JavaContext* context =
-    (simgrid::java::JavaContext*) MSG_process_get_smx_ctx(process);
+
   context->jprocess = jprocess;
   /* sets the PID and the PPID of the process */
   env->SetIntField(jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
   env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
   jprocess_bind(jprocess, process, env);
 
+  run_jprocess(env, context->jprocess);
   return 0;
 }
-
-SG_END_DECL()
-
-
 
 namespace simgrid {
 namespace java {
 
-int java_main(int argc, char *argv[])
+/** Run the Java org.simgrid.msg.Process */
+void java_main_jprocess(jobject jprocess)
 {
   JNIEnv *env = get_current_thread_env();
   simgrid::java::JavaContext* context =
     (simgrid::java::JavaContext*) SIMIX_context_self();
-
-  if (argc > 0)
-    create_jprocess(argc, argv);
-  else {
-    smx_process_t process = SIMIX_process_self();
-    context->jprocess = (jobject) MSG_process_get_data(process);
-    jprocess_bind(context->jprocess, process, env);
-  }
+  context->jprocess = jprocess;
+  smx_process_t process = SIMIX_process_self();
+  jprocess_bind(context->jprocess, process, env);
 
   // Adrien, ugly path, just to bypass creation of context at low levels
   // (i.e such as for the VM migration for instance)
-  if (context->jprocess != nullptr){
-    xbt_assert((context->jprocess != nullptr), "Process not created...");
-    //wait for the process to be able to begin
-    //TODO: Cache it
-    jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
-    jdouble startTime =  env->GetDoubleField(context->jprocess, jprocess_field_Process_startTime);
-    if (startTime > MSG_get_clock()) {
-      MSG_process_sleep(startTime - MSG_get_clock());
-    }
-    //Execution of the "run" method.
-    jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
-    xbt_assert( (id != nullptr), "Method not found...");
-    env->CallVoidMethod(context->jprocess, id);
-  }
-
-  return 0;
+  if (context->jprocess == nullptr)
+    return;
+  else
+    run_jprocess(env, context->jprocess);
 }
 
 }

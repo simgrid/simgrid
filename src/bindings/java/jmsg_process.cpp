@@ -153,10 +153,17 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
   jdouble jkill = env->GetDoubleField(jprocess, jprocess_field_Process_killTime);
   /* Actually build the MSG process */
   process = MSG_process_create_with_environment(name,
-						simgrid::java::java_main, jprocess,
+            [](int argc, char** argv) -> int {
+              smx_process_t process = SIMIX_process_self();
+              // This is the jprocess passed as environment.
+              // It would be simplet if we could use a closure.
+              jobject jprocess = (jobject) MSG_process_get_data(process);
+              simgrid::java::java_main_jprocess(jprocess);
+              return 0;
+            }, jprocess,
 						host,
 						/*argc, argv, properties*/
-						0,NULL,NULL);
+						0, NULL, NULL);
   MSG_process_set_kill_time(process, (double)jkill);
   /* bind the java process instance to the native process */
   jprocess_bind(jprocess, process, env);

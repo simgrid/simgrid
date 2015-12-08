@@ -62,7 +62,7 @@ public:
 };
 
 XBT_PRIVATE simgrid::simix::ContextFactory* java_factory();
-XBT_PRIVATE int java_main(int argc, char *argv[]);
+XBT_PRIVATE void java_main_jprocess(jobject process);
 
 }
 }
