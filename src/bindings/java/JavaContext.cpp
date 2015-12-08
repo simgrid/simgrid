@@ -70,10 +70,7 @@ JavaContext::JavaContext(xbt_main_func_t code,
   /* If the user provided a function for the process then use it
      otherwise is the context for maestro */
   if (code) {
-    if (argc == 0)
-      this->jprocess = (jobject) code;
-    else
-      this->jprocess = nullptr;
+    this->jprocess = nullptr;
     this->begin = xbt_os_sem_init(0);
     this->end = xbt_os_sem_init(0);
 
@@ -116,30 +113,7 @@ void* JavaContext::wrapper(void *data)
   //Wait for the first scheduling round to happen.
   xbt_os_sem_acquire(context->begin);
   //Create the "Process" object if needed.
-  if (context->argc_ > 0)
-    (*context)();
-  else {
-    smx_process_t process = SIMIX_process_self();
-    env->SetLongField(context->jprocess, jprocess_field_Process_bind,
-                         (intptr_t)process);
-  }
-
-  // Adrien, ugly path, just to bypass creation of context at low levels
-  // (i.e such as for the VM migration for instance)
-  if (context->jprocess != nullptr){
-    xbt_assert((context->jprocess != nullptr), "Process not created...");
-    //wait for the process to be able to begin
-    //TODO: Cache it
-    jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
-    jdouble startTime =  env->GetDoubleField(context->jprocess, jprocess_field_Process_startTime);
-    if (startTime > MSG_get_clock()) {
-      MSG_process_sleep(startTime - MSG_get_clock());
-    }
-    //Execution of the "run" method.
-    jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
-    xbt_assert( (id != nullptr), "Method not found...");
-    env->CallVoidMethod(context->jprocess, id);
-  }
+  (*context)();
   context->stop();
   return nullptr;
 }

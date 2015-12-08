@@ -105,6 +105,7 @@ Java_org_simgrid_msg_Process_nativeInit(JNIEnv *env, jclass cls) {
     jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
   }
 }
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_create(JNIEnv * env,
                                     jobject jprocess_arg,
@@ -152,8 +153,7 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
   jdouble jkill = env->GetDoubleField(jprocess, jprocess_field_Process_killTime);
   /* Actually build the MSG process */
   process = MSG_process_create_with_environment(name,
-						(xbt_main_func_t) jprocess,
-						/*data*/ jprocess,
+						simgrid::java::java_main, jprocess,
 						host,
 						/*argc, argv, properties*/
 						0,NULL,NULL);

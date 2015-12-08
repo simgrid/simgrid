@@ -39,8 +39,6 @@ SG_BEGIN_DECL()
 int JAVA_HOST_LEVEL;
 int JAVA_STORAGE_LEVEL;
 
-static int create_jprocess(int argc, char *argv[]);
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 JavaVM *__java_vm = NULL;
@@ -260,7 +258,7 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
   const char *deploymentFile =
       env->GetStringUTFChars(jdeploymentFile, 0);
 
-  SIMIX_function_register_default(create_jprocess);
+  SIMIX_function_register_default(simgrid::java::java_main);
   MSG_launch_application(deploymentFile);
 }
 /**
@@ -310,3 +308,46 @@ static int create_jprocess(int argc, char *argv[]) {
 }
 
 SG_END_DECL()
+
+
+
+namespace simgrid {
+namespace java {
+
+int java_main(int argc, char *argv[])
+{
+  JNIEnv *env = get_current_thread_env();
+  simgrid::java::JavaContext* context =
+    (simgrid::java::JavaContext*) SIMIX_context_self();
+
+  if (argc > 0)
+    create_jprocess(argc, argv);
+  else {
+    smx_process_t process = SIMIX_process_self();
+    context->jprocess = (jobject) MSG_process_get_data(process);
+    jprocess_bind(context->jprocess, process, env);
+  }
+
+  // Adrien, ugly path, just to bypass creation of context at low levels
+  // (i.e such as for the VM migration for instance)
+  if (context->jprocess != nullptr){
+    xbt_assert((context->jprocess != nullptr), "Process not created...");
+    //wait for the process to be able to begin
+    //TODO: Cache it
+    jfieldID jprocess_field_Process_startTime = jxbt_get_sfield(env, "org/simgrid/msg/Process", "startTime", "D");
+    jdouble startTime =  env->GetDoubleField(context->jprocess, jprocess_field_Process_startTime);
+    if (startTime > MSG_get_clock()) {
+      MSG_process_sleep(startTime - MSG_get_clock());
+    }
+    //Execution of the "run" method.
+    jmethodID id = jxbt_get_smethod(env, "org/simgrid/msg/Process", "run", "()V");
+    xbt_assert( (id != nullptr), "Method not found...");
+    env->CallVoidMethod(context->jprocess, id);
+  }
+
+  return 0;
+}
+
+}
+}
+

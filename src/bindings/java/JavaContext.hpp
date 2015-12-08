@@ -27,14 +27,14 @@ class JavacontextFactory;
 class JavaContext : public simgrid::simix::Context {
 public:
   // The java process instance bound with the msg process structure:
-  jobject jprocess;
+  jobject jprocess = nullptr;
   // JNI interface pointer associated to this thread:
-  JNIEnv *jenv;
-  xbt_os_thread_t thread;
+  JNIEnv *jenv = nullptr;
+  xbt_os_thread_t thread = nullptr;
   // Sempahore used to schedule/yield the process:
-  xbt_os_sem_t begin;
+  xbt_os_sem_t begin = nullptr;
   // Semaphore used to schedule/unschedule the process:
-  xbt_os_sem_t end;
+  xbt_os_sem_t end = nullptr;
 public:
   friend class JavaContextFactory;
   JavaContext(xbt_main_func_t code,
@@ -62,6 +62,7 @@ public:
 };
 
 XBT_PRIVATE simgrid::simix::ContextFactory* java_factory();
+XBT_PRIVATE int java_main(int argc, char *argv[]);
 
 }
 }
