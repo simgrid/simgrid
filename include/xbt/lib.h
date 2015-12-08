@@ -13,6 +13,42 @@
 
 SG_BEGIN_DECL()
 
+/** Container for all the objects of a given type
+ *
+ *  * each item is identified by a string name/identifier;
+ *
+ *  * the lib itself is a dictionary from the element id to the element;
+ *
+ *  * the element itself is represented aby the xbt_dictelm_t;
+ *
+ *  * the element can store any number of associated facets/data structures
+ *    (corresponding to the different layers of SimGrid or its extensions)
+ *    in ((void**)dictelt->content)[level];
+ *
+ *  * each level is allocated in the lib with `xbt_lib_add_level`.
+ *
+ *  <pre>
+ *  // Define a collection for the foo objects and two associated facets:
+ *  typedef xbt_dictelm_t foo_t;
+ *  xbt_lib_t foo_lib = xbt_lib_new();
+ *  int BAR_FOO_LEVEL  = xbt_lib_add_level(foo_lib, free_bar);
+ *  int AUTH_FOO_LEVEL = xbt_lib_add_level(foo_lib, free_auth);
+ *
+ *  // Store a bar:
+ *  bar_t bar = bar_new();
+ *  char* id = bar_name(bar);
+ *  xbt_lib_set(id, id, BAR_FOO_LEVEL, bar);
+ *
+ *  // Find the corresponding foo and the facet again:
+ *  foo_t foo = xbt_lib_get_elm_or_null(foo_lib, id);
+ *  bar_t bar2 = (bar_t) xbt_lib_get_level(foo, BAR_FOO_LEVEL);
+ *  assert(bar == bar2);
+ *
+ *  // Add authentication facet for the previous object:
+ *  auth_t auth = auth_new();
+ *  xbt_lib_set(foo_lib, id, AUTH_FOO_LEVEL, auth);
+ *  </pre>
+ */
 typedef struct s_xbt_lib {
   xbt_dict_t dict;
   int levels;
