@@ -46,11 +46,13 @@ extern "C" {
 #endif
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_surf_SurfJNI_getAction(JNIEnv *env, jclass cls, jlong jarg1) {
-  Action * action = (Action *)jarg1;
+  simgrid::surf::Action * action = (simgrid::surf::Action *)jarg1;
   jobject res;
-  CpuAction *cpu_action = dynamic_cast<CpuAction*>(action);
+  simgrid::surf::CpuAction *cpu_action =
+    dynamic_cast<simgrid::surf::CpuAction*>(action);
   if (cpu_action) {
-    SwigDirector_CpuAction *dir_cpu_action = dynamic_cast<SwigDirector_CpuAction*>(cpu_action);
+    SwigDirector_CpuAction *dir_cpu_action =
+      dynamic_cast<SwigDirector_CpuAction*>(cpu_action);
     if (dir_cpu_action) {
       res = dir_cpu_action->swig_get_self(env);\
     } else {
@@ -71,7 +73,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_surf_SurfJNI_getAction(JNIEnv *env, j
 #define GETDIRECTOR(NAME) \
 JNIEXPORT jobject JNICALL Java_org_simgrid_surf_SurfJNI_get## NAME ## Director(JNIEnv *env, jclass cls, jlong jarg1)\
 {\
-  NAME * arg1 = (NAME*)jarg1;\
+  simgrid::surf::NAME * arg1 = (simgrid::surf::NAME*)jarg1;\
   SwigDirector_ ##NAME *director = dynamic_cast<SwigDirector_ ##NAME *>(arg1);\
   jobject res;\
   if (director) {\
@@ -113,17 +115,20 @@ JAVA_ARRAYSOFCLASSES(Action);
 }
 %typemap(out) ActionArrayPtr {
   long l = 0;
-  for(ActionList::iterator it($1->begin()), itend($1->end()); it != itend ; ++it) {
+  for(simgrid::surf::ActionList::iterator it($1->begin()), itend($1->end()); it != itend ; ++it) {
     l++;
   }
   $result = jenv->NewLongArray(l);
   jlong *elts = jenv->GetLongArrayElements($result, NULL);
   l = 0;
-  for(ActionList::iterator it($1->begin()), itend($1->end()); it != itend ; ++it) {
-    elts[l++] = (jlong)static_cast<Action*>(&*it);
+  for(simgrid::surf::ActionList::iterator it($1->begin()), itend($1->end()); it != itend ; ++it) {
+    elts[l++] = (jlong)static_cast<simgrid::surf::Action*>(&*it);
   }
   jenv->ReleaseLongArrayElements($result, elts, 0);
 }
+
+namespace simgrid {
+namespace surf {
 
 class ActionList {
 public:
@@ -136,9 +141,12 @@ public:
 }
 };
 
+}
+}
+
 /* Handle xbt_dynar_t of Link */
-JAVA_ARRAYSOFCLASSES(Link);
-%apply Link[] {LinkDynar};
+JAVA_ARRAYSOFCLASSES(simgrid::surf::Link);
+%apply simgrid::surf::Link[] {LinkDynar};
 %typemap(jstype) LinkDynar "Link[]"
 %typemap(javain) LinkDynar "Link.cArrayUnwrap($javainput)"
 %typemap(javaout) LinkDynar {
@@ -200,6 +208,29 @@ JAVA_ARRAYSOFCLASSES(Link);
 
 %include "src/bindings/java/surf_swig.hpp"
 
+namespace simgrid {
+namespace surf {
+
+class Model;
+class CpuModel;
+class HostModel;
+class VMModel;
+class NetworkModel;
+class StorageModel;
+class Resource;
+class ResourceLmm;
+class Host;
+class HostCLM03;
+class NetworkCm02Link;
+class Action;
+class ActionLmm;
+class StorageActionLmm;
+class As;
+class RoutingPlatf;
+
+}
+}
+
 %rename tmgr_trace TmgrTrace;
 %nodefaultctor tmgr_trace;
 struct tmgr_trace {
@@ -230,6 +261,9 @@ struct tmgr_trace_event {
   }
 };
 
+namespace simgrid {
+namespace surf {
+
 %nodefaultctor Model;
 class Model {
 public:
@@ -243,7 +277,7 @@ public:
   virtual void updateActionsStateLazy(double now, double delta);
   virtual void updateActionsStateFull(double now, double delta);
 
-  virtual ActionList *getRunningActionSet();
+  virtual simgrid::surf::ActionList *getRunningActionSet();
 
   virtual void addTraces()=0;
 };
@@ -253,7 +287,8 @@ class CpuModel : public Model {
 public:
   CpuModel();
   virtual ~CpuModel();
-  virtual Cpu *createCpu(const char *name, DoubleDynar power_peak,
+  virtual simgrid::surf::Cpu *createCpu(const char *name,
+                              DoubleDynar power_peak,
                               int pstate, double power_scale,
                               tmgr_trace *power_trace, int core,
                               e_surf_resource_state_t state_initial,
@@ -266,7 +301,7 @@ public:
   Resource();
   const char *getName();
   virtual bool isUsed()=0;
-  Model *getModel();
+  simgrid::surf::Model *getModel();
 
   virtual e_surf_resource_state_t getState();
   lmm_constraint *getConstraint();
@@ -277,14 +312,14 @@ public:
 %feature("director") Cpu;
 class Cpu : public Resource {
 public:
-  Cpu(Model *model, const char *name, s_xbt_dict *props,
+  Cpu(simgrid::surf::Model *model, const char *name, s_xbt_dict *props,
     lmm_constraint *constraint, int core, double powerPeak, double powerScale);
-  Cpu(Model *model, const char *name, s_xbt_dict *props,
+  Cpu(simgrid::surf::Model *model, const char *name, s_xbt_dict *props,
     int core, double powerPeak, double powerScale);
   virtual ~Cpu();
   virtual double getCurrentPowerPeak();
-  virtual CpuAction *execute(double size)=0;
-  virtual CpuAction *sleep(double duration)=0;
+  virtual simgrid::surf::CpuAction *execute(double size)=0;
+  virtual simgrid::surf::CpuAction *sleep(double duration)=0;
   virtual int getCore();
   virtual double getSpeed(double load);
   virtual double getAvailableSpeed();
@@ -295,7 +330,7 @@ public:
   void setState(e_surf_resource_state_t state);
 };
 
-class Link : public Resource {
+class Link : public simgrid::surf::Resource {
 public:
   Link();
   ~Link();
@@ -328,7 +363,7 @@ class CpuAction : public Action {
 public:
 CpuAction(Model *model, double cost, bool failed);
 %extend {
-  Cpu *getCpu() {return getActionCpu($self);}
+  simgrid::surf::Cpu *getCpu() {return getActionCpu($self);}
 }
 };
 
@@ -346,6 +381,9 @@ class RoutingEdge {
 public:
   virtual char *getName()=0;
 };
+
+}
+}
 
 %rename lmm_constraint LmmConstraint;
 struct lmm_constraint {

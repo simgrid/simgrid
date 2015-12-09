@@ -15,6 +15,8 @@
 
 #include "surf_routing_cluster.hpp"
 
+namespace simgrid {
+namespace surf {
 
 /** \file surf_routing_cluster_fat_tree.cpp
  *  The class AsClusterFatTree describes PGFT, as introduced by Eitan Zahavi
@@ -162,4 +164,8 @@ private:
   bool areRelated(FatTreeNode *parent, FatTreeNode *child);
   bool isInSubTree(FatTreeNode *root, FatTreeNode *node);
 };
+
+}
+}
+
 #endif

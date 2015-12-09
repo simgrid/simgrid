@@ -67,9 +67,9 @@ XBT_PRIVATE void model_floyd_parse_route(AS_t rc, sg_platf_route_cbarg_t route);
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
 
-XBT_PRIVATE As *model_cluster_create(void);      /* create structures for cluster routing model */
-XBT_PRIVATE As *model_torus_cluster_create(void);
-XBT_PRIVATE As *model_fat_tree_cluster_create(void);
+XBT_PRIVATE surf_As *model_cluster_create(void);      /* create structures for cluster routing model */
+XBT_PRIVATE surf_As *model_torus_cluster_create(void);
+XBT_PRIVATE surf_As *model_fat_tree_cluster_create(void);
 
 /* ************************************************** */
 /* **************  Vivaldi ROUTING   **************** */

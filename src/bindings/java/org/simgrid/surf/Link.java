@@ -8,9 +8,6 @@
 
 package org.simgrid.surf;
 
-/**
- * A generic resource for the network component
- */
 public class Link extends Resource {
   private long swigCPtr;
 
@@ -52,50 +49,26 @@ public class Link extends Resource {
     return arrayWrapper;
   }
 
-  
-  /**
-    * @return The bandwidth of the link
-    */
   public double getBandwidth() {
     return SurfJNI.Link_getBandwidth(swigCPtr, this);
   }
 
-  
-  /**
-    * @param value The new bandwidth
-    */
   public void updateBandwidth(double value, double date) {
     SurfJNI.Link_updateBandwidth__SWIG_0(swigCPtr, this, value, date);
   }
 
-  
-  /**
-    * @param value The new bandwidth
-    */
   public void updateBandwidth(double value) {
     SurfJNI.Link_updateBandwidth__SWIG_1(swigCPtr, this, value);
   }
 
-  
-  /**
-    * @return The latency of the link
-    */
   public double getLatency() {
     return SurfJNI.Link_getLatency(swigCPtr, this);
   }
 
-  
-  /**
-    * @param value The new latency
-    */
   public void updateLatency(double value, double date) {
     SurfJNI.Link_updateLatency__SWIG_0(swigCPtr, this, value, date);
   }
 
-  
-  /**
-    * @param value The new latency
-    */
   public void updateLatency(double value) {
     SurfJNI.Link_updateLatency__SWIG_1(swigCPtr, this, value);
   }

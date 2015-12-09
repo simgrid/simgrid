@@ -8,25 +8,35 @@
 #define SG_PLATF_TYPES_H
 
 #include <xbt.h>
-#include <simgrid/host.h>
 
 #ifdef __cplusplus
 
+namespace simgrid {
+namespace surf {
+
 class Cpu;
 class RoutingEdge;
+class As;
+
+}
+}
+
+typedef simgrid::surf::Cpu surf_Cpu;
+typedef simgrid::surf::RoutingEdge surf_RoutingEdge;
+typedef simgrid::surf::As surf_As;
 
 #else
 
-typedef struct Cpu Cpu;
-typedef struct RoutingEdge RoutingEdge;
+typedef struct surf_Cpu surf_Cpu;
+typedef struct surf_RoutingEdge surf_RoutingEdge;
+typedef struct surf_As surf_As;
 
 #endif
 
-typedef Cpu *surf_cpu_t;
-typedef RoutingEdge *routing_edge_t;
-typedef RoutingEdge *sg_routing_edge_t;
-
-
+typedef surf_Cpu *surf_cpu_t;
+typedef surf_RoutingEdge *routing_edge_t;
+typedef surf_RoutingEdge *sg_routing_edge_t;
+typedef surf_As *AS_t;
 
 // Types which are in fact dictelmt:
 

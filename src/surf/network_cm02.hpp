@@ -13,12 +13,21 @@
 #include "xbt/fifo.h"
 #include "xbt/graph.h"
 
+
+
 /***********
  * Classes *
  ***********/
+
+namespace simgrid {
+namespace surf {
+
 class XBT_PRIVATE NetworkCm02Model;
 class XBT_PRIVATE NetworkCm02Action;
 class XBT_PRIVATE NetworkSmpiModel;
+
+}
+}
 
 /*********
  * Tools *
@@ -29,6 +38,10 @@ XBT_PRIVATE void net_define_callbacks(void);
 /*********
  * Model *
  *********/
+
+namespace simgrid {
+namespace surf {
+
 class NetworkCm02Model : public NetworkModel {
 private:
   void initialize();
@@ -95,5 +108,8 @@ public:
 protected:
   double m_senderGap;
 };
+
+}
+}
 
 #endif /* SURF_NETWORK_CM02_HPP_ */

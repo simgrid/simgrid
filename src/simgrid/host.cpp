@@ -51,10 +51,10 @@ int USER_HOST_LEVEL;
 #include "src/surf/surf_routing.hpp"
 
 static XBT_INLINE void surf_cpu_free(void *r) {
-  delete static_cast<Cpu*>(r);
+  delete static_cast<simgrid::surf::Cpu*>(r);
 }
 static XBT_INLINE void routing_asr_host_free(void *p) {
-  delete static_cast<RoutingEdge*>(p);
+  delete static_cast<simgrid::surf::RoutingEdge*>(p);
 }
 
 void sg_host_init() {
@@ -119,18 +119,18 @@ void sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu) {
 }
 void sg_host_surfcpu_register(sg_host_t host, surf_cpu_t cpu)
 {
-  surf_callback_emit(cpuCreatedCallbacks, cpu);
-  surf_callback_emit(cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, cpu->getState());
+  surf_callback_emit(simgrid::surf::cpuCreatedCallbacks, cpu);
+  surf_callback_emit(simgrid::surf::cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, cpu->getState());
   sg_host_surfcpu_set(host, cpu);
 }
 void sg_host_surfcpu_destroy(sg_host_t host) {
 	xbt_lib_unset(host_lib,host->key,SURF_CPU_LEVEL,1);
 }
 // ========== RoutingEdge ============
-RoutingEdge *sg_host_edge(sg_host_t host) {
-	return (RoutingEdge*) xbt_lib_get_level(host, ROUTING_HOST_LEVEL);
+surf_RoutingEdge *sg_host_edge(sg_host_t host) {
+	return (surf_RoutingEdge*) xbt_lib_get_level(host, ROUTING_HOST_LEVEL);
 }
-void sg_host_edge_set(sg_host_t host, RoutingEdge *edge) {
+void sg_host_edge_set(sg_host_t host, surf_RoutingEdge *edge) {
 	xbt_lib_set(host_lib, host->key, ROUTING_HOST_LEVEL, edge);
 }
 void sg_host_edge_destroy(sg_host_t host, int do_callback) {

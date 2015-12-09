@@ -25,9 +25,13 @@ typedef struct route_cache_element {
   int size;
 } s_route_cache_element_t, *route_cache_element_t;
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
+
 class XBT_PRIVATE AsDijkstra;
 
 class AsDijkstra : public AsGeneric {
@@ -63,5 +67,8 @@ public:
   xbt_dict_t p_routeCache;       /* use in cache mode */
   int m_cached;
 };
+
+}
+}
 
 #endif /* SURF_ROUTING_DIJKSTRA_HPP_ */

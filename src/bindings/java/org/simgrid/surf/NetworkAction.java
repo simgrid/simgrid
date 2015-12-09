@@ -8,10 +8,6 @@
 
 package org.simgrid.surf;
 
-/**
-  * An network action created by network model
-  * @see Link
-  */
 public class NetworkAction extends Action {
   private long swigCPtr;
 
@@ -39,10 +35,6 @@ public class NetworkAction extends Action {
     super.delete();
   }
 
-  
-  /**
-    * @return The latency of the action
-    */
   public double getLatency() {
     return SurfJNI.NetworkAction_getLatency(swigCPtr, this);
   }

@@ -11,7 +11,6 @@
 #include <xbt/dynar.h>
 
 #include <simgrid/forward.h>
-#include <surf/surf.h>
 
 SG_BEGIN_DECL()
 
@@ -22,12 +21,6 @@ static XBT_INLINE char *sg_host_get_name(sg_host_t host){
 }
 XBT_PUBLIC(xbt_dynar_t) sg_hosts_as_dynar(void);
 
-#ifdef __cplusplus
-#define DEFINE_EXTERNAL_CLASS(klass) class klass;
-class Cpu;
-#else
-#define DEFINE_EXTERNAL_CLASS(klass) typedef struct klass klass;
-#endif
 // ========== User Data ==============
 XBT_PUBLIC(void*) sg_host_user(sg_host_t host);
 XBT_PUBLIC(void) sg_host_user_set(sg_host_t host, void* userdata);
@@ -75,7 +68,6 @@ XBT_PUBLIC(int) sg_host_get_state(sg_host_t host);
 XBT_PUBLIC(int) sg_host_get_nb_pstates(sg_host_t host);
 XBT_PUBLIC(int) sg_host_get_pstate(sg_host_t host);
 XBT_PUBLIC(double) sg_host_get_consumed_energy(sg_host_t host);
-
 
 SG_END_DECL()
 

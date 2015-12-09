@@ -11,6 +11,9 @@
 #ifndef STORAGE_N11_HPP_
 #define STORAGE_N11_HPP_
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -71,5 +74,8 @@ public:
   void setPriority(double priority);
 
 };
+
+}
+}
 
 #endif /* STORAGE_N11_HPP_ */

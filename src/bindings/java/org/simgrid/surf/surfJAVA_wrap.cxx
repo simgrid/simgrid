@@ -1050,12 +1050,12 @@ static jdoubleArray SWIG_JavaArrayOutDouble (JNIEnv *jenv, double *result, jsize
 typedef struct lmm_constraint *lmm_constraint_t;
 typedef xbt_dynar_t DoubleDynar;
 
-SWIGINTERN ActionArrayPtr ActionList_getArray(ActionList *self){
+SWIGINTERN ActionArrayPtr simgrid_surf_ActionList_getArray(simgrid::surf::ActionList *self){
     return self;
   }
 SWIGINTERN unsigned int tmgr_trace_event_getIdx(tmgr_trace_event *self){return 0;}
-SWIGINTERN Cpu *CpuAction_getCpu(CpuAction *self){return getActionCpu(self);}
-SWIGINTERN double NetworkAction_getLatency(NetworkAction *self){return self->m_latency;}
+SWIGINTERN simgrid::surf::Cpu *simgrid_surf_CpuAction_getCpu(simgrid::surf::CpuAction *self){return getActionCpu(self);}
+SWIGINTERN double simgrid_surf_NetworkAction_getLatency(simgrid::surf::NetworkAction *self){return self->m_latency;}
 SWIGINTERN double lmm_constraint_getUsage(lmm_constraint *self){return lmm_constraint_get_usage(self);}
 SWIGINTERN double lmm_variable_getValue(lmm_variable *self){return lmm_variable_getvalue(self);}
 SWIGINTERN char *s_xbt_dict_getValue(s_xbt_dict *self,char *key){return (char*)xbt_dict_get_or_null(self, key);}
@@ -1075,7 +1075,7 @@ SwigDirector_Plugin::~SwigDirector_Plugin() {
 }
 
 
-void SwigDirector_Plugin::cpuCreatedCallback(Cpu *cpu) {
+void SwigDirector_Plugin::cpuCreatedCallback(simgrid::surf::Cpu *cpu) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1087,7 +1087,7 @@ void SwigDirector_Plugin::cpuCreatedCallback(Cpu *cpu) {
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((Cpu **)&jcpu) = (Cpu *) cpu; 
+    *((simgrid::surf::Cpu **)&jcpu) = (simgrid::surf::Cpu *) cpu; 
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[0], swigjobj, jcpu);
     if (jenv->ExceptionCheck() == JNI_TRUE) return ;
   } else {
@@ -1096,7 +1096,7 @@ void SwigDirector_Plugin::cpuCreatedCallback(Cpu *cpu) {
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::cpuDestructedCallback(Cpu *cpu) {
+void SwigDirector_Plugin::cpuDestructedCallback(simgrid::surf::Cpu *cpu) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1108,7 +1108,7 @@ void SwigDirector_Plugin::cpuDestructedCallback(Cpu *cpu) {
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((Cpu **)&jcpu) = (Cpu *) cpu; 
+    *((simgrid::surf::Cpu **)&jcpu) = (simgrid::surf::Cpu *) cpu; 
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[1], swigjobj, jcpu);
     if (jenv->ExceptionCheck() == JNI_TRUE) return ;
   } else {
@@ -1117,7 +1117,7 @@ void SwigDirector_Plugin::cpuDestructedCallback(Cpu *cpu) {
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::cpuStateChangedCallback(Cpu *cpu, e_surf_resource_state_t arg1, e_surf_resource_state_t arg2) {
+void SwigDirector_Plugin::cpuStateChangedCallback(simgrid::surf::Cpu *cpu, e_surf_resource_state_t arg1, e_surf_resource_state_t arg2) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1131,7 +1131,7 @@ void SwigDirector_Plugin::cpuStateChangedCallback(Cpu *cpu, e_surf_resource_stat
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((Cpu **)&jcpu) = (Cpu *) cpu; 
+    *((simgrid::surf::Cpu **)&jcpu) = (simgrid::surf::Cpu *) cpu; 
     jarg1 = (jint) arg1;
     jarg2 = (jint) arg2;
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[2], swigjobj, jcpu, jarg1, jarg2);
@@ -1142,7 +1142,7 @@ void SwigDirector_Plugin::cpuStateChangedCallback(Cpu *cpu, e_surf_resource_stat
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::cpuActionStateChangedCallback(CpuAction *action, e_surf_action_state_t arg1, e_surf_action_state_t arg2) {
+void SwigDirector_Plugin::cpuActionStateChangedCallback(simgrid::surf::CpuAction *action, e_surf_action_state_t arg1, e_surf_action_state_t arg2) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1156,7 +1156,7 @@ void SwigDirector_Plugin::cpuActionStateChangedCallback(CpuAction *action, e_sur
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((CpuAction **)&jaction) = (CpuAction *) action; 
+    *((simgrid::surf::CpuAction **)&jaction) = (simgrid::surf::CpuAction *) action; 
     jarg1 = (jint) arg1;
     jarg2 = (jint) arg2;
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[3], swigjobj, jaction, jarg1, jarg2);
@@ -1167,7 +1167,7 @@ void SwigDirector_Plugin::cpuActionStateChangedCallback(CpuAction *action, e_sur
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::networkLinkCreatedCallback(Link *link) {
+void SwigDirector_Plugin::networkLinkCreatedCallback(simgrid::surf::Link *link) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1179,7 +1179,7 @@ void SwigDirector_Plugin::networkLinkCreatedCallback(Link *link) {
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((Link **)&jlink) = (Link *) link; 
+    *((simgrid::surf::Link **)&jlink) = (simgrid::surf::Link *) link; 
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[4], swigjobj, jlink);
     if (jenv->ExceptionCheck() == JNI_TRUE) return ;
   } else {
@@ -1188,7 +1188,7 @@ void SwigDirector_Plugin::networkLinkCreatedCallback(Link *link) {
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::networkLinkDestructedCallback(Link *link) {
+void SwigDirector_Plugin::networkLinkDestructedCallback(simgrid::surf::Link *link) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1200,7 +1200,7 @@ void SwigDirector_Plugin::networkLinkDestructedCallback(Link *link) {
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((Link **)&jlink) = (Link *) link; 
+    *((simgrid::surf::Link **)&jlink) = (simgrid::surf::Link *) link; 
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[5], swigjobj, jlink);
     if (jenv->ExceptionCheck() == JNI_TRUE) return ;
   } else {
@@ -1209,7 +1209,7 @@ void SwigDirector_Plugin::networkLinkDestructedCallback(Link *link) {
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::networkLinkStateChangedCallback(Link *link, e_surf_resource_state_t arg1, e_surf_resource_state_t arg2) {
+void SwigDirector_Plugin::networkLinkStateChangedCallback(simgrid::surf::Link *link, e_surf_resource_state_t arg1, e_surf_resource_state_t arg2) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1223,7 +1223,7 @@ void SwigDirector_Plugin::networkLinkStateChangedCallback(Link *link, e_surf_res
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((Link **)&jlink) = (Link *) link; 
+    *((simgrid::surf::Link **)&jlink) = (simgrid::surf::Link *) link; 
     jarg1 = (jint) arg1;
     jarg2 = (jint) arg2;
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[6], swigjobj, jlink, jarg1, jarg2);
@@ -1234,7 +1234,7 @@ void SwigDirector_Plugin::networkLinkStateChangedCallback(Link *link, e_surf_res
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::networkActionStateChangedCallback(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t cur) {
+void SwigDirector_Plugin::networkActionStateChangedCallback(simgrid::surf::NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t cur) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1248,7 +1248,7 @@ void SwigDirector_Plugin::networkActionStateChangedCallback(NetworkAction *actio
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((NetworkAction **)&jaction) = (NetworkAction *) action; 
+    *((simgrid::surf::NetworkAction **)&jaction) = (simgrid::surf::NetworkAction *) action; 
     jold = (jint) old;
     jcur = (jint) cur;
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[7], swigjobj, jaction, jold, jcur);
@@ -1259,7 +1259,7 @@ void SwigDirector_Plugin::networkActionStateChangedCallback(NetworkAction *actio
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-void SwigDirector_Plugin::networkCommunicateCallback(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate) {
+void SwigDirector_Plugin::networkCommunicateCallback(simgrid::surf::NetworkAction *action, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate) {
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
@@ -1275,9 +1275,9 @@ void SwigDirector_Plugin::networkCommunicateCallback(NetworkAction *action, Rout
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
-    *((NetworkAction **)&jaction) = (NetworkAction *) action; 
-    *((RoutingEdge **)&jsrc) = (RoutingEdge *) src; 
-    *((RoutingEdge **)&jdst) = (RoutingEdge *) dst; 
+    *((simgrid::surf::NetworkAction **)&jaction) = (simgrid::surf::NetworkAction *) action; 
+    *((simgrid::surf::RoutingEdge **)&jsrc) = (simgrid::surf::RoutingEdge *) src; 
+    *((simgrid::surf::RoutingEdge **)&jdst) = (simgrid::surf::RoutingEdge *) dst; 
     jsize = (jdouble) size;
     jrate = (jdouble) rate;
     jenv->CallStaticVoidMethod(Swig::jclass_SurfJNI, Swig::director_methids[8], swigjobj, jaction, jsrc, jdst, jsize, jrate);
@@ -1348,7 +1348,7 @@ void SwigDirector_Plugin::swig_connect_director(JNIEnv *jenv, jobject jself, jcl
 }
 
 
-SwigDirector_CpuModel::SwigDirector_CpuModel(JNIEnv *jenv) : CpuModel(), Swig::Director(jenv) {
+SwigDirector_CpuModel::SwigDirector_CpuModel(JNIEnv *jenv) : simgrid::surf::CpuModel(), Swig::Director(jenv) {
 }
 
 double SwigDirector_CpuModel::shareResources(double now) {
@@ -1360,7 +1360,7 @@ double SwigDirector_CpuModel::shareResources(double now) {
   jdouble jnow  ;
   
   if (!swig_override[0]) {
-    return Model::shareResources(now);
+    return simgrid::surf::Model::shareResources(now);
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -1384,7 +1384,7 @@ double SwigDirector_CpuModel::shareResourcesLazy(double now) {
   jdouble jnow  ;
   
   if (!swig_override[1]) {
-    return Model::shareResourcesLazy(now);
+    return simgrid::surf::Model::shareResourcesLazy(now);
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -1408,7 +1408,7 @@ double SwigDirector_CpuModel::shareResourcesFull(double now) {
   jdouble jnow  ;
   
   if (!swig_override[2]) {
-    return Model::shareResourcesFull(now);
+    return simgrid::surf::Model::shareResourcesFull(now);
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -1431,7 +1431,7 @@ void SwigDirector_CpuModel::updateActionsState(double now, double delta) {
   jdouble jdelta  ;
   
   if (!swig_override[3]) {
-    Model::updateActionsState(now,delta);
+    simgrid::surf::Model::updateActionsState(now,delta);
     return;
   }
   swigjobj = swig_get_self(jenv);
@@ -1454,7 +1454,7 @@ void SwigDirector_CpuModel::updateActionsStateLazy(double now, double delta) {
   jdouble jdelta  ;
   
   if (!swig_override[4]) {
-    Model::updateActionsStateLazy(now,delta);
+    simgrid::surf::Model::updateActionsStateLazy(now,delta);
     return;
   }
   swigjobj = swig_get_self(jenv);
@@ -1477,7 +1477,7 @@ void SwigDirector_CpuModel::updateActionsStateFull(double now, double delta) {
   jdouble jdelta  ;
   
   if (!swig_override[5]) {
-    Model::updateActionsStateFull(now,delta);
+    simgrid::surf::Model::updateActionsStateFull(now,delta);
     return;
   }
   swigjobj = swig_get_self(jenv);
@@ -1492,21 +1492,21 @@ void SwigDirector_CpuModel::updateActionsStateFull(double now, double delta) {
   if (swigjobj) jenv->DeleteLocalRef(swigjobj);
 }
 
-ActionList *SwigDirector_CpuModel::getRunningActionSet() {
-  ActionList *c_result = 0 ;
+simgrid::surf::ActionList *SwigDirector_CpuModel::getRunningActionSet() {
+  simgrid::surf::ActionList *c_result = 0 ;
   jlong jresult = 0 ;
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[6]) {
-    return Model::getRunningActionSet();
+    return simgrid::surf::Model::getRunningActionSet();
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
     jresult = (jlong) jenv->CallStaticLongMethod(Swig::jclass_SurfJNI, Swig::director_methids[15], swigjobj);
     if (jenv->ExceptionCheck() == JNI_TRUE) return c_result;
-    c_result = *(ActionList **)&jresult; 
+    c_result = *(simgrid::surf::ActionList **)&jresult; 
   } else {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
   }
@@ -1520,7 +1520,7 @@ void SwigDirector_CpuModel::addTraces() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[7]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method CpuModel::addTraces.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::CpuModel::addTraces.");
     return;
   }
   swigjobj = swig_get_self(jenv);
@@ -1538,8 +1538,8 @@ SwigDirector_CpuModel::~SwigDirector_CpuModel() {
 }
 
 
-Cpu *SwigDirector_CpuModel::createCpu(char const *name, DoubleDynar power_peak, int pstate, double power_scale, tmgr_trace *power_trace, int core, e_surf_resource_state_t state_initial, tmgr_trace *state_trace, s_xbt_dict *cpu_properties) {
-  Cpu *c_result = 0 ;
+simgrid::surf::Cpu *SwigDirector_CpuModel::createCpu(char const *name, DoubleDynar power_peak, int pstate, double power_scale, tmgr_trace *power_trace, int core, e_surf_resource_state_t state_initial, tmgr_trace *state_trace, s_xbt_dict *cpu_properties) {
+  simgrid::surf::Cpu *c_result = 0 ;
   jlong jresult = 0 ;
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
@@ -1555,7 +1555,7 @@ Cpu *SwigDirector_CpuModel::createCpu(char const *name, DoubleDynar power_peak, 
   jlong jcpu_properties = 0 ;
   
   if (!swig_override[8]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method CpuModel::createCpu.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::CpuModel::createCpu.");
     return c_result;
   }
   swigjobj = swig_get_self(jenv);
@@ -1580,7 +1580,7 @@ Cpu *SwigDirector_CpuModel::createCpu(char const *name, DoubleDynar power_peak, 
     *((s_xbt_dict **)&jcpu_properties) = (s_xbt_dict *) cpu_properties; 
     jresult = (jlong) jenv->CallStaticLongMethod(Swig::jclass_SurfJNI, Swig::director_methids[17], swigjobj, jname, jpower_peak, jpstate, jpower_scale, jpower_trace, jcore, jstate_initial, jstate_trace, jcpu_properties);
     if (jenv->ExceptionCheck() == JNI_TRUE) return c_result;
-    c_result = *(Cpu **)&jresult; 
+    c_result = *(simgrid::surf::Cpu **)&jresult; 
   } else {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
   }
@@ -1648,10 +1648,10 @@ void SwigDirector_CpuModel::swig_connect_director(JNIEnv *jenv, jobject jself, j
 }
 
 
-SwigDirector_Cpu::SwigDirector_Cpu(JNIEnv *jenv, Model *model, char const *name, s_xbt_dict *props, lmm_constraint *constraint, int core, double powerPeak, double powerScale) : Cpu(model, name, props, constraint, core, powerPeak, powerScale), Swig::Director(jenv) {
+SwigDirector_Cpu::SwigDirector_Cpu(JNIEnv *jenv, simgrid::surf::Model *model, char const *name, s_xbt_dict *props, lmm_constraint *constraint, int core, double powerPeak, double powerScale) : simgrid::surf::Cpu(model, name, props, constraint, core, powerPeak, powerScale), Swig::Director(jenv) {
 }
 
-SwigDirector_Cpu::SwigDirector_Cpu(JNIEnv *jenv, Model *model, char const *name, s_xbt_dict *props, int core, double powerPeak, double powerScale) : Cpu(model, name, props, core, powerPeak, powerScale), Swig::Director(jenv) {
+SwigDirector_Cpu::SwigDirector_Cpu(JNIEnv *jenv, simgrid::surf::Model *model, char const *name, s_xbt_dict *props, int core, double powerPeak, double powerScale) : simgrid::surf::Cpu(model, name, props, core, powerPeak, powerScale), Swig::Director(jenv) {
 }
 
 bool SwigDirector_Cpu::isUsed() {
@@ -1662,7 +1662,7 @@ bool SwigDirector_Cpu::isUsed() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[0]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::isUsed.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::Cpu::isUsed.");
     return c_result;
   }
   swigjobj = swig_get_self(jenv);
@@ -1685,7 +1685,7 @@ e_surf_resource_state_t SwigDirector_Cpu::getState() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[1]) {
-    return Resource::getState();
+    return simgrid::surf::Resource::getState();
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -1708,7 +1708,7 @@ void SwigDirector_Cpu::updateState(tmgr_trace_event *event_type, double value, d
   jdouble jdate  ;
   
   if (!swig_override[2]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::updateState.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::Cpu::updateState.");
     return;
   }
   swigjobj = swig_get_self(jenv);
@@ -1737,7 +1737,7 @@ double SwigDirector_Cpu::getCurrentPowerPeak() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[3]) {
-    return Cpu::getCurrentPowerPeak();
+    return simgrid::surf::Cpu::getCurrentPowerPeak();
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -1751,8 +1751,8 @@ double SwigDirector_Cpu::getCurrentPowerPeak() {
   return c_result;
 }
 
-CpuAction *SwigDirector_Cpu::execute(double size) {
-  CpuAction *c_result = 0 ;
+simgrid::surf::CpuAction *SwigDirector_Cpu::execute(double size) {
+  simgrid::surf::CpuAction *c_result = 0 ;
   jlong jresult = 0 ;
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
@@ -1760,7 +1760,7 @@ CpuAction *SwigDirector_Cpu::execute(double size) {
   jdouble jsize  ;
   
   if (!swig_override[4]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::execute.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::Cpu::execute.");
     return c_result;
   }
   swigjobj = swig_get_self(jenv);
@@ -1768,7 +1768,7 @@ CpuAction *SwigDirector_Cpu::execute(double size) {
     jsize = (jdouble) size;
     jresult = (jlong) jenv->CallStaticLongMethod(Swig::jclass_SurfJNI, Swig::director_methids[22], swigjobj, jsize);
     if (jenv->ExceptionCheck() == JNI_TRUE) return c_result;
-    c_result = *(CpuAction **)&jresult; 
+    c_result = *(simgrid::surf::CpuAction **)&jresult; 
   } else {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
   }
@@ -1776,8 +1776,8 @@ CpuAction *SwigDirector_Cpu::execute(double size) {
   return c_result;
 }
 
-CpuAction *SwigDirector_Cpu::sleep(double duration) {
-  CpuAction *c_result = 0 ;
+simgrid::surf::CpuAction *SwigDirector_Cpu::sleep(double duration) {
+  simgrid::surf::CpuAction *c_result = 0 ;
   jlong jresult = 0 ;
   JNIEnvWrapper swigjnienv(this) ;
   JNIEnv * jenv = swigjnienv.getJNIEnv() ;
@@ -1785,7 +1785,7 @@ CpuAction *SwigDirector_Cpu::sleep(double duration) {
   jdouble jduration  ;
   
   if (!swig_override[5]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::sleep.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::Cpu::sleep.");
     return c_result;
   }
   swigjobj = swig_get_self(jenv);
@@ -1793,7 +1793,7 @@ CpuAction *SwigDirector_Cpu::sleep(double duration) {
     jduration = (jdouble) duration;
     jresult = (jlong) jenv->CallStaticLongMethod(Swig::jclass_SurfJNI, Swig::director_methids[23], swigjobj, jduration);
     if (jenv->ExceptionCheck() == JNI_TRUE) return c_result;
-    c_result = *(CpuAction **)&jresult; 
+    c_result = *(simgrid::surf::CpuAction **)&jresult; 
   } else {
     SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "null upcall object");
   }
@@ -1809,7 +1809,7 @@ int SwigDirector_Cpu::getCore() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[6]) {
-    return Cpu::getCore();
+    return simgrid::surf::Cpu::getCore();
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -1832,7 +1832,7 @@ double SwigDirector_Cpu::getSpeed(double load) {
   jdouble jload  ;
   
   if (!swig_override[7]) {
-    return Cpu::getSpeed(load);
+    return simgrid::surf::Cpu::getSpeed(load);
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -1855,7 +1855,7 @@ double SwigDirector_Cpu::getAvailableSpeed() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[8]) {
-    return Cpu::getAvailableSpeed();
+    return simgrid::surf::Cpu::getAvailableSpeed();
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -1878,7 +1878,7 @@ double SwigDirector_Cpu::getPowerPeakAt(int pstate_index) {
   jint jpstate_index  ;
   
   if (!swig_override[9]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::getPowerPeakAt.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::Cpu::getPowerPeakAt.");
     return c_result;
   }
   swigjobj = swig_get_self(jenv);
@@ -1902,7 +1902,7 @@ int SwigDirector_Cpu::getNbPstates() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[10]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::getNbPstates.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::Cpu::getNbPstates.");
     return c_result;
   }
   swigjobj = swig_get_self(jenv);
@@ -1924,7 +1924,7 @@ void SwigDirector_Cpu::setPstate(int pstate_index) {
   jint jpstate_index  ;
   
   if (!swig_override[11]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::setPstate.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::Cpu::setPstate.");
     return;
   }
   swigjobj = swig_get_self(jenv);
@@ -1946,7 +1946,7 @@ int SwigDirector_Cpu::getPstate() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[12]) {
-    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method Cpu::getPstate.");
+    SWIG_JavaThrowException(JNIEnvWrapper(this).getJNIEnv(), SWIG_JavaDirectorPureVirtual, "Attempted to invoke pure virtual method simgrid::surf::Cpu::getPstate.");
     return c_result;
   }
   swigjobj = swig_get_self(jenv);
@@ -2033,7 +2033,7 @@ void SwigDirector_Cpu::swig_connect_director(JNIEnv *jenv, jobject jself, jclass
 }
 
 
-SwigDirector_CpuAction::SwigDirector_CpuAction(JNIEnv *jenv, Model *model, double cost, bool failed) : CpuAction(model, cost, failed), Swig::Director(jenv) {
+SwigDirector_CpuAction::SwigDirector_CpuAction(JNIEnv *jenv, simgrid::surf::Model *model, double cost, bool failed) : simgrid::surf::CpuAction(model, cost, failed), Swig::Director(jenv) {
 }
 
 SwigDirector_CpuAction::~SwigDirector_CpuAction() {
@@ -2049,7 +2049,7 @@ double SwigDirector_CpuAction::getRemains() {
   jobject swigjobj = (jobject) NULL ;
   
   if (!swig_override[0]) {
-    return Action::getRemains();
+    return simgrid::surf::Action::getRemains();
   }
   swigjobj = swig_get_self(jenv);
   if (swigjobj && jenv->IsSameObject(swigjobj, NULL) == JNI_FALSE) {
@@ -2070,7 +2070,7 @@ void SwigDirector_CpuAction::setPriority(double priority) {
   jdouble jpriority  ;
   
   if (!swig_override[1]) {
-    Action::setPriority(priority);
+    simgrid::surf::Action::setPriority(priority);
     return;
   }
   swigjobj = swig_get_self(jenv);
@@ -2091,7 +2091,7 @@ void SwigDirector_CpuAction::setState(e_surf_action_state_t state) {
   jint jstate  ;
   
   if (!swig_override[2]) {
-    Action::setState(state);
+    simgrid::surf::Action::setState(state);
     return;
   }
   swigjobj = swig_get_self(jenv);
@@ -2158,11 +2158,13 @@ extern "C" {
 #endif
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_surf_SurfJNI_getAction(JNIEnv *env, jclass cls, jlong jarg1) {
-  Action * action = (Action *)jarg1;
+  simgrid::surf::Action * action = (simgrid::surf::Action *)jarg1;
   jobject res;
-  CpuAction *cpu_action = dynamic_cast<CpuAction*>(action);
+  simgrid::surf::CpuAction *cpu_action =
+    dynamic_cast<simgrid::surf::CpuAction*>(action);
   if (cpu_action) {
-    SwigDirector_CpuAction *dir_cpu_action = dynamic_cast<SwigDirector_CpuAction*>(cpu_action);
+    SwigDirector_CpuAction *dir_cpu_action =
+      dynamic_cast<SwigDirector_CpuAction*>(cpu_action);
     if (dir_cpu_action) {
       res = dir_cpu_action->swig_get_self(env);\
     } else {
@@ -2183,7 +2185,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_surf_SurfJNI_getAction(JNIEnv *env, j
 #define GETDIRECTOR(NAME) \
 JNIEXPORT jobject JNICALL Java_org_simgrid_surf_SurfJNI_get## NAME ## Director(JNIEnv *env, jclass cls, jlong jarg1)\
 {\
-  NAME * arg1 = (NAME*)jarg1;\
+  simgrid::surf::NAME * arg1 = (simgrid::surf::NAME*)jarg1;\
   SwigDirector_ ##NAME *director = dynamic_cast<SwigDirector_ ##NAME *>(arg1);\
   jobject res;\
   if (director) {\
@@ -2208,24 +2210,24 @@ GETDIRECTOR(CpuAction)
 
 SWIGEXPORT jlongArray JNICALL Java_org_simgrid_surf_SurfJNI_ActionList_1getArray(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlongArray jresult = 0 ;
-  ActionList *arg1 = (ActionList *) 0 ;
+  simgrid::surf::ActionList *arg1 = (simgrid::surf::ActionList *) 0 ;
   ActionArrayPtr result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(ActionList **)&jarg1; 
-  result = (ActionArrayPtr)ActionList_getArray(arg1);
+  arg1 = *(simgrid::surf::ActionList **)&jarg1; 
+  result = (ActionArrayPtr)simgrid_surf_ActionList_getArray(arg1);
   {
     long l = 0;
-    for(ActionList::iterator it(result->begin()), itend(result->end()); it != itend ; ++it) {
+    for(simgrid::surf::ActionList::iterator it(result->begin()), itend(result->end()); it != itend ; ++it) {
       l++;
     }
     jresult = jenv->NewLongArray(l);
     jlong *elts = jenv->GetLongArrayElements(jresult, NULL);
     l = 0;
-    for(ActionList::iterator it(result->begin()), itend(result->end()); it != itend ; ++it) {
-      elts[l++] = (jlong)static_cast<Action*>(&*it);
+    for(simgrid::surf::ActionList::iterator it(result->begin()), itend(result->end()); it != itend ; ++it) {
+      elts[l++] = (jlong)static_cast<simgrid::surf::Action*>(&*it);
     }
     jenv->ReleaseLongArrayElements(jresult, elts, 0);
   }
@@ -2235,22 +2237,22 @@ SWIGEXPORT jlongArray JNICALL Java_org_simgrid_surf_SurfJNI_ActionList_1getArray
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1ActionList(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
-  ActionList *result = 0 ;
+  simgrid::surf::ActionList *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  result = (ActionList *)new ActionList();
-  *(ActionList **)&jresult = result; 
+  result = (simgrid::surf::ActionList *)new simgrid::surf::ActionList();
+  *(simgrid::surf::ActionList **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1ActionList(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  ActionList *arg1 = (ActionList *) 0 ;
+  simgrid::surf::ActionList *arg1 = (simgrid::surf::ActionList *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(ActionList **)&jarg1; 
+  arg1 = *(simgrid::surf::ActionList **)&jarg1; 
   delete arg1;
 }
 
@@ -2276,30 +2278,30 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_clean(JNIEnv *jenv, jclass
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_getCpuModel(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
-  CpuModel *result = 0 ;
+  simgrid::surf::CpuModel *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  result = (CpuModel *)getCpuModel();
-  *(CpuModel **)&jresult = result; 
+  result = (simgrid::surf::CpuModel *)getCpuModel();
+  *(simgrid::surf::CpuModel **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_setCpuModel(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  CpuModel *arg1 = (CpuModel *) 0 ;
+  simgrid::surf::CpuModel *arg1 = (simgrid::surf::CpuModel *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(CpuModel **)&jarg1; 
+  arg1 = *(simgrid::surf::CpuModel **)&jarg1; 
   setCpuModel(arg1);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_setCpu(JNIEnv *jenv, jclass jcls, jstring jarg1, jlong jarg2, jobject jarg2_) {
   char *arg1 = (char *) 0 ;
-  Cpu *arg2 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg2 = (simgrid::surf::Cpu *) 0 ;
   
   (void)jenv;
   (void)jcls;
@@ -2309,7 +2311,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_setCpu(JNIEnv *jenv, jclas
     arg1 = (char *)jenv->GetStringUTFChars(jarg1, 0);
     if (!arg1) return ;
   }
-  arg2 = *(Cpu **)&jarg2; 
+  arg2 = *(simgrid::surf::Cpu **)&jarg2; 
   setCpu(arg1,arg2);
   {
     
@@ -2377,28 +2379,28 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateCpuCreated
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuCreatedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Cpu *arg2 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg2 = (simgrid::surf::Cpu *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Cpu **)&jarg2; 
+  arg2 = *(simgrid::surf::Cpu **)&jarg2; 
   (arg1)->cpuCreatedCallback(arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuCreatedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Cpu *arg2 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg2 = (simgrid::surf::Cpu *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Cpu **)&jarg2; 
+  arg2 = *(simgrid::surf::Cpu **)&jarg2; 
   (arg1)->Plugin::cpuCreatedCallback(arg2);
 }
 
@@ -2416,28 +2418,28 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateCpuDestruc
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuDestructedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Cpu *arg2 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg2 = (simgrid::surf::Cpu *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Cpu **)&jarg2; 
+  arg2 = *(simgrid::surf::Cpu **)&jarg2; 
   (arg1)->cpuDestructedCallback(arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuDestructedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Cpu *arg2 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg2 = (simgrid::surf::Cpu *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Cpu **)&jarg2; 
+  arg2 = *(simgrid::surf::Cpu **)&jarg2; 
   (arg1)->Plugin::cpuDestructedCallback(arg2);
 }
 
@@ -2455,7 +2457,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateCpuStateCh
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuStateChangedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Cpu *arg2 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg2 = (simgrid::surf::Cpu *) 0 ;
   e_surf_resource_state_t arg3 ;
   e_surf_resource_state_t arg4 ;
   
@@ -2464,7 +2466,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuStateChangedCal
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Cpu **)&jarg2; 
+  arg2 = *(simgrid::surf::Cpu **)&jarg2; 
   arg3 = (e_surf_resource_state_t)jarg3; 
   arg4 = (e_surf_resource_state_t)jarg4; 
   (arg1)->cpuStateChangedCallback(arg2,arg3,arg4);
@@ -2473,7 +2475,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuStateChangedCal
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuStateChangedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Cpu *arg2 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg2 = (simgrid::surf::Cpu *) 0 ;
   e_surf_resource_state_t arg3 ;
   e_surf_resource_state_t arg4 ;
   
@@ -2482,7 +2484,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuStateChangedCal
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Cpu **)&jarg2; 
+  arg2 = *(simgrid::surf::Cpu **)&jarg2; 
   arg3 = (e_surf_resource_state_t)jarg3; 
   arg4 = (e_surf_resource_state_t)jarg4; 
   (arg1)->Plugin::cpuStateChangedCallback(arg2,arg3,arg4);
@@ -2502,7 +2504,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateCpuActionS
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuActionStateChangedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  CpuAction *arg2 = (CpuAction *) 0 ;
+  simgrid::surf::CpuAction *arg2 = (simgrid::surf::CpuAction *) 0 ;
   e_surf_action_state_t arg3 ;
   e_surf_action_state_t arg4 ;
   
@@ -2511,7 +2513,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuActionStateChan
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(CpuAction **)&jarg2; 
+  arg2 = *(simgrid::surf::CpuAction **)&jarg2; 
   arg3 = (e_surf_action_state_t)jarg3; 
   arg4 = (e_surf_action_state_t)jarg4; 
   (arg1)->cpuActionStateChangedCallback(arg2,arg3,arg4);
@@ -2520,7 +2522,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuActionStateChan
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuActionStateChangedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  CpuAction *arg2 = (CpuAction *) 0 ;
+  simgrid::surf::CpuAction *arg2 = (simgrid::surf::CpuAction *) 0 ;
   e_surf_action_state_t arg3 ;
   e_surf_action_state_t arg4 ;
   
@@ -2529,7 +2531,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1cpuActionStateChan
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(CpuAction **)&jarg2; 
+  arg2 = *(simgrid::surf::CpuAction **)&jarg2; 
   arg3 = (e_surf_action_state_t)jarg3; 
   arg4 = (e_surf_action_state_t)jarg4; 
   (arg1)->Plugin::cpuActionStateChangedCallback(arg2,arg3,arg4);
@@ -2549,28 +2551,28 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateLinkCreate
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkCreatedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Link *arg2 = (Link *) 0 ;
+  simgrid::surf::Link *arg2 = (simgrid::surf::Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Link **)&jarg2; 
+  arg2 = *(simgrid::surf::Link **)&jarg2; 
   (arg1)->networkLinkCreatedCallback(arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkCreatedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Link *arg2 = (Link *) 0 ;
+  simgrid::surf::Link *arg2 = (simgrid::surf::Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Link **)&jarg2; 
+  arg2 = *(simgrid::surf::Link **)&jarg2; 
   (arg1)->Plugin::networkLinkCreatedCallback(arg2);
 }
 
@@ -2588,28 +2590,28 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateLinkDestru
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkDestructedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Link *arg2 = (Link *) 0 ;
+  simgrid::surf::Link *arg2 = (simgrid::surf::Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Link **)&jarg2; 
+  arg2 = *(simgrid::surf::Link **)&jarg2; 
   (arg1)->networkLinkDestructedCallback(arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkDestructedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Link *arg2 = (Link *) 0 ;
+  simgrid::surf::Link *arg2 = (simgrid::surf::Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Link **)&jarg2; 
+  arg2 = *(simgrid::surf::Link **)&jarg2; 
   (arg1)->Plugin::networkLinkDestructedCallback(arg2);
 }
 
@@ -2627,7 +2629,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateLinkStateC
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateChangedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Link *arg2 = (Link *) 0 ;
+  simgrid::surf::Link *arg2 = (simgrid::surf::Link *) 0 ;
   e_surf_resource_state_t arg3 ;
   e_surf_resource_state_t arg4 ;
   
@@ -2636,7 +2638,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateCh
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Link **)&jarg2; 
+  arg2 = *(simgrid::surf::Link **)&jarg2; 
   arg3 = (e_surf_resource_state_t)jarg3; 
   arg4 = (e_surf_resource_state_t)jarg4; 
   (arg1)->networkLinkStateChangedCallback(arg2,arg3,arg4);
@@ -2645,7 +2647,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateCh
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateChangedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  Link *arg2 = (Link *) 0 ;
+  simgrid::surf::Link *arg2 = (simgrid::surf::Link *) 0 ;
   e_surf_resource_state_t arg3 ;
   e_surf_resource_state_t arg4 ;
   
@@ -2654,7 +2656,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkLinkStateCh
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(Link **)&jarg2; 
+  arg2 = *(simgrid::surf::Link **)&jarg2; 
   arg3 = (e_surf_resource_state_t)jarg3; 
   arg4 = (e_surf_resource_state_t)jarg4; 
   (arg1)->Plugin::networkLinkStateChangedCallback(arg2,arg3,arg4);
@@ -2674,7 +2676,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateNetworkAct
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkActionStateChangedCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkAction *arg2 = (NetworkAction *) 0 ;
+  simgrid::surf::NetworkAction *arg2 = (simgrid::surf::NetworkAction *) 0 ;
   e_surf_action_state_t arg3 ;
   e_surf_action_state_t arg4 ;
   
@@ -2683,7 +2685,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkActionState
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkAction **)&jarg2; 
+  arg2 = *(simgrid::surf::NetworkAction **)&jarg2; 
   arg3 = (e_surf_action_state_t)jarg3; 
   arg4 = (e_surf_action_state_t)jarg4; 
   (arg1)->networkActionStateChangedCallback(arg2,arg3,arg4);
@@ -2692,7 +2694,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkActionState
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkActionStateChangedCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jint jarg3, jint jarg4) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkAction *arg2 = (NetworkAction *) 0 ;
+  simgrid::surf::NetworkAction *arg2 = (simgrid::surf::NetworkAction *) 0 ;
   e_surf_action_state_t arg3 ;
   e_surf_action_state_t arg4 ;
   
@@ -2701,7 +2703,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkActionState
   (void)jarg1_;
   (void)jarg2_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkAction **)&jarg2; 
+  arg2 = *(simgrid::surf::NetworkAction **)&jarg2; 
   arg3 = (e_surf_action_state_t)jarg3; 
   arg4 = (e_surf_action_state_t)jarg4; 
   (arg1)->Plugin::networkActionStateChangedCallback(arg2,arg3,arg4);
@@ -2721,9 +2723,9 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1activateNetworkCom
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkCommunicateCallback(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_, jlong jarg4, jobject jarg4_, jdouble jarg5, jdouble jarg6) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkAction *arg2 = (NetworkAction *) 0 ;
-  RoutingEdge *arg3 = (RoutingEdge *) 0 ;
-  RoutingEdge *arg4 = (RoutingEdge *) 0 ;
+  simgrid::surf::NetworkAction *arg2 = (simgrid::surf::NetworkAction *) 0 ;
+  simgrid::surf::RoutingEdge *arg3 = (simgrid::surf::RoutingEdge *) 0 ;
+  simgrid::surf::RoutingEdge *arg4 = (simgrid::surf::RoutingEdge *) 0 ;
   double arg5 ;
   double arg6 ;
   
@@ -2734,9 +2736,9 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkCommunicate
   (void)jarg3_;
   (void)jarg4_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkAction **)&jarg2; 
-  arg3 = *(RoutingEdge **)&jarg3; 
-  arg4 = *(RoutingEdge **)&jarg4; 
+  arg2 = *(simgrid::surf::NetworkAction **)&jarg2; 
+  arg3 = *(simgrid::surf::RoutingEdge **)&jarg3; 
+  arg4 = *(simgrid::surf::RoutingEdge **)&jarg4; 
   arg5 = (double)jarg5; 
   arg6 = (double)jarg6; 
   (arg1)->networkCommunicateCallback(arg2,arg3,arg4,arg5,arg6);
@@ -2745,9 +2747,9 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkCommunicate
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkCommunicateCallbackSwigExplicitPlugin(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jlong jarg3, jobject jarg3_, jlong jarg4, jobject jarg4_, jdouble jarg5, jdouble jarg6) {
   Plugin *arg1 = (Plugin *) 0 ;
-  NetworkAction *arg2 = (NetworkAction *) 0 ;
-  RoutingEdge *arg3 = (RoutingEdge *) 0 ;
-  RoutingEdge *arg4 = (RoutingEdge *) 0 ;
+  simgrid::surf::NetworkAction *arg2 = (simgrid::surf::NetworkAction *) 0 ;
+  simgrid::surf::RoutingEdge *arg3 = (simgrid::surf::RoutingEdge *) 0 ;
+  simgrid::surf::RoutingEdge *arg4 = (simgrid::surf::RoutingEdge *) 0 ;
   double arg5 ;
   double arg6 ;
   
@@ -2758,9 +2760,9 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Plugin_1networkCommunicate
   (void)jarg3_;
   (void)jarg4_;
   arg1 = *(Plugin **)&jarg1; 
-  arg2 = *(NetworkAction **)&jarg2; 
-  arg3 = *(RoutingEdge **)&jarg3; 
-  arg4 = *(RoutingEdge **)&jarg4; 
+  arg2 = *(simgrid::surf::NetworkAction **)&jarg2; 
+  arg3 = *(simgrid::surf::RoutingEdge **)&jarg3; 
+  arg4 = *(simgrid::surf::RoutingEdge **)&jarg4; 
   arg5 = (double)jarg5; 
   arg6 = (double)jarg6; 
   (arg1)->Plugin::networkCommunicateCallback(arg2,arg3,arg4,arg5,arg6);
@@ -2836,14 +2838,14 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1TmgrTraceEvent(JNI
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Model_1shareResources(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   jdouble jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   double arg2 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = (double)jarg2; 
   result = (double)(arg1)->shareResources(arg2);
   jresult = (jdouble)result; 
@@ -2853,14 +2855,14 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Model_1shareResources(J
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Model_1shareResourcesLazy(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   jdouble jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   double arg2 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = (double)jarg2; 
   result = (double)(arg1)->shareResourcesLazy(arg2);
   jresult = (jdouble)result; 
@@ -2870,14 +2872,14 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Model_1shareResourcesLa
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Model_1shareResourcesFull(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   jdouble jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   double arg2 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = (double)jarg2; 
   result = (double)(arg1)->shareResourcesFull(arg2);
   jresult = (jdouble)result; 
@@ -2886,14 +2888,14 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Model_1shareResourcesFu
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Model_1updateActionsState(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jdouble jarg3) {
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   double arg2 ;
   double arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = (double)jarg2; 
   arg3 = (double)jarg3; 
   (arg1)->updateActionsState(arg2,arg3);
@@ -2901,14 +2903,14 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Model_1updateActionsState(
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Model_1updateActionsStateLazy(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jdouble jarg3) {
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   double arg2 ;
   double arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = (double)jarg2; 
   arg3 = (double)jarg3; 
   (arg1)->updateActionsStateLazy(arg2,arg3);
@@ -2916,14 +2918,14 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Model_1updateActionsStateL
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Model_1updateActionsStateFull(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jdouble jarg3) {
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   double arg2 ;
   double arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = (double)jarg2; 
   arg3 = (double)jarg3; 
   (arg1)->updateActionsStateFull(arg2,arg3);
@@ -2932,65 +2934,65 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Model_1updateActionsStateF
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Model_1getRunningActionSet(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
-  ActionList *result = 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
+  simgrid::surf::ActionList *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
-  result = (ActionList *)(arg1)->getRunningActionSet();
-  *(ActionList **)&jresult = result; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
+  result = (simgrid::surf::ActionList *)(arg1)->getRunningActionSet();
+  *(simgrid::surf::ActionList **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Model_1addTraces(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   (arg1)->addTraces();
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1Model(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   delete arg1;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1CpuModel(JNIEnv *jenv, jclass jcls) {
   jlong jresult = 0 ;
-  CpuModel *result = 0 ;
+  simgrid::surf::CpuModel *result = 0 ;
   
   (void)jenv;
   (void)jcls;
-  result = (CpuModel *)new SwigDirector_CpuModel(jenv);
-  *(CpuModel **)&jresult = result; 
+  result = (simgrid::surf::CpuModel *)new SwigDirector_CpuModel(jenv);
+  *(simgrid::surf::CpuModel **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1CpuModel(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  CpuModel *arg1 = (CpuModel *) 0 ;
+  simgrid::surf::CpuModel *arg1 = (simgrid::surf::CpuModel *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(CpuModel **)&jarg1; 
+  arg1 = *(simgrid::surf::CpuModel **)&jarg1; 
   delete arg1;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1createCpu(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jdoubleArray jarg3, jint jarg4, jdouble jarg5, jlong jarg6, jobject jarg6_, jint jarg7, jint jarg8, jlong jarg9, jobject jarg9_, jlong jarg10, jobject jarg10_) {
   jlong jresult = 0 ;
-  CpuModel *arg1 = (CpuModel *) 0 ;
+  simgrid::surf::CpuModel *arg1 = (simgrid::surf::CpuModel *) 0 ;
   char *arg2 = (char *) 0 ;
   DoubleDynar arg3 ;
   int arg4 ;
@@ -3001,7 +3003,7 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1createCpu(JNIEn
   tmgr_trace *arg9 = (tmgr_trace *) 0 ;
   s_xbt_dict *arg10 = (s_xbt_dict *) 0 ;
   DoubleDynar *argp3 ;
-  Cpu *result = 0 ;
+  simgrid::surf::Cpu *result = 0 ;
   
   (void)jenv;
   (void)jcls;
@@ -3009,7 +3011,7 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1createCpu(JNIEn
   (void)jarg6_;
   (void)jarg9_;
   (void)jarg10_;
-  arg1 = *(CpuModel **)&jarg1; 
+  arg1 = *(simgrid::surf::CpuModel **)&jarg1; 
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
@@ -3028,8 +3030,8 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1createCpu(JNIEn
   arg8 = (e_surf_resource_state_t)jarg8; 
   arg9 = *(tmgr_trace **)&jarg9; 
   arg10 = *(s_xbt_dict **)&jarg10; 
-  result = (Cpu *)(arg1)->createCpu((char const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
-  *(Cpu **)&jresult = result; 
+  result = (simgrid::surf::Cpu *)(arg1)->createCpu((char const *)arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
+  *(simgrid::surf::Cpu **)&jresult = result; 
   {
     
   }
@@ -3038,7 +3040,7 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1createCpu(JNIEn
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1director_1connect(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jswig_mem_own, jboolean jweak_global) {
-  CpuModel *obj = *((CpuModel **)&objarg);
+  simgrid::surf::CpuModel *obj = *((simgrid::surf::CpuModel **)&objarg);
   (void)jcls;
   SwigDirector_CpuModel *director = dynamic_cast<SwigDirector_CpuModel *>(obj);
   if (director) {
@@ -3048,7 +3050,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1director_1connec
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1change_1ownership(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jtake_or_release) {
-  CpuModel *obj = *((CpuModel **)&objarg);
+  simgrid::surf::CpuModel *obj = *((simgrid::surf::CpuModel **)&objarg);
   SwigDirector_CpuModel *director = dynamic_cast<SwigDirector_CpuModel *>(obj);
   (void)jcls;
   if (director) {
@@ -3059,13 +3061,13 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1change_1ownershi
 
 SWIGEXPORT jstring JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1getName(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
-  Resource *arg1 = (Resource *) 0 ;
+  simgrid::surf::Resource *arg1 = (simgrid::surf::Resource *) 0 ;
   char *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Resource **)&jarg1; 
+  arg1 = *(simgrid::surf::Resource **)&jarg1; 
   result = (char *)(arg1)->getName();
   if (result) jresult = jenv->NewStringUTF((const char *)result);
   return jresult;
@@ -3074,13 +3076,13 @@ SWIGEXPORT jstring JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1getName(JNIEn
 
 SWIGEXPORT jboolean JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1isUsed(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
-  Resource *arg1 = (Resource *) 0 ;
+  simgrid::surf::Resource *arg1 = (simgrid::surf::Resource *) 0 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Resource **)&jarg1; 
+  arg1 = *(simgrid::surf::Resource **)&jarg1; 
   result = (bool)(arg1)->isUsed();
   jresult = (jboolean)result; 
   return jresult;
@@ -3089,28 +3091,28 @@ SWIGEXPORT jboolean JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1isUsed(JNIEn
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1getModel(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  Resource *arg1 = (Resource *) 0 ;
-  Model *result = 0 ;
+  simgrid::surf::Resource *arg1 = (simgrid::surf::Resource *) 0 ;
+  simgrid::surf::Model *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Resource **)&jarg1; 
-  result = (Model *)(arg1)->getModel();
-  *(Model **)&jresult = result; 
+  arg1 = *(simgrid::surf::Resource **)&jarg1; 
+  result = (simgrid::surf::Model *)(arg1)->getModel();
+  *(simgrid::surf::Model **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1getState(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
-  Resource *arg1 = (Resource *) 0 ;
+  simgrid::surf::Resource *arg1 = (simgrid::surf::Resource *) 0 ;
   e_surf_resource_state_t result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Resource **)&jarg1; 
+  arg1 = *(simgrid::surf::Resource **)&jarg1; 
   result = (e_surf_resource_state_t)(arg1)->getState();
   jresult = (jint)result; 
   return jresult;
@@ -3119,13 +3121,13 @@ SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1getState(JNIEnv 
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1getConstraint(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  Resource *arg1 = (Resource *) 0 ;
+  simgrid::surf::Resource *arg1 = (simgrid::surf::Resource *) 0 ;
   lmm_constraint *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Resource **)&jarg1; 
+  arg1 = *(simgrid::surf::Resource **)&jarg1; 
   result = (lmm_constraint *)(arg1)->getConstraint();
   *(lmm_constraint **)&jresult = result; 
   return jresult;
@@ -3134,13 +3136,13 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1getConstraint(J
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1getProperties(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  Resource *arg1 = (Resource *) 0 ;
+  simgrid::surf::Resource *arg1 = (simgrid::surf::Resource *) 0 ;
   s_xbt_dict *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Resource **)&jarg1; 
+  arg1 = *(simgrid::surf::Resource **)&jarg1; 
   result = (s_xbt_dict *)(arg1)->getProperties();
   *(s_xbt_dict **)&jresult = result; 
   return jresult;
@@ -3148,7 +3150,7 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1getProperties(J
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1updateState(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jlong jarg2, jobject jarg2_, jdouble jarg3, jdouble jarg4) {
-  Resource *arg1 = (Resource *) 0 ;
+  simgrid::surf::Resource *arg1 = (simgrid::surf::Resource *) 0 ;
   tmgr_trace_event *arg2 = (tmgr_trace_event *) 0 ;
   double arg3 ;
   double arg4 ;
@@ -3157,7 +3159,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1updateState(JNIE
   (void)jcls;
   (void)jarg1_;
   (void)jarg2_;
-  arg1 = *(Resource **)&jarg1; 
+  arg1 = *(simgrid::surf::Resource **)&jarg1; 
   arg2 = *(tmgr_trace_event **)&jarg2; 
   arg3 = (double)jarg3; 
   arg4 = (double)jarg4; 
@@ -3166,32 +3168,32 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Resource_1updateState(JNIE
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1Resource(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  Resource *arg1 = (Resource *) 0 ;
+  simgrid::surf::Resource *arg1 = (simgrid::surf::Resource *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(Resource **)&jarg1; 
+  arg1 = *(simgrid::surf::Resource **)&jarg1; 
   delete arg1;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1Cpu_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jlong jarg3, jobject jarg3_, jlong jarg4, jobject jarg4_, jint jarg5, jdouble jarg6, jdouble jarg7) {
   jlong jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   char *arg2 = (char *) 0 ;
   s_xbt_dict *arg3 = (s_xbt_dict *) 0 ;
   lmm_constraint *arg4 = (lmm_constraint *) 0 ;
   int arg5 ;
   double arg6 ;
   double arg7 ;
-  Cpu *result = 0 ;
+  simgrid::surf::Cpu *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg3_;
   (void)jarg4_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
@@ -3202,8 +3204,8 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1Cpu_1_1SWIG_10(JNIEn
   arg5 = (int)jarg5; 
   arg6 = (double)jarg6; 
   arg7 = (double)jarg7; 
-  result = (Cpu *)new SwigDirector_Cpu(jenv,arg1,(char const *)arg2,arg3,arg4,arg5,arg6,arg7);
-  *(Cpu **)&jresult = result; 
+  result = (simgrid::surf::Cpu *)new SwigDirector_Cpu(jenv,arg1,(char const *)arg2,arg3,arg4,arg5,arg6,arg7);
+  *(simgrid::surf::Cpu **)&jresult = result; 
   {
     
   }
@@ -3213,19 +3215,19 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1Cpu_1_1SWIG_10(JNIEn
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1Cpu_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2, jlong jarg3, jobject jarg3_, jint jarg4, jdouble jarg5, jdouble jarg6) {
   jlong jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   char *arg2 = (char *) 0 ;
   s_xbt_dict *arg3 = (s_xbt_dict *) 0 ;
   int arg4 ;
   double arg5 ;
   double arg6 ;
-  Cpu *result = 0 ;
+  simgrid::surf::Cpu *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
   (void)jarg3_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = 0;
   if (jarg2) {
     arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
@@ -3235,8 +3237,8 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1Cpu_1_1SWIG_11(JNIEn
   arg4 = (int)jarg4; 
   arg5 = (double)jarg5; 
   arg6 = (double)jarg6; 
-  result = (Cpu *)new SwigDirector_Cpu(jenv,arg1,(char const *)arg2,arg3,arg4,arg5,arg6);
-  *(Cpu **)&jresult = result; 
+  result = (simgrid::surf::Cpu *)new SwigDirector_Cpu(jenv,arg1,(char const *)arg2,arg3,arg4,arg5,arg6);
+  *(simgrid::surf::Cpu **)&jresult = result; 
   {
     
   }
@@ -3245,24 +3247,24 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1Cpu_1_1SWIG_11(JNIEn
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1Cpu(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   delete arg1;
 }
 
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getCurrentPowerPeak(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   result = (double)(arg1)->getCurrentPowerPeak();
   jresult = (jdouble)result; 
   return jresult;
@@ -3271,14 +3273,14 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getCurrentPowerPea
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getCurrentPowerPeakSwigExplicitCpu(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
-  result = (double)(arg1)->Cpu::getCurrentPowerPeak();
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
+  result = (double)(arg1)->simgrid::surf::Cpu::getCurrentPowerPeak();
   jresult = (jdouble)result; 
   return jresult;
 }
@@ -3286,47 +3288,47 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getCurrentPowerPea
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1execute(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   jlong jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   double arg2 ;
-  CpuAction *result = 0 ;
+  simgrid::surf::CpuAction *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   arg2 = (double)jarg2; 
-  result = (CpuAction *)(arg1)->execute(arg2);
-  *(CpuAction **)&jresult = result; 
+  result = (simgrid::surf::CpuAction *)(arg1)->execute(arg2);
+  *(simgrid::surf::CpuAction **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1sleep(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   jlong jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   double arg2 ;
-  CpuAction *result = 0 ;
+  simgrid::surf::CpuAction *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   arg2 = (double)jarg2; 
-  result = (CpuAction *)(arg1)->sleep(arg2);
-  *(CpuAction **)&jresult = result; 
+  result = (simgrid::surf::CpuAction *)(arg1)->sleep(arg2);
+  *(simgrid::surf::CpuAction **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getCore(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   result = (int)(arg1)->getCore();
   jresult = (jint)result; 
   return jresult;
@@ -3335,14 +3337,14 @@ SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getCore(JNIEnv *jenv,
 
 SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getCoreSwigExplicitCpu(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
-  result = (int)(arg1)->Cpu::getCore();
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
+  result = (int)(arg1)->simgrid::surf::Cpu::getCore();
   jresult = (jint)result; 
   return jresult;
 }
@@ -3350,14 +3352,14 @@ SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getCoreSwigExplicitCp
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getSpeed(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   jdouble jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   double arg2 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   arg2 = (double)jarg2; 
   result = (double)(arg1)->getSpeed(arg2);
   jresult = (jdouble)result; 
@@ -3367,16 +3369,16 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getSpeed(JNIEnv *j
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getSpeedSwigExplicitCpu(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
   jdouble jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   double arg2 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   arg2 = (double)jarg2; 
-  result = (double)(arg1)->Cpu::getSpeed(arg2);
+  result = (double)(arg1)->simgrid::surf::Cpu::getSpeed(arg2);
   jresult = (jdouble)result; 
   return jresult;
 }
@@ -3384,13 +3386,13 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getSpeedSwigExplic
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getAvailableSpeed(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   result = (double)(arg1)->getAvailableSpeed();
   jresult = (jdouble)result; 
   return jresult;
@@ -3399,14 +3401,14 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getAvailableSpeed(
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getAvailableSpeedSwigExplicitCpu(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
-  result = (double)(arg1)->Cpu::getAvailableSpeed();
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
+  result = (double)(arg1)->simgrid::surf::Cpu::getAvailableSpeed();
   jresult = (jdouble)result; 
   return jresult;
 }
@@ -3414,14 +3416,14 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getAvailableSpeedS
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getPowerPeakAt(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
   jdouble jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   int arg2 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   arg2 = (int)jarg2; 
   result = (double)(arg1)->getPowerPeakAt(arg2);
   jresult = (jdouble)result; 
@@ -3431,13 +3433,13 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getPowerPeakAt(JNI
 
 SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getNbPstates(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   result = (int)(arg1)->getNbPstates();
   jresult = (jint)result; 
   return jresult;
@@ -3445,13 +3447,13 @@ SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getNbPstates(JNIEnv *
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1setPstate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   int arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   arg2 = (int)jarg2; 
   (arg1)->setPstate(arg2);
 }
@@ -3459,13 +3461,13 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1setPstate(JNIEnv *jen
 
 SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getPstate(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   result = (int)(arg1)->getPstate();
   jresult = (jint)result; 
   return jresult;
@@ -3473,20 +3475,20 @@ SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1getPstate(JNIEnv *jen
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1setState(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
-  Cpu *arg1 = (Cpu *) 0 ;
+  simgrid::surf::Cpu *arg1 = (simgrid::surf::Cpu *) 0 ;
   e_surf_resource_state_t arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Cpu **)&jarg1; 
+  arg1 = *(simgrid::surf::Cpu **)&jarg1; 
   arg2 = (e_surf_resource_state_t)jarg2; 
   (arg1)->setState(arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1director_1connect(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jswig_mem_own, jboolean jweak_global) {
-  Cpu *obj = *((Cpu **)&objarg);
+  simgrid::surf::Cpu *obj = *((simgrid::surf::Cpu **)&objarg);
   (void)jcls;
   SwigDirector_Cpu *director = dynamic_cast<SwigDirector_Cpu *>(obj);
   if (director) {
@@ -3496,7 +3498,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1director_1connect(JNI
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1change_1ownership(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jtake_or_release) {
-  Cpu *obj = *((Cpu **)&objarg);
+  simgrid::surf::Cpu *obj = *((simgrid::surf::Cpu **)&objarg);
   SwigDirector_Cpu *director = dynamic_cast<SwigDirector_Cpu *>(obj);
   (void)jcls;
   if (director) {
@@ -3506,24 +3508,24 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1change_1ownership(JNI
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1Link(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  Link *arg1 = (Link *) 0 ;
+  simgrid::surf::Link *arg1 = (simgrid::surf::Link *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(Link **)&jarg1; 
+  arg1 = *(simgrid::surf::Link **)&jarg1; 
   delete arg1;
 }
 
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Link_1getBandwidth(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  Link *arg1 = (Link *) 0 ;
+  simgrid::surf::Link *arg1 = (simgrid::surf::Link *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Link **)&jarg1; 
+  arg1 = *(simgrid::surf::Link **)&jarg1; 
   result = (double)(arg1)->getBandwidth();
   jresult = (jdouble)result; 
   return jresult;
@@ -3531,14 +3533,14 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Link_1getBandwidth(JNIE
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateBandwidth_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jdouble jarg3) {
-  Link *arg1 = (Link *) 0 ;
+  simgrid::surf::Link *arg1 = (simgrid::surf::Link *) 0 ;
   double arg2 ;
   double arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Link **)&jarg1; 
+  arg1 = *(simgrid::surf::Link **)&jarg1; 
   arg2 = (double)jarg2; 
   arg3 = (double)jarg3; 
   (arg1)->updateBandwidth(arg2,arg3);
@@ -3546,13 +3548,13 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateBandwidth_1_1S
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateBandwidth_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
-  Link *arg1 = (Link *) 0 ;
+  simgrid::surf::Link *arg1 = (simgrid::surf::Link *) 0 ;
   double arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Link **)&jarg1; 
+  arg1 = *(simgrid::surf::Link **)&jarg1; 
   arg2 = (double)jarg2; 
   (arg1)->updateBandwidth(arg2);
 }
@@ -3560,13 +3562,13 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateBandwidth_1_1S
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Link_1getLatency(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  Link *arg1 = (Link *) 0 ;
+  simgrid::surf::Link *arg1 = (simgrid::surf::Link *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Link **)&jarg1; 
+  arg1 = *(simgrid::surf::Link **)&jarg1; 
   result = (double)(arg1)->getLatency();
   jresult = (jdouble)result; 
   return jresult;
@@ -3574,14 +3576,14 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Link_1getLatency(JNIEnv
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateLatency_1_1SWIG_10(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jdouble jarg3) {
-  Link *arg1 = (Link *) 0 ;
+  simgrid::surf::Link *arg1 = (simgrid::surf::Link *) 0 ;
   double arg2 ;
   double arg3 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Link **)&jarg1; 
+  arg1 = *(simgrid::surf::Link **)&jarg1; 
   arg2 = (double)jarg2; 
   arg3 = (double)jarg3; 
   (arg1)->updateLatency(arg2,arg3);
@@ -3589,13 +3591,13 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateLatency_1_1SWI
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateLatency_1_1SWIG_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
-  Link *arg1 = (Link *) 0 ;
+  simgrid::surf::Link *arg1 = (simgrid::surf::Link *) 0 ;
   double arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Link **)&jarg1; 
+  arg1 = *(simgrid::surf::Link **)&jarg1; 
   arg2 = (double)jarg2; 
   (arg1)->updateLatency(arg2);
 }
@@ -3603,57 +3605,57 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Link_1updateLatency_1_1SWI
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1Action(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jboolean jarg3) {
   jlong jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   double arg2 ;
   bool arg3 ;
-  Action *result = 0 ;
+  simgrid::surf::Action *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = (double)jarg2; 
   arg3 = jarg3 ? true : false; 
-  result = (Action *)new Action(arg1,arg2,arg3);
-  *(Action **)&jresult = result; 
+  result = (simgrid::surf::Action *)new simgrid::surf::Action(arg1,arg2,arg3);
+  *(simgrid::surf::Action **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1Action(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   delete arg1;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Action_1getModel(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  Action *arg1 = (Action *) 0 ;
-  Model *result = 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
+  simgrid::surf::Model *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
-  result = (Model *)(arg1)->getModel();
-  *(Model **)&jresult = result; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
+  result = (simgrid::surf::Model *)(arg1)->getModel();
+  *(simgrid::surf::Model **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Action_1getVariable(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   lmm_variable *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   result = (lmm_variable *)(arg1)->getVariable();
   *(lmm_variable **)&jresult = result; 
   return jresult;
@@ -3662,13 +3664,13 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Action_1getVariable(JNIEn
 
 SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Action_1getState(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jint jresult = 0 ;
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   e_surf_action_state_t result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   result = (e_surf_action_state_t)(arg1)->getState();
   jresult = (jint)result; 
   return jresult;
@@ -3677,13 +3679,13 @@ SWIGEXPORT jint JNICALL Java_org_simgrid_surf_SurfJNI_Action_1getState(JNIEnv *j
 
 SWIGEXPORT jboolean JNICALL Java_org_simgrid_surf_SurfJNI_Action_1isSuspended(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jboolean jresult = 0 ;
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   bool result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   result = (bool)(arg1)->isSuspended();
   jresult = (jboolean)result; 
   return jresult;
@@ -3692,13 +3694,13 @@ SWIGEXPORT jboolean JNICALL Java_org_simgrid_surf_SurfJNI_Action_1isSuspended(JN
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Action_1getBound(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   result = (double)(arg1)->getBound();
   jresult = (jdouble)result; 
   return jresult;
@@ -3706,26 +3708,26 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Action_1getBound(JNIEnv
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Action_1setBound(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   double arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   arg2 = (double)jarg2; 
   (arg1)->setBound(arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Action_1updateRemains(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   double arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   arg2 = (double)jarg2; 
   (arg1)->updateRemains(arg2);
 }
@@ -3733,13 +3735,13 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Action_1updateRemains(JNIE
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Action_1getRemains(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   result = (double)(arg1)->getRemains();
   jresult = (jdouble)result; 
   return jresult;
@@ -3747,26 +3749,26 @@ SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_Action_1getRemains(JNIE
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Action_1setPriority(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2) {
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   double arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   arg2 = (double)jarg2; 
   (arg1)->setPriority(arg2);
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Action_1setState(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
-  Action *arg1 = (Action *) 0 ;
+  simgrid::surf::Action *arg1 = (simgrid::surf::Action *) 0 ;
   e_surf_action_state_t arg2 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Action **)&jarg1; 
+  arg1 = *(simgrid::surf::Action **)&jarg1; 
   arg2 = (e_surf_action_state_t)jarg2; 
   (arg1)->setState(arg2);
 }
@@ -3774,50 +3776,50 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_Action_1setState(JNIEnv *j
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_new_1CpuAction(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jdouble jarg2, jboolean jarg3) {
   jlong jresult = 0 ;
-  Model *arg1 = (Model *) 0 ;
+  simgrid::surf::Model *arg1 = (simgrid::surf::Model *) 0 ;
   double arg2 ;
   bool arg3 ;
-  CpuAction *result = 0 ;
+  simgrid::surf::CpuAction *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(Model **)&jarg1; 
+  arg1 = *(simgrid::surf::Model **)&jarg1; 
   arg2 = (double)jarg2; 
   arg3 = jarg3 ? true : false; 
-  result = (CpuAction *)new SwigDirector_CpuAction(jenv,arg1,arg2,arg3);
-  *(CpuAction **)&jresult = result; 
+  result = (simgrid::surf::CpuAction *)new SwigDirector_CpuAction(jenv,arg1,arg2,arg3);
+  *(simgrid::surf::CpuAction **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuAction_1getCpu(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jlong jresult = 0 ;
-  CpuAction *arg1 = (CpuAction *) 0 ;
-  Cpu *result = 0 ;
+  simgrid::surf::CpuAction *arg1 = (simgrid::surf::CpuAction *) 0 ;
+  simgrid::surf::Cpu *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(CpuAction **)&jarg1; 
-  result = (Cpu *)CpuAction_getCpu(arg1);
-  *(Cpu **)&jresult = result; 
+  arg1 = *(simgrid::surf::CpuAction **)&jarg1; 
+  result = (simgrid::surf::Cpu *)simgrid_surf_CpuAction_getCpu(arg1);
+  *(simgrid::surf::Cpu **)&jresult = result; 
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1CpuAction(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  CpuAction *arg1 = (CpuAction *) 0 ;
+  simgrid::surf::CpuAction *arg1 = (simgrid::surf::CpuAction *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(CpuAction **)&jarg1; 
+  arg1 = *(simgrid::surf::CpuAction **)&jarg1; 
   delete arg1;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_CpuAction_1director_1connect(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jswig_mem_own, jboolean jweak_global) {
-  CpuAction *obj = *((CpuAction **)&objarg);
+  simgrid::surf::CpuAction *obj = *((simgrid::surf::CpuAction **)&objarg);
   (void)jcls;
   SwigDirector_CpuAction *director = dynamic_cast<SwigDirector_CpuAction *>(obj);
   if (director) {
@@ -3827,7 +3829,7 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_CpuAction_1director_1conne
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_CpuAction_1change_1ownership(JNIEnv *jenv, jclass jcls, jobject jself, jlong objarg, jboolean jtake_or_release) {
-  CpuAction *obj = *((CpuAction **)&objarg);
+  simgrid::surf::CpuAction *obj = *((simgrid::surf::CpuAction **)&objarg);
   SwigDirector_CpuAction *director = dynamic_cast<SwigDirector_CpuAction *>(obj);
   (void)jcls;
   if (director) {
@@ -3838,38 +3840,38 @@ SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_CpuAction_1change_1ownersh
 
 SWIGEXPORT jdouble JNICALL Java_org_simgrid_surf_SurfJNI_NetworkAction_1getLatency(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jdouble jresult = 0 ;
-  NetworkAction *arg1 = (NetworkAction *) 0 ;
+  simgrid::surf::NetworkAction *arg1 = (simgrid::surf::NetworkAction *) 0 ;
   double result;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(NetworkAction **)&jarg1; 
-  result = (double)NetworkAction_getLatency(arg1);
+  arg1 = *(simgrid::surf::NetworkAction **)&jarg1; 
+  result = (double)simgrid_surf_NetworkAction_getLatency(arg1);
   jresult = (jdouble)result; 
   return jresult;
 }
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1NetworkAction(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  NetworkAction *arg1 = (NetworkAction *) 0 ;
+  simgrid::surf::NetworkAction *arg1 = (simgrid::surf::NetworkAction *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(NetworkAction **)&jarg1; 
+  arg1 = *(simgrid::surf::NetworkAction **)&jarg1; 
   delete arg1;
 }
 
 
 SWIGEXPORT jstring JNICALL Java_org_simgrid_surf_SurfJNI_RoutingEdge_1getName(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
   jstring jresult = 0 ;
-  RoutingEdge *arg1 = (RoutingEdge *) 0 ;
+  simgrid::surf::RoutingEdge *arg1 = (simgrid::surf::RoutingEdge *) 0 ;
   char *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   (void)jarg1_;
-  arg1 = *(RoutingEdge **)&jarg1; 
+  arg1 = *(simgrid::surf::RoutingEdge **)&jarg1; 
   result = (char *)(arg1)->getName();
   if (result) jresult = jenv->NewStringUTF((const char *)result);
   return jresult;
@@ -3877,11 +3879,11 @@ SWIGEXPORT jstring JNICALL Java_org_simgrid_surf_SurfJNI_RoutingEdge_1getName(JN
 
 
 SWIGEXPORT void JNICALL Java_org_simgrid_surf_SurfJNI_delete_1RoutingEdge(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-  RoutingEdge *arg1 = (RoutingEdge *) 0 ;
+  simgrid::surf::RoutingEdge *arg1 = (simgrid::surf::RoutingEdge *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = *(RoutingEdge **)&jarg1; 
+  arg1 = *(simgrid::surf::RoutingEdge **)&jarg1; 
   delete arg1;
 }
 
@@ -4044,7 +4046,7 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuModel_1SWIGUpcast(JNIE
     jlong baseptr = 0;
     (void)jenv;
     (void)jcls;
-    *(Model **)&baseptr = *(CpuModel **)&jarg1;
+    *(simgrid::surf::Model **)&baseptr = *(simgrid::surf::CpuModel **)&jarg1;
     return baseptr;
 }
 
@@ -4052,7 +4054,7 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Cpu_1SWIGUpcast(JNIEnv *j
     jlong baseptr = 0;
     (void)jenv;
     (void)jcls;
-    *(Resource **)&baseptr = *(Cpu **)&jarg1;
+    *(simgrid::surf::Resource **)&baseptr = *(simgrid::surf::Cpu **)&jarg1;
     return baseptr;
 }
 
@@ -4060,7 +4062,7 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_Link_1SWIGUpcast(JNIEnv *
     jlong baseptr = 0;
     (void)jenv;
     (void)jcls;
-    *(Resource **)&baseptr = *(Link **)&jarg1;
+    *(simgrid::surf::Resource **)&baseptr = *(simgrid::surf::Link **)&jarg1;
     return baseptr;
 }
 
@@ -4068,7 +4070,7 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_CpuAction_1SWIGUpcast(JNI
     jlong baseptr = 0;
     (void)jenv;
     (void)jcls;
-    *(Action **)&baseptr = *(CpuAction **)&jarg1;
+    *(simgrid::surf::Action **)&baseptr = *(simgrid::surf::CpuAction **)&jarg1;
     return baseptr;
 }
 
@@ -4076,7 +4078,7 @@ SWIGEXPORT jlong JNICALL Java_org_simgrid_surf_SurfJNI_NetworkAction_1SWIGUpcast
     jlong baseptr = 0;
     (void)jenv;
     (void)jcls;
-    *(Action **)&baseptr = *(NetworkAction **)&jarg1;
+    *(simgrid::surf::Action **)&baseptr = *(simgrid::surf::NetworkAction **)&jarg1;
     return baseptr;
 }
 

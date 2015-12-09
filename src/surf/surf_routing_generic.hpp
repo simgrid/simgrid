@@ -11,9 +11,10 @@
 #ifndef SURF_ROUTING_GENERIC_HPP_
 #define SURF_ROUTING_GENERIC_HPP_
 
-class XBT_PRIVATE AsGeneric;
+namespace simgrid {
+namespace surf {
 
-void generic_free_route(sg_platf_route_cbarg_t route);
+class XBT_PRIVATE AsGeneric;
 
 class XBT_PRIVATE AsGeneric : public AsNone {
 public:
@@ -41,5 +42,8 @@ public:
   virtual As *processingUnitsExist(char *element);
   virtual void srcDstCheck(RoutingEdge *src, RoutingEdge *dst);
 };
+
+}
+}
 
 #endif /* SURF_ROUTING_GENERIC_HPP_ */

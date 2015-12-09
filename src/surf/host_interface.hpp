@@ -18,6 +18,9 @@
  * Classes *
  ***********/
 
+namespace simgrid {
+namespace surf {
+
 class XBT_PRIVATE HostModel;
 class XBT_PRIVATE Host;
 class XBT_PRIVATE HostAction;
@@ -46,15 +49,22 @@ XBT_PUBLIC_DATA(surf_callback(void, Host*, e_surf_resource_state_t, e_surf_resou
  */
 XBT_PUBLIC_DATA(surf_callback(void, HostAction*, e_surf_action_state_t, e_surf_action_state_t)) hostActionStateChangedCallbacks;
 
+}
+}
+
 /*********
  * Tools *
  *********/
-XBT_PUBLIC_DATA(HostModel*) surf_host_model;
+XBT_PUBLIC_DATA(simgrid::surf::HostModel*) surf_host_model;
 XBT_PUBLIC(void) host_add_traces();
 
 /*********
  * Model *
  *********/
+
+namespace simgrid {
+namespace surf {
+
 /** @ingroup SURF_host_interface
  * @brief SURF Host model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
@@ -84,7 +94,7 @@ public:
  * @brief SURF Host interface class
  * @details An host represents a machine with a aggregation of a Cpu, a Link and a Storage
  */
-class Host : public Resource {
+class Host : public simgrid::surf::Resource {
 public:
   /**
    * @brief Host constructor
@@ -96,7 +106,7 @@ public:
    * @param netElm The RoutingEdge associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  Host(Model *model, const char *name, xbt_dict_t props,
+  Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 		      xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu);
 
   /**
@@ -110,7 +120,7 @@ public:
    * @param netElm The RoutingEdge associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  Host(Model *model, const char *name, xbt_dict_t props,
+  Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
       lmm_constraint_t constraint, xbt_dynar_t storage, RoutingEdge *netElm,
       Cpu *cpu);
 
@@ -145,7 +155,7 @@ public:
   virtual Action *sleep(double duration)=0;
 
   /** @brief Return the storage of corresponding mount point */
-  virtual Storage *findStorageOnMountList(const char* storage);
+  virtual simgrid::surf::Storage *findStorageOnMountList(const char* storage);
 
   /** @brief Get the xbt_dict_t of mount_point: Storage */
   virtual xbt_dict_t getMountedStorageList();
@@ -285,7 +295,7 @@ public:
    * @param cost The cost of this HostAction in [TODO]
    * @param failed [description]
    */
-  HostAction(Model *model, double cost, bool failed)
+  HostAction(simgrid::surf::Model *model, double cost, bool failed)
   : Action(model, cost, failed) {}
 
   /**
@@ -296,11 +306,13 @@ public:
    * @param failed [description]
    * @param var The lmm variable associated to this StorageAction if it is part of a LMM component
    */
-  HostAction(Model *model, double cost, bool failed, lmm_variable_t var)
+  HostAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {}
 
   void setState(e_surf_action_state_t state);
 };
 
+}
+}
 
 #endif /* SURF_Host_INTERFACE_HPP_ */

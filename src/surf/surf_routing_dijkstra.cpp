@@ -36,16 +36,17 @@ static void graph_edge_data_free(void *e) // FIXME: useless code duplication
 }
 
 AS_t model_dijkstra_create(void){
-  return new AsDijkstra(0);
+  return new simgrid::surf::AsDijkstra(0);
 }
 
 AS_t model_dijkstracache_create(void){
-  return new AsDijkstra(1);
+  return new simgrid::surf::AsDijkstra(1);
 }
 
 void model_dijkstra_both_end(AS_t as)
 {
-  AsDijkstra *THIS_AS = static_cast<AsDijkstra*>(as);
+  simgrid::surf::AsDijkstra *THIS_AS
+    = static_cast<simgrid::surf::AsDijkstra*>(as);
   xbt_node_t node = NULL;
   unsigned int cursor2;
   xbt_dynar_t nodes = NULL;
@@ -73,6 +74,9 @@ void model_dijkstra_both_end(AS_t as)
 }
 
 /* Utility functions */
+
+namespace simgrid {
+namespace surf {
 
 xbt_node_t AsDijkstra::routeGraphNewNode(int id, int graph_id)
 {
@@ -527,4 +531,7 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
     newRoute(dst_net_elm->getId(), src_net_elm->getId(), link_route_back);
   }
   xbt_dynar_free(&route->link_list);
+}
+
+}
 }

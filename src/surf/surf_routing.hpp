@@ -14,10 +14,8 @@
 
 XBT_PUBLIC(void) routing_model_create( void *loopback);
 
-/* ************************************************************************** */
-/* ************************* GRAPH EXPORTING FUNCTIONS ********************** */
-XBT_PRIVATE xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_dict_t nodes);
-XBT_PRIVATE xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges);
+namespace simgrid {
+namespace surf {
 
 /***********
  * Classes *
@@ -32,7 +30,7 @@ class RoutingPlatf;
  * @brief A routing edge
  * @details [long description]
  */
-struct RoutingEdge {
+class RoutingEdge {
 public:
   virtual ~RoutingEdge(){};
   virtual int getId()=0;
@@ -82,17 +80,21 @@ public:
    * @param into [description]
    * @param latency [description]
    */
-  virtual void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t into, double *latency)=0;
+  virtual void getRouteAndLatency(
+    RoutingEdge *src, RoutingEdge *dst,
+    sg_platf_route_cbarg_t into, double *latency)=0;
   virtual xbt_dynar_t getOneLinkRoutes()=0;
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
-  virtual sg_platf_route_cbarg_t getBypassRoute(RoutingEdge *src, RoutingEdge *dst, double *lat)=0;
+  virtual sg_platf_route_cbarg_t getBypassRoute(
+    RoutingEdge *src, RoutingEdge *dst,
+    double *lat)=0;
 
   /* The parser calls the following functions to inform the routing models
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
   virtual int parsePU(RoutingEdge *elm)=0; /* A host or a router, whatever */
-  virtual int parseAS( RoutingEdge *elm)=0;
+  virtual int parseAS(RoutingEdge *elm)=0;
   virtual void parseRoute(sg_platf_route_cbarg_t route)=0;
   virtual void parseASroute(sg_platf_route_cbarg_t route)=0;
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
@@ -163,5 +165,8 @@ public:
 
 XBT_PUBLIC_DATA(surf_callback(void, RoutingEdge*)) routingEdgeCreatedCallbacks;
 XBT_PUBLIC_DATA(surf_callback(void, As*)) asCreatedCallbacks;
+
+}
+}
 
 #endif /* NETWORK_ROUTING_HPP_ */

@@ -15,6 +15,9 @@
 #ifndef HOST_L07_HPP_
 #define HOST_L07_HPP_
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -180,5 +183,8 @@ public:
   double m_latency;
   double m_rate;
 };
+
+}
+}
 
 #endif /* HOST_L07_HPP_ */

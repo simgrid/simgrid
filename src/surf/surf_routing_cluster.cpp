@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_routing_cluster.hpp"
+#include "surf_routing_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
 
@@ -14,8 +15,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 
 AS_t model_cluster_create(void)
 {
-  return new AsCluster();
+  return new simgrid::surf::AsCluster();
 }
+
+namespace simgrid {
+namespace surf {
 
 /* Creation routing model functions */
 AsCluster::AsCluster() : AsNone()
@@ -61,7 +65,8 @@ void AsCluster::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_
   }
 
   if (p_backbone) {
-    xbt_dynar_push_as(route->link_list, void *, static_cast<Resource*>(p_backbone));
+    xbt_dynar_push_as(route->link_list, void *,
+      static_cast<simgrid::surf::Resource*>(p_backbone));
     if (lat)
       *lat += p_backbone->getLatency();
   }
@@ -113,7 +118,8 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       if (info.link_up) {     // link up
 
-        const char *link_name = static_cast<Resource*>(info.link_up)->getName();
+        const char *link_name = static_cast<simgrid::surf::Resource*>(
+          info.link_up)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -126,7 +132,8 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       if (info.link_down) {    // link down
-        const char *link_name = static_cast<Resource*>(info.link_down)->getName();
+        const char *link_name = static_cast<simgrid::surf::Resource*>(
+          info.link_down)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -181,3 +188,5 @@ int AsCluster::parseAS(RoutingEdge *elm) {
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
+}
+}

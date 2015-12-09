@@ -15,13 +15,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 
 AS_t model_floyd_create(void)
 {
-  return new AsFloyd();
+  return new simgrid::surf::AsFloyd();
 }
 
 void model_floyd_end(AS_t current_routing)
 {
-  static_cast<AsFloyd*>(current_routing)->end();
+  static_cast<simgrid::surf::AsFloyd*>(current_routing)->end();
 }
+
+namespace simgrid {
+namespace surf {
 
 AsFloyd::AsFloyd(): AsGeneric() {
   p_predecessorTable = NULL;
@@ -318,4 +321,7 @@ void AsFloyd::end(){
       }
     }
   }
+}
+
+}
 }

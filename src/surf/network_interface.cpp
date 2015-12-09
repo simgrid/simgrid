@@ -18,7 +18,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
 /*********
  * C API *
  *********/
-SG_BEGIN_DECL()
+
+extern "C" {
+
 const char* sg_link_name(Link *link) {
   return link->getName();
 }
@@ -50,10 +52,15 @@ Link** sg_link_list(void) {
 void sg_link_exit(void) {
 	Link::linksExit();
 }
-SG_END_DECL()
+
+}
+
 /*****************
  * List of links *
  *****************/
+
+namespace simgrid {
+namespace surf {
 
 boost::unordered_map<std::string,Link *> *Link::links = new boost::unordered_map<std::string,Link *>();
 Link *Link::byName(const char* name) {
@@ -83,15 +90,19 @@ void Link::linksExit() {
 		delete (kv.second);
 	delete links;
 }
+
 /*************
  * Callbacks *
  *************/
 
-surf_callback(void, Link*) networkLinkCreatedCallbacks;
-surf_callback(void, Link*) networkLinkDestructedCallbacks;
-surf_callback(void, Link*, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
-surf_callback(void, NetworkAction*, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
-surf_callback(void, NetworkAction*, RoutingEdge *src, RoutingEdge *dst, double size, double rate) networkCommunicateCallbacks;
+surf_callback(void, simgrid::surf::Link*) networkLinkCreatedCallbacks;
+surf_callback(void, simgrid::surf::Link*) networkLinkDestructedCallbacks;
+surf_callback(void, simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
+surf_callback(void, simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
+surf_callback(void, simgrid::surf::NetworkAction*, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate) networkCommunicateCallbacks;
+
+}
+}
 
 void netlink_parse_init(sg_platf_link_cbarg_t link){
   if (link->policy == SURF_LINK_FULLDUPLEX) {
@@ -133,7 +144,10 @@ void net_add_traces(){
  * Model *
  *********/
 
-NetworkModel *surf_network_model = NULL;
+simgrid::surf::NetworkModel *surf_network_model = NULL;
+
+namespace simgrid {
+namespace surf {
 
 double NetworkModel::latencyFactor(double /*size*/) {
   return sg_latency_factor;
@@ -179,7 +193,7 @@ double NetworkModel::shareResourcesFull(double now)
  * Resource *
  ************/
 
-Link::Link(NetworkModel *model, const char *name, xbt_dict_t props)
+Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props)
 : Resource(model, name, props)
 {
   links->insert({name, this});
@@ -187,7 +201,7 @@ Link::Link(NetworkModel *model, const char *name, xbt_dict_t props)
   XBT_DEBUG("Create link '%s'",name);
 }
 
-Link::Link(NetworkModel *model, const char *name, xbt_dict_t props,
+Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
 		                 lmm_constraint_t constraint,
 	                     tmgr_history_t history,
 	                     tmgr_trace_t state_trace)
@@ -232,8 +246,6 @@ void Link::setState(e_surf_resource_state_t state){
   surf_callback_emit(networkLinkStateChangedCallbacks, this, old, state);
 }
 
-
-
 /**********
  * Action *
  **********/
@@ -242,6 +254,9 @@ void NetworkAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
   surf_callback_emit(networkActionStateChangedCallbacks, this, old, state);
+}
+
+}
 }
 
 #endif /* NETWORK_INTERFACE_CPP_ */

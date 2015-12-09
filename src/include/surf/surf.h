@@ -14,6 +14,7 @@
 #include "xbt/misc.h"
 #include "xbt/config.h"
 #include "src/portable.h"
+#include "surf/surf_routing.h"
 #include "surf/datatypes.h"
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
@@ -42,6 +43,10 @@ typedef enum {
 } e_surf_network_element_type_t;
 
 #ifdef __cplusplus
+
+namespace simgrid {
+namespace surf {
+
 class Model;
 class CpuModel;
 class HostModel;
@@ -58,23 +63,44 @@ class ActionLmm;
 class StorageActionLmm;
 class As;
 class RoutingPlatf;
+
+}
+}
+
+typedef simgrid::surf::Model surf_Model;
+typedef simgrid::surf::CpuModel surf_CpuModel;
+typedef simgrid::surf::HostModel surf_HostModel;
+typedef simgrid::surf::VMModel surf_VMModel;
+typedef simgrid::surf::NetworkModel surf_NetworkModel;
+typedef simgrid::surf::StorageModel surf_StorageModel;
+typedef simgrid::surf::Resource surf_Resource;
+typedef simgrid::surf::ResourceLmm surf_ResourceLmm;
+typedef simgrid::surf::Host surf_Host;
+typedef simgrid::surf::HostCLM03 surf_HostCLM03;
+typedef simgrid::surf::NetworkCm02Link surf_NetworkCm02Link;
+typedef simgrid::surf::Action surf_Action;
+typedef simgrid::surf::ActionLmm surf_ActionLmm;
+typedef simgrid::surf::StorageActionLmm surf_StorageActionLmm;
+typedef simgrid::surf::RoutingPlatf surf_RoutingPlatf;
+
 #else
-typedef struct Model Model;
-typedef struct CpuModel CpuModel;
-typedef struct HostModel HostModel;
-typedef struct VMModel VMModel;
-typedef struct NetworkModel NetworkModel;
-typedef struct StorageModel StorageModel;
-typedef struct Resource Resource;
-typedef struct ResourceLmm ResourceLmm;
-typedef struct HostCLM03 HostCLM03;
-typedef struct Host Host;
-typedef struct NetworkCm02Link NetworkCm02Link;
-typedef struct Action Action;
-typedef struct ActionLmm ActionLmm;
-typedef struct StorageActionLmm StorageActionLmm;
-typedef struct As As;
-typedef struct RoutingPlatf RoutingPlatf;
+
+typedef struct surf_Model surf_Model;
+typedef struct surf_CpuModel surf_CpuModel;
+typedef struct surf_HostModel surf_HostModel;
+typedef struct surf_VMModel surf_VMModel;
+typedef struct surf_NetworkModel surf_NetworkModel;
+typedef struct surf_StorageModel surf_StorageModel;
+typedef struct surf_Resource surf_Resource;
+typedef struct surf_ResourceLmm surf_ResourceLmm;
+typedef struct surf_HostCLM03 surf_HostCLM03;
+typedef struct surf_Host surf_Host;
+typedef struct surf_NetworkCm02Link surf_NetworkCm02Link;
+typedef struct surf_Action surf_Action;
+typedef struct surf_ActionLmm surf_ActionLmm;
+typedef struct surf_StorageActionLmm surf_StorageActionLmm;
+typedef struct surf_RoutingPlatf surf_RoutingPlatf;
+
 #endif
 
 /** @ingroup SURF_c_bindings
@@ -83,18 +109,17 @@ typedef struct RoutingPlatf RoutingPlatf;
  *  Generic data structure for a model. The hosts,
  *  the CPUs and the network links are examples of models.
  */
-typedef Model *surf_model_t;
-typedef CpuModel *surf_cpu_model_t;
-typedef HostModel *surf_host_model_t;
-typedef VMModel *surf_vm_model_t;
-
-typedef NetworkModel *surf_network_model_t;
-typedef StorageModel *surf_storage_model_t;
+typedef surf_Model *surf_model_t;
+typedef surf_CpuModel *surf_cpu_model_t;
+typedef surf_HostModel *surf_host_model_t;
+typedef surf_VMModel *surf_vm_model_t;
+typedef surf_NetworkModel *surf_network_model_t;
+typedef surf_StorageModel *surf_storage_model_t;
 
 typedef xbt_dictelm_t surf_resource_t;
-typedef Resource *surf_cpp_resource_t;
-typedef Host *surf_host_t;
-typedef Cpu *surf_cpu_t;
+typedef surf_Resource *surf_cpp_resource_t;
+typedef surf_Host *surf_host_t;
+typedef surf_Cpu *surf_cpu_t;
 
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
@@ -104,10 +129,8 @@ typedef Cpu *surf_cpu_t;
  *
  *  \see e_surf_action_state_t
  */
-typedef Action *surf_action_t;
-
-typedef As *AS_t;
-typedef RoutingPlatf *routing_platf_t;
+typedef surf_Action *surf_action_t;
+typedef surf_RoutingPlatf *routing_platf_t;
 
 typedef struct surf_file *surf_file_t;
 
@@ -1166,9 +1189,9 @@ void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *fi
 /********** Routing **********/
 void routing_AS_begin(sg_platf_AS_cbarg_t AS);
 void routing_AS_end(void);
-RoutingEdge *routing_add_host(As* as, sg_platf_host_cbarg_t host);
+surf_RoutingEdge* routing_add_host(surf_As* as, sg_platf_host_cbarg_t host);
 void routing_cluster_add_backbone(void* bb);
-As* routing_get_current();
+surf_As* routing_get_current();
 
 SG_END_DECL()
 #endif                          /* _SURF_SURF_H */

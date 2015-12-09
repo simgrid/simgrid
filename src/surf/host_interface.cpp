@@ -16,24 +16,28 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf,
                                 "Logging specific to the SURF host module");
 
-HostModel *surf_host_model = NULL;
-
-/*************
- * Callbacks *
- *************/
-
-surf_callback(void, Host*) hostCreatedCallbacks;
-surf_callback(void, Host*) hostDestructedCallbacks;
-surf_callback(void, Host*, e_surf_resource_state_t, e_surf_resource_state_t) hostStateChangedCallbacks;
-surf_callback(void, HostAction*, e_surf_action_state_t, e_surf_action_state_t) hostActionStateChangedCallbacks;
+simgrid::surf::HostModel *surf_host_model = NULL;
 
 void host_add_traces(){
   surf_host_model->addTraces();
 }
 
+/*************
+ * Callbacks *
+ *************/
+
+namespace simgrid {
+namespace surf {
+  
+surf_callback(void, simgrid::surf::Host*) hostCreatedCallbacks;
+surf_callback(void, simgrid::surf::Host*) hostDestructedCallbacks;
+surf_callback(void, simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t) hostStateChangedCallbacks;
+surf_callback(void, simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t) hostActionStateChangedCallbacks;
+
 /*********
  * Model *
  *********/
+
 /* Each VM has a dummy CPU action on the PM layer. This CPU action works as the
  * constraint (capacity) of the VM in the PM layer. If the VM does not have any
  * active task, the dummy CPU action must be deactivated, so that the VM does
@@ -72,7 +76,7 @@ void HostModel::adjustWeightOfDummyCpuActions()
 /************
  * Resource *
  ************/
-Host::Host(Model *model, const char *name, xbt_dict_t props,
+Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 		                 xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
  : Resource(model, name, props)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
@@ -80,7 +84,7 @@ Host::Host(Model *model, const char *name, xbt_dict_t props,
   p_params.ramsize = 0;
 }
 
-Host::Host(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
+Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
 				         xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
  : Resource(model, name, props, constraint)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
@@ -104,9 +108,9 @@ xbt_dict_t Host::getProperties()
   return p_cpu->getProperties();
 }
 
-Storage *Host::findStorageOnMountList(const char* mount)
+simgrid::surf::Storage *Host::findStorageOnMountList(const char* mount)
 {
-  Storage *st = NULL;
+  simgrid::surf::Storage *st = NULL;
   s_mount_t mnt;
   unsigned int cursor;
 
@@ -115,7 +119,7 @@ Storage *Host::findStorageOnMountList(const char* mount)
   {
     XBT_DEBUG("See '%s'",mnt.name);
     if(!strcmp(mount,mnt.name)){
-      st = static_cast<Storage*>(mnt.storage);
+      st = static_cast<simgrid::surf::Storage*>(mnt.storage);
       break;
     }
   }
@@ -131,7 +135,7 @@ xbt_dict_t Host::getMountedStorageList()
   char *storage_name = NULL;
 
   xbt_dynar_foreach(p_storage,i,mnt){
-    storage_name = (char *)static_cast<Storage*>(mnt.storage)->getName();
+    storage_name = (char *)static_cast<simgrid::surf::Storage*>(mnt.storage)->getName();
     xbt_dict_set(storage_list,mnt.name,storage_name,NULL);
   }
   return storage_list;
@@ -145,7 +149,7 @@ xbt_dynar_t Host::getAttachedStorageList()
   xbt_dynar_t result = xbt_dynar_new(sizeof(void*), NULL);
   xbt_lib_foreach(storage_lib, cursor, key, data) {
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
-	  Storage *storage = static_cast<Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
+	  simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
 	  if(!strcmp((const char*)storage->p_attach,this->getName())){
 	    xbt_dynar_push_as(result, void *, (void*)storage->getName());
 	  }
@@ -156,7 +160,7 @@ xbt_dynar_t Host::getAttachedStorageList()
 
 Action *Host::open(const char* fullpath) {
 
-  Storage *st = NULL;
+  simgrid::surf::Storage *st = NULL;
   s_mount_t mnt;
   unsigned int cursor;
   size_t longest_prefix_length = 0;
@@ -175,7 +179,7 @@ Action *Host::open(const char* fullpath) {
     if(!strcmp(file_mount_name,mnt.name) && strlen(mnt.name)>longest_prefix_length)
     {/* The current mount name is found in the full path and is bigger than the previous*/
       longest_prefix_length = strlen(mnt.name);
-      st = static_cast<Storage*>(mnt.storage);
+      st = static_cast<simgrid::surf::Storage*>(mnt.storage);
     }
     free(file_mount_name);
   }
@@ -199,19 +203,19 @@ Action *Host::open(const char* fullpath) {
 }
 
 Action *Host::close(surf_file_t fd) {
-  Storage *st = findStorageOnMountList(fd->mount);
+  simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("CLOSE %s on disk '%s'",fd->name, st->getName());
   return st->close(fd);
 }
 
 Action *Host::read(surf_file_t fd, sg_size_t size) {
-  Storage *st = findStorageOnMountList(fd->mount);
+  simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("READ %s on disk '%s'",fd->name, st->getName());
   return st->read(fd, size);
 }
 
 Action *Host::write(surf_file_t fd, sg_size_t size) {
-  Storage *st = findStorageOnMountList(fd->mount);
+  simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("WRITE %s on disk '%s'",fd->name, st->getName());
   return st->write(fd, size);
 }
@@ -222,7 +226,7 @@ int Host::unlink(surf_file_t fd) {
     return -1;
   } else {
 
-    Storage *st = findStorageOnMountList(fd->mount);
+    simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
     /* Check if the file is on this storage */
     if (!xbt_dict_get_or_null(st->p_content, fd->name)){
       XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name,
@@ -249,7 +253,7 @@ sg_size_t Host::getSize(surf_file_t fd){
 
 xbt_dynar_t Host::getInfo( surf_file_t fd)
 {
-  Storage *st = findStorageOnMountList(fd->mount);
+  simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
   sg_size_t *psize = xbt_new(sg_size_t, 1);
   *psize = fd->size;
   xbt_dynar_t info = xbt_dynar_new(sizeof(void*), NULL);
@@ -315,14 +319,14 @@ int Host::fileMove(surf_file_t fd, const char* fullpath){
 
 xbt_dynar_t Host::getVms()
 {
-  xbt_dynar_t dyn = xbt_dynar_new(sizeof(VirtualMachine*), NULL);
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(simgrid::surf::VirtualMachine*), NULL);
 
   /* iterate for all virtual machines */
-  for (VMModel::vm_list_t::iterator iter =
-         VMModel::ws_vms.begin();
-       iter !=  VMModel::ws_vms.end(); ++iter) {
+  for (simgrid::surf::VMModel::vm_list_t::iterator iter =
+         simgrid::surf::VMModel::ws_vms.begin();
+       iter !=  simgrid::surf::VMModel::ws_vms.end(); ++iter) {
 
-    VirtualMachine *ws_vm = &*iter;
+    simgrid::surf::VirtualMachine *ws_vm = &*iter;
     if (this == ws_vm->p_subWs)
       xbt_dynar_push(dyn, &ws_vm);
   }
@@ -349,4 +353,7 @@ void HostAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
   surf_callback_emit(hostActionStateChangedCallbacks, this, old, state);
+}
+
+}
 }

@@ -35,7 +35,13 @@ xbt_dynar_t surf_path = NULL;
 xbt_dynar_t host_that_restart = NULL;
 xbt_dict_t watched_hosts_lib;
 
+namespace simgrid {
+namespace surf {
+
 surf_callback(void, void) surfExitCallbacks;
+
+}
+}
 
 s_surf_model_description_t surf_plugin_description[] = {
     {"Energy", "Cpu energy consumption.", sg_energy_plugin_init},
@@ -265,12 +271,12 @@ static XBT_INLINE void routing_asr_prop_free(void *p)
 
 static XBT_INLINE void surf_host_free(void *r)
 {
-  delete static_cast<Host*>(r);
+  delete static_cast<simgrid::surf::Host*>(r);
 }
 
 static XBT_INLINE void surf_storage_free(void *r)
 {
-  delete static_cast<Storage*>(r);
+  delete static_cast<simgrid::surf::Storage*>(r);
 }
 
 void sg_version_check(int lib_version_major,int lib_version_minor,int lib_version_patch) {
@@ -318,9 +324,9 @@ void surf_init(int *argc, char **argv)
 
   xbt_init(argc, argv);
   if (!all_existing_models)
-    all_existing_models = xbt_dynar_new(sizeof(Model*), NULL);
+    all_existing_models = xbt_dynar_new(sizeof(simgrid::surf::Model*), NULL);
   if (!model_list_invoke)
-    model_list_invoke = xbt_dynar_new(sizeof(Model*), NULL);
+    model_list_invoke = xbt_dynar_new(sizeof(simgrid::surf::Model*), NULL);
   if (!history)
     history = tmgr_history_new();
 
@@ -336,7 +342,7 @@ void surf_init(int *argc, char **argv)
 void surf_exit(void)
 {
   unsigned int iter;
-  Model *model = NULL;
+  simgrid::surf::Model *model = NULL;
 
   TRACE_end();                  /* Just in case it was not called by the upper
                                  * layer (or there is no upper layer) */
@@ -360,7 +366,7 @@ void surf_exit(void)
   xbt_dynar_free(&model_list_invoke);
   routing_exit();
 
-  surf_callback_emit(surfExitCallbacks);
+  surf_callback_emit(simgrid::surf::surfExitCallbacks);
 
   if (maxmin_system) {
     lmm_system_free(maxmin_system);
@@ -385,6 +391,9 @@ void surf_exit(void)
 /*********
  * Model *
  *********/
+
+namespace simgrid {
+namespace surf {
 
 Model::Model()
   : p_maxminSystem(NULL)
@@ -574,9 +583,15 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
   THROW_UNIMPLEMENTED;
 }
 
+}
+}
+
 /************
  * Resource *
  ************/
+
+namespace simgrid {
+namespace surf {
 
 Resource::Resource()
 : p_name(NULL), p_properties(NULL), p_model(NULL)
@@ -654,6 +669,9 @@ lmm_constraint_t Resource::getConstraint() {
   return p_constraint;
 }
 
+}
+}
+
 /**********
  * Action *
  **********/
@@ -667,7 +685,15 @@ const char *surf_action_state_names[6] = {
   "SURF_ACTION_NOT_IN_THE_SYSTEM"
 };
 
-void Action::initialize(Model *model, double cost, bool failed,
+/* added to manage the communication action's heap */
+void surf_action_lmm_update_index_heap(void *action, int i) {
+  static_cast<simgrid::surf::Action*>(action)->updateIndexHeap(i);
+}
+
+namespace simgrid {
+namespace surf {
+
+void Action::initialize(simgrid::surf::Model *model, double cost, bool failed,
                         lmm_variable_t var)
 {
   m_priority = 1.0;
@@ -695,12 +721,12 @@ void Action::initialize(Model *model, double cost, bool failed,
   p_stateSet->push_back(*this);
 }
 
-Action::Action(Model *model, double cost, bool failed)
+Action::Action(simgrid::surf::Model *model, double cost, bool failed)
 {
   initialize(model, cost, failed);
 }
 
-Action::Action(Model *model, double cost, bool failed, lmm_variable_t var)
+Action::Action(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
 {
   initialize(model, cost, failed, var);
 }
@@ -899,11 +925,6 @@ void Action::heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat)
   }
 }
 
-/* added to manage the communication action's heap */
-void surf_action_lmm_update_index_heap(void *action, int i) {
-  static_cast<Action*>(action)->updateIndexHeap(i);
-}
-
 void Action::updateIndexHeap(int i) {
   m_indexHeap = i;
 }
@@ -950,7 +971,8 @@ void Action::updateRemainingLazy(double now)
     double_update(&m_remains, m_lastValue * delta, sg_surf_precision*sg_maxmin_precision);
 
     if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
-      Resource *cpu = static_cast<Resource*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
+      simgrid::surf::Resource *cpu = static_cast<simgrid::surf::Resource*>(
+        lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
       TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
     }
     XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);
@@ -977,4 +999,7 @@ void Action::updateRemainingLazy(double now)
 
   m_lastUpdate = now;
   m_lastValue = lmm_variable_getvalue(getVariable());
+}
+
+}
 }

@@ -50,21 +50,30 @@ and then use the following function to retrieve the consumption of a given host:
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf,
                                 "Logging specific to the SURF energy plugin");
 
-std::map<Host*, HostEnergy*> *surf_energy=NULL;
+namespace simgrid {
+namespace energy {
 
-static void energyHostCreatedCallback(Host *host){
+std::map<simgrid::surf::Host*, HostEnergy*> *surf_energy = NULL;
+
+}
+}
+
+using simgrid::energy::HostEnergy;
+using simgrid::energy::surf_energy;
+
+static void energyHostCreatedCallback(simgrid::surf::Host *host){
   (*surf_energy)[host] = new HostEnergy(host);
 }
 
-static void energyVMCreatedCallback(VirtualMachine* vm) {
-  std::map<Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(vm->p_subWs);
+static void energyVMCreatedCallback(simgrid::surf::VirtualMachine* vm) {
+  std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(vm->p_subWs);
   xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
   (*surf_energy)[vm] = host_energy_it->second;
   host_energy_it->second->ref(); // protect the HostEnergy from getting deleted too early
 }
 
 /* Computes the consumption so far.  Called lazily on need. */
-static void update_consumption(Host *host, HostEnergy *host_energy) {
+static void update_consumption(simgrid::surf::Host *host, HostEnergy *host_energy) {
 	double cpu_load = lmm_constraint_get_usage(host->p_cpu->getConstraint()) / host->p_cpu->m_speedPeak;
 	double start_time = host_energy->last_updated;
 	double finish_time = surf_get_clock();
@@ -86,8 +95,8 @@ static void update_consumption(Host *host, HostEnergy *host_energy) {
   		  start_time, finish_time, host->p_cpu->m_speedPeak, previous_energy, energy_this_step);
 }
 
-static void energyHostDestructedCallback(Host *host){
-  std::map<Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(host);
+static void energyHostDestructedCallback(simgrid::surf::Host *host){
+  std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(host);
   xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
 
   HostEnergy *host_energy = host_energy_it->second;
@@ -99,9 +108,11 @@ static void energyHostDestructedCallback(Host *host){
   surf_energy->erase(host_energy_it);
 }
 
-static void energyCpuActionStateChangedCallback(CpuAction *action, e_surf_action_state_t old, e_surf_action_state_t cur){
+static void energyCpuActionStateChangedCallback(
+    simgrid::surf::CpuAction *action, e_surf_action_state_t old, e_surf_action_state_t cur)
+{
   const char *name = getActionCpu(action)->getName();
-  Host *host = static_cast<Host*>(surf_host_resource_priv(sg_host_by_name(name)));
+  simgrid::surf::Host *host = static_cast<simgrid::surf::Host*>(surf_host_resource_priv(sg_host_by_name(name)));
 
   HostEnergy *host_energy = (*surf_energy)[host];
 
@@ -109,7 +120,8 @@ static void energyCpuActionStateChangedCallback(CpuAction *action, e_surf_action
 	  update_consumption(host, host_energy);
 }
 
-static void energyStateChangedCallback(Host *host, e_surf_resource_state_t oldState, e_surf_resource_state_t newState){
+static void energyStateChangedCallback(simgrid::surf::Host *host, e_surf_resource_state_t oldState, e_surf_resource_state_t newState)
+{
   HostEnergy *host_energy = (*surf_energy)[host];
 
   if(host_energy->last_updated < surf_get_clock())
@@ -127,21 +139,25 @@ static void sg_energy_plugin_exit()
  * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before #MSG_init().
  */
 void sg_energy_plugin_init() {
-  if (surf_energy == NULL) {
-    surf_energy = new std::map<Host*, HostEnergy*>();
-    surf_callback_connect(hostCreatedCallbacks, energyHostCreatedCallback);
-    surf_callback_connect(VMCreatedCallbacks, energyVMCreatedCallback);
-    surf_callback_connect(hostDestructedCallbacks, energyHostDestructedCallback);
-    surf_callback_connect(cpuActionStateChangedCallbacks, energyCpuActionStateChangedCallback);
-    surf_callback_connect(surfExitCallbacks, sg_energy_plugin_exit);
-    surf_callback_connect(hostStateChangedCallbacks, energyStateChangedCallback);
+  if (simgrid::energy::surf_energy == NULL) {
+    simgrid::energy::surf_energy =
+      new std::map<simgrid::surf::Host*, simgrid::energy::HostEnergy*>();
+    surf_callback_connect(simgrid::surf::hostCreatedCallbacks, energyHostCreatedCallback);
+    surf_callback_connect(simgrid::surf::VMCreatedCallbacks, energyVMCreatedCallback);
+    surf_callback_connect(simgrid::surf::hostDestructedCallbacks, energyHostDestructedCallback);
+    surf_callback_connect(simgrid::surf::cpuActionStateChangedCallbacks, energyCpuActionStateChangedCallback);
+    surf_callback_connect(simgrid::surf::surfExitCallbacks, sg_energy_plugin_exit);
+    surf_callback_connect(simgrid::surf::hostStateChangedCallbacks, energyStateChangedCallback);
   }
 }
+
+namespace simgrid {
+namespace energy {
 
 /**
  *
  */
-HostEnergy::HostEnergy(Host *ptr)
+HostEnergy::HostEnergy(simgrid::surf::Host *ptr)
 {
   host = ptr;
   total_energy = 0;
@@ -170,14 +186,14 @@ HostEnergy::~HostEnergy(){
 double HostEnergy::getWattMinAt(int pstate) {
   xbt_dynar_t power_range_list = power_range_watts_list;
   xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
-  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
+  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<simgrid::surf::CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
   double min_power = xbt_dynar_get_as(current_power_values, 0, double);
   return min_power;
 }
 double HostEnergy::getWattMaxAt(int pstate) {
   xbt_dynar_t power_range_list = power_range_watts_list;
   xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
-  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
+  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<simgrid::surf::CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
   double max_power = xbt_dynar_get_as(current_power_values, 1, double);
   return max_power;
 }
@@ -192,7 +208,9 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 	xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
 
     /* retrieve the power values associated with the current pstate */
-    xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
+    xbt_dynar_t current_power_values = xbt_dynar_get_as( power_range_list,
+      static_cast<simgrid::surf::CpuCas01*>(host->p_cpu)->getPState(),
+      xbt_dynar_t);
 
     /* min_power corresponds to the idle power (cpu load = 0) */
     /* max_power is the power consumed at 100% cpu load       */
@@ -260,4 +278,7 @@ xbt_dynar_t HostEnergy::getWattsRangeList()
 	}
 	xbt_dynar_free(&all_power_values);
 	return power_range_list;
+}
+
+}
 }

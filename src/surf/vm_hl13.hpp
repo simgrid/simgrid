@@ -15,6 +15,9 @@
 #define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
                           // It corresponds to the cost of a VM running no tasks.
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -77,5 +80,8 @@ public:
 /**********
  * Action *
  **********/
+
+}
+}
 
 #endif /* SURF_VM_HPP_ */

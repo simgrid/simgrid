@@ -31,7 +31,7 @@ static XBT_INLINE void routing_storage_type_free(void *r)
 static XBT_INLINE void surf_storage_resource_free(void *r)
 {
   // specific to storage
-  Storage *storage = static_cast<Storage*>(r);
+  simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(r);
   // generic resource
   delete storage;
 }
@@ -56,9 +56,12 @@ void storage_register_callbacks()
 
 void surf_storage_model_init_default(void)
 {
-  surf_storage_model = new StorageN11Model();
+  surf_storage_model = new simgrid::surf::StorageN11Model();
   xbt_dynar_push(all_existing_models, &surf_storage_model);
 }
+
+namespace simgrid {
+namespace surf {
 
 StorageN11Model::StorageN11Model() : StorageModel() {
   Action *action = NULL;
@@ -394,3 +397,5 @@ void StorageN11Action::setPriority(double /*priority*/)
   THROW_UNIMPLEMENTED;
 }
 
+}
+}

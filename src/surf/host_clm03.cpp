@@ -26,12 +26,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 
 void surf_host_model_init_current_default(void)
 {
-  surf_host_model = new HostCLM03Model();
+  surf_host_model = new simgrid::surf::HostCLM03Model();
   xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "yes");
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 
-  Model *model = surf_host_model;
+  simgrid::surf::Model *model = surf_host_model;
   xbt_dynar_push(all_existing_models, &model);
 }
 
@@ -40,12 +40,15 @@ void surf_host_model_init_compound()
   xbt_assert(surf_cpu_model_pm, "No CPU model defined yet!");
   xbt_assert(surf_network_model, "No network model defined yet!");
 
-  surf_host_model = new HostCLM03Model();
+  surf_host_model = new simgrid::surf::HostCLM03Model();
   xbt_dynar_push(all_existing_models, &surf_host_model);
 }
 
+namespace simgrid {
+namespace surf {
+
 Host *HostCLM03Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu){
-  Host *host = new HostCLM03(surf_host_model, name, NULL,
+  Host *host = new simgrid::surf::HostCLM03(surf_host_model, name, NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  netElm, cpu);
   surf_callback_emit(hostCreatedCallbacks, host);
@@ -149,3 +152,6 @@ e_surf_resource_state_t HostCLM03::getState() {
 /**********
  * Action *
  **********/
+
+}
+}

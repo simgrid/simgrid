@@ -15,8 +15,15 @@
 /***********
  * Classes *
  ***********/
+
+namespace simgrid {
+namespace surf {
+
 class XBT_PRIVATE NetworkNS3Model;
 class XBT_PRIVATE NetworkNS3Action;
+
+}
+}
 
 /*********
  * Tools *
@@ -27,6 +34,9 @@ XBT_PRIVATE void net_define_callbacks(void);
 /*********
  * Model *
  *********/
+
+namespace simgrid {
+namespace surf {
 
 class NetworkNS3Model : public NetworkModel {
 public:
@@ -95,5 +105,7 @@ void resume();
   RoutingEdge *p_dstElm;
 };
 
+}
+}
 
 #endif /* NETWORK_NS3_HPP_ */

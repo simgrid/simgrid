@@ -8,11 +8,6 @@
 
 package org.simgrid.surf;
 
-/**
-  * A resource used by a model (e.g., a cpu, a network link)
-  * @see Model
-  * @see Action
-  */
 public class Resource {
   private long swigCPtr;
   protected boolean swigCMemOwn;
@@ -40,65 +35,33 @@ public class Resource {
     }
   }
 
-  
-  /**
-    * @return The name of the resource
-    */
   public String getName() {
     return SurfJNI.Resource_getName(swigCPtr, this);
   }
 
-  
-  /**
-    * @return True if the Resource is used
-    */
   public boolean isUsed() {
     return SurfJNI.Resource_isUsed(swigCPtr, this);
   }
 
-  
-  /**
-    * @return The model associated to this Resource
-    */
   public Model getModel() {
     long cPtr = SurfJNI.Resource_getModel(swigCPtr, this);
     return (cPtr == 0) ? null : new Model(cPtr, false);
   }
 
-  
-  /**
-    * @return The state of the resource
-    * @see ResourceState
-    */
   public ResourceState getState() {
     return ResourceState.swigToEnum(SurfJNI.Resource_getState(swigCPtr, this));
   }
 
-  
-  /**
-    * @return The constraint associatied (if using LMM)
-    */
   public LmmConstraint getConstraint() {
     long cPtr = SurfJNI.Resource_getConstraint(swigCPtr, this);
     return (cPtr == 0) ? null : new LmmConstraint(cPtr, false);
   }
 
-  
-  /**
-    * @return The XbtDict of properties associated to this Resource
-    */
   public XbtDict getProperties() {
     long cPtr = SurfJNI.Resource_getProperties(swigCPtr, this);
     return (cPtr == 0) ? null : new XbtDict(cPtr, false);
   }
 
-  
-  /**
-    * Update the state of the Resource
-    * @param event_type
-    * @param value
-    * @param date
-    */
   public void updateState(TmgrTraceEvent event_type, double value, double date) {
     SurfJNI.Resource_updateState(swigCPtr, this, TmgrTraceEvent.getCPtr(event_type), event_type, value, date);
   }

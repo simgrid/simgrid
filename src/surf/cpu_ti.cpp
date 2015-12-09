@@ -14,7 +14,14 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu,
                                 "Logging specific to the SURF CPU TRACE INTEGRATION module");
 
-static void cpu_ti_action_update_index_heap(void *action, int i);
+namespace simgrid {
+namespace surf {
+  
+static inline
+void cpu_ti_action_update_index_heap(void *action, int i)
+{
+  ((simgrid::surf::CpuTiAction*)action)->updateIndexHeap(i);
+}
 
 /*********
  * Trace *
@@ -375,13 +382,16 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
   return low;
 }
 
+}
+}
+
 /*************
  * CallBacks *
  *************/
 
 static void cpu_ti_define_callbacks()
 {
-  sg_platf_postparse_add_cb(cpu_add_traces);
+  sg_platf_postparse_add_cb(simgrid::surf::cpu_add_traces);
 }
 
 /*********
@@ -393,15 +403,18 @@ void surf_cpu_model_init_ti()
   xbt_assert(!surf_cpu_model_pm,"CPU model already initialized. This should not happen.");
   xbt_assert(!surf_cpu_model_vm,"CPU model already initialized. This should not happen.");
 
-  surf_cpu_model_pm = new CpuTiModel();
-  surf_cpu_model_vm = new CpuTiModel();
+  surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
+  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
 
   cpu_ti_define_callbacks();
-  Model *model_pm = static_cast<Model*>(surf_cpu_model_pm);
-  Model *model_vm = static_cast<Model*>(surf_cpu_model_vm);
+  simgrid::surf::Model *model_pm = static_cast<simgrid::surf::Model*>(surf_cpu_model_pm);
+  simgrid::surf::Model *model_vm = static_cast<simgrid::surf::Model*>(surf_cpu_model_vm);
   xbt_dynar_push(all_existing_models, &model_pm);
   xbt_dynar_push(all_existing_models, &model_vm);
 }
+
+namespace simgrid {
+namespace surf {
 
 CpuTiModel::CpuTiModel() : CpuModel()
 {
@@ -844,11 +857,6 @@ void CpuTi::modified(bool modified){
  * Action *
  **********/
 
-static void cpu_ti_action_update_index_heap(void *action, int i)
-{
-((CpuTiAction*)action)->updateIndexHeap(i);
-}
-
 CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed,
 		                 CpuTi *cpu)
  : CpuAction(model_, cost, failed)
@@ -963,6 +971,9 @@ double CpuTiAction::getRemains()
   p_cpu->updateRemainingAmount(surf_get_clock());
   XBT_OUT();
   return m_remains;
+}
+
+}
 }
 
 #endif /* SURF_MODEL_CPUTI_H_ */

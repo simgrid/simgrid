@@ -11,6 +11,9 @@
 
 #include "surf_routing_generic.hpp"
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -41,5 +44,7 @@ public:
   //virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
 };
 
+}
+}
 
 #endif /* SURF_ROUTING_FULL_HPP_ */

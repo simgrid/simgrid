@@ -11,16 +11,16 @@
 #include "src/surf/maxmin_private.hpp"
 
 typedef xbt_dynar_t LinkDynar;
-typedef ActionList *ActionArrayPtr;
+typedef simgrid::surf::ActionList *ActionArrayPtr;
 
 double getClock();
 
 void clean();
 
-CpuModel *getCpuModel();
-void setCpuModel(CpuModel *cpuModel);
+simgrid::surf::CpuModel *getCpuModel();
+void setCpuModel(simgrid::surf::CpuModel *cpuModel);
 
-void setCpu(char *name, Cpu *cpu);
+void setCpu(char *name, simgrid::surf::Cpu *cpu);
 
 LinkDynar getRoute(char *srcName, char *dstName);
 
@@ -31,30 +31,30 @@ public:
  }
 
  void activateCpuCreatedCallback();
- virtual void cpuCreatedCallback(Cpu *cpu) {}
+ virtual void cpuCreatedCallback(simgrid::surf::Cpu *cpu) {}
 
  void activateCpuDestructedCallback();
- virtual void cpuDestructedCallback(Cpu *cpu) {}
+ virtual void cpuDestructedCallback(simgrid::surf::Cpu *cpu) {}
 
  void activateCpuStateChangedCallback();
- virtual void cpuStateChangedCallback(Cpu *cpu, e_surf_resource_state_t, e_surf_resource_state_t) {}
+ virtual void cpuStateChangedCallback(simgrid::surf::Cpu *cpu, e_surf_resource_state_t, e_surf_resource_state_t) {}
 
  void activateCpuActionStateChangedCallback();
- virtual void cpuActionStateChangedCallback(CpuAction *action, e_surf_action_state_t, e_surf_action_state_t) {}
+ virtual void cpuActionStateChangedCallback(simgrid::surf::CpuAction *action, e_surf_action_state_t, e_surf_action_state_t) {}
 
 
  void activateLinkCreatedCallback();
- virtual void networkLinkCreatedCallback(Link *link) {}
+ virtual void networkLinkCreatedCallback(simgrid::surf::Link *link) {}
 
  void activateLinkDestructedCallback();
- virtual void networkLinkDestructedCallback(Link *link) {}
+ virtual void networkLinkDestructedCallback(simgrid::surf::Link *link) {}
 
  void activateLinkStateChangedCallback();
- virtual void networkLinkStateChangedCallback(Link *link, e_surf_resource_state_t, e_surf_resource_state_t) {}
+ virtual void networkLinkStateChangedCallback(simgrid::surf::Link *link, e_surf_resource_state_t, e_surf_resource_state_t) {}
 
  void activateNetworkActionStateChangedCallback();
- virtual void networkActionStateChangedCallback(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t cur) {}
+ virtual void networkActionStateChangedCallback(simgrid::surf::NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t cur) {}
 
  void activateNetworkCommunicateCallback();
- virtual void networkCommunicateCallback(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate) {}
+ virtual void networkCommunicateCallback(simgrid::surf::NetworkAction *action, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate) {}
 };

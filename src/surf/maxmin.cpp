@@ -677,7 +677,7 @@ void lmm_solve(lmm_system_t sys)
           cnst->usage = elem->value / elem->variable->weight;
 
         make_elem_active(elem);
-        Action *action = static_cast<Action*>(elem->variable->id);
+        simgrid::surf::Action *action = static_cast<simgrid::surf::Action*>(elem->variable->id);
         if (sys->keep_track && !action->is_linked())
           sys->keep_track->push_back(*action);
       }

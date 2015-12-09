@@ -8,11 +8,6 @@
 
 package org.simgrid.surf;
 
-/**
-  * A generic resource for the cpu component
-  * @see CpuModel
-  * @see CpuAction
-  */
 public class Cpu extends Resource {
   private long swigCPtr;
 
@@ -55,105 +50,46 @@ public class Cpu extends Resource {
     SurfJNI.Cpu_change_ownership(this, swigCPtr, true);
   }
 
-  
-  /**
-    * A cpu constructor (using LMM)
-    * @param model
-    * @param name
-    * @param props
-    * @param constraint
-    * @param core
-    * @param powerPeak
-    * @param powerScale
-    */
   public Cpu(Model model, String name, XbtDict props, LmmConstraint constraint, int core, double powerPeak, double powerScale) {
     this(SurfJNI.new_Cpu__SWIG_0(Model.getCPtr(model), model, name, XbtDict.getCPtr(props), props, LmmConstraint.getCPtr(constraint), constraint, core, powerPeak, powerScale), true);
     SurfJNI.Cpu_director_connect(this, swigCPtr, swigCMemOwn, true);
   }
 
-  
-  /**
-    * A cpu constructor
-    * @param model
-    * @param name
-    * @param props
-    * @param core
-    * @param powerPeak
-    * @param powerScale
-    */
   public Cpu(Model model, String name, XbtDict props, int core, double powerPeak, double powerScale) {
     this(SurfJNI.new_Cpu__SWIG_1(Model.getCPtr(model), model, name, XbtDict.getCPtr(props), props, core, powerPeak, powerScale), true);
     SurfJNI.Cpu_director_connect(this, swigCPtr, swigCMemOwn, true);
   }
 
-  
-  /**
-    * @return The current power peak
-    */
   public double getCurrentPowerPeak() {
     return (getClass() == Cpu.class) ? SurfJNI.Cpu_getCurrentPowerPeak(swigCPtr, this) : SurfJNI.Cpu_getCurrentPowerPeakSwigExplicitCpu(swigCPtr, this);
   }
 
-  
-  /**
-    * Execute some quantity of computation
-    * @param size The processing amount (in flop) needed to process
-    * @return A cpu action representing code execution
-    */
   public CpuAction execute(double size) {
-  long cPtr = SurfJNI.Cpu_execute(swigCPtr, this, size);
-  return (CpuAction)Surf.getCpuDirector(cPtr);
-}
+    long cPtr = SurfJNI.Cpu_execute(swigCPtr, this, size);
+    return (cPtr == 0) ? null : new CpuAction(cPtr, false);
+  }
 
-  
-  /**
-    * Make a process sleep for duration
-    * @param duration The number of seconds to sleep
-    * @return A cpu action representing sleeping
-    */
   public CpuAction sleep(double duration) {
-  long cPtr = SurfJNI.Cpu_sleep(swigCPtr, this, duration);
-  return (CpuAction)Surf.getCpuDirector(cPtr);
-}
+    long cPtr = SurfJNI.Cpu_sleep(swigCPtr, this, duration);
+    return (cPtr == 0) ? null : new CpuAction(cPtr, false);
+  }
 
-  
-  /**
-    * @return The number of cores on the cpu
-    */
   public int getCore() {
     return (getClass() == Cpu.class) ? SurfJNI.Cpu_getCore(swigCPtr, this) : SurfJNI.Cpu_getCoreSwigExplicitCpu(swigCPtr, this);
   }
 
-  
-  /**
-    * TODO
-    * @param load
-    */
   public double getSpeed(double load) {
     return (getClass() == Cpu.class) ? SurfJNI.Cpu_getSpeed(swigCPtr, this, load) : SurfJNI.Cpu_getSpeedSwigExplicitCpu(swigCPtr, this, load);
   }
 
-  
-  /**
-    * TODO
-    */
   public double getAvailableSpeed() {
     return (getClass() == Cpu.class) ? SurfJNI.Cpu_getAvailableSpeed(swigCPtr, this) : SurfJNI.Cpu_getAvailableSpeedSwigExplicitCpu(swigCPtr, this);
   }
 
-  
-  /**
-    * @param pstate_index index of power peak to get
-    * @return Power peak at index
-    */
   public double getPowerPeakAt(int pstate_index) {
     return SurfJNI.Cpu_getPowerPeakAt(swigCPtr, this, pstate_index);
   }
 
-  
-  /**
-    * @return Number of power peak
-    */
   public int getNbPstates() {
     return SurfJNI.Cpu_getNbPstates(swigCPtr, this);
   }
@@ -166,10 +102,6 @@ public class Cpu extends Resource {
     return SurfJNI.Cpu_getPstate(swigCPtr, this);
   }
 
-  
-  /**
-    * @param state The new state of the cpu
-    */
   public void setState(ResourceState state) {
     SurfJNI.Cpu_setState(swigCPtr, this, state.swigValue());
   }

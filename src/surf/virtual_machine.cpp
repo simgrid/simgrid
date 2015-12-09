@@ -10,15 +10,18 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf,
                                 "Logging specific to the SURF VM module");
 
-VMModel *surf_vm_model = NULL;
+simgrid::surf::VMModel *surf_vm_model = NULL;
+
+namespace simgrid {
+namespace surf {
 
 /*************
  * Callbacks *
  *************/
 
-surf_callback(void, VirtualMachine*) VMCreatedCallbacks;
-surf_callback(void, VirtualMachine*) VMDestructedCallbacks;
-surf_callback(void, VirtualMachine*) VMStateChangedCallbacks;
+surf_callback(void, simgrid::surf::VirtualMachine*) VMCreatedCallbacks;
+surf_callback(void, simgrid::surf::VirtualMachine*) VMDestructedCallbacks;
+surf_callback(void, simgrid::surf::VirtualMachine*) VMStateChangedCallbacks;
 
 /*********
  * Model *
@@ -69,3 +72,5 @@ surf_resource_t VirtualMachine::getPm()
 
 //FIME:: handle action cancel
 
+}
+}

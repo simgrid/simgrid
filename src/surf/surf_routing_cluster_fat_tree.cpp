@@ -19,8 +19,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_fat_tree, surf, "Routing for fat tree
 
 AS_t model_fat_tree_cluster_create(void)
 {
-  return new AsClusterFatTree();
+  return new simgrid::surf::AsClusterFatTree();
 }
+
+namespace simgrid {
+namespace surf {
 
 AsClusterFatTree::AsClusterFatTree() : levels(0) {
   XBT_DEBUG("Creating a new fat tree.");
@@ -556,4 +559,7 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster,
   }
   uniqueId++;
   free((void*)linkTemplate.id);
+}
+
+}
 }

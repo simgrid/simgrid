@@ -25,8 +25,11 @@ inline unsigned int* rankId_to_coords(int rankId, xbt_dynar_t dimensions) {
 
 AS_t model_torus_cluster_create(void)
 {
-  return new AsClusterTorus();
+  return new simgrid::surf::AsClusterTorus();
 }
+
+namespace simgrid {
+namespace surf {
 
 /* Creation routing model functions */
 AsClusterTorus::AsClusterTorus() : AsCluster()
@@ -236,4 +239,7 @@ void AsClusterTorus::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_p
 
 
   return;
+}
+
+}
 }

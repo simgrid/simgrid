@@ -13,12 +13,14 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm);
 
 void surf_vm_model_init_HL13(void){
   if (surf_cpu_model_vm) {
-    surf_vm_model = new VMHL13Model();
-    Model *model = surf_vm_model;
-
+    surf_vm_model = new simgrid::surf::VMHL13Model();
+    simgrid::surf::Model *model = surf_vm_model;
     xbt_dynar_push(all_existing_models, &model);
   }
 }
+
+namespace simgrid {
+namespace surf {
 
 /*********
  * Model *
@@ -355,4 +357,7 @@ Action *VMHL13::execute(double size)
 
 Action *VMHL13::sleep(double duration) {
   return p_cpu->sleep(duration);
+}
+
+}
 }

@@ -13,6 +13,9 @@
 /* Epsilon */
 #define EPSILON 0.000000001
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -173,10 +176,13 @@ public:
   xbt_heap_t p_tiActionHeap;
 
 protected:
-  void NotifyResourceTurnedOn(Resource*){};
-  void NotifyResourceTurnedOff(Resource*){};
+  void NotifyResourceTurnedOn(simgrid::surf::Resource*){};
+  void NotifyResourceTurnedOff(simgrid::surf::Resource*){};
 
   void NotifyActionCancel(Action*){};
   void NotifyActionResume(Action*){};
   void NotifyActionSuspend(Action*){};
 };
+
+}
+}

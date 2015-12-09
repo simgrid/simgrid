@@ -94,7 +94,13 @@ XBT_PUBLIC(double) surf_get_clock(void);
 
 extern XBT_PRIVATE double sg_sender_gap;
 
+namespace simgrid {
+namespace surf {
+
 extern XBT_PRIVATE surf_callback(void, void) surfExitCallbacks;
+
+}
+}
 
 int XBT_PRIVATE __surf_is_absolute_file_path(const char *file_path);
 
@@ -123,7 +129,13 @@ XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_latency;
 /**********
  * Action *
  **********/
+
 XBT_PRIVATE void surf_action_lmm_update_index_heap(void *action, int i);
+
+XBT_PUBLIC_DATA(xbt_dynar_t) all_existing_models;
+
+namespace simgrid {
+namespace surf {
 
 /** @ingroup SURF_interface
  * @brief SURF action interface class
@@ -140,7 +152,7 @@ private:
   /**
    * @brief Common initializations for the constructors
    */
-  void initialize(Model *model, double cost, bool failed,
+  void initialize(simgrid::surf::Model *model, double cost, bool failed,
                   lmm_variable_t var = NULL);
 
 public:
@@ -151,7 +163,7 @@ public:
    * @param cost The cost of the Action
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    */
-  Action(Model *model, double cost, bool failed);
+  Action(simgrid::surf::Model *model, double cost, bool failed);
 
   /**
    * @brief Action constructor
@@ -161,7 +173,7 @@ public:
    * @param failed If the action is impossible (e.g.: execute something on a switched off host)
    * @param var The lmm variable associated to this Action if it is part of a LMM component
    */
-  Action(Model *model, double cost, bool failed, lmm_variable_t var);
+  Action(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var);
 
   /** @brief Destructor */
   virtual ~Action();
@@ -251,7 +263,7 @@ public:
 
   s_xbt_swag_hookup_t p_stateHookup;
 
-  Model *getModel() {return p_model;}
+  simgrid::surf::Model *getModel() {return p_model;}
 
 protected:
   ActionList* p_stateSet;
@@ -269,7 +281,7 @@ private:
   int m_latencyLimited;               /**< Set to 1 if is limited by latency, 0 otherwise */
   #endif
   double    m_cost;
-  Model *p_model;
+  simgrid::surf::Model *p_model;
   void *p_data; /**< for your convenience */
 
   /* LMM */
@@ -305,7 +317,6 @@ typedef ActionLmmList* ActionLmmListPtr;
 /*********
  * Model *
  *********/
-XBT_PUBLIC_DATA(xbt_dynar_t) all_existing_models;
 
 /** @ingroup SURF_interface
  * @brief SURF model interface class
@@ -389,6 +400,9 @@ private:
   ActionList* p_doneActionSet; /**< Actions in state SURF_ACTION_DONE */
 };
 
+}
+}
+
 /************
  * Resource *
  ************/
@@ -401,6 +415,9 @@ typedef struct {
   double scale;             /**< Current availability of the metric according to the traces, in [0,1] */
   tmgr_trace_event_t event; /**< The associated trace event associated to the metric */
 } s_surf_metric_t;
+
+namespace simgrid {
+namespace surf {
 
 /** @ingroup SURF_interface
  * @brief SURF resource interface class
@@ -491,5 +508,8 @@ public: /* LMM */
 private:
   lmm_constraint_t p_constraint;
 };
+
+}
+}
 
 #endif /* SURF_MODEL_H_ */

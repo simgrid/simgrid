@@ -8,6 +8,9 @@
 
 #include "network_cm02.hpp"
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -46,4 +49,5 @@ public:
  * Action *
  **********/
 
-
+}
+}

@@ -12,6 +12,9 @@
 
 #include "surf_routing_generic.hpp"
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -47,6 +50,7 @@ public:
   sg_platf_route_cbarg_t *p_linkTable;
 };
 
-
+}
+}
 
 #endif /* SURF_ROUTING_FLOYD_HPP_ */

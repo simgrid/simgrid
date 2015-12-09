@@ -23,18 +23,21 @@ static void netcste_parse_nolink(sg_platf_link_cbarg_t link){
 void surf_network_model_init_Constant()
 {
   xbt_assert(surf_network_model == NULL);
-  surf_network_model = new NetworkConstantModel();
+  surf_network_model = new simgrid::surf::NetworkConstantModel();
 
   routing_model_create(NULL);
 
-  hostCreatedCallbacks.connect([](Host*) {
+  simgrid::surf::hostCreatedCallbacks.connect([](simgrid::surf::Host*) {
     host_number_int++;
   });
   sg_platf_link_add_cb(netcste_parse_nolink);
 
-  Model *model = surf_network_model;
+  simgrid::surf::Model *model = surf_network_model;
   xbt_dynar_push(all_existing_models, &model);
 }
+
+namespace simgrid {
+namespace surf {
 
 double NetworkConstantModel::shareResources(double /*now*/)
 {
@@ -138,3 +141,5 @@ bool NetworkConstantAction::isSuspended()
   return m_suspended;
 }
 
+}
+}

@@ -27,18 +27,21 @@ void surf_cpu_model_init_Cas01()
     return;
   }
 
-  surf_cpu_model_pm = new CpuCas01Model();
-  surf_cpu_model_vm  = new CpuCas01Model();
+  surf_cpu_model_pm = new simgrid::surf::CpuCas01Model();
+  surf_cpu_model_vm  = new simgrid::surf::CpuCas01Model();
 
-  sg_platf_postparse_add_cb(cpu_add_traces);
+  sg_platf_postparse_add_cb(simgrid::surf::cpu_add_traces);
 
-  Model *model_pm = surf_cpu_model_pm;
-  Model *model_vm = surf_cpu_model_vm;
+  simgrid::surf::Model *model_pm = surf_cpu_model_pm;
+  simgrid::surf::Model *model_vm = surf_cpu_model_vm;
   xbt_dynar_push(all_existing_models, &model_pm);
   xbt_dynar_push(all_existing_models, &model_vm);
 }
 
-CpuCas01Model::CpuCas01Model() : CpuModel()
+namespace simgrid {
+namespace surf {
+
+CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 {
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   int select = xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
@@ -368,4 +371,7 @@ CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double sp
     m_lastValue = 0.0;
   }
   lmm_expand(model->getMaxminSystem(), constraint, getVariable(), 1.0);
+}
+
+}
 }

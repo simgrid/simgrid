@@ -83,13 +83,16 @@ void surf_network_model_init_SMPI(void)
 
   if (surf_network_model)
     return;
-  surf_network_model = new NetworkSmpiModel();
+  surf_network_model = new simgrid::surf::NetworkSmpiModel();
   net_define_callbacks();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/sender_gap", 10e-6);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }
+
+namespace simgrid {
+namespace surf {
 
 NetworkSmpiModel::NetworkSmpiModel()
  : NetworkCm02Model() {
@@ -226,3 +229,6 @@ double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double s
 /**********
  * Action *
  **********/
+
+}
+}

@@ -13,6 +13,9 @@
 
 extern xbt_dynar_t mount_list;
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -29,25 +32,25 @@ class StorageAction;
  * @brief Callbacks handler which emit the callbacks after Storage creation *
  * @details Callback functions have the following signature: `void(Storage*)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, Storage*)) storageCreatedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, simgrid::surf::Storage*)) storageCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage destruction *
  * @details Callback functions have the following signature: `void(StoragePtr)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, Storage*)) storageDestructedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, simgrid::surf::Storage*)) storageDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage State changed *
  * @details Callback functions have the following signature: `void(StorageAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, Storage*, e_surf_resource_state_t, e_surf_resource_state_t)) storageStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, simgrid::surf::Storage*, e_surf_resource_state_t, e_surf_resource_state_t)) storageStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
  * @details Callback functions have the following signature: `void(StorageAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, StorageAction*, e_surf_action_state_t, e_surf_action_state_t)) storageActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(surf_callback(void, simgrid::surf::StorageAction*, e_surf_action_state_t, e_surf_action_state_t)) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -98,7 +101,7 @@ public:
  * @brief SURF storage interface class
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
-class Storage : public Resource {
+class Storage : public simgrid::surf::Resource {
 public:
   /**
    * @brief Storage constructor
@@ -292,6 +295,9 @@ public:
   surf_file_t p_file;
   double progress;
 };
+
+}
+}
 
 typedef struct s_storage_type {
   char *model;

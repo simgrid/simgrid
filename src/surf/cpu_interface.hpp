@@ -13,6 +13,10 @@
 /***********
  * Classes *
  ***********/
+
+namespace simgrid {
+namespace surf {
+
 class CpuModel;
 class Cpu;
 class CpuAction;
@@ -94,7 +98,7 @@ public:
 * @brief SURF cpu resource interface class
 * @details A Cpu represent a cpu associated to a host
 */
-XBT_PUBLIC_CLASS Cpu : public Resource {
+XBT_PUBLIC_CLASS Cpu : public simgrid::surf::Resource {
 public:
   Cpu();
 
@@ -110,7 +114,7 @@ public:
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    * @param stateInitial whether it is created running or crashed
    */
-  Cpu(Model *model, const char *name, xbt_dict_t props,
+  Cpu(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale,
 	  e_surf_resource_state_t stateInitial);
 
@@ -125,13 +129,13 @@ public:
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    * @param stateInitial whether it is created running or crashed
    */
-  Cpu(Model *model, const char *name, xbt_dict_t props,
+  Cpu(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 	  int core, double speedPeak, double speedScale,
 	  e_surf_resource_state_t stateInitial);
 
-  Cpu(Model *model, const char *name, xbt_dict_t props,
+  Cpu(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale);
-  Cpu(Model *model, const char *name, xbt_dict_t props,
+  Cpu(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 	  int core, double speedPeak, double speedScale);
 
   ~Cpu();
@@ -142,7 +146,7 @@ public:
    * @param size The value of the processing amount (in flop) needed to process
    * @return The CpuAction corresponding to the processing
    */
-  virtual Action *execute(double size)=0;
+  virtual simgrid::surf::Action *execute(double size)=0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)
@@ -150,7 +154,7 @@ public:
    * @param duration The number of seconds to sleep
    * @return The CpuAction corresponding to the sleeping
    */
-  virtual Action *sleep(double duration)=0;
+  virtual simgrid::surf::Action *sleep(double duration)=0;
 
   /** @brief Get the amount of cores */
   virtual int getCore();
@@ -190,15 +194,15 @@ public:
  * @brief SURF Cpu action interface class
  * @details A CpuAction represent the execution of code on a Cpu
  */
-XBT_PUBLIC_CLASS CpuAction : public Action {
+XBT_PUBLIC_CLASS CpuAction : public simgrid::surf::Action {
 friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 public:
   /** @brief CpuAction constructor */
-  CpuAction(Model *model, double cost, bool failed)
+  CpuAction(simgrid::surf::Model *model, double cost, bool failed)
     : Action(model, cost, failed) {} //FIXME:REMOVE
 
   /** @brief CpuAction constructor */
-  CpuAction(Model *model, double cost, bool failed, lmm_variable_t var)
+  CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
     : Action(model, cost, failed, var) {}
 
   /**
@@ -212,5 +216,8 @@ public:
   void updateRemainingLazy(double now);
 
 };
+
+}
+}
 
 #endif /* SURF_CPU_INTERFACE_HPP_ */

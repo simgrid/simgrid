@@ -12,7 +12,7 @@
 
 void surf_on_host_created(void (*callback)(sg_host_t))
 {
-  hostCreatedCallbacks.connect([callback](Host* host) {
+  simgrid::surf::hostCreatedCallbacks.connect([callback](simgrid::surf::Host* host) {
     const char* id = host->getName();
     sg_host_t h = sg_host_by_name(id);
     xbt_assert(h != NULL, "Host not found for name %s", id);
@@ -22,7 +22,7 @@ void surf_on_host_created(void (*callback)(sg_host_t))
 
 void surf_on_storage_created(void (*callback)(sg_storage_t))
 {
-  storageCreatedCallbacks.connect([callback](Storage* storage) {
+  simgrid::surf::storageCreatedCallbacks.connect([callback](simgrid::surf::Storage* storage) {
     const char* id = storage->getName();
     // TODO, create sg_storage_by_name
     sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, id);

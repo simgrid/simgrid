@@ -12,11 +12,14 @@
 #include "surf_routing_none.hpp"
 #include "network_interface.hpp"
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
-class XBT_PRIVATE AsCluster;
 
+class XBT_PRIVATE AsCluster;
 
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
@@ -49,5 +52,7 @@ public:
 
 };
 
+}
+}
 
 #endif /* SURF_ROUTING_CLUSTER_HPP_ */

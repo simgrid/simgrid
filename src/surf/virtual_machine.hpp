@@ -14,6 +14,9 @@
 #define GUESTOS_NOISE 100 // This value corresponds to the cost of the global action associated to the VM
                           // It corresponds to the cost of a VM running no tasks.
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -28,17 +31,17 @@ class XBT_PRIVATE VirtualMachine;
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE surf_callback(void, VirtualMachine*) VMCreatedCallbacks;
+extern XBT_PRIVATE surf_callback(void, simgrid::surf::VirtualMachine*) VMCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE surf_callback(void, VirtualMachine*) VMDestructedCallbacks;
+extern XBT_PRIVATE surf_callback(void, simgrid::surf::VirtualMachine*) VMDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE surf_callback(void, VirtualMachine*) VMStateChangedCallbacks;
+extern XBT_PRIVATE surf_callback(void, simgrid::surf::VirtualMachine*) VMStateChangedCallbacks;
 
 /************
  * Resource *
@@ -59,7 +62,7 @@ public:
    * @param netElm The RoutingEdge associated to this VM
    * @param cpu The Cpu associated to this VM
    */
-  VirtualMachine(Model *model, const char *name, xbt_dict_t props,
+  VirtualMachine(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 		        RoutingEdge *netElm, Cpu *cpu);
 
   /** @brief Destructor */
@@ -129,5 +132,8 @@ public:
 /**********
  * Action *
  **********/
+
+}
+}
 
 #endif /* VM_INTERFACE_HPP_ */

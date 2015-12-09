@@ -10,6 +10,10 @@
 #include <xbt/base.h>
 
 #include "network_smpi.hpp"
+
+namespace simgrid {
+namespace surf {
+
 class XBT_PRIVATE IBNode;
 
 class XBT_PRIVATE ActiveComm{
@@ -53,5 +57,8 @@ public:
   double ys;
 
 };
+
+}
+}
 
 #endif

@@ -54,9 +54,9 @@ void surf_network_model_init_LegrandVelho(void)
   if (surf_network_model)
     return;
 
-  surf_network_model = new NetworkCm02Model();
+  surf_network_model = new simgrid::surf::NetworkCm02Model();
   net_define_callbacks();
-  Model *model = surf_network_model;
+  simgrid::surf::Model *model = surf_network_model;
   xbt_dynar_push(all_existing_models, &model);
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor",
@@ -83,9 +83,9 @@ void surf_network_model_init_CM02(void)
   if (surf_network_model)
     return;
 
-  surf_network_model = new NetworkCm02Model();
+  surf_network_model = new simgrid::surf::NetworkCm02Model();
   net_define_callbacks();
-  Model *model = surf_network_model;
+  simgrid::surf::Model *model = surf_network_model;
   xbt_dynar_push(all_existing_models, &model);
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 1.0);
@@ -109,9 +109,9 @@ void surf_network_model_init_Reno(void)
   if (surf_network_model)
     return;
 
-  surf_network_model = new NetworkCm02Model();
+  surf_network_model = new simgrid::surf::NetworkCm02Model();
   net_define_callbacks();
-  Model *model = surf_network_model;
+  simgrid::surf::Model *model = surf_network_model;
   xbt_dynar_push(all_existing_models, &model);
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
                                     func_reno_fpi);
@@ -129,9 +129,9 @@ void surf_network_model_init_Reno2(void)
   if (surf_network_model)
     return;
 
-  surf_network_model = new NetworkCm02Model();
+  surf_network_model = new simgrid::surf::NetworkCm02Model();
   net_define_callbacks();
-  Model *model = surf_network_model;
+  simgrid::surf::Model *model = surf_network_model;
   xbt_dynar_push(all_existing_models, &model);
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp,
                                     func_reno2_fpi);
@@ -149,9 +149,9 @@ void surf_network_model_init_Vegas(void)
   if (surf_network_model)
     return;
 
-  surf_network_model = new NetworkCm02Model();
+  surf_network_model = new simgrid::surf::NetworkCm02Model();
   net_define_callbacks();
-  Model *model = surf_network_model;
+  simgrid::surf::Model *model = surf_network_model;
   xbt_dynar_push(all_existing_models, &model);
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
                                     func_vegas_fpi);
@@ -162,6 +162,9 @@ void surf_network_model_init_Vegas(void)
                             0.92);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }
+
+namespace simgrid {
+namespace surf {
 
 NetworkCm02Model::NetworkCm02Model()
 	:NetworkModel()
@@ -695,3 +698,5 @@ void NetworkCm02Action::updateRemainingLazy(double now)
   m_lastValue = lmm_variable_getvalue(getVariable());
 }
 
+}
+}

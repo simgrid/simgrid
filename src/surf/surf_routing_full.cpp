@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
 AS_t model_full_create(void)
 {
-  return new AsFull();
+  return new simgrid::surf::AsFull();
 }
 
 void model_full_end(AS_t _routing)
@@ -22,7 +22,7 @@ void model_full_end(AS_t _routing)
   sg_platf_route_cbarg_t e_route;
 
   /* set utils vars */
-  AsFull *routing = static_cast<AsFull*>(_routing);
+  simgrid::surf::AsFull *routing = static_cast<simgrid::surf::AsFull*>(_routing);
   int table_size = (int)xbt_dynar_length(routing->p_indexNetworkElm);
 
   /* Create table if necessary */
@@ -44,6 +44,9 @@ void model_full_end(AS_t _routing)
     }
   }
 }
+
+namespace simgrid {
+namespace surf {
 
 AsFull::AsFull(){
   p_routingTable = 0;
@@ -264,6 +267,5 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
   xbt_dynar_free(&route->link_list);
 }
 
-
-
-
+}
+}

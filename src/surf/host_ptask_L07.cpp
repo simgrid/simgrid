@@ -41,11 +41,14 @@ void surf_host_model_init_ptask_L07(void)
   sg_platf_link_add_cb(ptask_netlink_parse_init);
   sg_platf_postparse_add_cb(host_add_traces);
 
-  surf_host_model = new HostL07Model();
-  Model *model = surf_host_model;
+  surf_host_model = new simgrid::surf::HostL07Model();
+  simgrid::surf::Model *model = surf_host_model;
   xbt_dynar_push(all_existing_models, &model);
 }
 
+
+namespace simgrid {
+namespace surf {
 
 HostL07Model::HostL07Model() : HostModel() {
   if (!ptask_maxmin_system)
@@ -669,4 +672,7 @@ double L07Action::getRemains()
   XBT_IN("(%p)", this);
   XBT_OUT();
   return m_remains;
+}
+
+}
 }

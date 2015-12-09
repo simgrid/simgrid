@@ -21,6 +21,10 @@
 /***********
  * Classes *
  ***********/
+
+namespace simgrid {
+namespace surf {
+
 class NetworkModel;
 class NetworkAction;
 
@@ -32,31 +36,34 @@ class NetworkAction;
  * @brief Callbacks handler which emits the callbacks after Link creation
  * @details Callback functions have the following signature: `void(Link*)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, Link*)) networkLinkCreatedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::Link*)) networkLinkCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after Link destruction
  * @details Callback functions have the following signature: `void(Link*)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, Link*)) networkLinkDestructedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::Link*)) networkLinkDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after Link State changed
  * @details Callback functions have the following signature: `void(LinkAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, Link*, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after NetworkAction State changed
  * @details Callback functions have the following signature: `void(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)) networkActionStateChangedCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)) networkActionStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after communication created
  * @details Callback functions have the following signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, NetworkAction*, RoutingEdge *src, RoutingEdge *dst, double size, double rate)) networkCommunicateCallbacks;
+XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::NetworkAction*, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate)) networkCommunicateCallbacks;
+
+}
+}
 
 /*********
  * Tools *
@@ -68,6 +75,10 @@ XBT_PUBLIC(void) net_add_traces();
 /*********
  * Model *
  *********/
+
+namespace simgrid {
+namespace surf {
+
 /** @ingroup SURF_network_interface
  * @brief SURF network model interface class
  * @details A model is an object which handles the interactions between its Resources and its Actions
@@ -176,7 +187,7 @@ public:
   * @brief SURF network link interface class
   * @details A Link represents the link between two [hosts](\ref Host)
   */
-class Link : public Resource {
+class Link : public simgrid::surf::Resource {
 public:
   /**
    * @brief Link constructor
@@ -185,7 +196,7 @@ public:
    * @param name The name of the Link
    * @param props Dictionary of properties associated to this Link
    */
-  Link(NetworkModel *model, const char *name, xbt_dict_t props);
+  Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props);
 
   /**
    * @brief Link constructor
@@ -197,7 +208,7 @@ public:
    * @param history [TODO]
    * @param state_trace [TODO]
    */
-  Link(NetworkModel *model, const char *name, xbt_dict_t props,
+  Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
               lmm_constraint_t constraint,
               tmgr_history_t history,
               tmgr_trace_t state_trace);
@@ -258,7 +269,7 @@ public:
  * @brief SURF network action interface class
  * @details A NetworkAction represents a communication between two [hosts](\ref Host)
  */
-class NetworkAction : public Action {
+class NetworkAction : public simgrid::surf::Action {
 public:
   /** @brief Constructor
    *
@@ -266,8 +277,8 @@ public:
    * @param cost The cost of this  NetworkAction in [TODO]
    * @param failed [description]
    */
-  NetworkAction(Model *model, double cost, bool failed)
-  : Action(model, cost, failed) {}
+  NetworkAction(simgrid::surf::Model *model, double cost, bool failed)
+  : simgrid::surf::Action(model, cost, failed) {}
 
   /**
    * @brief NetworkAction constructor
@@ -278,8 +289,8 @@ public:
    * @param var The lmm variable associated to this Action if it is part of a
    * LMM component
    */
-  NetworkAction(Model *model, double cost, bool failed, lmm_variable_t var)
-  : Action(model, cost, failed, var) {};
+  NetworkAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
+  : simgrid::surf::Action(model, cost, failed, var) {};
 
   void setState(e_surf_action_state_t state);
 
@@ -304,6 +315,9 @@ public:
 #endif
 
 };
+
+}
+}
 
 #endif /* SURF_NETWORK_INTERFACE_HPP_ */
 

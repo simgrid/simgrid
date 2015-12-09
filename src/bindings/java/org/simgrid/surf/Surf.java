@@ -38,9 +38,9 @@ public class Surf {
   }
 
   public static CpuModel getCpuModel() {
-  long cPtr = SurfJNI.getCpuModel();
-  return (CpuModel)Surf.getCpuModelDirector(cPtr);
-}
+    long cPtr = SurfJNI.getCpuModel();
+    return (cPtr == 0) ? null : new CpuModel(cPtr, false);
+  }
 
   public static void setCpuModel(CpuModel cpuModel) {
     SurfJNI.setCpuModel(CpuModel.getCPtr(cpuModel), cpuModel);

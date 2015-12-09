@@ -18,6 +18,9 @@
  * Classes *
  ***********/
 
+namespace simgrid {
+namespace surf {
+
 class XBT_PRIVATE HostCLM03Model;
 class XBT_PRIVATE HostCLM03;
 class XBT_PRIVATE HostCLM03Action;
@@ -66,6 +69,7 @@ public:
  * Action *
  **********/
 
-
+}
+}
 
 #endif /* SURF_HOST_CLM03_HPP_ */

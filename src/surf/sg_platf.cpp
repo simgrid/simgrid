@@ -55,12 +55,12 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   xbt_assert(! sg_host_by_name(host->id),
 		     "Refusing to create a second host named '%s'.", host->id);
 
-  RoutingEdge *net = NULL;
-  As* current_routing = routing_get_current();
+  simgrid::surf::RoutingEdge *net = NULL;
+  simgrid::surf::As* current_routing = routing_get_current();
   if (current_routing)
     net = routing_add_host(current_routing, host);
 
-  Cpu *cpu = surf_cpu_model_pm->createCpu(
+  simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu(
         host->id,
         host->speed_peak,
         host->pstate,
@@ -81,7 +81,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
  */
 void sg_platf_new_router(sg_platf_router_cbarg_t router)
 {
-  As* current_routing = routing_get_current();
+  simgrid::surf::As* current_routing = routing_get_current();
 
   if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
     current_routing->p_hierarchy = SURF_ROUTING_BASE;
@@ -89,14 +89,12 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
 
-  RoutingEdge *info = new RoutingEdgeImpl(xbt_strdup(router->id),
-                                            -1,
-                                            SURF_NETWORK_ELEMENT_ROUTER,
-                                            current_routing);
+  simgrid::surf::RoutingEdge *info = new simgrid::surf::RoutingEdgeImpl(
+    xbt_strdup(router->id), -1, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
   info->setId(current_routing->parsePU(info));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'", router->id, info->getId());
-  routingEdgeCreatedCallbacks(info);
+  simgrid::surf::routingEdgeCreatedCallbacks(info);
 
   if (router->coord && strcmp(router->coord, "")) {
     unsigned int cursor;

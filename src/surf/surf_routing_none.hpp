@@ -11,6 +11,9 @@
 #ifndef SURF_ROUTING_NONE_HPP_
 #define SURF_ROUTING_NONE_HPP_
 
+namespace simgrid {
+namespace surf {
+
 class XBT_PRIVATE AsNone : public As {
 public:
   AsNone();
@@ -32,5 +35,7 @@ public:
   void parseBypassroute(sg_platf_route_cbarg_t e_route);
 };
 
+}
+}
 
 #endif /* SURF_ROUTING_NONE_HPP_ */

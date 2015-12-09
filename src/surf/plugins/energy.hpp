@@ -12,13 +12,16 @@
 #ifndef ENERGY_CALLBACK_HPP_
 #define ENERGY_CALLBACK_HPP_
 
+namespace simgrid {
+namespace energy {
+
 class XBT_PRIVATE HostEnergy;
 
-extern XBT_PRIVATE std::map<Host*, HostEnergy*> *surf_energy;
+extern XBT_PRIVATE std::map<simgrid::surf::Host*, HostEnergy*> *surf_energy;
 
 class HostEnergy {
 public:
-  HostEnergy(Host *ptr);
+  HostEnergy(simgrid::surf::Host *ptr);
   ~HostEnergy();
 
   double getCurrentWattsValue(double cpu_load);
@@ -31,11 +34,14 @@ public:
   double watts_off;                      /*< Consumption when the machine is turned off (shutdown) */
   double total_energy;					/*< Total energy consumed by the host */
   double last_updated;					/*< Timestamp of the last energy update event*/
-  Host *host;
+  simgrid::surf::Host *host;
 
   void unref() {if (--refcount == 0) delete this;}
   void ref() {refcount++;}
   int refcount = 1;
 };
+
+}
+}
 
 #endif /* ENERGY_CALLBACK_HPP_ */

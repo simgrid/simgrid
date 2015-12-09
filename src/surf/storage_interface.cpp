@@ -19,16 +19,19 @@ int SURF_STORAGE_LEVEL;
 xbt_lib_t storage_type_lib;
 int ROUTING_STORAGE_TYPE_LEVEL; //Routing for storage_type level
 xbt_dynar_t mount_list = NULL;
-StorageModel *surf_storage_model = NULL;
+simgrid::surf::StorageModel *surf_storage_model = NULL;
+
+namespace simgrid {
+namespace surf {
 
 /*************
  * Callbacks *
  *************/
 
-surf_callback(void, Storage*) storageCreatedCallbacks;
-surf_callback(void, Storage*) storageDestructedCallbacks;
-surf_callback(void, Storage*, e_surf_resource_state_t, e_surf_resource_state_t) storageStateChangedCallbacks;
-surf_callback(void, StorageAction*, e_surf_action_state_t, e_surf_action_state_t) storageActionStateChangedCallbacks;
+surf_callback(void, simgrid::surf::Storage*) storageCreatedCallbacks;
+surf_callback(void, simgrid::surf::Storage*) storageDestructedCallbacks;
+surf_callback(void, simgrid::surf::Storage*, e_surf_resource_state_t, e_surf_resource_state_t) storageStateChangedCallbacks;
+surf_callback(void, simgrid::surf::StorageAction*, e_surf_action_state_t, e_surf_action_state_t) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -194,4 +197,7 @@ void StorageAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
   surf_callback_emit(storageActionStateChangedCallbacks, this, old, state);
+}
+
+}
 }

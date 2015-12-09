@@ -17,6 +17,7 @@
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 
 #include "surf_routing_generic.hpp"
+#include "surf_routing_private.hpp"
 #include "network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
@@ -31,6 +32,9 @@ void generic_free_route(sg_platf_route_cbarg_t route)
   }
 }
 
+namespace simgrid {
+namespace surf {
+  
 void AsGeneric::parseRoute(sg_platf_route_cbarg_t /*route*/){
   THROW_IMPOSSIBLE;
 }
@@ -98,13 +102,11 @@ void AsGeneric::parseBypassroute(sg_platf_route_cbarg_t e_route)
   xbt_free(route_name);
 }
 
+}
+}
+
 /* ************************************************************************** */
 /* *********************** GENERIC BUSINESS METHODS ************************* */
-
-xbt_dynar_t AsGeneric::getOneLinkRoutes() { // FIXME: kill that stub
-  xbt_die("\"generic_get_onelink_routes\" not implemented yet");
-  return NULL;
-}
 
 static const char *instr_node_name(xbt_node_t node)
 {
@@ -151,6 +153,14 @@ xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d,
   return ret;
 }
 
+namespace simgrid {
+namespace surf {
+
+xbt_dynar_t AsGeneric::getOneLinkRoutes() { // FIXME: kill that stub
+  xbt_die("\"generic_get_onelink_routes\" not implemented yet");
+  return NULL;
+}
+
 void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
   int src, dst;
@@ -188,7 +198,8 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       xbt_dynar_foreach(route->link_list, cpt, link) {
-        const char *link_name = static_cast<Resource*>(link)->getName();
+        const char *link_name = static_cast<simgrid::surf::Resource*>(
+          link)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         current_name = link_name;
         new_xbt_graph_edge(graph, previous, current, edges);
@@ -468,4 +479,7 @@ void AsGeneric::srcDstCheck(RoutingEdge *src, RoutingEdge *dst)
         src_as->p_name,
         dst_as->p_name,
         p_name);
+}
+
+}
 }

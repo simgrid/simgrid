@@ -11,6 +11,10 @@
 /***********
  * Classes *
  ***********/
+
+namespace simgrid {
+namespace surf {
+
 class XBT_PRIVATE CpuCas01Model;
 class XBT_PRIVATE CpuCas01;
 class XBT_PRIVATE CpuCas01Action;
@@ -18,7 +22,8 @@ class XBT_PRIVATE CpuCas01Action;
 /*********
  * Model *
  *********/
-class CpuCas01Model : public CpuModel {
+
+class CpuCas01Model : public simgrid::surf::CpuModel {
 public:
   CpuCas01Model();
   ~CpuCas01Model();
@@ -83,3 +88,6 @@ public:
 
   ~CpuCas01Action() {};
 };
+
+}
+}

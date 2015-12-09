@@ -9,6 +9,7 @@
 
 #include "xbt.h"
 #include "xbt/lib.h"
+#include "simgrid/forward.h"
 #include "simgrid/simix.h"
 #include "simgrid/platf.h"
 
@@ -29,7 +30,7 @@ SG_BEGIN_DECL()
 typedef struct s_smx_rvpoint *msg_mailbox_t;
 
 /* ******************************** Environment ************************************ */
-typedef struct As *msg_as_t;
+typedef surf_As *msg_as_t;
 
 /* ******************************** Host ************************************ */
 

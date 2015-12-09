@@ -20,8 +20,11 @@ static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dyn
 
 AS_t model_vivaldi_create(void)
 {
-  return new AsVivaldi();
+  return new simgrid::surf::AsVivaldi();
 }
+
+namespace simgrid {
+namespace surf {
 
 void AsVivaldi::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat)
 {
@@ -105,4 +108,7 @@ int AsVivaldi::parsePU(RoutingEdge *elm) {
   XBT_DEBUG("Load process unit \"%s\"", elm->getName());
   xbt_dynar_push_as(p_indexNetworkElm, sg_routing_edge_t, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
+}
+
+}
 }

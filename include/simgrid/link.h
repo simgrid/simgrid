@@ -11,7 +11,16 @@
 
 
 #ifdef __cplusplus
+
+namespace simgrid {
+namespace surf {
+
 class Link;
+
+}
+}
+typedef simgrid::surf::Link Link;
+
 #else
 typedef struct Link Link;
 #endif

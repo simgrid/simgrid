@@ -14,8 +14,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
 int autoload_surf_cpu_model = 1;
 void_f_void_t surf_cpu_model_init_preparse = NULL;
 
-CpuModel *surf_cpu_model_pm;
-CpuModel *surf_cpu_model_vm;
+simgrid::surf::CpuModel *surf_cpu_model_pm;
+simgrid::surf::CpuModel *surf_cpu_model_vm;
+
+namespace simgrid {
+namespace surf {
+
 /*************
  * Callbacks *
  *************/
@@ -30,7 +34,6 @@ surf_callback(void, Cpu*) cpuCreatedCallbacks;
 surf_callback(void, Cpu*) cpuDestructedCallbacks;
 surf_callback(void, Cpu*, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
 surf_callback(void, CpuAction*, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
-
 void cpu_add_traces(){
   surf_cpu_model_pm->addTraces();
 }
@@ -38,6 +41,7 @@ void cpu_add_traces(){
 /*********
  * Model *
  *********/
+
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
   CpuAction *action;
@@ -128,7 +132,6 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 /************
  * Resource *
  ************/
-
 Cpu::Cpu(){
 }
 
@@ -327,4 +330,7 @@ void CpuAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
   surf_callback_emit(cpuActionStateChangedCallbacks, this, old, state);
+}
+
+}
 }

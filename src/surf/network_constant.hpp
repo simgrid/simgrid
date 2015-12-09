@@ -11,9 +11,13 @@
 
 #include "network_interface.hpp"
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
+ 
 class XBT_PRIVATE NetworkConstantModel;
 class XBT_PRIVATE NetworkConstantAction;
 
@@ -68,5 +72,8 @@ public:
   double m_latInit;
   int m_suspended;
 };
+
+}
+}
 
 #endif /* NETWORK_CONSTANT_HPP_ */

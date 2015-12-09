@@ -8,11 +8,6 @@
 
 package org.simgrid.surf;
 
-/**
-  * An action created by a Resource (e.g., a communication, an execution)
-  * @see Model
-  * @see Resource
-  */
 public class Action {
   private long swigCPtr;
   protected boolean swigCMemOwn;
@@ -40,110 +35,48 @@ public class Action {
     }
   }
 
-  protected static long[] cArrayUnwrap(Action[] arrayWrapper) {
-      long[] cArray = new long[arrayWrapper.length];
-      for (int i=0; i<arrayWrapper.length; i++)
-        cArray[i] = Action.getCPtr(arrayWrapper[i]);
-      return cArray;
-  }
-
-  protected static Action[] cArrayWrap(long[] cArray, boolean cMemoryOwn) {
-    Action[] arrayWrapper = new Action[cArray.length];
-    for (int i=0; i<cArray.length; i++)
-      arrayWrapper[i] = new Action(cArray[i], cMemoryOwn);
-    return arrayWrapper;
-  }
-
-  
-  /**
-    * Action constructor
-    * @param model The model associated
-    * @param cost The cost of the action (e.g., flops, bytes)
-    * @param failed If the action has failed
-    */
   public Action(Model model, double cost, boolean failed) {
     this(SurfJNI.new_Action(Model.getCPtr(model), model, cost, failed), true);
   }
 
-  
-  /**
-    * @return The model associated
-    */
   public Model getModel() {
     long cPtr = SurfJNI.Action_getModel(swigCPtr, this);
     return (cPtr == 0) ? null : new Model(cPtr, false);
   }
 
-  
-  /**
-    * @return The variable associatied (if using LMM)
-    */
   public LmmVariable getVariable() {
     long cPtr = SurfJNI.Action_getVariable(swigCPtr, this);
     return (cPtr == 0) ? null : new LmmVariable(cPtr, false);
   }
 
-  
-  /**
-    * @return The state of the action
-    */
   public ActionState getState() {
     return ActionState.swigToEnum(SurfJNI.Action_getState(swigCPtr, this));
   }
 
-  
-  /**
-    * @return True if suspended
-    */
   public boolean isSuspended() {
     return SurfJNI.Action_isSuspended(swigCPtr, this);
   }
 
-  
-  /**
-    * @return TODO
-    */
   public double getBound() {
     return SurfJNI.Action_getBound(swigCPtr, this);
   }
 
-  
-  /**
-    * @param bound TODO
-    */
   public void setBound(double bound) {
     SurfJNI.Action_setBound(swigCPtr, this, bound);
   }
 
-  
-  /**
-    * Update remaining amount of cost to do
-    * @param delta Difference of time since last call to this function
-    */
   public void updateRemains(double delta) {
     SurfJNI.Action_updateRemains(swigCPtr, this, delta);
   }
 
-  
-  /**
-    * @return The remaining amount of cost to do
-    */
   public double getRemains() {
     return SurfJNI.Action_getRemains(swigCPtr, this);
   }
 
-  
-  /**
-    * @param priority The new priority of the action
-    */
   public void setPriority(double priority) {
     SurfJNI.Action_setPriority(swigCPtr, this, priority);
   }
 
-  
-  /**
-    * @param state The new state
-    */
   public void setState(ActionState state) {
     SurfJNI.Action_setState(swigCPtr, this, state.swigValue());
   }

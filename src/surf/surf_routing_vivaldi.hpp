@@ -18,6 +18,9 @@ XBT_PRIVATE AS_t model_vivaldi_create(void);      /* create structures for vival
 #define ROUTER_PEER(peername) bprintf("router_%s", peername)
 #define LINK_PEER(peername) bprintf("link_%s", peername)
 
+namespace simgrid {
+namespace surf {
+
 /***********
  * Classes *
  ***********/
@@ -44,5 +47,7 @@ public:
   //virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
 };
 
+}
+}
 
 #endif /* SURF_ROUTING_VIVALDI_HPP_ */
