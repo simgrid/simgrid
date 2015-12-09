@@ -3,26 +3,25 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "simgrid/s4u.h"
 
-using namespace simgrid;
-using namespace s4u;
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
-class myHost : Actor {
+class myHost : simgrid::s4u::Actor {
 public:
-	myHost(const char*procname, Host *host,int argc, char **argv)
-: s4u::Actor(procname,host,argc,argv){}
+	myHost(const char*procname, simgrid::s4u::Host *host,int argc, char **argv)
+: simgrid::s4u::Actor(procname,host,argc,argv){}
 
-	void show_info(boost::unordered_map <std::string, Storage &> &mounts) {
-		XBT_INFO("Storage info on %s:", Host::current()->name());
+	void show_info(boost::unordered_map <std::string, simgrid::s4u::Storage &> &mounts) {
+		XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->name());
 
 		for (const auto&kv : mounts) {
 			const char* mountpoint = kv.first.c_str();
-			Storage &storage = kv.second;
+			simgrid::s4u::Storage &storage = kv.second;
 
 			// Retrieve disk's information
 			sg_size_t free_size = storage.size_free();
@@ -35,13 +34,14 @@ public:
 	}
 
 	int main(int argc, char **argv) {
-		boost::unordered_map <std::string, Storage &> &mounts = Host::current()->mountedStorages();
+		boost::unordered_map <std::string, simgrid::s4u::Storage &> &mounts =
+			simgrid::s4u::Host::current()->mountedStorages();
 
 		show_info(mounts);
 
 		// Open an non-existing file to create it
 		const char *filename = "/home/tmp/data.txt";
-		File *file = new File(filename, NULL);
+		simgrid::s4u::File *file = new simgrid::s4u::File(filename, NULL);
 		sg_size_t write, read, file_size;
 
 		write = file->write(200000);  // Write 200,000 bytes
@@ -60,7 +60,7 @@ public:
 		write = file->write(100000);  // Write 100,000 bytes
 		XBT_INFO("Write %llu bytes on %s", write, filename);
 
-		Storage &storage = Storage::byName("Disk4");
+		simgrid::s4u::Storage &storage = simgrid::s4u::Storage::byName("Disk4");
 
 		// Now rename file from ./tmp/data.txt to ./tmp/simgrid.readme
 		const char *newpath = "/home/tmp/simgrid.readme";
@@ -105,10 +105,10 @@ public:
 };
 
 int main(int argc, char **argv) {
-	Engine *e = new Engine(&argc,argv);
+	simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
 	e->loadPlatform("../../platforms/storage/storage.xml");
 
-	new myHost("host", Host::byName("denise"), 0, NULL);
+	new myHost("host", simgrid::s4u::Host::byName("denise"), 0, NULL);
 	e->run();
 	return 0;
 }

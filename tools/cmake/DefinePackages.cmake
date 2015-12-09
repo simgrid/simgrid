@@ -706,6 +706,7 @@ set(headers_to_install
   include/simgrid.h
   include/simgrid/datatypes.h
   include/simgrid/modelchecker.h
+  include/simgrid/forward.h
   include/simgrid/platf.h
   include/simgrid/platf_generator.h
   include/simgrid/plugins.h

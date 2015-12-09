@@ -9,9 +9,12 @@
 
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
+
+#include <simgrid/forward.h>
+#include <surf/surf.h>
+
 SG_BEGIN_DECL()
 
-typedef xbt_dictelm_t sg_host_t;
 XBT_PUBLIC(sg_host_t) sg_host_by_name(const char *name);
 XBT_PUBLIC(sg_host_t) sg_host_by_name_or_create(const char *name);
 static XBT_INLINE char *sg_host_get_name(sg_host_t host){
@@ -49,17 +52,14 @@ XBT_PUBLIC(void) sg_host_simix_set(sg_host_t host, smx_host_priv_t priv);
 XBT_PUBLIC(void) sg_host_simix_destroy(sg_host_t host);
 
 // ========== SURF CPU ============
-DEFINE_EXTERNAL_CLASS(Cpu);
-typedef Cpu *surf_cpu_t;
 XBT_PUBLIC(surf_cpu_t) sg_host_surfcpu(sg_host_t host);
 XBT_PUBLIC(void) sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu);
 XBT_PUBLIC(void) sg_host_surfcpu_register(sg_host_t host, surf_cpu_t cpu);
 XBT_PUBLIC(void) sg_host_surfcpu_destroy(sg_host_t host);
 
 // ========== RoutingEdge ============
-DEFINE_EXTERNAL_CLASS(RoutingEdge);
-XBT_PUBLIC(RoutingEdge*) sg_host_edge(sg_host_t host);
-XBT_PUBLIC(void) sg_host_edge_set(sg_host_t host, RoutingEdge* edge);
+XBT_PUBLIC(routing_edge_t) sg_host_edge(sg_host_t host);
+XBT_PUBLIC(void) sg_host_edge_set(sg_host_t host, routing_edge_t edge);
 XBT_PUBLIC(void) sg_host_edge_destroy(sg_host_t host, int do_callback);
 
 

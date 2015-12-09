@@ -20,6 +20,7 @@
 #include "simgrid/platf_interface.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/plugins.h"
+#include "simgrid/forward.h"
 
 SG_BEGIN_DECL()
 /* Actions and models are highly connected structures... */
@@ -56,7 +57,6 @@ class Action;
 class ActionLmm;
 class StorageActionLmm;
 class As;
-class RoutingEdge;
 class RoutingPlatf;
 #else
 typedef struct Model Model;
@@ -74,7 +74,6 @@ typedef struct Action Action;
 typedef struct ActionLmm ActionLmm;
 typedef struct StorageActionLmm StorageActionLmm;
 typedef struct As As;
-typedef struct RoutingEdge RoutingEdge;
 typedef struct RoutingPlatf RoutingPlatf;
 #endif
 
@@ -95,6 +94,7 @@ typedef StorageModel *surf_storage_model_t;
 typedef xbt_dictelm_t surf_resource_t;
 typedef Resource *surf_cpp_resource_t;
 typedef Host *surf_host_t;
+typedef Cpu *surf_cpu_t;
 
 /** @ingroup SURF_c_bindings
  *  \brief Action structure
@@ -107,7 +107,6 @@ typedef Host *surf_host_t;
 typedef Action *surf_action_t;
 
 typedef As *AS_t;
-typedef RoutingEdge *routing_edge_t;
 typedef RoutingPlatf *routing_platf_t;
 
 typedef struct surf_file *surf_file_t;
@@ -243,7 +242,7 @@ XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
  */
 XBT_PUBLIC(surf_action_t) surf_host_model_execute_parallel_task(surf_host_model_t model,
 		                                    int host_nb,
-											sg_host_t *host_list,
+                                        sg_host_t *host_list,
                                             double *flops_amount,
                                             double *bytes_amount,
                                             double rate);

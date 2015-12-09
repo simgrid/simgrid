@@ -9,8 +9,12 @@
 #ifndef SG_PLATF_INTERFACE_H
 #define SG_PLATF_INTERFACE_H
 
+#include <xbt/dict.h>
+
 #include "simgrid/platf.h" /* public interface */
 #include "xbt/RngStream.h"
+
+#include <simgrid/forward.h>
 
 SG_BEGIN_DECL()
 
