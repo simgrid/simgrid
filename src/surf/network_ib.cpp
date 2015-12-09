@@ -4,6 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
+#include <utility>
+
 #include "network_ib.hpp"
 #include "simgrid/sg_config.h"
 #include "maxmin_private.hpp"
@@ -53,7 +56,7 @@ static void IB_action_init_callback(NetworkAction *action,RoutingEdge *src, Rout
     xbt_die("could not find dst node active comms !");  
  // act_dst->rate=rate;
   
-  ((NetworkIBModel*)surf_network_model)->active_comms[action]=make_pair(act_src, act_dst);
+  ((NetworkIBModel*)surf_network_model)->active_comms[action]=std::make_pair(act_src, act_dst);
   //post the action in the second dist, to retrieve in the other callback
   XBT_DEBUG("IB callback - action %p init", action);
 
@@ -136,7 +139,7 @@ void NetworkIBModel::computeIBfactors(IBNode *root) {
 	my_penalty_out = num_comm_out * Bs;
     }
 
-    max_penalty_out = max(max_penalty_out,my_penalty_out);
+    max_penalty_out = std::max(max_penalty_out,my_penalty_out);
   }
 
   for (std::vector<ActiveComm*>::iterator it= root->ActiveCommsUp.begin(); it != root->ActiveCommsUp.end(); ++it) {
@@ -149,7 +152,7 @@ void NetworkIBModel::computeIBfactors(IBNode *root) {
 		      * Be 
 		      * (*it)->destination->ActiveCommsDown.size();//number of different nodes sending to dest
     
-    double penalty=max(my_penalty_in,max_penalty_out);
+    double penalty = std::max(my_penalty_in,max_penalty_out);
     
     double rate_before_update = (*it)->action->getBound();
     //save initial rate of the action

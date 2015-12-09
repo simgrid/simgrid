@@ -4,6 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstddef>
+
+#include <algorithm>
+
+#include <xbt/log.h>
+
 #include "network_smpi.hpp"
 #include "simgrid/sg_config.h"
 
@@ -208,7 +214,7 @@ double NetworkSmpiModel::latencyFactor(double size)
 
 double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double size)
 {
-  return rate < 0 ? bound : min(bound, rate * bandwidthFactor(size));
+  return rate < 0 ? bound : std::min(bound, rate * bandwidthFactor(size));
 }
 
 /************

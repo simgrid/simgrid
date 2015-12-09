@@ -1,3 +1,11 @@
+#include <cstdlib>
+
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+#include <iostream>
+
 #include "surf_routing_cluster_fat_tree.hpp"
 #include "xbt/lib.h"
 
@@ -407,8 +415,8 @@ void AsClusterFatTree::addLink(FatTreeNode *parent, unsigned int parentPort,
 
 void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t 
                                                 cluster) {
-  std::vector<string> parameters;
-  std::vector<string> tmp;
+  std::vector<std::string> parameters;
+  std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
  
 
@@ -455,12 +463,12 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
 }
 
 
-void AsClusterFatTree::generateDotFile(const string& filename) const {
-  ofstream file;
+void AsClusterFatTree::generateDotFile(const std::string& filename) const {
+  std::ofstream file;
   /* Maybe should we get directly a char*, as open takes strings only beginning
    * with C++11...
    */
-  file.open(filename.c_str(), ios::out | ios::trunc); 
+  file.open(filename.c_str(), std::ios::out | std::ios::trunc); 
   
   if(file.is_open()) {
     file << "graph AsClusterFatTree {\n";

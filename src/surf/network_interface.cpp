@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
+
 #include "network_interface.hpp"
 #include "simgrid/sg_config.h"
 
@@ -164,7 +166,7 @@ double NetworkModel::shareResourcesFull(double now)
     }
 #endif
     if (action->m_latency > 0) {
-      minRes = (minRes < 0) ? action->m_latency : min(minRes, action->m_latency);
+      minRes = (minRes < 0) ? action->m_latency : std::min(minRes, action->m_latency);
     }
   }
 

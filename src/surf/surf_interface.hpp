@@ -75,8 +75,6 @@ namespace surf {
 extern XBT_PRIVATE tmgr_history_t history;
 #define NO_MAX_DURATION -1.0
 
-using namespace std;
-
 /*********
  * Utils *
  *********/

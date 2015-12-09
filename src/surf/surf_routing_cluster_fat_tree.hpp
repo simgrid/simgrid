@@ -7,6 +7,10 @@
 #ifndef SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 #define SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 
+#include <string>
+#include <map>
+#include <vector>
+
 #include <xbt/base.h>
 
 #include "surf_routing_cluster.hpp"
@@ -132,7 +136,7 @@ public:
   /** \brief Add a processing node.
    */
   void addProcessingNode(int id);
-  void generateDotFile(const string& filename = "fatTree.dot") const;
+  void generateDotFile(const std::string& filename = "fatTree.dot") const;
 
 private:
   

@@ -4,6 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdlib>
+
+#include <vector>
+
 #include <xbt/base.h>
 
 #include "host_interface.hpp"
@@ -170,7 +174,7 @@ public:
   void setPriority(double priority);
   double getRemains();
 
-  vector<RoutingEdge*> * p_edgeList = new vector<RoutingEdge*>();
+  std::vector<RoutingEdge*> * p_edgeList = new std::vector<RoutingEdge*>();
   double *p_computationAmount;
   double *p_communicationAmount;
   double m_latency;

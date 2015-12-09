@@ -4,11 +4,20 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdlib>
+
+#include <algorithm>
+
+#include <xbt/dict.h>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
+#include <xbt/dynar.h>
+#include <xbt/graph.h>
+
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 
 #include "surf_routing_generic.hpp"
 #include "network_interface.hpp"
-#include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
@@ -271,7 +280,7 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdge *src,
     int max_index_src = path_src->used - 1;
     int max_index_dst = path_dst->used - 1;
 
-    int max_index = max(max_index_src, max_index_dst);
+    int max_index = std::max(max_index_src, max_index_dst);
     int i, max;
 
     for (max = 0; max <= max_index; max++) {

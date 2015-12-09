@@ -4,6 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdlib>
+
+#include <algorithm>
+
 #include "host_ptask_L07.hpp"
 
 #include "cpu_interface.hpp"
@@ -596,7 +600,8 @@ void L07Action::updateBound()
     if (m_rate < 0)
       lmm_update_variable_bound(ptask_maxmin_system, getVariable(), lat_bound);
     else
-      lmm_update_variable_bound(ptask_maxmin_system, getVariable(), min(m_rate, lat_bound));
+      lmm_update_variable_bound(ptask_maxmin_system, getVariable(),
+        std::min(m_rate, lat_bound));
   }
 }
 

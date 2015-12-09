@@ -9,6 +9,8 @@
 
 #ifdef __cplusplus
 
+#include <cstdint>
+
 #include "ns3/core-module.h"
 #include "my-point-to-point-helper.h"
 
@@ -22,14 +24,11 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/tcp-socket-factory.h"
 
-using namespace ns3;
-using namespace std;
-
 struct MySocket{
-  uint32_t bufferedBytes;
-  uint32_t sentBytes;
-  uint32_t remaining;
-  uint32_t totalBytes;
+  std::uint32_t bufferedBytes;
+  std::uint32_t sentBytes;
+  std::uint32_t remaining;
+  std::uint32_t totalBytes;
   char finished;
   void* action;
 };
@@ -42,12 +41,12 @@ private:
 public:
   NS3Sim();
   ~NS3Sim();
-  void create_flow_NS3(Ptr<Node> src,
-            Ptr<Node> dst,
-            uint16_t port_number,
+  void create_flow_NS3(ns3::Ptr<ns3::Node> src,
+            ns3::Ptr<ns3::Node> dst,
+            std::uint16_t port_number,
             double start,
             const char *addr,
-            uint32_t TotalBytes,
+            std::uint32_t TotalBytes,
             void * action);
   void simulator_start(double min);
   void* get_action_from_socket(void *socket);

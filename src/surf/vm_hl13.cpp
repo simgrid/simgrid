@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
+
 #include "cpu_cas01.hpp"
 #include "vm_hl13.hpp"
 
@@ -110,7 +112,7 @@ double VMHL13Model::shareResources(double now)
 	        typeid(surf_network_model).name(), min_by_net,
             typeid(surf_storage_model).name(), min_by_sto);
 
-  double ret = max(max(min_by_cpu, min_by_net), min_by_sto);
+  double ret = std::max(std::max(min_by_cpu, min_by_net), min_by_sto);
   if (min_by_cpu >= 0.0 && min_by_cpu < ret)
 	ret = min_by_cpu;
   if (min_by_net >= 0.0 && min_by_net < ret)

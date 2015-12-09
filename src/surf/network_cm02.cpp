@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
+
 #include "network_cm02.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
@@ -406,7 +408,7 @@ Action *NetworkCm02Model::communicate(RoutingEdge *src, RoutingEdge *dst,
 	link = static_cast<NetworkCm02Link*>(_link);
     double bb = bandwidthFactor(size) * link->getBandwidth();
     bandwidth_bound =
-        (bandwidth_bound < 0.0) ? bb : min(bandwidth_bound, bb);
+        (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
   }
 
   action->m_latCurrent = action->m_latency;
@@ -442,7 +444,7 @@ Action *NetworkCm02Model::communicate(RoutingEdge *src, RoutingEdge *dst,
   if (action->m_rate < 0) {
     lmm_update_variable_bound(p_maxminSystem, action->getVariable(), (action->m_latCurrent > 0) ? sg_tcp_gamma / (2.0 * action->m_latCurrent) : -1.0);
   } else {
-    lmm_update_variable_bound(p_maxminSystem, action->getVariable(), (action->m_latCurrent > 0) ? min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)) : action->m_rate);
+    lmm_update_variable_bound(p_maxminSystem, action->getVariable(), (action->m_latCurrent > 0) ? std::min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)) : action->m_rate);
   }
 
   xbt_dynar_foreach(route, i, _link) {
@@ -640,7 +642,7 @@ void NetworkCm02Link::updateLatency(double value, double date){
       lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(), sg_tcp_gamma / (2.0 * action->m_latCurrent));
     else {
       lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(),
-                                min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)));
+                                std::min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)));
 
       if (action->m_rate < sg_tcp_gamma / (2.0 * action->m_latCurrent)) {
         XBT_INFO("Flow is limited BYBANDWIDTH");
