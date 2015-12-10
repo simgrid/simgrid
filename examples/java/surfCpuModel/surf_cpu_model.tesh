@@ -10,7 +10,7 @@ $ java -classpath ${classpath:=.} surfCpuModel/TestCpuModel ${srcdir:=.}/../plat
 > [0.000000] [jmsg/INFO] New Cpu(Ginette, 4.8492E7, 1.0)
 > [0.000000] [jmsg/INFO] New Cpu(Bourassa, 4.8492E7, 1.0)
 > [0.000000] [jmsg/INFO] UpdateActionState of 0 actions
-> [0.000000] [jmsg/INFO] Cpu Loaded: surfCpuModel.CpuConstantModel
+> [0.000000] [jmsg/INFO] Cpu Loaded: org.simgrid.surf.CpuModel
 > [Tremblay:surfCpuModel.Sender:(1) 0.000000] [jmsg/INFO] helloo!
 > [Jupiter:surfCpuModel.Receiver:(2) 0.000000] [jmsg/INFO] helloo!
 > [0.000000] [jmsg/INFO] Sleep action of duration -1.0 sleeping true
