@@ -9,23 +9,7 @@
 #ifndef INCLUDE_SIMGRID_LINK_H_
 #define INCLUDE_SIMGRID_LINK_H_
 
-
-#ifdef __cplusplus
-
-namespace simgrid {
-namespace surf {
-
-class Link;
-
-}
-}
-typedef simgrid::surf::Link Link;
-
-#else
-typedef struct Link Link;
-#endif
-
-
+#include <simgrid/forward.h>
 
 /* C interface */
 SG_BEGIN_DECL()

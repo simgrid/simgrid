@@ -17,6 +17,7 @@ namespace surf {
 class Cpu;
 class RoutingEdge;
 class As;
+class Link;
 
 }
 }
@@ -24,12 +25,14 @@ class As;
 typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::RoutingEdge surf_RoutingEdge;
 typedef simgrid::surf::As surf_As;
+typedef simgrid::surf::Link Link;
 
 #else
 
 typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_RoutingEdge surf_RoutingEdge;
 typedef struct surf_As surf_As;
+typedef struct Link Link;
 
 #endif
 
