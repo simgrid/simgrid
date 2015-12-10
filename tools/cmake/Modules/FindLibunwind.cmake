@@ -71,3 +71,5 @@ endif()
 
 mark_as_advanced(PATH_LIBDW_H)
 mark_as_advanced(PATH_LIBDW_LIB)
+mark_as_advanced(PATH_LIBUNWIND_LIB)
+mark_as_advanced(PATH_LIBUNWIND_H)
