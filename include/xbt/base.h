@@ -216,7 +216,7 @@
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern __declspec(dllexport) type
 #  define XBT_PUBLIC_CLASS            class __declspec(dllexport)
-
+#  define XBT_PRIVATE
 
 /* Pack everything up statically */
 #elif defined(DLL_STATIC)
@@ -225,7 +225,7 @@
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
 #  define XBT_PUBLIC_CLASS            class
-
+#  define XBT_PRIVATE
 
 /* Link against the DLL */
 #elif (defined(_XBT_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
@@ -234,6 +234,7 @@
 #  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type
 #  define XBT_PUBLIC_DATA(type)       extern __declspec(dllimport) type
 #  define XBT_PUBLIC_CLASS            class __declspec(dllimport)
+#  define XBT_PRIVATE
 
 #elif defined(__ELF__) 
 #  define XBT_PUBLIC(type)            __attribute__((visibility("default"))) type
@@ -241,6 +242,7 @@
 #  define XBT_IMPORT_NO_EXPORT(type)  __attribute__((visibility("default"))) type
 #  define XBT_PUBLIC_DATA(type)       extern __attribute__((visibility("default"))) type
 #  define XBT_PUBLIC_CLASS            class __attribute__((visibility("default")))
+#  define XBT_PRIVATE                 __attribute__((visibility("hidden")))
 
 #else
 #  define XBT_PUBLIC(type)            type
@@ -248,13 +250,8 @@
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
 #  define XBT_PUBLIC_CLASS            class
+#  define XBT_PRIVATE
 
-#endif
-
-#ifdef __ELF__
-#define XBT_PRIVATE __attribute__((visibility("hidden")))
-#else
-#define XBT_PRIVATE
 #endif
 
 #ifdef _MSC_VER /* MSVC has no ssize_t, and I fail to use the SSIZE_T declared in BaseTsd.h */
