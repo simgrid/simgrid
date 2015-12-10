@@ -1236,8 +1236,13 @@ void action_allToAllv(const char *const *action) {
   xbt_free(recvdisps);
 }
 
-/* Alternative implementation of send_process_data. */
-void send_process_data(double data_size, smx_host_t host){
+
+/*In previous versions, we called smpi_send_process_data (implemented on
+ * smpi_base.c). The problem is that that function needs to have at least one
+ * process in the destination host. This is not always true when using a
+ * centralized LB approach.*/
+void smpi_replay_send_process_data(double data_size, smx_host_t host)
+{
   smx_synchro_t synchro;
   smx_host_t host_list[2];
   double comp_amount[2];
@@ -1274,9 +1279,12 @@ void smpi_replay_process_migrate(smx_process_t process, smx_host_t new_host,
   simdata_process_t simdata = simcall_process_get_data(process);
   simdata->m_host = host;
   */
+ 
+  /* By rktesser: I removed the data migration from this function, because it
+   * needs to be done in parallel. As this function needs to be called in a
+   * critical region (e.g. protected by a mutex), these (synchronous) data
+   * migrations would become sequential.*/
 
-  /*In previous versions, we called smpi_send_process_data (implemented on smpi_base.c). The problem is that that function needs to have at least one process in the destination host. This is not always true when using a centralized LB approach.*/
-  send_process_data((double)size, new_host);
 
 #ifdef HAVE_TRACING
   //Update the traces to reflect the migration.
