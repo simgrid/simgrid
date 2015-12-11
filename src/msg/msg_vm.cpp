@@ -846,7 +846,6 @@ static int migration_tx_fun(int argc, char *argv[])
   }
  }
 
-stage3:
   /* Stage3: stop the VM and copy the rest of states. */
   XBT_DEBUG("mig-stage3: remaining_size %f", remaining_size);
   simcall_vm_suspend(ms->vm);
