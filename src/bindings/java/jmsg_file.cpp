@@ -10,30 +10,30 @@
 #include "jxbt_utilities.h"
 
 void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t fd) {
-  (*env)->SetLongField(env, jfile, jfile_field_bind, (intptr_t)fd);
+  env->SetLongField(jfile, jfile_field_bind, (intptr_t)fd);
 }
 
 msg_file_t jfile_get_native(JNIEnv *env, jobject jfile) {
   msg_file_t file =
-    (msg_file_t)(intptr_t)(*env)->GetLongField(env, jfile, jfile_field_bind);
+    (msg_file_t)(intptr_t)env->GetLongField(jfile, jfile_field_bind);
   return file;
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_File_nativeInit(JNIEnv *env, jclass cls) {
-  jclass class_File = (*env)->FindClass(env, "org/simgrid/msg/File");
+  jclass class_File = env->FindClass("org/simgrid/msg/File");
   jfile_field_bind = jxbt_get_jfield(env , class_File, "bind", "J");
   xbt_assert((jfile_field_bind != NULL), "Can't find \"bind\" field in File class.");
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_File_open(JNIEnv *env, jobject jfile, jobject jpath) {
-  const char *path = (*env)->GetStringUTFChars(env, jpath, 0);
+  const char *path = env->GetStringUTFChars((jstring) jpath, 0);
   msg_file_t file;
 
   file = MSG_file_open(path, NULL);
   jfile_bind(env, jfile, file);
 
-  (*env)->ReleaseStringUTFChars(env, jpath, path);
+  env->ReleaseStringUTFChars((jstring) jpath, path);
 }
 JNIEXPORT jlong JNICALL
 Java_org_simgrid_msg_File_read(JNIEnv *env, jobject jfile, jlong jsize) {

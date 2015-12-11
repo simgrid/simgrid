@@ -71,7 +71,8 @@ void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
         jxbt_throw_task_cancelled(env,NULL);
     break;
     default:
-        jxbt_throw_native(env,xbt_strdup("undefined message failed (please see jmsg_throw_status function in jmsg.c)"));
+        jxbt_throw_native(env,xbt_strdup("undefined message failed "
+          "(please see jmsg_throw_status function in jmsg.cpp)"));
   }
 }
 

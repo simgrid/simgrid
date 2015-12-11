@@ -13,7 +13,7 @@ jfieldID jrngstream_bind;
 
 RngStream jrngstream_to_native(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream =
-    (RngStream)(intptr_t)(*env)->GetLongField(env, jrngstream, jrngstream_bind);
+    (RngStream)(intptr_t)env->GetLongField(jrngstream, jrngstream_bind);
   if (!rngstream) {
     jxbt_throw_notbound(env, "rngstream", jrngstream);
     return NULL;
@@ -23,31 +23,31 @@ RngStream jrngstream_to_native(JNIEnv *env, jobject jrngstream) {
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_nativeInit(JNIEnv *env, jclass cls) {
-  jclass class_RngStream = (*env)->FindClass(env, "org/simgrid/msg/RngStream");
+  jclass class_RngStream = env->FindClass("org/simgrid/msg/RngStream");
 
   jrngstream_bind = jxbt_get_jfield(env, class_RngStream, "bind", "J");
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_create(JNIEnv *env, jobject jrngstream, jstring jname) {
-  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+  const char *name = env->GetStringUTFChars(jname, 0);
   RngStream rngstream = RngStream_CreateStream(name);
   //Bind the RngStream object
-  (*env)->SetLongField(env, jrngstream, jrngstream_bind, (intptr_t)rngstream);
+  env->SetLongField(jrngstream, jrngstream_bind, (intptr_t)rngstream);
 
-  (*env)->ReleaseStringUTFChars(env, jname, name);
+  env->ReleaseStringUTFChars(jname, name);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_RngStream_nativeFinalize(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
   RngStream_DeleteStream(&rngstream);
-  (*env)->SetLongField(env, jrngstream, jrngstream_bind, (intptr_t)NULL);
+  env->SetLongField(jrngstream, jrngstream_bind, (intptr_t)NULL);
 }
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_RngStream_setPackageSeed(JNIEnv *env, jobject jrngstream, jintArray jseed) {
   jint buffer[6];
 
-  (*env)->GetIntArrayRegion(env, jseed, 0, 6, buffer);
+  env->GetIntArrayRegion(jseed, 0, 6, buffer);
 
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
   if (!rngstream)
@@ -98,7 +98,7 @@ JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_RngStream_setSeed(JNIEnv *env, jobject jrngstream, jintArray jseed) {
   jint buffer[6];
 
-  (*env)->GetIntArrayRegion(env, jseed, 0, 6, buffer);
+  env->GetIntArrayRegion(jseed, 0, 6, buffer);
 
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
   if (!rngstream)

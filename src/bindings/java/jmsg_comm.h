@@ -10,6 +10,9 @@
 #define MSG_JCOMM_H
 #include <jni.h>
 #include <simgrid/msg.h>
+
+SG_BEGIN_DECL()
+
 /**
  * This function binds the task associated with the communication to
  * the java communication object.
@@ -27,4 +30,7 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm);
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout);
+
+SG_END_DECL()
+
 #endif /* MSG_JCOMM_H */

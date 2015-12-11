@@ -12,6 +12,7 @@
 #include <jni.h>
 #include "simgrid/msg.h"
 
+SG_BEGIN_DECL()
 
 /**
  * This function associated a native task to a java task instance.
@@ -274,6 +275,6 @@ Java_org_simgrid_msg_Task_listenFromHost(JNIEnv *, jclass, jstring,
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_Task_listenFrom(JNIEnv *, jclass, jstring);
 
-
+SG_END_DECL()
 
 #endif                          /* !MSG_JTASK_H */

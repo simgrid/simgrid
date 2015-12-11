@@ -14,6 +14,8 @@
 #include "simgrid/msg.h"
 #include "simgrid/simdag.h"
 
+SG_BEGIN_DECL()
+
 /*
  * Functions to manage tracing categories
  */
@@ -95,5 +97,7 @@ XBT_PUBLIC(xbt_dynar_t) TRACE_get_node_types (void);
 XBT_PUBLIC(xbt_dynar_t) TRACE_get_edge_types (void);
 XBT_PUBLIC(void) TRACE_pause (void);
 XBT_PUBLIC(void) TRACE_resume (void);
+
+SG_END_DECL()
 
 #endif                          /* INSTR_H_ */

@@ -12,6 +12,8 @@
 #include <jni.h>
 #include "simgrid/msg.h"
 
+SG_BEGIN_DECL()
+
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm);
 msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm);
 
@@ -155,4 +157,7 @@ Java_org_simgrid_msg_VM_restore(JNIEnv *env, jobject jvm);
 
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm);
+
+SG_END_DECL()
+
 #endif

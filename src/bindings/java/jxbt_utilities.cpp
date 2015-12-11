@@ -18,7 +18,7 @@
 
 jclass jxbt_get_class(JNIEnv * env, const char *name)
 {
-  jclass cls = (*env)->FindClass(env, name);
+  jclass cls = env->FindClass(name);
 
   if (!cls) {
     char *m = bprintf("Class %s not found", name);
@@ -37,20 +37,20 @@ jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls,
 
   if (!cls)
     return 0;
-  id = (*env)->GetMethodID(env, cls, name, signature);
+  id = env->GetMethodID(cls, name, signature);
 
   if (!id) {
 
     jmethodID tostr_id =
-        (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
+        env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
     jstring jclassname =
-        (jstring) (*env)->CallObjectMethod(env, cls, tostr_id, NULL);
-    const char *classname = (*env)->GetStringUTFChars(env, jclassname, 0);
+        (jstring) env->CallObjectMethod(cls, tostr_id, NULL);
+    const char *classname = env->GetStringUTFChars(jclassname, 0);
 
     char *m = bprintf("Cannot find method %s(%s) in %s", name, signature,
                       classname);
 
-    (*env)->ReleaseStringUTFChars(env, jclassname, classname);
+    env->ReleaseStringUTFChars(jclassname, classname);
 
     jxbt_throw_jni(env, m);
 
@@ -68,21 +68,21 @@ jmethodID jxbt_get_static_jmethod(JNIEnv * env, jclass cls,
 
   if (!cls)
     return 0;
-  id = (*env)->GetStaticMethodID(env, cls, name, signature);
+  id = env->GetStaticMethodID(cls, name, signature);
 
   if (!id) {
 
     jmethodID tostr_id =
-        (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
+        env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
     jstring jclassname =
-        (jstring) (*env)->CallObjectMethod(env, cls, tostr_id, NULL);
-    const char *classname = (*env)->GetStringUTFChars(env, jclassname, 0);
+        (jstring) env->CallObjectMethod(cls, tostr_id, NULL);
+    const char *classname = env->GetStringUTFChars(jclassname, 0);
 
     char *m =
         bprintf("Cannot find static method %s(%s) in %s", name, signature,
                 classname);
 
-    (*env)->ReleaseStringUTFChars(env, jclassname, classname);
+    env->ReleaseStringUTFChars(jclassname, classname);
 
     jxbt_throw_jni(env, m);
 
@@ -104,7 +104,7 @@ jmethodID jxbt_get_static_smethod(JNIEnv * env, const char *classname,
   if (!cls)
     return 0;
 
-  id = (*env)->GetStaticMethodID(env, cls, name, signature);
+  id = env->GetStaticMethodID(cls, name, signature);
 
   if (!id) {
     char *m =
@@ -130,7 +130,7 @@ jmethodID jxbt_get_smethod(JNIEnv * env, const char *classname,
   if (!cls)
     return 0;
 
-  id = (*env)->GetMethodID(env, cls, name, signature);
+  id = env->GetMethodID(cls, name, signature);
 
   if (!id) {
     char *m = bprintf("Cannot find method %s(%s) in %s", name, signature,
@@ -152,18 +152,18 @@ jfieldID jxbt_get_jfield(JNIEnv * env, jclass cls,
   if (!cls)
     return 0;
 
-  id = (*env)->GetFieldID(env, cls, name, signature);
+  id = env->GetFieldID(cls, name, signature);
 
   if (!id) {
     jmethodID getname_id =
-        (*env)->GetMethodID(env, cls, "getName", "()Ljava/lang/String;");
+        env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
     jstring jclassname =
-        (jstring) (*env)->CallObjectMethod(env, cls, getname_id, NULL);
-    const char *classname = (*env)->GetStringUTFChars(env, jclassname, 0);
+        (jstring) env->CallObjectMethod(cls, getname_id, NULL);
+    const char *classname = env->GetStringUTFChars(jclassname, 0);
     char *m = bprintf("Cannot find field %s %s in %s", signature, name,
                       classname);
 
-    (*env)->ReleaseStringUTFChars(env, jclassname, classname);
+    env->ReleaseStringUTFChars(jclassname, classname);
 
     jxbt_throw_jni(env, m);
 
@@ -183,7 +183,7 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
   if (!cls)
     return 0;
 
-  id = (*env)->GetFieldID(env, cls, name, signature);
+  id = env->GetFieldID(cls, name, signature);
 
   if (!id) {
     char *m = bprintf("Cannot find field %s %s in %s", signature, name,
@@ -203,12 +203,12 @@ jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
 /* ***************** */
 void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg)
 {
-  jclass cls = (*env)->FindClass(env, name);
+  jclass cls = env->FindClass(name);
 
   xbt_assert(cls, "%s (Plus severe error: class %s not found)\n", msg,
               name);
 
-  (*env)->ThrowNew(env, cls, msg);
+  env->ThrowNew(cls, msg);
 
   free(msg);
 }

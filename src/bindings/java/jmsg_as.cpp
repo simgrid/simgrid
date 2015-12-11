@@ -22,29 +22,29 @@ static jfieldID jas_field_As_bind;
 
 jobject jas_new_instance(JNIEnv * env) {
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/As");
-  return (*env)->NewObject(env, cls, jas_method_As_constructor);
+  return env->NewObject(cls, jas_method_As_constructor);
 }
 
 jobject jas_ref(JNIEnv * env, jobject jas) {
-  return (*env)->NewGlobalRef(env, jas);
+  return env->NewGlobalRef(jas);
 }
 
 void jas_unref(JNIEnv * env, jobject jas) {
-  (*env)->DeleteGlobalRef(env, jas);
+  env->DeleteGlobalRef(jas);
 }
 
 void jas_bind(jobject jas, msg_as_t as, JNIEnv * env) {
-  (*env)->SetLongField(env, jas, jas_field_As_bind, (jlong) (uintptr_t) (as));
+  env->SetLongField(jas, jas_field_As_bind, (jlong) (uintptr_t) (as));
 }
 
 msg_as_t jas_get_native(JNIEnv * env, jobject jas) {
-  return (msg_as_t) (uintptr_t) (*env)->GetLongField(env, jas, jas_field_As_bind);
+  return (msg_as_t) (uintptr_t) env->GetLongField(jas, jas_field_As_bind);
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cls) {
-  jclass class_As = (*env)->FindClass(env, "org/simgrid/msg/As");
-  jas_method_As_constructor = (*env)->GetMethodID(env, class_As, "<init>", "()V");
+  jclass class_As = env->FindClass("org/simgrid/msg/As");
+  jas_method_As_constructor = env->GetMethodID(class_As, "<init>", "()V");
   jas_field_As_bind = jxbt_get_jfield(env,class_As, "bind", "J");
   if (!class_As || !jas_method_As_constructor || !jas_field_As_bind) {
     jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
@@ -54,7 +54,7 @@ Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cls) {
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject jas) {
   msg_as_t as = jas_get_native(env, jas);
-  return (*env)->NewStringUTF(env, MSG_environment_as_get_name(as));
+  return env->NewStringUTF(MSG_environment_as_get_name(as));
 }
 
 JNIEXPORT jobjectArray JNICALL
@@ -67,13 +67,13 @@ Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
   
   xbt_dict_t dict = MSG_environment_as_get_routing_sons(self_as);
   int count = xbt_dict_length(dict);
-  jclass cls = (*env)->FindClass(env, "org/simgrid/msg/As");
+  jclass cls = env->FindClass("org/simgrid/msg/As");
 
   if (!cls) {
     return NULL;
   }
 
-  jtable = (*env)->NewObjectArray(env, (jsize) count, cls, NULL);
+  jtable = env->NewObjectArray((jsize) count, cls, NULL);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
@@ -96,7 +96,7 @@ Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
     }
     jas_bind(tmp_jas, tmp_as, env);
 
-    (*env)->SetObjectArrayElement(env, jtable, index, tmp_jas);
+    env->SetObjectArrayElement(jtable, index, tmp_jas);
     index++;
 
   }
@@ -111,16 +111,16 @@ Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jas, jobject jname) {
     jxbt_throw_notbound(env, "as", jas);
     return NULL;
   }
-  const char *name = (*env)->GetStringUTFChars(env, jname, 0);
+  const char *name = env->GetStringUTFChars((jstring) jname, 0);
 
   const char *property = MSG_environment_as_get_property_value(as, name);
   if (!property) {
     return NULL;
   }
 
-  jobject jproperty = (*env)->NewStringUTF(env, property);
+  jobject jproperty = env->NewStringUTF(property);
 
-  (*env)->ReleaseStringUTFChars(env, jname, name);
+  env->ReleaseStringUTFChars((jstring) jname, name);
 
   return jproperty;
 }
@@ -128,7 +128,7 @@ Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jas, jobject jname) {
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_As_getModel(JNIEnv * env, jobject jas) {
   msg_as_t as = jas_get_native(env, jas);
-  return (*env)->NewStringUTF(env, MSG_environment_as_get_model(as));
+  return env->NewStringUTF(MSG_environment_as_get_model(as));
 }
 
 JNIEXPORT jobjectArray JNICALL
@@ -150,7 +150,7 @@ Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
     return NULL;
   }
   
-  jtable = (*env)->NewObjectArray(env, (jsize) count, cls, NULL);
+  jtable = env->NewObjectArray((jsize) count, cls, NULL);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
@@ -163,14 +163,14 @@ Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
 
     jhost = (jobject) xbt_lib_get_level(host, JAVA_HOST_LEVEL);
     if (!jhost) {
-      jname = (*env)->NewStringUTF(env, MSG_host_get_name(host));
+      jname = env->NewStringUTF(MSG_host_get_name(host));
 
       jhost = Java_org_simgrid_msg_Host_getByName(env, cls, jname);
 
       /* FIXME: leak of jname ? */
     }
 
-    (*env)->SetObjectArrayElement(env, jtable, index, jhost);
+    env->SetObjectArrayElement(jtable, index, jhost);
   }
   xbt_dynar_free(&table);
   return jtable;

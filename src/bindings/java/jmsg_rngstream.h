@@ -11,6 +11,8 @@
 #include <jni.h>
 #include <xbt/RngStream.h>
 
+SG_BEGIN_DECL()
+
 RngStream jrngstream_to_native(JNIEnv *env, jobject jrngstream);
 
 JNIEXPORT void JNICALL
@@ -48,5 +50,7 @@ Java_org_simgrid_msg_RngStream_randU01(JNIEnv *env, jobject jrngstream);
 
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_RngStream_randInt(JNIEnv *env, jobject jrngstream, jint i, jint j);
+
+SG_END_DECL()
 
 #endif                          /* MSG_RNGSTREAM_H */

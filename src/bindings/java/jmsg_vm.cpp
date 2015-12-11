@@ -19,15 +19,15 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 static jfieldID jvm_field_bind;
 
 void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm) {
-  (*env)->SetLongField(env, jvm, jvm_field_bind, (intptr_t)vm);
+  env->SetLongField(jvm, jvm_field_bind, (intptr_t)vm);
 }
 msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm) {
-  return (msg_vm_t)(intptr_t)(*env)->GetLongField(env, jvm, jvm_field_bind);
+  return (msg_vm_t)(intptr_t)env->GetLongField(jvm, jvm_field_bind);
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cls) {
-  jclass jprocess_class_VM = (*env)->FindClass(env, "org/simgrid/msg/VM");
+  jclass jprocess_class_VM = env->FindClass("org/simgrid/msg/VM");
   jvm_field_bind = jxbt_get_jfield(env, jprocess_class_VM, "bind", "J");
   if (!jvm_field_bind	) {
     jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
@@ -91,7 +91,7 @@ Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring 
   msg_host_t host = jhost_get_native(env, jhost);
 
   const char *name;
-  name = (*env)->GetStringUTFChars(env, jname, 0);
+  name = env->GetStringUTFChars(jname, 0);
   name = xbt_strdup(name);
 
   // TODO disk concerns are not taken into account yet
@@ -187,8 +187,10 @@ Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm) {
     }
     /* Sets the host name */
     const char *name = MSG_host_get_name(host);
-    jobject jname = (*env)->NewStringUTF(env,name);
-    (*env)->SetObjectField(env, jhost, jxbt_get_jfield(env, (*env)->FindClass(env, "org/simgrid/msg/Host"), "name", "Ljava/lang/String;"), jname);
+    jobject jname = env->NewStringUTF(name);
+    env->SetObjectField(jhost, jxbt_get_jfield(env,
+      env->FindClass("org/simgrid/msg/Host"), "name", "Ljava/lang/String;"),
+      jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
     xbt_lib_set(host_lib, host->key, JAVA_HOST_LEVEL, (void *) jhost);

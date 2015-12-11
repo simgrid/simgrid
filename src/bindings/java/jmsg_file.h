@@ -11,6 +11,8 @@
 #include <jni.h>
 #include "simgrid/msg.h"
 
+SG_BEGIN_DECL()
+
 jfieldID jfile_field_bind;
 
 void jfile_bind(JNIEnv *env, jobject jfile, msg_file_t fd);
@@ -47,5 +49,7 @@ Java_org_simgrid_msg_File_write(JNIEnv*, jobject, jlong);
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_File_close(JNIEnv*, jobject);
+
+SG_END_DECL()
 
 #endif

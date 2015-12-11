@@ -11,6 +11,8 @@
 #include <jni.h>
 #include "simgrid/msg.h"
 
+SG_BEGIN_DECL()
+
 jobject jas_new_instance(JNIEnv * env);
 jobject jas_ref(JNIEnv * env, jobject jas);
 void jas_unref(JNIEnv * env, jobject jas);
@@ -34,5 +36,7 @@ Java_org_simgrid_msg_As_getModel(JNIEnv * env, jobject jas);
 
 JNIEXPORT jobjectArray JNICALL
 Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas);
+
+SG_END_DECL()
 
 #endif                          /*!MSG_JAS_H */

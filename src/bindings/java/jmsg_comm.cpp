@@ -20,24 +20,24 @@ static jfieldID jtask_field_Comm_task;
 static jfieldID jcomm_field_Comm_taskBind;
 
 void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
-  msg_comm_t comm = (msg_comm_t) (uintptr_t) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
+  msg_comm_t comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
   //test if we are receiving or sending a task.
-  jboolean jreceiving = (*env)->GetBooleanField(env, jcomm, jcomm_field_Comm_receiving);
+  jboolean jreceiving = env->GetBooleanField(jcomm, jcomm_field_Comm_receiving);
   if (jreceiving == JNI_TRUE) {
     //bind the task object.
     msg_task_t task = MSG_comm_get_task(comm);
     xbt_assert(task != NULL, "Task is NULL");
-    jobject jtask_global = MSG_task_get_data(task);
+    jobject jtask_global = (jobject) MSG_task_get_data(task);
     //case where the data has already been retrieved
     if (jtask_global == NULL) {
       return;
     }
 
     //Make sure the data will be correctly gc.
-    jobject jtask_local = (*env)->NewLocalRef(env, jtask_global);
-    (*env)->DeleteGlobalRef(env, jtask_global);
+    jobject jtask_local = env->NewLocalRef(jtask_global);
+    env->DeleteGlobalRef(jtask_global);
 
-    (*env)->SetObjectField(env, jcomm, jtask_field_Comm_task, jtask_local);
+    env->SetObjectField(jcomm, jtask_field_Comm_task, jtask_local);
 
     MSG_task_set_data(task, NULL);
   }
@@ -46,7 +46,7 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
-  jclass jfield_class_Comm = (*env)->FindClass(env, "org/simgrid/msg/Comm");
+  jclass jfield_class_Comm = env->FindClass("org/simgrid/msg/Comm");
   if (!jfield_class_Comm) {
     jxbt_throw_native(env,bprintf("Can't find the org/simgrid/msg/Comm class."));
     return;
@@ -66,19 +66,19 @@ Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
   msg_comm_t comm;
   msg_task_t *task_received;
 
-  task_received = (msg_task_t*)  (uintptr_t) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_taskBind);
+  task_received = (msg_task_t*)  (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_taskBind);
   xbt_free(task_received);
 
-  comm = (msg_comm_t) (uintptr_t) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
+  comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
   MSG_comm_destroy(comm);
 }
 
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
   msg_comm_t comm;
-  comm = (msg_comm_t) (uintptr_t) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
+  comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
 
-  jboolean finished = (*env)->GetBooleanField(env, jcomm, jcomm_field_Comm_finished);
+  jboolean finished = env->GetBooleanField(jcomm, jcomm_field_Comm_finished);
   if (finished == JNI_TRUE) {
     return JNI_TRUE;
   }
@@ -102,20 +102,20 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
-  msg_comm_t comm = (msg_comm_t) (uintptr_t) (*env)->GetLongField(env, jcomm, jcomm_field_Comm_bind);
+  msg_comm_t comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
   if (!comm) {
     jxbt_throw_native(env,bprintf("comm is null"));
     return;
   }
 
-  jboolean finished = (*env)->GetBooleanField(env, jcomm, jcomm_field_Comm_finished);
+  jboolean finished = env->GetBooleanField(jcomm, jcomm_field_Comm_finished);
   if (finished == JNI_TRUE) {
     return;
   }
 
   msg_error_t status;
   status = MSG_comm_wait(comm,(double)timeout);
-  (*env)->SetBooleanField(env, jcomm, jcomm_field_Comm_finished, JNI_TRUE);
+  env->SetBooleanField(jcomm, jcomm_field_Comm_finished, JNI_TRUE);
   if (status == MSG_OK) {
     jcomm_bind_task(env,jcomm);
     return;

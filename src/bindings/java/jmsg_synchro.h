@@ -13,6 +13,8 @@
 #include <simgrid/msg.h>
 #include <simgrid/simix.h>
 
+SG_BEGIN_DECL()
+
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Mutex_nativeInit(JNIEnv *env, jclass cls);
 
@@ -41,4 +43,7 @@ JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_Semaphore_wouldBlock(JNIEnv * env, jobject obj);
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Semaphore_nativeFinalize(JNIEnv * env, jobject obj);
+
+SG_END_DECL()
+
 #endif                          /* !MSG_JPROCESS_H */
