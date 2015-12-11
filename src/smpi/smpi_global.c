@@ -83,14 +83,15 @@ void smpi_process_init(int *argc, char ***argv)
     SIMIX_process_set_cleanup_function(proc, SIMIX_process_cleanup);
     char* instance_id = (*argv)[1];
     int rank = atoi((*argv)[2]);
-    /* Now using segment index of the process */
-    index = proc->segment_index;
+    index = smpi_process_index_of_smx_process(proc);
 
     if(!index_to_process_data){
       index_to_process_data=(int*)xbt_malloc(SIMIX_process_count()*sizeof(int));
     }
 
     if(smpi_privatize_global_variables){
+      /* Now using segment index of the process  */
+      index = proc->segment_index;
       /* Done at the process's creation */
       SMPI_switch_data_segment(index);
     }
