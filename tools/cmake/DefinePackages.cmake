@@ -874,8 +874,8 @@ endif()
 if(WIN32)
   set(simgrid_sources
     ${simgrid_sources}
-    src/simix/src/simix/ThreadContext.cpp
-    src/simix/src/simix/ThreadContext.hpp
+    src/simix/ThreadContext.cpp
+    src/simix/ThreadContext.hpp
     src/xbt/win32_ucontext.c
     src/xbt/xbt_os_thread.c
     )
