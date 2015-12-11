@@ -13,6 +13,7 @@
 #include "src/simix/smx_private.h"
 #include "simgrid/sg_config.h"
 #include "src/mc/mc_replay.h"
+#include "src/msg/msg_private.h"
 
 #include <float.h>              /* DBL_MAX */
 #include <stdint.h>
@@ -82,11 +83,18 @@ void smpi_process_init(int *argc, char ***argv)
     SIMIX_process_set_cleanup_function(proc, SIMIX_process_cleanup);
     char* instance_id = (*argv)[1];
     int rank = atoi((*argv)[2]);
-    index = smpi_process_index_of_smx_process(proc);
+    /* Now using segment index of the process */
+    index = proc->segment_index;
 
     if(!index_to_process_data){
       index_to_process_data=(int*)xbt_malloc(SIMIX_process_count()*sizeof(int));
     }
+
+    if(smpi_privatize_global_variables){
+      /* Done at the process's creation */
+      SMPI_switch_data_segment(index);
+    }
+
     MPI_Comm* temp_comm_world;
     xbt_bar_t temp_bar;
     smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world ,&temp_bar);
@@ -96,8 +104,11 @@ void smpi_process_init(int *argc, char ***argv)
     data->index = index;
     data->instance_id = instance_id;
     data->replaying = 0;
-    xbt_free(simcall_process_get_data(proc));
-    simcall_process_set_data(proc, data);
+    //xbt_free(simcall_process_get_data(proc));
+
+  simdata_process_t simdata = simcall_process_get_data(proc);
+  simdata->data = data;
+
     if (*argc > 3) {
       free((*argv)[1]);
       memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
@@ -110,10 +121,6 @@ void smpi_process_init(int *argc, char ***argv)
     // set the process attached to the mailbox
     simcall_rdv_set_receiver(data->mailbox_small, proc);
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
-
-    if(smpi_privatize_global_variables){
-      smpi_switch_data_segment(index);
-    }
 
   }
   if (smpi_process_data() == NULL)
@@ -162,9 +169,14 @@ int smpi_process_finalized()
  */
 int smpi_process_initialized(void)
 {
-  int index = smpi_process_index();
-  return ( (index != MPI_UNDEFINED)
-          && (process_data[index_to_process_data[index]]->state == SMPI_INITIALIZED));
+  if (!index_to_process_data){
+    return false;
+  }
+  else{
+    int index = smpi_process_index();
+    return ( (index != MPI_UNDEFINED)
+             && (process_data[index_to_process_data[index]]->state == SMPI_INITIALIZED));
+  }
 }
 
 /**
@@ -205,7 +217,8 @@ int smpi_global_size(void)
 
 smpi_process_data_t smpi_process_data(void)
 {
-  return SIMIX_process_self_get_data(SIMIX_process_self());
+  simdata_process_t simdata = SIMIX_process_self_get_data(SIMIX_process_self());
+  return simdata->data;
 }
 
 smpi_process_data_t smpi_process_remote_data(int index)
@@ -355,7 +368,7 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t comm,
       && ((char*)buff < smpi_start_data_exe + smpi_size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-       smpi_switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.src_proc))->index);
+       smpi_switch_data_segment(((smpi_process_data_t)(((simdata_process_t)SIMIX_process_get_data(comm->comm.src_proc))->data))->index);
        tmpbuff = (void*)xbt_malloc(buff_size);
        memcpy(tmpbuff, buff, buff_size);
   }
@@ -366,7 +379,7 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t comm,
       && ((char*)comm->comm.dst_buff < smpi_start_data_exe + smpi_size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-       smpi_switch_data_segment(((smpi_process_data_t)SIMIX_process_get_data(comm->comm.dst_proc))->index);
+       smpi_switch_data_segment(((smpi_process_data_t)(((simdata_process_t)SIMIX_process_get_data(comm->comm.dst_proc))->data))->index);
   }
 
 
@@ -647,6 +660,9 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
   TRACE_add_end_function(TRACE_smpi_release);
 
   SIMIX_global_init(&argc, argv);
+  MSG_init(&argc,argv);
+
+  SMPI_switch_data_segment = smpi_switch_data_segment;
 
   smpi_init_options();
 

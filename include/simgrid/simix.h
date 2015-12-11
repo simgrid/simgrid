@@ -230,6 +230,7 @@ XBT_PUBLIC(void) SIMIX_process_set_context(smx_process_t p,smx_context_t c);
 XBT_PUBLIC(int) SIMIX_process_has_pending_comms(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_on_exit_runall(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data);
+XBT_PUBLIC(xbt_main_func_t) SIMIX_process_get_code(void);
 
 /****************************** Communication *********************************/
 XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_synchro_t, void*, size_t));
