@@ -282,12 +282,12 @@ Java_org_simgrid_msg_Task_getSource(JNIEnv * env,
   if (host == NULL) {
   	return NULL;
   }
-  if (!xbt_lib_get_level(host, JAVA_HOST_LEVEL)) {
+  if (!host->facet(JAVA_HOST_LEVEL)) {
     jxbt_throw_jni(env, "MSG_task_get_source() failed");
     return NULL;
   }
 
-  return (jobject) xbt_lib_get_level(host, JAVA_HOST_LEVEL);
+  return (jobject) host->facet(JAVA_HOST_LEVEL);
 }
 
 JNIEXPORT jdouble JNICALL

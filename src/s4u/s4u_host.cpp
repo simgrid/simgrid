@@ -17,7 +17,8 @@ namespace s4u {
 boost::unordered_map<std::string, Host*> *Host::hosts
 		= new boost::unordered_map<std::string, Host*>();
 
-Host::Host(const char*name) {
+Host::Host(const char*name)
+{
 	p_inferior = sg_host_by_name(name);
 	if (p_inferior==NULL)
 		xbt_die("No such host: %s",name); //FIXME: raise an exception

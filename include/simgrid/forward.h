@@ -12,6 +12,10 @@
 #ifdef __cplusplus
 
 namespace simgrid {
+class Host;
+}
+
+namespace simgrid {
 namespace surf {
 
 class Cpu;
@@ -22,6 +26,7 @@ class Link;
 }
 }
 
+typedef simgrid::Host simgrid_Host;
 typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::RoutingEdge surf_RoutingEdge;
 typedef simgrid::surf::As surf_As;
@@ -29,6 +34,7 @@ typedef simgrid::surf::Link Link;
 
 #else
 
+typedef struct simgrid_Host simgrid_Host;
 typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_RoutingEdge surf_RoutingEdge;
 typedef struct surf_As surf_As;
@@ -36,16 +42,14 @@ typedef struct Link Link;
 
 #endif
 
+typedef simgrid_Host* sg_host_t;
 typedef surf_Cpu *surf_cpu_t;
 typedef surf_RoutingEdge *routing_edge_t;
 typedef surf_RoutingEdge *sg_routing_edge_t;
 typedef surf_As *AS_t;
 
 // Types which are in fact dictelmt:
-
-typedef xbt_dictelm_t sg_host_t;
 typedef xbt_dictelm_t sg_storage_t;
-
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 

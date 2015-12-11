@@ -11,13 +11,10 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
-extern xbt_lib_t host_lib;
-extern xbt_lib_t as_router_lib;
-
-extern xbt_dict_t dict_socket;
-
 xbt_dynar_t IPV4addr;
 static double time_to_next_flow_completion = -1;
+
+extern xbt_dict_t dict_socket;
 
 /*************
  * Callbacks *
@@ -44,11 +41,7 @@ static void simgrid_ns3_add_host(simgrid::surf::Host* host)
 {
   const char* id = host->getName();
   XBT_DEBUG("NS3_ADD_HOST '%s'", id);
-  xbt_lib_set(host_lib,
-              id,
-              NS3_HOST_LEVEL,
-              ns3_add_host(id)
-    );
+  simgrid::Host::get_host(id)->set_facet(NS3_HOST_LEVEL, ns3_add_host(id));
 }
 
 static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
@@ -115,11 +108,8 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
       start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
       xbt_dynar_push_as(tab_elements_num, int, start);
       router_id = bprintf("ns3_%s%d%s", cluster_prefix, start, cluster_suffix);
-      xbt_lib_set(host_lib,
-                  router_id,
-                  NS3_HOST_LEVEL,
-                  ns3_add_host_cluster(router_id)
-        );
+      simgrid::Host::get_host(router_id)
+        ->set_facet(NS3_HOST_LEVEL, ns3_add_host_cluster(router_id));
       XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
       free(router_id);
       break;
@@ -130,11 +120,8 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
       for (i = start; i <= end; i++){
         xbt_dynar_push_as(tab_elements_num, int, i);
         router_id = bprintf("ns3_%s%d%s", cluster_prefix, i, cluster_suffix);
-        xbt_lib_set(host_lib,
-                    router_id,
-                    NS3_HOST_LEVEL,
-                    ns3_add_host_cluster(router_id)
-          );
+        simgrid::Host::get_host(router_id)
+          ->set_facet(NS3_HOST_LEVEL, ns3_add_host_cluster(router_id));
         XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
         free(router_id);
       }
@@ -159,8 +146,8 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
     router_id = bprintf("ns3_%s%d%s", cluster_prefix, elmts, cluster_suffix);
     XBT_DEBUG("Create link from '%s' to '%s'",host_id,router_id);
 
-    ns3_nodes_t host_src = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(host_lib,host_id,  NS3_HOST_LEVEL));
-    ns3_nodes_t host_dst = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(host_lib,router_id,NS3_HOST_LEVEL));
+    ns3_nodes_t host_src = ns3_find_host(host_id);
+    ns3_nodes_t host_dst = ns3_find_host(router_id);
 
     if(host_src && host_dst){}
     else xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
@@ -218,9 +205,9 @@ static void create_ns3_topology(void)
       XBT_DEBUG("\tLink (%s) bdw:%s lat:%s", link->getName(), link_bdw, link_lat);
 
       //create link ns3
-      ns3_nodes_t host_src = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(host_lib,src,NS3_HOST_LEVEL));
+      ns3_nodes_t host_src = ns3_find_host(src);
       if(!host_src) host_src = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(as_router_lib,src,NS3_ASR_LEVEL));
-      ns3_nodes_t host_dst = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(host_lib,dst,NS3_HOST_LEVEL));
+      ns3_nodes_t host_dst = ns3_find_host(dst);
       if(!host_dst) host_dst = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(as_router_lib,dst,NS3_ASR_LEVEL));
 
       if(host_src && host_dst){}
@@ -284,8 +271,8 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   routing_model_create(NULL);
   define_callbacks_ns3();
 
-  NS3_HOST_LEVEL = xbt_lib_add_level(host_lib,(void_f_pvoid_t)free_ns3_host);
-  NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,(void_f_pvoid_t)free_ns3_host);
+  NS3_HOST_LEVEL = simgrid::Host::add_level(free_ns3_host);
+  NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib, free_ns3_host);
 }
 
 NetworkNS3Model::~NetworkNS3Model() {

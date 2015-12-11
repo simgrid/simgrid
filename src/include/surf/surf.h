@@ -198,8 +198,9 @@ typedef enum {
 
 XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
-static inline surf_host_t surf_host_resource_priv(const void *host){
-  return (surf_host_t) xbt_lib_get_level((xbt_dictelm_t)host, SURF_HOST_LEVEL);
+static inline surf_host_t surf_host_resource_priv(sg_host_t host)
+{
+  return (surf_host_t) sg_host_get_facet(host, SURF_HOST_LEVEL);
 }
 static inline void *surf_storage_resource_priv(const void *storage){
   return (void*)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
@@ -271,10 +272,11 @@ XBT_PUBLIC(surf_action_t) surf_host_model_execute_parallel_task(surf_host_model_
                                             double rate);
 
 /** @brief Get the route (dynar of sg_link_t) between two hosts */
-XBT_PUBLIC(xbt_dynar_t) surf_host_model_get_route(surf_host_model_t model, surf_resource_t src, surf_resource_t dst);
+XBT_PUBLIC(xbt_dynar_t) surf_host_model_get_route(
+  surf_host_model_t model, sg_host_t src, sg_host_t dst);
 
 /** @brief Create a new VM on the specified host */
-XBT_PUBLIC(void) surf_vm_model_create(const char *name, surf_resource_t host_PM);
+XBT_PUBLIC(void) surf_vm_model_create(const char *name, sg_host_t host_PM);
 
 /** @brief Create a communication between two hosts
  *
@@ -320,31 +322,31 @@ static inline void surf_host_set_state(surf_host_t host, e_surf_resource_state_t
 }
 
 /** @brief Get the speed of the cpu associated to a host */
-XBT_PUBLIC(double) surf_host_get_speed(surf_resource_t resource, double load);
+XBT_PUBLIC(double) surf_host_get_speed(sg_host_t resource, double load);
 
 /** @brief Get the available speed of cpu associated to a host */
-XBT_PUBLIC(double) surf_host_get_available_speed(surf_resource_t host);
+XBT_PUBLIC(double) surf_host_get_available_speed(sg_host_t host);
 
 /** @brief Get the number of cores of the cpu associated to a host */
-XBT_PUBLIC(int) surf_host_get_core(surf_resource_t host);
+XBT_PUBLIC(int) surf_host_get_core(sg_host_t host);
 
 /** @brief Create a computation action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_execute(surf_resource_t host, double size);
+XBT_PUBLIC(surf_action_t) surf_host_execute(sg_host_t host, double size);
 
 /** @brief Create a sleep action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_sleep(surf_resource_t host, double duration);
+XBT_PUBLIC(surf_action_t) surf_host_sleep(sg_host_t host, double duration);
 
 /** @brief Create a file opening action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_open(surf_resource_t host, const char* fullpath);
+XBT_PUBLIC(surf_action_t) surf_host_open(sg_host_t host, const char* fullpath);
 
 /** @brief Create a file closing action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_close(surf_resource_t host, surf_file_t fd);
+XBT_PUBLIC(surf_action_t) surf_host_close(sg_host_t host, surf_file_t fd);
 
 /** @brief Create a file reading action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_read(surf_resource_t host, surf_file_t fd, sg_size_t size);
+XBT_PUBLIC(surf_action_t) surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size);
 
 /** @brief Create a file writing action on the given host  */
-XBT_PUBLIC(surf_action_t) surf_host_write(surf_resource_t host, surf_file_t fd, sg_size_t size);
+XBT_PUBLIC(surf_action_t) surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size);
 
 /**
  * @brief Get the informations of a file descriptor
@@ -359,7 +361,7 @@ XBT_PUBLIC(surf_action_t) surf_host_write(surf_resource_t host, surf_file_t fd, 
  * @param fd The file descriptor
  * @return An xbt_dynar_t with the file informations
  */
-XBT_PUBLIC(xbt_dynar_t) surf_host_get_info(surf_resource_t host, surf_file_t fd);
+XBT_PUBLIC(xbt_dynar_t) surf_host_get_info(sg_host_t host, surf_file_t fd);
 
 /**
  * @brief Get the available space of the storage at the mount point
@@ -368,7 +370,7 @@ XBT_PUBLIC(xbt_dynar_t) surf_host_get_info(surf_resource_t host, surf_file_t fd)
  * @param name The mount point
  * @return The amount of available space in bytes
  */
-XBT_PUBLIC(sg_size_t) surf_host_get_free_size(surf_resource_t resource, const char* name);
+XBT_PUBLIC(sg_size_t) surf_host_get_free_size(sg_host_t resource, const char* name);
 
 /**
  * @brief Get the used space of the storage at the mount point
@@ -377,47 +379,47 @@ XBT_PUBLIC(sg_size_t) surf_host_get_free_size(surf_resource_t resource, const ch
  * @param name The mount point
  * @return The amount of used space in bytes
  */
-XBT_PUBLIC(sg_size_t) surf_host_get_used_size(surf_resource_t resource, const char* name);
+XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* name);
 
 /** @brief Get the list of VMs hosted on the host */
-XBT_PUBLIC(xbt_dynar_t) surf_host_get_vms(surf_resource_t resource);
+XBT_PUBLIC(xbt_dynar_t) surf_host_get_vms(sg_host_t resource);
 
 /** @brief Retrieve the params of that VM
  * @details You can use fields ramsize and overcommit on a PM, too.
  */
-XBT_PUBLIC(void) surf_host_get_params(surf_resource_t resource, vm_params_t params);
+XBT_PUBLIC(void) surf_host_get_params(sg_host_t resource, vm_params_t params);
 
 /** @brief Sets the params of that VM/PM
  * @details You can use fields ramsize and overcommit on a PM, too.
  */
-XBT_PUBLIC(void) surf_host_set_params(surf_resource_t resource, vm_params_t params);
+XBT_PUBLIC(void) surf_host_set_params(sg_host_t resource, vm_params_t params);
 
 /**
  * @brief Destroy a VM
  *
  * @param resource The surf vm
  */
-XBT_PUBLIC(void) surf_vm_destroy(surf_resource_t resource);
+XBT_PUBLIC(void) surf_vm_destroy(sg_host_t resource);
 
 /** @brief Suspend a VM */
-XBT_PUBLIC(void) surf_vm_suspend(surf_resource_t resource);
+XBT_PUBLIC(void) surf_vm_suspend(sg_host_t resource);
 
 /** @brief Resume a VM */
-XBT_PUBLIC(void) surf_vm_resume(surf_resource_t resource);
+XBT_PUBLIC(void) surf_vm_resume(sg_host_t resource);
 
 /**
  * @brief Save the VM (Not yet implemented)
  *
  * @param resource The surf vm
  */
-XBT_PUBLIC(void) surf_vm_save(surf_resource_t resource);
+XBT_PUBLIC(void) surf_vm_save(sg_host_t resource);
 
 /**
  * @brief Restore the VM (Not yet implemented)
  *
  * @param resource The surf vm
  */
-XBT_PUBLIC(void) surf_vm_restore(surf_resource_t resource);
+XBT_PUBLIC(void) surf_vm_restore(sg_host_t resource);
 
 /**
  * @brief Migrate the VM to the destination host
@@ -425,7 +427,7 @@ XBT_PUBLIC(void) surf_vm_restore(surf_resource_t resource);
  * @param resource The surf vm
  * @param ind_vm_ws_dest The destination host
  */
-XBT_PUBLIC(void) surf_vm_migrate(surf_resource_t resource, surf_resource_t ind_vm_ws_dest);
+XBT_PUBLIC(void) surf_vm_migrate(sg_host_t resource, sg_host_t ind_vm_ws_dest);
 
 /**
  * @brief Get the physical machine hosting the VM
@@ -433,7 +435,7 @@ XBT_PUBLIC(void) surf_vm_migrate(surf_resource_t resource, surf_resource_t ind_v
  * @param resource The surf vm
  * @return The physical machine hosting the VM
  */
-XBT_PUBLIC(surf_resource_t) surf_vm_get_pm(surf_resource_t resource);
+XBT_PUBLIC(sg_host_t) surf_vm_get_pm(sg_host_t resource);
 
 /**
  * @brief [brief description]
@@ -442,7 +444,7 @@ XBT_PUBLIC(surf_resource_t) surf_vm_get_pm(surf_resource_t resource);
  * @param resource [description]
  * @param bound [description]
  */
-XBT_PUBLIC(void) surf_vm_set_bound(surf_resource_t resource, double bound);
+XBT_PUBLIC(void) surf_vm_set_bound(sg_host_t resource, double bound);
 
 /**
  * @brief [brief description]
@@ -452,7 +454,7 @@ XBT_PUBLIC(void) surf_vm_set_bound(surf_resource_t resource, double bound);
  * @param cpu [description]
  * @param mask [description]
  */
-XBT_PUBLIC(void) surf_vm_set_affinity(surf_resource_t resource, surf_resource_t cpu, unsigned long mask);
+XBT_PUBLIC(void) surf_vm_set_affinity(sg_host_t resource, sg_host_t cpu, unsigned long mask);
 
 /**
  * @brief Execute some quantity of computation
@@ -461,7 +463,7 @@ XBT_PUBLIC(void) surf_vm_set_affinity(surf_resource_t resource, surf_resource_t 
  * @param size The value of the processing amount (in flop) needed to process
  * @return The surf action corresponding to the processing
  */
-XBT_PUBLIC(surf_action_t) surf_cpu_execute(surf_resource_t cpu, double size);
+XBT_PUBLIC(surf_action_t) surf_cpu_execute(sg_host_t cpu, double size);
 
 /**
  * @brief Make the cpu sleep for duration (in seconds)
@@ -471,7 +473,7 @@ XBT_PUBLIC(surf_action_t) surf_cpu_execute(surf_resource_t cpu, double size);
  * @param duration The number of seconds to sleep
  * @return The surf action corresponding to the sleeping
  */
-XBT_PUBLIC(surf_action_t) surf_cpu_sleep(surf_resource_t cpu, double duration);
+XBT_PUBLIC(surf_action_t) surf_cpu_sleep(sg_host_t cpu, double duration);
 
 /**
  * @brief Get the host power peak
@@ -480,7 +482,7 @@ XBT_PUBLIC(surf_action_t) surf_cpu_sleep(surf_resource_t cpu, double duration);
  * @param host The surf host
  * @return The power peak
  */
-XBT_PUBLIC(double) surf_host_get_current_power_peak(surf_resource_t host);
+XBT_PUBLIC(double) surf_host_get_current_power_peak(sg_host_t host);
 
 /**
  * @brief [brief description]
@@ -491,7 +493,7 @@ XBT_PUBLIC(double) surf_host_get_current_power_peak(surf_resource_t host);
  *
  * @return [description]
  */
-XBT_PUBLIC(double) surf_host_get_power_peak_at(surf_resource_t host, int pstate_index);
+XBT_PUBLIC(double) surf_host_get_power_peak_at(sg_host_t host, int pstate_index);
 
 /**
  * @brief [brief description]
@@ -500,12 +502,12 @@ XBT_PUBLIC(double) surf_host_get_power_peak_at(surf_resource_t host, int pstate_
  * @param host [description]
  * @return [description]
  */
-XBT_PUBLIC(int) surf_host_get_nb_pstates(surf_resource_t host);
+XBT_PUBLIC(int) surf_host_get_nb_pstates(sg_host_t host);
 
-XBT_PUBLIC(void) surf_host_set_pstate(surf_resource_t host, int pstate_index);
-XBT_PUBLIC(int) surf_host_get_pstate(surf_resource_t host);
-XBT_PUBLIC(double) surf_host_get_wattmin_at(surf_resource_t resource, int pstate);
-XBT_PUBLIC(double) surf_host_get_wattmax_at(surf_resource_t resource, int pstate);
+XBT_PUBLIC(void) surf_host_set_pstate(sg_host_t host, int pstate_index);
+XBT_PUBLIC(int) surf_host_get_pstate(sg_host_t host);
+XBT_PUBLIC(double) surf_host_get_wattmin_at(sg_host_t resource, int pstate);
+XBT_PUBLIC(double) surf_host_get_wattmax_at(sg_host_t resource, int pstate);
 
 /**
  * @brief Get the consumed energy (in joules) of an host
@@ -513,7 +515,7 @@ XBT_PUBLIC(double) surf_host_get_wattmax_at(surf_resource_t resource, int pstate
  * @param host The surf host
  * @return The consumed energy
  */
-XBT_PUBLIC(double) surf_host_get_consumed_energy(surf_resource_t host);
+XBT_PUBLIC(double) surf_host_get_consumed_energy(sg_host_t host);
 
 /**
  * @brief Get the list of storages mounted on an host
@@ -521,7 +523,7 @@ XBT_PUBLIC(double) surf_host_get_consumed_energy(surf_resource_t host);
  * @param host The surf host
  * @return Dictionary of mount point, Storage
  */
-XBT_PUBLIC(xbt_dict_t) surf_host_get_mounted_storage_list(surf_resource_t host);
+XBT_PUBLIC(xbt_dict_t) surf_host_get_mounted_storage_list(sg_host_t host);
 
 /**
  * @brief Get the list of storages attached to an host
@@ -529,7 +531,7 @@ XBT_PUBLIC(xbt_dict_t) surf_host_get_mounted_storage_list(surf_resource_t host);
  * @param host The surf host
  * @return Dictionary of storage
  */
-XBT_PUBLIC(xbt_dynar_t) surf_host_get_attached_storage_list(surf_resource_t host);
+XBT_PUBLIC(xbt_dynar_t) surf_host_get_attached_storage_list(sg_host_t host);
 
 /**
  * @brief Unlink a file descriptor
@@ -539,7 +541,7 @@ XBT_PUBLIC(xbt_dynar_t) surf_host_get_attached_storage_list(surf_resource_t host
  *
  * @return 0 if failed to unlink, 1 otherwise
  */
-XBT_PUBLIC(int) surf_host_unlink(surf_resource_t host, surf_file_t fd);
+XBT_PUBLIC(int) surf_host_unlink(sg_host_t host, surf_file_t fd);
 
 /**
  * @brief Get the size of a file on a host
@@ -549,7 +551,7 @@ XBT_PUBLIC(int) surf_host_unlink(surf_resource_t host, surf_file_t fd);
  *
  * @return The size in bytes of the file
  */
-XBT_PUBLIC(size_t) surf_host_get_size(surf_resource_t host, surf_file_t fd);
+XBT_PUBLIC(size_t) surf_host_get_size(sg_host_t host, surf_file_t fd);
 
 /**
  * @brief Get the current position of the file descriptor
@@ -558,7 +560,7 @@ XBT_PUBLIC(size_t) surf_host_get_size(surf_resource_t host, surf_file_t fd);
  * @param fd The file descriptor
  * @return The current position of the file descriptor
  */
-XBT_PUBLIC(size_t) surf_host_file_tell(surf_resource_t host, surf_file_t fd);
+XBT_PUBLIC(size_t) surf_host_file_tell(sg_host_t host, surf_file_t fd);
 
 /**
  * @brief Move a file to another location on the *same mount point*.
@@ -570,7 +572,7 @@ XBT_PUBLIC(size_t) surf_host_file_tell(surf_resource_t host, surf_file_t fd);
  *
  * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
  */
-XBT_PUBLIC(int) surf_host_file_move(surf_resource_t host, surf_file_t fd, const char* fullpath);
+XBT_PUBLIC(int) surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath);
 
 /**
  * @brief Set the position indictator assiociated with the file descriptor to a new position
@@ -585,7 +587,7 @@ XBT_PUBLIC(int) surf_host_file_move(surf_resource_t host, surf_file_t fd, const 
  *  - SEEK_END: end of the file
  * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
  */
-XBT_PUBLIC(int) surf_host_file_seek(surf_resource_t host,
+XBT_PUBLIC(int) surf_host_file_seek(sg_host_t host,
                                            surf_file_t fd, sg_offset_t offset,
                                            int origin);
 
@@ -733,7 +735,7 @@ XBT_PUBLIC(double) surf_action_get_cost(surf_action_t action);
  * @param cpu [description]
  * @param mask [description]
  */
-XBT_PUBLIC(void) surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask);
+XBT_PUBLIC(void) surf_cpu_action_set_affinity(surf_action_t action, sg_host_t cpu, unsigned long mask);
 
 /**
  * @brief [brief description]
@@ -774,10 +776,11 @@ XBT_PUBLIC(xbt_dict_t) surf_storage_action_get_ls_dict(surf_action_t action);
  *
  * @param resource The surf storage
  * @return The host name
+ * may not exist.
  */
 XBT_PUBLIC(const char * ) surf_storage_get_host(surf_resource_t resource);
 
-XBT_PUBLIC(surf_model_t) surf_resource_model(const void *host, int level);
+XBT_PUBLIC(surf_host_model_t) surf_host_get_model(sg_host_t host);
 
 /** @} */
 

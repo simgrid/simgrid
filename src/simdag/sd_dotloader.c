@@ -231,7 +231,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
             computer = xbt_dynar_new(sizeof(SD_task_t), NULL);
             xbt_dict_set(computers, char_performer, computer, NULL);
           }
-          if(performer < xbt_lib_length(host_lib)){
+          if(performer < xbt_dict_length(host_list)){
             /* the wanted computer is available */
             SD_task_t *task_test = NULL;
             if(order < computer->used)

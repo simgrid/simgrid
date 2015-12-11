@@ -63,6 +63,7 @@ ModelChecker::~ModelChecker()
 
 const char* ModelChecker::get_host_name(const char* hostname)
 {
+  // FIXME, simgrid::Host
   // Lookup the host name in the dictionary (or create it):
   xbt_dictelm_t elt = xbt_dict_get_elm_or_null(this->hostnames_, hostname);
   if (!elt) {

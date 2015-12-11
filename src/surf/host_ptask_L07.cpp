@@ -275,7 +275,7 @@ Host *HostL07Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu)
   HostL07 *host = new HostL07(this, name, NULL, netElm, cpu);
 
   surf_callback_emit(hostCreatedCallbacks, host);
-  xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, host);
+  simgrid::Host::get_host(name)->set_facet(SURF_HOST_LEVEL, host);
 
   return host;
 }

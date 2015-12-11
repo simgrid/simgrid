@@ -22,7 +22,7 @@ SG_BEGIN_DECL()
     resource with computing capabilities</em> and has a <em>name</em>.
 
     @see SD_workstation_management */
-typedef xbt_dictelm_t SD_workstation_t;
+typedef sg_host_t SD_workstation_t;
 
 /** @brief Workstation access mode
     @ingroup SD_datatypes_management

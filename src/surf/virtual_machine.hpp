@@ -83,10 +83,10 @@ public:
   virtual void restore()=0;
 
   /** @brief Migrate the VM to the destination host */
-  virtual void migrate(surf_resource_t dest_PM)=0;
+  virtual void migrate(sg_host_t dest_PM)=0;
 
   /** @brief Get the physical machine hosting the VM */
-  virtual surf_resource_t getPm()=0;
+  virtual sg_host_t getPm()=0;
 
   virtual void setBound(double bound)=0;
   virtual void setAffinity(Cpu *cpu, unsigned long mask)=0;
@@ -120,7 +120,7 @@ public:
    * @param host_PM The real machine hosting the VM
    *
    */
-  virtual VirtualMachine *createVM(const char *name, surf_resource_t host_PM)=0;
+  virtual VirtualMachine *createVM(const char *name, sg_host_t host_PM)=0;
   void adjustWeightOfDummyCpuActions() {};
 
   typedef boost::intrusive::member_hook<

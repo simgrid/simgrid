@@ -125,7 +125,7 @@ public:
       Cpu *cpu);
 
   /** @brief Host destructor */
-  ~ Host();
+  ~Host();
 
   void setState(e_surf_resource_state_t state);
 

@@ -6,32 +6,49 @@
 
 #include "xbt/dict.h"
 #include "simgrid/host.h"
+#include "simgrid/Host.hpp"
 #include "surf/surf.h" // routing_get_network_element_type FIXME:killme
 
-sg_host_t sg_host_by_name(const char *name){
-  return xbt_lib_get_elm_or_null(host_lib, name);
+size_t sg_host_count()
+{
+  return xbt_dict_length(host_list);
 }
 
-sg_host_t sg_host_by_name_or_create(const char *name) {
-	sg_host_t res = xbt_lib_get_elm_or_null(host_lib, name);
-	if (!res) {
-		xbt_lib_set(host_lib,name,0,NULL); // Should only create the bucklet with no data added
-		res = xbt_lib_get_elm_or_null(host_lib, name);
-	}
-	return res;
+void* sg_host_get_facet(sg_host_t host, size_t facet)
+{
+  return host->facet(facet);
 }
-xbt_dynar_t sg_hosts_as_dynar(void) {
-	xbt_lib_cursor_t cursor;
-	char *key;
-	void **data;
+
+const char *sg_host_get_name(sg_host_t host)
+{
+	return host->id().c_str();
+}
+
+size_t sg_host_add_level(void(*deleter)(void*))
+{
+  return simgrid::Host::add_level(deleter);
+}
+
+sg_host_t sg_host_by_name(const char *name)
+{
+  return simgrid::Host::find_host(name);
+}
+
+sg_host_t sg_host_by_name_or_create(const char *name)
+{
+  return simgrid::Host::get_host(name);
+}
+
+xbt_dynar_t sg_hosts_as_dynar(void)
+{
 	xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),NULL);
 
-	xbt_lib_foreach(host_lib, cursor, key, data) {
-		if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST) {
-			xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
-			xbt_dynar_push(res, &elm);
-		}
-	}
+  xbt_dict_cursor_t cursor = nullptr;
+  const char* name = nullptr;
+  simgrid::Host* host = nullptr;
+	xbt_dict_foreach(host_list, cursor, name, host)
+		if(routing_get_network_element_type(name) == SURF_NETWORK_ELEMENT_HOST)
+			xbt_dynar_push(res, &host);
 	return res;
 }
 
@@ -57,65 +74,67 @@ static XBT_INLINE void routing_asr_host_free(void *p) {
   delete static_cast<simgrid::surf::RoutingEdge*>(p);
 }
 
-void sg_host_init() {
-  MSG_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __MSG_host_priv_free);
-  SD_HOST_LEVEL = xbt_lib_add_level(host_lib,__SD_workstation_destroy);
-
-  SIMIX_HOST_LEVEL = xbt_lib_add_level(host_lib,SIMIX_host_destroy);
-  SURF_CPU_LEVEL = xbt_lib_add_level(host_lib,surf_cpu_free);
-  ROUTING_HOST_LEVEL = xbt_lib_add_level(host_lib,routing_asr_host_free);
-  USER_HOST_LEVEL = xbt_lib_add_level(host_lib,NULL);
+void sg_host_init()
+{
+  MSG_HOST_LEVEL = simgrid::Host::add_level([](void *p) {
+    __MSG_host_priv_free((msg_host_priv_t) p);
+  });
+  SD_HOST_LEVEL = simgrid::Host::add_level(__SD_workstation_destroy);
+  SIMIX_HOST_LEVEL = simgrid::Host::add_level(SIMIX_host_destroy);
+  SURF_CPU_LEVEL = simgrid::Host::add_level(surf_cpu_free);
+  ROUTING_HOST_LEVEL = simgrid::Host::add_level(routing_asr_host_free);
+  USER_HOST_LEVEL = simgrid::Host::add_level(NULL);
 }
+
 // ========== User data Layer ==========
 void *sg_host_user(sg_host_t host) {
-	return xbt_lib_get_level(host, USER_HOST_LEVEL);
+  return host->facet(USER_HOST_LEVEL);
 }
 void sg_host_user_set(sg_host_t host, void* userdata) {
-	xbt_lib_set(host_lib,host->key,USER_HOST_LEVEL,userdata);
+  host->set_facet(USER_HOST_LEVEL,userdata);
 }
 void sg_host_user_destroy(sg_host_t host) {
-	xbt_lib_unset(host_lib,host->key,USER_HOST_LEVEL,1);
+  host->set_facet(USER_HOST_LEVEL, nullptr);
 }
 
 // ========== MSG Layer ==============
 msg_host_priv_t sg_host_msg(sg_host_t host) {
-	return (msg_host_priv_t) xbt_lib_get_level(host, MSG_HOST_LEVEL);
+	return (msg_host_priv_t) host->facet(MSG_HOST_LEVEL);
 }
 void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
-	  xbt_lib_set(host_lib,host->key,MSG_HOST_LEVEL,smx_host);
+  host->set_facet(MSG_HOST_LEVEL, smx_host);
 }
 void sg_host_msg_destroy(sg_host_t host) {
-	  xbt_lib_unset(host_lib,host->key,MSG_HOST_LEVEL,1);
+  host->set_facet(MSG_HOST_LEVEL, nullptr);
 }
 // ========== SimDag Layer ==============
 SD_workstation_priv_t sg_host_sd(sg_host_t host) {
-       return (SD_workstation_priv_t) xbt_lib_get_level(host, SD_HOST_LEVEL);
+  return (SD_workstation_priv_t) host->facet(SD_HOST_LEVEL);
 }
 void sg_host_sd_set(sg_host_t host, SD_workstation_priv_t smx_host) {
-         xbt_lib_set(host_lib,host->key,SD_HOST_LEVEL,smx_host);
+  host->set_facet(SD_HOST_LEVEL, smx_host);
 }
 void sg_host_sd_destroy(sg_host_t host) {
-         xbt_lib_unset(host_lib,host->key,SD_HOST_LEVEL,1);
+  host->set_facet(SD_HOST_LEVEL, nullptr);
 }
 
 // ========== Simix layer =============
 smx_host_priv_t sg_host_simix(sg_host_t host){
-  return (smx_host_priv_t) xbt_lib_get_level(host, SIMIX_HOST_LEVEL);
+  return (smx_host_priv_t) host->facet(SIMIX_HOST_LEVEL);
 }
 void sg_host_simix_set(sg_host_t host, smx_host_priv_t smx_host) {
-  xbt_assert(xbt_lib_get_or_null(host_lib,host->key,SIMIX_HOST_LEVEL) == NULL);
-  xbt_lib_set(host_lib,host->key,SIMIX_HOST_LEVEL,smx_host);
+  host->set_facet(SIMIX_HOST_LEVEL, smx_host);
 }
 void sg_host_simix_destroy(sg_host_t host) {
-	xbt_lib_unset(host_lib,host->key,SIMIX_HOST_LEVEL,1);
+  host->set_facet(SIMIX_HOST_LEVEL, nullptr);
 }
 
 // ========== SURF CPU ============
 surf_cpu_t sg_host_surfcpu(sg_host_t host) {
-	return (surf_cpu_t) xbt_lib_get_level(host, SURF_CPU_LEVEL);
+	return (surf_cpu_t) host->facet(SURF_CPU_LEVEL);
 }
 void sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu) {
-	xbt_lib_set(host_lib, host->key, SURF_CPU_LEVEL, cpu);
+  host->set_facet(SURF_CPU_LEVEL, cpu);
 }
 void sg_host_surfcpu_register(sg_host_t host, surf_cpu_t cpu)
 {
@@ -124,19 +143,18 @@ void sg_host_surfcpu_register(sg_host_t host, surf_cpu_t cpu)
   sg_host_surfcpu_set(host, cpu);
 }
 void sg_host_surfcpu_destroy(sg_host_t host) {
-	xbt_lib_unset(host_lib,host->key,SURF_CPU_LEVEL,1);
+  host->set_facet(SURF_CPU_LEVEL, nullptr);
 }
 // ========== RoutingEdge ============
 surf_RoutingEdge *sg_host_edge(sg_host_t host) {
-	return (surf_RoutingEdge*) xbt_lib_get_level(host, ROUTING_HOST_LEVEL);
+	return (surf_RoutingEdge*) host->facet(ROUTING_HOST_LEVEL);
 }
 void sg_host_edge_set(sg_host_t host, surf_RoutingEdge *edge) {
-	xbt_lib_set(host_lib, host->key, ROUTING_HOST_LEVEL, edge);
+  host->set_facet(ROUTING_HOST_LEVEL, edge);
 }
 void sg_host_edge_destroy(sg_host_t host, int do_callback) {
-	xbt_lib_unset(host_lib,host->key,ROUTING_HOST_LEVEL,do_callback);
+  host->set_facet(ROUTING_HOST_LEVEL, nullptr, do_callback);
 }
-
 
 // =========== user-level functions ===============
 // ================================================
@@ -180,4 +198,32 @@ int sg_host_get_nb_pstates(sg_host_t host) {
  */
 int sg_host_get_pstate(sg_host_t host) {
 	return surf_host_get_pstate(host);
+}
+
+namespace simgrid {
+
+Host::Host(std::string id)
+  : id_(std::move(id))
+{
+}
+
+Host::~Host()
+{
+}
+
+Host* Host::find_host(const char* name)
+{
+  return (Host*) xbt_dict_get_or_null(host_list, name);
+}
+
+Host* Host::get_host(const char* name)
+{
+  Host* host = find_host(name);
+  if (host == nullptr) {
+    host = new Host(name);
+    xbt_dict_set(host_list, name, host, NULL);
+  }
+  return host;
+}
+
 }

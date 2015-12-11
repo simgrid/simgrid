@@ -367,9 +367,9 @@ smx_synchro_t SIMIX_process_parallel_execute(const char *name,
   /* FIXME: what happens if host_list contains VMs and PMs. If
    * execute_parallel_task() does not change the state of the model, we can mix
    * them. */
-  surf_model_t ws_model = surf_resource_model(host_list[0], SURF_HOST_LEVEL);
+  surf_host_model_t ws_model = surf_host_get_model(host_list[0]);
   for (i = 1; i < host_nb; i++) {
-    surf_model_t ws_model_tmp = surf_resource_model(host_list[i], SURF_HOST_LEVEL);
+    surf_host_model_t ws_model_tmp = surf_host_get_model(host_list[0]);
     if (ws_model_tmp != ws_model) {
       XBT_CRITICAL("mixing VMs and PMs is not supported");
       DIE_IMPOSSIBLE;

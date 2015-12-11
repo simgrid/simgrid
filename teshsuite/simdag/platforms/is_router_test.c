@@ -27,12 +27,12 @@ int main(int argc, char **argv)
   /* creation of the environment */
   SD_create_environment(argv[1]);
 
-  size = xbt_lib_length(host_lib) + xbt_lib_length(as_router_lib);
+  size = xbt_dict_length(host_list) + xbt_lib_length(as_router_lib);
 
   printf("Workstation number: %d, link number: %d, elmts number: %d\n",
          SD_workstation_get_number(), SD_link_get_number(), size);
 
-  xbt_lib_foreach(host_lib, cursor, key, data) {
+  xbt_dict_foreach(host_list, cursor, key, data) {
     printf("   - Seen: \"%s\" is type : %d\n", key,
            (int) routing_get_network_element_type(key));
   }

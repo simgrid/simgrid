@@ -72,7 +72,7 @@ void __SD_storage_destroy(void *storage)
  */
 SD_workstation_t SD_workstation_get_by_name(const char *name)
 {
-  return xbt_lib_get_elm_or_null(host_lib, name);
+  return sg_host_by_name(name);
 }
 
 /**
@@ -101,7 +101,7 @@ const SD_workstation_t *SD_workstation_get_list(void) {
  */
 int SD_workstation_get_number(void)
 {
-  return xbt_lib_length(host_lib);
+  return sg_host_count();
 }
 
 /**

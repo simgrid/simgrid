@@ -306,7 +306,9 @@ void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
 void surf_init(int *argc, char **argv)
 {
   XBT_DEBUG("Create all Libs");
-  host_lib = xbt_lib_new();
+  host_list = xbt_dict_new_homogeneous([](void*p) {
+    delete (simgrid::Host*)p;
+  });
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
@@ -319,7 +321,7 @@ void surf_init(int *argc, char **argv)
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");
-  SURF_HOST_LEVEL = xbt_lib_add_level(host_lib,surf_host_free);
+  SURF_HOST_LEVEL = simgrid::Host::add_level(surf_host_free);
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);
@@ -352,7 +354,7 @@ void surf_exit(void)
   xbt_dynar_free(&host_that_restart);
   xbt_dynar_free(&surf_path);
 
-  xbt_lib_free(&host_lib);
+  xbt_dict_free(&host_list);
   xbt_lib_free(&as_router_lib);
   xbt_lib_free(&storage_lib);
   sg_link_exit();

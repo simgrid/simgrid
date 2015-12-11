@@ -7,18 +7,25 @@
 #ifndef SIMGRID_HOST_H_
 #define SIMGRID_HOST_H_
 
+#include <stddef.h>
+
 #include <xbt/dict.h>
 #include <xbt/dynar.h>
 
 #include <simgrid/forward.h>
 
+#ifdef __cplusplus
+#include <simgrid/Host.hpp>
+#endif
+
 SG_BEGIN_DECL()
 
+XBT_PUBLIC(size_t) sg_host_count();
+XBT_PUBLIC(size_t) sg_host_add_level(void(*deleter)(void*));
 XBT_PUBLIC(sg_host_t) sg_host_by_name(const char *name);
 XBT_PUBLIC(sg_host_t) sg_host_by_name_or_create(const char *name);
-static XBT_INLINE char *sg_host_get_name(sg_host_t host){
-	return host->key;
-}
+XBT_PUBLIC(void*) sg_host_get_facet(sg_host_t host, size_t facet);
+XBT_PUBLIC(const char*) sg_host_get_name(sg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) sg_hosts_as_dynar(void);
 
 // ========== User Data ==============

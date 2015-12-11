@@ -134,8 +134,8 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 
   MSG_init(&argc, argv);
 
-  JAVA_HOST_LEVEL = xbt_lib_add_level(host_lib, (void_f_pvoid_t) __JAVA_host_priv_free);
-  JAVA_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __JAVA_storage_priv_free);
+  JAVA_HOST_LEVEL = simgrid::Host::add_level(__JAVA_host_priv_free);
+  JAVA_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, __JAVA_storage_priv_free);
 
   for (index = 0; index < argc; index++)
     free(argv[index]);
@@ -157,7 +157,8 @@ JNIEXPORT void JNICALL
   /* Cleanup java hosts */
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   for (unsigned long index = 0; index < xbt_dynar_length(hosts) - 1; index++) {
-    jobject jhost = (jobject) xbt_lib_get_level(xbt_dynar_get_as(hosts,index,msg_host_t), JAVA_HOST_LEVEL);
+    msg_host_t msg_host = xbt_dynar_get_as(hosts,index,msg_host_t);
+    jobject jhost = (jobject) msg_host->facet(JAVA_HOST_LEVEL);
     if (jhost)
       jhost_unref(env, jhost);
 

@@ -161,7 +161,7 @@ Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
 
     host = xbt_dynar_get_as(table,index,msg_host_t);
 
-    jhost = (jobject) xbt_lib_get_level(host, JAVA_HOST_LEVEL);
+    jhost = (jobject) host->facet(JAVA_HOST_LEVEL);
     if (!jhost) {
       jname = env->NewStringUTF(MSG_host_get_name(host));
 

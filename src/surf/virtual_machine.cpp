@@ -38,8 +38,7 @@ VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props,
 : Host(model, name, props, NULL, netElm, cpu)
 {
   VMModel::ws_vms.push_back(*this);
-
-  xbt_lib_set(host_lib, name, SURF_HOST_LEVEL, this);
+  simgrid::Host::get_host(name)->set_facet(SURF_HOST_LEVEL, this);
 }
 
 /*
@@ -61,9 +60,9 @@ void VirtualMachine::setState(e_surf_resource_state_t state){
  * A surf level object will be useless in the upper layer. Returning the
  * dict_elm of the host.
  **/
-surf_resource_t VirtualMachine::getPm()
+sg_host_t VirtualMachine::getPm()
 {
-  return xbt_lib_get_elm_or_null(host_lib, p_subWs->getName());
+  return simgrid::Host::find_host(p_subWs->getName());
 }
 
 /**********

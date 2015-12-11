@@ -33,7 +33,7 @@ void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 /* ind means ''indirect'' that this is a reference on the whole dict_elm
  * structure (i.e not on the surf_resource_private infos) */
 
-VirtualMachine *VMHL13Model::createVM(const char *name, surf_resource_t host_PM)
+VirtualMachine *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
 {
   VirtualMachine* vm = new VMHL13(this, name, NULL, host_PM);
   surf_callback_emit(VMCreatedCallbacks, vm);
@@ -163,7 +163,7 @@ Action *VMHL13Model::executeParallelTask(int host_nb,
  ************/
 
 VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
-		                                   surf_resource_t host_PM)
+		                                   sg_host_t host_PM)
  : VirtualMachine(model, name, props, NULL, NULL)
 {
   Host *sub_ws = surf_host_resource_priv(host_PM);
@@ -269,7 +269,7 @@ void VMHL13::restore()
 /*
  * Update the physical host of the given VM
  */
-void VMHL13::migrate(surf_resource_t ind_dst_pm)
+void VMHL13::migrate(sg_host_t ind_dst_pm)
 {
    /* ind_dst_pm equals to smx_host_t */
    Host *ws_dst = static_cast<Host*>(surf_host_resource_priv(ind_dst_pm));
@@ -335,9 +335,10 @@ void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
  * A surf level object will be useless in the upper layer. Returning the
  * dict_elm of the host.
  **/
-surf_resource_t VMHL13::getPm()
+sg_host_t VMHL13::getPm()
 {
-  return xbt_lib_get_elm_or_null(host_lib, p_subWs->getName());
+  // TODO, store pointer to the PM?
+  return simgrid::Host::find_host(p_subWs->getName());
 }
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */

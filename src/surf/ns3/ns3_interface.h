@@ -12,6 +12,9 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 
+#include <simgrid/host.h>
+#include <surf/surf_routing.h>
+
 typedef enum {
   NS3_NETWORK_ELEMENT_NULL = 0,    /* NULL */
   NS3_NETWORK_ELEMENT_HOST,      /* host type */
@@ -45,6 +48,16 @@ XBT_PUBLIC(void) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
                 char * bw,char * lat);
 XBT_PUBLIC(void) ns3_end_platform(void);
 XBT_PUBLIC(void) ns3_add_cluster(char * bw,char * lat,const char *id);
+
+XBT_INLINE
+ns3_nodes_t ns3_find_host(const char* id)
+{
+  sg_host_t host = sg_host_by_name(id);
+  if (host == nullptr)
+    return nullptr;
+  else
+    return (ns3_nodes_t) sg_host_get_facet(host, NS3_HOST_LEVEL);
+}
 
 SG_END_DECL()
 

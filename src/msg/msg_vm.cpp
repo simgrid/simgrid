@@ -210,10 +210,11 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
 {
   /* make sure the VM of the same name does not exit */
   {
-    xbt_dictelm_t ind_host_tmp = xbt_lib_get_elm_or_null(host_lib, name);
-    if (ind_host_tmp && sg_host_simix(ind_host_tmp) != NULL) {
+    simgrid::Host* ind_host_tmp =
+      (simgrid::Host*) xbt_dict_get_or_null(host_list, name);
+    if (ind_host_tmp != nullptr && sg_host_simix(ind_host_tmp) != nullptr) {
       XBT_ERROR("host %s already exits", name);
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -293,45 +294,45 @@ void MSG_vm_shutdown(msg_vm_t vm)
  * migration. The names of these mailboxes must not conflict with others. */
 static inline char *get_mig_mbox_src_dst(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  char *vm_name = sg_host_get_name(vm);
-  char *src_pm_name = sg_host_get_name(src_pm);
-  char *dst_pm_name = sg_host_get_name(dst_pm);
+  const char *vm_name = sg_host_get_name(vm);
+  const char *src_pm_name = sg_host_get_name(src_pm);
+  const char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__mbox_mig_src_dst:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
 static inline char *get_mig_mbox_ctl(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  char *vm_name = sg_host_get_name(vm);
-  char *src_pm_name = sg_host_get_name(src_pm);
-  char *dst_pm_name = sg_host_get_name(dst_pm);
+  const char *vm_name = sg_host_get_name(vm);
+  const char *src_pm_name = sg_host_get_name(src_pm);
+  const char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__mbox_mig_ctl:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
 static inline char *get_mig_process_tx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  char *vm_name = sg_host_get_name(vm);
-  char *src_pm_name = sg_host_get_name(src_pm);
-  char *dst_pm_name = sg_host_get_name(dst_pm);
+  const char *vm_name = sg_host_get_name(vm);
+  const char *src_pm_name = sg_host_get_name(src_pm);
+  const char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__pr_mig_tx:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
 static inline char *get_mig_process_rx_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
 {
-  char *vm_name = sg_host_get_name(vm);
-  char *src_pm_name = sg_host_get_name(src_pm);
-  char *dst_pm_name = sg_host_get_name(dst_pm);
+  const char *vm_name = sg_host_get_name(vm);
+  const char *src_pm_name = sg_host_get_name(src_pm);
+  const char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__pr_mig_rx:%s(%s-%s)", vm_name, src_pm_name, dst_pm_name);
 }
 
 static inline char *get_mig_task_name(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, int stage)
 {
-  char *vm_name = sg_host_get_name(vm);
-  char *src_pm_name = sg_host_get_name(src_pm);
-  char *dst_pm_name = sg_host_get_name(dst_pm);
+  const char *vm_name = sg_host_get_name(vm);
+  const char *src_pm_name = sg_host_get_name(src_pm);
+  const char *dst_pm_name = sg_host_get_name(dst_pm);
 
   return bprintf("__task_mig_stage%d:%s(%s-%s)", stage, vm_name, src_pm_name, dst_pm_name);
 }
@@ -423,7 +424,9 @@ static int migration_rx_fun(int argc, char *argv[])
    // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
    msg_host_priv_t priv = sg_host_msg(vm);
    priv->is_migrating = 0;
-   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", ms->vm->key, ms->src_pm->key, ms->dst_pm->key);
+   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)",
+      sg_host_get_name(ms->vm), sg_host_get_name(ms->src_pm),
+      sg_host_get_name(ms->dst_pm));
    TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
   }
   // Inform the SRC that the migration has been correctly performed

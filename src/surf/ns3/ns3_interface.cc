@@ -13,7 +13,6 @@
 
 using namespace ns3;
 
-extern xbt_lib_t host_lib;
 extern int NS3_HOST_LEVEL;		//host node for ns3
 extern xbt_dynar_t IPV4addr;
 
@@ -59,8 +58,8 @@ double ns3_time(){
 
 int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,void * action)
 {
-	ns3_nodes_t node1 = (ns3_nodes_t) xbt_lib_get_or_null(host_lib,a,NS3_HOST_LEVEL);
-	ns3_nodes_t node2 = (ns3_nodes_t) xbt_lib_get_or_null(host_lib,b,NS3_HOST_LEVEL);
+	ns3_nodes_t node1 = ns3_find_host(a);
+	ns3_nodes_t node2 = ns3_find_host(b);
 
 	Ptr<Node> src_node = nodes.Get(node1->node_num);
 	Ptr<Node> dst_node = nodes.Get(node2->node_num);

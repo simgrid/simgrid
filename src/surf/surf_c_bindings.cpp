@@ -18,11 +18,11 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  * TOOLS *
  *********/
 
-static simgrid::surf::Host *get_casted_host(surf_resource_t resource){
+static simgrid::surf::Host *get_casted_host(sg_host_t resource){
   return static_cast<simgrid::surf::Host*>(surf_host_resource_priv(resource));
 }
 
-static simgrid::surf::VirtualMachine *get_casted_vm(surf_resource_t resource){
+static simgrid::surf::VirtualMachine *get_casted_vm(sg_host_t resource){
   return static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(resource));
 }
 
@@ -168,12 +168,11 @@ void routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
  * MODEL *
  *********/
 
-surf_model_t surf_resource_model(const void *host, int level) {
-  /* If level is SURF_WKS_LEVEL, ws is a host_CLM03 object. It has
-   * surf_resource at the generic_resource field. */
-  simgrid::surf::Resource *ws = static_cast<simgrid::surf::Resource*>(
-    xbt_lib_get_level((xbt_dictelm_t) host, level));
-  return ws->getModel();
+surf_host_model_t surf_host_get_model(sg_host_t host)
+{
+  simgrid::surf::Host* surf_host =
+    (simgrid::surf::Host*) host->facet(SURF_HOST_LEVEL);
+  return (surf_host_model_t) surf_host->getModel();
 }
 
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
@@ -223,7 +222,7 @@ surf_action_t surf_host_model_execute_parallel_task(surf_host_model_t model,
 }
 
 xbt_dynar_t surf_host_model_get_route(surf_host_model_t /*model*/,
-                                             surf_resource_t src, surf_resource_t dst){
+                                             sg_host_t src, sg_host_t dst){
   xbt_dynar_t route = NULL;
   routing_platf->getRouteAndLatency(
     get_casted_host(src)->p_netElm,
@@ -231,7 +230,7 @@ xbt_dynar_t surf_host_model_get_route(surf_host_model_t /*model*/,
   return route;
 }
 
-void surf_vm_model_create(const char *name, surf_resource_t ind_phys_host){
+void surf_vm_model_create(const char *name, sg_host_t ind_phys_host){
   surf_vm_model->createVM(name, ind_phys_host);
 }
 
@@ -255,184 +254,184 @@ void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state
   resource->setState(state);
 }
 
-surf_action_t surf_host_sleep(surf_resource_t host, double duration){
+surf_action_t surf_host_sleep(sg_host_t host, double duration){
   return get_casted_host(host)->sleep(duration);
 }
 
-double surf_host_get_speed(surf_resource_t host, double load){
+double surf_host_get_speed(sg_host_t host, double load){
   return sg_host_surfcpu(host)->getSpeed(load);
 }
 
-double surf_host_get_available_speed(surf_resource_t host){
+double surf_host_get_available_speed(sg_host_t host){
   return sg_host_surfcpu(host)->getAvailableSpeed();
 }
 
-int surf_host_get_core(surf_resource_t host){
+int surf_host_get_core(sg_host_t host){
   return sg_host_surfcpu(host)->getCore();
 }
 
-surf_action_t surf_host_execute(surf_resource_t host, double size){
+surf_action_t surf_host_execute(sg_host_t host, double size){
   return get_casted_host(host)->execute(size);
 }
 
-double surf_host_get_current_power_peak(surf_resource_t host){
+double surf_host_get_current_power_peak(sg_host_t host){
   return sg_host_surfcpu(host)->getCurrentPowerPeak();
 }
 
-double surf_host_get_power_peak_at(surf_resource_t host, int pstate_index){
+double surf_host_get_power_peak_at(sg_host_t host, int pstate_index){
   return sg_host_surfcpu(host)->getPowerPeakAt(pstate_index);
 }
 
-int surf_host_get_nb_pstates(surf_resource_t host){
+int surf_host_get_nb_pstates(sg_host_t host){
   return sg_host_surfcpu(host)->getNbPstates();
 }
 
-void surf_host_set_pstate(surf_resource_t host, int pstate_index){
+void surf_host_set_pstate(sg_host_t host, int pstate_index){
 	sg_host_surfcpu(host)->setPstate(pstate_index);
 }
-int surf_host_get_pstate(surf_resource_t host){
+int surf_host_get_pstate(sg_host_t host){
   return sg_host_surfcpu(host)->getPstate();
 }
 
 using simgrid::energy::HostEnergy;
 using simgrid::energy::surf_energy;
 
-double surf_host_get_wattmin_at(surf_resource_t resource, int pstate){
+double surf_host_get_wattmin_at(sg_host_t resource, int pstate){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
   std::map<simgrid::surf::Host*, HostEnergy*>::iterator hostIt = surf_energy->find(get_casted_host(resource));
   return hostIt->second->getWattMinAt(pstate);
 }
-double surf_host_get_wattmax_at(surf_resource_t resource, int pstate){
+double surf_host_get_wattmax_at(sg_host_t resource, int pstate){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
   std::map<simgrid::surf::Host*, HostEnergy*>::iterator hostIt = surf_energy->find(get_casted_host(resource));
   return hostIt->second->getWattMaxAt(pstate);
 }
 
-double surf_host_get_consumed_energy(surf_resource_t resource){
+double surf_host_get_consumed_energy(sg_host_t resource){
   xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
   std::map<simgrid::surf::Host*, HostEnergy*>::iterator hostIt = surf_energy->find(get_casted_host(resource));
   return hostIt->second->getConsumedEnergy();
 }
 
-xbt_dict_t surf_host_get_mounted_storage_list(surf_resource_t host){
+xbt_dict_t surf_host_get_mounted_storage_list(sg_host_t host){
   return get_casted_host(host)->getMountedStorageList();
 }
 
-xbt_dynar_t surf_host_get_attached_storage_list(surf_resource_t host){
+xbt_dynar_t surf_host_get_attached_storage_list(sg_host_t host){
   return get_casted_host(host)->getAttachedStorageList();
 }
 
-surf_action_t surf_host_open(surf_resource_t host, const char* fullpath){
+surf_action_t surf_host_open(sg_host_t host, const char* fullpath){
   return get_casted_host(host)->open(fullpath);
 }
 
-surf_action_t surf_host_close(surf_resource_t host, surf_file_t fd){
+surf_action_t surf_host_close(sg_host_t host, surf_file_t fd){
   return get_casted_host(host)->close(fd);
 }
 
-int surf_host_unlink(surf_resource_t host, surf_file_t fd){
+int surf_host_unlink(sg_host_t host, surf_file_t fd){
   return get_casted_host(host)->unlink(fd);
 }
 
-size_t surf_host_get_size(surf_resource_t host, surf_file_t fd){
+size_t surf_host_get_size(sg_host_t host, surf_file_t fd){
   return get_casted_host(host)->getSize(fd);
 }
 
-surf_action_t surf_host_read(surf_resource_t host, surf_file_t fd, sg_size_t size){
+surf_action_t surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size){
   return get_casted_host(host)->read(fd, size);
 }
 
-surf_action_t surf_host_write(surf_resource_t host, surf_file_t fd, sg_size_t size){
+surf_action_t surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size){
   return get_casted_host(host)->write(fd, size);
 }
 
-xbt_dynar_t surf_host_get_info(surf_resource_t host, surf_file_t fd){
+xbt_dynar_t surf_host_get_info(sg_host_t host, surf_file_t fd){
   return get_casted_host(host)->getInfo(fd);
 }
 
-size_t surf_host_file_tell(surf_resource_t host, surf_file_t fd){
+size_t surf_host_file_tell(sg_host_t host, surf_file_t fd){
   return get_casted_host(host)->fileTell(fd);
 }
 
-int surf_host_file_seek(surf_resource_t host, surf_file_t fd,
+int surf_host_file_seek(sg_host_t host, surf_file_t fd,
                                sg_offset_t offset, int origin){
   return get_casted_host(host)->fileSeek(fd, offset, origin);
 }
 
-int surf_host_file_move(surf_resource_t host, surf_file_t fd, const char* fullpath){
+int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return get_casted_host(host)->fileMove(fd, fullpath);
 }
 
-xbt_dynar_t surf_host_get_vms(surf_resource_t host){
+xbt_dynar_t surf_host_get_vms(sg_host_t host){
   xbt_dynar_t vms = get_casted_host(host)->getVms();
   xbt_dynar_t vms_ = xbt_dynar_new(sizeof(sg_host_t), NULL);
   unsigned int cpt;
   simgrid::surf::VirtualMachine *vm;
   xbt_dynar_foreach(vms, cpt, vm) {
-    sg_host_t vm_ = xbt_lib_get_elm_or_null(host_lib, vm->getName());
+    // TODO, use a backlink from simgrid::surf::Host to simgrid::Host 
+    sg_host_t vm_ = (sg_host_t) xbt_dict_get_elm_or_null(host_list, vm->getName());
     xbt_dynar_push(vms_, &vm_);
   }
   xbt_dynar_free(&vms);
   return vms_;
 }
 
-void surf_host_get_params(surf_resource_t host, vm_params_t params){
+void surf_host_get_params(sg_host_t host, vm_params_t params){
   get_casted_host(host)->getParams(params);
 }
 
-void surf_host_set_params(surf_resource_t host, vm_params_t params){
+void surf_host_set_params(sg_host_t host, vm_params_t params){
   get_casted_host(host)->setParams(params);
 }
 
-void surf_vm_destroy(surf_resource_t resource){
+void surf_vm_destroy(sg_host_t resource){
   /* Before clearing the entries in host_lib, we have to pick up resources. */
-  simgrid::surf::VirtualMachine *vm = get_casted_vm(resource);
-  char* name = xbt_dict_get_elm_key(resource);
+  const char* name = resource->id().c_str();
   /* We deregister objects from host_lib, without invoking the freeing callback
    * of each level.
    *
    * Do not call xbt_lib_remove() here. It deletes all levels of the key,
    * including MSG_HOST_LEVEL and others. We should unregister only what we know.
    */
-  sg_host_surfcpu_destroy((sg_host_t)resource);
-  sg_host_edge_destroy((sg_host_t)resource,1);
-  xbt_lib_unset(host_lib, name, SURF_HOST_LEVEL, 0);
+  sg_host_surfcpu_destroy(resource);
+  sg_host_edge_destroy(resource,1);
+  // TODO, use backlink from simgrid::surf::Host to simgrid::Host
+  simgrid::Host* host = (simgrid::Host*) xbt_dict_get_or_null(host_list, name);
+  host->set_facet(SURF_HOST_LEVEL, nullptr);
 
   /* TODO: comment out when VM storage is implemented. */
-  // xbt_lib_unset(host_lib, name, SURF_STORAGE_LEVEL, 0);
-
-  delete vm;
+  // host->set_facet(SURF_STORAGE_LEVEL, nullptr);
 }
 
-void surf_vm_suspend(surf_resource_t vm){
+void surf_vm_suspend(sg_host_t vm){
   get_casted_vm(vm)->suspend();
 }
 
-void surf_vm_resume(surf_resource_t vm){
+void surf_vm_resume(sg_host_t vm){
   get_casted_vm(vm)->resume();
 }
 
-void surf_vm_save(surf_resource_t vm){
+void surf_vm_save(sg_host_t vm){
   get_casted_vm(vm)->save();
 }
 
-void surf_vm_restore(surf_resource_t vm){
+void surf_vm_restore(sg_host_t vm){
   get_casted_vm(vm)->restore();
 }
 
-void surf_vm_migrate(surf_resource_t vm, surf_resource_t ind_vm_ws_dest){
+void surf_vm_migrate(sg_host_t vm, sg_host_t ind_vm_ws_dest){
   get_casted_vm(vm)->migrate(ind_vm_ws_dest);
 }
 
-surf_resource_t surf_vm_get_pm(surf_resource_t vm){
+sg_host_t surf_vm_get_pm(sg_host_t vm){
   return get_casted_vm(vm)->getPm();
 }
 
-void surf_vm_set_bound(surf_resource_t vm, double bound){
+void surf_vm_set_bound(sg_host_t vm, double bound){
   return get_casted_vm(vm)->setBound(bound);
 }
 
-void surf_vm_set_affinity(surf_resource_t vm, surf_resource_t cpu, unsigned long mask){
+void surf_vm_set_affinity(sg_host_t vm, sg_host_t cpu, unsigned long mask){
   return get_casted_vm(vm)->setAffinity(sg_host_surfcpu(cpu), mask);
 }
 
@@ -456,11 +455,11 @@ const char* surf_storage_get_host(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->p_attach;
 }
 
-surf_action_t surf_cpu_execute(surf_resource_t cpu, double size){
+surf_action_t surf_cpu_execute(sg_host_t cpu, double size){
   return sg_host_surfcpu(cpu)->execute(size);
 }
 
-surf_action_t surf_cpu_sleep(surf_resource_t cpu, double duration){
+surf_action_t surf_cpu_sleep(sg_host_t cpu, double duration){
   return sg_host_surfcpu(cpu)->sleep(duration);
 }
 
@@ -516,7 +515,7 @@ double surf_action_get_cost(surf_action_t action){
   return action->getCost();
 }
 
-void surf_cpu_action_set_affinity(surf_action_t action, surf_resource_t cpu, unsigned long mask) {
+void surf_cpu_action_set_affinity(surf_action_t action, sg_host_t cpu, unsigned long mask) {
   static_cast<simgrid::surf::CpuAction*>(action)->setAffinity(sg_host_surfcpu(cpu), mask);
 }
 

@@ -179,6 +179,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
 
   simgrid::mc::Process* process = &mc_model_checker->process();
 
+  // FIXME, simgrid::Host
   // Currently, smx_host_t = xbt_dictelm_t.
   // TODO, add an static_assert on this if switching to C++
   // The host name is host->key and the host->key_len==strlen(host->key).

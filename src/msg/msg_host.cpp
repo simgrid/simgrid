@@ -9,6 +9,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "simgrid/simix.h"
+#include "simgrid/Host.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
@@ -72,7 +73,7 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
  */
 msg_host_t MSG_host_by_name(const char *name)
 {
-  return (msg_host_t) xbt_lib_get_elm_or_null(host_lib,name);
+  return simgrid::Host::find_host(name);
 }
 
 /** \ingroup m_host_management
@@ -179,27 +180,23 @@ void __MSG_host_destroy(msg_host_t host) //FIXME: killme?
  */
 int MSG_get_host_number(void)
 {
-  return xbt_lib_length(host_lib);
+  return xbt_dict_length(host_list);
 }
 
 #ifdef MSG_USE_DEPRECATED
 msg_host_t *MSG_get_host_table(void)
 {
-      void **array;
-    int i = 0;
+  if (xbt_dict_is_empty(host_list))
+    return nullptr;
+
+  void **array = xbt_new0(void *, xbt_dict_length(host_list));
+
     xbt_lib_cursor_t cursor;
-    char *key;
-    void **data;
-
-    if (xbt_lib_length(host_lib) == 0)
-    return NULL;
-    else
-    array = xbt_new0(void *, xbt_lib_length(host_lib));
-
-    xbt_lib_foreach(host_lib, cursor, key, data) {
+    const char *id;
+    simgrid::Host* host;
+    xbt_dict_foreach(host_list, cursor, id, host)
       if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
-        array[i++] = data[MSG_HOST_LEVEL];
-    }
+        array[i++] = host->facet(MSG_HOST_LEVEL);
 
     return (msg_host_t *)array;
 }

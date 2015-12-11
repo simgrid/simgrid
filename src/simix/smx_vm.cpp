@@ -61,7 +61,7 @@ static int __can_be_started(sg_host_t vm)
   }
 
   if (pm_overcommit) {
-    XBT_INFO("%s allows memory overcommit.", pm->key);
+    XBT_INFO("%s allows memory overcommit.", sg_host_get_name(pm));
     return 1;
   }
 
@@ -78,7 +78,8 @@ static int __can_be_started(sg_host_t vm)
 
   if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
     XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
-        vm->key, pm->key, vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
+        sg_host_get_name(vm), sg_host_get_name(pm),
+        vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
     xbt_dynar_free(&dyn_vms);
     return 0;
   }

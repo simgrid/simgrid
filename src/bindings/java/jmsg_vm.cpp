@@ -167,7 +167,7 @@ Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   msg_host_t host = MSG_vm_get_pm(vm);
 
-  if (!xbt_lib_get_level(host, JAVA_HOST_LEVEL)) {
+  if (!host->facet(JAVA_HOST_LEVEL)) {
     /* the native host not yet associated with the java host instance */
 
     /* instanciate a new java host instance */
@@ -193,9 +193,9 @@ Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm) {
       jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
-    xbt_lib_set(host_lib, host->key, JAVA_HOST_LEVEL, (void *) jhost);
+    host->set_facet(JAVA_HOST_LEVEL, (void *) jhost);
   } else {
-    jhost = (jobject) xbt_lib_get_level(host, JAVA_HOST_LEVEL);
+    jhost = (jobject) host->facet(JAVA_HOST_LEVEL);
   }
 
   return jhost;

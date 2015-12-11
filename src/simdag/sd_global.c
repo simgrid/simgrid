@@ -10,6 +10,7 @@
 #include "xbt/dynar.h"
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
+#include "simgrid/host.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
@@ -201,15 +202,19 @@ void SD_create_environment(const char *platform_file)
 {
   xbt_lib_cursor_t cursor = NULL;
   char *name = NULL;
-  void **surf_workstation = NULL;
   void **surf_storage = NULL;
 
   parse_platform_file(platform_file);
 
   /* now let's create the SD wrappers for workstations, storages and links */
-  xbt_lib_foreach(host_lib, cursor, name, surf_workstation){
-    if(surf_workstation[SURF_HOST_LEVEL])
-      __SD_workstation_create(surf_workstation[SURF_HOST_LEVEL], NULL);
+  {
+    xbt_dict_cursor_t cursor = NULL;
+    simgrid_Host* host = NULL;
+    xbt_dict_foreach(host_list, cursor, name, host){
+      surf_Host* surf_host = (surf_Host*) sg_host_get_facet(host, SURF_HOST_LEVEL);
+      if (surf_host != NULL)
+        __SD_workstation_create(surf_host, NULL);
+    }
   }
 
   xbt_lib_foreach(storage_lib, cursor, name, surf_storage) {

@@ -53,7 +53,7 @@
     #surf_host_model_init_current_default() or #surf_host_model_init_ptask_L07() 
     to create the platform.
 
-    Then you can access the hosts with the global variables \ref host_lib.
+    Then you can access the hosts with the global variables \ref host_list.
     Some functions of the \ref SURF_host_interface and similar can give
     you some information about:
 	- a host: get_speed(), get_available_speed();

@@ -33,7 +33,7 @@ surf_callback(void, simgrid::surf::As*) asCreatedCallbacks;
  * @ingroup SURF_build_api
  * @brief A library containing all known hosts
  */
-xbt_lib_t host_lib;
+xbt_dict_t host_list;
 
 int SURF_HOST_LEVEL;            //Surf host level
 int COORD_HOST_LEVEL=0;         //Coordinates level
@@ -196,7 +196,7 @@ simgrid::surf::RoutingEdge *routing_add_host(
     }
     xbt_dynar_shrink(ctn, 0);
     xbt_dynar_free(&ctn_str);
-    xbt_lib_set(host_lib, host->id, COORD_HOST_LEVEL, (void *) ctn);
+    simgrid::Host::get_host(host->id)->set_facet(COORD_HOST_LEVEL, (void *) ctn);
     XBT_DEBUG("Having set host coordinates for '%s'",host->id);
   }
 
@@ -1334,14 +1334,12 @@ const char *surf_AS_get_model(simgrid::surf::As *as)
 xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)
 {
   xbt_dynar_t elms = as->p_indexNetworkElm;
-  sg_routing_edge_t relm;
-  xbt_dictelm_t delm;
-  int index;
   int count = xbt_dynar_length(elms);
-  xbt_dynar_t res =  xbt_dynar_new(sizeof(xbt_dictelm_t), NULL);
-  for (index = 0; index < count; index++) {
-     relm = xbt_dynar_get_as(elms, index, simgrid::surf::RoutingEdge*);
-     delm = xbt_lib_get_elm_or_null(host_lib, relm->getName());
+  xbt_dynar_t res =  xbt_dynar_new(sizeof(sg_host_t), NULL);
+  for (int index = 0; index < count; index++) {
+     sg_routing_edge_t relm =
+      xbt_dynar_get_as(elms, index, simgrid::surf::RoutingEdge*);
+     sg_host_t delm = simgrid::Host::find_host(relm->getName());
      if (delm!=NULL) {
        xbt_dynar_push(res, &delm);
      }
