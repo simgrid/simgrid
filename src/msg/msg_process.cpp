@@ -33,11 +33,11 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
   // get the MSG process from the SIMIX process
   if (smx_proc == SIMIX_process_self()) {
     /* avoid a SIMIX request if this function is called by the process itself */
-    msg_proc = SIMIX_process_self_get_data(smx_proc);
+    msg_proc = (simdata_process_t) SIMIX_process_self_get_data(smx_proc);
     SIMIX_process_self_set_data(smx_proc, NULL);
   }
   else {
-    msg_proc = simcall_process_get_data(smx_proc);
+    msg_proc = (simdata_process_t) simcall_process_get_data(smx_proc);
     simcall_process_set_data(smx_proc, NULL);
   }
 
@@ -219,7 +219,7 @@ msg_error_t MSG_process_join(msg_process_t process, double timeout){
  */
 msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
-  simdata_process_t simdata = simcall_process_get_data(process);
+  simdata_process_t simdata = (simdata_process_t) simcall_process_get_data(process);
   simdata->m_host = host;
   msg_host_t now = simdata->m_host;
   TRACE_msg_process_change_host(process, now, host);
@@ -238,7 +238,7 @@ void* MSG_process_get_data(msg_process_t process)
   xbt_assert(process != NULL, "Invalid parameter: first parameter must not be NULL!");
 
   /* get from SIMIX the MSG process data, and then the user data */
-  simdata_process_t simdata = simcall_process_get_data(process);
+  simdata_process_t simdata = (simdata_process_t) simcall_process_get_data(process);
   if (simdata)
     return simdata->data;
   else
@@ -255,7 +255,8 @@ msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != NULL, "Invalid parameter: first parameter must not be NULL!");
 
-  simdata_process_t simdata = simcall_process_get_data(process);
+  simdata_process_t simdata =
+    (simdata_process_t) simcall_process_get_data(process);
   simdata->data = data;
 
   return MSG_OK;
@@ -282,10 +283,10 @@ msg_host_t MSG_process_get_host(msg_process_t process)
 {
   simdata_process_t simdata;
   if (process == NULL) {
-    simdata = SIMIX_process_self_get_data(SIMIX_process_self());
+    simdata = (simdata_process_t) SIMIX_process_self_get_data(SIMIX_process_self());
   }
   else {
-    simdata = simcall_process_get_data(process);
+    simdata = (simdata_process_t) simcall_process_get_data(process);
   }
   return simdata ? simdata->m_host : NULL;
 }
@@ -379,7 +380,7 @@ const char *MSG_process_get_name(msg_process_t process)
 const char *MSG_process_get_property_value(msg_process_t process,
                                            const char *name)
 {
-  return xbt_dict_get_or_null(MSG_process_get_properties(process), name);
+  return (char*) xbt_dict_get_or_null(MSG_process_get_properties(process), name);
 }
 
 /** \ingroup m_process_management

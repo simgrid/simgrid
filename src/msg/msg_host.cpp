@@ -273,7 +273,7 @@ xbt_swag_t MSG_host_get_process_list(msg_host_t host)
  */
 const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 {
-  return xbt_dict_get_or_null(MSG_host_get_properties(host), name);
+  return (const char*) xbt_dict_get_or_null(MSG_host_get_properties(host), name);
 }
 
 /** \ingroup m_host_management

@@ -218,12 +218,11 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
   }
 
   /* Note: ind_vm and vm_workstation point to the same elm object. */
-  msg_vm_t ind_vm = NULL;
-  void *ind_vm_workstation =  NULL;
-
+  
   /* Ask the SIMIX layer to create the surf vm resource */
-  ind_vm_workstation = simcall_vm_create(name, ind_pm);
-  ind_vm = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
+  sg_host_t ind_vm_workstation =  (sg_host_t) simcall_vm_create(name, ind_pm);
+
+  msg_vm_t ind_vm = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
 
   XBT_DEBUG("A new VM (%s) has been created", name);
 
@@ -357,7 +356,7 @@ static int migration_rx_fun(int argc, char *argv[])
   XBT_DEBUG("mig: rx_start");
 
   // The structure has been created in the do_migration function and should only be freed in the same place ;)
-  struct migration_session *ms = MSG_process_get_data(MSG_process_self());
+  struct migration_session *ms = (migration_session *) MSG_process_get_data(MSG_process_self());
 
   s_vm_params_t params;
   simcall_host_get_params(ms->vm, &params);
@@ -578,7 +577,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
 
   char *key = bprintf("%s-%p", task->name, task);
 
-  dirty_page_t dp = xbt_dict_get_or_null(priv->dp_objs, key);
+  dirty_page_t dp = (dirty_page_t) xbt_dict_get_or_null(priv->dp_objs, key);
   xbt_assert(dp->task == task);
 
   /* If we are in the middle of dirty page tracking, we record how much
@@ -702,7 +701,8 @@ static int migration_tx_fun(int argc, char *argv[])
   XBT_DEBUG("mig: tx_start");
 
   // Note that the ms structure has been allocated in do_migration and hence should be freed in the same function ;)
-  struct migration_session *ms = MSG_process_get_data(MSG_process_self());
+  migration_session *ms = 
+    (migration_session *) MSG_process_get_data(MSG_process_self());
 
   s_vm_params_t params;
   simcall_host_get_params(ms->vm, &params);
@@ -778,9 +778,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
   /* Stage2: send update pages iteratively until the size of remaining states
    * becomes smaller than the threshold value. */
-  if (skip_stage2)
-    goto stage3;
-
+ if (! skip_stage2) {
 
   int stage2_round = 0;
   for (;;) {
@@ -846,7 +844,7 @@ static int migration_tx_fun(int argc, char *argv[])
     } else
       XBT_CRITICAL("bug");
   }
-
+ }
 
 stage3:
   /* Stage3: stop the VM and copy the rest of states. */
@@ -970,7 +968,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
    *  
    */
 
-  msg_host_t old_pm = simcall_vm_get_pm(vm);
+  msg_host_t old_pm = (msg_host_t) simcall_vm_get_pm(vm);
 
   if(MSG_host_is_off(old_pm))
     THROWF(vm_error, 0, "SRC host(%s) seems off, cannot start a migration", sg_host_get_name(old_pm));
@@ -1080,7 +1078,7 @@ void MSG_vm_restore(msg_vm_t vm)
  */
 msg_host_t MSG_vm_get_pm(msg_vm_t vm)
 {
-  return simcall_vm_get_pm(vm);
+  return (msg_host_t) simcall_vm_get_pm(vm);
 }
 
 

@@ -109,7 +109,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, read_size);
     msg_host_t *m_host_list = NULL;
-    m_host_list = calloc(2, sizeof(msg_host_t));
+    m_host_list = (msg_host_t*) calloc(2, sizeof(msg_host_t));
 
     m_host_list[0] = MSG_host_self();
     m_host_list[1] = attached_host;
@@ -153,7 +153,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, size);
     msg_host_t *m_host_list = NULL;
-    m_host_list = calloc(2, sizeof(msg_host_t));
+    m_host_list = (msg_host_t*) calloc(2, sizeof(msg_host_t));
 
     m_host_list[0] = MSG_host_self();
     m_host_list[1] = attached_host;
@@ -248,7 +248,7 @@ msg_error_t MSG_file_unlink(msg_file_t fd)
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
   msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
   int res = simcall_file_unlink(file_priv->simdata->smx_file, attached_host);
-  return res;
+  return (msg_error_t) res;
 }
 
 /** \ingroup msg_file_management
@@ -281,7 +281,7 @@ sg_size_t MSG_file_get_size(msg_file_t fd){
 msg_error_t MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin)
 {
   msg_file_priv_t priv = MSG_file_priv(fd);
-  return simcall_file_seek(priv->simdata->smx_file, offset, origin);
+  return (msg_error_t) simcall_file_seek(priv->simdata->smx_file, offset, origin);
 }
 
 /**
@@ -312,7 +312,7 @@ const char *MSG_file_get_name(msg_file_t fd) {
 msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
 {
   msg_file_priv_t priv = MSG_file_priv(fd);
-  return simcall_file_move(priv->simdata->smx_file, fullpath);
+  return (msg_error_t) simcall_file_move(priv->simdata->smx_file, fullpath);
 }
 
 /**
@@ -371,7 +371,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 
   XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, storage_priv_src->hostname, host_name_dest);
   msg_host_t *m_host_list = NULL;
-  m_host_list = calloc(2, sizeof(msg_host_t));
+  m_host_list = (msg_host_t*) calloc(2, sizeof(msg_host_t));
 
   m_host_list[0] = attached_host;
   m_host_list[1] = host_dest;
@@ -388,7 +388,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
     if (transfer == MSG_TASK_CANCELED)
       XBT_WARN("Transfer error, task has been canceled!");
 
-    return -1;
+    return (msg_error_t) -1;
   }
 
   /* Create file on remote host, write it and close it */
@@ -510,7 +510,7 @@ void MSG_storage_set_property_value(msg_storage_t storage, const char *name, cha
  */
 const char *MSG_storage_get_property_value(msg_storage_t storage, const char *name)
 {
-  return xbt_dict_get_or_null(MSG_storage_get_properties(storage), name);
+  return (char*) xbt_dict_get_or_null(MSG_storage_get_properties(storage), name);
 }
 
 

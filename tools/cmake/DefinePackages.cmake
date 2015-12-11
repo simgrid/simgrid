@@ -415,21 +415,21 @@ set(SIMGRID_SRC
   )
 
 set(MSG_SRC
-  src/msg/instr_msg_process.c
-  src/msg/instr_msg_task.c
-  src/msg/instr_msg_vm.c
-  src/msg/msg_actions.c
-  src/msg/msg_deployment.c
-  src/msg/msg_environment.c
-  src/msg/msg_global.c
-  src/msg/msg_gos.c
-  src/msg/msg_host.c
-  src/msg/msg_io.c
-  src/msg/msg_mailbox.c
-  src/msg/msg_process.c
-  src/msg/msg_synchro.c
-  src/msg/msg_task.c
-  src/msg/msg_vm.c
+  src/msg/instr_msg_process.cpp
+  src/msg/instr_msg_task.cpp
+  src/msg/instr_msg_vm.cpp
+  src/msg/msg_actions.cpp
+  src/msg/msg_deployment.cpp
+  src/msg/msg_environment.cpp
+  src/msg/msg_global.cpp
+  src/msg/msg_gos.cpp
+  src/msg/msg_host.cpp
+  src/msg/msg_io.cpp
+  src/msg/msg_mailbox.cpp
+  src/msg/msg_process.cpp
+  src/msg/msg_synchro.cpp
+  src/msg/msg_task.cpp
+  src/msg/msg_vm.cpp
   )
 
 set(SIMDAG_SRC

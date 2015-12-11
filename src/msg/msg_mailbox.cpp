@@ -169,7 +169,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
   msg_error_t ret = MSG_OK;
   simdata_task_t t_simdata = NULL;
   msg_process_t process = MSG_process_self();
-  simdata_process_t p_simdata = SIMIX_process_self_get_data(process);
+  simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data(process);
 
   int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
 
@@ -181,7 +181,7 @@ MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
   if (t_simdata->isused != 0) {
     if (msg_global->debug_multiple_use){
       XBT_ERROR("This task is already used in there:");
-      xbt_backtrace_display(t_simdata->isused);
+      xbt_backtrace_display((xbt_ex_t*) t_simdata->isused);
       XBT_ERROR("And you try to reuse it from here:");
       xbt_backtrace_display_current();
     } else {

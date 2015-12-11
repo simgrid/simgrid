@@ -48,7 +48,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
   xbt_ex_t e;
   simdata_task_t simdata = task->simdata;
   msg_process_t self = SIMIX_process_self();
-  simdata_process_t p_simdata = SIMIX_process_self_get_data(self);
+  simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data(self);
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
@@ -395,7 +395,7 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   if (t_simdata->isused != 0) {
     if (msg_global->debug_multiple_use){
       XBT_ERROR("This task is already used in there:");
-      xbt_backtrace_display(t_simdata->isused);
+      xbt_backtrace_display((xbt_ex_t*) t_simdata->isused);
       XBT_ERROR("And you try to reuse it from here:");
       xbt_backtrace_display_current();
     } else {
@@ -855,7 +855,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_s
 
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
-    msg_task_t task = buff;
+    msg_task_t task = (msg_task_t) buff;
     msg_global->task_copy_callback(task,
         simcall_comm_get_src_proc(comm), simcall_comm_get_dst_proc(comm));
   }
@@ -1042,7 +1042,8 @@ const char *MSG_task_get_category (msg_task_t task)
  */
 const char *MSG_as_router_get_property_value(const char* asr, const char *name)
 {
-  return xbt_dict_get_or_null(MSG_as_router_get_properties(asr), name);
+  return (char*) xbt_dict_get_or_null(
+    MSG_as_router_get_properties(asr), name);
 }
 
 /**
