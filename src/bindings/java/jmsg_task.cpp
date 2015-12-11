@@ -10,14 +10,13 @@
 
 #include "jmsg_host.h"
 #include "jmsg_task.h"
+#include "jmsg_process.h"
 
 #include "jxbt_utilities.h"
 
 #include <simgrid/msg.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
-
-jobject native_to_java_process(msg_process_t process);
 
 static jmethodID jtask_method_Comm_constructor;
 

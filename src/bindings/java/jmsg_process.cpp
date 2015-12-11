@@ -10,6 +10,7 @@
 
 #include "jmsg.h"
 #include "jmsg_host.h"
+#include "jmsg_proces.h"
 #include "jxbt_utilities.h"
 #include "JavaContext.hpp"
 
