@@ -1410,7 +1410,7 @@ void *simcall_mc_snapshot(void) {
 }
 
 int simcall_mc_compare_snapshots(void *s1, void *s2) {
-  return simcall_BODY_mc_compare_snapshots(s1, s2);
+  return simcall_BODY_mc_compare_snapshots((simgrid::mc::Snapshot*)s1, (simgrid::mc::Snapshot*)s2);
 }
 
 #endif /* HAVE_MC */

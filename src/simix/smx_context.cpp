@@ -141,7 +141,7 @@ void *SIMIX_context_stack_new(void)
 #ifdef HAVE_MC
     /* Cannot use posix_memalign when HAVE_MC. Align stack by hand, and save the
      * pointer returned by xbt_malloc0. */
-    char *alloc = xbt_malloc0(size + xbt_pagesize);
+    char *alloc = (char*)xbt_malloc0(size + xbt_pagesize);
     stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
     *((void **)stack - 1) = alloc;
 #elif !defined(_XBT_WIN32)

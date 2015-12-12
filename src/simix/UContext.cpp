@@ -232,7 +232,7 @@ UContext::UContext(std::function<void()> code,
 
 #ifdef HAVE_MC
   if (MC_is_active() && code) {
-    MC_register_stack_area(this->stack_, context->process,
+    MC_register_stack_area(this->stack_, process,
                       &(this->uc_), smx_context_usable_stack_size);
   }
 #endif

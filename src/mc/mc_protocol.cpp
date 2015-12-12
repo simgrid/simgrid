@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdio.h> // perror
+#include <cstddef> // std::size_t
 
 #include <sys/types.h>
 #include <sys/socket.h>
