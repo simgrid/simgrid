@@ -55,7 +55,7 @@ $ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -tra
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
-> [Jupiter:1:(0) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
+> [Jupiter:1:(2) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
 
 ! output sort
 $ sh -c "cat ./out_ti.txt_files/*"
@@ -163,7 +163,7 @@ $ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -tra
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format/ti_one_file' to 'yes'
-> [Jupiter:1:(0) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
+> [Jupiter:1:(2) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
 
 
 
