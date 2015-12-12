@@ -41,10 +41,12 @@ public final class NativeLib {
 			try {
 				System.loadLibrary(name);
 			} catch (UnsatisfiedLinkError e2) {
-				System.err.println("Cannot load the bindings to the "+name+" library in path "+getPath());
-				e.printStackTrace();
-				System.err.println("This jar file does not seem to fit your system, and I cannot find an installation of SimGrid.");
-				System.exit(1);
+				if (! name.equals("boost_context")) {
+					System.err.println("Cannot load the bindings to the "+name+" library in path "+getPath());
+					e.printStackTrace();
+					System.err.println("This jar file does not seem to fit your system, and I cannot find an installation of SimGrid.");
+					System.exit(1);
+				}
 			}
 		}
 	}
