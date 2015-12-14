@@ -273,6 +273,7 @@ smx_process_t SIMIX_process_create(
        process->ppid = SIMIX_process_get_PID(parent_process);
        /* SMPI process have their own data segment and
           each other inherit from their father */
+#ifdef HAVE_SMPI
        if(smpi_privatize_global_variables){
          if( parent_process->pid != 0){
            SIMIX_segment_index_set(process, parent_process->segment_index);
@@ -280,6 +281,7 @@ smx_process_t SIMIX_process_create(
            SIMIX_segment_index_set(process, process->pid - 1);
          }
        }
+#endif
      } else {
        process->ppid = -1;
      }
