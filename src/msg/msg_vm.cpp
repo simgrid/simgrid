@@ -482,25 +482,6 @@ static void stop_dirty_page_tracking(msg_vm_t vm)
   priv->dp_enabled = 0;
 }
 
-#if 0
-/* It might be natural that we define dp_rate for each task. But, we will also
- * have to care about how each task behavior affects the memory update behavior
- * at the operating system level. It may not be easy to model it with a simple algorithm. */
-double calc_updated_pages(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
-{
-    double computed = dp->prev_remaining - remaining;
-    double duration = clock - dp->prev_clock;
-    double updated = dp->task->dp_rate * computed;
-
-    XBT_INFO("%s@%s: computated %f ops (remaining %f -> %f) in %f secs (%f -> %f)",
-        key, sg_host_name(vm), computed, dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
-    XBT_INFO("%s@%s: updated %f bytes, %f Mbytes/s",
-        key, sg_host_name(vm), updated, updated / duration / 1000 / 1000);
-
-    return updated;
-}
-#endif
-
 static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
 {
   double computed = dp->prev_remaining - remaining;
