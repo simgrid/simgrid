@@ -31,12 +31,12 @@ size_t sg_host_add_level(void(*deleter)(void*))
 
 sg_host_t sg_host_by_name(const char *name)
 {
-  return simgrid::Host::find_host(name);
+  return simgrid::Host::by_name_or_null(name);
 }
 
 sg_host_t sg_host_by_name_or_create(const char *name)
 {
-  return simgrid::Host::get_host(name);
+  return simgrid::Host::by_name_or_create(name);
 }
 
 xbt_dynar_t sg_hosts_as_dynar(void)
@@ -211,14 +211,14 @@ Host::~Host()
 {
 }
 
-Host* Host::find_host(const char* name)
+Host* Host::by_name_or_null(const char* name)
 {
   return (Host*) xbt_dict_get_or_null(host_list, name);
 }
 
-Host* Host::get_host(const char* name)
+Host* Host::by_name_or_create(const char* name)
 {
-  Host* host = find_host(name);
+  Host* host = by_name_or_null(name);
   if (host == nullptr) {
     host = new Host(name);
     xbt_dict_set(host_list, name, host, NULL);

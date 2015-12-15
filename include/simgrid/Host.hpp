@@ -23,8 +23,8 @@ public:
   Host(std::string id);
   ~Host();
   std::string const& id() const { return id_; }
-  static Host* find_host(const char* name);
-  static Host* get_host(const char* name);
+  static Host* by_name_or_null(const char* name);
+  static Host* by_name_or_create(const char* name);
 };
 
 }

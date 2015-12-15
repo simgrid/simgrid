@@ -73,7 +73,7 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
  */
 msg_host_t MSG_host_by_name(const char *name)
 {
-  return simgrid::Host::find_host(name);
+  return simgrid::Host::by_name_or_null(name);
 }
 
 /** \ingroup m_host_management

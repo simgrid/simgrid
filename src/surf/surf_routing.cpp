@@ -196,7 +196,7 @@ simgrid::surf::RoutingEdge *routing_add_host(
     }
     xbt_dynar_shrink(ctn, 0);
     xbt_dynar_free(&ctn_str);
-    simgrid::Host::get_host(host->id)->set_facet(COORD_HOST_LEVEL, (void *) ctn);
+    simgrid::Host::by_name_or_create(host->id)->set_facet(COORD_HOST_LEVEL, (void *) ctn);
     XBT_DEBUG("Having set host coordinates for '%s'",host->id);
   }
 
@@ -1339,7 +1339,7 @@ xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)
   for (int index = 0; index < count; index++) {
      sg_routing_edge_t relm =
       xbt_dynar_get_as(elms, index, simgrid::surf::RoutingEdge*);
-     sg_host_t delm = simgrid::Host::find_host(relm->getName());
+     sg_host_t delm = simgrid::Host::by_name_or_null(relm->getName());
      if (delm!=NULL) {
        xbt_dynar_push(res, &delm);
      }

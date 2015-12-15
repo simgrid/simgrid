@@ -41,7 +41,7 @@ static void simgrid_ns3_add_host(simgrid::surf::Host* host)
 {
   const char* id = host->getName();
   XBT_DEBUG("NS3_ADD_HOST '%s'", id);
-  simgrid::Host::get_host(id)->set_facet(NS3_HOST_LEVEL, ns3_add_host(id));
+  simgrid::Host::by_name_or_create(id)->set_facet(NS3_HOST_LEVEL, ns3_add_host(id));
 }
 
 static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
@@ -108,7 +108,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
       start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
       xbt_dynar_push_as(tab_elements_num, int, start);
       router_id = bprintf("ns3_%s%d%s", cluster_prefix, start, cluster_suffix);
-      simgrid::Host::get_host(router_id)
+      simgrid::Host::by_name_or_create(router_id)
         ->set_facet(NS3_HOST_LEVEL, ns3_add_host_cluster(router_id));
       XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
       free(router_id);
@@ -120,7 +120,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
       for (i = start; i <= end; i++){
         xbt_dynar_push_as(tab_elements_num, int, i);
         router_id = bprintf("ns3_%s%d%s", cluster_prefix, i, cluster_suffix);
-        simgrid::Host::get_host(router_id)
+        simgrid::Host::by_name_or_create(router_id)
           ->set_facet(NS3_HOST_LEVEL, ns3_add_host_cluster(router_id));
         XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
         free(router_id);

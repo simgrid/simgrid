@@ -38,7 +38,7 @@ VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props,
 : Host(model, name, props, NULL, netElm, cpu)
 {
   VMModel::ws_vms.push_back(*this);
-  simgrid::Host::get_host(name)->set_facet(SURF_HOST_LEVEL, this);
+  simgrid::Host::by_name_or_create(name)->set_facet(SURF_HOST_LEVEL, this);
 }
 
 /*
@@ -62,7 +62,7 @@ void VirtualMachine::setState(e_surf_resource_state_t state){
  **/
 sg_host_t VirtualMachine::getPm()
 {
-  return simgrid::Host::find_host(p_subWs->getName());
+  return simgrid::Host::by_name_or_null(p_subWs->getName());
 }
 
 /**********
