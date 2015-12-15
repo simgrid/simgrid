@@ -396,8 +396,7 @@ void surf_vm_destroy(sg_host_t resource){
   sg_host_surfcpu_destroy(resource);
   sg_host_edge_destroy(resource,1);
   // TODO, use backlink from simgrid::surf::Host to simgrid::Host
-  simgrid::Host* host = (simgrid::Host*) xbt_dict_get_or_null(host_list, name);
-  host->set_facet(SURF_HOST_LEVEL, nullptr);
+  simgrid::Host::by_name_or_null(name)->set_facet(SURF_HOST_LEVEL, nullptr);
 
   /* TODO: comment out when VM storage is implemented. */
   // host->set_facet(SURF_STORAGE_LEVEL, nullptr);
