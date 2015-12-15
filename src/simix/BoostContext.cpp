@@ -191,7 +191,7 @@ void BoostContext::resume()
     (intptr_t) this);
 #else
   boost::context::jump_fcontext(
-    &boost_maestro_context_->fc_, this->fc_,
+    &maestro_context_->fc_, this->fc_,
     (intptr_t) this);
 #endif
 }
