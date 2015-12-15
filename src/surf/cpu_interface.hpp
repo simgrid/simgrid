@@ -182,8 +182,8 @@ public:
   double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
 
   /* Note (hypervisor): */
-  lmm_constraint_t *p_constraintCore;
-  void **p_constraintCoreId;
+  lmm_constraint_t *p_constraintCore=NULL;
+  void **p_constraintCoreId=NULL;
 };
 
 /**********

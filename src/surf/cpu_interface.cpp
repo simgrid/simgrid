@@ -132,7 +132,8 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 /************
  * Resource *
  ************/
-Cpu::Cpu(){
+Cpu::Cpu()
+{
 }
 
 
@@ -143,8 +144,6 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
  , m_core(core)
  , m_speedPeak(speedPeak)
  , m_speedScale(speedScale)
- , p_constraintCore(NULL)
- , p_constraintCoreId(NULL)
 {
 
 }
@@ -161,8 +160,6 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
   if (core > 1)
     xbt_assert(model == surf_cpu_model_pm);
 
-  p_constraintCore = NULL;
-  p_constraintCoreId = NULL;
   if (model->getUpdateMechanism() != UM_UNDEFINED) {
 	p_constraintCore = xbt_new(lmm_constraint_t, core);
 	p_constraintCoreId = xbt_new(void*, core);
