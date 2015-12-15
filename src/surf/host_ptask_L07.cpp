@@ -465,9 +465,9 @@ Action *CpuL07::execute(double size)
   host_list[0] = sg_host_by_name(getName());
   flops_amount[0] = size;
 
-  return static_cast<HostL07Model*>(getModel())->executeParallelTask(1, host_list,
-		                              flops_amount,
-                                     bytes_amount, -1);
+  return static_cast<CpuL07Model*>(getModel())
+    ->p_hostModel
+    ->executeParallelTask( 1, host_list, flops_amount, bytes_amount, -1);
 }
 
 Action *CpuL07::sleep(double duration)
