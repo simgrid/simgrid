@@ -202,8 +202,8 @@ int sg_host_get_pstate(sg_host_t host) {
 
 namespace simgrid {
 
-Host::Host(std::string id)
-  : id_(std::move(id))
+Host::Host(std::string const& id)
+  : id_(id)
 {
 }
 

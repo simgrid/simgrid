@@ -1,0 +1,288 @@
+/* Copyright (c) 2015. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef SIMGRIC_XBT_STRING_HPP
+#define SIMGRIC_XBT_STRING_HPP
+
+#ifdef HAVE_MC
+
+#include <stdexcept>
+#include <cstddef>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <iterator>
+
+#include <xbt/sysdep.h>
+
+namespace simgrid {
+namespace xbt {
+
+/** POD structure representation of a string
+ */
+struct string_data {
+  char* data;
+  std::size_t len;
+};
+
+/** A std::string with well-known representation
+ *
+ *  This is a (incomplete) drop-in replacement for std::string.
+ *
+ *  This is used for cross-process access to strings
+ *  (when the MC is enabled).
+ */
+XBT_PUBLIC_CLASS string : private string_data {
+  static const char NUL;
+public:
+
+  // Types
+  typedef std::size_t size_type;
+  typedef std::ptrdiff_t difference_type;
+  typedef char& reference;
+  typedef const char& const_reference;
+  typedef char* pointer;
+  typedef const char* const_pointer;
+  typedef char* iterator;
+  typedef const char* const_iterator;
+
+  // Dtor
+  ~string()
+  {
+    if (string_data::data != &NUL)
+      std::free(string_data::data);
+  }
+
+  // Ctors
+  string(const char* s, size_t size)
+  {
+    if (size == 0) {
+      string_data::len = 0;
+      string_data::data = const_cast<char*>(&NUL);
+    } else {
+      string_data::len = size;
+      string_data::data = static_cast<char*>(std::malloc(string_data::len + 1));
+      memcpy(string_data::data, s, string_data::len);
+      string_data::data[string_data::len] = '\0';
+    }
+  }
+  string() : string (nullptr, 0) {}
+  string(const char* s)
+    : string(s, s == nullptr ? 0 : strlen(s))
+  {}
+  string(string const& s) : string(s.c_str(), s.size()) {}
+  string(string&& s)
+  {
+    string_data::len = s.string_data::len;
+    string_data::data = s.string_data::data;
+    s.string_data::len = 0;
+    s.string_data::data = const_cast<char*>(&NUL);
+  }
+  string(std::string const& s) : string(s.c_str(), s.size()) {}
+
+  // Assign
+  void assign(const char* s, size_t size)
+  {
+    if (string_data::data != &NUL)
+      std::free(string_data::data);
+    if (size == 0) {
+      string_data::len = 0;
+      string_data::data = nullptr;
+    } else {
+      string_data::len = size;
+      string_data::data = (char*) std::malloc(string_data::len + 1);
+      memcpy(string_data::data, s, string_data::len);
+      string_data::data[string_data::len] = '\0';
+    }
+  }
+
+  // Copy
+  string& operator=(const char* s)
+  {
+    assign(s, s == nullptr ? 0 : std::strlen(s));
+    return *this;
+  }
+  string& operator=(string& s)
+  {
+    assign(s.c_str(), s.size());
+    return *this;
+  }
+  string& operator=(std::string& s)
+  {
+    assign(s.c_str(), s.size());
+    return *this;
+  }
+
+  // Capacity
+  size_t size() const   { return len; }
+  size_t length() const { return len; }
+  bool empty() const    { return len != 0; }
+  void shrink_to_fit() {}
+
+  // Alement access
+  char* data()              { return string_data::data; }
+  const char* data()  const { return string_data::data; }
+  char* c_str()             { return string_data::data; }
+  const char* c_str() const { return string_data::data; };
+  reference at(size_type i)
+  {
+    if (i >= size())
+      throw std::out_of_range("Out of range");
+    return data()[i];
+  }
+  const_reference at(size_type i) const
+  {
+    if (i >= size())
+      throw std::out_of_range("Out of range");
+    return data()[i];
+  }
+  reference operator[](size_type i)
+  {
+    return data()[i];
+  }
+  const_reference operator[](size_type i) const
+  {
+    return data()[i];
+  }
+  // Conversion
+  operator std::string() const
+  {
+    return std::string(this->c_str(), this->size());
+  }
+
+  // Iterators
+  iterator begin()               { return data(); }
+  iterator end()                 { return data() + size(); }
+  const_iterator begin() const   { return data(); }
+  const_iterator end() const     { return data() + size(); }
+  const_iterator cbegin() const  { return data(); }
+  const_iterator cend() const    { return data() + size(); }
+  // (Missing, reverse iterators)
+
+  // Operations
+  void clear()
+  {
+    string_data::len = 0;
+    string_data::data = (char*) &NUL;
+  }
+
+  // Compare
+  int compare(string const& that) const
+  {
+    size_t n = std::min(this->size(), that.size());
+    int res = memcmp(this->c_str(), that.c_str(), n);
+    if (res != 0)
+      return res;
+    else if (this->size() == that.size())
+      return 0;
+    else if (this->size() < that.size())
+      return -1;
+    else
+      return 1;
+  }
+  bool operator==(string const& that) const
+  {
+    return this->size() == that.size()
+      && std::memcmp(this->c_str(), that.c_str(), this->size()) == 0;
+  }
+  bool operator!=(string const& that) const
+  {
+    return !(*this == that);
+  }
+  bool operator<(string const& that) const
+  {
+    return compare(that) < 0;
+  }
+  bool operator<=(string const& that) const
+  {
+    return compare(that) <= 0;
+  }
+  bool operator>(string const& that) const
+  {
+    return compare(that) > 0;
+  }
+  bool operator>=(string const& that) const
+  {
+    return compare(that) >= 0;
+  }
+
+  // Compare with std::string
+  bool operator==(std::string const& that) const
+  {
+    return this->size() == that.size()
+      && std::memcmp(this->c_str(), that.c_str(), this->size()) == 0;
+  }
+  bool operator!=(std::string const& that) const
+  {
+    return !(*this == that);
+  }
+  bool operator<(std::string const& that) const
+  {
+    return compare(that) < 0;
+  }
+  bool operator<=(std::string const& that) const
+  {
+    return compare(that) <= 0;
+  }
+  bool operator>(std::string const& that) const
+  {
+    return compare(that) > 0;
+  }
+  bool operator>=(std::string const& that) const
+  {
+    return compare(that) >= 0;
+  }
+};
+
+inline
+bool operator==(std::string const& a, string const& b)
+{
+  return b == a;
+}
+inline
+bool operator!=(std::string const& a, string const& b)
+{
+  return b != a;
+}
+inline
+bool operator<(std::string const& a, string const& b)
+{
+  return b > a;
+}
+inline
+bool operator<=(std::string const& a, string const& b)
+{
+  return b >= a;
+}
+inline
+bool operator>(std::string const& a, string const& b)
+{
+  return b < a;
+}
+inline
+bool operator>=(std::string const& a, string const& b)
+{
+  return b <= a;
+}
+
+}
+}
+
+#else
+
+#include <string>
+
+namespace simgrid {
+namespace xbt {
+
+typedef std::string string;
+
+}
+}
+
+#endif
+
+#endif

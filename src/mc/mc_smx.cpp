@@ -7,6 +7,7 @@
 #include <assert.h>
 
 #include <xbt/log.h>
+#include <xbt/string.hpp>
 
 #include "src/simix/smx_private.h"
 
@@ -179,21 +180,33 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
 
   simgrid::mc::Process* process = &mc_model_checker->process();
 
-  // FIXME, simgrid::Host
-  // Currently, smx_host_t = xbt_dictelm_t.
-  // TODO, add an static_assert on this if switching to C++
-  // The host name is host->key and the host->key_len==strlen(host->key).
-  s_xbt_dictelm_t host_copy;
-  mc_smx_process_info_t info = MC_smx_process_get_info(p);
-  if (!info->hostname) {
+  /* Horrible hack to find the offset of the id in the simgrid::Host.
 
-    // Read the hostname from the MCed process:
-    process->read_bytes(&host_copy, sizeof(host_copy), remote(p->host));
-    int len = host_copy.key_len + 1;
-    char hostname[len];
-    process->read_bytes(hostname, len, remote(host_copy.key));
-    info->hostname = mc_model_checker->get_host_name(hostname);
-  }
+     Offsetof is not supported for non-POD types but this should
+     work in pratice for the targets currently supported by the MC
+     as long as we do not add funny features to the Host class
+     (such as virtual base).
+
+     We are using a (C++11) unrestricted union in order to avoid
+     any construction/destruction of the simgrid::Host.
+  */
+  union fake_host {
+    simgrid::Host host;
+    fake_host() {}
+    ~fake_host() {}
+  };
+  fake_host foo;
+  const size_t offset = (char*) &foo.host.id() - (char*) &foo.host;
+
+  // Read the simgrid::xbt::string in the MCed process:
+  mc_smx_process_info_t info = MC_smx_process_get_info(p);
+  simgrid::xbt::string_data remote_string;
+  auto remote_string_address = remote(
+    (simgrid::xbt::string_data*) ((char*) p->host + offset));
+  process->read_bytes(&remote_string, sizeof(remote_string), remote_string_address);
+  char hostname[remote_string.len];
+  process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));
+  info->hostname = mc_model_checker->get_host_name(hostname);
   return info->hostname;
 }
 

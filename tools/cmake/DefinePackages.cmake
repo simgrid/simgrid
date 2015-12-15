@@ -272,6 +272,7 @@ set(XBT_SRC
   src/xbt/parmap.cpp
   src/xbt/set.c
   src/xbt/snprintf.c
+  src/xbt/string.cpp
   src/xbt/swag.c
   src/xbt/xbt_log_appender_file.c
   src/xbt/xbt_log_layout_format.c
@@ -740,6 +741,7 @@ set(headers_to_install
   include/xbt/config.h
   include/xbt/cunit.h
   include/xbt/dict.h
+  include/xbt/string.hpp
   include/xbt/dynar.h
   include/xbt/ex.h
   include/xbt/fifo.h

@@ -7,22 +7,24 @@
 #ifndef SIMGRID_HOST_HPP
 #define SIMGRID_HOST_HPP
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include <xbt/base.h>
 #include <xbt/Facetable.hpp>
+#include <xbt/string.hpp>
 
 namespace simgrid {
 
 XBT_PUBLIC_CLASS Host : public simgrid::xbt::Facetable<Host> {
 private:
-  std::string id_;
+  simgrid::xbt::string id_;
 public:
-  Host(std::string id);
+  Host(std::string const& id);
   ~Host();
-  std::string const& id() const { return id_; }
+  simgrid::xbt::string const& id() const { return id_; }
   static Host* by_name_or_null(const char* name);
   static Host* by_name_or_create(const char* name);
 };
