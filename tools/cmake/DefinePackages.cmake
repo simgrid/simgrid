@@ -751,7 +751,7 @@ set(headers_to_install
   include/xbt/hash.h
   include/xbt/heap.h
   include/xbt/lib.h
-  include/xbt/Lib.hpp
+  include/xbt/Facetable.hpp
   include/xbt/log.h
   include/xbt/mallocator.h
   include/xbt/matrix.h

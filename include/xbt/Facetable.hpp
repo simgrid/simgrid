@@ -14,8 +14,24 @@
 namespace simgrid {
 namespace xbt {
 
+/** A Facetable is an object that you can extend with external facets.
+ *
+ * Facets are similar to the concept of mixins, that is, a set of behavior that is injected into a class without derivation.
+ *
+ * Imagine that you want to write a plugin dealing with the energy in SimGrid.
+ * You will have to store some information about each and every host.
+ *
+ * You could modify the Host class directly (but your code will soon become messy).
+ * You could create a class EnergyHost deriving Host, but it is not easily combinable
+ *    with a notion of Host extended with another concept (such as mobility).
+ * You could completely externalize these data with an associative map Host->EnergyHost.
+ *    It would work, provided that you implement this classical feature correctly (and it would induce a little performance penalty).
+ * Instead, you should add a new facet to the Host class, that happens to be Facetable.
+ *
+ */
+
 template<class T>
-class Lib {
+class Facetable {
 private:
   static std::vector<void(*)(void*)> deleters_;
 protected:
@@ -32,8 +48,8 @@ public:
   {
     return add_level([](void* p){ delete (U*)p; });
   }
-  Lib() : facets_(deleters_.size(), nullptr) {}
-  ~Lib()
+  Facetable() : facets_(deleters_.size(), nullptr) {}
+  ~Facetable()
   {
     for (std::size_t i = 0; i < facets_.size(); ++i)
       if (facets_[i] != nullptr)
@@ -60,7 +76,7 @@ public:
 };
 
 template<class T>
-std::vector<void(*)(void*)> Lib<T>::deleters_ = {};
+std::vector<void(*)(void*)> Facetable<T>::deleters_ = {};
 
 }
 }
