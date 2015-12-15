@@ -42,9 +42,9 @@ before_install:
    - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 50 ; fi
 script:
    - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=ON -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . && make VERBOSE=1 && ctest --output-on-failure --timeout 100
-branches:
-  only:
-     - master
+# branches:
+#   only:
+#      - master
 notifications:
   recipients:
     - martin.quinson@loria.fr
