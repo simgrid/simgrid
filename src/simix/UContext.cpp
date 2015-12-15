@@ -37,7 +37,7 @@
  * variable is decomposed into a serie of integers and
  * each integer is passed as argument to makecontext. */
 XBT_PRIVATE
-void simgrid_makecontext(ucontext* ucp, void (*func)(int first, ...), void* arg)
+void simgrid_makecontext(ucontext_t* ucp, void (*func)(int first, ...), void* arg)
 {
   int ctx_addr[CTX_ADDR_LEN];
   memcpy(ctx_addr, &arg, sizeof(void*));
