@@ -11,6 +11,7 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow_platform.xml
   PARENT_SCOPE
   )
 set(teshsuite_src

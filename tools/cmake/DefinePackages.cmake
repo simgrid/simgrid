@@ -723,6 +723,7 @@ set(headers_to_install
   include/simgrid/s4u/mailbox.hpp  
   include/simgrid/s4u/storage.hpp  
   include/simgrid/s4u.h
+  include/simgrid/Host.hpp
   include/smpi/mpi.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h
@@ -750,6 +751,7 @@ set(headers_to_install
   include/xbt/hash.h
   include/xbt/heap.h
   include/xbt/lib.h
+  include/xbt/Lib.hpp
   include/xbt/log.h
   include/xbt/mallocator.h
   include/xbt/matrix.h
@@ -1027,6 +1029,7 @@ set(bin_files
 
 set(txt_files
   ${txt_files}
+  .appveyor-download.cmd
   AUTHORS
   COPYING
   README
