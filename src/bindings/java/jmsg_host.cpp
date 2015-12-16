@@ -202,17 +202,6 @@ Java_org_simgrid_msg_Host_getCoreNumber(JNIEnv * env,
   return (jdouble) MSG_host_get_core_number(host);
 }
 
-JNIEXPORT jint JNICALL
-Java_org_simgrid_msg_Host_getLoad(JNIEnv * env, jobject jhost) {
-  msg_host_t host = jhost_get_native(env, jhost);
-
-  if (!host) {
-    jxbt_throw_notbound(env, "host", jhost);
-    return -1;
-  }
-
-  return (jint) MSG_get_host_msgload(host);
-}
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, jobject jhost, jobject jname) {
   msg_host_t host = jhost_get_native(env, jhost);

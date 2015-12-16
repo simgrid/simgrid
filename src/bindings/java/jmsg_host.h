@@ -162,14 +162,6 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCoreNumber
     (JNIEnv *, jobject);
 /*
- * Class		org_simgrid_msg_Host
- * Method		getLoad
- * Signature	()I
- */
-JNIEXPORT jint JNICALL
-Java_org_simgrid_msg_Host_getLoad(JNIEnv * env,
-                                       jobject jhost);
-/*
  * Class        org_simgrid_msg_Host
  * Method       getProperty
  * Signature    (Ljava/lang/String;)Ljava/lang/String;

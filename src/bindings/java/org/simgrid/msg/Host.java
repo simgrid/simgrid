@@ -165,14 +165,6 @@ public class Host {
 
 
 	/**
-	 * This method returns the number of tasks currently running on a host.
-	 * The external load is not taken in account.
-	 *
-	 * @return			The number of tasks currently running on a host.
-	 */ 
-	public native int getLoad();
-
-	/**
 	 * This method returns the speed of the processor of a host,
 	 * regardless of the current load of the machine.
 	 *
