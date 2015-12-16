@@ -211,18 +211,6 @@ xbt_dynar_t MSG_hosts_as_dynar(void) {
 }
 
 /** \ingroup m_host_management
- * \brief Return the number of MSG tasks currently running on a
- * #msg_host_t. The external load is not taken in account.
- */
-int MSG_get_host_msgload(msg_host_t h)
-{
-  xbt_assert((h != NULL), "Invalid parameters");
-  xbt_die( "Not implemented yet");
-
-  return (0);
-}
-
-/** \ingroup m_host_management
  * \brief Return the speed of the processor (in flop/s), regardless of 
     the current load on the machine.
  */

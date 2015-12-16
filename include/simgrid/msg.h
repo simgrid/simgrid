@@ -300,7 +300,6 @@ XBT_PUBLIC(const char *) MSG_host_get_name(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
 XBT_PUBLIC(msg_host_t) MSG_host_self(void);
-XBT_PUBLIC(int) MSG_get_host_msgload(msg_host_t host);
 XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
