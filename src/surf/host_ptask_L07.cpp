@@ -454,7 +454,7 @@ Action *CpuL07::execute(double size)
   double *flops_amount = xbt_new0(double, 1);
   double *bytes_amount = xbt_new0(double, 1);
 
-  host_list[0] = sg_host_by_name(getName());
+  host_list[0] = getHost();
   flops_amount[0] = size;
 
   return static_cast<CpuL07Model*>(getModel())

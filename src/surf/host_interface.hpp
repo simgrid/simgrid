@@ -279,6 +279,7 @@ public:
   void getParams(vm_params_t params);
   /** @brief Sets the params of that VM/PM */
   void setParams(vm_params_t params);
+  simgrid::Host* getHost() { return p_host; }
 private:
   s_vm_params_t p_params;
 };

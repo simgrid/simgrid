@@ -172,7 +172,8 @@ simgrid::surf::RoutingEdge *routing_add_host(
 		                                    SURF_NETWORK_ELEMENT_HOST,
 		                                    current_routing);
   routingEdge->setId(current_routing->parsePU(routingEdge));
-  sg_host_edge_set(sg_host_by_name_or_create(host->id), routingEdge);
+  sg_host_t h = sg_host_by_name_or_create(host->id);
+  sg_host_edge_set(h, routingEdge);
   XBT_DEBUG("Having set name '%s' id '%d'", host->id, routingEdge->getId());
   simgrid::surf::routingEdgeCreatedCallbacks(routingEdge);
 
@@ -196,7 +197,7 @@ simgrid::surf::RoutingEdge *routing_add_host(
     }
     xbt_dynar_shrink(ctn, 0);
     xbt_dynar_free(&ctn_str);
-    simgrid::Host::by_name_or_create(host->id)->set_facet(COORD_HOST_LEVEL, (void *) ctn);
+    h->set_facet(COORD_HOST_LEVEL, (void *) ctn);
     XBT_DEBUG("Having set host coordinates for '%s'",host->id);
   }
 

@@ -41,7 +41,7 @@ static void simgrid_ns3_add_host(simgrid::surf::Host* host)
 {
   const char* id = host->getName();
   XBT_DEBUG("NS3_ADD_HOST '%s'", id);
-  simgrid::Host::by_name_or_create(id)->set_facet(NS3_HOST_LEVEL, ns3_add_host(id));
+  host->getHost()->set_facet(NS3_HOST_LEVEL, ns3_add_host(id));
 }
 
 static void parse_ns3_add_link(sg_platf_link_cbarg_t link)

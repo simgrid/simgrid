@@ -185,6 +185,8 @@ public:
   double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
   simgrid::Host* m_host = nullptr;
 
+  simgrid::Host* getHost() { return m_host; }
+
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore=NULL;
   void **p_constraintCoreId=NULL;

@@ -385,8 +385,6 @@ void surf_host_set_params(sg_host_t host, vm_params_t params){
 }
 
 void surf_vm_destroy(sg_host_t resource){
-  /* Before clearing the entries in host_lib, we have to pick up resources. */
-  const char* name = resource->id().c_str();
   /* We deregister objects from host_lib, without invoking the freeing callback
    * of each level.
    *
@@ -395,8 +393,7 @@ void surf_vm_destroy(sg_host_t resource){
    */
   sg_host_surfcpu_destroy(resource);
   sg_host_edge_destroy(resource,1);
-  // TODO, use backlink from simgrid::surf::Host to simgrid::Host
-  simgrid::Host::by_name_or_null(name)->set_facet((simgrid::surf::Host*)nullptr);
+  resource->set_facet<simgrid::surf::Host>(nullptr);
 
   /* TODO: comment out when VM storage is implemented. */
   // host->set_facet(SURF_STORAGE_LEVEL, nullptr);

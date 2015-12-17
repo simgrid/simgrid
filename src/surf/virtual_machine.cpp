@@ -62,7 +62,7 @@ void VirtualMachine::setState(e_surf_resource_state_t state){
  **/
 sg_host_t VirtualMachine::getPm()
 {
-  return simgrid::Host::by_name_or_null(p_subWs->getName());
+  return p_subWs->getHost();
 }
 
 /**********

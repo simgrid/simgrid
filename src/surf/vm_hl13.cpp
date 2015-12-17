@@ -340,8 +340,7 @@ void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
  **/
 sg_host_t VMHL13::getPm()
 {
-  // TODO, store pointer to the PM?
-  return simgrid::Host::by_name_or_null(p_subWs->getName());
+  return p_subWs->getHost();
 }
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
