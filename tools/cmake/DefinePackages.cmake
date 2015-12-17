@@ -84,6 +84,7 @@ set(EXTRA_DIST
   src/surf/surfxml_parse.c
   src/surf/trace_mgr_private.h
   src/surf/vm_hl13.hpp
+  src/surf/PropertyHolder.hpp
   src/surf/virtual_machine.hpp
   src/surf/host_clm03.hpp
   src/surf/host_interface.hpp
@@ -326,6 +327,7 @@ set(SURF_SRC
   src/surf/network_ib.cpp
   src/surf/platf_generator.c
   src/surf/plugins/energy.cpp
+  src/surf/PropertyHolder.cpp
   src/surf/random_mgr.c
   src/surf/sg_platf.cpp
   src/surf/storage_interface.cpp

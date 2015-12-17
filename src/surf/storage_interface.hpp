@@ -7,6 +7,7 @@
 #include <xbt/base.h>
 
 #include "surf_interface.hpp"
+#include "src/surf/PropertyHolder.hpp"
 
 #ifndef STORAGE_INTERFACE_HPP_
 #define STORAGE_INTERFACE_HPP_
@@ -101,7 +102,7 @@ public:
  * @brief SURF storage interface class
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
-class Storage : public simgrid::surf::Resource {
+class Storage : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
 public:
   /**
    * @brief Storage constructor
@@ -241,12 +242,6 @@ public:
 
   lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t p_constraintRead;     /* Constraint for maximum write bandwidth*/
-
-public:
-  xbt_dict_t getProperties();
-protected:
-  xbt_dict_t p_properties = NULL;
-
 };
 
 /**********

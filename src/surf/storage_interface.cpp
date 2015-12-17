@@ -59,11 +59,11 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
                  const char* type_id, char *content_name, char *content_type,
                  sg_size_t size)
  : Resource(model, name)
+ , PropertyHolder(props)
  , p_contentType(content_type)
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
  , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL))
- , p_properties(props)
 {
   p_content = parseContent(content_name);
   setState(SURF_RESOURCE_ON);
@@ -73,12 +73,12 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
                  lmm_system_t maxminSystem, double bread, double bwrite,
                  double bconnection, const char* type_id, char *content_name,
                  char *content_type, sg_size_t size, char *attach)
- :  Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
+ : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
+ , PropertyHolder(props)
  , p_contentType(content_type)
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
  , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL))
- , p_properties(props)
 {
   p_content = parseContent(content_name);
   p_attach = xbt_strdup(attach);
@@ -91,7 +91,6 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
 Storage::~Storage(){
   surf_callback_emit(storageDestructedCallbacks, this);
   xbt_dict_free(&p_content);
-  xbt_dict_free(&p_properties);
   xbt_dynar_free(&p_writeActions);
   free(p_typeId);
   free(p_contentType);
@@ -178,13 +177,6 @@ sg_size_t Storage::getFreeSize(){
 
 sg_size_t Storage::getUsedSize(){
   return m_usedSize;
-}
-
-xbt_dict_t Storage::getProperties()
-{
-	if (p_properties==NULL)
-		p_properties = xbt_dict_new();
-	return p_properties;
 }
 
 /**********

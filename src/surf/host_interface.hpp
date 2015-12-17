@@ -8,6 +8,7 @@
 #include "storage_interface.hpp"
 #include "cpu_interface.hpp"
 #include "network_interface.hpp"
+#include "src/surf/PropertyHolder.hpp"
 
 #include <xbt/base.h>
 
@@ -94,7 +95,7 @@ public:
  * @brief SURF Host interface class
  * @details An host represents a machine with a aggregation of a Cpu, a Link and a Storage
  */
-class Host : public simgrid::surf::Resource {
+class Host : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
 public:
   static simgrid::xbt::FacetLevel<simgrid::Host, Host> LEVEL;
   static void init();
@@ -131,13 +132,6 @@ public:
 
   void attach(simgrid::Host* host);
   void setState(e_surf_resource_state_t state);
-
-  /**
-   * @brief Get the properties of the current Host
-   *
-   * @return The properties of the current Host
-   */
-  xbt_dict_t getProperties();
 
   /**
    * @brief Execute some quantity of computation
@@ -269,7 +263,6 @@ public:
   RoutingEdge *p_netElm;
   Cpu *p_cpu;
   simgrid::Host* p_host = nullptr;
-  xbt_dict_t p_properties = NULL;
 
   /** @brief Get the list of virtual machines on the current Host */
   xbt_dynar_t getVms();

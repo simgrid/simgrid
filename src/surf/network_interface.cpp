@@ -195,7 +195,7 @@ double NetworkModel::shareResourcesFull(double now)
 
 Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props)
 : Resource(model, name),
-  p_properties(props)
+  PropertyHolder(props)
 {
   links->insert({name, this});
 
@@ -207,7 +207,7 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 	                     tmgr_history_t history,
 	                     tmgr_trace_t state_trace)
 : Resource(model, name, constraint),
-  p_properties(props)
+  PropertyHolder(props)
 {
   if (state_trace)
     p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
@@ -220,7 +220,6 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 Link::~Link()
 {
   surf_callback_emit(networkLinkDestructedCallbacks, this);
-  xbt_dict_free(&p_properties);
 }
 
 bool Link::isUsed()
@@ -247,13 +246,6 @@ void Link::setState(e_surf_resource_state_t state){
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
   surf_callback_emit(networkLinkStateChangedCallbacks, this, old, state);
-}
-
-xbt_dict_t Link::getProperties()
-{
-	if (p_properties==NULL)
-		p_properties = xbt_dict_new();
-	return p_properties;
 }
 
 /**********

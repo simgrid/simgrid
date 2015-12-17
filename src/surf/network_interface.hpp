@@ -15,6 +15,7 @@
 #include "xbt/dict.h"
 #include "surf_interface.hpp"
 #include "surf_routing.hpp"
+#include "src/surf/PropertyHolder.hpp"
 
 #include "simgrid/link.h"
 
@@ -187,7 +188,7 @@ public:
   * @brief SURF network link interface class
   * @details A Link represents the link between two [hosts](\ref Host)
   */
-class Link : public simgrid::surf::Resource {
+class Link : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
 public:
   /**
    * @brief Link constructor
@@ -251,11 +252,6 @@ public:
   void  setData(void *d) { userData=d;}
 private:
   void *userData = NULL;
-
-public:
-  xbt_dict_t getProperties();
-protected:
-  xbt_dict_t p_properties = NULL;
 
   /* List of all links */
 private:
