@@ -17,6 +17,7 @@
 #include <xbt/asserts.h>
 #include <simgrid/modelchecker.h>
 
+#include <sys/time.h> /* Load it before the define next line to not mess with the system headers */
 #define gettimeofday(x, y) smpi_gettimeofday(x, NULL)
 
 #ifdef HAVE_MC
