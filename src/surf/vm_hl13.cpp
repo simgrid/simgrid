@@ -179,8 +179,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  sg_host_t sg_sub_ws = sg_host_by_name_or_create(sub_ws->getName());
-  p_netElm = new RoutingEdgeWrapper(sg_host_edge(sg_sub_ws));
+  p_netElm = new RoutingEdgeWrapper(sg_host_edge(host_PM));
   sg_host_t host = sg_host_by_name_or_create(name);
   sg_host_edge_set(host, p_netElm);
 
