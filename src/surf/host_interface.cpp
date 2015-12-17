@@ -109,6 +109,15 @@ Host::~Host(){
   surf_callback_emit(hostDestructedCallbacks, this);
 }
 
+void Host::attach(simgrid::Host* host)
+{
+  if (p_host != nullptr)
+    xbt_die("Already attached to host %s", host->id().c_str());
+  host->set_facet(this);
+  p_host = host;
+  surf_callback_emit(hostCreatedCallbacks, this);
+}
+
 void Host::setState(e_surf_resource_state_t state){
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);

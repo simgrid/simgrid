@@ -51,9 +51,7 @@ Host *HostCLM03Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu)
   Host *host = new simgrid::surf::HostCLM03(surf_host_model, name, NULL,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  netElm, cpu);
-  surf_callback_emit(hostCreatedCallbacks, host);
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
-  simgrid::Host::by_name_or_null(name)->set_facet(host);
   return host;
 }
 

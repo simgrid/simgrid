@@ -272,12 +272,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 
 Host *HostL07Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu)
 {
-  HostL07 *host = new HostL07(this, name, NULL, netElm, cpu);
-
-  surf_callback_emit(hostCreatedCallbacks, host);
-  simgrid::Host::by_name_or_create(name)->set_facet<Host>(host);
-
-  return host;
+  return new HostL07(this, name, NULL, netElm, cpu);
 }
 
 Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,

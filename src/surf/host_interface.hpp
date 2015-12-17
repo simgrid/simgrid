@@ -129,6 +129,7 @@ public:
   /** @brief Host destructor */
   ~Host();
 
+  void attach(simgrid::Host* host);
   void setState(e_surf_resource_state_t state);
 
   /**
@@ -267,6 +268,7 @@ public:
   xbt_dynar_t p_storage;
   RoutingEdge *p_netElm;
   Cpu *p_cpu;
+  simgrid::Host* p_host = nullptr;
 
   /** @brief Get the list of virtual machines on the current Host */
   xbt_dynar_t getVms();
