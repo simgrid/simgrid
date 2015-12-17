@@ -135,12 +135,6 @@ surf_cpu_t sg_host_surfcpu(sg_host_t host) {
 void sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu) {
   host->set_facet(simgrid::surf::Cpu::LEVEL, cpu);
 }
-void sg_host_surfcpu_register(sg_host_t host, surf_cpu_t cpu)
-{
-  surf_callback_emit(simgrid::surf::cpuCreatedCallbacks, cpu);
-  surf_callback_emit(simgrid::surf::cpuStateChangedCallbacks, cpu, SURF_RESOURCE_ON, cpu->getState());
-  sg_host_surfcpu_set(host, cpu);
-}
 void sg_host_surfcpu_destroy(sg_host_t host) {
   host->set_facet<simgrid::surf::Cpu>(nullptr);
 }

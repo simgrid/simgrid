@@ -200,7 +200,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
       SURF_RESOURCE_ON,           // host->initial_state,
       NULL,                       // host->state_trace,
       NULL);                       // host->properties,
-  sg_host_surfcpu_register(host, p_cpu);
+  p_cpu->plug(host);
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */

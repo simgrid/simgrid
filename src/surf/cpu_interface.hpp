@@ -177,15 +177,18 @@ public:
   virtual int  getPstate()=0;
 
   void setState(e_surf_resource_state_t state);
+  void plug(simgrid::Host* host);
 
   void addTraces(void);
   int m_core = 1;                /* Amount of cores */
   double m_speedPeak;            /*< CPU speed peak, ie max value */
   double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
+  simgrid::Host* m_host = nullptr;
 
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore=NULL;
   void **p_constraintCoreId=NULL;
+
 };
 
 /**********
