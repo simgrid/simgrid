@@ -145,10 +145,10 @@ Cpu::Cpu()
 }
 
 
-Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
+Cpu::Cpu(Model *model, const char *name,
          int core, double speedPeak, double speedScale,
          e_surf_resource_state_t stateInitial)
- : Resource(model, name, props, stateInitial)
+ : Resource(model, name, stateInitial)
  , m_core(core)
  , m_speedPeak(speedPeak)
  , m_speedScale(speedScale)
@@ -156,10 +156,10 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
 
 }
 
-Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
+Cpu::Cpu(Model *model, const char *name,
         lmm_constraint_t constraint, int core, double speedPeak,
         double speedScale, e_surf_resource_state_t stateInitial)
- : Resource(model, name, props, constraint, stateInitial)
+ : Resource(model, name, constraint, stateInitial)
  , m_core(core)
  , m_speedPeak(speedPeak)
  , m_speedScale(speedScale)
@@ -181,14 +181,14 @@ Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
   }
 }
 
-Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
+Cpu::Cpu(Model *model, const char *name,
   lmm_constraint_t constraint, int core, double speedPeak, double speedScale)
-: Cpu(model, name, props, constraint, core, speedPeak, speedScale, SURF_RESOURCE_ON)
+: Cpu(model, name, constraint, core, speedPeak, speedScale, SURF_RESOURCE_ON)
 {}
 
-Cpu::Cpu(Model *model, const char *name, xbt_dict_t props,
+Cpu::Cpu(Model *model, const char *name,
   int core, double speedPeak, double speedScale)
-: Cpu(model, name, props, core, speedPeak, speedScale, SURF_RESOURCE_ON)
+: Cpu(model, name, core, speedPeak, speedScale, SURF_RESOURCE_ON)
 {}
 
 Cpu::~Cpu(){

@@ -164,7 +164,7 @@ const char *SD_workstation_get_property_value(SD_workstation_t ws,
  */
 xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
 {
-  return surf_host_get_properties(surf_host_resource_priv(workstation));
+  return sg_host_get_properties(workstation);
 }
 
 

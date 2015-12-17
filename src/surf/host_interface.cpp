@@ -91,22 +91,23 @@ void Host::init()
 
 Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 		                 xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
- : Resource(model, name, props)
- , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
+ : Resource(model, name)
+ , p_storage(storage), p_netElm(netElm), p_cpu(cpu), p_properties(props)
 {
   p_params.ramsize = 0;
 }
 
 Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
 				         xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
- : Resource(model, name, props, constraint)
- , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
+ : Resource(model, name, constraint)
+ , p_storage(storage), p_netElm(netElm), p_cpu(cpu), p_properties(props)
 {
   p_params.ramsize = 0;
 }
 
 Host::~Host(){
   surf_callback_emit(hostDestructedCallbacks, this);
+  xbt_dict_free(&p_properties);
 }
 
 void Host::attach(simgrid::Host* host)
@@ -127,7 +128,9 @@ void Host::setState(e_surf_resource_state_t state){
 
 xbt_dict_t Host::getProperties()
 {
-  return p_cpu->getProperties();
+	if (p_properties==NULL)
+		p_properties = xbt_dict_new();
+	return p_properties;
 }
 
 simgrid::surf::Storage *Host::findStorageOnMountList(const char* mount)

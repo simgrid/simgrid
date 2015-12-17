@@ -13,10 +13,10 @@ public class CpuConstantModel extends CpuModel {
     Msg.info("Initialize Cpu Constant Model");
   }
 
-  public Cpu createCpu(String name, double[] power_peak, int pstate, double power_scale, TmgrTrace power_trace, int core, ResourceState state_initial, TmgrTrace state_trace, XbtDict cpu_properties) {
+  public Cpu createCpu(String name, double[] power_peak, int pstate, double power_scale, TmgrTrace power_trace, int core, ResourceState state_initial, TmgrTrace state_trace) {
     Msg.info("New Cpu("+name+", "+power_peak[pstate]+", "+power_scale+")");
 
-    CpuConstant res = new CpuConstant(this, name, cpu_properties, core, power_peak[pstate], power_scale);
+    CpuConstant res = new CpuConstant(this, name, core, power_peak[pstate], power_scale);
     cpus.add(res);
     return res;
   }
@@ -54,9 +54,9 @@ public class CpuConstantModel extends CpuModel {
 public class CpuConstant extends Cpu {
   private List<CpuConstantAction> actions = new ArrayList<CpuConstantAction>();
 
-  public CpuConstant(CpuConstantModel model, String name, XbtDict props,
+  public CpuConstant(CpuConstantModel model, String name, 
                      int core, double powerPeak, double powerScale) {
-    super(model, name, props, core, powerPeak, powerScale);
+    super(model, name, core, powerPeak, powerScale);
   }
 
   public void remove(CpuConstantAction action){

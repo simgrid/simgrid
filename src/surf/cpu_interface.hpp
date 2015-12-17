@@ -76,14 +76,12 @@ public:
    * @param core The number of core of this Cpu
    * @param state_initial [TODO]
    * @param state_trace [TODO]
-   * @param cpu_properties Dictionary of properties associated to this Cpu
    */
   virtual Cpu *createCpu(const char *name, xbt_dynar_t speedPeak,
                       int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
-                          tmgr_trace_t state_trace,
-                          xbt_dict_t cpu_properties)=0;
+                          tmgr_trace_t state_trace)=0;
 
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
@@ -109,14 +107,13 @@ public:
    *
    * @param model The CpuModel associated to this Cpu
    * @param name The name of the Cpu
-   * @param props Dictionary of properties associated to this Cpu
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    * @param stateInitial whether it is created running or crashed
    */
-  Cpu(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
+  Cpu(simgrid::surf::Model *model, const char *name,
 	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale,
 	  e_surf_resource_state_t stateInitial);
 
@@ -125,19 +122,18 @@ public:
    *
    * @param model The CpuModel associated to this Cpu
    * @param name The name of the Cpu
-   * @param props Dictionary of properties associated to this Cpu
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    * @param stateInitial whether it is created running or crashed
    */
-  Cpu(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
+  Cpu(simgrid::surf::Model *model, const char *name,
 	  int core, double speedPeak, double speedScale,
 	  e_surf_resource_state_t stateInitial);
 
-  Cpu(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
+  Cpu(simgrid::surf::Model *model, const char *name,
 	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale);
-  Cpu(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
+  Cpu(simgrid::surf::Model *model, const char *name,
 	  int core, double speedPeak, double speedScale);
 
   ~Cpu();

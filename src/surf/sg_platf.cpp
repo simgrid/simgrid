@@ -69,10 +69,9 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
         host->speed_trace,
         host->core_amount,
         host->initial_state,
-        host->state_trace,
-        host->properties);
+        host->state_trace);
   cpu->plug(h);
-  surf_host_model->createHost(host->id, net, cpu)->attach(h);
+  surf_host_model->createHost(host->id, net, cpu, host->properties)->attach(h);
   if (TRACE_is_enabled() && TRACE_needs_platform())
     sg_instr_new_host(host);
 }
@@ -182,13 +181,13 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
       ((storage_type_t) stype)->type_id,
       storage->content,
       storage->content_type,
-      storage->properties);
+	  storage->properties);
 
   surf_storage_model->createStorage(storage->id,
                                      ((storage_type_t) stype)->type_id,
                                      storage->content,
                                      storage->content_type,
-                                     storage->properties,
+									 storage->properties,
                                      storage->attach);
 }
 void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){

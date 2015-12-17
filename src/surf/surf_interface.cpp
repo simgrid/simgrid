@@ -591,32 +591,31 @@ namespace simgrid {
 namespace surf {
 
 Resource::Resource()
-: p_name(NULL), p_properties(NULL), p_model(NULL)
+: p_name(NULL), p_model(NULL)
 {}
 
-Resource::Resource(Model *model, const char *name, xbt_dict_t props)
-  : Resource(model, name, props, SURF_RESOURCE_ON)
+Resource::Resource(Model *model, const char *name)
+  : Resource(model, name, SURF_RESOURCE_ON)
 {}
 
-Resource::Resource(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
-  : Resource(model, name, props, constraint, SURF_RESOURCE_ON)
+Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint)
+  : Resource(model, name, constraint, SURF_RESOURCE_ON)
 {}
   
 Resource::Resource(
-  Model *model, const char *name, xbt_dict_t props,
+  Model *model, const char *name,
   lmm_constraint_t constraint, e_surf_resource_state_t stateInit)
-  : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+  : p_name(xbt_strdup(name)), p_model(model)
   , m_running(true), m_stateCurrent(stateInit), p_constraint(constraint)
 {}
 
-Resource::Resource(Model *model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit)
-  : p_name(xbt_strdup(name)), p_properties(props), p_model(model)
+Resource::Resource(Model *model, const char *name, e_surf_resource_state_t stateInit)
+  : p_name(xbt_strdup(name)), p_model(model)
   , m_running(true), m_stateCurrent(stateInit)
 {}
 
 Resource::~Resource() {
   xbt_free((void*)p_name);
-  xbt_dict_free(&p_properties);
 }
 
 e_surf_resource_state_t Resource::getState()
@@ -654,12 +653,6 @@ Model *Resource::getModel() {
 
 const char *Resource::getName() {
   return p_name;
-}
-
-xbt_dict_t Resource::getProperties() {
-  if (p_properties==NULL)
-    p_properties = xbt_dict_new();
-  return p_properties;
 }
 
 lmm_constraint_t Resource::getConstraint() {

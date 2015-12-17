@@ -73,4 +73,9 @@ public class Link extends Resource {
     SurfJNI.Link_updateLatency__SWIG_1(swigCPtr, this, value);
   }
 
+  public XbtDict getProperties() {
+    long cPtr = SurfJNI.Link_getProperties(swigCPtr, this);
+    return (cPtr == 0) ? null : new XbtDict(cPtr, false);
+  }
+
 }

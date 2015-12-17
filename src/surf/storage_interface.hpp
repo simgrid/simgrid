@@ -241,6 +241,12 @@ public:
 
   lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t p_constraintRead;     /* Constraint for maximum write bandwidth*/
+
+public:
+  xbt_dict_t getProperties();
+protected:
+  xbt_dict_t p_properties = NULL;
+
 };
 
 /**********

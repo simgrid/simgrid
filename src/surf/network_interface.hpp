@@ -252,6 +252,11 @@ public:
 private:
   void *userData = NULL;
 
+public:
+  xbt_dict_t getProperties();
+protected:
+  xbt_dict_t p_properties = NULL;
+
   /* List of all links */
 private:
   static boost::unordered_map<std::string, Link *> *links;

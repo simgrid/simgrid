@@ -432,31 +432,28 @@ public:
    *
    * @param model Model associated to this Resource
    * @param name The name of the Resource
-   * @param props Dictionary of properties associated to this Resource
    */
-  Resource(Model *model, const char *name, xbt_dict_t props);
+  Resource(Model *model, const char *name);
 
   /**
    * @brief Constructor of LMM Resources
    *
    * @param model Model associated to this Resource
    * @param name The name of the Resource
-   * @param props Dictionary of properties associated to this Resource
    * @param constraint The lmm constraint associated to this Resource if it is part of a LMM component
    */
-  Resource(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
+  Resource(Model *model, const char *name, lmm_constraint_t constraint);
 
-  Resource(Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint, e_surf_resource_state_t stateInit);
+  Resource(Model *model, const char *name, lmm_constraint_t constraint, e_surf_resource_state_t stateInit);
 
   /**
    * @brief Resource constructor
    *
    * @param model Model associated to this Resource
    * @param name The name of the Resource
-   * @param props Dictionary of properties associated to this Resource
    * @param stateInit the initial state of the Resource
    */
-  Resource(Model *model, const char *name, xbt_dict_t props, e_surf_resource_state_t stateInit);
+  Resource(Model *model, const char *name, e_surf_resource_state_t stateInit);
 
   virtual ~Resource();
 
@@ -465,9 +462,6 @@ public:
 
   /** @brief Get the name of the current Resource */
   const char *getName();
-
-  /** @brief Get the properties of the current Resource */
-  virtual xbt_dict_t getProperties();
 
   /**
    * @brief Update the state of the current Resource
@@ -496,7 +490,6 @@ public:
 
 private:
   const char *p_name;
-  xbt_dict_t p_properties;
   Model *p_model;
   bool m_running;
   e_surf_resource_state_t m_stateCurrent;

@@ -117,8 +117,7 @@ public:
   CpuTi() {};
   CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
-        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
-	xbt_dict_t properties) ;
+        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace) ;
   ~CpuTi();
 
   void updateState(tmgr_trace_event_t event_type, double value, double date);
@@ -165,8 +164,7 @@ public:
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
-                          tmgr_trace_t state_trace,
-                          xbt_dict_t cpu_properties);
+                          tmgr_trace_t state_trace);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
   void addTraces();

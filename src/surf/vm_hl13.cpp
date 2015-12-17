@@ -197,8 +197,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
       NULL,                       // host->power_trace,
       1,                          // host->core_amount,
       SURF_RESOURCE_ON,           // host->initial_state,
-      NULL,                       // host->state_trace,
-      NULL);                       // host->properties,
+      NULL);                      // host->state_trace,
   p_cpu->plug(host);
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */

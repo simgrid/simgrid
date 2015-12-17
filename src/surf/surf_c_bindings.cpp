@@ -242,10 +242,6 @@ const char *surf_resource_name(surf_cpp_resource_t resource){
   return resource->getName();
 }
 
-xbt_dict_t surf_resource_get_properties(surf_cpp_resource_t resource){
-  return resource->getProperties();
-}
-
 e_surf_resource_state_t surf_resource_get_state(surf_cpp_resource_t resource){
   return resource->getState();
 }
@@ -256,6 +252,10 @@ void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state
 
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
   return get_casted_host(host)->sleep(duration);
+}
+
+xbt_dict_t sg_host_get_properties(sg_host_t host) {
+	return get_casted_host(host)->getProperties();
 }
 
 double surf_host_get_speed(sg_host_t host, double load){
@@ -445,6 +445,10 @@ sg_size_t surf_storage_get_free_size(surf_resource_t resource){
 
 sg_size_t surf_storage_get_used_size(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getUsedSize();
+}
+
+xbt_dict_t surf_storage_get_properties(surf_resource_t resource){
+  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getProperties();
 }
 
 const char* surf_storage_get_host(surf_resource_t resource){

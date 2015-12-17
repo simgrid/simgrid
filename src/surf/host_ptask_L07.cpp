@@ -270,9 +270,9 @@ Action *HostL07Model::executeParallelTask(int host_nb,
   return action;
 }
 
-Host *HostL07Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu)
+Host *HostL07Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props)
 {
-  return new HostL07(this, name, NULL, netElm, cpu);
+  return new HostL07(this, name, props, netElm, cpu);
 }
 
 Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
@@ -305,12 +305,10 @@ Cpu *CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
-                          tmgr_trace_t state_trace,
-                          xbt_dict_t cpu_properties)
+                          tmgr_trace_t state_trace)
 {
   double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
-  CpuL07 *cpu = new CpuL07(this, name, cpu_properties,
-		                     power_initial, power_scale, power_trace,
+  CpuL07 *cpu = new CpuL07(this, name, power_initial, power_scale, power_trace,
                          core, state_initial, state_trace);
   return cpu;
 }
@@ -407,10 +405,10 @@ HostL07::HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEd
 {
 }
 
-CpuL07::CpuL07(CpuL07Model *model, const char* name, xbt_dict_t props,
+CpuL07::CpuL07(CpuL07Model *model, const char* name,
 	             double speedInitial, double speedScale, tmgr_trace_t speedTrace,
 		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
- : Cpu(model, name, props, lmm_constraint_new(ptask_maxmin_system, this, speedInitial * speedScale),
+ : Cpu(model, name, lmm_constraint_new(ptask_maxmin_system, this, speedInitial * speedScale),
 	   core, speedInitial, speedScale, state_initial)
 {
   xbt_assert(m_speedScale > 0, "Power has to be >0");

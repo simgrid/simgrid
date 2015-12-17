@@ -300,11 +300,8 @@ static inline const char * surf_cpu_name(surf_cpu_t cpu) {
 	return surf_resource_name((surf_cpp_resource_t)cpu);
 }
 
-/** @brief Get the properties of a surf resource (cpu, host, network, …) */
-XBT_PUBLIC(xbt_dict_t) surf_resource_get_properties(surf_cpp_resource_t resource);
-static XBT_INLINE xbt_dict_t surf_host_get_properties(surf_host_t host) {
-	return surf_resource_get_properties((surf_cpp_resource_t)host);
-}
+/** @brief Get the properties of an host */
+XBT_PUBLIC(xbt_dict_t) sg_host_get_properties(sg_host_t host);
 
 
 /** @brief Get the state of a surf resource (cpu, host, network, …) */
@@ -623,6 +620,8 @@ XBT_PUBLIC(sg_size_t) surf_storage_get_free_size(surf_resource_t resource);
  */
 XBT_PUBLIC(sg_size_t) surf_storage_get_used_size(surf_resource_t resource);
 
+/** @brief return the properties set associated to that storage */
+XBT_PUBLIC(xbt_dict_t) surf_storage_get_properties(surf_resource_t resource);
 
 /**
  * @brief Get the data associated to the action

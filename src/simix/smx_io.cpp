@@ -273,9 +273,7 @@ sg_size_t SIMIX_storage_get_used_size(smx_process_t process, smx_storage_t stora
 }
 
 xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
-  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
-  return (xbt_dict_t) surf_resource_get_properties((surf_cpp_resource_t)
-    surf_storage_resource_priv(storage));
+  return surf_storage_get_properties(storage);
 }
 
 const char* SIMIX_storage_get_name(smx_storage_t storage){

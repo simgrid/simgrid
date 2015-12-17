@@ -57,11 +57,6 @@ public class Resource {
     return (cPtr == 0) ? null : new LmmConstraint(cPtr, false);
   }
 
-  public XbtDict getProperties() {
-    long cPtr = SurfJNI.Resource_getProperties(swigCPtr, this);
-    return (cPtr == 0) ? null : new XbtDict(cPtr, false);
-  }
-
   public void updateState(TmgrTraceEvent event_type, double value, double date) {
     SurfJNI.Resource_updateState(swigCPtr, this, TmgrTraceEvent.getCPtr(event_type), event_type, value, date);
   }

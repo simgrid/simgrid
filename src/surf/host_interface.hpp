@@ -74,7 +74,7 @@ public:
   HostModel() : Model() {}
   ~HostModel() {}
 
-  virtual Host *createHost(const char *name, RoutingEdge *net, Cpu *cpu)=0;
+  virtual Host *createHost(const char *name, RoutingEdge *net, Cpu *cpu, xbt_dict_t props)=0;
   void addTraces(){DIE_IMPOSSIBLE;}
 
   virtual void adjustWeightOfDummyCpuActions();
@@ -269,6 +269,7 @@ public:
   RoutingEdge *p_netElm;
   Cpu *p_cpu;
   simgrid::Host* p_host = nullptr;
+  xbt_dict_t p_properties = NULL;
 
   /** @brief Get the list of virtual machines on the current Host */
   xbt_dynar_t getVms();

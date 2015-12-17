@@ -50,13 +50,13 @@ public class Cpu extends Resource {
     SurfJNI.Cpu_change_ownership(this, swigCPtr, true);
   }
 
-  public Cpu(Model model, String name, XbtDict props, LmmConstraint constraint, int core, double powerPeak, double powerScale) {
-    this(SurfJNI.new_Cpu__SWIG_0(Model.getCPtr(model), model, name, XbtDict.getCPtr(props), props, LmmConstraint.getCPtr(constraint), constraint, core, powerPeak, powerScale), true);
+  public Cpu(Model model, String name, LmmConstraint constraint, int core, double powerPeak, double powerScale) {
+    this(SurfJNI.new_Cpu__SWIG_0(Model.getCPtr(model), model, name, LmmConstraint.getCPtr(constraint), constraint, core, powerPeak, powerScale), true);
     SurfJNI.Cpu_director_connect(this, swigCPtr, swigCMemOwn, true);
   }
 
-  public Cpu(Model model, String name, XbtDict props, int core, double powerPeak, double powerScale) {
-    this(SurfJNI.new_Cpu__SWIG_1(Model.getCPtr(model), model, name, XbtDict.getCPtr(props), props, core, powerPeak, powerScale), true);
+  public Cpu(Model model, String name, int core, double powerPeak, double powerScale) {
+    this(SurfJNI.new_Cpu__SWIG_1(Model.getCPtr(model), model, name, core, powerPeak, powerScale), true);
     SurfJNI.Cpu_director_connect(this, swigCPtr, swigCMemOwn, true);
   }
 

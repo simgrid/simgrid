@@ -292,8 +292,7 @@ public:
                               int pstate, double power_scale,
                               tmgr_trace *power_trace, int core,
                               e_surf_resource_state_t state_initial,
-                              tmgr_trace *state_trace,
-                              s_xbt_dict *cpu_properties)=0;
+                              tmgr_trace *state_trace)=0;
 };
 
 class Resource {
@@ -305,16 +304,15 @@ public:
 
   virtual e_surf_resource_state_t getState();
   lmm_constraint *getConstraint();
-  s_xbt_dict *getProperties();
   virtual void updateState(tmgr_trace_event *event_type, double value, double date)=0;
 };
 
 %feature("director") Cpu;
 class Cpu : public Resource {
 public:
-  Cpu(simgrid::surf::Model *model, const char *name, s_xbt_dict *props,
+  Cpu(simgrid::surf::Model *model, const char *name, 
     lmm_constraint *constraint, int core, double powerPeak, double powerScale);
-  Cpu(simgrid::surf::Model *model, const char *name, s_xbt_dict *props,
+  Cpu(simgrid::surf::Model *model, const char *name, 
     int core, double powerPeak, double powerScale);
   virtual ~Cpu();
   virtual double getCurrentPowerPeak();
@@ -338,6 +336,7 @@ public:
   void updateBandwidth(double value, double date=surf_get_clock());
   double getLatency();
   void updateLatency(double value, double date=surf_get_clock());
+  s_xbt_dict *getProperties();
 };
 
 %nodefaultctor Action;

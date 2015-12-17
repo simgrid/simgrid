@@ -45,12 +45,12 @@ public:
 
   double shareResources(double now);
   void updateActionsState(double now, double delta);
-  Host *createHost(const char *name,RoutingEdge *netElm, Cpu *cpu);
+  Host *createHost(const char *name,RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props) override;
   Action *executeParallelTask(int host_nb,
                               sg_host_t *host_list,
 							  double *flops_amount,
 							  double *bytes_amount,
-							  double rate);
+							  double rate) override;
   xbt_dynar_t getRoute(Host *src, Host *dst);
   void addTraces();
 };
@@ -63,8 +63,7 @@ public:
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
-                          tmgr_trace_t state_trace,
-                          xbt_dict_t cpu_properties);
+                          tmgr_trace_t state_trace) override;
   void addTraces() {DIE_IMPOSSIBLE;};
 
   HostL07Model *p_hostModel;
@@ -75,15 +74,14 @@ public:
   NetworkL07Model(HostL07Model *hmodel) : NetworkModel() {p_hostModel = hmodel;};
   ~NetworkL07Model() {surf_network_model = NULL;};
   Link* createLink(const char *name,
-		                                   double bw_initial,
-		                                   tmgr_trace_t bw_trace,
-		                                   double lat_initial,
-		                                   tmgr_trace_t lat_trace,
-		                                   e_surf_resource_state_t
-		                                   state_initial,
-		                                   tmgr_trace_t state_trace,
-		                                   e_surf_link_sharing_policy_t
-		                                   policy, xbt_dict_t properties);
+		  double bw_initial,
+		  tmgr_trace_t bw_trace,
+		  double lat_initial,
+		  tmgr_trace_t lat_trace,
+		  e_surf_resource_state_t state_initial,
+		  tmgr_trace_t state_trace,
+		  e_surf_link_sharing_policy_t policy,
+		  xbt_dict_t properties) override;
 
   Action *communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate);
   void addTraces() {DIE_IMPOSSIBLE;};
@@ -111,7 +109,7 @@ class CpuL07 : public Cpu {
   tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_speedEvent;
 public:
-  CpuL07(CpuL07Model *model, const char* name, xbt_dict_t properties,
+  CpuL07(CpuL07Model *model, const char* name,
 		 double power_scale, double power_initial, tmgr_trace_t power_trace,
      int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
   bool isUsed();

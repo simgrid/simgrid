@@ -48,7 +48,7 @@ public:
     virtual simgrid::surf::ActionList *getRunningActionSet();
     virtual void addTraces();
     virtual ~SwigDirector_CpuModel();
-    virtual simgrid::surf::Cpu *createCpu(char const *name, DoubleDynar power_peak, int pstate, double power_scale, tmgr_trace *power_trace, int core, e_surf_resource_state_t state_initial, tmgr_trace *state_trace, s_xbt_dict *cpu_properties);
+    virtual simgrid::surf::Cpu *createCpu(char const *name, DoubleDynar power_peak, int pstate, double power_scale, tmgr_trace *power_trace, int core, e_surf_resource_state_t state_initial, tmgr_trace *state_trace);
 public:
     bool swig_overrides(int n) {
       return (n < 9 ? swig_override[n] : false);
@@ -61,8 +61,8 @@ class SwigDirector_Cpu : public simgrid::surf::Cpu, public Swig::Director {
 
 public:
     void swig_connect_director(JNIEnv *jenv, jobject jself, jclass jcls, bool swig_mem_own, bool weak_global);
-    SwigDirector_Cpu(JNIEnv *jenv, simgrid::surf::Model *model, char const *name, s_xbt_dict *props, lmm_constraint *constraint, int core, double powerPeak, double powerScale);
-    SwigDirector_Cpu(JNIEnv *jenv, simgrid::surf::Model *model, char const *name, s_xbt_dict *props, int core, double powerPeak, double powerScale);
+    SwigDirector_Cpu(JNIEnv *jenv, simgrid::surf::Model *model, char const *name, lmm_constraint *constraint, int core, double powerPeak, double powerScale);
+    SwigDirector_Cpu(JNIEnv *jenv, simgrid::surf::Model *model, char const *name, int core, double powerPeak, double powerScale);
     virtual bool isUsed();
     virtual e_surf_resource_state_t getState();
     virtual void updateState(tmgr_trace_event *event_type, double value, double date);

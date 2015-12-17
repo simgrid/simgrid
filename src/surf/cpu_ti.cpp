@@ -442,14 +442,13 @@ Cpu *CpuTiModel::createCpu(const char *name,
                            tmgr_trace_t speedTrace,
                            int core,
                            e_surf_resource_state_t stateInitial,
-                           tmgr_trace_t stateTrace,
-                           xbt_dict_t cpuProperties)
+                           tmgr_trace_t stateTrace)
 {
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory speed attribute?");
   CpuTi *cpu = new CpuTi(this, name, speedPeak, pstate, speedScale, speedTrace,
-		           core, stateInitial, stateTrace, cpuProperties);
+		           core, stateInitial, stateTrace);
   return cpu;
 }
 
@@ -551,9 +550,8 @@ void CpuTiModel::addTraces()
  ************/
 CpuTi::CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
-        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
-	      xbt_dict_t properties)
-  : Cpu(model, name, properties, core, 0, speedScale, stateInitial)
+        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace)
+  : Cpu(model, name, core, 0, speedScale, stateInitial)
 {
   p_speedEvent = NULL;
   m_speedScale = speedScale;

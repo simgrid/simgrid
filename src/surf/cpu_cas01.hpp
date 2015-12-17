@@ -35,8 +35,7 @@ public:
                    double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
-                          tmgr_trace_t state_trace,
-                          xbt_dict_t cpu_properties);
+                          tmgr_trace_t state_trace);
   double shareResourcesFull(double now);
   void addTraces();
   ActionList *p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
@@ -50,8 +49,7 @@ class CpuCas01 : public Cpu {
 public:
   CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
-        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
-	xbt_dict_t properties) ;
+        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace) ;
   ~CpuCas01();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   CpuAction *execute(double size);

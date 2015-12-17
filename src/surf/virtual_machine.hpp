@@ -111,7 +111,7 @@ public:
   VMModel() :HostModel(){}
   ~VMModel(){};
 
-  Host *createHost(const char *name, RoutingEdge *netElm, Cpu *cpu){DIE_IMPOSSIBLE;}
+  Host *createHost(const char *name, RoutingEdge *netElm, Cpu *cpu,xbt_dict_t props) override {DIE_IMPOSSIBLE;}
 
   /**
    * @brief Create a new VM

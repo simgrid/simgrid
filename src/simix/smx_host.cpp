@@ -162,7 +162,7 @@ const char* SIMIX_host_self_get_name(void)
 }
 
 xbt_dict_t SIMIX_host_get_properties(sg_host_t host){
-  return surf_host_get_properties(surf_host_resource_priv(host));
+  return sg_host_get_properties(host);
 }
 
 

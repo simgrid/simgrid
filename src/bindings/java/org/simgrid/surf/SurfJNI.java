@@ -82,7 +82,7 @@ public class SurfJNI {
   public final static native void delete_Model(long jarg1);
   public final static native long new_CpuModel();
   public final static native void delete_CpuModel(long jarg1);
-  public final static native long CpuModel_createCpu(long jarg1, CpuModel jarg1_, String jarg2, double[] jarg3, int jarg4, double jarg5, long jarg6, TmgrTrace jarg6_, int jarg7, int jarg8, long jarg9, TmgrTrace jarg9_, long jarg10, XbtDict jarg10_);
+  public final static native long CpuModel_createCpu(long jarg1, CpuModel jarg1_, String jarg2, double[] jarg3, int jarg4, double jarg5, long jarg6, TmgrTrace jarg6_, int jarg7, int jarg8, long jarg9, TmgrTrace jarg9_);
   public final static native void CpuModel_director_connect(CpuModel obj, long cptr, boolean mem_own, boolean weak_global);
   public final static native void CpuModel_change_ownership(CpuModel obj, long cptr, boolean take_or_release);
   public final static native String Resource_getName(long jarg1, Resource jarg1_);
@@ -90,11 +90,10 @@ public class SurfJNI {
   public final static native long Resource_getModel(long jarg1, Resource jarg1_);
   public final static native int Resource_getState(long jarg1, Resource jarg1_);
   public final static native long Resource_getConstraint(long jarg1, Resource jarg1_);
-  public final static native long Resource_getProperties(long jarg1, Resource jarg1_);
   public final static native void Resource_updateState(long jarg1, Resource jarg1_, long jarg2, TmgrTraceEvent jarg2_, double jarg3, double jarg4);
   public final static native void delete_Resource(long jarg1);
-  public final static native long new_Cpu__SWIG_0(long jarg1, Model jarg1_, String jarg2, long jarg3, XbtDict jarg3_, long jarg4, LmmConstraint jarg4_, int jarg5, double jarg6, double jarg7);
-  public final static native long new_Cpu__SWIG_1(long jarg1, Model jarg1_, String jarg2, long jarg3, XbtDict jarg3_, int jarg4, double jarg5, double jarg6);
+  public final static native long new_Cpu__SWIG_0(long jarg1, Model jarg1_, String jarg2, long jarg3, LmmConstraint jarg3_, int jarg4, double jarg5, double jarg6);
+  public final static native long new_Cpu__SWIG_1(long jarg1, Model jarg1_, String jarg2, int jarg3, double jarg4, double jarg5);
   public final static native void delete_Cpu(long jarg1);
   public final static native double Cpu_getCurrentPowerPeak(long jarg1, Cpu jarg1_);
   public final static native double Cpu_getCurrentPowerPeakSwigExplicitCpu(long jarg1, Cpu jarg1_);
@@ -120,6 +119,7 @@ public class SurfJNI {
   public final static native double Link_getLatency(long jarg1, Link jarg1_);
   public final static native void Link_updateLatency__SWIG_0(long jarg1, Link jarg1_, double jarg2, double jarg3);
   public final static native void Link_updateLatency__SWIG_1(long jarg1, Link jarg1_, double jarg2);
+  public final static native long Link_getProperties(long jarg1, Link jarg1_);
   public final static native long new_Action(long jarg1, Model jarg1_, double jarg2, boolean jarg3);
   public final static native void delete_Action(long jarg1);
   public final static native long Action_getModel(long jarg1, Action jarg1_);
@@ -210,8 +210,8 @@ public class SurfJNI {
   public static void SwigDirector_CpuModel_addTraces(CpuModel self) {
     self.addTraces();
   }
-  public static long SwigDirector_CpuModel_createCpu(CpuModel self, String name, double[] power_peak, int pstate, double power_scale, long power_trace, int core, int state_initial, long state_trace, long cpu_properties) {
-    return Cpu.getCPtr(self.createCpu(name, power_peak, pstate, power_scale, (power_trace == 0) ? null : new TmgrTrace(power_trace, false), core, ResourceState.swigToEnum(state_initial), (state_trace == 0) ? null : new TmgrTrace(state_trace, false), (cpu_properties == 0) ? null : new XbtDict(cpu_properties, false)));
+  public static long SwigDirector_CpuModel_createCpu(CpuModel self, String name, double[] power_peak, int pstate, double power_scale, long power_trace, int core, int state_initial, long state_trace) {
+    return Cpu.getCPtr(self.createCpu(name, power_peak, pstate, power_scale, (power_trace == 0) ? null : new TmgrTrace(power_trace, false), core, ResourceState.swigToEnum(state_initial), (state_trace == 0) ? null : new TmgrTrace(state_trace, false)));
   }
   public static boolean SwigDirector_Cpu_isUsed(Cpu self) {
     return self.isUsed();

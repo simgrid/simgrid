@@ -47,8 +47,8 @@ void surf_host_model_init_compound()
 namespace simgrid {
 namespace surf {
 
-Host *HostCLM03Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu){
-  Host *host = new simgrid::surf::HostCLM03(surf_host_model, name, NULL,
+Host *HostCLM03Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props){
+  Host *host = new simgrid::surf::HostCLM03(surf_host_model, name, props,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  netElm, cpu);
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
