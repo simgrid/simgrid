@@ -20,6 +20,14 @@ simgrid::surf::CpuModel *surf_cpu_model_vm;
 namespace simgrid {
 namespace surf {
 
+simgrid::xbt::FacetLevel<simgrid::Host, Cpu> Cpu::LEVEL;
+
+void Cpu::init()
+{
+  if (!LEVEL.valid())
+    LEVEL = simgrid::Host::add_level<simgrid::surf::Cpu>();
+}
+
 /*************
  * Callbacks *
  *************/

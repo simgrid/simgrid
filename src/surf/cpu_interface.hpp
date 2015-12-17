@@ -100,6 +100,8 @@ public:
 */
 XBT_PUBLIC_CLASS Cpu : public simgrid::surf::Resource {
 public:
+  static simgrid::xbt::FacetLevel<simgrid::Host, Cpu> LEVEL;
+  static void init();
   Cpu();
 
   /**

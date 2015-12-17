@@ -53,7 +53,7 @@ Host *HostCLM03Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu)
 		  netElm, cpu);
   surf_callback_emit(hostCreatedCallbacks, host);
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
-  simgrid::Host::by_name_or_null(name)->set_facet(SURF_HOST_LEVEL, host);
+  simgrid::Host::by_name_or_null(name)->set_facet(host);
   return host;
 }
 

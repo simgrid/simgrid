@@ -269,11 +269,6 @@ static XBT_INLINE void routing_asr_prop_free(void *p)
   //xbt_dict_free(&elm); FIXME: leaking in some case? That's a sometimes double-free with AsCluster::~AsCluster
 }
 
-static XBT_INLINE void surf_host_free(void *r)
-{
-  delete static_cast<simgrid::surf::Host*>(r);
-}
-
 static XBT_INLINE void surf_storage_free(void *r)
 {
   delete static_cast<simgrid::surf::Storage*>(r);
@@ -321,7 +316,7 @@ void surf_init(int *argc, char **argv)
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");
-  SURF_HOST_LEVEL = simgrid::Host::add_level(surf_host_free);
+  simgrid::surf::Host::init();
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);

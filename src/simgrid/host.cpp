@@ -58,7 +58,6 @@ int MSG_HOST_LEVEL;
 int SD_HOST_LEVEL;
 int SIMIX_HOST_LEVEL;
 int ROUTING_HOST_LEVEL;
-int SURF_CPU_LEVEL;
 int USER_HOST_LEVEL;
 
 #include "src/msg/msg_private.h" // MSG_host_priv_free. FIXME: killme
@@ -81,7 +80,7 @@ void sg_host_init()
   });
   SD_HOST_LEVEL = simgrid::Host::add_level(__SD_workstation_destroy);
   SIMIX_HOST_LEVEL = simgrid::Host::add_level(SIMIX_host_destroy);
-  SURF_CPU_LEVEL = simgrid::Host::add_level(surf_cpu_free);
+  simgrid::surf::Cpu::init();
   ROUTING_HOST_LEVEL = simgrid::Host::add_level(routing_asr_host_free);
   USER_HOST_LEVEL = simgrid::Host::add_level(NULL);
 }
@@ -131,10 +130,10 @@ void sg_host_simix_destroy(sg_host_t host) {
 
 // ========== SURF CPU ============
 surf_cpu_t sg_host_surfcpu(sg_host_t host) {
-	return (surf_cpu_t) host->facet(SURF_CPU_LEVEL);
+	return host->facet<simgrid::surf::Cpu>();
 }
 void sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu) {
-  host->set_facet(SURF_CPU_LEVEL, cpu);
+  host->set_facet(simgrid::surf::Cpu::LEVEL, cpu);
 }
 void sg_host_surfcpu_register(sg_host_t host, surf_cpu_t cpu)
 {
@@ -143,7 +142,7 @@ void sg_host_surfcpu_register(sg_host_t host, surf_cpu_t cpu)
   sg_host_surfcpu_set(host, cpu);
 }
 void sg_host_surfcpu_destroy(sg_host_t host) {
-  host->set_facet(SURF_CPU_LEVEL, nullptr);
+  host->set_facet<simgrid::surf::Cpu>(nullptr);
 }
 // ========== RoutingEdge ============
 surf_RoutingEdge *sg_host_edge(sg_host_t host) {

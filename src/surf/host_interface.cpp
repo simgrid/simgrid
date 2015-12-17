@@ -6,6 +6,8 @@
 
 #include "host_interface.hpp"
 
+#include <simgrid/Host.hpp>
+
 #include "src/simix/smx_private.h"
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.h"
@@ -28,7 +30,9 @@ void host_add_traces(){
 
 namespace simgrid {
 namespace surf {
-  
+
+simgrid::xbt::FacetLevel<simgrid::Host, Host> Host::LEVEL;
+
 surf_callback(void, simgrid::surf::Host*) hostCreatedCallbacks;
 surf_callback(void, simgrid::surf::Host*) hostDestructedCallbacks;
 surf_callback(void, simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t) hostStateChangedCallbacks;
@@ -76,6 +80,15 @@ void HostModel::adjustWeightOfDummyCpuActions()
 /************
  * Resource *
  ************/
+
+void Host::init()
+{
+  if (!LEVEL.valid()) {
+    LEVEL = simgrid::Host::add_level<simgrid::surf::Host>();
+    SURF_HOST_LEVEL = LEVEL.id();
+  }
+}
+
 Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 		                 xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
  : Resource(model, name, props)

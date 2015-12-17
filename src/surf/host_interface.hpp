@@ -96,6 +96,8 @@ public:
  */
 class Host : public simgrid::surf::Resource {
 public:
+  static simgrid::xbt::FacetLevel<simgrid::Host, Host> LEVEL;
+  static void init();
   /**
    * @brief Host constructor
    *
