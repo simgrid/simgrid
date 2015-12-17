@@ -70,6 +70,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
         host->initial_state,
         host->state_trace,
         host->properties);
+  sg_host_surfcpu_register(sg_host_by_name(host->id), cpu);
   surf_host_model->createHost(host->id, net, cpu);
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
