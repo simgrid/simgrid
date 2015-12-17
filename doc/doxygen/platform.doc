@@ -1304,7 +1304,7 @@ can only occur as a child of \ref pf_routing_tag_route "&lt;route/&gt;"
 
 #### Example Files ####
 
-This is an automatically generated list of example files that use the \c &lt;link_ctn/gt;
+This is an automatically generated list of example files that use the \c &lt;link_ctn/&gt;
 entity (the path is given relative to SimGrid's source directory):
 
 \verbinclude example_filelist_xmltag_linkctn
