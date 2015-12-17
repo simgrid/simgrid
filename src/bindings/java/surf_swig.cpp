@@ -47,7 +47,7 @@ void setCpuModel(simgrid::surf::CpuModel *cpuModel){
 }
 
 void setCpu(char *name, simgrid::surf::Cpu *cpu) {
-	sg_host_surfcpu_set(sg_host_by_name(name), cpu);
+	// No-op here for compatibility with previous versions
 }
 
 LinkDynar getRoute(char *srcName, char *dstName) {

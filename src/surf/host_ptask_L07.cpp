@@ -272,12 +272,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 
 Host *HostL07Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu)
 {
-  HostL07 *host = new HostL07(this, name, NULL, netElm, cpu);
-
-  surf_callback_emit(hostCreatedCallbacks, host);
-  simgrid::Host::by_name_or_create(name)->set_facet(SURF_HOST_LEVEL, host);
-
-  return host;
+  return new HostL07(this, name, NULL, netElm, cpu);
 }
 
 Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
@@ -314,12 +309,9 @@ Cpu *CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
                           xbt_dict_t cpu_properties)
 {
   double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
-  sg_host_t sg_host = sg_host_by_name(name);
-
   CpuL07 *cpu = new CpuL07(this, name, cpu_properties,
 		                     power_initial, power_scale, power_trace,
                          core, state_initial, state_trace);
-  sg_host_surfcpu_register(sg_host, cpu);
   return cpu;
 }
 

@@ -60,6 +60,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   if (current_routing)
     net = routing_add_host(current_routing, host);
 
+  sg_host_t h = simgrid::Host::by_name_or_create(host->id);
   simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu(
         host->id,
         host->speed_peak,
@@ -70,8 +71,8 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
         host->initial_state,
         host->state_trace,
         host->properties);
-  surf_host_model->createHost(host->id, net, cpu);
-
+  cpu->plug(h);
+  surf_host_model->createHost(host->id, net, cpu)->attach(h);
   if (TRACE_is_enabled() && TRACE_needs_platform())
     sg_instr_new_host(host);
 }

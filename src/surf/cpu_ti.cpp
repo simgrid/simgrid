@@ -446,12 +446,10 @@ Cpu *CpuTiModel::createCpu(const char *name,
                            xbt_dict_t cpuProperties)
 {
   xbt_assert(core==1,"Multi-core not handled with this model yet");
-  sg_host_t host = sg_host_by_name(name);
   xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory speed attribute?");
   CpuTi *cpu = new CpuTi(this, name, speedPeak, pstate, speedScale, speedTrace,
 		           core, stateInitial, stateTrace, cpuProperties);
-  sg_host_surfcpu_register(host, cpu);
   return cpu;
 }
 
@@ -977,4 +975,3 @@ double CpuTiAction::getRemains()
 }
 
 #endif /* SURF_MODEL_CPUTI_H_ */
-

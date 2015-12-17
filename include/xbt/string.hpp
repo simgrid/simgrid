@@ -30,10 +30,21 @@ struct string_data {
 
 /** A std::string with well-known representation
  *
- *  This is a (incomplete) drop-in replacement for std::string.
+ *  This is a (incomplete) drop-in replacement for `std::string`.
+ *  It has a fixed POD representation (`simgrid::xbt::string_data`)
+ *  which can be used to easily read the string content from another
+ *  process.
  *
- *  This is used for cross-process access to strings
- *  (when the MC is enabled).
+ *  The internal representation of a `std::string` is private.
+ *  We could add some code to read this for a given implementation.
+ *  However, even if we focus on GNU libstdc++ with Itanium ABI
+ *  GNU libstdc++ currently has two different ABIs
+ *
+ *  * the pre-C++11 is a pointer to a ref-counted
+ *    string-representation (with support for COW);
+ *
+ *  * the [C++11-conforming implementation](https://gcc.gnu.org/gcc-5/changes.html)
+ *    does not use refcouting/COW but has a small string optimization.
  */
 XBT_PUBLIC_CLASS string : private string_data {
   static const char NUL;

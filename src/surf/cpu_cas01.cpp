@@ -106,14 +106,10 @@ Cpu *CpuCas01Model::createCpu(const char *name, xbt_dynar_t speedPeak,
                           tmgr_trace_t state_trace,
                           xbt_dict_t cpu_properties)
 {
-  Cpu *cpu = NULL;
-  sg_host_t host = sg_host_by_name(name);
   xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory power attribute?");
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
-
-  cpu = new CpuCas01(this, name, speedPeak, pstate, speedScale, speedTrace, core, state_initial, state_trace, cpu_properties);
-  sg_host_surfcpu_register(host, cpu);
+  Cpu *cpu = new CpuCas01(this, name, speedPeak, pstate, speedScale, speedTrace, core, state_initial, state_trace, cpu_properties);
   return cpu;
 }
 

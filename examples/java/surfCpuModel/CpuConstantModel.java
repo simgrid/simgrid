@@ -18,7 +18,6 @@ public class CpuConstantModel extends CpuModel {
 
     CpuConstant res = new CpuConstant(this, name, cpu_properties, core, power_peak[pstate], power_scale);
     cpus.add(res);
-    Surf.setCpu(name, res);
     return res;
   }
 

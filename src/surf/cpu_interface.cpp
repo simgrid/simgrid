@@ -20,6 +20,14 @@ simgrid::surf::CpuModel *surf_cpu_model_vm;
 namespace simgrid {
 namespace surf {
 
+simgrid::xbt::FacetLevel<simgrid::Host, Cpu> Cpu::LEVEL;
+
+void Cpu::init()
+{
+  if (!LEVEL.valid())
+    LEVEL = simgrid::Host::add_level<simgrid::surf::Cpu>();
+}
+
 /*************
  * Callbacks *
  *************/
@@ -221,6 +229,17 @@ void Cpu::setState(e_surf_resource_state_t state)
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
   surf_callback_emit(cpuStateChangedCallbacks, this, old, state);
+}
+
+void Cpu::plug(simgrid::Host* host)
+{
+  if (this->m_host != nullptr)
+    xbt_die("Aleady plugged into host %s", host->id().c_str());
+  host->set_facet(this);
+  this->m_host = host;
+  simgrid::surf::cpuCreatedCallbacks(this);
+  simgrid::surf::cpuStateChangedCallbacks(this,
+    SURF_RESOURCE_ON, this->getState());
 }
 
 /**********
