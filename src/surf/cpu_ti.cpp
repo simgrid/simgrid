@@ -584,7 +584,9 @@ CpuTi::CpuTi(CpuTiModel *model, const char *name, xbt_dynar_t speedPeak,
   }
 };
 
-CpuTi::~CpuTi(){
+CpuTi::~CpuTi()
+{
+  this->die();
   modified(false);
   delete p_availTrace;
   delete p_actionSet;

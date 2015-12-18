@@ -181,7 +181,9 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t speedPeak
     p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, this);
 }
 
-CpuCas01::~CpuCas01(){
+CpuCas01::~CpuCas01()
+{
+  this->die();
   if (getModel() == surf_cpu_model_pm)
     xbt_dynar_free(&p_speedPeakList);
 }

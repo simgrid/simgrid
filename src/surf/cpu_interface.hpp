@@ -176,12 +176,16 @@ public:
   void plug(simgrid::Host* host);
 
   void addTraces(void);
+  simgrid::Host* getHost() { return m_host; }
+
+protected:
+  virtual void onDie() override;
+
+public:
   int m_core = 1;                /* Amount of cores */
   double m_speedPeak;            /*< CPU speed peak, ie max value */
   double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
   simgrid::Host* m_host = nullptr;
-
-  simgrid::Host* getHost() { return m_host; }
 
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore=NULL;

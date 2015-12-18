@@ -107,8 +107,15 @@ Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_
   p_params.ramsize = 0;
 }
 
-Host::~Host(){
+void Host::onDie()
+{
   surf_callback_emit(hostDestructedCallbacks, this);
+  Resource::onDie();
+}
+
+Host::~Host()
+{
+  this->die();
 }
 
 void Host::attach(simgrid::Host* host)

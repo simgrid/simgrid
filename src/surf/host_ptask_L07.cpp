@@ -405,6 +405,11 @@ HostL07::HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEd
 {
 }
 
+HostL07::~HostL07()
+{
+  this->die();
+}
+
 CpuL07::CpuL07(CpuL07Model *model, const char* name,
 	             double speedInitial, double speedScale, tmgr_trace_t speedTrace,
 		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
@@ -420,6 +425,11 @@ CpuL07::CpuL07(CpuL07Model *model, const char* name,
 
   if (state_trace)
 	p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
+}
+
+CpuL07::~CpuL07()
+{
+  this->die();
 }
 
 LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,

@@ -126,6 +126,11 @@ Action *HostCLM03Model::executeParallelTask(int host_nb,
 HostCLM03::HostCLM03(HostModel *model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
   : Host(model, name, properties, storage, netElm, cpu) {}
 
+HostCLM03::~HostCLM03()
+{
+  this->die();
+}
+
 bool HostCLM03::isUsed(){
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
   return -1;

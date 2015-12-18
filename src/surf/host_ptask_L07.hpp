@@ -97,6 +97,7 @@ public:
 class HostL07 : public Host {
 public:
   HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEdge *netElm, Cpu *cpu);
+  ~HostL07();
   bool isUsed() {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {DIE_IMPOSSIBLE;};
   Action *execute(double size) {return p_cpu->execute(size);};
@@ -112,6 +113,7 @@ public:
   CpuL07(CpuL07Model *model, const char* name,
 		 double power_scale, double power_initial, tmgr_trace_t power_trace,
      int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
+  ~CpuL07();
   bool isUsed();
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   Action *execute(double size);

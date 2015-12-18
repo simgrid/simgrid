@@ -259,6 +259,10 @@ public:
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
+protected:
+  void onDie() override;
+
+public:
   xbt_dynar_t p_storage;
   RoutingEdge *p_netElm;
   Cpu *p_cpu;

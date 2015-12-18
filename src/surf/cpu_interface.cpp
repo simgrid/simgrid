@@ -191,8 +191,15 @@ Cpu::Cpu(Model *model, const char *name,
 : Cpu(model, name, core, speedPeak, speedScale, SURF_RESOURCE_ON)
 {}
 
-Cpu::~Cpu(){
+void Cpu::onDie()
+{
   surf_callback_emit(cpuDestructedCallbacks, this);
+  Resource::onDie();
+}
+
+Cpu::~Cpu()
+{
+  this->die();
   if (p_constraintCoreId){
     for (int i = 0; i < m_core; i++) {
 	  xbt_free(p_constraintCoreId[i]);

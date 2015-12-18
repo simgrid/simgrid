@@ -488,7 +488,12 @@ public:
   /** @brief Set the [state](\ref e_surf_resource_state_t) of the current Resource */
   virtual void setState(e_surf_resource_state_t state);
 
+protected:
+  void die();
+  virtual void onDie();
+
 private:
+  bool alive_ = true;
   const char *p_name;
   Model *p_model;
   bool m_running;
