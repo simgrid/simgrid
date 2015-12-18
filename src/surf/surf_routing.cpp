@@ -197,7 +197,7 @@ simgrid::surf::RoutingEdge *routing_add_host(
     }
     xbt_dynar_shrink(ctn, 0);
     xbt_dynar_free(&ctn_str);
-    h->set_facet(COORD_HOST_LEVEL, (void *) ctn);
+    h->extension_set(COORD_HOST_LEVEL, (void *) ctn);
     XBT_DEBUG("Having set host coordinates for '%s'",host->id);
   }
 

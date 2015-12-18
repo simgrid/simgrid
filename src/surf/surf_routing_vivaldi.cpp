@@ -57,9 +57,9 @@ void AsVivaldi::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_
           *lat += static_cast<Link*>(info.link_up)->getLatency();
       }
     }
-    src_ctn = (xbt_dynar_t) simgrid::Host::by_name_or_create(tmp_src_name)->facet(COORD_HOST_LEVEL);
+    src_ctn = (xbt_dynar_t) simgrid::Host::by_name_or_create(tmp_src_name)->extension(COORD_HOST_LEVEL);
     if (src_ctn == nullptr)
-      src_ctn = (xbt_dynar_t) simgrid::Host::by_name_or_create(src->getName())->facet(COORD_HOST_LEVEL);
+      src_ctn = (xbt_dynar_t) simgrid::Host::by_name_or_create(src->getName())->extension(COORD_HOST_LEVEL);
   }
   else if(src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_AS){
     tmp_src_name = ROUTER_PEER(src->getName());
@@ -81,10 +81,10 @@ void AsVivaldi::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_
       }
     }
     dst_ctn = (xbt_dynar_t) simgrid::Host::by_name_or_create(tmp_dst_name)
-      ->facet(COORD_HOST_LEVEL);
+      ->extension(COORD_HOST_LEVEL);
     if (dst_ctn == nullptr)
       dst_ctn = (xbt_dynar_t) simgrid::Host::by_name_or_create(dst->getName())
-        ->facet(COORD_HOST_LEVEL);
+        ->extension(COORD_HOST_LEVEL);
   }
   else if(dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || dst->getRcType() == SURF_NETWORK_ELEMENT_AS){
     tmp_dst_name = ROUTER_PEER(dst->getName());

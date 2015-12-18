@@ -38,7 +38,7 @@ VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props,
 : Host(model, name, props, NULL, netElm, cpu)
 {
   VMModel::ws_vms.push_back(*this);
-  simgrid::Host::by_name_or_create(name)->set_facet<simgrid::surf::Host>(this);
+  simgrid::Host::by_name_or_create(name)->extension_set<simgrid::surf::Host>(this);
 }
 
 /*

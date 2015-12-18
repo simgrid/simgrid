@@ -456,7 +456,7 @@ static void _sg_cfg_cb__surf_network_coordinates(const char *name,
   int val = xbt_cfg_get_boolean(_sg_cfg_set, name);
   if (val) {
     if (!already_set) {
-      COORD_HOST_LEVEL = sg_host_add_level(xbt_dynar_free_voidp);
+      COORD_HOST_LEVEL = sg_host_extension_create(xbt_dynar_free_voidp);
       COORD_ASR_LEVEL  = xbt_lib_add_level(as_router_lib,xbt_dynar_free_voidp);
     }
     already_set = 1;

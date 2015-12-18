@@ -31,7 +31,7 @@ void host_add_traces(){
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::FacetLevel<simgrid::Host, Host> Host::LEVEL;
+simgrid::xbt::Extension<simgrid::Host, Host> Host::EXTENSION_ID;
 
 simgrid::surf::signal<void(simgrid::surf::Host*)> hostCreatedCallbacks;
 simgrid::surf::signal<void(simgrid::surf::Host*)> hostDestructedCallbacks;
@@ -83,9 +83,9 @@ void HostModel::adjustWeightOfDummyCpuActions()
 
 void Host::init()
 {
-  if (!LEVEL.valid()) {
-    LEVEL = simgrid::Host::add_level<simgrid::surf::Host>();
-    SURF_HOST_LEVEL = LEVEL.id();
+  if (!EXTENSION_ID.valid()) {
+    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>();
+    SURF_HOST_LEVEL = EXTENSION_ID.id(); // FIXME: KILLME
   }
 }
 
@@ -122,7 +122,7 @@ void Host::attach(simgrid::Host* host)
 {
   if (p_host != nullptr)
     xbt_die("Already attached to host %s", host->id().c_str());
-  host->set_facet(this);
+  host->extension_set(this);
   p_host = host;
   hostCreatedCallbacks(this);
 }

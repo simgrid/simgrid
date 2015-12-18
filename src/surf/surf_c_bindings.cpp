@@ -171,7 +171,7 @@ void routing_get_route_and_latency(sg_routing_edge_t src, sg_routing_edge_t dst,
 surf_host_model_t surf_host_get_model(sg_host_t host)
 {
   simgrid::surf::Host* surf_host =
-    (simgrid::surf::Host*) host->facet<simgrid::surf::Host>();
+    (simgrid::surf::Host*) host->extension<simgrid::surf::Host>();
   return (surf_host_model_t) surf_host->getModel();
 }
 
@@ -393,10 +393,10 @@ void surf_vm_destroy(sg_host_t resource){
    */
   sg_host_surfcpu_destroy(resource);
   sg_host_edge_destroy(resource,1);
-  resource->set_facet<simgrid::surf::Host>(nullptr);
+  resource->extension_set<simgrid::surf::Host>(nullptr);
 
   /* TODO: comment out when VM storage is implemented. */
-  // host->set_facet(SURF_STORAGE_LEVEL, nullptr);
+  // host->extension_set(SURF_STORAGE_LEVEL, nullptr);
 }
 
 void surf_vm_suspend(sg_host_t vm){

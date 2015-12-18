@@ -56,7 +56,7 @@ ns3_nodes_t ns3_find_host(const char* id)
   if (host == nullptr)
     return nullptr;
   else
-    return (ns3_nodes_t) sg_host_get_facet(host, NS3_HOST_LEVEL);
+    return (ns3_nodes_t) sg_host_get_extension(host, NS3_HOST_LEVEL);
 }
 
 SG_END_DECL()

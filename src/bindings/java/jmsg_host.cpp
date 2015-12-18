@@ -86,7 +86,7 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
   }
   env->ReleaseStringUTFChars(jname, name);
 
-  if (!host->facet(JAVA_HOST_LEVEL)) {       /* native host not associated yet with java host */
+  if (!host->extension(JAVA_HOST_LEVEL)) {       /* native host not associated yet with java host */
 
     /* Instantiate a new java host */
     jhost = jhost_new_instance(env);
@@ -111,11 +111,11 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
     /* the native host data field is set with the global reference to the
      * java host returned by this function
      */
-    host->set_facet(JAVA_HOST_LEVEL, (void *)jhost);
+    host->extension_set(JAVA_HOST_LEVEL, (void *)jhost);
   }
 
   /* return the global reference to the java host instance */
-  return (jobject) host->facet(JAVA_HOST_LEVEL);
+  return (jobject) host->extension(JAVA_HOST_LEVEL);
 }
 
 JNIEXPORT jobject JNICALL
@@ -124,7 +124,7 @@ Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
 
   msg_host_t host = MSG_host_self();
 
-  if (!host->facet(JAVA_HOST_LEVEL)) {
+  if (!host->extension(JAVA_HOST_LEVEL)) {
     /* the native host not yet associated with the java host instance */
 
     /* instanciate a new java host instance */
@@ -148,9 +148,9 @@ Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
     env->SetObjectField(jhost, jhost_field_Host_name, jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
-    host->set_facet(JAVA_HOST_LEVEL, (void *) jhost);
+    host->extension_set(JAVA_HOST_LEVEL, (void *) jhost);
   } else {
-    jhost = (jobject) host->facet(JAVA_HOST_LEVEL);
+    jhost = (jobject) host->extension(JAVA_HOST_LEVEL);
   }
 
   return jhost;
@@ -357,7 +357,7 @@ Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
 
   for (index = 0; index < count; index++) {
     host = xbt_dynar_get_as(table,index,msg_host_t);
-    jhost = (jobject) host->facet(JAVA_HOST_LEVEL);
+    jhost = (jobject) host->extension(JAVA_HOST_LEVEL);
 
     if (!jhost) {
       jname = env->NewStringUTF(MSG_host_get_name(host));

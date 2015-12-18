@@ -13,12 +13,12 @@
 #include <vector>
 
 #include <xbt/base.h>
-#include <xbt/Facetable.hpp>
 #include <xbt/string.hpp>
+#include <xbt/Extendable.hpp>
 
 namespace simgrid {
 
-XBT_PUBLIC_CLASS Host : public simgrid::xbt::Facetable<Host> {
+XBT_PUBLIC_CLASS Host : public simgrid::xbt::Extendable<Host> {
 private:
   simgrid::xbt::string id_;
 public:

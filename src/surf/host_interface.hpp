@@ -97,7 +97,7 @@ public:
  */
 class Host : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
 public:
-  static simgrid::xbt::FacetLevel<simgrid::Host, Host> LEVEL;
+  static simgrid::xbt::Extension<simgrid::Host, Host> EXTENSION_ID;
   static void init();
   /**
    * @brief Host constructor
