@@ -70,9 +70,15 @@ public:
   Facetable() : facets_(deleters_.size(), nullptr) {}
   ~Facetable()
   {
-    for (std::size_t i = 0; i < facets_.size(); ++i)
-      if (facets_[i] != nullptr)
-        deleters_[i](facets_[i]);
+    /* Call destructors in reverse order of their registrations
+     *
+     * The rationale for this, is that if a level B as been added after a
+     * facet A, the subsystem of B might depend on the subsystem on A and a
+     * facet of B might need to have the facet of A around when executing
+     * its cleanup function/destructor. */
+    for (std::size_t i = facets_.size(); i > 0; --i)
+      if (facets_[i - 1] != nullptr)
+        deleters_[i - 1](facets_[i - 1]);
   }
 
   // Type-unsafe versions of the facet access methods:
