@@ -38,7 +38,7 @@ void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 VirtualMachine *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
 {
   VirtualMachine* vm = new VMHL13(this, name, NULL, host_PM);
-  surf_callback_emit(VMCreatedCallbacks, vm);
+  VMCreatedCallbacks(vm);
   return vm;
 }
 

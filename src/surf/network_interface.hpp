@@ -37,31 +37,31 @@ class NetworkAction;
  * @brief Callbacks handler which emits the callbacks after Link creation
  * @details Callback functions have the following signature: `void(Link*)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::Link*)) networkLinkCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::Link*)>) networkLinkCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after Link destruction
  * @details Callback functions have the following signature: `void(Link*)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::Link*)) networkLinkDestructedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::Link*)>) networkLinkDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after Link State changed
  * @details Callback functions have the following signature: `void(LinkAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)) networkLinkStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)>) networkLinkStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after NetworkAction State changed
  * @details Callback functions have the following signature: `void(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)) networkActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)>) networkActionStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emits the callbacks after communication created
  * @details Callback functions have the following signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)`
  */
-XBT_PUBLIC_DATA( surf_callback(void, simgrid::surf::NetworkAction*, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate)) networkCommunicateCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate)>) networkCommunicateCallbacks;
 
 }
 }

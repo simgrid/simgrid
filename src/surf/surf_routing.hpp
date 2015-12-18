@@ -163,8 +163,8 @@ public:
  * Callbacks *
  *************/
 
-XBT_PUBLIC_DATA(surf_callback(void, RoutingEdge*)) routingEdgeCreatedCallbacks;
-XBT_PUBLIC_DATA(surf_callback(void, As*)) asCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(RoutingEdge*)>) routingEdgeCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(As*)>) asCreatedCallbacks;
 
 }
 }

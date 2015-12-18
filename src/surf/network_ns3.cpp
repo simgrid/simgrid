@@ -297,7 +297,7 @@ Link* NetworkNS3Model::createLink(const char *name,
   if (state_trace)
     XBT_INFO("The NS3 network model doesn't support link state traces");
   Link* link = new NetworkNS3Link(this, name, properties, bw_initial, lat_initial);
-  surf_callback_emit(networkLinkCreatedCallbacks, link);
+  networkLinkCreatedCallbacks(link);
   return link;
 }
 
@@ -320,7 +320,7 @@ Action *NetworkNS3Model::communicate(RoutingEdge *src, RoutingEdge *dst,
   action->m_lastSent = 0;
   action->p_srcElm = src;
   action->p_dstElm = dst;
-  surf_callback_emit(networkCommunicateCallbacks, action, src, dst, size, rate);
+  networkCommunicateCallbacks(action, src, dst, size, rate);
 
   return (surf_action_t) action;
 }

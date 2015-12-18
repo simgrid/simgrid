@@ -62,11 +62,6 @@ namespace surf {
 }
 #endif
 
-// Deprecated:
-#define surf_callback(arg1, ...)  ::simgrid::surf::signal<arg1(__VA_ARGS__)>
-#define surf_callback_connect(callback, fun_ptr) callback.connect(fun_ptr)
-#define surf_callback_emit(callback, ...) callback(__VA_ARGS__)
-
 #ifdef _MSC_VER
 #pragma warning( disable : 4251)
 // 4251: needs to have dll-interface to be used by clients of class
@@ -97,7 +92,7 @@ extern XBT_PRIVATE double sg_sender_gap;
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE surf_callback(void, void) surfExitCallbacks;
+extern XBT_PRIVATE simgrid::surf::signal<void(void)> surfExitCallbacks;
 
 }
 }

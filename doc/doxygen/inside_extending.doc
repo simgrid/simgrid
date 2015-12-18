@@ -95,12 +95,9 @@ static void MyNetworkCommunicationCallback(NetworkActionPtr cpu,
 }
 
 void sg_my_network_plugin_init() {
-  surf_callback_connect(networkLinkCreatedCallbacks,
-                        MyNetworkLinkCreatedCallback);
-  surf_callback_connect(networkLinkDestructedCallbacks,
-                        MyNetworkLinkDestructedCallback);
-  surf_callback_connect(networkCommunicationCallbacks,
-                        MyNetworkCommunicationCallback);
+  networkLinkCreatedCallbacks.connect(MyNetworkLinkCreatedCallback);
+  networkLinkDestructedCallbacks.connect(MyNetworkLinkDestructedCallback);
+  networkCommunicationCallbacks.connect(MyNetworkCommunicationCallback);
 }
 ~~~~
 

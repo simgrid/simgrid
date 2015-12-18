@@ -38,7 +38,7 @@ xbt_dict_t watched_hosts_lib;
 namespace simgrid {
 namespace surf {
 
-surf_callback(void, void) surfExitCallbacks;
+simgrid::surf::signal<void(void)> surfExitCallbacks;
 
 }
 }
@@ -363,7 +363,7 @@ void surf_exit(void)
   xbt_dynar_free(&model_list_invoke);
   routing_exit();
 
-  surf_callback_emit(simgrid::surf::surfExitCallbacks);
+  simgrid::surf::surfExitCallbacks();
 
   if (maxmin_system) {
     lmm_system_free(maxmin_system);

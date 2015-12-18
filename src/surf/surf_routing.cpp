@@ -23,8 +23,8 @@
 namespace simgrid {
 namespace surf {
 
-surf_callback(void, simgrid::surf::RoutingEdge*) routingEdgeCreatedCallbacks;
-surf_callback(void, simgrid::surf::As*) asCreatedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::RoutingEdge*)> routingEdgeCreatedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::As*)> asCreatedCallbacks;
 
 }
 }

@@ -33,22 +33,22 @@ class XBT_PRIVATE HostAction;
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after Host creation. Signature: `void(Host*)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, Host*)) hostCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(Host*)>) hostCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired Host destruction. Signature: `void(Host*)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, Host*)) hostDestructedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(Host*)>) hostDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after Host State changed. Signature: `void(Host *, e_surf_resource_state_t old, e_surf_resource_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, Host*, e_surf_resource_state_t, e_surf_resource_state_t)) hostStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(Host*, e_surf_resource_state_t, e_surf_resource_state_t)>) hostStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired HostAction State changed. Signature: `void(HostAction *, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, HostAction*, e_surf_action_state_t, e_surf_action_state_t)) hostActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(HostAction*, e_surf_action_state_t, e_surf_action_state_t)>) hostActionStateChangedCallbacks;
 
 }
 }

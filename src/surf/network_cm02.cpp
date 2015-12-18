@@ -222,7 +222,7 @@ Link* NetworkCm02Model::createLink(const char *name,
 
   Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial, history,
 				             state_initial, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
-  surf_callback_emit(networkLinkCreatedCallbacks, link);
+  networkLinkCreatedCallbacks(link);
   return link;
 }
 
@@ -466,7 +466,7 @@ Action *NetworkCm02Model::communicate(RoutingEdge *src, RoutingEdge *dst,
   xbt_dynar_free(&route);
   XBT_OUT();
 
-  surf_callback_emit(networkCommunicateCallbacks, action, src, dst, size, rate);
+  networkCommunicateCallbacks(action, src, dst, size, rate);
   return action;
 }
 

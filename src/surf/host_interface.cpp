@@ -33,10 +33,10 @@ namespace surf {
 
 simgrid::xbt::FacetLevel<simgrid::Host, Host> Host::LEVEL;
 
-surf_callback(void, simgrid::surf::Host*) hostCreatedCallbacks;
-surf_callback(void, simgrid::surf::Host*) hostDestructedCallbacks;
-surf_callback(void, simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t) hostStateChangedCallbacks;
-surf_callback(void, simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t) hostActionStateChangedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Host*)> hostCreatedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Host*)> hostDestructedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> hostStateChangedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t)> hostActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -109,7 +109,7 @@ Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_
 
 void Host::onDie()
 {
-  surf_callback_emit(hostDestructedCallbacks, this);
+  hostDestructedCallbacks(this);
   Resource::onDie();
 }
 
@@ -124,13 +124,13 @@ void Host::attach(simgrid::Host* host)
     xbt_die("Already attached to host %s", host->id().c_str());
   host->set_facet(this);
   p_host = host;
-  surf_callback_emit(hostCreatedCallbacks, this);
+  hostCreatedCallbacks(this);
 }
 
 void Host::setState(e_surf_resource_state_t state){
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  surf_callback_emit(hostStateChangedCallbacks, this, old, state);
+  hostStateChangedCallbacks(this, old, state);
   p_cpu->setState(state);
 }
 
@@ -378,7 +378,7 @@ void Host::setParams(vm_params_t params)
 void HostAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
-  surf_callback_emit(hostActionStateChangedCallbacks, this, old, state);
+  hostActionStateChangedCallbacks(this, old, state);
 }
 
 }

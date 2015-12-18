@@ -95,11 +95,11 @@ void Link::linksExit() {
  * Callbacks *
  *************/
 
-surf_callback(void, simgrid::surf::Link*) networkLinkCreatedCallbacks;
-surf_callback(void, simgrid::surf::Link*) networkLinkDestructedCallbacks;
-surf_callback(void, simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
-surf_callback(void, simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
-surf_callback(void, simgrid::surf::NetworkAction*, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate) networkCommunicateCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Link*)> networkLinkCreatedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Link*)> networkLinkDestructedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)> networkLinkStateChangedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)> networkActionStateChangedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate)> networkCommunicateCallbacks;
 
 }
 }
@@ -219,7 +219,7 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 
 Link::~Link()
 {
-  surf_callback_emit(networkLinkDestructedCallbacks, this);
+  networkLinkDestructedCallbacks(this);
 }
 
 bool Link::isUsed()
@@ -245,7 +245,7 @@ int Link::sharingPolicy()
 void Link::setState(e_surf_resource_state_t state){
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  surf_callback_emit(networkLinkStateChangedCallbacks, this, old, state);
+  networkLinkStateChangedCallbacks(this, old, state);
 }
 
 /**********
@@ -255,7 +255,7 @@ void Link::setState(e_surf_resource_state_t state){
 void NetworkAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
-  surf_callback_emit(networkActionStateChangedCallbacks, this, old, state);
+  networkActionStateChangedCallbacks(this, old, state);
 }
 
 }

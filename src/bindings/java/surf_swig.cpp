@@ -62,56 +62,56 @@ LinkDynar getRoute(char *srcName, char *dstName) {
 
 void Plugin::activateCpuCreatedCallback()
 {
-  surf_callback_connect(simgrid::surf::cpuCreatedCallbacks,
+  simgrid::surf::cpuCreatedCallbacks.connect(
     std::bind(&Plugin::cpuCreatedCallback, this, _1));
 }
 
 void Plugin::activateCpuDestructedCallback()
 {
-  surf_callback_connect(simgrid::surf::cpuDestructedCallbacks,
+  simgrid::surf::cpuDestructedCallbacks.connect(
     std::bind(&Plugin::cpuDestructedCallback, this, _1));
 }
 
 void Plugin::activateCpuStateChangedCallback()
 {
-  surf_callback_connect(simgrid::surf::cpuStateChangedCallbacks,
+  simgrid::surf::cpuStateChangedCallbacks.connect(
     std::bind(&Plugin::cpuStateChangedCallback, this, _1, _2, _3));
 }
 
 void Plugin::activateCpuActionStateChangedCallback()
 {
-  surf_callback_connect(simgrid::surf::cpuActionStateChangedCallbacks,
+  simgrid::surf::cpuActionStateChangedCallbacks.connect(
     std::bind(&Plugin::cpuActionStateChangedCallback, this, _1, _2, _3));
 }
 
 
 void Plugin::activateLinkCreatedCallback()
 {
-  surf_callback_connect(simgrid::surf::networkLinkCreatedCallbacks,
+  simgrid::surf::networkLinkCreatedCallbacks.connect(
     std::bind(&Plugin::networkLinkCreatedCallback, this, _1));
 }
 
 void Plugin::activateLinkDestructedCallback()
 {
-  surf_callback_connect(simgrid::surf::networkLinkDestructedCallbacks,
+  simgrid::surf::networkLinkDestructedCallbacks.connect(
     std::bind(&Plugin::networkLinkDestructedCallback, this, _1));
 }
 
 void Plugin::activateLinkStateChangedCallback()
 {
-  surf_callback_connect(simgrid::surf::networkLinkStateChangedCallbacks,
+  simgrid::surf::networkLinkStateChangedCallbacks.connect(
     std::bind(&Plugin::networkLinkStateChangedCallback, this, _1, _2, _3));
 }
 
 void Plugin::activateNetworkActionStateChangedCallback()
 {
-  surf_callback_connect(simgrid::surf::networkActionStateChangedCallbacks,
+  simgrid::surf::networkActionStateChangedCallbacks.connect(
     std::bind(&Plugin::networkActionStateChangedCallback, this, _1, _2, _3));
 }
 
 void Plugin::activateNetworkCommunicateCallback()
 {
-  surf_callback_connect(simgrid::surf::networkCommunicateCallbacks,
+  simgrid::surf::networkCommunicateCallbacks.connect(
     std::bind(&Plugin::networkCommunicateCallback, this, _1, _2, _3, _4, _5));
 }
 

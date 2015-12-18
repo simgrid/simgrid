@@ -38,10 +38,10 @@ Cpu *getActionCpu(CpuAction *action) {
 		                	 action->getVariable(), 0)));
 }
 
-surf_callback(void, Cpu*) cpuCreatedCallbacks;
-surf_callback(void, Cpu*) cpuDestructedCallbacks;
-surf_callback(void, Cpu*, e_surf_resource_state_t, e_surf_resource_state_t) cpuStateChangedCallbacks;
-surf_callback(void, CpuAction*, e_surf_action_state_t, e_surf_action_state_t) cpuActionStateChangedCallbacks;
+simgrid::surf::signal<void(Cpu*)> cpuCreatedCallbacks;
+simgrid::surf::signal<void(Cpu*)> cpuDestructedCallbacks;
+simgrid::surf::signal<void(Cpu*, e_surf_resource_state_t, e_surf_resource_state_t)> cpuStateChangedCallbacks;
+simgrid::surf::signal<void(CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> cpuActionStateChangedCallbacks;
 void cpu_add_traces(){
   surf_cpu_model_pm->addTraces();
 }
@@ -193,7 +193,7 @@ Cpu::Cpu(Model *model, const char *name,
 
 void Cpu::onDie()
 {
-  surf_callback_emit(cpuDestructedCallbacks, this);
+  cpuDestructedCallbacks(this);
   Resource::onDie();
 }
 
@@ -235,7 +235,7 @@ void Cpu::setState(e_surf_resource_state_t state)
 {
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  surf_callback_emit(cpuStateChangedCallbacks, this, old, state);
+  cpuStateChangedCallbacks(this, old, state);
 }
 
 void Cpu::plug(simgrid::Host* host)
@@ -352,7 +352,7 @@ void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
 void CpuAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
-  surf_callback_emit(cpuActionStateChangedCallbacks, this, old, state);
+  cpuActionStateChangedCallbacks(this, old, state);
 }
 
 }

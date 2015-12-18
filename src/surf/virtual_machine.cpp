@@ -19,9 +19,9 @@ namespace surf {
  * Callbacks *
  *************/
 
-surf_callback(void, simgrid::surf::VirtualMachine*) VMCreatedCallbacks;
-surf_callback(void, simgrid::surf::VirtualMachine*) VMDestructedCallbacks;
-surf_callback(void, simgrid::surf::VirtualMachine*) VMStateChangedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::VirtualMachine*)> VMCreatedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::VirtualMachine*)> VMDestructedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::VirtualMachine*)> VMStateChangedCallbacks;
 
 /*********
  * Model *
@@ -47,13 +47,13 @@ VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props,
  */
 VirtualMachine::~VirtualMachine()
 {
-  surf_callback_emit(VMDestructedCallbacks, this);
+  VMDestructedCallbacks(this);
   VMModel::ws_vms.erase(VMModel::vm_list_t::s_iterator_to(*this));
 }
 
 void VirtualMachine::setState(e_surf_resource_state_t state){
   Resource::setState(state);
-  surf_callback_emit(VMStateChangedCallbacks, this);
+  VMStateChangedCallbacks(this);
 }
 
 /*

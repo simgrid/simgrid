@@ -331,7 +331,7 @@ Link* NetworkL07Model::createLink(const char *name,
 					 lat_initial, lat_trace,
 					 state_initial, state_trace,
 					 policy);
-  surf_callback_emit(networkLinkCreatedCallbacks, link);
+  networkLinkCreatedCallbacks(link);
   return link;
 }
 

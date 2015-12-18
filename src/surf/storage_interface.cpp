@@ -28,10 +28,10 @@ namespace surf {
  * Callbacks *
  *************/
 
-surf_callback(void, simgrid::surf::Storage*) storageCreatedCallbacks;
-surf_callback(void, simgrid::surf::Storage*) storageDestructedCallbacks;
-surf_callback(void, simgrid::surf::Storage*, e_surf_resource_state_t, e_surf_resource_state_t) storageStateChangedCallbacks;
-surf_callback(void, simgrid::surf::StorageAction*, e_surf_action_state_t, e_surf_action_state_t) storageActionStateChangedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Storage*)> storageCreatedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Storage*)> storageDestructedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Storage*, e_surf_resource_state_t, e_surf_resource_state_t)> storageStateChangedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::StorageAction*, e_surf_action_state_t, e_surf_action_state_t)> storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -89,7 +89,7 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
 }
 
 Storage::~Storage(){
-  surf_callback_emit(storageDestructedCallbacks, this);
+  storageDestructedCallbacks(this);
   xbt_dict_free(&p_content);
   xbt_dynar_free(&p_writeActions);
   free(p_typeId);
@@ -149,7 +149,7 @@ void Storage::setState(e_surf_resource_state_t state)
 {
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  surf_callback_emit(storageStateChangedCallbacks, this, old, state);
+  storageStateChangedCallbacks(this, old, state);
 }
 
 xbt_dict_t Storage::getContent()
@@ -199,7 +199,7 @@ StorageAction::StorageAction(Model *model, double cost, bool failed, lmm_variabl
 void StorageAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
-  surf_callback_emit(storageActionStateChangedCallbacks, this, old, state);
+  storageActionStateChangedCallbacks(this, old, state);
 }
 
 }

@@ -95,7 +95,7 @@ Action *NetworkConstantModel::communicate(RoutingEdge *src, RoutingEdge *dst,
   NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
   XBT_OUT();
 
-  surf_callback_emit(networkCommunicateCallbacks, action, src, dst, size, rate);
+  networkCommunicateCallbacks(action, src, dst, size, rate);
   return action;
 }
 
