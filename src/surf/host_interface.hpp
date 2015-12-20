@@ -78,9 +78,9 @@ public:
   static simgrid::xbt::Extension<simgrid::Host, Host> EXTENSION_ID;
 
   /* callbacks */
-  static simgrid::surf::signal<void(Host*)> creationCallbacks;    /** Called on each newly created object */
-  static simgrid::surf::signal<void(Host*)> destructionCallbacks; /** Called just before destructing an object */
-  static simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> stateChangeCallbacks;
+  static simgrid::surf::signal<void(Host*)> onCreation;    /** Called on each newly created object */
+  static simgrid::surf::signal<void(Host*)> onDestruction; /** Called just before destructing an object */
+  static simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> onStateChange;
 
 public:
   static void init();
@@ -276,7 +276,7 @@ private:
  */
 class HostAction : public Action {
 public:
-	static simgrid::surf::signal<void(simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t)> stateChangeCallbacks;
+	static simgrid::surf::signal<void(simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t)> onStateChange;
 
   /**
    * @brief HostAction constructor

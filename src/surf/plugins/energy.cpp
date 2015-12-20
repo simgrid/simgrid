@@ -143,12 +143,12 @@ void sg_energy_plugin_init() {
     simgrid::energy::surf_energy =
       new std::map<simgrid::surf::Host*, simgrid::energy::HostEnergy*>();
     simgrid::surf::VMCreatedCallbacks.connect(energyVMCreatedCallback);
-    simgrid::surf::Host::creationCallbacks.connect(energyHostCreatedCallback);
-    simgrid::surf::Host::destructionCallbacks.connect(energyHostDestructedCallback);
+    simgrid::surf::Host::onCreation.connect(energyHostCreatedCallback);
+    simgrid::surf::Host::onDestruction.connect(energyHostDestructedCallback);
     simgrid::surf::cpuActionStateChangedCallbacks.connect(
       energyCpuActionStateChangedCallback);
     simgrid::surf::surfExitCallbacks.connect(sg_energy_plugin_exit);
-    simgrid::surf::Host::stateChangeCallbacks.connect(
+    simgrid::surf::Host::onStateChange.connect(
       energyStateChangedCallback);
   }
 }

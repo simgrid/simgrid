@@ -75,9 +75,9 @@ void HostModel::adjustWeightOfDummyCpuActions()
 /************
  * Resource *
  ************/
-simgrid::surf::signal<void(simgrid::surf::Host*)> Host::creationCallbacks;
-simgrid::surf::signal<void(simgrid::surf::Host*)> Host::destructionCallbacks;
-simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> Host::stateChangeCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onCreation;
+simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onDestruction;
+simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> Host::onStateChange;
 
 void Host::init()
 {
@@ -107,7 +107,7 @@ Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_
 
 void Host::onDie()
 {
-  destructionCallbacks(this);
+  onDestruction(this);
   Resource::onDie();
 }
 
@@ -122,13 +122,13 @@ void Host::attach(simgrid::Host* host)
     xbt_die("Already attached to host %s", host->id().c_str());
   host->extension_set(this);
   p_host = host;
-  creationCallbacks(this);
+  onCreation(this);
 }
 
 void Host::setState(e_surf_resource_state_t state){
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  stateChangeCallbacks(this, old, state);
+  onStateChange(this, old, state);
   p_cpu->setState(state);
 }
 
@@ -372,12 +372,12 @@ void Host::setParams(vm_params_t params)
 /**********
  * Action *
  **********/
-simgrid::surf::signal<void(simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t)> HostAction::stateChangeCallbacks;
+simgrid::surf::signal<void(simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t)> HostAction::onStateChange;
 
 void HostAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
-  stateChangeCallbacks(this, old, state);
+  onStateChange(this, old, state);
 }
 
 }

@@ -99,7 +99,7 @@ void surf_network_model_init_IB(void)
   xbt_dynar_push(all_existing_models, &surf_network_model);
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
   networkCommunicateCallbacks.connect(IB_action_init_callback);
-  simgrid::surf::Host::creationCallbacks.connect(IB_create_host_callback);
+  simgrid::surf::Host::onCreation.connect(IB_create_host_callback);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
   
 }
