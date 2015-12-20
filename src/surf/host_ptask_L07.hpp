@@ -43,7 +43,7 @@ public:
   HostL07Model();
   ~HostL07Model();
 
-  double shareResources(double now);
+  double shareResources(double now) override;
   void updateActionsState(double now, double delta);
   Host *createHost(const char *name,RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props) override;
   Action *executeParallelTask(int host_nb,
@@ -52,19 +52,20 @@ public:
 							  double *bytes_amount,
 							  double rate) override;
   xbt_dynar_t getRoute(Host *src, Host *dst);
-  void addTraces();
+  void addTraces() override;
 };
 
 class CpuL07Model : public CpuModel {
 public:
   CpuL07Model(HostL07Model *hmodel) : CpuModel() {p_hostModel = hmodel;};
   ~CpuL07Model() {surf_cpu_model_pm = NULL;};
+
   Cpu *createCpu(const char *name,  xbt_dynar_t speedPeak,
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace) override;
-  void addTraces() {DIE_IMPOSSIBLE;};
+  void addTraces() override {DIE_IMPOSSIBLE;};
 
   HostL07Model *p_hostModel;
 };
@@ -83,9 +84,9 @@ public:
 		  e_surf_link_sharing_policy_t policy,
 		  xbt_dict_t properties) override;
 
-  Action *communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate);
-  void addTraces() {DIE_IMPOSSIBLE;};
-  bool shareResourcesIsIdempotent() {return true;}
+  Action *communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate) override;
+  void addTraces() override {DIE_IMPOSSIBLE;};
+  bool shareResourcesIsIdempotent() override {return true;}
 
   HostL07Model *p_hostModel;
 };
@@ -98,11 +99,11 @@ class HostL07 : public Host {
 public:
   HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEdge *netElm, Cpu *cpu);
   ~HostL07();
-  bool isUsed() {DIE_IMPOSSIBLE;};
-  void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {DIE_IMPOSSIBLE;};
-  Action *execute(double size) {return p_cpu->execute(size);};
-  Action *sleep(double duration) {return p_cpu->sleep(duration);};
-  e_surf_resource_state_t getState();
+  bool isUsed() override {DIE_IMPOSSIBLE;};
+  void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) override {DIE_IMPOSSIBLE;};
+  Action *execute(double size) override {return p_cpu->execute(size);};
+  Action *sleep(double duration) override {return p_cpu->sleep(duration);};
+  e_surf_resource_state_t getState() override;
 };
 
 class CpuL07 : public Cpu {
@@ -114,17 +115,16 @@ public:
 		 double power_scale, double power_initial, tmgr_trace_t power_trace,
      int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
   ~CpuL07();
-  bool isUsed();
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
-  Action *execute(double size);
-  Action *sleep(double duration);
+  bool isUsed() override;
+  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  Action *execute(double size) override;
+  Action *sleep(double duration) override;
 
-  double getCurrentPowerPeak() {THROW_UNIMPLEMENTED;};
-  double getPowerPeakAt(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
-  int getNbPstates() {THROW_UNIMPLEMENTED;};
-  void setPstate(int /*pstate_index*/) {THROW_UNIMPLEMENTED;};
-  int  getPstate() {THROW_UNIMPLEMENTED;};
-  double getConsumedEnergy() {THROW_UNIMPLEMENTED;};
+  double getCurrentPowerPeak() override {THROW_UNIMPLEMENTED;};
+  double getPowerPeakAt(int /*pstate_index*/) override {THROW_UNIMPLEMENTED;};
+  int getNbPstates() override {THROW_UNIMPLEMENTED;};
+  void setPstate(int /*pstate_index*/) override {THROW_UNIMPLEMENTED;};
+  int  getPstate() override {THROW_UNIMPLEMENTED;};
 };
 
 class LinkL07 : public Link {
@@ -138,13 +138,12 @@ public:
           state_initial,
           tmgr_trace_t state_trace,
           e_surf_link_sharing_policy_t policy);
-  ~LinkL07(){
-  };
-  bool isUsed();
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
-  double getBandwidth();
-  void updateBandwidth(double value, double date=surf_get_clock());
-  void updateLatency(double value, double date=surf_get_clock());
+  ~LinkL07(){ };
+  bool isUsed() override;
+  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  double getBandwidth() override;
+  void updateBandwidth(double value, double date=surf_get_clock()) override;
+  void updateLatency(double value, double date=surf_get_clock()) override;
 
   double m_bwCurrent;
   tmgr_trace_event_t p_bwEvent;
@@ -168,14 +167,14 @@ public:
 
   void updateBound();
 
-  int unref();
-  void cancel();
-  void suspend();
-  void resume();
-  bool isSuspended();
-  void setMaxDuration(double duration);
-  void setPriority(double priority);
-  double getRemains();
+  int unref() override;
+  void cancel() override;
+  void suspend() override;
+  void resume() override;
+  bool isSuspended() override;
+  void setMaxDuration(double duration) override;
+  void setPriority(double priority) override;
+  double getRemains() override;
 
   std::vector<RoutingEdge*> * p_edgeList = new std::vector<RoutingEdge*>();
   double *p_computationAmount;

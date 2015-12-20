@@ -36,13 +36,13 @@ public:
   Host *createHost(const char *name, RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props) override;
   double shareResources(double now) override;
 
-  void updateActionsState(double now, double delta);
+  void updateActionsState(double now, double delta) override;
 
   Action *executeParallelTask(int host_nb,
                               sg_host_t *host_list,
 							  double *flops_amount,
 							  double *bytes_amount,
-							  double rate);
+							  double rate) override;
 };
 
 /************
@@ -53,13 +53,13 @@ class HostCLM03 : public Host {
 public:
   HostCLM03(HostModel *model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu);
   ~HostCLM03();
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
+  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
 
-  virtual Action *execute(double size);
-  virtual Action *sleep(double duration);
-  e_surf_resource_state_t getState();
+  virtual Action *execute(double size) override;
+  virtual Action *sleep(double duration) override;
+  e_surf_resource_state_t getState() override;
 
-  bool isUsed();
+  bool isUsed() override;
 
   xbt_dynar_t getVms();
 };

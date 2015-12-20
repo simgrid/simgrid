@@ -76,7 +76,7 @@ public:
   ~HostModel() {}
 
   virtual Host *createHost(const char *name, RoutingEdge *net, Cpu *cpu, xbt_dict_t props)=0;
-  void addTraces(){DIE_IMPOSSIBLE;}
+  void addTraces() override {DIE_IMPOSSIBLE;}
 
   virtual void adjustWeightOfDummyCpuActions();
   virtual Action *executeParallelTask(int host_nb,
@@ -85,7 +85,7 @@ public:
 									  double *bytes_amount,
 									  double rate)=0;
 
-  bool shareResourcesIsIdempotent() {return true;}
+  bool shareResourcesIsIdempotent() override {return true;}
 };
 
 /************
@@ -95,7 +95,8 @@ public:
  * @brief SURF Host interface class
  * @details An host represents a machine with a aggregation of a Cpu, a Link and a Storage
  */
-class Host : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
+class Host : public simgrid::surf::Resource,
+	         public simgrid::surf::PropertyHolder {
 public:
   static simgrid::xbt::Extension<simgrid::Host, Host> EXTENSION_ID;
   static void init();
