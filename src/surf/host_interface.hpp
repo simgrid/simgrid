@@ -26,29 +26,6 @@ class XBT_PRIVATE HostModel;
 class XBT_PRIVATE Host;
 class XBT_PRIVATE HostAction;
 
-/*************
- * Callbacks *
- *************/
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks fired after Host creation. Signature: `void(Host*)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(Host*)>) hostCreatedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks fired Host destruction. Signature: `void(Host*)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(Host*)>) hostDestructedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks fired after Host State changed. Signature: `void(Host *, e_surf_resource_state_t old, e_surf_resource_state_t current)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(Host*, e_surf_resource_state_t, e_surf_resource_state_t)>) hostStateChangedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks fired HostAction State changed. Signature: `void(HostAction *, e_surf_action_state_t old, e_surf_action_state_t current)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(HostAction*, e_surf_action_state_t, e_surf_action_state_t)>) hostActionStateChangedCallbacks;
 
 }
 }
@@ -70,7 +47,7 @@ namespace surf {
  * @brief SURF Host model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class HostModel : public Model {
+class HostModel : public Model{
 public:
   HostModel() : Model() {}
   ~HostModel() {}
@@ -99,6 +76,13 @@ class Host : public simgrid::surf::Resource,
 	         public simgrid::surf::PropertyHolder {
 public:
   static simgrid::xbt::Extension<simgrid::Host, Host> EXTENSION_ID;
+
+  /* callbacks */
+  static simgrid::surf::signal<void(Host*)> creationCallbacks;    /** Called on each newly created object */
+  static simgrid::surf::signal<void(Host*)> destructionCallbacks; /** Called just before destructing an object */
+  static simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> stateChangeCallbacks;
+
+public:
   static void init();
   /**
    * @brief Host constructor
@@ -292,6 +276,8 @@ private:
  */
 class HostAction : public Action {
 public:
+	static simgrid::surf::signal<void(simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t)> stateChangeCallbacks;
+
   /**
    * @brief HostAction constructor
    *

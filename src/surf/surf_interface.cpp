@@ -302,7 +302,7 @@ void surf_init(int *argc, char **argv)
 {
   XBT_DEBUG("Create all Libs");
   host_list = xbt_dict_new_homogeneous([](void*p) {
-    delete (simgrid::Host*)p;
+    delete static_cast<simgrid::Host*>(p);
   });
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();

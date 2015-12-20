@@ -91,7 +91,6 @@ void surf_network_model_init_IB(void)
 {
   using simgrid::surf::networkActionStateChangedCallbacks;
   using simgrid::surf::networkCommunicateCallbacks;
-  using simgrid::surf::hostCreatedCallbacks;
 
   if (surf_network_model)
     return;
@@ -100,7 +99,7 @@ void surf_network_model_init_IB(void)
   xbt_dynar_push(all_existing_models, &surf_network_model);
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
   networkCommunicateCallbacks.connect(IB_action_init_callback);
-  hostCreatedCallbacks.connect(IB_create_host_callback);
+  simgrid::surf::Host::creationCallbacks.connect(IB_create_host_callback);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
   
 }
