@@ -51,7 +51,6 @@ public:
 							  double *flops_amount,
 							  double *bytes_amount,
 							  double rate) override;
-  xbt_dynar_t getRoute(Host *src, Host *dst);
   void addTraces() override;
 };
 

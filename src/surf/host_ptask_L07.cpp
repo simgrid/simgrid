@@ -294,13 +294,6 @@ Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
   return res;
 }
 
-xbt_dynar_t HostL07Model::getRoute(Host *src, Host *dst)
-{
-  xbt_dynar_t route=NULL;
-  routing_platf->getRouteAndLatency(src->p_netElm, dst->p_netElm, &route, NULL);
-  return route;
-}
-
 Cpu *CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
