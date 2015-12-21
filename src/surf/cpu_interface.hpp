@@ -81,7 +81,7 @@ public:
 XBT_PUBLIC_CLASS Cpu : public simgrid::surf::Resource {
 public:
   static simgrid::xbt::Extension<simgrid::Host, Cpu> EXTENSION_ID;
-  static void init();
+  static void classInit();
   Cpu();
 
   /**

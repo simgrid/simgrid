@@ -80,7 +80,7 @@ void sg_host_init()
   });
   SD_HOST_LEVEL = simgrid::Host::extension_create(__SD_workstation_destroy);
   SIMIX_HOST_LEVEL = simgrid::Host::extension_create(SIMIX_host_destroy);
-  simgrid::surf::Cpu::init();
+  simgrid::surf::Cpu::classInit();
   ROUTING_HOST_LEVEL = simgrid::Host::extension_create(routing_asr_host_free);
   USER_HOST_LEVEL = simgrid::Host::extension_create(NULL);
 }

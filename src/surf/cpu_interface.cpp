@@ -22,7 +22,7 @@ namespace surf {
 
 simgrid::xbt::Extension<simgrid::Host, Cpu> Cpu::EXTENSION_ID;
 
-void Cpu::init()
+void Cpu::classInit()
 {
   if (!EXTENSION_ID.valid())
     EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Cpu>();
