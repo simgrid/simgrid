@@ -28,24 +28,6 @@ class CpuPlugin;
 XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 
 /** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Cpu creation *
- * @details Callback functions have the following signature: `void(CpuPtr)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(Cpu*)>) cpuCreatedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Cpu destruction *
- * @details Callback functions have the following signature: `void(CpuPtr)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(Cpu*)>) cpuDestructedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Cpu State changed *
- * @details Callback functions have the following signature: `void(CpuAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(Cpu*, e_surf_resource_state_t, e_surf_resource_state_t)>) cpuStateChangedCallbacks;
-
-/** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after CpuAction State changed *
  * @details Callback functions have the following signature: `void(CpuAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
  */
@@ -172,7 +154,6 @@ public:
   virtual void setPstate(int pstate_index)=0;
   virtual int  getPstate()=0;
 
-  void setState(e_surf_resource_state_t state);
   void plug(simgrid::Host* host);
 
   void addTraces(void);

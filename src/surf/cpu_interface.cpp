@@ -38,10 +38,8 @@ Cpu *getActionCpu(CpuAction *action) {
 		                	 action->getVariable(), 0)));
 }
 
-simgrid::surf::signal<void(Cpu*)> cpuCreatedCallbacks;
-simgrid::surf::signal<void(Cpu*)> cpuDestructedCallbacks;
-simgrid::surf::signal<void(Cpu*, e_surf_resource_state_t, e_surf_resource_state_t)> cpuStateChangedCallbacks;
 simgrid::surf::signal<void(CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> cpuActionStateChangedCallbacks;
+
 void cpu_add_traces(){
   surf_cpu_model_pm->addTraces();
 }
@@ -193,7 +191,6 @@ Cpu::Cpu(Model *model, const char *name,
 
 void Cpu::onDie()
 {
-  cpuDestructedCallbacks(this);
   Resource::onDie();
 }
 
@@ -231,22 +228,12 @@ int Cpu::getCore()
   return m_core;
 }
 
-void Cpu::setState(e_surf_resource_state_t state)
-{
-  e_surf_resource_state_t old = Resource::getState();
-  Resource::setState(state);
-  cpuStateChangedCallbacks(this, old, state);
-}
-
 void Cpu::plug(simgrid::Host* host)
 {
   if (this->m_host != nullptr)
     xbt_die("Already plugged into host %s", host->id().c_str());
   host->extension_set(this);
   this->m_host = host;
-  simgrid::surf::cpuCreatedCallbacks(this);
-  simgrid::surf::cpuStateChangedCallbacks(this,
-    SURF_RESOURCE_ON, this->getState());
 }
 
 /**********
