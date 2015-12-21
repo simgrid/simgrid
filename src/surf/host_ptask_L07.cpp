@@ -407,7 +407,6 @@ HostL07::HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEd
 
 HostL07::~HostL07()
 {
-  this->die();
 }
 
 CpuL07::CpuL07(CpuL07Model *model, const char* name,
@@ -429,7 +428,6 @@ CpuL07::CpuL07(CpuL07Model *model, const char* name,
 
 CpuL07::~CpuL07()
 {
-  this->die();
 }
 
 LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,

@@ -79,10 +79,14 @@ simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onCreation;
 simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onDestruction;
 simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> Host::onStateChange;
 
-void Host::init()
+static void host_destroy(void *h){
+	static_cast<simgrid::surf::Host*>(h)->destroy();
+}
+
+void Host::classInit()
 {
   if (!EXTENSION_ID.valid()) {
-    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>();
+    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>(host_destroy);
     SURF_HOST_LEVEL = EXTENSION_ID.id(); // FIXME: KILLME
   }
 }
@@ -105,15 +109,22 @@ Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_
   p_params.ramsize = 0;
 }
 
-void Host::onDie()
-{
-  onDestruction(this);
-  Resource::onDie();
-}
-
+/** @brief use destroy() instead of this destructor */
 Host::~Host()
 {
-  this->die();
+	xbt_assert(currentlyDestroying_, "Don't delete Hosts directly. Call destroy() instead.");
+}
+/** @brief Fire the require callbacks and destroy the object
+ *
+ * Don't delete directly an Host, call h->destroy() instead.
+ */
+void Host::destroy()
+{
+	if (!currentlyDestroying_) {
+		currentlyDestroying_ = true;
+		onDestruction(this);
+		delete this;
+	}
 }
 
 void Host::attach(simgrid::Host* host)

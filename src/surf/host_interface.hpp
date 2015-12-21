@@ -70,7 +70,7 @@ public:
  ************/
 /** @ingroup SURF_host_interface
  * @brief SURF Host interface class
- * @details An host represents a machine with a aggregation of a Cpu, a Link and a Storage
+ * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
 class Host : public simgrid::surf::Resource,
 	         public simgrid::surf::PropertyHolder {
@@ -83,7 +83,7 @@ public:
   static simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> onStateChange;
 
 public:
-  static void init();
+  static void classInit();
   /**
    * @brief Host constructor
    *
@@ -112,9 +112,17 @@ public:
       lmm_constraint_t constraint, xbt_dynar_t storage, RoutingEdge *netElm,
       Cpu *cpu);
 
-  /** @brief Host destructor */
+  /* Host destruction logic */
+  /**************************/
+protected:
   ~Host();
+public:
+	void destroy(); // Must be called instead of the destructor
+private:
+	bool currentlyDestroying_ = false;
 
+
+public:
   void attach(simgrid::Host* host);
   void setState(e_surf_resource_state_t state);
 
@@ -149,7 +157,6 @@ public:
    * @brief Open a file
    *
    * @param fullpath The full path to the file
-   *
    * @return The StorageAction corresponding to the opening
    */
   virtual Action *open(const char* fullpath);
@@ -243,9 +250,6 @@ public:
    * full path is not on the same mount point
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
-
-protected:
-  void onDie() override;
 
 public:
   xbt_dynar_t p_storage;

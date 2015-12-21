@@ -183,7 +183,6 @@ CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t speedPeak
 
 CpuCas01::~CpuCas01()
 {
-  this->die();
   if (getModel() == surf_cpu_model_pm)
     xbt_dynar_free(&p_speedPeakList);
 }

@@ -159,9 +159,6 @@ public:
   void addTraces(void);
   simgrid::Host* getHost() { return m_host; }
 
-protected:
-  virtual void onDie() override;
-
 public:
   int m_core = 1;                /* Amount of cores */
   double m_speedPeak;            /*< CPU speed peak, ie max value */

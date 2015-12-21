@@ -128,7 +128,6 @@ HostCLM03::HostCLM03(HostModel *model, const char* name, xbt_dict_t properties, 
 
 HostCLM03::~HostCLM03()
 {
-  this->die();
 }
 
 bool HostCLM03::isUsed(){

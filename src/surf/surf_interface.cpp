@@ -316,7 +316,7 @@ void surf_init(int *argc, char **argv)
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");
-  simgrid::surf::Host::init();
+  simgrid::surf::Host::classInit();
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);
@@ -614,34 +614,8 @@ Resource::Resource(Model *model, const char *name, e_surf_resource_state_t state
   , m_running(true), m_stateCurrent(stateInit)
 {}
 
-/** Cleanup code of the full object.
- *
- *  The destructed callbacks might need to have a fully
- *  created `Cpu` instance so they cannot be called `~Cpu()`
- *  (at this point the fields of the parents have been destroyed
- *  and the virtual methods are the ones of `Cpu`). If a `Cpu`
- *  subclass overrides any virtual method, it should call this
- *  method at the beginning of the destructor in order to trigger
- *  the callbacks in the real state of the Cpu.
- *
- *  Once the method has been called once, it becomes a noop ensuring
- *  that the callbacks are not for each class of the hierarchy.
- *
- *  A better solution would be to call a `Cpu::destroy()` method
- *  before calling the destructor and trigger the callbacks here.
- */
-void Resource::die()
-{
-  if (alive_) {
-    onDie();
-    alive_ = false;
-  }
-}
-
-void Resource::onDie() {}
 
 Resource::~Resource() {
-  this->die();
   xbt_free((void*)p_name);
 }
 
