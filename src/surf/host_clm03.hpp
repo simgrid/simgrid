@@ -57,7 +57,6 @@ public:
 
   virtual Action *execute(double size) override;
   virtual Action *sleep(double duration) override;
-  e_surf_resource_state_t getState() override;
 
   bool isUsed() override;
 

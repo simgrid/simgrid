@@ -529,11 +529,6 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
   return;
 }
 
-e_surf_resource_state_t HostL07::getState() {
-  return p_cpu->getState();
-}
-
-
 double LinkL07::getBandwidth()
 {
   return m_bwCurrent;

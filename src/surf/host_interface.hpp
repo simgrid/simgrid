@@ -124,6 +124,8 @@ private:
 
 public:
   void attach(simgrid::Host* host);
+
+  e_surf_resource_state_t getState();
   void setState(e_surf_resource_state_t state);
 
   /**

@@ -147,10 +147,6 @@ Action *HostCLM03::sleep(double duration) {
   return p_cpu->sleep(duration);
 }
 
-e_surf_resource_state_t HostCLM03::getState() {
-  return p_cpu->getState();
-}
-
 /**********
  * Action *
  **********/

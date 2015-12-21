@@ -136,6 +136,9 @@ void Host::attach(simgrid::Host* host)
   onCreation(this);
 }
 
+e_surf_resource_state_t Host::getState() {
+  return p_cpu->getState();
+}
 void Host::setState(e_surf_resource_state_t state){
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);

@@ -102,7 +102,6 @@ public:
   void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) override {DIE_IMPOSSIBLE;};
   Action *execute(double size) override {return p_cpu->execute(size);};
   Action *sleep(double duration) override {return p_cpu->sleep(duration);};
-  e_surf_resource_state_t getState() override;
 };
 
 class CpuL07 : public Cpu {
