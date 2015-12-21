@@ -27,7 +27,6 @@ public final class NativeLib {
 			NativeLib.nativeInit("boost_context");
 		} catch (Exception e) {/* Dont care */}
 		NativeLib.nativeInit("simgrid");
-		NativeLib.nativeInit("surf-java");
 		NativeLib.nativeInit("simgrid-java");      
 		isNativeInited = true;
 	}

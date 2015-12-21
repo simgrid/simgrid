@@ -14,15 +14,14 @@ find_package(JNI REQUIRED)
 message("-- [Java] JNI found: ${JNI_FOUND}")
 message("-- [Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
 
-find_package(SWIG)
-if(${SWIG_FOUND})
-  include(UseSWIG)
-  message("-- [Java] Swig found: version ${SWIG_VERSION}")
-else()
-  message("-- [Java] Swig NOT FOUND. Surf java bindings won't get refreshed. That's fine unless you work on this part yourself.")
-endif()
-mark_as_advanced(SWIG_EXECUTABLE)
-
+# find_package(SWIG)
+# if(${SWIG_FOUND})
+#   include(UseSWIG)
+#   message("-- [Java] Swig found: version ${SWIG_VERSION}")
+# else()
+#   message("-- [Java] Swig NOT FOUND. That's fine unless you work on this part yourself.")
+# endif()
+#mark_as_advanced(SWIG_EXECUTABLE)
 
 # Rules to build libsimgrid-java
 #
@@ -65,8 +64,6 @@ set(LIBSIMGRID_SO
   libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
 set(LIBSIMGRID_JAVA_SO
   ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(LIBSURF_JAVA_SO
-  ${CMAKE_SHARED_LIBRARY_PREFIX}surf-java${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 ## Here is how to build simgrid.jar
 ##
@@ -91,7 +88,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E echo "Specification-Version: \\\"${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}\\\"" >> ${MANIFEST_FILE}
   COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
 
-  COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.msg org.simgrid.surf org.simgrid.trace
+  COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.msg org.simgrid.trace
   
   COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} doc/javadoc -C ${CMAKE_HOME_DIRECTORY} COPYING ChangeLog ChangeLog.SimGrid-java LICENSE-LGPL-2.1 NEWS
   )
@@ -133,19 +130,16 @@ if(enable_lib_in_jar)
     DEPENDS simgrid-java 
 	    ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
 	    ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
-	    ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}
 	  
     COMMAND ${CMAKE_COMMAND} -E remove_directory NATIVE
     COMMAND ${CMAKE_COMMAND} -E make_directory                                     ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSURF_JAVA_SO}    ${JAVA_NATIVE_PATH}
     
     ## strip seems to fail on Mac on binaries that are already stripped.
     ## It then spits: "symbols referenced by indirect symbol table entries that can't be stripped"
     #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}      || true
     #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO} || true
-    #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSURF_JAVA_SO}    || true
 
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  NATIVE
     
@@ -184,22 +178,6 @@ endif(enable_lib_in_jar)
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
 
-if(${SWIG_FOUND})
-  set(CMAKE_SWIG_FLAGS "-package" "org.simgrid.surf")
-  set(CMAKE_SWIG_OUTDIR "${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/surf")
-
-  set_source_files_properties(${JSURF_SWIG_SRC} PROPERTIES CPLUSPLUS 1)
-
-  swig_add_module(surf-java java ${JSURF_SWIG_SRC} ${JSURF_JAVA_C_SRC})
-  swig_link_libraries(surf-java simgrid)
-else()
-  add_library(surf-java SHARED ${JSURF_C_SRC})
-  target_link_libraries(surf-java simgrid)
-endif()
-
-set_target_properties(surf-java PROPERTIES SKIP_BUILD_RPATH ON)
 set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
 
-add_dependencies(simgrid-java surf-java)
-add_dependencies(simgrid-java_jar surf-java)
 

@@ -4,10 +4,13 @@ SimGrid (3.13) UNRELEASED; urgency=low
  * BC breaks:
    - The option smpi/async_small_thres was renamed to smpi/async_small_thresh
      as we attempt to unify our naming schemes -> smpi/send_is_detached_thresh
-     
 
  XBT
  * Kill the setset datacontainer: it's unused since a while.
+ 
+ JAVA:
+ * Remove the ability to write internal plugins in Java. 
+   It may be reintroduced once the ongoing cleanup is done.
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
