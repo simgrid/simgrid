@@ -7,7 +7,7 @@
   <host id="MyHost1" power="100.0Mf,50.0Mf,20.0Mf" pstate="0" >
         <!--  List of min_power:max_power pairs (in Watts) corresponding to the power consumed when the processor is idle and when it is fully loaded -->
         <!--  The list must contain one power pair for each previously defined pstate-->
-        <prop id="watt_per_state" value="95.0:200.0, 93.0:170.0, 90.0:150.0" />
+        <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
         <prop id="watt_off" value="10" />
   </host>
   <host id="MyHost2" power="100.0Mf,50.0Mf,20.0Mf" pstate="0" >
