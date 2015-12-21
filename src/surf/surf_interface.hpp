@@ -62,11 +62,6 @@ namespace surf {
 }
 #endif
 
-#ifdef _MSC_VER
-#pragma warning( disable : 4251)
-// 4251: needs to have dll-interface to be used by clients of class
-#endif
-
 extern XBT_PRIVATE tmgr_history_t history;
 #define NO_MAX_DURATION -1.0
 
