@@ -61,17 +61,6 @@ std::map<simgrid::surf::Host*, HostEnergy*> *surf_energy = NULL;
 using simgrid::energy::HostEnergy;
 using simgrid::energy::surf_energy;
 
-static void energyHostCreatedCallback(simgrid::surf::Host *host){
-  (*surf_energy)[host] = new HostEnergy(host);
-}
-
-static void energyVMCreatedCallback(simgrid::surf::VirtualMachine* vm) {
-  std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(vm->p_subWs);
-  xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
-  (*surf_energy)[vm] = host_energy_it->second;
-  host_energy_it->second->ref(); // protect the HostEnergy from getting deleted too early
-}
-
 /* Computes the consumption so far.  Called lazily on need. */
 static void update_consumption(simgrid::surf::Host *host, HostEnergy *host_energy) {
 	double cpu_load = lmm_constraint_get_usage(host->p_cpu->getConstraint()) / host->p_cpu->m_speedPeak;
@@ -95,61 +84,68 @@ static void update_consumption(simgrid::surf::Host *host, HostEnergy *host_energ
   		  start_time, finish_time, host->p_cpu->m_speedPeak, previous_energy, energy_this_step);
 }
 
-static void energyHostDestructedCallback(simgrid::surf::Host *host){
-  std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(host);
-  xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
-
-  HostEnergy *host_energy = host_energy_it->second;
-  update_consumption(host, host_energy);
-
-  if (host_energy_it->second->refcount == 1) // Don't display anything for virtual CPUs
-	  XBT_INFO("Total energy of host %s: %f Joules", host->getName(), host_energy->getConsumedEnergy());
-  host_energy_it->second->unref();
-  surf_energy->erase(host_energy_it);
-}
-
-static void energyCpuActionStateChangedCallback(
-    simgrid::surf::CpuAction *action, e_surf_action_state_t old, e_surf_action_state_t cur)
-{
-  const char *name = getActionCpu(action)->getName();
-  simgrid::surf::Host *host = static_cast<simgrid::surf::Host*>(surf_host_resource_priv(sg_host_by_name(name)));
-
-  HostEnergy *host_energy = (*surf_energy)[host];
-
-  if(host_energy->last_updated < surf_get_clock())
-	  update_consumption(host, host_energy);
-}
-
-static void energyStateChangedCallback(simgrid::surf::Host *host, e_surf_resource_state_t oldState, e_surf_resource_state_t newState)
-{
-  HostEnergy *host_energy = (*surf_energy)[host];
-
-  if(host_energy->last_updated < surf_get_clock())
-	  update_consumption(host, host_energy);
-}
-
-static void sg_energy_plugin_exit()
-{
-  delete surf_energy;
-  surf_energy = NULL;
-}
-
 /** \ingroup SURF_plugin_energy
  * \brief Enable energy plugin
  * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before #MSG_init().
  */
 void sg_energy_plugin_init() {
   if (simgrid::energy::surf_energy == NULL) {
-    simgrid::energy::surf_energy =
-      new std::map<simgrid::surf::Host*, simgrid::energy::HostEnergy*>();
-    simgrid::surf::VMCreatedCallbacks.connect(energyVMCreatedCallback);
-    simgrid::surf::Host::onCreation.connect(energyHostCreatedCallback);
-    simgrid::surf::Host::onDestruction.connect(energyHostDestructedCallback);
-    simgrid::surf::CpuAction::onStateChange.connect(
-      energyCpuActionStateChangedCallback);
-    simgrid::surf::surfExitCallbacks.connect(sg_energy_plugin_exit);
-    simgrid::surf::Host::onStateChange.connect(
-      energyStateChangedCallback);
+
+	simgrid::energy::surf_energy = new std::map<simgrid::surf::Host*, simgrid::energy::HostEnergy*>();
+
+    /* The following attaches an anonymous function to the Host::onCreation signal */
+	/* Search for "C++ lambda" for more information on the syntax used here */
+    simgrid::surf::Host::onCreation.connect([](simgrid::surf::Host *host) {
+    	(*surf_energy)[host] = new HostEnergy(host);
+    });
+
+    simgrid::surf::VMCreatedCallbacks.connect([](simgrid::surf::VirtualMachine* vm) {
+    	std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(vm->p_subWs);
+    	xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
+    	(*surf_energy)[vm] = host_energy_it->second;
+    	host_energy_it->second->ref(); // protect the HostEnergy from getting deleted too early
+    });
+
+    simgrid::surf::Host::onDestruction.connect([](simgrid::surf::Host *host) {
+    	std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(host);
+    	xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
+
+    	HostEnergy *host_energy = host_energy_it->second;
+    	update_consumption(host, host_energy);
+
+    	if (host_energy_it->second->refcount == 1) // Don't display anything for virtual CPUs
+    		XBT_INFO("Total energy of host %s: %f Joules", host->getName(), host_energy->getConsumedEnergy());
+    	host_energy_it->second->unref();
+    	surf_energy->erase(host_energy_it);
+    });
+    simgrid::surf::CpuAction::onStateChange.connect([]
+													 (simgrid::surf::CpuAction *action,
+															 e_surf_action_state_t old,
+															 e_surf_action_state_t cur) {
+    	const char *name = getActionCpu(action)->getName();
+    	simgrid::surf::Host *host = static_cast<simgrid::surf::Host*>(surf_host_resource_priv(sg_host_by_name(name)));
+
+    	HostEnergy *host_energy = (*surf_energy)[host];
+
+    	if(host_energy->last_updated < surf_get_clock())
+    		update_consumption(host, host_energy);
+
+    });
+
+    simgrid::surf::Host::onStateChange.connect([]
+												(simgrid::surf::Host *host,
+														e_surf_resource_state_t oldState,
+														e_surf_resource_state_t newState) {
+    	HostEnergy *host_energy = (*surf_energy)[host];
+
+    	if(host_energy->last_updated < surf_get_clock())
+    		update_consumption(host, host_energy);
+    });
+
+    simgrid::surf::surfExitCallbacks.connect([]() {
+    	delete surf_energy;
+    	surf_energy = NULL;
+    });
   }
 }
 
