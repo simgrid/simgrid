@@ -13,10 +13,7 @@
 void surf_on_host_created(void (*callback)(sg_host_t))
 {
   simgrid::surf::Host::onCreation.connect([callback](simgrid::surf::Host* host) {
-    const char* id = host->getName();
-    sg_host_t h = sg_host_by_name(id);
-    xbt_assert(h != NULL, "Host not found for name %s", id);
-    callback(h);
+    callback(host->p_host);
   });
 }
 
