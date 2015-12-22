@@ -330,10 +330,12 @@ void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
   XBT_OUT();
 }
 
+simgrid::surf::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> CpuAction::onStateChange;
+
 void CpuAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();
   Action::setState(state);
-  cpuActionStateChangedCallbacks(this, old, state);
+  onStateChange(this, old, state);
 }
 
 }

@@ -145,7 +145,7 @@ void sg_energy_plugin_init() {
     simgrid::surf::VMCreatedCallbacks.connect(energyVMCreatedCallback);
     simgrid::surf::Host::onCreation.connect(energyHostCreatedCallback);
     simgrid::surf::Host::onDestruction.connect(energyHostDestructedCallback);
-    simgrid::surf::cpuActionStateChangedCallbacks.connect(
+    simgrid::surf::CpuAction::onStateChange.connect(
       energyCpuActionStateChangedCallback);
     simgrid::surf::surfExitCallbacks.connect(sg_energy_plugin_exit);
     simgrid::surf::Host::onStateChange.connect(
