@@ -79,14 +79,12 @@ simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onCreation;
 simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onDestruction;
 simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> Host::onStateChange;
 
-static void host_destroy(void *h){
-	static_cast<simgrid::surf::Host*>(h)->destroy();
-}
-
 void Host::classInit()
 {
   if (!EXTENSION_ID.valid()) {
-    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>(host_destroy);
+    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>([](void *h) {
+    	static_cast<simgrid::surf::Host*>(h)->destroy();
+    });
     SURF_HOST_LEVEL = EXTENSION_ID.id(); // FIXME: KILLME
   }
 }

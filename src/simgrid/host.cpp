@@ -66,23 +66,20 @@ int USER_HOST_LEVEL;
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_routing.hpp"
 
-static XBT_INLINE void surf_cpu_free(void *r) {
-  delete static_cast<simgrid::surf::Cpu*>(r);
-}
-static XBT_INLINE void routing_asr_host_free(void *p) {
-  delete static_cast<simgrid::surf::RoutingEdge*>(p);
-}
-
 void sg_host_init()
 {
   MSG_HOST_LEVEL = simgrid::Host::extension_create([](void *p) {
     __MSG_host_priv_free((msg_host_priv_t) p);
   });
+
+  ROUTING_HOST_LEVEL = simgrid::Host::extension_create([](void *p) {
+	  delete static_cast<simgrid::surf::RoutingEdge*>(p);
+  });
+
   SD_HOST_LEVEL = simgrid::Host::extension_create(__SD_workstation_destroy);
   SIMIX_HOST_LEVEL = simgrid::Host::extension_create(SIMIX_host_destroy);
-  simgrid::surf::Cpu::classInit();
-  ROUTING_HOST_LEVEL = simgrid::Host::extension_create(routing_asr_host_free);
   USER_HOST_LEVEL = simgrid::Host::extension_create(NULL);
+  simgrid::surf::Cpu::classInit();
 }
 
 // ========== User data Layer ==========
