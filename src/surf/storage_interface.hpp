@@ -62,18 +62,10 @@ XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::StorageAction*, e_surf
  */
 class StorageModel : public Model {
 public:
-  /**
-   * @brief The storage model constructor
-   */
   StorageModel();
-
-  /**
-   * @brief The Storange model destructor
-   */
   ~StorageModel();
 
-  /**
-   * @brief Create a Storage
+  /** @brief Create a Storage
    *
    * @param id [description]
    * @param type_id [description]
@@ -102,7 +94,8 @@ public:
  * @brief SURF storage interface class
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
-class Storage : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
+class Storage : public simgrid::surf::Resource,
+				public simgrid::surf::PropertyHolder {
 public:
   /**
    * @brief Storage constructor
@@ -141,16 +134,9 @@ public:
           const char* type_id, char *content_name, char *content_type,
           sg_size_t size, char *attach);
 
-  /**
-   * @brief Storage destructor
-   */
   ~Storage();
 
-  /**
-   * @brief Check if the Storage is used
-   *
-   * @return true if the current Storage is used, false otherwise
-   */
+  /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool isUsed();
 
   /**
