@@ -48,7 +48,7 @@ namespace simgrid {
 namespace surf {
 
 Host *HostCLM03Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props){
-  Host *host = new simgrid::surf::HostCLM03(surf_host_model, name, props,
+  Host *host = new simgrid::surf::Host(surf_host_model, name, props,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  netElm, cpu);
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
@@ -119,24 +119,6 @@ Action *HostCLM03Model::executeParallelTask(int host_nb,
   xbt_free(host_list);
   return action;
 }
-
-/************
- * Resource *
- ************/
-HostCLM03::HostCLM03(HostModel *model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
-  : Host(model, name, properties, storage, netElm, cpu) {}
-
-HostCLM03::~HostCLM03()
-{
-}
-
-void HostCLM03::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/){
-  THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
-}
-
-/**********
- * Action *
- **********/
 
 }
 }

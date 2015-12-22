@@ -22,8 +22,6 @@ namespace simgrid {
 namespace surf {
 
 class XBT_PRIVATE HostCLM03Model;
-class XBT_PRIVATE HostCLM03;
-class XBT_PRIVATE HostCLM03Action;
 
 /*********
  * Model *
@@ -44,24 +42,6 @@ public:
 							  double *bytes_amount,
 							  double rate) override;
 };
-
-/************
- * Resource *
- ************/
-
-class HostCLM03 : public Host {
-public:
-  HostCLM03(HostModel *model, const char* name, xbt_dict_t properties, xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu);
-  ~HostCLM03();
-  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
-
-  xbt_dynar_t getVms();
-};
-
-
-/**********
- * Action *
- **********/
 
 }
 }

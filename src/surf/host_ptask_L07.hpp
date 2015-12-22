@@ -94,16 +94,6 @@ public:
  * Resource *
  ************/
 
-class HostL07 : public Host {
-public:
-  HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEdge *netElm, Cpu *cpu)
-	: Host(model, name, props, NULL, netElm, cpu)
-	{}
-  ~HostL07()
-  	{}
-  void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) override {DIE_IMPOSSIBLE;};
-};
-
 class CpuL07 : public Cpu {
   friend void HostL07Model::addTraces();
   tmgr_trace_event_t p_stateEvent;
