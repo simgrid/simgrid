@@ -135,7 +135,7 @@ public:
    * @return The CpuAction corresponding to the processing
    * @see Cpu
    */
-  virtual Action *execute(double flops_amount)=0;
+  Action *execute(double flops_amount);
 
   /**
    * @brief Make a process sleep for duration seconds
@@ -144,7 +144,7 @@ public:
    * @return The CpuAction corresponding to the sleeping
    * @see Cpu
    */
-  virtual Action *sleep(double duration)=0;
+  Action *sleep(double duration);
 
   /** @brief Return the storage of corresponding mount point */
   virtual simgrid::surf::Storage *findStorageOnMountList(const char* storage);

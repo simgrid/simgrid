@@ -96,12 +96,13 @@ public:
 
 class HostL07 : public Host {
 public:
-  HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEdge *netElm, Cpu *cpu);
-  ~HostL07();
+  HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEdge *netElm, Cpu *cpu)
+	: Host(model, name, props, NULL, netElm, cpu)
+	{}
+  ~HostL07()
+  	{}
   bool isUsed() override {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) override {DIE_IMPOSSIBLE;};
-  Action *execute(double size) override {return p_cpu->execute(size);};
-  Action *sleep(double duration) override {return p_cpu->sleep(duration);};
 };
 
 class CpuL07 : public Cpu {

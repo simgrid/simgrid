@@ -392,16 +392,6 @@ void HostL07Model::addTraces()
 /************
  * Resource *
  ************/
-
-HostL07::HostL07(HostModel *model, const char* name, xbt_dict_t props, RoutingEdge *netElm, Cpu *cpu)
-  : Host(model, name, props, NULL, netElm, cpu)
-{
-}
-
-HostL07::~HostL07()
-{
-}
-
 CpuL07::CpuL07(CpuL07Model *model, const char* name,
 	             double speedInitial, double speedScale, tmgr_trace_t speedTrace,
 		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)

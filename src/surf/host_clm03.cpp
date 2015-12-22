@@ -139,14 +139,6 @@ void HostCLM03::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/,
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }
 
-Action *HostCLM03::execute(double size) {
-  return p_cpu->execute(size);
-}
-
-Action *HostCLM03::sleep(double duration) {
-  return p_cpu->sleep(duration);
-}
-
 /**********
  * Action *
  **********/
