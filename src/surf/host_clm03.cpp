@@ -130,11 +130,6 @@ HostCLM03::~HostCLM03()
 {
 }
 
-bool HostCLM03::isUsed(){
-  THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
-  return -1;
-}
-
 void HostCLM03::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/){
   THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
 }

@@ -101,7 +101,6 @@ public:
 	{}
   ~HostL07()
   	{}
-  bool isUsed() override {DIE_IMPOSSIBLE;};
   void updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) override {DIE_IMPOSSIBLE;};
 };
 

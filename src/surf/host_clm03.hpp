@@ -55,8 +55,6 @@ public:
   ~HostCLM03();
   void updateState(tmgr_trace_event_t event_type, double value, double date) override;
 
-  bool isUsed() override;
-
   xbt_dynar_t getVms();
 };
 

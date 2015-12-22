@@ -253,6 +253,8 @@ public:
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
+  bool isUsed() override {DIE_IMPOSSIBLE;} // FIXME: Host should not be a Resource
+
 public:
   xbt_dynar_t p_storage;
   RoutingEdge *p_netElm;
