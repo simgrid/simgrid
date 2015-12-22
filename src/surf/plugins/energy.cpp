@@ -196,10 +196,7 @@ double HostEnergy::getWattMaxAt(int pstate) {
   return max_power;
 }
 
-/**
- * Computes the power consumed by the host according to the current pstate and processor load
- *
- */
+/** @brief Computes the power consumed by the host according to the current pstate and processor load */
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
 	xbt_dynar_t power_range_list = power_range_watts_list;
@@ -226,11 +223,9 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 
 double HostEnergy::getConsumedEnergy()
 {
-
 	if(last_updated < surf_get_clock())
 		update_consumption(host, this);
 	return total_energy;
-
 }
 
 xbt_dynar_t HostEnergy::getWattsRangeList()

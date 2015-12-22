@@ -33,34 +33,13 @@ class NetworkAction;
  * Callbacks *
  *************/
 
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emits the callbacks after Link creation
- * @details Callback functions have the following signature: `void(Link*)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::Link*)>) networkLinkCreatedCallbacks;
 
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emits the callbacks after Link destruction
- * @details Callback functions have the following signature: `void(Link*)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::Link*)>) networkLinkDestructedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emits the callbacks after Link State changed
- * @details Callback functions have the following signature: `void(LinkAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
- */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)>) networkLinkStateChangedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emits the callbacks after NetworkAction State changed
- * @details Callback functions have the following signature: `void(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
- */
+/** @brief Callback signal fired when the state of a NetworkAction changes
+ *  Signature: `void(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t current)` */
 XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)>) networkActionStateChangedCallbacks;
 
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emits the callbacks after communication created
- * @details Callback functions have the following signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)`
- */
+/** @brief Callback signal fired when a NetworkAction is created (when a communication starts)
+ *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)` */
 XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate)>) networkCommunicateCallbacks;
 
 }
@@ -188,7 +167,9 @@ public:
   * @brief SURF network link interface class
   * @details A Link represents the link between two [hosts](\ref Host)
   */
-class Link : public simgrid::surf::Resource, public simgrid::surf::PropertyHolder {
+class Link :
+		public simgrid::surf::Resource,
+		public simgrid::surf::PropertyHolder {
 public:
   /**
    * @brief Link constructor
@@ -214,8 +195,28 @@ public:
               tmgr_history_t history,
               tmgr_trace_t state_trace);
 
-  /** @brief Link destructor */
+  /* Link destruction logic */
+  /**************************/
+protected:
   ~Link();
+public:
+	void destroy(); // Must be called instead of the destructor
+private:
+	bool currentlyDestroying_ = false;
+
+public:
+  /** @brief Callback signal fired when a new Link is created.
+   *  Signature: void(Link*) */
+  static simgrid::surf::signal<void(simgrid::surf::Link*)> onCreation;
+
+  /** @brief Callback signal fired when a Link is destroyed.
+   *  Signature: void(Link*) */
+  static simgrid::surf::signal<void(simgrid::surf::Link*)> onDestruction;
+
+  /** @brief Callback signal fired when the state of a Link changes
+   *  Signature: `void(LinkAction *action, e_surf_resource_state_t oldState, e_surf_resource_state_t currentState)` */
+  static simgrid::surf::signal<void(simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)> onStateChange;
+
 
   /** @brief Get the bandwidth in bytes per second of current Link */
   virtual double getBandwidth();

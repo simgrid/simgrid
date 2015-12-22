@@ -72,8 +72,9 @@ public:
  * @brief SURF Host interface class
  * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
-class Host : public simgrid::surf::Resource,
-	         public simgrid::surf::PropertyHolder {
+class Host :
+ 	 public simgrid::surf::Resource,
+	 public simgrid::surf::PropertyHolder {
 public:
   static simgrid::xbt::Extension<simgrid::Host, Host> EXTENSION_ID;
 
@@ -83,7 +84,7 @@ public:
   static simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> onStateChange;
 
 public:
-  static void classInit();
+  static void classInit(); // must be called before the first use of that class
   /**
    * @brief Host constructor
    *

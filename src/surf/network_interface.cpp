@@ -87,7 +87,7 @@ Link **Link::linksList() {
 /** @brief destructor of the static data */
 void Link::linksExit() {
 	for (auto kv : *links)
-		delete (kv.second);
+		(kv.second)->destroy();
 	delete links;
 }
 
@@ -95,9 +95,10 @@ void Link::linksExit() {
  * Callbacks *
  *************/
 
-simgrid::surf::signal<void(simgrid::surf::Link*)> networkLinkCreatedCallbacks;
-simgrid::surf::signal<void(simgrid::surf::Link*)> networkLinkDestructedCallbacks;
-simgrid::surf::signal<void(simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)> networkLinkStateChangedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Link*)> Link::onCreation;
+simgrid::surf::signal<void(simgrid::surf::Link*)> Link::onDestruction;
+simgrid::surf::signal<void(simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)> Link::onStateChange;
+
 simgrid::surf::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)> networkActionStateChangedCallbacks;
 simgrid::surf::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate)> networkCommunicateCallbacks;
 
@@ -217,9 +218,21 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 
 }
 
-Link::~Link()
+/** @brief use destroy() instead of this destructor */
+Link::~Link() {
+	xbt_assert(currentlyDestroying_, "Don't delete Links directly. Call destroy() instead.");
+}
+/** @brief Fire the require callbacks and destroy the object
+ *
+ * Don't delete directly an Link, call l->destroy() instead.
+ */
+void Link::destroy()
 {
-  networkLinkDestructedCallbacks(this);
+	if (!currentlyDestroying_) {
+		currentlyDestroying_ = true;
+		onDestruction(this);
+		delete this;
+	}
 }
 
 bool Link::isUsed()
@@ -245,7 +258,7 @@ int Link::sharingPolicy()
 void Link::setState(e_surf_resource_state_t state){
   e_surf_resource_state_t old = Resource::getState();
   Resource::setState(state);
-  networkLinkStateChangedCallbacks(this, old, state);
+  onStateChange(this, old, state);
 }
 
 /**********
