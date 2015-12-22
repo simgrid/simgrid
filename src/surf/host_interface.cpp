@@ -391,16 +391,5 @@ void Host::setParams(vm_params_t params)
   p_params = *params;
 }
 
-/**********
- * Action *
- **********/
-simgrid::surf::signal<void(simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t)> HostAction::onStateChange;
-
-void HostAction::setState(e_surf_action_state_t state){
-  e_surf_action_state_t old = getState();
-  Action::setState(state);
-  onStateChange(this, old, state);
-}
-
 }
 }

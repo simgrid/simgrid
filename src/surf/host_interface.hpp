@@ -277,41 +277,6 @@ private:
   s_vm_params_t p_params;
 };
 
-/**********
- * Action *
- **********/
-
-/** @ingroup SURF_host_interface
- * @brief SURF host action interface class
- */
-class HostAction : public Action {
-public:
-	static simgrid::surf::signal<void(simgrid::surf::HostAction*, e_surf_action_state_t, e_surf_action_state_t)> onStateChange;
-
-  /**
-   * @brief HostAction constructor
-   *
-   * @param model The HostModel associated to this HostAction
-   * @param cost The cost of this HostAction in [TODO]
-   * @param failed [description]
-   */
-  HostAction(simgrid::surf::Model *model, double cost, bool failed)
-  : Action(model, cost, failed) {}
-
-  /**
-   * @brief HostAction constructor
-   *
-   * @param model The HostModel associated to this HostAction
-   * @param cost The cost of this HostAction in [TODO]
-   * @param failed [description]
-   * @param var The lmm variable associated to this StorageAction if it is part of a LMM component
-   */
-  HostAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
-  : Action(model, cost, failed, var) {}
-
-  void setState(e_surf_action_state_t state);
-};
-
 }
 }
 

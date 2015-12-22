@@ -140,7 +140,7 @@ public:
 /**********
  * Action *
  **********/
-class L07Action : public HostAction {
+class L07Action : public CpuAction {
   friend Action *CpuL07::execute(double size);
   friend Action *CpuL07::sleep(double duration);
   friend Action *HostL07Model::executeParallelTask(int host_nb,
@@ -150,7 +150,7 @@ class L07Action : public HostAction {
                                                    double rate);
 public:
   L07Action(Model *model, double cost, bool failed)
-  : HostAction(model, cost, failed) {};
+  : CpuAction(model, cost, failed) {};
  ~L07Action();
 
   void updateBound();
