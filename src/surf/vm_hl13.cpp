@@ -329,15 +329,6 @@ void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
  p_action->setAffinity(cpu, mask);
 }
 
-/*
- * A surf level object will be useless in the upper layer. Returning the
- * dict_elm of the host.
- **/
-sg_host_t VMHL13::getPm()
-{
-  return p_hostPM;
-}
-
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
 Action *VMHL13::execute(double size)
 {

@@ -53,18 +53,16 @@ public:
   VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t host_PM);
   ~VMHL13();
 
-  void suspend();
-  void resume();
+  void suspend() override;
+  void resume() override;
 
-  void save();
-  void restore();
+  void save() override;
+  void restore() override;
 
-  void migrate(sg_host_t ind_dst_pm);
+  void migrate(sg_host_t ind_dst_pm) override;
 
   e_surf_resource_state_t getState();
   void setState(e_surf_resource_state_t state);
-
-  sg_host_t getPm(); // will be vm_ws_get_pm()
 
   void setBound(double bound);
   void setAffinity(Cpu *cpu, unsigned long mask);
