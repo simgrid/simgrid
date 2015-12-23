@@ -109,7 +109,7 @@ public:
    * @param size [description]
    */
   Storage(Model *model, const char *name, xbt_dict_t props,
-          const char* type_id, char *content_name, char *content_type,
+          const char* type_id, const char *content_name, const char *content_type,
           sg_size_t size);
 
   /**
@@ -131,8 +131,8 @@ public:
   Storage(Model *model, const char *name, xbt_dict_t props,
           lmm_system_t maxminSystem, double bread, double bwrite,
           double bconnection,
-          const char* type_id, char *content_name, char *content_type,
-          sg_size_t size, char *attach);
+          const char* type_id, const char *content_name, const char *content_type,
+          sg_size_t size, const char *attach);
 
   ~Storage();
 
@@ -155,7 +155,7 @@ public:
   sg_size_t m_size;
   sg_size_t m_usedSize;
   char * p_typeId;
-  char* p_attach;
+  char* p_attach; //FIXME: this is the name of the host. Use the host directly
 
   /**
    * @brief Open a file
@@ -222,7 +222,7 @@ public:
   virtual sg_size_t getUsedSize();
 
 
-  xbt_dict_t parseContent(char *filename);
+  xbt_dict_t parseContent(const char *filename);
 
   xbt_dynar_t p_writeActions;
 

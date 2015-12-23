@@ -140,13 +140,10 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
 {
   xbt_assert(!xbt_lib_get_or_null(storage_lib, storage->id,ROUTING_STORAGE_LEVEL),
-               "Reading a storage, processing unit \"%s\" already exists", storage->id);
+               "Refusing to add a second storage named \"%s\"", storage->id);
 
-  // Verification of an existing type_id
-#ifndef NDEBUG
-  void* storage_type = xbt_lib_get_or_null(storage_type_lib, storage->type_id,ROUTING_STORAGE_TYPE_LEVEL);
-#endif
-  xbt_assert(storage_type,"Reading a storage, type id \"%s\" does not exists", storage->type_id);
+  void* stype = xbt_lib_get_or_null(storage_type_lib, storage->type_id,ROUTING_STORAGE_TYPE_LEVEL);
+  xbt_assert(stype,"No storage type '%s'", storage->type_id);
 
   XBT_DEBUG("ROUTING Create a storage name '%s' with type_id '%s' and content '%s'",
       storage->id,
@@ -158,12 +155,7 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
       ROUTING_STORAGE_LEVEL,
       (void *) xbt_strdup(storage->type_id));
 
-  void* stype = xbt_lib_get_or_null(storage_type_lib,
-                                    storage->type_id,
-                                    ROUTING_STORAGE_TYPE_LEVEL);
-  if(!stype) xbt_die("No storage type '%s'",storage->type_id);
-
-  // if storage content is not specified use the content of storage_type if exist
+  // if storage content is not specified use the content of storage_type if any
   if(!strcmp(storage->content,"") && strcmp(((storage_type_t) stype)->content,"")){
     storage->content = ((storage_type_t) stype)->content;
     storage->content_type = ((storage_type_t) stype)->content_type;
