@@ -58,7 +58,7 @@ public:
   CpuL07Model(HostL07Model *hmodel) : CpuModel() {p_hostModel = hmodel;};
   ~CpuL07Model() {surf_cpu_model_pm = NULL;};
 
-  Cpu *createCpu(const char *name,  xbt_dynar_t speedPeak,
+  Cpu *createCpu(simgrid::Host *host,  xbt_dynar_t speedPeak,
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
@@ -98,7 +98,7 @@ class CpuL07 : public Cpu {
   tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_speedEvent;
 public:
-  CpuL07(CpuL07Model *model, const char* name,
+  CpuL07(CpuL07Model *model, simgrid::Host *host,
 		 double power_scale, double power_initial, tmgr_trace_t power_trace,
      int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
   ~CpuL07();

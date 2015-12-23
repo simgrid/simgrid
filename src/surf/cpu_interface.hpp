@@ -53,7 +53,7 @@ public:
    * @param state_initial [TODO]
    * @param state_trace [TODO]
    */
-  virtual Cpu *createCpu(const char *name, xbt_dynar_t speedPeak,
+  virtual Cpu *createCpu(simgrid::Host *host, xbt_dynar_t speedPeak,
                       int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
@@ -82,14 +82,14 @@ public:
    * @brief Cpu constructor
    *
    * @param model The CpuModel associated to this Cpu
-   * @param name The name of the Cpu
+   * @param host The host in which this Cpu should be plugged
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    * @param stateInitial whether it is created running or crashed
    */
-  Cpu(simgrid::surf::Model *model, const char *name,
+  Cpu(simgrid::surf::Model *model, simgrid::Host *host,
 	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale,
 	  e_surf_resource_state_t stateInitial);
 
@@ -97,19 +97,19 @@ public:
    * @brief Cpu constructor
    *
    * @param model The CpuModel associated to this Cpu
-   * @param name The name of the Cpu
+   * @param host The host in which this Cpu should be plugged
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    * @param stateInitial whether it is created running or crashed
    */
-  Cpu(simgrid::surf::Model *model, const char *name,
+  Cpu(simgrid::surf::Model *model, simgrid::Host *host,
 	  int core, double speedPeak, double speedScale,
 	  e_surf_resource_state_t stateInitial);
 
-  Cpu(simgrid::surf::Model *model, const char *name,
+  Cpu(simgrid::surf::Model *model, simgrid::Host *host,
 	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale);
-  Cpu(simgrid::surf::Model *model, const char *name,
+  Cpu(simgrid::surf::Model *model, simgrid::Host *host,
 	  int core, double speedPeak, double speedScale);
 
   ~Cpu();
@@ -148,8 +148,6 @@ public:
   virtual void setPstate(int pstate_index)=0;
   virtual int  getPstate()=0;
 
-  void plug(simgrid::Host* host);
-
   void addTraces(void);
   simgrid::Host* getHost() { return m_host; }
 
@@ -157,7 +155,7 @@ public:
   int m_core = 1;                /* Amount of cores */
   double m_speedPeak;            /*< CPU speed peak, ie max value */
   double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
-  simgrid::Host* m_host = nullptr;
+  simgrid::Host* m_host;
 
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore=NULL;

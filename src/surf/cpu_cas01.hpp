@@ -31,7 +31,7 @@ public:
   double (CpuCas01Model::*shareResources)(double now);
   void (CpuCas01Model::*updateActionsState)(double now, double delta);
 
-  Cpu *createCpu(const char *name, xbt_dynar_t speedPeak, int pstate,
+  Cpu *createCpu(simgrid::Host *host, xbt_dynar_t speedPeak, int pstate,
                    double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
@@ -47,7 +47,7 @@ public:
 
 class CpuCas01 : public Cpu {
 public:
-  CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t speedPeak,
+  CpuCas01(CpuCas01Model *model, simgrid::Host *host, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace) ;
   ~CpuCas01();

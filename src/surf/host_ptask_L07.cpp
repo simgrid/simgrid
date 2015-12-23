@@ -289,14 +289,14 @@ Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
   return res;
 }
 
-Cpu *CpuL07Model::createCpu(const char *name,  xbt_dynar_t powerPeak,
+Cpu *CpuL07Model::createCpu(simgrid::Host *host,  xbt_dynar_t powerPeak,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace)
 {
   double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
-  CpuL07 *cpu = new CpuL07(this, name, power_initial, power_scale, power_trace,
+  CpuL07 *cpu = new CpuL07(this, host, power_initial, power_scale, power_trace,
                          core, state_initial, state_trace);
   return cpu;
 }
@@ -387,10 +387,10 @@ void HostL07Model::addTraces()
 /************
  * Resource *
  ************/
-CpuL07::CpuL07(CpuL07Model *model, const char* name,
+CpuL07::CpuL07(CpuL07Model *model, simgrid::Host *host,
 	             double speedInitial, double speedScale, tmgr_trace_t speedTrace,
 		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
- : Cpu(model, name, lmm_constraint_new(ptask_maxmin_system, this, speedInitial * speedScale),
+ : Cpu(model, host, lmm_constraint_new(ptask_maxmin_system, this, speedInitial * speedScale),
 	   core, speedInitial, speedScale, state_initial)
 {
   xbt_assert(m_speedScale > 0, "Power has to be >0");

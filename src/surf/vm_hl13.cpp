@@ -186,7 +186,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
   CpuCas01 *sub_cpu = static_cast<CpuCas01*>(sg_host_surfcpu(host_PM));
 
-  p_cpu = surf_cpu_model_vm->createCpu(name, // name
+  p_cpu = surf_cpu_model_vm->createCpu(host, // the machine hosting the VM
       sub_cpu->getSpeedPeakList(),        // host->power_peak,
       sub_cpu->getPState(),
       1,                          // host->power_scale,
@@ -194,7 +194,6 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
       1,                          // host->core_amount,
       SURF_RESOURCE_ON,           // host->initial_state,
       NULL);                      // host->state_trace,
-  p_cpu->plug(host);
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */

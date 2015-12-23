@@ -99,7 +99,7 @@ CpuCas01Model::~CpuCas01Model()
   delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
 
-Cpu *CpuCas01Model::createCpu(const char *name, xbt_dynar_t speedPeak,
+Cpu *CpuCas01Model::createCpu(simgrid::Host *host, xbt_dynar_t speedPeak,
 		                  int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
@@ -108,7 +108,7 @@ Cpu *CpuCas01Model::createCpu(const char *name, xbt_dynar_t speedPeak,
   xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory power attribute?");
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
-  Cpu *cpu = new CpuCas01(this, name, speedPeak, pstate, speedScale, speedTrace, core, state_initial, state_trace);
+  Cpu *cpu = new CpuCas01(this, host, speedPeak, pstate, speedScale, speedTrace, core, state_initial, state_trace);
   return cpu;
 }
 
@@ -152,10 +152,10 @@ void CpuCas01Model::addTraces()
 /************
  * Resource *
  ************/
-CpuCas01::CpuCas01(CpuCas01Model *model, const char *name, xbt_dynar_t speedPeak,
+CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::Host *host, xbt_dynar_t speedPeak,
                          int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
                          e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace)
-: Cpu(model, name,
+: Cpu(model, host,
 	  lmm_constraint_new(model->getMaxminSystem(), this, core * speedScale * xbt_dynar_get_as(speedPeak, pstate, double)),
 	  core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
     stateInitial) {

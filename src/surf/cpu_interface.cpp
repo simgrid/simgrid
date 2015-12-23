@@ -143,26 +143,28 @@ Cpu::Cpu()
 }
 
 
-Cpu::Cpu(Model *model, const char *name,
+Cpu::Cpu(Model *model, simgrid::Host *host,
          int core, double speedPeak, double speedScale,
          e_surf_resource_state_t stateInitial)
- : Resource(model, name, stateInitial)
+ : Resource(model, host->getName().c_str(), stateInitial)
  , m_core(core)
  , m_speedPeak(speedPeak)
  , m_speedScale(speedScale)
+ , m_host(host)
 {
 
 }
 
-Cpu::Cpu(Model *model, const char *name,
+Cpu::Cpu(Model *model, simgrid::Host *host,
         lmm_constraint_t constraint, int core, double speedPeak,
         double speedScale, e_surf_resource_state_t stateInitial)
- : Resource(model, name, constraint, stateInitial)
+ : Resource(model, host->getName().c_str(), constraint, stateInitial)
  , m_core(core)
  , m_speedPeak(speedPeak)
  , m_speedScale(speedScale)
+ , m_host(host)
 {
-  /* At now, we assume that a VM does not have a multicore CPU. */
+  /* Currently, we assume that a VM does not have a multicore CPU. */
   if (core > 1)
     xbt_assert(model == surf_cpu_model_pm);
 
@@ -173,20 +175,20 @@ Cpu::Cpu(Model *model, const char *name,
     int i;
     for (i = 0; i < core; i++) {
       /* just for a unique id, never used as a string. */
-      p_constraintCoreId[i] = bprintf("%s:%i", name, i);
+      p_constraintCoreId[i] = bprintf("%s:%i", host->getName().c_str(), i);
       p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], m_speedScale * m_speedPeak);
     }
   }
 }
 
-Cpu::Cpu(Model *model, const char *name,
+Cpu::Cpu(Model *model, simgrid::Host *host,
   lmm_constraint_t constraint, int core, double speedPeak, double speedScale)
-: Cpu(model, name, constraint, core, speedPeak, speedScale, SURF_RESOURCE_ON)
+: Cpu(model, host, constraint, core, speedPeak, speedScale, SURF_RESOURCE_ON)
 {}
 
-Cpu::Cpu(Model *model, const char *name,
+Cpu::Cpu(Model *model, simgrid::Host *host,
   int core, double speedPeak, double speedScale)
-: Cpu(model, name, core, speedPeak, speedScale, SURF_RESOURCE_ON)
+: Cpu(model, host, core, speedPeak, speedScale, SURF_RESOURCE_ON)
 {}
 
 Cpu::~Cpu()
@@ -220,14 +222,6 @@ double Cpu::getAvailableSpeed()
 int Cpu::getCore()
 {
   return m_core;
-}
-
-void Cpu::plug(simgrid::Host* host)
-{
-  if (this->m_host != nullptr)
-    xbt_die("Already plugged into host %s", host->getName().c_str());
-  host->extension_set(this);
-  this->m_host = host;
 }
 
 /**********
