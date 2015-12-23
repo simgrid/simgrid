@@ -127,7 +127,7 @@ if(enable_lib_in_jar)
   add_custom_command(
     TARGET simgrid-java_jar POST_BUILD
     COMMENT "Add the native libs into simgrid.jar..."
-    DEPENDS simgrid-java 
+    DEPENDS simgrid simgrid-java 
 	    ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
 	    ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
 	  
