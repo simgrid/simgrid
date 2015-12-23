@@ -73,9 +73,16 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
                  lmm_system_t maxminSystem, double bread, double bwrite,
                  double bconnection, const char* type_id, const char *content_name,
                  const char *content_type, sg_size_t size, const char *attach)
- : Storage(model, name, props, type_id, content_name, content_type, size)
+ : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
+ , PropertyHolder(props)
+ , p_contentType(xbt_strdup(content_type))
+ , m_size(size), m_usedSize(0)
+ , p_typeId(xbt_strdup(type_id))
+ , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL))
 {
+  p_content = parseContent(content_name);
   p_attach = xbt_strdup(attach);
+  setState(SURF_RESOURCE_ON);
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
   p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
   p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
