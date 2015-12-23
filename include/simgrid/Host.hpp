@@ -18,13 +18,14 @@
 
 namespace simgrid {
 
-XBT_PUBLIC_CLASS Host : public simgrid::xbt::Extendable<Host> {
+XBT_PUBLIC_CLASS Host :
+	public simgrid::xbt::Extendable<Host> {
 private:
-  simgrid::xbt::string id_;
+  simgrid::xbt::string name_;
 public:
-  Host(std::string const& id);
+  Host(std::string const& name);
   ~Host();
-  simgrid::xbt::string const& id() const { return id_; }
+  simgrid::xbt::string const& getName() const { return name_; }
   static Host* by_name_or_null(const char* name);
   static Host* by_name_or_create(const char* name);
 };

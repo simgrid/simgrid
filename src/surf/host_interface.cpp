@@ -128,7 +128,7 @@ void Host::destroy()
 void Host::attach(simgrid::Host* host)
 {
   if (p_host != nullptr)
-    xbt_die("Already attached to host %s", host->id().c_str());
+    xbt_die("Already attached to host %s", host->getName().c_str());
   host->extension_set(this);
   p_host = host;
   onCreation(this);
@@ -371,7 +371,7 @@ xbt_dynar_t Host::getVms()
        iter !=  simgrid::surf::VMModel::ws_vms.end(); ++iter) {
 
     simgrid::surf::VirtualMachine *ws_vm = &*iter;
-    if (this == ws_vm->p_subWs)
+    if (this == ws_vm->p_hostPM->extension(simgrid::surf::Host::EXTENSION_ID))
       xbt_dynar_push(dyn, &ws_vm);
   }
 

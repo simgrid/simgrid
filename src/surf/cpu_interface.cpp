@@ -225,7 +225,7 @@ int Cpu::getCore()
 void Cpu::plug(simgrid::Host* host)
 {
   if (this->m_host != nullptr)
-    xbt_die("Already plugged into host %s", host->id().c_str());
+    xbt_die("Already plugged into host %s", host->getName().c_str());
   host->extension_set(this);
   this->m_host = host;
 }

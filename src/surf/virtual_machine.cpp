@@ -33,9 +33,9 @@ VMModel::vm_list_t VMModel::ws_vms;
  * Resource *
  ************/
 
-VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props,
-		        RoutingEdge *netElm, Cpu *cpu)
-: Host(model, name, props, NULL, netElm, cpu)
+VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props,simgrid::Host *hostPM)
+: Host(model, name, props, NULL, NULL, NULL)
+, p_hostPM(hostPM)
 {
   VMModel::ws_vms.push_back(*this);
   simgrid::Host::by_name_or_create(name)->extension_set<simgrid::surf::Host>(this);
@@ -56,20 +56,10 @@ void VirtualMachine::setState(e_surf_resource_state_t state){
   VMStateChangedCallbacks(this);
 }
 
-/*
- * A surf level object will be useless in the upper layer. Returning the
- * dict_elm of the host.
- **/
-sg_host_t VirtualMachine::getPm()
-{
-  return p_subWs->getHost();
+/** @brief returns the physical machine on which the VM is running **/
+sg_host_t VirtualMachine::getPm() {
+  return p_hostPM;
 }
-
-/**********
- * Action *
- **********/
-
-//FIME:: handle action cancel
 
 }
 }

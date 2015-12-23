@@ -100,7 +100,8 @@ void sg_energy_plugin_init() {
     });
 
     simgrid::surf::VMCreatedCallbacks.connect([](simgrid::surf::VirtualMachine* vm) {
-    	std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(vm->p_subWs);
+    	std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it =
+    			surf_energy->find(vm->p_hostPM->extension(simgrid::surf::Host::EXTENSION_ID));
     	xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
     	(*surf_energy)[vm] = host_energy_it->second;
     	host_energy_it->second->ref(); // protect the HostEnergy from getting deleted too early

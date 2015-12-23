@@ -93,7 +93,7 @@ double VMHL13Model::shareResources(double now)
 
     double solved_value = get_solved_value(ws_vm->p_action);
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
-        ws_vm->getName(), ws_vm->p_subWs->getName());
+        ws_vm->getName(), ws_vm->p_hostPM->getName().c_str());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
@@ -164,12 +164,9 @@ Action *VMHL13Model::executeParallelTask(int host_nb,
  * Resource *
  ************/
 
-VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
-		                                   sg_host_t host_PM)
- : VirtualMachine(model, name, props, NULL, NULL)
+VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t host_PM)
+ : VirtualMachine(model, name, props, host_PM)
 {
-  Host *sub_ws = surf_host_resource_priv(host_PM);
-
   /* Currently, we assume a VM has no storage. */
   p_storage = NULL;
 
@@ -183,7 +180,6 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
   sg_host_t host = sg_host_by_name_or_create(name);
   sg_host_edge_set(host, p_netElm);
 
-  p_subWs = sub_ws;
   p_currentState = SURF_VM_STATE_CREATED;
 
   // //// CPU  RELATED STUFF ////
@@ -205,7 +201,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props,
   // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(host_PM, GUESTOS_NOISE);
   p_action = sub_cpu->execute(0);
 
-  XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, sub_ws->getName(), xbt_dynar_length(p_storage));
+  XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, p_hostPM->getName().c_str(), xbt_dynar_length(p_storage));
 }
 
 /*
@@ -271,15 +267,15 @@ void VMHL13::restore()
 /*
  * Update the physical host of the given VM
  */
-void VMHL13::migrate(sg_host_t ind_dst_pm)
+void VMHL13::migrate(sg_host_t host_dest)
 {
    /* ind_dst_pm equals to smx_host_t */
-   Host *ws_dst = static_cast<Host*>(surf_host_resource_priv(ind_dst_pm));
+   Host *surfHost_dst = static_cast<Host*>(surf_host_resource_priv(host_dest));
    const char *vm_name = getName();
-   const char *pm_name_src = p_subWs->getName();
-   const char *pm_name_dst = ws_dst->getName();
+   const char *pm_name_src = p_hostPM->getName().c_str();
+   const char *pm_name_dst = surfHost_dst->getName();
 
-   xbt_assert(ws_dst);
+   xbt_assert(surfHost_dst);
 
    /* update net_elm with that of the destination physical host */
    RoutingEdge *old_net_elm = p_netElm;
@@ -293,13 +289,13 @@ void VMHL13::migrate(sg_host_t ind_dst_pm)
    p_netElm = new_net_elm;
    sg_host_edge_set(sg_host_by_name(vm_name), p_netElm);
 
-   p_subWs = ws_dst;
+   p_hostPM = host_dest;
 
    /* Update vcpu's action for the new pm */
    {
      /* create a cpu action bound to the pm model at the destination. */
      CpuAction *new_cpu_action = static_cast<CpuAction*>(
-    		                            static_cast<Cpu*>(sg_host_surfcpu(ind_dst_pm))->execute(0));
+    		                            static_cast<Cpu*>(sg_host_surfcpu(host_dest))->execute(0));
 
      e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)
@@ -339,7 +335,7 @@ void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
  **/
 sg_host_t VMHL13::getPm()
 {
-  return p_subWs->getHost();
+  return p_hostPM;
 }
 
 /* Adding a task to a VM updates the VCPU task on its physical machine. */
@@ -349,7 +345,7 @@ Action *VMHL13::execute(double size)
   double new_cost = old_cost + size;
 
   XBT_DEBUG("VM(%s)@PM(%s): update dummy action's cost (%f -> %f)",
-      getName(), p_subWs->getName(),
+      getName(), p_hostPM->getName().c_str(),
       old_cost, new_cost);
 
   p_action->setCost(new_cost);

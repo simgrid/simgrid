@@ -16,7 +16,7 @@ size_t sg_host_count()
 
 const char *sg_host_get_name(sg_host_t host)
 {
-	return host->id().c_str();
+	return host->getName().c_str();
 }
 
 void* sg_host_extension_get(sg_host_t host, size_t ext)
@@ -193,7 +193,7 @@ int sg_host_get_pstate(sg_host_t host) {
 namespace simgrid {
 
 Host::Host(std::string const& id)
-  : id_(id)
+  : name_(id)
 {
 }
 

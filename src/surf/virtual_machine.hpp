@@ -63,7 +63,7 @@ public:
    * @param cpu The Cpu associated to this VM
    */
   VirtualMachine(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
-		        RoutingEdge *netElm, Cpu *cpu);
+		        simgrid::Host *host);
 
   /** @brief Destructor */
   ~VirtualMachine();
@@ -86,14 +86,14 @@ public:
   virtual void migrate(sg_host_t dest_PM)=0;
 
   /** @brief Get the physical machine hosting the VM */
-  virtual sg_host_t getPm()=0;
+  sg_host_t getPm();
 
   virtual void setBound(double bound)=0;
   virtual void setAffinity(Cpu *cpu, unsigned long mask)=0;
 
   /* The vm object of the lower layer */
   CpuAction *p_action;
-  Host *p_subWs;
+  simgrid::Host *p_hostPM;
   e_surf_vm_state_t p_currentState;
 public:
   boost::intrusive::list_member_hook<> vm_hook;
@@ -128,10 +128,6 @@ public:
   typedef boost::intrusive::list<VirtualMachine, VmOptions, boost::intrusive::constant_time_size<false> > vm_list_t;
   static vm_list_t ws_vms;
 };
-
-/**********
- * Action *
- **********/
 
 }
 }
