@@ -152,7 +152,7 @@ Cpu::Cpu(Model *model, simgrid::Host *host,
  , m_speedScale(speedScale)
  , m_host(host)
 {
-
+  host->extension_set(Cpu::EXTENSION_ID, this);
 }
 
 Cpu::Cpu(Model *model, simgrid::Host *host,
@@ -164,6 +164,7 @@ Cpu::Cpu(Model *model, simgrid::Host *host,
  , m_speedScale(speedScale)
  , m_host(host)
 {
+  host->extension_set(Cpu::EXTENSION_ID, this);
   /* Currently, we assume that a VM does not have a multicore CPU. */
   if (core > 1)
     xbt_assert(model == surf_cpu_model_pm);
