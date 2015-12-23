@@ -45,7 +45,6 @@ public:
 
   double shareResources(double now) override;
   void updateActionsState(double now, double delta);
-  Host *createHost(const char *name,RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props) override;
   Action *executeParallelTask(int host_nb,
                               sg_host_t *host_list,
 							  double *flops_amount,

@@ -52,7 +52,7 @@ public:
   HostModel() : Model() {}
   ~HostModel() {}
 
-  virtual Host *createHost(const char *name, RoutingEdge *net, Cpu *cpu, xbt_dict_t props)=0;
+  Host *createHost(const char *name, RoutingEdge *net, Cpu *cpu, xbt_dict_t props);
   void addTraces() override {DIE_IMPOSSIBLE;}
 
   virtual void adjustWeightOfDummyCpuActions();

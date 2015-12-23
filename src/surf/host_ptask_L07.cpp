@@ -270,13 +270,6 @@ Action *HostL07Model::executeParallelTask(int host_nb,
   return action;
 }
 
-Host *HostL07Model::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props)
-{
-  return new simgrid::surf::Host(this, name, props,
-		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
-		  netElm, cpu);
-}
-
 Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
                                        double size, double rate)
 {

@@ -31,7 +31,6 @@ class HostCLM03Model : public HostModel {
 public:
   HostCLM03Model(): HostModel(){}
   ~HostCLM03Model() {}
-  Host *createHost(const char *name, RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props) override;
   double shareResources(double now) override;
 
   void updateActionsState(double now, double delta) override;

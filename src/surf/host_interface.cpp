@@ -36,6 +36,13 @@ simgrid::xbt::Extension<simgrid::Host, Host> Host::EXTENSION_ID;
 /*********
  * Model *
  *********/
+Host *HostModel::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props){
+  Host *host = new simgrid::surf::Host(surf_host_model, name, props,
+		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
+		  netElm, cpu);
+  XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
+  return host;
+}
 
 /* Each VM has a dummy CPU action on the PM layer. This CPU action works as the
  * constraint (capacity) of the VM in the PM layer. If the VM does not have any
