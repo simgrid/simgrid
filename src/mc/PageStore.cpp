@@ -171,7 +171,7 @@ std::size_t PageStore::store_page(void* page)
 
 #include <memory>
 
-#include "mc/PageStore.hpp"
+#include "src/mc/PageStore.hpp"
 
 static int value = 0;
 

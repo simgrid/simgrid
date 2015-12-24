@@ -198,9 +198,9 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
 
 #include <sys/mman.h>
 
-#include "mc/mc_private.h"
-#include "mc/mc_snapshot.h"
-#include "mc/mc_mmu.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_mmu.h"
 
 extern "C" {
 
