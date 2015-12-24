@@ -37,7 +37,6 @@ xbt_dict_t host_list;
 
 int SURF_HOST_LEVEL;            //Surf host level
 int COORD_HOST_LEVEL=0;         //Coordinates level
-int NS3_HOST_LEVEL;             //host node for ns3
 
 int MSG_FILE_LEVEL;             //Msg file level
 

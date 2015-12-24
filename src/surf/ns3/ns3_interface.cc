@@ -9,11 +9,11 @@
 #include "xbt/lib.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"
+#include "xbt/Extendable.hpp"
 
 
 using namespace ns3;
 
-extern int NS3_HOST_LEVEL;		//host node for ns3
 extern xbt_dynar_t IPV4addr;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf,

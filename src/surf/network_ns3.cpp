@@ -11,6 +11,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
+int NS3_EXTENSION_ID;
+
 xbt_dynar_t IPV4addr;
 static double time_to_next_flow_completion = -1;
 
@@ -41,7 +43,7 @@ static void simgrid_ns3_add_host(simgrid::surf::Host* host)
 {
   const char* id = host->getName();
   XBT_DEBUG("NS3_ADD_HOST '%s'", id);
-  host->getHost()->set_facet(NS3_HOST_LEVEL, ns3_add_host(id));
+  host->getHost()->extension_set(NS3_EXTENSION_ID, ns3_add_host(id));
 }
 
 static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
@@ -109,7 +111,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
       xbt_dynar_push_as(tab_elements_num, int, start);
       router_id = bprintf("ns3_%s%d%s", cluster_prefix, start, cluster_suffix);
       simgrid::Host::by_name_or_create(router_id)
-        ->set_facet(NS3_HOST_LEVEL, ns3_add_host_cluster(router_id));
+        ->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
       XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
       free(router_id);
       break;
@@ -121,7 +123,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
         xbt_dynar_push_as(tab_elements_num, int, i);
         router_id = bprintf("ns3_%s%d%s", cluster_prefix, i, cluster_suffix);
         simgrid::Host::by_name_or_create(router_id)
-          ->set_facet(NS3_HOST_LEVEL, ns3_add_host_cluster(router_id));
+          ->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
         XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
         free(router_id);
       }
@@ -228,7 +230,7 @@ static void parse_ns3_end_platform(void)
 
 static void define_callbacks_ns3(void)
 {
-  simgrid::surf::hostCreatedCallbacks.connect(simgrid_ns3_add_host);
+  simgrid::surf::Host::onCreation.connect(simgrid_ns3_add_host);
   simgrid::surf::routingEdgeCreatedCallbacks.connect(simgrid_ns3_add_router);
   sg_platf_link_add_cb (&parse_ns3_add_link);
   sg_platf_cluster_add_cb (&parse_ns3_add_cluster);
@@ -271,7 +273,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   routing_model_create(NULL);
   define_callbacks_ns3();
 
-  NS3_HOST_LEVEL = simgrid::Host::add_level(free_ns3_host);
+  NS3_EXTENSION_ID = simgrid::Host::extension_create(free_ns3_host);
   NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib, free_ns3_host);
 }
 
@@ -297,7 +299,7 @@ Link* NetworkNS3Model::createLink(const char *name,
   if (state_trace)
     XBT_INFO("The NS3 network model doesn't support link state traces");
   Link* link = new NetworkNS3Link(this, name, properties, bw_initial, lat_initial);
-  networkLinkCreatedCallbacks(link);
+  Link::onCreation(link);
   return link;
 }
 

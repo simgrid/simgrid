@@ -11,8 +11,9 @@
 #include "xbt/dynar.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
+#include <xbt/Extendable.hpp>
 
-#include <simgrid/host.h>
+#include <simgrid/Host.hpp>
 #include <surf/surf_routing.h>
 
 typedef enum {
@@ -22,11 +23,14 @@ typedef enum {
   NS3_NETWORK_ELEMENT_AS,        /* AS type */
 } e_ns3_network_element_type_t;
 
+
 typedef struct ns3_nodes{
   int node_num;
   e_ns3_network_element_type_t type;
   void * data;
 }s_ns3_nodes_t, *ns3_nodes_t;
+
+XBT_PUBLIC_DATA(int) NS3_EXTENSION_ID;
 
 SG_BEGIN_DECL()
 
@@ -56,7 +60,7 @@ ns3_nodes_t ns3_find_host(const char* id)
   if (host == nullptr)
     return nullptr;
   else
-    return (ns3_nodes_t) sg_host_get_extension(host, NS3_HOST_LEVEL);
+    return (ns3_nodes_t) host->extension(NS3_EXTENSION_ID);
 }
 
 SG_END_DECL()
