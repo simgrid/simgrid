@@ -37,8 +37,7 @@ void surf_presolve(void)
   simgrid::surf::Model *model = NULL;
   unsigned int iter;
 
-  XBT_DEBUG ("First Run! Let's \"purge\" events and put models in the right state");
-
+  XBT_DEBUG ("Consume all trace events occurring before the starting time.");
   while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
     if (next_event_date > NOW)
       break;
@@ -51,6 +50,8 @@ void surf_presolve(void)
       }
     }
   }
+
+  XBT_DEBUG ("Set every models in the right state by updating them to 0.");
   xbt_dynar_foreach(all_existing_models, iter, model)
       model->updateActionsState(NOW, 0.0);
 }

@@ -42,8 +42,7 @@ void surf_host_model_init_ptask_L07(void)
   sg_platf_postparse_add_cb(host_add_traces);
 
   surf_host_model = new simgrid::surf::HostL07Model();
-  simgrid::surf::Model *model = surf_host_model;
-  xbt_dynar_push(all_existing_models, &model);
+  xbt_dynar_push(all_existing_models, &surf_host_model);
 }
 
 
@@ -54,7 +53,6 @@ HostL07Model::HostL07Model() : HostModel() {
   if (!ptask_maxmin_system)
 	ptask_maxmin_system = lmm_system_new(1);
   p_maxminSystem = ptask_maxmin_system;
-  surf_host_model = NULL;
   surf_network_model = new NetworkL07Model(this,ptask_maxmin_system);
   surf_cpu_model_pm = new CpuL07Model(this,ptask_maxmin_system);
 

@@ -31,8 +31,7 @@ void surf_host_model_init_current_default(void)
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 
-  simgrid::surf::Model *model = surf_host_model;
-  xbt_dynar_push(all_existing_models, &model);
+  xbt_dynar_push(all_existing_models, &surf_host_model);
 }
 
 void surf_host_model_init_compound()
