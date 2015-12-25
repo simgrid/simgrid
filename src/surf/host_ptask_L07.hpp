@@ -55,10 +55,10 @@ public:
 
 class CpuL07Model : public CpuModel {
 public:
-  CpuL07Model(HostL07Model *hmodel) : CpuModel() {p_hostModel = hmodel;};
-  ~CpuL07Model() {surf_cpu_model_pm = NULL;};
+  CpuL07Model(HostL07Model *hmodel,lmm_system_t sys);
+  ~CpuL07Model();
 
-  Cpu *createCpu(simgrid::Host *host,  xbt_dynar_t speedPeak,
+  Cpu *createCpu(simgrid::Host *host,  xbt_dynar_t speedPeakList,
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
@@ -70,8 +70,8 @@ public:
 
 class NetworkL07Model : public NetworkModel {
 public:
-  NetworkL07Model(HostL07Model *hmodel) : NetworkModel() {p_hostModel = hmodel;};
-  ~NetworkL07Model() {surf_network_model = NULL;};
+  NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys);
+  ~NetworkL07Model();
   Link* createLink(const char *name,
 		  double bw_initial,
 		  tmgr_trace_t bw_trace,
@@ -98,20 +98,14 @@ class CpuL07 : public Cpu {
   tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_speedEvent;
 public:
-  CpuL07(CpuL07Model *model, simgrid::Host *host,
-		 double power_scale, double power_initial, tmgr_trace_t power_trace,
+  CpuL07(CpuL07Model *model, simgrid::Host *host, xbt_dynar_t speedPeakList, int pstate,
+		 double power_scale, tmgr_trace_t power_trace,
      int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
   ~CpuL07();
   bool isUsed() override;
   void updateState(tmgr_trace_event_t event_type, double value, double date) override;
   Action *execute(double size) override;
   Action *sleep(double duration) override;
-
-  double getCurrentPowerPeak() override {THROW_UNIMPLEMENTED;};
-  double getPowerPeakAt(int /*pstate_index*/) override {THROW_UNIMPLEMENTED;};
-  int getNbPstates() override {THROW_UNIMPLEMENTED;};
-  void setPstate(int /*pstate_index*/) override {THROW_UNIMPLEMENTED;};
-  int  getPstate() override {THROW_UNIMPLEMENTED;};
 };
 
 class LinkL07 : public Link {

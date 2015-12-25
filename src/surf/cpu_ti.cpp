@@ -551,7 +551,7 @@ void CpuTiModel::addTraces()
 CpuTi::CpuTi(CpuTiModel *model, simgrid::Host *host, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace)
-  : Cpu(model, host, core, 0, speedScale, stateInitial)
+  : Cpu(model, host, NULL, pstate, core, 0, speedScale, stateInitial)
 {
   p_speedEvent = NULL;
   m_speedScale = speedScale;

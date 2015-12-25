@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/dynar.h>
 #include "cpu_interface.hpp"
 #include "plugins/energy.hpp"
 
@@ -144,7 +145,8 @@ Cpu::Cpu()
 
 
 Cpu::Cpu(Model *model, simgrid::Host *host,
-         int core, double speedPeak, double speedScale,
+	     xbt_dynar_t speedPeakList, int pstate,
+		 int core, double speedPeak, double speedScale,
          e_surf_resource_state_t stateInitial)
  : Resource(model, host->getName().c_str(), stateInitial)
  , m_core(core)
@@ -153,10 +155,21 @@ Cpu::Cpu(Model *model, simgrid::Host *host,
  , m_host(host)
 {
   host->extension_set(Cpu::EXTENSION_ID, this);
+
+  // Copy the power peak array:
+  p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
+  unsigned long n = xbt_dynar_length(speedPeakList);
+  for (unsigned long i = 0; i != n; ++i) {
+    double value = xbt_dynar_get_as(speedPeakList, i, double);
+    xbt_dynar_push(p_speedPeakList, &value);
+  }
+
+  m_pstate = pstate;
 }
 
-Cpu::Cpu(Model *model, simgrid::Host *host,
-        lmm_constraint_t constraint, int core, double speedPeak,
+Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
+	      xbt_dynar_t speedPeakList, int pstate,
+		  int core, double speedPeak,
         double speedScale, e_surf_resource_state_t stateInitial)
  : Resource(model, host->getName().c_str(), constraint, stateInitial)
  , m_core(core)
@@ -165,6 +178,17 @@ Cpu::Cpu(Model *model, simgrid::Host *host,
  , m_host(host)
 {
   host->extension_set(Cpu::EXTENSION_ID, this);
+
+  // Copy the power peak array:
+  p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
+  unsigned long n = xbt_dynar_length(speedPeakList);
+  for (unsigned long i = 0; i != n; ++i) {
+    double value = xbt_dynar_get_as(speedPeakList, i, double);
+    xbt_dynar_push(p_speedPeakList, &value);
+  }
+
+  m_pstate = pstate;
+
   /* Currently, we assume that a VM does not have a multicore CPU. */
   if (core > 1)
     xbt_assert(model == surf_cpu_model_pm);
@@ -182,14 +206,18 @@ Cpu::Cpu(Model *model, simgrid::Host *host,
   }
 }
 
-Cpu::Cpu(Model *model, simgrid::Host *host,
-  lmm_constraint_t constraint, int core, double speedPeak, double speedScale)
-: Cpu(model, host, constraint, core, speedPeak, speedScale, SURF_RESOURCE_ON)
-{}
+Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
+  xbt_dynar_t speedPeakList, int pstate,
+  int core, double speedPeak, double speedScale)
+: Cpu(model, host, constraint, speedPeakList, pstate, core, speedPeak, speedScale, SURF_RESOURCE_ON)
+{
+	xbt_assert(0,"FIXME: this constructor could be removed");
+}
 
 Cpu::Cpu(Model *model, simgrid::Host *host,
+  xbt_dynar_t speedPeakList, int pstate,
   int core, double speedPeak, double speedScale)
-: Cpu(model, host, core, speedPeak, speedScale, SURF_RESOURCE_ON)
+: Cpu(model, host, speedPeakList, pstate, core, speedPeak, speedScale, SURF_RESOURCE_ON)
 {}
 
 Cpu::~Cpu()
@@ -207,6 +235,35 @@ Cpu::~Cpu()
 double Cpu::getCurrentPowerPeak()
 {
   return m_speedPeak;
+}
+
+int Cpu::getNbPStates()
+{
+  return xbt_dynar_length(p_speedPeakList);
+}
+
+void Cpu::setPState(int pstate_index)
+{
+  xbt_dynar_t plist = p_speedPeakList;
+  xbt_assert(pstate_index <= (int)xbt_dynar_length(plist),
+		  "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getName(), pstate_index, (int)xbt_dynar_length(plist));
+
+  double new_peak_speed = xbt_dynar_get_as(plist, pstate_index, double);
+  m_pstate = pstate_index;
+  m_speedPeak = new_peak_speed;
+}
+
+int Cpu::getPState()
+{
+  return m_pstate;
+}
+
+double Cpu::getPowerPeakAt(int pstate_index)
+{
+  xbt_dynar_t plist = p_speedPeakList;
+  xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
+
+  return xbt_dynar_get_as(plist, pstate_index, double);
 }
 
 double Cpu::getSpeed(double load)

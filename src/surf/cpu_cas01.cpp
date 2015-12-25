@@ -156,20 +156,11 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::Host *host, xbt_dynar_t speedP
                          int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
                          e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace)
 : Cpu(model, host,
-	  lmm_constraint_new(model->getMaxminSystem(), this, core * speedScale * xbt_dynar_get_as(speedPeak, pstate, double)),
-	  core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
+	lmm_constraint_new(model->getMaxminSystem(), this, core * speedScale * xbt_dynar_get_as(speedPeak, pstate, double)),
+	speedPeak, pstate,
+	core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
     stateInitial) {
   p_speedEvent = NULL;
-
-  // Copy the power peak array:
-  p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
-  unsigned long n = xbt_dynar_length(speedPeak);
-  for (unsigned long i = 0; i != n; ++i) {
-    double value = xbt_dynar_get_as(speedPeak, i, double);
-    xbt_dynar_push(p_speedPeakList, &value);
-  }
-
-  m_pstate = pstate;
 
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_speedPeak, m_pstate);
 
@@ -199,11 +190,6 @@ void CpuCas01::setPowerEvent(tmgr_trace_event_t powerEvent)
 
 xbt_dynar_t CpuCas01::getSpeedPeakList(){
   return p_speedPeakList;
-}
-
-int CpuCas01::getPState()
-{
-  return m_pstate;
 }
 
 bool CpuCas01::isUsed()
@@ -320,34 +306,6 @@ CpuAction *CpuCas01::sleep(double duration)
 double CpuCas01::getCurrentPowerPeak()
 {
   return m_speedPeak;
-}
-
-double CpuCas01::getPowerPeakAt(int pstate_index)
-{
-  xbt_dynar_t plist = p_speedPeakList;
-  xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
-
-  return xbt_dynar_get_as(plist, pstate_index, double);
-}
-
-int CpuCas01::getNbPstates()
-{
-  return xbt_dynar_length(p_speedPeakList);
-}
-
-void CpuCas01::setPstate(int pstate_index)
-{
-  xbt_dynar_t plist = p_speedPeakList;
-  xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
-
-  double new_pstate = xbt_dynar_get_as(plist, pstate_index, double);
-  m_pstate = pstate_index;
-  m_speedPeak = new_pstate;
-}
-
-int CpuCas01::getPstate()
-{
-  return m_pstate;
 }
 
 /**********

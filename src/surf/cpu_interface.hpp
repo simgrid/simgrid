@@ -89,8 +89,9 @@ public:
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    * @param stateInitial whether it is created running or crashed
    */
-  Cpu(simgrid::surf::Model *model, simgrid::Host *host,
-	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale,
+  Cpu(simgrid::surf::Model *model, simgrid::Host *host, lmm_constraint_t constraint,
+	  xbt_dynar_t speedPeakList, int pstate,
+	  int core, double speedPeak, double speedScale,
 	  e_surf_resource_state_t stateInitial);
 
   /**
@@ -104,12 +105,15 @@ public:
    * @param stateInitial whether it is created running or crashed
    */
   Cpu(simgrid::surf::Model *model, simgrid::Host *host,
+      xbt_dynar_t speedPeakList, int pstate,
 	  int core, double speedPeak, double speedScale,
 	  e_surf_resource_state_t stateInitial);
 
+  Cpu(simgrid::surf::Model *model, simgrid::Host *host, lmm_constraint_t constraint,
+	  xbt_dynar_t speedPeakList, int pstate,
+	  int core, double speedPeak, double speedScale);
   Cpu(simgrid::surf::Model *model, simgrid::Host *host,
-	  lmm_constraint_t constraint, int core, double speedPeak, double speedScale);
-  Cpu(simgrid::surf::Model *model, simgrid::Host *host,
+	  xbt_dynar_t speedPeakList, int pstate,
 	  int core, double speedPeak, double speedScale);
 
   ~Cpu();
@@ -142,11 +146,11 @@ public:
   /** @brief Get the current Cpu power peak */
   virtual double getCurrentPowerPeak();
 
-  virtual double getPowerPeakAt(int pstate_index)=0;
+  virtual double getPowerPeakAt(int pstate_index);
 
-  virtual int getNbPstates()=0;
-  virtual void setPstate(int pstate_index)=0;
-  virtual int  getPstate()=0;
+  virtual int getNbPStates();
+  virtual void setPState(int pstate_index);
+  virtual int  getPState();
 
   void addTraces(void);
   simgrid::Host* getHost() { return m_host; }
@@ -156,6 +160,9 @@ public:
   double m_speedPeak;            /*< CPU speed peak, ie max value */
   double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
   simgrid::Host* m_host;
+
+  xbt_dynar_t p_speedPeakList = NULL; /*< List of supported CPU capacities (pstate related) */
+  int m_pstate = 0;                   /*< Current pstate (index in the speedPeakList)*/
 
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore=NULL;

@@ -56,22 +56,14 @@ public:
   CpuAction *sleep(double duration);
 
   double getCurrentPowerPeak();
-  double getPowerPeakAt(int pstate_index);
-  int getNbPstates();
-  void setPstate(int pstate_index);
-  int  getPstate();
-  bool isUsed();
+  bool isUsed() override;
   void setStateEvent(tmgr_trace_event_t stateEvent);
   void setPowerEvent(tmgr_trace_event_t stateEvent);
   xbt_dynar_t getSpeedPeakList();
 
-  int getPState();
-
 private:
   tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_speedEvent;
-  xbt_dynar_t p_speedPeakList;       /*< List of supported CPU capacities (pstate related) */
-  int m_pstate;                      /*< Current pstate (index in the speedPeakList)*/
 };
 
 /**********

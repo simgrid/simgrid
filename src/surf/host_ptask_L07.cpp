@@ -53,9 +53,10 @@ namespace surf {
 HostL07Model::HostL07Model() : HostModel() {
   if (!ptask_maxmin_system)
 	ptask_maxmin_system = lmm_system_new(1);
+  p_maxminSystem = ptask_maxmin_system;
   surf_host_model = NULL;
-  surf_network_model = new NetworkL07Model(this);
-  surf_cpu_model_pm = new CpuL07Model(this);
+  surf_network_model = new NetworkL07Model(this,ptask_maxmin_system);
+  surf_cpu_model_pm = new CpuL07Model(this,ptask_maxmin_system);
 
   routing_model_create(surf_network_model->createLink("__loopback__",
 	                                                  498000000, NULL,
@@ -71,11 +72,31 @@ HostL07Model::~HostL07Model() {
   delete surf_network_model;
   ptask_host_count = 0;
 
-  if (ptask_maxmin_system) {
-    lmm_system_free(ptask_maxmin_system);
-    ptask_maxmin_system = NULL;
-  }
+  ptask_maxmin_system = NULL; // freed as part of ~Model (it's also stored as p_maxminSystem)
 }
+
+CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
+	: CpuModel()
+	, p_hostModel(hmodel)
+	{
+	  p_maxminSystem = sys;
+	}
+CpuL07Model::~CpuL07Model() {
+	surf_cpu_model_pm = NULL;
+	p_maxminSystem = NULL; // Avoid multi-free
+}
+NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
+	: NetworkModel()
+	, p_hostModel(hmodel)
+	{
+	  p_maxminSystem = sys;
+	}
+NetworkL07Model::~NetworkL07Model()
+{
+	surf_network_model = NULL;
+	p_maxminSystem = NULL; // Avoid multi-free
+}
+
 
 double HostL07Model::shareResources(double /*now*/)
 {
@@ -180,7 +201,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
   L07Action *action = new L07Action(this, 1, 0);
   unsigned int cpt;
   int nb_link = 0;
-  int nb_host = 0;
+  int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
   double latency = 0.0;
 
   action->p_edgeList->reserve(host_nb);
@@ -220,7 +241,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 
   for (int i = 0; i < host_nb; i++)
     if (flops_amount[i] > 0)
-      nb_host++;
+      nb_used_host++;
 
   XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
          action, host_nb, nb_link);
@@ -262,7 +283,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
     }
   }
 
-  if (nb_link + nb_host == 0) {
+  if (nb_link + nb_used_host == 0) {
     action->setCost(1.0);
     action->setRemains(0.0);
   }
@@ -289,14 +310,13 @@ Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
   return res;
 }
 
-Cpu *CpuL07Model::createCpu(simgrid::Host *host,  xbt_dynar_t powerPeak,
+Cpu *CpuL07Model::createCpu(simgrid::Host *host,  xbt_dynar_t powerPeakList,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace)
 {
-  double power_initial = xbt_dynar_get_as(powerPeak, pstate, double);
-  CpuL07 *cpu = new CpuL07(this, host, power_initial, power_scale, power_trace,
+  CpuL07 *cpu = new CpuL07(this, host, powerPeakList, pstate, power_scale, power_trace,
                          core, state_initial, state_trace);
   return cpu;
 }
@@ -387,13 +407,16 @@ void HostL07Model::addTraces()
 /************
  * Resource *
  ************/
+
 CpuL07::CpuL07(CpuL07Model *model, simgrid::Host *host,
-	             double speedInitial, double speedScale, tmgr_trace_t speedTrace,
-		           int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
- : Cpu(model, host, lmm_constraint_new(ptask_maxmin_system, this, speedInitial * speedScale),
-	   core, speedInitial, speedScale, state_initial)
+	             xbt_dynar_t speedPeakList, int pstate,
+				 double speedScale, tmgr_trace_t speedTrace,
+		         int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
+ : Cpu(model, host, speedPeakList, pstate,
+	   core, xbt_dynar_get_as(speedPeakList,pstate,double), speedScale, state_initial)
 {
   xbt_assert(m_speedScale > 0, "Power has to be >0");
+  p_constraint = lmm_constraint_new(ptask_maxmin_system, this, xbt_dynar_get_as(speedPeakList,pstate,double) * speedScale);
 
   if (speedTrace)
     p_speedEvent = tmgr_history_add_trace(history, speedTrace, 0.0, 0, this);

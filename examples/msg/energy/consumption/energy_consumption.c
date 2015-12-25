@@ -41,8 +41,8 @@ int dvfs(int argc, char *argv[])
 
   // Run a task
   start = MSG_get_clock();
-  XBT_INFO("Run a task for 100E6 flops");
   task1 = MSG_task_create ("t1", 100E6, 0, NULL);
+  XBT_INFO("Run a task of %.0E flops",MSG_task_get_flops_amount(task1));
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Current consumption: from %.0fW to %.0fW depending on load; Energy dissipated=%.0f J",
@@ -54,15 +54,15 @@ int dvfs(int argc, char *argv[])
   // ========= Change power peak =========
   int pstate=2;
   MSG_host_set_pstate(host, pstate);
-  XBT_INFO("========= Requesting pstate %d (speed should be of %.2f flop/s and is of %.2f flop/s)",
+  XBT_INFO("========= Requesting pstate %d (speed should be of %.0E flop/s and is of %.0E flop/s)",
 		  pstate,
 		  MSG_host_get_power_peak_at(host, pstate),
 		  MSG_host_get_current_power_peak(host));
 
   // Run a second task
   start = MSG_get_clock();
-  XBT_INFO("Run a task for 100E6 flops");
   task1 = MSG_task_create ("t2", 100E6, 0, NULL);
+  XBT_INFO("Run a task of %.0E flops",MSG_task_get_flops_amount(task1));
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
   XBT_INFO("Task done (duration: %.2f s). Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",

@@ -283,14 +283,14 @@ double surf_host_get_power_peak_at(sg_host_t host, int pstate_index){
 }
 
 int surf_host_get_nb_pstates(sg_host_t host){
-  return sg_host_surfcpu(host)->getNbPstates();
+  return sg_host_surfcpu(host)->getNbPStates();
 }
 
 void surf_host_set_pstate(sg_host_t host, int pstate_index){
-	sg_host_surfcpu(host)->setPstate(pstate_index);
+	sg_host_surfcpu(host)->setPState(pstate_index);
 }
 int surf_host_get_pstate(sg_host_t host){
-  return sg_host_surfcpu(host)->getPstate();
+  return sg_host_surfcpu(host)->getPState();
 }
 
 using simgrid::energy::HostEnergy;

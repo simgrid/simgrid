@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <src/surf/plugins/energy.hpp>
-#include <src/surf/cpu_cas01.hpp>
+#include <src/surf/cpu_interface.hpp>
 #include <src/surf/virtual_machine.hpp>
 
 /** @addtogroup SURF_plugin_energy
@@ -185,14 +185,14 @@ HostEnergy::~HostEnergy(){
 double HostEnergy::getWattMinAt(int pstate) {
   xbt_dynar_t power_range_list = power_range_watts_list;
   xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
-  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<simgrid::surf::CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
+  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, host->p_cpu->getPState(), xbt_dynar_t);
   double min_power = xbt_dynar_get_as(current_power_values, 0, double);
   return min_power;
 }
 double HostEnergy::getWattMaxAt(int pstate) {
   xbt_dynar_t power_range_list = power_range_watts_list;
   xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
-  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, static_cast<simgrid::surf::CpuCas01*>(host->p_cpu)->getPState(), xbt_dynar_t);
+  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, host->p_cpu->getPState(), xbt_dynar_t);
   double max_power = xbt_dynar_get_as(current_power_values, 1, double);
   return max_power;
 }
@@ -203,10 +203,11 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 	xbt_dynar_t power_range_list = power_range_watts_list;
 	xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
 
+	int pstate = host->p_cpu->getPState();
+	xbt_assert(pstate < (int)xbt_dynar_length(power_range_list),
+			"pstate %d >= power range amound %d",pstate,(int)xbt_dynar_length(power_range_list));
     /* retrieve the power values associated with the current pstate */
-    xbt_dynar_t current_power_values = xbt_dynar_get_as( power_range_list,
-      static_cast<simgrid::surf::CpuCas01*>(host->p_cpu)->getPState(),
-      xbt_dynar_t);
+    xbt_dynar_t current_power_values = xbt_dynar_get_as( power_range_list, pstate, xbt_dynar_t);
 
     /* min_power corresponds to the idle power (cpu load = 0) */
     /* max_power is the power consumed at 100% cpu load       */
