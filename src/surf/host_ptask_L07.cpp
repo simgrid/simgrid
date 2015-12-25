@@ -16,8 +16,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 
-static int ptask_host_count = 0;
-static xbt_dict_t ptask_parallel_task_link_set = NULL;
 lmm_system_t ptask_maxmin_system = NULL;
 
 
@@ -64,11 +62,8 @@ HostL07Model::HostL07Model() : HostModel() {
 }
 
 HostL07Model::~HostL07Model() {
-  xbt_dict_free(&ptask_parallel_task_link_set);
-
   delete surf_cpu_model_pm;
   delete surf_network_model;
-  ptask_host_count = 0;
 
   ptask_maxmin_system = NULL; // freed as part of ~Model (it's also stored as p_maxminSystem)
 }
@@ -202,14 +197,11 @@ Action *HostL07Model::executeParallelTask(int host_nb,
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
   double latency = 0.0;
 
+  xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
+
   action->p_edgeList->reserve(host_nb);
   for (int i = 0; i<host_nb; i++)
 	  action->p_edgeList->push_back(sg_host_edge(host_list[i]));
-
-  if (ptask_parallel_task_link_set == NULL)
-    ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
-
-  xbt_dict_reset(ptask_parallel_task_link_set);
 
   /* Compute the number of affected resources... */
   for (int i = 0; i < host_nb; i++) {
@@ -235,7 +227,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
   }
 
   nb_link = xbt_dict_length(ptask_parallel_task_link_set);
-  xbt_dict_reset(ptask_parallel_task_link_set);
+  xbt_dict_free(&ptask_parallel_task_link_set);
 
   for (int i = 0; i < host_nb; i++)
     if (flops_amount[i] > 0)
