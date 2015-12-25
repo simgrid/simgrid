@@ -149,10 +149,8 @@ public:
   void updateBound();
 
   int unref() override;
-  void cancel() override;
   void suspend() override;
   void resume() override;
-  bool isSuspended() override;
   void setMaxDuration(double duration) override;
   void setPriority(double priority) override;
   double getRemains() override;

@@ -599,12 +599,6 @@ int L07Action::unref()
   return 0;
 }
 
-void L07Action::cancel()
-{
-  setState(SURF_ACTION_FAILED);
-  return;
-}
-
 void L07Action::suspend()
 {
   XBT_IN("(%p))", this);
@@ -623,11 +617,6 @@ void L07Action::resume()
     m_suspended = 0;
   }
   XBT_OUT();
-}
-
-bool L07Action::isSuspended()
-{
-  return m_suspended == 1;
 }
 
 void L07Action::setMaxDuration(double duration)
