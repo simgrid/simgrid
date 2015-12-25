@@ -317,7 +317,6 @@ CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double sp
 		     lmm_variable_new(model->getMaxminSystem(), this,
 		     1.0, speed, 1))
 {
-  m_suspended = 0;
   if (model->getUpdateMechanism() == UM_LAZY) {
     m_indexHeap = -1;
     m_lastUpdate = surf_get_clock();

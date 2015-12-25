@@ -228,7 +228,6 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 
   XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
          action, host_nb, nb_link);
-  action->m_suspended = 0; /* valgrind seems to want it despite the calloc... */
   action->p_computationAmount = flops_amount;
   action->p_communicationAmount = bytes_amount;
   action->m_latency = latency;

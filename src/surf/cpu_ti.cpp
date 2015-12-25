@@ -858,8 +858,6 @@ CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed,
 		                 CpuTi *cpu)
  : CpuAction(model_, cost, failed)
 {
-  m_suspended = 0;        /* Should be useless because of the
-	                         calloc but it seems to help valgrind... */
   p_cpu = cpu;
   m_indexHeap = -1;
   p_cpu->modified(true);

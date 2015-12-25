@@ -292,7 +292,7 @@ protected:
   lmm_variable_t p_variable;
   double m_lastValue;
   double m_lastUpdate;
-  int m_suspended;
+  int m_suspended = 0;
   int m_indexHeap;
   enum heap_action_type m_hat;
 };

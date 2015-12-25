@@ -99,7 +99,7 @@ public:
 
   CpuTi *p_cpu;
   int m_indexHeap;
-  int m_suspended;
+  int m_suspended = 0;
 public:
   boost::intrusive::list_member_hook<> action_ti_hook;
 };

@@ -699,7 +699,6 @@ void Action::initialize(simgrid::surf::Model *model, double cost, bool failed,
   p_variable = var;
   m_lastValue = 0;
   m_lastUpdate = 0;
-  m_suspended = false;
   m_hat = NOTSET;
   p_category = NULL;
   p_stateHookup.prev = 0;
