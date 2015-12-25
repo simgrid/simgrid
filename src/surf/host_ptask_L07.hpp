@@ -44,12 +44,11 @@ public:
   ~HostL07Model();
 
   double shareResources(double now) override;
-  void updateActionsState(double now, double delta);
-  Action *executeParallelTask(int host_nb,
-                              sg_host_t *host_list,
-							  double *flops_amount,
-							  double *bytes_amount,
+  void updateActionsState(double now, double delta) override;
+  Action *executeParallelTask(int host_nb, sg_host_t *host_list,
+							  double *flops_amount, double *bytes_amount,
 							  double rate) override;
+
   void addTraces() override;
 };
 
@@ -142,8 +141,11 @@ class L07Action : public CpuAction {
 												   double *bytes_amount,
                                                    double rate);
 public:
-  L07Action(Model *model, double cost, bool failed)
-  : CpuAction(model, cost, failed) {};
+  L07Action(Model *model, int host_nb,
+          sg_host_t*host_list,
+          double *flops_amount,
+		   double *bytes_amount,
+          double rate);
  ~L07Action();
 
   void updateBound();

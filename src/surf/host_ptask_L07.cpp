@@ -178,13 +178,20 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
   return;
 }
 
-Action *HostL07Model::executeParallelTask(int host_nb,
-                                          sg_host_t*host_list,
-										  double *flops_amount,
-										  double *bytes_amount,
-										  double rate)
+Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t *host_list,
+		  double *flops_amount, double *bytes_amount,
+		  double rate) {
+	return new L07Action(this, host_nb, host_list, flops_amount, bytes_amount, rate);
+}
+
+
+L07Action::L07Action(Model *model, int host_nb,
+		sg_host_t*host_list,
+		double *flops_amount,
+		double *bytes_amount,
+		double rate)
+	: CpuAction(model, 1, 0)
 {
-  L07Action *action = new L07Action(this, 1, 0);
   unsigned int cpt;
   int nb_link = 0;
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
@@ -192,9 +199,9 @@ Action *HostL07Model::executeParallelTask(int host_nb,
 
   xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
 
-  action->p_edgeList->reserve(host_nb);
+  this->p_edgeList->reserve(host_nb);
   for (int i = 0; i<host_nb; i++)
-	  action->p_edgeList->push_back(sg_host_edge(host_list[i]));
+	  this->p_edgeList->push_back(sg_host_edge(host_list[i]));
 
   /* Compute the number of affected resources... */
   for (int i = 0; i < host_nb; i++) {
@@ -207,7 +214,7 @@ Action *HostL07Model::executeParallelTask(int host_nb,
         void *_link;
         LinkL07 *link;
 
-        routing_platf->getRouteAndLatency((*action->p_edgeList)[i], (*action->p_edgeList)[j],
+        routing_platf->getRouteAndLatency((*this->p_edgeList)[i], (*this->p_edgeList)[j],
         		                          &route, &lat);
         latency = MAX(latency, lat);
 
@@ -227,23 +234,23 @@ Action *HostL07Model::executeParallelTask(int host_nb,
       nb_used_host++;
 
   XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
-         action, host_nb, nb_link);
-  action->p_computationAmount = flops_amount;
-  action->p_communicationAmount = bytes_amount;
-  action->m_latency = latency;
-  action->m_rate = rate;
+         this, host_nb, nb_link);
+  this->p_computationAmount = flops_amount;
+  this->p_communicationAmount = bytes_amount;
+  this->m_latency = latency;
+  this->m_rate = rate;
 
-  action->p_variable = lmm_variable_new(p_maxminSystem, action, 1.0,
+  this->p_variable = lmm_variable_new(model->getMaxminSystem(), this, 1.0,
                                         (rate > 0 ? rate : -1.0),
 										host_nb + nb_link);
 
-  if (action->m_latency > 0)
-    lmm_update_variable_weight(p_maxminSystem, action->getVariable(), 0.0);
+  if (this->m_latency > 0)
+    lmm_update_variable_weight(model->getMaxminSystem(), this->getVariable(), 0.0);
 
   for (int i = 0; i < host_nb; i++)
-    lmm_expand(p_maxminSystem,
+    lmm_expand(model->getMaxminSystem(),
     	       sg_host_surfcpu(host_list[i])->getConstraint(),
-               action->getVariable(), flops_amount[i]);
+               this->getVariable(), flops_amount[i]);
 
   for (int i = 0; i < host_nb; i++) {
     for (int j = 0; j < host_nb; j++) {
@@ -253,24 +260,22 @@ Action *HostL07Model::executeParallelTask(int host_nb,
       if (bytes_amount[i * host_nb + j] == 0.0)
         continue;
 
-      routing_platf->getRouteAndLatency((*action->p_edgeList)[i], (*action->p_edgeList)[j],
+      routing_platf->getRouteAndLatency((*this->p_edgeList)[i], (*this->p_edgeList)[j],
     		                            &route, NULL);
 
       xbt_dynar_foreach(route, cpt, _link) {
         LinkL07 *link = static_cast<LinkL07*>(_link);
-        lmm_expand_add(p_maxminSystem, link->getConstraint(),
-                       action->getVariable(),
+        lmm_expand_add(model->getMaxminSystem(), link->getConstraint(),
+                       this->getVariable(),
                        bytes_amount[i * host_nb + j]);
       }
     }
   }
 
   if (nb_link + nb_used_host == 0) {
-    action->setCost(1.0);
-    action->setRemains(0.0);
+    this->setCost(1.0);
+    this->setRemains(0.0);
   }
-
-  return action;
 }
 
 Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
