@@ -18,12 +18,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  * TOOLS *
  *********/
 
-static simgrid::surf::Host *get_casted_host(sg_host_t resource){
-  return static_cast<simgrid::surf::Host*>(surf_host_resource_priv(resource));
+static simgrid::surf::Host *get_casted_host(sg_host_t host){
+  return static_cast<simgrid::surf::Host*>(surf_host_resource_priv(host));
 }
 
-static simgrid::surf::VirtualMachine *get_casted_vm(sg_host_t resource){
-  return static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(resource));
+static simgrid::surf::VirtualMachine *get_casted_vm(sg_host_t host){
+  return static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(host));
 }
 
 extern double NOW;
@@ -252,7 +252,7 @@ void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state
 }
 
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
-  return get_casted_host(host)->sleep(duration);
+	return host->extension(simgrid::surf::Cpu::EXTENSION_ID)->sleep(duration);
 }
 
 xbt_dict_t sg_host_get_properties(sg_host_t host) {
@@ -272,7 +272,7 @@ int surf_host_get_core(sg_host_t host){
 }
 
 surf_action_t surf_host_execute(sg_host_t host, double size){
-  return get_casted_host(host)->execute(size);
+  return host->extension(simgrid::surf::Cpu::EXTENSION_ID)->execute(size);
 }
 
 double surf_host_get_current_power_peak(sg_host_t host){
