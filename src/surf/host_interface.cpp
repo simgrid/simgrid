@@ -36,7 +36,7 @@ simgrid::xbt::Extension<simgrid::Host, Host> Host::EXTENSION_ID;
 /*********
  * Model *
  *********/
-Host *HostModel::createHost(const char *name,RoutingEdge *netElm, Cpu *cpu, xbt_dict_t props){
+Host *HostModel::createHost(const char *name,NetCard *netElm, Cpu *cpu, xbt_dict_t props){
   Host *host = new simgrid::surf::Host(surf_host_model, name, props,
 		  (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL),
 		  netElm, cpu);
@@ -96,7 +96,7 @@ void Host::classInit()
 }
 
 Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
-		                 xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
+		                 xbt_dynar_t storage, NetCard *netElm, Cpu *cpu)
  : Resource(model, name)
  , PropertyHolder(props)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
@@ -105,7 +105,7 @@ Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 }
 
 Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
-				         xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu)
+				         xbt_dynar_t storage, NetCard *netElm, Cpu *cpu)
  : Resource(model, name, constraint)
  , PropertyHolder(props)
  , p_storage(storage), p_netElm(netElm), p_cpu(cpu)

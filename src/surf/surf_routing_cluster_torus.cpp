@@ -121,7 +121,7 @@ void AsClusterTorus::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster){
     xbt_dynar_free(&dimensions);
 }
 
-void AsClusterTorus::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat){
+void AsClusterTorus::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat){
 
   XBT_VERB("torus_get_route_and_latency from '%s'[%d] to '%s'[%d]",
                src->getName(), src->getId(),

@@ -81,7 +81,7 @@ public:
 		  e_surf_link_sharing_policy_t policy,
 		  xbt_dict_t properties) override;
 
-  Action *communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate) override;
+  Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
   void addTraces() override {DIE_IMPOSSIBLE;};
   bool shareResourcesIsIdempotent() override {return true;}
 
@@ -157,7 +157,7 @@ public:
   void setPriority(double priority) override;
   double getRemains() override;
 
-  std::vector<RoutingEdge*> * p_edgeList = new std::vector<RoutingEdge*>();
+  std::vector<NetCard*> * p_edgeList = new std::vector<NetCard*>();
   double *p_computationAmount;
   double *p_communicationAmount;
   double m_latency;

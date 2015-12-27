@@ -55,7 +55,7 @@ public:
      * will have a loopback attached to it.
      */
 	void addLoopback();
-	void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat);
+	void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat);
 	xbt_dynar_t getOnelinkRoutes();
 	void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat);
 	void parseASroute(sg_platf_route_cbarg_t route);

@@ -277,8 +277,8 @@ void VMHL13::migrate(sg_host_t host_dest)
    xbt_assert(surfHost_dst);
 
    /* update net_elm with that of the destination physical host */
-   RoutingEdge *old_net_elm = p_netElm;
-   RoutingEdge *new_net_elm = new RoutingEdgeWrapper(sg_host_edge(sg_host_by_name(pm_name_dst)));
+   NetCard *old_net_elm = p_netElm;
+   NetCard *new_net_elm = new RoutingEdgeWrapper(sg_host_edge(sg_host_by_name(pm_name_dst)));
    xbt_assert(new_net_elm);
 
    /* Unregister the current net_elm from host_lib. Do not call the free callback. */

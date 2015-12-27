@@ -119,7 +119,7 @@ class XBT_PRIVATE AsClusterFatTree : public AsCluster {
 public:
   AsClusterFatTree();
   ~AsClusterFatTree();
-  virtual void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst,
+  virtual void getRouteAndLatency(NetCard *src, NetCard *dst,
                                   sg_platf_route_cbarg_t into,
                                   double *latency);
 

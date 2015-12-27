@@ -55,7 +55,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   xbt_assert(! sg_host_by_name(host->id),
 		     "Refusing to create a second host named '%s'.", host->id);
 
-  simgrid::surf::RoutingEdge *net = NULL;
+  simgrid::surf::NetCard *net = NULL;
   simgrid::surf::As* current_routing = routing_get_current();
   if (current_routing)
     net = routing_add_host(current_routing, host);
@@ -88,7 +88,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
 
-  simgrid::surf::RoutingEdge *info = new simgrid::surf::RoutingEdgeImpl(
+  simgrid::surf::NetCard *info = new simgrid::surf::RoutingEdgeImpl(
     xbt_strdup(router->id), -1, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
   info->setId(current_routing->parsePU(info));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);

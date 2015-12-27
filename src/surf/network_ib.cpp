@@ -48,7 +48,7 @@ static void IB_action_state_changed_callback(
 
 
 static void IB_action_init_callback(
-  simgrid::surf::NetworkAction *action, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst,
+  simgrid::surf::NetworkAction *action, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
   double size, double rate)
 {
   using namespace simgrid::surf;

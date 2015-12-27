@@ -58,8 +58,8 @@ bool AsClusterFatTree::isInSubTree(FatTreeNode *root, FatTreeNode *node) {
   return true;
 }
 
-void AsClusterFatTree::getRouteAndLatency(RoutingEdge *src,
-                                          RoutingEdge *dst,
+void AsClusterFatTree::getRouteAndLatency(NetCard *src,
+                                          NetCard *dst,
                                           sg_platf_route_cbarg_t into,
                                           double *latency) {
   FatTreeNode *source, *destination, *currentNode;

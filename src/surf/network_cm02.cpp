@@ -347,7 +347,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
   return;
 }
 
-Action *NetworkCm02Model::communicate(RoutingEdge *src, RoutingEdge *dst,
+Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
                                                 double size, double rate)
 {
   unsigned int i;
@@ -360,7 +360,7 @@ Action *NetworkCm02Model::communicate(RoutingEdge *src, RoutingEdge *dst,
   xbt_dynar_t back_route = NULL;
   int constraints_per_variable = 0;
 
-  xbt_dynar_t route = xbt_dynar_new(sizeof(RoutingEdge*), NULL);
+  xbt_dynar_t route = xbt_dynar_new(sizeof(NetCard*), NULL);
 
   XBT_IN("(%s,%s,%g,%g)", src->getName(), dst->getName(), size, rate);
 

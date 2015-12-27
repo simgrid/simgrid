@@ -19,7 +19,7 @@ static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;
 }
 
-XBT_PUBLIC(sg_routing_edge_t) sg_routing_edge_by_name_or_null(const char *name);
+XBT_PUBLIC(sg_netcard_t) sg_routing_edge_by_name_or_null(const char *name);
 
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,

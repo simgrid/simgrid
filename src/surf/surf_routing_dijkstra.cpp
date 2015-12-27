@@ -182,13 +182,13 @@ xbt_dynar_t AsDijkstra::getOnelinkRoutes()
   route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
 
   int src,dst;
-  RoutingEdge *src_elm, *dst_elm;
+  NetCard *src_elm, *dst_elm;
   int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
   for(src=0; src < table_size; src++) {
     for(dst=0; dst< table_size; dst++) {
       xbt_dynar_reset(route->link_list);
-      src_elm = xbt_dynar_get_as(p_indexNetworkElm, src, RoutingEdge*);
-      dst_elm = xbt_dynar_get_as(p_indexNetworkElm, dst, RoutingEdge*);
+      src_elm = xbt_dynar_get_as(p_indexNetworkElm, src, NetCard*);
+      dst_elm = xbt_dynar_get_as(p_indexNetworkElm, dst, NetCard*);
       this->getRouteAndLatency(src_elm, dst_elm,route, NULL);
 
       if (xbt_dynar_length(route->link_list) == 1) {
@@ -207,7 +207,7 @@ xbt_dynar_t AsDijkstra::getOnelinkRoutes()
   return ret;
 }
 
-void AsDijkstra::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat)
+void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
 
   /* set utils vars */
@@ -331,8 +331,8 @@ void AsDijkstra::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf
   }
 
   /* compose route path with links */
-  RoutingEdge *gw_src = NULL, *gw_dst, *prev_gw_src, *first_gw = NULL;
-  RoutingEdge *gw_dst_net_elm = NULL, *prev_gw_src_net_elm = NULL;
+  NetCard *gw_src = NULL, *gw_dst, *prev_gw_src, *first_gw = NULL;
+  NetCard *gw_dst_net_elm = NULL, *prev_gw_src_net_elm = NULL;
 
   for (v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v =
@@ -481,7 +481,7 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
       surf_parse_error("The gw_src '%s' does not exist!",route->gw_src->getName());
   }
 
-  RoutingEdge *src_net_elm, *dst_net_elm;
+  NetCard *src_net_elm, *dst_net_elm;
 
   src_net_elm = sg_routing_edge_by_name_or_null(src);
   dst_net_elm = sg_routing_edge_by_name_or_null(dst);
@@ -522,7 +522,7 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
       THROWF(arg_error,0,"(AS)Route from '%s' to '%s' already exists",src,dst);
 
     if (route->gw_dst && route->gw_src) {
-      RoutingEdge *gw_tmp;
+      NetCard *gw_tmp;
       gw_tmp = route->gw_src;
       route->gw_src = route->gw_dst;
       route->gw_dst = gw_tmp;

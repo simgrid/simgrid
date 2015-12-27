@@ -30,8 +30,8 @@ XBT_PRIVATE void model_none_finalize(AS_t as);
 XBT_PRIVATE AS_t model_generic_create_sized(size_t childsize);
 XBT_PRIVATE void model_generic_finalize(AS_t as);
 
-XBT_PRIVATE int generic_parse_PU(AS_t rc, sg_routing_edge_t elm);
-XBT_PRIVATE int generic_parse_AS(AS_t rc, sg_routing_edge_t elm);
+XBT_PRIVATE int generic_parse_PU(AS_t rc, sg_netcard_t elm);
+XBT_PRIVATE int generic_parse_AS(AS_t rc, sg_netcard_t elm);
 XBT_PRIVATE void generic_parse_bypassroute(AS_t rc, sg_platf_route_cbarg_t e_route);
 
 /* ************************************************************************** */
@@ -39,8 +39,8 @@ XBT_PRIVATE void generic_parse_bypassroute(AS_t rc, sg_platf_route_cbarg_t e_rou
 
 XBT_PRIVATE xbt_dynar_t generic_get_onelink_routes(AS_t rc);
 XBT_PRIVATE sg_platf_route_cbarg_t generic_get_bypassroute(AS_t rc,
-    sg_routing_edge_t src,
-    sg_routing_edge_t dst,
+    sg_netcard_t src,
+    sg_netcard_t dst,
     double *lat);
 
 /* ************************************************************************** */
@@ -55,8 +55,8 @@ XBT_PRIVATE AS_t
 generic_autonomous_system_exist(AS_t rc, char *element);
 XBT_PRIVATE AS_t
 generic_processing_units_exist(AS_t rc, char *element);
-void generic_src_dst_check(AS_t rc, sg_routing_edge_t src,
-    sg_routing_edge_t dst);
+void generic_src_dst_check(AS_t rc, sg_netcard_t src,
+    sg_netcard_t dst);
 
 /* ************************************************************************** */
 /* *************************** FLOYD ROUTING ******************************** */

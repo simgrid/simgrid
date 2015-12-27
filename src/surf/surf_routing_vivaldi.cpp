@@ -26,7 +26,7 @@ AS_t model_vivaldi_create(void)
 namespace simgrid {
 namespace surf {
 
-void AsVivaldi::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat)
+void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
 
@@ -36,8 +36,8 @@ void AsVivaldi::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_
   if(src->getRcType() == SURF_NETWORK_ELEMENT_AS) {
     char *src_name = ROUTER_PEER(src->getName());
     char *dst_name = ROUTER_PEER(dst->getName());
-    route->gw_src = (sg_routing_edge_t) xbt_lib_get_or_null(as_router_lib, src_name, ROUTING_ASR_LEVEL);
-    route->gw_dst = (sg_routing_edge_t) xbt_lib_get_or_null(as_router_lib, dst_name, ROUTING_ASR_LEVEL);
+    route->gw_src = (sg_netcard_t) xbt_lib_get_or_null(as_router_lib, src_name, ROUTING_ASR_LEVEL);
+    route->gw_dst = (sg_netcard_t) xbt_lib_get_or_null(as_router_lib, dst_name, ROUTING_ASR_LEVEL);
     xbt_free(src_name);
     xbt_free(dst_name);
   }
@@ -108,9 +108,9 @@ void AsVivaldi::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_
   }
 }
 
-int AsVivaldi::parsePU(RoutingEdge *elm) {
+int AsVivaldi::parsePU(NetCard *elm) {
   XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, sg_routing_edge_t, elm);
+  xbt_dynar_push_as(p_indexNetworkElm, sg_netcard_t, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 

@@ -43,7 +43,7 @@ void AsGeneric::parseASroute(sg_platf_route_cbarg_t /*route*/){
   THROW_IMPOSSIBLE;
 }
 
-void AsGeneric::getRouteAndLatency(RoutingEdge */*src*/, RoutingEdge */*dst*/, sg_platf_route_cbarg_t /*into*/, double */*latency*/){
+void AsGeneric::getRouteAndLatency(NetCard */*src*/, NetCard */*dst*/, sg_platf_route_cbarg_t /*into*/, double */*latency*/){
   THROW_IMPOSSIBLE;
 }
 
@@ -55,17 +55,17 @@ AsGeneric::~AsGeneric() {
   xbt_dict_free(&p_bypassRoutes);
 }
 
-int AsGeneric::parsePU(RoutingEdge *elm)
+int AsGeneric::parsePU(NetCard *elm)
 {
   XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdge*, elm);
+  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
-int AsGeneric::parseAS(RoutingEdge *elm)
+int AsGeneric::parseAS(NetCard *elm)
 {
   XBT_DEBUG("Load Autonomous system \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdge*, elm);
+  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
@@ -168,13 +168,13 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
 
   for (src = 0; src < table_size; src++) {
-    RoutingEdge *my_src =
-        xbt_dynar_get_as(p_indexNetworkElm, src, RoutingEdge*);
+    NetCard *my_src =
+        xbt_dynar_get_as(p_indexNetworkElm, src, NetCard*);
     for (dst = 0; dst < table_size; dst++) {
       if (src == dst)
         continue;
-      RoutingEdge *my_dst =
-          xbt_dynar_get_as(p_indexNetworkElm, dst, RoutingEdge*);
+      NetCard *my_dst =
+          xbt_dynar_get_as(p_indexNetworkElm, dst, NetCard*);
 
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
       route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
@@ -224,8 +224,8 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   }
 }
 
-sg_platf_route_cbarg_t AsGeneric::getBypassRoute(RoutingEdge *src,
-                                               RoutingEdge *dst,
+sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
+                                               NetCard *dst,
                                                double *lat)
 {
   // If never set a bypass route return NULL without any further computations
@@ -427,7 +427,7 @@ As *AsGeneric::autonomousSystemExist(char *element)
   As *element_as, *result, *elem;
   xbt_dict_cursor_t cursor = NULL;
   char *key;
-  element_as = ((RoutingEdge*)
+  element_as = ((NetCard*)
       xbt_lib_get_or_null(as_router_lib, element,
           ROUTING_ASR_LEVEL))->getRcComponent();
   result = ((As*) - 1);
@@ -455,7 +455,7 @@ As *AsGeneric::processingUnitsExist(char *element)
   return asExist(element_as);
 }
 
-void AsGeneric::srcDstCheck(RoutingEdge *src, RoutingEdge *dst)
+void AsGeneric::srcDstCheck(NetCard *src, NetCard *dst)
 {
   if (src == NULL || dst == NULL)
     xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",

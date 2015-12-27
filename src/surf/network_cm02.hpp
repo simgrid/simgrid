@@ -61,7 +61,7 @@ public:
   void addTraces();
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
-  Action *communicate(RoutingEdge *src, RoutingEdge *dst,
+  Action *communicate(NetCard *src, NetCard *dst,
 		                           double size, double rate);
   bool shareResourcesIsIdempotent() {return true;}
   virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
@@ -98,7 +98,7 @@ public:
  * Action *
  **********/
 class NetworkCm02Action : public NetworkAction {
-  friend Action *NetworkCm02Model::communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate);
+  friend Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, double rate);
   friend NetworkSmpiModel;
 
 public:

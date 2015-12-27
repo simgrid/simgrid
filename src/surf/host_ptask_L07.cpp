@@ -278,7 +278,7 @@ L07Action::L07Action(Model *model, int host_nb,
   }
 }
 
-Action *NetworkL07Model::communicate(RoutingEdge *src, RoutingEdge *dst,
+Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
                                        double size, double rate)
 {
   sg_host_t*host_list = xbt_new0(sg_host_t, 2);

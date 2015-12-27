@@ -73,7 +73,7 @@ void sg_host_init()
   });
 
   ROUTING_HOST_LEVEL = simgrid::Host::extension_create([](void *p) {
-	  delete static_cast<simgrid::surf::RoutingEdge*>(p);
+	  delete static_cast<simgrid::surf::NetCard*>(p);
   });
 
   SD_HOST_LEVEL = simgrid::Host::extension_create(__SD_workstation_destroy);
@@ -125,10 +125,10 @@ void sg_host_simix_destroy(sg_host_t host) {
 }
 
 // ========== RoutingEdge ============
-surf_RoutingEdge *sg_host_edge(sg_host_t host) {
-	return (surf_RoutingEdge*) host->extension(ROUTING_HOST_LEVEL);
+surf_NetCard *sg_host_edge(sg_host_t host) {
+	return (surf_NetCard*) host->extension(ROUTING_HOST_LEVEL);
 }
-void sg_host_edge_set(sg_host_t host, surf_RoutingEdge *edge) {
+void sg_host_edge_set(sg_host_t host, surf_NetCard *edge) {
   host->extension_set(ROUTING_HOST_LEVEL, edge);
 }
 void sg_host_edge_destroy(sg_host_t host, int do_callback) {

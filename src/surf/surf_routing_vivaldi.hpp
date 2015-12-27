@@ -33,7 +33,7 @@ public:
   AsVivaldi() : AsGeneric() {};
   ~AsVivaldi() {};
 
-  void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t into, double *latency);
+  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency);
   //void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges);
   //sg_platf_route_cbarg_t getBypassRoute(RoutingEdge *src, RoutingEdge *dst, double *lat);
 
@@ -41,7 +41,7 @@ public:
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  int parsePU(RoutingEdge *elm); /* A host or a router, whatever */
+  int parsePU(NetCard *elm); /* A host or a router, whatever */
   //virtual int parseAS( RoutingEdge *elm)=0;
 
   //virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;

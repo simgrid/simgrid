@@ -52,8 +52,8 @@ public:
   	                                 tmgr_trace_t state_trace,
   	                                 e_surf_link_sharing_policy_t policy,
   	                                 xbt_dict_t properties);
-  xbt_dynar_t getRoute(RoutingEdge *src, RoutingEdge *dst);
-  Action *communicate(RoutingEdge *src, RoutingEdge *dst,
+  xbt_dynar_t getRoute(NetCard *src, NetCard *dst);
+  Action *communicate(NetCard *src, NetCard *dst,
 		                           double size, double rate);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
@@ -101,8 +101,8 @@ void resume();
 
 //private:
   double m_lastSent;
-  RoutingEdge *p_srcElm;
-  RoutingEdge *p_dstElm;
+  NetCard *p_srcElm;
+  NetCard *p_dstElm;
 };
 
 }

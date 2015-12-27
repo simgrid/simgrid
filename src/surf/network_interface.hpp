@@ -40,7 +40,7 @@ XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::NetworkAction*, e_surf
 
 /** @brief Callback signal fired when a NetworkAction is created (when a communication starts)
  *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)` */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst, double size, double rate)>) networkCommunicateCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)>) networkCommunicateCallbacks;
 
 }
 }
@@ -114,7 +114,7 @@ public:
    * unlimited.
    * @return The action representing the communication
    */
-  virtual Action *communicate(RoutingEdge *src, RoutingEdge *dst,
+  virtual Action *communicate(NetCard *src, NetCard *dst,
 		                           double size, double rate)=0;
 
   /** @brief Function pointer to the function to use to solve the lmm_system_t

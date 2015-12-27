@@ -28,7 +28,7 @@ class AsCluster: public AsNone {
 public:
   AsCluster();
 
-  virtual void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t into, double *latency);
+  virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency);
   //xbt_dynar_t getOneLinkRoutes();
   //void parseRoute(sg_platf_route_cbarg_t route);
   //void parseASroute(sg_platf_route_cbarg_t route);
@@ -40,12 +40,12 @@ public:
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  int parsePU(RoutingEdge *elm); /* A host or a router, whatever */
-  int parseAS(RoutingEdge *elm);
+  int parsePU(NetCard *elm); /* A host or a router, whatever */
+  int parseAS(NetCard *elm);
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
   Link* p_backbone;
   void *p_loopback;
-  RoutingEdge *p_router;
+  NetCard *p_router;
   int p_has_limiter;
   int p_has_loopback;
   int p_nb_links_per_node;

@@ -63,7 +63,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
                                      link->properties);
 }
 
-static void simgrid_ns3_add_router(simgrid::surf::RoutingEdge* router)
+static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
 {
   const char* router_id = router->getName();
   XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
@@ -303,7 +303,7 @@ Link* NetworkNS3Model::createLink(const char *name,
   return link;
 }
 
-xbt_dynar_t NetworkNS3Model::getRoute(RoutingEdge *src, RoutingEdge *dst)
+xbt_dynar_t NetworkNS3Model::getRoute(NetCard *src, NetCard *dst)
 {
   xbt_dynar_t route = NULL;
   routing_get_route_and_latency(src, dst, &route, NULL);
@@ -311,7 +311,7 @@ xbt_dynar_t NetworkNS3Model::getRoute(RoutingEdge *src, RoutingEdge *dst)
   return route;
 }
 
-Action *NetworkNS3Model::communicate(RoutingEdge *src, RoutingEdge *dst,
+Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst,
 		                               double size, double rate)
 {
   XBT_DEBUG("Communicate from %s to %s", src->getName(), dst->getName());

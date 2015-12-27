@@ -1081,7 +1081,7 @@ XBT_PUBLIC_DATA(const char *) surf_AS_get_model(AS_t as);
 XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
 XBT_PUBLIC_DATA(void) surf_AS_get_graph(AS_t as, xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges);
 XBT_PUBLIC_DATA(AS_t) surf_platf_get_root(routing_platf_t platf);
-XBT_PUBLIC_DATA(e_surf_network_element_type_t) surf_routing_edge_get_rc_type(sg_routing_edge_t edge);
+XBT_PUBLIC_DATA(e_surf_network_element_type_t) surf_routing_edge_get_rc_type(sg_netcard_t edge);
 
 /*******************************************/
 /*** SURF Globals **************************/
@@ -1189,7 +1189,7 @@ void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *fi
 /********** Routing **********/
 void routing_AS_begin(sg_platf_AS_cbarg_t AS);
 void routing_AS_end(void);
-surf_RoutingEdge* routing_add_host(surf_As* as, sg_platf_host_cbarg_t host);
+surf_NetCard* routing_add_host(surf_As* as, sg_platf_host_cbarg_t host);
 void routing_cluster_add_backbone(void* bb);
 surf_As* routing_get_current();
 

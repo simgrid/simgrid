@@ -26,7 +26,7 @@ public:
   AsFull();
   ~AsFull();
 
-  void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t into, double *latency);
+  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency);
   xbt_dynar_t getOneLinkRoutes();
   void parseRoute(sg_platf_route_cbarg_t route);
   void parseASroute(sg_platf_route_cbarg_t route);

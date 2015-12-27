@@ -23,7 +23,7 @@
 namespace simgrid {
 namespace surf {
 
-simgrid::surf::signal<void(simgrid::surf::RoutingEdge*)> routingEdgeCreatedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::NetCard*)> routingEdgeCreatedCallbacks;
 simgrid::surf::signal<void(simgrid::surf::As*)> asCreatedCallbacks;
 
 }
@@ -56,12 +56,12 @@ static xbt_dict_t random_value = NULL;
  *
  * Routing edges are either host and routers, whatever
  */
-simgrid::surf::RoutingEdge *sg_routing_edge_by_name_or_null(const char *name)
+simgrid::surf::NetCard *sg_routing_edge_by_name_or_null(const char *name)
 {
   sg_host_t h = sg_host_by_name(name);
-  simgrid::surf::RoutingEdge *net_elm = h==NULL?NULL: sg_host_edge(h);
+  simgrid::surf::NetCard *net_elm = h==NULL?NULL: sg_host_edge(h);
   if (!net_elm)
-	net_elm = (simgrid::surf::RoutingEdge*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
+	net_elm = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
   return net_elm;
 }
 
@@ -128,7 +128,7 @@ struct s_model_type routing_models[] = {
  */
 void sg_platf_new_host_link(sg_platf_host_link_cbarg_t host)
 {
-  simgrid::surf::RoutingEdge *info = sg_host_edge(sg_host_by_name(host->id));
+  simgrid::surf::NetCard *info = sg_host_edge(sg_host_by_name(host->id));
   xbt_assert(info, "Host '%s' not found!", host->id);
   xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER] ||
       current_routing->p_modelDesc == &routing_models[SURF_MODEL_VIVALDI],
@@ -156,7 +156,7 @@ void sg_platf_new_host_link(sg_platf_host_link_cbarg_t host)
 /**
  * \brief Add a "host" to the network element list
  */
-simgrid::surf::RoutingEdge *routing_add_host(
+simgrid::surf::NetCard *routing_add_host(
   simgrid::surf::As* current_routing, sg_platf_host_cbarg_t host)
 {
   if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
@@ -164,7 +164,7 @@ simgrid::surf::RoutingEdge *routing_add_host(
   xbt_assert(!sg_host_by_name(host->id),
 		     "Reading a host, processing unit \"%s\" already exists", host->id);
 
-  simgrid::surf::RoutingEdge *routingEdge =
+  simgrid::surf::NetCard *routingEdge =
     new simgrid::surf::RoutingEdgeImpl(xbt_strdup(host->id),
 		                                    -1,
 		                                    SURF_NETWORK_ELEMENT_HOST,
@@ -315,7 +315,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   new_as->p_hierarchy = SURF_ROUTING_NULL;
   new_as->p_name = xbt_strdup(AS->id);
 
-  simgrid::surf::RoutingEdge *info =
+  simgrid::surf::NetCard *info =
     new simgrid::surf::RoutingEdgeImpl(xbt_strdup(new_as->p_name),
                                             -1,
                                             SURF_NETWORK_ELEMENT_AS,
@@ -391,7 +391,7 @@ void routing_AS_end()
  * Get the common father of the to processing units, and the first different
  * father in the chain
  */
-static void elements_father(sg_routing_edge_t src, sg_routing_edge_t dst,
+static void elements_father(sg_netcard_t src, sg_netcard_t dst,
                             AS_t * res_father,
                             AS_t * res_src,
                             AS_t * res_dst)
@@ -409,8 +409,8 @@ static void elements_father(sg_routing_edge_t src, sg_routing_edge_t dst,
   simgrid::surf::As *father;
 
   /* (1) find the as where the src and dst are located */
-  sg_routing_edge_t src_data = src;
-  sg_routing_edge_t dst_data = dst;
+  sg_netcard_t src_data = src;
+  sg_netcard_t dst_data = dst;
   src_as = src_data->getRcComponent();
   dst_as = dst_data->getRcComponent();
 #ifndef NDEBUG
@@ -467,7 +467,7 @@ static void elements_father(sg_routing_edge_t src, sg_routing_edge_t dst,
  * recursively through the ASes tree.
  */
 static void _get_route_and_latency(
-  simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst,
+  simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
   xbt_dynar_t * links, double *latency)
 {
   s_sg_platf_route_cbarg_t route = SG_PLATF_ROUTE_INITIALIZER;
@@ -507,8 +507,8 @@ static void _get_route_and_latency(
 
   route.link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
   // Find the net_card corresponding to father
-  simgrid::surf::RoutingEdge *src_father_net_elm = src_father->p_netElem;
-  simgrid::surf::RoutingEdge *dst_father_net_elm = dst_father->p_netElem;
+  simgrid::surf::NetCard *src_father_net_elm = src_father->p_netElem;
+  simgrid::surf::NetCard *dst_father_net_elm = dst_father->p_netElem;
 
   common_father->getRouteAndLatency(src_father_net_elm, dst_father_net_elm,
                                     &route, latency);
@@ -516,8 +516,8 @@ static void _get_route_and_latency(
   xbt_assert((route.gw_src != NULL) && (route.gw_dst != NULL),
       "bad gateways for route from \"%s\" to \"%s\"", src->getName(), dst->getName());
 
-  sg_routing_edge_t src_gateway_net_elm = route.gw_src;
-  sg_routing_edge_t dst_gateway_net_elm = route.gw_dst;
+  sg_netcard_t src_gateway_net_elm = route.gw_src;
+  sg_netcard_t dst_gateway_net_elm = route.gw_dst;
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != src_gateway_net_elm)
@@ -535,7 +535,7 @@ AS_t surf_platf_get_root(routing_platf_t platf){
   return platf->p_root;
 }
 
-e_surf_network_element_type_t surf_routing_edge_get_rc_type(sg_routing_edge_t edge){
+e_surf_network_element_type_t surf_routing_edge_get_rc_type(sg_netcard_t edge){
   return edge->getRcType();
 }
 
@@ -557,7 +557,7 @@ namespace surf {
  * by calling the differents "get_route" functions in each routing component.
  */
 void RoutingPlatf::getRouteAndLatency(
-  simgrid::surf::RoutingEdge *src, simgrid::surf::RoutingEdge *dst,
+  simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
   xbt_dynar_t* route, double *latency)
 {
   XBT_DEBUG("routing_get_route_and_latency from %s to %s", src->getName(), dst->getName());
@@ -602,7 +602,7 @@ xbt_dynar_t RoutingPlatf::recursiveGetOneLinkRoutes(As *rc)
 
 e_surf_network_element_type_t routing_get_network_element_type(const char *name)
 {
-  simgrid::surf::RoutingEdge *rc = sg_routing_edge_by_name_or_null(name);
+  simgrid::surf::NetCard *rc = sg_routing_edge_by_name_or_null(name);
   if (rc)
     return rc->getRcType();
 
@@ -983,7 +983,7 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
         bprintf("%s%s_router%s", cluster->prefix, cluster->id,
                 cluster->suffix);
   sg_platf_new_router(&router);
-  ((AsCluster*)current_routing)->p_router = (simgrid::surf::RoutingEdge*) xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
+  ((AsCluster*)current_routing)->p_router = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
   free(newid);
 
   //Make the backbone
@@ -1018,7 +1018,7 @@ static void routing_parse_postparse(void) {
 
 void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 {
-  using simgrid::surf::RoutingEdge;
+  using simgrid::surf::NetCard;
   using simgrid::surf::AsCluster;
 
   char *host_id = NULL;
@@ -1089,7 +1089,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   router.id = router_id;
   router.coord = peer->coord;
   sg_platf_new_router(&router);
-  static_cast<AsCluster*>(current_routing)->p_router = static_cast<RoutingEdge*>(xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL));
+  static_cast<AsCluster*>(current_routing)->p_router = static_cast<NetCard*>(xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL));
 
   XBT_DEBUG("</AS>");
   sg_platf_new_AS_end();
@@ -1228,7 +1228,7 @@ static void check_disk_attachment()
   xbt_lib_cursor_t cursor;
   char *key;
   void **data;
-  simgrid::surf::RoutingEdge *host_elm;
+  simgrid::surf::NetCard *host_elm;
   xbt_lib_foreach(storage_lib, cursor, key, data) {
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
 	  simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
@@ -1336,8 +1336,8 @@ xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)
   int count = xbt_dynar_length(elms);
   xbt_dynar_t res =  xbt_dynar_new(sizeof(sg_host_t), NULL);
   for (int index = 0; index < count; index++) {
-     sg_routing_edge_t relm =
-      xbt_dynar_get_as(elms, index, simgrid::surf::RoutingEdge*);
+     sg_netcard_t relm =
+      xbt_dynar_get_as(elms, index, simgrid::surf::NetCard*);
      sg_host_t delm = simgrid::Host::by_name_or_null(relm->getName());
      if (delm!=NULL) {
        xbt_dynar_push(res, &delm);

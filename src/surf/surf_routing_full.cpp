@@ -83,9 +83,9 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
           void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
           Onelink *onelink;
           if (p_hierarchy == SURF_ROUTING_BASE) {
-        	RoutingEdge *tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_routing_edge_t);
+        	NetCard *tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_netcard_t);
             tmp_src->setId(src);
-        	RoutingEdge *tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_routing_edge_t);
+        	NetCard *tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_netcard_t);
         	tmp_dst->setId(dst);
             onelink = new Onelink(link, tmp_src, tmp_dst);
           } else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
@@ -103,7 +103,7 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
   return ret;
 }
 
-void AsFull::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t res, double *lat)
+void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t res, double *lat)
 {
   XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]",
       src->getName(),
@@ -145,7 +145,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
   int as_route = 0;
   char *src = (char*)(route->src);
   char *dst = (char*)(route->dst);
-  RoutingEdge *src_net_elm, *dst_net_elm;
+  NetCard *src_net_elm, *dst_net_elm;
   src_net_elm = sg_routing_edge_by_name_or_null(src);
   dst_net_elm = sg_routing_edge_by_name_or_null(dst);
 
@@ -233,7 +233,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
       || (route->symmetrical == TRUE && as_route == 1)
   ) {
     if (route->gw_dst && route->gw_src) {
-      sg_routing_edge_t gw_tmp;
+      sg_netcard_t gw_tmp;
       gw_tmp = route->gw_src;
       route->gw_src = route->gw_dst;
       route->gw_dst = gw_tmp;

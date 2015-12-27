@@ -19,7 +19,7 @@ namespace simgrid {
 namespace surf {
 
 class Cpu;
-class RoutingEdge;
+class NetCard;
 class As;
 class Link;
 
@@ -28,7 +28,7 @@ class Link;
 
 typedef simgrid::Host simgrid_Host;
 typedef simgrid::surf::Cpu surf_Cpu;
-typedef simgrid::surf::RoutingEdge surf_RoutingEdge;
+typedef simgrid::surf::NetCard surf_NetCard;
 typedef simgrid::surf::As surf_As;
 typedef simgrid::surf::Link Link;
 
@@ -36,7 +36,7 @@ typedef simgrid::surf::Link Link;
 
 typedef struct simgrid_Host simgrid_Host;
 typedef struct surf_Cpu surf_Cpu;
-typedef struct surf_RoutingEdge surf_RoutingEdge;
+typedef struct surf_NetCard surf_NetCard;
 typedef struct surf_As surf_As;
 typedef struct Link Link;
 
@@ -44,7 +44,7 @@ typedef struct Link Link;
 
 typedef simgrid_Host* sg_host_t;
 typedef surf_Cpu *surf_cpu_t;
-typedef surf_RoutingEdge *sg_routing_edge_t;
+typedef surf_NetCard *sg_netcard_t;
 typedef surf_As *AS_t;
 
 // Types which are in fact dictelmt:
@@ -176,8 +176,8 @@ typedef struct s_sg_platf_route_cbarg {
   int symmetrical;
   const char *src;
   const char *dst;
-  sg_routing_edge_t gw_src;
-  sg_routing_edge_t gw_dst;
+  sg_netcard_t gw_src;
+  sg_netcard_t gw_dst;
   xbt_dynar_t link_list;
 } s_sg_platf_route_cbarg_t;
 

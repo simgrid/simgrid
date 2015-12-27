@@ -27,12 +27,12 @@ class XBT_PRIVATE Onelink;
 class RoutingPlatf;
 
 /** @ingroup SURF_routing_interface
- * @brief A routing edge
- * @details [long description]
+ * @brief A network card
+ * @details This represents a position in the network. One can route information between two netcards
  */
-class RoutingEdge {
+class NetCard {
 public:
-  virtual ~RoutingEdge(){};
+  virtual ~NetCard(){};
   virtual int getId()=0;
   virtual int *getIdPtr()=0;
   virtual void setId(int id)=0;
@@ -54,7 +54,7 @@ public:
   char *p_name;
   As *p_routingFather;
   xbt_dict_t p_routingSons;
-  RoutingEdge *p_netElem;
+  NetCard *p_netElem;
   xbt_dynar_t p_linkUpDownList;
 
   /**
@@ -81,26 +81,26 @@ public:
    * @param latency [description]
    */
   virtual void getRouteAndLatency(
-    RoutingEdge *src, RoutingEdge *dst,
+    NetCard *src, NetCard *dst,
     sg_platf_route_cbarg_t into, double *latency)=0;
   virtual xbt_dynar_t getOneLinkRoutes()=0;
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
   virtual sg_platf_route_cbarg_t getBypassRoute(
-    RoutingEdge *src, RoutingEdge *dst,
+    NetCard *src, NetCard *dst,
     double *lat)=0;
 
   /* The parser calls the following functions to inform the routing models
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  virtual int parsePU(RoutingEdge *elm)=0; /* A host or a router, whatever */
-  virtual int parseAS(RoutingEdge *elm)=0;
+  virtual int parsePU(NetCard *elm)=0; /* A host or a router, whatever */
+  virtual int parseAS(NetCard *elm)=0;
   virtual void parseRoute(sg_platf_route_cbarg_t route)=0;
   virtual void parseASroute(sg_platf_route_cbarg_t route)=0;
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
 };
 
-struct XBT_PRIVATE RoutingEdgeImpl : public RoutingEdge {
+struct XBT_PRIVATE RoutingEdgeImpl : public NetCard {
 public:
   RoutingEdgeImpl(char *name, int id, e_surf_network_element_type_t rcType, As *rcComponent)
   : p_rcComponent(rcComponent), p_rcType(rcType), m_id(id), p_name(name) {}
@@ -119,9 +119,9 @@ private:
   char *p_name;
 };
 
-struct RoutingEdgeWrapper : public RoutingEdge {
+struct RoutingEdgeWrapper : public NetCard {
 public:
-  RoutingEdgeWrapper(RoutingEdge *re) : p_re(re){}
+  RoutingEdgeWrapper(NetCard *re) : p_re(re){}
   ~RoutingEdgeWrapper(){}
   int getId() {return p_re->getId();}
   int *getIdPtr() {return p_re->getIdPtr();}
@@ -130,7 +130,7 @@ public:
   As *getRcComponent() {return p_re->getRcComponent();}
   e_surf_network_element_type_t getRcType() {return p_re->getRcType();}
 private:
-  RoutingEdge *p_re;
+  NetCard *p_re;
 };
 
 /** @ingroup SURF_routing_interface
@@ -138,10 +138,10 @@ private:
  */
 class Onelink {
 public:
-  Onelink(void *link, RoutingEdge *src, RoutingEdge *dst)
+  Onelink(void *link, NetCard *src, NetCard *dst)
     : p_src(src), p_dst(dst), p_link(link) {};
-  RoutingEdge *p_src;
-  RoutingEdge *p_dst;
+  NetCard *p_src;
+  NetCard *p_dst;
   void *p_link;
 };
 
@@ -156,14 +156,14 @@ public:
   xbt_dynar_t p_lastRoute;
   xbt_dynar_t getOneLinkRoutes(void);
   xbt_dynar_t recursiveGetOneLinkRoutes(As *rc);
-  void getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, xbt_dynar_t * links, double *latency);
+  void getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t * links, double *latency);
 };
 
 /*************
  * Callbacks *
  *************/
 
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(RoutingEdge*)>) routingEdgeCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(NetCard*)>) routingEdgeCreatedCallbacks;
 XBT_PUBLIC_DATA(simgrid::surf::signal<void(As*)>) asCreatedCallbacks;
 
 }

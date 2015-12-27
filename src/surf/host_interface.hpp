@@ -52,7 +52,7 @@ public:
   HostModel() : Model() {}
   ~HostModel() {}
 
-  Host *createHost(const char *name, RoutingEdge *net, Cpu *cpu, xbt_dict_t props);
+  Host *createHost(const char *name, NetCard *net, Cpu *cpu, xbt_dict_t props);
   void addTraces() override {DIE_IMPOSSIBLE;}
 
   virtual void adjustWeightOfDummyCpuActions();
@@ -96,7 +96,7 @@ public:
    * @param cpu The Cpu associated to this Host
    */
   Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
-		      xbt_dynar_t storage, RoutingEdge *netElm, Cpu *cpu);
+		      xbt_dynar_t storage, NetCard *netElm, Cpu *cpu);
 
   /**
    * @brief Host constructor
@@ -110,7 +110,7 @@ public:
    * @param cpu The Cpu associated to this Host
    */
   Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
-      lmm_constraint_t constraint, xbt_dynar_t storage, RoutingEdge *netElm,
+      lmm_constraint_t constraint, xbt_dynar_t storage, NetCard *netElm,
       Cpu *cpu);
 
   /* Host destruction logic */
@@ -242,7 +242,7 @@ public:
 
 public:
   xbt_dynar_t p_storage;
-  RoutingEdge *p_netElm;
+  NetCard *p_netElm;
   Cpu *p_cpu;
   simgrid::Host* p_host = nullptr;
 

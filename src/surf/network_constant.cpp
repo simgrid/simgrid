@@ -85,7 +85,7 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
   }
 }
 
-Action *NetworkConstantModel::communicate(RoutingEdge *src, RoutingEdge *dst,
+Action *NetworkConstantModel::communicate(NetCard *src, NetCard *dst,
 		                         double size, double rate)
 {
   char *src_name = src->getName();

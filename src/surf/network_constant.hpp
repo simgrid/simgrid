@@ -29,7 +29,7 @@ public:
   NetworkConstantModel()  : NetworkModel() { };
   ~NetworkConstantModel() { }
 
-  Action *communicate(RoutingEdge *src, RoutingEdge *dst, double size, double rate);
+  Action *communicate(NetCard *src, NetCard *dst, double size, double rate);
   double shareResources(double now);
   void updateActionsState(double now, double delta);
   bool shareResourcesIsIdempotent() {return true;}
@@ -44,7 +44,7 @@ public:
 				   e_surf_link_sharing_policy_t policy,
 				   xbt_dict_t properties)                  { DIE_IMPOSSIBLE; }
   void addTraces()                                         { DIE_IMPOSSIBLE; }
-  xbt_dynar_t getRoute(RoutingEdge *src, RoutingEdge *dst) { DIE_IMPOSSIBLE; }
+  xbt_dynar_t getRoute(NetCard *src, NetCard *dst) { DIE_IMPOSSIBLE; }
 };
 
 /**********

@@ -97,8 +97,8 @@ int main(int argc, char **argv)
   xbt_lib_cursor_t cursor_src = NULL;
   xbt_lib_cursor_t cursor_dst = NULL;
   char *src,*dst,*key,*data;
-  sg_routing_edge_t value1;
-  sg_routing_edge_t value2;
+  sg_netcard_t value1;
+  sg_netcard_t value2;
 
   const SD_workstation_t *hosts;
   const SD_link_t *links;
@@ -220,7 +220,7 @@ int main(int argc, char **argv)
               ,dst);
           xbt_dynar_t route=NULL;
           value2 = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-          routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route,NULL);
+          routing_get_route_and_latency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
           for(i=0;i<xbt_dynar_length(route) ;i++)
           {
             void *link = xbt_dynar_get_as(route,i,void *);
@@ -246,7 +246,7 @@ int main(int argc, char **argv)
                 ,dst);
             xbt_dynar_t route=NULL;
             value2 = xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-            routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route,NULL);
+            routing_get_route_and_latency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
             for(i=0;i<xbt_dynar_length(route) ;i++)
             {
               void *link = xbt_dynar_get_as(route,i,void *);
@@ -264,7 +264,7 @@ int main(int argc, char **argv)
               ,src, dst);
           xbt_dynar_t route=NULL;
           value2 = sg_host_edge(sg_host_by_name(dst));
-          routing_get_route_and_latency((sg_routing_edge_t)value1,(sg_routing_edge_t)value2,&route, NULL);
+          routing_get_route_and_latency((sg_netcard_t)value1,(sg_netcard_t)value2,&route, NULL);
           for(i=0;i<xbt_dynar_length(route) ;i++)
           {
             void *link = xbt_dynar_get_as(route,i,void *);

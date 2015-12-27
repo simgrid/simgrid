@@ -33,7 +33,7 @@ AsCluster::AsCluster() : AsNone()
 }
 
 /* Business methods */
-void AsCluster::getRouteAndLatency(RoutingEdge *src, RoutingEdge *dst, sg_platf_route_cbarg_t route, double *lat)
+void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
   XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]",
@@ -91,7 +91,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   int isrc;
   int table_size = xbt_dynar_length(p_indexNetworkElm);
 
-  RoutingEdge *src;
+  NetCard *src;
   xbt_node_t current, previous, backboneNode = NULL, routerNode;
   s_surf_parsing_link_up_down_t info;
 
@@ -109,7 +109,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   }
 
   for (isrc = 0; isrc < table_size; isrc++) {
-    src = xbt_dynar_get_as(p_indexNetworkElm, isrc, RoutingEdge*);
+    src = xbt_dynar_get_as(p_indexNetworkElm, isrc, NetCard*);
 
     if (src->getRcType() != SURF_NETWORK_ELEMENT_ROUTER) {
       previous = new_xbt_graph_node(graph, src->getName(), nodes);
@@ -176,15 +176,15 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
   xbt_free(link_id);
 }
 
-int AsCluster::parsePU(RoutingEdge *elm) {
+int AsCluster::parsePU(NetCard *elm) {
   XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdge*, elm);
+  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
-int AsCluster::parseAS(RoutingEdge *elm) {
+int AsCluster::parseAS(NetCard *elm) {
   XBT_DEBUG("Load Autonomous system \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, RoutingEdge*, elm);
+  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
   return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
