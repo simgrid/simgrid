@@ -198,10 +198,8 @@ typedef enum {
 
 XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
-static inline surf_host_t surf_host_resource_priv(sg_host_t host)
-{
-  return (surf_host_t) sg_host_extension_get(host, SURF_HOST_LEVEL);
-}
+XBT_PUBLIC(surf_host_t) surf_host_resource_priv(sg_host_t host);
+
 static inline void *surf_storage_resource_priv(const void *storage){
   return (void*)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
 }

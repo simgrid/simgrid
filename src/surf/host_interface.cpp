@@ -92,7 +92,6 @@ void Host::classInit()
     EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>([](void *h) {
     	static_cast<simgrid::surf::Host*>(h)->destroy();
     });
-    SURF_HOST_LEVEL = EXTENSION_ID.id(); // FIXME: KILLME
   }
 }
 

@@ -533,3 +533,7 @@ double surf_network_action_get_latency_limited(surf_action_t action) {
 surf_file_t surf_storage_action_get_file(surf_action_t action){
   return static_cast<simgrid::surf::StorageAction*>(action)->p_file;
 }
+
+surf_host_t surf_host_resource_priv(sg_host_t host) {
+  return host->extension(simgrid::surf::Host::EXTENSION_ID);
+}
