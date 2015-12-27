@@ -44,7 +44,6 @@ typedef struct Link Link;
 
 typedef simgrid_Host* sg_host_t;
 typedef surf_Cpu *surf_cpu_t;
-typedef surf_RoutingEdge *routing_edge_t;
 typedef surf_RoutingEdge *sg_routing_edge_t;
 typedef surf_As *AS_t;
 
