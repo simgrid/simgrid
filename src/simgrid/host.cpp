@@ -124,16 +124,6 @@ void sg_host_simix_destroy(sg_host_t host) {
   host->extension_set(SIMIX_HOST_LEVEL, nullptr);
 }
 
-// ========== SURF CPU ============
-surf_cpu_t sg_host_surfcpu(sg_host_t host) {
-	return host->p_cpu;
-}
-void sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu) {
-  host->p_cpu = cpu;
-}
-void sg_host_surfcpu_destroy(sg_host_t host) {
-  host->p_cpu = nullptr;
-}
 // ========== RoutingEdge ============
 surf_RoutingEdge *sg_host_edge(sg_host_t host) {
 	return (surf_RoutingEdge*) host->extension(ROUTING_HOST_LEVEL);

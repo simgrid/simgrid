@@ -260,15 +260,15 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
 }
 
 double surf_host_get_speed(sg_host_t host, double load){
-  return sg_host_surfcpu(host)->getSpeed(load);
+  return host->p_cpu->getSpeed(load);
 }
 
 double surf_host_get_available_speed(sg_host_t host){
-  return sg_host_surfcpu(host)->getAvailableSpeed();
+  return host->p_cpu->getAvailableSpeed();
 }
 
 int surf_host_get_core(sg_host_t host){
-  return sg_host_surfcpu(host)->getCore();
+  return host->p_cpu->getCore();
 }
 
 surf_action_t surf_host_execute(sg_host_t host, double size){
@@ -276,22 +276,22 @@ surf_action_t surf_host_execute(sg_host_t host, double size){
 }
 
 double surf_host_get_current_power_peak(sg_host_t host){
-  return sg_host_surfcpu(host)->getCurrentPowerPeak();
+  return host->p_cpu->getCurrentPowerPeak();
 }
 
 double surf_host_get_power_peak_at(sg_host_t host, int pstate_index){
-  return sg_host_surfcpu(host)->getPowerPeakAt(pstate_index);
+  return host->p_cpu->getPowerPeakAt(pstate_index);
 }
 
 int surf_host_get_nb_pstates(sg_host_t host){
-  return sg_host_surfcpu(host)->getNbPStates();
+  return host->p_cpu->getNbPStates();
 }
 
 void surf_host_set_pstate(sg_host_t host, int pstate_index){
-	sg_host_surfcpu(host)->setPState(pstate_index);
+  host->p_cpu->setPState(pstate_index);
 }
 int surf_host_get_pstate(sg_host_t host){
-  return sg_host_surfcpu(host)->getPState();
+  return host->p_cpu->getPState();
 }
 
 using simgrid::energy::HostEnergy;
@@ -392,7 +392,7 @@ void surf_vm_destroy(sg_host_t resource){
    * Do not call xbt_lib_remove() here. It deletes all levels of the key,
    * including MSG_HOST_LEVEL and others. We should unregister only what we know.
    */
-  sg_host_surfcpu_destroy(resource);
+  resource->p_cpu = nullptr; // FIXME: memleaking?
   sg_host_edge_destroy(resource,1);
   resource->extension_set<simgrid::surf::Host>(nullptr);
 
@@ -428,8 +428,8 @@ void surf_vm_set_bound(sg_host_t vm, double bound){
   return get_casted_vm(vm)->setBound(bound);
 }
 
-void surf_vm_set_affinity(sg_host_t vm, sg_host_t cpu, unsigned long mask){
-  return get_casted_vm(vm)->setAffinity(sg_host_surfcpu(cpu), mask);
+void surf_vm_set_affinity(sg_host_t vm, sg_host_t host, unsigned long mask){
+  return get_casted_vm(vm)->setAffinity(host->p_cpu, mask);
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
@@ -456,12 +456,14 @@ const char* surf_storage_get_host(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->p_attach;
 }
 
-surf_action_t surf_cpu_execute(sg_host_t cpu, double size){
-  return sg_host_surfcpu(cpu)->execute(size);
+surf_action_t surf_cpu_execute(sg_host_t host, double size){
+	xbt_die("FIXME: DEADCODE");
+  return host->p_cpu->execute(size);
 }
 
 surf_action_t surf_cpu_sleep(sg_host_t host, double duration){
-  return sg_host_surfcpu(host)->sleep(duration);
+	xbt_die("FIXME: DEADCODE");
+  return host->p_cpu->sleep(duration);
 }
 
 double surf_action_get_start_time(surf_action_t action){
@@ -516,8 +518,8 @@ double surf_action_get_cost(surf_action_t action){
   return action->getCost();
 }
 
-void surf_cpu_action_set_affinity(surf_action_t action, sg_host_t cpu, unsigned long mask) {
-  static_cast<simgrid::surf::CpuAction*>(action)->setAffinity(sg_host_surfcpu(cpu), mask);
+void surf_cpu_action_set_affinity(surf_action_t action, sg_host_t host, unsigned long mask) {
+  static_cast<simgrid::surf::CpuAction*>(action)->setAffinity(host->p_cpu, mask);
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

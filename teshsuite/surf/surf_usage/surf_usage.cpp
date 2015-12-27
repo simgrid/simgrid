@@ -37,8 +37,8 @@ const char *string_action(e_surf_action_state_t state)
 void test(char *platform);
 void test(char *platform)
 {
-  sg_host_t cpuA = NULL;
-  sg_host_t cpuB = NULL;
+  sg_host_t hostA = NULL;
+  sg_host_t hostB = NULL;
   surf_action_t actionA = NULL;
   surf_action_t actionB = NULL;
   surf_action_t actionC = NULL;
@@ -52,17 +52,17 @@ void test(char *platform)
 
   /*********************** CPU ***********************************/
   XBT_DEBUG("%p", surf_cpu_model_pm);
-  cpuA = sg_host_by_name("Cpu A");
-  cpuB = sg_host_by_name("Cpu B");
+  hostA = sg_host_by_name("Cpu A");
+  hostB = sg_host_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_cpu_name(sg_host_surfcpu(cpuA)), cpuA);
-  XBT_DEBUG("%s : %p", surf_cpu_name(sg_host_surfcpu(cpuB)), cpuB);
+  XBT_DEBUG("%s : %p", surf_cpu_name(hostA->p_cpu), hostA);
+  XBT_DEBUG("%s : %p", surf_cpu_name(hostB->p_cpu), hostB);
 
   /* Let's do something on it */
-  actionA = surf_cpu_execute(cpuA, 1000.0);
-  actionB = surf_cpu_execute(cpuB, 1000.0);
-  actionC = surf_cpu_sleep(cpuB, 7.32);
+  actionA = surf_host_execute(hostA, 1000.0);
+  actionB = surf_host_execute(hostB, 1000.0);
+  actionC = surf_host_sleep(hostB, 7.32);
 
   /* Use whatever calling style you want... */
   stateActionA = surf_action_get_state(actionA);     /* When you know actionA model type */
@@ -78,7 +78,7 @@ void test(char *platform)
   XBT_DEBUG("%p", surf_network_model);
 
   /* Let's do something on it */
-  surf_network_model_communicate(surf_network_model, cpuA, cpuB, 150.0, -1.0);
+  surf_network_model_communicate(surf_network_model, hostA, hostB, 150.0, -1.0);
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {

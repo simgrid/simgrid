@@ -51,11 +51,6 @@ XBT_PUBLIC(smx_host_priv_t) sg_host_simix(sg_host_t host);
 XBT_PUBLIC(void) sg_host_simix_set(sg_host_t host, smx_host_priv_t priv);
 XBT_PUBLIC(void) sg_host_simix_destroy(sg_host_t host);
 
-// ========== SURF CPU ============
-XBT_PUBLIC(surf_cpu_t) sg_host_surfcpu(sg_host_t host);
-XBT_PUBLIC(void) sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu);
-XBT_PUBLIC(void) sg_host_surfcpu_destroy(sg_host_t host);
-
 // ========== RoutingEdge ============
 XBT_PUBLIC(routing_edge_t) sg_host_edge(sg_host_t host);
 XBT_PUBLIC(void) sg_host_edge_set(sg_host_t host, routing_edge_t edge);
