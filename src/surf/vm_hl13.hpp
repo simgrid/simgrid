@@ -70,9 +70,6 @@ public:
   //FIXME: remove
   void updateState(tmgr_trace_event_t event_type, double value, double date);
   bool isUsed();
-
-  Action *execute(double size);
-  Action *sleep(double duration);
 };
 
 /**********

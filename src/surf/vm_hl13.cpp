@@ -328,24 +328,6 @@ void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
  p_action->setAffinity(cpu, mask);
 }
 
-/* Adding a task to a VM updates the VCPU task on its physical machine. */
-Action *VMHL13::execute(double size)
-{
-  double old_cost = p_action->getCost();
-  double new_cost = old_cost + size;
-
-  XBT_DEBUG("VM(%s)@PM(%s): update dummy action's cost (%f -> %f)",
-      getName(), p_hostPM->getName().c_str(),
-      old_cost, new_cost);
-
-  p_action->setCost(new_cost);
-
-  return p_cpu->execute(size);
-}
-
-Action *VMHL13::sleep(double duration) {
-  return p_cpu->sleep(duration);
-}
 
 }
 }

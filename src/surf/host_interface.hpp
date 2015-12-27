@@ -129,24 +129,6 @@ public:
   e_surf_resource_state_t getState();
   void setState(e_surf_resource_state_t state);
 
-  /**
-   * @brief Execute some quantity of computation
-   *
-   * @param flops_amount The value of the processing amount (in flop) needed to process
-   * @return The CpuAction corresponding to the processing
-   * @see Cpu
-   */
-  Action *execute(double flops_amount);
-
-  /**
-   * @brief Make a process sleep for duration seconds
-   *
-   * @param duration The number of seconds to sleep
-   * @return The CpuAction corresponding to the sleeping
-   * @see Cpu
-   */
-  Action *sleep(double duration);
-
   /** @brief Return the storage of corresponding mount point */
   virtual simgrid::surf::Storage *findStorageOnMountList(const char* storage);
 

@@ -151,15 +151,6 @@ void Host::setState(e_surf_resource_state_t state){
   p_cpu->setState(state);
 }
 
-Action *Host::execute(double size) {
-	xbt_assert(0,"FIXME: DEADCODE");
-  return p_cpu->execute(size);
-}
-Action *Host::sleep(double duration) {
-	xbt_assert(0,"FIXME: DEADCODE");
-  return p_cpu->sleep(duration);
-}
-
 
 simgrid::surf::Storage *Host::findStorageOnMountList(const char* mount)
 {
