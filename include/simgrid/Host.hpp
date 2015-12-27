@@ -20,6 +20,10 @@ namespace simgrid {
 
 XBT_PUBLIC_CLASS Host :
 	public simgrid::xbt::Extendable<Host> {
+
+	public:
+	surf::Cpu *p_cpu;
+
 private:
   simgrid::xbt::string name_;
 public:

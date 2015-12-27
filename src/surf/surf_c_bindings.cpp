@@ -252,7 +252,7 @@ void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state
 }
 
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
-	return host->extension(simgrid::surf::Cpu::EXTENSION_ID)->sleep(duration);
+	return host->p_cpu->sleep(duration);
 }
 
 xbt_dict_t sg_host_get_properties(sg_host_t host) {
@@ -272,7 +272,7 @@ int surf_host_get_core(sg_host_t host){
 }
 
 surf_action_t surf_host_execute(sg_host_t host, double size){
-  return host->extension(simgrid::surf::Cpu::EXTENSION_ID)->execute(size);
+  return host->p_cpu->execute(size);
 }
 
 double surf_host_get_current_power_peak(sg_host_t host){
@@ -460,8 +460,8 @@ surf_action_t surf_cpu_execute(sg_host_t cpu, double size){
   return sg_host_surfcpu(cpu)->execute(size);
 }
 
-surf_action_t surf_cpu_sleep(sg_host_t cpu, double duration){
-  return sg_host_surfcpu(cpu)->sleep(duration);
+surf_action_t surf_cpu_sleep(sg_host_t host, double duration){
+  return sg_host_surfcpu(host)->sleep(duration);
 }
 
 double surf_action_get_start_time(surf_action_t action){

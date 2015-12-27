@@ -79,7 +79,6 @@ void sg_host_init()
   SD_HOST_LEVEL = simgrid::Host::extension_create(__SD_workstation_destroy);
   SIMIX_HOST_LEVEL = simgrid::Host::extension_create(SIMIX_host_destroy);
   USER_HOST_LEVEL = simgrid::Host::extension_create(NULL);
-  simgrid::surf::Cpu::classInit();
 }
 
 // ========== User data Layer ==========
@@ -127,13 +126,13 @@ void sg_host_simix_destroy(sg_host_t host) {
 
 // ========== SURF CPU ============
 surf_cpu_t sg_host_surfcpu(sg_host_t host) {
-	return host->extension<simgrid::surf::Cpu>();
+	return host->p_cpu;
 }
 void sg_host_surfcpu_set(sg_host_t host, surf_cpu_t cpu) {
-  host->extension_set(simgrid::surf::Cpu::EXTENSION_ID, cpu); // FIXME: use the typesafe version
+  host->p_cpu = cpu;
 }
 void sg_host_surfcpu_destroy(sg_host_t host) {
-  host->extension_set<simgrid::surf::Cpu>(nullptr);
+  host->p_cpu = nullptr;
 }
 // ========== RoutingEdge ============
 surf_RoutingEdge *sg_host_edge(sg_host_t host) {

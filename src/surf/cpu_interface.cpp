@@ -21,14 +21,6 @@ simgrid::surf::CpuModel *surf_cpu_model_vm;
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::Extension<simgrid::Host, Cpu> Cpu::EXTENSION_ID;
-
-void Cpu::classInit()
-{
-  if (!EXTENSION_ID.valid())
-    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Cpu>();
-}
-
 /*************
  * Callbacks *
  *************/
@@ -154,7 +146,7 @@ Cpu::Cpu(Model *model, simgrid::Host *host,
  , m_speedScale(speedScale)
  , m_host(host)
 {
-  host->extension_set(Cpu::EXTENSION_ID, this);
+  host->p_cpu = this;
 
   // Copy the power peak array:
   p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
@@ -177,7 +169,7 @@ Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
  , m_speedScale(speedScale)
  , m_host(host)
 {
-  host->extension_set(Cpu::EXTENSION_ID, this);
+  host->p_cpu = this;
 
   // Copy the power peak array:
   p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
