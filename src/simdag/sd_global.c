@@ -211,9 +211,7 @@ void SD_create_environment(const char *platform_file)
     xbt_dict_cursor_t cursor = NULL;
     simgrid_Host* host = NULL;
     xbt_dict_foreach(host_list, cursor, name, host){
-      surf_Host* surf_host = (surf_Host*) surf_host_resource_priv(host);
-      if (surf_host != NULL)
-        __SD_workstation_create(surf_host, NULL);
+    	__SD_workstation_create((const char*)name);
     }
   }
 

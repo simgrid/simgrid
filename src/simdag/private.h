@@ -121,8 +121,7 @@ typedef struct SD_dependency {
 XBT_PUBLIC(xbt_swag_t) SD_simulate_swag(double how_long); /* could be public, but you need to see the internals of the SD_task_t to use it */
 
 
-XBT_PRIVATE SD_workstation_t __SD_workstation_create(void *surf_workstation,
-                                         void *data);
+XBT_PRIVATE SD_workstation_t __SD_workstation_create(const char* name);
 XBT_PRIVATE void __SD_workstation_destroy(void *workstation);
 XBT_PRIVATE int __SD_workstation_is_busy(SD_workstation_t workstation);
 

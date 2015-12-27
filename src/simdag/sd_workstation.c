@@ -17,22 +17,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_workstation, sd,
 
 /* Creates a workstation and registers it in SD.
  */
-SD_workstation_t __SD_workstation_create(void *surf_workstation,
-                                         void *data)
+SD_workstation_t __SD_workstation_create(const char *name)
 {
 
   SD_workstation_priv_t workstation;
-  const char *name;
 
   workstation = xbt_new(s_SD_workstation_priv_t, 1);
   workstation->access_mode = SD_WORKSTATION_SHARED_ACCESS;      /* default mode is shared */
   workstation->task_fifo = NULL;
   workstation->current_task = NULL;
 
-  name = surf_resource_name(surf_workstation);
   sg_host_t sg_host = sg_host_by_name(name);
   sg_host_sd_set(sg_host,workstation);
-  sg_host_user_set(sg_host,data);
   return sg_host;
 }
 
