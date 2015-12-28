@@ -542,17 +542,17 @@ set(LUA_SRC
   )
 
 set(TRACING_SRC
-  src/instr/instr_TI_trace.c
-  src/instr/instr_config.c
-  src/instr/instr_interface.c
-  src/instr/instr_paje_containers.c
-  src/instr/instr_paje_header.c
-  src/instr/instr_paje_trace.c
-  src/instr/instr_paje_types.c
-  src/instr/instr_paje_values.c
+  src/instr/instr_TI_trace.cpp
+  src/instr/instr_config.cpp
+  src/instr/instr_interface.cpp
+  src/instr/instr_paje_containers.cpp
+  src/instr/instr_paje_header.cpp
+  src/instr/instr_paje_trace.cpp
+  src/instr/instr_paje_types.cpp
+  src/instr/instr_paje_values.cpp
   src/instr/instr_private.h
-  src/instr/instr_resource_utilization.c
-  src/instr/instr_trace.c
+  src/instr/instr_resource_utilization.cpp
+  src/instr/instr_trace.cpp
   )
 
 set(JEDULE_SRC

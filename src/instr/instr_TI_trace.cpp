@@ -100,7 +100,7 @@ void print_TIDestroyContainer(paje_event_t event)
 {
   if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file")||
       xbt_dict_length(tracing_files) == 1) {
-    FILE* f = xbt_dict_get_or_null(tracing_files,
+    FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files,
         ((destroyContainer_t) event->data)->container->name);
     fclose(f);
   }

@@ -95,7 +95,7 @@ void TRACE_category_with_color (const char *category, const char *color)
   if (!TRACE_needs_platform()) return;
 
   //check if category is already created
-  char *created = xbt_dict_get_or_null(created_categories, category);
+  char *created = (char*)xbt_dict_get_or_null(created_categories, category);
   if (created) return;
   xbt_dict_set (created_categories, category, xbt_strdup("1"), NULL);
 
@@ -163,7 +163,7 @@ void TRACE_declare_mark(const char *mark_type)
   if (!mark_type) THROWF (tracing_error, 1, "mark_type is NULL");
 
   //check if mark_type is already declared
-  char *created = xbt_dict_get_or_null(declared_marks, mark_type);
+  char *created = (char*)xbt_dict_get_or_null(declared_marks, mark_type);
   if (created) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is already declared", mark_type);
   }
@@ -306,7 +306,7 @@ static void instr_user_variable(double time,
   if (!TRACE_needs_platform()) return;
 
   //check if variable is already declared
-  char *created = xbt_dict_get_or_null(filter, variable);
+  char *created = (char*)xbt_dict_get_or_null(filter, variable);
   if (what == INSTR_US_DECLARE){
     if (created){
       //already declared
@@ -372,7 +372,7 @@ static void instr_user_srcdst_variable(double time,
 
   routing_get_route_and_latency (src_elm, dst_elm, &route,NULL);
   unsigned int i;
-  void *link;
+  surf_cpp_resource_t link;
   xbt_dynar_foreach (route, i, link) {
     char *link_name = (char*)surf_resource_name(link);
     instr_user_variable (time, link_name, variable, father_type, value, what, NULL, user_link_variables);

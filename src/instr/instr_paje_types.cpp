@@ -24,14 +24,14 @@ type_t PJ_type_get_root ()
   return rootType;
 }
 
-static type_t newType (const char *typename, const char *key, const char *color, e_entity_types kind, type_t father)
+static type_t newType (const char *typeNameBuff, const char *key, const char *color, e_entity_types kind, type_t father)
 {
-  if (typename == NULL || key == NULL){
+  if (typeNameBuff == NULL || key == NULL){
     THROWF(tracing_error, 0, "can't create a new type with name or key equal NULL");
   }
 
   type_t ret = xbt_new0(s_type_t, 1);
-  ret->name = xbt_strdup (typename);
+  ret->name = xbt_strdup (typeNameBuff);
   ret->father = father;
   ret->kind = kind;
   ret->children = xbt_dict_new_homogeneous(NULL);
@@ -44,7 +44,7 @@ static type_t newType (const char *typename, const char *key, const char *color,
 
   if (father != NULL){
     xbt_dict_set (father->children, key, ret, NULL);
-    XBT_DEBUG("new type %s, child of %s", typename, father->name);
+    XBT_DEBUG("new type %s, child of %s", typeNameBuff, father->name);
   }
   return ret;
 }
