@@ -236,7 +236,7 @@ void surf_vm_model_create(const char *name, sg_host_t ind_phys_host){
 }
 
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate){
-  return model->communicate(sg_host_edge(src), sg_host_edge(dst), size, rate);
+  return model->communicate(src->p_netcard, dst->p_netcard, size, rate);
 }
 
 const char *surf_resource_name(surf_cpp_resource_t resource){
@@ -385,19 +385,9 @@ void surf_host_set_params(sg_host_t host, vm_params_t params){
   get_casted_host(host)->setParams(params);
 }
 
-void surf_vm_destroy(sg_host_t resource){
-  /* We deregister objects from host_lib, without invoking the freeing callback
-   * of each level.
-   *
-   * Do not call xbt_lib_remove() here. It deletes all levels of the key,
-   * including MSG_HOST_LEVEL and others. We should unregister only what we know.
-   */
-  resource->p_cpu = nullptr; // FIXME: memleaking?
-  sg_host_edge_destroy(resource,1);
-  resource->extension_set<simgrid::surf::Host>(nullptr);
-
-  /* TODO: comment out when VM storage is implemented. */
-  // host->extension_set(SURF_STORAGE_LEVEL, nullptr);
+void surf_vm_destroy(sg_host_t vm){
+  vm->p_cpu = nullptr;
+  delete vm->p_netcard;
 }
 
 void surf_vm_suspend(sg_host_t vm){

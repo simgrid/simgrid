@@ -490,7 +490,7 @@ void STag_surfxml_host___link(void){
   host_link.id        = A_surfxml_host___link_id;
   host_link.link_up   = A_surfxml_host___link_up;
   host_link.link_down = A_surfxml_host___link_down;
-  sg_platf_new_host_link(&host_link);
+  sg_platf_new_netcard(&host_link);
 }
 
 void STag_surfxml_router(void){
@@ -773,8 +773,8 @@ void ETag_surfxml_ASroute(void){
   ASroute.src = A_surfxml_ASroute_src;
   ASroute.dst = A_surfxml_ASroute_dst;
 
-  ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___src);
-  ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_ASroute_gw___dst);
+  ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___src);
+  ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___dst);
 
   if (A_surfxml_ASroute_gw___src && !ASroute.gw_src)
     surf_parse_error("gw_src=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
@@ -823,8 +823,8 @@ void ETag_surfxml_bypassASroute(void){
   ASroute.link_list   = parsed_link_list;
   ASroute.symmetrical = FALSE;
 
-  ASroute.gw_src = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___src);
-  ASroute.gw_dst = sg_routing_edge_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
+  ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src);
+  ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
   sg_platf_new_bypassASroute(&ASroute);
   parsed_link_list = NULL;

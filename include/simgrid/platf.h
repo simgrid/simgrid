@@ -19,7 +19,7 @@ static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;
 }
 
-XBT_PUBLIC(sg_netcard_t) sg_routing_edge_by_name_or_null(const char *name);
+XBT_PUBLIC(sg_netcard_t) sg_netcard_by_name_or_null(const char *name);
 
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
@@ -55,7 +55,7 @@ XBT_PUBLIC(void) sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS); // Begin descrip
 XBT_PUBLIC(void) sg_platf_new_AS_end(void);                            // That AS is fully described
 
 XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an host   to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_host_link(sg_platf_host_link_cbarg_t h); // Add an host_link to the currently described AS
+XBT_PUBLIC(void) sg_platf_new_netcard(sg_platf_host_link_cbarg_t h); // Add an host_link to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_router (sg_platf_router_cbarg_t router); // Add a router  to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_link   (sg_platf_link_cbarg_t link);     // Add a link    to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_peer   (sg_platf_peer_cbarg_t peer);     // Add a peer    to the currently described AS

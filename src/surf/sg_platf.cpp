@@ -88,7 +88,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
 
-  simgrid::surf::NetCard *info = new simgrid::surf::RoutingEdgeImpl(
+  simgrid::surf::NetCard *info = new simgrid::surf::NetCardImpl(
     xbt_strdup(router->id), -1, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
   info->setId(current_routing->parsePU(info));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);

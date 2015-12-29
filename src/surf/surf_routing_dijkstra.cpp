@@ -483,8 +483,8 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
 
   NetCard *src_net_elm, *dst_net_elm;
 
-  src_net_elm = sg_routing_edge_by_name_or_null(src);
-  dst_net_elm = sg_routing_edge_by_name_or_null(dst);
+  src_net_elm = sg_netcard_by_name_or_null(src);
+  dst_net_elm = sg_netcard_by_name_or_null(dst);
 
   xbt_assert(src_net_elm, "Network elements %s not found", src);
   xbt_assert(dst_net_elm, "Network elements %s not found", dst);

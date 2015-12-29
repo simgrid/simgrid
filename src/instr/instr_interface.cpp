@@ -364,10 +364,10 @@ static void instr_user_srcdst_variable(double time,
                               InstrUserVariable what)
 {
   xbt_dynar_t route=NULL;
-  sg_netcard_t src_elm = sg_routing_edge_by_name_or_null(src);
+  sg_netcard_t src_elm = sg_netcard_by_name_or_null(src);
   if(!src_elm) xbt_die("Element '%s' not found!",src);
 
-  sg_netcard_t dst_elm = sg_routing_edge_by_name_or_null(dst);
+  sg_netcard_t dst_elm = sg_netcard_by_name_or_null(dst);
   if(!dst_elm) xbt_die("Element '%s' not found!",dst);
 
   routing_get_route_and_latency (src_elm, dst_elm, &route,NULL);

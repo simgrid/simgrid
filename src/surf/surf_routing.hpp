@@ -100,11 +100,11 @@ public:
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
 };
 
-struct XBT_PRIVATE RoutingEdgeImpl : public NetCard {
+struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  RoutingEdgeImpl(char *name, int id, e_surf_network_element_type_t rcType, As *rcComponent)
+  NetCardImpl(char *name, int id, e_surf_network_element_type_t rcType, As *rcComponent)
   : p_rcComponent(rcComponent), p_rcType(rcType), m_id(id), p_name(name) {}
-  ~RoutingEdgeImpl() { xbt_free(p_name);};
+  ~NetCardImpl() { xbt_free(p_name);};
 
   int getId() {return m_id;}
   int *getIdPtr() {return &m_id;}

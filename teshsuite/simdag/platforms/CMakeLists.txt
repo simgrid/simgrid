@@ -2,7 +2,7 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(basic_parsing_test basic_parsing_test.c)
 add_executable(is_router_test is_router_test.c)
-add_executable(flatifier flatifier.c)
+add_executable(flatifier flatifier.cpp)
 add_executable(basic_tracing basic_tracing.c)
 add_executable(basic_link_test basic_link_test.c)
 

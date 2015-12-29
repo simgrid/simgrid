@@ -19,13 +19,14 @@
 namespace simgrid {
 
 XBT_PUBLIC_CLASS Host :
-	public simgrid::xbt::Extendable<Host> {
+public simgrid::xbt::Extendable<Host> {
 
-	public:
-	surf::Cpu *p_cpu;
+public:
+	  surf::Cpu     *p_cpu = nullptr;
+	  surf::NetCard *p_netcard = nullptr;
 
 private:
-  simgrid::xbt::string name_;
+  simgrid::xbt::string name_ = "noname";
 public:
   Host(std::string const& name);
   ~Host();

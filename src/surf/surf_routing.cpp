@@ -52,14 +52,14 @@ int ROUTING_PROP_ASR_LEVEL;     //Where the properties are stored
 static xbt_dict_t random_value = NULL;
 
 
-/** @brief Retrieve a routing edge from its name
+/** @brief Retrieve a netcard from its name
  *
- * Routing edges are either host and routers, whatever
+ * Netcards are the thing that connect host or routers to the network
  */
-simgrid::surf::NetCard *sg_routing_edge_by_name_or_null(const char *name)
+simgrid::surf::NetCard *sg_netcard_by_name_or_null(const char *name)
 {
   sg_host_t h = sg_host_by_name(name);
-  simgrid::surf::NetCard *net_elm = h==NULL?NULL: sg_host_edge(h);
+  simgrid::surf::NetCard *net_elm = h==NULL?NULL: h->p_netcard;
   if (!net_elm)
 	net_elm = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
   return net_elm;
@@ -79,8 +79,6 @@ simgrid::surf::As* routing_get_current()
 {
   return current_routing;
 }
-
-// static void routing_parse_Srandom(void);        /* random bypass */
 
 static void routing_parse_postparse(void);
 
@@ -124,30 +122,31 @@ struct s_model_type routing_models[] = {
 };
 
 /**
- * \brief Add a "host_link" to the network element list
+ * \brief Add a netcard connecting an host to the network element list
+ * FIXME: integrate into host constructor
  */
-void sg_platf_new_host_link(sg_platf_host_link_cbarg_t host)
+void sg_platf_new_netcard(sg_platf_host_link_cbarg_t netcard)
 {
-  simgrid::surf::NetCard *info = sg_host_edge(sg_host_by_name(host->id));
-  xbt_assert(info, "Host '%s' not found!", host->id);
+  simgrid::surf::NetCard *info = sg_host_by_name(netcard->id)->p_netcard;
+  xbt_assert(info, "Host '%s' not found!", netcard->id);
   xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER] ||
       current_routing->p_modelDesc == &routing_models[SURF_MODEL_VIVALDI],
       "You have to be in model Cluster to use tag host_link!");
 
   s_surf_parsing_link_up_down_t link_up_down;
-  link_up_down.link_up = Link::byName(host->link_up);
-  link_up_down.link_down = Link::byName(host->link_down);
+  link_up_down.link_up = Link::byName(netcard->link_up);
+  link_up_down.link_down = Link::byName(netcard->link_down);
 
-  xbt_assert(link_up_down.link_up, "Link '%s' not found!",host->link_up);
-  xbt_assert(link_up_down.link_down, "Link '%s' not found!",host->link_down);
+  xbt_assert(link_up_down.link_up, "Link '%s' not found!",netcard->link_up);
+  xbt_assert(link_up_down.link_down, "Link '%s' not found!",netcard->link_down);
 
   if(!current_routing->p_linkUpDownList)
     current_routing->p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
-  // If dynar is is greater than edge id and if the host_link is already defined
+  // If dynar is is greater than netcard id and if the host_link is already defined
   if((int)xbt_dynar_length(current_routing->p_linkUpDownList) > info->getId() &&
       xbt_dynar_get_as(current_routing->p_linkUpDownList, info->getId(), void*))
-	surf_parse_error("Host_link for '%s' is already defined!",host->id);
+	surf_parse_error("Host_link for '%s' is already defined!",netcard->id);
 
   XBT_DEBUG("Push Host_link for host '%s' to position %d", info->getName(), info->getId());
   xbt_dynar_set_as(current_routing->p_linkUpDownList, info->getId(), s_surf_parsing_link_up_down_t, link_up_down);
@@ -164,16 +163,16 @@ simgrid::surf::NetCard *routing_add_host(
   xbt_assert(!sg_host_by_name(host->id),
 		     "Reading a host, processing unit \"%s\" already exists", host->id);
 
-  simgrid::surf::NetCard *routingEdge =
-    new simgrid::surf::RoutingEdgeImpl(xbt_strdup(host->id),
+  simgrid::surf::NetCard *netcard =
+    new simgrid::surf::NetCardImpl(xbt_strdup(host->id),
 		                                    -1,
 		                                    SURF_NETWORK_ELEMENT_HOST,
 		                                    current_routing);
-  routingEdge->setId(current_routing->parsePU(routingEdge));
+  netcard->setId(current_routing->parsePU(netcard));
   sg_host_t h = sg_host_by_name_or_create(host->id);
-  sg_host_edge_set(h, routingEdge);
-  XBT_DEBUG("Having set name '%s' id '%d'", host->id, routingEdge->getId());
-  simgrid::surf::routingEdgeCreatedCallbacks(routingEdge);
+  h->p_netcard = netcard;
+  XBT_DEBUG("Having set name '%s' id '%d'", host->id, netcard->getId());
+  simgrid::surf::routingEdgeCreatedCallbacks(netcard);
 
   if(mount_list){
     xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
@@ -199,7 +198,7 @@ simgrid::surf::NetCard *routing_add_host(
     XBT_DEBUG("Having set host coordinates for '%s'",host->id);
   }
 
-  return routingEdge;
+  return netcard;
 }
 
 /**
@@ -316,7 +315,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   new_as->p_name = xbt_strdup(AS->id);
 
   simgrid::surf::NetCard *info =
-    new simgrid::surf::RoutingEdgeImpl(xbt_strdup(new_as->p_name),
+    new simgrid::surf::NetCardImpl(xbt_strdup(new_as->p_name),
                                             -1,
                                             SURF_NETWORK_ELEMENT_AS,
                                             current_routing);
@@ -535,8 +534,8 @@ AS_t surf_platf_get_root(routing_platf_t platf){
   return platf->p_root;
 }
 
-e_surf_network_element_type_t surf_routing_edge_get_rc_type(sg_netcard_t edge){
-  return edge->getRcType();
+e_surf_network_element_type_t surf_routing_edge_get_rc_type(sg_netcard_t netcard){
+  return netcard->getRcType();
 }
 
 namespace simgrid {
@@ -554,7 +553,7 @@ namespace surf {
  * \pre route!=NULL
  *
  * walk through the routing components tree and find a route between hosts
- * by calling the differents "get_route" functions in each routing component.
+ * by calling each "get_route" function in each routing component.
  */
 void RoutingPlatf::getRouteAndLatency(
   simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
@@ -602,7 +601,7 @@ xbt_dynar_t RoutingPlatf::recursiveGetOneLinkRoutes(As *rc)
 
 e_surf_network_element_type_t routing_get_network_element_type(const char *name)
 {
-  simgrid::surf::NetCard *rc = sg_routing_edge_by_name_or_null(name);
+  simgrid::surf::NetCard *rc = sg_netcard_by_name_or_null(name);
   if (rc)
     return rc->getRcType();
 
@@ -740,7 +739,7 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
       host_link.id        = host_id;
       host_link.link_up   = link_up;
       host_link.link_down = link_down;
-      sg_platf_new_host_link(&host_link);
+      sg_platf_new_netcard(&host_link);
 
       free(host_id);
       free(link_id);
@@ -1081,7 +1080,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   host_link.id        = host_id;
   host_link.link_up   = link_up;
   host_link.link_down = link_down;
-  sg_platf_new_host_link(&host_link);
+  sg_platf_new_netcard(&host_link);
 
   XBT_DEBUG("<router id=\"%s\"/>", router_id);
   s_sg_platf_router_cbarg_t router = SG_PLATF_ROUTER_INITIALIZER;
@@ -1232,7 +1231,7 @@ static void check_disk_attachment()
   xbt_lib_foreach(storage_lib, cursor, key, data) {
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
 	  simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-	  host_elm = sg_routing_edge_by_name_or_null(storage->p_attach);
+	  host_elm = sg_netcard_by_name_or_null(storage->p_attach);
 	  if(!host_elm)
 		  surf_parse_error("Unable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->p_attach);
     }

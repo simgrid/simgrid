@@ -332,7 +332,7 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @defgroup SD_simulation Simulation
  *  @brief Functions for creating the environment and launching the simulation
  *
- *  This section describes the functions for initialising SimDag, launching
+ *  This section describes the functions for initializing SimDag, launching
  *  the simulation and exiting SimDag.
  *
  *  @{
@@ -352,7 +352,8 @@ XBT_PUBLIC(void) uniq_transfer_task_name(SD_task_t task);
 
 /** @} */
 
+SG_END_DECL()
+
 #include "simgrid/instr.h"
 
-SG_END_DECL()
 #endif

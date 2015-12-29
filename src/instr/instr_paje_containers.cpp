@@ -60,7 +60,7 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   //Search for network_element_t
   switch (kind){
     case INSTR_HOST:
-      newContainer->net_elm = sg_host_edge(sg_host);
+      newContainer->net_elm = sg_host->p_netcard;
       if(!newContainer->net_elm) xbt_die("Element '%s' not found",name);
       break;
     case INSTR_ROUTER:

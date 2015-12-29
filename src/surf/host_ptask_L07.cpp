@@ -199,9 +199,9 @@ L07Action::L07Action(Model *model, int host_nb,
 
   xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
 
-  this->p_edgeList->reserve(host_nb);
+  this->p_netcardList->reserve(host_nb);
   for (int i = 0; i<host_nb; i++)
-	  this->p_edgeList->push_back(sg_host_edge(host_list[i]));
+	  this->p_netcardList->push_back(host_list[i]->p_netcard);
 
   /* Compute the number of affected resources... */
   for (int i = 0; i < host_nb; i++) {
@@ -214,7 +214,7 @@ L07Action::L07Action(Model *model, int host_nb,
         void *_link;
         LinkL07 *link;
 
-        routing_platf->getRouteAndLatency((*this->p_edgeList)[i], (*this->p_edgeList)[j],
+        routing_platf->getRouteAndLatency((*this->p_netcardList)[i], (*this->p_netcardList)[j],
         		                          &route, &lat);
         latency = MAX(latency, lat);
 
@@ -260,7 +260,7 @@ L07Action::L07Action(Model *model, int host_nb,
       if (bytes_amount[i * host_nb + j] == 0.0)
         continue;
 
-      routing_platf->getRouteAndLatency((*this->p_edgeList)[i], (*this->p_edgeList)[j],
+      routing_platf->getRouteAndLatency((*this->p_netcardList)[i], (*this->p_netcardList)[j],
     		                            &route, NULL);
 
       xbt_dynar_foreach(route, cpt, _link) {
@@ -563,7 +563,7 @@ void L07Action::updateBound()
   double lat_bound = -1.0;
   int i, j;
 
-  int hostNb = p_edgeList->size();
+  int hostNb = p_netcardList->size();
 
   for (i = 0; i < hostNb; i++) {
     for (j = 0; j < hostNb; j++) {
@@ -571,7 +571,7 @@ void L07Action::updateBound()
 
       if (p_communicationAmount[i * hostNb + j] > 0) {
         double lat = 0.0;
-        routing_platf->getRouteAndLatency((*p_edgeList)[i], (*p_edgeList)[j],
+        routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j],
                 				          &route, &lat);
 
         lat_current = MAX(lat_current, lat * p_communicationAmount[i * hostNb + j]);

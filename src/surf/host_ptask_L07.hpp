@@ -157,7 +157,7 @@ public:
   void setPriority(double priority) override;
   double getRemains() override;
 
-  std::vector<NetCard*> * p_edgeList = new std::vector<NetCard*>();
+  std::vector<NetCard*> * p_netcardList = new std::vector<NetCard*>();
   double *p_computationAmount;
   double *p_communicationAmount;
   double m_latency;

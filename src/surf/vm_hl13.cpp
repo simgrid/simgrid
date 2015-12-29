@@ -176,9 +176,9 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  p_netElm = new RoutingEdgeWrapper(sg_host_edge(host_PM));
+  p_netElm = new RoutingEdgeWrapper(host_PM->p_netcard);
   sg_host_t host = sg_host_by_name_or_create(name);
-  sg_host_edge_set(host, p_netElm);
+  host->p_netcard = p_netElm;
 
   p_currentState = SURF_VM_STATE_CREATED;
 
@@ -278,15 +278,15 @@ void VMHL13::migrate(sg_host_t host_dest)
 
    /* update net_elm with that of the destination physical host */
    NetCard *old_net_elm = p_netElm;
-   NetCard *new_net_elm = new RoutingEdgeWrapper(sg_host_edge(sg_host_by_name(pm_name_dst)));
+   NetCard *new_net_elm = new RoutingEdgeWrapper(sg_host_by_name(pm_name_dst)->p_netcard);
    xbt_assert(new_net_elm);
 
    /* Unregister the current net_elm from host_lib. Do not call the free callback. */
-   sg_host_edge_destroy(sg_host_by_name(vm_name), 0);
+   sg_host_by_name(vm_name)->p_netcard = nullptr;
 
    /* Then, resister the new one. */
    p_netElm = new_net_elm;
-   sg_host_edge_set(sg_host_by_name(vm_name), p_netElm);
+   sg_host_by_name(vm_name)->p_netcard = p_netElm;
 
    p_hostPM = host_dest;
 

@@ -124,17 +124,6 @@ void sg_host_simix_destroy(sg_host_t host) {
   host->extension_set(SIMIX_HOST_LEVEL, nullptr);
 }
 
-// ========== RoutingEdge ============
-surf_NetCard *sg_host_edge(sg_host_t host) {
-	return (surf_NetCard*) host->extension(ROUTING_HOST_LEVEL);
-}
-void sg_host_edge_set(sg_host_t host, surf_NetCard *edge) {
-  host->extension_set(ROUTING_HOST_LEVEL, edge);
-}
-void sg_host_edge_destroy(sg_host_t host, int do_callback) {
-  host->extension_set(ROUTING_HOST_LEVEL, nullptr, do_callback);
-}
-
 // =========== user-level functions ===============
 // ================================================
 double sg_host_get_speed(sg_host_t host){
