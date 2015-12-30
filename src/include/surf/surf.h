@@ -452,25 +452,6 @@ XBT_PUBLIC(void) surf_vm_set_bound(sg_host_t resource, double bound);
 XBT_PUBLIC(void) surf_vm_set_affinity(sg_host_t resource, sg_host_t cpu, unsigned long mask);
 
 /**
- * @brief Execute some quantity of computation
- *
- * @param cpu The surf cpu
- * @param size The value of the processing amount (in flop) needed to process
- * @return The surf action corresponding to the processing
- */
-XBT_PUBLIC(surf_action_t) surf_cpu_execute(sg_host_t cpu, double size);
-
-/**
- * @brief Make the cpu sleep for duration (in seconds)
- * @details [long description]
- *
- * @param cpu The surf cpu
- * @param duration The number of seconds to sleep
- * @return The surf action corresponding to the sleeping
- */
-XBT_PUBLIC(surf_action_t) surf_cpu_sleep(sg_host_t cpu, double duration);
-
-/**
  * @brief Get the host power peak
  * @details [long description]
  *

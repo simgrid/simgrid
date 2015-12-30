@@ -446,16 +446,6 @@ const char* surf_storage_get_host(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->p_attach;
 }
 
-surf_action_t surf_cpu_execute(sg_host_t host, double size){
-	xbt_die("FIXME: DEADCODE");
-  return host->p_cpu->execute(size);
-}
-
-surf_action_t surf_cpu_sleep(sg_host_t host, double duration){
-	xbt_die("FIXME: DEADCODE");
-  return host->p_cpu->sleep(duration);
-}
-
 double surf_action_get_start_time(surf_action_t action){
   return action->getStartTime();
 }
