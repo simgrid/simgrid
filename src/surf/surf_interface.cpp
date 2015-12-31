@@ -687,22 +687,11 @@ namespace surf {
 void Action::initialize(simgrid::surf::Model *model, double cost, bool failed,
                         lmm_variable_t var)
 {
-  m_priority = 1.0;
-  m_refcount = 1;
   m_remains = cost;
-  m_maxDuration = NO_MAX_DURATION;
-  m_finish = -1.0;
   m_start = surf_get_clock();
   m_cost = cost;
   p_model = model;
-  p_data = NULL;
   p_variable = var;
-  m_lastValue = 0;
-  m_lastUpdate = 0;
-  m_hat = NOTSET;
-  p_category = NULL;
-  p_stateHookup.prev = 0;
-  p_stateHookup.next = 0;
   if (failed)
     p_stateSet = getModel()->getFailedActionSet();
   else

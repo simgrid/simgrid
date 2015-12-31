@@ -251,28 +251,28 @@ public:
   /** @brief Get the state set in which the action is */
   ActionList* getStateSet() {return p_stateSet;};
 
-  s_xbt_swag_hookup_t p_stateHookup;
+  s_xbt_swag_hookup_t p_stateHookup = {NULL,NULL};
 
   simgrid::surf::Model *getModel() {return p_model;}
 
 protected:
   ActionList* p_stateSet;
-  double m_priority; /**< priority (1.0 by default) */
-  int    m_refcount;
+  double m_priority = 1.0; /**< priority (1.0 by default) */
+  int    m_refcount = 1;
   double m_remains; /**< How much of that cost remains to be done in the currently running task */
-  double m_maxDuration; /*< max_duration (may fluctuate until the task is completed) */
-  double m_finish; /**< finish time : this is modified during the run and fluctuates until the task is completed */
+  double m_maxDuration = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
+  double m_finish = -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
 private:
   double m_start; /**< start time  */
-  char *p_category;               /**< tracing category for categorized resource utilization monitoring */
+  char *p_category = NULL;            /**< tracing category for categorized resource utilization monitoring */
 
   #ifdef HAVE_LATENCY_BOUND_TRACKING
   int m_latencyLimited;               /**< Set to 1 if is limited by latency, 0 otherwise */
   #endif
   double    m_cost;
   simgrid::surf::Model *p_model;
-  void *p_data; /**< for your convenience */
+  void *p_data = NULL; /**< for your convenience */
 
   /* LMM */
 public:
@@ -290,11 +290,11 @@ public:
 
 protected:
   lmm_variable_t p_variable;
-  double m_lastValue;
-  double m_lastUpdate;
+  double m_lastValue = 0;
+  double m_lastUpdate = 0;
   int m_suspended = 0;
   int m_indexHeap;
-  enum heap_action_type m_hat;
+  enum heap_action_type m_hat = NOTSET;
 };
 
 typedef Action::ActionList ActionList;
