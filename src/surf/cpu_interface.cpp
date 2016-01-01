@@ -133,6 +133,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  ************/
 Cpu::Cpu()
 {
+	xbt_die("FIXME: DEADCODE");
 }
 
 
@@ -140,23 +141,8 @@ Cpu::Cpu(Model *model, simgrid::Host *host,
 	     xbt_dynar_t speedPeakList, int pstate,
 		 int core, double speedPeak, double speedScale,
          e_surf_resource_state_t stateInitial)
- : Resource(model, host->getName().c_str(), stateInitial)
- , m_core(core)
- , m_speedPeak(speedPeak)
- , m_speedScale(speedScale)
- , m_host(host)
+ : Cpu(model, host, NULL/*constraint*/, speedPeakList, pstate, core, speedPeak, speedScale, stateInitial)
 {
-  host->p_cpu = this;
-
-  // Copy the power peak array:
-  p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
-  unsigned long n = xbt_dynar_length(speedPeakList);
-  for (unsigned long i = 0; i != n; ++i) {
-    double value = xbt_dynar_get_as(speedPeakList, i, double);
-    xbt_dynar_push(p_speedPeakList, &value);
-  }
-
-  m_pstate = pstate;
 }
 
 Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
@@ -170,6 +156,7 @@ Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
  , m_host(host)
 {
   host->p_cpu = this;
+  xbt_assert(m_speedScale > 0, "Available speed has to be >0");
 
   // Copy the power peak array:
   p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
@@ -203,7 +190,7 @@ Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
   int core, double speedPeak, double speedScale)
 : Cpu(model, host, constraint, speedPeakList, pstate, core, speedPeak, speedScale, SURF_RESOURCE_ON)
 {
-	xbt_assert(0,"FIXME: this constructor could be removed");
+	xbt_die("FIXME: DEADCODE");
 }
 
 Cpu::Cpu(Model *model, simgrid::Host *host,

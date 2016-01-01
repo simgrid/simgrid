@@ -402,7 +402,6 @@ CpuL07::CpuL07(CpuL07Model *model, simgrid::Host *host,
  : Cpu(model, host, speedPeakList, pstate,
 	   core, xbt_dynar_get_as(speedPeakList,pstate,double), speedScale, state_initial)
 {
-  xbt_assert(m_speedScale > 0, "Power has to be >0");
   p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,pstate,double) * speedScale);
 
   if (speedTrace)
