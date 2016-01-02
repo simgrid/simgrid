@@ -197,7 +197,9 @@ Cpu::Cpu(Model *model, simgrid::Host *host,
   xbt_dynar_t speedPeakList, int pstate,
   int core, double speedPeak, double speedScale)
 : Cpu(model, host, speedPeakList, pstate, core, speedPeak, speedScale, SURF_RESOURCE_ON)
-{}
+{
+	xbt_die("FIXME: DEADCODE");
+}
 
 Cpu::~Cpu()
 {
