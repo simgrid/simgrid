@@ -131,12 +131,6 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 /************
  * Resource *
  ************/
-Cpu::Cpu()
-{
-	xbt_die("FIXME: DEADCODE");
-}
-
-
 Cpu::Cpu(Model *model, simgrid::Host *host,
 	     xbt_dynar_t speedPeakList, int pstate,
 		 int core, double speedPeak, double speedScale,
@@ -183,22 +177,6 @@ Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
       p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], m_speedScale * m_speedPeak);
     }
   }
-}
-
-Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
-  xbt_dynar_t speedPeakList, int pstate,
-  int core, double speedPeak, double speedScale)
-: Cpu(model, host, constraint, speedPeakList, pstate, core, speedPeak, speedScale, SURF_RESOURCE_ON)
-{
-	xbt_die("FIXME: DEADCODE");
-}
-
-Cpu::Cpu(Model *model, simgrid::Host *host,
-  xbt_dynar_t speedPeakList, int pstate,
-  int core, double speedPeak, double speedScale)
-: Cpu(model, host, speedPeakList, pstate, core, speedPeak, speedScale, SURF_RESOURCE_ON)
-{
-	xbt_die("FIXME: DEADCODE");
 }
 
 Cpu::~Cpu()

@@ -74,8 +74,6 @@ public:
 */
 XBT_PUBLIC_CLASS Cpu : public simgrid::surf::Resource {
 public:
-  Cpu();
-
   /**
    * @brief Cpu constructor
    *
@@ -106,13 +104,6 @@ public:
       xbt_dynar_t speedPeakList, int pstate,
 	  int core, double speedPeak, double speedScale,
 	  e_surf_resource_state_t stateInitial);
-
-  Cpu(simgrid::surf::Model *model, simgrid::Host *host, lmm_constraint_t constraint,
-	  xbt_dynar_t speedPeakList, int pstate,
-	  int core, double speedPeak, double speedScale);
-  Cpu(simgrid::surf::Model *model, simgrid::Host *host,
-	  xbt_dynar_t speedPeakList, int pstate,
-	  int core, double speedPeak, double speedScale);
 
   ~Cpu();
 
