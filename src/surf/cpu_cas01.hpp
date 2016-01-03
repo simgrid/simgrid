@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -28,16 +27,13 @@ public:
   CpuCas01Model();
   ~CpuCas01Model();
 
-  double (CpuCas01Model::*shareResources)(double now);
-  void (CpuCas01Model::*updateActionsState)(double now, double delta);
-
   Cpu *createCpu(simgrid::Host *host, xbt_dynar_t speedPeak, int pstate,
                    double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
-                          tmgr_trace_t state_trace);
-  double shareResourcesFull(double now);
-  void addTraces();
+                          tmgr_trace_t state_trace) override;
+  double shareResourcesFull(double now) override;
+  void addTraces() override;
   ActionList *p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 };
 
@@ -51,17 +47,17 @@ public:
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace) ;
   ~CpuCas01();
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
-  CpuAction *execute(double size);
-  CpuAction *sleep(double duration);
+  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  CpuAction *execute(double size) override;
+  CpuAction *sleep(double duration) override;
 
-  double getCurrentPowerPeak();
   bool isUsed() override;
   void setStateEvent(tmgr_trace_event_t stateEvent);
   void setPowerEvent(tmgr_trace_event_t stateEvent);
-  xbt_dynar_t getSpeedPeakList();
 
+  xbt_dynar_t getSpeedPeakList();
 private:
+
   tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_speedEvent;
 };

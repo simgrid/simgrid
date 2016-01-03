@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2011, 2013-2015. The SimGrid Team.
+/* Copyright (c) 2009-2011, 2013-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -17,25 +17,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
  *********/
 void surf_cpu_model_init_Cas01()
 {
-  char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
-
   xbt_assert(!surf_cpu_model_pm);
   xbt_assert(!surf_cpu_model_vm);
 
+  char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
   if (!strcmp(optim, "TI")) {
     surf_cpu_model_init_ti();
     return;
   }
 
   surf_cpu_model_pm = new simgrid::surf::CpuCas01Model();
+  xbt_dynar_push(all_existing_models, &surf_cpu_model_pm);
+
   surf_cpu_model_vm  = new simgrid::surf::CpuCas01Model();
+  xbt_dynar_push(all_existing_models, &surf_cpu_model_vm);
 
   sg_platf_postparse_add_cb(simgrid::surf::cpu_add_traces);
-
-  simgrid::surf::Model *model_pm = surf_cpu_model_pm;
-  simgrid::surf::Model *model_vm = surf_cpu_model_vm;
-  xbt_dynar_push(all_existing_models, &model_pm);
-  xbt_dynar_push(all_existing_models, &model_vm);
 }
 
 namespace simgrid {
@@ -63,19 +60,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();
 
-  if (getUpdateMechanism() == UM_LAZY) {
-	shareResources = &CpuCas01Model::shareResourcesLazy;
-	updateActionsState = &CpuCas01Model::updateActionsStateLazy;
-
-  } else if (getUpdateMechanism() == UM_FULL) {
-	shareResources = &CpuCas01Model::shareResourcesFull;
-	updateActionsState = &CpuCas01Model::updateActionsStateFull;
-  } else
-    xbt_die("Invalid cpu update mechanism!");
-
-  if (!p_maxminSystem) {
-    p_maxminSystem = lmm_system_new(m_selectiveUpdate);
-  }
+  p_maxminSystem = lmm_system_new(m_selectiveUpdate);
 
   if (getUpdateMechanism() == UM_LAZY) {
     p_actionHeap = xbt_heap_new(8, NULL);
@@ -301,11 +286,6 @@ CpuAction *CpuCas01::sleep(double duration)
 
   XBT_OUT();
   return action;
-}
-
-double CpuCas01::getCurrentPowerPeak()
-{
-  return m_speedPeak;
 }
 
 /**********

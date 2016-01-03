@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -378,7 +377,7 @@ public:
 
 protected:
   ActionLmmListPtr p_modifiedSet;
-  lmm_system_t p_maxminSystem;
+  lmm_system_t p_maxminSystem = nullptr;
   e_UM_t p_updateMechanism = UM_UNDEFINED;
   int m_selectiveUpdate;
   xbt_heap_t p_actionHeap;
