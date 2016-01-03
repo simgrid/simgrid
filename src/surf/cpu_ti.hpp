@@ -43,8 +43,6 @@ public:
   double *p_integral;
   int m_nbPoints;
   int binarySearch(double *array, double a, int low, int high);
-
-private:
 };
 
 enum trace_type {
@@ -55,7 +53,9 @@ enum trace_type {
 
 class CpuTiTgmr {
 public:
-  CpuTiTgmr(trace_type type, double value): m_type(type), m_value(value){};
+  CpuTiTgmr(trace_type type, double value)
+    : m_type(type), m_value(value)
+	{};
   CpuTiTgmr(tmgr_trace_t speedTrace, double value);
   ~CpuTiTgmr();
 
@@ -68,11 +68,11 @@ public:
   double m_value;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
   /* Dynamic */
-  double m_lastTime;             /*< Integral interval last point (discrete time) */
-  double m_total;                 /*< Integral total between 0 and last_pointn */
+  double m_lastTime = 0.0;             /*< Integral interval last point (discrete time) */
+  double m_total = 0.0;                 /*< Integral total between 0 and last_pointn */
 
-  CpuTiTrace *p_trace;
-  tmgr_trace_t p_speedTrace;
+  CpuTiTrace *p_trace = nullptr;
+  tmgr_trace_t p_speedTrace = nullptr;
 };
 
 /**********
@@ -85,17 +85,17 @@ public:
   CpuTiAction(CpuTiModel *model, double cost, bool failed,
                    CpuTi *cpu);
 
-  void setState(e_surf_action_state_t state);
-  int unref();
-  void cancel();
+  void setState(e_surf_action_state_t state) override;
+  int unref() override;
+  void cancel() override;
   void updateIndexHeap(int i);
-  void suspend();
-  void resume();
-  bool isSuspended();
-  void setMaxDuration(double duration);
-  void setPriority(double priority);
-  double getRemains();
-  void setAffinity(Cpu * /*cpu*/, unsigned long /*mask*/) {};
+  void suspend() override;
+  void resume() override;
+  bool isSuspended() override;
+  void setMaxDuration(double duration) override;
+  void setPriority(double priority) override;
+  double getRemains() override;
+  void setAffinity(Cpu * /*cpu*/, unsigned long /*mask*/) override {};
 
   CpuTi *p_cpu;
   int m_indexHeap;
@@ -119,13 +119,13 @@ public:
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace) ;
   ~CpuTi();
 
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
+  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
   void updateActionsFinishTime(double now);
-  bool isUsed();
+  bool isUsed() override;
   void printCpuTiModel();
-  CpuAction *execute(double size);
-  CpuAction *sleep(double duration);
-  double getAvailableSpeed();
+  CpuAction *execute(double size) override;
+  CpuAction *sleep(double duration) override;
+  double getAvailableSpeed() override;
 
   void modified(bool modified);
 
@@ -159,9 +159,9 @@ public:
                           tmgr_trace_t speedTrace, int core,
                           e_surf_resource_state_t state_initial,
                           tmgr_trace_t state_trace);
-  double shareResources(double now);
-  void updateActionsState(double now, double delta);
-  void addTraces();
+  double shareResources(double now) override;
+  void updateActionsState(double now, double delta) override;
+  void addTraces() override;
 
   ActionList *p_runningActionSetThatDoesNotNeedBeingChecked;
   CpuTiList *p_modifiedCpu;
