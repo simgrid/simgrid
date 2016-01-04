@@ -125,9 +125,8 @@ double CpuTiTgmr::integrate(double a, double b)
 }
 
 /**
- * \brief Auxiliary function to calculate the integral between a and b.
- *     It simply calculates the integral at point a and b and returns the difference
- *   between them.
+ * \brief Auxiliary function to compute the integral between a and b.
+ *     It simply computes the integrals at point a and b and returns the difference between them.
  * \param trace    Trace structure
  * \param a        Initial point
  * \param b  Final point
@@ -139,7 +138,7 @@ double CpuTiTrace::integrateSimple(double a, double b)
 }
 
 /**
- * \brief Auxiliary function to calculate the integral at point a.
+ * \brief Auxiliary function to compute the integral at point a.
  * \param trace    Trace structure
  * \param a        point
  * \return  Integral
@@ -167,7 +166,7 @@ double CpuTiTrace::integrateSimplePoint(double a)
 }
 
 /**
-* \brief Calculate the time needed to execute "amount" on cpu.
+* \brief Computes the time needed to execute "amount" on cpu.
 *
 * Here, amount can span multiple trace periods
 *
@@ -553,36 +552,31 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::Host *host, xbt_dynar_t speedPeak,
         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace)
   : Cpu(model, host, NULL, pstate, core, 0, speedScale, stateInitial)
 {
-  p_speedEvent = NULL;
-  m_speedScale = speedScale;
+  xbt_assert(core==1,"Multi-core not handled by this model yet");
   m_core = core;
-  tmgr_trace_t empty_trace;
-  s_tmgr_event_t val;
-  xbt_assert(core==1,"Multi-core not handled with this model yet");
-  XBT_DEBUG("speed scale %f", speedScale);
+
+  m_speedScale = speedScale;
   p_availTrace = new CpuTiTgmr(speedTrace, speedScale);
 
   p_actionSet = new ActionTiList();
-
-  m_lastUpdate = 0;
 
   xbt_dynar_get_cpy(speedPeak, 0, &m_speedPeak);
   XBT_DEBUG("CPU create: peak=%f", m_speedPeak);
 
   if (stateTrace)
     p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, this);
+
   if (speedTrace && xbt_dynar_length(speedTrace->s_list.event_list) > 1) {
+	s_tmgr_event_t val;
     // add a fake trace event if periodicity == 0
     xbt_dynar_get_cpy(speedTrace->s_list.event_list,
                       xbt_dynar_length(speedTrace->s_list.event_list) - 1, &val);
     if (val.delta == 0) {
-      empty_trace = tmgr_empty_trace_new();
-      p_speedEvent =
-        tmgr_history_add_trace(history, empty_trace,
-                               p_availTrace->m_lastTime, 0, this);
+      tmgr_trace_t empty_trace = tmgr_empty_trace_new();
+      p_speedEvent = tmgr_history_add_trace(history, empty_trace, p_availTrace->m_lastTime, 0, this);
     }
   }
-};
+}
 
 CpuTi::~CpuTi()
 {
@@ -664,8 +658,8 @@ void CpuTi::updateActionsFinishTime(double now)
   CpuTiAction *action;
   double sum_priority = 0.0, total_area, min_finish = -1;
 
-/* update remaning amount of actions */
-updateRemainingAmount(now);
+  /* update remaining amount of actions */
+  updateRemainingAmount(now);
 
   for(ActionTiList::iterator it(p_actionSet->begin()), itend(p_actionSet->end())
       ; it != itend ; ++it) {
@@ -734,7 +728,7 @@ updateRemainingAmount(now);
          action->m_finish,
          action->getMaxDuration());
   }
-/* remove from modified cpu */
+  /* remove from modified cpu */
   modified(false);
 }
 
@@ -749,11 +743,7 @@ double CpuTi::getAvailableSpeed()
   return Cpu::getAvailableSpeed();
 }
 
-/**
-* \brief Update the remaining amount of actions
-*
-* \param  now    Current time
-*/
+/** @brief Update the remaining amount of actions */
 void CpuTi::updateRemainingAmount(double now)
 {
   double area_total;
@@ -763,7 +753,7 @@ void CpuTi::updateRemainingAmount(double now)
   if (m_lastUpdate >= now)
     return;
 
-/* calcule the surface */
+  /* compute the integration area */
   area_total = p_availTrace->integrate(m_lastUpdate, now) * m_speedPeak;
   XBT_DEBUG("Flops total: %f, Last update %f", area_total,
          m_lastUpdate);
@@ -919,11 +909,6 @@ void CpuTiAction::resume()
     p_cpu->modified(true);
   }
   XBT_OUT();
-}
-
-bool CpuTiAction::isSuspended()
-{
-  return m_suspended == 1;
 }
 
 void CpuTiAction::setMaxDuration(double duration)
