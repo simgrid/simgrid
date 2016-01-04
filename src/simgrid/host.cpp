@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-201. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -61,7 +61,7 @@ int ROUTING_HOST_LEVEL;
 int USER_HOST_LEVEL;
 
 #include "src/msg/msg_private.h" // MSG_host_priv_free. FIXME: killme
-#include "src/simdag/private.h" // __SD_workstation_destroy. FIXME: killme
+#include "src/simdag/simdag_private.h" // __SD_workstation_destroy. FIXME: killme
 #include "src/simix/smx_host_private.h" // SIMIX_host_destroy. FIXME: killme
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_routing.hpp"
