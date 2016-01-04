@@ -202,7 +202,7 @@ extern FILE *dax_in, *dax_out;
      */
     #define  YY_LESS_LINENO(n) \
             do { \
-                int yyl;\
+                unsigned int yyl;\
                 for ( yyl = n; yyl < dax_leng; ++yyl )\
                     if ( dax_text[yyl] == '\n' )\
                         --dax_lineno;\

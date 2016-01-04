@@ -26,7 +26,7 @@ set(EXTRA_DIST
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
-  src/simdag/private.h
+  src/simdag/simdag_private.h
   src/simix/simcalls.in
   src/simix/simcalls.py
   src/simix/popping_private.h
@@ -436,20 +436,20 @@ set(MSG_SRC
   )
 
 set(SIMDAG_SRC
-  src/simdag/instr_sd_task.c
-  src/simdag/sd_daxloader.c
-  src/simdag/sd_global.c
-  src/simdag/sd_link.c
-  src/simdag/sd_task.c
-  src/simdag/sd_workstation.c
+  src/simdag/instr_sd_task.cpp
+  src/simdag/sd_daxloader.cpp
+  src/simdag/sd_global.cpp
+  src/simdag/sd_link.cpp
+  src/simdag/sd_task.cpp
+  src/simdag/sd_workstation.cpp
   )
 if(HAVE_GRAPHVIZ)
   set(SIMDAG_SRC
-    ${SIMDAG_SRC} src/simdag/sd_dotloader.c
+    ${SIMDAG_SRC} src/simdag/sd_dotloader.cpp
     )
 else()
   set(EXTRA_DIST
-    ${EXTRA_DIST} src/simdag/sd_dotloader.c
+    ${EXTRA_DIST} src/simdag/sd_dotloader.cpp
     )
 endif()
 

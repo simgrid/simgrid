@@ -80,7 +80,7 @@ void SD_task_free_f(void *t)
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount)
 {
-  SD_task_t task = xbt_mallocator_get(sd_global->task_mallocator);
+  SD_task_t task = (SD_task_t)xbt_mallocator_get(sd_global->task_mallocator);
 
   /* general information */
   task->data = data;            /* user data */
@@ -586,22 +586,23 @@ void SD_task_dotty(SD_task_t task, void *out)
 {
   unsigned int counter;
   SD_dependency_t dependency;
-  fprintf(out, "  T%p [label=\"%.20s\"", task, task->name);
+  FILE *fout = (FILE*)out;
+  fprintf(fout, "  T%p [label=\"%.20s\"", task, task->name);
   switch (task->kind) {
   case SD_TASK_COMM_E2E:
   case SD_TASK_COMM_PAR_MXN_1D_BLOCK:
-    fprintf(out, ", shape=box");
+    fprintf(fout, ", shape=box");
     break;
   case SD_TASK_COMP_SEQ:
   case SD_TASK_COMP_PAR_AMDAHL:
-    fprintf(out, ", shape=circle");
+    fprintf(fout, ", shape=circle");
     break;
   default:
     xbt_die("Unknown task type!");
   }
-  fprintf(out, "];\n");
+  fprintf(fout, "];\n");
   xbt_dynar_foreach(task->tasks_before, counter, dependency) {
-    fprintf(out, " T%p -> T%p;\n", dependency->src, dependency->dst);
+    fprintf(fout, " T%p -> T%p;\n", dependency->src, dependency->dst);
   }
 }
 
@@ -996,7 +997,7 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
   task->rate = rate;
 
   if (flops_amount) {
-    task->flops_amount = xbt_realloc(task->flops_amount,
+    task->flops_amount = (double*)xbt_realloc(task->flops_amount,
                                            sizeof(double) * workstation_count);
     memcpy(task->flops_amount, flops_amount,
            sizeof(double) * workstation_count);
@@ -1007,7 +1008,7 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
 
   communication_nb = workstation_count * workstation_count;
   if (bytes_amount) {
-    task->bytes_amount = xbt_realloc(task->bytes_amount,
+    task->bytes_amount = (double*)xbt_realloc(task->bytes_amount,
                                              sizeof(double) * communication_nb);
     memcpy(task->bytes_amount, bytes_amount,
            sizeof(double) * communication_nb);
@@ -1016,7 +1017,7 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
     task->bytes_amount = NULL;
   }
 
-  task->workstation_list =
+  task->workstation_list = (SD_workstation_t*)
     xbt_realloc(task->workstation_list,
                 sizeof(SD_workstation_t) * workstation_count);
   memcpy(task->workstation_list, workstation_list,
@@ -1252,7 +1253,7 @@ void __SD_task_just_done(SD_task_t task)
       sg_host_sd(workstation)->current_task = NULL;
 
       XBT_DEBUG("Getting candidate in FIFO");
-      candidate =
+      candidate = (SD_task_t)
           xbt_fifo_get_item_content(xbt_fifo_get_first_item
                                     (sg_host_sd(workstation)->task_fifo));
 
@@ -1277,7 +1278,7 @@ void __SD_task_just_done(SD_task_t task)
         /* realloc if necessary */
         if (candidate_nb == candidate_capacity) {
           candidate_capacity *= 2;
-          candidates =
+          candidates = (SD_task_t*)
               xbt_realloc(candidates,
                           sizeof(SD_task_t) * candidate_capacity);
         }
@@ -1324,7 +1325,7 @@ void __SD_task_just_done(SD_task_t task)
 
         /* update the FIFO */
         if (sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-          candidate = xbt_fifo_shift(sg_host_sd(workstation)->task_fifo);   /* the return value is stored just for debugging */
+          candidate = (SD_task_t)xbt_fifo_shift(sg_host_sd(workstation)->task_fifo);   /* the return value is stored just for debugging */
           XBT_DEBUG("Head of the FIFO: '%s'",
                  (candidate !=
                   NULL) ? SD_task_get_name(candidate) : "NULL");

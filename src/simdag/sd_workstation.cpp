@@ -43,8 +43,8 @@ SD_storage_t __SD_storage_create(void *surf_storage, void *data)
 
   storage = xbt_new(s_SD_storage_priv_t, 1);
   storage->data = data;     /* user data */
-  name = surf_resource_name(surf_storage);
-  storage->host = surf_storage_get_host(surf_storage_resource_by_name(name));
+  name = surf_resource_name((surf_cpp_resource_t)surf_storage);
+  storage->host = (const char*)surf_storage_get_host( (surf_resource_t )surf_storage_resource_by_name(name));
   xbt_lib_set(storage_lib,name, SD_STORAGE_LEVEL, storage);
   return xbt_lib_get_elm_or_null(storage_lib, name);
 }
@@ -85,7 +85,7 @@ const SD_workstation_t *SD_workstation_get_list(void) {
   xbt_assert(SD_workstation_get_number() > 0, "There is no workstation!");
 
   if (sd_global->workstation_list == NULL)     /* this is the first time the function is called */
-    sd_global->workstation_list = xbt_dynar_to_array(sg_hosts_as_dynar());
+    sd_global->workstation_list = (SD_workstation_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
 
   return sd_global->workstation_list;
 }
@@ -149,7 +149,7 @@ const char *SD_workstation_get_name(SD_workstation_t workstation)
 const char *SD_workstation_get_property_value(SD_workstation_t ws,
                                               const char *name)
 {
-  return xbt_dict_get_or_null(SD_workstation_get_properties(ws), name);
+  return (const char*) xbt_dict_get_or_null(SD_workstation_get_properties(ws), name);
 }
 
 
@@ -215,8 +215,6 @@ void SD_workstation_dump(SD_workstation_t ws)
 const SD_link_t *SD_route_get_list(SD_workstation_t src,
                                    SD_workstation_t dst)
 {
-  void *surf_src;
-  void *surf_dst;
   xbt_dynar_t surf_route;
   void *surf_link;
   unsigned int cpt;
@@ -226,14 +224,10 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
     sd_global->recyclable_route = xbt_new(SD_link_t, SD_link_get_number());
   }
 
-  surf_src = src;
-  surf_dst = dst;
-
-  surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model,
-		                                        surf_src, surf_dst);
+  surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model, src, dst);
 
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
-    sd_global->recyclable_route[cpt] = surf_link;
+    sd_global->recyclable_route[cpt] = (SD_link_t)surf_link;
   }
   return sd_global->recyclable_route;
 }
@@ -577,5 +571,5 @@ const char* SD_as_router_get_property_value(const char *asr, const char *name)
 {
   xbt_dict_t dict = get_as_router_properties(asr);
   if(!dict) return NULL;
-  return xbt_dict_get_or_null(dict,name);
+  return (const char*)xbt_dict_get_or_null(dict,name);
 }

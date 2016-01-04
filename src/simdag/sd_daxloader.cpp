@@ -12,9 +12,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
-#undef CLEANUP
-#include "dax_dtd.h"
-#include "dax_dtd.c"
+extern "C" {
+	#undef CLEANUP
+	#include "dax_dtd.h"
+	#include "dax_dtd.c"
+}
 
 bool children_are_marked(SD_task_t task);
 bool parents_are_marked(SD_task_t task);
@@ -245,8 +247,7 @@ static SD_task_t root_task, end_task;
 
 static void dax_task_free(void *task)
 {
-  SD_task_t t = task;
-  SD_task_destroy(t);
+  SD_task_destroy((SD_task_t)task);
 }
 
 /** @brief loads a DAX file describing a DAG
@@ -413,7 +414,7 @@ void STag_dax__uses(void)
   int is_input = (A_dax__uses_link == A_dax__uses_link_input);
 
 //  XBT_INFO("See <uses file=%s %s>",A_dax__uses_file,(is_input?"in":"out"));
-  file = xbt_dict_get_or_null(files, A_dax__uses_file);
+  file = (SD_task_t)xbt_dict_get_or_null(files, A_dax__uses_file);
   if (file == NULL) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, NULL, size);
     xbt_dict_set(files, A_dax__uses_file, file, NULL);
@@ -436,7 +437,7 @@ void STag_dax__uses(void)
 static SD_task_t current_child;
 void STag_dax__child(void)
 {
-  current_child = xbt_dict_get_or_null(jobs, A_dax__child_ref);
+  current_child = (SD_task_t)xbt_dict_get_or_null(jobs, A_dax__child_ref);
   if (current_child == NULL)
     dax_parse_error(bprintf
                     ("Asked to add dependencies to the non-existent %s task",
@@ -450,7 +451,7 @@ void ETag_dax__child(void)
 
 void STag_dax__parent(void)
 {
-  SD_task_t parent = xbt_dict_get_or_null(jobs, A_dax__parent_ref);
+  SD_task_t parent = (SD_task_t)xbt_dict_get_or_null(jobs, A_dax__parent_ref);
   if (parent == NULL)
     dax_parse_error(bprintf
                     ("Asked to add a dependency from %s to %s, but %s does not exist",
