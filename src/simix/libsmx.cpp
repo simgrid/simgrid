@@ -11,6 +11,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <functional>
+
 #include "src/mc/mc_replay.h"
 #include "smx_private.h"
 #include "src/mc/mc_forward.h"
@@ -1401,7 +1403,10 @@ xbt_dict_t simcall_storage_get_content(smx_storage_t storage)
   return simcall_BODY_storage_get_content(storage);
 }
 
-
+void simcall_run_kernel(std::function<void()> const& code)
+{
+  return simcall_BODY_run_kernel((void*) &code);
+}
 
 #ifdef HAVE_MC
 

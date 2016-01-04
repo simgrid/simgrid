@@ -1112,6 +1112,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
+  teshsuite/simix/CMakeLists.txt
   teshsuite/simix/check_defaults/CMakeLists.txt
   teshsuite/simix/stack_overflow/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt

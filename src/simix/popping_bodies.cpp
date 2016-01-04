@@ -16,6 +16,7 @@
 #include "smx_private.h"
 #include "src/mc/mc_forward.h"
 #include "xbt/ex.h"
+#include <simgrid/simix.hpp>
   
 inline static void simcall_BODY_host_on(sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
@@ -2521,6 +2522,27 @@ inline static void simcall_BODY_set_category(smx_synchro_t synchro, const char* 
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) synchro;
     self->simcall.args[1].cc = (const char*) category;
+    if (self != simix_global->maestro_process) {
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
+      SIMIX_process_yield(self);
+    } else {
+      SIMIX_simcall_handle(&self->simcall, 0);
+    }    
+    
+  }
+  
+inline static void simcall_BODY_run_kernel(void* code) {
+    smx_process_t self = SIMIX_process_self();
+
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_run_kernel(code);
+    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
+
+    self->simcall.call = SIMCALL_RUN_KERNEL;
+    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
+    memset(self->simcall.args, 0, sizeof(self->simcall.args));
+    self->simcall.args[0].dp = (void*) code;
     if (self != simix_global->maestro_process) {
       XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);

@@ -13,12 +13,32 @@
 #include <utility>
 #include <memory>
 #include <functional>
+#include <future>
+#include <type_traits>
 
 #include <xbt/function_types.h>
 #include <simgrid/simix.h>
 
+XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
+
 namespace simgrid {
 namespace simix {
+
+template<class F>
+typename std::result_of<F()>::type kernel(F&& code)
+{
+  typedef typename std::result_of<F()>::type R;
+  std::promise<R> promise;
+  simcall_run_kernel([&]{
+    try {
+      promise.set_value(code());
+    }
+    catch(...) {
+      promise.set_exception(std::current_exception());
+    }
+  });
+  return promise.get_future().get();
+}
 
 class Context;
 class ContextFactory;

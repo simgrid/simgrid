@@ -1790,6 +1790,13 @@ static inline const char* simcall_set_category__get__category(smx_simcall_t simc
 static inline void simcall_set_category__set__category(smx_simcall_t simcall, const char* arg) {
     simcall->args[1].cc = arg;
 }
+
+static inline void* simcall_run_kernel__get__code(smx_simcall_t simcall) {
+  return  simcall->args[0].dp;
+}
+static inline void simcall_run_kernel__set__code(smx_simcall_t simcall, void* arg) {
+    simcall->args[0].dp = arg;
+}
 #ifdef HAVE_LATENCY_BOUND_TRACKING
 
 static inline smx_synchro_t simcall_comm_is_latency_bounded__get__comm(smx_simcall_t simcall) {

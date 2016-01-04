@@ -65,6 +65,7 @@ XBT_PRIVATE void SIMIX_simcall_answer(smx_simcall_t);
 XBT_PRIVATE void SIMIX_simcall_handle(smx_simcall_t, int);
 XBT_PRIVATE void SIMIX_simcall_exit(smx_synchro_t);
 XBT_PRIVATE const char *SIMIX_simcall_name(e_smx_simcall_t kind);
+XBT_PRIVATE void SIMIX_run_kernel(void* code);
 
 SG_END_DECL()
 

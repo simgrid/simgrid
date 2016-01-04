@@ -59,3 +59,9 @@ void SIMIX_simcall_exit(smx_synchro_t synchro)
       break;
   }
 }
+
+void SIMIX_run_kernel(void* code)
+{
+  std::function<void()>* function = (std::function<void()>*) code;
+  (*function)();
+}

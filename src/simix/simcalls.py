@@ -332,5 +332,6 @@ if __name__=='__main__':
   fd.write('#include "smx_private.h"\n')
   fd.write('#include "src/mc/mc_forward.h"\n')
   fd.write('#include "xbt/ex.h"\n')
+  fd.write('#include <simgrid/simix.hpp>\n')
   handle(fd, Simcall.body, simcalls, simcalls_dict)
   fd.close()

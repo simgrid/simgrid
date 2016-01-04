@@ -165,6 +165,7 @@ Func - storage_get_content (void*, xbt_dict_t) (storage, void*, smx_storage_t)
 Func H asr_get_properties (void*, xbt_dict_t) (name, const char*)
 Func H mc_random (int) (min, int) (max, int)
 Proc - set_category (void) (synchro, void*, smx_synchro_t) (category, const char*)
+Proc - run_kernel (void) (code, void*)
 ## HAVE_LATENCY_BOUND_TRACKING
 Func - comm_is_latency_bounded (int) (comm, void*, smx_synchro_t)
 ## HAVE_MC
