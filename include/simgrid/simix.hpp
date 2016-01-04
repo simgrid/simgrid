@@ -24,18 +24,38 @@ XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
 namespace simgrid {
 namespace simix {
 
+template<class R, class F>
+void fulfill_promise(std::promise<R>& promise, F&& code)
+{
+  try {
+    promise.set_value(code());
+  }
+  catch(...) {
+    promise.set_exception(std::current_exception());
+  }
+}
+
+// special version for R=void because the previous code does not compile
+// in this case:
+template<class F>
+void fulfill_promise(std::promise<void>& promise, F&& code)
+{
+  try {
+    code();
+    promise.set_value();
+  }
+  catch(...) {
+    promise.set_exception(std::current_exception());
+  }
+}
+
 template<class F>
 typename std::result_of<F()>::type kernel(F&& code)
 {
   typedef typename std::result_of<F()>::type R;
   std::promise<R> promise;
   simcall_run_kernel([&]{
-    try {
-      promise.set_value(code());
-    }
-    catch(...) {
-      promise.set_exception(std::current_exception());
-    }
+    fulfill_promise(promise, code);
   });
   return promise.get_future().get();
 }
