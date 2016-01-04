@@ -39,8 +39,8 @@ $ $SG_TEST_EXENV energy/consumption/energy_consumption$EXEEXT ${srcdir:=.}/../pl
 > [ 16.000000] (1:dvfs_test@MyHost1) Sleep for 4 seconds
 > [ 20.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 4.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=2310 J
 > [ 20.000000] (1:dvfs_test@MyHost1) Turning MyHost2 off, and sleeping another 10 seconds. MyHost2 dissipated 2000 J so far.
+> [ 30.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 10.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=3210 J
 > [ 30.000000] (0:@) Total simulation time: 30.00
 > [ 30.000000] (0:@) Total energy of host MyHost1: 3210.000000 Joules
 > [ 30.000000] (0:@) Total energy of host MyHost2: 2100.000000 Joules
 > [ 30.000000] (0:@) Total energy of host MyHost3: 3000.000000 Joules
-> [ 30.000000] (1:dvfs_test@MyHost1) Done sleeping (duration: 10.00 s). Current peak speed=2E+07 flop/s; Energy dissipated=3210 J

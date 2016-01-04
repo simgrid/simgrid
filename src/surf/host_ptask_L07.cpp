@@ -474,6 +474,25 @@ bool CpuL07::isUsed(){
   return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
 }
 
+/** @brief take into account changes of speed (either load or max) */
+void CpuL07::onSpeedChange() {
+	lmm_variable_t var = NULL;
+	lmm_element_t elem = NULL;
+
+    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), m_speedPeak * m_speedScale);
+    while ((var = lmm_get_var_from_cnst
+            (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
+      Action *action = static_cast<Action*>(lmm_variable_id(var));
+
+      lmm_update_variable_bound(getModel()->getMaxminSystem(),
+                                action->getVariable(),
+                                m_speedScale * m_speedPeak);
+    }
+
+	Cpu::onSpeedChange();
+}
+
+
 bool LinkL07::isUsed(){
   return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
 }
@@ -481,8 +500,8 @@ bool LinkL07::isUsed(){
 void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*date*/){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
   if (event_type == p_speedEvent) {
-	  m_speedScale = value;
-    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), m_speedPeak * m_speedScale);
+	m_speedScale = value;
+	onSpeedChange();
     if (tmgr_trace_event_free(event_type))
       p_speedEvent = NULL;
   } else if (event_type == p_stateEvent) {

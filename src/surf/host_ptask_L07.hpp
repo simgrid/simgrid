@@ -105,6 +105,8 @@ public:
   void updateState(tmgr_trace_event_t event_type, double value, double date) override;
   Action *execute(double size) override;
   Action *sleep(double duration) override;
+protected:
+  void onSpeedChange() override;
 };
 
 class LinkL07 : public Link {
