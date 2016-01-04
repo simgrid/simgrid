@@ -23,49 +23,20 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {
-   "SIMCALL_NONE",  "SIMCALL_HOST_ON",
-  "SIMCALL_HOST_OFF",
-  "SIMCALL_HOST_GET_PROPERTIES",
-  "SIMCALL_HOST_GET_PROCESS_LIST",
-  "SIMCALL_HOST_GET_CURRENT_POWER_PEAK",
-  "SIMCALL_HOST_GET_POWER_PEAK_AT",
-  "SIMCALL_HOST_GET_WATTMIN_AT",
-  "SIMCALL_HOST_GET_WATTMAX_AT",
-  "SIMCALL_HOST_SET_PSTATE",
-  "SIMCALL_HOST_GET_MOUNTED_STORAGE_LIST",
-  "SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST",
-  "SIMCALL_HOST_GET_PARAMS",
-  "SIMCALL_HOST_SET_PARAMS",
-  "SIMCALL_VM_CREATE",
-  "SIMCALL_VM_START",
-  "SIMCALL_VM_GET_STATE",
-  "SIMCALL_VM_MIGRATE",
-  "SIMCALL_VM_GET_PM",
-  "SIMCALL_VM_SET_BOUND",
-  "SIMCALL_VM_SET_AFFINITY",
-  "SIMCALL_VM_DESTROY",
+   "SIMCALL_NONE",  "SIMCALL_HOST_OFF",
   "SIMCALL_VM_SUSPEND",
   "SIMCALL_VM_RESUME",
   "SIMCALL_VM_SHUTDOWN",
   "SIMCALL_VM_SAVE",
   "SIMCALL_VM_RESTORE",
-  "SIMCALL_VM_MIGRATEFROM_RESUMETO",
   "SIMCALL_PROCESS_CREATE",
   "SIMCALL_PROCESS_KILL",
   "SIMCALL_PROCESS_KILLALL",
   "SIMCALL_PROCESS_CLEANUP",
   "SIMCALL_PROCESS_SUSPEND",
   "SIMCALL_PROCESS_RESUME",
-  "SIMCALL_PROCESS_COUNT",
-  "SIMCALL_PROCESS_GET_PID",
-  "SIMCALL_PROCESS_GET_PPID",
-  "SIMCALL_PROCESS_GET_DATA",
-  "SIMCALL_PROCESS_SET_DATA",
   "SIMCALL_PROCESS_SET_HOST",
-  "SIMCALL_PROCESS_GET_HOST",
-  "SIMCALL_PROCESS_GET_NAME",
   "SIMCALL_PROCESS_IS_SUSPENDED",
-  "SIMCALL_PROCESS_GET_PROPERTIES",
   "SIMCALL_PROCESS_JOIN",
   "SIMCALL_PROCESS_SLEEP",
   "SIMCALL_PROCESS_EXECUTE",
@@ -160,108 +131,8 @@ void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
     return;
   switch (simcall->call) {
-case SIMCALL_HOST_ON:
-       SIMIX_host_on((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_HOST_OFF:
        simcall_HANDLER_host_off(simcall , (sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_PROPERTIES:
-      simcall->result.dp = SIMIX_host_get_properties((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_PROCESS_LIST:
-      simcall->result.dp = SIMIX_host_get_process_list((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_CURRENT_POWER_PEAK:
-      simcall->result.d = SIMIX_host_get_current_power_peak((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_POWER_PEAK_AT:
-      simcall->result.d = SIMIX_host_get_power_peak_at((sg_host_t) simcall->args[0].dp, simcall->args[1].i);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_WATTMIN_AT:
-      simcall->result.d = SIMIX_host_get_wattmin_at((sg_host_t) simcall->args[0].dp, simcall->args[1].i);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_WATTMAX_AT:
-      simcall->result.d = SIMIX_host_get_wattmax_at((sg_host_t) simcall->args[0].dp, simcall->args[1].i);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_SET_PSTATE:
-       SIMIX_host_set_pstate((sg_host_t) simcall->args[0].dp, simcall->args[1].i);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_MOUNTED_STORAGE_LIST:
-      simcall->result.dp = SIMIX_host_get_mounted_storage_list((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_ATTACHED_STORAGE_LIST:
-      simcall->result.dp = SIMIX_host_get_attached_storage_list((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_GET_PARAMS:
-       SIMIX_host_get_params((sg_host_t) simcall->args[0].dp,(vm_params_t) simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_HOST_SET_PARAMS:
-       SIMIX_host_set_params((sg_host_t) simcall->args[0].dp,(vm_params_t) simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_VM_CREATE:
-      simcall->result.dp = SIMIX_vm_create( simcall->args[0].cc,(sg_host_t) simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_VM_START:
-       SIMIX_vm_start((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_VM_GET_STATE:
-      simcall->result.i = SIMIX_vm_get_state((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_VM_MIGRATE:
-       SIMIX_vm_migrate((sg_host_t) simcall->args[0].dp,(sg_host_t) simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_VM_GET_PM:
-      simcall->result.dp = SIMIX_vm_get_pm((sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_VM_SET_BOUND:
-       SIMIX_vm_set_bound((sg_host_t) simcall->args[0].dp, simcall->args[1].d);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_VM_SET_AFFINITY:
-       SIMIX_vm_set_affinity((sg_host_t) simcall->args[0].dp,(sg_host_t) simcall->args[1].dp, simcall->args[2].ul);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_VM_DESTROY:
-       SIMIX_vm_destroy((sg_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
@@ -287,11 +158,6 @@ case SIMCALL_VM_SAVE:
 
 case SIMCALL_VM_RESTORE:
        simcall_HANDLER_vm_restore(simcall , (sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_VM_MIGRATEFROM_RESUMETO:
-       SIMIX_vm_migratefrom_resumeto((sg_host_t) simcall->args[0].dp,(sg_host_t) simcall->args[1].dp,(sg_host_t) simcall->args[2].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
@@ -324,53 +190,13 @@ case SIMCALL_PROCESS_RESUME:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_COUNT:
-      simcall->result.i = SIMIX_process_count();
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_PROCESS_GET_PID:
-      simcall->result.i = SIMIX_process_get_PID((smx_process_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_PROCESS_GET_PPID:
-      simcall->result.i = SIMIX_process_get_PPID((smx_process_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_PROCESS_GET_DATA:
-      simcall->result.dp = SIMIX_process_get_data((smx_process_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_PROCESS_SET_DATA:
-       SIMIX_process_set_data((smx_process_t) simcall->args[0].dp, simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_PROCESS_SET_HOST:
        simcall_HANDLER_process_set_host(simcall , (smx_process_t) simcall->args[0].dp, (sg_host_t) simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_GET_HOST:
-      simcall->result.dp = SIMIX_process_get_host((smx_process_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_PROCESS_GET_NAME:
-      simcall->result.cc = SIMIX_process_get_name((smx_process_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_PROCESS_IS_SUSPENDED:
       simcall->result.i = SIMIX_process_is_suspended((smx_process_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_PROCESS_GET_PROPERTIES:
-      simcall->result.dp = SIMIX_process_get_properties((smx_process_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

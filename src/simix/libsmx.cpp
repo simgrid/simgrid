@@ -19,6 +19,9 @@
 #include "xbt/ex.h"
 #include <math.h>         /* isfinite() */
 #include "mc/mc.h"
+#include "src/simix/smx_host_private.h"
+
+#include <simgrid/simix.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
@@ -32,7 +35,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
  */
 void simcall_host_on(sg_host_t host)
 {
-  simcall_BODY_host_on(host);
+  return simgrid::simix::kernel(std::bind(SIMIX_host_on, host));
 }
 
 /**
@@ -55,7 +58,7 @@ void simcall_host_off(sg_host_t host)
  */
 xbt_dict_t simcall_host_get_properties(sg_host_t host)
 {
-  return simcall_BODY_host_get_properties(host);
+  return simgrid::simix::kernel(std::bind(SIMIX_host_get_properties, host));
 }
 
 /**
@@ -79,7 +82,7 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
  */
 xbt_swag_t simcall_host_get_process_list(sg_host_t host)
 {
-  return simcall_BODY_host_get_process_list(host);
+  return simgrid::simix::kernel(std::bind(SIMIX_host_get_process_list, host));
 }
 
 /**
@@ -91,7 +94,8 @@ xbt_swag_t simcall_host_get_process_list(sg_host_t host)
  */
 double simcall_host_get_current_power_peak(sg_host_t host)
 {
-  return simcall_BODY_host_get_current_power_peak(host);
+  return simgrid::simix::kernel(
+    std::bind(SIMIX_host_get_current_power_peak, host));
 }
 
 /**
@@ -104,7 +108,8 @@ double simcall_host_get_current_power_peak(sg_host_t host)
  */
 double simcall_host_get_power_peak_at(sg_host_t host, int pstate_index)
 {
-  return simcall_BODY_host_get_power_peak_at(host, pstate_index);
+  return simgrid::simix::kernel(
+    std::bind(SIMIX_host_get_power_peak_at, host, pstate_index));
 }
 
 /**
@@ -116,20 +121,26 @@ double simcall_host_get_power_peak_at(sg_host_t host, int pstate_index)
  */
 void simcall_host_set_pstate(sg_host_t host, int pstate_index)
 {
-	simcall_BODY_host_set_pstate(host, pstate_index);
+  simgrid::simix::kernel(
+    std::bind(SIMIX_host_set_pstate, host, pstate_index));
 }
 
 /** \ingroup simix_host_management
  * \brief Returns the amount of watt dissipated at the given pstate when the host is idling
  */
-double simcall_host_get_wattmin_at(msg_host_t host, int pstate){
-	return simcall_BODY_host_get_wattmin_at(host, pstate);
+double simcall_host_get_wattmin_at(msg_host_t host, int pstate)
+{
+  return simgrid::simix::kernel(
+    std::bind(SIMIX_host_get_wattmin_at, host, pstate));
 }
+
 /** \ingroup simix_host_management
  * \brief Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100%
  */
-double simcall_host_get_wattmax_at(msg_host_t host, int pstate){
-	return simcall_BODY_host_get_wattmax_at(host, pstate);
+double simcall_host_get_wattmax_at(msg_host_t host, int pstate)
+{
+  return simgrid::simix::kernel(
+    std::bind(SIMIX_host_get_wattmax_at, host, pstate));
 }
 
 
@@ -314,8 +325,9 @@ e_smx_state_t simcall_process_execution_wait(smx_synchro_t execution)
  *
  * \return The host object of the VM
  */
-void* simcall_vm_create(const char *name, sg_host_t phys_host){
-  return simcall_BODY_vm_create(name, phys_host);
+void* simcall_vm_create(const char *name, sg_host_t phys_host)
+{
+  return simgrid::simix::kernel(std::bind(SIMIX_vm_create, name, phys_host));
 }
 
 /**
@@ -326,7 +338,7 @@ void* simcall_vm_create(const char *name, sg_host_t phys_host){
  */
 void simcall_vm_start(sg_host_t vm)
 {
-  simcall_BODY_vm_start(vm);
+  return simgrid::simix::kernel(std::bind(SIMIX_vm_start, vm));
 }
 
 /**
@@ -338,7 +350,7 @@ void simcall_vm_start(sg_host_t vm)
  */
 int simcall_vm_get_state(sg_host_t vm)
 {
-  return simcall_BODY_vm_get_state(vm);
+  return simgrid::simix::kernel(std::bind(SIMIX_vm_get_state, vm));
 }
 
 /**
@@ -350,27 +362,27 @@ int simcall_vm_get_state(sg_host_t vm)
  */
 void *simcall_vm_get_pm(sg_host_t vm)
 {
-  return simcall_BODY_vm_get_pm(vm);
+  return simgrid::simix::kernel(std::bind(SIMIX_vm_get_pm, vm));
 }
 
 void simcall_vm_set_bound(sg_host_t vm, double bound)
 {
-  simcall_BODY_vm_set_bound(vm, bound);
+  simgrid::simix::kernel(std::bind(SIMIX_vm_set_bound, vm, bound));
 }
 
 void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
 {
-  simcall_BODY_vm_set_affinity(vm, pm, mask);
+  simgrid::simix::kernel(std::bind(SIMIX_vm_set_affinity, vm, pm, mask));
 }
 
 void simcall_host_get_params(sg_host_t vm, vm_params_t params)
 {
-  simcall_BODY_host_get_params(vm, params);
+  simgrid::simix::kernel(std::bind(SIMIX_host_get_params, vm, params));
 }
 
 void simcall_host_set_params(sg_host_t vm, vm_params_t params)
 {
-  simcall_BODY_host_set_params(vm, params);
+  simgrid::simix::kernel(std::bind(SIMIX_host_set_params, vm, params));
 }
 
 /**
@@ -382,7 +394,7 @@ void simcall_host_set_params(sg_host_t vm, vm_params_t params)
  */
 void simcall_vm_migrate(sg_host_t vm, sg_host_t host)
 {
-  simcall_BODY_vm_migrate(vm, host);
+  return simgrid::simix::kernel(std::bind(SIMIX_vm_migrate, vm, host));
 }
 
 /**
@@ -448,7 +460,7 @@ void simcall_vm_shutdown(sg_host_t vm)
  */
 void simcall_vm_destroy(sg_host_t vm)
 {
-  simcall_BODY_vm_destroy(vm);
+  simgrid::simix::kernel(std::bind(SIMIX_vm_destroy, vm));
 }
 
 /**
@@ -467,7 +479,8 @@ void simcall_vm_destroy(sg_host_t vm)
  */
 void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm)
 {
-  simcall_BODY_vm_migratefrom_resumeto(vm, src_pm, dst_pm);
+  simgrid::simix::kernel(std::bind(
+    SIMIX_vm_migratefrom_resumeto, vm, src_pm, dst_pm));
 }
 
 /**
@@ -590,7 +603,7 @@ void simcall_process_resume(smx_process_t process)
  */
 int simcall_process_count(void)
 {
-  return simcall_BODY_process_count();
+  return simgrid::simix::kernel(SIMIX_process_count);
 }
 
 /**
@@ -601,12 +614,7 @@ int simcall_process_count(void)
  */
 int simcall_process_get_PID(smx_process_t process)
 {
-  if (process == SIMIX_process_self()) {
-    /* avoid a simcall if this function is called by the process itself */
-    return SIMIX_process_get_PID(process);
-  }
-
-  return simcall_BODY_process_get_PID(process);
+  return SIMIX_process_get_PID(process);
 }
 
 /**
@@ -617,12 +625,7 @@ int simcall_process_get_PID(smx_process_t process)
  */
 int simcall_process_get_PPID(smx_process_t process)
 {
-  if (process == SIMIX_process_self()) {
-    /* avoid a simcall if this function is called by the process itself */
-    return SIMIX_process_get_PPID(process);
-  }
-
-  return simcall_BODY_process_get_PPID(process);
+  return SIMIX_process_get_PPID(process);
 }
 
 /**
@@ -633,12 +636,7 @@ int simcall_process_get_PPID(smx_process_t process)
  */
 void* simcall_process_get_data(smx_process_t process)
 {
-  if (process == SIMIX_process_self()) {
-    /* avoid a simcall if this function is called by the process itself */
-    return SIMIX_process_get_data(process);
-  }
-
-  return simcall_BODY_process_get_data(process);
+  return SIMIX_process_get_data(process);
 }
 
 /**
@@ -651,13 +649,7 @@ void* simcall_process_get_data(smx_process_t process)
  */
 void simcall_process_set_data(smx_process_t process, void *data)
 {
-  if (process == SIMIX_process_self()) {
-    /* avoid a simcall if this function is called by the process itself */
-    SIMIX_process_self_set_data(process, data);
-  }
-  else {
-    simcall_BODY_process_set_data(process, data);
-  }
+  simgrid::simix::kernel(std::bind(SIMIX_process_set_data, process, data));
 }
 
 static void kill_process(void* arg)
@@ -699,7 +691,7 @@ double simcall_process_get_kill_time(smx_process_t process) {
  */
 sg_host_t simcall_process_get_host(smx_process_t process)
 {
-  return simcall_BODY_process_get_host(process);
+  return SIMIX_process_get_host(process);
 }
 
 /**
@@ -712,11 +704,7 @@ sg_host_t simcall_process_get_host(smx_process_t process)
  */
 const char* simcall_process_get_name(smx_process_t process)
 {
-  if (process == SIMIX_process_self()) {
-    /* avoid a simcall if this function is called by the process itself */
-    return process->name;
-  }
-  return simcall_BODY_process_get_name(process);
+  return SIMIX_process_get_name(process);
 }
 
 /**
@@ -729,7 +717,7 @@ const char* simcall_process_get_name(smx_process_t process)
  */
 int simcall_process_is_suspended(smx_process_t process)
 {
-  return  simcall_BODY_process_is_suspended(process);
+  return simcall_BODY_process_is_suspended(process);
 }
 
 /**
@@ -740,7 +728,7 @@ int simcall_process_is_suspended(smx_process_t process)
  */
 xbt_dict_t simcall_process_get_properties(smx_process_t process)
 {
-  return simcall_BODY_process_get_properties(process);
+  return SIMIX_process_get_properties(process);
 }
 /**
  * \ingroup simix_process_management
@@ -1365,7 +1353,9 @@ sg_size_t simcall_storage_get_used_size (smx_storage_t storage){
  */
 xbt_dict_t simcall_host_get_mounted_storage_list(sg_host_t host)
 {
-  return simcall_BODY_host_get_mounted_storage_list(host);
+  return simgrid::simix::kernel(std::bind(
+    SIMIX_host_get_mounted_storage_list, host
+  ));
 }
 
 /**
@@ -1376,7 +1366,9 @@ xbt_dict_t simcall_host_get_mounted_storage_list(sg_host_t host)
  */
 xbt_dynar_t simcall_host_get_attached_storage_list(sg_host_t host)
 {
-  return simcall_BODY_host_get_attached_storage_list(host);
+  return simgrid::simix::kernel(std::bind(
+    SIMIX_host_get_attached_storage_list, host
+  ));
 }
 
 /**
