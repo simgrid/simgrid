@@ -126,8 +126,9 @@ void sg_host_simix_destroy(sg_host_t host) {
 
 // =========== user-level functions ===============
 // ================================================
+/** @brief Get the speed of the cpu associated to a host */
 double sg_host_get_speed(sg_host_t host){
-  return surf_host_get_speed(host, 1.0);
+	return host->p_cpu->getSpeed(1.0);
 }
 
 double sg_host_get_available_speed(sg_host_t host){
@@ -135,7 +136,7 @@ double sg_host_get_available_speed(sg_host_t host){
 }
 /** @brief Returns the number of core of the processor. */
 int sg_host_get_core(sg_host_t host) {
-	return surf_host_get_core(host);
+	return host->p_cpu->getCore();
 }
 /** @brief Returns the state of a host.
  *  @return 1 if the host is active or 0 if it has crashed.

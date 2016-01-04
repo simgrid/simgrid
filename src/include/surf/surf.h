@@ -316,14 +316,8 @@ static inline void surf_host_set_state(surf_host_t host, e_surf_resource_state_t
 	surf_resource_set_state((surf_cpp_resource_t)host, state);
 }
 
-/** @brief Get the speed of the cpu associated to a host */
-XBT_PUBLIC(double) surf_host_get_speed(sg_host_t resource, double load);
-
 /** @brief Get the available speed of cpu associated to a host */
 XBT_PUBLIC(double) surf_host_get_available_speed(sg_host_t host);
-
-/** @brief Get the number of cores of the cpu associated to a host */
-XBT_PUBLIC(int) surf_host_get_core(sg_host_t host);
 
 /** @brief Create a computation action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_execute(sg_host_t host, double size);

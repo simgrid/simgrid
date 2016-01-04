@@ -259,16 +259,8 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
 	return get_casted_host(host)->getProperties();
 }
 
-double surf_host_get_speed(sg_host_t host, double load){
-  return host->p_cpu->getSpeed(load);
-}
-
 double surf_host_get_available_speed(sg_host_t host){
   return host->p_cpu->getAvailableSpeed();
-}
-
-int surf_host_get_core(sg_host_t host){
-  return host->p_cpu->getCore();
 }
 
 surf_action_t surf_host_execute(sg_host_t host, double size){

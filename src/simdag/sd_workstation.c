@@ -6,6 +6,7 @@
 
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
+#include "simgrid/host.h"
 #include "xbt/dict.h"
 #include "xbt/lib.h"
 #include "xbt/sysdep.h"
@@ -260,7 +261,7 @@ int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
  */
 double SD_workstation_get_power(SD_workstation_t workstation)
 {
-  return surf_host_get_speed(workstation, 1.0);
+  return sg_host_get_speed(workstation);
 }
 /**
  * \brief Returns the amount of cores of a workstation
@@ -269,7 +270,7 @@ double SD_workstation_get_power(SD_workstation_t workstation)
  * \return the amount of cores of this workstation
  */
 int SD_workstation_get_cores(SD_workstation_t workstation) {
-  return surf_host_get_core(workstation);
+  return sg_host_get_core(workstation);
 }
 
 /**
