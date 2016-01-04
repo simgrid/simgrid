@@ -98,7 +98,7 @@ set(teshsuite_src
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_link_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Evaluate_get_route_time.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Evaluate_parse_time.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/is_router_test.c
   PARENT_SCOPE
   )

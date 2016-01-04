@@ -1022,10 +1022,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/mutualExclusion/CMakeLists.txt
   examples/java/pingPong/CMakeLists.txt
   examples/java/priority/CMakeLists.txt
-  examples/java/reservationSurfPlugin/CMakeLists.txt
   examples/java/startKillTime/CMakeLists.txt
-  examples/java/surfCpuModel/CMakeLists.txt
-  examples/java/surfPlugin/CMakeLists.txt
   examples/java/suspend/CMakeLists.txt
   examples/java/tracing/CMakeLists.txt
   examples/lua/CMakeLists.txt
@@ -1112,7 +1109,6 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
-  teshsuite/simix/CMakeLists.txt
   teshsuite/simix/check_defaults/CMakeLists.txt
   teshsuite/simix/stack_overflow/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
