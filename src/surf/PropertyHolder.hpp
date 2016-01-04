@@ -22,6 +22,10 @@ public:
 
 	const char *getProperty(const char*id);
 	void setProperty(const char*id, const char*value);
+
+	/* FIXME: This should not be exposed, as users may do bad things with the dict they got (it's not a copy).
+	 * But some user API expose this call so removing it is not so easy.
+	 */
 	xbt_dict_t getProperties();
 private:
 	xbt_dict_t p_properties = NULL;
