@@ -28,7 +28,7 @@ template<class R, class F>
 void fulfill_promise(std::promise<R>& promise, F&& code)
 {
   try {
-    promise.set_value(code());
+    promise.set_value(std::forward<F>(code)());
   }
   catch(...) {
     promise.set_exception(std::current_exception());
@@ -41,7 +41,7 @@ template<class F>
 void fulfill_promise(std::promise<void>& promise, F&& code)
 {
   try {
-    code();
+    std::forward<F>(code)();
     promise.set_value();
   }
   catch(...) {
@@ -56,7 +56,7 @@ typename std::result_of<F()>::type kernel(F&& code)
   std::promise<R> promise;
   simcall_run_kernel([&]{
     xbt_assert(SIMIX_is_maestro(), "Not in maestro");
-    fulfill_promise(promise, code);
+    fulfill_promise(promise, std::forward<F>(code));
   });
   return promise.get_future().get();
 }
