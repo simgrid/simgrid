@@ -167,7 +167,7 @@ XBT_PUBLIC(int) SIMIX_context_get_parallel_threshold(void);
 XBT_PUBLIC(void) SIMIX_context_set_parallel_threshold(int threshold);
 XBT_PUBLIC(e_xbt_parmap_mode_t) SIMIX_context_get_parallel_mode(void);
 XBT_PUBLIC(void) SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
-
+XBT_PUBLIC(int) SIMIX_is_maestro();
 
 
 /********************************** Global ************************************/

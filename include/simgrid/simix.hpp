@@ -55,6 +55,7 @@ typename std::result_of<F()>::type kernel(F&& code)
   typedef typename std::result_of<F()>::type R;
   std::promise<R> promise;
   simcall_run_kernel([&]{
+    xbt_assert(SIMIX_is_maestro(), "Not in maestro");
     fulfill_promise(promise, code);
   });
   return promise.get_future().get();

@@ -698,3 +698,8 @@ xbt_dict_t SIMIX_asr_get_properties(const char *name)
 {
   return (xbt_dict_t) xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
 }
+
+int SIMIX_is_maestro()
+{
+  return SIMIX_process_self() == simix_global->maestro_process;
+}
