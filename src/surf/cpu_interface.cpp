@@ -210,6 +210,8 @@ void Cpu::setPState(int pstate_index)
   double new_peak_speed = xbt_dynar_get_as(plist, pstate_index, double);
   m_pstate = pstate_index;
   m_speedPeak = new_peak_speed;
+
+  onSpeedChange();
 }
 
 int Cpu::getPState()
@@ -235,6 +237,12 @@ double Cpu::getAvailableSpeed()
 /* number between 0 and 1 */
   return m_speedScale;
 }
+
+void Cpu::onSpeedChange() {
+	TRACE_surf_host_set_speed(surf_get_clock(), getName(),
+			m_core * m_speedScale * m_speedPeak);
+}
+
 
 int Cpu::getCore()
 {

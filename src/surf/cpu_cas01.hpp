@@ -55,7 +55,11 @@ public:
   void setStateEvent(tmgr_trace_event_t stateEvent);
   void setPowerEvent(tmgr_trace_event_t stateEvent);
 
-  xbt_dynar_t getSpeedPeakList();
+  xbt_dynar_t getSpeedPeakList(); // FIXME: killme to hide our internals
+
+protected:
+  void onSpeedChange() override;
+
 private:
 
   tmgr_trace_event_t p_stateEvent;

@@ -129,6 +129,11 @@ public:
   /** @brief Get the speed, accounting for the trace load and provided process load instead of the real current one */
   virtual double getSpeed(double load);
 
+protected:
+  /** @brief Take speed changes (either load or max) into account */
+  virtual void onSpeedChange();
+
+public:
   /** @brief Get the available speed of the current Cpu */
   virtual double getAvailableSpeed();
 

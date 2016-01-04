@@ -322,16 +322,7 @@ smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
     surf_action_set_data(synchro->execution.surf_exec, synchro);
     surf_action_set_priority(synchro->execution.surf_exec, priority);
 
-    /* Note (hypervisor): for multicore, the bound value being passed to the
-     * surf layer should not be zero (i.e., unlimited). It should be the
-     * capacity of a CPU core.
-     *
-     * FIXME: this should probably not be part of Simix but of Surf directly.
-     * That bound is part of the performance model, not of the synchronization
-     */
-    if (bound == 0)
-      surf_cpu_action_set_bound(synchro->execution.surf_exec, sg_host_get_speed(issuer->host));
-    else
+    if (bound != 0)
       surf_cpu_action_set_bound(synchro->execution.surf_exec, bound);
 
     if (affinity_mask != 0) {

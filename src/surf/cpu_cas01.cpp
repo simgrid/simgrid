@@ -182,6 +182,25 @@ bool CpuCas01::isUsed()
   return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
 }
 
+/** @brief take into account changes of speed (either load or max) */
+void CpuCas01::onSpeedChange() {
+	lmm_variable_t var = NULL;
+	lmm_element_t elem = NULL;
+
+    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
+                                m_core * m_speedScale * m_speedPeak);
+    while ((var = lmm_get_var_from_cnst
+            (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
+      CpuCas01Action *action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
+
+      lmm_update_variable_bound(getModel()->getMaxminSystem(),
+                                action->getVariable(),
+                                m_speedScale * m_speedPeak);
+    }
+
+	Cpu::onSpeedChange();
+}
+
 void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double date)
 {
   lmm_variable_t var = NULL;
@@ -192,20 +211,8 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
 	xbt_assert(m_core == 1, "FIXME: add speed scaling code also for constraint_core[i]");
 
     m_speedScale = value;
-    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
-                                m_core * m_speedScale *
-                                m_speedPeak);
-    TRACE_surf_host_set_speed(date, getName(),
-                              m_core * m_speedScale *
-                              m_speedPeak);
-    while ((var = lmm_get_var_from_cnst
-            (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
-      CpuCas01Action *action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
+    onSpeedChange();
 
-      lmm_update_variable_bound(getModel()->getMaxminSystem(),
-                                action->getVariable(),
-                                m_speedScale * m_speedPeak);
-    }
     if (tmgr_trace_event_free(event_type))
       p_speedEvent = NULL;
   } else if (event_type == p_stateEvent) {
