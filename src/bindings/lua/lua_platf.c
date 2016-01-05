@@ -114,8 +114,8 @@ int console_add_backbone(lua_State *L) {
 }
 
 int console_add_host___link(lua_State *L) {
-  s_sg_platf_host_link_cbarg_t host_link;
-  memset(&host_link,0,sizeof(host_link));
+  s_sg_platf_host_link_cbarg_t netcard;
+  memset(&netcard,0,sizeof(netcard));
   int type;
 
   // we get values from the table passed as argument
@@ -130,7 +130,7 @@ int console_add_host___link(lua_State *L) {
   if (type != LUA_TSTRING) {
     XBT_ERROR("Attribute 'id' must be specified for any host_link and must be a string.");
   }
-  host_link.id = lua_tostring(L, -1);
+  netcard.id = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   lua_pushstring(L, "up");
@@ -138,7 +138,7 @@ int console_add_host___link(lua_State *L) {
   if (type != LUA_TSTRING && type != LUA_TNUMBER) {
     XBT_ERROR("Attribute 'up' must be specified for host_link and must either be a string or a number.");
   }
-  host_link.link_up = lua_tostring(L, -1);
+  netcard.link_up = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   lua_pushstring(L, "down");
@@ -146,11 +146,11 @@ int console_add_host___link(lua_State *L) {
   if (type != LUA_TSTRING && type != LUA_TNUMBER) {
     XBT_ERROR("Attribute 'down' must be specified for host_link and must either be a string or a number.");
   }
-  host_link.link_down = lua_tostring(L, -1);
+  netcard.link_down = lua_tostring(L, -1);
   lua_pop(L, 1);
 
-  XBT_DEBUG("Create a host_link for host %s", host_link.id);
-  sg_platf_new_host_link(&host_link);
+  XBT_DEBUG("Create a host_link for host %s", netcard.id);
+  sg_platf_new_netcard(&netcard);
 
   return 0;
 }
@@ -437,12 +437,12 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L, "gw_src");
   lua_gettable(L, -2);
-  ASroute.gw_src = sg_routing_edge_by_name_or_null(lua_tostring(L, -1));
+  ASroute.gw_src = sg_netcard_by_name_or_null(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   lua_pushstring(L, "gw_dst");
   lua_gettable(L, -2);
-  ASroute.gw_dst = sg_routing_edge_by_name_or_null(lua_tostring(L, -1));
+  ASroute.gw_dst = sg_netcard_by_name_or_null(lua_tostring(L, -1));
   lua_pop(L, 1);
 
   /*if (A_surfxml_ASroute_gw___src && !ASroute.gw_src)*/
