@@ -24,6 +24,7 @@ XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
 namespace simgrid {
 namespace simix {
 
+/** Fulfill a promise by executing a given code */
 template<class R, class F>
 void fulfill_promise(std::promise<R>& promise, F&& code)
 {
@@ -35,8 +36,11 @@ void fulfill_promise(std::promise<R>& promise, F&& code)
   }
 }
 
-// special version for R=void because the previous code does not compile
-// in this case:
+/** Fulfill a promise by executing a given code
+ *
+ *  This is a special version for `std::promise<void>` because the default
+ *  version does not compile in this case.
+ */
 template<class F>
 void fulfill_promise(std::promise<void>& promise, F&& code)
 {
@@ -49,9 +53,23 @@ void fulfill_promise(std::promise<void>& promise, F&& code)
   }
 }
 
+/** Execute some code in the kernel/maestro
+ *
+ *  This can be used to enforce mutual exclusion with other simcall.
+ *  More importantly, this enforces a deterministic/reproducible ordering
+ *  of the operation with respect to other simcalls.
+ */
 template<class F>
 typename std::result_of<F()>::type kernel(F&& code)
 {
+  // If we are in the maestro, we take the fast path and execute the
+  // code directly without simcall mashalling/unmarshalling/dispatch:
+  if (SIMIX_is_maestro())
+    return std::forward<F>(code)();
+
+  // If we are in the application, pass the code to the maestro which is
+  // executes it for us and reports the result. We use a std::future which
+  // conveniently handles the success/failure value for us.
   typedef typename std::result_of<F()>::type R;
   std::promise<R> promise;
   simcall_run_kernel([&]{
