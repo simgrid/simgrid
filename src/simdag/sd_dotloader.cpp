@@ -41,7 +41,7 @@ static Agraph_t *dag_dot;
 static bool schedule = true;
 
 static void dot_task_p_free(void *task) {
-  SD_task_t *t = task;
+  SD_task_t *t = (SD_task_t *)task;
   SD_task_destroy(*t);
 }
 
@@ -184,7 +184,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
           name, amount, alpha);
     }
 
-    if (!(task = xbt_dict_get_or_null(jobs, name))) {
+    if (!(task = (SD_task_t)xbt_dict_get_or_null(jobs, name))) {
       if (seq_or_par == sequential){
         task = SD_task_create_comp_seq(name, NULL , amount);
       } else {
@@ -226,7 +226,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
         xbt_dynar_t computer = NULL;
         if(performer != -1 && order != -1){
           /* required parameters are given */
-          computer = xbt_dict_get_or_null(computers, char_performer);
+          computer = (xbt_dynar_t)xbt_dict_get_or_null(computers, char_performer);
           if(computer == NULL){
             computer = xbt_dynar_new(sizeof(SD_task_t), NULL);
             xbt_dict_set(computers, char_performer, computer, NULL);
@@ -234,8 +234,8 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
           if(performer < xbt_dict_length(host_list)){
             /* the wanted computer is available */
             SD_task_t *task_test = NULL;
-            if(order < computer->used)
-              task_test = xbt_dynar_get_ptr(computer,order);
+            if((unsigned int)order < computer->used)
+              task_test = (SD_task_t *)xbt_dynar_get_ptr(computer,order);
             if(task_test != NULL && *task_test != NULL && *task_test != task){
               /* the user gives the same order to several tasks */
               schedule = false;
@@ -269,7 +269,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
    * Check if 'root' and 'end' nodes have been explicitly declared.
    * If not, create them.
    */
-  if (!(root = xbt_dict_get_or_null(jobs, "root"))){
+  if (!(root = (SD_task_t)xbt_dict_get_or_null(jobs, "root"))){
     if (seq_or_par == sequential)
       root = SD_task_create_comp_seq("root", NULL, 0);
     else
@@ -280,7 +280,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
       xbt_dynar_insert_at(result, 0, &root);
   }
 
-  if (!(end = xbt_dict_get_or_null(jobs, "end"))){
+  if (!(end = (SD_task_t)xbt_dict_get_or_null(jobs, "end"))){
     if (seq_or_par == sequential)
       end = SD_task_create_comp_seq("end", NULL, 0);
     else
@@ -317,15 +317,14 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
       char *dst_name=agnameof(aghead(edge));
       double size = atof(agget(edge, (char *) "size"));
 
-      src = xbt_dict_get_or_null(jobs, src_name);
-      dst  = xbt_dict_get_or_null(jobs, dst_name);
+      src = (SD_task_t)xbt_dict_get_or_null(jobs, src_name);
+      dst = (SD_task_t)xbt_dict_get_or_null(jobs, dst_name);
 
       if (size > 0) {
-        char *name =
-            xbt_malloc((strlen(src_name)+strlen(dst_name)+6)*sizeof(char));
+        char *name = (char*)xbt_malloc((strlen(src_name)+strlen(dst_name)+6)*sizeof(char));
         sprintf(name, "%s->%s", src_name, dst_name);
         XBT_DEBUG("See <transfer id=%s amount = %.0f>", name, size);
-        if (!(task = xbt_dict_get_or_null(jobs, name))) {
+        if (!(task = (SD_task_t)xbt_dict_get_or_null(jobs, name))) {
           if (seq_or_par == sequential)
             task = SD_task_create_comm_e2e(name, NULL , size);
           else
