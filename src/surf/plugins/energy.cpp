@@ -63,9 +63,15 @@ using simgrid::energy::surf_energy;
 
 /* Computes the consumption so far.  Called lazily on need. */
 static void update_consumption(simgrid::surf::Host *host, HostEnergy *host_energy) {
-	double cpu_load = lmm_constraint_get_usage(host->p_cpu->getConstraint()) / host->p_cpu->m_speedPeak;
 	double start_time = host_energy->last_updated;
 	double finish_time = surf_get_clock();
+	double cpu_load;
+	if (host->p_cpu->m_speedPeak == 0)
+		// Some users declare a pstate of speed 0 flops (eg to model boot time).
+		// We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
+		cpu_load = 1;
+	else
+		cpu_load = lmm_constraint_get_usage(host->p_cpu->getConstraint()) / host->p_cpu->m_speedPeak;
 
 	double previous_energy = host_energy->total_energy;
 
