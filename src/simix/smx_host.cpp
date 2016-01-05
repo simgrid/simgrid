@@ -10,6 +10,7 @@
 #include "xbt/dict.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
+#include "src/surf/host_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
                                 "SIMIX hosts");
@@ -44,7 +45,8 @@ void SIMIX_host_on(sg_host_t h)
   xbt_assert((host != NULL), "Invalid parameters");
 
   if (h->isOff()) {
-    surf_host_turn_on(surf_host_resource_priv(h));
+    simgrid::surf::Host* surf_host = h->extension<simgrid::surf::Host>();
+    surf_host_turn_on(surf_host);
 
     unsigned int cpt;
     smx_process_arg_t arg;
@@ -97,7 +99,8 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
   xbt_assert((host != NULL), "Invalid parameters");
 
   if (h->isOn()) {
-    surf_host_turn_off(surf_host_resource_priv(h));
+    simgrid::surf::Host* surf_host = h->extension<simgrid::surf::Host>();
+    surf_host_turn_off(surf_host);
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {
@@ -561,24 +564,22 @@ void SIMIX_set_category(smx_synchro_t synchro, const char *category)
  */
 void SIMIX_host_get_params(sg_host_t ind_vm, vm_params_t params)
 {
-  /* jump to ws_get_params(). */
-  surf_host_get_params(ind_vm, params);
+  ind_vm->extension<simgrid::surf::Host>()->getParams(params);
 }
 
 void SIMIX_host_set_params(sg_host_t ind_vm, vm_params_t params)
 {
-  /* jump to ws_set_params(). */
-  surf_host_set_params(ind_vm, params);
+  ind_vm->extension<simgrid::surf::Host>()->setParams(params);
 }
 
-xbt_dict_t SIMIX_host_get_mounted_storage_list(sg_host_t host){
+xbt_dict_t SIMIX_host_get_mounted_storage_list(sg_host_t host)
+{
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
-  return surf_host_get_mounted_storage_list(host);
+  return host->extension<simgrid::surf::Host>()->getMountedStorageList();
 }
 
-xbt_dynar_t SIMIX_host_get_attached_storage_list(sg_host_t host){
+xbt_dynar_t SIMIX_host_get_attached_storage_list(sg_host_t host)
+{
   xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-
-  return surf_host_get_attached_storage_list(host);
+  return host->extension<simgrid::surf::Host>()->getAttachedStorageList();
 }
