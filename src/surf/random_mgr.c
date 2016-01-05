@@ -122,6 +122,10 @@ int _drand48_iterate(unsigned short int xsubi[3],
   return 0;
 }
 
+double _drand48(void);
+void _srand(unsigned int seed);
+int _rand(void);
+int _rand_r(unsigned int *pseed);
 
 double _drand48(void)
 {
