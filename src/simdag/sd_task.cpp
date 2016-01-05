@@ -988,9 +988,6 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
                       const double *flops_amount,
                       const double *bytes_amount, double rate)
 {
-  int communication_nb;
-  task->workstation_nb = 0;
-  task->rate = -1;
   xbt_assert(workstation_count > 0, "workstation_nb must be positive");
 
   task->workstation_nb = workstation_count;
@@ -1006,7 +1003,7 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
     task->flops_amount = NULL;
   }
 
-  communication_nb = workstation_count * workstation_count;
+  int communication_nb = workstation_count * workstation_count;
   if (bytes_amount) {
     task->bytes_amount = (double*)xbt_realloc(task->bytes_amount,
                                              sizeof(double) * communication_nb);
