@@ -44,13 +44,6 @@ void simcall_call(smx_process_t process)
 
 /** \ingroup simix_host_management
  * \deprecated */
-xbt_dict_t simcall_host_get_properties(sg_host_t host)
-{
-  return host->getProperties();
-}
-
-/** \ingroup simix_host_management
- * \deprecated */
 xbt_swag_t simcall_host_get_process_list(sg_host_t host)
 {
   return host->getProcessList();
