@@ -190,6 +190,32 @@ void Host::off()
   simgrid::simix::simcall<void>(SIMCALL_HOST_OFF, this);
 }
 
+/** Get the properties assigned to a host */
+xbt_dict_t Host::getProperties()
+{
+  return simgrid::simix::kernel(std::bind(SIMIX_host_get_properties, this));
+}
+
+/** Get the processes attached to the host */
+xbt_swag_t Host::getProcessList()
+{
+  return simgrid::simix::kernel(std::bind(SIMIX_host_get_process_list, this));
+}
+
+/** Get the peak power of a host */
+double Host::getCurrentPowerPeak()
+{
+  return simgrid::simix::kernel(
+    std::bind(SIMIX_host_get_current_power_peak, this));
+}
+
+/** Get one power peak (in flops/s) of a host at a given pstate */
+double Host::getPowerPeakAt(int pstate_index)
+{
+  return simgrid::simix::kernel(
+    std::bind(SIMIX_host_get_power_peak_at, this, pstate_index));
+}
+
 /** @brief Get the speed of the cpu associated to a host */
 double Host::getSpeed() {
 	return p_cpu->getSpeed(1.0);
@@ -212,6 +238,61 @@ Host* Host::by_name_or_create(const char* name)
     xbt_dict_set(host_list, name, host, NULL);
   }
   return host;
+}
+
+/** Set the pstate at which the host should run */
+void Host::setPstate(int pstate_index)
+{
+  simgrid::simix::kernel(
+    std::bind(SIMIX_host_set_pstate, this, pstate_index));
+}
+
+/** Get the amount of watt dissipated at the given pstate when the host is idling */
+double Host::getWattMinAt(int pstate)
+{
+  return simgrid::simix::kernel(
+    std::bind(SIMIX_host_get_wattmin_at, this, pstate));
+}
+
+/** Get the amount of watt dissipated at the given pstate when the host burns CPU at 100% */
+double Host::getWattMaxAt(int pstate)
+{
+  return simgrid::simix::kernel(
+    std::bind(SIMIX_host_get_wattmax_at, this, pstate));
+}
+
+void Host::getParams(vm_params_t params)
+{
+  simgrid::simix::kernel(std::bind(SIMIX_host_get_params, this, params));
+}
+
+void Host::setParams(vm_params_t params)
+{
+  simgrid::simix::kernel(std::bind(SIMIX_host_set_params, this, params));
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns the list of storages mounted on an host.
+ * \return a dict containing all storages mounted on the host
+ */
+xbt_dict_t Host::getMountedStorageList()
+{
+  return simgrid::simix::kernel(std::bind(
+    SIMIX_host_get_mounted_storage_list, this
+  ));
+}
+
+/**
+ * \ingroup simix_storage_management
+ * \brief Returns the list of storages attached to an host.
+ * \return a dict containing all storages attached to the host
+ */
+xbt_dynar_t Host::getAttachedStorageList()
+{
+  return simgrid::simix::kernel(std::bind(
+    SIMIX_host_get_attached_storage_list, this
+  ));
 }
 
 }

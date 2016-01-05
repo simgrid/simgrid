@@ -13,9 +13,12 @@
 #include <vector>
 
 #include <xbt/base.h>
+#include <xbt/dict.h>
+#include <xbt/swag.h>
 #include <xbt/string.hpp>
 #include <xbt/Extendable.hpp>
 
+#include <simgrid/datatypes.h>
 
 namespace simgrid {
 
@@ -37,6 +40,18 @@ public:
   simgrid::xbt::string const& getName() const { return name_; }
   void on();
   void off();
+  xbt_dict_t getProperties();
+  xbt_swag_t getProcessList();
+  double getCurrentPowerPeak();
+  double getPowerPeakAt(int pstate_index);
+  void setPstate(int pstate_index);
+  double getWattMinAt(int pstate);
+  double getWattMaxAt(int pstate);
+  void getParams(vm_params_t params);
+  void setParams(vm_params_t params);
+  xbt_dict_t getMountedStorageList();
+  xbt_dynar_t getAttachedStorageList();
+
   static Host* by_name_or_null(const char* name);
   static Host* by_name_or_create(const char* name);
 };

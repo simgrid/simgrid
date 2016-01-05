@@ -255,7 +255,6 @@ XBT_PUBLIC(void) simcall_call(smx_process_t process);
 /* TODO use handlers and keep sg_host_t hidden from higher levels */
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_properties(sg_host_t host);
 XBT_PUBLIC(xbt_swag_t) simcall_host_get_process_list(sg_host_t host);
-
 XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
 
 XBT_PUBLIC(double) simcall_host_get_current_power_peak(sg_host_t host);

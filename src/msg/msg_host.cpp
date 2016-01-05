@@ -238,8 +238,7 @@ int MSG_host_get_core_number(msg_host_t host) {
 xbt_swag_t MSG_host_get_process_list(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
-
-  return (simcall_host_get_process_list(host));
+  return host->getProcessList();
 }
 
 
@@ -264,8 +263,7 @@ const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-
-  return (simcall_host_get_properties(host));
+  return host->getProperties();
 }
 
 /** \ingroup m_host_management
@@ -316,7 +314,7 @@ int MSG_host_is_off(msg_host_t host)
  */
 void MSG_host_set_params(msg_host_t host, vm_params_t params)
 {
-  simcall_host_set_params(host, params);
+  host->setParams(params);
 }
 
 /** \ingroup m_host_management
@@ -327,7 +325,7 @@ void MSG_host_set_params(msg_host_t host, vm_params_t params)
  */
 void MSG_host_get_params(msg_host_t host, vm_params_t params)
 {
-  simcall_host_get_params(host, params);
+  host->getParams(params);
 }
 
 /** \ingroup m_host_management
@@ -339,7 +337,7 @@ void MSG_host_get_params(msg_host_t host, vm_params_t params)
  */
 double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-	  return (simcall_host_get_power_peak_at(host, pstate_index));
+	  return host->getPowerPeakAt(pstate_index);
 }
 
 /** \ingroup m_host_management
@@ -350,7 +348,7 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
  */
 double MSG_host_get_current_power_peak(msg_host_t host) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-	  return simcall_host_get_current_power_peak(host);
+	  return host->getCurrentPowerPeak();
 }
 
 /** \ingroup m_host_management
@@ -370,8 +368,7 @@ int MSG_host_get_nb_pstates(msg_host_t host) {
  */
 void MSG_host_set_pstate(msg_host_t host, int pstate_index) {
 	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-
-	  simcall_host_set_pstate(host, pstate_index);
+    host->setPstate(pstate_index);
 }
 /** \ingroup m_host_management
  * \brief Gets the pstate at which the given host is currently running. See also @ref SURF_plugin_energy.
@@ -397,14 +394,14 @@ double MSG_host_get_consumed_energy(msg_host_t host) {
  *
  */
 double MSG_host_get_wattmin_at(msg_host_t host, int pstate){
-	return simcall_host_get_wattmin_at(host, pstate);
+	return host->getWattMinAt(pstate);
 }
 /** \ingroup m_host_management
  * \brief Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100%
  *
  */
 double MSG_host_get_wattmax_at(msg_host_t host, int pstate){
-	return simcall_host_get_wattmax_at(host, pstate);
+	return host->getWattMaxAt(pstate);
 }
 
 /** \ingroup m_host_management
@@ -415,7 +412,7 @@ double MSG_host_get_wattmax_at(msg_host_t host, int pstate){
 xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
-  return (simcall_host_get_mounted_storage_list(host));
+  return host->getMountedStorageList();
 }
 
 /** \ingroup m_host_management
@@ -426,7 +423,7 @@ xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
 xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
-  return (simcall_host_get_attached_storage_list(host));
+  return host->getAttachedStorageList();
 }
 
 /** \ingroup m_host_management
@@ -443,7 +440,7 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
   char* mount_name;
   xbt_dict_cursor_t cursor = NULL;
 
-  xbt_dict_t storage_list = simcall_host_get_mounted_storage_list(host);
+  xbt_dict_t storage_list = host->getMountedStorageList();
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
     storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);

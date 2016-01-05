@@ -39,17 +39,85 @@ void simcall_call(smx_process_t process)
   }
 }
 
-/**
- * \ingroup simix_host_management
- * \brief Returns a dict of the properties assigned to a host.
- *
- * \param host A host
- * \return The properties of this host
- */
+// ***** Host simcalls
+// Those functions are replaced by methods on the Host object.
+
+/** \ingroup simix_host_management
+ * \deprecated */
 xbt_dict_t simcall_host_get_properties(sg_host_t host)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_host_get_properties, host));
+  return host->getProperties();
 }
+
+/** \ingroup simix_host_management
+ * \deprecated */
+xbt_swag_t simcall_host_get_process_list(sg_host_t host)
+{
+  return host->getProcessList();
+}
+
+/** \ingroup simix_host_management
+ * \deprecated */
+double simcall_host_get_current_power_peak(sg_host_t host)
+{
+  return host->getCurrentPowerPeak();
+}
+
+/** \ingroup simix_host_management
+ * \deprecated */
+double simcall_host_get_power_peak_at(sg_host_t host, int pstate_index)
+{
+  return host->getPowerPeakAt(pstate_index);
+}
+
+/** \ingroup simix_host_management
+ * \deprecated */
+void simcall_host_set_pstate(sg_host_t host, int pstate_index)
+{
+  host->setPstate(pstate_index);
+}
+
+/** \ingroup simix_host_management
+ * \deprecated */
+double simcall_host_get_wattmin_at(msg_host_t host, int pstate)
+{
+  return host->getWattMinAt(pstate);
+}
+
+/** \ingroup simix_host_management
+ *  \deprecated */
+double simcall_host_get_wattmax_at(msg_host_t host, int pstate)
+{
+  return host->getWattMaxAt(pstate);
+}
+
+/** \deprecated */
+void simcall_host_get_params(sg_host_t vm, vm_params_t params)
+{
+  vm->getParams(params);
+}
+
+/** \deprecated */
+void simcall_host_set_params(sg_host_t vm, vm_params_t params)
+{
+  vm->setParams(params);
+}
+
+/** \ingroup simix_storage_management
+ *  \deprecated */
+xbt_dict_t simcall_host_get_mounted_storage_list(sg_host_t host)
+{
+  return host->getMountedStorageList();
+}
+
+/** \ingroup simix_storage_management
+ *  \deprecated */
+xbt_dynar_t simcall_host_get_attached_storage_list(sg_host_t host)
+{
+  return host->getAttachedStorageList();
+}
+
+// ***** Other simcalls
 
 /**
  * \ingroup simix_host_management
@@ -62,78 +130,6 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
 {
   return simcall_BODY_asr_get_properties(name);
 }
-
-/**
- * \ingroup simix_host_management
- * \brief Returns the list of processes attached to the host.
- *
- * \param host A SIMIX host
- * \return the swag of attached processes
- */
-xbt_swag_t simcall_host_get_process_list(sg_host_t host)
-{
-  return simgrid::simix::kernel(std::bind(SIMIX_host_get_process_list, host));
-}
-
-/**
- * \ingroup simix_host_management
- * \brief Returns the power peak of a host.
- *
- * \param host A SIMIX host
- * \return the current power peak value (double)
- */
-double simcall_host_get_current_power_peak(sg_host_t host)
-{
-  return simgrid::simix::kernel(
-    std::bind(SIMIX_host_get_current_power_peak, host));
-}
-
-/**
- * \ingroup simix_host_management
- * \brief Returns one power peak (in flops/s) of a host at a given pstate
- *
- * \param host A SIMIX host
- * \param pstate_index pstate to test
- * \return the current power peak value (double) for pstate_index
- */
-double simcall_host_get_power_peak_at(sg_host_t host, int pstate_index)
-{
-  return simgrid::simix::kernel(
-    std::bind(SIMIX_host_get_power_peak_at, host, pstate_index));
-}
-
-/**
- * \ingroup simix_host_management
- * \brief Sets the pstate at which the host should run
- *
- * \param host A SIMIX host
- * \param pstate_index The pstate to which the CPU power will be set
- */
-void simcall_host_set_pstate(sg_host_t host, int pstate_index)
-{
-  simgrid::simix::kernel(
-    std::bind(SIMIX_host_set_pstate, host, pstate_index));
-}
-
-/** \ingroup simix_host_management
- * \brief Returns the amount of watt dissipated at the given pstate when the host is idling
- */
-double simcall_host_get_wattmin_at(msg_host_t host, int pstate)
-{
-  return simgrid::simix::kernel(
-    std::bind(SIMIX_host_get_wattmin_at, host, pstate));
-}
-
-/** \ingroup simix_host_management
- * \brief Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100%
- */
-double simcall_host_get_wattmax_at(msg_host_t host, int pstate)
-{
-  return simgrid::simix::kernel(
-    std::bind(SIMIX_host_get_wattmax_at, host, pstate));
-}
-
-
 
 /**
  * \ingroup simix_process_management
@@ -363,16 +359,6 @@ void simcall_vm_set_bound(sg_host_t vm, double bound)
 void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
 {
   simgrid::simix::kernel(std::bind(SIMIX_vm_set_affinity, vm, pm, mask));
-}
-
-void simcall_host_get_params(sg_host_t vm, vm_params_t params)
-{
-  simgrid::simix::kernel(std::bind(SIMIX_host_get_params, vm, params));
-}
-
-void simcall_host_set_params(sg_host_t vm, vm_params_t params)
-{
-  simgrid::simix::kernel(std::bind(SIMIX_host_set_params, vm, params));
 }
 
 /**
@@ -1333,32 +1319,6 @@ sg_size_t simcall_storage_get_free_size (smx_storage_t storage){
  */
 sg_size_t simcall_storage_get_used_size (smx_storage_t storage){
   return simcall_BODY_storage_get_used_size(storage);
-}
-
-/**
- * \ingroup simix_storage_management
- * \brief Returns the list of storages mounted on an host.
- * \param host A SIMIX host
- * \return a dict containing all storages mounted on the host
- */
-xbt_dict_t simcall_host_get_mounted_storage_list(sg_host_t host)
-{
-  return simgrid::simix::kernel(std::bind(
-    SIMIX_host_get_mounted_storage_list, host
-  ));
-}
-
-/**
- * \ingroup simix_storage_management
- * \brief Returns the list of storages attached to an host.
- * \param host A SIMIX host
- * \return a dict containing all storages attached to the host
- */
-xbt_dynar_t simcall_host_get_attached_storage_list(sg_host_t host)
-{
-  return simgrid::simix::kernel(std::bind(
-    SIMIX_host_get_attached_storage_list, host
-  ));
 }
 
 /**

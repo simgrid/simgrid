@@ -66,7 +66,7 @@ boost::unordered_map<std::string, Storage&> &Host::mountedStorages() {
 	if (mounts == NULL) {
 		mounts = new boost::unordered_map<std::string, Storage&> ();
 
-		xbt_dict_t dict = simcall_host_get_mounted_storage_list(p_inferior);
+		xbt_dict_t dict = p_inferior->getMountedStorageList();
 
 		xbt_dict_cursor_t cursor;
 		char *mountname;
