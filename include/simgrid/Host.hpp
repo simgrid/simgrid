@@ -35,6 +35,8 @@ public:
   Host(std::string const& name);
   ~Host();
   simgrid::xbt::string const& getName() const { return name_; }
+  void on();
+  void off();
   static Host* by_name_or_null(const char* name);
   static Host* by_name_or_create(const char* name);
 };

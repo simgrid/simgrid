@@ -9,6 +9,7 @@
 
 #include <simgrid/simix.hpp>
 #include "smx_private.h"
+#include "src/simix/popping_private.h"
 
 /**
  * \brief destroy a context
@@ -76,6 +77,15 @@ XBT_PRIVATE ContextFactory* thread_factory();
 XBT_PRIVATE ContextFactory* sysv_factory();
 XBT_PRIVATE ContextFactory* raw_factory();
 XBT_PRIVATE ContextFactory* boost_factory();
+
+template<class R, class... Args> inline
+R simcall(e_smx_simcall_t call, Args&&... args)
+{
+  smx_process_t self = SIMIX_process_self();
+  marshal(&self->simcall, call, std::forward<Args>(args)...);
+  simcall_call(self);
+  return unmarshal<R>(self->simcall.result);
+}
 
 }
 }

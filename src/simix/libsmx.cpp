@@ -20,6 +20,7 @@
 #include <math.h>         /* isfinite() */
 #include "mc/mc.h"
 #include "src/simix/smx_host_private.h"
+#include "src/simix/smx_private.hpp"
 
 #include <simgrid/simix.hpp>
 
@@ -27,26 +28,15 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 #include "popping_bodies.cpp"
 
-/**
- * \ingroup simix_host_management
- * \brief Start the host if it is off
- *
- * \param host A SIMIX host
- */
-void simcall_host_on(sg_host_t host)
+void simcall_call(smx_process_t process)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_host_on, host));
-}
-
-/**
- * \ingroup simix_host_management
- * \brief Stop the host if it is on
- *
- * \param host A SIMIX host
- */
-void simcall_host_off(sg_host_t host)
-{
-  simcall_BODY_host_off(host);
+  if (process != simix_global->maestro_process) {
+    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", process->name,
+              SIMIX_simcall_name(process->simcall.call), (int)process->simcall.call);
+    SIMIX_process_yield(process);
+  } else {
+    SIMIX_simcall_handle(&process->simcall, 0);
+  }
 }
 
 /**

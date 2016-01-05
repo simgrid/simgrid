@@ -249,11 +249,11 @@ XBT_PUBLIC(void) SIMIX_comm_finish(smx_synchro_t synchro);
 /* They can also be called from maestro's context, and they are thread safe.  */
 /******************************************************************************/
 
+XBT_PUBLIC(void) simcall_call(smx_process_t process);
+
 /******************************* Host simcalls ********************************/
 /* TODO use handlers and keep sg_host_t hidden from higher levels */
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_properties(sg_host_t host);
-XBT_PUBLIC(void) simcall_host_on(sg_host_t host);
-XBT_PUBLIC(void) simcall_host_off(sg_host_t host);
 XBT_PUBLIC(xbt_swag_t) simcall_host_get_process_list(sg_host_t host);
 
 XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);

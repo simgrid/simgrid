@@ -53,10 +53,10 @@ const char* Host::name() {
 }
 
 void Host::turnOn() {
-	simcall_host_on(p_inferior);
+	p_inferior->on();
 }
 void Host::turnOff() {
-	simcall_host_off(p_inferior);
+	p_inferior->off();
 }
 bool Host::isOn() {
 	return sg_host_get_state(p_inferior);

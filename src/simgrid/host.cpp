@@ -4,10 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/simix.hpp>
+
 #include "xbt/dict.h"
 #include "simgrid/host.h"
 #include "simgrid/Host.hpp"
 #include "surf/surf.h" // routing_get_network_element_type FIXME:killme
+
+#include "src/simix/smx_private.hpp"
 
 size_t sg_host_count()
 {
@@ -170,6 +174,20 @@ Host::Host(std::string const& id)
 
 Host::~Host()
 {
+}
+
+/** Start the host if it is off */
+void Host::on()
+{
+  simgrid::simix::kernel(std::bind(SIMIX_host_on, this));
+}
+
+/** Stop the host if it is on */
+void Host::off()
+{
+  /* Go to that function to follow the code flow through the simcall barrier */
+  if (0) simcall_HANDLER_host_off(&SIMIX_process_self()->simcall, this);
+  simgrid::simix::simcall<void>(SIMCALL_HOST_OFF, this);
 }
 
 /** @brief Get the speed of the cpu associated to a host */
