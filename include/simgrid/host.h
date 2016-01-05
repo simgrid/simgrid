@@ -55,9 +55,7 @@ XBT_PUBLIC(void) sg_host_simix_destroy(sg_host_t host);
 XBT_PUBLIC(void) sg_host_init(void);
 
 // =========== user-level functions ===============
-XBT_PUBLIC(double) sg_host_get_speed(sg_host_t host);
 XBT_PUBLIC(double) sg_host_get_available_speed(sg_host_t host);
-XBT_PUBLIC(int) sg_host_get_core(sg_host_t host);
 XBT_PUBLIC(int) sg_host_get_state(sg_host_t host);
 
 XBT_PUBLIC(int) sg_host_get_nb_pstates(sg_host_t host);

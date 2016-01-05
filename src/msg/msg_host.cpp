@@ -214,11 +214,8 @@ xbt_dynar_t MSG_hosts_as_dynar(void) {
  * \brief Return the speed of the processor (in flop/s), regardless of 
     the current load on the machine.
  */
-double MSG_get_host_speed(msg_host_t h)
-{
-  xbt_assert((h != NULL), "Invalid parameters");
-
-  return sg_host_get_speed(h);
+double MSG_get_host_speed(msg_host_t host) {
+  return host->getSpeed();
 }
 
 
@@ -228,11 +225,8 @@ double MSG_get_host_speed(msg_host_t h)
  * \param host a host
  * \return the number of cores
  */
-int MSG_host_get_core_number(msg_host_t host)
-{
-  xbt_assert((host != NULL), "Invalid parameters");
-
-  return sg_host_get_core(host);
+int MSG_host_get_core_number(msg_host_t host) {
+  return host->getCoreAmount();
 }
 
 /** \ingroup m_host_management
