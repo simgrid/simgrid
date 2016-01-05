@@ -119,10 +119,9 @@ void sg_energy_plugin_init() {
     	host_energy_it->second->unref();
     	surf_energy->erase(host_energy_it);
     });
-    simgrid::surf::CpuAction::onStateChange.connect([]
-													 (simgrid::surf::CpuAction *action,
-															 e_surf_action_state_t old,
-															 e_surf_action_state_t cur) {
+    simgrid::surf::CpuAction::onStateChange.connect([](simgrid::surf::CpuAction *action,
+                                                       e_surf_action_state_t old,
+                                                       e_surf_action_state_t cur) {
     	const char *name = getActionCpu(action)->getName();
     	simgrid::surf::Host *host = static_cast<simgrid::surf::Host*>(surf_host_resource_priv(sg_host_by_name(name)));
 
