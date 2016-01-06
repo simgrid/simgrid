@@ -251,8 +251,6 @@ void MSG_vm_destroy(msg_vm_t vm)
   /* Then, destroy the VM object */
   simcall_vm_destroy(vm);
 
-  __MSG_host_destroy(vm);
-
   TRACE_msg_vm_end(vm);
 }
 

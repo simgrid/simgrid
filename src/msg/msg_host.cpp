@@ -163,18 +163,6 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
   free(priv);
 }
 
-/*
- * \brief Destroys a host (internal call only)
- */
-void __MSG_host_destroy(msg_host_t host) //FIXME: killme?
-{
-  /* TODO:
-   * What happens if VMs still remain on this host?
-   * Revisit here after the surf layer gets stable.
-   **/
-  sg_host_msg_destroy(host);
-}
-
 /** \ingroup m_host_management
  * \brief Return the current number MSG hosts.
  */

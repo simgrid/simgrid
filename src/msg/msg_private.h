@@ -160,7 +160,6 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
 XBT_PRIVATE msg_host_t __MSG_host_create(sg_host_t host);
 XBT_PRIVATE msg_storage_t __MSG_storage_create(smx_storage_t storage);
-void __MSG_host_destroy(msg_host_t host);
 XBT_PRIVATE void __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PRIVATE void __MSG_storage_destroy(msg_storage_priv_t host);
 XBT_PRIVATE void __MSG_file_destroy(msg_file_priv_t host);

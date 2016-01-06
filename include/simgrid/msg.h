@@ -308,8 +308,6 @@ XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
 XBT_PUBLIC(double) MSG_host_get_wattmin_at(msg_host_t host, int pstate);
 XBT_PUBLIC(double) MSG_host_get_wattmax_at(msg_host_t host, int pstate);
 
-XBT_PUBLIC(void) __MSG_host_destroy(msg_host_t host);
-
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
 XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
