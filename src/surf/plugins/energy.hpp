@@ -6,7 +6,7 @@
 
 #include <xbt/base.h>
 
-#include "../host_interface.hpp"
+#include "src/surf/host_interface.hpp"
 #include <map>
 
 #ifndef ENERGY_CALLBACK_HPP_

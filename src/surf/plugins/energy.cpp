@@ -50,16 +50,9 @@ and then use the following function to retrieve the consumption of a given host:
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf,
                                 "Logging specific to the SURF energy plugin");
 
-namespace simgrid {
-namespace energy {
-
-std::map<simgrid::surf::Host*, HostEnergy*> *surf_energy = NULL;
-
-}
-}
+std::map<simgrid::surf::Host*, simgrid::energy::HostEnergy*> *simgrid::energy::surf_energy = NULL;
 
 using simgrid::energy::HostEnergy;
-using simgrid::energy::surf_energy;
 
 /* Computes the consumption so far.  Called lazily on need. */
 static void update_consumption(simgrid::surf::Host *host, HostEnergy *host_energy) {
@@ -102,20 +95,20 @@ void sg_energy_plugin_init() {
     /* The following attaches an anonymous function to the Host::onCreation signal */
 	/* Search for "C++ lambda" for more information on the syntax used here */
     simgrid::surf::Host::onCreation.connect([](simgrid::surf::Host *host) {
-    	(*surf_energy)[host] = new HostEnergy(host);
+    	(*simgrid::energy::surf_energy)[host] = new HostEnergy(host);
     });
 
     simgrid::surf::VMCreatedCallbacks.connect([](simgrid::surf::VirtualMachine* vm) {
     	std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it =
-    			surf_energy->find(vm->p_hostPM->extension(simgrid::surf::Host::EXTENSION_ID));
-    	xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
-    	(*surf_energy)[vm] = host_energy_it->second;
+    			simgrid::energy::surf_energy->find(vm->p_hostPM->extension(simgrid::surf::Host::EXTENSION_ID));
+    	xbt_assert(host_energy_it != simgrid::energy::surf_energy->end(), "The host is not in surf_energy.");
+    	(*simgrid::energy::surf_energy)[vm] = host_energy_it->second;
     	host_energy_it->second->ref(); // protect the HostEnergy from getting deleted too early
     });
 
     simgrid::surf::Host::onDestruction.connect([](simgrid::surf::Host *host) {
-    	std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it = surf_energy->find(host);
-    	xbt_assert(host_energy_it != surf_energy->end(), "The host is not in surf_energy.");
+    	std::map<simgrid::surf::Host*, HostEnergy*>::iterator host_energy_it = simgrid::energy::surf_energy->find(host);
+    	xbt_assert(host_energy_it != simgrid::energy::surf_energy->end(), "The host is not in surf_energy.");
 
     	HostEnergy *host_energy = host_energy_it->second;
     	update_consumption(host, host_energy);
@@ -123,7 +116,7 @@ void sg_energy_plugin_init() {
     	if (host_energy_it->second->refcount == 1) // Don't display anything for virtual CPUs
     		XBT_INFO("Total energy of host %s: %f Joules", host->getName(), host_energy->getConsumedEnergy());
     	host_energy_it->second->unref();
-    	surf_energy->erase(host_energy_it);
+    	simgrid::energy::surf_energy->erase(host_energy_it);
     });
     simgrid::surf::CpuAction::onStateChange.connect([](simgrid::surf::CpuAction *action,
                                                        e_surf_action_state_t old,
@@ -131,7 +124,7 @@ void sg_energy_plugin_init() {
     	const char *name = getActionCpu(action)->getName();
     	simgrid::surf::Host *host = static_cast<simgrid::surf::Host*>(surf_host_resource_priv(sg_host_by_name(name)));
 
-    	HostEnergy *host_energy = (*surf_energy)[host];
+    	HostEnergy *host_energy = (*simgrid::energy::surf_energy)[host];
 
     	if(host_energy->last_updated < surf_get_clock())
     		update_consumption(host, host_energy);
@@ -142,15 +135,15 @@ void sg_energy_plugin_init() {
 												(simgrid::surf::Host *host,
 														e_surf_resource_state_t oldState,
 														e_surf_resource_state_t newState) {
-    	HostEnergy *host_energy = (*surf_energy)[host];
+    	HostEnergy *host_energy = (*simgrid::energy::surf_energy)[host];
 
     	if(host_energy->last_updated < surf_get_clock())
     		update_consumption(host, host_energy);
     });
 
     simgrid::surf::surfExitCallbacks.connect([]() {
-    	delete surf_energy;
-    	surf_energy = NULL;
+    	delete simgrid::energy::surf_energy;
+    	simgrid::energy::surf_energy = NULL;
     });
   }
 }
