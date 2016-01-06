@@ -84,7 +84,6 @@ public:
   static simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> onStateChange;
 
 public:
-  static void classInit(); // must be called before the first use of that class
   /**
    * @brief Host constructor
    *

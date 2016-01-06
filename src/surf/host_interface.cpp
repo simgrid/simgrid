@@ -31,7 +31,10 @@ void host_add_traces(){
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::Extension<simgrid::Host, Host> Host::EXTENSION_ID;
+simgrid::xbt::Extension<simgrid::Host, Host> Host::EXTENSION_ID =
+		simgrid::Host::extension_create<simgrid::surf::Host>([](void *h) {
+	        static_cast<simgrid::surf::Host*>(h)->destroy();
+        });
 
 /*********
  * Model *
@@ -86,15 +89,6 @@ void HostModel::adjustWeightOfDummyCpuActions()
 simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onCreation;
 simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onDestruction;
 simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> Host::onStateChange;
-
-void Host::classInit()
-{
-  if (!EXTENSION_ID.valid()) {
-    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>([](void *h) {
-    	static_cast<simgrid::surf::Host*>(h)->destroy();
-    });
-  }
-}
 
 Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 		                 xbt_dynar_t storage, NetCard *netElm, Cpu *cpu)
