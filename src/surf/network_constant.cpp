@@ -125,21 +125,5 @@ void NetworkConstantAction::setCategory(const char * /*category*/)
   //ignore completely the categories in constant model, they are not traced
 }
 
-void NetworkConstantAction::suspend()
-{
-  m_suspended = true;
-}
-
-void NetworkConstantAction::resume()
-{
-  if (m_suspended)
-	m_suspended = false;
-}
-
-bool NetworkConstantAction::isSuspended()
-{
-  return m_suspended;
-}
-
 }
 }

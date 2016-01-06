@@ -66,11 +66,7 @@ public:
   int unref();
   void cancel();
   void setCategory(const char *category);
-  void suspend();
-  void resume();
-  bool isSuspended();
   double m_latInit;
-  int m_suspended;
 };
 
 }
