@@ -177,8 +177,8 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
   p_netElm = new RoutingEdgeWrapper(host_PM->p_netcard);
-  sg_host_t host = sg_host_by_name_or_create(name);
-  host->p_netcard = p_netElm;
+  sg_host_t host_VM = sg_host_by_name_or_create(name);
+  host_VM->p_netcard = p_netElm;
 
   p_currentState = SURF_VM_STATE_CREATED;
 
@@ -186,7 +186,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
   CpuCas01 *sub_cpu = static_cast<CpuCas01*>(host_PM->p_cpu);
 
-  p_cpu = surf_cpu_model_vm->createCpu(host, // the machine hosting the VM
+  p_cpu = surf_cpu_model_vm->createCpu(host_VM, // the machine hosting the VM
       sub_cpu->getSpeedPeakList(),        // host->power_peak,
       sub_cpu->getPState(),
       1,                          // host->power_scale,

@@ -118,6 +118,10 @@ Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_
 Host::~Host()
 {
 	xbt_assert(currentlyDestroying_, "Don't delete Hosts directly. Call destroy() instead.");
+	delete p_cpu;
+	// FIXME: VM plays strange games, leading to segfaults if I do the expected thing of next line
+	// delete p_netElm;
+	delete p_storage;
 }
 /** @brief Fire the require callbacks and destroy the object
  *
