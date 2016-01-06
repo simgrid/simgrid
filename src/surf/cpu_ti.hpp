@@ -121,7 +121,6 @@ public:
   void updateState(tmgr_trace_event_t event_type, double value, double date) override;
   void updateActionsFinishTime(double now);
   bool isUsed() override;
-  void printCpuTiModel();
   CpuAction *execute(double size) override;
   CpuAction *sleep(double duration) override;
   double getAvailableSpeed() override;
