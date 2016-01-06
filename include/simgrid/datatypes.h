@@ -7,6 +7,8 @@
 #ifndef SIMGRID_DATATYPES_H_
 #define SIMGRID_DATATYPES_H_
 
+#include <simgrid/forward.h>
+
 typedef struct vm_params {
   int ncpus;
   sg_size_t ramsize;
