@@ -43,10 +43,7 @@ namespace simgrid {
 namespace surf {
 
 class NetworkCm02Model : public NetworkModel {
-private:
-  void initialize();
 public:
-  NetworkCm02Model(int /*i*/) : NetworkModel() {};
   NetworkCm02Model();
   ~NetworkCm02Model() { }
   Link* createLink(const char *name,
@@ -58,13 +55,14 @@ public:
 		  tmgr_trace_t state_trace,
 		  e_surf_link_sharing_policy_t policy,
 		  xbt_dict_t properties) override;
-  void addTraces();
-  void updateActionsStateLazy(double now, double delta);
-  void updateActionsStateFull(double now, double delta);
+  void addTraces() override;
+  void updateActionsStateLazy(double now, double delta) override;
+  void updateActionsStateFull(double now, double delta) override;
   Action *communicate(NetCard *src, NetCard *dst,
-		                           double size, double rate);
-  bool shareResourcesIsIdempotent() {return true;}
+		                           double size, double rate) override;
+  bool shareResourcesIsIdempotent() override {return true;}
   virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
+protected:
   bool m_haveGap = false;
 };
 
@@ -85,9 +83,9 @@ public:
 	                           double lat_initial,
 	                           tmgr_trace_t lat_trace,
                                e_surf_link_sharing_policy_t policy);
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
-  void updateBandwidth(double value, double date=surf_get_clock());
-  void updateLatency(double value, double date=surf_get_clock());
+  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  void updateBandwidth(double value, double date=surf_get_clock()) override;
+  void updateLatency(double value, double date=surf_get_clock()) override;
   virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
 
 

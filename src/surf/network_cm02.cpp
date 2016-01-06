@@ -84,13 +84,11 @@ void surf_network_model_init_CM02(void)
     return;
 
   surf_network_model = new simgrid::surf::NetworkCm02Model();
+  xbt_dynar_push(all_existing_models, &surf_network_model);
   net_define_callbacks();
-  simgrid::surf::Model *model = surf_network_model;
-  xbt_dynar_push(all_existing_models, &model);
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 1.0);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
-                            1.0);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor", 1.0);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 0.0);
 }
 
@@ -110,16 +108,13 @@ void surf_network_model_init_Reno(void)
     return;
 
   surf_network_model = new simgrid::surf::NetworkCm02Model();
+  xbt_dynar_push(all_existing_models, &surf_network_model);
   net_define_callbacks();
-  simgrid::surf::Model *model = surf_network_model;
-  xbt_dynar_push(all_existing_models, &model);
-  lmm_set_default_protocol_function(func_reno_f, func_reno_fp,
-                                    func_reno_fpi);
+  lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
   surf_network_model->f_networkSolve = lagrange_solve;
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 10.4);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
-                            0.92);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor", 0.92);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }
 
@@ -130,18 +125,14 @@ void surf_network_model_init_Reno2(void)
     return;
 
   surf_network_model = new simgrid::surf::NetworkCm02Model();
+  xbt_dynar_push(all_existing_models, &surf_network_model);
   net_define_callbacks();
-  simgrid::surf::Model *model = surf_network_model;
-  xbt_dynar_push(all_existing_models, &model);
-  lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp,
-                                    func_reno2_fpi);
+  lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp, func_reno2_fpi);
   surf_network_model->f_networkSolve = lagrange_solve;
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 10.4);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
-                            0.92);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S",
-                            8775);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor", 0.92);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }
 
 void surf_network_model_init_Vegas(void)
@@ -150,16 +141,13 @@ void surf_network_model_init_Vegas(void)
     return;
 
   surf_network_model = new simgrid::surf::NetworkCm02Model();
+  xbt_dynar_push(all_existing_models, &surf_network_model);
   net_define_callbacks();
-  simgrid::surf::Model *model = surf_network_model;
-  xbt_dynar_push(all_existing_models, &model);
-  lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp,
-                                    func_vegas_fpi);
+  lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
   surf_network_model->f_networkSolve = lagrange_solve;
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor", 10.4);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",
-                            0.92);
+  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor", 0.92);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 }
 
@@ -202,8 +190,6 @@ NetworkCm02Model::NetworkCm02Model()
 	p_modifiedSet = new ActionLmmList();
 	p_maxminSystem->keep_track = p_modifiedSet;
   }
-
-  m_haveGap = false;
 }
 
 Link* NetworkCm02Model::createLink(const char *name,
