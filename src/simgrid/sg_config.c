@@ -27,7 +27,7 @@
 #include "src/mc/mc_replay.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
-                                "About the configuration of simgrid");
+                                "About the configuration of SimGrid");
 
 xbt_cfg_t _sg_cfg_set = NULL;
 
@@ -374,21 +374,15 @@ extern int _sg_do_model_check;   /* this variable lives in xbt_main until I find
 extern int _sg_do_model_check_record;
 #endif
 
-static void _sg_cfg_cb_model_check_replay(const char *name, int pos)
-{
+static void _sg_cfg_cb_model_check_replay(const char *name, int pos) {
   MC_record_path = xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
-static void _sg_cfg_cb_model_check_record(const char *name, int pos)
-{
 #ifdef HAVE_MC
+static void _sg_cfg_cb_model_check_record(const char *name, int pos) {
   _sg_do_model_check_record = xbt_cfg_get_boolean(_sg_cfg_set, name);
-#else
-  if (xbt_cfg_get_boolean(_sg_cfg_set, name)) {
-    xbt_die("You tried to activate the model-checking record from the command line, but it was not compiled in. Change your settings in cmake, recompile and try again");
-  }
-#endif
 }
+#endif
 
 extern int _sg_do_verbose_exit;
 
@@ -600,7 +594,7 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_boolean, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/maxmin_selective_update", "no");
 
-    /* Replay (this part is enabled event if MC it disabled) */
+    /* Replay (this part is enabled even if MC it disabled) */
     xbt_cfg_register(&_sg_cfg_set, "model-check/replay",
       "Uenable replay mode with the given path",
       xbt_cfgelm_string, 0, 1, _sg_cfg_cb_model_check_replay, NULL);
