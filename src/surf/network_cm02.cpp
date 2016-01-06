@@ -352,7 +352,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
 
   routing_platf->getRouteAndLatency(src, dst, &route, &latency);
   xbt_assert(!xbt_dynar_is_empty(route) || latency,
-             "You're trying to send data from %s to %s but there is no connection at all between these two hosts.",
+             "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->getName(), dst->getName());
 
   xbt_dynar_foreach(route, i, _link) {
