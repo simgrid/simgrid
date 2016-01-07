@@ -196,13 +196,12 @@ XBT_PRIVATE char *instr_process_id_2 (const char *process_name, int process_pid,
 XBT_PRIVATE void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host,
                                    msg_host_t new_host);
 XBT_PRIVATE void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host);
-XBT_PRIVATE void TRACE_msg_process_destroy (const char *process_name, int process_pid, msg_host_t host);
+XBT_PRIVATE void TRACE_msg_process_destroy (const char *process_name, int process_pid);
 XBT_PRIVATE void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_suspend(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_resume(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c
 XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
-XBT_PRIVATE void TRACE_msg_process_end(msg_process_t process);
 
 /* declaration of instrumentation functions from instr_msg_vm.c */
 XBT_PRIVATE char *instr_vm_id(msg_vm_t vm, char *str, int len);
