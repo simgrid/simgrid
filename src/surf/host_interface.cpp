@@ -115,7 +115,7 @@ Host::~Host()
 	delete p_cpu;
 	// FIXME: VM plays strange games, leading to segfaults if I do the expected thing of next line
 	// delete p_netElm;
-	delete p_storage;
+	// delete p_storage;
 }
 /** @brief Fire the require callbacks and destroy the object
  *
