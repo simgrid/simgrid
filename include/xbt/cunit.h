@@ -117,10 +117,15 @@ XBT_PUBLIC(void) xbt_test_exit(void);
  * @param func a valid function name that will be used to contain all code of this unit
  * @param title human informative description of your test (displayed in testall)
  */
+#ifdef __cplusplus
+#define XBT_TEST_UNIT(name,func,title)    \
+    extern "C" void func(void);  /*prototype*/ \
+    void func(void)
+#else
 #define XBT_TEST_UNIT(name,func,title)    \
     void func(void);  /*prototype*/       \
     void func(void)
-
+#endif
 
 /* test operations */
 XBT_PUBLIC(void) _xbt_test_add(const char *file, int line, const char *fmt,

@@ -185,8 +185,6 @@ static void* getpage()
   return mmap(NULL, getpagesize(), PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 }
 
-extern "C" {
-
 XBT_TEST_SUITE("mc_page_store", "Page store");
 
 XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the store")
@@ -233,8 +231,6 @@ XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the sto
   xbt_test_assert(pageno1 == pageno4, "Page was not reused");
   xbt_test_assert(store->get_ref(pageno4)==1, "Bad refcount");
   xbt_test_assert(store->size()==2, "Bad size");
-}
-
 }
 
 #endif /* SIMGRID_TEST */

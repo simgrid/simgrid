@@ -191,6 +191,8 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
 }
 }
 
+}
+
 #ifdef SIMGRID_TEST
 
 #include <string.h>
@@ -201,8 +203,6 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_mmu.h"
-
-extern "C" {
 
 XBT_TEST_SUITE("mc_snapshot", "Snapshots");
 
@@ -297,8 +297,5 @@ static void test_snapshot(bool sparse_checkpoint) {
   mc_model_checker = NULL;
 }
 
-}
-
 #endif /* SIMGRID_TEST */
 
-}
