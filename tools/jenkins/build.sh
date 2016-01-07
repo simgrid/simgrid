@@ -39,10 +39,10 @@ onoff() {
 }
 
 # Check that we have what we need, or die quickly
-test -e /bin/tar  || die "I need tar to compile. Please fix your slave."
-test -e /bin/gzip || die "I need gzip to compile. Please fix your slave."
-test -e /usr/include/libunwind.h || die "I need libunwind to compile. Please fix your slave."
-test -e /usr/include/valgrind/valgrind.h || die "I need valgrind to compile. Please fix your slave."
+test -e /bin/tar  || die 1 "I need tar to compile. Please fix your slave."
+test -e /bin/gzip || die 1 "I need gzip to compile. Please fix your slave."
+test -e /usr/include/libunwind.h || die 1 "I need libunwind to compile. Please fix your slave."
+test -e /usr/include/valgrind/valgrind.h || die 1 "I need valgrind to compile. Please fix your slave."
 
 build_mode="$1"
 echo "Build mode $build_mode on $(uname -np)" >&2
