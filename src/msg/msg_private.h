@@ -202,7 +202,6 @@ XBT_PRIVATE void TRACE_msg_process_suspend(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_resume(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c
 XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
-XBT_PRIVATE void TRACE_msg_process_end(msg_process_t process);
 
 /* declaration of instrumentation functions from instr_msg_vm.c */
 XBT_PRIVATE char *instr_vm_id(msg_vm_t vm, char *str, int len);

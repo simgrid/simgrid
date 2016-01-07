@@ -134,10 +134,3 @@ void TRACE_msg_process_sleep_out(msg_process_t process)
     new_pajePopState (MSG_get_clock(), process_container, type);
   }
 }
-
-void TRACE_msg_process_end(msg_process_t process)
-{
-  if (TRACE_msg_process_is_enabled()) {
-    TRACE_msg_process_destroy(process->name, process->pid);
-  }
-}
