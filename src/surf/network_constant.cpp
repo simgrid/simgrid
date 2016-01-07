@@ -120,10 +120,5 @@ void NetworkConstantAction::cancel()
   return;
 }
 
-void NetworkConstantAction::setCategory(const char * /*category*/)
-{
-  //ignore completely the categories in constant model, they are not traced
-}
-
 }
 }
