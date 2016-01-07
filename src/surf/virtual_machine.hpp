@@ -68,7 +68,7 @@ public:
   /** @brief Destructor */
   ~VirtualMachine();
 
-  void setState(e_surf_resource_state_t state);
+  void setState(e_surf_resource_state_t state) override;
 
   /** @brief Suspend the VM */
   virtual void suspend()=0;

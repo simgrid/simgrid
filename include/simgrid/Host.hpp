@@ -40,6 +40,7 @@ public:
   simgrid::xbt::string const& getName() const { return name_; }
   void on();
   void off();
+  e_surf_resource_state_t getState();
   xbt_dict_t getProperties();
   xbt_swag_t getProcessList();
   double getCurrentPowerPeak();

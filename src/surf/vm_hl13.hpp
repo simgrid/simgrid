@@ -61,8 +61,8 @@ public:
 
   void migrate(sg_host_t ind_dst_pm) override;
 
-  e_surf_resource_state_t getState();
-  void setState(e_surf_resource_state_t state);
+  e_surf_resource_state_t getState() override;
+  void setState(e_surf_resource_state_t state) override;
 
   void setBound(double bound);
   void setAffinity(Cpu *cpu, unsigned long mask);

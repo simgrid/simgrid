@@ -305,11 +305,6 @@ XBT_PUBLIC(xbt_dict_t) sg_host_get_properties(sg_host_t host);
 /** @brief Get the state of a surf resource (cpu, host, network, …) */
 XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t resource);
 
-static XBT_INLINE e_surf_resource_state_t surf_host_get_state(surf_host_t host) {
-	return surf_resource_get_state((surf_cpp_resource_t)host);
-}
-
-
 /** @brief Set the state of a surf resource (cpu, host, network, …) */
 XBT_PUBLIC(void) surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
 static inline void surf_host_set_state(surf_host_t host, e_surf_resource_state_t state) {

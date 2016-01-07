@@ -9,6 +9,7 @@
 #include "xbt/log.h"
 #include "xbt/dict.h"
 #include "mc/mc.h"
+#include "src/surf/host_interface.hpp"
 
 //If you need to log some stuffs, just uncomment these two lines and uses XBT_DEBUG for instance
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms)");
@@ -100,7 +101,7 @@ void SIMIX_vm_start(sg_host_t ind_vm)
 
 int SIMIX_vm_get_state(sg_host_t ind_vm)
 {
-  return surf_host_get_state(surf_host_resource_priv(ind_vm));
+  return surf_host_resource_priv(ind_vm)->getState();
 }
 
 /**

@@ -770,7 +770,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   sg_host_t host = process->host;
 
   /* check if the host is active */
-  if (surf_host_get_state(surf_host_resource_priv(host)) != SURF_RESOURCE_ON) {
+  if (host->getState() != SURF_RESOURCE_ON) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_get_name(host));
   }
@@ -812,7 +812,7 @@ void SIMIX_post_process_sleep(smx_synchro_t synchro)
         THROW_IMPOSSIBLE;
         break;
     }
-    if (surf_host_get_state(surf_host_resource_priv(simcall->issuer->host)) != SURF_RESOURCE_ON) {
+    if (simcall->issuer->host->getState() != SURF_RESOURCE_ON) {
       simcall->issuer->context->iwannadie = 1;
     }
     simcall_process_sleep__set__result(simcall, state);
