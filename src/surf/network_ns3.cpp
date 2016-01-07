@@ -57,7 +57,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
                                      link->bandwidth_trace,
                                      link->latency,
                                      link->latency_trace,
-                                     link->state,
+                                     link->initiallyOn,
                                      link->state_trace,
                                      link->policy,
                                      link->properties);
@@ -288,7 +288,7 @@ Link* NetworkNS3Model::createLink(const char *name,
 	                                 tmgr_trace_t bw_trace,
 	                                 double lat_initial,
 	                                 tmgr_trace_t lat_trace,
-	                                 e_surf_resource_state_t state_initial,
+	                                 int initiallyOn,
 	                                 tmgr_trace_t state_trace,
 	                                 e_surf_link_sharing_policy_t policy,
 	                                 xbt_dict_t properties){

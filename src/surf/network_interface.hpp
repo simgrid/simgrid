@@ -97,7 +97,7 @@ public:
                                    tmgr_trace_t bw_trace,
                                    double lat_initial,
                                    tmgr_trace_t lat_trace,
-                                   e_surf_resource_state_t state_initial,
+                                   int initiallyOn,
                                    tmgr_trace_t state_trace,
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties)=0;
@@ -214,8 +214,8 @@ public:
   static simgrid::surf::signal<void(simgrid::surf::Link*)> onDestruction;
 
   /** @brief Callback signal fired when the state of a Link changes
-   *  Signature: `void(LinkAction *action, e_surf_resource_state_t oldState, e_surf_resource_state_t currentState)` */
-  static simgrid::surf::signal<void(simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)> onStateChange;
+   *  Signature: `void(LinkAction *action, int previouslyOn, int currentlyOn)` */
+  static simgrid::surf::signal<void(simgrid::surf::Link*, int, int)> onStateChange;
 
 
   /** @brief Get the bandwidth in bytes per second of current Link */
@@ -236,7 +236,8 @@ public:
   /** @brief Check if the Link is used */
   bool isUsed();
 
-  void setState(e_surf_resource_state_t state);
+  void turnOn() override;
+  void turnOff() override;
 
   /* Using this object with the public part of
     model does not make sense */

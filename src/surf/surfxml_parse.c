@@ -472,9 +472,9 @@ void ETag_surfxml_host(void)    {
   xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
         (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
   if (A_surfxml_host_state == A_surfxml_host_state_ON)
-    host.initial_state = SURF_RESOURCE_ON;
+    host.initiallyOn = 1;
   if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-    host.initial_state = SURF_RESOURCE_OFF;
+    host.initiallyOn = 1;
   host.coord = A_surfxml_host_coordinates;
 
   sg_platf_new_host(&host);
@@ -637,10 +637,10 @@ void ETag_surfxml_link(void){
 
   switch (A_surfxml_link_state) {
   case A_surfxml_link_state_ON:
-    link.state = SURF_RESOURCE_ON;
+    link.initiallyOn = 1;
     break;
   case A_surfxml_link_state_OFF:
-    link.state = SURF_RESOURCE_OFF;
+    link.initiallyOn = 0;
     break;
   default:
     surf_parse_error("invalid state for link %s", link.id);
@@ -698,7 +698,7 @@ void ETag_surfxml_backbone(void){
   link.id = A_surfxml_backbone_id;
   link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth);
   link.latency = surf_parse_get_time(A_surfxml_backbone_latency);
-  link.state = SURF_RESOURCE_ON;
+  link.initiallyOn = 1;
   link.policy = SURF_LINK_SHARED;
 
   sg_platf_new_link(&link);

@@ -81,7 +81,7 @@ tmgr_trace_t tmgr_trace_generator_value(const char *id,
  */
 tmgr_trace_t tmgr_trace_generator_state(const char *id,
                                   probabilist_event_generator_t date_generator,
-                                  e_surf_resource_state_t first_event_value)
+                                  int first_event_hostIsOn)
 {
   tmgr_trace_t trace = NULL;
 
@@ -91,7 +91,7 @@ tmgr_trace_t tmgr_trace_generator_state(const char *id,
   trace->s_probabilist.event_generator[0] = date_generator;
   trace->s_probabilist.event_generator[1] = date_generator;
   trace->s_probabilist.is_state_trace = 1;
-  trace->s_probabilist.next_event = (first_event_value==SURF_RESOURCE_ON ? 1 : 0);
+  trace->s_probabilist.next_event = first_event_hostIsOn;
 
   return trace;
 }
@@ -113,7 +113,7 @@ tmgr_trace_t tmgr_trace_generator_state(const char *id,
 tmgr_trace_t tmgr_trace_generator_avail_unavail(const char *id,
                                 probabilist_event_generator_t avail_duration_generator,
                                 probabilist_event_generator_t unavail_duration_generator,
-                                e_surf_resource_state_t first_event_value)
+                                int first_event_hostIsOn)
 {
   tmgr_trace_t trace = NULL;
 
@@ -123,7 +123,7 @@ tmgr_trace_t tmgr_trace_generator_avail_unavail(const char *id,
   trace->s_probabilist.event_generator[0] = unavail_duration_generator;
   trace->s_probabilist.event_generator[1] = avail_duration_generator;
   trace->s_probabilist.is_state_trace = 1;
-  trace->s_probabilist.next_event = (first_event_value==SURF_RESOURCE_ON ? 1 : 0);
+  trace->s_probabilist.next_event = first_event_hostIsOn;
 
   return trace;
 }

@@ -157,7 +157,7 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
   link.id = link_id;
   link.bandwidth = cluster->bw;
   link.latency = cluster->lat;
-  link.state = SURF_RESOURCE_ON;
+  link.initiallyOn = 1;
   link.policy = cluster->sharing_policy;
   sg_platf_new_link(&link);
 

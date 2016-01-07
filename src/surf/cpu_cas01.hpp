@@ -30,7 +30,7 @@ public:
   Cpu *createCpu(simgrid::Host *host, xbt_dynar_t speedPeak, int pstate,
                    double speedScale,
                           tmgr_trace_t speedTrace, int core,
-                          e_surf_resource_state_t state_initial,
+                          int initiallyOn,
                           tmgr_trace_t state_trace) override;
   double shareResourcesFull(double now) override;
   void addTraces() override;
@@ -45,7 +45,7 @@ class CpuCas01 : public Cpu {
 public:
   CpuCas01(CpuCas01Model *model, simgrid::Host *host, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
-        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace) ;
+        int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuCas01();
   void updateState(tmgr_trace_event_t event_type, double value, double date) override;
   CpuAction *execute(double size) override;

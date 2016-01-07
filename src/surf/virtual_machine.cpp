@@ -33,7 +33,7 @@ VMModel::vm_list_t VMModel::ws_vms;
  * Resource *
  ************/
 
-VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props,simgrid::Host *hostPM)
+VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props, simgrid::Host *hostPM)
 : Host(model, name, props, NULL, NULL, NULL)
 , p_hostPM(hostPM)
 {
@@ -49,11 +49,29 @@ VirtualMachine::~VirtualMachine()
 {
   VMDestructedCallbacks(this);
   VMModel::ws_vms.erase(VMModel::vm_list_t::s_iterator_to(*this));
+  /* Free the cpu_action of the VM. */
+  XBT_ATTRIB_UNUSED int ret = p_action->unref();
+  xbt_assert(ret == 1, "Bug: some resource still remains");
 }
 
-void VirtualMachine::setState(e_surf_resource_state_t state){
-  Resource::setState(state);
-  VMStateChangedCallbacks(this);
+e_surf_vm_state_t VirtualMachine::getState() {
+  return p_vm_state;
+}
+
+void VirtualMachine::setState(e_surf_vm_state_t state) {
+  p_vm_state = state;
+}
+void VirtualMachine::turnOn() {
+  if (isOff()) {
+    Resource::turnOn();
+    VMStateChangedCallbacks(this);
+  }
+}
+void VirtualMachine::turnOff() {
+  if (isOn()) {
+    Resource::turnOff();
+    VMStateChangedCallbacks(this);
+  }
 }
 
 /** @brief returns the physical machine on which the VM is running **/

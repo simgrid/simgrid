@@ -10,6 +10,7 @@
 #include "xbt/dict.h"
 #include "mc/mc.h"
 #include "src/surf/host_interface.hpp"
+#include "src/surf/virtual_machine.hpp"
 
 //If you need to log some stuffs, just uncomment these two lines and uses XBT_DEBUG for instance
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms)");
@@ -92,16 +93,16 @@ static int __can_be_started(sg_host_t vm)
 void SIMIX_vm_start(sg_host_t ind_vm)
 {
   if (__can_be_started(ind_vm))
-    surf_host_set_state(surf_host_resource_priv(ind_vm),
-                            (e_surf_resource_state_t) SURF_VM_STATE_RUNNING);
+    static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(ind_vm))
+      ->setState(SURF_VM_STATE_RUNNING);
   else
     THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
 }
 
 
-int SIMIX_vm_get_state(sg_host_t ind_vm)
+e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm)
 {
-  return surf_host_resource_priv(ind_vm)->getState();
+  return static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(ind_vm))->getState();
 }
 
 /**
@@ -344,8 +345,7 @@ void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer)
   }
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
-  surf_host_set_state(surf_host_resource_priv(ind_vm),
-          (e_surf_resource_state_t) SURF_VM_STATE_CREATED);
+  static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(ind_vm))->setState(SURF_VM_STATE_CREATED);
 }
 
 void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm)

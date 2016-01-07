@@ -115,7 +115,7 @@ class CpuTi : public Cpu {
 public:
   CpuTi(CpuTiModel *model, simgrid::Host *host, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
-        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace) ;
+        int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuTi();
 
   void updateState(tmgr_trace_event_t event_type, double value, double date) override;
@@ -155,7 +155,7 @@ public:
   Cpu *createCpu(simgrid::Host *host,  xbt_dynar_t speedPeak,
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
-                          e_surf_resource_state_t state_initial,
+                          int initiallyOn,
                           tmgr_trace_t state_trace);
   double shareResources(double now) override;
   void updateActionsState(double now, double delta) override;

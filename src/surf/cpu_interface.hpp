@@ -56,7 +56,7 @@ public:
   virtual Cpu *createCpu(simgrid::Host *host, xbt_dynar_t speedPeak,
                       int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
-                          e_surf_resource_state_t state_initial,
+                          int initiallyOn,
                           tmgr_trace_t state_trace)=0;
 
   void updateActionsStateLazy(double now, double delta);
@@ -88,7 +88,7 @@ public:
   Cpu(simgrid::surf::Model *model, simgrid::Host *host, lmm_constraint_t constraint,
 	  xbt_dynar_t speedPeakList, int pstate,
 	  int core, double speedPeak, double speedScale,
-	  e_surf_resource_state_t stateInitial);
+	  int initiallyOn);
 
   /**
    * @brief Cpu constructor
@@ -103,7 +103,7 @@ public:
   Cpu(simgrid::surf::Model *model, simgrid::Host *host,
       xbt_dynar_t speedPeakList, int pstate,
 	  int core, double speedPeak, double speedScale,
-	  e_surf_resource_state_t stateInitial);
+	  int initiallyOn);
 
   ~Cpu();
 
@@ -182,7 +182,7 @@ public:
 
   /** @brief CpuAction constructor */
   CpuAction(simgrid::surf::Model *model, double cost, bool failed)
-    : Action(model, cost, failed) {} //FIXME:REMOVE
+    : Action(model, cost, failed) {} //FIXME:DEADCODE?
 
   /** @brief CpuAction constructor */
   CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)

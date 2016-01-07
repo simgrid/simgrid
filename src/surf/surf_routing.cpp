@@ -708,14 +708,14 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     }
     s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
     memset(&host, 0, sizeof(host));
-    host.initial_state = SURF_RESOURCE_ON;
+    host.initiallyOn   = 1;
     host.pstate        = 0;
     host.speed_scale   = 1.0;
     host.core_amount   = 1;
 
     s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
     memset(&link, 0, sizeof(link));
-    link.state     = SURF_RESOURCE_ON;
+    link.initiallyOn = 1;
     link.policy    = SURF_LINK_FULLDUPLEX;
     link.latency   = cabinet->lat;
     link.bandwidth = cabinet->bw;
@@ -881,7 +881,7 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
       //host.power_peak = cluster->power;
       host.speed_scale = 1.0;
       host.core_amount = cluster->core_amount;
-      host.initial_state = SURF_RESOURCE_ON;
+      host.initiallyOn = 1;
       host.coord = "";
       sg_platf_new_host(&host);
       xbt_dynar_free(&host.speed_peak);
@@ -910,7 +910,7 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
         link.id        = tmp_link;
         link.bandwidth = cluster->loopback_bw;
         link.latency   = cluster->loopback_lat;
-        link.state     = SURF_RESOURCE_ON;
+        link.initiallyOn = 1;
         link.policy    = SURF_LINK_FATPIPE;
         sg_platf_new_link(&link);
         info_loop.link_up   = Link::byName(tmp_link);
@@ -931,7 +931,7 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
         link.id = tmp_link;
         link.bandwidth = cluster->limiter_link;
         link.latency = 0;
-        link.state = SURF_RESOURCE_ON;
+        link.initiallyOn = 1;
         link.policy = SURF_LINK_SHARED;
         sg_platf_new_link(&link);
         info_lim.link_up = Link::byName(tmp_link);
@@ -995,7 +995,7 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
     link.id        = link_backbone;
     link.bandwidth = cluster->bb_bw;
     link.latency   = cluster->bb_lat;
-    link.state     = SURF_RESOURCE_ON;
+    link.initiallyOn = 1;
     link.policy    = cluster->bb_sharing_policy;
 
     sg_platf_new_link(&link);
@@ -1040,7 +1040,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->speed);
   s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
   memset(&host, 0, sizeof(host));
-  host.initial_state = SURF_RESOURCE_ON;
+  host.initiallyOn = 1;
   host.id = host_id;
 
   host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
@@ -1056,7 +1056,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link, 0, sizeof(link));
-  link.state   = SURF_RESOURCE_ON;
+  link.initiallyOn = 1;
   link.policy  = SURF_LINK_SHARED;
   link.latency = peer->lat;
 

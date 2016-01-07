@@ -433,16 +433,16 @@ public:
    */
   Resource(Model *model, const char *name, lmm_constraint_t constraint);
 
-  Resource(Model *model, const char *name, lmm_constraint_t constraint, e_surf_resource_state_t stateInit);
+  Resource(Model *model, const char *name, lmm_constraint_t constraint, int initiallyOn);
 
   /**
    * @brief Resource constructor
    *
    * @param model Model associated to this Resource
    * @param name The name of the Resource
-   * @param stateInit the initial state of the Resource
+   * @param initiallyOn the initial state of the Resource
    */
-  Resource(Model *model, const char *name, e_surf_resource_state_t stateInit);
+  Resource(Model *model, const char *name, int initiallyOn);
 
   virtual ~Resource();
 
@@ -466,23 +466,18 @@ public:
   virtual bool isUsed()=0;
 
   /** @brief Check if the current Resource is active */
-  bool isOn();
+  virtual bool isOn();
+  /** @brief Check if the current Resource is shut down */
+  virtual bool isOff();
   /** @brief Turn on the current Resource */
-  void turnOn();
+  virtual void turnOn();
   /** @brief Turn off the current Resource */
-  void turnOff();
-
-  /** @brief Get the [state](\ref e_surf_resource_state_t) of the current Resource */
-  virtual e_surf_resource_state_t getState();
-  /** @brief Set the [state](\ref e_surf_resource_state_t) of the current Resource */
-  virtual void setState(e_surf_resource_state_t state);
+  virtual void turnOff();
 
 private:
   const char *p_name;
   Model *p_model;
-  bool m_running;
-  e_surf_resource_state_t m_stateCurrent;
-
+  bool m_isOn;
 
 public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component */

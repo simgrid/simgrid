@@ -38,7 +38,7 @@ void promoter(context_node_t node)
     host_parameters.core_amount = 1;
     host_parameters.speed_scale = 1;
     host_parameters.speed_trace = NULL;
-    host_parameters.initial_state = SURF_RESOURCE_ON;
+    host_parameters.initiallyOn = 1;
     host_parameters.state_trace = NULL;
     host_parameters.coord = NULL;
     host_parameters.properties = NULL;
@@ -60,7 +60,7 @@ void labeler(context_edge_t edge)
   //Latency from 0ms to 100ms
   link_parameters.latency = RngStream_RandU01(rng_stream) / 10.0;
   link_parameters.latency_trace = NULL;
-  link_parameters.state = SURF_RESOURCE_ON;
+  link_parameters.initiallyOn = 1;
   link_parameters.state_trace = NULL;
   link_parameters.policy = SURF_LINK_SHARED;
   link_parameters.properties = NULL;

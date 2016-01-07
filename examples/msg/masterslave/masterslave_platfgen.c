@@ -33,7 +33,7 @@ void promoter_1(context_node_t node) {
   host_parameters.core_amount = 1;
   host_parameters.speed_scale = 1;
   host_parameters.speed_trace = NULL;
-  host_parameters.initial_state = SURF_RESOURCE_ON;
+  host_parameters.initiallyOn = 1;
   host_parameters.state_trace = NULL;
   host_parameters.coord = NULL;
   host_parameters.properties = NULL;
@@ -52,7 +52,7 @@ void labeler_1(context_edge_t edge) {
   link_parameters.bandwidth_trace = NULL;
   link_parameters.latency = 0.01;
   link_parameters.latency_trace = NULL;
-  link_parameters.state = SURF_RESOURCE_ON;
+  link_parameters.initiallyOn = 1;
   link_parameters.state_trace = NULL;
   link_parameters.policy = SURF_LINK_SHARED;
   link_parameters.properties = NULL;

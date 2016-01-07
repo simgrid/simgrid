@@ -60,7 +60,7 @@ public:
   Cpu *createCpu(simgrid::Host *host,  xbt_dynar_t speedPeakList,
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
-                          e_surf_resource_state_t state_initial,
+                          int initiallyOn,
                           tmgr_trace_t state_trace) override;
   void addTraces() override {DIE_IMPOSSIBLE;};
 
@@ -76,7 +76,7 @@ public:
 		  tmgr_trace_t bw_trace,
 		  double lat_initial,
 		  tmgr_trace_t lat_trace,
-		  e_surf_resource_state_t state_initial,
+		  int initiallyOn,
 		  tmgr_trace_t state_trace,
 		  e_surf_link_sharing_policy_t policy,
 		  xbt_dict_t properties) override;
@@ -99,7 +99,7 @@ class CpuL07 : public Cpu {
 public:
   CpuL07(CpuL07Model *model, simgrid::Host *host, xbt_dynar_t speedPeakList, int pstate,
 		 double power_scale, tmgr_trace_t power_trace,
-     int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace);
+     int core, int initiallyOn, tmgr_trace_t state_trace);
   ~CpuL07();
   bool isUsed() override;
   void updateState(tmgr_trace_event_t event_type, double value, double date) override;
@@ -116,8 +116,7 @@ public:
           tmgr_trace_t bw_trace,
           double lat_initial,
           tmgr_trace_t lat_trace,
-          e_surf_resource_state_t
-          state_initial,
+          int initiallyOn,
           tmgr_trace_t state_trace,
           e_surf_link_sharing_policy_t policy);
   ~LinkL07(){ };

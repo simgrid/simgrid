@@ -68,7 +68,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
         host->speed_scale,
         host->speed_trace,
         host->core_amount,
-        host->initial_state,
+        host->initiallyOn,
         host->state_trace);
   surf_host_model->createHost(host->id, net, cpu, host->properties)->attach(h);
   if (TRACE_is_enabled() && TRACE_needs_platform())

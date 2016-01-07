@@ -97,7 +97,7 @@ void Link::linksExit() {
 
 simgrid::surf::signal<void(simgrid::surf::Link*)> Link::onCreation;
 simgrid::surf::signal<void(simgrid::surf::Link*)> Link::onDestruction;
-simgrid::surf::signal<void(simgrid::surf::Link*, e_surf_resource_state_t, e_surf_resource_state_t)> Link::onStateChange;
+simgrid::surf::signal<void(simgrid::surf::Link*, int, int)> Link::onStateChange; // signature: wasOn, currentlyOn
 
 simgrid::surf::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)> networkActionStateChangedCallbacks;
 simgrid::surf::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)> networkCommunicateCallbacks;
@@ -114,7 +114,7 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
                       link->bandwidth_trace,
                       link->latency,
                       link->latency_trace,
-                      link->state,
+                      link->initiallyOn,
                       link->state_trace, link->policy, link->properties);
     xbt_free(link_id);
     link_id = bprintf("%s_DOWN", link->id);
@@ -123,7 +123,7 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
                       link->bandwidth_trace,
                       link->latency,
                       link->latency_trace,
-                      link->state,
+                      link->initiallyOn,
                       link->state_trace, link->policy, link->properties);
     xbt_free(link_id);
   } else {
@@ -132,7 +132,7 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
 			  link->bandwidth_trace,
 			  link->latency,
 			  link->latency_trace,
-			  link->state,
+			  link->initiallyOn,
 			  link->state_trace, link->policy, link->properties);
   }
 }
@@ -255,10 +255,17 @@ int Link::sharingPolicy()
   return lmm_constraint_sharing_policy(getConstraint());
 }
 
-void Link::setState(e_surf_resource_state_t state){
-  e_surf_resource_state_t old = Resource::getState();
-  Resource::setState(state);
-  onStateChange(this, old, state);
+void Link::turnOn(){
+  if (isOff()) {
+    Resource::turnOn();
+    onStateChange(this, 0, 1);
+  }
+}
+void Link::turnOff(){
+  if (isOn()) {
+    Resource::turnOff();
+    onStateChange(this, 1, 0);
+  }
 }
 
 /**********

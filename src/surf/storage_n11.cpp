@@ -248,7 +248,7 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
   file->mount = xbt_strdup(mount);
   file->current_position = 0;
 
-  StorageAction *action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, OPEN);
+  StorageAction *action = new StorageN11Action(getModel(), 0, isOff(), this, OPEN);
   action->p_file = file;
 
   return action;
@@ -272,7 +272,7 @@ StorageAction *StorageN11::close(surf_file_t fd)
   free(fd->name);
   free(fd->mount);
   xbt_free(fd);
-  StorageAction *action = new StorageN11Action(getModel(), 0, getState() != SURF_RESOURCE_ON, this, CLOSE);
+  StorageAction *action = new StorageN11Action(getModel(), 0, isOff(), this, CLOSE);
   return action;
 }
 
@@ -289,7 +289,7 @@ StorageAction *StorageN11::read(surf_file_t fd, sg_size_t size)
   else
     fd->current_position += size;
 
-  StorageAction *action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, READ);
+  StorageAction *action = new StorageN11Action(getModel(), size, isOff(), this, READ);
   return action;
 }
 
@@ -298,7 +298,7 @@ StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
   char *filename = fd->name;
   XBT_DEBUG("\tWrite file '%s' size '%llu/%llu'",filename,size,fd->size);
 
-  StorageAction *action = new StorageN11Action(getModel(), size, getState() != SURF_RESOURCE_ON, this, WRITE);
+  StorageAction *action = new StorageN11Action(getModel(), size, isOff(), this, WRITE);
   action->p_file = fd;
   /* Substract the part of the file that might disappear from the used sized on
    * the storage element */

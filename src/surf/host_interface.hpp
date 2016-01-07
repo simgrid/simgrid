@@ -81,7 +81,7 @@ public:
   /* callbacks */
   static simgrid::surf::signal<void(Host*)> onCreation;    /** Called on each newly created object */
   static simgrid::surf::signal<void(Host*)> onDestruction; /** Called just before destructing an object */
-  static simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> onStateChange;
+  static simgrid::surf::signal<void(Host*)> onStateChange; /** Called when the machine is turned on or off */
 
 public:
   /**
@@ -125,8 +125,10 @@ private:
 public:
   void attach(simgrid::Host* host);
 
-  e_surf_resource_state_t getState();
-  void setState(e_surf_resource_state_t state);
+  bool isOn() override;
+  bool isOff() override;
+  void turnOn() override;
+  void turnOff() override;
 
   /** @brief Return the storage of corresponding mount point */
   virtual simgrid::surf::Storage *findStorageOnMountList(const char* storage);

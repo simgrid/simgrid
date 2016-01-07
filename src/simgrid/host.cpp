@@ -137,8 +137,8 @@ double sg_host_get_available_speed(sg_host_t host){
 /** @brief Returns the state of a host.
  *  @return 1 if the host is active or 0 if it has crashed.
  */
-int sg_host_get_state(sg_host_t host) {
-	return host->p_cpu->getState();
+int sg_host_is_on(sg_host_t host) {
+	return host->p_cpu->isOn();
 }
 
 /** @brief Returns the total energy consumed by the host (in Joules).
@@ -190,8 +190,11 @@ void Host::off()
   simgrid::simix::simcall<void>(SIMCALL_HOST_OFF, this);
 }
 
-e_surf_resource_state_t Host::getState() {
-  return p_cpu->getState();
+bool Host::isOn() {
+  return p_cpu->isOn();
+}
+bool Host::isOff() {
+  return ! p_cpu->isOn();
 }
 
 

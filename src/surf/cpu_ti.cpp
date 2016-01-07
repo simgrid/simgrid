@@ -440,14 +440,14 @@ Cpu *CpuTiModel::createCpu(simgrid::Host *host,
                            double speedScale,
                            tmgr_trace_t speedTrace,
                            int core,
-                           e_surf_resource_state_t stateInitial,
+                           int initiallyOn,
                            tmgr_trace_t stateTrace)
 {
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory speed attribute?");
   CpuTi *cpu = new CpuTi(this, host, speedPeak, pstate, speedScale, speedTrace,
-		           core, stateInitial, stateTrace);
+		           core, initiallyOn, stateTrace);
   return cpu;
 }
 
@@ -549,8 +549,8 @@ void CpuTiModel::addTraces()
  ************/
 CpuTi::CpuTi(CpuTiModel *model, simgrid::Host *host, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
-        e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace)
-  : Cpu(model, host, NULL, pstate, core, 0, speedScale, stateInitial)
+        int initiallyOn, tmgr_trace_t stateTrace)
+  : Cpu(model, host, NULL, pstate, core, 0, speedScale, initiallyOn)
 {
   xbt_assert(core==1,"Multi-core not handled by this model yet");
   m_core = core;
@@ -619,11 +619,11 @@ void CpuTi::updateState(tmgr_trace_event_t event_type,
 
   } else if (event_type == p_stateEvent) {
     if (value > 0) {
-      if(getState() == SURF_RESOURCE_OFF)
+      if(isOff())
         xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
-      setState(SURF_RESOURCE_ON);
+      turnOn();
     } else {
-      setState(SURF_RESOURCE_OFF);
+      turnOff();
 
       /* put all action running on cpu to failed */
       for(ActionTiList::iterator it(p_actionSet->begin()), itend(p_actionSet->end())
@@ -794,7 +794,7 @@ void CpuTi::updateRemainingAmount(double now)
 CpuAction *CpuTi::execute(double size)
 {
   XBT_IN("(%s,%g)", getName(), size);
-  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), size, getState() != SURF_RESOURCE_ON, this);
+  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), size, isOff(), this);
 
   p_actionSet->push_back(*action);
 
@@ -809,7 +809,7 @@ CpuAction *CpuTi::sleep(double duration)
     duration = MAX(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getName(), duration);
-  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), 1.0, getState() != SURF_RESOURCE_ON, this);
+  CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), 1.0, isOff(), this);
 
   action->m_maxDuration = duration;
   action->m_suspended = 2;

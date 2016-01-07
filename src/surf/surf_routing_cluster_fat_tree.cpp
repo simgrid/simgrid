@@ -508,7 +508,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     memset(&linkTemplate, 0, sizeof(linkTemplate));
     linkTemplate.bandwidth = cluster->limiter_link;
     linkTemplate.latency = 0;
-    linkTemplate.state = SURF_RESOURCE_ON;
+    linkTemplate.initiallyOn = 1;
     linkTemplate.policy = SURF_LINK_SHARED;
     linkTemplate.id = bprintf("limiter_%d", id);
     sg_platf_new_link(&linkTemplate);
@@ -519,7 +519,7 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     memset(&linkTemplate, 0, sizeof(linkTemplate));
     linkTemplate.bandwidth = cluster->loopback_bw;
     linkTemplate.latency = cluster->loopback_lat;
-    linkTemplate.state = SURF_RESOURCE_ON;
+    linkTemplate.initiallyOn = 1;
     linkTemplate.policy = SURF_LINK_FATPIPE;
     linkTemplate.id = bprintf("loopback_%d", id);
     sg_platf_new_link(&linkTemplate);
@@ -537,7 +537,7 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster,
   memset(&linkTemplate, 0, sizeof(linkTemplate));
   linkTemplate.bandwidth = cluster->bw;
   linkTemplate.latency = cluster->lat;
-  linkTemplate.state = SURF_RESOURCE_ON;
+  linkTemplate.initiallyOn = 1;
   linkTemplate.policy = cluster->sharing_policy; // sthg to do with that ?
   linkTemplate.id = bprintf("link_from_%d_to_%d_%d", downNode->id, upNode->id,
                             uniqueId);

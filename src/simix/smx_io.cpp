@@ -61,7 +61,7 @@ smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
   smx_synchro_t synchro;
 
   /* check if the host is active */
-  if (host->getState() != SURF_RESOURCE_ON) {
+  if (host->isOff()) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_get_name(host));
   }
@@ -93,7 +93,7 @@ smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
   smx_synchro_t synchro;
 
   /* check if the host is active */
-  if (host->getState() != SURF_RESOURCE_ON) {
+  if (host->isOff()) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_get_name(host));
   }
@@ -125,7 +125,7 @@ smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host)
   smx_synchro_t synchro;
 
   /* check if the host is active */
-  if (host->getState() != SURF_RESOURCE_ON) {
+  if (host->isOff()) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_get_name(host));
   }
@@ -157,7 +157,7 @@ smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
   smx_synchro_t synchro;
 
   /* check if the host is active */
-  if (host->getState() != SURF_RESOURCE_ON) {
+  if (host->isOff()) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_get_name(host));
   }
@@ -181,7 +181,7 @@ smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
 int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
 {
   /* check if the host is active */
-  if (host->getState() != SURF_RESOURCE_ON) {
+  if (host->isOff()) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_get_name(host));
   }
@@ -373,7 +373,7 @@ void SIMIX_io_finish(smx_synchro_t synchro)
             (int)synchro->state);
     }
 
-    if (simcall->issuer->host->getState() != SURF_RESOURCE_ON) {
+    if (simcall->issuer->host->isOff()) {
       simcall->issuer->context->iwannadie = 1;
     }
 

@@ -18,6 +18,6 @@ $ $SG_TEST_EXENV energy/vm/energy_vm$EXEEXT ${srcdir:=.}/../platforms/energy_pla
 > [  6.000000] (6:p31@vm_host3) This worker is done.
 > [  6.000000] (7:p32@vm_host3) This worker is done.
 > [ 10.000000] (0:@) Total simulation time: 10.00; All hosts must have the exact same energy consumption.
+> [ 10.000000] (0:@) Total energy of host MyHost1: 1600.000000 Joules
 > [ 10.000000] (0:@) Total energy of host MyHost2: 1600.000000 Joules
-> [ 10.000000] (0:@) Total energy of host vm_host1: 1600.000000 Joules
-> [ 10.000000] (0:@) Total energy of host vm_host3: 1600.000000 Joules
+> [ 10.000000] (0:@) Total energy of host MyHost3: 1600.000000 Joules

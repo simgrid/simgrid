@@ -59,7 +59,7 @@ void Host::turnOff() {
 	p_inferior->off();
 }
 bool Host::isOn() {
-	return sg_host_get_state(p_inferior);
+	return sg_host_is_on(p_inferior);
 }
 
 boost::unordered_map<std::string, Storage&> &Host::mountedStorages() {

@@ -62,12 +62,12 @@ void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int
       memset(&link, 0, sizeof(link));
       current_dimension = xbt_dynar_get_as(p_dimensions, j, int);
       neighbour_rank_id = ( ((int) rank / dim_product) % current_dimension == current_dimension-1) ? rank - (current_dimension-1)*dim_product : rank + dim_product;
-      //name of neighbour is not right for non contiguous cluster radicals (as id != rank in this case)
+      //name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
       link_id           = bprintf("%s_link_from_%i_to_%i", cluster->id, id, neighbour_rank_id);
       link.id           = link_id;
       link.bandwidth    = cluster->bw;
       link.latency      = cluster->lat;
-      link.state        = SURF_RESOURCE_ON;
+      link.initiallyOn  = 1;
       link.policy       = cluster->sharing_policy;
       sg_platf_new_link(&link);
       s_surf_parsing_link_up_down_t info;

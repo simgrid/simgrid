@@ -31,11 +31,11 @@ XBT_PUBLIC(tmgr_trace_t) tmgr_trace_generator_value(const char *id,
                                               probabilist_event_generator_t value_generator);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_generator_state(const char *id,
                                               probabilist_event_generator_t date_generator,
-                                              e_surf_resource_state_t first_event_value);
+                                              int first_event_hostIsOn);
 XBT_PUBLIC(tmgr_trace_t) tmgr_trace_generator_avail_unavail(const char *id,
                                               probabilist_event_generator_t avail_duration_generator,
                                               probabilist_event_generator_t unavail_duration_generator,
-                                              e_surf_resource_state_t first_event_value);
+                                              int first_event_hostIsOn);
 
 XBT_PUBLIC(probabilist_event_generator_t) tmgr_event_generator_new_uniform(const char* id,
                                                                            double min,

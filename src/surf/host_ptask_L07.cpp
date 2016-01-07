@@ -52,7 +52,7 @@ HostL07Model::HostL07Model() : HostModel() {
   routing_model_create(surf_network_model->createLink("__loopback__",
 	                                                  498000000, NULL,
 	                                                  0.000015, NULL,
-	                                                  SURF_RESOURCE_ON, NULL,
+	                                                  1/*ON*/, NULL,
 	                                                  SURF_LINK_FATPIPE, NULL));
 }
 
@@ -166,7 +166,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
       while ((cnst = lmm_get_cnst_from_var(p_maxminSystem, action->getVariable(), i++))) {
         void *constraint_id = lmm_constraint_id(cnst);
 
-        if (static_cast<Host*>(constraint_id)->getState() == SURF_RESOURCE_OFF) {
+        if (static_cast<Host*>(constraint_id)->isOff()) {
           XBT_DEBUG("Action (%p) Failed!!", action);
           action->finish();
           action->setState(SURF_ACTION_FAILED);
@@ -300,11 +300,11 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
 Cpu *CpuL07Model::createCpu(simgrid::Host *host,  xbt_dynar_t powerPeakList,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
-                          e_surf_resource_state_t state_initial,
+                          int initiallyOn,
                           tmgr_trace_t state_trace)
 {
   CpuL07 *cpu = new CpuL07(this, host, powerPeakList, pstate, power_scale, power_trace,
-                         core, state_initial, state_trace);
+                         core, initiallyOn, state_trace);
   return cpu;
 }
 
@@ -313,7 +313,7 @@ Link* NetworkL07Model::createLink(const char *name,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
                                  tmgr_trace_t lat_trace,
-                                 e_surf_resource_state_t state_initial,
+                                 int initiallyOn,
                                  tmgr_trace_t state_trace,
                                  e_surf_link_sharing_policy_t policy,
                                  xbt_dict_t properties)
@@ -324,7 +324,7 @@ Link* NetworkL07Model::createLink(const char *name,
   Link* link = new LinkL07(this, name, properties,
 		             bw_initial, bw_trace,
 					 lat_initial, lat_trace,
-					 state_initial, state_trace,
+					 initiallyOn, state_trace,
 					 policy);
   Link::onCreation(link);
   return link;
@@ -398,9 +398,9 @@ void HostL07Model::addTraces()
 CpuL07::CpuL07(CpuL07Model *model, simgrid::Host *host,
 	             xbt_dynar_t speedPeakList, int pstate,
 				 double speedScale, tmgr_trace_t speedTrace,
-		         int core, e_surf_resource_state_t state_initial, tmgr_trace_t state_trace)
+		         int core, int initiallyOn, tmgr_trace_t state_trace)
  : Cpu(model, host, speedPeakList, pstate,
-	   core, xbt_dynar_get_as(speedPeakList,pstate,double), speedScale, state_initial)
+	   core, xbt_dynar_get_as(speedPeakList,pstate,double), speedScale, initiallyOn)
 {
   p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,pstate,double) * speedScale);
 
@@ -422,7 +422,7 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
 		         tmgr_trace_t bw_trace,
 		         double lat_initial,
 		         tmgr_trace_t lat_trace,
-		         e_surf_resource_state_t state_initial,
+		         int initiallyOn,
 		         tmgr_trace_t state_trace,
 		         e_surf_link_sharing_policy_t policy)
  : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), history, state_trace)
@@ -431,7 +431,10 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
   if (bw_trace)
     p_bwEvent = tmgr_history_add_trace(history, bw_trace, 0.0, 0, this);
 
-  setState(state_initial);
+  if (initiallyOn)
+    turnOn();
+  else
+    turnOff();
   m_latCurrent = lat_initial;
 
   if (lat_trace)
@@ -506,9 +509,9 @@ void CpuL07::updateState(tmgr_trace_event_t event_type, double value, double /*d
       p_speedEvent = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
-      setState(SURF_RESOURCE_ON);
+      turnOn();
     else
-      setState(SURF_RESOURCE_OFF);
+      turnOff();
     if (tmgr_trace_event_free(event_type))
       p_stateEvent = NULL;
   } else {
@@ -530,9 +533,9 @@ void LinkL07::updateState(tmgr_trace_event_t event_type, double value, double da
       p_latEvent = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
-      setState(SURF_RESOURCE_ON);
+      turnOn();
     else
-      setState(SURF_RESOURCE_OFF);
+      turnOff();
     if (tmgr_trace_event_free(event_type))
       p_stateEvent = NULL;
   } else {

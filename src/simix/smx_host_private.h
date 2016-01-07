@@ -83,7 +83,7 @@ XBT_PRIVATE void SIMIX_vm_start(sg_host_t ind_vm);
 XBT_PRIVATE void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer);
 // --
 
-XBT_PRIVATE int SIMIX_vm_get_state(sg_host_t ind_vm);
+XBT_PRIVATE e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm);
 // --
 XBT_PRIVATE void SIMIX_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm);
 

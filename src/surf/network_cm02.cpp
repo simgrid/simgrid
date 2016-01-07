@@ -181,7 +181,7 @@ NetworkCm02Model::NetworkCm02Model()
 
   routing_model_create(createLink("__loopback__",
 	                              498000000, NULL, 0.000015, NULL,
-	                              SURF_RESOURCE_ON, NULL,
+	                              1 /*SURF_RESOURCE_ON*/, NULL,
 	                              SURF_LINK_FATPIPE, NULL));
 
   if (p_updateMechanism == UM_LAZY) {
@@ -197,7 +197,7 @@ Link* NetworkCm02Model::createLink(const char *name,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
                                  tmgr_trace_t lat_trace,
-                                 e_surf_resource_state_t state_initial,
+                                 int initiallyOn,
                                  tmgr_trace_t state_trace,
                                  e_surf_link_sharing_policy_t policy,
                                  xbt_dict_t properties)
@@ -207,7 +207,7 @@ Link* NetworkCm02Model::createLink(const char *name,
              name);
 
   Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial, history,
-				             state_initial, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
+				             initiallyOn, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
   Link::onCreation(link);
   return link;
 }
@@ -357,7 +357,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
 
   xbt_dynar_foreach(route, i, _link) {
 	link = static_cast<NetworkCm02Link*>(_link);
-    if (link->getState() == SURF_RESOURCE_OFF) {
+    if (link->isOff()) {
       failed = 1;
       break;
     }
@@ -366,7 +366,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
 	  routing_platf->getRouteAndLatency(dst, src, &back_route, NULL);
     xbt_dynar_foreach(back_route, i, _link) {
       link = static_cast<NetworkCm02Link*>(_link);
-      if (link->getState() == SURF_RESOURCE_OFF) {
+      if (link->isOff()) {
         failed = 1;
         break;
       }
@@ -513,7 +513,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
 	                           lmm_system_t system,
 	                           double constraint_value,
 	                           tmgr_history_t history,
-	                           e_surf_resource_state_t state_init,
+	                           int initiallyOn,
 	                           tmgr_trace_t state_trace,
 	                           double metric_peak,
 	                           tmgr_trace_t metric_trace,
@@ -522,7 +522,10 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
 	                           e_surf_link_sharing_policy_t policy)
 : Link(model, name, props, lmm_constraint_new(system, this, constraint_value), history, state_trace)
 {
-  setState(state_init);
+  if (initiallyOn)
+    turnOn();
+  else
+    turnOff();
 
   p_speed.scale = 1.0;
   p_speed.peak = metric_peak;
@@ -558,13 +561,13 @@ void NetworkCm02Link::updateState(tmgr_trace_event_t event_type,
       p_latEvent = NULL;
   } else if (event_type == p_stateEvent) {
     if (value > 0)
-      setState(SURF_RESOURCE_ON);
+      turnOn();
     else {
       lmm_constraint_t cnst = getConstraint();
       lmm_variable_t var = NULL;
       lmm_element_t elem = NULL;
 
-      setState(SURF_RESOURCE_OFF);
+      turnOff();
       while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
         Action *action = static_cast<Action*>( lmm_variable_id(var) );
 

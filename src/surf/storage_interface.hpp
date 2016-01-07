@@ -43,9 +43,9 @@ XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::Storage*)>) storageDes
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage State changed *
- * @details Callback functions have the following signature: `void(StorageAction *action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @details Callback functions have the following signature: `void(StorageAction *action, int previouslyOn, int currentlyOn)`
  */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::Storage*, e_surf_resource_state_t, e_surf_resource_state_t)>) storageStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::Storage*, int, int)>) storageStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
@@ -148,7 +148,8 @@ public:
    */
   void updateState(tmgr_trace_event_t event_type, double value, double date);
 
-  void setState(e_surf_resource_state_t state);
+  void turnOn() override;
+  void turnOff() override;
 
   xbt_dict_t p_content;
   char* p_contentType;

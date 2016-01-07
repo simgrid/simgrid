@@ -30,7 +30,7 @@ namespace surf {
 
 simgrid::surf::signal<void(simgrid::surf::Storage*)> storageCreatedCallbacks;
 simgrid::surf::signal<void(simgrid::surf::Storage*)> storageDestructedCallbacks;
-simgrid::surf::signal<void(simgrid::surf::Storage*, e_surf_resource_state_t, e_surf_resource_state_t)> storageStateChangedCallbacks;
+simgrid::surf::signal<void(simgrid::surf::Storage*, int, int)> storageStateChangedCallbacks; // signature: wasOn, isOn
 simgrid::surf::signal<void(simgrid::surf::StorageAction*, e_surf_action_state_t, e_surf_action_state_t)> storageActionStateChangedCallbacks;
 
 /*********
@@ -66,7 +66,7 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
  , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL))
 {
   p_content = parseContent(content_name);
-  setState(SURF_RESOURCE_ON);
+  turnOn();
 }
 
 Storage::Storage(Model *model, const char *name, xbt_dict_t props,
@@ -82,7 +82,7 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
 {
   p_content = parseContent(content_name);
   p_attach = xbt_strdup(attach);
-  setState(SURF_RESOURCE_ON);
+  turnOn();
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
   p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
   p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
@@ -145,11 +145,17 @@ void Storage::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, d
   THROW_UNIMPLEMENTED;
 }
 
-void Storage::setState(e_surf_resource_state_t state)
-{
-  e_surf_resource_state_t old = Resource::getState();
-  Resource::setState(state);
-  storageStateChangedCallbacks(this, old, state);
+void Storage::turnOn() {
+  if (isOff()) {
+    Resource::turnOn();
+    storageStateChangedCallbacks(this, 0, 1);
+  }
+}
+void Storage::turnOff() {
+  if (isOn()) {
+    Resource::turnOff();
+    storageStateChangedCallbacks(this, 1, 0);
+  }
 }
 
 xbt_dict_t Storage::getContent()

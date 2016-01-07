@@ -303,12 +303,19 @@ XBT_PUBLIC(xbt_dict_t) sg_host_get_properties(sg_host_t host);
 
 
 /** @brief Get the state of a surf resource (cpu, host, network, …) */
-XBT_PUBLIC(e_surf_resource_state_t) surf_resource_get_state(surf_cpp_resource_t resource);
+XBT_PUBLIC(int) surf_resource_is_on(surf_cpp_resource_t resource);
+/** @brief Get the state of a surf resource (cpu, host, network, …) */
+XBT_PUBLIC(int) surf_resource_is_off(surf_cpp_resource_t resource);
 
 /** @brief Set the state of a surf resource (cpu, host, network, …) */
-XBT_PUBLIC(void) surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state);
-static inline void surf_host_set_state(surf_host_t host, e_surf_resource_state_t state) {
-	surf_resource_set_state((surf_cpp_resource_t)host, state);
+XBT_PUBLIC(void) surf_resource_turn_on(surf_cpp_resource_t resource);
+/** @brief Set the state of a surf resource (cpu, host, network, …) */
+XBT_PUBLIC(void) surf_resource_turn_off(surf_cpp_resource_t resource);
+static inline void surf_host_turn_on(surf_host_t host) {
+  surf_resource_turn_on((surf_cpp_resource_t)host);
+}
+static inline void surf_host_turn_off(surf_host_t host) {
+  surf_resource_turn_off((surf_cpp_resource_t)host);
 }
 
 /** @brief Get the available speed of cpu associated to a host */

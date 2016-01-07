@@ -243,12 +243,17 @@ const char *surf_resource_name(surf_cpp_resource_t resource){
   return resource->getName();
 }
 
-e_surf_resource_state_t surf_resource_get_state(surf_cpp_resource_t resource){
-  return resource->getState();
+int surf_resource_is_on(surf_cpp_resource_t resource){
+  return resource->isOn();
 }
-
-void surf_resource_set_state(surf_cpp_resource_t resource, e_surf_resource_state_t state){
-  resource->setState(state);
+int surf_resource_is_off(surf_cpp_resource_t resource){
+  return resource->isOff();
+}
+void surf_resource_turn_on(surf_cpp_resource_t resource){
+  resource->turnOn();
+}
+void surf_resource_turn_off(surf_cpp_resource_t resource){
+  resource->turnOff();
 }
 
 surf_action_t surf_host_sleep(sg_host_t host, double duration){

@@ -591,59 +591,52 @@ namespace surf {
 
 Resource::Resource()
 : p_name(NULL), p_model(NULL)
-{}
+{} // FIXME: DEADCODE?
 
 Resource::Resource(Model *model, const char *name)
-  : Resource(model, name, SURF_RESOURCE_ON)
-{}
+  : Resource(model, name, 1/*SURF_RESOURCE_ON*/)
+{} // FIXME: DEADCODE?
 
 Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint)
-  : Resource(model, name, constraint, SURF_RESOURCE_ON)
+  : Resource(model, name, constraint, 1/*SURF_RESOURCE_ON*/)
 {}
   
-Resource::Resource(
-  Model *model, const char *name,
-  lmm_constraint_t constraint, e_surf_resource_state_t stateInit)
-  : p_name(xbt_strdup(name)), p_model(model)
-  , m_running(true), m_stateCurrent(stateInit), p_constraint(constraint)
+Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint, int initiallyOn)
+  : p_name(xbt_strdup(name))
+  , p_model(model)
+  , m_isOn(initiallyOn)
+  , p_constraint(constraint)
 {}
 
-Resource::Resource(Model *model, const char *name, e_surf_resource_state_t stateInit)
-  : p_name(xbt_strdup(name)), p_model(model)
-  , m_running(true), m_stateCurrent(stateInit)
-{}
+Resource::Resource(Model *model, const char *name, int initiallyOn)
+  : p_name(xbt_strdup(name))
+  , p_model(model)
+  , m_isOn(initiallyOn)
+{} // FIXME: DEADCODE?
 
 
 Resource::~Resource() {
   xbt_free((void*)p_name);
 }
 
-e_surf_resource_state_t Resource::getState()
-{
-  return m_stateCurrent;
+bool Resource::isOn() {
+  return m_isOn;
 }
-
-void Resource::setState(e_surf_resource_state_t state)
-{
-  m_stateCurrent = state;
-}
-
-bool Resource::isOn()
-{
-  return m_running;
+bool Resource::isOff() {
+  return ! m_isOn;
 }
 
 void Resource::turnOn()
 {
-  if (!m_running) {
-    m_running = true;
+  if (!m_isOn) {
+    m_isOn = true;
   }
 }
 
 void Resource::turnOff()
 {
-  if (m_running) {
-    m_running = false;
+  if (m_isOn) {
+    m_isOn = false;
   }
 }
 

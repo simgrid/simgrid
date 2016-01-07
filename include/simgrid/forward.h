@@ -54,13 +54,6 @@ typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an avail
 
 typedef void *sg_routing_link_t; /* FIXME:The actual type is model-dependent so use void* instead*/
 
-/** @ingroup SURF_interface
-* @brief Defines whether a given resource is working or not */
-typedef enum {
-  SURF_RESOURCE_ON = 1,                   /**< Up & ready        */
-  SURF_RESOURCE_OFF = 0                   /**< Down & broken     */
-} e_surf_resource_state_t;
-
 typedef enum {
   SURF_LINK_FULLDUPLEX = 2,
   SURF_LINK_SHARED = 1,
@@ -114,14 +107,14 @@ typedef struct {
   int core_amount;
   double speed_scale;
   tmgr_trace_t speed_trace;
-  e_surf_resource_state_t initial_state;
+  int initiallyOn;
   tmgr_trace_t state_trace;
   const char* coord;
   xbt_dict_t properties;
 } s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 
 #define SG_PLATF_HOST_INITIALIZER { \
-    NULL, 0, 1, 1, 1., NULL, SURF_RESOURCE_ON, NULL, \
+    NULL, 0, 1, 1, 1., NULL, 1/*ON*/, NULL, \
     NULL, NULL \
 }
 
@@ -146,14 +139,14 @@ typedef struct {
   tmgr_trace_t bandwidth_trace;
   double latency;
   tmgr_trace_t latency_trace;
-  e_surf_resource_state_t state;
+  int initiallyOn;
   tmgr_trace_t state_trace;
   e_surf_link_sharing_policy_t policy;
   xbt_dict_t properties;
 } s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
 
 #define SG_PLATF_LINK_INITIALIZER {\
-  NULL, 0., NULL, 0., NULL, SURF_RESOURCE_ON, \
+  NULL, 0., NULL, 0., NULL, 1/*ON*/, \
   NULL, SURF_LINK_SHARED, NULL \
 }
 

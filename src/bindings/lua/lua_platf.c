@@ -94,7 +94,7 @@ int console_add_backbone(lua_State *L) {
   link.latency = surf_parse_get_time(lua_tostring(L, -1));
   lua_pop(L, 1);
 
-  link.state = SURF_RESOURCE_ON;
+  link.initiallyOn = 1;
 
   lua_pushstring(L, "sharing_policy");
   type = lua_gettable(L, -2);
@@ -218,9 +218,9 @@ int console_add_host(lua_State *L) {
   lua_pop(L, 1);
 
   if (state)
-    host.initial_state = SURF_RESOURCE_ON;
+    host.initiallyOn = 1;
   else
-    host.initial_state = SURF_RESOURCE_OFF;
+    host.initiallyOn = 0;
 
   //get trace state
   lua_pushstring(L, "state_file");
@@ -297,9 +297,9 @@ int  console_add_link(lua_State *L) {
   lua_pushstring(L, "state");
   lua_gettable(L, -2);
   if (!lua_isnumber(L,-1) || lua_tonumber(L, -1))
-    link.state = SURF_RESOURCE_ON;
+    link.initiallyOn = 1;
   else
-    link.state = SURF_RESOURCE_OFF;
+    link.initiallyOn = 0;
   lua_pop(L, 1);
 
   //get policy value

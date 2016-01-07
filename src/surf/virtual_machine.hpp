@@ -68,8 +68,6 @@ public:
   /** @brief Destructor */
   ~VirtualMachine();
 
-  void setState(e_surf_resource_state_t state) override;
-
   /** @brief Suspend the VM */
   virtual void suspend()=0;
 
@@ -94,7 +92,17 @@ public:
   /* The vm object of the lower layer */
   CpuAction *p_action;
   simgrid::Host *p_hostPM;
-  e_surf_vm_state_t p_currentState;
+
+  void turnOn() override;
+  void turnOff() override;
+
+public:
+  e_surf_vm_state_t getState();
+  void setState(e_surf_vm_state_t state);
+protected:
+  e_surf_vm_state_t p_vm_state = SURF_VM_STATE_CREATED;
+
+
 public:
   boost::intrusive::list_member_hook<> vm_hook;
 };

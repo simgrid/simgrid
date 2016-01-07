@@ -43,8 +43,8 @@ void SIMIX_host_on(sg_host_t h)
 
   xbt_assert((host != NULL), "Invalid parameters");
 
-  if (h->getState()==SURF_RESOURCE_OFF) {
-    surf_host_set_state(surf_host_resource_priv(h), SURF_RESOURCE_ON);
+  if (h->isOff()) {
+    surf_host_turn_on(surf_host_resource_priv(h));
 
     unsigned int cpt;
     smx_process_arg_t arg;
@@ -96,8 +96,8 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
 
   xbt_assert((host != NULL), "Invalid parameters");
 
-  if (h->getState()==SURF_RESOURCE_ON) {
-	surf_host_set_state(surf_host_resource_priv(h), SURF_RESOURCE_OFF);
+  if (h->isOn()) {
+    surf_host_turn_off(surf_host_resource_priv(h));
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {
@@ -107,6 +107,8 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
         XBT_DEBUG("Killing %s on %s by %s", process->name,  sg_host_get_name(process->host), issuer->name);
       }
     }
+  } else {
+    XBT_INFO("Host %s is already off",h->getName().c_str());
   }
 }
 
@@ -240,7 +242,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
-  if( sg_host_get_state(host) == SURF_RESOURCE_OFF
+  if( ! sg_host_is_on(host)
       && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_get_name(host))){
     xbt_dict_set(watched_hosts_lib,sg_host_get_name(host),host,NULL);
     XBT_DEBUG("Have pushed host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_get_name(host));
@@ -499,7 +501,7 @@ void SIMIX_execution_finish(smx_synchro_t synchro)
             (int)synchro->state);
     }
     /* check if the host is down */
-    if (simcall->issuer->host->getState() != SURF_RESOURCE_ON) {
+    if (simcall->issuer->host->isOff()) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -517,7 +519,7 @@ void SIMIX_post_host_execute(smx_synchro_t synchro)
 {
   if (synchro->type == SIMIX_SYNC_EXECUTE && /* FIMXE: handle resource failure
                                                * for parallel tasks too */
-      synchro->execution.host->getState() == SURF_RESOURCE_OFF) {
+      synchro->execution.host->isOff()) {
     /* If the host running the synchro failed, notice it so that the asking
      * process can be killed if it runs on that host itself */
     synchro->state = SIMIX_FAILED;

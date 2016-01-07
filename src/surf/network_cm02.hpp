@@ -51,7 +51,7 @@ public:
 		  tmgr_trace_t bw_trace,
 		  double lat_initial,
 		  tmgr_trace_t lat_trace,
-		  e_surf_resource_state_t state_initial,
+		  int initiallyOn,
 		  tmgr_trace_t state_trace,
 		  e_surf_link_sharing_policy_t policy,
 		  xbt_dict_t properties) override;
@@ -76,7 +76,7 @@ public:
 	                           lmm_system_t system,
 	                           double constraint_value,
 	                           tmgr_history_t history,
-	                           e_surf_resource_state_t state_init,
+	                           int initiallyOn,
 	                           tmgr_trace_t state_trace,
 	                           double metric_peak,
 	                           tmgr_trace_t metric_trace,

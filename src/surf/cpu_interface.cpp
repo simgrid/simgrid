@@ -134,16 +134,16 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 Cpu::Cpu(Model *model, simgrid::Host *host,
 	     xbt_dynar_t speedPeakList, int pstate,
 		 int core, double speedPeak, double speedScale,
-         e_surf_resource_state_t stateInitial)
- : Cpu(model, host, NULL/*constraint*/, speedPeakList, pstate, core, speedPeak, speedScale, stateInitial)
+		 int initiallyOn)
+ : Cpu(model, host, NULL/*constraint*/, speedPeakList, pstate, core, speedPeak, speedScale, initiallyOn)
 {
 }
 
 Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
 	      xbt_dynar_t speedPeakList, int pstate,
 		  int core, double speedPeak,
-        double speedScale, e_surf_resource_state_t stateInitial)
- : Resource(model, host->getName().c_str(), constraint, stateInitial)
+        double speedScale, int initiallyOn)
+ : Resource(model, host->getName().c_str(), constraint, initiallyOn)
  , m_core(core)
  , m_speedPeak(speedPeak)
  , m_speedScale(speedScale)

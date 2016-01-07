@@ -87,13 +87,13 @@ CpuCas01Model::~CpuCas01Model()
 Cpu *CpuCas01Model::createCpu(simgrid::Host *host, xbt_dynar_t speedPeak,
 		                  int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
-                          e_surf_resource_state_t state_initial,
+                          int initiallyOn,
                           tmgr_trace_t state_trace)
 {
   xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory power attribute?");
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
-  Cpu *cpu = new CpuCas01(this, host, speedPeak, pstate, speedScale, speedTrace, core, state_initial, state_trace);
+  Cpu *cpu = new CpuCas01(this, host, speedPeak, pstate, speedScale, speedTrace, core, initiallyOn, state_trace);
   return cpu;
 }
 
@@ -139,12 +139,12 @@ void CpuCas01Model::addTraces()
  ************/
 CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::Host *host, xbt_dynar_t speedPeak,
                          int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
-                         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace)
+                         int initiallyOn, tmgr_trace_t stateTrace)
 : Cpu(model, host,
 	lmm_constraint_new(model->getMaxminSystem(), this, core * speedScale * xbt_dynar_get_as(speedPeak, pstate, double)),
 	speedPeak, pstate,
 	core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
-    stateInitial) {
+    initiallyOn) {
   p_speedEvent = NULL;
 
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_speedPeak, m_pstate);
@@ -220,13 +220,13 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
     xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
-      if(getState() == SURF_RESOURCE_OFF)
+      if(isOff())
         xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
-      setState(SURF_RESOURCE_ON);
+      turnOn();
     } else {
       lmm_constraint_t cnst = getConstraint();
 
-      setState(SURF_RESOURCE_OFF);
+      turnOff();
 
       while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
         Action *action = static_cast<Action*>(lmm_variable_id(var));
@@ -253,7 +253,7 @@ CpuAction *CpuCas01::execute(double size)
 {
 
   XBT_IN("(%s,%g)", getName(), size);
-  CpuCas01Action *action = new CpuCas01Action(getModel(), size, getState() != SURF_RESOURCE_ON,
+  CpuCas01Action *action = new CpuCas01Action(getModel(), size, isOff(),
 		                                              m_speedScale * m_speedPeak, getConstraint());
 
   XBT_OUT();
@@ -266,7 +266,7 @@ CpuAction *CpuCas01::sleep(double duration)
     duration = MAX(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getName(), duration);
-  CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, getState() != SURF_RESOURCE_ON,
+  CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, isOff(),
                                                       m_speedScale * m_speedPeak, getConstraint());
 
 

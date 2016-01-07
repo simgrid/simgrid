@@ -88,7 +88,7 @@ void HostModel::adjustWeightOfDummyCpuActions()
  ************/
 simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onCreation;
 simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onDestruction;
-simgrid::surf::signal<void(simgrid::surf::Host*, e_surf_resource_state_t, e_surf_resource_state_t)> Host::onStateChange;
+simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onStateChange;
 
 Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
 		                 xbt_dynar_t storage, NetCard *netElm, Cpu *cpu)
@@ -139,16 +139,24 @@ void Host::attach(simgrid::Host* host)
   onCreation(this);
 }
 
-e_surf_resource_state_t Host::getState() {
-  return p_cpu->getState();
+bool Host::isOn() {
+  return p_cpu->isOn();
 }
-void Host::setState(e_surf_resource_state_t state){
-  e_surf_resource_state_t old = Resource::getState();
-  Resource::setState(state);
-  onStateChange(this, old, state);
-  p_cpu->setState(state);
+bool Host::isOff() {
+  return p_cpu->isOff();
 }
-
+void Host::turnOn(){
+  if (isOff()) {
+    p_cpu->turnOn();
+    onStateChange(this);
+  }
+}
+void Host::turnOff(){
+  if (isOn()) {
+    p_cpu->turnOff();
+    onStateChange(this);
+  }
+}
 
 simgrid::surf::Storage *Host::findStorageOnMountList(const char* mount)
 {

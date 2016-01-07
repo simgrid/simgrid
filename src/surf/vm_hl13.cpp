@@ -180,7 +180,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
   sg_host_t host_VM = sg_host_by_name_or_create(name);
   host_VM->p_netcard = p_netElm;
 
-  p_currentState = SURF_VM_STATE_CREATED;
+  p_vm_state = SURF_VM_STATE_CREATED;
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
@@ -192,7 +192,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
       1,                          // host->power_scale,
       NULL,                       // host->power_trace,
       1,                          // host->core_amount,
-      SURF_RESOURCE_ON,           // host->initial_state,
+      1/*ON*/,                    // host->initiallyOn,
       NULL);                      // host->state_trace,
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
@@ -203,64 +203,34 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
   XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, p_hostPM->getName().c_str(), xbt_dynar_length(p_storage));
 }
 
-/*
- * A physical host does not disappear in the current SimGrid code, but a VM may
- * disappear during a simulation.
- */
-VMHL13::~VMHL13()
-{
-  /* Free the cpu_action of the VM. */
-  XBT_ATTRIB_UNUSED int ret = p_action->unref();
-  xbt_assert(ret == 1, "Bug: some resource still remains");
-}
-
-void VMHL13::updateState(tmgr_trace_event_t /*event_type*/, double /*value*/, double /*date*/) {
-  THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
-}
-
-bool VMHL13::isUsed() {
-  THROW_IMPOSSIBLE;             /* This model does not implement parallel tasks */
-  return -1;
-}
-
-e_surf_resource_state_t VMHL13::getState()
-{
-  return (e_surf_resource_state_t) p_currentState;
-}
-
-void VMHL13::setState(e_surf_resource_state_t state)
-{
-  p_currentState = (e_surf_vm_state_t) state;
-}
-
 void VMHL13::suspend()
 {
   p_action->suspend();
-  p_currentState = SURF_VM_STATE_SUSPENDED;
+  p_vm_state = SURF_VM_STATE_SUSPENDED;
 }
 
 void VMHL13::resume()
 {
   p_action->resume();
-  p_currentState = SURF_VM_STATE_RUNNING;
+  p_vm_state = SURF_VM_STATE_RUNNING;
 }
 
 void VMHL13::save()
 {
-  p_currentState = SURF_VM_STATE_SAVING;
+  p_vm_state = SURF_VM_STATE_SAVING;
 
   /* FIXME: do something here */
   p_action->suspend();
-  p_currentState = SURF_VM_STATE_SAVED;
+  p_vm_state = SURF_VM_STATE_SAVED;
 }
 
 void VMHL13::restore()
 {
-  p_currentState = SURF_VM_STATE_RESTORING;
+  p_vm_state = SURF_VM_STATE_RESTORING;
 
   /* FIXME: do something here */
   p_action->resume();
-  p_currentState = SURF_VM_STATE_RUNNING;
+  p_vm_state = SURF_VM_STATE_RUNNING;
 }
 
 /*
