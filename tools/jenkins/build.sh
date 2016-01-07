@@ -39,9 +39,10 @@ onoff() {
   fi
 }
 
-# Check that we have what we need, or die quickly
-test -e /bin/tar  || die 1 "I need tar to compile. Please fix your slave."
-test -e /bin/gzip || die 1 "I need gzip to compile. Please fix your slave."
+# Check that we have what we need, or die quickly.
+# The paths are not the same on all platforms, unfortunately.
+#test -e /bin/tar  || die 1 "I need tar to compile. Please fix your slave."
+#test -e /bin/gzip || die 1 "I need gzip to compile. Please fix your slave."
 #test -e /usr/include/libunwind.h || die 1 "I need libunwind to compile. Please fix your slave."
 #test -e /usr/include/valgrind/valgrind.h || die 1 "I need valgrind to compile. Please fix your slave."
 
