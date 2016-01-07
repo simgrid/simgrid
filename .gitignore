@@ -12,6 +12,7 @@
 *.plist
 *.trace
 *.class
+.cproject # Eclipse cruft
 \#*
 .attach_pid* 
 smpitmp-*
