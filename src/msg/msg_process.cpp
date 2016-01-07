@@ -168,7 +168,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
   /* The TRACE process is created before the SIMIX one
    * to avoid issues when SIMIX decides to start the new
    * process right now (before returning the flow control). */
-  int next_pid = SIMIX_process_get_maxpid();
+  unsigned int next_pid = SIMIX_process_get_maxpid();
   TRACE_msg_process_create(name, next_pid, host);
 
   /* Let's create the process: SIMIX may decide to start it right now,
