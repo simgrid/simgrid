@@ -9,6 +9,7 @@ set -e
 
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
+rm -rf /tmp/jvm-* 
 find /builds/workspace/SimGrid-Multi/ -name "hs_err_pid*.log" | xargs rm -f
 ls /tmp
 df -h
@@ -41,8 +42,8 @@ onoff() {
 # Check that we have what we need, or die quickly
 test -e /bin/tar  || die 1 "I need tar to compile. Please fix your slave."
 test -e /bin/gzip || die 1 "I need gzip to compile. Please fix your slave."
-test -e /usr/include/libunwind.h || die 1 "I need libunwind to compile. Please fix your slave."
-test -e /usr/include/valgrind/valgrind.h || die 1 "I need valgrind to compile. Please fix your slave."
+#test -e /usr/include/libunwind.h || die 1 "I need libunwind to compile. Please fix your slave."
+#test -e /usr/include/valgrind/valgrind.h || die 1 "I need valgrind to compile. Please fix your slave."
 
 build_mode="$1"
 echo "Build mode $build_mode on $(uname -np)" >&2
