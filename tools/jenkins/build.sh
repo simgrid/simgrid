@@ -7,9 +7,11 @@
 
 set -e
 
-# Cleanup previous attempts
+echo "XXXX Cleanup previous attempts"
 rm -rf /tmp/simgrid*tmp
-rm -rf /tmp/surf-java*tmp
+ls /tmp
+df -h
+echo "XXXX Let's go"
 
 # Help older cmakes
 if [ -e /usr/lib/jvm/java-7-openjdk-amd64 ] ; 
