@@ -60,7 +60,7 @@ public:
   /**
    * @brief The As constructor
    */
-  As(){};
+  As(){xbt_die("FIXME:DEADCODE");};
 
   /**
    * @brief The As destructor
@@ -117,20 +117,6 @@ private:
   e_surf_network_element_type_t p_rcType;
   int m_id;
   char *p_name;
-};
-
-struct RoutingEdgeWrapper : public NetCard {
-public:
-  RoutingEdgeWrapper(NetCard *re) : p_re(re){}
-  ~RoutingEdgeWrapper(){}
-  int getId() {return p_re->getId();}
-  int *getIdPtr() {return p_re->getIdPtr();}
-  void setId(int id) {p_re->setId(id);}
-  char *getName() {return p_re->getName();}
-  As *getRcComponent() {return p_re->getRcComponent();}
-  e_surf_network_element_type_t getRcType() {return p_re->getRcType();}
-private:
-  NetCard *p_re;
 };
 
 /** @ingroup SURF_routing_interface
