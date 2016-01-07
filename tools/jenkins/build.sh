@@ -9,6 +9,7 @@ set -e
 
 echo "XXXX Cleanup previous attempts"
 rm -rf /tmp/simgrid*tmp
+find /builds/workspace/SimGrid-Multi/ -name "hs_err_pid*.log" | xargs rm -f
 ls /tmp
 df -h
 echo "XXXX Let's go"
