@@ -616,13 +616,6 @@ XBT_PUBLIC(void*) surf_action_get_data(surf_action_t action);
 XBT_PUBLIC(void) surf_action_set_data(surf_action_t action, void *data);
 
 /**
- * @brief Unreference an action
- *
- * @param action The surf action
- */
-XBT_PUBLIC(void) surf_action_unref(surf_action_t action);
-
-/**
  * @brief Get the start time of an action
  *
  * @param action The surf action

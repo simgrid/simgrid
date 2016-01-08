@@ -455,10 +455,6 @@ double surf_action_get_remains(surf_action_t action){
   return action->getRemains();
 }
 
-void surf_action_unref(surf_action_t action){
-  action->unref();
-}
-
 void surf_action_suspend(surf_action_t action){
   action->suspend();
 }
