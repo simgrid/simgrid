@@ -60,7 +60,7 @@ public:
   /**
    * @brief The As constructor
    */
-  As(){xbt_die("FIXME:DEADCODE");};
+  As(){};
 
   /**
    * @brief The As destructor
