@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/surf/surf_interface.hpp"
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
 #include "xbt/sysdep.h"
@@ -247,7 +248,7 @@ void SD_task_destroy(SD_task_t task)
   xbt_free(task->name);
 
   if (task->surf_action != NULL)
-	surf_action_unref(task->surf_action);
+	task->surf_action->unref();
 
   xbt_free(task->workstation_list);
   xbt_free(task->bytes_amount);
@@ -350,11 +351,11 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     break;
   case SD_RUNNING:
     task->state_set = sd_global->running_task_set;
-    task->start_time = surf_action_get_start_time(task->surf_action);
+    task->start_time = task->surf_action->getStartTime();
     break;
   case SD_DONE:
     task->state_set = sd_global->done_task_set;
-    task->finish_time = surf_action_get_finish_time(task->surf_action);
+    task->finish_time = task->surf_action->getFinishTime();
     task->remains = 0;
 #ifdef HAVE_JEDULE
     jedule_log_sd_event(task);
@@ -1053,7 +1054,7 @@ void SD_task_unschedule(SD_task_t task)
   }
 
   if (__SD_task_is_running(task))       /* the task should become SD_FAILED */
-	surf_action_cancel(task->surf_action);
+	task->surf_action->cancel();
   else {
     if (task->unsatisfied_dependencies == 0)
       __SD_task_set_state(task, SD_SCHEDULABLE);
@@ -1139,7 +1140,7 @@ void __SD_task_really_run(SD_task_t task)
 		                                                     bytes_amount,
 		                                                     task->rate);
 
-  surf_action_set_data(task->surf_action, task);
+  task->surf_action->setData(task);
 
   XBT_DEBUG("surf_action = %p", task->surf_action);
 
@@ -1226,7 +1227,7 @@ void __SD_task_just_done(SD_task_t task)
   candidates = xbt_new(SD_task_t, 8);
 
   __SD_task_set_state(task, SD_DONE);
-  surf_action_unref(task->surf_action);
+  task->surf_action->unref();
   task->surf_action = NULL;
 
   XBT_DEBUG("Looking for candidates");
@@ -1384,7 +1385,7 @@ static void __SD_task_remove_dependencies(SD_task_t task)
 double SD_task_get_start_time(SD_task_t task)
 {
   if (task->surf_action)
-    return surf_action_get_start_time(task->surf_action);
+    return task->surf_action->getStartTime();
   else
     return task->start_time;
 }
@@ -1403,7 +1404,7 @@ double SD_task_get_start_time(SD_task_t task)
 double SD_task_get_finish_time(SD_task_t task)
 {
   if (task->surf_action)        /* should never happen as actions are destroyed right after their completion */
-    return surf_action_get_finish_time(task->surf_action);
+    return task->surf_action->getFinishTime();
   else
     return task->finish_time;
 }

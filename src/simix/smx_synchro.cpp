@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
 #include "xbt/log.h"
 
@@ -30,7 +31,7 @@ static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
   sync->name = xbt_strdup("synchro");
   sync->synchro.sleep = surf_host_sleep(smx_host, timeout);
 
-  surf_action_set_data(sync->synchro.sleep, sync);
+  sync->synchro.sleep->setData(sync);
   XBT_OUT();
   return sync;
 }
@@ -71,7 +72,7 @@ void SIMIX_synchro_destroy(smx_synchro_t synchro)
   XBT_IN("(%p)",synchro);
   XBT_DEBUG("Destroying synchro %p", synchro);
   xbt_assert(synchro->type == SIMIX_SYNC_SYNCHRO);
-  surf_action_unref(synchro->synchro.sleep);
+  synchro->synchro.sleep->unref();
   xbt_free(synchro->name);
   xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
   XBT_OUT();
@@ -81,9 +82,9 @@ void SIMIX_post_synchro(smx_synchro_t synchro)
 {
   XBT_IN("(%p)",synchro);
   xbt_assert(synchro->type == SIMIX_SYNC_SYNCHRO);
-  if (surf_action_get_state(synchro->synchro.sleep) == SURF_ACTION_FAILED)
+  if (synchro->synchro.sleep->getState() == SURF_ACTION_FAILED)
     synchro->state = SIMIX_FAILED;
-  else if(surf_action_get_state(synchro->synchro.sleep) == SURF_ACTION_DONE)
+  else if(synchro->synchro.sleep->getState() == SURF_ACTION_DONE)
     synchro->state = SIMIX_SRC_TIMEOUT;
 
   SIMIX_synchro_finish(synchro);  

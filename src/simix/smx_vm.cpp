@@ -93,8 +93,9 @@ static int __can_be_started(sg_host_t vm)
 void SIMIX_vm_start(sg_host_t ind_vm)
 {
   if (__can_be_started(ind_vm))
-    static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(ind_vm))
-      ->setState(SURF_VM_STATE_RUNNING);
+    static_cast<simgrid::surf::VirtualMachine*>(
+      ind_vm->extension<simgrid::surf::Host>()
+    )->setState(SURF_VM_STATE_RUNNING);
   else
     THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
 }
@@ -102,7 +103,9 @@ void SIMIX_vm_start(sg_host_t ind_vm)
 
 e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm)
 {
-  return static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(ind_vm))->getState();
+  return static_cast<simgrid::surf::VirtualMachine*>(
+    ind_vm->extension<simgrid::surf::Host>()
+  )->getState();
 }
 
 /**
@@ -345,7 +348,9 @@ void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer)
   }
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
-  static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(ind_vm))->setState(SURF_VM_STATE_CREATED);
+  static_cast<simgrid::surf::VirtualMachine*>(
+    ind_vm->extension<simgrid::surf::Host>()
+  )->setState(SURF_VM_STATE_CREATED);
 }
 
 void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm)

@@ -10,6 +10,7 @@
 #include "simgrid/sg_config.h"
 #include "surf/surf.h"
 #include "surf/surfxml_parse.h" // for reset callback
+#include "src/surf/surf_interface.hpp"
 
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
@@ -76,11 +77,11 @@ void test(char *platform)
       XBT_DEBUG("\t Actions");
       while ((action = surf_model_extract_failed_action_set((surf_model_t)model))) {
         XBT_DEBUG("\t * Failed : %p", action);
-        surf_action_unref(action);
+        action->unref();
       }
       while ((action = surf_model_extract_done_action_set((surf_model_t)model))) {
         XBT_DEBUG("\t * Done : %p", action);
-        surf_action_unref(action);
+        action->unref();
       }
       if (surf_model_running_action_set_size((surf_model_t)model)) {
         XBT_DEBUG("running that model");

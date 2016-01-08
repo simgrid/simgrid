@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -721,7 +722,7 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, 
 
 static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synchro_t sync){
   if (sync->sleep.surf_sleep) {
-    surf_action_cancel(sync->sleep.surf_sleep);
+    sync->sleep.surf_sleep->cancel();
 
     smx_simcall_t simcall;
     while ((simcall = (smx_simcall_t) xbt_fifo_shift(sync->simcalls))) {
@@ -735,7 +736,7 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synch
         SIMIX_simcall_answer(simcall);
       }
     }
-    surf_action_unref(sync->sleep.surf_sleep);
+    sync->sleep.surf_sleep->unref();
     sync->sleep.surf_sleep = NULL;
   }
   xbt_mallocator_release(simix_global->synchro_mallocator, sync);
@@ -781,7 +782,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   synchro->sleep.host = host;
   synchro->sleep.surf_sleep = surf_host_sleep(host, duration);
 
-  surf_action_set_data(synchro->sleep.surf_sleep, synchro);
+  synchro->sleep.surf_sleep->setData(synchro);
   XBT_DEBUG("Create sleep synchronization %p", synchro);
 
   return synchro;
@@ -795,7 +796,7 @@ void SIMIX_post_process_sleep(smx_synchro_t synchro)
 
   while ((simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls))) {
 
-    switch(surf_action_get_state(synchro->sleep.surf_sleep)){
+    switch (synchro->sleep.surf_sleep->getState()){
       case SURF_ACTION_FAILED:
         simcall->issuer->context->iwannadie = 1;
         //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
@@ -833,7 +834,7 @@ void SIMIX_process_sleep_destroy(smx_synchro_t synchro)
   xbt_assert(synchro->type == SIMIX_SYNC_SLEEP || synchro->type == SIMIX_SYNC_JOIN);
 
   if (synchro->sleep.surf_sleep) {
-    surf_action_unref(synchro->sleep.surf_sleep);
+    synchro->sleep.surf_sleep->unref();
     synchro->sleep.surf_sleep = NULL;
   }
   if (synchro->type == SIMIX_SYNC_SLEEP)
@@ -843,14 +844,14 @@ void SIMIX_process_sleep_destroy(smx_synchro_t synchro)
 void SIMIX_process_sleep_suspend(smx_synchro_t synchro)
 {
   xbt_assert(synchro->type == SIMIX_SYNC_SLEEP);
-  surf_action_suspend(synchro->sleep.surf_sleep);
+  synchro->sleep.surf_sleep->suspend();
 }
 
 void SIMIX_process_sleep_resume(smx_synchro_t synchro)
 {
   XBT_DEBUG("Synchro state is %d on process_sleep_resume.", synchro->state);
   xbt_assert(synchro->type == SIMIX_SYNC_SLEEP);
-  surf_action_resume(synchro->sleep.surf_sleep);
+  synchro->sleep.surf_sleep->resume();
 }
 
 /**

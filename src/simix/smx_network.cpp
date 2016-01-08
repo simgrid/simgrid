@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
 #include "xbt/log.h"
 #include "mc/mc.h"
@@ -314,17 +315,17 @@ void SIMIX_comm_destroy_internal_actions(smx_synchro_t synchro)
 #ifdef HAVE_LATENCY_BOUND_TRACKING
     synchro->latency_limited = SIMIX_comm_is_latency_bounded(synchro);
 #endif
-    surf_action_unref(synchro->comm.surf_comm);
+    synchro->comm.surf_comm->unref();
     synchro->comm.surf_comm = NULL;
   }
 
   if (synchro->comm.src_timeout){
-    surf_action_unref(synchro->comm.src_timeout);
+    synchro->comm.src_timeout->unref();
     synchro->comm.src_timeout = NULL;
   }
 
   if (synchro->comm.dst_timeout){
-    surf_action_unref(synchro->comm.dst_timeout);
+    synchro->comm.dst_timeout->unref();
     synchro->comm.dst_timeout = NULL;
   }
 }
@@ -609,7 +610,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, dou
     SIMIX_comm_finish(synchro);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
     sleep = surf_host_sleep(simcall->issuer->host, timeout);
-    surf_action_set_data(sleep, synchro);
+    sleep->setData(synchro);
 
     if (simcall->issuer == synchro->comm.src_proc)
       synchro->comm.src_timeout = sleep;
@@ -729,12 +730,12 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
     		                                                    sender, receiver,
     		                                                    synchro->comm.task_size, synchro->comm.rate);
 
-    surf_action_set_data(synchro->comm.surf_comm, synchro);
+    synchro->comm.surf_comm->setData(synchro);
 
     synchro->state = SIMIX_RUNNING;
 
     /* If a link is failed, detect it immediately */
-    if (surf_action_get_state(synchro->comm.surf_comm) == SURF_ACTION_FAILED) {
+    if (synchro->comm.surf_comm->getState() == SURF_ACTION_FAILED) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
                 SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
       synchro->state = SIMIX_LINK_FAILURE;
@@ -754,7 +755,7 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
         XBT_DEBUG("The communication is suspended on startup because dst (%s:%s) were suspended since it initiated the communication",
                   SIMIX_host_get_name(synchro->comm.dst_proc->host), synchro->comm.dst_proc->name);
 
-      surf_action_suspend(synchro->comm.surf_comm);
+      synchro->comm.surf_comm->suspend();
 
     }
   }
@@ -902,19 +903,19 @@ void SIMIX_post_comm(smx_synchro_t synchro)
 {
   /* Update synchro state */
   if (synchro->comm.src_timeout &&
-      surf_action_get_state(synchro->comm.src_timeout) == SURF_ACTION_DONE)
+      synchro->comm.src_timeout->getState() == SURF_ACTION_DONE)
     synchro->state = SIMIX_SRC_TIMEOUT;
   else if (synchro->comm.dst_timeout &&
-	  surf_action_get_state(synchro->comm.dst_timeout) == SURF_ACTION_DONE)
+	  synchro->comm.dst_timeout->getState() == SURF_ACTION_DONE)
     synchro->state = SIMIX_DST_TIMEOUT;
   else if (synchro->comm.src_timeout &&
-	  surf_action_get_state(synchro->comm.src_timeout) == SURF_ACTION_FAILED)
+	  synchro->comm.src_timeout->getState() == SURF_ACTION_FAILED)
     synchro->state = SIMIX_SRC_HOST_FAILURE;
   else if (synchro->comm.dst_timeout &&
-      surf_action_get_state(synchro->comm.dst_timeout) == SURF_ACTION_FAILED)
+      synchro->comm.dst_timeout->getState() == SURF_ACTION_FAILED)
     synchro->state = SIMIX_DST_HOST_FAILURE;
   else if (synchro->comm.surf_comm &&
-	  surf_action_get_state(synchro->comm.surf_comm) == SURF_ACTION_FAILED) {
+	  synchro->comm.surf_comm->getState() == SURF_ACTION_FAILED) {
     XBT_DEBUG("Puta madre. Surf says that the link broke");
     synchro->state = SIMIX_LINK_FAILURE;
   } else
@@ -944,7 +945,7 @@ void SIMIX_comm_cancel(smx_synchro_t synchro)
            && !MC_record_replay_is_active()
            && (synchro->state == SIMIX_READY || synchro->state == SIMIX_RUNNING)) {
 
-    surf_action_cancel(synchro->comm.surf_comm);
+    synchro->comm.surf_comm->cancel();
   }
 }
 
@@ -952,7 +953,7 @@ void SIMIX_comm_suspend(smx_synchro_t synchro)
 {
   /*FIXME: shall we suspend also the timeout synchro? */
   if (synchro->comm.surf_comm)
-    surf_action_suspend(synchro->comm.surf_comm);
+    synchro->comm.surf_comm->suspend();
   /* in the other case, the action will be suspended on creation, in SIMIX_comm_start() */
 }
 
@@ -960,7 +961,7 @@ void SIMIX_comm_resume(smx_synchro_t synchro)
 {
   /*FIXME: check what happen with the timeouts */
   if (synchro->comm.surf_comm)
-    surf_action_resume(synchro->comm.surf_comm);
+    synchro->comm.surf_comm->resume();
   /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 

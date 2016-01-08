@@ -123,10 +123,10 @@ void sg_energy_plugin_init() {
 	    e_surf_action_state_t old,
 	    e_surf_action_state_t cur) {
 	  const char *name = getActionCpu(action)->getName();
-	  simgrid::surf::Host *host = surf_host_resource_priv(sg_host_by_name(name));
+	  simgrid::surf::Host *host = sg_host_by_name(name)->extension<simgrid::surf::Host>();
 	  simgrid::surf::VirtualMachine *vm = dynamic_cast<simgrid::surf::VirtualMachine*>(host);
 	  if (vm) // If it's a VM, take the corresponding PM
-	      host = surf_host_resource_priv(vm->getPm());
+	      host = vm->getPm()->extension<simgrid::surf::Host>();
 
 	  HostEnergy *host_energy = (*simgrid::energy::surf_energy)[host];
 

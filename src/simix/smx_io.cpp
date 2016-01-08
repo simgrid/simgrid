@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -74,7 +75,7 @@ smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
   synchro->io.host = host;
   synchro->io.surf_io = surf_host_read(host, fd->surf_file, size);
 
-  surf_action_set_data(synchro->io.surf_io, synchro);
+  synchro->io.surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -106,7 +107,7 @@ smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
   synchro->io.host = host;
   synchro->io.surf_io = surf_host_write(host, fd->surf_file, size);
 
-  surf_action_set_data(synchro->io.surf_io, synchro);
+  synchro->io.surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -138,7 +139,7 @@ smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host)
   synchro->io.host = host;
   synchro->io.surf_io = surf_host_open(host, fullpath);
 
-  surf_action_set_data(synchro->io.surf_io, synchro);
+  synchro->io.surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -170,7 +171,7 @@ smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
   synchro->io.host = host;
   synchro->io.surf_io = surf_host_close(host, fd->surf_file);
 
-  surf_action_set_data(synchro->io.surf_io, synchro);
+  synchro->io.surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -309,11 +310,13 @@ void SIMIX_post_io(smx_synchro_t synchro)
       simcall_file_close__set__result(simcall, 0);
       break;
     case SIMCALL_FILE_WRITE:
-      simcall_file_write__set__result(simcall, surf_action_get_cost(synchro->io.surf_io));
+      simcall_file_write__set__result(simcall,
+        synchro->io.surf_io->getCost());
       break;
 
     case SIMCALL_FILE_READ:
-      simcall_file_read__set__result(simcall, surf_action_get_cost(synchro->io.surf_io));
+      simcall_file_read__set__result(simcall,
+        synchro->io.surf_io->getCost());
       break;
 
     default:
@@ -321,7 +324,7 @@ void SIMIX_post_io(smx_synchro_t synchro)
     }
   }
 
-  switch (surf_action_get_state(synchro->io.surf_io)) {
+  switch (synchro->io.surf_io->getState()) {
 
     case SURF_ACTION_FAILED:
       synchro->state = SIMIX_FAILED;
@@ -343,7 +346,7 @@ void SIMIX_io_destroy(smx_synchro_t synchro)
 {
   XBT_DEBUG("Destroy synchro %p", synchro);
   if (synchro->io.surf_io)
-    surf_action_unref(synchro->io.surf_io);
+    synchro->io.surf_io->unref();
   xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
 }
 

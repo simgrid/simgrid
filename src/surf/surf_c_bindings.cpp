@@ -19,11 +19,11 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  *********/
 
 static simgrid::surf::Host *get_casted_host(sg_host_t host){
-  return static_cast<simgrid::surf::Host*>(surf_host_resource_priv(host));
+  return host->extension<simgrid::surf::Host>();
 }
 
 static simgrid::surf::VirtualMachine *get_casted_vm(sg_host_t host){
-  return static_cast<simgrid::surf::VirtualMachine*>(surf_host_resource_priv(host));
+  return static_cast<simgrid::surf::VirtualMachine*>(host->extension<simgrid::surf::Host>());
 }
 
 extern double NOW;
@@ -514,5 +514,5 @@ surf_file_t surf_storage_action_get_file(surf_action_t action){
 }
 
 surf_host_t surf_host_resource_priv(sg_host_t host) {
-  return host->extension(simgrid::surf::Host::EXTENSION_ID);
+  return host->extension<simgrid::surf::Host>();
 }

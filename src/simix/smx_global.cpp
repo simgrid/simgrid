@@ -11,6 +11,7 @@
 # include <sys/ptrace.h>
 #endif
 
+#include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
 #include "smx_private.hpp"
 #include "xbt/heap.h"
@@ -462,15 +463,15 @@ void SIMIX_run(void)
         XBT_DEBUG("Handling process whose action failed");
         while ((action = surf_model_extract_failed_action_set(model))) {
           XBT_DEBUG("   Handling Action %p",action);
-          SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+          SIMIX_simcall_exit((smx_synchro_t) action->getData());
         }
         XBT_DEBUG("Handling process whose action terminated normally");
         while ((action = surf_model_extract_done_action_set(model))) {
           XBT_DEBUG("   Handling Action %p",action);
-          if (surf_action_get_data(action) == NULL)
+          if (action->getData() == NULL)
             XBT_DEBUG("probably vcpu's action %p, skip", action);
           else
-            SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+            SIMIX_simcall_exit((smx_synchro_t) action->getData());
         }
       }
     }
@@ -500,15 +501,15 @@ void SIMIX_run(void)
       XBT_DEBUG("Handling process whose action failed");
       while ((action = surf_model_extract_failed_action_set(model))) {
         XBT_DEBUG("   Handling Action %p",action);
-        SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+        SIMIX_simcall_exit((smx_synchro_t) action->getData());
       }
       XBT_DEBUG("Handling process whose action terminated normally");
       while ((action = surf_model_extract_done_action_set(model))) {
         XBT_DEBUG("   Handling Action %p",action);
-        if (surf_action_get_data(action) == NULL)
+        if (action->getData() == NULL)
           XBT_DEBUG("probably vcpu's action %p, skip", action);
         else
-          SIMIX_simcall_exit((smx_synchro_t) surf_action_get_data(action));
+          SIMIX_simcall_exit((smx_synchro_t) action->getData());
       }
     }
 

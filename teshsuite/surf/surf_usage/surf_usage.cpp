@@ -10,6 +10,7 @@
 #include "simgrid/sg_config.h"
 #include "surf/surf.h"
 #include "surf/surfxml_parse.h" // for reset callback
+#include "src/surf/surf_interface.hpp"
 
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
@@ -65,9 +66,9 @@ void test(char *platform)
   actionC = surf_host_sleep(hostB, 7.32);
 
   /* Use whatever calling style you want... */
-  stateActionA = surf_action_get_state(actionA);     /* When you know actionA model type */
-  stateActionB = surf_action_get_state(actionB);        /* If you're unsure about it's model type */
-  stateActionC = surf_action_get_state(actionC);     /* When you know actionA model type */
+  stateActionA = actionA->getState(); /* When you know actionA model type */
+  stateActionB = actionB->getState(); /* If you're unsure about it's model type */
+  stateActionC = actionC->getState(); /* When you know actionA model type */
 
   /* And just look at the state of these tasks */
   XBT_DEBUG("actionA : %p (%s)", actionA, string_action(stateActionA));
@@ -89,23 +90,23 @@ void test(char *platform)
     while ((action =
             surf_model_extract_failed_action_set((surf_model_t)surf_cpu_model_pm))) {
       XBT_DEBUG("\t * Failed : %p", action);
-      surf_action_unref(action);
+      action->unref();
     }
     while ((action =
             surf_model_extract_done_action_set((surf_model_t)surf_cpu_model_pm))) {
       XBT_DEBUG("\t * Done : %p", action);
-      surf_action_unref(action);
+      action->unref();
     }
     XBT_DEBUG("\t Network actions");
     while ((action =
             surf_model_extract_failed_action_set((surf_model_t)surf_network_model))) {
       XBT_DEBUG("\t * Failed : %p", action);
-      surf_action_unref(action);
+      action->unref();
     }
     while ((action =
             surf_model_extract_done_action_set((surf_model_t)surf_network_model))) {
       XBT_DEBUG("\t * Done : %p", action);
-      surf_action_unref(action);
+      action->unref();
     }
 
   } while ((surf_model_running_action_set_size((surf_model_t)surf_network_model) ||

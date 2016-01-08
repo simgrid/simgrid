@@ -324,16 +324,18 @@ smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
   if (!MC_is_active() && !MC_record_replay_is_active()) {
 
     synchro->execution.surf_exec = surf_host_execute(issuer->host, flops_amount);
-    surf_action_set_data(synchro->execution.surf_exec, synchro);
-    surf_action_set_priority(synchro->execution.surf_exec, priority);
+    synchro->execution.surf_exec->setData(synchro);
+    synchro->execution.surf_exec->setPriority(priority);
 
     if (bound != 0)
-      surf_cpu_action_set_bound(synchro->execution.surf_exec, bound);
+      static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)
+        ->setBound(bound);
 
     if (affinity_mask != 0) {
       /* just a double check to confirm that this host is the host where this task is running. */
       xbt_assert(synchro->execution.host == issuer->host);
-      surf_cpu_action_set_affinity(synchro->execution.surf_exec, issuer->host, affinity_mask);
+      static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)
+        ->setAffinity(issuer->host->p_cpu, affinity_mask);
     }
   }
 
@@ -382,7 +384,7 @@ smx_synchro_t SIMIX_process_parallel_execute(const char *name,
       surf_host_model_execute_parallel_task(surf_host_model,
     		  host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
 
-    surf_action_set_data(synchro->execution.surf_exec, synchro);
+    synchro->execution.surf_exec->setData(synchro);
   }
   XBT_DEBUG("Create parallel execute synchro %p", synchro);
 
@@ -393,7 +395,7 @@ void SIMIX_process_execution_destroy(smx_synchro_t synchro){
   XBT_DEBUG("Destroy synchro %p", synchro);
 
   if (synchro->execution.surf_exec) {
-    surf_action_unref(synchro->execution.surf_exec);
+    synchro->execution.surf_exec->unref();
     synchro->execution.surf_exec = NULL;
   }
   xbt_free(synchro->name);
@@ -404,7 +406,7 @@ void SIMIX_process_execution_cancel(smx_synchro_t synchro){
   XBT_DEBUG("Cancel synchro %p", synchro);
 
   if (synchro->execution.surf_exec)
-    surf_action_cancel(synchro->execution.surf_exec);
+    synchro->execution.surf_exec->cancel();
 }
 
 double SIMIX_process_execution_get_remains(smx_synchro_t synchro){
@@ -423,13 +425,14 @@ e_smx_state_t SIMIX_process_execution_get_state(smx_synchro_t synchro){
 void SIMIX_process_execution_set_priority(smx_synchro_t synchro, double priority){
 
   if(synchro->execution.surf_exec)
-	surf_action_set_priority(synchro->execution.surf_exec, priority);
+	synchro->execution.surf_exec->setPriority(priority);
 }
 
 void SIMIX_process_execution_set_bound(smx_synchro_t synchro, double bound){
 
   if(synchro->execution.surf_exec)
-	surf_cpu_action_set_bound(synchro->execution.surf_exec, bound);
+	static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)
+    ->setBound(bound);
 }
 
 void SIMIX_process_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask){
@@ -438,7 +441,8 @@ void SIMIX_process_execution_set_affinity(smx_synchro_t synchro, sg_host_t host,
   if (synchro->execution.surf_exec) {
     /* just a double check to confirm that this host is the host where this task is running. */
     xbt_assert(synchro->execution.host == host);
-    surf_cpu_action_set_affinity(synchro->execution.surf_exec, host, mask);
+    static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)
+      ->setAffinity(host->p_cpu, mask);
   }
 }
 
@@ -465,13 +469,13 @@ void simcall_HANDLER_process_execution_wait(smx_simcall_t simcall, smx_synchro_t
 void SIMIX_host_execution_suspend(smx_synchro_t synchro)
 {
   if(synchro->execution.surf_exec)
-    surf_action_suspend(synchro->execution.surf_exec);
+    synchro->execution.surf_exec->suspend();
 }
 
 void SIMIX_host_execution_resume(smx_synchro_t synchro)
 {
   if(synchro->execution.surf_exec)
-    surf_action_resume(synchro->execution.surf_exec);
+    synchro->execution.surf_exec->resume();
 }
 
 void SIMIX_execution_finish(smx_synchro_t synchro)
@@ -526,7 +530,7 @@ void SIMIX_post_host_execute(smx_synchro_t synchro)
     /* If the host running the synchro failed, notice it so that the asking
      * process can be killed if it runs on that host itself */
     synchro->state = SIMIX_FAILED;
-  } else if (surf_action_get_state(synchro->execution.surf_exec) == SURF_ACTION_FAILED) {
+  } else if (synchro->execution.surf_exec->getState() == SURF_ACTION_FAILED) {
     /* If the host running the synchro didn't fail, then the synchro was
      * canceled */
     synchro->state = SIMIX_CANCELED;
@@ -535,7 +539,7 @@ void SIMIX_post_host_execute(smx_synchro_t synchro)
   }
 
   if (synchro->execution.surf_exec) {
-    surf_action_unref(synchro->execution.surf_exec);
+    synchro->execution.surf_exec->unref();
     synchro->execution.surf_exec = NULL;
   }
 
@@ -550,9 +554,9 @@ void SIMIX_set_category(smx_synchro_t synchro, const char *category)
 {
   if (synchro->state != SIMIX_RUNNING) return;
   if (synchro->type == SIMIX_SYNC_EXECUTE){
-    surf_action_set_category(synchro->execution.surf_exec, category);
+    synchro->execution.surf_exec->setCategory(category);
   }else if (synchro->type == SIMIX_SYNC_COMMUNICATE){
-    surf_action_set_category(synchro->comm.surf_comm, category);
+    synchro->comm.surf_comm->setCategory(category);
   }
 }
 

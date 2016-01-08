@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/surf/surf_interface.hpp"
 #include "src/simdag/simdag_private.h"
 #include "instr/instr_interface.h"
 #include "xbt/sysdep.h"
@@ -303,8 +304,8 @@ xbt_swag_t SD_simulate_swag(double how_long) {
     /* let's see which tasks are done */
     xbt_dynar_foreach(all_existing_models, iter, model) {
       while ((action = surf_model_extract_done_action_set(model))) {
-        task = (SD_task_t)surf_action_get_data(action);
-        task->start_time = surf_action_get_start_time(task->surf_action);
+        task = (SD_task_t) action->getData();
+        task->start_time = task->surf_action->getStartTime();
 
         task->finish_time = surf_get_clock();
         XBT_VERB("Task '%s' done", SD_task_get_name(task));
@@ -370,12 +371,12 @@ xbt_swag_t SD_simulate_swag(double how_long) {
 
       /* let's see which tasks have just failed */
       while ((action = surf_model_extract_failed_action_set(model))) {
-        task = (SD_task_t)surf_action_get_data(action);
+        task = (SD_task_t) action->getData();
         task->start_time = surf_action_get_start_time(task->surf_action);
         task->finish_time = surf_get_clock();
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
         __SD_task_set_state(task, SD_FAILED);
-        surf_action_unref(action);
+        action->unref();
         task->surf_action = NULL;
 
         xbt_swag_insert(task,sd_global->return_set);
