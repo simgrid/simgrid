@@ -382,9 +382,9 @@ void surf_host_set_params(sg_host_t host, vm_params_t params){
   get_casted_host(host)->setParams(params);
 }
 
-void surf_vm_destroy(sg_host_t vm){
+void surf_vm_destroy(sg_host_t vm){ // FIXME:DEADCODE
   vm->p_cpu = nullptr;
-  delete vm->p_netcard;
+  vm->p_netcard = nullptr;
 }
 
 void surf_vm_suspend(sg_host_t vm){
