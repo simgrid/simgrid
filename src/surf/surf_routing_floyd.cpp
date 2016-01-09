@@ -4,8 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf_routing_floyd.hpp"
-#include "network_interface.hpp"
+#include "src/surf/surf_routing_private.hpp"
+#include "src/surf/surf_routing_floyd.hpp"
+#include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 

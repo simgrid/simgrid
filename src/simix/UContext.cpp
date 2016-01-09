@@ -11,8 +11,8 @@
 #include <functional>
 
 #include "xbt/parmap.h"
-#include "smx_private.h"
-#include "smx_private.hpp"
+#include "src/simix/smx_private.h"
+#include "src/simix/smx_private.hpp"
 #include "src/internal_config.h"
 #include "src/context_sysv_config.h"        /* loads context system definitions */
 #include "mc/mc.h"
@@ -36,7 +36,7 @@
  * Makecontext expects integer arguments, we the context
  * variable is decomposed into a serie of integers and
  * each integer is passed as argument to makecontext. */
-XBT_PRIVATE
+static
 void simgrid_makecontext(ucontext_t* ucp, void (*func)(int first, ...), void* arg)
 {
   int ctx_addr[CTX_ADDR_LEN];

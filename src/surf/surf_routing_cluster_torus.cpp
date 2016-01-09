@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf_routing_cluster_torus.hpp"
+#include "src/surf/surf_routing_private.hpp"
+#include "src/surf/surf_routing_cluster_torus.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
 

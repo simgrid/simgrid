@@ -14,6 +14,7 @@
 #include "xbt/xbt_os_thread.h"
 #include "src/xbt_modinter.h"       /* prototype of os thread module's init/exit in XBT */
 
+#include "src/simix/smx_private.hpp"
 #include "src/simix/ThreadContext.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);

@@ -12,6 +12,7 @@
 #include "simgrid_config.h"
 #include "src/internal_config.h"
 #include "src/simix/smx_private.h"
+#include "mc/mc.h"
 
 SG_BEGIN_DECL()
 
@@ -36,6 +37,9 @@ XBT_PRIVATE int MC_request_is_visible(smx_simcall_t req);
 XBT_PRIVATE void MC_wait_for_requests(void);
 
 XBT_PRIVATE extern double *mc_time;
+
+/** Execute a given simcall */
+XBT_PRIVATE void MC_simcall_handle(smx_simcall_t req, int value);
 
 SG_END_DECL()
 

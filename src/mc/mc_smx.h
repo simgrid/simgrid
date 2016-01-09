@@ -84,8 +84,6 @@ XBT_PRIVATE const char* MC_smx_process_get_host_name(smx_process_t p);
     } \
   }
 
-/** Execute a given simcall */
-XBT_PRIVATE void MC_simcall_handle(smx_simcall_t req, int value);
 
 XBT_PRIVATE int MC_smpi_process_count(void);
 

@@ -6,7 +6,8 @@
 #include <vector>
 #include <iostream>
 
-#include "surf_routing_cluster_fat_tree.hpp"
+#include "src/surf/surf_routing_private.hpp"
+#include "src/surf/surf_routing_cluster_fat_tree.hpp"
 #include "xbt/lib.h"
 
 #include <boost/algorithm/string/split.hpp>
