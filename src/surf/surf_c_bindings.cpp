@@ -267,10 +267,6 @@ double surf_host_get_power_peak_at(sg_host_t host, int pstate_index){
   return host->p_cpu->getPowerPeakAt(pstate_index);
 }
 
-void surf_host_set_pstate(sg_host_t host, int pstate_index){
-  host->p_cpu->setPState(pstate_index);
-}
-
 using simgrid::energy::HostEnergy;
 using simgrid::energy::surf_energy;
 

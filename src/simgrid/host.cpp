@@ -251,8 +251,9 @@ Host* Host::by_name_or_create(const char* name)
 /** Set the pstate at which the host should run */
 void Host::setPstate(int pstate_index)
 {
-  simgrid::simix::kernel(
-    std::bind(SIMIX_host_set_pstate, this, pstate_index));
+  simgrid::simix::kernel(std::bind(
+      &simgrid::surf::Cpu::setPState, p_cpu, pstate_index
+  ));
 }
 
 /** Get the amount of watt dissipated at the given pstate when the host is idling */
