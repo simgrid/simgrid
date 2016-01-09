@@ -462,6 +462,8 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
   THROWF(unknown_error, 0, "The Impossible Did Happen (yet again)")
 #define THROW_UNIMPLEMENTED \
   THROWF(unknown_error, 0, "Function %s unimplemented",_XBT_FUNCTION)
+#define THROW_DEADCODE \
+  THROWF(unknown_error, 0, "Function %s was supposed to be DEADCODE, but it's not",_XBT_FUNCTION)
 
 #define DIE_IMPOSSIBLE xbt_die("The Impossible Did Happen (yet again)")
 

@@ -483,7 +483,7 @@ public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component */
   lmm_constraint_t getConstraint();
 protected:
-  lmm_constraint_t p_constraint;
+  lmm_constraint_t p_constraint = nullptr;
 };
 
 }

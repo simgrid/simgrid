@@ -591,14 +591,14 @@ namespace surf {
 
 Resource::Resource()
 : p_name(NULL), p_model(NULL)
-{} // FIXME: DEADCODE?
+{THROW_DEADCODE;} // FIXME: DEADCODE?
 
 Resource::Resource(Model *model, const char *name)
-  : Resource(model, name, 1/*SURF_RESOURCE_ON*/)
-{} // FIXME: DEADCODE?
+  : Resource(model, name, 1/*ON*/)
+{}
 
 Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint)
-  : Resource(model, name, constraint, 1/*SURF_RESOURCE_ON*/)
+  : Resource(model, name, constraint, 1/*ON*/)
 {}
   
 Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint, int initiallyOn)
@@ -612,7 +612,7 @@ Resource::Resource(Model *model, const char *name, int initiallyOn)
   : p_name(xbt_strdup(name))
   , p_model(model)
   , m_isOn(initiallyOn)
-{} // FIXME: DEADCODE?
+{}
 
 
 Resource::~Resource() {
