@@ -320,7 +320,7 @@ smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
   /* set surf's action */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
 
-    synchro->execution.surf_exec = surf_host_execute(issuer->host, flops_amount);
+    synchro->execution.surf_exec = issuer->host->p_cpu->execute(flops_amount);
     synchro->execution.surf_exec->setData(synchro);
     synchro->execution.surf_exec->setPriority(priority);
 

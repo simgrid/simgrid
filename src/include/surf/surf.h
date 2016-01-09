@@ -304,9 +304,6 @@ XBT_PUBLIC(xbt_dict_t) sg_host_get_properties(sg_host_t host);
 /** @brief Get the available speed of cpu associated to a host */
 XBT_PUBLIC(double) surf_host_get_available_speed(sg_host_t host);
 
-/** @brief Create a computation action on the given host */
-XBT_PUBLIC(surf_action_t) surf_host_execute(sg_host_t host, double size);
-
 /** @brief Create a sleep action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_sleep(sg_host_t host, double duration);
 

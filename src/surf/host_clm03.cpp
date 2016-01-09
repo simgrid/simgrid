@@ -81,7 +81,7 @@ Action *HostCLM03Model::executeParallelTask(int host_nb,
   Action *action =NULL;
   if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0)){
-    action = surf_host_execute(host_list[0],flops_amount[0]);
+    action = host_list[0]->p_cpu->execute(flops_amount[0]);
   } else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0)) {
     action = surf_network_model->communicate(host_list[0]->p_netcard,

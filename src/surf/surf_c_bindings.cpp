@@ -255,10 +255,6 @@ double surf_host_get_available_speed(sg_host_t host){
   return host->p_cpu->getAvailableSpeed();
 }
 
-surf_action_t surf_host_execute(sg_host_t host, double size){
-  return host->p_cpu->execute(size);
-}
-
 double surf_host_get_current_power_peak(sg_host_t host){
   return host->p_cpu->getCurrentPowerPeak();
 }

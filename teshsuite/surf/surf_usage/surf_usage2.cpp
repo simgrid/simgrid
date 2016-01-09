@@ -11,6 +11,7 @@
 #include "surf/surf.h"
 #include "surf/surfxml_parse.h" // for reset callback
 #include "src/surf/surf_interface.hpp"
+#include "src/surf/cpu_interface.hpp"
 
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
@@ -57,8 +58,8 @@ void test(char *platform)
   XBT_DEBUG("%s : %p", sg_host_get_name(hostB), hostB);
 
   /* Let's do something on it */
-  surf_host_execute(hostA, 1000.0);
-  surf_host_execute(hostB, 1000.0);
+  hostA->p_cpu->execute(1000.0);
+  hostB->p_cpu->execute(1000.0);
   surf_host_sleep(hostB, 7.32);
 
   surf_network_model_communicate(surf_network_model, hostA, hostB, 150.0, -1.0);
