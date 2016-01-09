@@ -450,17 +450,7 @@ XBT_PUBLIC(double) surf_host_get_current_power_peak(sg_host_t host);
  */
 XBT_PUBLIC(double) surf_host_get_power_peak_at(sg_host_t host, int pstate_index);
 
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param host [description]
- * @return [description]
- */
-XBT_PUBLIC(int) surf_host_get_nb_pstates(sg_host_t host);
-
 XBT_PUBLIC(void) surf_host_set_pstate(sg_host_t host, int pstate_index);
-XBT_PUBLIC(int) surf_host_get_pstate(sg_host_t host);
 XBT_PUBLIC(double) surf_host_get_wattmin_at(sg_host_t resource, int pstate);
 XBT_PUBLIC(double) surf_host_get_wattmax_at(sg_host_t resource, int pstate);
 

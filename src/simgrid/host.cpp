@@ -154,7 +154,7 @@ double sg_host_get_consumed_energy(sg_host_t host) {
  *  See also @ref SURF_plugin_energy.
  */
 int sg_host_get_nb_pstates(sg_host_t host) {
-	return surf_host_get_nb_pstates(host);
+  return host->p_cpu->getNbPStates();
 }
 
 /** @brief Gets the pstate at which that host currently runs.
@@ -162,7 +162,7 @@ int sg_host_get_nb_pstates(sg_host_t host) {
  *  See also @ref SURF_plugin_energy.
  */
 int sg_host_get_pstate(sg_host_t host) {
-	return surf_host_get_pstate(host);
+	return host->p_cpu->getPState();
 }
 
 namespace simgrid {
