@@ -38,8 +38,8 @@ public:
   Host(std::string const& name);
   ~Host();
   simgrid::xbt::string const& getName() const { return name_; }
-  void on();
-  void off();
+  void turnOn();
+  void turnOff();
   bool isOn();
   bool isOff();
   xbt_dict_t getProperties();

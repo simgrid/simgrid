@@ -177,13 +177,13 @@ Host::~Host()
 }
 
 /** Start the host if it is off */
-void Host::on()
+void Host::turnOn()
 {
   simgrid::simix::kernel(std::bind(SIMIX_host_on, this));
 }
 
 /** Stop the host if it is on */
-void Host::off()
+void Host::turnOff()
 {
   /* Go to that function to follow the code flow through the simcall barrier */
   if (0) simcall_HANDLER_host_off(&SIMIX_process_self()->simcall, this);

@@ -128,7 +128,7 @@ msg_host_t MSG_host_self(void)
  */
 void MSG_host_on(msg_host_t host)
 {
-  host->on();
+  host->turnOn();
 }
 
 /** \ingroup m_host_management
@@ -139,7 +139,7 @@ void MSG_host_on(msg_host_t host)
  */
 void MSG_host_off(msg_host_t host)
 {
-  host->off();
+  host->turnOff();
 }
 
 /*
