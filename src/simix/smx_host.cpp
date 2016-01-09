@@ -46,7 +46,7 @@ void SIMIX_host_on(sg_host_t h)
 
   if (h->isOff()) {
     simgrid::surf::Host* surf_host = h->extension<simgrid::surf::Host>();
-    surf_host_turn_on(surf_host);
+    surf_host->turnOn();
 
     unsigned int cpt;
     smx_process_arg_t arg;
@@ -100,7 +100,7 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
 
   if (h->isOn()) {
     simgrid::surf::Host* surf_host = h->extension<simgrid::surf::Host>();
-    surf_host_turn_off(surf_host);
+    surf_host->turnOff();
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {

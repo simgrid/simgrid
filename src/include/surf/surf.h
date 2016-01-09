@@ -301,23 +301,6 @@ static inline const char * surf_cpu_name(surf_cpu_t cpu) {
 /** @brief Get the properties of an host */
 XBT_PUBLIC(xbt_dict_t) sg_host_get_properties(sg_host_t host);
 
-
-/** @brief Get the state of a surf resource (cpu, host, network, …) */
-XBT_PUBLIC(int) surf_resource_is_on(surf_cpp_resource_t resource);
-/** @brief Get the state of a surf resource (cpu, host, network, …) */
-XBT_PUBLIC(int) surf_resource_is_off(surf_cpp_resource_t resource);
-
-/** @brief Set the state of a surf resource (cpu, host, network, …) */
-XBT_PUBLIC(void) surf_resource_turn_on(surf_cpp_resource_t resource);
-/** @brief Set the state of a surf resource (cpu, host, network, …) */
-XBT_PUBLIC(void) surf_resource_turn_off(surf_cpp_resource_t resource);
-static inline void surf_host_turn_on(surf_host_t host) {
-  surf_resource_turn_on((surf_cpp_resource_t)host);
-}
-static inline void surf_host_turn_off(surf_host_t host) {
-  surf_resource_turn_off((surf_cpp_resource_t)host);
-}
-
 /** @brief Get the available speed of cpu associated to a host */
 XBT_PUBLIC(double) surf_host_get_available_speed(sg_host_t host);
 

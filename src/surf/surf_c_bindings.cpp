@@ -243,19 +243,6 @@ const char *surf_resource_name(surf_cpp_resource_t resource){
   return resource->getName();
 }
 
-int surf_resource_is_on(surf_cpp_resource_t resource){
-  return resource->isOn();
-}
-int surf_resource_is_off(surf_cpp_resource_t resource){
-  return resource->isOff();
-}
-void surf_resource_turn_on(surf_cpp_resource_t resource){
-  resource->turnOn();
-}
-void surf_resource_turn_off(surf_cpp_resource_t resource){
-  resource->turnOff();
-}
-
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
 	return host->p_cpu->sleep(duration);
 }
