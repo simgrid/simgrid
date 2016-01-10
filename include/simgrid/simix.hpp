@@ -82,7 +82,7 @@ typename std::result_of<F()>::type kernel(F&& code)
 class Context;
 class ContextFactory;
 
-class ContextFactory {
+XBT_PUBLIC_CLASS ContextFactory {
 private:
   std::string name_;
 public:
@@ -109,7 +109,7 @@ protected:
   }
 };
 
-class Context {
+XBT_PUBLIC_CLASS Context {
 private:
   std::function<void()> code_;
   void_pfn_smxprocess_t cleanup_func_ = nullptr;
