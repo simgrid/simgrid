@@ -589,10 +589,6 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 namespace simgrid {
 namespace surf {
 
-Resource::Resource()
-: p_name(NULL), p_model(NULL)
-{THROW_DEADCODE;} // FIXME: DEADCODE?
-
 Resource::Resource(Model *model, const char *name)
   : Resource(model, name, 1/*ON*/)
 {}

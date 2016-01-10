@@ -414,8 +414,6 @@ namespace surf {
  */
 XBT_PUBLIC_CLASS Resource {
 public:
-  Resource();
-
   /**
    * @brief Constructor of non-LMM Resources
    *
