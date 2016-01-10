@@ -34,18 +34,15 @@ environment:
 #- if [%COMPILER%]==[MinGW-w64] 7z x -tzip lua.zip > NULL
 
 install:
-# Sane migwin, as installed by syengine
+# Perl: The installed version breaks with Perl::IPC 0.94. Get an older one.
+- call .appveyor-download.cmd "http://strawberryperl.com/download/5.18.4.1/strawberry-perl-5.18.4.1-64bit.msi" -FileName strawberry-perl.msi
+- msiexec /i "strawberry-perl.msi" /qn INSTALLDIR="C:\projects\perl"
+# Sane migwin, as installed by symengine
 - if [%COMPILER%]==[MinGW-w64] call .appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z
 - if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ mw64.7z > NUL
-- if [%COMPILER%]==[MinGW-w64] set PATH=C:\mingw64\bin;%PATH%-
+# Take the newly installed stuff in the path
+- set PATH=C:\mingw64\bin;C:\projects\perl\perl\bin;C:\projects\perl\perl\site\bin;C:\projects\perl\c\bin;%PATH%
 - if [%COMPILER%]==[MinGW-w64] rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
-# Perl
-- if not exist "C:\projects\sources" mkdir "C:\projects\sources"
-- cd C:\projects\sources
-- ps: Start-FileDownload http://strawberryperl.com/download/5.22.1.1/strawberry-perl-5.22.1.1-64bit.msi
-- msiexec /i "C:\projects\sources\strawberry-perl-5.22.1.1-64bit.msi" /qn INSTALLDIR="C:\projects\perl"
-- set PATH=C:\projects\perl\perl\bin;C:\projects\perl\perl\site\bin;C:\projects\perl\c\bin;%PATH%
-- cd C:\projects\simgrid
 
 build_script:
 - if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"       -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF .
