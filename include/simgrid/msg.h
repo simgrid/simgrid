@@ -311,8 +311,8 @@ XBT_PUBLIC(double) MSG_host_get_wattmax_at(msg_host_t host, int pstate);
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
 XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
-XBT_PUBLIC(void)   MSG_host_set_pstate(msg_host_t h, int pstate);
-XBT_PUBLIC(int)    MSG_host_get_pstate(msg_host_t host);
+#define MSG_host_get_pstate(h)         sg_host_get_pstate(h)
+#define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate)
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
 XBT_PUBLIC(int) MSG_get_host_number(void);
 XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, vm_params_t params);

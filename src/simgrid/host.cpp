@@ -162,7 +162,14 @@ int sg_host_get_nb_pstates(sg_host_t host) {
  *  See also @ref SURF_plugin_energy.
  */
 int sg_host_get_pstate(sg_host_t host) {
-	return host->p_cpu->getPState();
+  return host->getPState();
+}
+/** @brief Sets the pstate at which that host should run.
+ *
+ *  See also @ref SURF_plugin_energy.
+ */
+void sg_host_set_pstate(sg_host_t host,int pstate) {
+  host->setPState(pstate);
 }
 
 namespace simgrid {
@@ -248,12 +255,17 @@ Host* Host::by_name_or_create(const char* name)
   return host;
 }
 
-/** Set the pstate at which the host should run */
-void Host::setPstate(int pstate_index)
+/** @brief Set the pstate at which the host should run */
+void Host::setPState(int pstate_index)
 {
   simgrid::simix::kernel(std::bind(
       &simgrid::surf::Cpu::setPState, p_cpu, pstate_index
   ));
+}
+/** @brief Retrieve the pstate at which the host is currently running */
+int Host::getPState()
+{
+  return p_cpu->getPState();
 }
 
 /** Get the amount of watt dissipated at the given pstate when the host is idling */

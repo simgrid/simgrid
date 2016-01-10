@@ -46,7 +46,8 @@ public:
   xbt_swag_t getProcessList();
   double getCurrentPowerPeak();
   double getPowerPeakAt(int pstate_index);
-  void setPstate(int pstate_index);
+  void setPState(int pstate_index);
+  int getPState();
   double getWattMinAt(int pstate);
   double getWattMaxAt(int pstate);
   void getParams(vm_params_t params);

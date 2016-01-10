@@ -48,7 +48,7 @@ int smpi_get_host_nb_pstates(void)
  */
 void smpi_set_host_pstate(int pstate_index)
 {
-  simcall_host_set_pstate(SIMIX_host_self(), pstate_index);
+  sg_host_set_pstate(SIMIX_host_self(), pstate_index);
 }
 /**
  * \brief Gets the pstate at which the processor currently running

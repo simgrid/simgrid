@@ -258,7 +258,6 @@ XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
 
 XBT_PUBLIC(double) simcall_host_get_current_power_peak(sg_host_t host);
 XBT_PUBLIC(double) simcall_host_get_power_peak_at(sg_host_t host, int pstate_index);
-XBT_PUBLIC(void) simcall_host_set_pstate(sg_host_t host, int pstate_index);
 XBT_PUBLIC(double) simcall_host_get_wattmin_at(sg_host_t host, int pstate);
 XBT_PUBLIC(double) simcall_host_get_wattmax_at(sg_host_t host, int pstate);
 
