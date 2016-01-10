@@ -74,25 +74,27 @@ else()
   add_jar(simgrid-java_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
 endif()
 
-add_custom_command(
-  TARGET simgrid-java_jar POST_BUILD
-  COMMENT "Add the documentation into simgrid.jar..."
-  DEPENDS ${MANIFEST_IN_FILE}
-	  ${CMAKE_HOME_DIRECTORY}/COPYING
-	  ${CMAKE_HOME_DIRECTORY}/ChangeLog
-	  ${CMAKE_HOME_DIRECTORY}/NEWS
-	  ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
-	  ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
-	    
-  COMMAND ${CMAKE_COMMAND} -E copy ${MANIFEST_IN_FILE} ${MANIFEST_FILE}
-  COMMAND ${CMAKE_COMMAND} -E echo "Specification-Version: \\\"${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}\\\"" >> ${MANIFEST_FILE}
-  COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
+if (enable_documentation)
+  add_custom_command(
+    TARGET simgrid-java_jar POST_BUILD
+    COMMENT "Add the documentation into simgrid.jar..."
+    DEPENDS ${MANIFEST_IN_FILE}
+            ${CMAKE_HOME_DIRECTORY}/COPYING
+            ${CMAKE_HOME_DIRECTORY}/ChangeLog
+            ${CMAKE_HOME_DIRECTORY}/NEWS
+            ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
+            ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
 
-  COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.msg org.simgrid.trace
-  
-  COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} doc/javadoc
-  COMMAND ${JAVA_ARCHIVE} -uvf  ${SIMGRID_JAR} -C ${CMAKE_HOME_DIRECTORY} COPYING -C ${CMAKE_HOME_DIRECTORY} ChangeLog -C ${CMAKE_HOME_DIRECTORY} LICENSE-LGPL-2.1 -C ${CMAKE_HOME_DIRECTORY} NEWS
+    COMMAND ${CMAKE_COMMAND} -E copy ${MANIFEST_IN_FILE} ${MANIFEST_FILE}
+    COMMAND ${CMAKE_COMMAND} -E echo "Specification-Version: \\\"${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}.${SIMGRID_VERSION_PATCH}\\\"" >> ${MANIFEST_FILE}
+    COMMAND ${CMAKE_COMMAND} -E echo "Implementation-Version: \\\"${GIT_VERSION}\\\"" >> ${MANIFEST_FILE}
+
+    COMMAND ${Java_JAVADOC_EXECUTABLE} -quiet -d doc/javadoc -sourcepath ${CMAKE_HOME_DIRECTORY}/src/bindings/java/ org.simgrid.msg org.simgrid.trace
+
+    COMMAND ${JAVA_ARCHIVE} -uvmf ${MANIFEST_FILE} ${SIMGRID_JAR} doc/javadoc
+    COMMAND ${JAVA_ARCHIVE} -uvf  ${SIMGRID_JAR} -C ${CMAKE_HOME_DIRECTORY} COPYING -C ${CMAKE_HOME_DIRECTORY} ChangeLog -C ${CMAKE_HOME_DIRECTORY} LICENSE-LGPL-2.1 -C ${CMAKE_HOME_DIRECTORY} NEWS
   )
+endif()
 
 ###
 ### Pack the java libraries into the jarfile if asked to do so
