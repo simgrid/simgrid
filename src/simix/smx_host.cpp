@@ -186,13 +186,6 @@ double SIMIX_host_get_power_peak_at(sg_host_t host, int pstate_index) {
 	  return surf_host_get_power_peak_at(host, pstate_index);
 }
 
-double SIMIX_host_get_wattmin_at(sg_host_t host,int pstate) {
-	  return surf_host_get_wattmin_at(host,pstate);
-}
-double SIMIX_host_get_wattmax_at(sg_host_t host,int pstate) {
-	  return surf_host_get_wattmax_at(host,pstate);
-}
-
 void _SIMIX_host_free_process_arg(void *data)
 {
   smx_process_arg_t arg = *(smx_process_arg_t*)data;

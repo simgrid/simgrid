@@ -259,15 +259,17 @@ void Host::setPstate(int pstate_index)
 /** Get the amount of watt dissipated at the given pstate when the host is idling */
 double Host::getWattMinAt(int pstate)
 {
-  return simgrid::simix::kernel(
-    std::bind(SIMIX_host_get_wattmin_at, this, pstate));
+  return simgrid::simix::kernel(std::bind(
+      surf_host_get_wattmin_at, this, pstate
+  ));
 }
 
 /** Get the amount of watt dissipated at the given pstate when the host burns CPU at 100% */
 double Host::getWattMaxAt(int pstate)
 {
-  return simgrid::simix::kernel(
-    std::bind(SIMIX_host_get_wattmax_at, this, pstate));
+  return simgrid::simix::kernel(std::bind(
+      surf_host_get_wattmax_at, this, pstate
+  ));
 }
 
 void Host::getParams(vm_params_t params)
