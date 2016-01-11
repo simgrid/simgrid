@@ -529,31 +529,3 @@ void SIMIX_set_category(smx_synchro_t synchro, const char *category)
     synchro->comm.surf_comm->setCategory(category);
   }
 }
-
-/**
- * \brief Function to get the parameters of the given the SIMIX host.
- *
- * \param host the host to get_phys_host (a sg_host_t)
- * \param param the parameter object space to be overwritten (a ws_params_t)
- */
-void SIMIX_host_get_params(sg_host_t ind_vm, vm_params_t params)
-{
-  ind_vm->extension<simgrid::surf::Host>()->getParams(params);
-}
-
-void SIMIX_host_set_params(sg_host_t ind_vm, vm_params_t params)
-{
-  ind_vm->extension<simgrid::surf::Host>()->setParams(params);
-}
-
-xbt_dict_t SIMIX_host_get_mounted_storage_list(sg_host_t host)
-{
-  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-  return host->extension<simgrid::surf::Host>()->getMountedStorageList();
-}
-
-xbt_dynar_t SIMIX_host_get_attached_storage_list(sg_host_t host)
-{
-  xbt_assert((host != NULL), "Invalid parameters (simix host is NULL)");
-  return host->extension<simgrid::surf::Host>()->getAttachedStorageList();
-}

@@ -12,6 +12,7 @@
 #include "surf/surf.h" // routing_get_network_element_type FIXME:killme
 
 #include "src/simix/smx_private.hpp"
+#include "src/surf/host_interface.hpp"
 
 size_t sg_host_count()
 {
@@ -264,12 +265,16 @@ int Host::getPState()
 
 void Host::getParams(vm_params_t params)
 {
-  simgrid::simix::kernel(std::bind(SIMIX_host_get_params, this, params));
+  simgrid::simix::kernel([&]() {
+    this->extension<simgrid::surf::Host>()->getParams(params);
+  });
 }
 
 void Host::setParams(vm_params_t params)
 {
-  simgrid::simix::kernel(std::bind(SIMIX_host_set_params, this, params));
+  simgrid::simix::kernel([&]() {
+    this->extension<simgrid::surf::Host>()->setParams(params);
+  });
 }
 
 /**
@@ -279,9 +284,9 @@ void Host::setParams(vm_params_t params)
  */
 xbt_dict_t Host::getMountedStorageList()
 {
-  return simgrid::simix::kernel(std::bind(
-    SIMIX_host_get_mounted_storage_list, this
-  ));
+  return simgrid::simix::kernel([&] {
+    return this->extension<simgrid::surf::Host>()->getMountedStorageList();
+  });
 }
 
 /**
@@ -291,9 +296,9 @@ xbt_dict_t Host::getMountedStorageList()
  */
 xbt_dynar_t Host::getAttachedStorageList()
 {
-  return simgrid::simix::kernel(std::bind(
-    SIMIX_host_get_attached_storage_list, this
-  ));
+  return simgrid::simix::kernel([&] {
+    return this->extension<simgrid::surf::Host>()->getAttachedStorageList();
+  });
 }
 
 }

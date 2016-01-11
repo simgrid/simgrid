@@ -50,7 +50,6 @@ XBT_PRIVATE e_smx_state_t SIMIX_process_execution_get_state(smx_synchro_t synchr
 XBT_PRIVATE void SIMIX_process_execution_set_priority(smx_synchro_t synchro, double priority);
 XBT_PRIVATE void SIMIX_process_execution_set_bound(smx_synchro_t synchro, double bound);
 XBT_PRIVATE void SIMIX_process_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask);
-XBT_PRIVATE xbt_dynar_t SIMIX_host_get_attached_storage_list(sg_host_t host);
 
 XBT_PRIVATE void SIMIX_host_execution_suspend(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_host_execution_resume(smx_synchro_t synchro);
@@ -87,10 +86,6 @@ XBT_PRIVATE void SIMIX_vm_set_bound(sg_host_t ind_vm, double bound);
 XBT_PRIVATE void SIMIX_vm_set_affinity(sg_host_t ind_vm, sg_host_t ind_pm, unsigned long mask);
 
 XBT_PRIVATE void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm);
-
-XBT_PRIVATE void SIMIX_host_get_params(sg_host_t ind_vm, vm_params_t params);
-
-XBT_PRIVATE void SIMIX_host_set_params(sg_host_t ind_vm, vm_params_t params);
 
 SG_END_DECL()
 
