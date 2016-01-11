@@ -702,5 +702,5 @@ xbt_dict_t SIMIX_asr_get_properties(const char *name)
 
 int SIMIX_is_maestro()
 {
-  return SIMIX_process_self() == simix_global->maestro_process;
+  return simix_global==NULL /*SimDag*/|| SIMIX_process_self() == simix_global->maestro_process;
 }
