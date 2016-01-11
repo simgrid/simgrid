@@ -225,9 +225,7 @@ surf_action_t surf_host_model_execute_parallel_task(surf_host_model_t model,
 xbt_dynar_t surf_host_model_get_route(surf_host_model_t /*model*/,
                                              sg_host_t src, sg_host_t dst){
   xbt_dynar_t route = NULL;
-  routing_platf->getRouteAndLatency(
-    get_casted_host(src)->p_netElm,
-		get_casted_host(dst)->p_netElm, &route, NULL);
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, &route, NULL);
   return route;
 }
 

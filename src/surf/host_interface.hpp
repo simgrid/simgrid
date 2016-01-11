@@ -91,11 +91,10 @@ public:
    * @param name The name of the Host
    * @param props Dictionary of properties associated to this Host
    * @param storage The Storage associated to this Host
-   * @param netElm The RoutingEdge associated to this Host
    * @param cpu The Cpu associated to this Host
    */
   Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
-		      xbt_dynar_t storage, NetCard *netElm, Cpu *cpu);
+		      xbt_dynar_t storage, Cpu *cpu);
 
   /**
    * @brief Host constructor
@@ -105,12 +104,10 @@ public:
    * @param props Dictionary of properties associated to this Host
    * @param constraint The lmm constraint associated to this Host if it is part of a LMM component
    * @param storage The Storage associated to this Host
-   * @param netElm The RoutingEdge associated to this Host
    * @param cpu The Cpu associated to this Host
    */
   Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
-      lmm_constraint_t constraint, xbt_dynar_t storage, NetCard *netElm,
-      Cpu *cpu);
+      lmm_constraint_t constraint, xbt_dynar_t storage, Cpu *cpu);
 
   /* Host destruction logic */
   /**************************/
@@ -243,7 +240,6 @@ public:
 
 public:
   xbt_dynar_t p_storage;
-  NetCard *p_netElm;
   Cpu *p_cpu;
   simgrid::Host* p_host = nullptr;
 

@@ -42,8 +42,7 @@ simgrid::xbt::Extension<simgrid::Host, Host> Host::EXTENSION_ID =
 Host *HostModel::createHost(const char *name,NetCard *netElm, Cpu *cpu, xbt_dict_t props){
   xbt_dynar_t storageList = (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL);
 
-  Host *host = new simgrid::surf::Host(surf_host_model, name, props,
-		  storageList, netElm, cpu);
+  Host *host = new simgrid::surf::Host(surf_host_model, name, props, storageList, cpu);
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
   return host;
 }
@@ -91,19 +90,19 @@ simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onDestruction;
 simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onStateChange;
 
 Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
-		                 xbt_dynar_t storage, NetCard *netElm, Cpu *cpu)
+		                 xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name)
  , PropertyHolder(props)
- , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
+ , p_storage(storage), p_cpu(cpu)
 {
   p_params.ramsize = 0;
 }
 
 Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
-				         xbt_dynar_t storage, NetCard *netElm, Cpu *cpu)
+				         xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name, constraint)
  , PropertyHolder(props)
- , p_storage(storage), p_netElm(netElm), p_cpu(cpu)
+ , p_storage(storage), p_cpu(cpu)
 {
   p_params.ramsize = 0;
 }

@@ -176,9 +176,8 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  p_netElm = host_PM->pimpl_netcard;
   sg_host_t host_VM = sg_host_by_name_or_create(name);
-  host_VM->pimpl_netcard = p_netElm;
+  host_VM->pimpl_netcard = host_PM->pimpl_netcard;
 
   p_vm_state = SURF_VM_STATE_CREATED;
 
@@ -244,7 +243,7 @@ void VMHL13::migrate(sg_host_t host_dest)
    const char *pm_name_dst = surfHost_dst->getName();
 
    /* update net_elm with that of the destination physical host */
-   sg_host_by_name(vm_name)->pimpl_netcard = p_netElm = sg_host_by_name(pm_name_dst)->pimpl_netcard;
+   sg_host_by_name(vm_name)->pimpl_netcard = sg_host_by_name(pm_name_dst)->pimpl_netcard;
 
    p_hostPM = host_dest;
 
