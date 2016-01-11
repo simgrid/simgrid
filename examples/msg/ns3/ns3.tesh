@@ -1,34 +1,39 @@
 #! ./tesh
 
+p In the NS3 tests, the timings are not shown because the exact values
+p may vary with your NS3 version. We just want to check that the NS3
+p bindings of SimGrid are working correctly, we don't want to
+p throughoutly test NS3.
+
 p 3hosts 2links
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3hosts_2links_d.xml --cfg=network/model:NS3
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [Jupiter:slave:(2) 0.000250] [msg_test/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3hosts_2links_d.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+> [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
 
 p 6hosts 3links
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d.xml --cfg=network/model:NS3
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [Jupiter:slave:(2) 0.003057] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
-> [Ginette:slave:(4) 0.162674] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
-> [Lovelace:slave:(6) 1.269505] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+> [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
+> [Ginette:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
+> [Lovelace:slave(6)] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d-timer.xml --cfg=network/model:NS3
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [Jupiter:slave:(2) 0.003057] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
-> [Ginette:slave:(4) 0.162674] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
-> [Lovelace:slave:(6) 1.269505] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
-> [Lovelace:slave:(7) 3.269505] [msg_test/INFO] FLOW[4] : Receive 2000000 bytes from Bourassa to Lovelace
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d-timer.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+> [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
+> [Ginette:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
+> [Lovelace:slave(6)] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
+> [Lovelace:slave(7)] [msg_test/INFO] FLOW[4] : Receive 2000000 bytes from Bourassa to Lovelace
 
 p One cluster
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/ns3/One_cluster-d.xml --cfg=network/model:NS3
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [node-6.acme.org:slave:(2) 0.007311] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-2.acme.org to node-6.acme.org
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/ns3/One_cluster-d.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+> [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [node-6.acme.org:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-2.acme.org to node-6.acme.org
 
 p Two clusters
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}/examples/msg/ns3/Two_clusters-d.xml --cfg=network/model:NS3
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [c-16.me:slave:(2) 0.026463] [msg_test/INFO] FLOW[1] : Receive 100 bytes from c-3.me to c-16.me
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}/examples/msg/ns3/Two_clusters-d.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+> [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [c-16.me:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from c-3.me to c-16.me
