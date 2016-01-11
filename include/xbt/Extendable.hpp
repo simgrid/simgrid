@@ -111,6 +111,7 @@ public:
     extension_set(rank.id(), value, use_dtor);
   }
 
+public:
   // Convenience extension access when the type has a associated EXTENSION ID:
   template<class U> U* extension()           { return extension<U>(U::EXTENSION_ID); }
   template<class U> void extension_set(U* p) { extension_set<U>(U::EXTENSION_ID, p); }
