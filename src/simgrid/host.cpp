@@ -162,6 +162,12 @@ void sg_host_set_pstate(sg_host_t host,int pstate) {
   host->setPState(pstate);
 }
 
+/** @brief Get the properties of an host */
+xbt_dict_t sg_host_get_properties(sg_host_t host) {
+  return host->getProperties();
+}
+
+
 namespace simgrid {
 
 Host::Host(std::string const& id)
@@ -196,7 +202,7 @@ bool Host::isOff() {
 /** Get the properties assigned to a host */
 xbt_dict_t Host::getProperties()
 {
-  return simgrid::simix::kernel(std::bind(sg_host_get_properties, this));
+  return simgrid::simix::kernel(std::bind(&simgrid::surf::Host::getProperties, this->extension(simgrid::surf::Host::EXTENSION_ID)));
 }
 
 /** Get the processes attached to the host */

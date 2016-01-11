@@ -245,9 +245,6 @@ surf_action_t surf_host_sleep(sg_host_t host, double duration){
 	return host->pimpl_cpu->sleep(duration);
 }
 
-xbt_dict_t sg_host_get_properties(sg_host_t host) {
-	return get_casted_host(host)->getProperties();
-}
 
 double surf_host_get_available_speed(sg_host_t host){
   return host->pimpl_cpu->getAvailableSpeed();
