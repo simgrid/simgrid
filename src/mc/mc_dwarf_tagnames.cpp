@@ -8,6 +8,7 @@
 
 #include <dwarf.h>
 #include <elfutils/libdw.h>
+#include "src/mc/mc_dwarf.hpp"
 
 #include <xbt/base.h>
 

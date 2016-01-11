@@ -478,7 +478,7 @@ void MC_automaton_load(const char *file)
 }
 
 // TODO, fix cross-process access (this function is not used)
-void MC_dump_stacks(FILE* file)
+static void MC_dump_stacks(FILE* file)
 {
   int nstack = 0;
   for (auto const& stack : mc_model_checker->process().stack_areas()) {

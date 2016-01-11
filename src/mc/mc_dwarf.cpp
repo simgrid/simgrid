@@ -132,7 +132,7 @@ enum class FormClass {
   RangeListPtr
 };
 
-XBT_PRIVATE
+static
 TagClass classify_tag(int tag)
 {
   switch (tag) {
@@ -191,7 +191,7 @@ TagClass classify_tag(int tag)
  *  \param form The form (values taken from the DWARF spec)
  *  \return An internal representation for the corresponding class
  * */
-XBT_PRIVATE
+static
 FormClass classify_form(int form)
 {
   switch (form) {

@@ -9,6 +9,8 @@
 #include "src/mc/mc_object_info.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/Type.hpp"
+#include "src/mc/mc_dwarf.hpp"
+
 
 namespace simgrid {
 namespace dwarf {

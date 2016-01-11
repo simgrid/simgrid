@@ -35,6 +35,7 @@
 #include "src/mc/mc_smx.h"
 #include "mc_hash.hpp"
 
+#include "src/mc/RegionSnapshot.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Frame.hpp"
 #include "src/mc/Variable.hpp"
@@ -83,9 +84,9 @@ namespace simgrid {
 namespace mc {
 
 #ifdef HAVE_SMPI
-simgrid::mc::RegionSnapshot privatized_region(
+RegionSnapshot privatized_region(
     RegionType region_type, void *start_addr, void* permanent_addr,
-    std::size_t size, const simgrid::mc::RegionSnapshot* ref_region
+    std::size_t size, const RegionSnapshot* ref_region
     )
 {
   size_t process_count = MC_smpi_process_count();
