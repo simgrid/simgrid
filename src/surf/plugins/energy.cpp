@@ -158,8 +158,9 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 
 double HostEnergy::getConsumedEnergy()
 {
-	if(last_updated < surf_get_clock())
-		this->update();
+	if (last_updated < surf_get_clock()) // We need to simcall this as it modifies the environment
+	  simgrid::simix::kernel(std::bind(&HostEnergy::update, this));
+
 	return total_energy;
 }
 
@@ -192,29 +193,6 @@ void HostEnergy::initWattsRangeList()
     ));
 	}
 	xbt_dynar_free(&all_power_values);
-}
-
-double surf_host_get_wattmin_at(sg_host_t host, int pstate)
-{
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-    "The Energy plugin is not active. "
-    "Please call sg_energy_plugin_init() during initialization.");
-  return host->extension<HostEnergy>()->getWattMinAt(pstate);
-}
-double surf_host_get_wattmax_at(sg_host_t host, int pstate)
-{
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-    "The Energy plugin is not active. "
-    "Please call sg_energy_plugin_init() during initialization.");
-  return host->extension<HostEnergy>()->getWattMaxAt(pstate);
-}
-
-double surf_host_get_consumed_energy(sg_host_t host)
-{
-  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
-    "The Energy plugin is not active. "
-    "Please call sg_energy_plugin_init() during initialization.");
-  return host->extension<HostEnergy>()->getConsumedEnergy();
 }
 
 }
@@ -273,18 +251,23 @@ void sg_energy_plugin_init(void)
  *  See also @ref SURF_plugin_energy.
  */
 double sg_host_get_consumed_energy(sg_host_t host) {
-  return simgrid::energy::surf_host_get_consumed_energy(host);
+  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
+    "The Energy plugin is not active. "
+    "Please call sg_energy_plugin_init() during initialization.");
+  return host->extension<HostEnergy>()->getConsumedEnergy();
 }
 
 /** @brief Get the amount of watt dissipated at the given pstate when the host is idling */
 double sg_host_get_wattmin_at(sg_host_t host, int pstate) {
-  return simgrid::simix::kernel(std::bind(
-      simgrid::energy::surf_host_get_wattmin_at, host, pstate
-  ));
+  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
+    "The Energy plugin is not active. "
+    "Please call sg_energy_plugin_init() during initialization.");
+  return host->extension<HostEnergy>()->getWattMinAt(pstate);
 }
 /** @brief  Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100% */
 double sg_host_get_wattmax_at(sg_host_t host, int pstate) {
-  return simgrid::simix::kernel(std::bind(
-      simgrid::energy::surf_host_get_wattmax_at, host, pstate
-  ));
+  xbt_assert(HostEnergy::EXTENSION_ID.valid(),
+    "The Energy plugin is not active. "
+    "Please call sg_energy_plugin_init() during initialization.");
+  return host->extension<HostEnergy>()->getWattMaxAt(pstate);
 }

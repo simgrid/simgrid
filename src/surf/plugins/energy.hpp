@@ -43,12 +43,7 @@ public:
   double last_updated;       /*< Timestamp of the last energy update event*/
 };
 
-XBT_PUBLIC(double) surf_host_get_wattmin_at(sg_host_t resource, int pstate);
-XBT_PUBLIC(double) surf_host_get_wattmax_at(sg_host_t resource, int pstate);
-XBT_PUBLIC(double) surf_host_get_consumed_energy(sg_host_t host);
 }
 }
-
-
 
 #endif /* ENERGY_CALLBACK_HPP_ */
