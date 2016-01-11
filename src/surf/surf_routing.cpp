@@ -201,17 +201,6 @@ simgrid::surf::NetCard *routing_add_host(
   return netcard;
 }
 
-/**
- * \brief Store the ASroute by calling the set_ASroute function of the current routing component
- */
-static void parse_E_ASroute(sg_platf_route_cbarg_t ASroute)
-{
-  /*FIXME:REMOVE:xbt_assert(current_routing->parse_ASroute,
-             "no defined method \"set_ASroute\" in \"%s\"",
-             current_routing->name);*/
-  current_routing->parseASroute(ASroute);
-}
-
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 {
   tmgr_trace_t tmgr_trace;
