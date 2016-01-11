@@ -135,7 +135,7 @@ Action *VMHL13Model::executeParallelTask(int host_nb,
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
   if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0))
-    return host_list[0]->p_cpu->execute(flops_amount[0]);
+    return host_list[0]->pimpl_cpu->execute(flops_amount[0]);
   else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0))
     return surf_network_model_communicate(surf_network_model, host_list[0], host_list[0],bytes_amount[0], rate);
@@ -176,15 +176,15 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  p_netElm = host_PM->p_netcard;
+  p_netElm = host_PM->pimpl_netcard;
   sg_host_t host_VM = sg_host_by_name_or_create(name);
-  host_VM->p_netcard = p_netElm;
+  host_VM->pimpl_netcard = p_netElm;
 
   p_vm_state = SURF_VM_STATE_CREATED;
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01 *sub_cpu = static_cast<CpuCas01*>(host_PM->p_cpu);
+  CpuCas01 *sub_cpu = static_cast<CpuCas01*>(host_PM->pimpl_cpu);
 
   p_cpu = surf_cpu_model_vm->createCpu(host_VM, // the machine hosting the VM
       sub_cpu->getSpeedPeakList(),        // host->power_peak,
@@ -244,14 +244,14 @@ void VMHL13::migrate(sg_host_t host_dest)
    const char *pm_name_dst = surfHost_dst->getName();
 
    /* update net_elm with that of the destination physical host */
-   sg_host_by_name(vm_name)->p_netcard = p_netElm = sg_host_by_name(pm_name_dst)->p_netcard;
+   sg_host_by_name(vm_name)->pimpl_netcard = p_netElm = sg_host_by_name(pm_name_dst)->pimpl_netcard;
 
    p_hostPM = host_dest;
 
    /* Update vcpu's action for the new pm */
    {
      /* create a cpu action bound to the pm model at the destination. */
-     CpuAction *new_cpu_action = static_cast<CpuAction*>(host_dest->p_cpu->execute(0));
+     CpuAction *new_cpu_action = static_cast<CpuAction*>(host_dest->pimpl_cpu->execute(0));
 
      e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)

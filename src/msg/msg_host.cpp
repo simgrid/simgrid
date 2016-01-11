@@ -349,31 +349,6 @@ int MSG_host_get_nb_pstates(msg_host_t host) {
 }
 
 /** \ingroup m_host_management
- * \brief Return the total energy consumed by a host (in Joules). See also @ref SURF_plugin_energy.
- *
- * \param  host host to test
- * \return Returns the consumed energy
- */
-double MSG_host_get_consumed_energy(msg_host_t host) {
-	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-	  return sg_host_get_consumed_energy(host);
-}
-/** \ingroup m_host_management
- * \brief Returns the amount of watt dissipated at the given pstate when the host is idling
- *
- */
-double MSG_host_get_wattmin_at(msg_host_t host, int pstate){
-	return host->getWattMinAt(pstate);
-}
-/** \ingroup m_host_management
- * \brief Returns the amount of watt dissipated at the given pstate when the host burns CPU at 100%
- *
- */
-double MSG_host_get_wattmax_at(msg_host_t host, int pstate){
-	return host->getWattMaxAt(pstate);
-}
-
-/** \ingroup m_host_management
  * \brief Return the list of mount point names on an host.
  * \param host a host
  * \return a dict containing all mount point on the host (mount_name => msg_storage_t)

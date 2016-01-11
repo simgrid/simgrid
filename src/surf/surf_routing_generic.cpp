@@ -449,7 +449,7 @@ As *AsGeneric::autonomousSystemExist(char *element)
 
 As *AsGeneric::processingUnitsExist(char *element)
 {
-  As *element_as = sg_host_by_name(element)->p_netcard ->getRcComponent();
+  As *element_as = sg_host_by_name(element)->pimpl_netcard ->getRcComponent();
   if (element_as == this)
     return element_as;
   return asExist(element_as);

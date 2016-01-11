@@ -138,15 +138,7 @@ double sg_host_get_available_speed(sg_host_t host){
  *  @return 1 if the host is active or 0 if it has crashed.
  */
 int sg_host_is_on(sg_host_t host) {
-	return host->p_cpu->isOn();
-}
-
-/** @brief Returns the total energy consumed by the host (in Joules).
- *
- *  See also @ref SURF_plugin_energy.
- */
-double sg_host_get_consumed_energy(sg_host_t host) {
-	return surf_host_get_consumed_energy(host);
+	return host->pimpl_cpu->isOn();
 }
 
 /** @brief Returns the number of power states for a host.
@@ -154,7 +146,7 @@ double sg_host_get_consumed_energy(sg_host_t host) {
  *  See also @ref SURF_plugin_energy.
  */
 int sg_host_get_nb_pstates(sg_host_t host) {
-  return host->p_cpu->getNbPStates();
+  return host->pimpl_cpu->getNbPStates();
 }
 
 /** @brief Gets the pstate at which that host currently runs.
@@ -198,10 +190,10 @@ void Host::turnOff()
 }
 
 bool Host::isOn() {
-  return p_cpu->isOn();
+  return pimpl_cpu->isOn();
 }
 bool Host::isOff() {
-  return ! p_cpu->isOn();
+  return ! pimpl_cpu->isOn();
 }
 
 
@@ -233,11 +225,11 @@ double Host::getPowerPeakAt(int pstate_index)
 
 /** @brief Get the speed of the cpu associated to a host */
 double Host::getSpeed() {
-	return p_cpu->getSpeed(1.0);
+	return pimpl_cpu->getSpeed(1.0);
 }
 /** @brief Returns the number of core of the processor. */
 int Host::getCoreAmount() {
-	return p_cpu->getCore();
+	return pimpl_cpu->getCore();
 }
 
 Host* Host::by_name_or_null(const char* name)
@@ -259,29 +251,13 @@ Host* Host::by_name_or_create(const char* name)
 void Host::setPState(int pstate_index)
 {
   simgrid::simix::kernel(std::bind(
-      &simgrid::surf::Cpu::setPState, p_cpu, pstate_index
+      &simgrid::surf::Cpu::setPState, pimpl_cpu, pstate_index
   ));
 }
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::getPState()
 {
-  return p_cpu->getPState();
-}
-
-/** Get the amount of watt dissipated at the given pstate when the host is idling */
-double Host::getWattMinAt(int pstate)
-{
-  return simgrid::simix::kernel(std::bind(
-      surf_host_get_wattmin_at, this, pstate
-  ));
-}
-
-/** Get the amount of watt dissipated at the given pstate when the host burns CPU at 100% */
-double Host::getWattMaxAt(int pstate)
-{
-  return simgrid::simix::kernel(std::bind(
-      surf_host_get_wattmax_at, this, pstate
-  ));
+  return pimpl_cpu->getPState();
 }
 
 void Host::getParams(vm_params_t params)

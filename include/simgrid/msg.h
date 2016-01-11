@@ -305,8 +305,6 @@ XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
-XBT_PUBLIC(double) MSG_host_get_wattmin_at(msg_host_t host, int pstate);
-XBT_PUBLIC(double) MSG_host_get_wattmax_at(msg_host_t host, int pstate);
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
 XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
@@ -320,8 +318,6 @@ XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, vm_params_t params);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) MSG_host_get_attached_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
-
-XBT_PUBLIC(double) MSG_host_get_consumed_energy(msg_host_t h);
 
 /*property handlers*/
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_properties(msg_host_t host);

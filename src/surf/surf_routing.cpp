@@ -59,7 +59,7 @@ static xbt_dict_t random_value = NULL;
 simgrid::surf::NetCard *sg_netcard_by_name_or_null(const char *name)
 {
   sg_host_t h = sg_host_by_name(name);
-  simgrid::surf::NetCard *net_elm = h==NULL?NULL: h->p_netcard;
+  simgrid::surf::NetCard *net_elm = h==NULL?NULL: h->pimpl_netcard;
   if (!net_elm)
 	net_elm = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
   return net_elm;
@@ -127,7 +127,7 @@ struct s_model_type routing_models[] = {
  */
 void sg_platf_new_netcard(sg_platf_host_link_cbarg_t netcard)
 {
-  simgrid::surf::NetCard *info = sg_host_by_name(netcard->id)->p_netcard;
+  simgrid::surf::NetCard *info = sg_host_by_name(netcard->id)->pimpl_netcard;
   xbt_assert(info, "Host '%s' not found!", netcard->id);
   xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER] ||
       current_routing->p_modelDesc == &routing_models[SURF_MODEL_VIVALDI],
@@ -170,7 +170,7 @@ simgrid::surf::NetCard *routing_add_host(
 		                                    current_routing);
   netcard->setId(current_routing->parsePU(netcard));
   sg_host_t h = sg_host_by_name_or_create(host->id);
-  h->p_netcard = netcard;
+  h->pimpl_netcard = netcard;
   XBT_DEBUG("Having set name '%s' id '%d'", host->id, netcard->getId());
   simgrid::surf::routingEdgeCreatedCallbacks(netcard);
 

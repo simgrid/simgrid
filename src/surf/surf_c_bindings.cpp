@@ -18,7 +18,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  * TOOLS *
  *********/
 
-static simgrid::surf::Host *get_casted_host(sg_host_t host){
+static simgrid::surf::Host *get_casted_host(sg_host_t host){ //FIXME: killme
   return host->extension<simgrid::surf::Host>();
 }
 
@@ -236,7 +236,7 @@ void surf_vm_model_create(const char *name, sg_host_t ind_phys_host){
 }
 
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate){
-  return model->communicate(src->p_netcard, dst->p_netcard, size, rate);
+  return model->communicate(src->pimpl_netcard, dst->pimpl_netcard, size, rate);
 }
 
 const char *surf_resource_name(surf_cpp_resource_t resource){
@@ -244,7 +244,7 @@ const char *surf_resource_name(surf_cpp_resource_t resource){
 }
 
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
-	return host->p_cpu->sleep(duration);
+	return host->pimpl_cpu->sleep(duration);
 }
 
 xbt_dict_t sg_host_get_properties(sg_host_t host) {
@@ -252,36 +252,17 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
 }
 
 double surf_host_get_available_speed(sg_host_t host){
-  return host->p_cpu->getAvailableSpeed();
+  return host->pimpl_cpu->getAvailableSpeed();
 }
 
 double surf_host_get_current_power_peak(sg_host_t host){
-  return host->p_cpu->getCurrentPowerPeak();
+  return host->pimpl_cpu->getCurrentPowerPeak();
 }
 
 double surf_host_get_power_peak_at(sg_host_t host, int pstate_index){
-  return host->p_cpu->getPowerPeakAt(pstate_index);
+  return host->pimpl_cpu->getPowerPeakAt(pstate_index);
 }
 
-using simgrid::energy::HostEnergy;
-using simgrid::energy::surf_energy;
-
-double surf_host_get_wattmin_at(sg_host_t resource, int pstate){
-  xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<simgrid::surf::Host*, HostEnergy*>::iterator hostIt = surf_energy->find(get_casted_host(resource));
-  return hostIt->second->getWattMinAt(pstate);
-}
-double surf_host_get_wattmax_at(sg_host_t resource, int pstate){
-  xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<simgrid::surf::Host*, HostEnergy*>::iterator hostIt = surf_energy->find(get_casted_host(resource));
-  return hostIt->second->getWattMaxAt(pstate);
-}
-
-double surf_host_get_consumed_energy(sg_host_t resource){
-  xbt_assert(surf_energy!=NULL, "The Energy plugin is not active. Please call sg_energy_plugin_init() during initialization.");
-  std::map<simgrid::surf::Host*, HostEnergy*>::iterator hostIt = surf_energy->find(get_casted_host(resource));
-  return hostIt->second->getConsumedEnergy();
-}
 
 xbt_dict_t surf_host_get_mounted_storage_list(sg_host_t host){
   return get_casted_host(host)->getMountedStorageList();
@@ -355,8 +336,8 @@ void surf_host_set_params(sg_host_t host, vm_params_t params){
 }
 
 void surf_vm_destroy(sg_host_t vm){ // FIXME:DEADCODE
-  vm->p_cpu = nullptr;
-  vm->p_netcard = nullptr;
+  vm->pimpl_cpu = nullptr;
+  vm->pimpl_netcard = nullptr;
 }
 
 void surf_vm_suspend(sg_host_t vm){
@@ -388,7 +369,7 @@ void surf_vm_set_bound(sg_host_t vm, double bound){
 }
 
 void surf_vm_set_affinity(sg_host_t vm, sg_host_t host, unsigned long mask){
-  return get_casted_vm(vm)->setAffinity(host->p_cpu, mask);
+  return get_casted_vm(vm)->setAffinity(host->pimpl_cpu, mask);
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
@@ -464,7 +445,7 @@ double surf_action_get_cost(surf_action_t action){
 }
 
 void surf_cpu_action_set_affinity(surf_action_t action, sg_host_t host, unsigned long mask) {
-  static_cast<simgrid::surf::CpuAction*>(action)->setAffinity(host->p_cpu, mask);
+  static_cast<simgrid::surf::CpuAction*>(action)->setAffinity(host->pimpl_cpu, mask);
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

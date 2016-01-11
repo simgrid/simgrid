@@ -1,4 +1,6 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
+/* energy.hpp: internal interface to the energy plugin                      */
+
+/* Copyright (c) 2014-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -41,7 +43,12 @@ public:
   int refcount = 1;
 };
 
+XBT_PUBLIC(double) surf_host_get_wattmin_at(sg_host_t resource, int pstate);
+XBT_PUBLIC(double) surf_host_get_wattmax_at(sg_host_t resource, int pstate);
+XBT_PUBLIC(double) surf_host_get_consumed_energy(sg_host_t host);
 }
 }
+
+
 
 #endif /* ENERGY_CALLBACK_HPP_ */

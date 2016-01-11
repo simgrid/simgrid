@@ -660,6 +660,7 @@ set(headers_to_install
   include/simdag/simdag.h
   include/simdag/datatypes.h
   
+  include/simgrid/plugins/energy.h
   include/simgrid/instr.h
   include/simgrid/msg.h
   include/simgrid/simdag.h
@@ -669,7 +670,6 @@ set(headers_to_install
   include/simgrid/forward.h
   include/simgrid/platf.h
   include/simgrid/platf_generator.h
-  include/simgrid/plugins.h
   include/simgrid/simix.h
   include/simgrid/simix.hpp
   include/simgrid/host.h

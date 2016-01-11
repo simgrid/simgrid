@@ -193,14 +193,14 @@ int main(int argc, char **argv)
     sg_host_t host1, host2;
     xbt_dict_foreach(host_list, cursor_src, src, host1) // Routes from host
     {
-      value1 = sg_host_by_name(src)->p_netcard;
+      value1 = sg_host_by_name(src)->pimpl_netcard;
       xbt_dict_foreach(host_list, cursor_dst, dst, host2) //to host
       {
         printf("  <route src=\"%s\" dst=\"%s\">\n  "
             ,src
             ,dst);
         xbt_dynar_t route=NULL;
-        value2 = sg_host_by_name(dst)->p_netcard;
+        value2 = sg_host_by_name(dst)->pimpl_netcard;
         routing_get_route_and_latency(value1, value2, &route,NULL);
         for(i=0;i<xbt_dynar_length(route) ;i++)
         {
@@ -263,7 +263,7 @@ int main(int argc, char **argv)
           printf("  <route src=\"%s\" dst=\"%s\">\n  "
               ,src, dst);
           xbt_dynar_t route=NULL;
-          value2 = sg_host_by_name(dst)->p_netcard;
+          value2 = sg_host_by_name(dst)->pimpl_netcard;
           routing_get_route_and_latency((sg_netcard_t)value1,(sg_netcard_t)value2,&route, NULL);
           for(i=0;i<xbt_dynar_length(route) ;i++)
           {

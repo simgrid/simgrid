@@ -201,7 +201,7 @@ L07Action::L07Action(Model *model, int host_nb,
 
   this->p_netcardList->reserve(host_nb);
   for (int i = 0; i<host_nb; i++)
-	  this->p_netcardList->push_back(host_list[i]->p_netcard);
+	  this->p_netcardList->push_back(host_list[i]->pimpl_netcard);
 
   /* Compute the number of affected resources... */
   for (int i = 0; i < host_nb; i++) {
@@ -249,7 +249,7 @@ L07Action::L07Action(Model *model, int host_nb,
 
   for (int i = 0; i < host_nb; i++)
     lmm_expand(model->getMaxminSystem(),
-    	       host_list[i]->p_cpu->getConstraint(),
+    	       host_list[i]->pimpl_cpu->getConstraint(),
                this->getVariable(), flops_amount[i]);
 
   for (int i = 0; i < host_nb; i++) {
@@ -341,7 +341,7 @@ void HostL07Model::addTraces()
   /* Connect traces relative to cpu */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07 *host = static_cast<CpuL07*>(sg_host_by_name(elm)->p_cpu);
+    CpuL07 *host = static_cast<CpuL07*>(sg_host_by_name(elm)->pimpl_cpu);
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -351,7 +351,7 @@ void HostL07Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07 *host = static_cast<CpuL07*>(sg_host_by_name(elm)->p_cpu);
+    CpuL07 *host = static_cast<CpuL07*>(sg_host_by_name(elm)->pimpl_cpu);
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);

@@ -63,20 +63,6 @@ double simcall_host_get_power_peak_at(sg_host_t host, int pstate_index)
   return host->getPowerPeakAt(pstate_index);
 }
 
-/** \ingroup simix_host_management
- * \deprecated */
-double simcall_host_get_wattmin_at(msg_host_t host, int pstate)
-{
-  return host->getWattMinAt(pstate);
-}
-
-/** \ingroup simix_host_management
- *  \deprecated */
-double simcall_host_get_wattmax_at(msg_host_t host, int pstate)
-{
-  return host->getWattMaxAt(pstate);
-}
-
 /** \deprecated */
 void simcall_host_get_params(sg_host_t vm, vm_params_t params)
 {

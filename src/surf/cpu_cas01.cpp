@@ -115,7 +115,7 @@ void CpuCas01Model::addTraces()
   /* connect all traces relative to hosts */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01 *host = static_cast<CpuCas01*>(sg_host_by_name(elm)->p_cpu);
+    CpuCas01 *host = static_cast<CpuCas01*>(sg_host_by_name(elm)->pimpl_cpu);
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
@@ -125,7 +125,7 @@ void CpuCas01Model::addTraces()
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01 *host = static_cast<CpuCas01*>(sg_host_by_name(elm)->p_cpu);
+    CpuCas01 *host = static_cast<CpuCas01*>(sg_host_by_name(elm)->pimpl_cpu);
 
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);

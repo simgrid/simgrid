@@ -58,12 +58,12 @@ void test(char *platform)
   hostB = sg_host_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_cpu_name(hostA->p_cpu), hostA);
-  XBT_DEBUG("%s : %p", surf_cpu_name(hostB->p_cpu), hostB);
+  XBT_DEBUG("%s : %p", surf_cpu_name(hostA->pimpl_cpu), hostA);
+  XBT_DEBUG("%s : %p", surf_cpu_name(hostB->pimpl_cpu), hostB);
 
   /* Let's do something on it */
-  actionA = hostA->p_cpu->execute(1000.0);
-  actionB = hostB->p_cpu->execute(1000.0);
+  actionA = hostA->pimpl_cpu->execute(1000.0);
+  actionB = hostB->pimpl_cpu->execute(1000.0);
   actionC = surf_host_sleep(hostB, 7.32);
 
   /* Use whatever calling style you want... */

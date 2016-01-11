@@ -58,8 +58,8 @@ void test(char *platform)
   XBT_DEBUG("%s : %p", sg_host_get_name(hostB), hostB);
 
   /* Let's do something on it */
-  hostA->p_cpu->execute(1000.0);
-  hostB->p_cpu->execute(1000.0);
+  hostA->pimpl_cpu->execute(1000.0);
+  hostB->pimpl_cpu->execute(1000.0);
   surf_host_sleep(hostB, 7.32);
 
   surf_network_model_communicate(surf_network_model, hostA, hostB, 150.0, -1.0);

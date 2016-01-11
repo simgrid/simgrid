@@ -313,7 +313,7 @@ smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
   /* set surf's action */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
 
-    synchro->execution.surf_exec = issuer->host->p_cpu->execute(flops_amount);
+    synchro->execution.surf_exec = issuer->host->pimpl_cpu->execute(flops_amount);
     synchro->execution.surf_exec->setData(synchro);
     synchro->execution.surf_exec->setPriority(priority);
 
@@ -325,7 +325,7 @@ smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
       /* just a double check to confirm that this host is the host where this task is running. */
       xbt_assert(synchro->execution.host == issuer->host);
       static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)
-        ->setAffinity(issuer->host->p_cpu, affinity_mask);
+        ->setAffinity(issuer->host->pimpl_cpu, affinity_mask);
     }
   }
 
@@ -432,7 +432,7 @@ void SIMIX_process_execution_set_affinity(smx_synchro_t synchro, sg_host_t host,
     /* just a double check to confirm that this host is the host where this task is running. */
     xbt_assert(synchro->execution.host == host);
     static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)
-      ->setAffinity(host->p_cpu, mask);
+      ->setAffinity(host->pimpl_cpu, mask);
   }
 }
 

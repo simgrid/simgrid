@@ -8,7 +8,7 @@
 
 #include "simgrid/msg.h"
 #include "xbt/sysdep.h"         /* calloc */
-#include "simgrid/plugins.h"
+#include "simgrid/plugins/energy.h"
 
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"

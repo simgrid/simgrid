@@ -20,7 +20,6 @@
 #include "surf/surf_routing.h"
 #include "simgrid/platf_interface.h"
 #include "simgrid/datatypes.h"
-#include "simgrid/plugins.h"
 #include "simgrid/forward.h"
 
 SG_BEGIN_DECL()
@@ -446,17 +445,6 @@ XBT_PUBLIC(double) surf_host_get_current_power_peak(sg_host_t host);
  * @return [description]
  */
 XBT_PUBLIC(double) surf_host_get_power_peak_at(sg_host_t host, int pstate_index);
-
-XBT_PUBLIC(double) surf_host_get_wattmin_at(sg_host_t resource, int pstate);
-XBT_PUBLIC(double) surf_host_get_wattmax_at(sg_host_t resource, int pstate);
-
-/**
- * @brief Get the consumed energy (in joules) of an host
- *
- * @param host The surf host
- * @return The consumed energy
- */
-XBT_PUBLIC(double) surf_host_get_consumed_energy(sg_host_t host);
 
 /**
  * @brief Get the list of storages mounted on an host

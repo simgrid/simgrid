@@ -149,7 +149,7 @@ Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
  , m_speedScale(speedScale)
  , m_host(host)
 {
-  host->p_cpu = this;
+  host->pimpl_cpu = this;
   xbt_assert(m_speedScale > 0, "Available speed has to be >0");
 
   // Copy the power peak array:

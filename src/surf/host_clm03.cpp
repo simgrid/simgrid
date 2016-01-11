@@ -81,11 +81,11 @@ Action *HostCLM03Model::executeParallelTask(int host_nb,
   Action *action =NULL;
   if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0)){
-    action = host_list[0]->p_cpu->execute(flops_amount[0]);
+    action = host_list[0]->pimpl_cpu->execute(flops_amount[0]);
   } else if ((host_nb == 1)
            && (cost_or_zero(flops_amount, 0) == 0.0)) {
-    action = surf_network_model->communicate(host_list[0]->p_netcard,
-    		                                 host_list[0]->p_netcard,
+    action = surf_network_model->communicate(host_list[0]->pimpl_netcard,
+    		                                 host_list[0]->pimpl_netcard,
 											 bytes_amount[0], rate);
   } else if ((host_nb == 2)
              && (cost_or_zero(flops_amount, 0) == 0.0)
@@ -100,8 +100,8 @@ Action *HostCLM03Model::executeParallelTask(int host_nb,
       }
     }
     if (nb == 1){
-      action = surf_network_model->communicate(host_list[0]->p_netcard,
-    		                                   host_list[1]->p_netcard,
+      action = surf_network_model->communicate(host_list[0]->pimpl_netcard,
+    		                                   host_list[1]->pimpl_netcard,
 											   value, rate);
     }
   } else

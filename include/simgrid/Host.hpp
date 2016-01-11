@@ -30,8 +30,8 @@ public:
 	int getCoreAmount();
 
 	/* FIXME: these should be protected, but it leads to many errors */
-	surf::Cpu     *p_cpu = nullptr;
-	surf::NetCard *p_netcard = nullptr;
+	surf::Cpu     *pimpl_cpu = nullptr;
+	surf::NetCard *pimpl_netcard = nullptr;
 private:
   simgrid::xbt::string name_ = "noname";
 public:
@@ -48,8 +48,6 @@ public:
   double getPowerPeakAt(int pstate_index);
   void setPState(int pstate_index);
   int getPState();
-  double getWattMinAt(int pstate);
-  double getWattMaxAt(int pstate);
   void getParams(vm_params_t params);
   void setParams(vm_params_t params);
   xbt_dict_t getMountedStorageList();
