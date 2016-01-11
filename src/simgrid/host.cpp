@@ -104,9 +104,6 @@ msg_host_priv_t sg_host_msg(sg_host_t host) {
 void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
   host->extension_set(MSG_HOST_LEVEL, smx_host);
 }
-void sg_host_msg_destroy(sg_host_t host) {
-  host->extension_set(MSG_HOST_LEVEL, nullptr);
-}
 // ========== SimDag Layer ==============
 SD_workstation_priv_t sg_host_sd(sg_host_t host) {
   return (SD_workstation_priv_t) host->extension(SD_HOST_LEVEL);
@@ -185,8 +182,6 @@ void Host::turnOn()
 /** Stop the host if it is on */
 void Host::turnOff()
 {
-  /* Go to that function to follow the code flow through the simcall barrier */
-  if (0) simcall_HANDLER_host_off(&SIMIX_process_self()->simcall, this);
   simgrid::simix::simcall<void>(SIMCALL_HOST_OFF, this);
 }
 
