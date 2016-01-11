@@ -4,6 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <utility>
+#include <vector>
+
 #include <simgrid/plugins/energy.h>
 #include <simgrid/simix.hpp>
 #include <src/surf/plugins/energy.hpp>
@@ -91,68 +94,51 @@ static void update_consumption(simgrid::surf::Host *host, HostEnergy *host_energ
 namespace simgrid {
 namespace energy {
 
-/**
- *
- */
-HostEnergy::HostEnergy(simgrid::surf::Host *ptr)
+HostEnergy::HostEnergy(simgrid::surf::Host *ptr) :
+  host(ptr), last_updated(surf_get_clock())
 {
-  host = ptr;
-  total_energy = 0;
-  power_range_watts_list = getWattsRangeList();
-  last_updated = surf_get_clock();
+  initWattsRangeList();
 
   if (host->getProperties() != NULL) {
-	char* off_power_str = (char*)xbt_dict_get_or_null(host->getProperties(), "watt_off");
-	if (off_power_str != NULL)
-		watts_off = atof(off_power_str);
-	else
-		watts_off = 0;
+    char* off_power_str = (char*)xbt_dict_get_or_null(host->getProperties(), "watt_off");
+    if (off_power_str != NULL)
+      watts_off = atof(off_power_str);
+    else
+      watts_off = 0;
   }
 
 }
 
-HostEnergy::~HostEnergy(){
-  unsigned int iter;
-  xbt_dynar_t power_tuple = NULL;
-  xbt_dynar_foreach(power_range_watts_list, iter, power_tuple)
-    xbt_dynar_free(&power_tuple);
-  xbt_dynar_free(&power_range_watts_list);
+HostEnergy::~HostEnergy()
+{
 }
 
-
-double HostEnergy::getWattMinAt(int pstate) {
-  xbt_dynar_t power_range_list = power_range_watts_list;
-  xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
-  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, host->p_cpu->getPState(), xbt_dynar_t);
-  double min_power = xbt_dynar_get_as(current_power_values, 0, double);
-  return min_power;
+double HostEnergy::getWattMinAt(int pstate)
+{
+  xbt_assert(!power_range_watts_list.empty(),
+    "No power range properties specified for host %s", host->getName());
+  return power_range_watts_list[pstate].first;
 }
-double HostEnergy::getWattMaxAt(int pstate) {
-  xbt_dynar_t power_range_list = power_range_watts_list;
-  xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
-  xbt_dynar_t current_power_values = xbt_dynar_get_as(power_range_list, host->p_cpu->getPState(), xbt_dynar_t);
-  double max_power = xbt_dynar_get_as(current_power_values, 1, double);
-  return max_power;
+
+double HostEnergy::getWattMaxAt(int pstate)
+{
+  xbt_assert(!power_range_watts_list.empty(),
+    "No power range properties specified for host %s", host->getName());
+  return power_range_watts_list[pstate].second;
 }
 
 /** @brief Computes the power consumed by the host according to the current pstate and processor load */
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
-	xbt_dynar_t power_range_list = power_range_watts_list;
-	xbt_assert(power_range_watts_list, "No power range properties specified for host %s", host->getName());
+	xbt_assert(!power_range_watts_list.empty(),
+    "No power range properties specified for host %s", host->getName());
 
-	int pstate = host->p_cpu->getPState();
-	xbt_assert(pstate < (int)xbt_dynar_length(power_range_list),
-			"pstate %d >= power range amound %d",pstate,(int)xbt_dynar_length(power_range_list));
-	/* retrieve the power values associated with the current pstate */
-	xbt_dynar_t current_power_values = xbt_dynar_get_as( power_range_list, pstate, xbt_dynar_t);
-
-	/* min_power corresponds to the idle power (cpu load = 0) */
-	/* max_power is the power consumed at 100% cpu load       */
-	double min_power = xbt_dynar_get_as(current_power_values, 0, double);
-	double max_power = xbt_dynar_get_as(current_power_values, 1, double);
-	double power_slope = max_power - min_power;
-
+  /* min_power corresponds to the idle power (cpu load = 0) */
+  /* max_power is the power consumed at 100% cpu load       */
+  auto range = power_range_watts_list.at(host->p_cpu->getPState());
+  double min_power = range.first;
+  double max_power = range.second;
+  double power_slope = max_power - min_power;
 	double current_power = min_power + cpu_load * power_slope;
 
 	XBT_DEBUG("[get_current_watts] min_power=%f, max_power=%f, slope=%f", min_power, max_power, power_slope);
@@ -168,49 +154,34 @@ double HostEnergy::getConsumedEnergy()
 	return total_energy;
 }
 
-xbt_dynar_t HostEnergy::getWattsRangeList()
+void HostEnergy::initWattsRangeList()
 {
-	xbt_dynar_t power_range_list;
-	xbt_dynar_t power_tuple;
-	int i = 0, pstate_nb=0;
-	xbt_dynar_t current_power_values;
-	double min_power, max_power;
-
 	if (host->getProperties() == NULL)
-		return NULL;
-
-	char* all_power_values_str = (char*)xbt_dict_get_or_null(host->getProperties(), "watt_per_state");
-
+		return;
+	char* all_power_values_str =
+    (char*)xbt_dict_get_or_null(host->getProperties(), "watt_per_state");
 	if (all_power_values_str == NULL)
-		return NULL;
+		return;
 
-
-	power_range_list = xbt_dynar_new(sizeof(xbt_dynar_t), NULL);
 	xbt_dynar_t all_power_values = xbt_str_split(all_power_values_str, ",");
+	int pstate_nb = xbt_dynar_length(all_power_values);
 
-	pstate_nb = xbt_dynar_length(all_power_values);
-	for (i=0; i< pstate_nb; i++)
+	for (int i=0; i< pstate_nb; i++)
 	{
 		/* retrieve the power values associated with the current pstate */
-		current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
+		xbt_dynar_t current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
 		xbt_assert(xbt_dynar_length(current_power_values) > 1,
 				"Power properties incorrectly defined - could not retrieve min and max power values for host %s",
 				host->getName());
 
 		/* min_power corresponds to the idle power (cpu load = 0) */
 		/* max_power is the power consumed at 100% cpu load       */
-		min_power = atof(xbt_dynar_get_as(current_power_values, 0, char*));
-		max_power = atof(xbt_dynar_get_as(current_power_values, 1, char*));
-
-		power_tuple = xbt_dynar_new(sizeof(double), NULL);
-		xbt_dynar_push_as(power_tuple, double, min_power);
-		xbt_dynar_push_as(power_tuple, double, max_power);
-
-		xbt_dynar_push_as(power_range_list, xbt_dynar_t, power_tuple);
-		xbt_dynar_free(&current_power_values);
+    power_range_watts_list.push_back(power_range(
+      atof(xbt_dynar_get_as(current_power_values, 0, char*)),
+      atof(xbt_dynar_get_as(current_power_values, 1, char*))
+    ));
 	}
 	xbt_dynar_free(&all_power_values);
-	return power_range_list;
 }
 
 

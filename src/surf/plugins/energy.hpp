@@ -23,6 +23,8 @@ extern XBT_PRIVATE std::map<simgrid::surf::Host*, HostEnergy*> *surf_energy;
 
 class HostEnergy {
 public:
+  typedef std::pair<double,double> power_range;
+
   HostEnergy(simgrid::surf::Host *ptr);
   ~HostEnergy();
 
@@ -31,16 +33,18 @@ public:
   double getWattMinAt(int pstate);
   double getWattMaxAt(int pstate);
 
-  xbt_dynar_t getWattsRangeList();
-  xbt_dynar_t power_range_watts_list;   /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
-  double watts_off;                      /*< Consumption when the machine is turned off (shutdown) */
-  double total_energy;					/*< Total energy consumed by the host */
-  double last_updated;					/*< Timestamp of the last energy update event*/
-  simgrid::surf::Host *host;
-
   void unref() {if (--refcount == 0) delete this;}
   void ref() {refcount++;}
+
+private:
+  void initWattsRangeList();
   int refcount = 1;
+  simgrid::surf::Host *host;
+  std::vector<power_range> power_range_watts_list;   /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
+public:
+  double watts_off = 0.0; /*< Consumption when the machine is turned off (shutdown) */
+  double total_energy = 0.0; /*< Total energy consumed by the host */
+  double last_updated;       /*< Timestamp of the last energy update event*/
 };
 
 XBT_PUBLIC(double) surf_host_get_wattmin_at(sg_host_t resource, int pstate);
