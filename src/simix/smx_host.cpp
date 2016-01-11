@@ -166,18 +166,6 @@ const char* SIMIX_host_self_get_name(void)
   return SIMIX_host_get_name(host);
 }
 
-xbt_dict_t SIMIX_host_get_properties(sg_host_t host){
-  return sg_host_get_properties(host);
-}
-
-
-xbt_swag_t SIMIX_host_get_process_list(sg_host_t host){
-  smx_host_priv_t host_priv = sg_host_simix(host);
-
-  return host_priv->process_list;
-}
-
-
 double SIMIX_host_get_current_power_peak(sg_host_t host) {
 	  return surf_host_get_current_power_peak(host);
 }

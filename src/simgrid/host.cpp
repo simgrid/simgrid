@@ -200,13 +200,15 @@ bool Host::isOff() {
 /** Get the properties assigned to a host */
 xbt_dict_t Host::getProperties()
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_host_get_properties, this));
+  return simgrid::simix::kernel(std::bind(sg_host_get_properties, this));
 }
 
 /** Get the processes attached to the host */
 xbt_swag_t Host::getProcessList()
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_host_get_process_list, this));
+  return simgrid::simix::kernel([&]() {
+    return ((smx_host_priv_t)this->extension(SIMIX_HOST_LEVEL))->process_list;
+  });
 }
 
 /** Get the peak power of a host */
