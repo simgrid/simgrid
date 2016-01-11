@@ -160,10 +160,15 @@ void xbt_ex_display(xbt_ex_t * e)
   if (e->used && e->bt_strings) {
     /* We have everything to build neat backtraces */
     int i;
+    int cutpath = 0;
+    TRY { // We don't want to have an exception while checking how to deal with the one we already have, do we?
+      cutpath = sg_cfg_get_boolean("exception/cutpath");
+    } CATCH_ANONYMOUS { }
 
     fprintf(stderr, "\n");
     for (i = 0; i < e->used; i++) {
-      if (sg_cfg_get_boolean("exception/cutpath")) {
+        
+      if (cutpath) {
         char* p = e->bt_strings[i];
         xbt_str_rtrim(p, ":0123456789");
         char* filename = strrchr(p, '/')+1;
