@@ -29,11 +29,11 @@ public:
   void suspend() override;
 private:
   /** A portable thread */
-  xbt_os_thread_t thread_;
+  xbt_os_thread_t thread_ = nullptr;
   /** Semaphore used to schedule/yield the process */
-  xbt_os_sem_t begin_;
+  xbt_os_sem_t begin_ = nullptr;
   /** Semaphore used to schedule/unschedule */
-  xbt_os_sem_t end_;
+  xbt_os_sem_t end_ = nullptr;
 private:
   static void* wrapper(void *param);
 };
