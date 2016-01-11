@@ -166,14 +166,6 @@ const char* SIMIX_host_self_get_name(void)
   return SIMIX_host_get_name(host);
 }
 
-double SIMIX_host_get_current_power_peak(sg_host_t host) {
-	  return surf_host_get_current_power_peak(host);
-}
-
-double SIMIX_host_get_power_peak_at(sg_host_t host, int pstate_index) {
-	  return surf_host_get_power_peak_at(host, pstate_index);
-}
-
 void _SIMIX_host_free_process_arg(void *data)
 {
   smx_process_arg_t arg = *(smx_process_arg_t*)data;
