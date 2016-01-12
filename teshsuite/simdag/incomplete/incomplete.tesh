@@ -1,7 +1,7 @@
 $ ${bindir:=.}/incomplete ../../../examples/platforms/two_hosts_platform_shared.xml "--log=root.fmt:[%10.6r]%e%m%n"
 > [  0.000000] Switching to the L07 model to handle parallel tasks.
 > [  8.000100] Simulation is finished but 3 tasks are still not done
-> [  8.000100] Task C is in SD_NOT_SCHEDULED state
 > [  8.000100] Task B is in SD_SCHEDULABLE state
+> [  8.000100] Task C is in SD_NOT_SCHEDULED state
 > [  8.000100] Task D is in SD_SCHEDULED state
 > [  8.000100] Simulation time: 8.000100

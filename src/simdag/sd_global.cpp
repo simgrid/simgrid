@@ -59,22 +59,10 @@ void SD_init(int *argc, char **argv)
 
   sd_global->task_mallocator=xbt_mallocator_new(65536, SD_task_new_f,SD_task_free_f,SD_task_recycle_f);
 
-  sd_global->not_scheduled_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->schedulable_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->scheduled_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->runnable_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->in_fifo_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->running_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->done_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->failed_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
+  sd_global->initial_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  sd_global->executable_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  sd_global->completed_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
+
   sd_global->return_set =
       xbt_swag_new(xbt_swag_offset(task, return_hookup));
   sd_global->task_number = 0;
@@ -125,52 +113,27 @@ void SD_config(const char *key, const char *value){
 void SD_application_reinit(void)
 {
 
-  s_SD_task_t task;
+//  s_SD_task_t task;
 
-  SD_task_t done_task, next_done_task;
+//  SD_task_t done_task, next_done_task;
   xbt_die("This function is not working since the C++ links and others. Please report the problem if you really need that function.");
 
    XBT_DEBUG("Recreating the swags...");
-  xbt_swag_free(sd_global->not_scheduled_task_set);
-  xbt_swag_free(sd_global->schedulable_task_set);
-  xbt_swag_free(sd_global->scheduled_task_set);
-  xbt_swag_free(sd_global->runnable_task_set);
-  xbt_swag_free(sd_global->in_fifo_task_set);
-  xbt_swag_free(sd_global->running_task_set);
-  xbt_swag_free(sd_global->failed_task_set);
 
-  sd_global->not_scheduled_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->schedulable_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  xbt_swag_foreach_safe(done_task, next_done_task, sd_global->done_task_set){
-    if (xbt_dynar_is_empty(done_task->tasks_before)){
-      __SD_task_set_state(done_task, SD_SCHEDULABLE);
-    } else{
-      __SD_task_set_state(done_task, SD_NOT_SCHEDULED);
-      done_task->unsatisfied_dependencies =
-        xbt_dynar_length(done_task->tasks_before);
-      done_task->is_not_ready = done_task->unsatisfied_dependencies;
-    }
-    free(done_task->workstation_list);
-    done_task->workstation_list = NULL;
-    done_task->workstation_nb = 0;
-  }
+//  xbt_swag_foreach_safe(done_task, next_done_task, sd_global->done_task_set){
+//    if (xbt_dynar_is_empty(done_task->tasks_before)){
+//      __SD_task_set_state(done_task, SD_SCHEDULABLE);
+//    } else{
+//      __SD_task_set_state(done_task, SD_NOT_SCHEDULED);
+//      done_task->unsatisfied_dependencies =
+//        xbt_dynar_length(done_task->tasks_before);
+//      done_task->is_not_ready = done_task->unsatisfied_dependencies;
+//    }
+//    free(done_task->workstation_list);
+//    done_task->workstation_list = NULL;
+//    done_task->workstation_nb = 0;
+//  }
 
-  xbt_swag_free(sd_global->done_task_set);
-
-  sd_global->scheduled_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->runnable_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->in_fifo_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->running_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->done_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
-  sd_global->failed_task_set =
-      xbt_swag_new(xbt_swag_offset(task, state_hookup));
   sd_global->task_number = 0;
 
 
@@ -260,7 +223,7 @@ xbt_dynar_t SD_simulate(double how_long) {
 xbt_swag_t SD_simulate_swag(double how_long) {
   double total_time = 0.0;      /* we stop the simulation when total_time >= how_long */
   double elapsed_time = 0.0;
-  SD_task_t task, task_safe, dst;
+  SD_task_t task, dst;
   SD_dependency_t dependency;
   surf_action_t action;
   unsigned int iter, depcnt;
@@ -279,10 +242,12 @@ xbt_swag_t SD_simulate_swag(double how_long) {
   xbt_swag_reset(sd_global->return_set);
 
   /* explore the runnable tasks */
-  xbt_swag_foreach_safe(task, task_safe, sd_global->runnable_task_set) {
+  xbt_dynar_foreach(sd_global->executable_task_set , iter, task) {
     XBT_VERB("Executing task '%s'", SD_task_get_name(task));
-    if (__SD_task_try_to_run(task))
+    if (__SD_task_try_to_run(task)){
       xbt_swag_insert(task,sd_global->return_set);
+      iter--;
+    }
   }
 
   /* main loop */
@@ -330,14 +295,15 @@ xbt_swag_t SD_simulate_swag(double how_long) {
              dst->is_not_ready);
 
           if (!(dst->unsatisfied_dependencies)) {
-            if (__SD_task_is_scheduled(dst))
-              __SD_task_set_state(dst, SD_RUNNABLE);
+            if (SD_task_get_state(dst) == SD_SCHEDULED)
+              SD_task_set_state(dst, SD_RUNNABLE);
             else
-              __SD_task_set_state(dst, SD_SCHEDULABLE);
+              SD_task_set_state(dst, SD_SCHEDULABLE);
           }
 
-          if (__SD_task_is_not_scheduled(dst) && !(dst->is_not_ready)) {
-            __SD_task_set_state(dst, SD_SCHEDULABLE);
+          if (SD_task_get_state(dst) == SD_NOT_SCHEDULED &&
+              !(dst->is_not_ready)) {
+            SD_task_set_state(dst, SD_SCHEDULABLE);
           }
 
           if (SD_task_get_kind(dst) == SD_TASK_COMM_E2E) {
@@ -345,7 +311,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
             SD_task_t comm_dst;
             xbt_dynar_get_cpy(dst->tasks_after, 0, &comm_dep);
             comm_dst = comm_dep->dst;
-            if (__SD_task_is_not_scheduled(comm_dst) &&
+            if (SD_task_get_state(comm_dst) == SD_NOT_SCHEDULED &&
                 comm_dst->is_not_ready > 0) {
               comm_dst->is_not_ready--;
 
@@ -354,13 +320,13 @@ xbt_swag_t SD_simulate_swag(double how_long) {
                comm_dst->is_not_ready);
 
               if (!(comm_dst->is_not_ready)) {
-                __SD_task_set_state(comm_dst, SD_SCHEDULABLE);
+                SD_task_set_state(comm_dst, SD_SCHEDULABLE);
               }
             }
           }
 
           /* is dst runnable now? */
-          if (__SD_task_is_runnable(dst)
+          if (SD_task_get_state(dst) == SD_RUNNABLE
               && !sd_global->watch_point_reached) {
             XBT_VERB("Executing task '%s'", SD_task_get_name(dst));
             if (__SD_task_try_to_run(dst))
@@ -375,7 +341,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
         task->start_time = surf_action_get_start_time(task->surf_action);
         task->finish_time = surf_get_clock();
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
-        __SD_task_set_state(task, SD_FAILED);
+        SD_task_set_state(task, SD_FAILED);
         action->unref();
         task->surf_action = NULL;
 
@@ -385,18 +351,19 @@ xbt_swag_t SD_simulate_swag(double how_long) {
   }
 
   if (!sd_global->watch_point_reached && how_long<0){
-    if (xbt_swag_size(sd_global->done_task_set) < sd_global->task_number){
+    if ((int) xbt_dynar_length(sd_global->completed_task_set) <
+         sd_global->task_number){
         XBT_WARN("Simulation is finished but %d tasks are still not done",
-            (sd_global->task_number - xbt_swag_size(sd_global->done_task_set)));
-        xbt_swag_foreach_safe (task, task_safe,sd_global->not_scheduled_task_set){
-                XBT_WARN("%s is in SD_NOT_SCHEDULED state", SD_task_get_name(task));
-    }
-      xbt_swag_foreach_safe (task, task_safe,sd_global->schedulable_task_set){
-                XBT_WARN("%s is in SD_SCHEDULABLE state", SD_task_get_name(task));
-  }
-        xbt_swag_foreach_safe (task, task_safe,sd_global->scheduled_task_set){
-                XBT_WARN("%s is in SD_SCHEDULED state", SD_task_get_name(task));
-         }
+            (sd_global->task_number -
+             (int) xbt_dynar_length(sd_global->completed_task_set)));
+        static const char* state_names[] =
+              { "SD_NOT_SCHEDULED", "SD_SCHEDULABLE", "SD_SCHEDULED",
+                "SD_RUNNABLE", "SD_IN_INFO", "SD_RUNNING", "SD_DONE",
+                "SD_FAILED" };
+        xbt_dynar_foreach(sd_global->initial_task_set, iter, task){
+          XBT_WARN("%s is in %s state", SD_task_get_name(task),
+                   state_names[SD_task_get_state(task)]);
+        }
     }
   }
 
@@ -436,14 +403,9 @@ void SD_exit(void)
   xbt_free(sd_global->recyclable_route);
 
   XBT_DEBUG("Destroying the swags...");
-  xbt_swag_free(sd_global->not_scheduled_task_set);
-  xbt_swag_free(sd_global->schedulable_task_set);
-  xbt_swag_free(sd_global->scheduled_task_set);
-  xbt_swag_free(sd_global->runnable_task_set);
-  xbt_swag_free(sd_global->in_fifo_task_set);
-  xbt_swag_free(sd_global->running_task_set);
-  xbt_swag_free(sd_global->done_task_set);
-  xbt_swag_free(sd_global->failed_task_set);
+  xbt_dynar_free_container(&(sd_global->initial_task_set));
+  xbt_dynar_free_container(&(sd_global->executable_task_set));
+  xbt_dynar_free_container(&(sd_global->completed_task_set));
   xbt_swag_free(sd_global->return_set);
 
   TRACE_end();

@@ -33,11 +33,8 @@ void SD_task_recycle_f(void *t)
 
   /* Reset the content */
   task->kind = SD_TASK_NOT_TYPED;
-  task->state_hookup.prev = NULL;
-  task->state_hookup.next = NULL;
-  task->state_set = sd_global->not_scheduled_task_set;
-  xbt_swag_insert(task, task->state_set);
-  task->state = SD_NOT_SCHEDULED;
+  task->state= SD_NOT_SCHEDULED;
+  xbt_dynar_push(sd_global->initial_task_set,&task);
   task->return_hookup.prev = NULL;
   task->return_hookup.next = NULL;
 
@@ -241,8 +238,6 @@ void SD_task_destroy(SD_task_t task)
   /* if the task was scheduled or runnable we have to free the scheduling parameters */
   if (__SD_task_is_scheduled_or_runnable(task))
     __SD_task_destroy_scheduling_data(task);
-  if (task->state_set != NULL) /* would be null if just created */
-    xbt_swag_remove(task, task->state_set);
 
   xbt_swag_remove(task, sd_global->return_set);
 
@@ -331,31 +326,50 @@ e_SD_task_state_t SD_task_get_state(SD_task_t task)
 
 /* Changes the state of a task. Updates the swags and the flag sd_global->watch_point_reached.
  */
-void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
+void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 {
-  xbt_swag_remove(task, task->state_set);
+  int idx;
   switch (new_state) {
   case SD_NOT_SCHEDULED:
-    task->state_set = sd_global->not_scheduled_task_set;
-    break;
   case SD_SCHEDULABLE:
-    task->state_set = sd_global->schedulable_task_set;
+    if (SD_task_get_state(task) == SD_FAILED){
+        xbt_dynar_remove_at(sd_global->completed_task_set,
+            xbt_dynar_search(sd_global->completed_task_set, &task), &task);
+        xbt_dynar_push(sd_global->initial_task_set,&task);
+    }
     break;
   case SD_SCHEDULED:
-    task->state_set = sd_global->scheduled_task_set;
-    break;
-  case SD_RUNNABLE:
-    task->state_set = sd_global->runnable_task_set;
+    if (SD_task_get_state(task) == SD_RUNNABLE){
+      xbt_dynar_remove_at(sd_global->executable_task_set,
+          xbt_dynar_search(sd_global->executable_task_set, &task), &task);
+      xbt_dynar_push(sd_global->initial_task_set,&task);
+    }
     break;
   case SD_IN_FIFO:
-    task->state_set = sd_global->in_fifo_task_set;
+    xbt_dynar_remove_at(sd_global->executable_task_set,
+       xbt_dynar_search(sd_global->executable_task_set, &task), &task);
+    xbt_dynar_push(sd_global->initial_task_set,&task);
+    break;
+  case SD_RUNNABLE:
+    idx = xbt_dynar_search_or_negative(sd_global->initial_task_set, &task);
+    if (idx >= 0) {
+      xbt_dynar_remove_at(sd_global->initial_task_set, idx, &task);
+      xbt_dynar_push(sd_global->executable_task_set,&task);
+    }
     break;
   case SD_RUNNING:
-    task->state_set = sd_global->running_task_set;
-    task->start_time = task->surf_action->getStartTime();
+    if (SD_task_get_state(task) == SD_RUNNABLE){
+      xbt_dynar_remove_at(sd_global->executable_task_set,
+         xbt_dynar_search(sd_global->executable_task_set, &task), &task);
+    } else {
+      if (SD_task_get_state(task) == SD_IN_FIFO){
+        xbt_dynar_remove_at(sd_global->initial_task_set,
+            xbt_dynar_search(sd_global->initial_task_set, &task), &task);
+      }
+    }
     break;
   case SD_DONE:
-    task->state_set = sd_global->done_task_set;
+    xbt_dynar_push(sd_global->completed_task_set,&task);
     task->finish_time = task->surf_action->getFinishTime();
     task->remains = 0;
 #ifdef HAVE_JEDULE
@@ -363,12 +377,12 @@ void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 #endif
     break;
   case SD_FAILED:
-    task->state_set = sd_global->failed_task_set;
+    xbt_dynar_push(sd_global->completed_task_set,&task);
     break;
   default:
     xbt_die( "Invalid state");
   }
-  xbt_swag_insert(task, task->state_set);
+
   task->state = new_state;
 
   if (task->watch_points & new_state) {
@@ -636,6 +650,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
   int found = 0;
   unsigned long i;
   SD_dependency_t dependency;
+  e_SD_task_state_t state;
 
   dynar = src->tasks_after;
   length = xbt_dynar_length(dynar);
@@ -645,18 +660,19 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
            "Cannot add a dependency between task '%s' and itself",
            SD_task_get_name(src));
 
-  if (!__SD_task_is_not_scheduled(src) && !__SD_task_is_schedulable(src)
-      && !__SD_task_is_scheduled_or_runnable(src) && !__SD_task_is_running(src))
+  state = SD_task_get_state(src);
+  if (state != SD_NOT_SCHEDULED && state != SD_SCHEDULABLE &&
+      state != SD_RUNNING && !__SD_task_is_scheduled_or_runnable(src))
     THROWF(arg_error, 0,
-           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED or SD_RUNNABLE"
-     " or SD_RUNNING",
-           SD_task_get_name(src));
+           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED,"
+           " SD_RUNNABLE or SD_RUNNING", SD_task_get_name(src));
 
-  if (!__SD_task_is_not_scheduled(dst) && !__SD_task_is_schedulable(dst)
-      && !__SD_task_is_scheduled_or_runnable(dst))
+  state = SD_task_get_state(dst);
+  if (state != SD_NOT_SCHEDULED && state != SD_SCHEDULABLE &&
+      !__SD_task_is_scheduled_or_runnable(dst))
     THROWF(arg_error, 0,
-           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED or SD_RUNNABLE",
-           SD_task_get_name(dst));
+           "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED,"
+           "or SD_RUNNABLE", SD_task_get_name(dst));
 
   XBT_DEBUG("SD_task_dependency_add: src = %s, dst = %s",
          SD_task_get_name(src), SD_task_get_name(dst));
@@ -688,11 +704,11 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
 
   /* if the task was runnable, then dst->tasks_before is not empty anymore,
      so we must go back to state SD_SCHEDULED */
-  if (__SD_task_is_runnable(dst)) {
+  if (SD_task_get_state(dst) == SD_RUNNABLE) {
     XBT_DEBUG
         ("SD_task_dependency_add: %s was runnable and becomes scheduled!",
          SD_task_get_name(dst));
-    __SD_task_set_state(dst, SD_SCHEDULED);
+    SD_task_set_state(dst, SD_SCHEDULED);
   }
 }
 /**
@@ -803,14 +819,14 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
   /* if the task was scheduled and dst->tasks_before is empty now, we can make it runnable */
 
   if (dst->unsatisfied_dependencies == 0) {
-    if (__SD_task_is_scheduled(dst))
-      __SD_task_set_state(dst, SD_RUNNABLE);
+    if (SD_task_get_state(dst) == SD_SCHEDULED)
+      SD_task_set_state(dst, SD_RUNNABLE);
     else
-      __SD_task_set_state(dst, SD_SCHEDULABLE);
+      SD_task_set_state(dst, SD_SCHEDULABLE);
   }
 
   if (dst->is_not_ready == 0)
-    __SD_task_set_state(dst, SD_SCHEDULABLE);
+    SD_task_set_state(dst, SD_SCHEDULABLE);
 
   /*  __SD_print_dependencies(src);
      __SD_print_dependencies(dst); */
@@ -846,29 +862,6 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
   return dependency->data;
 }
 
-/* temporary function for debugging */
-static void __SD_print_watch_points(SD_task_t task)
-{
-  static const int state_masks[] =
-      { SD_SCHEDULABLE, SD_SCHEDULED, SD_RUNNING, SD_RUNNABLE, SD_DONE,
-    SD_FAILED
-  };
-  static const char *state_names[] =
-      { "schedulable", "scheduled", "running", "runnable", "done",
-    "failed"
-  };
-  int i;
-
-  XBT_INFO("Task '%s' watch points (%x): ", SD_task_get_name(task),
-        task->watch_points);
-
-
-  for (i = 0; i < 5; i++) {
-    if (task->watch_points & state_masks[i])
-      XBT_INFO("%s ", state_names[i]);
-  }
-}
-
 /**
  * \brief Adds a watch point to a task
  *
@@ -888,7 +881,6 @@ void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
            "Cannot add a watch point for state SD_NOT_SCHEDULED");
 
   task->watch_points = task->watch_points | state;
-  /*  __SD_print_watch_points(task); */
 }
 
 /**
@@ -904,7 +896,6 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
               "SimDag error: Cannot have a watch point for state SD_NOT_SCHEDULED");
 
   task->watch_points = task->watch_points & ~state;
-  /*  __SD_print_watch_points(task); */
 }
 
 /**
@@ -959,15 +950,15 @@ double SD_task_get_execution_time(SD_task_t task,
 
 static XBT_INLINE void SD_task_do_schedule(SD_task_t task)
 {
-  if (!__SD_task_is_not_scheduled(task) && !__SD_task_is_schedulable(task))
+  if (SD_task_get_state(task) > SD_SCHEDULABLE)
     THROWF(arg_error, 0, "Task '%s' has already been scheduled",
            SD_task_get_name(task));
 
   /* update the task state */
   if (task->unsatisfied_dependencies == 0)
-    __SD_task_set_state(task, SD_RUNNABLE);
+    SD_task_set_state(task, SD_RUNNABLE);
   else
-    __SD_task_set_state(task, SD_SCHEDULED);
+    SD_task_set_state(task, SD_SCHEDULED);
 }
 
 /**
@@ -1037,10 +1028,10 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
  */
 void SD_task_unschedule(SD_task_t task)
 {
-  if (task->state_set != sd_global->scheduled_task_set &&
-      task->state_set != sd_global->runnable_task_set &&
-      task->state_set != sd_global->running_task_set &&
-      task->state_set != sd_global->failed_task_set)
+  if (task->state != SD_SCHEDULED &&
+      task->state != SD_RUNNABLE &&
+      task->state != SD_RUNNING &&
+      task->state != SD_FAILED)
     THROWF(arg_error, 0,
            "Task %s: the state must be SD_SCHEDULED, SD_RUNNABLE, SD_RUNNING or SD_FAILED",
            SD_task_get_name(task));
@@ -1054,13 +1045,14 @@ void SD_task_unschedule(SD_task_t task)
     task->workstation_nb = 0;
   }
 
-  if (__SD_task_is_running(task))       /* the task should become SD_FAILED */
-	task->surf_action->cancel();
+  if (SD_task_get_state(task) == SD_RUNNING)
+    /* the task should become SD_FAILED */
+    task->surf_action->cancel();
   else {
     if (task->unsatisfied_dependencies == 0)
-      __SD_task_set_state(task, SD_SCHEDULABLE);
+      SD_task_set_state(task, SD_SCHEDULABLE);
     else
-      __SD_task_set_state(task, SD_NOT_SCHEDULED);
+      SD_task_set_state(task, SD_NOT_SCHEDULED);
   }
   task->remains = task->amount;
   task->start_time = -1.0;
@@ -1072,7 +1064,7 @@ void SD_task_unschedule(SD_task_t task)
 static void __SD_task_destroy_scheduling_data(SD_task_t task)
 {
   if (!__SD_task_is_scheduled_or_runnable(task)
-      && !__SD_task_is_in_fifo(task))
+      && SD_task_get_state(task) != SD_IN_FIFO)
     THROWF(arg_error, 0,
            "Task '%s' must be SD_SCHEDULED, SD_RUNNABLE or SD_IN_FIFO",
            SD_task_get_name(task));
@@ -1145,8 +1137,9 @@ void __SD_task_really_run(SD_task_t task)
     TRACE_surf_action(task->surf_action, task->category);
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
-  __SD_task_set_state(task, SD_RUNNING);
-  xbt_assert(__SD_task_is_running(task), "Bad state of task '%s': %d",
+  SD_task_set_state(task, SD_RUNNING);
+  xbt_assert(SD_task_get_state(task) == SD_RUNNING,
+             "Bad state of task '%s': %d",
              SD_task_get_name(task), (int)SD_task_get_state(task));
 
 }
@@ -1165,7 +1158,7 @@ int __SD_task_try_to_run(SD_task_t task)
   int i;
   SD_workstation_t workstation;
 
-  xbt_assert(__SD_task_is_runnable(task),
+  xbt_assert(SD_task_get_state(task) == SD_RUNNABLE,
               "Task '%s' is not runnable! Task state: %d",
              SD_task_get_name(task), (int)SD_task_get_state(task));
 
@@ -1187,9 +1180,7 @@ int __SD_task_try_to_run(SD_task_t task)
         xbt_fifo_push(sg_host_sd(workstation)->task_fifo, task);
       }
     }
-    __SD_task_set_state(task, SD_IN_FIFO);
-    xbt_assert(__SD_task_is_in_fifo(task), "Bad state of task '%s': %d",
-               SD_task_get_name(task), (int)SD_task_get_state(task));
+    SD_task_set_state(task, SD_IN_FIFO);
     XBT_DEBUG("Task '%s' state is now SD_IN_FIFO", SD_task_get_name(task));
   } else {
     __SD_task_really_run(task);
@@ -1213,7 +1204,7 @@ void __SD_task_just_done(SD_task_t task)
   SD_task_t *candidates;
   int can_start = 1;
 
-  xbt_assert(__SD_task_is_running(task),
+  xbt_assert(SD_task_get_state(task)== SD_RUNNING,
               "The task must be running! Task state: %d",
               (int)SD_task_get_state(task));
   xbt_assert(task->workstation_list != NULL,
@@ -1223,7 +1214,7 @@ void __SD_task_just_done(SD_task_t task)
 
   candidates = xbt_new(SD_task_t, 8);
 
-  __SD_task_set_state(task, SD_DONE);
+  SD_task_set_state(task, SD_DONE);
   task->surf_action->unref();
   task->surf_action = NULL;
 
@@ -1234,8 +1225,10 @@ void __SD_task_just_done(SD_task_t task)
   for (i = 0; i < task->workstation_nb; i++) {
     workstation = task->workstation_list[i];
     XBT_DEBUG("Workstation '%s': access_mode = %d",
-              SD_workstation_get_name(workstation), (int)sg_host_sd(workstation)->access_mode);
-    if (sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
+              SD_workstation_get_name(workstation),
+              (int)sg_host_sd(workstation)->access_mode);
+    if (sg_host_sd(workstation)->access_mode ==
+        SD_WORKSTATION_SEQUENTIAL_ACCESS) {
       xbt_assert(sg_host_sd(workstation)->task_fifo != NULL,
                   "Workstation '%s' has sequential access but no FIFO!",
                   SD_workstation_get_name(workstation));
@@ -1254,7 +1247,7 @@ void __SD_task_just_done(SD_task_t task)
 
       if (candidate != NULL) {
         XBT_DEBUG("Candidate: '%s'", SD_task_get_name(candidate));
-        xbt_assert(__SD_task_is_in_fifo(candidate),
+        xbt_assert(SD_task_get_state(candidate) == SD_IN_FIFO,
                     "Bad state of candidate '%s': %d",
                     SD_task_get_name(candidate),
                     (int)SD_task_get_state(candidate));
@@ -1295,7 +1288,7 @@ void __SD_task_just_done(SD_task_t task)
       continue;                 /* we have already evaluated that task */
     }
 
-    xbt_assert(__SD_task_is_in_fifo(candidate),
+    xbt_assert(SD_task_get_state(candidate) == SD_IN_FIFO,
                 "Bad state of candidate '%s': %d",
                SD_task_get_name(candidate), (int)SD_task_get_state(candidate));
 
@@ -1321,11 +1314,14 @@ void __SD_task_just_done(SD_task_t task)
         /* update the FIFO */
         if (sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
           candidate = (SD_task_t)xbt_fifo_shift(sg_host_sd(workstation)->task_fifo);   /* the return value is stored just for debugging */
-          XBT_DEBUG("Head of the FIFO: '%s'",
+          XBT_DEBUG("Head of the FIFO: '%s' on workstation %s (%d task left)",
                  (candidate !=
-                  NULL) ? SD_task_get_name(candidate) : "NULL");
+                  NULL) ? SD_task_get_name(candidate) : "NULL",
+                  SD_workstation_get_name(workstation),
+                  xbt_fifo_size(sg_host_sd(workstation)->task_fifo));
           xbt_assert(candidate == candidates[i],
                       "Error in __SD_task_just_done: bad first task in the FIFO");
+
         }
       }                         /* for each workstation */
 
@@ -1335,10 +1331,9 @@ void __SD_task_just_done(SD_task_t task)
       __SD_task_really_run(candidate);
 
       XBT_DEBUG
-          ("Calling __SD_task_is_running: task '%s', state set: %p, running_task_set: %p, is running: %d",
-           SD_task_get_name(candidate), candidate->state_set,
-           sd_global->running_task_set, __SD_task_is_running(candidate));
-      xbt_assert(__SD_task_is_running(candidate),
+          ("Calling __SD_task_is_running: task '%s', state set: %d",
+           SD_task_get_name(candidate), candidate->state);
+      xbt_assert(SD_task_get_state(candidate) == SD_RUNNING,
                   "Bad state of task '%s': %d",
                   SD_task_get_name(candidate),
                  (int)SD_task_get_state(candidate));
@@ -1502,8 +1497,7 @@ void SD_task_schedulev(SD_task_t task, int count,
         before->workstation_list[1] = task->workstation_list[0];
 
         if (before->workstation_list[0] &&
-            (__SD_task_is_schedulable(before)
-             || __SD_task_is_not_scheduled(before))) {
+            (SD_task_get_state(before)< SD_SCHEDULED)) {
           SD_task_do_schedule(before);
           XBT_VERB
               ("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
@@ -1519,8 +1513,7 @@ void SD_task_schedulev(SD_task_t task, int count,
       if (after->kind == SD_TASK_COMM_E2E) {
         after->workstation_list[0] = task->workstation_list[0];
         if (after->workstation_list[1]
-            && (__SD_task_is_not_scheduled(after)
-                || __SD_task_is_schedulable(after))) {
+            && (SD_task_get_state(after)< SD_SCHEDULED)) {
           SD_task_do_schedule(after);
           XBT_VERB
               ("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
@@ -1596,8 +1589,7 @@ void SD_task_schedulev(SD_task_t task, int count,
             }
           }
 
-          if (__SD_task_is_schedulable(before) ||
-              __SD_task_is_not_scheduled(before)) {
+          if (SD_task_get_state(before)< SD_SCHEDULED) {
             SD_task_do_schedule(before);
             XBT_VERB
               ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",
@@ -1660,8 +1652,7 @@ void SD_task_schedulev(SD_task_t task, int count,
             }
           }
 
-          if (__SD_task_is_schedulable(after) ||
-              __SD_task_is_not_scheduled(after)) {
+          if (SD_task_get_state(after)< SD_SCHEDULED) {
             SD_task_do_schedule(after);
             XBT_VERB
             ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",

@@ -33,15 +33,9 @@ typedef struct SD_global {
 
   int watch_point_reached;      /* has a task just reached a watch point? */
 
-  /* task state sets */
-  xbt_swag_t not_scheduled_task_set;
-  xbt_swag_t schedulable_task_set;
-  xbt_swag_t scheduled_task_set;
-  xbt_swag_t runnable_task_set;
-  xbt_swag_t in_fifo_task_set;
-  xbt_swag_t running_task_set;
-  xbt_swag_t done_task_set;
-  xbt_swag_t failed_task_set;
+  xbt_dynar_t initial_task_set;
+  xbt_dynar_t executable_task_set;
+  xbt_dynar_t completed_task_set;
 
   xbt_swag_t return_set;
   int task_number;
@@ -72,9 +66,7 @@ static inline SD_storage_priv_t SD_storage_priv(SD_storage_t storage){
 
 /* Task */
 typedef struct SD_task {
-  s_xbt_swag_hookup_t state_hookup;
   s_xbt_swag_hookup_t return_hookup;
-  xbt_swag_t state_set;
   e_SD_task_state_t state;
   void *data;                   /* user data */
   char *name;
@@ -125,7 +117,7 @@ XBT_PRIVATE SD_workstation_t __SD_workstation_create(const char* name);
 XBT_PRIVATE void __SD_workstation_destroy(void *workstation);
 XBT_PRIVATE int __SD_workstation_is_busy(SD_workstation_t workstation);
 
-XBT_PRIVATE void __SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
+XBT_PRIVATE void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
 XBT_PRIVATE void __SD_task_really_run(SD_task_t task);
 XBT_PRIVATE void __SD_task_just_done(SD_task_t task);
 XBT_PRIVATE int __SD_task_try_to_run(SD_task_t task);
@@ -141,58 +133,19 @@ XBT_PRIVATE void SD_task_free_f(void *t);
 /* Returns whether the given task is scheduled or runnable. */
 static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
 {
-  return task->state_set == sd_global->scheduled_task_set ||
-      task->state_set == sd_global->runnable_task_set;
+  return task->state == SD_SCHEDULED || task->state == SD_RUNNABLE;
 }
 
 /* Returns whether the given task is scheduled or runnable. */
 static XBT_INLINE int __SD_task_is_schedulable_or_done(SD_task_t task)
 {
-  return task->state_set == sd_global->schedulable_task_set ||
-      task->state_set == sd_global->done_task_set;
-}
-
-/* Returns whether the state of the given task is SD_NOT_SCHEDULED. */
-static XBT_INLINE int __SD_task_is_not_scheduled(SD_task_t task)
-{
-  return task->state_set == sd_global->not_scheduled_task_set;
-}
-
-/* Returns whether the state of the given task is SD_SCHEDULED. */
-static XBT_INLINE int __SD_task_is_schedulable(SD_task_t task)
-{
-  return task->state_set == sd_global->schedulable_task_set;
-}
-
-/* Returns whether the state of the given task is SD_SCHEDULED. */
-static XBT_INLINE int __SD_task_is_scheduled(SD_task_t task)
-{
-  return task->state_set == sd_global->scheduled_task_set;
-}
-
-/* Returns whether the state of the given task is SD_RUNNABLE. */
-static XBT_INLINE int __SD_task_is_runnable(SD_task_t task)
-{
-  return task->state_set == sd_global->runnable_task_set;
-}
-
-/* Returns whether the state of the given task is SD_IN_FIFO. */
-static XBT_INLINE int __SD_task_is_in_fifo(SD_task_t task)
-{
-  return task->state_set == sd_global->in_fifo_task_set;
+  return task->state == SD_SCHEDULABLE || task->state == SD_DONE;
 }
 
 /* Returns whether the state of the given task is SD_RUNNABLE or SD_IN_FIFO. */
 static XBT_INLINE int __SD_task_is_runnable_or_in_fifo(SD_task_t task)
 {
-  return task->state_set == sd_global->runnable_task_set ||
-      task->state_set == sd_global->in_fifo_task_set;
-}
-
-/* Returns whether the state of the given task is SD_RUNNING. */
-static XBT_INLINE int __SD_task_is_running(SD_task_t task)
-{
-  return task->state_set == sd_global->running_task_set;
+  return task->state == SD_RUNNABLE || task->state == SD_IN_FIFO;
 }
 
 /********** Storage **********/
