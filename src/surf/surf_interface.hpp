@@ -33,10 +33,10 @@ namespace surf {
   private:
     sigc::signal<R, P...> sig_;
   public:
-    template<class T> XBT_ALWAYS_INLINE
-    void connect(T&& slot)
+    template<class U> XBT_ALWAYS_INLINE
+    void connect(U&& slot)
     {
-      sig_.connect(std::forward<T>(slot));
+      sig_.connect(std::forward<U>(slot));
     }
     template<class Res, class... Args> XBT_ALWAYS_INLINE
     void connect(Res(*slot)(Args...))
