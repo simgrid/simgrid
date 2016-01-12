@@ -95,7 +95,7 @@ void Host::classInit()
   }
 }
 
-Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
+Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
 		                 xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name)
  , PropertyHolder(props)
@@ -104,7 +104,7 @@ Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
   p_params.ramsize = 0;
 }
 
-Host::Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
+Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
 				         xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name, constraint)
  , PropertyHolder(props)

@@ -197,8 +197,6 @@ typedef enum {
 
 XBT_PUBLIC_DATA(routing_platf_t) routing_platf;
 
-XBT_PUBLIC(surf_host_t) surf_host_resource_priv(sg_host_t host);
-
 static inline void *surf_storage_resource_priv(const void *storage){
   return (void*)xbt_lib_get_level((xbt_dictelm_t)storage, SURF_STORAGE_LEVEL);
 }
@@ -422,34 +420,6 @@ XBT_PUBLIC(void) surf_vm_set_bound(sg_host_t resource, double bound);
  * @param mask [description]
  */
 XBT_PUBLIC(void) surf_vm_set_affinity(sg_host_t resource, sg_host_t cpu, unsigned long mask);
-
-/**
- * @brief Get the host power peak
- * @details [long description]
- *
- * @param host The surf host
- * @return The power peak
- */
-XBT_PUBLIC(double) surf_host_get_current_power_peak(sg_host_t host);
-
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param host [description]
- * @param pstate_index [description]
- *
- * @return [description]
- */
-XBT_PUBLIC(double) surf_host_get_power_peak_at(sg_host_t host, int pstate_index);
-
-/**
- * @brief Get the list of storages mounted on an host
- *
- * @param host The surf host
- * @return Dictionary of mount point, Storage
- */
-XBT_PUBLIC(xbt_dict_t) surf_host_get_mounted_storage_list(sg_host_t host);
 
 /**
  * @brief Get the list of storages attached to an host
@@ -700,8 +670,6 @@ XBT_PUBLIC(xbt_dict_t) surf_storage_action_get_ls_dict(surf_action_t action);
  * may not exist.
  */
 XBT_PUBLIC(const char * ) surf_storage_get_host(surf_resource_t resource);
-
-XBT_PUBLIC(surf_host_model_t) surf_host_get_model(sg_host_t host);
 
 /** @} */
 

@@ -62,7 +62,7 @@ public:
    * @param netElm The RoutingEdge associated to this VM
    * @param cpu The Cpu associated to this VM
    */
-  VirtualMachine(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
+  VirtualMachine(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
 		        simgrid::Host *host);
 
   /** @brief Destructor */

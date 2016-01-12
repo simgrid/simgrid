@@ -94,7 +94,7 @@ public:
    * @param storage The Storage associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
+  Host(HostModel *model, const char *name, xbt_dict_t props,
 		      xbt_dynar_t storage, Cpu *cpu);
 
   /**
@@ -107,7 +107,7 @@ public:
    * @param storage The Storage associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  Host(simgrid::surf::Model *model, const char *name, xbt_dict_t props,
+  Host(HostModel *model, const char *name, xbt_dict_t props,
       lmm_constraint_t constraint, xbt_dynar_t storage, Cpu *cpu);
 
   /* Host destruction logic */
@@ -121,6 +121,10 @@ private:
 
 
 public:
+  HostModel *getModel()
+  {
+    return static_cast<HostModel*>(Resource::getModel());
+  }
   void attach(simgrid::Host* host);
 
   bool isOn() override;

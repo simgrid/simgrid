@@ -216,15 +216,17 @@ xbt_swag_t Host::getProcessList()
 /** Get the peak power of a host */
 double Host::getCurrentPowerPeak()
 {
-  return simgrid::simix::kernel(
-    std::bind(surf_host_get_current_power_peak, this));
+  return simgrid::simix::kernel([&] {
+    return this->pimpl_cpu->getCurrentPowerPeak();
+  });
 }
 
 /** Get one power peak (in flops/s) of a host at a given pstate */
 double Host::getPowerPeakAt(int pstate_index)
 {
-  return simgrid::simix::kernel(
-    std::bind(surf_host_get_power_peak_at, this, pstate_index));
+  return simgrid::simix::kernel([&] {
+    return this->pimpl_cpu->getPowerPeakAt(pstate_index);
+  });
 }
 
 /** @brief Get the speed of the cpu associated to a host */

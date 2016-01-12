@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/surf/host_interface.hpp"
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
 #include "simgrid/Host.hpp"
@@ -460,7 +461,7 @@ void SD_workstation_set_access_mode(SD_workstation_t workstation,
  * \return a dynar containing all mounted storages on the workstation
  */
 xbt_dict_t SD_workstation_get_mounted_storage_list(SD_workstation_t workstation){
-  return surf_host_get_mounted_storage_list(workstation);
+  return workstation->extension<simgrid::surf::Host>()->getMountedStorageList();
 }
 
 /**

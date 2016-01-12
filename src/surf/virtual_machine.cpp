@@ -33,7 +33,7 @@ VMModel::vm_list_t VMModel::ws_vms;
  * Resource *
  ************/
 
-VirtualMachine::VirtualMachine(Model *model, const char *name, xbt_dict_t props, simgrid::Host *hostPM)
+VirtualMachine::VirtualMachine(HostModel *model, const char *name, xbt_dict_t props, simgrid::Host *hostPM)
 : Host(model, name, props, NULL, NULL, NULL)
 , p_hostPM(hostPM)
 {

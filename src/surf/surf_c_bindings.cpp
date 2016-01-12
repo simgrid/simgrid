@@ -169,13 +169,6 @@ void routing_get_route_and_latency(sg_netcard_t src, sg_netcard_t dst,
  * MODEL *
  *********/
 
-surf_host_model_t surf_host_get_model(sg_host_t host)
-{
-  simgrid::surf::Host* surf_host =
-    (simgrid::surf::Host*) host->extension<simgrid::surf::Host>();
-  return (surf_host_model_t) surf_host->getModel();
-}
-
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
   if (model->getDoneActionSet()->empty())
 	return NULL;
@@ -248,19 +241,6 @@ surf_action_t surf_host_sleep(sg_host_t host, double duration){
 
 double surf_host_get_available_speed(sg_host_t host){
   return host->pimpl_cpu->getAvailableSpeed();
-}
-
-double surf_host_get_current_power_peak(sg_host_t host){
-  return host->pimpl_cpu->getCurrentPowerPeak();
-}
-
-double surf_host_get_power_peak_at(sg_host_t host, int pstate_index){
-  return host->pimpl_cpu->getPowerPeakAt(pstate_index);
-}
-
-
-xbt_dict_t surf_host_get_mounted_storage_list(sg_host_t host){
-  return get_casted_host(host)->getMountedStorageList();
 }
 
 xbt_dynar_t surf_host_get_attached_storage_list(sg_host_t host){
@@ -455,8 +435,4 @@ double surf_network_action_get_latency_limited(surf_action_t action) {
 
 surf_file_t surf_storage_action_get_file(surf_action_t action){
   return static_cast<simgrid::surf::StorageAction*>(action)->p_file;
-}
-
-surf_host_t surf_host_resource_priv(sg_host_t host) {
-  return host->extension<simgrid::surf::Host>();
 }
