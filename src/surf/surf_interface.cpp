@@ -318,6 +318,7 @@ void surf_init(int *argc, char **argv)
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");
+  simgrid::surf::Host::classInit();
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);

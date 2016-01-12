@@ -84,6 +84,7 @@ public:
   static simgrid::surf::signal<void(Host*)> onStateChange; /** Called when the machine is turned on or off */
 
 public:
+  static void classInit(); // must be called before the first use of that class
   /**
    * @brief Host constructor
    *
