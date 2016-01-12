@@ -110,7 +110,9 @@ typedef struct SD_dependency {
 } s_SD_dependency_t, *SD_dependency_t;
 
 /* SimDag private functions */
-XBT_PUBLIC(xbt_swag_t) SD_simulate_swag(double how_long); /* could be public, but you need to see the internals of the SD_task_t to use it */
+
+/* could be public, but you need to see the SD_task_t internals to use it */
+XBT_PRIVATE xbt_swag_t SD_simulate_swag(double how_long);
 
 
 XBT_PRIVATE SD_workstation_t __SD_workstation_create(const char* name);
