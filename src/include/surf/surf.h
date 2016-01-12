@@ -247,25 +247,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_running_action_set(surf_model_t mod
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 
-/**
- * @brief Execute a parallel task
- * @details [long description]
- *
- * @param model The model which handle the parallelisation
- * @param host_nb The number of hosts
- * @param host_list The list of hosts on which the task is executed
- * @param flops_amount The processing amount (in flop) needed to process
- * @param bytes_amount The amount of data (in bytes) needed to transfer
- * @param rate [description]
- * @return The action corresponding to the parallele execution task
- */
-XBT_PUBLIC(surf_action_t) surf_host_model_execute_parallel_task(surf_host_model_t model,
-		                                    int host_nb,
-                                        sg_host_t *host_list,
-                                            double *flops_amount,
-                                            double *bytes_amount,
-                                            double rate);
-
 /** @brief Get the route (dynar of sg_link_t) between two hosts */
 XBT_PUBLIC(xbt_dynar_t) surf_host_model_get_route(
   surf_host_model_t model, sg_host_t src, sg_host_t dst);

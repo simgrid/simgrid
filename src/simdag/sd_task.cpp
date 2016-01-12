@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/surf/surf_interface.hpp"
+#include "src/surf/host_interface.hpp"
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
 #include "xbt/sysdep.h"
@@ -1133,12 +1134,8 @@ void __SD_task_really_run(SD_task_t task)
     memcpy(bytes_amount, task->bytes_amount,
            sizeof(double) * host_nb * host_nb);
 
-  task->surf_action = surf_host_model_execute_parallel_task((surf_host_model_t)surf_host_model,
-		                                                     host_nb,
-		                                                     hosts,
-		                                                     flops_amount,
-		                                                     bytes_amount,
-		                                                     task->rate);
+  task->surf_action = surf_host_model->executeParallelTask(
+    host_nb, hosts, flops_amount, bytes_amount, task->rate);
 
   task->surf_action->setData(task);
 

@@ -353,7 +353,7 @@ smx_synchro_t SIMIX_process_parallel_execute(const char *name,
   /* set surf's synchro */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
     synchro->execution.surf_exec =
-      surf_host_model_execute_parallel_task(surf_host_model,
+      surf_host_model->executeParallelTask(
     		  host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
 
     synchro->execution.surf_exec->setData(synchro);

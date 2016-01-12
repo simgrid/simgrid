@@ -205,16 +205,6 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-surf_action_t surf_host_model_execute_parallel_task(surf_host_model_t model,
-		                                    int host_nb,
-                                            sg_host_t *host_list,
-                                            double *flops_amount,
-                                            double *bytes_amount,
-                                            double rate){
-  return static_cast<simgrid::surf::Action*>(
-    model->executeParallelTask(host_nb, host_list, flops_amount, bytes_amount, rate));
-}
-
 xbt_dynar_t surf_host_model_get_route(surf_host_model_t /*model*/,
                                              sg_host_t src, sg_host_t dst){
   xbt_dynar_t route = NULL;
