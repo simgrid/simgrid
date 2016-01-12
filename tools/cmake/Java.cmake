@@ -127,56 +127,40 @@ if(enable_lib_in_jar)
     set(JAVA_NATIVE_PATH NATIVE/${SG_SYSTEM_NAME}/arm) # Default arm (soft-float ABI)
   endif()
 
+  # Find what to copy
+  set(JAVALIBS ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO} ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO})
+  if (HAVE_BOOST_CONTEXT)
+    set(JAVALIBS ${JAVALIBS} ${Boost_CONTEXT_LIBRARY_RELEASE})
+  endif()
+  if(MINGW)
+    find_library(WINPTHREAD_DLL
+      NAME winpthread winpthread-1
+      PATHS C:\\MinGW C:\\MinGW64 C:\\MinGW\\bin C:\\MinGW64\\bin
+    )
+    set(JAVALIBS ${JAVALIBS} ${WINPTHREAD_DLL})
+  endif(MINGW)
+
   add_custom_command(
     TARGET simgrid-java_jar POST_BUILD
     COMMENT "Add the native libs into simgrid.jar..."
-    DEPENDS simgrid simgrid-java 
-	    ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
-	    ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO}
+    DEPENDS simgrid simgrid-java ${JAVALIBS}
 	  
-    COMMAND ${CMAKE_COMMAND} -E remove_directory NATIVE
-    COMMAND ${CMAKE_COMMAND} -E make_directory                                     ${JAVA_NATIVE_PATH}
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
+    COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
+    COMMAND cp ${JAVALIBS} ${JAVA_NATIVE_PATH} # cp is less portable, but cmake cannot copy several files at once
     
     ## strip seems to fail on Mac on binaries that are already stripped.
     ## It then spits: "symbols referenced by indirect symbol table entries that can't be stripped"
     #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}      || true
     #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO} || true
 
-    COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  NATIVE
+    COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  ${JAVA_NATIVE_PATH}
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
     
     COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in ${JAVA_NATIVE_PATH}"
     COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
     )
     
-  if (HAVE_BOOST_CONTEXT)
-    add_custom_command(
-      TARGET simgrid-java_jar POST_BUILD
-      COMMENT "Add the boost_context lib into simgrid.jar..."
-      COMMAND ${CMAKE_COMMAND} -E copy ${Boost_CONTEXT_LIBRARY_RELEASE}  ${JAVA_NATIVE_PATH}
-      COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  NATIVE
-    )
-  endif()
-  
-  if(MINGW)
-    find_library(WINPTHREAD_DLL
-      NAME winpthread winpthread-1
-      PATHS C:\\MinGW C:\\MinGW64 C:\\MinGW\\bin C:\\MinGW64\\bin
-    )
-    add_custom_command(
-      TARGET simgrid-java_jar POST_BUILD
-      COMMENT "Add the MinGW libs into simgrid.jar..."
-      DEPENDS ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}
-
-      COMMAND ${CMAKE_COMMAND} -E remove_directory NATIVE
-      COMMAND ${CMAKE_COMMAND} -E make_directory          ${JAVA_NATIVE_PATH}
-      COMMAND ${CMAKE_COMMAND} -E copy ${WINPTHREAD_DLL}  ${JAVA_NATIVE_PATH}
-
-      COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  NATIVE
-      COMMAND ${CMAKE_COMMAND} -E remove_directory NATIVE
-    )
-  endif(MINGW)
 endif(enable_lib_in_jar)
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
