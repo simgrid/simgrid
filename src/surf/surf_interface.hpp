@@ -43,7 +43,7 @@ namespace surf {
     {
       sig_.connect(sigc::ptr_fun(slot));
     }
-    template<class... Args>
+    template<class... Args> XBT_ALWAYS_INLINE
     R operator()(Args&&... args) const
     {
       return sig_.emit(std::forward<Args>(args)...);
