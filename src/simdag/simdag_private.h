@@ -70,7 +70,7 @@ typedef struct SD_task {
   e_SD_task_state_t state;
   void *data;                   /* user data */
   char *name;
-  int kind;
+  e_SD_task_kind_t kind;
   double amount;
   double alpha;          /* used by typed parallel tasks */
   double remains;

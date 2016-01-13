@@ -530,7 +530,7 @@ double SD_task_get_remaining_amount(SD_task_t task)
     return task->remains;
 }
 
-int SD_task_get_kind(SD_task_t task)
+e_SD_task_kind_t SD_task_get_kind(SD_task_t task)
 {
   return task->kind;
 }
