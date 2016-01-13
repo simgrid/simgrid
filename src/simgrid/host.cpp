@@ -170,6 +170,10 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
 
 namespace simgrid {
 
+simgrid::xbt::signal<void(Host&)> Host::onCreation;
+simgrid::xbt::signal<void(Host&)> Host::onDestruction;
+simgrid::xbt::signal<void(Host&)> Host::onStateChange;
+
 Host::Host(std::string const& id)
   : name_(id)
 {

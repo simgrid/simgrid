@@ -68,7 +68,9 @@ void MSG_init_nocheck(int *argc, char **argv) {
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
 
     sg_platf_postparse_add_cb(MSG_post_create_environment);
-    surf_on_host_created(MSG_host_create_);
+    simgrid::Host::onCreation.connect([](simgrid::Host& host) {
+      MSG_host_create_(&host);
+    });
   }
 
   if(MC_is_active()){

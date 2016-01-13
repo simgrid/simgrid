@@ -10,13 +10,6 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/host_interface.hpp"
 
-void surf_on_host_created(void (*callback)(sg_host_t))
-{
-  simgrid::surf::Host::onCreation.connect([callback](simgrid::surf::Host* host) {
-    callback(host->p_host);
-  });
-}
-
 void surf_on_storage_created(void (*callback)(sg_storage_t))
 {
   simgrid::surf::storageCreatedCallbacks.connect([callback](simgrid::surf::Storage* storage) {

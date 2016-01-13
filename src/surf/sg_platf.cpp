@@ -71,6 +71,8 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
         host->initiallyOn,
         host->state_trace);
   surf_host_model->createHost(host->id, net, cpu, host->properties)->attach(h);
+  simgrid::Host::onCreation(*h);
+
   if (TRACE_is_enabled() && TRACE_needs_platform())
     sg_instr_new_host(host);
 }

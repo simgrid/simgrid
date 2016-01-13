@@ -82,16 +82,12 @@ void HostModel::adjustWeightOfDummyCpuActions()
 /************
  * Resource *
  ************/
-simgrid::xbt::signal<void(simgrid::surf::Host*)> Host::onCreation;
-simgrid::xbt::signal<void(simgrid::surf::Host*)> Host::onDestruction;
-simgrid::xbt::signal<void(simgrid::surf::Host*)> Host::onStateChange;
+
 
 void Host::classInit()
 {
   if (!EXTENSION_ID.valid()) {
-    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>([](void *h) {
-    	static_cast<simgrid::surf::Host*>(h)->destroy();
-    });
+    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>();
   }
 }
 
@@ -116,23 +112,6 @@ Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props, 
 /** @brief use destroy() instead of this destructor */
 Host::~Host()
 {
-	xbt_assert(currentlyDestroying_, "Don't delete Hosts directly. Call destroy() instead.");
-	delete p_cpu;
-	// FIXME: VM plays strange games, leading to segfaults if I do the expected thing of next line
-	// delete p_netElm;
-	// delete p_storage;
-}
-/** @brief Fire the require callbacks and destroy the object
- *
- * Don't delete directly an Host, call h->destroy() instead.
- */
-void Host::destroy()
-{
-	if (!currentlyDestroying_) {
-		currentlyDestroying_ = true;
-		onDestruction(this);
-		delete this;
-	}
 }
 
 void Host::attach(simgrid::Host* host)
@@ -141,7 +120,6 @@ void Host::attach(simgrid::Host* host)
     xbt_die("Already attached to host %s", host->getName().c_str());
   host->extension_set(this);
   p_host = host;
-  onCreation(this);
 }
 
 bool Host::isOn() {
@@ -153,13 +131,13 @@ bool Host::isOff() {
 void Host::turnOn(){
   if (isOff()) {
     p_cpu->turnOn();
-    onStateChange(this);
+    simgrid::Host::onStateChange(*this->p_host);
   }
 }
 void Host::turnOff(){
   if (isOn()) {
     p_cpu->turnOff();
-    onStateChange(this);
+    simgrid::Host::onStateChange(*this->p_host);
   }
 }
 

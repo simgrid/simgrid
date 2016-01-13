@@ -33,6 +33,7 @@ class XBT_PRIVATE HostAction;
 /*********
  * Tools *
  *********/
+
 XBT_PUBLIC_DATA(simgrid::surf::HostModel*) surf_host_model;
 XBT_PUBLIC(void) host_add_traces();
 
@@ -78,11 +79,6 @@ class Host :
 public:
   static simgrid::xbt::Extension<simgrid::Host, Host> EXTENSION_ID;
 
-  /* callbacks */
-  static simgrid::xbt::signal<void(Host*)> onCreation;    /** Called on each newly created object */
-  static simgrid::xbt::signal<void(Host*)> onDestruction; /** Called just before destructing an object */
-  static simgrid::xbt::signal<void(Host*)> onStateChange; /** Called when the machine is turned on or off */
-
 public:
   static void classInit(); // must be called before the first use of that class
   /**
@@ -112,13 +108,7 @@ public:
 
   /* Host destruction logic */
   /**************************/
-protected:
   ~Host();
-public:
-	void destroy(); // Must be called instead of the destructor
-private:
-	bool currentlyDestroying_ = false;
-
 
 public:
   HostModel *getModel()

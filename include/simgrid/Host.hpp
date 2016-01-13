@@ -16,6 +16,7 @@
 #include <xbt/dict.h>
 #include <xbt/swag.h>
 #include <xbt/string.hpp>
+#include <xbt/signal.hpp>
 #include <xbt/Extendable.hpp>
 
 #include <simgrid/datatypes.h>
@@ -55,6 +56,13 @@ public:
 
   static Host* by_name_or_null(const char* name);
   static Host* by_name_or_create(const char* name);
+
+  /*** Called on each newly created object */
+  static simgrid::xbt::signal<void(Host&)> onCreation;
+  /*** Called just before destructing an object */
+  static simgrid::xbt::signal<void(Host&)> onDestruction;
+  /*** Called when the machine is turned on or off */
+  static simgrid::xbt::signal<void(Host&)> onStateChange;
 };
 
 }

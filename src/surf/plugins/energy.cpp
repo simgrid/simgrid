@@ -193,10 +193,11 @@ void HostEnergy::initWattsRangeList()
 }
 
 /* **************************** events  callback *************************** */
-static void onCreation(simgrid::surf::Host *host) {
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(host)) // Ignore virtual machines
+static void onCreation(simgrid::Host& host) {
+  simgrid::surf::Host* surf_host = host.extension<simgrid::surf::Host>();
+  if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host)) // Ignore virtual machines
     return;
-  host->p_host->extension_set(new HostEnergy(host->p_host));
+  host.extension_set(new HostEnergy(&host));
 }
 
 static void onActionStateChange(simgrid::surf::CpuAction *action,
@@ -213,23 +214,26 @@ static void onActionStateChange(simgrid::surf::CpuAction *action,
     host_energy->update();
 }
 
-static void onHostStateChange(simgrid::surf::Host *host) {
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(host)) // Ignore virtual machines
+static void onHostStateChange(simgrid::Host &host) {
+  simgrid::surf::Host* surf_host = host.extension<simgrid::surf::Host>();
+  if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host)) // Ignore virtual machines
     return;
 
-  HostEnergy *host_energy = host->p_host->extension<HostEnergy>();
+  HostEnergy *host_energy = host.extension<HostEnergy>();
 
   if(host_energy->last_updated < surf_get_clock())
     host_energy->update();
 }
 
-static void onHostDestruction(simgrid::surf::Host *host) {
+static void onHostDestruction(simgrid::Host& host) {
   // Ignore virtual machines
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(host))
+  simgrid::surf::Host* surf_host = host.extension<simgrid::surf::Host>();
+  if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host))
     return;
-  HostEnergy *host_energy = host->p_host->extension<HostEnergy>();
+  HostEnergy *host_energy = host.extension<HostEnergy>();
   host_energy->update();
-  XBT_INFO("Total energy of host %s: %f Joules", host->getName(), host_energy->getConsumedEnergy());
+  XBT_INFO("Total energy of host %s: %f Joules",
+    host.getName().c_str(), host_energy->getConsumedEnergy());
 }
 
 /* **************************** Public interface *************************** */
@@ -244,10 +248,10 @@ void sg_energy_plugin_init(void)
 
   HostEnergy::EXTENSION_ID = simgrid::Host::extension_create<HostEnergy>();
 
-  simgrid::surf::Host::onCreation.connect(&onCreation);
+  simgrid::Host::onCreation.connect(&onCreation);
+  simgrid::Host::onStateChange.connect(&onHostStateChange);
+  simgrid::Host::onDestruction.connect(&onHostDestruction);
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
-  simgrid::surf::Host::onStateChange.connect(&onHostStateChange);
-  simgrid::surf::Host::onDestruction.connect(&onHostDestruction);
 }
 
 /** @brief Returns the total energy consumed by the host so far (in Joules)
