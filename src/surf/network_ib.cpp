@@ -14,7 +14,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
-static void IB_create_host_callback(simgrid::Host& host){
+static void IB_create_host_callback(simgrid::s4u::Host& host){
   using namespace simgrid::surf;
   
   static int id=0;
@@ -26,7 +26,7 @@ static void IB_create_host_callback(simgrid::Host& host){
 
   id++;
   xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes,
-    host.getName().c_str(), act, NULL);
+    host.name().c_str(), act, NULL);
 
 }
 
@@ -99,7 +99,7 @@ void surf_network_model_init_IB(void)
   xbt_dynar_push(all_existing_models, &surf_network_model);
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
   networkCommunicateCallbacks.connect(IB_action_init_callback);
-  simgrid::Host::onCreation.connect(IB_create_host_callback);
+  simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
   
 }

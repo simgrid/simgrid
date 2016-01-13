@@ -17,7 +17,8 @@ public:
 : simgrid::s4u::Actor(procname,host,argc,argv){}
 
 	void show_info(boost::unordered_map <std::string, simgrid::s4u::Storage &> &mounts) {
-		XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->name());
+		XBT_INFO("Storage info on %s:",
+			simgrid::s4u::Host::current()->name().c_str());
 
 		for (const auto&kv : mounts) {
 			const char* mountpoint = kv.first.c_str();

@@ -60,7 +60,7 @@ using simgrid::energy::HostEnergy;
 namespace simgrid {
 namespace energy {
 
-simgrid::xbt::Extension<simgrid::Host, HostEnergy> HostEnergy::EXTENSION_ID;
+simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID;
 
 /* Computes the consumption so far.  Called lazily on need. */
 void HostEnergy::update()
@@ -97,7 +97,7 @@ void HostEnergy::update()
 	    surf_host->getName(), start_time, finish_time, surf_host->p_cpu->m_speedPeak, previous_energy, energy_this_step);
 }
 
-HostEnergy::HostEnergy(simgrid::Host *ptr) :
+HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) :
   host(ptr), last_updated(surf_get_clock())
 {
   initWattsRangeList();
@@ -119,14 +119,14 @@ HostEnergy::~HostEnergy()
 double HostEnergy::getWattMinAt(int pstate)
 {
   xbt_assert(!power_range_watts_list.empty(),
-    "No power range properties specified for host %s", host->getName().c_str());
+    "No power range properties specified for host %s", host->name().c_str());
   return power_range_watts_list[pstate].first;
 }
 
 double HostEnergy::getWattMaxAt(int pstate)
 {
   xbt_assert(!power_range_watts_list.empty(),
-    "No power range properties specified for host %s", host->getName().c_str());
+    "No power range properties specified for host %s", host->name().c_str());
   return power_range_watts_list[pstate].second;
 }
 
@@ -134,7 +134,7 @@ double HostEnergy::getWattMaxAt(int pstate)
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
 	xbt_assert(!power_range_watts_list.empty(),
-    "No power range properties specified for host %s", host->getName().c_str());
+    "No power range properties specified for host %s", host->name().c_str());
 
   /* min_power corresponds to the idle power (cpu load = 0) */
   /* max_power is the power consumed at 100% cpu load       */
@@ -177,7 +177,7 @@ void HostEnergy::initWattsRangeList()
 		xbt_assert(xbt_dynar_length(current_power_values) > 1,
 				"Power properties incorrectly defined - "
         "could not retrieve min and max power values for host %s",
-				host->getName().c_str());
+				host->name().c_str());
 
 		/* min_power corresponds to the idle power (cpu load = 0) */
 		/* max_power is the power consumed at 100% cpu load       */
@@ -193,7 +193,7 @@ void HostEnergy::initWattsRangeList()
 }
 
 /* **************************** events  callback *************************** */
-static void onCreation(simgrid::Host& host) {
+static void onCreation(simgrid::s4u::Host& host) {
   simgrid::surf::Host* surf_host = host.extension<simgrid::surf::Host>();
   if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host)) // Ignore virtual machines
     return;
@@ -214,7 +214,7 @@ static void onActionStateChange(simgrid::surf::CpuAction *action,
     host_energy->update();
 }
 
-static void onHostStateChange(simgrid::Host &host) {
+static void onHostStateChange(simgrid::s4u::Host &host) {
   simgrid::surf::Host* surf_host = host.extension<simgrid::surf::Host>();
   if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host)) // Ignore virtual machines
     return;
@@ -225,7 +225,7 @@ static void onHostStateChange(simgrid::Host &host) {
     host_energy->update();
 }
 
-static void onHostDestruction(simgrid::Host& host) {
+static void onHostDestruction(simgrid::s4u::Host& host) {
   // Ignore virtual machines
   simgrid::surf::Host* surf_host = host.extension<simgrid::surf::Host>();
   if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host))
@@ -233,7 +233,7 @@ static void onHostDestruction(simgrid::Host& host) {
   HostEnergy *host_energy = host.extension<HostEnergy>();
   host_energy->update();
   XBT_INFO("Total energy of host %s: %f Joules",
-    host.getName().c_str(), host_energy->getConsumedEnergy());
+    host.name().c_str(), host_energy->getConsumedEnergy());
 }
 
 /* **************************** Public interface *************************** */
@@ -246,11 +246,11 @@ void sg_energy_plugin_init(void)
   if (HostEnergy::EXTENSION_ID.valid())
     return;
 
-  HostEnergy::EXTENSION_ID = simgrid::Host::extension_create<HostEnergy>();
+  HostEnergy::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostEnergy>();
 
-  simgrid::Host::onCreation.connect(&onCreation);
-  simgrid::Host::onStateChange.connect(&onHostStateChange);
-  simgrid::Host::onDestruction.connect(&onHostDestruction);
+  simgrid::s4u::Host::onCreation.connect(&onCreation);
+  simgrid::s4u::Host::onStateChange.connect(&onHostStateChange);
+  simgrid::s4u::Host::onDestruction.connect(&onHostDestruction);
   simgrid::surf::CpuAction::onStateChange.connect(&onActionStateChange);
 }
 

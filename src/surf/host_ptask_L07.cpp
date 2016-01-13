@@ -297,7 +297,7 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
   return res;
 }
 
-Cpu *CpuL07Model::createCpu(simgrid::Host *host,  xbt_dynar_t powerPeakList,
+Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t powerPeakList,
                           int pstate, double power_scale,
                           tmgr_trace_t power_trace, int core,
                           int initiallyOn,
@@ -395,7 +395,7 @@ void HostL07Model::addTraces()
  * Resource *
  ************/
 
-CpuL07::CpuL07(CpuL07Model *model, simgrid::Host *host,
+CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host,
 	             xbt_dynar_t speedPeakList, int pstate,
 				 double speedScale, tmgr_trace_t speedTrace,
 		         int core, int initiallyOn, tmgr_trace_t state_trace)

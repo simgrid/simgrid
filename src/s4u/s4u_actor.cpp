@@ -35,7 +35,7 @@ s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv)
     : s4u::Actor::Actor(name,host, argc,argv, -1) {
 }
 s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv, double killTime) {
-	p_smx_process = simcall_process_create(name, s4u_actor_runner, this, host->name(), killTime, argc, argv, NULL/*properties*/,0);
+	p_smx_process = simcall_process_create(name, s4u_actor_runner, this, host->name().c_str(), killTime, argc, argv, NULL/*properties*/,0);
 
 	xbt_assert(p_smx_process,"Cannot create the actor");
 //	TRACE_msg_process_create(procname, simcall_process_get_PID(p_smx_process), host->getInferior());

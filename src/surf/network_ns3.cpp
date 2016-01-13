@@ -110,7 +110,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
       start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
       xbt_dynar_push_as(tab_elements_num, int, start);
       router_id = bprintf("ns3_%s%d%s", cluster_prefix, start, cluster_suffix);
-      simgrid::Host::by_name_or_create(router_id)
+      simgrid::s4u::Host::by_name_or_create(router_id)
         ->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
       XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
       free(router_id);
@@ -122,7 +122,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
       for (i = start; i <= end; i++){
         xbt_dynar_push_as(tab_elements_num, int, i);
         router_id = bprintf("ns3_%s%d%s", cluster_prefix, i, cluster_suffix);
-        simgrid::Host::by_name_or_create(router_id)
+        simgrid::s4u::Host::by_name_or_create(router_id)
           ->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
         XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
         free(router_id);
@@ -273,7 +273,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   routing_model_create(NULL);
   define_callbacks_ns3();
 
-  NS3_EXTENSION_ID = simgrid::Host::extension_create(free_ns3_host);
+  NS3_EXTENSION_ID = simgrid::s4u::Host::extension_create(free_ns3_host);
   NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib, free_ns3_host);
 }
 

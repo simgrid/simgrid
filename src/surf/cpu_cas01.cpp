@@ -84,7 +84,7 @@ CpuCas01Model::~CpuCas01Model()
   delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
 
-Cpu *CpuCas01Model::createCpu(simgrid::Host *host, xbt_dynar_t speedPeak,
+Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
 		                  int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,
@@ -137,7 +137,7 @@ void CpuCas01Model::addTraces()
 /************
  * Resource *
  ************/
-CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::Host *host, xbt_dynar_t speedPeak,
+CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
                          int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
                          int initiallyOn, tmgr_trace_t stateTrace)
 : Cpu(model, host,

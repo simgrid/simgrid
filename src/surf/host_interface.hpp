@@ -77,7 +77,7 @@ class Host :
  	 public simgrid::surf::Resource,
 	 public simgrid::surf::PropertyHolder {
 public:
-  static simgrid::xbt::Extension<simgrid::Host, Host> EXTENSION_ID;
+  static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
 
 public:
   static void classInit(); // must be called before the first use of that class
@@ -115,7 +115,7 @@ public:
   {
     return static_cast<HostModel*>(Resource::getModel());
   }
-  void attach(simgrid::Host* host);
+  void attach(simgrid::s4u::Host* host);
 
   bool isOn() override;
   bool isOff() override;
@@ -236,7 +236,7 @@ public:
 public:
   xbt_dynar_t p_storage;
   Cpu *p_cpu;
-  simgrid::Host* p_host = nullptr;
+  simgrid::s4u::Host* p_host = nullptr;
 
   /** @brief Get the list of virtual machines on the current Host */
   xbt_dynar_t getVms();
@@ -247,7 +247,7 @@ public:
   void getParams(vm_params_t params);
   /** @brief Sets the params of that VM/PM */
   void setParams(vm_params_t params);
-  simgrid::Host* getHost() { return p_host; }
+  simgrid::s4u::Host* getHost() { return p_host; }
 private:
   s_vm_params_t p_params;
 };

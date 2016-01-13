@@ -12,21 +12,22 @@
 #ifdef __cplusplus
 
 namespace simgrid {
-class Host;
+  namespace s4u {
+    class Host;
+  }
+  namespace surf {
+    class Cpu;
+    class NetCard;
+    class As;
+    class Link;
+  }
 }
 
 namespace simgrid {
-namespace surf {
-
-class Cpu;
-class NetCard;
-class As;
-class Link;
 
 }
-}
 
-typedef simgrid::Host simgrid_Host;
+typedef simgrid::s4u::Host simgrid_Host;
 typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::NetCard surf_NetCard;
 typedef simgrid::surf::As surf_As;

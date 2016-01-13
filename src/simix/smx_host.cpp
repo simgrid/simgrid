@@ -111,7 +111,7 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
       }
     }
   } else {
-    XBT_INFO("Host %s is already off",h->getName().c_str());
+    XBT_INFO("Host %s is already off",h->name().c_str());
   }
 }
 

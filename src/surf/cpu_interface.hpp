@@ -53,8 +53,8 @@ public:
    * @param state_initial [TODO]
    * @param state_trace [TODO]
    */
-  virtual Cpu *createCpu(simgrid::Host *host, xbt_dynar_t speedPeak,
-                      int pstate, double speedScale,
+  virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
+                          int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,
                           tmgr_trace_t state_trace)=0;
@@ -85,7 +85,8 @@ public:
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    * @param stateInitial whether it is created running or crashed
    */
-  Cpu(simgrid::surf::Model *model, simgrid::Host *host, lmm_constraint_t constraint,
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
+    lmm_constraint_t constraint,
 	  xbt_dynar_t speedPeakList, int pstate,
 	  int core, double speedPeak, double speedScale,
 	  int initiallyOn);
@@ -100,7 +101,7 @@ public:
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    * @param stateInitial whether it is created running or crashed
    */
-  Cpu(simgrid::surf::Model *model, simgrid::Host *host,
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
       xbt_dynar_t speedPeakList, int pstate,
 	  int core, double speedPeak, double speedScale,
 	  int initiallyOn);
@@ -147,13 +148,13 @@ public:
   virtual int  getPState();
 
   void addTraces(void);
-  simgrid::Host* getHost() { return m_host; }
+  simgrid::s4u::Host* getHost() { return m_host; }
 
 public:
   int m_core = 1;                /* Amount of cores */
   double m_speedPeak;            /*< CPU speed peak, ie max value */
   double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
-  simgrid::Host* m_host;
+  simgrid::s4u::Host* m_host;
 
   xbt_dynar_t p_speedPeakList = NULL; /*< List of supported CPU capacities (pstate related) */
   int m_pstate = 0;                   /*< Current pstate (index in the speedPeakList)*/

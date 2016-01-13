@@ -131,7 +131,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 /************
  * Resource *
  ************/
-Cpu::Cpu(Model *model, simgrid::Host *host,
+Cpu::Cpu(Model *model, simgrid::s4u::Host *host,
 	     xbt_dynar_t speedPeakList, int pstate,
 		 int core, double speedPeak, double speedScale,
 		 int initiallyOn)
@@ -139,11 +139,11 @@ Cpu::Cpu(Model *model, simgrid::Host *host,
 {
 }
 
-Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
+Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
 	      xbt_dynar_t speedPeakList, int pstate,
 		  int core, double speedPeak,
         double speedScale, int initiallyOn)
- : Resource(model, host->getName().c_str(), constraint, initiallyOn)
+ : Resource(model, host->name().c_str(), constraint, initiallyOn)
  , m_core(core)
  , m_speedPeak(speedPeak)
  , m_speedScale(speedScale)
@@ -173,7 +173,7 @@ Cpu::Cpu(Model *model, simgrid::Host *host, lmm_constraint_t constraint,
     int i;
     for (i = 0; i < core; i++) {
       /* just for a unique id, never used as a string. */
-      p_constraintCoreId[i] = bprintf("%s:%i", host->getName().c_str(), i);
+      p_constraintCoreId[i] = bprintf("%s:%i", host->name().c_str(), i);
       p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], m_speedScale * m_speedPeak);
     }
   }

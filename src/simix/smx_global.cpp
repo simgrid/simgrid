@@ -231,7 +231,7 @@ void SIMIX_global_init(int *argc, char **argv)
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
     sg_platf_postparse_add_cb(SIMIX_post_create_environment);
-    simgrid::Host::onCreation.connect([](simgrid::Host& host) {
+    simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       SIMIX_host_create(&host);
     });
     surf_on_storage_created(SIMIX_storage_create_);

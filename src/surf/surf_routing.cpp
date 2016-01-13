@@ -1326,7 +1326,7 @@ xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)
   for (int index = 0; index < count; index++) {
      sg_netcard_t relm =
       xbt_dynar_get_as(elms, index, simgrid::surf::NetCard*);
-     sg_host_t delm = simgrid::Host::by_name_or_null(relm->getName());
+     sg_host_t delm = simgrid::s4u::Host::by_name_or_null(relm->getName());
      if (delm!=NULL) {
        xbt_dynar_push(res, &delm);
      }

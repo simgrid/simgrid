@@ -9,8 +9,13 @@
 #include <boost/unordered_map.hpp>
 #include <vector>
 
-#include "xbt/base.h"
-#include "simgrid/simix.h"
+#include <xbt/base.h>
+#include <xbt/string.hpp>
+#include <xbt/signal.hpp>
+#include <xbt/Extendable.hpp>
+
+#include <simgrid/simix.h>
+#include <simgrid/datatypes.h>
 
 namespace simgrid {
 namespace s4u {
@@ -30,12 +35,14 @@ class File;
  * You can retrieve a particular host using @link{simgrid::s4u::Host.byName()},
  * and actors can retrieve the host on which they run using @link{simgrid::s4u::Host.current()}.
  */
-XBT_PUBLIC_CLASS Host {
-	friend Actor;
-	friend File;
+XBT_PUBLIC_CLASS Host :
+  public simgrid::xbt::Extendable<Host> {
+
+	// friend Actor;
+	// friend File;
 private:
 	Host(const char *name);
-protected:
+public: // TODO, make me private
 	~Host();
 public:
 	/** Retrieves an host from its name. */
@@ -43,7 +50,10 @@ public:
 	/** Retrieves the host on which the current actor is running */
 	static s4u::Host *current();
 
-	const char* name();
+  static Host* by_name_or_null(const char* name);
+  static Host* by_name_or_create(const char* name);
+
+	simgrid::xbt::string const& name() const { return name_; }
 
 	/** Turns that host on if it was previously off
 	 *
@@ -55,9 +65,24 @@ public:
 	void turnOff();
 	/** Returns if that host is currently up and running */
 	bool isOn();
+	bool isOff() { return !isOn(); }
 
+	double getSpeed();
+	int getCoreAmount();
+  xbt_dict_t getProperties();
+  xbt_swag_t getProcessList();
+  double getCurrentPowerPeak();
+  double getPowerPeakAt(int pstate_index);
+  void setPState(int pstate_index);
+	int getNbPStates() const;
+  int getPState();
+  void getParams(vm_params_t params);
+  void setParams(vm_params_t params);
+  xbt_dict_t getMountedStorageList();
+  xbt_dynar_t getAttachedStorageList();
 
 	/** Allows to store user data on that host */
+	// TODO, use the extension stuff instead
 	void set_userdata(void *data) {p_userdata = data;}
 	/** Retrieves the previously stored data */
 	void* userdata() {return p_userdata;}
@@ -68,19 +93,38 @@ public:
 	 *
 	 *	Do not change the returned value in any way.
 	 */
+	// TODO, do not use Storage&, this looks dangerous!
 	boost::unordered_map<std::string, Storage&> &mountedStorages();
-private:
-	boost::unordered_map<std::string, Storage&> *mounts = NULL; // caching
 
-protected:
-	sg_host_t inferior() {return p_inferior;}
 private:
-	void*p_userdata=NULL;
-	sg_host_t p_inferior;
+	simgrid::xbt::string name_ = "noname";
+	boost::unordered_map<std::string, Storage&> *mounts = NULL; // caching
+	void* p_userdata = NULL;
+
+public:
+	// FIXME: these should be protected, but it leads to many errors
+	// Use the extensions stuff for this? Go through simgrid::surf::Host?
+	surf::Cpu     *pimpl_cpu = nullptr;
+	surf::NetCard *pimpl_netcard = nullptr;
+
+public:
 	static boost::unordered_map<std::string, s4u::Host *> *hosts;
+
+	/*** Called on each newly created object */
+	static simgrid::xbt::signal<void(Host&)> onCreation;
+	/*** Called just before destructing an object */
+	static simgrid::xbt::signal<void(Host&)> onDestruction;
+	/*** Called when the machine is turned on or off */
+	static simgrid::xbt::signal<void(Host&)> onStateChange;
 };
 
 }} // namespace simgrid::s4u
+
+extern int MSG_HOST_LEVEL;
+extern int SD_HOST_LEVEL;
+extern int SIMIX_HOST_LEVEL;
+extern int ROUTING_HOST_LEVEL;
+extern int USER_HOST_LEVEL;
 
 #endif /* SIMGRID_S4U_HOST_HPP */
 

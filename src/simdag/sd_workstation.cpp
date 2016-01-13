@@ -7,7 +7,7 @@
 #include "src/surf/host_interface.hpp"
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
-#include "simgrid/Host.hpp"
+#include <simgrid/s4u/host.hpp>
 #include "xbt/dict.h"
 #include "xbt/lib.h"
 #include "xbt/sysdep.h"

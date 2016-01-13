@@ -684,7 +684,6 @@ set(headers_to_install
   include/simgrid/s4u/storage.hpp  
   include/simgrid/s4u.h
   include/simgrid/plugins/energy.h
-  include/simgrid/Host.hpp
   include/smpi/mpi.h
   include/smpi/smpi.h
   include/smpi/smpi_cocci.h

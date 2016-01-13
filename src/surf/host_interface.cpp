@@ -6,7 +6,7 @@
 
 #include "host_interface.hpp"
 
-#include <simgrid/Host.hpp>
+#include <simgrid/s4u/host.hpp>
 
 #include "src/simix/smx_private.h"
 #include "cpu_cas01.hpp"
@@ -31,7 +31,7 @@ void host_add_traces(){
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::Extension<simgrid::Host, Host> Host::EXTENSION_ID;
+simgrid::xbt::Extension<simgrid::s4u::Host, Host> Host::EXTENSION_ID;
 
 /*********
  * Model *
@@ -87,7 +87,7 @@ void HostModel::adjustWeightOfDummyCpuActions()
 void Host::classInit()
 {
   if (!EXTENSION_ID.valid()) {
-    EXTENSION_ID = simgrid::Host::extension_create<simgrid::surf::Host>();
+    EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::surf::Host>();
   }
 }
 
@@ -114,10 +114,10 @@ Host::~Host()
 {
 }
 
-void Host::attach(simgrid::Host* host)
+void Host::attach(simgrid::s4u::Host* host)
 {
   if (p_host != nullptr)
-    xbt_die("Already attached to host %s", host->getName().c_str());
+    xbt_die("Already attached to host %s", host->name().c_str());
   host->extension_set(this);
   p_host = host;
 }
@@ -131,13 +131,13 @@ bool Host::isOff() {
 void Host::turnOn(){
   if (isOff()) {
     p_cpu->turnOn();
-    simgrid::Host::onStateChange(*this->p_host);
+    simgrid::s4u::Host::onStateChange(*this->p_host);
   }
 }
 void Host::turnOff(){
   if (isOn()) {
     p_cpu->turnOff();
-    simgrid::Host::onStateChange(*this->p_host);
+    simgrid::s4u::Host::onStateChange(*this->p_host);
   }
 }
 

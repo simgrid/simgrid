@@ -134,7 +134,7 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 
   MSG_init(&argc, argv);
 
-  JAVA_HOST_LEVEL = simgrid::Host::extension_create(__JAVA_host_priv_free);
+  JAVA_HOST_LEVEL = simgrid::s4u::Host::extension_create(__JAVA_host_priv_free);
   JAVA_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, __JAVA_storage_priv_free);
 
   for (index = 0; index < argc; index++)

@@ -304,8 +304,8 @@ void surf_init(int *argc, char **argv)
 {
   XBT_DEBUG("Create all Libs");
   host_list = xbt_dict_new_homogeneous([](void*p) {
-    simgrid::Host* host = static_cast<simgrid::Host*>(p);
-    simgrid::Host::onDestruction(*host);
+    simgrid::s4u::Host* host = static_cast<simgrid::s4u::Host*>(p);
+    simgrid::s4u::Host::onDestruction(*host);
     delete host;
   });
   as_router_lib = xbt_lib_new();

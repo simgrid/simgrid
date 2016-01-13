@@ -93,7 +93,7 @@ double VMHL13Model::shareResources(double now)
 
     double solved_value = get_solved_value(ws_vm->p_action);
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
-        ws_vm->getName(), ws_vm->p_hostPM->getName().c_str());
+        ws_vm->getName(), ws_vm->p_hostPM->name().c_str());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
@@ -199,7 +199,8 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
   // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(host_PM, GUESTOS_NOISE);
   p_action = sub_cpu->execute(0);
 
-  XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks", name, p_hostPM->getName().c_str(), xbt_dynar_length(p_storage));
+  XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks",
+    name, p_hostPM->name().c_str(), xbt_dynar_length(p_storage));
 }
 
 void VMHL13::suspend()
@@ -239,7 +240,7 @@ void VMHL13::migrate(sg_host_t host_dest)
 {
    Host *surfHost_dst = host_dest->extension<Host>();
    const char *vm_name = getName();
-   const char *pm_name_src = p_hostPM->getName().c_str();
+   const char *pm_name_src = p_hostPM->name().c_str();
    const char *pm_name_dst = surfHost_dst->getName();
 
    /* update net_elm with that of the destination physical host */

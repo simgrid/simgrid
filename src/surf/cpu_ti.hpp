@@ -113,7 +113,7 @@ typedef boost::intrusive::list<
  ************/
 class CpuTi : public Cpu {
 public:
-  CpuTi(CpuTiModel *model, simgrid::Host *host, xbt_dynar_t speedPeak,
+  CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuTi();
@@ -152,7 +152,7 @@ class CpuTiModel : public CpuModel {
 public:
   CpuTiModel();
   ~CpuTiModel();
-  Cpu *createCpu(simgrid::Host *host,  xbt_dynar_t speedPeak,
+  Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPeak,
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,

@@ -27,7 +27,7 @@ public:
   CpuCas01Model();
   ~CpuCas01Model();
 
-  Cpu *createCpu(simgrid::Host *host, xbt_dynar_t speedPeak, int pstate,
+  Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak, int pstate,
                    double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,
@@ -43,7 +43,7 @@ public:
 
 class CpuCas01 : public Cpu {
 public:
-  CpuCas01(CpuCas01Model *model, simgrid::Host *host, xbt_dynar_t speedPeak,
+  CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuCas01();

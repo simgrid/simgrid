@@ -33,12 +33,12 @@ VMModel::vm_list_t VMModel::ws_vms;
  * Resource *
  ************/
 
-VirtualMachine::VirtualMachine(HostModel *model, const char *name, xbt_dict_t props, simgrid::Host *hostPM)
+VirtualMachine::VirtualMachine(HostModel *model, const char *name, xbt_dict_t props, simgrid::s4u::Host *hostPM)
 : Host(model, name, props, NULL, NULL, NULL)
 , p_hostPM(hostPM)
 {
   VMModel::ws_vms.push_back(*this);
-  simgrid::Host::by_name_or_create(name)->extension_set<simgrid::surf::Host>(this);
+  simgrid::s4u::Host::by_name_or_create(name)->extension_set<simgrid::surf::Host>(this);
 }
 
 /*

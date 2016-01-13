@@ -15,7 +15,7 @@
 #include <simgrid/forward.h>
 
 #ifdef __cplusplus
-#include <simgrid/Host.hpp>
+#include <simgrid/s4u/host.hpp>
 #endif
 
 SG_BEGIN_DECL()

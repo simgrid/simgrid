@@ -9,7 +9,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "simgrid/simix.h"
-#include "simgrid/Host.hpp"
+#include <simgrid/s4u/host.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
@@ -73,7 +73,7 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
  */
 msg_host_t MSG_host_by_name(const char *name)
 {
-  return simgrid::Host::by_name_or_null(name);
+  return simgrid::s4u::Host::by_name_or_null(name);
 }
 
 /** \ingroup m_host_management
@@ -181,7 +181,7 @@ msg_host_t *MSG_get_host_table(void)
 
     xbt_lib_cursor_t cursor;
     const char *id;
-    simgrid::Host* host;
+    simgrid::s4u::Host* host;
     xbt_dict_foreach(host_list, cursor, id, host)
       if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
         array[i++] = host->facet(MSG_HOST_LEVEL);

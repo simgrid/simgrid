@@ -57,7 +57,7 @@ public:
   CpuL07Model(HostL07Model *hmodel,lmm_system_t sys);
   ~CpuL07Model();
 
-  Cpu *createCpu(simgrid::Host *host,  xbt_dynar_t speedPeakList,
+  Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPeakList,
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,
@@ -97,7 +97,7 @@ class CpuL07 : public Cpu {
   tmgr_trace_event_t p_stateEvent;
   tmgr_trace_event_t p_speedEvent;
 public:
-  CpuL07(CpuL07Model *model, simgrid::Host *host, xbt_dynar_t speedPeakList, int pstate,
+  CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeakList, int pstate,
 		 double power_scale, tmgr_trace_t power_trace,
      int core, int initiallyOn, tmgr_trace_t state_trace);
   ~CpuL07();

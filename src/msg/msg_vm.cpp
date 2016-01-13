@@ -209,8 +209,8 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
 {
   /* make sure the VM of the same name does not exit */
   {
-    simgrid::Host* ind_host_tmp =
-      (simgrid::Host*) xbt_dict_get_or_null(host_list, name);
+    simgrid::s4u::Host* ind_host_tmp =
+      (simgrid::s4u::Host*) xbt_dict_get_or_null(host_list, name);
     if (ind_host_tmp != nullptr && sg_host_simix(ind_host_tmp) != nullptr) {
       XBT_ERROR("host %s already exits", name);
       return nullptr;

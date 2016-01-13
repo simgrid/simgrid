@@ -13,7 +13,7 @@
 #include "xbt/sysdep.h"
 #include <xbt/Extendable.hpp>
 
-#include <simgrid/Host.hpp>
+#include <simgrid/s4u/host.hpp>
 #include <surf/surf_routing.h>
 
 typedef enum {

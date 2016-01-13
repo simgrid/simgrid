@@ -27,7 +27,7 @@ void surf_network_model_init_Constant()
 
   routing_model_create(NULL);
 
-  simgrid::Host::onCreation.connect([](simgrid::Host&) {
+  simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host&) {
     host_number_int++;
   });
   sg_platf_link_add_cb(netcste_parse_nolink);

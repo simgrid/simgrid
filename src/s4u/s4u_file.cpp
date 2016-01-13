@@ -23,19 +23,19 @@ namespace s4u {
 
 File::File(const char*fullpath, void *userdata) {
 	// this cannot fail because we get a xbt_die if the mountpoint does not exist
-	p_inferior = simcall_file_open(fullpath, Host::current()->inferior());
+	p_inferior = simcall_file_open(fullpath, Host::current());
 	p_path = fullpath;
 }
 
 File::~File() {
-	simcall_file_close(p_inferior, Host::current()->inferior());
+	simcall_file_close(p_inferior, Host::current());
 }
 
 sg_size_t File::read(sg_size_t size) {
-	return simcall_file_read(p_inferior, size, Host::current()->inferior());
+	return simcall_file_read(p_inferior, size, Host::current());
 }
 sg_size_t File::write(sg_size_t size) {
-	return simcall_file_write(p_inferior,size, Host::current()->inferior());
+	return simcall_file_write(p_inferior,size, Host::current());
 }
 sg_size_t File::size() {
 	return simcall_file_get_size(p_inferior);
@@ -51,7 +51,7 @@ void File::move(const char*fullpath) {
 	simcall_file_move(p_inferior,fullpath);
 }
 void File::unlink() {
-	sg_host_t attached = Host::current()->inferior(); // FIXME: we should check where this file is attached
+	sg_host_t attached = Host::current(); // FIXME: we should check where this file is attached
 	simcall_file_unlink(p_inferior,attached);
 }
 

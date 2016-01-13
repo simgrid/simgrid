@@ -434,7 +434,7 @@ CpuTiModel::~CpuTiModel()
   xbt_heap_free(p_tiActionHeap);
 }
 
-Cpu *CpuTiModel::createCpu(simgrid::Host *host,
+Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host,
 	                       xbt_dynar_t speedPeak,
 	                       int pstate,
                            double speedScale,
@@ -547,7 +547,7 @@ void CpuTiModel::addTraces()
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(CpuTiModel *model, simgrid::Host *host, xbt_dynar_t speedPeak,
+CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         int initiallyOn, tmgr_trace_t stateTrace)
   : Cpu(model, host, NULL, pstate, core, 0, speedScale, initiallyOn)

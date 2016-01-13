@@ -63,7 +63,7 @@ public:
    * @param cpu The Cpu associated to this VM
    */
   VirtualMachine(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
-		        simgrid::Host *host);
+		        simgrid::s4u::Host *host);
 
   /** @brief Destructor */
   ~VirtualMachine();
@@ -91,7 +91,7 @@ public:
 
   /* The vm object of the lower layer */
   CpuAction *p_action;
-  simgrid::Host *p_hostPM;
+  simgrid::s4u::Host *p_hostPM;
 
   void turnOn() override;
   void turnOff() override;
