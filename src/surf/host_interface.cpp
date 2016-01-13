@@ -82,9 +82,9 @@ void HostModel::adjustWeightOfDummyCpuActions()
 /************
  * Resource *
  ************/
-simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onCreation;
-simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onDestruction;
-simgrid::surf::signal<void(simgrid::surf::Host*)> Host::onStateChange;
+simgrid::xbt::signal<void(simgrid::surf::Host*)> Host::onCreation;
+simgrid::xbt::signal<void(simgrid::surf::Host*)> Host::onDestruction;
+simgrid::xbt::signal<void(simgrid::surf::Host*)> Host::onStateChange;
 
 void Host::classInit()
 {

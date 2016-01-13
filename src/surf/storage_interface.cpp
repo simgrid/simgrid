@@ -28,10 +28,10 @@ namespace surf {
  * Callbacks *
  *************/
 
-simgrid::surf::signal<void(simgrid::surf::Storage*)> storageCreatedCallbacks;
-simgrid::surf::signal<void(simgrid::surf::Storage*)> storageDestructedCallbacks;
-simgrid::surf::signal<void(simgrid::surf::Storage*, int, int)> storageStateChangedCallbacks; // signature: wasOn, isOn
-simgrid::surf::signal<void(simgrid::surf::StorageAction*, e_surf_action_state_t, e_surf_action_state_t)> storageActionStateChangedCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::Storage*)> storageCreatedCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::Storage*)> storageDestructedCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::Storage*, int, int)> storageStateChangedCallbacks; // signature: wasOn, isOn
+simgrid::xbt::signal<void(simgrid::surf::StorageAction*, e_surf_action_state_t, e_surf_action_state_t)> storageActionStateChangedCallbacks;
 
 /*********
  * Model *

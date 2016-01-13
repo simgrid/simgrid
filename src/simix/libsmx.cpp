@@ -11,13 +11,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cmath>         /* std::isfinite() */
+
 #include <functional>
 
 #include "src/mc/mc_replay.h"
 #include "smx_private.h"
 #include "src/mc/mc_forward.h"
 #include "xbt/ex.h"
-#include <math.h>         /* isfinite() */
 #include "mc/mc.h"
 #include "src/simix/smx_host_private.h"
 #include "src/simix/smx_private.hpp"
@@ -122,8 +123,8 @@ smx_synchro_t simcall_process_execute(const char *name,
                                     double priority, double bound, unsigned long affinity_mask)
 {
   /* checking for infinite values */
-  xbt_assert(isfinite(flops_amount), "flops_amount is not finite!");
-  xbt_assert(isfinite(priority), "priority is not finite!");
+  xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
+  xbt_assert(std::isfinite(priority), "priority is not finite!");
 
   return simcall_BODY_process_execute(name, flops_amount, priority, bound, affinity_mask);
 }
@@ -154,15 +155,15 @@ smx_synchro_t simcall_process_parallel_execute(const char *name,
   int i,j;
   /* checking for infinite values */
   for (i = 0 ; i < host_nb ; ++i) {
-     xbt_assert(isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
+     xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
      for (j = 0 ; j < host_nb ; ++j) {
-        xbt_assert(isfinite(bytes_amount[i + host_nb * j]),
+        xbt_assert(std::isfinite(bytes_amount[i + host_nb * j]),
              "bytes_amount[%d+%d*%d] is not finite!", i, host_nb, j);
      }
   }
 
-  xbt_assert(isfinite(amount), "amount is not finite!");
-  xbt_assert(isfinite(rate), "rate is not finite!");
+  xbt_assert(std::isfinite(amount), "amount is not finite!");
+  xbt_assert(std::isfinite(rate), "rate is not finite!");
 
   return simcall_BODY_process_parallel_execute(name, host_nb, host_list,
                                             flops_amount,
@@ -230,7 +231,7 @@ e_smx_state_t simcall_process_execution_get_state(smx_synchro_t execution)
 void simcall_process_execution_set_priority(smx_synchro_t execution, double priority)
 {
   /* checking for infinite values */
-  xbt_assert(isfinite(priority), "priority is not finite!");
+  xbt_assert(std::isfinite(priority), "priority is not finite!");
 
   simcall_BODY_process_execution_set_priority(execution, priority);
 }
@@ -720,7 +721,7 @@ XBT_PUBLIC(smx_process_t) simcall_process_restart(smx_process_t process)
 e_smx_state_t simcall_process_sleep(double duration)
 {
   /* checking for infinite values */
-  xbt_assert(isfinite(duration), "duration is not finite!");
+  xbt_assert(std::isfinite(duration), "duration is not finite!");
   return (e_smx_state_t) simcall_BODY_process_sleep(duration);
 }
 
@@ -804,9 +805,9 @@ void simcall_comm_send(smx_process_t sender, smx_rdv_t rdv, double task_size, do
                          double timeout)
 {
   /* checking for infinite values */
-  xbt_assert(isfinite(task_size), "task_size is not finite!");
-  xbt_assert(isfinite(rate), "rate is not finite!");
-  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  xbt_assert(std::isfinite(task_size), "task_size is not finite!");
+  xbt_assert(std::isfinite(rate), "rate is not finite!");
+  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
   xbt_assert(rdv, "No rendez-vous point defined for send");
 
@@ -836,8 +837,8 @@ smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_rdv_t rdv, double tas
                               int detached)
 {
   /* checking for infinite values */
-  xbt_assert(isfinite(task_size), "task_size is not finite!");
-  xbt_assert(isfinite(rate), "rate is not finite!");
+  xbt_assert(std::isfinite(task_size), "task_size is not finite!");
+  xbt_assert(std::isfinite(rate), "rate is not finite!");
 
   xbt_assert(rdv, "No rendez-vous point defined for isend");
 
@@ -854,7 +855,7 @@ void simcall_comm_recv(smx_process_t receiver, smx_rdv_t rdv, void *dst_buff, si
                        void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                        void *data, double timeout, double rate)
 {
-  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   xbt_assert(rdv, "No rendez-vous point defined for recv");
 
   if (MC_is_active() || MC_record_replay_is_active()) {
@@ -926,7 +927,7 @@ int simcall_comm_testany(xbt_dynar_t comms)
  */
 void simcall_comm_wait(smx_synchro_t comm, double timeout)
 {
-  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   simcall_BODY_comm_wait(comm, timeout);
 }
 
@@ -1108,7 +1109,7 @@ void simcall_cond_wait_timeout(smx_cond_t cond,
                                  smx_mutex_t mutex,
                                  double timeout)
 {
-  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   simcall_BODY_cond_wait_timeout(cond, mutex, timeout);
 }
 
@@ -1172,7 +1173,7 @@ void simcall_sem_acquire(smx_sem_t sem)
  */
 void simcall_sem_acquire_timeout(smx_sem_t sem, double timeout)
 {
-  xbt_assert(isfinite(timeout), "timeout is not finite!");
+  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   simcall_BODY_sem_acquire_timeout(sem, timeout);
 }
 

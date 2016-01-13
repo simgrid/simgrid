@@ -14,6 +14,9 @@
 
 #include <boost/function.hpp>
 #include <boost/intrusive/list.hpp>
+
+#include <xbt/signal.hpp>
+
 #include "surf/trace_mgr.h"
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
@@ -21,45 +24,6 @@
 #include "surf/surf.h"
 #include "src/surf/surf_private.h"
 #include "src/internal_config.h"
-
-#ifdef LIBSIGC
-#include <sigc++/sigc++.h>
-namespace simgrid {
-namespace surf {
-  // Wraps sigc++ signals with the interface of boost::signals2:
-  template<class T> class signal;
-  template<class R, class... P>
-  class signal<R(P...)> {
-  private:
-    sigc::signal<R, P...> sig_;
-  public:
-    template<class U> XBT_ALWAYS_INLINE
-    void connect(U&& slot)
-    {
-      sig_.connect(std::forward<U>(slot));
-    }
-    template<class Res, class... Args> XBT_ALWAYS_INLINE
-    void connect(Res(*slot)(Args...))
-    {
-      sig_.connect(sigc::ptr_fun(slot));
-    }
-    template<class... Args> XBT_ALWAYS_INLINE
-    R operator()(Args&&... args) const
-    {
-      return sig_.emit(std::forward<Args>(args)...);
-    }
-  };
-}
-}
-#else
-#include <boost/signals2.hpp>
-namespace simgrid {
-namespace surf {
-  template<class T>
-  using signal = ::boost::signals2::signal<T>;
-}
-}
-#endif
 
 extern XBT_PRIVATE tmgr_history_t history;
 #define NO_MAX_DURATION -1.0
@@ -86,7 +50,7 @@ extern XBT_PRIVATE double sg_sender_gap;
 namespace simgrid {
 namespace surf {
 
-extern XBT_PRIVATE simgrid::surf::signal<void(void)> surfExitCallbacks;
+extern XBT_PRIVATE simgrid::xbt::signal<void(void)> surfExitCallbacks;
 
 }
 }

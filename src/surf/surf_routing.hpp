@@ -8,6 +8,7 @@
 #define NETWORK_ROUTING_HPP_
 
 #include <xbt/base.h>
+#include <xbt/signal.hpp>
 
 #include "surf_interface.hpp"
 #include <float.h>
@@ -149,8 +150,8 @@ public:
  * Callbacks *
  *************/
 
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(NetCard*)>) routingEdgeCreatedCallbacks;
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(As*)>) asCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(NetCard*)>) routingEdgeCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(As*)>) asCreatedCallbacks;
 
 }
 }

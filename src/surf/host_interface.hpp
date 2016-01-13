@@ -79,9 +79,9 @@ public:
   static simgrid::xbt::Extension<simgrid::Host, Host> EXTENSION_ID;
 
   /* callbacks */
-  static simgrid::surf::signal<void(Host*)> onCreation;    /** Called on each newly created object */
-  static simgrid::surf::signal<void(Host*)> onDestruction; /** Called just before destructing an object */
-  static simgrid::surf::signal<void(Host*)> onStateChange; /** Called when the machine is turned on or off */
+  static simgrid::xbt::signal<void(Host*)> onCreation;    /** Called on each newly created object */
+  static simgrid::xbt::signal<void(Host*)> onDestruction; /** Called just before destructing an object */
+  static simgrid::xbt::signal<void(Host*)> onStateChange; /** Called when the machine is turned on or off */
 
 public:
   static void classInit(); // must be called before the first use of that class

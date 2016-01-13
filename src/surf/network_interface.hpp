@@ -36,11 +36,11 @@ class NetworkAction;
 
 /** @brief Callback signal fired when the state of a NetworkAction changes
  *  Signature: `void(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t current)` */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)>) networkActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)>) networkActionStateChangedCallbacks;
 
 /** @brief Callback signal fired when a NetworkAction is created (when a communication starts)
  *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)` */
-XBT_PUBLIC_DATA(simgrid::surf::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)>) networkCommunicateCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)>) networkCommunicateCallbacks;
 
 }
 }
@@ -207,15 +207,15 @@ private:
 public:
   /** @brief Callback signal fired when a new Link is created.
    *  Signature: void(Link*) */
-  static simgrid::surf::signal<void(simgrid::surf::Link*)> onCreation;
+  static simgrid::xbt::signal<void(simgrid::surf::Link*)> onCreation;
 
   /** @brief Callback signal fired when a Link is destroyed.
    *  Signature: void(Link*) */
-  static simgrid::surf::signal<void(simgrid::surf::Link*)> onDestruction;
+  static simgrid::xbt::signal<void(simgrid::surf::Link*)> onDestruction;
 
   /** @brief Callback signal fired when the state of a Link changes
    *  Signature: `void(LinkAction *action, int previouslyOn, int currentlyOn)` */
-  static simgrid::surf::signal<void(simgrid::surf::Link*, int, int)> onStateChange;
+  static simgrid::xbt::signal<void(simgrid::surf::Link*, int, int)> onStateChange;
 
 
   /** @brief Get the bandwidth in bytes per second of current Link */

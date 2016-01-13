@@ -31,7 +31,7 @@ Cpu *getActionCpu(CpuAction *action) {
 		                	 action->getVariable(), 0)));
 }
 
-simgrid::surf::signal<void(CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> cpuActionStateChangedCallbacks;
+simgrid::xbt::signal<void(CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> cpuActionStateChangedCallbacks;
 
 void cpu_add_traces(){
   surf_cpu_model_pm->addTraces();
@@ -349,7 +349,7 @@ void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
   XBT_OUT();
 }
 
-simgrid::surf::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> CpuAction::onStateChange;
+simgrid::xbt::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> CpuAction::onStateChange;
 
 void CpuAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t old = getState();

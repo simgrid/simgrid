@@ -95,12 +95,12 @@ void Link::linksExit() {
  * Callbacks *
  *************/
 
-simgrid::surf::signal<void(simgrid::surf::Link*)> Link::onCreation;
-simgrid::surf::signal<void(simgrid::surf::Link*)> Link::onDestruction;
-simgrid::surf::signal<void(simgrid::surf::Link*, int, int)> Link::onStateChange; // signature: wasOn, currentlyOn
+simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onCreation;
+simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onDestruction;
+simgrid::xbt::signal<void(simgrid::surf::Link*, int, int)> Link::onStateChange; // signature: wasOn, currentlyOn
 
-simgrid::surf::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)> networkActionStateChangedCallbacks;
-simgrid::surf::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)> networkCommunicateCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)> networkActionStateChangedCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)> networkCommunicateCallbacks;
 
 }
 }

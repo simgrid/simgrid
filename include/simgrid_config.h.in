@@ -90,4 +90,6 @@
 /* If Model-Checking support was requested */
 #cmakedefine HAVE_MC @HAVE_MC@
 
+#cmakedefine SIMGRID_HAVE_LIBSIG @SIMGRID_HAVE_LIBSIG@
+
 #endif /* SIMGRID_PUBLIC_CONFIG_H */

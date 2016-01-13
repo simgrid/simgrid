@@ -38,7 +38,7 @@ xbt_dict_t watched_hosts_lib;
 namespace simgrid {
 namespace surf {
 
-simgrid::surf::signal<void(void)> surfExitCallbacks;
+simgrid::xbt::signal<void(void)> surfExitCallbacks;
 
 }
 }

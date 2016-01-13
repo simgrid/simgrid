@@ -19,9 +19,9 @@ namespace surf {
  * Callbacks *
  *************/
 
-simgrid::surf::signal<void(simgrid::surf::VirtualMachine*)> VMCreatedCallbacks;
-simgrid::surf::signal<void(simgrid::surf::VirtualMachine*)> VMDestructedCallbacks;
-simgrid::surf::signal<void(simgrid::surf::VirtualMachine*)> VMStateChangedCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMCreatedCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMDestructedCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMStateChangedCallbacks;
 
 /*********
  * Model *
