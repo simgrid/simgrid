@@ -73,22 +73,30 @@ public:
   };
 
   /**
-   * @brief Get the route and latency between two RoutingEdges
-   * @details [long description]
+   * @brief Get the characteristics of the routing path between two points
+   *
+   * This function is used by the networking model to find the information it needs when starting a communication.
+   *
+   * The things are not straightforward because the platform can be routed using several routing models.
+   * Some ASes may be routed in full, others may have only some connection information and use a shortest path on top of that, and so on.
+   * Some ASes may even not have any predefined links and use only coordinate informations to compute the latency.
+   *
+   * So, the path is constructed recursively, with each traversed AS adding its information to the set.
+   * The algorithm for that is explained in http://hal.inria.fr/hal-00650233/
    * 
-   * @param src [description]
-   * @param dst [description]
-   * @param into [description]
-   * @param latency [description]
+   * @param src Initial point of the routing path
+   * @param dst Final point of the routing path
+   * @param into Container into which the links should be pushed
+   * @param latency Accumulator in which the latencies should be added
    */
   virtual void getRouteAndLatency(
-    NetCard *src, NetCard *dst,
-    sg_platf_route_cbarg_t into, double *latency)=0;
+      NetCard *src, NetCard *dst,
+      sg_platf_route_cbarg_t into, double *latency)=0;
   virtual xbt_dynar_t getOneLinkRoutes()=0;
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
   virtual sg_platf_route_cbarg_t getBypassRoute(
-    NetCard *src, NetCard *dst,
-    double *lat)=0;
+      NetCard *src, NetCard *dst,
+      double *lat)=0;
 
   /* The parser calls the following functions to inform the routing models
    * that a new element is added to the AS currently built.
