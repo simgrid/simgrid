@@ -65,3 +65,5 @@ endif()
 
 message(STATUS "Lua version: ${LUA_VERSION_MAJOR}.${LUA_VERSION_MINOR}")
 message(STATUS "Lua library: ${LUA_LIBRARY}")
+mark_as_advanced(LUA_INCLUDE_DIR)
+mark_as_advanced(LUA_LIBRARY)
