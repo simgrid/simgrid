@@ -37,7 +37,7 @@ class XBT_PRIVATE AsDijkstra;
 class AsDijkstra : public AsGeneric {
 public:
   AsDijkstra();
-  AsDijkstra(int cached);
+  AsDijkstra(bool cached);
   ~AsDijkstra();
 	xbt_node_t routeGraphNewNode(int id, int graph_id);
 	graph_node_map_element_t nodeMapSearch(int id);
@@ -55,17 +55,17 @@ public:
      * will have a loopback attached to it.
      */
 	void addLoopback();
-	void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat);
-	xbt_dynar_t getOnelinkRoutes();
-	void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat);
-	void parseASroute(sg_platf_route_cbarg_t route);
-	void parseRoute(sg_platf_route_cbarg_t route);
+	void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat) override;
+	xbt_dynar_t getOneLinkRoutes() override;
+	void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat); // FIXME: this function is dangerously not overriding because of diverging prototype
+	void parseASroute(sg_platf_route_cbarg_t route) override;
+	void parseRoute(sg_platf_route_cbarg_t route) override;
 	void end();
 
-  xbt_graph_t p_routeGraph;      /* xbt_graph */
-  xbt_dict_t p_graphNodeMap;    /* map */
-  xbt_dict_t p_routeCache;       /* use in cache mode */
-  int m_cached;
+  xbt_graph_t p_routeGraph = nullptr;      /* xbt_graph */
+  xbt_dict_t p_graphNodeMap = nullptr;    /* map */
+  xbt_dict_t p_routeCache = nullptr;       /* use in cache mode */
+  bool m_cached = false;
 };
 
 }

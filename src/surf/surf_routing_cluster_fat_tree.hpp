@@ -80,17 +80,13 @@ class FatTreeLink {
 public:
   FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *source,
               FatTreeNode *destination);
-  /** Link going up in the tree
-   */
+  /** Link going up in the tree */
   Link *upLink; 
-  /** Link going down in the tree
-   */
+  /** Link going down in the tree */
   Link *downLink;
-  /** Upper end of the link
-   */
+  /** Upper end of the link */
   FatTreeNode *upNode;
-  /** Lower end of the link
-   */
+  /** Lower end of the link */
   FatTreeNode *downNode;
 };
 
@@ -121,7 +117,7 @@ public:
   ~AsClusterFatTree();
   virtual void getRouteAndLatency(NetCard *src, NetCard *dst,
                                   sg_platf_route_cbarg_t into,
-                                  double *latency);
+                                  double *latency) override;
 
   /** \brief Generate the fat tree
    * 
@@ -135,8 +131,6 @@ public:
    * It will also store the cluster for future use.
    */
   void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster);
-  /** \brief Add a processing node.
-   */
   void addProcessingNode(int id);
   void generateDotFile(const std::string& filename = "fatTree.dot") const;
 

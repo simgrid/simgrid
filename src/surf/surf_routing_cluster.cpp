@@ -21,17 +21,6 @@ AS_t model_cluster_create(void)
 namespace simgrid {
 namespace surf {
 
-/* Creation routing model functions */
-AsCluster::AsCluster() : AsNone()
-{
-  p_backbone = 0;
-  p_loopback = 0;
-  p_router = 0;
-  p_has_limiter = 0;
-  p_has_loopback = 0;
-  p_nb_links_per_node = 1;
-}
-
 /* Business methods */
 void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {

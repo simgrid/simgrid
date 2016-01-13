@@ -51,7 +51,7 @@ int AsNone::parseAS(NetCard *elm) {
 }
 
 void AsNone::parseRoute(sg_platf_route_cbarg_t /*route*/){
-  THROW_IMPOSSIBLE;
+  THROW_IMPOSSIBLE; /* No. */
 }
 
 void AsNone::parseASroute(sg_platf_route_cbarg_t /*route*/){
@@ -59,13 +59,6 @@ void AsNone::parseASroute(sg_platf_route_cbarg_t /*route*/){
 }
 void AsNone::parseBypassroute(sg_platf_route_cbarg_t /*e_route*/){
   THROW_IMPOSSIBLE;
-}
-
-/* Creation routing model functions */
-AsNone::AsNone() {
-}
-
-AsNone::~AsNone() {
 }
 
 }

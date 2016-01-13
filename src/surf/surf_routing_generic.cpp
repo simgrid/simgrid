@@ -156,11 +156,6 @@ xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d,
 namespace simgrid {
 namespace surf {
 
-xbt_dynar_t AsGeneric::getOneLinkRoutes() { // FIXME: kill that stub
-  xbt_die("\"generic_get_onelink_routes\" not implemented yet");
-  return NULL;
-}
-
 void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
   int src, dst;

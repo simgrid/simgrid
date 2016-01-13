@@ -231,7 +231,7 @@ static void parse_ns3_end_platform(void)
 static void define_callbacks_ns3(void)
 {
   simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
-  simgrid::surf::routingEdgeCreatedCallbacks.connect(simgrid_ns3_add_router);
+  simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_router);
   sg_platf_link_add_cb (&parse_ns3_add_link);
   sg_platf_cluster_add_cb (&parse_ns3_add_cluster);
   simgrid::surf::asCreatedCallbacks.connect(parse_ns3_add_AS);

@@ -35,10 +35,10 @@ extern XBT_PRIVATE int sg_network_crosstraffic;
 extern XBT_PRIVATE xbt_dynar_t surf_path;
 
 typedef enum {
-  SURF_NETWORK_ELEMENT_NULL = 0,        /* NULL */
-  SURF_NETWORK_ELEMENT_HOST,    /* host type */
-  SURF_NETWORK_ELEMENT_ROUTER,  /* router type */
-  SURF_NETWORK_ELEMENT_AS       /* AS type */
+  SURF_NETWORK_ELEMENT_NULL = 0, /* NULL */
+  SURF_NETWORK_ELEMENT_HOST,     /* host type */
+  SURF_NETWORK_ELEMENT_ROUTER,   /* router type */
+  SURF_NETWORK_ELEMENT_AS        /* AS type */
 } e_surf_network_element_type_t;
 
 #ifdef __cplusplus

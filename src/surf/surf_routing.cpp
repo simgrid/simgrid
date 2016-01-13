@@ -23,7 +23,7 @@
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::signal<void(simgrid::surf::NetCard*)> routingEdgeCreatedCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::NetCard*)> netcardCreatedCallbacks;
 simgrid::xbt::signal<void(simgrid::surf::As*)> asCreatedCallbacks;
 
 }
@@ -61,7 +61,7 @@ simgrid::surf::NetCard *sg_netcard_by_name_or_null(const char *name)
   sg_host_t h = sg_host_by_name(name);
   simgrid::surf::NetCard *net_elm = h==NULL?NULL: h->pimpl_netcard;
   if (!net_elm)
-	net_elm = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
+    net_elm = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
   return net_elm;
 }
 
@@ -172,7 +172,7 @@ simgrid::surf::NetCard *routing_add_host(
   sg_host_t h = sg_host_by_name_or_create(host->id);
   h->pimpl_netcard = netcard;
   XBT_DEBUG("Having set name '%s' id '%d'", host->id, netcard->getId());
-  simgrid::surf::routingEdgeCreatedCallbacks(netcard);
+  simgrid::surf::netcardCreatedCallbacks(netcard);
 
   if(mount_list){
     xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
@@ -339,9 +339,9 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 
   /* set the new current component of the tree */
   current_routing = new_as;
-  current_routing->p_netElem = info;
+  current_routing->p_netcard = info;
 
-  simgrid::surf::routingEdgeCreatedCallbacks(info);
+  simgrid::surf::netcardCreatedCallbacks(info);
   simgrid::surf::asCreatedCallbacks(new_as);
 }
 
@@ -495,10 +495,10 @@ static void _get_route_and_latency(
 
   route.link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
   // Find the net_card corresponding to father
-  simgrid::surf::NetCard *src_father_net_elm = src_father->p_netElem;
-  simgrid::surf::NetCard *dst_father_net_elm = dst_father->p_netElem;
+  simgrid::surf::NetCard *src_father_netcard = src_father->p_netcard;
+  simgrid::surf::NetCard *dst_father_netcard = dst_father->p_netcard;
 
-  common_father->getRouteAndLatency(src_father_net_elm, dst_father_net_elm,
+  common_father->getRouteAndLatency(src_father_netcard, dst_father_netcard,
                                     &route, latency);
 
   xbt_assert((route.gw_src != NULL) && (route.gw_dst != NULL),
@@ -516,7 +516,6 @@ static void _get_route_and_latency(
   if (dst_gateway_net_elm != dst)
     _get_route_and_latency(dst_gateway_net_elm, dst, links, latency);
 
-  // if vivaldi latency+=vivaldi(src_gateway,dst_gateway)
 }
 
 AS_t surf_platf_get_root(routing_platf_t platf){
@@ -544,12 +543,10 @@ namespace surf {
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
  */
-void RoutingPlatf::getRouteAndLatency(
-  simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
-  xbt_dynar_t* route, double *latency)
+void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t* route, double *latency)
 {
   XBT_DEBUG("routing_get_route_and_latency from %s to %s", src->getName(), dst->getName());
-  if (!*route) {
+  if (NULL == *route) {
     xbt_dynar_reset(routing_platf->p_lastRoute);
     *route = routing_platf->p_lastRoute;
   }

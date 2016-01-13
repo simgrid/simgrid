@@ -176,7 +176,7 @@ void AsDijkstra::addLoopback() {
   }
 }
 
-xbt_dynar_t AsDijkstra::getOnelinkRoutes()
+xbt_dynar_t AsDijkstra::getOneLinkRoutes()
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
   sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
@@ -409,13 +409,10 @@ AsDijkstra::~AsDijkstra()
 
 /* Creation routing model functions */
 
-AsDijkstra::AsDijkstra() : AsGeneric(), m_cached(0) {
-  p_routeGraph = NULL;
-  p_graphNodeMap = NULL;
-  p_routeCache = NULL;
+AsDijkstra::AsDijkstra() : AsGeneric() {
 }
 
-AsDijkstra::AsDijkstra(int cached) : AsGeneric(), m_cached(cached)
+AsDijkstra::AsDijkstra(bool cached) : AsGeneric(), m_cached(cached)
 {
   p_routeGraph = NULL;
   p_graphNodeMap = NULL;

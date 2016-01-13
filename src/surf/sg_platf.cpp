@@ -95,7 +95,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
   info->setId(current_routing->parsePU(info));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'", router->id, info->getId());
-  simgrid::surf::routingEdgeCreatedCallbacks(info);
+  simgrid::surf::netcardCreatedCallbacks(info);
 
   if (router->coord && strcmp(router->coord, "")) {
     unsigned int cursor;

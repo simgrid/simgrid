@@ -49,10 +49,6 @@ void model_full_end(AS_t _routing)
 namespace simgrid {
 namespace surf {
 
-AsFull::AsFull(){
-  p_routingTable = 0;
-}
-
 AsFull::~AsFull(){
   if (p_routingTable) {
     int table_size = (int)xbt_dynar_length(p_indexNetworkElm);

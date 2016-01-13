@@ -55,7 +55,7 @@ public:
   char *p_name = nullptr;
   As *p_routingFather = nullptr;
   xbt_dict_t p_routingSons = xbt_dict_new_homogeneous(NULL);
-  NetCard *p_netElem;
+  NetCard *p_netcard;
   xbt_dynar_t p_linkUpDownList = NULL;
 
   /**
@@ -71,8 +71,8 @@ public:
     xbt_dynar_free(&p_indexNetworkElm);
     xbt_dynar_free(&p_linkUpDownList);
     xbt_free(p_name);
-    if (p_netElem)
-      delete p_netElem;
+    if (p_netcard)
+      delete p_netcard;
   };
 
   /**
@@ -161,7 +161,7 @@ public:
  * Callbacks *
  *************/
 
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(NetCard*)>) routingEdgeCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(NetCard*)>) netcardCreatedCallbacks;
 XBT_PUBLIC_DATA(simgrid::xbt::signal<void(As*)>) asCreatedCallbacks;
 
 }
