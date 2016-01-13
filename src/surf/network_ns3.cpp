@@ -39,9 +39,9 @@ static void replace_lat_ns3(char ** lat)
   xbt_free(temp);
 }
 
-static void simgrid_ns3_add_host(simgrid::Host& host)
+static void simgrid_ns3_add_host(simgrid::s4u::Host& host)
 {
-  const char* id = host.getName().c_str();
+  const char* id = host.name().c_str();
   XBT_DEBUG("NS3_ADD_HOST '%s'", id);
   host.extension_set(NS3_EXTENSION_ID, ns3_add_host(id));
 }
@@ -230,7 +230,7 @@ static void parse_ns3_end_platform(void)
 
 static void define_callbacks_ns3(void)
 {
-  simgrid::Host::onCreation.connect(simgrid_ns3_add_host);
+  simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
   simgrid::surf::routingEdgeCreatedCallbacks.connect(simgrid_ns3_add_router);
   sg_platf_link_add_cb (&parse_ns3_add_link);
   sg_platf_cluster_add_cb (&parse_ns3_add_cluster);
