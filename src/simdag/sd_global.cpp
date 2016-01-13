@@ -57,7 +57,9 @@ void SD_init(int *argc, char **argv)
   sd_global->recyclable_route = NULL;
   sd_global->watch_point_reached = 0;
 
-  sd_global->task_mallocator=xbt_mallocator_new(65536, SD_task_new_f,SD_task_free_f,SD_task_recycle_f);
+  sd_global->task_mallocator=xbt_mallocator_new(65536, SD_task_new_f,
+                                                SD_task_free_f,
+                                                SD_task_recycle_f);
 
   sd_global->initial_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
   sd_global->executable_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
@@ -87,7 +89,8 @@ void SD_init(int *argc, char **argv)
 
 /** \brief set a configuration variable
  *
- * Do --help on any simgrid binary to see the list of currently existing configuration variables, and see Section @ref options.
+ * Do --help on any simgrid binary to see the list of currently existing
+ * configuration variables, and see Section @ref options.
  *
  * Example:
  * SD_config("host/model","default");
@@ -106,9 +109,10 @@ void SD_config(const char *key, const char *value){
  *
  * @warning: this function is still experimental and not perfect. For example,
  * the simulation clock (and traces usage) is not reset. So, do not use it if
- * you use traces in your simulation, and do not use absolute timing after using it.
- * That being said, this function is still precious if you want to compare a bunch of
- * heuristics on the same platforms.
+ * you use traces in your simulation, and do not use absolute timing after
+ * using it.
+ * That being said, this function is still precious if you want to compare a
+ * bunch of heuristics on the same platforms.
  */
 void SD_application_reinit(void)
 {
@@ -203,7 +207,8 @@ void SD_create_environment(const char *platform_file)
  * when no more task can be executed.
  * Then you can call SD_simulate() again.
  *
- * \param how_long maximum duration of the simulation (a negative value means no time limit)
+ * \param how_long maximum duration of the simulation (a negative value means
+ * no time limit)
  * \return a dynar of \ref SD_task_t whose state has changed.
  * \see SD_task_schedule(), SD_task_watch()
  */
@@ -221,7 +226,8 @@ xbt_dynar_t SD_simulate(double how_long) {
 }
 
 xbt_swag_t SD_simulate_swag(double how_long) {
-  double total_time = 0.0;      /* we stop the simulation when total_time >= how_long */
+  /* we stop the simulation when total_time >= how_long */
+  double total_time = 0.0;
   double elapsed_time = 0.0;
   SD_task_t task, dst;
   SD_dependency_t dependency;
@@ -280,6 +286,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
                SD_task_get_name(task));
 
         /* the state has changed */
+        XBT_INFO("%d",xbt_swag_belongs(task, sd_global->return_set));
         xbt_swag_insert(task,sd_global->return_set);
 
         /* remove the dependencies after this task */
@@ -402,7 +409,7 @@ void SD_exit(void)
   xbt_free(sd_global->link_list);
   xbt_free(sd_global->recyclable_route);
 
-  XBT_DEBUG("Destroying the swags...");
+  XBT_DEBUG("Destroying the dynars and swags...");
   xbt_dynar_free_container(&(sd_global->initial_task_set));
   xbt_dynar_free_container(&(sd_global->executable_task_set));
   xbt_dynar_free_container(&(sd_global->completed_task_set));
