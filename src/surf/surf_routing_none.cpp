@@ -63,15 +63,9 @@ void AsNone::parseBypassroute(sg_platf_route_cbarg_t /*e_route*/){
 
 /* Creation routing model functions */
 AsNone::AsNone() {
-  p_routingSons = xbt_dict_new_homogeneous(NULL);
-  p_indexNetworkElm = xbt_dynar_new(sizeof(char*),NULL);
-  p_linkUpDownList = NULL;
 }
 
 AsNone::~AsNone() {
-  xbt_dict_free(&p_routingSons);
-  xbt_dynar_free(&p_indexNetworkElm);
-  xbt_dynar_free(&p_linkUpDownList);
 }
 
 }
