@@ -549,28 +549,3 @@ SD_task_t SD_workstation_get_current_task(SD_workstation_t workstation)
   return (sg_host_sd(workstation)->current_task);
 }
 
-/**
- * \brief Returns a #xbt_dict_t consisting of the list of properties assigned to the AS
- * or router
- *
- * \param AS, router name
- * \return the xbt_dict_t properties of the AS
- */
-xbt_dict_t SD_as_router_get_properties(const char *asr)
-{
-  return get_as_router_properties(asr);
-}
-/**
- * \brief Returns a #xbt_dict_t consisting of the list of properties assigned to the AS
- * or router
- *
- * \param AS, router name
- * \param The name of a properties
- * \return value of the properties
- */
-const char* SD_as_router_get_property_value(const char *asr, const char *name)
-{
-  xbt_dict_t dict = get_as_router_properties(asr);
-  if(!dict) return NULL;
-  return (const char*)xbt_dict_get_or_null(dict,name);
-}

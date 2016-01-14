@@ -98,11 +98,6 @@ typedef enum {
     @see SD_storage_management */
 typedef xbt_dictelm_t SD_storage_t;
 
-/************************** AS handling *************************************/
-XBT_PUBLIC(xbt_dict_t) SD_as_router_get_properties(const char *as);
-XBT_PUBLIC(const char*) SD_as_router_get_property_value(const char * as,
-                                                  const char *name);
-
 /************************** Link handling ***********************************/
 /** @defgroup SD_link_management Links
  *  @brief Functions for managing the network links
