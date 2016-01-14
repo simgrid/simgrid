@@ -194,7 +194,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
       xbt_dict_set(jobs, name, task, NULL);
       if (!strcmp(name, "root")){
       /* by design the root task is always SCHEDULABLE */
-      __SD_task_set_state(task, SD_SCHEDULABLE);
+      SD_task_set_state(task, SD_SCHEDULABLE);
       /* Put it at the beginning of the dynar */
         xbt_dynar_insert_at(result, 0, &task);
       } else {
@@ -275,7 +275,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
     else
       root = SD_task_create_comp_par_amdahl("root", NULL, 0, 0);
     /* by design the root task is always SCHEDULABLE */
-    __SD_task_set_state(root, SD_SCHEDULABLE);
+    SD_task_set_state(root, SD_SCHEDULABLE);
     /* Put it at the beginning of the dynar */
       xbt_dynar_insert_at(result, 0, &root);
   }
