@@ -28,7 +28,6 @@ int main(int argc, char **argv)
   double communication_amount2[] = { 0.0, 1.0, 0.0, 0.0 };
   double no_cost1[] = { 0.0 };
   double no_cost[] = { 0.0, 0.0 };
-  xbt_dynar_t ret;
 
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
@@ -47,8 +46,7 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, root, task1);
   SD_task_dependency_add(NULL, NULL, root, task2);
 
-  ret = SD_simulate(-1.0);
-  xbt_dynar_free(&ret);
+  SD_simulate(-1.0);
 
   time = SD_get_clock();
 

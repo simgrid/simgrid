@@ -19,7 +19,6 @@ int main(int argc, char **argv)
   const char *platform_file;
   const SD_workstation_t *workstations;
   SD_task_t taskA, taskB, taskC, taskD;
-  xbt_dynar_t changed_tasks;
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -80,14 +79,12 @@ int main(int argc, char **argv)
   SD_task_schedulel(taskD, 1, workstations[1]);
 
   /* let's launch the simulation! */
-  while (!xbt_dynar_is_empty(changed_tasks = SD_simulate(-1.0))) {
+  while (!xbt_dynar_is_empty(SD_simulate(-1.0))) {
     XBT_INFO(" Simulation was suspended, check workstation states"); 
     for (i = 0; i < 2; i++) {
       SD_workstation_dump(workstations[i]);
     }
-    xbt_dynar_free(&changed_tasks);
   }
-  xbt_dynar_free(&changed_tasks);
 
   XBT_DEBUG("Destroying tasks...");
 

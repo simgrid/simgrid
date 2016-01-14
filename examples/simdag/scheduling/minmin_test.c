@@ -254,7 +254,7 @@ int main(int argc, char **argv)
   SD_workstation_t workstation, selected_workstation = NULL;
   int total_nworkstations = 0;
   const SD_workstation_t *workstations = NULL;
-  xbt_dynar_t dax, changed;
+  xbt_dynar_t dax;
   FILE *out = NULL;
 
   /* initialization of SD */
@@ -303,12 +303,11 @@ int main(int argc, char **argv)
   workstation = SD_task_get_best_workstation(task);
   SD_task_schedulel(task, 1, workstation);
 
-  while (!xbt_dynar_is_empty((changed = SD_simulate(-1.0)))) {
+  while (!xbt_dynar_is_empty(SD_simulate(-1.0))) {
     /* Get the set of ready tasks */
     ready_tasks = get_ready_tasks(dax);
     if (xbt_dynar_is_empty(ready_tasks)) {
       xbt_dynar_free_container(&ready_tasks);
-      xbt_dynar_free_container(&changed);
       /* there is no ready task, let advance the simulation */
       continue;
     }
@@ -362,7 +361,6 @@ int main(int argc, char **argv)
     xbt_dynar_free_container(&ready_tasks);
     /* reset the min_finish_time for the next set of ready tasks */
     min_finish_time = -1.;
-    xbt_dynar_free_container(&changed);
   }
 
   XBT_INFO("Simulation Time: %f", SD_get_clock());
@@ -383,7 +381,6 @@ int main(int argc, char **argv)
 
 
   xbt_dynar_free_container(&ready_tasks);
-  xbt_dynar_free_container(&changed);
 
   xbt_dynar_foreach(dax, cursor, task) {
     SD_task_destroy(task);

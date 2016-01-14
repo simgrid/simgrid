@@ -27,7 +27,7 @@ static int name_compare_hosts(const void *n1, const void *n2)
 
 int main(int argc, char **argv)
 {
-  xbt_dynar_t dax, changed;
+  xbt_dynar_t dax;
   unsigned int cursor;
   SD_task_t task;
 
@@ -100,8 +100,7 @@ int main(int argc, char **argv)
 
   XBT_INFO
       ("------------------- Run the schedule ---------------------------");
-  changed = SD_simulate(-1);
-  xbt_dynar_free_container(&changed);
+  SD_simulate(-1);
   XBT_INFO
       ("------------------- Produce the trace file---------------------------");
   XBT_INFO("Producing the trace of the run into %s", tracefilename);

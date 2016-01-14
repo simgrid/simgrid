@@ -144,8 +144,7 @@ static xbt_dynar_t initDynamicThrottling(int *argc, char *argv[])
   fprintf(stdout, "Scheduling DAX...\n");
   scheduleDAX(dax);
   fprintf(stdout, "DAX scheduled\n");
-  xbt_dynar_t ret = SD_simulate(-1);
-  xbt_dynar_free(&ret);
+  SD_simulate(-1);
   fprintf(stdout, "Simulation end. Time: %f\n", SD_get_clock());
 
   return dax;

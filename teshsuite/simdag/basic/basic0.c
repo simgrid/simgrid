@@ -28,8 +28,7 @@ int main(int argc, char **argv)
   SD_task_t taskInit;
   SD_task_t taskA;
   SD_task_t taskB;
-  xbt_dynar_t ret;
-
+ 
   /* scheduling parameters */
 
   double communication_amount1[] = { 0, 1e8, 0, 0 };
@@ -59,8 +58,7 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, taskInit, taskA);
   SD_task_dependency_add(NULL, NULL, taskInit, taskB);
 
-  ret = SD_simulate(-1.0);
-  xbt_dynar_free(&ret);
+  SD_simulate(-1.0);
   SD_task_destroy(taskInit);
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);

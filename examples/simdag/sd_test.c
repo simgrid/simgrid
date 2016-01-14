@@ -197,8 +197,6 @@ int main(int argc, char **argv)
   xbt_assert(checkD == taskD &&
               checkB == taskB, "Unexpected simulation results");
 
-  xbt_dynar_free_container(&changed_tasks);
-
   XBT_DEBUG("Destroying tasks...");
 
   SD_task_destroy(taskA);

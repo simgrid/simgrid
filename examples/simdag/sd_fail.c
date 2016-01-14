@@ -19,7 +19,6 @@ int main(int argc, char **argv)
   double computation_amount[1];
   double communication_amount[2] = { 0 };
   SD_workstation_t workstation_list[1];
-  xbt_dynar_t ret;
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -39,8 +38,7 @@ int main(int argc, char **argv)
 
   SD_task_schedulel(task, 1, SD_workstation_get_by_name("Faulty Host"));
 
-  ret = SD_simulate(-1.0);
-  xbt_dynar_free(&ret);
+  SD_simulate(-1.0);
 
   SD_task_dump(task);
 
@@ -54,8 +52,7 @@ int main(int argc, char **argv)
   SD_task_schedulel(task, 1, SD_workstation_get_by_name("Safe Host"));
 
   XBT_INFO("Run the simulation again");
-  ret = SD_simulate(-1.0);
-  xbt_dynar_free(&ret);
+  SD_simulate(-1.0);
 
   SD_task_dump(task);
   XBT_INFO("Task '%s' start time: %f, finish time: %f",
@@ -81,8 +78,7 @@ int main(int argc, char **argv)
   SD_task_schedule(task, 1, workstation_list,
           computation_amount, communication_amount,-1);
 
-  ret = SD_simulate(-1.0);
-  xbt_dynar_free(&ret);
+  SD_simulate(-1.0);
 
   SD_task_dump(task);
 
@@ -100,8 +96,7 @@ int main(int argc, char **argv)
                    computation_amount, communication_amount,-1);
 
   XBT_INFO("Run the simulation again");
-  ret = SD_simulate(-1.0);
-  xbt_dynar_free(&ret);
+  SD_simulate(-1.0);
 
   SD_task_dump(task);
   XBT_INFO("Task '%s' start time: %f, finish time: %f",

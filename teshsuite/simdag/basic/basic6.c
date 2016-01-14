@@ -42,9 +42,8 @@ int main(int argc, char **argv)
 
   ret = SD_simulate(-1.0);
   xbt_assert(xbt_dynar_length(ret) == 2,
-      "I was expecting the terminaison of 2 tasks, but I got %lu instead",
+      "I was expecting the completion of 2 tasks, but I got %lu instead",
       xbt_dynar_length(ret));
-  xbt_dynar_free(&ret);
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);
 
