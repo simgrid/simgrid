@@ -8,9 +8,15 @@
 
 #ifdef SIMGRID_HAVE_LIBSIG
 #include <sigc++/sigc++.h>
+#else
+#include <boost/signals2.hpp>
+#endif
 
 namespace simgrid {
 namespace xbt {
+
+#ifdef SIMGRID_HAVE_LIBSIG
+
   // Wraps sigc++ signals with the interface of boost::signals2:
   template<class T> class signal;
   template<class R, class... P>
@@ -33,20 +39,20 @@ namespace xbt {
     {
       return sig_.emit(std::forward<Args>(args)...);
     }
+    void disconnect_all_slots()
+    {
+      sig_.clear();
+    }
   };
-}
-}
 
 #else
 
-#include <boost/signals2.hpp>
-namespace simgrid {
-namespace xbt {
   template<class T>
   using signal = ::boost::signals2::signal<T>;
-}
-}
 
 #endif
+
+}
+}
 
 #endif
