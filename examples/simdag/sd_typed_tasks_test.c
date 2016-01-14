@@ -90,9 +90,11 @@ int main(int argc, char **argv)
     XBT_INFO("Task '%s' start time: %f, finish time: %f",
           SD_task_get_name(task),
           SD_task_get_start_time(task), SD_task_get_finish_time(task));
+  }
+
+  xbt_dynar_foreach(changed_tasks, ctr, task) {
     SD_task_destroy(task);
   }
-  xbt_dynar_free_container(&changed_tasks);
   SD_exit();
   return 0;
 }

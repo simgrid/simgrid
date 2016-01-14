@@ -13,7 +13,6 @@
 #include "xbt/fifo.h"
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
-#include "xbt/swag.h"
 #include "xbt/mallocator.h"
 #include <stdbool.h>
 
@@ -37,7 +36,7 @@ typedef struct SD_global {
   xbt_dynar_t executable_task_set;
   xbt_dynar_t completed_task_set;
 
-  xbt_swag_t return_set;
+  xbt_dynar_t return_set;
   int task_number;
 
 } s_SD_global_t, *SD_global_t;
@@ -66,7 +65,6 @@ static inline SD_storage_priv_t SD_storage_priv(SD_storage_t storage){
 
 /* Task */
 typedef struct SD_task {
-  s_xbt_swag_hookup_t return_hookup;
   e_SD_task_state_t state;
   void *data;                   /* user data */
   char *name;
@@ -110,11 +108,6 @@ typedef struct SD_dependency {
 } s_SD_dependency_t, *SD_dependency_t;
 
 /* SimDag private functions */
-
-/* could be public, but you need to see the SD_task_t internals to use it */
-XBT_PRIVATE xbt_swag_t SD_simulate_swag(double how_long);
-
-
 XBT_PRIVATE SD_workstation_t __SD_workstation_create(const char* name);
 XBT_PRIVATE void __SD_workstation_destroy(void *workstation);
 XBT_PRIVATE int __SD_workstation_is_busy(SD_workstation_t workstation);

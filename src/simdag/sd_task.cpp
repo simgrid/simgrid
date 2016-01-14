@@ -35,8 +35,6 @@ void SD_task_recycle_f(void *t)
   task->kind = SD_TASK_NOT_TYPED;
   task->state= SD_NOT_SCHEDULED;
   xbt_dynar_push(sd_global->initial_task_set,&task);
-  task->return_hookup.prev = NULL;
-  task->return_hookup.next = NULL;
 
   task->marked = 0;
 
@@ -232,6 +230,7 @@ SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data,
  */
 void SD_task_destroy(SD_task_t task)
 {
+  int idx;
   XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
 
   __SD_task_remove_dependencies(task);
@@ -239,12 +238,15 @@ void SD_task_destroy(SD_task_t task)
   if (__SD_task_is_scheduled_or_runnable(task))
     __SD_task_destroy_scheduling_data(task);
 
-  xbt_swag_remove(task, sd_global->return_set);
+  idx = xbt_dynar_search_or_negative(sd_global->return_set, &task);
+  if (idx >=0) {
+    xbt_dynar_remove_at(sd_global->return_set, idx, NULL);
+  }
 
   xbt_free(task->name);
 
   if (task->surf_action != NULL)
-	task->surf_action->unref();
+    task->surf_action->unref();
 
   xbt_free(task->workstation_list);
   xbt_free(task->bytes_amount);
@@ -334,37 +336,37 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   case SD_SCHEDULABLE:
     if (SD_task_get_state(task) == SD_FAILED){
         xbt_dynar_remove_at(sd_global->completed_task_set,
-            xbt_dynar_search(sd_global->completed_task_set, &task), &task);
+            xbt_dynar_search(sd_global->completed_task_set, &task), NULL);
         xbt_dynar_push(sd_global->initial_task_set,&task);
     }
     break;
   case SD_SCHEDULED:
     if (SD_task_get_state(task) == SD_RUNNABLE){
       xbt_dynar_remove_at(sd_global->executable_task_set,
-          xbt_dynar_search(sd_global->executable_task_set, &task), &task);
+          xbt_dynar_search(sd_global->executable_task_set, &task), NULL);
       xbt_dynar_push(sd_global->initial_task_set,&task);
     }
     break;
   case SD_IN_FIFO:
     xbt_dynar_remove_at(sd_global->executable_task_set,
-       xbt_dynar_search(sd_global->executable_task_set, &task), &task);
+       xbt_dynar_search(sd_global->executable_task_set, &task), NULL);
     xbt_dynar_push(sd_global->initial_task_set,&task);
     break;
   case SD_RUNNABLE:
     idx = xbt_dynar_search_or_negative(sd_global->initial_task_set, &task);
     if (idx >= 0) {
-      xbt_dynar_remove_at(sd_global->initial_task_set, idx, &task);
+      xbt_dynar_remove_at(sd_global->initial_task_set, idx, NULL);
       xbt_dynar_push(sd_global->executable_task_set,&task);
     }
     break;
   case SD_RUNNING:
     if (SD_task_get_state(task) == SD_RUNNABLE){
       xbt_dynar_remove_at(sd_global->executable_task_set,
-         xbt_dynar_search(sd_global->executable_task_set, &task), &task);
+         xbt_dynar_search(sd_global->executable_task_set, &task), NULL);
     } else {
       if (SD_task_get_state(task) == SD_IN_FIFO){
         xbt_dynar_remove_at(sd_global->initial_task_set,
-            xbt_dynar_search(sd_global->initial_task_set, &task), &task);
+            xbt_dynar_search(sd_global->initial_task_set, &task), NULL);
       }
     }
     break;

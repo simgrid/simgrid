@@ -47,8 +47,6 @@ void SD_init(int *argc, char **argv)
 {
   TRACE_global_init(argc, argv);
 
-  s_SD_task_t task;
-
   xbt_assert(sd_global == NULL, "SD_init() already called");
 
   sd_global = xbt_new(s_SD_global_t, 1);
@@ -64,9 +62,8 @@ void SD_init(int *argc, char **argv)
   sd_global->initial_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
   sd_global->executable_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
   sd_global->completed_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  sd_global->return_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
 
-  sd_global->return_set =
-      xbt_swag_new(xbt_swag_offset(task, return_hookup));
   sd_global->task_number = 0;
 
   surf_init(argc, argv);
@@ -214,18 +211,6 @@ void SD_create_environment(const char *platform_file)
  */
 
 xbt_dynar_t SD_simulate(double how_long) {
-  xbt_dynar_t changed_tasks = xbt_dynar_new(sizeof(SD_task_t), NULL);
-  SD_task_t task;
-
-  SD_simulate_swag(how_long);
-  while( (task = (SD_task_t)xbt_swag_extract(sd_global->return_set)) != NULL) {
-    xbt_dynar_push(changed_tasks, &task);
-  }
-
-  return changed_tasks;
-}
-
-xbt_swag_t SD_simulate_swag(double how_long) {
   /* we stop the simulation when total_time >= how_long */
   double total_time = 0.0;
   double elapsed_time = 0.0;
@@ -245,13 +230,13 @@ xbt_swag_t SD_simulate_swag(double how_long) {
   XBT_VERB("Run simulation for %f seconds", how_long);
   sd_global->watch_point_reached = 0;
 
-  xbt_swag_reset(sd_global->return_set);
+  xbt_dynar_reset(sd_global->return_set);
 
   /* explore the runnable tasks */
   xbt_dynar_foreach(sd_global->executable_task_set , iter, task) {
     XBT_VERB("Executing task '%s'", SD_task_get_name(task));
     if (__SD_task_try_to_run(task)){
-      xbt_swag_insert(task,sd_global->return_set);
+      xbt_dynar_push(sd_global->return_set, &task);
       iter--;
     }
   }
@@ -285,9 +270,10 @@ xbt_swag_t SD_simulate_swag(double how_long) {
         XBT_DEBUG("__SD_task_just_done called on task '%s'",
                SD_task_get_name(task));
 
-        /* the state has changed */
-        XBT_INFO("%d",xbt_swag_belongs(task, sd_global->return_set));
-        xbt_swag_insert(task,sd_global->return_set);
+        /* the state has changed. Add it only if it's the first change */
+        if (xbt_dynar_search_or_negative(sd_global->return_set, &task) < 0) {
+          xbt_dynar_push(sd_global->return_set, &task);
+        }
 
         /* remove the dependencies after this task */
         xbt_dynar_foreach(task->tasks_after, depcnt, dependency) {
@@ -337,7 +323,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
               && !sd_global->watch_point_reached) {
             XBT_VERB("Executing task '%s'", SD_task_get_name(dst));
             if (__SD_task_try_to_run(dst))
-              xbt_swag_insert(dst,sd_global->return_set);
+              xbt_dynar_push(sd_global->return_set, &dst);
           }
         }
       }
@@ -352,7 +338,7 @@ xbt_swag_t SD_simulate_swag(double how_long) {
         action->unref();
         task->surf_action = NULL;
 
-        xbt_swag_insert(task,sd_global->return_set);
+        xbt_dynar_push(sd_global->return_set, &task);
       }
     }
   }
@@ -409,11 +395,11 @@ void SD_exit(void)
   xbt_free(sd_global->link_list);
   xbt_free(sd_global->recyclable_route);
 
-  XBT_DEBUG("Destroying the dynars and swags...");
+  XBT_DEBUG("Destroying the dynars ...");
   xbt_dynar_free_container(&(sd_global->initial_task_set));
   xbt_dynar_free_container(&(sd_global->executable_task_set));
   xbt_dynar_free_container(&(sd_global->completed_task_set));
-  xbt_swag_free(sd_global->return_set);
+  xbt_dynar_free_container(&(sd_global->return_set));
 
   TRACE_end();
 
