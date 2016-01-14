@@ -675,6 +675,7 @@ set(headers_to_install
   include/simgrid/simix.hpp
   include/simgrid/host.h
   include/simgrid/link.h
+  include/simgrid/s4u/forward.hpp
   include/simgrid/s4u/actor.hpp
   include/simgrid/s4u/async.hpp
   include/simgrid/s4u/comm.hpp

@@ -10,6 +10,7 @@
 #include <boost/unordered_map.hpp>
 #include "xbt/base.h"
 #include "simgrid/simix.h"
+#include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
 namespace s4u {

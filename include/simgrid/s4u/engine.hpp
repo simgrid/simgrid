@@ -8,6 +8,8 @@
 
 #include <xbt/base.h>
 
+#include <simgrid/s4u/forward.hpp>
+
 namespace simgrid {
 namespace s4u {
 /** @brief Simulation engine

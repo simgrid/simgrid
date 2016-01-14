@@ -9,12 +9,11 @@
 #include <boost/unordered_map.hpp>
 
 #include <xbt/base.h>
+#include <simgrid/s4u/forward.hpp>
 #include <simgrid/s4u/actor.hpp>
 
 namespace simgrid {
 namespace s4u {
-
-class Comm;
 
 /** @brief Mailboxes
  *

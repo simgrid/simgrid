@@ -11,6 +11,8 @@
 #include <xbt/base.h>
 #include <xbt/misc.h>
 
+#include <simgrid/s4u/forward.hpp>
+
 SG_BEGIN_DECL();
 typedef enum {
 	inited, started, finished
@@ -19,10 +21,6 @@ SG_END_DECL();
 
 namespace simgrid {
 namespace s4u {
-
-/* Forward declaration */
-class Comm;
-
 
 /** @brief Asynchronous Actions
  *

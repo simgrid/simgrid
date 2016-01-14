@@ -8,13 +8,12 @@
 #define SIMGRID_S4U_COMM_HPP
 
 #include <xbt/base.h>
+#include <simgrid/s4u/forward.hpp>
 #include <simgrid/s4u/async.hpp>
 #include <simgrid/s4u/mailbox.hpp>
 
 namespace simgrid {
 namespace s4u {
-
-class Mailbox;
 
 /** @brief Communication async
  *

@@ -8,13 +8,10 @@
 
 #include <xbt/base.h>
 #include <simgrid/simix.h>
+#include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
 namespace s4u {
-
-class Comm;
-class Host;
-class Mailbox;
 
 /** @brief Simulation Agent
  *
