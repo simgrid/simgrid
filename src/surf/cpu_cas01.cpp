@@ -8,6 +8,7 @@
 #include "cpu_ti.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
+#include "src/surf/platform.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
                                 "Logging specific to the SURF CPU IMPROVED module");
@@ -32,7 +33,7 @@ void surf_cpu_model_init_Cas01()
   surf_cpu_model_vm  = new simgrid::surf::CpuCas01Model();
   xbt_dynar_push(all_existing_models, &surf_cpu_model_vm);
 
-  sg_platf_postparse_add_cb(simgrid::surf::cpu_add_traces);
+  simgrid::surf::on_postparse.connect(simgrid::surf::cpu_add_traces);
 }
 
 namespace simgrid {

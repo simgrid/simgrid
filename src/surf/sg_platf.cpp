@@ -15,14 +15,22 @@
 #include "surf/surf.h"
 
 #include "src/simix/smx_private.h"
+#include "src/surf/platform.hpp"
 
 #include "cpu_interface.hpp"
 #include "host_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
-static simgrid::xbt::signal<void(sg_platf_link_cbarg_t)> on_link;
-static simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
-static simgrid::xbt::signal<void(void)> on_postparse;
+
+namespace simgrid {
+namespace surf {
+
+simgrid::xbt::signal<void(sg_platf_link_cbarg_t)> on_link;
+simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
+simgrid::xbt::signal<void(void)> on_postparse;
+
+}
+}
 
 static int surf_parse_models_setup_already_called = 0;
 
@@ -35,9 +43,9 @@ void sg_platf_init(void) {
 
 /** Module management function: frees all internal data structures */
 void sg_platf_exit(void) {
-  on_link.disconnect_all_slots();
-  on_cluster.disconnect_all_slots();
-  on_postparse.disconnect_all_slots();
+  simgrid::surf::on_link.disconnect_all_slots();
+  simgrid::surf::on_cluster.disconnect_all_slots();
+  simgrid::surf::on_postparse.disconnect_all_slots();
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
@@ -114,13 +122,13 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 }
 
 void sg_platf_new_link(sg_platf_link_cbarg_t link){
-  on_link(link);
+  simgrid::surf::on_link(link);
 }
 
 void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   routing_new_cluster(cluster);
-  on_cluster(cluster);
+  simgrid::surf::on_cluster(cluster);
 }
 
 void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
@@ -360,7 +368,7 @@ void sg_platf_ASroute_add_link (const char* link_id, sg_platf_route_cbarg_t ASro
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
 
 void sg_platf_end() {
-  on_postparse();
+  simgrid::surf::on_postparse();
 }
 
 void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
@@ -399,16 +407,6 @@ void sg_platf_new_AS_end()
     sg_instr_AS_end();
 }
 /* ***************************************** */
-
-void sg_platf_link_add_cb(sg_platf_link_cb_t fct) {
-  on_link.connect(fct);
-}
-void sg_platf_cluster_add_cb(sg_platf_cluster_cb_t fct) {
-  on_cluster.connect(fct);
-}
-void sg_platf_postparse_add_cb(void_f_void_t fct) {
-  on_postparse.connect(fct);
-}
 
 void sg_platf_rng_stream_init(unsigned long seed[6]) {
   RngStream_SetPackageSeed(seed);

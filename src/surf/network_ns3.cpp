@@ -8,6 +8,7 @@
 #include "src/surf/surf_private.h"
 #include "src/surf/host_interface.hpp"
 #include "simgrid/sg_config.h"
+#include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
@@ -232,11 +233,11 @@ static void define_callbacks_ns3(void)
 {
   simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
   simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_router);
-  sg_platf_link_add_cb (&parse_ns3_add_link);
-  sg_platf_cluster_add_cb (&parse_ns3_add_cluster);
+  simgrid::surf::on_link.connect (&parse_ns3_add_link);
+  simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
   simgrid::surf::asCreatedCallbacks.connect(parse_ns3_add_AS);
-  sg_platf_postparse_add_cb(&create_ns3_topology); //get_one_link_routes
-  sg_platf_postparse_add_cb(&parse_ns3_end_platform); //InitializeRoutes
+  simgrid::surf::on_postparse.connect(&create_ns3_topology); //get_one_link_routes
+  simgrid::surf::on_postparse.connect(&parse_ns3_end_platform); //InitializeRoutes
 }
 
 /*********

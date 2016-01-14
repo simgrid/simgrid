@@ -7,6 +7,7 @@
 #include "cpu_ti.hpp"
 #include "trace_mgr_private.h"
 #include "xbt/heap.h"
+#include "src/surf/platform.hpp"
 
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
@@ -390,7 +391,7 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
 
 static void cpu_ti_define_callbacks()
 {
-  sg_platf_postparse_add_cb(simgrid::surf::cpu_add_traces);
+  simgrid::surf::on_postparse.connect(simgrid::surf::cpu_add_traces);
 }
 
 /*********

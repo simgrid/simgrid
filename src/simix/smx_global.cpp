@@ -37,6 +37,7 @@
 #endif 
 
 #include "src/mc/mc_record.h"
+#include "src/surf/platform.hpp"
 
 #ifdef HAVE_SMPI
 #include "src/smpi/private.h"
@@ -230,7 +231,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();
-    sg_platf_postparse_add_cb(SIMIX_post_create_environment);
+    simgrid::surf::on_postparse.connect(SIMIX_post_create_environment);
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       SIMIX_host_create(&host);
     });

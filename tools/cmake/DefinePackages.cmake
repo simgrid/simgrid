@@ -63,6 +63,7 @@ set(EXTRA_DIST
   src/surf/ns3/ns3_simulator.h
   src/surf/ns3/red-queue.h
   src/surf/platf_generator_private.h
+  src/surf/platform.hpp
   src/surf/plugins/energy.hpp
   src/surf/simgrid.dtd
   src/surf/simgrid_dtd.c

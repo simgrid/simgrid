@@ -8,6 +8,7 @@
 
 #include "src/surf/surf_private.h"
 #include "xbt/graph.h"
+#include "src/surf/platform.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
@@ -343,8 +344,8 @@ void instr_routing_define_callbacks ()
   //always need the call backs to ASes (we need only the root AS),
   //to create the rootContainer and the rootType properly
   if (!TRACE_needs_platform()) return;
-  sg_platf_link_add_cb(instr_routing_parse_start_link);
-  sg_platf_postparse_add_cb(instr_routing_parse_end_platform);
+  simgrid::surf::on_link.connect(instr_routing_parse_start_link);
+  simgrid::surf::on_postparse.connect(instr_routing_parse_end_platform);
 }
 
 /*

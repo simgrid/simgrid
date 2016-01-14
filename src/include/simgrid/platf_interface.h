@@ -22,15 +22,6 @@ SG_BEGIN_DECL()
 XBT_PUBLIC(void) sg_platf_init(void);
 XBT_PUBLIC(void) sg_platf_exit(void);
 
-/* Managing the parsing callbacks */
-
-typedef void (*sg_platf_link_cb_t)(sg_platf_link_cbarg_t);
-typedef void (*sg_platf_cluster_cb_t)(sg_platf_cluster_cbarg_t);
-
-XBT_PUBLIC(void) sg_platf_link_add_cb(sg_platf_link_cb_t);
-XBT_PUBLIC(void) sg_platf_cluster_add_cb(sg_platf_cluster_cb_t fct);
-XBT_PUBLIC(void) sg_platf_postparse_add_cb(void_f_void_t fct);
-
 /** \brief Pick the right models for CPU, net and host, and call their model_init_preparse
  *
  * Must be called within parsing/creating the environment (after the <config>s, if any, and before <AS> or friends such as <cluster>)

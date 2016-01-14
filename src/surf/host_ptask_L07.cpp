@@ -13,6 +13,7 @@
 #include "cpu_interface.hpp"
 #include "surf_routing.hpp"
 #include "xbt/lib.h"
+#include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 
@@ -33,8 +34,8 @@ void surf_host_model_init_ptask_L07(void)
   xbt_assert(!surf_network_model, "network model type already defined");
 
   // Define the callbacks to parse the XML
-  sg_platf_link_add_cb(ptask_netlink_parse_init);
-  sg_platf_postparse_add_cb(host_add_traces);
+  simgrid::surf::on_link.connect(ptask_netlink_parse_init);
+  simgrid::surf::on_postparse.connect(host_add_traces);
 
   surf_host_model = new simgrid::surf::HostL07Model();
   xbt_dynar_push(all_existing_models, &surf_host_model);

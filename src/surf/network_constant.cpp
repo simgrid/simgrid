@@ -8,6 +8,7 @@
 #include "surf/random_mgr.h"
 
 #include "host_interface.hpp"
+#include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 static int host_number_int = 0;
@@ -30,7 +31,7 @@ void surf_network_model_init_Constant()
   simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host&) {
     host_number_int++;
   });
-  sg_platf_link_add_cb(netcste_parse_nolink);
+  simgrid::surf::on_link.connect(netcste_parse_nolink);
 
   simgrid::surf::Model *model = surf_network_model;
   xbt_dynar_push(all_existing_models, &model);

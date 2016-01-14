@@ -13,7 +13,7 @@
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 #include "simgrid/sg_config.h"
 #include "storage_interface.hpp"
-
+#include "src/surf/platform.hpp"
 #include "surf/surfxml_parse_values.h"
 
 /*************
@@ -1226,8 +1226,8 @@ static void check_disk_attachment()
 
 void routing_register_callbacks()
 {
-  sg_platf_postparse_add_cb(routing_parse_postparse);
-  sg_platf_postparse_add_cb(check_disk_attachment);
+  simgrid::surf::on_postparse.connect(routing_parse_postparse);
+  simgrid::surf::on_postparse.connect(check_disk_attachment);
 
   instr_routing_define_callbacks();
 }

@@ -9,6 +9,7 @@
 #include "network_cm02.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
+#include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
@@ -27,8 +28,8 @@ int sg_network_crosstraffic = 0;
 void net_define_callbacks(void)
 {
   /* Figuring out the network links */
-  sg_platf_link_add_cb(netlink_parse_init);
-  sg_platf_postparse_add_cb(net_add_traces);
+  simgrid::surf::on_link.connect(netlink_parse_init);
+  simgrid::surf::on_postparse.connect(net_add_traces);
 }
 
 /*********
