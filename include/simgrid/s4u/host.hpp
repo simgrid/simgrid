@@ -16,13 +16,10 @@
 
 #include <simgrid/simix.h>
 #include <simgrid/datatypes.h>
+#include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
 namespace s4u {
-
-class Actor;
-class Storage;
-class File;
 
 /** @brief Simulated machine that can host some actors
  *
