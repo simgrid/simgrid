@@ -16,13 +16,10 @@
 
 #include <simgrid/simix.h>
 #include <simgrid/datatypes.h>
+#include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
 namespace s4u {
-
-class Actor;
-class Storage;
-class File;
 
 /** @brief Simulated machine that can host some actors
  *
@@ -45,13 +42,13 @@ private:
 public: // TODO, make me private
 	~Host();
 public:
-	/** Retrieves an host from its name. */
-	static s4u::Host *byName(std::string name);
-	/** Retrieves the host on which the current actor is running */
-	static s4u::Host *current();
 
   static Host* by_name_or_null(const char* name);
   static Host* by_name_or_create(const char* name);
+	/** Retrieves an host from its name. */
+	static s4u::Host *by_name(std::string name);
+	/** Retrieves the host on which the current actor is running */
+	static s4u::Host *current();
 
 	simgrid::xbt::string const& name() const { return name_; }
 
@@ -81,25 +78,17 @@ public:
   xbt_dict_t getMountedStorageList();
   xbt_dynar_t getAttachedStorageList();
 
-	/** Allows to store user data on that host */
-	// TODO, use the extension stuff instead
-	void set_userdata(void *data) {p_userdata = data;}
-	/** Retrieves the previously stored data */
-	void* userdata() {return p_userdata;}
-
 	/** Get an associative list [mount point]->[Storage] off all local mount points.
 	 *
 	 *	This is defined in the platform file, and cannot be modified programatically (yet).
 	 *
 	 *	Do not change the returned value in any way.
 	 */
-	// TODO, do not use Storage&, this looks dangerous!
-	boost::unordered_map<std::string, Storage&> &mountedStorages();
+	boost::unordered_map<std::string, Storage*> &mountedStorages();
 
 private:
 	simgrid::xbt::string name_ = "noname";
-	boost::unordered_map<std::string, Storage&> *mounts = NULL; // caching
-	void* p_userdata = NULL;
+	boost::unordered_map<std::string, Storage*> *mounts = NULL; // caching
 
 public:
 	// FIXME: these should be protected, but it leads to many errors
@@ -108,8 +97,6 @@ public:
 	surf::NetCard *pimpl_netcard = nullptr;
 
 public:
-	static boost::unordered_map<std::string, s4u::Host *> *hosts;
-
 	/*** Called on each newly created object */
 	static simgrid::xbt::signal<void(Host&)> onCreation;
 	/*** Called just before destructing an object */

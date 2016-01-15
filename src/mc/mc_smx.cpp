@@ -196,7 +196,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
     ~fake_host() {}
   };
   fake_host foo;
-  const size_t offset = (char*) &foo.host.getName() - (char*) &foo.host;
+  const size_t offset = (char*) &foo.host.name() - (char*) &foo.host;
 
   // Read the simgrid::xbt::string in the MCed process:
   mc_smx_process_info_t info = MC_smx_process_get_info(p);

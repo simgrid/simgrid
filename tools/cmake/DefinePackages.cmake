@@ -703,6 +703,7 @@ set(headers_to_install
   include/xbt/cunit.h
   include/xbt/dict.h
   include/xbt/string.hpp
+  include/xbt/signal.hpp
   include/xbt/dynar.h
   include/xbt/ex.h
   include/xbt/fifo.h

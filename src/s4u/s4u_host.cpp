@@ -31,9 +31,6 @@ int USER_HOST_LEVEL;
 namespace simgrid {
 namespace s4u {
 
-boost::unordered_map<std::string, Host*> *Host::hosts
-		= new boost::unordered_map<std::string, Host*>();
-
 simgrid::xbt::signal<void(Host&)> Host::onCreation;
 simgrid::xbt::signal<void(Host&)> Host::onDestruction;
 simgrid::xbt::signal<void(Host&)> Host::onStateChange;
@@ -48,7 +45,7 @@ Host::~Host() {
 		delete mounts;
 }
 
-Host *Host::byName(std::string name) {
+Host *Host::by_name(std::string name) {
 	Host* host = Host::by_name_or_null(name.c_str());
 	// TODO, raise an exception instead?
 	if (host == nullptr)
@@ -79,9 +76,9 @@ int Host::getNbPStates() const {
 	return this->pimpl_cpu->getNbPStates();
 }
 
-boost::unordered_map<std::string, Storage&> &Host::mountedStorages() {
+boost::unordered_map<std::string, Storage*> &Host::mountedStorages() {
 	if (mounts == NULL) {
-		mounts = new boost::unordered_map<std::string, Storage&> ();
+		mounts = new boost::unordered_map<std::string, Storage*> ();
 
 		xbt_dict_t dict = this->getMountedStorageList();
 
@@ -89,7 +86,7 @@ boost::unordered_map<std::string, Storage&> &Host::mountedStorages() {
 		char *mountname;
 		char *storagename;
 		xbt_dict_foreach(dict, cursor, mountname, storagename) {
-			mounts->insert({mountname, Storage::byName(storagename)});
+			mounts->insert({mountname, &Storage::byName(storagename)});
 		}
 		xbt_dict_free(&dict);
 	}

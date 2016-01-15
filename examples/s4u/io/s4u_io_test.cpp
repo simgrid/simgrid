@@ -16,13 +16,13 @@ public:
 	myHost(const char*procname, simgrid::s4u::Host *host,int argc, char **argv)
 : simgrid::s4u::Actor(procname,host,argc,argv){}
 
-	void show_info(boost::unordered_map <std::string, simgrid::s4u::Storage &> &mounts) {
+	void show_info(boost::unordered_map <std::string, simgrid::s4u::Storage*> &mounts) {
 		XBT_INFO("Storage info on %s:",
 			simgrid::s4u::Host::current()->name().c_str());
 
 		for (const auto&kv : mounts) {
 			const char* mountpoint = kv.first.c_str();
-			simgrid::s4u::Storage &storage = kv.second;
+			simgrid::s4u::Storage &storage = *kv.second;
 
 			// Retrieve disk's information
 			sg_size_t free_size = storage.size_free();
@@ -35,7 +35,7 @@ public:
 	}
 
 	int main(int argc, char **argv) {
-		boost::unordered_map <std::string, simgrid::s4u::Storage &> &mounts =
+		boost::unordered_map <std::string, simgrid::s4u::Storage *>& mounts =
 			simgrid::s4u::Host::current()->mountedStorages();
 
 		show_info(mounts);
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 	simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
 	e->loadPlatform("../../platforms/storage/storage.xml");
 
-	new myHost("host", simgrid::s4u::Host::byName("denise"), 0, NULL);
+	new myHost("host", simgrid::s4u::Host::by_name("denise"), 0, NULL);
 	e->run();
 	return 0;
 }
