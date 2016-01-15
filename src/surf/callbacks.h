@@ -18,7 +18,6 @@
 
 SG_BEGIN_DECL();
 
-XBT_PRIVATE void surf_on_host_created(void (*callback)(sg_host_t));
 XBT_PRIVATE void surf_on_storage_created(void (*callback)(sg_storage_t));
 
 SG_END_DECL();
