@@ -76,9 +76,9 @@ int Host::getNbPStates() const {
 	return this->pimpl_cpu->getNbPStates();
 }
 
-boost::unordered_map<std::string, Storage&> &Host::mountedStorages() {
+boost::unordered_map<std::string, Storage*> &Host::mountedStorages() {
 	if (mounts == NULL) {
-		mounts = new boost::unordered_map<std::string, Storage&> ();
+		mounts = new boost::unordered_map<std::string, Storage*> ();
 
 		xbt_dict_t dict = this->getMountedStorageList();
 
@@ -86,7 +86,7 @@ boost::unordered_map<std::string, Storage&> &Host::mountedStorages() {
 		char *mountname;
 		char *storagename;
 		xbt_dict_foreach(dict, cursor, mountname, storagename) {
-			mounts->insert({mountname, Storage::byName(storagename)});
+			mounts->insert({mountname, &Storage::byName(storagename)});
 		}
 		xbt_dict_free(&dict);
 	}

@@ -94,11 +94,11 @@ public:
 	 *	Do not change the returned value in any way.
 	 */
 	// TODO, do not use Storage&, this looks dangerous!
-	boost::unordered_map<std::string, Storage&> &mountedStorages();
+	boost::unordered_map<std::string, Storage*> &mountedStorages();
 
 private:
 	simgrid::xbt::string name_ = "noname";
-	boost::unordered_map<std::string, Storage&> *mounts = NULL; // caching
+	boost::unordered_map<std::string, Storage*> *mounts = NULL; // caching
 	void* p_userdata = NULL;
 
 public:
