@@ -26,7 +26,7 @@ public:
   template<class T>
   void update(T& x)
   {
-    state_ = (state_ << 5) + state_ + (std::uint64_t) value;
+    state_ = (state_ << 5) + state_ + state_;
   }
   hash_type value()
   {
