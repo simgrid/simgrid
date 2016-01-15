@@ -62,7 +62,7 @@ void s4u::Actor::setAutoRestart(bool autorestart) {
 }
 
 s4u::Host *s4u::Actor::getHost() {
-	return s4u::Host::byName(sg_host_get_name(simcall_process_get_host(p_smx_process)));
+	return s4u::Host::by_name(sg_host_get_name(simcall_process_get_host(p_smx_process)));
 }
 const char* s4u::Actor::getName() {
 	return simcall_process_get_name(p_smx_process);

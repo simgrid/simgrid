@@ -45,7 +45,7 @@ Host::~Host() {
 		delete mounts;
 }
 
-Host *Host::byName(std::string name) {
+Host *Host::by_name(std::string name) {
 	Host* host = Host::by_name_or_null(name.c_str());
 	// TODO, raise an exception instead?
 	if (host == nullptr)

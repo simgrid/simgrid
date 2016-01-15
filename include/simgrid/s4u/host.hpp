@@ -45,13 +45,13 @@ private:
 public: // TODO, make me private
 	~Host();
 public:
-	/** Retrieves an host from its name. */
-	static s4u::Host *byName(std::string name);
-	/** Retrieves the host on which the current actor is running */
-	static s4u::Host *current();
 
   static Host* by_name_or_null(const char* name);
   static Host* by_name_or_create(const char* name);
+	/** Retrieves an host from its name. */
+	static s4u::Host *by_name(std::string name);
+	/** Retrieves the host on which the current actor is running */
+	static s4u::Host *current();
 
 	simgrid::xbt::string const& name() const { return name_; }
 

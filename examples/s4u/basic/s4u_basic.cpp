@@ -44,8 +44,8 @@ int main(int argc, char **argv) {
 	simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
 	e->loadPlatform("../../platforms/two_hosts_platform.xml");
 
-	new Worker("worker", simgrid::s4u::Host::byName("host0"), 0, NULL);
-	new Master("master", simgrid::s4u::Host::byName("host1"), 0, NULL);
+	new Worker("worker", simgrid::s4u::Host::by_name("host0"), 0, NULL);
+	new Master("master", simgrid::s4u::Host::by_name("host1"), 0, NULL);
 	e->run();
 	return 0;
 }

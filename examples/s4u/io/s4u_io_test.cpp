@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 	simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
 	e->loadPlatform("../../platforms/storage/storage.xml");
 
-	new myHost("host", simgrid::s4u::Host::byName("denise"), 0, NULL);
+	new myHost("host", simgrid::s4u::Host::by_name("denise"), 0, NULL);
 	e->run();
 	return 0;
 }
