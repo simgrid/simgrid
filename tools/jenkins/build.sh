@@ -75,17 +75,17 @@ fi
 
 ulimit -c 0 || true
 
-if test "$(uname -o)" != "Msys"; then
-  echo "XX"
-  echo "XX Get out of the tree"
-  echo "XX"
-  if [ -d $WORKSPACE/build ]
-  then
-    rm -rf $WORKSPACE/build
-  fi
-  mkdir $WORKSPACE/build
-  cd $WORKSPACE/build
+echo "XX"
+echo "XX Get out of the tree"
+echo "XX"
+if [ -d $WORKSPACE/build ]
+then
+  rm -rf $WORKSPACE/build
+fi
+mkdir $WORKSPACE/build
+cd $WORKSPACE/build
 
+if test "$(uname -o)" != "Msys"; then
   echo "XX"
   echo "XX Build the archive out of the tree"
   echo "XX   pwd: `pwd`"
@@ -99,6 +99,10 @@ if test "$(uname -o)" != "Msys"; then
   echo "XX"
   tar xzf `cat VERSION`.tar.gz
   cd `cat VERSION`
+  SRCFOLDER=$WORKSPACE/build
+else
+#for windows we don't make dist, but we still want to build out of source
+  SRCFOLDER=$WORKSPACE
 fi
 
 echo "XX"
@@ -115,7 +119,7 @@ cmake -G"$GENERATOR"\
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
   -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF \
-  -Denable_tracing=ON -Denable_java=ON -Denable_lua=OFF
+  -Denable_tracing=ON -Denable_java=ON -Denable_lua=OFF $SRCFOLDER
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 
 
