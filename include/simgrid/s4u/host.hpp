@@ -81,12 +81,6 @@ public:
   xbt_dict_t getMountedStorageList();
   xbt_dynar_t getAttachedStorageList();
 
-	/** Allows to store user data on that host */
-	// TODO, use the extension stuff instead
-	void set_userdata(void *data) {p_userdata = data;}
-	/** Retrieves the previously stored data */
-	void* userdata() {return p_userdata;}
-
 	/** Get an associative list [mount point]->[Storage] off all local mount points.
 	 *
 	 *	This is defined in the platform file, and cannot be modified programatically (yet).
@@ -98,7 +92,6 @@ public:
 private:
 	simgrid::xbt::string name_ = "noname";
 	boost::unordered_map<std::string, Storage*> *mounts = NULL; // caching
-	void* p_userdata = NULL;
 
 public:
 	// FIXME: these should be protected, but it leads to many errors
