@@ -26,7 +26,6 @@ int main(int argc, char **argv)
 {
   double time;
   SD_task_t task;
-  xbt_dynar_t ret;
 
   double communication_amount[] = { 0.0, 1.0, 2.0, 3.0,
     0.0, 0.0, 0.0, 0.0,
@@ -47,8 +46,7 @@ int main(int argc, char **argv)
   SD_task_schedule(task, 4, SD_workstation_get_list(), no_cost,
                    communication_amount, -1.0);
 
-  ret = SD_simulate(-1.0);
-  xbt_dynar_free(&ret);
+  SD_simulate(-1.0);
 
   time = SD_get_clock();
 

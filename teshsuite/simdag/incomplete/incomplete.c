@@ -26,7 +26,6 @@ int main(int argc, char **argv)
 
   SD_task_t taskInit;
   SD_task_t taskA, taskB, taskC, taskD;
-  xbt_dynar_t ret;
 
   const SD_workstation_t *workstation;
 
@@ -64,8 +63,7 @@ int main(int argc, char **argv)
                      &communication_amount1, -1.0);
 
 
-  ret = SD_simulate(-1.);
-  xbt_dynar_free(&ret);
+  SD_simulate(-1.);
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);
   SD_task_destroy(taskC);
