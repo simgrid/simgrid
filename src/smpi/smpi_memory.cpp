@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#ifndef WIN32
 #include <sys/mman.h>
 #include <unistd.h>
 
@@ -57,3 +58,5 @@ void smpi_get_executable_global_size(void)
   }
   xbt_die("Did not find my data segment.");
 }
+
+#endif
