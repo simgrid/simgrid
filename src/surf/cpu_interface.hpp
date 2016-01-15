@@ -27,8 +27,6 @@ class CpuPlugin;
  *************/
 XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 
-XBT_PUBLIC(void) cpu_add_traces();
-
 /*********
  * Model *
  *********/

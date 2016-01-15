@@ -137,10 +137,6 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
   }
 }
 
-void net_add_traces(){
-  surf_network_model->addTraces();
-}
-
 /*********
  * Model *
  *********/

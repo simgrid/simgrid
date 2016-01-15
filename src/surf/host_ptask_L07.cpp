@@ -35,7 +35,9 @@ void surf_host_model_init_ptask_L07(void)
 
   // Define the callbacks to parse the XML
   simgrid::surf::on_link.connect(ptask_netlink_parse_init);
-  simgrid::surf::on_postparse.connect(host_add_traces);
+  simgrid::surf::on_postparse.connect([](){
+      surf_host_model->addTraces();
+  });
 
   surf_host_model = new simgrid::surf::HostL07Model();
   xbt_dynar_push(all_existing_models, &surf_host_model);

@@ -33,10 +33,6 @@ Cpu *getActionCpu(CpuAction *action) {
 
 simgrid::xbt::signal<void(CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> cpuActionStateChangedCallbacks;
 
-void cpu_add_traces(){
-  surf_cpu_model_pm->addTraces();
-}
-
 /*********
  * Model *
  *********/

@@ -50,8 +50,6 @@ XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid
  *********/
 XBT_PUBLIC(void) netlink_parse_init(sg_platf_link_cbarg_t link);
 
-XBT_PUBLIC(void) net_add_traces();
-
 /*********
  * Model *
  *********/

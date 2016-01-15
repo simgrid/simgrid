@@ -35,7 +35,6 @@ class XBT_PRIVATE HostAction;
  *********/
 
 XBT_PUBLIC_DATA(simgrid::surf::HostModel*) surf_host_model;
-XBT_PUBLIC(void) host_add_traces();
 
 /*********
  * Model *

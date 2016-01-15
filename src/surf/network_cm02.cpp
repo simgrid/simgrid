@@ -29,7 +29,9 @@ void net_define_callbacks(void)
 {
   /* Figuring out the network links */
   simgrid::surf::on_link.connect(netlink_parse_init);
-  simgrid::surf::on_postparse.connect(net_add_traces);
+  simgrid::surf::on_postparse.connect([]() {
+    surf_network_model->addTraces();
+  });
 }
 
 /*********

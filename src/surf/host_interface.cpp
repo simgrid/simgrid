@@ -20,10 +20,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf,
 
 simgrid::surf::HostModel *surf_host_model = NULL;
 
-void host_add_traces(){
-  surf_host_model->addTraces();
-}
-
 /*************
  * Callbacks *
  *************/

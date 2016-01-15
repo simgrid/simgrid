@@ -391,7 +391,9 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
 
 static void cpu_ti_define_callbacks()
 {
-  simgrid::surf::on_postparse.connect(simgrid::surf::cpu_add_traces);
+  simgrid::surf::on_postparse.connect([]() {
+    surf_cpu_model_pm->addTraces();
+  });
 }
 
 /*********

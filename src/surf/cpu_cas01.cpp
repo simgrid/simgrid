@@ -33,7 +33,9 @@ void surf_cpu_model_init_Cas01()
   surf_cpu_model_vm  = new simgrid::surf::CpuCas01Model();
   xbt_dynar_push(all_existing_models, &surf_cpu_model_vm);
 
-  simgrid::surf::on_postparse.connect(simgrid::surf::cpu_add_traces);
+  simgrid::surf::on_postparse.connect([]() {
+    surf_cpu_model_pm->addTraces();
+  });
 }
 
 namespace simgrid {
