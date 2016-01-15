@@ -167,7 +167,7 @@ include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH
 
 set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
 
-add_dependencies(simgrid-java simgrid)
+add_dependencies(simgrid-java_jar simgrid-java)
 add_dependencies(simgrid-java_jar simgrid)
 
 
