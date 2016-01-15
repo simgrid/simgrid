@@ -81,10 +81,8 @@ public:
 	/** Get an associative list [mount point]->[Storage] off all local mount points.
 	 *
 	 *	This is defined in the platform file, and cannot be modified programatically (yet).
-	 *
-	 *	Do not change the returned value in any way.
 	 */
-	boost::unordered_map<std::string, Storage*> &mounted_storages();
+	boost::unordered_map<std::string, Storage*> const &mounted_storages();
 
 private:
 	simgrid::xbt::string name_ = "noname";

@@ -16,7 +16,7 @@ public:
 	myHost(const char*procname, simgrid::s4u::Host *host,int argc, char **argv)
 : simgrid::s4u::Actor(procname,host,argc,argv){}
 
-	void show_info(boost::unordered_map <std::string, simgrid::s4u::Storage*> &mounts) {
+	void show_info(boost::unordered_map <std::string, simgrid::s4u::Storage*> const&mounts) {
 		XBT_INFO("Storage info on %s:",
 			simgrid::s4u::Host::current()->name().c_str());
 
@@ -35,7 +35,7 @@ public:
 	}
 
 	int main(int argc, char **argv) {
-		boost::unordered_map <std::string, simgrid::s4u::Storage *>& mounts =
+		boost::unordered_map <std::string, simgrid::s4u::Storage *> const& mounts =
 			simgrid::s4u::Host::current()->mounted_storages();
 
 		show_info(mounts);

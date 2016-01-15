@@ -76,7 +76,7 @@ int Host::pstates_count() const {
 	return this->pimpl_cpu->getNbPStates();
 }
 
-boost::unordered_map<std::string, Storage*> &Host::mounted_storages() {
+boost::unordered_map<std::string, Storage*> const& Host::mounted_storages() {
 	if (mounts == NULL) {
 		mounts = new boost::unordered_map<std::string, Storage*> ();
 
