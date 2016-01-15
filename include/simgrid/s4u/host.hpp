@@ -93,7 +93,6 @@ public:
 	 *
 	 *	Do not change the returned value in any way.
 	 */
-	// TODO, do not use Storage&, this looks dangerous!
 	boost::unordered_map<std::string, Storage*> &mountedStorages();
 
 private:
