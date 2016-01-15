@@ -135,7 +135,7 @@ if(enable_lib_in_jar)
   if(MINGW)
     find_library(WINPTHREAD_DLL
       NAME winpthread winpthread-1
-      PATHS C:\\MinGW C:\\MinGW64 C:\\MinGW\\bin C:\\MinGW64\\bin
+      PATHS C:\\MinGW C:\\MinGW64 C:\\MinGW\\bin C:\\MinGW64\\bin C:\\msys64\\mingw64\\bin C:\\msys64\\mingw64 C:\\msys\\mingw64\\bin C:\\msys\\mingw64
     )
     set(JAVALIBS ${JAVALIBS} ${WINPTHREAD_DLL})
   endif(MINGW)
