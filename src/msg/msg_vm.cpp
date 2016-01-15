@@ -46,7 +46,7 @@ const char *MSG_vm_get_property_value(msg_vm_t vm, const char *name)
 xbt_dict_t MSG_vm_get_properties(msg_vm_t vm)
 {
   xbt_assert((vm != NULL), "Invalid parameters (vm is NULL)");
-  return vm->getProperties();
+  return vm->properties();
 }
 
 /** \ingroup m_host_management
@@ -194,7 +194,7 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char *name,
   params.mig_speed = (double)mig_netspeed * 1024 * 1024; // mig_speed
 
   //XBT_INFO("dp rate %f migspeed : %f intensity mem : %d, updatespeed %f, hostspeed %f",params.dp_rate, params.mig_speed, dp_intensity, update_speed, host_speed);
-  vm->setParams(&params);
+  vm->set_parameters(&params);
 
   return vm;
 }
@@ -357,7 +357,7 @@ static int migration_rx_fun(int argc, char *argv[])
   struct migration_session *ms = (migration_session *) MSG_process_get_data(MSG_process_self());
 
   s_vm_params_t params;
-  ms->vm->getParams(&params);
+  ms->vm->get_parameters(&params);
 
   int need_exit = 0;
 
@@ -686,7 +686,7 @@ static int migration_tx_fun(int argc, char *argv[])
     (migration_session *) MSG_process_get_data(MSG_process_self());
 
   s_vm_params_t params;
-  ms->vm->getParams(&params);
+  ms->vm->get_parameters(&params);
   const sg_size_t ramsize   = params.ramsize;
   const sg_size_t devsize   = params.devsize;
   const int skip_stage1     = params.skip_stage1;

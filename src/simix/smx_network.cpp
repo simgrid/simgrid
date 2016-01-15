@@ -793,7 +793,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
 
     /* Check out for errors */
 
-    if (simcall->issuer->host->isOff()) {
+    if (simcall->issuer->host->is_off()) {
       simcall->issuer->context->iwannadie = 1;
       SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
     } else
@@ -871,7 +871,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
       }
     }
 
-    if (simcall->issuer->host->isOff()) {
+    if (simcall->issuer->host->is_off()) {
       simcall->issuer->context->iwannadie = 1;
     }
 

@@ -83,7 +83,7 @@ void HostEnergy::update()
 	double previous_energy = this->total_energy;
 
 	double instantaneous_consumption;
-	if (host->isOff())
+	if (host->is_off())
 		instantaneous_consumption = this->watts_off;
 	else
 		instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
@@ -102,8 +102,9 @@ HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) :
 {
   initWattsRangeList();
 
-  if (host->getProperties() != NULL) {
-    char* off_power_str = (char*)xbt_dict_get_or_null(host->getProperties(), "watt_off");
+  if (host->properties() != NULL) {
+    char* off_power_str = (char*)xbt_dict_get_or_null(
+      host->properties(), "watt_off");
     if (off_power_str != NULL)
       watts_off = atof(off_power_str);
     else
@@ -138,7 +139,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 
   /* min_power corresponds to the idle power (cpu load = 0) */
   /* max_power is the power consumed at 100% cpu load       */
-  auto range = power_range_watts_list.at(host->getPState());
+  auto range = power_range_watts_list.at(host->pstate());
   double min_power = range.first;
   double max_power = range.second;
   double power_slope = max_power - min_power;
@@ -160,10 +161,10 @@ double HostEnergy::getConsumedEnergy()
 
 void HostEnergy::initWattsRangeList()
 {
-	if (host->getProperties() == NULL)
+	if (host->properties() == NULL)
 		return;
 	char* all_power_values_str =
-    (char*)xbt_dict_get_or_null(host->getProperties(), "watt_per_state");
+    (char*)xbt_dict_get_or_null(host->properties(), "watt_per_state");
 	if (all_power_values_str == NULL)
 		return;
 

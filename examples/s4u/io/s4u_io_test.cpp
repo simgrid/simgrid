@@ -36,7 +36,7 @@ public:
 
 	int main(int argc, char **argv) {
 		boost::unordered_map <std::string, simgrid::s4u::Storage *>& mounts =
-			simgrid::s4u::Host::current()->mountedStorages();
+			simgrid::s4u::Host::current()->mounted_storages();
 
 		show_info(mounts);
 

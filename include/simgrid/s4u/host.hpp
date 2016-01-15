@@ -57,26 +57,26 @@ public:
 	 * All actors on that host which were marked autorestart will be restarted automatically.
 	 * This call does nothing if the host is already on.
 	 */
-	void turnOn();
+	void turn_on();
 	/** Turns that host off. All actors are forcefully stopped. */
-	void turnOff();
+	void turn_off();
 	/** Returns if that host is currently up and running */
-	bool isOn();
-	bool isOff() { return !isOn(); }
+	bool is_on();
+	bool is_off() { return !is_on(); }
 
-	double getSpeed();
-	int getCoreAmount();
-  xbt_dict_t getProperties();
-  xbt_swag_t getProcessList();
-  double getCurrentPowerPeak();
-  double getPowerPeakAt(int pstate_index);
-  void setPState(int pstate_index);
-	int getNbPStates() const;
-  int getPState();
-  void getParams(vm_params_t params);
-  void setParams(vm_params_t params);
-  xbt_dict_t getMountedStorageList();
-  xbt_dynar_t getAttachedStorageList();
+	double speed();
+	int core_count();
+	xbt_dict_t properties();
+	xbt_swag_t processes();
+	double current_power_peak();
+	double power_peak_at(int pstate_index);
+	void set_pstate(int pstate_index);
+	int pstates_count() const;
+	int pstate();
+	void get_parameters(vm_params_t params);
+	void set_parameters(vm_params_t params);
+	xbt_dict_t mounted_storages_as_dict(); // HACK
+	xbt_dynar_t attached_storages();
 
 	/** Get an associative list [mount point]->[Storage] off all local mount points.
 	 *
@@ -84,7 +84,7 @@ public:
 	 *
 	 *	Do not change the returned value in any way.
 	 */
-	boost::unordered_map<std::string, Storage*> &mountedStorages();
+	boost::unordered_map<std::string, Storage*> &mounted_storages();
 
 private:
 	simgrid::xbt::string name_ = "noname";

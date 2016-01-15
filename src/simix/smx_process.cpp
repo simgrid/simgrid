@@ -167,7 +167,7 @@ void SIMIX_process_stop(smx_process_t arg) {
   /* execute the on_exit functions */
   SIMIX_process_on_exit_runall(arg);
   /* Add the process to the list of process to restart, only if the host is down */
-  if (arg->auto_restart && arg->host->isOff()) {
+  if (arg->auto_restart && arg->host->is_off()) {
     SIMIX_host_add_auto_restart_process(arg->host,arg->name,arg->code, arg->data,
                                         sg_host_get_name(arg->host),
                                         SIMIX_timer_get_date(arg->kill_timer),
@@ -246,7 +246,7 @@ smx_process_t SIMIX_process_create(
 
   XBT_DEBUG("Start process %s on host '%s'", name, hostname);
 
-  if (host->isOff()) {
+  if (host->is_off()) {
     int i;
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name,
           hostname);
@@ -769,7 +769,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   sg_host_t host = process->host;
 
   /* check if the host is active */
-  if (host->isOff()) {
+  if (host->is_off()) {
     THROWF(host_error, 0, "Host %s failed, you cannot call this function",
            sg_host_get_name(host));
   }
@@ -811,7 +811,7 @@ void SIMIX_post_process_sleep(smx_synchro_t synchro)
         THROW_IMPOSSIBLE;
         break;
     }
-    if (simcall->issuer->host->isOff()) {
+    if (simcall->issuer->host->is_off()) {
       simcall->issuer->context->iwannadie = 1;
     }
     simcall_process_sleep__set__result(simcall, state);

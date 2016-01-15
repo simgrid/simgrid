@@ -256,7 +256,7 @@ int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
  */
 double SD_workstation_get_power(SD_workstation_t workstation)
 {
-  return workstation->getSpeed();
+  return workstation->speed();
 }
 /**
  * \brief Returns the amount of cores of a workstation
@@ -265,7 +265,7 @@ double SD_workstation_get_power(SD_workstation_t workstation)
  * \return the amount of cores of this workstation
  */
 int SD_workstation_get_cores(SD_workstation_t workstation) {
-  return workstation->getCoreAmount();
+  return workstation->core_count();
 }
 
 /**
