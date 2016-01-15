@@ -31,9 +31,6 @@ int USER_HOST_LEVEL;
 namespace simgrid {
 namespace s4u {
 
-boost::unordered_map<std::string, Host*> *Host::hosts
-		= new boost::unordered_map<std::string, Host*>();
-
 simgrid::xbt::signal<void(Host&)> Host::onCreation;
 simgrid::xbt::signal<void(Host&)> Host::onDestruction;
 simgrid::xbt::signal<void(Host&)> Host::onStateChange;

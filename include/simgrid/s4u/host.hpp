@@ -108,8 +108,6 @@ public:
 	surf::NetCard *pimpl_netcard = nullptr;
 
 public:
-	static boost::unordered_map<std::string, s4u::Host *> *hosts;
-
 	/*** Called on each newly created object */
 	static simgrid::xbt::signal<void(Host&)> onCreation;
 	/*** Called just before destructing an object */
