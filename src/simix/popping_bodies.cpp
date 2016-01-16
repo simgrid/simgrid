@@ -18,27 +18,6 @@
 #include "xbt/ex.h"
 #include <simgrid/simix.hpp>
   
-inline static void simcall_BODY_host_off(sg_host_t host) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_host_off(&self->simcall, host);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_HOST_OFF;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) host;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
-  }
-  
 inline static void simcall_BODY_vm_suspend(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
 

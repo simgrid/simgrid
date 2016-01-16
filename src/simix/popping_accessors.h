@@ -14,13 +14,6 @@
  */
 
 
-static inline sg_host_t simcall_host_off__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[0].dp;
-}
-static inline void simcall_host_off__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-
 static inline sg_host_t simcall_vm_suspend__get__ind_vm(smx_simcall_t simcall) {
   return (sg_host_t) simcall->args[0].dp;
 }
@@ -1456,7 +1449,6 @@ static inline void simcall_mc_compare_snapshots__set__result(smx_simcall_t simca
 
 /* The prototype of all simcall handlers, automatically generated for you */
 
-XBT_PRIVATE void simcall_HANDLER_host_off(smx_simcall_t simcall, sg_host_t host);
 XBT_PRIVATE void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm);

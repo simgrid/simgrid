@@ -97,7 +97,7 @@ void SIMIX_vm_start(sg_host_t ind_vm)
       ind_vm->extension<simgrid::surf::Host>()
     )->setState(SURF_VM_STATE_RUNNING);
   else
-    THROWF(vm_error, 0, "The VM %s cannot be started", SIMIX_host_get_name(ind_vm));
+    THROWF(vm_error, 0, "The VM %s cannot be started", sg_host_get_name(ind_vm));
 }
 
 
@@ -197,7 +197,7 @@ void SIMIX_vm_set_affinity(sg_host_t ind_vm, sg_host_t ind_pm, unsigned long mas
  */
 void SIMIX_vm_suspend(sg_host_t ind_vm, smx_process_t issuer)
 {
-  const char *name = SIMIX_host_get_name(ind_vm);
+  const char *name = sg_host_get_name(ind_vm);
 
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
@@ -237,7 +237,7 @@ void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm)
  */
 void SIMIX_vm_resume(sg_host_t ind_vm, smx_process_t issuer)
 {
-  const char *name = SIMIX_host_get_name(ind_vm);
+  const char *name = sg_host_get_name(ind_vm);
 
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_SUSPENDED)
     THROWF(vm_error, 0, "VM(%s) was not suspended", name);
@@ -269,7 +269,7 @@ void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_vm)
  */
 void SIMIX_vm_save(sg_host_t ind_vm, smx_process_t issuer)
 {
-  const char *name = SIMIX_host_get_name(ind_vm);
+  const char *name = sg_host_get_name(ind_vm);
 
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
@@ -301,7 +301,7 @@ void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t ind_vm)
  */
 void SIMIX_vm_restore(sg_host_t ind_vm, smx_process_t issuer)
 {
-  const char *name = SIMIX_host_get_name(ind_vm);
+  const char *name = sg_host_get_name(ind_vm);
 
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_SAVED)
     THROWF(vm_error, 0, "VM(%s) was not saved", name);
@@ -333,7 +333,7 @@ void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t ind_vm)
  */
 void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer)
 {
-  const char *name = SIMIX_host_get_name(ind_vm);
+  const char *name = sg_host_get_name(ind_vm);
 
   if (SIMIX_vm_get_state(ind_vm) != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
@@ -368,8 +368,7 @@ void SIMIX_vm_destroy(sg_host_t ind_vm)
 {
   /* this code basically performs a similar thing like SIMIX_host_destroy() */
 
-  xbt_assert((ind_vm != NULL), "Invalid parameters");
-  const char *hostname = SIMIX_host_get_name(ind_vm);
+  const char *hostname = sg_host_get_name(ind_vm);
 
   XBT_DEBUG("destroy %s", hostname);
 

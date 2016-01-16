@@ -83,11 +83,6 @@ void SIMIX_host_on(sg_host_t h)
   }
 }
 
-void simcall_HANDLER_host_off(smx_simcall_t simcall, sg_host_t h)
-{
- SIMIX_host_off(h, simcall->issuer);
-}
-
 /**
  * \brief Stop the host if it is on
  *
@@ -163,7 +158,7 @@ const char* SIMIX_host_self_get_name(void)
   if (host == NULL || SIMIX_process_self() == simix_global->maestro_process)
     return "";
 
-  return SIMIX_host_get_name(host);
+  return sg_host_get_name(host);
 }
 
 void _SIMIX_host_free_process_arg(void *data)

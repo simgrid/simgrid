@@ -65,7 +65,7 @@ void Host::turn_on() {
 }
 
 void Host::turn_off() {
-	simgrid::simix::simcall<void>(SIMCALL_HOST_OFF, this);
+  simgrid::simix::kernel(std::bind(SIMIX_host_off, this, SIMIX_process_self()));
 }
 
 bool Host::is_on() {

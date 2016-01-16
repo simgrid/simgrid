@@ -101,17 +101,6 @@ void *MSG_host_get_data(msg_host_t host) {
 
 /** \ingroup m_host_management
  *
- * \brief Return the name of the #msg_host_t.
- *
- * This functions checks whether \a host is a valid pointer or not and return
-   its name.
- */
-const char *MSG_host_get_name(msg_host_t host) {
-  return SIMIX_host_get_name(host);
-}
-
-/** \ingroup m_host_management
- *
  * \brief Return the location on which the current process is executed.
  */
 msg_host_t MSG_host_self(void)

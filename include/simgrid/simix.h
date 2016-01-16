@@ -213,7 +213,6 @@ XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
 /*********************************** Host *************************************/
 XBT_PUBLIC(sg_host_t) SIMIX_host_self(void);
 XBT_PUBLIC(const char*) SIMIX_host_self_get_name(void);
-#define SIMIX_host_get_name(h) sg_host_get_name(h)  /* DEPRECATED: SIMIX_host_get_name */
 XBT_PUBLIC(void) SIMIX_host_on(sg_host_t host);
 XBT_PUBLIC(void) SIMIX_host_off(sg_host_t host, smx_process_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);

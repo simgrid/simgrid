@@ -365,7 +365,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
     host_dest = MSG_host_by_name(host_name_dest);
 
   }else{
-    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, SIMIX_host_get_name(host));
+    XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, sg_host_get_name(host));
     return MSG_TASK_CANCELED;
   }
 

@@ -296,7 +296,10 @@ XBT_PUBLIC(msg_host_t) MSG_host_by_name(const char *name);
 #define MSG_get_host_by_name(n) MSG_host_by_name(n) /* Rewrite the old name into the new one transparently */
 XBT_PUBLIC(msg_error_t) MSG_host_set_data(msg_host_t host, void *data);
 XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
-XBT_PUBLIC(const char *) MSG_host_get_name(msg_host_t host);
+/** \ingroup m_host_management
+ *
+ * \brief Return the name of the #msg_host_t. */
+#define MSG_host_get_name(host) sg_host_get_name(host)
 XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
 XBT_PUBLIC(msg_host_t) MSG_host_self(void);

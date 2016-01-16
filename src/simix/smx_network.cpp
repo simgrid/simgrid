@@ -724,7 +724,7 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
     sg_host_t receiver = synchro->comm.dst_proc->host;
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro,
-              SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
+              sg_host_get_name(sender), sg_host_get_name(receiver));
 
     synchro->comm.surf_comm = surf_network_model_communicate(surf_network_model,
     		                                                    sender, receiver,
@@ -737,7 +737,7 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
     /* If a link is failed, detect it immediately */
     if (synchro->comm.surf_comm->getState() == SURF_ACTION_FAILED) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
-                SIMIX_host_get_name(sender), SIMIX_host_get_name(receiver));
+                sg_host_get_name(sender), sg_host_get_name(receiver));
       synchro->state = SIMIX_LINK_FAILURE;
       SIMIX_comm_destroy_internal_actions(synchro);
     }
@@ -750,10 +750,10 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
 
       if (SIMIX_process_is_suspended(synchro->comm.src_proc))
         XBT_DEBUG("The communication is suspended on startup because src (%s:%s) were suspended since it initiated the communication",
-                  SIMIX_host_get_name(synchro->comm.src_proc->host), synchro->comm.src_proc->name);
+                  sg_host_get_name(synchro->comm.src_proc->host), synchro->comm.src_proc->name);
       else
         XBT_DEBUG("The communication is suspended on startup because dst (%s:%s) were suspended since it initiated the communication",
-                  SIMIX_host_get_name(synchro->comm.dst_proc->host), synchro->comm.dst_proc->name);
+                  sg_host_get_name(synchro->comm.dst_proc->host), synchro->comm.dst_proc->name);
 
       synchro->comm.surf_comm->suspend();
 

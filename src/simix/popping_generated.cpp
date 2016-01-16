@@ -23,8 +23,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */
 const char* simcall_names[] = {
-   "SIMCALL_NONE",  "SIMCALL_HOST_OFF",
-  "SIMCALL_VM_SUSPEND",
+   "SIMCALL_NONE",  "SIMCALL_VM_SUSPEND",
   "SIMCALL_VM_RESUME",
   "SIMCALL_VM_SHUTDOWN",
   "SIMCALL_VM_SAVE",
@@ -131,11 +130,6 @@ void SIMIX_simcall_handle(smx_simcall_t simcall, int value) {
   if (simcall->issuer->context->iwannadie && simcall->call != SIMCALL_PROCESS_CLEANUP)
     return;
   switch (simcall->call) {
-case SIMCALL_HOST_OFF:
-       simcall_HANDLER_host_off(simcall , (sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_VM_SUSPEND:
        simcall_HANDLER_vm_suspend(simcall , (sg_host_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
@@ -572,7 +566,7 @@ case SIMCALL_MC_COMPARE_SNAPSHOTS:
     case SIMCALL_NONE:
       THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
           SIMIX_process_get_name(simcall->issuer),
-          SIMIX_host_get_name(SIMIX_process_get_host(simcall->issuer))
+          sg_host_get_name(SIMIX_process_get_host(simcall->issuer))
           );
       break;
 

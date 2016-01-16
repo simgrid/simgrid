@@ -316,7 +316,7 @@ if __name__=='__main__':
   fd.write('    case SIMCALL_NONE:\n');
   fd.write('      THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",\n');
   fd.write('          SIMIX_process_get_name(simcall->issuer),\n');
-  fd.write('          SIMIX_host_get_name(SIMIX_process_get_host(simcall->issuer))\n');
+  fd.write('          sg_host_get_name(SIMIX_process_get_host(simcall->issuer))\n');
   fd.write('          );\n');
   fd.write('      break;\n');
   fd.write('\n');

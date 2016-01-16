@@ -2410,9 +2410,9 @@ int PMPI_Get_processor_name(char *name, int *resultlen)
 {
   int retval = MPI_SUCCESS;
 
-  strncpy(name, SIMIX_host_get_name(SIMIX_host_self()),
-          strlen(SIMIX_host_get_name(SIMIX_host_self())) < MPI_MAX_PROCESSOR_NAME - 1 ?
-          strlen(SIMIX_host_get_name(SIMIX_host_self())) +1 :
+  strncpy(name, sg_host_get_name(SIMIX_host_self()),
+          strlen(sg_host_get_name(SIMIX_host_self())) < MPI_MAX_PROCESSOR_NAME - 1 ?
+          strlen(sg_host_get_name(SIMIX_host_self())) +1 :
           MPI_MAX_PROCESSOR_NAME - 1 );
   *resultlen =
       strlen(name) >
