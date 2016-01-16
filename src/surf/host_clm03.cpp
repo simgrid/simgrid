@@ -72,44 +72,5 @@ void HostCLM03Model::updateActionsState(double /*now*/, double /*delta*/){
   return;
 }
 
-Action *HostCLM03Model::executeParallelTask(int host_nb,
-                                        sg_host_t *host_list,
-                                        double *flops_amount,
-                                        double *bytes_amount,
-                                        double rate){
-#define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
-  Action *action =NULL;
-  if ((host_nb == 1)
-      && (cost_or_zero(bytes_amount, 0) == 0.0)){
-    action = host_list[0]->pimpl_cpu->execute(flops_amount[0]);
-  } else if ((host_nb == 1)
-           && (cost_or_zero(flops_amount, 0) == 0.0)) {
-    action = surf_network_model->communicate(host_list[0]->pimpl_netcard,
-    		                                 host_list[0]->pimpl_netcard,
-											 bytes_amount[0], rate);
-  } else if ((host_nb == 2)
-             && (cost_or_zero(flops_amount, 0) == 0.0)
-             && (cost_or_zero(flops_amount, 1) == 0.0)) {
-    int i,nb = 0;
-    double value = 0.0;
-
-    for (i = 0; i < host_nb * host_nb; i++) {
-      if (cost_or_zero(bytes_amount, i) > 0.0) {
-        nb++;
-        value = cost_or_zero(bytes_amount, i);
-      }
-    }
-    if (nb == 1){
-      action = surf_network_model->communicate(host_list[0]->pimpl_netcard,
-    		                                   host_list[1]->pimpl_netcard,
-											   value, rate);
-    }
-  } else
-    THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks for more than 2 hosts */
-#undef cost_or_zero
-  xbt_free(host_list);
-  return action;
-}
-
 }
 }

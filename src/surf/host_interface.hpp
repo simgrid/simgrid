@@ -57,10 +57,10 @@ public:
 
   virtual void adjustWeightOfDummyCpuActions();
   virtual Action *executeParallelTask(int host_nb,
-                                      sg_host_t *host_list,
-									  double *flops_amount,
-									  double *bytes_amount,
-									  double rate)=0;
+      sg_host_t *host_list,
+      double *flops_amount,
+      double *bytes_amount,
+      double rate);
 
   bool shareResourcesIsIdempotent() override {return true;}
 };

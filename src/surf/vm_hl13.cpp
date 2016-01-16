@@ -127,39 +127,6 @@ double VMHL13Model::shareResources(double now)
   return ret;
 }
 
-Action *VMHL13Model::executeParallelTask(int host_nb,
-                                         sg_host_t *host_list,
-										 double *flops_amount,
-										 double *bytes_amount,
-										 double rate){
-#define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
-  if ((host_nb == 1)
-      && (cost_or_zero(bytes_amount, 0) == 0.0))
-    return host_list[0]->pimpl_cpu->execute(flops_amount[0]);
-  else if ((host_nb == 1)
-           && (cost_or_zero(flops_amount, 0) == 0.0))
-    return surf_network_model_communicate(surf_network_model, host_list[0], host_list[0],bytes_amount[0], rate);
-  else if ((host_nb == 2)
-             && (cost_or_zero(flops_amount, 0) == 0.0)
-             && (cost_or_zero(flops_amount, 1) == 0.0)) {
-    int i,nb = 0;
-    double value = 0.0;
-
-    for (i = 0; i < host_nb * host_nb; i++) {
-      if (cost_or_zero(bytes_amount, i) > 0.0) {
-        nb++;
-        value = cost_or_zero(bytes_amount, i);
-      }
-    }
-    if (nb == 1)
-      return surf_network_model_communicate(surf_network_model, host_list[0], host_list[1], value, rate);
-  }
-#undef cost_or_zero
-
-  THROW_UNIMPLEMENTED;          /* This model does not implement parallel tasks for more than 2 hosts. */
-  return NULL;
-}
-
 /************
  * Resource *
  ************/

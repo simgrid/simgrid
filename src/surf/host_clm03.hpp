@@ -34,14 +34,7 @@ public:
   double shareResources(double now) override;
 
   void updateActionsState(double now, double delta) override;
-
-  Action *executeParallelTask(int host_nb,
-                              sg_host_t *host_list,
-							  double *flops_amount,
-							  double *bytes_amount,
-							  double rate) override;
 };
-
 }
 }
 
