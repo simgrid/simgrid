@@ -176,7 +176,7 @@ mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_a
 const char* MC_smx_process_get_host_name(smx_process_t p)
 {
   if (mc_mode == MC_MODE_CLIENT)
-    return SIMIX_host_get_name(p->host);
+    return sg_host_get_name(p->host);
 
   simgrid::mc::Process* process = &mc_model_checker->process();
 
