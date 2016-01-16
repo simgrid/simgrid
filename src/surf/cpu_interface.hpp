@@ -175,9 +175,9 @@ XBT_PUBLIC_CLASS CpuAction : public simgrid::surf::Action {
 friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 public:
 /** @brief Callbacks handler which emit the callbacks after CpuAction State changed *
- * @details Callback functions have the following signature: `void(CpuAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
+ * @details Callback functions have the following signature: `void(CpuAction *action, e_surf_action_state_t previous)`
  */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> onStateChange;
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t)> onStateChange;
 
   /** @brief CpuAction constructor */
   CpuAction(simgrid::surf::Model *model, double cost, bool failed)

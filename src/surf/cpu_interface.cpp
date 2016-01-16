@@ -345,12 +345,12 @@ void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
   XBT_OUT();
 }
 
-simgrid::xbt::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> CpuAction::onStateChange;
+simgrid::xbt::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t)> CpuAction::onStateChange;
 
 void CpuAction::setState(e_surf_action_state_t state){
-  e_surf_action_state_t old = getState();
+  e_surf_action_state_t previous = getState();
   Action::setState(state);
-  onStateChange(this, old, state);
+  onStateChange(this, previous);
 }
 
 }
