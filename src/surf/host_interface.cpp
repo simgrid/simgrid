@@ -52,11 +52,9 @@ void HostModel::adjustWeightOfDummyCpuActions()
        iter !=  VMModel::ws_vms.end(); ++iter) {
 
     VirtualMachine *ws_vm = &*iter;
-    CpuCas01 *cpu_cas01 = static_cast<CpuCas01*>(ws_vm->p_cpu);
-    xbt_assert(cpu_cas01, "cpu-less host");
+    Cpu *cpu = ws_vm->p_cpu;
 
-    int is_active = lmm_constraint_used(cpu_cas01->getModel()->getMaxminSystem(), cpu_cas01->getConstraint());
-    // int is_active_old = constraint_is_active(cpu_cas01);
+    int is_active = lmm_constraint_used(cpu->getModel()->getMaxminSystem(), cpu->getConstraint());
 
     if (is_active) {
       /* some tasks exist on this VM */
