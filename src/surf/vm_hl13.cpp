@@ -42,11 +42,6 @@ VirtualMachine *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
   return vm;
 }
 
-static inline double get_solved_value(CpuAction *cpu_action)
-{
-  return cpu_action->getVariable()->value;
-}
-
 /* In the real world, processes on the guest operating system will be somewhat
  * degraded due to virtualization overhead. The total CPU share that these
  * processes get is smaller than that of the VM process gets on a host
@@ -91,7 +86,7 @@ double VMHL13Model::shareResources(double now)
     Cpu *cpu = ws_vm->p_cpu;
     xbt_assert(cpu, "cpu-less host");
 
-    double solved_value = get_solved_value(ws_vm->p_action);
+    double solved_value = ws_vm->p_action->getVariable()->value;
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
         ws_vm->getName(), ws_vm->p_hostPM->name().c_str());
 
