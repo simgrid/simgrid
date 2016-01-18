@@ -75,7 +75,7 @@ void* smpi_get_tmp_recvbuffer(int size){
     recvbuffer=xbt_realloc(recvbuffer,size);
     recvbuffer_size=size;
   }
-  return sendbuffer;
+  return recvbuffer;
 }
 
 void smpi_free_tmp_buffer(void* buf){
