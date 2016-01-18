@@ -167,7 +167,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
   std::free(line);
   std::fclose(fp);
-  return std::move(ret); // MPOQUET FIXME: this line generates a warning on clang 3.7.0
+  return ret;
 #else
   /* On FreeBSD, kinfo_getvmmap() could be used but mmap() support is disabled
      anyway. */
