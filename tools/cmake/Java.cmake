@@ -141,6 +141,8 @@ if(enable_lib_in_jar)
       set(JAVALIBS ${JAVALIBS} ${WINPTHREAD_DLL})
     endif()
   endif(MINGW)
+  string(REPLACE ";" " " JAVALIBS "${JAVALIBS}")
+  message("-- [Java] Native Libs: ${JAVALIBS}")
 
   add_custom_command(
     TARGET simgrid-java_jar POST_BUILD
@@ -149,7 +151,19 @@ if(enable_lib_in_jar)
 	  
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
-    COMMAND cp ${JAVALIBS} ${JAVA_NATIVE_PATH} # cp is less portable, but cmake cannot copy several files at once
+    
+    COMMAND echo cp ${JAVALIBS} ${JAVA_NATIVE_PATH} # Just display what's going on
+    # So, first of all, I'm sorry for the next few lines. Here is what's going on.
+    # I need to copy some files, depending on the environment. 
+    # I cannot use several POST_BUILD commands because cmake does
+    #     force them to run sequentially, so it fails if we build with -j
+    # So I add some content to the JAVALIBS cmake variable, and copy them in one shoot.
+    # But cmake list variables are ; separated, not space separated.
+    # So I string(REPLACE a bit above to change ; into spaces.
+    # But if I do so, cmake still passes the space-separated list as a single argument to cp.
+    # So I have to fire a sh -c, just to correctly parse the cp parameters.
+    # Yup. That's the ways it goes. cmake is so lovely, that's wonderful.
+    COMMAND sh -c "cp ${JAVALIBS} ${JAVA_NATIVE_PATH}" # cp is less portable, but cmake cannot copy several files at once
     
     ## strip seems to fail on Mac on binaries that are already stripped.
     ## It then spits: "symbols referenced by indirect symbol table entries that can't be stripped"
