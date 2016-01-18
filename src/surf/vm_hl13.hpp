@@ -34,7 +34,7 @@ public:
   ~VMHL13Model(){};
 
   VirtualMachine *createVM(const char *name, sg_host_t host_PM) override;
-  double shareResources(double now);
+  double shareResources(double now) override;
   void adjustWeightOfDummyCpuActions() override {};
   void updateActionsState(double /*now*/, double /*delta*/) override;
 };
@@ -56,8 +56,8 @@ public:
 
   void migrate(sg_host_t ind_dst_pm) override;
 
-  void setBound(double bound);
-  void setAffinity(Cpu *cpu, unsigned long mask);
+  void setBound(double bound) override;
+  void setAffinity(Cpu *cpu, unsigned long mask) override;
 };
 
 /**********
