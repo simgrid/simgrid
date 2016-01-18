@@ -523,7 +523,7 @@ for routing algorithms. So, it does not have any attributes except :
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | The identifier of the router to be used when referring to it.
-coordinates     | yes       | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the AS the router belongs to. More details can be found in the Section \ref pf_P2P_tags.
+coordinates     | no        | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the AS the router belongs to. More details can be found in the Section \ref pf_P2P_tags.
 
 #### Example ####
 
