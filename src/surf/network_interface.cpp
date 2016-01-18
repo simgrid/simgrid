@@ -43,8 +43,8 @@ void* sg_link_data(Link *link) {
 void sg_link_data_set(Link *link,void *data) {
 	link->setData(data);
 }
-int sg_link_amount(void) {
-	return Link::linksAmount();
+int sg_link_count(void) {
+	return Link::linksCount();
 }
 Link** sg_link_list(void) {
 	return Link::linksList();
@@ -72,7 +72,7 @@ Link *Link::byName(const char* name) {
 	  return res;
 }
 /** @brief Returns the amount of links in the platform */
-int Link::linksAmount() {
+int Link::linksCount() {
 	  return links->size();
 }
 /** @brief Returns a list of all existing links */

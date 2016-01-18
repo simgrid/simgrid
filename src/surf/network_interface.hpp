@@ -258,7 +258,7 @@ private:
   static boost::unordered_map<std::string, Link *> *links;
 public:
   static Link *byName(const char* name);
-  static int linksAmount();
+  static int linksCount();
   static Link **linksList();
   static void linksExit();
 };
