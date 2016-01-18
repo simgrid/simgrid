@@ -20,7 +20,7 @@ XBT_PUBLIC(double) sg_link_bandwidth(Link *link);
 XBT_PUBLIC(double) sg_link_latency(Link *link);
 XBT_PUBLIC(void*) sg_link_data(Link *link);
 XBT_PUBLIC(void) sg_link_data_set(Link *link,void *data);
-XBT_PUBLIC(int) sg_link_amount(void);
+XBT_PUBLIC(int) sg_link_count(void);
 XBT_PUBLIC(Link**) sg_link_list(void);
 XBT_PUBLIC(void) sg_link_exit(void);
 SG_END_DECL()

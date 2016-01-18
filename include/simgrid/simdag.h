@@ -114,7 +114,7 @@ typedef xbt_dictelm_t SD_storage_t;
 XBT_PUBLIC(const SD_link_t *) SD_link_get_list(void);
 /** @brief Returns the number of links in the whole platform */
 static inline int SD_link_get_number(void) {
-  return sg_link_amount();
+  return sg_link_count();
 }
 
 /** @brief Returns the user data of a link */

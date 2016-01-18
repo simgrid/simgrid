@@ -210,8 +210,8 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
   lmm_element_t elem = NULL;
 
   if (event_type == p_speedEvent) {
-	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
-	xbt_assert(m_core == 1, "FIXME: add speed scaling code also for constraint_core[i]");
+    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
+    xbt_assert(m_core == 1, "FIXME: add speed scaling code also for constraint_core[i]");
 
     m_speedScale = value;
     onSpeedChange();
@@ -219,7 +219,7 @@ void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double d
     if (tmgr_trace_event_free(event_type))
       p_speedEvent = NULL;
   } else if (event_type == p_stateEvent) {
-	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
+    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
@@ -257,7 +257,7 @@ CpuAction *CpuCas01::execute(double size)
 
   XBT_IN("(%s,%g)", getName(), size);
   CpuCas01Action *action = new CpuCas01Action(getModel(), size, isOff(),
-		                                              m_speedScale * m_speedPeak, getConstraint());
+      m_speedScale * m_speedPeak, getConstraint());
 
   XBT_OUT();
   return action;
@@ -270,7 +270,7 @@ CpuAction *CpuCas01::sleep(double duration)
 
   XBT_IN("(%s,%g)", getName(), duration);
   CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, isOff(),
-                                                      m_speedScale * m_speedPeak, getConstraint());
+      m_speedScale * m_speedPeak, getConstraint());
 
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
@@ -279,13 +279,13 @@ CpuAction *CpuCas01::sleep(double duration)
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention
        is used to speed up update_resource_state  */
-	action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
+    action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
     action->p_stateSet = static_cast<CpuCas01Model*>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
     action->getStateSet()->push_back(*action);
   }
 
   lmm_update_variable_weight(getModel()->getMaxminSystem(),
-                             action->getVariable(), 0.0);
+      action->getVariable(), 0.0);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {     // remove action from the heap
     action->heapRemove(getModel()->getActionHeap());
     // this is necessary for a variable with weight 0 since such
