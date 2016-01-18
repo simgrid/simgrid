@@ -432,6 +432,8 @@ int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
 
 /* declarations */
 
+/* MPOQUET FIXME: the __foo__ function generates a warning on clang 3.7.0
+   MPOQUET FIXME: the credits is unused if __foo__ is commented*/
 static char credits[] = "\n\
   @(#)snprintf.c, v2.2: Mark Martinec, <mark.martinec@ijs.si>\n\
   @(#)snprintf.c, v2.2: Copyright 1999, Mark Martinec. Frontier Artistic License applies.\n\

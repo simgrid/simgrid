@@ -232,7 +232,7 @@ public:
   virtual int sharingPolicy();
 
   /** @brief Check if the Link is used */
-  bool isUsed();
+  bool isUsed() override;
 
   void turnOn() override;
   void turnOff() override;
