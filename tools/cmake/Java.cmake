@@ -127,6 +127,12 @@ if(enable_lib_in_jar)
     set(JAVA_NATIVE_PATH NATIVE/${SG_SYSTEM_NAME}/arm) # Default arm (soft-float ABI)
   endif()
 
+  # Find how to copy
+  set(CPEXE cp)
+  if(WIN32)
+    set(CPEXE cp.exe)
+  endif()
+
   # Find what to copy
   set(JAVALIBS ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO} ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO})
   if (HAVE_BOOST_CONTEXT)
@@ -152,7 +158,7 @@ if(enable_lib_in_jar)
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
     
-    COMMAND echo cp ${JAVALIBS} ${JAVA_NATIVE_PATH} # Just display what's going on
+    COMMAND echo ${CPEXE} ${JAVALIBS} ${JAVA_NATIVE_PATH} # Just display what's going on
     # So, first of all, I'm sorry for the next few lines. Here is what's going on.
     # I need to copy some files, depending on the environment. 
     # I cannot use several POST_BUILD commands because cmake does
@@ -163,7 +169,7 @@ if(enable_lib_in_jar)
     # But if I do so, cmake still passes the space-separated list as a single argument to cp.
     # So I have to fire a sh -c, just to correctly parse the cp parameters.
     # Yup. That's the ways it goes. cmake is so lovely, that's wonderful.
-    COMMAND sh -c "cp ${JAVALIBS} ${JAVA_NATIVE_PATH}" # cp is less portable, but cmake cannot copy several files at once
+    COMMAND sh -c "${CPEXE} ${JAVALIBS} ${JAVA_NATIVE_PATH}" # cp is less portable, but cmake cannot copy several files at once
     
     ## strip seems to fail on Mac on binaries that are already stripped.
     ## It then spits: "symbols referenced by indirect symbol table entries that can't be stripped"
