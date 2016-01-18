@@ -25,7 +25,7 @@
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS ((prop*),(((AS|include|storage_type|storage|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,(ASroute|trace|trace_connect|bypassASroute)*,(trace|trace_connect)*)|((include|storage_type|storage|host|gpu|cabinet|router|link|backbone|trace|trace_connect|host_link)*,(route|trace|trace_connect|bypassRoute)*)))>
+<!ELEMENT AS ((prop*), ((AS|ASroute|include|storage_type|storage|link|backbone|cabinet|router|host|gpu|cluster|peer|host_link)*,(route|ASroute|trace|trace_connect|bypassRoute|bypassASroute)*))>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|Cluster_torus|Cluster_fat_tree) #REQUIRED>
 
