@@ -175,6 +175,15 @@ static void SIMIX_storage_create_(smx_storage_t storage)
   SIMIX_storage_create(key, storage, NULL);
 }
 
+static void (*maestro_code)(void*) = nullptr;
+static void* maestro_data = nullptr;
+
+void SIMIX_set_maestro(void (*code)(void*), void* data)
+{
+  maestro_code = code;
+  maestro_data = data;
+}
+
 /**
  * \ingroup SIMIX_API
  * \brief Initialize SIMIX internal data.
@@ -218,7 +227,10 @@ void SIMIX_global_init(int *argc, char **argv)
 
     surf_init(argc, argv);      /* Initialize SURF structures */
     SIMIX_context_mod_init();
-    SIMIX_create_maestro_process();
+
+    // Either create a new context with maestro or create
+    // a context object with the current context mestro):
+    SIMIX_maestro_create(maestro_code, maestro_data);
 
     /* context exception handlers */
     __xbt_running_ctx_fetch = SIMIX_process_get_running_context;

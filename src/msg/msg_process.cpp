@@ -181,6 +181,59 @@ msg_process_t MSG_process_create_with_environment(const char *name,
   return process;
 }
 
+static
+int MSG_maestro(int argc, char** argv)
+{
+  int res = MSG_main();
+  return res;
+}
+
+/* Become a process in the simulation
+ *
+ * Currently this can only be called by the main thread (once) and only work
+ * with some thread factories (currently ThreadContextFactory).
+ *
+ * In the future, it might be extended in order to attach other threads created
+ * by a third party library.
+ */
+msg_process_t MSG_process_attach(
+  const char *name, void *data,
+  msg_host_t host, xbt_dict_t properties)
+{
+  xbt_assert(host != NULL, "Invalid parameters: host and code params must not be NULL");
+  simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
+  msg_process_t process;
+
+  /* Simulator data for MSG */
+  simdata->waiting_action = NULL;
+  simdata->waiting_task = NULL;
+  simdata->m_host = host;
+  simdata->argc = 0;
+  simdata->argv = NULL;
+  simdata->data = data;
+  simdata->last_errno = MSG_OK;
+
+  /* Let's create the process: SIMIX may decide to start it right now,
+   * even before returning the flow control to us */
+  process = SIMIX_process_attach(name, simdata, sg_host_get_name(host), properties, NULL);
+  if (!process)
+    xbt_die("Could not attach");
+  simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
+  return process;
+}
+
+/** Detach a process attached with `MSG_process_attach()`
+ *
+ *  This is called when the current process has finished its job.
+ *  Used in the main thread, it waits for the simulation to finish before
+ *  returning. When it returns, the other simulated processes and the maestro
+ *  are destroyed.
+ */
+void MSG_process_detach(void)
+{
+  SIMIX_process_detach();
+}
+
 /** \ingroup m_process_management
  * \param process poor victim
  *

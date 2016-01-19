@@ -15,74 +15,12 @@
 #include "mc/mc.h"
 
 #include <src/simix/smx_private.h>
+#include <src/simix/smx_private.hpp>
 
 void SIMIX_process_set_cleanup_function(
   smx_process_t process, void_pfn_smxprocess_t cleanup)
 {
   process->context->set_cleanup(cleanup);
-}
-
-namespace simgrid {
-namespace simix {
-
-class XBT_PRIVATE args {
-private:
-  int argc_;
-  char** argv_;
-public:
-
-  // Main constructors
-  args() : argc_(0), argv_(nullptr) {}
-  args(int argc, char** argv) : argc_(argc), argv_(argv) {}
-
-  // Free
-  void clear()
-  {
-    for (int i = 0; i < this->argc_; i++)
-      free(this->argv_[i]);
-    free(this->argv_);
-    this->argc_ = 0;
-    this->argv_ = nullptr;
-  }
-  ~args() { clear(); }
-
-  // Copy
-  args(args const& that) = delete;
-  args& operator=(args const& that) = delete;
-
-  // Move:
-  args(args&& that) : argc_(that.argc_), argv_(that.argv_)
-  {
-    that.argc_ = 0;
-    that.argv_ = nullptr;
-  }
-  args& operator=(args&& that)
-  {
-    this->argc_ = that.argc_;
-    this->argv_ = that.argv_;
-    that.argc_ = 0;
-    that.argv_ = nullptr;
-    return *this;
-  }
-
-  int    argc()            const { return argc_; }
-  char** argv()                  { return argv_; }
-  const char*const* argv() const { return argv_; }
-  char* operator[](std::size_t i) { return argv_[i]; }
-};
-
-}
-}
-
-static
-std::function<void()> wrap_main(xbt_main_func_t code, int argc, char **argv)
-{
-  if (code) {
-    auto arg = std::make_shared<simgrid::simix::args>(argc, argv);
-    return [=]() {
-      code(arg->argc(), arg->argv());
-    };
-  } else return std::function<void()>();
 }
 
 /**
@@ -101,7 +39,7 @@ smx_context_t SIMIX_context_new(
   if (!simix_global)
     xbt_die("simix is not initialized, please call MSG_init first");
   return simix_global->context_factory->create_context(
-    wrap_main(code, argc, argv), cleanup_func, simix_process);
+    simgrid::simix::wrap_main(code, argc, argv), cleanup_func, simix_process);
 }
 
 namespace simgrid {
@@ -123,6 +61,18 @@ void ContextFactory::declare_context(void* context, std::size_t size)
   if(MC_is_active())
     MC_ignore_heap(context, size);
 #endif
+}
+
+Context* ContextFactory::attach(void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+{
+  xbt_die("Cannot attach with this ContextFactory.\n"
+    "Try using --cfg=contexts/factory:thread instead.\n");
+}
+
+Context* ContextFactory::create_maestro(std::function<void()> code, smx_process_t process)
+{
+  xbt_die("Cannot create_maestro with this ContextFactory.\n"
+    "Try using --cfg=contexts/factory:thread instead.\n");
 }
 
 Context::Context(std::function<void()> code,
@@ -151,6 +101,10 @@ void Context::stop()
   this->iwannadie = false;
   simcall_process_cleanup(this->process_);
   this->iwannadie = true;
+}
+
+AttachContext::~AttachContext()
+{
 }
 
 }

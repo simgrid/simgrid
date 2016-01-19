@@ -52,35 +52,7 @@ ThreadContext* ThreadContextFactory::create_context(
     std::function<void()> code,
     void_pfn_smxprocess_t cleanup, smx_process_t process)
 {
-  return this->new_context<ThreadContext>(std::move(code), cleanup, process);
-}
-
-ThreadContext::ThreadContext(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_process_t process)
-  : Context(std::move(code), cleanup, process)
-{
-  /* If the user provided a function for the process then use it
-     otherwise is the context for maestro */
-  if (has_code()) {
-    this->begin_ = xbt_os_sem_init(0);
-    this->end_ = xbt_os_sem_init(0);
-    if (smx_context_stack_size_was_set)
-      xbt_os_thread_setstacksize(smx_context_stack_size);
-    if (smx_context_guard_size_was_set)
-      xbt_os_thread_setguardsize(smx_context_guard_size);
-
-    /* create and start the process */
-    /* NOTE: The first argument to xbt_os_thread_create used to be the process *
-    * name, but now the name is stored at SIMIX level, so we pass a null  */
-    this->thread_ =
-      xbt_os_thread_create(NULL, ThreadContext::wrapper, this, this);
-
-    /* wait the starting of the newly created process */
-    xbt_os_sem_acquire(this->end_);
-
-  } else {
-    xbt_os_thread_set_extra_data(this);
-  }
+  return this->new_context<ThreadContext>(std::move(code), cleanup, process, !code);
 }
 
 void ThreadContextFactory::run_all()
@@ -111,6 +83,51 @@ ThreadContext* ThreadContextFactory::self()
   return static_cast<ThreadContext*>(xbt_os_thread_get_extra_data());
 }
 
+ThreadContext* ThreadContextFactory::attach(void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+{
+  return this->new_context<ThreadContext>(
+    std::function<void()>(), cleanup_func, process, false);
+}
+
+ThreadContext* ThreadContextFactory::create_maestro(std::function<void()> code, smx_process_t process)
+{
+    return this->new_context<ThreadContext>(std::move(code), nullptr, process, true);
+}
+
+ThreadContext::ThreadContext(std::function<void()> code,
+    void_pfn_smxprocess_t cleanup, smx_process_t process, bool maestro)
+  : AttachContext(std::move(code), cleanup, process)
+{
+  // We do not need the semaphores when maestro is in main:
+  // if (!(maestro && !code)) {
+    this->begin_ = xbt_os_sem_init(0);
+    this->end_ = xbt_os_sem_init(0);
+  // }
+
+  /* If the user provided a function for the process then use it */
+  if (has_code()) {
+    if (smx_context_stack_size_was_set)
+      xbt_os_thread_setstacksize(smx_context_stack_size);
+    if (smx_context_guard_size_was_set)
+      xbt_os_thread_setguardsize(smx_context_guard_size);
+
+    /* create and start the process */
+    /* NOTE: The first argument to xbt_os_thread_create used to be the process *
+    * name, but now the name is stored at SIMIX level, so we pass a null  */
+    this->thread_ =
+      xbt_os_thread_create(NULL,
+        maestro ? ThreadContext::maestro_wrapper : ThreadContext::wrapper,
+        this, this);
+    /* wait the starting of the newly created process */
+    xbt_os_sem_acquire(this->end_);
+  }
+
+  /* Otherwise, we attach to the current thread */
+  else {
+    xbt_os_thread_set_extra_data(this);
+  }
+}
+
 ThreadContext::~ThreadContext()
 {
   /* check if this is the context of maestro (it doesn't have a real thread) */
@@ -138,13 +155,47 @@ void *ThreadContext::wrapper(void *param)
 #endif
   /* Tell the maestro we are starting, and wait for its green light */
   xbt_os_sem_release(context->end_);
+
   xbt_os_sem_acquire(context->begin_);
   if (smx_ctx_thread_sem)       /* parallel run */
     xbt_os_sem_acquire(smx_ctx_thread_sem);
 
   (*context)();
   context->stop();
+
   return nullptr;
+}
+
+void *ThreadContext::maestro_wrapper(void *param)
+{
+  ThreadContext* context = static_cast<ThreadContext*>(param);
+
+#ifndef WIN32
+  /* Install alternate signal stack, for SIGSEGV handler. */
+  stack_t stack;
+  stack.ss_sp = sigsegv_stack;
+  stack.ss_size = sizeof sigsegv_stack;
+  stack.ss_flags = 0;
+  sigaltstack(&stack, nullptr);
+#endif
+  /* Tell the caller we are starting */
+  xbt_os_sem_release(context->end_);
+
+  // Wait for the caller to give control back to us:
+  xbt_os_sem_acquire(context->begin_);
+  (*context)();
+
+  // Tell main that we have finished:
+  xbt_os_sem_release(context->end_);
+
+  return nullptr;
+}
+
+void ThreadContext::start()
+{
+  xbt_os_sem_acquire(this->begin_);
+  if (smx_ctx_thread_sem)       /* parallel run */
+    xbt_os_sem_acquire(smx_ctx_thread_sem);
 }
 
 void ThreadContext::stop()
@@ -167,6 +218,26 @@ void ThreadContext::suspend()
   xbt_os_sem_acquire(this->begin_);
   if (smx_ctx_thread_sem)
     xbt_os_sem_acquire(smx_ctx_thread_sem);
+}
+
+void ThreadContext::attach_start()
+{
+  // We're breaking the layers here by depending on the upper layer:
+  ThreadContext* maestro = (ThreadContext*) simix_global->maestro_process->context;
+  xbt_os_sem_release(maestro->begin_);
+  this->start();
+}
+
+void ThreadContext::attach_stop()
+{
+  if (smx_ctx_thread_sem)
+    xbt_os_sem_release(smx_ctx_thread_sem);
+  xbt_os_sem_release(this->end_);
+
+  ThreadContext* maestro = (ThreadContext*) simix_global->maestro_process->context;
+  xbt_os_sem_acquire(maestro->end_);
+
+  xbt_os_thread_set_extra_data(nullptr);
 }
 
 }

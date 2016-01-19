@@ -103,7 +103,8 @@ void SIMIX_process_cleanup(smx_process_t process)
 
   XBT_DEBUG("%p should not be run anymore",process);
   xbt_swag_remove(process, simix_global->process_list);
-  xbt_swag_remove(process, sg_host_simix(process->host)->process_list);
+  if (process->host)
+    xbt_swag_remove(process, sg_host_simix(process->host)->process_list);
   xbt_swag_insert(process, simix_global->process_to_destroy);
   process->context->iwannadie = 0;
 
@@ -141,21 +142,32 @@ void SIMIX_process_empty_trash(void)
 /**
  * \brief Creates and runs the maestro process
  */
-void SIMIX_create_maestro_process()
+void SIMIX_maestro_create(void (*code)(void*), void* data)
 {
   smx_process_t maestro = NULL;
-
   /* Create maestro process and intilialize it */
   maestro = xbt_new0(s_smx_process_t, 1);
   maestro->pid = simix_process_maxpid++;
   maestro->ppid = -1;
-  maestro->name = (char *) "";
+  maestro->name = (char*) "";
+  maestro->data = data;
   maestro->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
-  maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
+
+  if (!code) {
+    maestro->context = SIMIX_context_new(NULL, 0, nullptr, NULL, maestro);
+  } else {
+    if (!simix_global)
+      xbt_die("simix is not initialized, please call MSG_init first");
+    maestro->context =
+      simix_global->context_factory->create_maestro(
+        std::bind(code, data), maestro);
+  }
+
   maestro->simcall.issuer = maestro;
   simix_global->maestro_process = maestro;
 }
+
 /**
  * \brief Stops a process.
  *
@@ -325,6 +337,110 @@ smx_process_t SIMIX_process_create(
     TRACE_msg_process_create(process->name, process->pid, process->host);
   }
   return process;
+}
+
+smx_process_t SIMIX_process_attach(
+  const char* name,
+  void *data,
+  const char* hostname,
+  xbt_dict_t properties,
+  smx_process_t parent_process)
+{
+  // This is mostly a copy/paste from SIMIX_process_new(),
+  // it'd be nice to share some code between those two functions.
+
+  sg_host_t host = sg_host_by_name(hostname);
+  XBT_DEBUG("Attach process %s on host '%s'", name, hostname);
+
+  if (host->is_off()) {
+    XBT_WARN("Cannot launch process '%s' on failed host '%s'",
+      name, hostname);
+    return nullptr;
+  }
+
+  smx_process_t process = xbt_new0(s_smx_process_t, 1);
+  /* Process data */
+  process->pid = simix_process_maxpid++;
+  process->name = xbt_strdup(name);
+  process->host = host;
+  process->data = data;
+  process->comms = xbt_fifo_new();
+  process->simcall.issuer = process;
+  process->ppid = -1;
+  /* Initiliaze data segment to default value */
+  SIMIX_segment_index_set(process, -1);
+  if (parent_process != NULL) {
+    process->ppid = SIMIX_process_get_PID(parent_process);
+   /* SMPI process have their own data segment and
+      each other inherit from their father */
+  #ifdef HAVE_SMPI
+    if(smpi_privatize_global_variables){
+      if(parent_process->pid != 0){
+        SIMIX_segment_index_set(process, parent_process->segment_index);
+      } else {
+        SIMIX_segment_index_set(process, process->pid - 1);
+      }
+    }
+  #endif
+  }
+
+  /* Process data for auto-restart */
+  process->auto_restart = false;
+  process->code = nullptr;
+  process->argc = 0;
+  process->argv = nullptr;
+
+  XBT_VERB("Create context %s", process->name);
+  if (!simix_global)
+    xbt_die("simix is not initialized, please call MSG_init first");
+  process->context = simix_global->context_factory->attach(
+    simix_global->cleanup_process_function, process);
+
+  process->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
+  XBT_RUNNING_CTX_INITIALIZE(process->running_ctx);
+
+  if(MC_is_active()){
+    MC_ignore_heap(process->running_ctx, sizeof(*process->running_ctx));
+  }
+
+  /* Add properties */
+  process->properties = properties;
+
+  /* Add the process to it's host process list */
+  xbt_swag_insert(process, sg_host_simix(host)->process_list);
+
+  /* Now insert it in the global process list and in the process to run list */
+  xbt_swag_insert(process, simix_global->process_list);
+  XBT_DEBUG("Inserting %s(%s) in the to_run list", process->name, sg_host_get_name(host));
+  xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, process);
+
+  /* Tracing the process creation */
+  TRACE_msg_process_create(process->name, process->pid, process->host);
+
+  auto context = dynamic_cast<simgrid::simix::AttachContext*>(process->context);
+  if (!context)
+    xbt_die("Not a suitable context");
+
+  context->attach_start();
+  return process;
+}
+
+void SIMIX_process_detach(void)
+{
+  auto context = dynamic_cast<simgrid::simix::AttachContext*>(SIMIX_context_self());
+  if (!context)
+    xbt_die("Not a suitable context");
+
+  simix_global->cleanup_process_function(context->process());
+
+  // Let maestro ignore we are still alive:
+  // xbt_swag_remove(context->process(), simix_global->process_list);
+
+  // TODDO, Remove from proces list:
+  //   xbt_swag_remove(process, sg_host_simix(host)->process_list);
+
+  context->attach_stop();
+  // delete context;
 }
 
 /**
@@ -906,7 +1022,11 @@ void SIMIX_process_yield(smx_process_t self)
 /* callback: context fetching */
 xbt_running_ctx_t *SIMIX_process_get_running_context(void)
 {
-  return SIMIX_process_self()->running_ctx;
+  smx_process_t process = SIMIX_process_self();
+  if (process)
+    return process->running_ctx;
+  else
+    return nullptr;
 }
 
 /* callback: termination */

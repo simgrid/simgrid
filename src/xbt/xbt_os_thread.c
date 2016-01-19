@@ -103,10 +103,13 @@ void xbt_os_thread_mod_preinit(void)
            "pthread_key_create failed for xbt_self_thread_key");
   
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
+  main_thread->name = NULL;
+  main_thread->detached = 0;
   main_thread->name = (char *) "main";
-  main_thread->start_routine = NULL;
   main_thread->param = NULL;
+  main_thread->start_routine = NULL;
   main_thread->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+  main_thread->extra_data = NULL;
   XBT_RUNNING_CTX_INITIALIZE(main_thread->running_ctx);
 
   if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
@@ -1299,7 +1302,11 @@ void xbt_os_thread_set_extra_data(void *data)
 
 void *xbt_os_thread_get_extra_data(void)
 {
-  return xbt_os_thread_self()->extra_data;
+  xbt_os_thread_t thread = xbt_os_thread_self();
+  if (thread)
+    return xbt_os_thread_self()->extra_data;
+  else
+    return NULL;
 }
 
 xbt_os_rmutex_t xbt_os_rmutex_init(void)
