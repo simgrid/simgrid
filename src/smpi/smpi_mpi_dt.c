@@ -35,7 +35,7 @@ int type_keyval_id=0;//avoid collisions
     NULL,           /* pointer on extended struct*/   \
     0               /* in_use counter */              \
   };                                                  \
-MPI_Datatype name = &mpi_##name;
+const MPI_Datatype name = &mpi_##name;
 
 #define CREATE_MPI_DATATYPE_NULL(name)                \
   static s_smpi_mpi_datatype_t mpi_##name = {         \
@@ -49,7 +49,7 @@ MPI_Datatype name = &mpi_##name;
     NULL,           /* pointer on extended struct*/   \
     0               /* in_use counter */              \
   };                                                  \
-MPI_Datatype name = &mpi_##name;
+const MPI_Datatype name = &mpi_##name;
 
 //The following are datatypes for the MPI functions MPI_MAXLOC and MPI_MINLOC.
 typedef struct {

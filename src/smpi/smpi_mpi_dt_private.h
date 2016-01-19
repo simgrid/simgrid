@@ -32,7 +32,7 @@
  */
 #define DT_FLAG_BASIC         (DT_FLAG_PREDEFINED | DT_FLAG_CONTIGUOUS | DT_FLAG_NO_GAPS | DT_FLAG_DATA | DT_FLAG_COMMITED)
 
-extern MPI_Datatype MPI_PTR;
+extern const MPI_Datatype MPI_PTR;
 
 
 //*****************************************************************************************
