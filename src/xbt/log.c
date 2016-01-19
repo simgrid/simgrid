@@ -596,12 +596,8 @@ static void xbt_log_connect_categories(void)
 #ifdef HAVE_LUA
   XBT_LOG_CONNECT(bindings);
   XBT_LOG_CONNECT(lua);
-  XBT_LOG_CONNECT(lua_comm);
   XBT_LOG_CONNECT(lua_host);
   XBT_LOG_CONNECT(lua_platf);
-  XBT_LOG_CONNECT(lua_process);
-  XBT_LOG_CONNECT(lua_state_cloner);
-  XBT_LOG_CONNECT(lua_task);
   XBT_LOG_CONNECT(lua_utils);
 #endif
 

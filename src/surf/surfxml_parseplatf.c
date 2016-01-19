@@ -14,7 +14,6 @@
 
 #ifdef HAVE_LUA
 #include "src/bindings/lua/simgrid_lua.h"
-#include "src/bindings/lua/lua_state_cloner.h"
 
 #include <lua.h>                /* Always include this when calling Lua */
 #include <lauxlib.h>            /* Always include this when calling Lua */
@@ -99,22 +98,16 @@ void parse_platform_file(const char *file)
    * written in lua). If not, we will use the (old?) XML parser
    */
   if (is_lua) {
-    // Get maestro state. In case we're calling Lua from
-    // C only, this will be NULL -- no Lua code has been
-    // executed yet and hence, the SimGrid module has not
-    // yet been loaded.
     // NOTE: After executing the lua_pcall() below,
     // sglua_get_maestro() will not be NULL, since the
     // SimGrid module was loaded!
-    lua_State* L = sglua_get_maestro();
+    // C. Heinrich 01/2016: Not sure if this is still required after I
+    // ripped out most of that bloody Lua simulation stuff. We may
+    // want to check and maybe we can clean that up.
+    lua_State* L;
 
-    // We may want to remove the task_copy_callback from
-    // the SimGrid module if we're using C code only (this
-    // callback is used for Lua-only code).
-    int remove_callback = FALSE;
     if (L == NULL) {
         L = luaL_newstate();
-        remove_callback = TRUE;
     }
     luaL_openlibs(L);
 
@@ -125,14 +118,6 @@ void parse_platform_file(const char *file)
         XBT_ERROR("FATAL ERROR:\n  %s: %s\n\n", "Lua call failed. Errormessage:", lua_tostring(L, -1));
         xbt_die("Lua call failed. See Log");
     }
-    // Without this, task_copy_callback() will try to copy
-    // some tasks -- but these don't exist in case we're using
-    // C. Hence, we need to remove the callback -- we don't
-    // want to segfault.
-    if (remove_callback) {
-      MSG_task_set_copy_callback(NULL);
-    }
-
   }
   else
 #endif

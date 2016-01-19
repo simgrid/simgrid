@@ -22,9 +22,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/priority)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/startKillTime)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/suspend)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/tracing)
-
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/lua)
-
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/actions)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/bittorrent)

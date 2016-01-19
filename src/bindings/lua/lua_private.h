@@ -9,19 +9,8 @@
 #include "simgrid_lua.h"
 #include "simgrid/msg.h"
 
-void sglua_register_task_functions(lua_State* L);
-msg_task_t sglua_check_task(lua_State* L, int index);
-void sglua_task_register(lua_State* L);
-void sglua_task_unregister(lua_State* L, msg_task_t task);
-
-void sglua_register_comm_functions(lua_State* L);
-msg_comm_t sglua_check_comm(lua_State* L, int index);
-void sglua_push_comm(lua_State* L, msg_comm_t comm);
-
 void sglua_register_host_functions(lua_State* L);
 msg_host_t sglua_check_host(lua_State* L, int index);
-
-void sglua_register_process_functions(lua_State* L);
 
 void sglua_register_platf_functions(lua_State* L);
 

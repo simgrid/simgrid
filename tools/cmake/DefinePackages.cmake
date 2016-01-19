@@ -456,7 +456,6 @@ endif()
 set(BINDINGS_SRC
   src/bindings/bindings_global.c
   src/bindings/lua/lua_private.h
-  src/bindings/lua/lua_state_cloner.h
   src/bindings/lua/lua_utils.h
   src/bindings/lua/simgrid_lua.h
   )
@@ -531,12 +530,8 @@ list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
 
 set(LUA_SRC
   src/bindings/lua/factories/host.lua
-  src/bindings/lua/lua_comm.c
   src/bindings/lua/lua_host.c
   src/bindings/lua/lua_platf.c
-  src/bindings/lua/lua_process.c
-  src/bindings/lua/lua_state_cloner.c
-  src/bindings/lua/lua_task.c
   src/bindings/lua/lua_utils.c
   src/bindings/lua/simgrid_lua.c
   )
