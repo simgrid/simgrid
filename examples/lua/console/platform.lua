@@ -8,11 +8,11 @@ simgrid.platf.open();
 
 simgrid.platf.AS_open{id="AS0",mode="Full"};
 
-simgrid.platf.host_new{id="Tremblay",power=98095000};
-simgrid.platf.host_new{id="Jupiter",power=76296000};
-simgrid.platf.host_new{id="Fafard",power=76296000};
-simgrid.platf.host_new{id="Ginette",power=48492000};
-simgrid.platf.host_new{id="Bourassa",power=48492000};
+simgrid.platf.host_new{id="Tremblay",speed=98095000};
+simgrid.platf.host_new{id="Jupiter",speed=76296000};
+simgrid.platf.host_new{id="Fafard",speed=76296000};
+simgrid.platf.host_new{id="Ginette",speed=48492000};
+simgrid.platf.host_new{id="Bourassa",speed=48492000};
 
 -- create Links
 for i=10,0,-1 do

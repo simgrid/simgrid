@@ -8,11 +8,11 @@ require "simgrid"
 
   simgrid.AS.new{id="AS0",mode="Full"};
 
-  simgrid.host.new{id="Tremblay",power=98095000};
-  simgrid.host.new{id="Jupiter",power=76296000};
-  simgrid.host.new{id="Fafard",power=76296000};
-  simgrid.host.new{id="Ginette",power=48492000};
-  simgrid.host.new{id="Bourassa",power=48492000};
+  simgrid.host.new{id="Tremblay",speed=98095000};
+  simgrid.host.new{id="Jupiter",speed=76296000};
+  simgrid.host.new{id="Fafard",speed=76296000};
+  simgrid.host.new{id="Ginette",speed=48492000};
+  simgrid.host.new{id="Bourassa",speed=48492000};
 
     -- create Links
   for i=0,11 do

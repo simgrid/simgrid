@@ -48,7 +48,7 @@
         for _,i in pairs(args.radical) do
             local hostname = args.prefix .. i .. args.suffix
             local linkname = args.id .."_link_" .. i
-            simgrid.platf.host_new{id=hostname, power=args.power,core=args.core,power_trace=args.availability_file,state_trace=args.state_file};
+            simgrid.platf.host_new{id=hostname, speed=args.power,core=args.core,power_trace=args.availability_file,state_trace=args.state_file};
             simgrid.platf.link_new{id=linkname, bandwidth=args.bw,latency=args.lat, sharing_policy=args.sharing_sharing_policy};
             simgrid.platf.host_link_new{id=hostname,up=linkname.."_UP",down=linkname.."_DOWN"};
 
@@ -65,7 +65,7 @@
       if hostno % 2 == 0 then return "blabla" end
       if hostno % 2 == 1 then return "blublub" end
     end,
-    power="1Gf",
+    speed="1Gf",
     id="AS0",
     bw="125MBps",
     lat="50us",

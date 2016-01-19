@@ -8,9 +8,9 @@ require "simgrid"
 
   simgrid.AS.new{id="AS0",mode="Full"}; 
 
-  simgrid.AS.addHost{AS="AS0",id="Tremblay",power=98095000};
-  simgrid.AS.addHost{AS="AS0",id="Jupiter",power=76296000};
-  simgrid.AS.addHost{AS="AS0",id="Fafard",power=76296000};
+  simgrid.AS.addHost{AS="AS0",id="Tremblay",speed=98095000};
+  simgrid.AS.addHost{AS="AS0",id="Jupiter",speed=76296000};
+  simgrid.AS.addHost{AS="AS0",id="Fafard",speed=76296000};
 
   simgrid.host.setProperty{host="Tremblay",prop_id="ip",prop_value="199.23.98.3"};
   simgrid.host.setProperty{host="Tremblay",prop_id="port",prop_value="65"};

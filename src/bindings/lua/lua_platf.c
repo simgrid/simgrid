@@ -177,10 +177,10 @@ int console_add_host(lua_State *L) {
   lua_pop(L, 1);
 
   // get power value
-  lua_pushstring(L, "power");
+  lua_pushstring(L, "speed");
   type = lua_gettable(L, -2);
   if (type != LUA_TSTRING && type != LUA_TNUMBER) {
-    XBT_ERROR("Attribute 'power' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
+    XBT_ERROR("Attribute 'speed' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
   }
   host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
   xbt_dynar_push_as(host.speed_peak, double, get_cpu_speed(lua_tostring(L, -1)));

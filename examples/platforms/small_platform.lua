@@ -12,11 +12,11 @@
   simgrid.platf.open();
   simgrid.platf.AS_open{id="AS0",mode="Full"};
 
-  simgrid.platf.host_new{AS="AS0",id="Tremblay",power=98095000};
-  simgrid.platf.host_new{AS="AS0",id="Jupiter",power=76296000};
-  simgrid.platf.host_new{AS="AS0",id="Fafard",power=76296000};
-  simgrid.platf.host_new{AS="AS0",id="Ginette",power=48492000};
-  simgrid.platf.host_new{AS="AS0",id="Bourassa",power=48492000};
+  simgrid.platf.host_new{AS="AS0",id="Tremblay",speed=98095000};
+  simgrid.platf.host_new{AS="AS0",id="Jupiter",speed=76296000};
+  simgrid.platf.host_new{AS="AS0",id="Fafard",speed=76296000};
+  simgrid.platf.host_new{AS="AS0",id="Ginette",speed=48492000};
+  simgrid.platf.host_new{AS="AS0",id="Bourassa",speed=48492000};
 
   -- create Links
   simgrid.platf.link_new{AS="AS0",id=0,bandwidth=41279125,lat=0.000059904};

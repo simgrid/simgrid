@@ -10,7 +10,7 @@ require "simgrid"
 
   -- create 5 Splayd (Hosts)
   for i=0,5,1 do
-	simgrid.AS.addHost{AS="AS0",id="Splayd_"..i,power= 7000000+i*1000000}
+	simgrid.AS.addHost{AS="AS0",id="Splayd_"..i,speed= 7000000+i*1000000}
   end
 
     -- create Links
