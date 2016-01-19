@@ -636,6 +636,8 @@ static void action_allReduce(const char *const *action) {
 }
 
 static void action_allToAll(const char *const *action) {
+  CHECK_ACTION_PARAMS(action, 2, 2); //two mandatory (send and recv volumes)
+                                     //two optional (corresponding datatypes)
   double clock = smpi_process_simulated_elapsed();
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   int send_size = parse_double(action[2]);
