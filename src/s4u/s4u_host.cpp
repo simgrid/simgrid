@@ -42,8 +42,7 @@ Host::Host(const char* name)
 
 Host::~Host() {
 	delete pimpl_cpu;
-	if (mounts != NULL)
-		delete mounts;
+	delete mounts;
 }
 
 Host *Host::by_name(std::string name) {
