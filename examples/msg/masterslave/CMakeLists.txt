@@ -7,8 +7,6 @@ add_executable(masterslave_bypass "masterslave_bypass.c")
 add_executable(masterslave_cluster "masterslave_cluster.c")
 add_executable(masterslave_kill "masterslave_kill.c")
 add_executable(masterslave_arg "masterslave_arg.c")
-add_executable(masterslave_platfgen "masterslave_platfgen.c")
-add_executable(masterslave_failure_platfgen "masterslave_failure_platfgen.c")
 
 ### Add definitions for compile
 if(WIN32)
@@ -18,8 +16,6 @@ if(WIN32)
   target_link_libraries(masterslave_bypass simgrid )
   target_link_libraries(masterslave_kill simgrid )
   target_link_libraries(masterslave_arg simgrid )
-  target_link_libraries(masterslave_platfgen simgrid )
-  target_link_libraries(masterslave_failure_platfgen simgrid )
 else()
   target_link_libraries(masterslave_forwarder simgrid )
   target_link_libraries(masterslave_failure simgrid )
@@ -27,8 +23,6 @@ else()
   target_link_libraries(masterslave_bypass simgrid )
   target_link_libraries(masterslave_kill simgrid )
   target_link_libraries(masterslave_arg simgrid )
-  target_link_libraries(masterslave_platfgen simgrid )
-  target_link_libraries(masterslave_failure_platfgen simgrid )
 endif()
 target_link_libraries(masterslave_cluster simgrid)
 
@@ -70,8 +64,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_forwarder.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_kill.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_mailbox.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_platfgen.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_failure_platfgen.c
   PARENT_SCOPE
   )
 set(bin_files
