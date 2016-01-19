@@ -528,47 +528,6 @@ int console_AS_close(lua_State *L) {
   return 0;
 }
 
-int console_set_function(lua_State *L) {
-
-  const char *host_id ;
-  const char *function_id;
-  xbt_dynar_t args;
-
-  if (! lua_istable(L, 1)) {
-    XBT_ERROR("Bad Arguments to AS.new, Should be a table with named arguments");
-    return -1;
-  }
-
-  // get Host id
-  lua_pushstring(L, "host");
-  lua_gettable(L, -2);
-  host_id = lua_tostring(L, -1);
-  lua_pop(L, 1);
-
-  // get Function Name
-  lua_pushstring(L, "fct");
-  lua_gettable(L, -2);
-  function_id = lua_tostring(L, -1);
-  lua_pop(L, 1);
-
-  //get args
-  lua_pushstring(L,"args");
-  lua_gettable(L, -2);
-  args = xbt_str_split_str( lua_tostring(L,-1) , ",");
-  lua_pop(L, 1);
-
-  msg_host_t host = MSG_host_by_name(host_id);
-  if (!host) {
-    XBT_ERROR("no host '%s' found",host_id);
-    return -1;
-  }
-
-  // FIXME: use sg_platf_new_process directly (warning: find a way to check hostname)
-  MSG_set_function(host_id, function_id, args);
-
-  return 0;
-}
-
 int console_host_set_property(lua_State *L) {
   const char* name ="";
   const char* prop_id = "";

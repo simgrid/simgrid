@@ -17,8 +17,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
-static lua_State* sglua_maestro_state;
-
 int luaopen_simgrid(lua_State *L);
 static void sglua_register_c_functions(lua_State *L);
 
@@ -96,49 +94,6 @@ static const luaL_Reg simgrid_functions[] = {
 int luaopen_simgrid(lua_State *L)
 {
   XBT_DEBUG("luaopen_simgrid *****");
-
-  /* Get the command line arguments from the lua interpreter */
-  char **argv = xbt_malloc(sizeof(char *) * LUA_MAX_ARGS_COUNT);
-  int argc = 1;
-  argv[0] = (char *) "/usr/bin/lua";    /* Lie on the argv[0] so that the stack dumping facilities find the right binary. FIXME: what if lua is not in that location? */
-
-  lua_getglobal(L, "arg");
-  /* if arg is a null value, it means we use lua only as a script to init platform
-   * else it should be a table and then take arg in consideration
-   */
-  if (lua_istable(L, -1)) {
-    int done = 0;
-    while (!done) {
-      argc++;
-      lua_pushinteger(L, argc - 2);
-      lua_gettable(L, -2);
-      if (lua_isnil(L, -1)) {
-        done = 1;
-      } else {
-        xbt_assert(lua_isstring(L, -1),
-                    "argv[%d] got from lua is no string", argc - 1);
-        xbt_assert(argc < LUA_MAX_ARGS_COUNT,
-                    "Too many arguments, please increase LUA_MAX_ARGS_COUNT in %s before recompiling SimGrid if you insist on having more than %d args on command line",
-                    __FILE__, LUA_MAX_ARGS_COUNT - 1);
-        argv[argc - 1] = (char *) luaL_checkstring(L, -1);
-        lua_pop(L, 1);
-        XBT_DEBUG("Got command line argument %s from lua", argv[argc - 1]);
-      }
-    }
-    argv[argc--] = NULL;
-
-    /* Initialize the MSG core */
-    XBT_DEBUG("Still %d arguments on command line", argc); // FIXME: update the lua's arg table to reflect the changes from SimGrid
-  }
-  MSG_init(&argc, argv);
-  MSG_process_set_data_cleanup((void_f_pvoid_t) lua_close);
-
-  /* Keep the context mechanism informed of our lua world today */
-  sglua_maestro_state = L;
-
-  /* initialize access to my tables by children Lua states */
-  lua_newtable(L);
-  lua_setfield(L, LUA_REGISTRYINDEX, "simgrid.maestro_tables");
 
   sglua_register_c_functions(L);
 

@@ -161,20 +161,6 @@ static int l_host_get_property_value(lua_State * L)
 }
 
 /**
- * \brief Makes the current process sleep for a while.
- * \param L a Lua state
- * \return number of values returned to Lua
- *
- * - Argument 1 (number): duration of the sleep
- */
-static int l_host_sleep(lua_State *L)
-{
-  int time = luaL_checkinteger(L, 1);
-  MSG_process_sleep(time);
-  return 0;
-}
-
-/**
  * \brief Destroys a host.
  * \param L a Lua state
  * \return number of values returned to Lua
@@ -195,10 +181,8 @@ static const luaL_Reg host_functions[] = {
   {"at", l_host_at},
   {"self", l_host_self},
   {"get_prop_value", l_host_get_property_value},
-  {"sleep", l_host_sleep},
   {"destroy", l_host_destroy},
   // Bypass XML Methods
-  {"set_function", console_set_function},
   {"set_property", console_host_set_property},
   {NULL, NULL}
 };
