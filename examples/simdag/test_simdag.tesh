@@ -15,6 +15,6 @@ $ $SG_TEST_EXENV ./sd_test ${srcdir:=.}/../platforms/platform.xml
 > [0.000000] [sd_test/INFO] Route latency = 0.070615, route bandwidth = 472125.000000
 > [0.000000] [sd_test/INFO] Communication time for 2000000.000000 bytes between Jacquelin and Intel: 4.306781
 > [0.000000] [sd_test/INFO] Communication time for 3000000.000000 bytes between Intel and Jacquelin: 6.424864
-> [0.000000] [sd_test/INFO] Estimated time for 'Task D': 6.432146
+> [0.000000] [sd_test/INFO] Estimated time for 'Task D': 6.502761
 > [21.322061] [sd_test/INFO] Task 'Task D' start time: 0.000000, finish time: 10.661030
 > [21.322061] [sd_test/INFO] Task 'Task B' start time: 10.661030, finish time: 21.322061
