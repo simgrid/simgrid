@@ -884,9 +884,9 @@ static void action_allgather(const char *const *action) {
 
   MPI_Datatype MPI_CURRENT_TYPE2;
 
-  if(action[4]) {
-    MPI_CURRENT_TYPE = decode_datatype(action[3]);
-    MPI_CURRENT_TYPE2 = decode_datatype(action[4]);
+  if(action[4] && action[5]) {
+    MPI_CURRENT_TYPE = decode_datatype(action[4]);
+    MPI_CURRENT_TYPE2 = decode_datatype(action[5]);
   } else {
     MPI_CURRENT_TYPE = MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2 = MPI_DEFAULT_TYPE;    
