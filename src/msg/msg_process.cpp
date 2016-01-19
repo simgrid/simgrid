@@ -165,12 +165,6 @@ msg_process_t MSG_process_create_with_environment(const char *name,
   simdata->data = data;
   simdata->last_errno = MSG_OK;
 
-  /* The TRACE process is created before the SIMIX one
-   * to avoid issues when SIMIX decides to start the new
-   * process right now (before returning the flow control). */
-  unsigned int next_pid = SIMIX_process_get_maxpid();
-  TRACE_msg_process_create(name, next_pid, host);
-
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
   process = simcall_process_create(name, code, simdata, sg_host_get_name(host), -1,
@@ -180,10 +174,8 @@ msg_process_t MSG_process_create_with_environment(const char *name,
     /* Undo everything we have just changed */
     xbt_free(simdata);
     return NULL;
-    // FIXME: is the TRACE process destroyed in this case?
   }
   else {
-    xbt_assert(next_pid == process->pid, "Bad trace pid hack");
     simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
   }
   return process;
