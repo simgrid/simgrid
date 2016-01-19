@@ -151,8 +151,8 @@ XBT_PUBLIC(const SD_link_t *) SD_route_get_list(SD_workstation_t src,
                                                 SD_workstation_t dst);
 XBT_PUBLIC(int) SD_route_get_size(SD_workstation_t src,
                                   SD_workstation_t dst);
-XBT_PUBLIC(double) SD_workstation_get_power(SD_workstation_t workstation);
-XBT_PUBLIC(double) SD_workstation_get_available_power(SD_workstation_t
+XBT_PUBLIC(double) SD_workstation_get_speed(SD_workstation_t workstation);
+XBT_PUBLIC(double) SD_workstation_get_available_speed(SD_workstation_t
                                                       workstation);
 XBT_PUBLIC(int) SD_workstation_get_cores(SD_workstation_t workstation);
 XBT_PUBLIC(e_SD_workstation_access_mode_t)

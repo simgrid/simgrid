@@ -175,8 +175,8 @@ void SD_workstation_dump(SD_workstation_t ws)
   SD_task_t task = NULL;
   
   XBT_INFO("Displaying workstation %s", SD_workstation_get_name(ws));
-  XBT_INFO("  - power: %.0f", SD_workstation_get_power(ws));
-  XBT_INFO("  - available power: %.2f", SD_workstation_get_available_power(ws));
+  XBT_INFO("  - speed: %.0f", SD_workstation_get_speed(ws));
+  XBT_INFO("  - available speed: %.2f", SD_workstation_get_available_speed(ws));
   switch (sg_host_sd(ws)->access_mode){
   case SD_WORKSTATION_SHARED_ACCESS:
       XBT_INFO("  - access mode: Space shared");
@@ -248,13 +248,13 @@ int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
 }
 
 /**
- * \brief Returns the total power of a workstation
+ * \brief Returns the total speed of a workstation
  *
  * \param workstation a workstation
- * \return the total power of this workstation
- * \see SD_workstation_get_available_power()
+ * \return the total speed of this workstation
+ * \see SD_workstation_get_available_speed()
  */
-double SD_workstation_get_power(SD_workstation_t workstation)
+double SD_workstation_get_speed(SD_workstation_t workstation)
 {
   return workstation->speed();
 }
@@ -269,13 +269,13 @@ int SD_workstation_get_cores(SD_workstation_t workstation) {
 }
 
 /**
- * \brief Returns the proportion of available power in a workstation
+ * \brief Returns the proportion of available speed in a workstation
  *
  * \param workstation a workstation
- * \return the proportion of power currently available in this workstation (normally a number between 0 and 1)
- * \see SD_workstation_get_power()
+ * \return the proportion of speed currently available in this workstation (normally a number between 0 and 1)
+ * \see SD_workstation_get_speed()
  */
-double SD_workstation_get_available_power(SD_workstation_t workstation)
+double SD_workstation_get_available_speed(SD_workstation_t workstation)
 {
   return surf_host_get_available_speed(workstation);
 }
@@ -292,7 +292,7 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
 {
   xbt_assert(flops_amount >= 0,
               "flops_amount must be greater than or equal to zero");
-  return flops_amount / SD_workstation_get_power(workstation);
+  return flops_amount / SD_workstation_get_speed(workstation);
 }
 
 /**

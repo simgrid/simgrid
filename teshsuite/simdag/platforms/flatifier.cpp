@@ -146,7 +146,7 @@ int main(int argc, char **argv)
     for (i = 0; i < totalHosts; i++) {
       printf("  <host id=\"%s\" power=\"%.0f\"",
           SD_workstation_get_name(hosts[i]),
-          SD_workstation_get_power(hosts[i]));
+          SD_workstation_get_speed(hosts[i]));
       props = SD_workstation_get_properties(hosts[i]);
       if (SD_workstation_get_cores(hosts[i])>1) {
         printf(" core=\"%d\"", SD_workstation_get_cores(hosts[i]));
