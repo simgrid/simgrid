@@ -101,8 +101,13 @@ static void _XBT_CALL segvhandler(int signum, siginfo_t *siginfo, void *context)
     fprintf(stderr, "Segmentation fault.\n");
 #ifdef HAVE_SMPI
     if (smpi_enabled() && !smpi_privatize_global_variables) {
+#ifdef HAVE_PRIVATIZATION
       fprintf(stderr,
         "Try to enable SMPI variable privatization with --cfg=smpi/privatize_global_variables:yes.\n");
+#else
+      fprintf(stderr,
+        "Sadly, your system does not support --cfg=smpi/privatize_global_variables:yes (yet).\n");
+#endif
     }
 #endif
   }
