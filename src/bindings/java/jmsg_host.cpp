@@ -381,3 +381,17 @@ Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject 
   env->ReleaseStringUTFChars((jstring) jname, name);
 
 }
+
+#include "simgrid/plugins/energy.h"
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *env, jobject jhost) {
+  msg_host_t host = jhost_get_native(env, jhost);
+
+  if (!host) {
+    jxbt_throw_notbound(env, "host", jhost);
+    return 0;
+  }
+
+  return MSG_host_get_consumed_energy(host);
+
+}
+

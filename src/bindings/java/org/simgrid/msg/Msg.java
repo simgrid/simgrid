@@ -57,6 +57,9 @@ public final class Msg {
 	 * @param args            The arguments of the command line of the simulation.
 	 */
 	public final static native void init(String[]args);
+	
+	/** Tell the kernel that you want to use the energy plugin */
+	public final static native void energyInit();
 
 	/**
 	 * Run the MSG simulation.

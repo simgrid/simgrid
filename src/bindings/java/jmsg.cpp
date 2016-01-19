@@ -359,3 +359,10 @@ void java_main_jprocess(jobject jprocess)
 }
 }
 
+
+
+#include "simgrid/plugins/energy.h"
+JNIEXPORT void JNICALL
+Java_org_simgrid_msg_Msg_energyInit(void) {
+  sg_energy_plugin_init();
+}

@@ -214,6 +214,8 @@ Java_org_simgrid_msg_Host_all(JNIEnv *, jclass);
 JNIEXPORT void JNICALL 
 Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname);
 
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy
+    (JNIEnv *, jobject);
 
 
 #endif                          /*!MSG_JHOST_H */

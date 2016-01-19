@@ -206,6 +206,8 @@ public class Host {
 	 */
 	public native String[] getAttachedStorage();
 
+	/** Returns the amount of Joules consumed by that host so far */
+	public native double getConsumedEnergy();
 
 	/**
 	 * Class initializer, to initialize various JNI stuff
