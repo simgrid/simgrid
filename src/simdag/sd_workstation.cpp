@@ -210,7 +210,7 @@ void SD_workstation_dump(SD_workstation_t ws)
  *
  * \param src a workstation
  * \param dst another workstation
- * \return a new array of \ref SD_link_t representating the route between these two workstations
+ * \return a new array of \ref SD_link_t representing the route between these two workstations
  * \see SD_route_get_size(), SD_link_t
  */
 const SD_link_t *SD_route_get_list(SD_workstation_t src,

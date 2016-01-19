@@ -75,7 +75,7 @@ void* smpi_get_tmp_recvbuffer(int size){
     recvbuffer=xbt_realloc(recvbuffer,size);
     recvbuffer_size=size;
   }
-  return sendbuffer;
+  return recvbuffer;
 }
 
 void smpi_free_tmp_buffer(void* buf){
@@ -689,7 +689,7 @@ static void action_gather(const char *const *action) {
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
   MPI_Datatype MPI_CURRENT_TYPE2;
-  if(action[5]) {
+  if(action[4] && action[5]) {
     MPI_CURRENT_TYPE=decode_datatype(action[5]);
     MPI_CURRENT_TYPE2=decode_datatype(action[6]);
   } else {
