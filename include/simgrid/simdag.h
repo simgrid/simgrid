@@ -67,7 +67,7 @@ typedef struct SD_task *SD_task_t;
     @see SD_task_management */
 typedef enum {
   SD_NOT_SCHEDULED = 0,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
-  SD_SCHEDULABLE = 0x0001,               /**< @brief A task becomes SD_SCHEDULABLE as soon as its dependencies are satisfied */
+  SD_SCHEDULABLE = 0x0001,   /**< @brief A task becomes SD_SCHEDULABLE as soon as its dependencies are satisfied */
   SD_SCHEDULED = 0x0002,     /**< @brief A task becomes SD_SCHEDULED when you call function
                                   SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
   SD_RUNNABLE = 0x0004,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
@@ -112,42 +112,7 @@ typedef xbt_dictelm_t SD_storage_t;
  *  @{
  */
 XBT_PUBLIC(const SD_link_t *) SD_link_get_list(void);
-/** @brief Returns the number of links in the whole platform */
-static inline int SD_link_get_count(void) {
-  return sg_link_count();
-}
 
-/** @brief Returns the user data of a link */
-static inline void *SD_link_get_data(SD_link_t link) {
-  return sg_link_data(link);
-}
-
-/** @brief Sets the user data of a link
- *
- * The new data can be \c NULL. The old data should have been freed first
- * if it was not \c NULL.
- */
-static inline void SD_link_set_data(SD_link_t link, void *data) {
-	sg_link_data_set(link, data);
-}
-/** @brief Returns the name of a link  */
-static inline const char *SD_link_get_name(SD_link_t link) {
-  return sg_link_name(link);
-}
-/** @brief Returns the current bandwidth of a link (in bytes per second) */
-static inline double SD_link_get_bandwidth(SD_link_t link) {
-  return sg_link_bandwidth(link);
-}
-/** @brief Returns the current latency of a link (in seconds) */
-static inline double SD_link_get_latency(SD_link_t link){
-  return sg_link_latency(link);
-}
-/** @brief Returns the sharing policy of this workstation.
- *  @return true if the link is shared, and false if it's a fatpipe
- */
-static inline int SD_link_is_shared(SD_link_t link) {
-  return sg_link_is_shared(link);
-}
 /** @} */
 
 /************************** Workstation handling ****************************/

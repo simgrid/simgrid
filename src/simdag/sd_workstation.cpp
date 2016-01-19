@@ -222,7 +222,7 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
 
   if (sd_global->recyclable_route == NULL) {
     /* first run */
-    sd_global->recyclable_route = xbt_new(SD_link_t, SD_link_get_count());
+    sd_global->recyclable_route = xbt_new(SD_link_t, sg_link_count());
   }
 
   surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model, src, dst);
@@ -338,7 +338,7 @@ double SD_route_get_bandwidth(SD_workstation_t src, SD_workstation_t dst)
   min_bandwidth = -1.0;
 
   for (i = 0; i < nb_links; i++) {
-    bandwidth = SD_link_get_bandwidth(links[i]);
+    bandwidth = sg_link_bandwidth(links[i]);
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }
@@ -386,7 +386,7 @@ double SD_route_get_communication_time(SD_workstation_t src,
   min_bandwidth = -1.0;
 
   for (i = 0; i < nb_links; i++) {
-    bandwidth = SD_link_get_bandwidth(links[i]);
+    bandwidth = sg_link_bandwidth(links[i]);
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }

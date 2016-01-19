@@ -65,9 +65,9 @@ int main(int argc, char **argv)
       route_size = SD_route_get_size(w1, w2);
       for (k = 0; k < route_size; k++) {
         XBT_INFO("\tLink %s: latency = %f, bandwidth = %f",
-              SD_link_get_name(route[k]),
-              SD_link_get_latency(route[k]),
-              SD_link_get_bandwidth(route[k]));
+              sg_link_name(route[k]),
+              sg_link_latency(route[k]),
+              sg_link_bandwidth(route[k]));
       }
     }
   }

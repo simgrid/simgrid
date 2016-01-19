@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   /* creation of the environment */
   SD_create_environment(argv[1]);
   printf("Workstation number: %d, link number: %d\n",
-         SD_workstation_get_count(), SD_link_get_count());
+         SD_workstation_get_count(), sg_link_count());
 
   if (argc >= 3) {
     if (!strcmp(argv[2], "ONE_LINK")) {
@@ -48,9 +48,9 @@ int main(int argc, char **argv)
       printf("Route size %d\n", route_size);
       for (i = 0; i < route_size; i++) {
       printf("  Link %s: latency = %f, bandwidth = %f\n",
-           SD_link_get_name(route[i]),
-           SD_link_get_latency(route[i]),
-           SD_link_get_bandwidth(route[i]));
+           sg_link_name(route[i]),
+           sg_link_latency(route[i]),
+           sg_link_bandwidth(route[i]));
       }
       printf("Route latency = %f, route bandwidth = %f\n",
          SD_route_get_latency(w1, w2),
@@ -71,9 +71,9 @@ int main(int argc, char **argv)
         printf("  Route size %d\n", route_size);
         for (k = 0; k < route_size; k++) {
         printf("  Link %s: latency = %f, bandwidth = %f\n",
-             SD_link_get_name(route[k]),
-             SD_link_get_latency(route[k]),
-             SD_link_get_bandwidth(route[k]));
+             sg_link_name(route[k]),
+             sg_link_latency(route[k]),
+             sg_link_bandwidth(route[k]));
         }
         printf("  Route latency = %f, route bandwidth = %f\n",
            SD_route_get_latency(w1, w2),

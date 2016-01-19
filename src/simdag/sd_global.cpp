@@ -187,7 +187,7 @@ void SD_create_environment(const char *platform_file)
 
 
   XBT_DEBUG("Workstation number: %d, link number: %d",
-         SD_workstation_get_count(), SD_link_get_count());
+         SD_workstation_get_count(), sg_link_count());
 #ifdef HAVE_JEDULE
   jedule_setup_platform();
 #endif
