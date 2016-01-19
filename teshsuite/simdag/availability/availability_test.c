@@ -69,12 +69,11 @@ static void scheduleDAX(xbt_dynar_t dax)
   SD_task_t task;
 
   const SD_workstation_t *ws_list = SD_workstation_get_list();
-  int totalHosts = SD_workstation_get_number();
+  int totalHosts = SD_workstation_get_count();
   qsort((void *) ws_list, totalHosts, sizeof(SD_workstation_t),
         name_compare_hosts);
 
-  int count = SD_workstation_get_number();
-  //fprintf(stdout, "No. workstations: %d, %d\n", count, (dax != NULL));
+  //fprintf(stdout, "No. workstations: %d, %d\n", totalHosts, (dax != NULL));
 
   xbt_dynar_foreach(dax, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {
@@ -85,8 +84,8 @@ static void scheduleDAX(xbt_dynar_t dax)
         SD_task_schedulel(task, 1, ws_list[0]);
       } else {
         fprintf(stdout, "Scheduling %s to node: %s\n", SD_task_get_name(task),
-                SD_workstation_get_name(ws_list[(cursor) % count]));
-        SD_task_schedulel(task, 1, ws_list[(cursor) % count]);
+                SD_workstation_get_name(ws_list[(cursor) % totalHosts]));
+        SD_task_schedulel(task, 1, ws_list[(cursor) % totalHosts]);
       }
     }
   }

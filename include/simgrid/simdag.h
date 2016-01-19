@@ -113,7 +113,7 @@ typedef xbt_dictelm_t SD_storage_t;
  */
 XBT_PUBLIC(const SD_link_t *) SD_link_get_list(void);
 /** @brief Returns the number of links in the whole platform */
-static inline int SD_link_get_number(void) {
+static inline int SD_link_get_count(void) {
   return sg_link_count();
 }
 
@@ -135,11 +135,11 @@ static inline const char *SD_link_get_name(SD_link_t link) {
   return sg_link_name(link);
 }
 /** @brief Returns the current bandwidth of a link (in bytes per second) */
-static inline double SD_link_get_current_bandwidth(SD_link_t link) {
+static inline double SD_link_get_bandwidth(SD_link_t link) {
   return sg_link_bandwidth(link);
 }
 /** @brief Returns the current latency of a link (in seconds) */
-static inline double SD_link_get_current_latency(SD_link_t link){
+static inline double SD_link_get_latency(SD_link_t link){
   return sg_link_latency(link);
 }
 /** @brief Returns the sharing policy of this workstation.
@@ -168,7 +168,7 @@ static inline int SD_link_is_shared(SD_link_t link) {
  */
 XBT_PUBLIC(SD_workstation_t) SD_workstation_get_by_name(const char *name);
 XBT_PUBLIC(const SD_workstation_t *) SD_workstation_get_list(void);
-XBT_PUBLIC(int) SD_workstation_get_number(void);
+XBT_PUBLIC(int) SD_workstation_get_count(void);
 XBT_PUBLIC(void) SD_workstation_set_data(SD_workstation_t workstation,
                                          void *data);
 XBT_PUBLIC(void *) SD_workstation_get_data(SD_workstation_t workstation);
@@ -199,9 +199,9 @@ XBT_PUBLIC(void) SD_workstation_set_access_mode(SD_workstation_t
 
 XBT_PUBLIC(double) SD_workstation_get_computation_time(SD_workstation_t workstation,
                                                        double flops_amount);
-XBT_PUBLIC(double) SD_route_get_current_latency(SD_workstation_t src,
+XBT_PUBLIC(double) SD_route_get_latency(SD_workstation_t src,
                                                 SD_workstation_t dst);
-XBT_PUBLIC(double) SD_route_get_current_bandwidth(SD_workstation_t src,
+XBT_PUBLIC(double) SD_route_get_bandwidth(SD_workstation_t src,
                                                   SD_workstation_t dst);
 XBT_PUBLIC(double) SD_route_get_communication_time(SD_workstation_t src,
                                                    SD_workstation_t dst,

@@ -157,7 +157,7 @@ static SD_workstation_t SD_task_get_best_workstation(SD_task_t task)
   int i;
   double EFT, min_EFT = -1.0;
   const SD_workstation_t *workstations = SD_workstation_get_list();
-  int nworkstations = SD_workstation_get_number();
+  int nworkstations = SD_workstation_get_count();
   SD_workstation_t best_workstation;
 
   best_workstation = workstations[0];
@@ -182,7 +182,7 @@ static void output_xml(FILE * out, xbt_dynar_t dax)
 {
   unsigned int i, j, k;
   int current_nworkstations;
-  const int nworkstations = SD_workstation_get_number();
+  const int nworkstations = SD_workstation_get_count();
   const SD_workstation_t *workstations = SD_workstation_get_list();
   SD_task_t task;
   SD_workstation_t *list;
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /*  Allocating the workstation attribute */
-  total_nworkstations = SD_workstation_get_number();
+  total_nworkstations = SD_workstation_get_count();
   workstations = SD_workstation_get_list();
 
   for (cursor = 0; cursor < total_nworkstations; cursor++)

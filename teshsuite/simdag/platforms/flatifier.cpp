@@ -128,7 +128,8 @@ int main(int argc, char **argv)
 
   if (timings) {
     XBT_INFO("Parsing time: %fs (%d hosts, %d links)",
-          xbt_os_timer_elapsed(parse_time),SD_workstation_get_number(),SD_link_get_number());
+          xbt_os_timer_elapsed(parse_time),SD_workstation_get_count(),
+          SD_link_get_count());
   } else {
     printf("<?xml version='1.0'?>\n");
     printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n");
@@ -137,7 +138,7 @@ int main(int argc, char **argv)
       printf("<AS id=\"AS0\" routing=\"Full\">\n");
 
     // Hosts
-    totalHosts = SD_workstation_get_number();
+    totalHosts = SD_workstation_get_count();
     hosts = SD_workstation_get_list();
     qsort((void *) hosts, totalHosts, sizeof(SD_workstation_t),
         name_compare_hosts);
@@ -171,7 +172,7 @@ int main(int argc, char **argv)
     }
 
     // Links
-    totalLinks = SD_link_get_number();
+    totalLinks = SD_link_get_count();
     links = SD_link_get_list();
 
     qsort((void *) links, totalLinks, sizeof(SD_link_t), name_compare_links);
@@ -181,8 +182,8 @@ int main(int argc, char **argv)
 
       printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"",
           SD_link_get_name(links[i]),
-          SD_link_get_current_bandwidth(links[i]),
-          SD_link_get_current_latency(links[i]));
+          SD_link_get_bandwidth(links[i]),
+          SD_link_get_latency(links[i]));
       if (SD_link_is_shared(links[i])) {
         printf("/>\n");
       } else {

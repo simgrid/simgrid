@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 
   /* test the estimation functions */
   workstations = SD_workstation_get_list();
-  ws_nr = SD_workstation_get_number();
+  ws_nr = SD_workstation_get_count();
 
 
   /* Show routes between all workstation */
@@ -66,8 +66,8 @@ int main(int argc, char **argv)
       for (k = 0; k < route_size; k++) {
         XBT_INFO("\tLink %s: latency = %f, bandwidth = %f",
               SD_link_get_name(route[k]),
-              SD_link_get_current_latency(route[k]),
-              SD_link_get_current_bandwidth(route[k]));
+              SD_link_get_latency(route[k]),
+              SD_link_get_bandwidth(route[k]));
       }
     }
   }

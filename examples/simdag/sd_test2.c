@@ -67,7 +67,7 @@ int main(int argc, char **argv)
             argv[1]);
 
   /* getting platform infos */
-  n_hosts = SD_workstation_get_number();
+  n_hosts = SD_workstation_get_count();
   hosts = SD_workstation_get_list();
 
   /* sorting hosts by hostname */

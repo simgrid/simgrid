@@ -87,8 +87,8 @@ int main(int argc, char **argv)
 
   while (!xbt_dynar_is_empty((changed_tasks = SD_simulate(-1.0)))) {    
     XBT_INFO("link1: bw=%.0f, lat=%f",
-             SD_route_get_current_bandwidth(workstations[0], workstations[1]),
-             SD_route_get_current_latency(workstations[0], workstations[1]));
+             SD_route_get_bandwidth(workstations[0], workstations[1]),
+             SD_route_get_latency(workstations[0], workstations[1]));
     XBT_INFO("Jupiter: power=%.0f",
              SD_workstation_get_power(workstations[0])*
              SD_workstation_get_available_power(workstations[0]));

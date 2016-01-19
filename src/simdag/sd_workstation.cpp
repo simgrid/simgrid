@@ -83,7 +83,7 @@ SD_workstation_t SD_workstation_get_by_name(const char *name)
  * \see SD_workstation_get_number()
  */
 const SD_workstation_t *SD_workstation_get_list(void) {
-  xbt_assert(SD_workstation_get_number() > 0, "There is no workstation!");
+  xbt_assert(SD_workstation_get_count() > 0, "There is no workstation!");
 
   if (sd_global->workstation_list == NULL)     /* this is the first time the function is called */
     sd_global->workstation_list = (SD_workstation_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
@@ -97,7 +97,7 @@ const SD_workstation_t *SD_workstation_get_list(void) {
  * \return the number of existing workstations
  * \see SD_workstation_get_list()
  */
-int SD_workstation_get_number(void)
+int SD_workstation_get_count(void)
 {
   return sg_host_count();
 }
@@ -222,7 +222,7 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
 
   if (sd_global->recyclable_route == NULL) {
     /* first run */
-    sd_global->recyclable_route = xbt_new(SD_link_t, SD_link_get_number());
+    sd_global->recyclable_route = xbt_new(SD_link_t, SD_link_get_count());
   }
 
   surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model, src, dst);
@@ -301,9 +301,9 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
  * \param src the first workstation
  * \param dst the second workstation
  * \return the latency of the route between the two workstations (in seconds)
- * \see SD_route_get_current_bandwidth()
+ * \see SD_route_get_bandwidth()
  */
-double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst)
+double SD_route_get_latency(SD_workstation_t src, SD_workstation_t dst)
 {
   xbt_dynar_t route = NULL;
   double latency;
@@ -315,16 +315,16 @@ double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst)
 }
 
 /**
- * \brief Returns the bandwidth of the route between two workstations, i.e. the minimum link bandwidth of all
- * between the workstations.
+ * \brief Returns the bandwidth of the route between two workstations,
+ * i.e. the minimum link bandwidth of all between the workstations.
  *
  * \param src the first workstation
  * \param dst the second workstation
- * \return the bandwidth of the route between the two workstations (in bytes/second)
- * \see SD_route_get_current_latency()
+ * \return the bandwidth of the route between the two workstations
+ * (in bytes/second)
+ * \see SD_route_get_latency()
  */
-double SD_route_get_current_bandwidth(SD_workstation_t src,
-                                      SD_workstation_t dst)
+double SD_route_get_bandwidth(SD_workstation_t src, SD_workstation_t dst)
 {
 
   const SD_link_t *links;
@@ -338,7 +338,7 @@ double SD_route_get_current_bandwidth(SD_workstation_t src,
   min_bandwidth = -1.0;
 
   for (i = 0; i < nb_links; i++) {
-    bandwidth = SD_link_get_current_bandwidth(links[i]);
+    bandwidth = SD_link_get_bandwidth(links[i]);
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }
@@ -386,7 +386,7 @@ double SD_route_get_communication_time(SD_workstation_t src,
   min_bandwidth = -1.0;
 
   for (i = 0; i < nb_links; i++) {
-    bandwidth = SD_link_get_current_bandwidth(links[i]);
+    bandwidth = SD_link_get_bandwidth(links[i]);
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }

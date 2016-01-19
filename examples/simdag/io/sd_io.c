@@ -29,7 +29,7 @@ int main(int argc, char **argv)
   SD_config("host/model", "default");
   SD_create_environment(argv[1]);
   workstations = SD_workstation_get_list();
-  total_nworkstations = SD_workstation_get_number();
+  total_nworkstations = SD_workstation_get_count();
 
   for (ctr=0; ctr<total_nworkstations;ctr++){
     current_storage_list = SD_workstation_get_mounted_storage_list(workstations[ctr]);
