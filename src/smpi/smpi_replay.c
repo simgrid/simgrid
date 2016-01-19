@@ -644,19 +644,15 @@ static void action_allToAll(const char *const *action) {
   int recv_size = parse_double(action[3]);
   MPI_Datatype MPI_CURRENT_TYPE2;
 
-  if(action[4]) {
+  if(action[4] && action[5]) {
     MPI_CURRENT_TYPE=decode_datatype(action[4]);
+    MPI_CURRENT_TYPE2=decode_datatype(action[5]);
   }
   else{
     MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
-  }
-
-  if (action[5]){
-    MPI_CURRENT_TYPE2=decode_datatype(action[5]);
-  }
-  else {
     MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
+
   void *send = smpi_get_tmp_sendbuffer(send_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recv = smpi_get_tmp_recvbuffer(recv_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
