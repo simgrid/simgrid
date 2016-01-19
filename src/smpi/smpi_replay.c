@@ -937,7 +937,7 @@ static void action_allgatherv(const char *const *action) {
   int recv_sum=0;  
   MPI_Datatype MPI_CURRENT_TYPE2;
 
-  if(action[3+comm_size]) {
+  if(action[3+comm_size] && action[4+comm_size]) {
     MPI_CURRENT_TYPE = decode_datatype(action[3+comm_size]);
     MPI_CURRENT_TYPE2 = decode_datatype(action[4+comm_size]);
   } else {
