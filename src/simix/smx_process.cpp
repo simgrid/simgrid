@@ -13,6 +13,7 @@
 #include "src/mc/mc_replay.h"
 #include "src/mc/mc_client.h"
 #include "src/simix/smx_private.hpp"
+#include "src/msg/msg_private.h"
 
 #ifdef HAVE_SMPI
 #include "src/smpi/private.h"
@@ -58,7 +59,7 @@ void SIMIX_process_cleanup(smx_process_t process)
 
   /* Unregister from the kill timer if any */
   if (process->kill_timer != NULL)
-	  SIMIX_timer_remove(process->kill_timer);
+      SIMIX_timer_remove(process->kill_timer);
 
   xbt_os_mutex_acquire(simix_global->mutex);
 
@@ -320,6 +321,9 @@ smx_process_t SIMIX_process_create(
           sg_host_get_name(process->host), kill_time);
       process->kill_timer = SIMIX_timer_set(kill_time, kill_process, process);
     }
+
+    /* Tracing the process creation */
+    TRACE_msg_process_create(process->name, process->pid, process->host);
   }
   return process;
 }
