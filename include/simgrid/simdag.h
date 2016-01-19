@@ -67,7 +67,7 @@ typedef struct SD_task *SD_task_t;
     @see SD_task_management */
 typedef enum {
   SD_NOT_SCHEDULED = 0,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
-  SD_SCHEDULABLE = 0x0001,               /**< @brief A task becomes SD_SCHEDULABLE as soon as its dependencies are satisfied */
+  SD_SCHEDULABLE = 0x0001,   /**< @brief A task becomes SD_SCHEDULABLE as soon as its dependencies are satisfied */
   SD_SCHEDULED = 0x0002,     /**< @brief A task becomes SD_SCHEDULED when you call function
                                   SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
   SD_RUNNABLE = 0x0004,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
@@ -112,42 +112,7 @@ typedef xbt_dictelm_t SD_storage_t;
  *  @{
  */
 XBT_PUBLIC(const SD_link_t *) SD_link_get_list(void);
-/** @brief Returns the number of links in the whole platform */
-static inline int SD_link_get_number(void) {
-  return sg_link_count();
-}
 
-/** @brief Returns the user data of a link */
-static inline void *SD_link_get_data(SD_link_t link) {
-  return sg_link_data(link);
-}
-
-/** @brief Sets the user data of a link
- *
- * The new data can be \c NULL. The old data should have been freed first
- * if it was not \c NULL.
- */
-static inline void SD_link_set_data(SD_link_t link, void *data) {
-	sg_link_data_set(link, data);
-}
-/** @brief Returns the name of a link  */
-static inline const char *SD_link_get_name(SD_link_t link) {
-  return sg_link_name(link);
-}
-/** @brief Returns the current bandwidth of a link (in bytes per second) */
-static inline double SD_link_get_current_bandwidth(SD_link_t link) {
-  return sg_link_bandwidth(link);
-}
-/** @brief Returns the current latency of a link (in seconds) */
-static inline double SD_link_get_current_latency(SD_link_t link){
-  return sg_link_latency(link);
-}
-/** @brief Returns the sharing policy of this workstation.
- *  @return true if the link is shared, and false if it's a fatpipe
- */
-static inline int SD_link_is_shared(SD_link_t link) {
-  return sg_link_is_shared(link);
-}
 /** @} */
 
 /************************** Workstation handling ****************************/
@@ -168,7 +133,7 @@ static inline int SD_link_is_shared(SD_link_t link) {
  */
 XBT_PUBLIC(SD_workstation_t) SD_workstation_get_by_name(const char *name);
 XBT_PUBLIC(const SD_workstation_t *) SD_workstation_get_list(void);
-XBT_PUBLIC(int) SD_workstation_get_number(void);
+XBT_PUBLIC(int) SD_workstation_get_count(void);
 XBT_PUBLIC(void) SD_workstation_set_data(SD_workstation_t workstation,
                                          void *data);
 XBT_PUBLIC(void *) SD_workstation_get_data(SD_workstation_t workstation);
@@ -186,8 +151,8 @@ XBT_PUBLIC(const SD_link_t *) SD_route_get_list(SD_workstation_t src,
                                                 SD_workstation_t dst);
 XBT_PUBLIC(int) SD_route_get_size(SD_workstation_t src,
                                   SD_workstation_t dst);
-XBT_PUBLIC(double) SD_workstation_get_power(SD_workstation_t workstation);
-XBT_PUBLIC(double) SD_workstation_get_available_power(SD_workstation_t
+XBT_PUBLIC(double) SD_workstation_get_speed(SD_workstation_t workstation);
+XBT_PUBLIC(double) SD_workstation_get_available_speed(SD_workstation_t
                                                       workstation);
 XBT_PUBLIC(int) SD_workstation_get_cores(SD_workstation_t workstation);
 XBT_PUBLIC(e_SD_workstation_access_mode_t)
@@ -199,9 +164,9 @@ XBT_PUBLIC(void) SD_workstation_set_access_mode(SD_workstation_t
 
 XBT_PUBLIC(double) SD_workstation_get_computation_time(SD_workstation_t workstation,
                                                        double flops_amount);
-XBT_PUBLIC(double) SD_route_get_current_latency(SD_workstation_t src,
+XBT_PUBLIC(double) SD_route_get_latency(SD_workstation_t src,
                                                 SD_workstation_t dst);
-XBT_PUBLIC(double) SD_route_get_current_bandwidth(SD_workstation_t src,
+XBT_PUBLIC(double) SD_route_get_bandwidth(SD_workstation_t src,
                                                   SD_workstation_t dst);
 XBT_PUBLIC(double) SD_route_get_communication_time(SD_workstation_t src,
                                                    SD_workstation_t dst,

@@ -75,13 +75,13 @@ int main(int argc, char **argv)
   route_size = SD_route_get_size(w1, w2);
   for (i = 0; i < route_size; i++) {
     XBT_INFO("   Link %s: latency = %f, bandwidth = %f",
-          SD_link_get_name(route[i]),
-          SD_link_get_current_latency(route[i]),
-          SD_link_get_current_bandwidth(route[i]));
+          sg_link_name(route[i]),
+          sg_link_latency(route[i]),
+          sg_link_bandwidth(route[i]));
   }
   XBT_INFO("Route latency = %f, route bandwidth = %f",
-        SD_route_get_current_latency(w1, w2),
-        SD_route_get_current_bandwidth(w1, w2));
+        SD_route_get_latency(w1, w2),
+        SD_route_get_bandwidth(w1, w2));
   XBT_INFO("Communication time for %f bytes between %s and %s: %f",
         communication_amount12, name1, name2,
         SD_route_get_communication_time(w1, w2, communication_amount12));

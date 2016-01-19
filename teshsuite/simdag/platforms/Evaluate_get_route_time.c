@@ -31,7 +31,7 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   workstations = SD_workstation_get_list();
-  list_size = SD_workstation_get_number();
+  list_size = SD_workstation_get_count();
 
   /* Random number initialization */
   srand( (int) (xbt_os_time()*1000) );

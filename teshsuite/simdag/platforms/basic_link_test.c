@@ -13,8 +13,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic_link_test, sd,
                                 "SimDag test basic_link_test");
 
 static int cmp_link(const void*a, const void*b) {
-	const char *nameA = SD_link_get_name(*(SD_link_t*)a);
-	const char *nameB = SD_link_get_name(*(SD_link_t*)b);
+	const char *nameA = sg_link_name(*(SD_link_t*)a);
+	const char *nameB = sg_link_name(*(SD_link_t*)b);
   return strcmp( nameA, nameB );
 }
 
@@ -30,17 +30,17 @@ int main(int argc, char **argv)
   /* creation of the environment */
   SD_create_environment(argv[1]);
   links = SD_link_get_list();
-  int count = SD_link_get_number();
+  int count = sg_link_count();
   XBT_INFO("Link count: %d", count);
   qsort((void *)links, count, sizeof(SD_link_t), cmp_link);
    
-  for(i=0; i<SD_link_get_number();i++){
+  for(i=0; i < count; i++){
     XBT_INFO("%s: latency = %.5f, bandwidth = %f",
-             SD_link_get_name(links[i]),
-             SD_link_get_current_latency(links[i]),
-             SD_link_get_current_bandwidth(links[i]));
-    SD_link_set_data(links[i], (void*) user_data);
-    if(strcmp(user_data, (const char*)SD_link_get_data(links[i]))){
+             sg_link_name(links[i]),
+             sg_link_latency(links[i]),
+             sg_link_bandwidth(links[i]));
+    sg_link_data_set(links[i], (void*) user_data);
+    if(strcmp(user_data, (const char*)sg_link_data(links[i]))){
       XBT_ERROR("User data was corrupted.");
     }
   }

@@ -59,7 +59,7 @@ int main(int argc, char **argv){
   /* Schedule them all on all the first workstation */
   XBT_INFO("------------------- Schedule tasks ---------------------------");
   const SD_workstation_t *ws_list = SD_workstation_get_list();
-  int count = SD_workstation_get_number();
+  int count = SD_workstation_get_count();
   xbt_dynar_foreach(dot, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_PAR_AMDAHL) {
         SD_task_schedulev(task, count, ws_list);

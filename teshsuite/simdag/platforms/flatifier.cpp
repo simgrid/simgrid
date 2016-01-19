@@ -41,8 +41,8 @@ static int name_compare_hosts(const void *n1, const void *n2)
 static int name_compare_links(const void *n1, const void *n2)
 {
   char name1[80], name2[80];
-  strcpy(name1, SD_link_get_name(*((SD_link_t *) n1)));
-  strcpy(name2, SD_link_get_name(*((SD_link_t *) n2)));
+  strcpy(name1, sg_link_name(*((SD_link_t *) n1)));
+  strcpy(name2, sg_link_name(*((SD_link_t *) n2)));
 
   return strcmp(name1, name2);
 }
@@ -128,7 +128,8 @@ int main(int argc, char **argv)
 
   if (timings) {
     XBT_INFO("Parsing time: %fs (%d hosts, %d links)",
-          xbt_os_timer_elapsed(parse_time),SD_workstation_get_number(),SD_link_get_number());
+          xbt_os_timer_elapsed(parse_time),SD_workstation_get_count(),
+          sg_link_count());
   } else {
     printf("<?xml version='1.0'?>\n");
     printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n");
@@ -137,7 +138,7 @@ int main(int argc, char **argv)
       printf("<AS id=\"AS0\" routing=\"Full\">\n");
 
     // Hosts
-    totalHosts = SD_workstation_get_number();
+    totalHosts = SD_workstation_get_count();
     hosts = SD_workstation_get_list();
     qsort((void *) hosts, totalHosts, sizeof(SD_workstation_t),
         name_compare_hosts);
@@ -145,7 +146,7 @@ int main(int argc, char **argv)
     for (i = 0; i < totalHosts; i++) {
       printf("  <host id=\"%s\" power=\"%.0f\"",
           SD_workstation_get_name(hosts[i]),
-          SD_workstation_get_power(hosts[i]));
+          SD_workstation_get_speed(hosts[i]));
       props = SD_workstation_get_properties(hosts[i]);
       if (SD_workstation_get_cores(hosts[i])>1) {
         printf(" core=\"%d\"", SD_workstation_get_cores(hosts[i]));
@@ -171,7 +172,7 @@ int main(int argc, char **argv)
     }
 
     // Links
-    totalLinks = SD_link_get_number();
+    totalLinks = sg_link_count();
     links = SD_link_get_list();
 
     qsort((void *) links, totalLinks, sizeof(SD_link_t), name_compare_links);
@@ -180,10 +181,10 @@ int main(int argc, char **argv)
       printf("  <link id=\"");
 
       printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"",
-          SD_link_get_name(links[i]),
-          SD_link_get_current_bandwidth(links[i]),
-          SD_link_get_current_latency(links[i]));
-      if (SD_link_is_shared(links[i])) {
+          sg_link_name(links[i]),
+          sg_link_bandwidth(links[i]),
+          sg_link_latency(links[i]));
+      if (sg_link_is_shared(links[i])) {
         printf("/>\n");
       } else {
         printf(" sharing_policy=\"FATPIPE\"/>\n");

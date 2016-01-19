@@ -83,7 +83,7 @@ SD_workstation_t SD_workstation_get_by_name(const char *name)
  * \see SD_workstation_get_number()
  */
 const SD_workstation_t *SD_workstation_get_list(void) {
-  xbt_assert(SD_workstation_get_number() > 0, "There is no workstation!");
+  xbt_assert(SD_workstation_get_count() > 0, "There is no workstation!");
 
   if (sd_global->workstation_list == NULL)     /* this is the first time the function is called */
     sd_global->workstation_list = (SD_workstation_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
@@ -97,7 +97,7 @@ const SD_workstation_t *SD_workstation_get_list(void) {
  * \return the number of existing workstations
  * \see SD_workstation_get_list()
  */
-int SD_workstation_get_number(void)
+int SD_workstation_get_count(void)
 {
   return sg_host_count();
 }
@@ -175,8 +175,8 @@ void SD_workstation_dump(SD_workstation_t ws)
   SD_task_t task = NULL;
   
   XBT_INFO("Displaying workstation %s", SD_workstation_get_name(ws));
-  XBT_INFO("  - power: %.0f", SD_workstation_get_power(ws));
-  XBT_INFO("  - available power: %.2f", SD_workstation_get_available_power(ws));
+  XBT_INFO("  - speed: %.0f", SD_workstation_get_speed(ws));
+  XBT_INFO("  - available speed: %.2f", SD_workstation_get_available_speed(ws));
   switch (sg_host_sd(ws)->access_mode){
   case SD_WORKSTATION_SHARED_ACCESS:
       XBT_INFO("  - access mode: Space shared");
@@ -222,7 +222,7 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
 
   if (sd_global->recyclable_route == NULL) {
     /* first run */
-    sd_global->recyclable_route = xbt_new(SD_link_t, SD_link_get_number());
+    sd_global->recyclable_route = xbt_new(SD_link_t, sg_link_count());
   }
 
   surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model, src, dst);
@@ -248,13 +248,13 @@ int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
 }
 
 /**
- * \brief Returns the total power of a workstation
+ * \brief Returns the total speed of a workstation
  *
  * \param workstation a workstation
- * \return the total power of this workstation
- * \see SD_workstation_get_available_power()
+ * \return the total speed of this workstation
+ * \see SD_workstation_get_available_speed()
  */
-double SD_workstation_get_power(SD_workstation_t workstation)
+double SD_workstation_get_speed(SD_workstation_t workstation)
 {
   return workstation->speed();
 }
@@ -269,13 +269,13 @@ int SD_workstation_get_cores(SD_workstation_t workstation) {
 }
 
 /**
- * \brief Returns the proportion of available power in a workstation
+ * \brief Returns the proportion of available speed in a workstation
  *
  * \param workstation a workstation
- * \return the proportion of power currently available in this workstation (normally a number between 0 and 1)
- * \see SD_workstation_get_power()
+ * \return the proportion of speed currently available in this workstation (normally a number between 0 and 1)
+ * \see SD_workstation_get_speed()
  */
-double SD_workstation_get_available_power(SD_workstation_t workstation)
+double SD_workstation_get_available_speed(SD_workstation_t workstation)
 {
   return surf_host_get_available_speed(workstation);
 }
@@ -292,7 +292,7 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
 {
   xbt_assert(flops_amount >= 0,
               "flops_amount must be greater than or equal to zero");
-  return flops_amount / SD_workstation_get_power(workstation);
+  return flops_amount / SD_workstation_get_speed(workstation);
 }
 
 /**
@@ -301,12 +301,12 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
  * \param src the first workstation
  * \param dst the second workstation
  * \return the latency of the route between the two workstations (in seconds)
- * \see SD_route_get_current_bandwidth()
+ * \see SD_route_get_bandwidth()
  */
-double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst)
+double SD_route_get_latency(SD_workstation_t src, SD_workstation_t dst)
 {
   xbt_dynar_t route = NULL;
-  double latency;
+  double latency = 0;
 
   routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard,
                                     &route, &latency);
@@ -315,16 +315,16 @@ double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst)
 }
 
 /**
- * \brief Returns the bandwidth of the route between two workstations, i.e. the minimum link bandwidth of all
- * between the workstations.
+ * \brief Returns the bandwidth of the route between two workstations,
+ * i.e. the minimum link bandwidth of all between the workstations.
  *
  * \param src the first workstation
  * \param dst the second workstation
- * \return the bandwidth of the route between the two workstations (in bytes/second)
- * \see SD_route_get_current_latency()
+ * \return the bandwidth of the route between the two workstations
+ * (in bytes/second)
+ * \see SD_route_get_latency()
  */
-double SD_route_get_current_bandwidth(SD_workstation_t src,
-                                      SD_workstation_t dst)
+double SD_route_get_bandwidth(SD_workstation_t src, SD_workstation_t dst)
 {
 
   const SD_link_t *links;
@@ -338,7 +338,7 @@ double SD_route_get_current_bandwidth(SD_workstation_t src,
   min_bandwidth = -1.0;
 
   for (i = 0; i < nb_links; i++) {
-    bandwidth = SD_link_get_current_bandwidth(links[i]);
+    bandwidth = sg_link_bandwidth(links[i]);
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }
@@ -369,7 +369,7 @@ double SD_route_get_communication_time(SD_workstation_t src,
   xbt_dynar_t route = NULL;
   int nb_links;
   double bandwidth, min_bandwidth;
-  double latency;
+  double latency = 0;
   int i;
 
   xbt_assert(bytes_amount >= 0, "bytes_amount must be greater than or equal to zero");
@@ -386,7 +386,7 @@ double SD_route_get_communication_time(SD_workstation_t src,
   min_bandwidth = -1.0;
 
   for (i = 0; i < nb_links; i++) {
-    bandwidth = SD_link_get_current_bandwidth(links[i]);
+    bandwidth = sg_link_bandwidth(links[i]);
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }

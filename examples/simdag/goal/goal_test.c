@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
   xbt_dynar_t done = NULL;
 
   xbt_os_cputimer_start(timer);
-  send_one(0,SD_workstation_get_number());
+  send_one(0,SD_workstation_get_count());
   do {
     if (done != NULL && !xbt_dynar_is_empty(done)) {
       unsigned int cursor;
