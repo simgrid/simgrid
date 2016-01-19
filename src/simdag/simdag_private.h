@@ -23,8 +23,7 @@ SG_BEGIN_DECL()
 typedef struct SD_global {
   SD_workstation_t *workstation_list;   /* array of workstations, created only if
                                            necessary in SD_workstation_get_list */
-  SD_link_t *link_list;         /* array of links, created only if
-                                   necessary in SD_link_get_list */
+  SD_link_t *link_list;         /* array of links */
   SD_link_t *recyclable_route;  /* array returned by SD_route_get_list
                                    and mallocated only once */
 

@@ -173,7 +173,7 @@ int main(int argc, char **argv)
 
     // Links
     totalLinks = sg_link_count();
-    links = SD_link_get_list();
+    links = sg_link_list();
 
     qsort((void *) links, totalLinks, sizeof(SD_link_t), name_compare_links);
 

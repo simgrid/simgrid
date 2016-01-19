@@ -98,23 +98,6 @@ typedef enum {
     @see SD_storage_management */
 typedef xbt_dictelm_t SD_storage_t;
 
-/************************** Link handling ***********************************/
-/** @defgroup SD_link_management Links
- *  @brief Functions for managing the network links
- *
- *  This section describes the functions for managing the network links.
- *
- *  A link is a network node represented as a <em>name</em>, a <em>current
- *  bandwidth</em> and a <em>current latency</em>. The links are created
- *  when you call the function SD_create_environment.
- *
- *  @see SD_link_t
- *  @{
- */
-XBT_PUBLIC(const SD_link_t *) SD_link_get_list(void);
-
-/** @} */
-
 /************************** Workstation handling ****************************/
 
 /** @defgroup SD_workstation_management Workstations

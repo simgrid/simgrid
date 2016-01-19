@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
-  links = SD_link_get_list();
+  links = sg_link_list();
   int count = sg_link_count();
   XBT_INFO("Link count: %d", count);
   qsort((void *)links, count, sizeof(SD_link_t), cmp_link);
