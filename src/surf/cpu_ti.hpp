@@ -156,7 +156,7 @@ public:
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,
-                          tmgr_trace_t state_trace);
+                          tmgr_trace_t state_trace) override;
   double shareResources(double now) override;
   void updateActionsState(double now, double delta) override;
   void addTraces() override;

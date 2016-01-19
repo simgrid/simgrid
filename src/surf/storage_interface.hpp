@@ -138,7 +138,7 @@ public:
   ~Storage();
 
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
-  bool isUsed();
+  bool isUsed() override;
 
   /**
    * @brief Update the state of the current Storage
@@ -147,7 +147,7 @@ public:
    * @param value [description]
    * @param date [description]
    */
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
+  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
 
   void turnOn() override;
   void turnOff() override;
