@@ -648,6 +648,7 @@ void smpi_initialize_global_memory_segments(){
 
 #ifndef HAVE_PRIVATIZATION
   smpi_privatize_global_variables=0;
+  xbt_die("You are trying to use privatization on a system that does not support it. Don't.'")
   return;
 #else
 
