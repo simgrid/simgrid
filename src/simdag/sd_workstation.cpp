@@ -296,30 +296,20 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
 }
 
 /**
- * \brief Returns the latency of the route between two workstations, i.e. the sum of all link latencies
- * between the workstations.
+ * \brief Returns the latency of the route between two workstations.
  *
  * \param src the first workstation
  * \param dst the second workstation
  * \return the latency of the route between the two workstations (in seconds)
  * \see SD_route_get_current_bandwidth()
  */
-double SD_route_get_current_latency(SD_workstation_t src,
-                                    SD_workstation_t dst)
+double SD_route_get_current_latency(SD_workstation_t src, SD_workstation_t dst)
 {
-
-  const SD_link_t *links;
-  int nb_links;
+  xbt_dynar_t route = NULL;
   double latency;
-  int i;
 
-  links = SD_route_get_list(src, dst);
-  nb_links = SD_route_get_size(src, dst);
-  latency = 0.0;
-
-  for (i = 0; i < nb_links; i++) {
-    latency += SD_link_get_current_latency(links[i]);
-  }
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard,
+                                    &route, &latency);
 
   return latency;
 }
@@ -376,6 +366,7 @@ double SD_route_get_communication_time(SD_workstation_t src,
      transmission time of a link = communication amount / link bandwidth */
 
   const SD_link_t *links;
+  xbt_dynar_t route = NULL;
   int nb_links;
   double bandwidth, min_bandwidth;
   double latency;
@@ -387,13 +378,14 @@ double SD_route_get_communication_time(SD_workstation_t src,
   if (bytes_amount == 0.0)
     return 0.0;
 
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard,
+                                    &route, &latency);
+
   links = SD_route_get_list(src, dst);
   nb_links = SD_route_get_size(src, dst);
   min_bandwidth = -1.0;
-  latency = 0;
 
   for (i = 0; i < nb_links; i++) {
-    latency += SD_link_get_current_latency(links[i]);
     bandwidth = SD_link_get_current_bandwidth(links[i]);
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
