@@ -689,7 +689,7 @@ static void action_gather(const char *const *action) {
   int send_size = parse_double(action[2]);
   int recv_size = parse_double(action[3]);
   MPI_Datatype MPI_CURRENT_TYPE2;
-  if(action[5]) {
+  if(action[4] && action[5]) {
     MPI_CURRENT_TYPE=decode_datatype(action[5]);
     MPI_CURRENT_TYPE2=decode_datatype(action[6]);
   } else {
