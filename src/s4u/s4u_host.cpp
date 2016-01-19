@@ -41,6 +41,7 @@ Host::Host(const char* name)
 }
 
 Host::~Host() {
+	delete pimpl_cpu;
 	if (mounts != NULL)
 		delete mounts;
 }

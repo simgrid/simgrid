@@ -91,6 +91,7 @@ private:
 public:
 	// FIXME: these should be protected, but it leads to many errors
 	// Use the extensions stuff for this? Go through simgrid::surf::Host?
+  // TODO, this could be a unique_ptr
 	surf::Cpu     *pimpl_cpu = nullptr;
 	surf::NetCard *pimpl_netcard = nullptr;
 
