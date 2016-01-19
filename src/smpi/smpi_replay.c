@@ -756,7 +756,7 @@ static void action_gatherv(const char *const *action) {
   int i=0,recv_sum=0;
 
   MPI_Datatype MPI_CURRENT_TYPE2;
-  if(action[4+comm_size]) {
+  if(action[4+comm_size] && action[5+comm_size]) {
     MPI_CURRENT_TYPE=decode_datatype(action[4+comm_size]);
     MPI_CURRENT_TYPE2=decode_datatype(action[5+comm_size]);
   } else {
