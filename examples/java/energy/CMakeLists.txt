@@ -24,7 +24,6 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/energyDeployment.xml
   PARENT_SCOPE
   )
 set(examples_src
@@ -38,6 +37,5 @@ set(bin_files
   )
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/README
   PARENT_SCOPE
   )
