@@ -646,10 +646,15 @@ static void action_allToAll(const char *const *action) {
 
   if(action[4]) {
     MPI_CURRENT_TYPE=decode_datatype(action[4]);
+  }
+  else{
+    MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
+  }
+
+  if (action[5]){
     MPI_CURRENT_TYPE2=decode_datatype(action[5]);
   }
   else {
-    MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
     MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
   void *send = smpi_get_tmp_sendbuffer(send_size*comm_size* smpi_datatype_size(MPI_CURRENT_TYPE));
@@ -999,10 +1004,14 @@ static void action_allToAllv(const char *const *action) {
   recv_buf_size=parse_double(action[3+comm_size]);
   if(action[4+2*comm_size]) {
     MPI_CURRENT_TYPE=decode_datatype(action[4+2*comm_size]);
+  }
+  else{
+      MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
+  }
+  if(action[5+2*comm_size]){
     MPI_CURRENT_TYPE2=decode_datatype(action[5+2*comm_size]);
   }
   else {
-      MPI_CURRENT_TYPE=MPI_DEFAULT_TYPE;
       MPI_CURRENT_TYPE2=MPI_DEFAULT_TYPE;
   }
 
