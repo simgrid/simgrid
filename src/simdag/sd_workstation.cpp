@@ -306,7 +306,7 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
 double SD_route_get_latency(SD_workstation_t src, SD_workstation_t dst)
 {
   xbt_dynar_t route = NULL;
-  double latency;
+  double latency = 0;
 
   routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard,
                                     &route, &latency);
@@ -369,7 +369,7 @@ double SD_route_get_communication_time(SD_workstation_t src,
   xbt_dynar_t route = NULL;
   int nb_links;
   double bandwidth, min_bandwidth;
-  double latency;
+  double latency = 0;
   int i;
 
   xbt_assert(bytes_amount >= 0, "bytes_amount must be greater than or equal to zero");
