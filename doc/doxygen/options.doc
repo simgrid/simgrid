@@ -752,8 +752,15 @@ being replayed/simulated. At the moment, these computation events can
 be simulated using SMPI by calling internal smpi_execute*() functions.
 
 To disable the benchmarking/simulation of computation in the simulated
-application, the variable \b
-smpi/simulate_computation should be set to no
+application, the variable \b smpi/simulate_computation should be set to no.
+Equivalently, setting \b smpi/cpu_threshold to -1 also ignores all
+computation.
+
+\note
+    This option just ignores the timings in your simulation; it still executes
+    the computations itself. If you want to stop SMPI from doing that,
+    you should check the SMPI_SAMPLE macros, documented in the chapter
+    \ref SMPI_adapting_speed.
 
 \subsection options_model_smpi_bw_factor smpi/bw_factor: Bandwidth factors
 
