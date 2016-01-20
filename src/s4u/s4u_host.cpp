@@ -29,6 +29,11 @@ int ROUTING_HOST_LEVEL;
 int USER_HOST_LEVEL;
 
 namespace simgrid {
+
+namespace xbt {
+template class Extendable<simgrid::s4u::Host>;
+}
+
 namespace s4u {
 
 simgrid::xbt::signal<void(Host&)> Host::onCreation;

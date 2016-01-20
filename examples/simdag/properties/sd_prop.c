@@ -39,7 +39,6 @@ int main(int argc, char **argv)
   /* init of platform elements */
   w1 = SD_workstation_get_by_name("host1");
   w2 = SD_workstation_get_by_name("host2");
-  SD_workstation_set_access_mode(w2, SD_WORKSTATION_SEQUENTIAL_ACCESS);
   name1 = SD_workstation_get_name(w1);
   name2 = SD_workstation_get_name(w2);
 

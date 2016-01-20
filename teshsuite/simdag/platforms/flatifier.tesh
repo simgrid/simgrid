@@ -1160,19 +1160,19 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/torus_cluster.xm
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 > <platform version="3">
 > <AS id="AS0" routing="Full">
->   <host id="bob0.hamburger.edu" power="1000000000"/>
->   <host id="bob1.hamburger.edu" power="1000000000"/>
->   <host id="bob10.hamburger.edu" power="1000000000"/>
->   <host id="bob11.hamburger.edu" power="1000000000"/>
->   <host id="bob2.hamburger.edu" power="1000000000"/>
->   <host id="bob3.hamburger.edu" power="1000000000"/>
->   <host id="bob4.hamburger.edu" power="1000000000"/>
->   <host id="bob5.hamburger.edu" power="1000000000"/>
->   <host id="bob6.hamburger.edu" power="1000000000"/>
->   <host id="bob7.hamburger.edu" power="1000000000"/>
->   <host id="bob8.hamburger.edu" power="1000000000"/>
->   <host id="bob9.hamburger.edu" power="1000000000"/>
->   <router id="bobbob_cluster_router.hamburger.edu"/>
+>   <host id="node-0.acme.org" power="1000000000"/>
+>   <host id="node-1.acme.org" power="1000000000"/>
+>   <host id="node-10.acme.org" power="1000000000"/>
+>   <host id="node-11.acme.org" power="1000000000"/>
+>   <host id="node-2.acme.org" power="1000000000"/>
+>   <host id="node-3.acme.org" power="1000000000"/>
+>   <host id="node-4.acme.org" power="1000000000"/>
+>   <host id="node-5.acme.org" power="1000000000"/>
+>   <host id="node-6.acme.org" power="1000000000"/>
+>   <host id="node-7.acme.org" power="1000000000"/>
+>   <host id="node-8.acme.org" power="1000000000"/>
+>   <host id="node-9.acme.org" power="1000000000"/>
+>   <router id="node-bob_cluster_router.acme.org"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_0_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_10_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
@@ -1258,512 +1258,513 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/torus_cluster.xm
 >   <link id="bob_cluster_link_from_9_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_from_9_to_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_from_9_to_6_UP" bandwidth="125000000" latency="0.000050000"/>
->   <route src="bob1.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_1_loopback"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob7.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_4_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob10.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob3.hamburger.edu">
+>   <route src="node-3.acme.org" dst="node-3.acme.org">
 >   <link_ctn id="bob_cluster_link_3_loopback"/>
 >   </route>
->   <route src="bob3.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob7.hamburger.edu">
+>   <route src="node-3.acme.org" dst="node-7.acme.org">
 >   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
 >   </route>
->   <route src="bob3.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob10.hamburger.edu">
+>   <route src="node-3.acme.org" dst="node-10.acme.org">
 >   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
 >   </route>
->   <route src="bob3.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+>   <route src="node-3.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/>
+>   </route>
+>   <route src="node-3.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/>
+>   </route>
+>   <route src="node-3.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="node-3.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="node-3.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_3_to_4_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/>
+>   </route>
+>   <route src="node-3.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/>
+>   </route>
+>   <route src="node-3.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="node-3.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/>
+>   </route>
+>   <route src="node-3.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="node-3.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bob5.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_5_loopback"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob7.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bob10.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
->   </route>
->   <route src="bob5.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob3.hamburger.edu">
+>   <route src="node-7.acme.org" dst="node-3.acme.org">
 >   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
 >   </route>
->   <route src="bob7.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob7.hamburger.edu">
+>   <route src="node-7.acme.org" dst="node-7.acme.org">
 >   <link_ctn id="bob_cluster_link_7_loopback"/>
 >   </route>
->   <route src="bob7.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/>
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/>
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/>
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/>
->   </route>
->   <route src="bob7.hamburger.edu" dst="bob10.hamburger.edu">
+>   <route src="node-7.acme.org" dst="node-10.acme.org">
 >   <link_ctn id="bob_cluster_link_from_7_to_10_UP"/>
 >   </route>
->   <route src="bob7.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+>   <route src="node-7.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="node-7.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="node-7.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/>
+>   </route>
+>   <route src="node-7.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/>
+>   </route>
+>   <route src="node-7.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="node-7.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="node-7.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/>
+>   </route>
+>   <route src="node-7.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_8_UP"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="node-7.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_7_DOWN"/>
+>   </route>
+>   <route src="node-7.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bob9.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob7.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_9_loopback"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bob10.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/>
->   </route>
->   <route src="bob9.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob7.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_11_loopback"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bob10.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/>
->   </route>
->   <route src="bob11.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_3_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob7.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_0_loopback"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob10.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_5_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob7.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_2_loopback"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob10.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob7.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_4_loopback"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob10.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob7.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_9_UP"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_6_loopback"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bob10.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/>
->   </route>
->   <route src="bob6.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob7.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_11_UP"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_8_loopback"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bob10.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/>
->   </route>
->   <route src="bob8.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob3.hamburger.edu">
+>   <route src="node-10.acme.org" dst="node-3.acme.org">
 >   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
 >   </route>
->   <route src="bob10.hamburger.edu" dst="bob5.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob7.hamburger.edu">
+>   <route src="node-10.acme.org" dst="node-7.acme.org">
 >   <link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/>
 >   </route>
->   <route src="bob10.hamburger.edu" dst="bob9.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/>
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob11.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/>
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob6.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/>
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob8.hamburger.edu">
->   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/>
->   </route>
->   <route src="bob10.hamburger.edu" dst="bob10.hamburger.edu">
+>   <route src="node-10.acme.org" dst="node-10.acme.org">
 >   <link_ctn id="bob_cluster_link_10_loopback"/>
 >   </route>
->   <route src="bob10.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+>   <route src="node-10.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="node-10.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="node-10.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/>
+>   </route>
+>   <route src="node-10.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/>
+>   </route>
+>   <route src="node-10.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="node-10.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="node-10.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/>
+>   </route>
+>   <route src="node-10.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_10_to_11_UP"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="node-10.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_9_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/>
+>   </route>
+>   <route src="node-10.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
+>   <route src="node-0.acme.org" dst="node-3.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_3_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-7.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-10.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_0_loopback"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_1_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_0_DOWN"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="node-0.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob1.hamburger.edu">
+>   <route src="node-4.acme.org" dst="node-3.acme.org">
+>   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-7.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-10.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_4_loopback"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_5_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_3_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="node-4.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob3.hamburger.edu">
+>   <route src="node-8.acme.org" dst="node-3.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-7.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-10.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_8_loopback"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_11_UP"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_7_to_8_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_UP"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_6_UP"/>
+>   </route>
+>   <route src="node-8.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob5.hamburger.edu">
+>   <route src="node-11.acme.org" dst="node-3.acme.org">
+>   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-7.acme.org">
+>   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-10.acme.org">
+>   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_11_loopback"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_10_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_11_to_9_UP"/><link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/>
+>   </route>
+>   <route src="node-11.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob7.hamburger.edu">
+>   <route src="node-1.acme.org" dst="node-3.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-7.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-10.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_4_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_1_loopback"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/><link_ctn id="bob_cluster_link_from_2_to_5_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_2_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_1_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="node-1.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob9.hamburger.edu">
+>   <route src="node-5.acme.org" dst="node-3.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-7.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-10.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_4_to_5_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_DOWN"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_5_loopback"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_5_DOWN"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_5_to_3_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="node-5.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob11.hamburger.edu">
+>   <route src="node-9.acme.org" dst="node-3.acme.org">
+>   <link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-7.acme.org">
+>   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-10.acme.org">
+>   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_9_to_10_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_9_loopback"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_11_to_9_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_9_DOWN"/>
+>   </route>
+>   <route src="node-9.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob0.hamburger.edu">
+>   <route src="node-2.acme.org" dst="node-3.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-7.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_7_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-10.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/><link_ctn id="bob_cluster_link_from_1_to_4_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_8_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_5_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_1_to_2_DOWN"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_5_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/><link_ctn id="bob_cluster_link_from_0_to_3_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_2_loopback"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_from_2_to_0_UP"/><link_ctn id="bob_cluster_link_from_0_to_6_UP"/>
+>   </route>
+>   <route src="node-2.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob2.hamburger.edu">
+>   <route src="node-6.acme.org" dst="node-3.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_9_UP"/><link_ctn id="bob_cluster_link_from_3_to_9_DOWN"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-7.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-10.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-0.acme.org">
+>   <link_ctn id="bob_cluster_link_from_0_to_6_DOWN"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-4.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/><link_ctn id="bob_cluster_link_from_7_to_10_UP"/><link_ctn id="bob_cluster_link_from_4_to_10_DOWN"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-8.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-11.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-1.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_7_UP"/><link_ctn id="bob_cluster_link_from_1_to_7_DOWN"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-5.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/><link_ctn id="bob_cluster_link_from_8_to_11_UP"/><link_ctn id="bob_cluster_link_from_5_to_11_DOWN"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-9.acme.org">
+>   <link_ctn id="bob_cluster_link_from_6_to_9_UP"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-2.acme.org">
+>   <link_ctn id="bob_cluster_link_from_8_to_6_DOWN"/><link_ctn id="bob_cluster_link_from_2_to_8_DOWN"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-6.acme.org">
+>   <link_ctn id="bob_cluster_link_6_loopback"/>
+>   </route>
+>   <route src="node-6.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob4.hamburger.edu">
+>   <route src="node-bob_cluster_router.acme.org" dst="node-bob_cluster_router.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob6.hamburger.edu">
+>   <route src="node-bob_cluster_router.acme.org" dst="node-3.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob8.hamburger.edu">
+>   <route src="node-bob_cluster_router.acme.org" dst="node-7.acme.org">
 >   
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob10.hamburger.edu">
+>   <route src="node-bob_cluster_router.acme.org" dst="node-10.acme.org">
+>   
+>   </route>
+>   <route src="node-bob_cluster_router.acme.org" dst="node-0.acme.org">
+>   
+>   </route>
+>   <route src="node-bob_cluster_router.acme.org" dst="node-4.acme.org">
+>   
+>   </route>
+>   <route src="node-bob_cluster_router.acme.org" dst="node-8.acme.org">
+>   
+>   </route>
+>   <route src="node-bob_cluster_router.acme.org" dst="node-11.acme.org">
+>   
+>   </route>
+>   <route src="node-bob_cluster_router.acme.org" dst="node-1.acme.org">
+>   
+>   </route>
+>   <route src="node-bob_cluster_router.acme.org" dst="node-5.acme.org">
+>   
+>   </route>
+>   <route src="node-bob_cluster_router.acme.org" dst="node-9.acme.org">
+>   
+>   </route>
+>   <route src="node-bob_cluster_router.acme.org" dst="node-2.acme.org">
+>   
+>   </route>
+>   <route src="node-bob_cluster_router.acme.org" dst="node-6.acme.org">
 >   
 >   </route>
 > </AS>
 > </platform>
+

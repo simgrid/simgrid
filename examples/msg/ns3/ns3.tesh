@@ -36,4 +36,4 @@ p Two clusters
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}/examples/msg/ns3/Two_clusters-d.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
 > [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [c-16.me:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from c-3.me to c-16.me
+> [node16.acme.org:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node3.acme.org to node16.acme.org

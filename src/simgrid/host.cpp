@@ -59,7 +59,6 @@ xbt_dynar_t sg_hosts_as_dynar(void)
 // ========= Layering madness ==============*
 
 #include "src/msg/msg_private.h" // MSG_host_priv_free. FIXME: killme by initializing that level in msg when used
-#include "src/simdag/simdag_private.h" // __SD_workstation_destroy. FIXME: killme by initializing that level in simdag when used
 #include "src/simix/smx_host_private.h" // SIMIX_host_destroy. FIXME: killme by initializing that level in simix when used
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_routing.hpp"
@@ -74,7 +73,7 @@ void sg_host_init()
 	  delete static_cast<simgrid::surf::NetCard*>(p);
   });
 
-  SD_HOST_LEVEL = simgrid::s4u::Host::extension_create(__SD_workstation_destroy);
+  SD_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
   SIMIX_HOST_LEVEL = simgrid::s4u::Host::extension_create(SIMIX_host_destroy);
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
 }

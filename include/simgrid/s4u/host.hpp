@@ -19,6 +19,11 @@
 #include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
+
+namespace xbt {
+extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Host>;
+}
+
 namespace s4u {
 
 /** @brief Simulated machine that can host some actors
