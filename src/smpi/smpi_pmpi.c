@@ -84,7 +84,7 @@ int PMPI_Get_library_version (char *version,int *len){
 int PMPI_Init_thread(int *argc, char ***argv, int required, int *provided)
 {
   if (provided != NULL) {
-    *provided = MPI_THREAD_MULTIPLE;
+    *provided = MPI_THREAD_SINGLE;
   }
   return MPI_Init(argc, argv);
 }
@@ -96,7 +96,7 @@ int PMPI_Query_thread(int *provided)
   if (provided == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    *provided = MPI_THREAD_MULTIPLE;
+    *provided = MPI_THREAD_SINGLE;
     retval = MPI_SUCCESS;
   }
   return retval;
