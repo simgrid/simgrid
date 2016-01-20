@@ -108,8 +108,6 @@ static const luaL_Reg simgrid_functions[] = {
   {"info", info},
   {"critical", critical},
   {"error", error},
-  /* short names */
-  /* methods to bypass XML parser */
   {NULL, NULL}
 };
 
