@@ -56,7 +56,6 @@ int main(int argc, char **argv)
   workstations = SD_workstation_get_list();
   w1 = workstations[0];
   w2 = workstations[1];
-  SD_workstation_set_access_mode(w2, SD_WORKSTATION_SEQUENTIAL_ACCESS);
   name1 = SD_workstation_get_name(w1);
   name2 = SD_workstation_get_name(w2);
   computation_amount1 = 2000000;
@@ -104,7 +103,7 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, taskC, taskA);
   SD_task_dependency_add(NULL, NULL, taskD, taskB);
   SD_task_dependency_add(NULL, NULL, taskD, taskC);
-  /*  SD_task_dependency_add(NULL, NULL, taskA, taskD); /\* deadlock */
+  SD_task_dependency_add(NULL, NULL, taskB, taskC);
 
 
 

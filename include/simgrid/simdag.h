@@ -24,21 +24,6 @@ SG_BEGIN_DECL()
     @see SD_workstation_management */
 typedef sg_host_t SD_workstation_t;
 
-/** @brief Workstation access mode
-    @ingroup SD_datatypes_management
-
-    By default, a workstation resource is shared, i.e. several tasks
-    can be executed at the same time on a workstation. The CPU power of
-    the workstation is shared between the running tasks on the workstation.
-    In sequential mode, only one task can use the workstation, and the other
-    tasks wait in a FIFO.
-
-    @see SD_workstation_get_access_mode(), SD_workstation_set_access_mode() */
-typedef enum {
-  SD_WORKSTATION_SHARED_ACCESS,     /**< @brief Several tasks can be executed at the same time */
-  SD_WORKSTATION_SEQUENTIAL_ACCESS  /**< @brief Only one task can be executed, the others wait in a FIFO. */
-} e_SD_workstation_access_mode_t;
-
 /** @brief Link datatype
     @ingroup SD_datatypes_management
 
@@ -71,10 +56,9 @@ typedef enum {
   SD_SCHEDULED = 0x0002,     /**< @brief A task becomes SD_SCHEDULED when you call function
                                   SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
   SD_RUNNABLE = 0x0004,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
-  SD_IN_FIFO = 0x0008,       /**< @brief A runnable task can have to wait in a workstation fifo if the workstation is sequential */
-  SD_RUNNING = 0x0010,       /**< @brief An SD_RUNNABLE or SD_IN_FIFO becomes SD_RUNNING when it is launched. */
-  SD_DONE = 0x0020,          /**< @brief The task is successfully finished. */
-  SD_FAILED = 0x0040         /**< @brief A problem occurred during the execution of the task. */
+  SD_RUNNING = 0x0008,       /**< @brief An SD_RUNNABLE task becomes SD_RUNNING when it is launched. */
+  SD_DONE = 0x0010,          /**< @brief The task is successfully finished. */
+  SD_FAILED = 0x0020         /**< @brief A problem occurred during the execution of the task. */
 } e_SD_task_state_t;
 
 /** @brief Task kinds
@@ -138,12 +122,6 @@ XBT_PUBLIC(double) SD_workstation_get_speed(SD_workstation_t workstation);
 XBT_PUBLIC(double) SD_workstation_get_available_speed(SD_workstation_t
                                                       workstation);
 XBT_PUBLIC(int) SD_workstation_get_cores(SD_workstation_t workstation);
-XBT_PUBLIC(e_SD_workstation_access_mode_t)
-    SD_workstation_get_access_mode(SD_workstation_t workstation);
-XBT_PUBLIC(void) SD_workstation_set_access_mode(SD_workstation_t
-                                                workstation,
-                                                e_SD_workstation_access_mode_t
-                                                access_mode);
 
 XBT_PUBLIC(double) SD_workstation_get_computation_time(SD_workstation_t workstation,
                                                        double flops_amount);
@@ -155,7 +133,6 @@ XBT_PUBLIC(double) SD_route_get_communication_time(SD_workstation_t src,
                                                    SD_workstation_t dst,
                                                    double bytes_amount);
 
-XBT_PUBLIC(SD_task_t) SD_workstation_get_current_task(SD_workstation_t workstation);
 XBT_PUBLIC(xbt_dict_t)
     SD_workstation_get_mounted_storage_list(SD_workstation_t workstation);
 XBT_PUBLIC(xbt_dynar_t)

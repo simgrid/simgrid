@@ -15,12 +15,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_seq_access,
 
 int main(int argc, char **argv)
 {
-  int i;
   const char *platform_file;
   const SD_workstation_t *workstations;
-  int kind;
-  SD_task_t task, taskA, taskB, taskC;
-  xbt_dynar_t changed_tasks;
+  SD_task_t taskA, taskB, taskC;
   SD_workstation_t workstation_list[2];
   double computation_amount[2];
   double communication_amount[4] = { 0 };
@@ -46,14 +43,6 @@ int main(int argc, char **argv)
   workstations = SD_workstation_get_list();
   w1 = workstations[0];
   w2 = workstations[1];
-  for (i = 0; i < 2; i++) {
-    SD_workstation_set_access_mode(workstations[i],
-                                   SD_WORKSTATION_SEQUENTIAL_ACCESS);
-    XBT_INFO("Access mode of %s is %s",
-          SD_workstation_get_name(workstations[i]),
-          (SD_workstation_get_access_mode(workstations[i]) ==
-           SD_WORKSTATION_SEQUENTIAL_ACCESS) ? "sequential" : "shared");
-  }
 
   /* creation of the tasks and their dependencies */
   taskA = SD_task_create_comp_seq("Task A", NULL, 2e9);
@@ -65,15 +54,6 @@ int main(int argc, char **argv)
   TRACE_sd_set_task_category (taskA, "taskA");
   TRACE_sd_set_task_category (taskB, "taskB");
   TRACE_sd_set_task_category (taskC, "taskC");
-
-  /* if everything is ok, no exception is forwarded or rethrown by main() */
-
-  /* watch points */
-  SD_task_watch(taskA, SD_RUNNING);
-  SD_task_watch(taskB, SD_RUNNING);
-  SD_task_watch(taskC, SD_RUNNING);
-  SD_task_watch(taskC, SD_DONE);
-
 
   /* scheduling parameters */
   workstation_list[0] = w1;
@@ -92,37 +72,7 @@ int main(int argc, char **argv)
                    &(computation_amount[1]), SD_SCHED_NO_COST, rate);
 
   /* let's launch the simulation! */
-  while (!xbt_dynar_is_empty(changed_tasks = SD_simulate(-1.0))) {
-    for (i = 0; i < 2; i++) {
-      task = SD_workstation_get_current_task(workstations[i]);
-      if (task)
-        kind = SD_task_get_kind(task);
-      else {
-        XBT_INFO("There is no task running on %s",
-              SD_workstation_get_name(workstations[i]));
-        continue;
-      }
-
-      switch (kind) {
-      case SD_TASK_COMP_SEQ:
-        XBT_INFO("%s is currently running on %s (SD_TASK_COMP_SEQ)",
-              SD_task_get_name(task),
-              SD_workstation_get_name(workstations[i]));
-        break;
-      case SD_TASK_COMM_E2E:
-        XBT_INFO("%s is currently running on %s (SD_TASK_COMM_E2E)",
-              SD_task_get_name(task),
-              SD_workstation_get_name(workstations[i]));
-        break;
-      case SD_TASK_NOT_TYPED:
-        XBT_INFO("Task running on %s has no type",
-              SD_workstation_get_name(workstations[i]));
-        break;
-      default:
-        XBT_ERROR("Shouldn't be here");
-      }
-    }
-  }
+  SD_simulate(-1.0);
 
   XBT_DEBUG("Destroying tasks...");
 

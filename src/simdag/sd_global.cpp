@@ -235,10 +235,9 @@ xbt_dynar_t SD_simulate(double how_long) {
   /* explore the runnable tasks */
   xbt_dynar_foreach(sd_global->executable_task_set , iter, task) {
     XBT_VERB("Executing task '%s'", SD_task_get_name(task));
-    if (__SD_task_try_to_run(task)){
-      xbt_dynar_push(sd_global->return_set, &task);
-      iter--;
-    }
+    SD_task_run(task);
+    xbt_dynar_push(sd_global->return_set, &task);
+    iter--;
   }
 
   /* main loop */
@@ -265,10 +264,9 @@ xbt_dynar_t SD_simulate(double how_long) {
 
         task->finish_time = surf_get_clock();
         XBT_VERB("Task '%s' done", SD_task_get_name(task));
-        XBT_DEBUG("Calling __SD_task_just_done");
-        __SD_task_just_done(task);
-        XBT_DEBUG("__SD_task_just_done called on task '%s'",
-               SD_task_get_name(task));
+        SD_task_set_state(task, SD_DONE);
+        task->surf_action->unref();
+        task->surf_action = NULL;
 
         /* the state has changed. Add it only if it's the first change */
         if (xbt_dynar_search_or_negative(sd_global->return_set, &task) < 0) {
@@ -322,8 +320,8 @@ xbt_dynar_t SD_simulate(double how_long) {
           if (SD_task_get_state(dst) == SD_RUNNABLE
               && !sd_global->watch_point_reached) {
             XBT_VERB("Executing task '%s'", SD_task_get_name(dst));
-            if (__SD_task_try_to_run(dst))
-              xbt_dynar_push(sd_global->return_set, &dst);
+            SD_task_run(dst);
+            xbt_dynar_push(sd_global->return_set, &dst);
           }
         }
       }
@@ -351,7 +349,7 @@ xbt_dynar_t SD_simulate(double how_long) {
              (int) xbt_dynar_length(sd_global->completed_task_set)));
         static const char* state_names[] =
               { "SD_NOT_SCHEDULED", "SD_SCHEDULABLE", "SD_SCHEDULED",
-                "SD_RUNNABLE", "SD_IN_INFO", "SD_RUNNING", "SD_DONE",
+                "SD_RUNNABLE", "SD_RUNNING", "SD_DONE",
                 "SD_FAILED" };
         xbt_dynar_foreach(sd_global->initial_task_set, iter, task){
           XBT_WARN("%s is in %s state", SD_task_get_name(task),

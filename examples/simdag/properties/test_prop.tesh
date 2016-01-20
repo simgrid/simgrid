@@ -17,7 +17,5 @@ $ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
 > [0.000000] [sd_workstation/INFO] Displaying workstation host2
 > [0.000000] [sd_workstation/INFO]   - speed: 1000000000
 > [0.000000] [sd_workstation/INFO]   - available speed: 1.00
-> [0.000000] [sd_workstation/INFO]   - access mode: Exclusive
-> [0.000000] [sd_workstation/INFO]     no task running
 > [0.000000] [sd_workstation/INFO]   - properties:
 > [0.000000] [sd_workstation/INFO]     Hdd->250

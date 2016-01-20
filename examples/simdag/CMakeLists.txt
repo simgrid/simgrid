@@ -6,7 +6,6 @@ add_executable(sd_fail sd_fail.c)
 add_executable(sd_avail sd_avail.c)
 add_executable(sd_typed_tasks_test sd_typed_tasks_test.c)
 add_executable(sd_comm_throttling sd_comm_throttling.c)
-add_executable(sd_seq_access sd_seq_access.c)
 
 add_executable(simdag_tracing simdag_trace.c)
 
@@ -18,7 +17,6 @@ if(NOT WIN32)
   target_link_libraries(sd_avail simgrid pthread )
   target_link_libraries(sd_typed_tasks_test simgrid pthread )
   target_link_libraries(sd_comm_throttling simgrid pthread )
-  target_link_libraries(sd_seq_access simgrid pthread )
   target_link_libraries(simdag_tracing simgrid pthread )
 
   add_custom_command(TARGET ex_sd_test
@@ -38,7 +36,6 @@ else()
   target_link_libraries(sd_avail simgrid)
   target_link_libraries(sd_typed_tasks_test simgrid)
   target_link_libraries(sd_comm_throttling simgrid)
-  target_link_libraries(sd_seq_access simgrid)
   target_link_libraries(simdag_tracing simgrid)
   
   add_custom_command(TARGET ex_sd_test
@@ -57,7 +54,6 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag2.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_comm_throttling.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_seq_access.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_tracing.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_typed_tasks.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_avail.tesh
@@ -76,7 +72,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_avail.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_comm_throttling.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_fail.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/sd_seq_access.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_test2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_typed_tasks_test.c

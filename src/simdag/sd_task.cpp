@@ -347,11 +347,6 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
       xbt_dynar_push(sd_global->initial_task_set,&task);
     }
     break;
-  case SD_IN_FIFO:
-    xbt_dynar_remove_at(sd_global->executable_task_set,
-       xbt_dynar_search(sd_global->executable_task_set, &task), NULL);
-    xbt_dynar_push(sd_global->initial_task_set,&task);
-    break;
   case SD_RUNNABLE:
     idx = xbt_dynar_search_or_negative(sd_global->initial_task_set, &task);
     if (idx >= 0) {
@@ -360,15 +355,8 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     }
     break;
   case SD_RUNNING:
-    if (SD_task_get_state(task) == SD_RUNNABLE){
       xbt_dynar_remove_at(sd_global->executable_task_set,
          xbt_dynar_search(sd_global->executable_task_set, &task), NULL);
-    } else {
-      if (SD_task_get_state(task) == SD_IN_FIFO){
-        xbt_dynar_remove_at(sd_global->initial_task_set,
-            xbt_dynar_search(sd_global->initial_task_set, &task), NULL);
-      }
-    }
     break;
   case SD_DONE:
     xbt_dynar_push(sd_global->completed_task_set,&task);
@@ -545,18 +533,17 @@ void SD_task_dump(SD_task_t task)
   char *statename;
 
   XBT_INFO("Displaying task %s", SD_task_get_name(task));
-  statename = bprintf("%s %s %s %s %s %s %s %s",
-                      (task->state == SD_NOT_SCHEDULED ? "not scheduled" :
+  statename = bprintf("%s%s%s%s%s%s%s",
+                      (task->state == SD_NOT_SCHEDULED ? " not scheduled" :
                        ""),
-                      (task->state == SD_SCHEDULABLE ? "schedulable" : ""),
-                      (task->state == SD_SCHEDULED ? "scheduled" : ""),
-                      (task->state == SD_RUNNABLE ? "runnable" :
-                       "not runnable"),
-                      (task->state == SD_IN_FIFO ? "in fifo" : ""),
-                      (task->state == SD_RUNNING ? "running" : ""),
-                      (task->state == SD_DONE ? "done" : ""),
-                      (task->state == SD_FAILED ? "failed" : ""));
-  XBT_INFO("  - state: %s", statename);
+                      (task->state == SD_SCHEDULABLE ? " schedulable" : ""),
+                      (task->state == SD_SCHEDULED ? " scheduled" : ""),
+                      (task->state == SD_RUNNABLE ? " runnable" :
+                       " not runnable"),
+                      (task->state == SD_RUNNING ? " running" : ""),
+                      (task->state == SD_DONE ? " done" : ""),
+                      (task->state == SD_FAILED ? " failed" : ""));
+  XBT_INFO("  - state:%s", statename);
   free(statename);
 
   if (task->kind != 0) {
@@ -1065,10 +1052,9 @@ void SD_task_unschedule(SD_task_t task)
  */
 static void __SD_task_destroy_scheduling_data(SD_task_t task)
 {
-  if (!__SD_task_is_scheduled_or_runnable(task)
-      && SD_task_get_state(task) != SD_IN_FIFO)
+  if (!__SD_task_is_scheduled_or_runnable(task))
     THROWF(arg_error, 0,
-           "Task '%s' must be SD_SCHEDULED, SD_RUNNABLE or SD_IN_FIFO",
+           "Task '%s' must be SD_SCHEDULED or SD_RUNNABLE",
            SD_task_get_name(task));
 
   xbt_free(task->flops_amount);
@@ -1080,38 +1066,23 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
  * the task doesn't have to wait in FIFOs. Otherwise, it is called by
  * __SD_task_just_done when the task gets out of its FIFOs.
  */
-void __SD_task_really_run(SD_task_t task)
+void SD_task_run(SD_task_t task)
 {
 
   int i;
   sg_host_t *hosts;
 
-  xbt_assert(__SD_task_is_runnable_or_in_fifo(task),
-              "Task '%s' is not runnable or in a fifo! Task state: %d",
+  xbt_assert(SD_task_get_state(task) == SD_RUNNABLE,
+             "Task '%s' is not runnable! Task state: %d",
              SD_task_get_name(task), (int)SD_task_get_state(task));
   xbt_assert(task->workstation_list != NULL,
               "Task '%s': workstation_list is NULL!",
               SD_task_get_name(task));
 
-  XBT_DEBUG("Really running task '%s'", SD_task_get_name(task));
-  int host_nb = task->workstation_nb;
-
-  /* set this task as current task for the workstations in sequential mode */
-  for (i = 0; i < host_nb; i++) {
-    if (SD_workstation_get_access_mode(task->workstation_list[i]) ==
-        SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-    	sg_host_sd(task->workstation_list[i])->current_task = task;
-      xbt_assert(__SD_workstation_is_busy(task->workstation_list[i]),
-                  "The workstation should be busy now");
-    }
-  }
-
-  XBT_DEBUG("Task '%s' set as current task for its workstations",
-         SD_task_get_name(task));
-
-  /* start the task */
+  XBT_DEBUG("Running task '%s'", SD_task_get_name(task));
 
   /* Copy the elements of the task into the action */
+  int host_nb = task->workstation_nb;
   hosts = xbt_new(sg_host_t, host_nb);
 
   for (i = 0; i < host_nb; i++)
@@ -1120,10 +1091,8 @@ void __SD_task_really_run(SD_task_t task)
   double *flops_amount = xbt_new0(double, host_nb);
   double *bytes_amount = xbt_new0(double, host_nb * host_nb);
 
-
   if(task->flops_amount)
-    memcpy(flops_amount, task->flops_amount, sizeof(double) *
-           host_nb);
+    memcpy(flops_amount, task->flops_amount, sizeof(double) * host_nb);
   if(task->bytes_amount)
     memcpy(bytes_amount, task->bytes_amount,
            sizeof(double) * host_nb * host_nb);
@@ -1144,208 +1113,6 @@ void __SD_task_really_run(SD_task_t task)
              "Bad state of task '%s': %d",
              SD_task_get_name(task), (int)SD_task_get_state(task));
 
-}
-
-/* Tries to run a task. This function is called by SD_simulate() when a
- * scheduled task becomes SD_RUNNABLE (i.e., when its dependencies are
- * satisfied).
- * If one of the workstations where the task is scheduled on is busy (in
- * sequential mode), the task doesn't start.
- * Returns whether the task has started.
- */
-int __SD_task_try_to_run(SD_task_t task)
-{
-
-  int can_start = 1;
-  int i;
-  SD_workstation_t workstation;
-
-  xbt_assert(SD_task_get_state(task) == SD_RUNNABLE,
-              "Task '%s' is not runnable! Task state: %d",
-             SD_task_get_name(task), (int)SD_task_get_state(task));
-
-
-  for (i = 0; i < task->workstation_nb; i++) {
-    can_start = can_start &&
-        !__SD_workstation_is_busy(task->workstation_list[i]);
-  }
-
-  XBT_DEBUG("Task '%s' can start: %d", SD_task_get_name(task), can_start);
-
-  if (!can_start) {             /* if the task cannot start and is not in the FIFOs yet */
-    for (i = 0; i < task->workstation_nb; i++) {
-      workstation = task->workstation_list[i];
-      if (sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-        XBT_DEBUG("Pushing task '%s' in the FIFO of workstation '%s'",
-               SD_task_get_name(task),
-               SD_workstation_get_name(workstation));
-        xbt_fifo_push(sg_host_sd(workstation)->task_fifo, task);
-      }
-    }
-    SD_task_set_state(task, SD_IN_FIFO);
-    XBT_DEBUG("Task '%s' state is now SD_IN_FIFO", SD_task_get_name(task));
-  } else {
-    __SD_task_really_run(task);
-  }
-
-  return can_start;
-}
-
-/* This function is called by SD_simulate when a task is done.
- * It updates task->state and task->action and executes if necessary the tasks
- * which were waiting in FIFOs for the end of `task'
- */
-void __SD_task_just_done(SD_task_t task)
-{
-  int i, j;
-  SD_workstation_t workstation;
-
-  SD_task_t candidate;
-  int candidate_nb = 0;
-  int candidate_capacity = 8;
-  SD_task_t *candidates;
-  int can_start = 1;
-
-  xbt_assert(SD_task_get_state(task)== SD_RUNNING,
-              "The task must be running! Task state: %d",
-              (int)SD_task_get_state(task));
-  xbt_assert(task->workstation_list != NULL,
-              "Task '%s': workstation_list is NULL!",
-              SD_task_get_name(task));
-
-
-  candidates = xbt_new(SD_task_t, 8);
-
-  SD_task_set_state(task, SD_DONE);
-  task->surf_action->unref();
-  task->surf_action = NULL;
-
-  XBT_DEBUG("Looking for candidates");
-
-  /* if the task was executed on sequential workstations,
-     maybe we can execute the next task of the FIFO for each workstation */
-  for (i = 0; i < task->workstation_nb; i++) {
-    workstation = task->workstation_list[i];
-    XBT_DEBUG("Workstation '%s': access_mode = %d",
-              SD_workstation_get_name(workstation),
-              (int)sg_host_sd(workstation)->access_mode);
-    if (sg_host_sd(workstation)->access_mode ==
-        SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-      xbt_assert(sg_host_sd(workstation)->task_fifo != NULL,
-                  "Workstation '%s' has sequential access but no FIFO!",
-                  SD_workstation_get_name(workstation));
-      xbt_assert(sg_host_sd(workstation)->current_task =
-                  task, "Workstation '%s': current task should be '%s'",
-                  SD_workstation_get_name(workstation),
-                  SD_task_get_name(task));
-
-      /* the task is over so we can release the workstation */
-      sg_host_sd(workstation)->current_task = NULL;
-
-      XBT_DEBUG("Getting candidate in FIFO");
-      candidate = (SD_task_t)
-          xbt_fifo_get_item_content(xbt_fifo_get_first_item
-                                    (sg_host_sd(workstation)->task_fifo));
-
-      if (candidate != NULL) {
-        XBT_DEBUG("Candidate: '%s'", SD_task_get_name(candidate));
-        xbt_assert(SD_task_get_state(candidate) == SD_IN_FIFO,
-                    "Bad state of candidate '%s': %d",
-                    SD_task_get_name(candidate),
-                    (int)SD_task_get_state(candidate));
-      }
-
-      XBT_DEBUG("Candidate in fifo: %p", candidate);
-
-      /* if there was a task waiting for my place */
-      if (candidate != NULL) {
-        /* Unfortunately, we are not sure yet that we can execute the task now,
-           because the task can be waiting more deeply in some other
-           workstation's FIFOs ...
-           So we memorize all candidate tasks, and then we will check for each
-           candidate whether or not all its workstations are available. */
-
-        /* realloc if necessary */
-        if (candidate_nb == candidate_capacity) {
-          candidate_capacity *= 2;
-          candidates = (SD_task_t*)
-              xbt_realloc(candidates,
-                          sizeof(SD_task_t) * candidate_capacity);
-        }
-
-        /* register the candidate */
-        candidates[candidate_nb++] = candidate;
-        candidate->fifo_checked = 0;
-      }
-    }
-  }
-
-  XBT_DEBUG("Candidates found: %d", candidate_nb);
-
-  /* now we check every candidate task */
-  for (i = 0; i < candidate_nb; i++) {
-    candidate = candidates[i];
-
-    if (candidate->fifo_checked) {
-      continue;                 /* we have already evaluated that task */
-    }
-
-    xbt_assert(SD_task_get_state(candidate) == SD_IN_FIFO,
-                "Bad state of candidate '%s': %d",
-               SD_task_get_name(candidate), (int)SD_task_get_state(candidate));
-
-    for (j = 0; j < candidate->workstation_nb && can_start; j++) {
-      workstation = candidate->workstation_list[j];
-
-      /* I can start on this workstation if the workstation is shared
-         or if I am the first task in the FIFO */
-      can_start = sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SHARED_ACCESS
-          || candidate ==
-          xbt_fifo_get_item_content(xbt_fifo_get_first_item
-                                    (sg_host_sd(workstation)->task_fifo));
-    }
-
-    XBT_DEBUG("Candidate '%s' can start: %d", SD_task_get_name(candidate),
-           can_start);
-
-    /* now we are sure that I can start! */
-    if (can_start) {
-      for (j = 0; j < candidate->workstation_nb && can_start; j++) {
-        workstation = candidate->workstation_list[j];
-
-        /* update the FIFO */
-        if (sg_host_sd(workstation)->access_mode == SD_WORKSTATION_SEQUENTIAL_ACCESS) {
-          candidate = (SD_task_t)xbt_fifo_shift(sg_host_sd(workstation)->task_fifo);   /* the return value is stored just for debugging */
-          XBT_DEBUG("Head of the FIFO: '%s' on workstation %s (%d task left)",
-                 (candidate !=
-                  NULL) ? SD_task_get_name(candidate) : "NULL",
-                  SD_workstation_get_name(workstation),
-                  xbt_fifo_size(sg_host_sd(workstation)->task_fifo));
-          xbt_assert(candidate == candidates[i],
-                      "Error in __SD_task_just_done: bad first task in the FIFO");
-
-        }
-      }                         /* for each workstation */
-
-      /* finally execute the task */
-      XBT_DEBUG("Task '%s' state: %d", SD_task_get_name(candidate),
-             (int)SD_task_get_state(candidate));
-      __SD_task_really_run(candidate);
-
-      XBT_DEBUG
-          ("Calling __SD_task_is_running: task '%s', state set: %d",
-           SD_task_get_name(candidate), candidate->state);
-      xbt_assert(SD_task_get_state(candidate) == SD_RUNNING,
-                  "Bad state of task '%s': %d",
-                  SD_task_get_name(candidate),
-                 (int)SD_task_get_state(candidate));
-      XBT_DEBUG("Okay, the task is running.");
-
-    }                           /* can start */
-    candidate->fifo_checked = 1;
-  }                             /* for each candidate */
-
-  xbt_free(candidates);
 }
 
 /* 

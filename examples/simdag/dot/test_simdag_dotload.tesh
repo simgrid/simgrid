@@ -5,7 +5,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
-> [0.000000] [sd_task/INFO]   - state:  schedulable  not runnable    
+> [0.000000] [sd_task/INFO]   - state: schedulable not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: COMP_SEQ
 > [0.000000] [sd_task/INFO]   - amount: 0
@@ -14,7 +14,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]     root->5
 > [0.000000] [sd_task/INFO]     0
 > [0.000000] [sd_task/INFO] Displaying task 0
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10000000129
@@ -24,7 +24,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     0->1
 > [0.000000] [sd_task/INFO] Displaying task 1
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10000000131
@@ -34,7 +34,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     1->2
 > [0.000000] [sd_task/INFO] Displaying task 2
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10000000121
@@ -44,7 +44,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     2->3
 > [0.000000] [sd_task/INFO] Displaying task 3
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10000000231
@@ -54,7 +54,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     4
 > [0.000000] [sd_task/INFO] Displaying task 4
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000000005
@@ -64,7 +64,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     4->5
 > [0.000000] [sd_task/INFO] Displaying task 5
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000000046
@@ -75,7 +75,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     6
 > [0.000000] [sd_task/INFO] Displaying task 6
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000000092
@@ -85,7 +85,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     6->7
 > [0.000000] [sd_task/INFO] Displaying task 7
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000000041
@@ -96,7 +96,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]     7->8
 > [0.000000] [sd_task/INFO]     7->end
 > [0.000000] [sd_task/INFO] Displaying task 8
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskC
 > [0.000000] [sd_task/INFO]   - amount: 10000000250
@@ -106,7 +106,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     9
 > [0.000000] [sd_task/INFO] Displaying task 9
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskC
 > [0.000000] [sd_task/INFO]   - amount: 10000000079
@@ -116,7 +116,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     end
 > [0.000000] [sd_task/INFO] Displaying task 0->1
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10001
@@ -126,7 +126,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     1
 > [0.000000] [sd_task/INFO] Displaying task 1->2
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10004
@@ -136,7 +136,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     2
 > [0.000000] [sd_task/INFO] Displaying task 2->3
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10002
@@ -146,7 +146,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     3
 > [0.000000] [sd_task/INFO] Displaying task 4->5
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10029
@@ -156,7 +156,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     5
 > [0.000000] [sd_task/INFO] Displaying task 6->7
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10005
@@ -166,7 +166,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     7
 > [0.000000] [sd_task/INFO] Displaying task 7->8
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000
@@ -176,7 +176,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     8
 > [0.000000] [sd_task/INFO] Displaying task 7->end
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10014000
@@ -186,7 +186,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     end
 > [0.000000] [sd_task/INFO] Displaying task root->5
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: COMM_E2E
 > [0.000000] [sd_task/INFO]   - amount: 10014000
@@ -196,7 +196,7 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     5
 > [0.000000] [sd_task/INFO] Displaying task end
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: COMP_SEQ
 > [0.000000] [sd_task/INFO]   - amount: 10000000129
@@ -248,7 +248,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
-> [0.000000] [sd_task/INFO]   - state:    runnable    
+> [0.000000] [sd_task/INFO]   - state: runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: COMP_SEQ
 > [0.000000] [sd_task/INFO]   - amount: 0
@@ -258,7 +258,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]     0
 > [0.000000] [sd_task/INFO]     1
 > [0.000000] [sd_task/INFO] Displaying task 0
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10000000129
@@ -269,7 +269,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]     0->2
 > [0.000000] [sd_task/INFO]     2
 > [0.000000] [sd_task/INFO] Displaying task 1
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10000000131
@@ -280,7 +280,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]     1->2
 > [0.000000] [sd_task/INFO]     4
 > [0.000000] [sd_task/INFO] Displaying task 2
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10000000121
@@ -293,7 +293,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]     2->3
 > [0.000000] [sd_task/INFO]     3
 > [0.000000] [sd_task/INFO] Displaying task 3
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10000000231
@@ -305,7 +305,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]     4
 > [0.000000] [sd_task/INFO]     8
 > [0.000000] [sd_task/INFO] Displaying task 4
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000000005
@@ -317,7 +317,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]     4->5
 > [0.000000] [sd_task/INFO]     5
 > [0.000000] [sd_task/INFO] Displaying task 5
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000000046
@@ -329,7 +329,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     6
 > [0.000000] [sd_task/INFO] Displaying task 6
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000000092
@@ -340,7 +340,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]     6->7
 > [0.000000] [sd_task/INFO]     7
 > [0.000000] [sd_task/INFO] Displaying task 7
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000000041
@@ -353,7 +353,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]     7->end
 > [0.000000] [sd_task/INFO]     end
 > [0.000000] [sd_task/INFO] Displaying task 8
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskC
 > [0.000000] [sd_task/INFO]   - amount: 10000000250
@@ -364,7 +364,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     9
 > [0.000000] [sd_task/INFO] Displaying task 9
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: taskC
 > [0.000000] [sd_task/INFO]   - amount: 10000000079
@@ -374,7 +374,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     end
 > [0.000000] [sd_task/INFO] Displaying task root->5
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: COMM_E2E
 > [0.000000] [sd_task/INFO]   - amount: 10014000
@@ -384,7 +384,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     5
 > [0.000000] [sd_task/INFO] Displaying task 0->2
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10001
@@ -394,7 +394,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     2
 > [0.000000] [sd_task/INFO] Displaying task 1->2
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10004
@@ -404,7 +404,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     2
 > [0.000000] [sd_task/INFO] Displaying task 2->3
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskA
 > [0.000000] [sd_task/INFO]   - amount: 10002
@@ -414,7 +414,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     3
 > [0.000000] [sd_task/INFO] Displaying task 4->5
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10029
@@ -424,7 +424,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     5
 > [0.000000] [sd_task/INFO] Displaying task 6->7
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10005
@@ -434,7 +434,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     7
 > [0.000000] [sd_task/INFO] Displaying task 7->8
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10000
@@ -444,7 +444,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     8
 > [0.000000] [sd_task/INFO] Displaying task 7->end
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: taskB
 > [0.000000] [sd_task/INFO]   - amount: 10014000
@@ -454,7 +454,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${src
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     end
 > [0.000000] [sd_task/INFO] Displaying task end
-> [0.000000] [sd_task/INFO]   - state:   scheduled not runnable    
+> [0.000000] [sd_task/INFO]   - state: scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: COMP_SEQ
 > [0.000000] [sd_task/INFO]   - amount: 10000000129

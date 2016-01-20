@@ -7,7 +7,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_daxparse/WARNING] Ignoring file o2 size redefinition from 1000000 to 304
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
-> [0.000000] [sd_task/INFO]   - state:  schedulable  not runnable    
+> [0.000000] [sd_task/INFO]   - state: schedulable not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: COMP_SEQ
 > [0.000000] [sd_task/INFO]   - amount: 0
@@ -16,7 +16,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]     root_i2_2@task2
 > [0.000000] [sd_task/INFO]     root_i1_1@task1
 > [0.000000] [sd_task/INFO] Displaying task 1@task1
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: task1
 > [0.000000] [sd_task/INFO]   - amount: 42000000000
@@ -27,7 +27,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]     3@task1
 > [0.000000] [sd_task/INFO]     1@task1_o1_3@task1
 > [0.000000] [sd_task/INFO] Displaying task 2@task2
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: task2
 > [0.000000] [sd_task/INFO]   - amount: 42000000000
@@ -38,7 +38,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]     3@task1
 > [0.000000] [sd_task/INFO]     2@task2_o2_3@task1
 > [0.000000] [sd_task/INFO] Displaying task 3@task1
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: task1
 > [0.000000] [sd_task/INFO]   - amount: 42000000000
@@ -51,7 +51,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     3@task1_o3_end
 > [0.000000] [sd_task/INFO] Displaying task root_i2_2@task2
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: COMM_E2E
 > [0.000000] [sd_task/INFO]   - amount: 1000000
@@ -61,7 +61,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     2@task2
 > [0.000000] [sd_task/INFO] Displaying task 1@task1_o1_3@task1
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: task1
 > [0.000000] [sd_task/INFO]   - amount: 1000000
@@ -71,7 +71,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     3@task1
 > [0.000000] [sd_task/INFO] Displaying task 2@task2_o2_3@task1
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: task2
 > [0.000000] [sd_task/INFO]   - amount: 1000000
@@ -81,7 +81,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     3@task1
 > [0.000000] [sd_task/INFO] Displaying task 3@task1_o3_end
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: task1
 > [0.000000] [sd_task/INFO]   - amount: 4167312
@@ -91,7 +91,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     end
 > [0.000000] [sd_task/INFO] Displaying task root_i1_1@task1
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: end-to-end communication
 > [0.000000] [sd_task/INFO]   - tracing category: COMM_E2E
 > [0.000000] [sd_task/INFO]   - amount: 1000000
@@ -101,7 +101,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     1@task1
 > [0.000000] [sd_task/INFO] Displaying task end
-> [0.000000] [sd_task/INFO]   - state: not scheduled   not runnable    
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
 > [0.000000] [sd_task/INFO]   - tracing category: COMP_SEQ
 > [0.000000] [sd_task/INFO]   - amount: 0

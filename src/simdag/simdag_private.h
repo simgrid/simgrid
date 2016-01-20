@@ -10,7 +10,6 @@
 #include "xbt/base.h"
 #include "xbt/dict.h"
 #include "xbt/dynar.h"
-#include "xbt/fifo.h"
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
 #include "xbt/mallocator.h"
@@ -44,12 +43,6 @@ extern XBT_PRIVATE SD_global_t sd_global;
 
 /* Workstation */
 typedef s_xbt_dictelm_t s_SD_workstation_t;
-typedef struct SD_workstation {
-  e_SD_workstation_access_mode_t access_mode;
-
-  xbt_fifo_t task_fifo;         /* only used in sequential mode */
-  SD_task_t current_task;       /* only used in sequential mode */
-} s_SD_workstation_priv_t, *SD_workstation_priv_t;
 
 /* Storage */
 typedef s_xbt_dictelm_t s_SD_storage_t;
@@ -76,8 +69,6 @@ typedef struct SD_task {
   surf_action_t surf_action;
   unsigned short watch_points;  /* bit field xor()ed with masks */
 
-  int fifo_checked;             /* used by SD_task_just_done to make sure we evaluate
-                                   the task only once */
   int marked;                   /* used to check if the task DAG has some cycle*/
 
   /* dependencies */
@@ -112,9 +103,7 @@ XBT_PRIVATE void __SD_workstation_destroy(void *workstation);
 XBT_PRIVATE int __SD_workstation_is_busy(SD_workstation_t workstation);
 
 XBT_PRIVATE void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
-XBT_PRIVATE void __SD_task_really_run(SD_task_t task);
-XBT_PRIVATE void __SD_task_just_done(SD_task_t task);
-XBT_PRIVATE int __SD_task_try_to_run(SD_task_t task);
+XBT_PRIVATE void SD_task_run(SD_task_t task);
 XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
 XBT_PRIVATE void uniq_transfer_task_name(SD_task_t task);
 
@@ -135,12 +124,6 @@ static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
 static XBT_INLINE int __SD_task_is_schedulable_or_done(SD_task_t task)
 {
   return task->state == SD_SCHEDULABLE || task->state == SD_DONE;
-}
-
-/* Returns whether the state of the given task is SD_RUNNABLE or SD_IN_FIFO. */
-static XBT_INLINE int __SD_task_is_runnable_or_in_fifo(SD_task_t task)
-{
-  return task->state == SD_RUNNABLE || task->state == SD_IN_FIFO;
 }
 
 /********** Storage **********/
