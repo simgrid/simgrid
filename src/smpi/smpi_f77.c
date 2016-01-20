@@ -60,158 +60,7 @@ static char* get_key_id(char* key, int id) {
   return key;
 }
 
-int smpi_comm_c2f(MPI_Comm comm) {
-  static int comm_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(comm_lookup, comm==MPI_COMM_WORLD? get_key(key, comm_id) : get_key_id(key, comm_id), comm, NULL);
-  comm_id++;
-  return comm_id-1;
-}
 
-static void free_comm(int comm) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(comm_lookup, comm==0? get_key(key, comm) : get_key_id(key, comm));
-}
-
-MPI_Comm smpi_comm_f2c(int comm) {
-  if(comm == -2) {
-    return MPI_COMM_SELF;
-  }else if(comm==0){
-    return MPI_COMM_WORLD;
-  }     else if(comm_lookup && comm >= 0) {
-
-      char key[KEY_SIZE];
-      MPI_Comm tmp =  (MPI_Comm)xbt_dict_get_or_null(comm_lookup,get_key_id(key, comm));
-      return tmp != NULL ? tmp : MPI_COMM_NULL ;
-  }
-  return MPI_COMM_NULL;
-}
-
-int smpi_group_c2f(MPI_Group group) {
-  static int group_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(group_lookup, get_key(key, group_id), group, NULL);
-  group_id++;
-  return group_id-1;
-}
-
-MPI_Group smpi_group_f2c(int group) {
-  if(group == -2) {
-    return MPI_GROUP_EMPTY;
-  } else if(group_lookup && group >= 0) {
-    char key[KEY_SIZE];
-    return (MPI_Group)xbt_dict_get_or_null(group_lookup, get_key(key, group));
-  }
-  return MPI_GROUP_NULL;
-}
-
-static void free_group(int group) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(group_lookup, get_key(key, group));
-}
-
-
-
-int smpi_request_c2f(MPI_Request req) {
-  static int request_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(request_lookup, get_key_id(key, request_id), req, NULL);
-  request_id++;
-  return request_id-1;
-}
-
-MPI_Request smpi_request_f2c(int req) {
-  char key[KEY_SIZE];
-  if(req==MPI_FORTRAN_REQUEST_NULL)return MPI_REQUEST_NULL;
-  return (MPI_Request)xbt_dict_get(request_lookup, get_key_id(key, req));
-}
-
-static void free_request(int request) {
-  char key[KEY_SIZE];
-  if(request!=MPI_FORTRAN_REQUEST_NULL)
-  xbt_dict_remove(request_lookup, get_key_id(key, request));
-}
-
-int smpi_type_c2f(MPI_Datatype datatype) {
-  static int datatype_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(datatype_lookup, get_key(key, datatype_id), datatype, NULL);
-  datatype_id++;
-  return datatype_id-1;
-}
-
-MPI_Datatype smpi_type_f2c(int datatype) {
-  char key[KEY_SIZE];
-  return datatype >= 0
-         ? (MPI_Datatype)xbt_dict_get_or_null(datatype_lookup, get_key(key, datatype))
-         : MPI_DATATYPE_NULL;
-}
-
-static void free_datatype(int datatype) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(datatype_lookup, get_key(key, datatype));
-}
-
-int smpi_op_c2f(MPI_Op op) {
-  static int op_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(op_lookup, get_key(key, op_id), op, NULL);
-  op_id++;
-  return op_id-1;
-}
-
-MPI_Op smpi_op_f2c(int op) {
-  char key[KEY_SIZE];
-   return op >= 0
-          ? (MPI_Op)xbt_dict_get_or_null(op_lookup,  get_key(key, op))
-          : MPI_OP_NULL;
-}
-
-static void free_op(int op) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(op_lookup, get_key(key, op));
-}
-
-int smpi_win_c2f(MPI_Win win) {
-  static int win_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(win_lookup, get_key(key, win_id), win, NULL);
-  win_id++;
-  return win_id-1;
-}
-
-MPI_Win smpi_win_f2c(int win) {
-  char key[KEY_SIZE];
-   return win >= 0
-          ? (MPI_Win)xbt_dict_get_or_null(win_lookup,  get_key(key, win))
-          : MPI_WIN_NULL;
-}
-
-static void free_win(int win) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(win_lookup, get_key(key, win));
-}
-
-
-int smpi_info_c2f(MPI_Info info) {
-  static int info_id = 0;
-  char key[KEY_SIZE];
-  xbt_dict_set(info_lookup, get_key(key, info_id), info, NULL);
-  info_id++;
-  return info_id-1;
-}
-
-MPI_Info smpi_info_f2c(int info) {
-  char key[KEY_SIZE];
-   return info >= 0
-          ? (MPI_Info)xbt_dict_get_or_null(info_lookup,  get_key(key, info))
-          : MPI_INFO_NULL;
-}
-
-static void free_info(int info) {
-  char key[KEY_SIZE];
-  xbt_dict_remove(info_lookup, get_key(key, info));
-}
 
 static void smpi_init_fortran_types(){
    if(!comm_lookup){
@@ -273,6 +122,167 @@ static void smpi_init_fortran_types(){
      smpi_op_c2f(MPI_BOR);
      smpi_op_c2f(MPI_BXOR);
    }
+}
+
+
+int smpi_comm_c2f(MPI_Comm comm) {
+  static int comm_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(comm_lookup, comm==MPI_COMM_WORLD? get_key(key, comm_id) : get_key_id(key, comm_id), comm, NULL);
+  comm_id++;
+  return comm_id-1;
+}
+
+static void free_comm(int comm) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(comm_lookup, comm==0? get_key(key, comm) : get_key_id(key, comm));
+}
+
+MPI_Comm smpi_comm_f2c(int comm) {
+  smpi_init_fortran_types();
+  if(comm == -2) {
+    return MPI_COMM_SELF;
+  }else if(comm==0){
+    return MPI_COMM_WORLD;
+  }     else if(comm_lookup && comm >= 0) {
+
+      char key[KEY_SIZE];
+      MPI_Comm tmp =  (MPI_Comm)xbt_dict_get_or_null(comm_lookup,get_key_id(key, comm));
+      return tmp != NULL ? tmp : MPI_COMM_NULL ;
+  }
+  return MPI_COMM_NULL;
+}
+
+int smpi_group_c2f(MPI_Group group) {
+  static int group_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(group_lookup, get_key(key, group_id), group, NULL);
+  group_id++;
+  return group_id-1;
+}
+
+MPI_Group smpi_group_f2c(int group) {
+  smpi_init_fortran_types();
+  if(group == -2) {
+    return MPI_GROUP_EMPTY;
+  } else if(group_lookup && group >= 0) {
+    char key[KEY_SIZE];
+    return (MPI_Group)xbt_dict_get_or_null(group_lookup, get_key(key, group));
+  }
+  return MPI_GROUP_NULL;
+}
+
+static void free_group(int group) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(group_lookup, get_key(key, group));
+}
+
+
+
+int smpi_request_c2f(MPI_Request req) {
+  static int request_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(request_lookup, get_key_id(key, request_id), req, NULL);
+  request_id++;
+  return request_id-1;
+}
+
+MPI_Request smpi_request_f2c(int req) {
+  smpi_init_fortran_types();
+  char key[KEY_SIZE];
+  if(req==MPI_FORTRAN_REQUEST_NULL)return MPI_REQUEST_NULL;
+  return (MPI_Request)xbt_dict_get(request_lookup, get_key_id(key, req));
+}
+
+static void free_request(int request) {
+  char key[KEY_SIZE];
+  if(request!=MPI_FORTRAN_REQUEST_NULL)
+  xbt_dict_remove(request_lookup, get_key_id(key, request));
+}
+
+int smpi_type_c2f(MPI_Datatype datatype) {
+  static int datatype_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(datatype_lookup, get_key(key, datatype_id), datatype, NULL);
+  datatype_id++;
+  return datatype_id-1;
+}
+
+MPI_Datatype smpi_type_f2c(int datatype) {
+  smpi_init_fortran_types();
+  char key[KEY_SIZE];
+  return datatype >= 0
+         ? (MPI_Datatype)xbt_dict_get_or_null(datatype_lookup, get_key(key, datatype))
+         : MPI_DATATYPE_NULL;
+}
+
+static void free_datatype(int datatype) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(datatype_lookup, get_key(key, datatype));
+}
+
+int smpi_op_c2f(MPI_Op op) {
+  static int op_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(op_lookup, get_key(key, op_id), op, NULL);
+  op_id++;
+  return op_id-1;
+}
+
+MPI_Op smpi_op_f2c(int op) {
+  smpi_init_fortran_types();
+  char key[KEY_SIZE];
+   return op >= 0
+          ? (MPI_Op)xbt_dict_get_or_null(op_lookup,  get_key(key, op))
+          : MPI_OP_NULL;
+}
+
+static void free_op(int op) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(op_lookup, get_key(key, op));
+}
+
+int smpi_win_c2f(MPI_Win win) {
+  static int win_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(win_lookup, get_key(key, win_id), win, NULL);
+  win_id++;
+  return win_id-1;
+}
+
+MPI_Win smpi_win_f2c(int win) {
+  smpi_init_fortran_types();
+  char key[KEY_SIZE];
+   return win >= 0
+          ? (MPI_Win)xbt_dict_get_or_null(win_lookup,  get_key(key, win))
+          : MPI_WIN_NULL;
+}
+
+static void free_win(int win) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(win_lookup, get_key(key, win));
+}
+
+
+int smpi_info_c2f(MPI_Info info) {
+  static int info_id = 0;
+  char key[KEY_SIZE];
+  xbt_dict_set(info_lookup, get_key(key, info_id), info, NULL);
+  info_id++;
+  return info_id-1;
+}
+
+MPI_Info smpi_info_f2c(int info) {
+  smpi_init_fortran_types();
+  char key[KEY_SIZE];
+   return info >= 0
+          ? (MPI_Info)xbt_dict_get_or_null(info_lookup,  get_key(key, info))
+          : MPI_INFO_NULL;
+}
+
+static void free_info(int info) {
+  char key[KEY_SIZE];
+  xbt_dict_remove(info_lookup, get_key(key, info));
 }
 
 
