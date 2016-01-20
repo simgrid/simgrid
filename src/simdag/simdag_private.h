@@ -116,6 +116,7 @@ XBT_PRIVATE void __SD_task_really_run(SD_task_t task);
 XBT_PRIVATE void __SD_task_just_done(SD_task_t task);
 XBT_PRIVATE int __SD_task_try_to_run(SD_task_t task);
 XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
+XBT_PRIVATE void uniq_transfer_task_name(SD_task_t task);
 
 /* Task mallocator functions */
 XBT_PRIVATE void* SD_task_new_f(void);

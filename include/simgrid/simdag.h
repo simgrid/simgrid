@@ -291,7 +291,6 @@ XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload_with_sched(const char *filename);
-XBT_PUBLIC(void) uniq_transfer_task_name(SD_task_t task);
 
 /** @} */
 
