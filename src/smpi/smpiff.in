@@ -27,7 +27,14 @@ cleanup () {
 }
 trap 'cleanup' EXIT
 
-
+filter_and_compile() {
+    list_add TMPFILES "${TMPFILE}"
+    #replace "program main_name by subroutine user\_main (and the end clause as well)"
+    sed 's/[[:space:]]\{6\}[[:space:]]*\(end \)\{0,1\}program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /gI;s/[[:space:]]*use[[:space:]]*mpi/\include \"mpif\.h\" /gI' "${ARG}" > "${TMPFILE}"
+    ORIGFILE="${ARG}"
+    SRCFILE="${TMPFILE}"
+    list_add CMDLINE "${SRCFILE}"
+}
 NEEDS_OUTPUT=1
 
 list_set CMDLINE "${F77}"
@@ -41,14 +48,13 @@ while [ $# -gt 0 ]; do
             LINKARGS=""
             list_add CMDLINE "-c"
             ;;
-        *.f|*.F)
+        *.f)
             TMPFILE=$(mymktemp "${ARG}" ".f")
-            list_add TMPFILES "${TMPFILE}"
-      #replace "program main_name by subroutine user\_main (and the end clause as well)"
-            sed 's/[[:space:]]\{6\}[[:space:]]*\(end \)\{0,1\}program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /gI;s/[[:space:]]*use[[:space:]]*mpi/\include \"mpif\.h\" /gI' "${ARG}" > "${TMPFILE}"
-            ORIGFILE="${ARG}"
-            SRCFILE="${TMPFILE}"
-            list_add CMDLINE "${SRCFILE}"
+            filter_and_compile
+            ;;
+        *.F)
+            TMPFILE=$(mymktemp "${ARG}" ".F")
+            filter_and_compile
             ;;
         '-version' | '--version')
             printf '%b\n' "$SIMGRID_VERSION"
