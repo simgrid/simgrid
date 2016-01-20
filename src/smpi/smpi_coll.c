@@ -68,8 +68,8 @@ COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
 
 s_mpi_coll_description_t mpi_coll_barrier_description[] = {
   {"default",
-   "barrier default collective",
-   smpi_mpi_barrier},
+   "barrier default collective - ompi selector",
+   smpi_coll_tuned_barrier_ompi},
 COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -97,8 +97,8 @@ COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
 
 s_mpi_coll_description_t mpi_coll_bcast_description[] = {
   {"default",
-   "bcast default collective",
-   smpi_mpi_bcast},
+   "bcast default collective - ompi selector",
+   smpi_coll_tuned_bcast_ompi},
 COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -173,188 +173,7 @@ int (*mpi_coll_reduce_fun)(void *buf, void *rbuf, int count, MPI_Datatype dataty
 int (*mpi_coll_reduce_scatter_fun)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int (*mpi_coll_scatter_fun)(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbuf, int recvcount, MPI_Datatype recvtype,int root, MPI_Comm comm);
 int (*mpi_coll_barrier_fun)(MPI_Comm comm);
-struct s_proc_tree {
-  int PROCTREE_A;
-  int numChildren;
-  int *child;
-  int parent;
-  int me;
-  int root;
-  int isRoot;
-};
-typedef struct s_proc_tree *proc_tree_t;
 
-/**
- * alloc and init
- **/
-static proc_tree_t alloc_tree(int arity)
-{
-  proc_tree_t tree;
-  int i;
-
-  tree = xbt_new(struct s_proc_tree, 1);
-  tree->PROCTREE_A = arity;
-  tree->isRoot = 0;
-  tree->numChildren = 0;
-  tree->child = xbt_new(int, arity);
-  for (i = 0; i < arity; i++) {
-    tree->child[i] = -1;
-  }
-  tree->root = -1;
-  tree->parent = -1;
-  return tree;
-}
-
-/**
- * free
- **/
-static void free_tree(proc_tree_t tree)
-{
-  xbt_free(tree->child);
-  xbt_free(tree);
-}
-
-/**
- * Build the tree depending on a process rank (index) and the group size (extent)
- * @param root the rank of the tree root
- * @param rank the rank of the calling process
- * @param size the total number of processes
- **/
-static void build_tree(int root, int rank, int size, proc_tree_t * tree)
-{
-  int index = (rank - root + size) % size;
-  int firstChildIdx = index * (*tree)->PROCTREE_A + 1;
-  int i;
-
-  (*tree)->me = rank;
-  (*tree)->root = root;
-
-  for (i = 0; i < (*tree)->PROCTREE_A && firstChildIdx + i < size; i++) {
-    (*tree)->child[i] = (firstChildIdx + i + root) % size;
-    (*tree)->numChildren++;
-  }
-  if (rank == root) {
-    (*tree)->isRoot = 1;
-  } else {
-    (*tree)->isRoot = 0;
-    (*tree)->parent = (((index - 1) / (*tree)->PROCTREE_A) + root) % size;
-  }
-}
-
-/**
- * bcast
- **/
-static void tree_bcast(void *buf, int count, MPI_Datatype datatype,
-                       MPI_Comm comm, proc_tree_t tree)
-{
-  int system_tag = COLL_TAG_BCAST;
-  int rank, i;
-  MPI_Request *requests;
-
-  rank = smpi_comm_rank(comm);
-  /* wait for data from my parent in the tree */
-  if (!tree->isRoot) {
-    XBT_DEBUG("<%d> tree_bcast(): i am not root: recv from %d, tag=%d)",
-           rank, tree->parent, system_tag + rank);
-    smpi_mpi_recv(buf, count, datatype, tree->parent, system_tag + rank,
-                  comm, MPI_STATUS_IGNORE);
-  }
-  requests = xbt_new(MPI_Request, tree->numChildren);
-  XBT_DEBUG("<%d> creates %d requests (1 per child)", rank,
-         tree->numChildren);
-  /* iniates sends to ranks lower in the tree */
-  for (i = 0; i < tree->numChildren; i++) {
-    if (tree->child[i] == -1) {
-      requests[i] = MPI_REQUEST_NULL;
-    } else {
-      XBT_DEBUG("<%d> send to <%d>, tag=%d", rank, tree->child[i],
-             system_tag + tree->child[i]);
-      requests[i] =
-          smpi_isend_init(buf, count, datatype, tree->child[i],
-                          system_tag + tree->child[i], comm);
-    }
-  }
-  smpi_mpi_startall(tree->numChildren, requests);
-  smpi_mpi_waitall(tree->numChildren, requests, MPI_STATUS_IGNORE);
-  for(i = 0; i < tree->numChildren; i++) {
-    if(requests[i]!=MPI_REQUEST_NULL) smpi_mpi_request_free(&requests[i]);
-  }
-  xbt_free(requests);
-}
-
-/**
- * anti-bcast
- **/
-static void tree_antibcast(void *buf, int count, MPI_Datatype datatype,
-                           MPI_Comm comm, proc_tree_t tree)
-{
-  int system_tag = COLL_TAG_BCAST;
-  int rank, i;
-  MPI_Request *requests;
-
-  rank = smpi_comm_rank(comm);
-  // everyone sends to its parent, except root.
-  if (!tree->isRoot) {
-    XBT_DEBUG("<%d> tree_antibcast(): i am not root: send to %d, tag=%d)",
-           rank, tree->parent, system_tag + rank);
-    smpi_mpi_send(buf, count, datatype, tree->parent, system_tag + rank,
-                  comm);
-  }
-  //every one receives as many messages as it has children
-  requests = xbt_new(MPI_Request, tree->numChildren);
-  XBT_DEBUG("<%d> creates %d requests (1 per child)", rank,
-         tree->numChildren);
-  for (i = 0; i < tree->numChildren; i++) {
-    if (tree->child[i] == -1) {
-      requests[i] = MPI_REQUEST_NULL;
-    } else {
-      XBT_DEBUG("<%d> recv from <%d>, tag=%d", rank, tree->child[i],
-             system_tag + tree->child[i]);
-      requests[i] =
-          smpi_irecv_init(buf, count, datatype, tree->child[i],
-                          system_tag + tree->child[i], comm);
-    }
-  }
-  smpi_mpi_startall(tree->numChildren, requests);
-  smpi_mpi_waitall(tree->numChildren, requests, MPI_STATUS_IGNORE);
-  for(i = 0; i < tree->numChildren; i++) {
-    if(requests[i]!=MPI_REQUEST_NULL) smpi_mpi_request_free(&requests[i]);
-  }
-  xbt_free(requests);
-}
-
-/**
- * bcast with a binary, ternary, or whatever tree ..
- **/
-void nary_tree_bcast(void *buf, int count, MPI_Datatype datatype, int root,
-                     MPI_Comm comm, int arity)
-{
-  proc_tree_t tree = alloc_tree(arity);
-  int rank, size;
-
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
-  build_tree(root, rank, size, &tree);
-  tree_bcast(buf, count, datatype, comm, tree);
-  free_tree(tree);
-}
-
-/**
- * barrier with a binary, ternary, or whatever tree ..
- **/
-void nary_tree_barrier(MPI_Comm comm, int arity)
-{
-  proc_tree_t tree = alloc_tree(arity);
-  int rank, size;
-  char dummy = '$';
-
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
-  build_tree(0, rank, size, &tree);
-  tree_antibcast(&dummy, 1, MPI_CHAR, comm, tree);
-  tree_bcast(&dummy, 1, MPI_CHAR, comm, tree);
-  free_tree(tree);
-}
 
 int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount,
                                    MPI_Datatype sendtype, void *recvbuf,

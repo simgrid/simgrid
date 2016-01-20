@@ -1086,14 +1086,14 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
 void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                     MPI_Comm comm)
 {
-  // arity=2: a binary tree, arity=4 seem to be a good setting (see P2P-MPI))
-  nary_tree_bcast(buf, count, datatype, root, comm, 4);
+  // use openMPI selector as default one, as naive one was removed
+    smpi_coll_tuned_bcast_ompi(buf, count, datatype, root, comm);
 }
 
 void smpi_mpi_barrier(MPI_Comm comm)
 {
-  // arity=2: a binary tree, arity=4 seem to be a good setting (see P2P-MPI))
-  nary_tree_barrier(comm, 4);
+  // use openMPI selector as default one, as naive one was removed
+    smpi_coll_tuned_barrier_ompi(comm);
 }
 
 void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
