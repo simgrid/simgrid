@@ -117,7 +117,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
     XBT_DEBUG("Having set router coordinates for '%s'",router->id);
   }
 
-  if (TRACE_is_enabled())
+  if (TRACE_is_enabled() && TRACE_needs_platform())
     sg_instr_new_router(router);
 }
 
