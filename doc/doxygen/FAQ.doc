@@ -498,7 +498,7 @@ libsimgrid are expressed directly in the dynamic library, so it's
 quite impossible that you see this message when doing dynamic linking.
 
 If you compile your code statically (and if you use a pthread version
-of SimGrid -- see \ref faq_more_processes), you must absolutely
+of SimGrid), you must absolutely
 specify <tt>-lpthread</tt> on the linker command line. As usual, this should
 come after <tt>-lsimgrid</tt> on this command line.
 

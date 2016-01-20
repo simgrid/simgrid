@@ -228,7 +228,7 @@ public:
   /** @brief Update the latency in seconds of current Link */
   virtual void updateLatency(double value, double date=surf_get_clock())=0;
 
-  /** @brief The sharing policy is a @{link #e_surf_link_sharing_policy_t} (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
+  /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
   virtual int sharingPolicy();
 
   /** @brief Check if the Link is used */

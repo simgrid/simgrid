@@ -66,7 +66,12 @@ foreach $type (qw(define enumeration enumvalue function typedef)) {
 	    if($type eq "function") {
 		print OUTPUT "\t<LI> $name()</LI>\n";
 	    } else {
-		print OUTPUT "\t<LI> #$name</LI>\n";
+          if($type eq "enumeration") {
+		    print OUTPUT "\t<LI> ".$name."::EType</LI>\n";
+          }
+          else {
+		    print OUTPUT "\t<LI> #$name</LI>\n";
+          }
 	    }
 	}
 	print OUTPUT "\n  </ul>\n";
