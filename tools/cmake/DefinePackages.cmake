@@ -1023,7 +1023,6 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/startKillTime/CMakeLists.txt
   examples/java/suspend/CMakeLists.txt
   examples/java/tracing/CMakeLists.txt
-  examples/lua/CMakeLists.txt
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
   examples/msg/bittorrent/CMakeLists.txt
