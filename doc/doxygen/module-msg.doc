@@ -7,8 +7,7 @@ simplification of the reality of distributed systems. It can be used to build
 rather realistic simulations, but remains simple to use: most unpleasant
 technical elements can be abstracted away rather easily.  If you want to use the
 C programming language, your are in the right section. If you prefer not to use
-this venerable but demanding language, please refer to the @ref MSG_Java, the
-@ref MSG_LUA, or the @ref MSG_Ruby (that are distributed separately).
+this venerable but demanding language, please refer to the @ref MSG_Java section.
 
 If you think that MSG may not be the interface you need, please consider the
 other user interfaces provided by SimGrid: If you want to use DAGs, have a look
@@ -156,43 +155,6 @@ Check the examples in <b>examples/msg/actions/actions.c</b> for details.
 
  */
 
-
-
-/**
-@defgroup MSG_LUA      Lua bindings
-@ingroup MSG_API
-@brief Lua bindings to MSG (\ref MSG_API)
-
-@htmlonly <!--  DOXYGEN_NAVBAR_LABEL="LUA bindings" --> @endhtmlonly
-
-This is the lua bindings of the \ref MSG_API interface.
-
-\section lMSG_who Who should use this (and who shouldn't)
-
-If you want to use MSG to study your algorithm, but you don't want to use the C
-language (using \ref MSG_API), then you should use some bindings such as this
-one. Just like the \ref MSG_Java, the advantage of the lua bindings is that they
-are distributed directly with the main archive (in contrary to Ruby bindings,
-that are distributed separately).  Another advantage of lua is that there is
-almost no performance loss with regard to the C version (at least there
-shouldn't be any -- it is still to be precisely assessed).
-
-\section MSG_Lua_funct  Lua offered functionnalities in MSG
-
-Almost all important features of the MSG interface are available from
-the lua bindings. Unfortunately, since doxygen does not support the
-lua modules implemented directly in C as we are using, there is no
-ready to use reference documentation for this module. Even more than
-for the other modules, you will have to dig into the source code of
-the examples to learn how to use it.
-
-\section Lua_examples Examples of lua MSG
-
-  - \ref MSG_ex_master_slave_lua
-  - \ref MSG_ex_master_slave_lua_bypass
-  - Also, the lua version of the Chord example (in the source tree)
-    is a working non-trivial example of use of the lua bindings
-*/
 
 /**
 @defgroup MSG_examples MSG examples

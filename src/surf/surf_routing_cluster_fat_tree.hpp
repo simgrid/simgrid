@@ -91,7 +91,10 @@ public:
 };
 
 
-/** \brief Fat tree representation and routing.
+/** 
+ * \class AsClusterFatTree
+ *
+ * \brief Fat tree representation and routing.
  *
  * Generate fat trees according to the topology asked for. Almost everything
  * is based on the work of Eitan Zahavi in "D-Mod-K Routing Providing

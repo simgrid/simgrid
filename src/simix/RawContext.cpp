@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** \file Rawcontext.cpp 
+/** \file RawContext.cpp 
   * Fast context switching inspired from SystemV ucontexts.
   *
   * In contrast to System V context, it does not touch the signal mask

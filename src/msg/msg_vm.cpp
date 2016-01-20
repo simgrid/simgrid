@@ -164,6 +164,9 @@ int MSG_vm_is_restoring(msg_vm_t vm)
 /** @brief Create a new VM with specified parameters.
  *  @ingroup msg_VMs*
  *  @param pm        Physical machine that will host the VM
+ *  @param name      [TODO]
+ *  @param ncpus     [TODO]
+ *  @param ramsize   [TODO]
  *  @param net_cap   Maximal bandwidth that the VM can consume (in MByte/s)
  *  @param disk_path (unused) Path to the image that boots
  *  @param disksize  (unused) will represent the size of the VM (will be used during migrations)

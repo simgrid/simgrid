@@ -9,14 +9,14 @@ process: Which process should be deployed to which processor/core?
 
 For the last two items, there are essentially two possible ways you can provide
 this information as an input:
-\li You can program it, either by using the Lua console (
-    \ref MSG_Lua_funct) or, if you're using MSG, some of MSG's platform and
+\li You can program, if you're using MSG, some of MSG's platform and
     deployment functions (\ref msg_simulation). If you want to use this,
     check the particular documentation. (You can also check the section
     \ref pf_flexml_bypassing, however, this documentation is deprecated;
     there is a new, but undocumented, way to do it properly).
 \li You can use two XML files: one contains the platform description while
-    the other contains the deployment instructions.
+    the other contains the deployment instructions. The platform description
+    can also be in Lua format.
 
 For more information on SimGrid's deployment features, please refer to
 the \ref deployment documentation.
@@ -344,7 +344,7 @@ state_file        | no      | string | Allows you to use a file as input for sta
 loopback_bw       | no      | int    | Bandwidth for loopback (if any). See <b>link</b> section for syntax/details. If loopback_bw and loopback_lat (see below) attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node. Loopback link is a \ref pf_sharing_policy_fatpipe "\b FATPIPE".
 loopback_lat      | no      | int    | Latency for loopback (if any). See <b>link</b> section for syntax/details. See loopback_bw for more info.
 topology          | no      | FLAT\|TORUS\|FAT_TREE (default: FLAT) | Network topology to use. SimGrid currently supports FLAT (with or without backbone, as described before), <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS </a> and FAT_TREE attributes for this tag.
-topo_parameters   | no      | string | Specific parameters to pass for the topology defined in the topology tag. For torus networks, comma-separated list of the number of nodes in each dimension of the torus. For fat trees, refer to \ref AsClusterFatTree "AsClusterFatTree documentation".
+topo_parameters   | no      | string | Specific parameters to pass for the topology defined in the topology tag. For torus networks, comma-separated list of the number of nodes in each dimension of the torus. For fat trees, refer to \ref simgrid::surf::AsClusterFatTree "AsClusterFatTree documentation".
 
 TODO
 

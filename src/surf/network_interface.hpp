@@ -84,7 +84,7 @@ public:
    * @param bw_trace The trace associated to the Link bandwidth
    * @param lat_initial The initial latency of the Link in seconds
    * @param lat_trace The trace associated to the Link latency
-   * @param state_initial The initial Link (state)[e_surf_resource_state_t]
+   * @param initiallyOn The initial Link (state)[e_surf_resource_state_t]
    * @param state_trace The trace associated to the Link (state)[e_surf_resource_state_t]
    * @param policy The sharing policy of the Link
    * @param properties Dictionary of properties associated to this Resource

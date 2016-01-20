@@ -42,13 +42,13 @@ public:
   /**
    * @brief Create a Cpu
    *
-   * @param name The name of the Cpu
+   * @param host The host that will have this CPU
    * @param speedPeak The peak spead (max speed in Flops)
    * @param pstate [TODO]
    * @param speedScale The speed scale (in [O;1] available speed from peak)
    * @param speedTrace Trace variations
    * @param core The number of core of this Cpu
-   * @param state_initial [TODO]
+   * @param initiallyOn [TODO]
    * @param state_trace [TODO]
    */
   virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
@@ -78,10 +78,12 @@ public:
    * @param model The CpuModel associated to this Cpu
    * @param host The host in which this Cpu should be plugged
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
+   * @param speedPeakList [TODO]
+   * @param pstate [TODO]
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
-   * @param stateInitial whether it is created running or crashed
+   * @param initiallyOn whether it is created running or crashed
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
     lmm_constraint_t constraint,
@@ -94,10 +96,12 @@ public:
    *
    * @param model The CpuModel associated to this Cpu
    * @param host The host in which this Cpu should be plugged
+   * @param speedPeakList [TODO]
+   * @param pstate
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
-   * @param stateInitial whether it is created running or crashed
+   * @param initiallyOn whether it is created running or crashed
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
       xbt_dynar_t speedPeakList, int pstate,

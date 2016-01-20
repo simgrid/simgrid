@@ -59,8 +59,7 @@ public:
    * @param model VMModel associated to this VM
    * @param name The name of the VM
    * @param props Dictionary of properties associated to this VM
-   * @param netElm The RoutingEdge associated to this VM
-   * @param cpu The Cpu associated to this VM
+   * @param host The host
    */
   VirtualMachine(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
 		        simgrid::s4u::Host *host);
