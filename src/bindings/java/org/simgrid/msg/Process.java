@@ -146,6 +146,8 @@ public abstract class Process implements Runnable {
 	public Process(Host host, String name, String[]args) {
 		this();
 		this.host = host;
+		if (host == null)
+			throw new NullPointerException("Process name cannot be NULL");
 		if (name == null)
 			throw new NullPointerException("Process name cannot be NULL");
 		this.name = name;
@@ -168,6 +170,8 @@ public abstract class Process implements Runnable {
 	public Process(Host host, String name, String[]args, double startTime, double killTime) {
 		this();
 		this.host = host;
+		if (host == null)
+			throw new NullPointerException("Process name cannot be NULL");
 		if (name == null)
 			throw new NullPointerException("Process name cannot be NULL");
 		this.name = name;
