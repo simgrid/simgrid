@@ -598,7 +598,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(lua);
   XBT_LOG_CONNECT(lua_host);
   XBT_LOG_CONNECT(lua_platf);
-  XBT_LOG_CONNECT(lua_utils);
+  XBT_LOG_CONNECT(lua_debug);
 #endif
 
   /* instr */

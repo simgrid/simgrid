@@ -115,8 +115,6 @@ static const luaL_Reg simgrid_functions[] = {
 /*                           module management functions                             */
 /* ********************************************************************************* */
 
-#define LUA_MAX_ARGS_COUNT 10   /* maximum amount of arguments we can get from lua on command line */
-
 /**
  * \brief Opens the simgrid Lua module.
  *
@@ -125,7 +123,6 @@ static const luaL_Reg simgrid_functions[] = {
  *
  * \param L the Lua state
  */
-
 int luaopen_simgrid(lua_State *L)
 {
   XBT_DEBUG("luaopen_simgrid *****");
