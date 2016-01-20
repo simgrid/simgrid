@@ -16,14 +16,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_workstation, sd,
                                 "Logging specific to SimDag (workstation)");
 
-/* Creates a workstation and registers it in SD.
- */
-SD_workstation_t __SD_workstation_create(const char *name)
-{
-  sg_host_t sg_host = sg_host_by_name(name);
-  return sg_host;
-}
-
 /* Creates a storage and registers it in SD.
  */
 SD_storage_t __SD_storage_create(void *surf_storage, void *data)

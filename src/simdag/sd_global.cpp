@@ -171,20 +171,11 @@ void SD_create_environment(const char *platform_file)
 
   parse_platform_file(platform_file);
 
-  /* now let's create the SD wrappers for workstations, storages and links */
-  {
-    xbt_dict_cursor_t cursor = NULL;
-    simgrid_Host* host = NULL;
-    xbt_dict_foreach(host_list, cursor, name, host){
-    	__SD_workstation_create((const char*)name);
-    }
-  }
-
+  /* now let's create the SD wrappers for storage elements */
   xbt_lib_foreach(storage_lib, cursor, name, surf_storage) {
-  if(surf_storage[SURF_STORAGE_LEVEL])
-    __SD_storage_create(surf_storage[SURF_STORAGE_LEVEL], NULL);
+    if(surf_storage[SURF_STORAGE_LEVEL])
+      __SD_storage_create(surf_storage[SURF_STORAGE_LEVEL], NULL);
   }
-
 
   XBT_DEBUG("Workstation number: %d, link number: %d",
          SD_workstation_get_count(), sg_link_count());

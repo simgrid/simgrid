@@ -98,10 +98,6 @@ typedef struct SD_dependency {
 } s_SD_dependency_t, *SD_dependency_t;
 
 /* SimDag private functions */
-XBT_PRIVATE SD_workstation_t __SD_workstation_create(const char* name);
-XBT_PRIVATE void __SD_workstation_destroy(void *workstation);
-XBT_PRIVATE int __SD_workstation_is_busy(SD_workstation_t workstation);
-
 XBT_PRIVATE void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
 XBT_PRIVATE void SD_task_run(SD_task_t task);
 XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
@@ -118,12 +114,6 @@ XBT_PRIVATE void SD_task_free_f(void *t);
 static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
 {
   return task->state == SD_SCHEDULED || task->state == SD_RUNNABLE;
-}
-
-/* Returns whether the given task is scheduled or runnable. */
-static XBT_INLINE int __SD_task_is_schedulable_or_done(SD_task_t task)
-{
-  return task->state == SD_SCHEDULABLE || task->state == SD_DONE;
 }
 
 /********** Storage **********/
