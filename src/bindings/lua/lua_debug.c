@@ -1,17 +1,24 @@
-/* Copyright (c) 2010-2014. The SimGrid Team.
- * All rights reserved.                                                     */
-
-/* This program is free software; you can redistribute it and/or modify it
+/* Copyright (c) 2010-2016. The SimGrid Team.
+ * All rights reserved.                                                     
+ *
+ * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* SimGrid Lua helper functions                                             */
 
+/*
+ * This file contains functions that aid users to debug their lua scripts; for instance,
+ * tables can be easily output and values are represented in a human-readable way. (For instance,
+ * a NULL value becomes the string "nil").
+ *
+ */
+ /* SimGrid Lua debug functions                                             */
 #include <lauxlib.h>
 #include "lua_utils.h"
 #include "xbt.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_utils, bindings, "Lua helper functions");
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_debug, bindings, "Lua helper functions");
 
 /**
  * @brief Returns a string representation of a value in the Lua stack.
@@ -33,7 +40,7 @@ const char* sglua_tostring(lua_State* L, int index) {
       sprintf(buff, "nil");
       break;
 
-    case LUA_TNUMBER:
+    case LUA_TNUMBER: 
       sprintf(buff, "%.3f", lua_tonumber(L, index));
       break;
 
@@ -70,24 +77,34 @@ const char* sglua_tostring(lua_State* L, int index) {
   return buff;
 }
 
-/**
- * @brief Returns a string representation of a key-value pair.
- *
- * This function is for debugging purposes.
- * It always returns the same pointer.
- *
- * @param L the Lua state
- * @param key_index index of the key
- * @param value_index index of the value
- * @return a string representation of the key-value pair
- */
-const char* sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index) {
+static int sglua_dump_table(lua_State* L) {
+  int argc = lua_gettop(L);
 
-  static char buff[64];
-  /* value_tostring also always returns the same pointer */
-  int len = snprintf(buff, 63, "[%s] -> ", sglua_tostring(L, key_index));
-  snprintf(buff + len, 63 - len, "%s", sglua_tostring(L, value_index));
-  return buff;
+  for (int i = 1; i < argc; i++) {
+    if (lua_istable(L, i)) {
+      lua_pushnil(L); /* table nil */
+
+      //lua_next pops the topmost element from the stack and 
+      //gets the next pair from the table
+      while (lua_next(L, -1)) { /* table key val  */
+        // we need to copy here, as a cast from "Number" to "String"
+        // could happen in Lua.
+        // see remark in the lua manual, function "lua_tolstring"
+        // http://www.lua.org/manual/5.3/manual.html#lua_tolstring
+
+        lua_pushvalue(L, -2); /* table key val key */
+
+        const char *key = lua_tostring(L, -1); /* table key val */
+        const char *val = lua_tostring(L, -1); /* table key     */
+
+        XBT_DEBUG("%s => %s", key, val);
+      }
+
+      lua_settop(L, argc); // Remove everything except the initial arguments
+    }
+  }
+
+  return 0;
 }
 
 /**
@@ -113,28 +130,43 @@ const char* sglua_get_spaces(int length) {
 }
 
 /**
+ * @brief Returns a string representation of a key-value pair.
+ *
+ * It always returns the same pointer.
+ *
+ * @param L the Lua state
+ * @param key_index index of the key (in the lua stack)
+ * @param value_index index of the value (in the lua stack)
+ * @return a string representation of the key-value pair
+ */
+const char* sglua_keyvalue_tostring(lua_State* L, int key_index, int value_index) {
+
+  static char buff[64];
+  /* value_tostring also always returns the same pointer */
+  int len = snprintf(buff, 63, "[%s] -> ", sglua_tostring(L, key_index));
+  snprintf(buff + len, 63 - len, "%s", sglua_tostring(L, value_index));
+  return buff;
+}
+
+/**
  * @brief Dumps the Lua stack if debug logs are enabled.
  * @param msg a message to print
  * @param L a Lua state
  */
-void sglua_stack_dump(const char* msg, lua_State* L)
+void sglua_stack_dump(lua_State* L, const char* msg)
 {
-  if (XBT_LOG_ISENABLED(lua_utils, xbt_log_priority_debug)) {
+  if (XBT_LOG_ISENABLED(lua_debug, xbt_log_priority_debug)) {
     char buff[2048];
     char* p = buff;
-    int i;
     int top = lua_gettop(L);
-
-    //if (1) return;
 
     fflush(stdout);
 
     p[0] = '\0';
-    for (i = 1; i <= top; i++) {  /* repeat for each level */
-
-      p += sprintf(p, "%s", sglua_tostring(L, i));
-      p += sprintf(p, " ");       /* put a separator */
+    for (int i = 1; i <= top; i++) {  /* repeat for each level */
+      p += sprintf(p, "%s ", sglua_tostring(L, i));
     }
+
     XBT_DEBUG("%s%s", msg, buff);
   }
 }
@@ -151,7 +183,7 @@ void sglua_stack_dump(const char* msg, lua_State* L)
 void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
 {
   XBT_DEBUG("Checking the userdata: ud = %d", ud);
-  sglua_stack_dump("my_checkudata: ", L);
+  sglua_stack_dump(L, "my_checkudata: ");
   void* p = lua_touserdata(L, ud);
   lua_getfield(L, LUA_REGISTRYINDEX, tname);
   const void* correct_mt = lua_topointer(L, -1);
@@ -164,7 +196,7 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
     lua_pop(L, 1);
   }
   XBT_DEBUG("Checking the task's metatable: expected %p, found %p", correct_mt, actual_mt);
-  sglua_stack_dump("my_checkudata: ", L);
+  sglua_stack_dump(L, "my_checkudata: ");
 
   if (p == NULL || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
     XBT_ERROR("Error: Userdata is NULL, couldn't find metatable or top of stack does not equal element below it.");
