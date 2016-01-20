@@ -605,6 +605,7 @@ teshsuite/smpi/mpich3-test/coll/scatter2
 teshsuite/smpi/mpich3-test/coll/scatter3
 teshsuite/smpi/mpich3-test/coll/scattern
 teshsuite/smpi/mpich3-test/coll/scatterv
+teshsuite/smpi/mpich3-test/coll/tmp*
 teshsuite/smpi/mpich3-test/coll/uoplong
 teshsuite/smpi/mpich3-test/comm/cmfree
 teshsuite/smpi/mpich3-test/comm/cmsplit
