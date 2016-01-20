@@ -66,7 +66,44 @@ static int critical(lua_State* L) {
   return 0;
 }
 
+/**
+ * @brief Dumps a lua table with XBT_DEBUG
+ *
+ * This function can be called from within lua via "simgrid.dump(table)". It will
+ * then dump the table via XBT_DEBUG 
+ */
+static int dump(lua_State* L) {
+  int argc = lua_gettop(L);
+
+  for (int i = 1; i <= argc; i++) {
+    if (lua_istable(L, i)) {
+      lua_pushnil(L); /* table nil */
+
+      //lua_next pops the topmost element from the stack and 
+      //gets the next pair from the table at the specified index
+      while (lua_next(L, i)) { /* table key val  */
+        // we need to copy here, as a cast from "Number" to "String"
+        // could happen in Lua.
+        // see remark in the lua manual, function "lua_tolstring"
+        // http://www.lua.org/manual/5.3/manual.html#lua_tolstring
+
+        lua_pushvalue(L, -2); /* table key val key */
+
+        const char *key = lua_tostring(L, -1); /* table key val key */
+        const char *val = lua_tostring(L, -2); /* table key val key */
+
+        XBT_DEBUG("%s", sglua_keyvalue_tostring(L, -1, -2));
+      }
+
+      lua_settop(L, argc); // Remove everything except the initial arguments
+    }
+  }
+
+  return 0;
+}
+
 static const luaL_Reg simgrid_functions[] = {
+  {"dump", dump},
   {"debug", debug},
   {"info", info},
   {"critical", critical},
