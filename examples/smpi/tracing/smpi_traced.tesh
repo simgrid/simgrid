@@ -24,6 +24,15 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.t
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 
+p Another SMPI test, with only -trace
+$ ../../smpi_script/bin/smpirun -trace -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+
 p Testing without trace parameters
 $ ../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
