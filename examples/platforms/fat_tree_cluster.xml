@@ -11,7 +11,7 @@ and 2 core switches connected to each leaf switch by two cables
 
 <platform version="3">
 <AS id="AS0" routing="Full">
-<cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
+<cluster id="bob_cluster" prefix="node-" suffix=".acme.org"
   radical="0-15" power="1Gf" bw="125MBps" lat="50us" topology="FAT_TREE" topo_parameters="2;4,4;1,2;1,2" 
   loopback_bw="100000000" loopback_lat="0"/>
 </AS>
