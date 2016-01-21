@@ -3,7 +3,7 @@
 p Simple test of simdag
 
 $ $SG_TEST_EXENV ./sd_test ${srcdir:=.}/../platforms/platform.xml
-> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_test/INFO] Computation time for 2000000.000000 flops on Jacquelin: 0.014563
 > [0.000000] [sd_test/INFO] Computation time for 1000000.000000 flops on Intel: 0.007282
 > [0.000000] [sd_test/INFO] Route between Jacquelin and Intel:

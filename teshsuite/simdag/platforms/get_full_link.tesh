@@ -2,7 +2,7 @@
 ! output sort
 
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd.xml FULL_LINK
-> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 4, link number: 5
 > Route between host1 and host1
 >   Route size 1
@@ -74,7 +74,7 @@ $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd.xml FULL_LINK
 >   Route latency = 0.000015, route bandwidth = 498000000.000000
 
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd_bis.xml FULL_LINK
-> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 5, link number: 7
 > Route between host1 and host1
 >   Route size 1

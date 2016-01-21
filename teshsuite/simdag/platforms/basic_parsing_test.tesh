@@ -69,11 +69,11 @@ $ ${bindir:=.}/basic_parsing_test two_hosts_one_link.xml "--log=root.fmt:[%10.6r
 > Workstation number: 2, link number: 2
 
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd.xml
-> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 4, link number: 5
 
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd_bis.xml
-> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 5, link number: 7
 
 $ ${bindir:=.}/basic_parsing_test ./properties.xml
@@ -92,11 +92,11 @@ $ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/optim:TI
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic_parsing_test ./one_cluster_file.xml
-> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 6
 
 $ ${bindir:=.}/is_router_test ./test_of_is_router.xml
-> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 10, link number: 1, elmts number: 21
 >    - Seen: "host01" is type : 1
 >    - Seen: "host02" is type : 1

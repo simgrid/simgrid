@@ -3,5 +3,5 @@
 p Simple test of simdag
 
 $ $SG_TEST_EXENV ./sd_test2 ${srcdir:=.}/2clusters.xml
-> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [3.251960] [sd_test/INFO] Simulation time: 3.251960

@@ -2,7 +2,7 @@
 
 $ simdag/availability/availability_test ${srcdir:=.}/simdag/availability/simulacrum_7_hosts.xml --cfg=path:${srcdir:=.}/simdag/availability/ ${srcdir:=.}/../examples/simdag/scheduling/Montage_25.xml --cfg=network/TCP_gamma:4194304 --log=sd_daxparse.thresh:critical
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-> [0.000000] [surf_host/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Scheduling DAX...
 > Scheduling root to node: Host 26
 > Scheduling ID00000@mProjectPP to node: Host 27
