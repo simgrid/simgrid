@@ -588,7 +588,7 @@ CpuTi::~CpuTi()
   delete p_actionSet;
 }
 
-void CpuTi::updateState(tmgr_trace_event_t event_type,
+void CpuTi::updateState(tmgr_trace_iterator_t event_type,
                         double value, double date)
 {
   CpuTiAction *action;

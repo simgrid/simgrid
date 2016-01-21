@@ -47,13 +47,13 @@ public:
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuCas01();
-  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
   CpuAction *execute(double size) override;
   CpuAction *sleep(double duration) override;
 
   bool isUsed() override;
-  void setStateEvent(tmgr_trace_event_t stateEvent);
-  void setPowerEvent(tmgr_trace_event_t stateEvent);
+  void setStateEvent(tmgr_trace_iterator_t stateEvent);
+  void setPowerEvent(tmgr_trace_iterator_t stateEvent);
 
   xbt_dynar_t getSpeedPeakList(); // FIXME: killme to hide our internals
 
@@ -62,8 +62,8 @@ protected:
 
 private:
 
-  tmgr_trace_event_t p_stateEvent;
-  tmgr_trace_event_t p_speedEvent;
+  tmgr_trace_iterator_t p_stateEvent;
+  tmgr_trace_iterator_t p_speedEvent;
 };
 
 /**********

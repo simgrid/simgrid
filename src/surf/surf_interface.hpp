@@ -25,7 +25,7 @@
 #include "src/surf/surf_private.h"
 #include "src/internal_config.h"
 
-extern XBT_PRIVATE tmgr_history_t history;
+extern XBT_PRIVATE tmgr_fes_t history;
 #define NO_MAX_DURATION -1.0
 
 /*********
@@ -366,7 +366,7 @@ private:
 typedef struct {
   double peak;              /**< The peak of the metric, ie its max value */
   double scale;             /**< Current availability of the metric according to the traces, in [0,1] */
-  tmgr_trace_event_t event; /**< The associated trace event associated to the metric */
+  tmgr_trace_iterator_t event; /**< The associated trace event associated to the metric */
 } s_surf_metric_t;
 
 namespace simgrid {
@@ -422,7 +422,7 @@ public:
    * @param value [TODO]
    * @param date [TODO]
    */
-  virtual void updateState(tmgr_trace_event_t event_type, double value, double date)=0;
+  virtual void updateState(tmgr_trace_iterator_t event_type, double value, double date)=0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool isUsed()=0;

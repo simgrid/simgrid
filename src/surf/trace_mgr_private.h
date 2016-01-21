@@ -59,16 +59,18 @@ typedef struct tmgr_trace {
   };
 } s_tmgr_trace_t;
 
-
-typedef struct tmgr_trace_event {
+/* Iterator within a trace */
+typedef struct tmgr_trace_iterator {
   tmgr_trace_t trace;
   unsigned int idx;
   void *model;
   int free_me;
 } s_tmgr_trace_event_t;
 
-typedef struct tmgr_history {
-  xbt_heap_t heap;
+/* Future Event Set (collection of iterators over the traces)
+ * That's useful to quickly know which is the next occurring event in a set of traces. */
+typedef struct tmgr_fes {
+  xbt_heap_t heap; /* Content: only trace_events */
 } s_tmgr_history_t;
 
 XBT_PRIVATE double tmgr_event_generator_next_value(probabilist_event_generator_t generator);

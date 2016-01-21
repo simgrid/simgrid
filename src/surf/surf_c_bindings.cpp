@@ -31,7 +31,7 @@ extern double NOW;
 void surf_presolve(void)
 {
   double next_event_date = -1.0;
-  tmgr_trace_event_t event = NULL;
+  tmgr_trace_iterator_t event = NULL;
   double value = -1.0;
   simgrid::surf::Resource *resource = NULL;
   simgrid::surf::Model *model = NULL;
@@ -64,7 +64,7 @@ double surf_solve(double max_date)
   double value = -1.0;
   simgrid::surf::Resource *resource = NULL;
   simgrid::surf::Model *model = NULL;
-  tmgr_trace_event_t event = NULL;
+  tmgr_trace_iterator_t event = NULL;
   unsigned int iter;
 
   if(!host_that_restart)

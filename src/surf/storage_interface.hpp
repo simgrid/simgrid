@@ -147,7 +147,7 @@ public:
    * @param value [description]
    * @param date [description]
    */
-  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
 
   void turnOn() override;
   void turnOff() override;

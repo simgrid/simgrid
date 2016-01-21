@@ -70,7 +70,7 @@ public:
   		         double bw_initial, double lat_initial);
   ~NetworkNS3Link();
 
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
+  void updateState(tmgr_trace_iterator_t event_type, double value, double date);
   double getLatency(){THROW_UNIMPLEMENTED;}
   double getBandwidth(){THROW_UNIMPLEMENTED;}
   void updateBandwidth(double value, double date=surf_get_clock()){THROW_UNIMPLEMENTED;}

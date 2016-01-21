@@ -94,15 +94,15 @@ public:
 
 class CpuL07 : public Cpu {
   friend void HostL07Model::addTraces();
-  tmgr_trace_event_t p_stateEvent;
-  tmgr_trace_event_t p_speedEvent;
+  tmgr_trace_iterator_t p_stateEvent;
+  tmgr_trace_iterator_t p_speedEvent;
 public:
   CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeakList, int pstate,
 		 double power_scale, tmgr_trace_t power_trace,
      int core, int initiallyOn, tmgr_trace_t state_trace);
   ~CpuL07();
   bool isUsed() override;
-  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
   Action *execute(double size) override;
   Action *sleep(double duration) override;
 protected:
@@ -121,13 +121,13 @@ public:
           e_surf_link_sharing_policy_t policy);
   ~LinkL07(){ };
   bool isUsed() override;
-  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
   double getBandwidth() override;
   void updateBandwidth(double value, double date=surf_get_clock()) override;
   void updateLatency(double value, double date=surf_get_clock()) override;
 
   double m_bwCurrent;
-  tmgr_trace_event_t p_bwEvent;
+  tmgr_trace_iterator_t p_bwEvent;
 };
 
 /**********

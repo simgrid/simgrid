@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 xbt_dynar_t all_existing_models = NULL; /* to destroy models correctly */
 xbt_dynar_t model_list_invoke = NULL;  /* for invoking callbacks */
 
-tmgr_history_t history = NULL;
+tmgr_fes_t history = NULL;
 lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
 xbt_dynar_t host_that_restart = NULL;

@@ -515,7 +515,7 @@ void NetworkCm02Model::addTraces(){
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
 	                           lmm_system_t system,
 	                           double constraint_value,
-	                           tmgr_history_t history,
+	                           tmgr_fes_t history,
 	                           int initiallyOn,
 	                           tmgr_trace_t state_trace,
 	                           double metric_peak,
@@ -547,22 +547,20 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
 
 
 
-void NetworkCm02Link::updateState(tmgr_trace_event_t event_type,
+void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
                                       double value, double date)
 {
-  /*   printf("[" "%g" "] Asking to update network card \"%s\" with value " */
-  /*     "%g" " for event %p\n", surf_get_clock(), nw_link->name, */
-  /*     value, event_type); */
 
-  if (event_type == p_speed.event) {
+  /* Find out which of my iterators was triggered, and react accordingly */
+  if (triggered == p_speed.event) {
     updateBandwidth(value, date);
-    if (tmgr_trace_event_free(event_type))
+    if (tmgr_trace_event_free(triggered))
       p_speed.event = NULL;
-  } else if (event_type == p_latEvent) {
+  } else if (triggered == p_latEvent) {
     updateLatency(value, date);
-    if (tmgr_trace_event_free(event_type))
+    if (tmgr_trace_event_free(triggered))
       p_latEvent = NULL;
-  } else if (event_type == p_stateEvent) {
+  } else if (triggered == p_stateEvent) {
     if (value > 0)
       turnOn();
     else {
@@ -581,7 +579,7 @@ void NetworkCm02Link::updateState(tmgr_trace_event_t event_type,
         }
       }
     }
-    if (tmgr_trace_event_free(event_type))
+    if (tmgr_trace_event_free(triggered))
       p_stateEvent = NULL;
   } else {
     XBT_CRITICAL("Unknown event ! \n");

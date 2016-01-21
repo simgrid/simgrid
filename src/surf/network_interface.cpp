@@ -201,7 +201,7 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 
 Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
 		                 lmm_constraint_t constraint,
-	                     tmgr_history_t history,
+	                     tmgr_fes_t history,
 	                     tmgr_trace_t state_trace)
 : Resource(model, name, constraint),
   PropertyHolder(props)

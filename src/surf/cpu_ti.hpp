@@ -118,7 +118,7 @@ public:
         int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuTi();
 
-  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
   void updateActionsFinishTime(double now);
   bool isUsed() override;
   CpuAction *execute(double size) override;
@@ -128,8 +128,8 @@ public:
   void modified(bool modified);
 
   CpuTiTgmr *p_availTrace;       /*< Structure with data needed to integrate trace file */
-  tmgr_trace_event_t p_stateEvent = NULL; /*< trace file with states events (ON or OFF) */
-  tmgr_trace_event_t p_speedEvent = NULL; /*< trace file with availability events */
+  tmgr_trace_iterator_t p_stateEvent = NULL; /*< trace file with states events (ON or OFF) */
+  tmgr_trace_iterator_t p_speedEvent = NULL; /*< trace file with availability events */
   ActionTiList *p_actionSet;        /*< set with all actions running on cpu */
   double m_sumPriority;          /*< the sum of actions' priority that are running on cpu */
   double m_lastUpdate = 0;       /*< last update of actions' remaining amount done */

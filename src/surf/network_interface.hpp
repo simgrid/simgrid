@@ -190,7 +190,7 @@ public:
    */
   Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
               lmm_constraint_t constraint,
-              tmgr_history_t history,
+              tmgr_fes_t history,
               tmgr_trace_t state_trace);
 
   /* Link destruction logic */
@@ -240,10 +240,10 @@ public:
   /* Using this object with the public part of
     model does not make sense */
   double m_latCurrent = 0;
-  tmgr_trace_event_t p_latEvent = NULL;
+  tmgr_trace_iterator_t p_latEvent = NULL;
 
   /* LMM */
-  tmgr_trace_event_t p_stateEvent = NULL;
+  tmgr_trace_iterator_t p_stateEvent = NULL;
   s_surf_metric_t p_speed;
 
   /* User data */

@@ -75,7 +75,7 @@ public:
   NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
 	                           lmm_system_t system,
 	                           double constraint_value,
-	                           tmgr_history_t history,
+	                           tmgr_fes_t history,
 	                           int initiallyOn,
 	                           tmgr_trace_t state_trace,
 	                           double metric_peak,
@@ -83,7 +83,7 @@ public:
 	                           double lat_initial,
 	                           tmgr_trace_t lat_trace,
                                e_surf_link_sharing_policy_t policy);
-  void updateState(tmgr_trace_event_t event_type, double value, double date) override;
+  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
   void updateBandwidth(double value, double date=surf_get_clock()) override;
   void updateLatency(double value, double date=surf_get_clock()) override;
   virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};

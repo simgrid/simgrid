@@ -166,12 +166,12 @@ CpuCas01::~CpuCas01()
     xbt_dynar_free(&p_speedPeakList);
 }
 
-void CpuCas01::setStateEvent(tmgr_trace_event_t stateEvent)
+void CpuCas01::setStateEvent(tmgr_trace_iterator_t stateEvent)
 {
   p_stateEvent = stateEvent;
 }
 
-void CpuCas01::setPowerEvent(tmgr_trace_event_t powerEvent)
+void CpuCas01::setPowerEvent(tmgr_trace_iterator_t powerEvent)
 {
   p_speedEvent = powerEvent;
 }
@@ -204,7 +204,7 @@ void CpuCas01::onSpeedChange() {
 	Cpu::onSpeedChange();
 }
 
-void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double date)
+void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, double date)
 {
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
