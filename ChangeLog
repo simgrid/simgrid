@@ -1,5 +1,20 @@
 SimGrid (3.13) UNRELEASED; urgency=low
 
+ The Easter Trim Release.
+ 
+ S4U
+ * s4u::Host is now the prefered public interface to the Host features.
+   sg_host_* functions are C bindings to the exact same behavior
+   MSG_host_* and SD_workstation_* are #define to the sg_host_* ones
+   
+ Simix
+ * simgrid::simix::kernel() is the closure callback. It ensures that
+    the lambda or closure passed as a parameter will run in kernel mode.
+   Every callbacks should be rewritten to that interface at some point.
+   
+ Surf
+ * Reorganizing and cleaning the internals all around the place.
+
  SMPI
  * BC breaks:
    - The option smpi/async_small_thres was renamed to smpi/async_small_thresh
