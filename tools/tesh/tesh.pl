@@ -33,6 +33,7 @@ they produce the expected output and return the expected value.
                         launching the tests
   --setenv var=value  : set a specific environment variable
   --cfg arg           : add parameter --cfg=arg to each command line
+  --log arg           : add parameter --log=arg to each command line
   --enable-coverage   : ignore output lines starting with "profiling:"
 
 =head1 TEST SUITE FILE SYTAX
@@ -304,6 +305,7 @@ GetOptions(
     'timeout=s' => \$opts{'timeout'},
     'setenv=s'  => sub { setenv_cmd( $_[1] ) },
     'cfg=s' => sub { $opts{'cfg'} .= " --cfg=$_[1]" },
+    'log=s' => sub { $opts{'log'} .= " --log=$_[1]" },
     'enable-coverage+' => \$enable_coverage,
 );
 
@@ -349,9 +351,11 @@ sub exec_cmd {
         $cmd{'cmd'} = var_subst( $cmd{'cmd'}, $1, "" );
     }
 
-    # add cfg options
+    # add cfg and log options
     $cmd{'cmd'} .= " $opts{'cfg'}"
       if ( defined( $opts{'cfg'} ) && length( $opts{'cfg'} ) );
+    $cmd{'cmd'} .= " $opts{'log'}"
+      if ( defined( $opts{'log'} ) && length( $opts{'log'} ) );
 
     # finally trim any remaining space chars
     $cmd{'cmd'} =~ s/^\s+//;
