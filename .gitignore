@@ -40,6 +40,7 @@ SimGrid-*.tar.gz
 simgrid.jar
 ### Unit files
 src/simgrid_units_main.c
+src/*_unit.cpp
 src/*_unit.c
 ### Generated files
 _*.c
