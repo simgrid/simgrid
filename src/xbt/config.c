@@ -14,7 +14,6 @@
 #include "xbt/ex.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
-#include "xbt/peer.h"
 
 #include <stdio.h>
 
@@ -41,12 +40,12 @@ typedef struct {
   xbt_cfg_cb_t cb_rm;
 
   /* actual content
-     (cannot be an union because type peer uses both str and i) */
+     (cannot be an union because type peer used to use both str and i, but it could be converted now) */
   xbt_dynar_t content;
 } s_xbt_cfgelm_t, *xbt_cfgelm_t;
 
 static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count] =
-    { "int", "double", "string", "boolean", "peer", "any" };
+    { "int", "double", "string", "boolean", "any" };
 
 const struct xbt_boolean_couple xbt_cfgelm_boolean_values[] = {
   { "yes",    "no"},
@@ -125,7 +124,6 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
   int ival;
   char *sval;
   double dval;
-  xbt_peer_t hval;
 
   if (name)
     printf("%s>> Dumping of the config set '%s':\n", indent, name);
@@ -167,13 +165,6 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
       for (i = 0; i < size; i++) {
         ival = xbt_dynar_get_as(variable->content, i, int);
         printf("%s    %d\n", indent, ival);
-      }
-      break;
-
-    case xbt_cfgelm_peer:
-      for (i = 0; i < size; i++) {
-        hval = xbt_dynar_get_as(variable->content, i, xbt_peer_t);
-        printf("%s    %s:%d\n", indent, hval->name, hval->port);
       }
       break;
 
@@ -231,9 +222,9 @@ xbt_cfg_register(xbt_cfg_t * cfg,
 
   if (*cfg == NULL)
     *cfg = xbt_cfg_new();
-  xbt_assert(type >= xbt_cfgelm_int && type <= xbt_cfgelm_peer,
+  xbt_assert(type >= xbt_cfgelm_int && type <= xbt_cfgelm_boolean,
               "type of %s not valid (%d should be between %d and %d)",
-             name, (int)type, xbt_cfgelm_int, xbt_cfgelm_peer);
+             name, (int)type, xbt_cfgelm_int, xbt_cfgelm_boolean);
   res = xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
 
   if (res) {
@@ -271,10 +262,6 @@ xbt_cfg_register(xbt_cfg_t * cfg,
     res->content = xbt_dynar_new(sizeof(int), NULL);
     break;
 
-  case xbt_cfgelm_peer:
-    res->content = xbt_dynar_new(sizeof(xbt_peer_t), xbt_peer_free_voidp);
-    break;
-
   default:
     XBT_ERROR("%d is an invalid type code", (int)type);
   }
@@ -305,7 +292,7 @@ void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name)
  *
  * The string may consist in several variable descriptions separated by a space.
  * Each of them must use the following syntax: \<name\>:\<min nb\>_to_\<max nb\>_\<type\>
- * with type being one of  'string','int', 'peer' or 'double'.
+ * with type being one of  'string','int' or 'double'.
  *
  * FIXME: this does not allow to set the description
  */
@@ -347,7 +334,7 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
        && strcmp(tok, xbt_cfgelm_type_name[type]); type++);
   xbt_assert(type < xbt_cfgelm_type_count,
               "Invalid type in config element descriptor: %s%s", entry,
-              "; Should be one of 'string', 'int', 'peer' or 'double'.");
+              "; Should be one of 'string', 'int' or 'double'.");
 
   xbt_cfg_register(cfg, entrycpy, NULL, type, min, max, NULL, NULL);
 
@@ -416,12 +403,6 @@ void xbt_cfg_help(xbt_cfg_t cfg)
           printf("'%s'%s", bs, sep);
         else
           printf("'%s/%d'%s", bs, b, sep);
-        break;
-      }
-
-      case xbt_cfgelm_peer: {
-        xbt_peer_t hval = xbt_dynar_get_as(variable->content, i, xbt_peer_t);
-        printf("%s:%d%s", hval->name, hval->port, sep);
         break;
       }
 
@@ -551,12 +532,6 @@ void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
   }
 
   switch (type) {
-  case xbt_cfgelm_peer:
-    str = va_arg(pa, char *);
-    i = va_arg(pa, int);
-    xbt_cfg_set_peer(cfg, name, str, i);
-    break;
-
   case xbt_cfgelm_string:
     str = va_arg(pa, char *);
     xbt_cfg_set_string(cfg, name, str);
@@ -702,8 +677,6 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
   volatile xbt_cfgelm_t variable = NULL;
   int i;
   double d;
-  char *str, *val;
-
 
   TRY {
     variable = xbt_dict_get((xbt_dict_t) cfg, key);
@@ -743,24 +716,6 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
   case xbt_cfgelm_boolean:
     xbt_cfg_set_boolean(cfg, key, value);  /* throws */
     ret = (char *)value + strlen(value);
-    break;
-
-  case xbt_cfgelm_peer:
-    val = xbt_strdup(value);
-    str = val;
-    val = strchr(val, ':');
-    if (!val) {
-      xbt_die("Value of option %s not valid. Should be an peer (machine:port)", key);
-    }
-
-    *(val++) = '\0';
-    i = strtol(val, &ret, 0);
-    if (ret == val) {
-      xbt_die("Value of option %s not valid. Should be an peer (machine:port)", key);
-    }
-
-    xbt_cfg_set_peer(cfg, key, str, i);    /* throws */
-    free(val);
     break;
 
   default:
@@ -847,26 +802,6 @@ void xbt_cfg_setdefault_boolean(xbt_cfg_t cfg, const char *name, const char *val
     XBT_DEBUG
         ("Do not override configuration variable '%s' with value '%s' because it was already set.",
          name, val);
-}
-
-/** @brief Set a peer value to \a name within \a cfg if it wasn't changed yet
- *
- * This is useful to change the default value of a variable while allowing
- * users to override it with command line arguments
- */
-void xbt_cfg_setdefault_peer(xbt_cfg_t cfg, const char *name,
-                             const char *host, int port)
-{
-  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
-
-  if (variable->isdefault){
-    xbt_cfg_set_peer(cfg, name, host, port);
-    variable->isdefault = 1;
-  }
-  else
-    XBT_DEBUG
-        ("Do not override configuration variable '%s' with value '%s:%d' because it was already set.",
-         name, host, port);
 }
 
 /** @brief Set or add an integer value to \a name within \a cfg
@@ -1031,47 +966,6 @@ void xbt_cfg_set_boolean(xbt_cfg_t cfg, const char *name, const char *val)
   variable->isdefault = 0;
 }
 
-/** @brief Set or add an peer value to \a name within \a cfg
- *
- * @param cfg the config set
- * @param name the name of the variable
- * @param peer the peer
- * @param port the port number
- *
- * \e peer values are composed of a string (peername) and an integer (port)
- */
-
-void
-xbt_cfg_set_peer(xbt_cfg_t cfg, const char *name, const char *peer,
-                 int port)
-{
-  xbt_cfgelm_t variable;
-  xbt_peer_t val = xbt_peer_new(peer, port);
-
-  XBT_VERB("Configuration setting: %s=%s:%d", name, peer, port);
-
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
-
-  if (variable->max == 1) {
-    if (variable->cb_rm && !xbt_dynar_is_empty(variable->content))
-      variable->cb_rm(name, 0);
-
-    xbt_dynar_set(variable->content, 0, &val);
-  } else {
-    if (variable->max
-        && xbt_dynar_length(variable->content) == variable->max)
-      THROWF(mismatch_error, 0,
-             "Cannot add value %s:%d to the config element %s since it's already full (size=%d)",
-             peer, port, name, variable->max);
-
-    xbt_dynar_push(variable->content, &val);
-  }
-
-  if (variable->cb_set)
-    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
-  variable->isdefault = 0;
-}
-
 /* ---- [ Removing ] ---- */
 
 /** @brief Remove the provided \e val integer value from a variable
@@ -1207,43 +1101,6 @@ void xbt_cfg_rm_boolean(xbt_cfg_t cfg, const char *name, int val)
   THROWF(not_found_error, 0,
          "Can't remove the value %d of config element %s: value not found.",
          val, name);
-}
-
-/** @brief Remove the provided \e val peer value from a variable
- *
- * @param cfg the config set
- * @param name the name of the variable
- * @param peer the peername
- * @param port the port number
- */
-
-void
-xbt_cfg_rm_peer(xbt_cfg_t cfg, const char *name, const char *peer,
-                int port)
-{
-  xbt_cfgelm_t variable;
-  unsigned int cpt;
-  xbt_peer_t seen;
-
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
-
-  if (xbt_dynar_length(variable->content) == variable->min)
-    THROWF(mismatch_error, 0,
-           "Cannot remove value %s:%d from the config element %s since it's already at its minimal size (=%d)",
-           peer, port, name, variable->min);
-
-  xbt_dynar_foreach(variable->content, cpt, seen) {
-    if (!strcpy(seen->name, peer) && seen->port == port) {
-      if (variable->cb_rm)
-        variable->cb_rm(name, cpt);
-      xbt_dynar_cursor_rm(variable->content, &cpt);
-      return;
-    }
-  }
-
-  THROWF(not_found_error, 0,
-         "Can't remove the value %s:%d of config element %s: value not found.",
-         peer, port, name);
 }
 
 /** @brief Remove the \e pos th value from the provided variable */
@@ -1411,39 +1268,6 @@ int xbt_cfg_get_boolean(xbt_cfg_t cfg, const char *name)
   return xbt_dynar_get_as(variable->content, 0, int);
 }
 
-/** @brief Retrieve an peer value of a variable (get a warning if not uniq)
- *
- * @param cfg the config set
- * @param name the name of the variable
- * @param peer the peer
- * @param port the port number
- *
- * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using
- * xbt_cfg_get_dynar() instead.
- *
- * \warning the returned value is the actual content of the config set
- */
-
-void xbt_cfg_get_peer(xbt_cfg_t cfg, const char *name, char **peer,
-                      int *port)
-{
-  xbt_cfgelm_t variable;
-  xbt_peer_t val;
-
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_peer);
-
-  if (xbt_dynar_length(variable->content) > 1) {
-    XBT_WARN
-        ("You asked for the first value of the config element '%s', but there is %lu values\n",
-         name, xbt_dynar_length(variable->content));
-  }
-
-  val = xbt_dynar_get_as(variable->content, 0, xbt_peer_t);
-  *peer = val->name;
-  *port = val->port;
-}
-
 /** @brief Retrieve the dynar of all the values stored in a variable
  *
  * @param cfg where to search in
@@ -1505,19 +1329,6 @@ int xbt_cfg_get_boolean_at(xbt_cfg_t cfg, const char *name, int pos)
 
   xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
   return xbt_dynar_get_as(variable->content, pos, int);
-}
-
-/** @brief Retrieve one of the peer value of a variable */
-void
-xbt_cfg_get_peer_at(xbt_cfg_t cfg, const char *name, int pos,
-                    char **peer, int *port)
-{
-
-  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
-  xbt_peer_t val = xbt_dynar_get_ptr(variable->content, pos);
-
-  *port = val->port;
-  *peer = val->name;
 }
 
 

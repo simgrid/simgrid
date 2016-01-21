@@ -1061,11 +1061,6 @@ int sg_cfg_get_boolean(const char* name)
   return xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
 
-void sg_cfg_get_peer(const char *name, char **peer, int *port)
-{
-  xbt_cfg_get_peer(_sg_cfg_set, name, peer, port);
-}
-
 xbt_dynar_t sg_cfg_get_dynar(const char* name)
 {
   return xbt_cfg_get_dynar(_sg_cfg_set, name);

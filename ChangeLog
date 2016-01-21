@@ -21,8 +21,9 @@ SimGrid (3.13) UNRELEASED; urgency=low
      as we attempt to unify our naming schemes -> smpi/send_is_detached_thresh
 
  XBT
- * Kill the setset datacontainer: it's unused since a while.
- * Kill the queue datacontainer: it made more sense with GRAS.
+ * Kill the setset data container: MC don't use it anymore.
+ * Kill the queue data container: it made more sense with GRAS.
+ * Kill the xbt_peer_t data type: it's useless without GRAS.
  
  JAVA:
  * Remove the ability to write internal plugins in Java. 
