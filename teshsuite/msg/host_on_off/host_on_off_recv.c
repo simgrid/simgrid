@@ -31,15 +31,13 @@ int master(int argc, char *argv[])
     MSG_process_sleep(0.5);
 
     msg_comm_t comm = NULL;
-    if (1) {
+    {
       msg_task_t task = MSG_task_create("COMM", 0, 100000000, NULL);
       comm = MSG_task_isend(task, mailbox);
     }
 
-    if(MSG_process_sleep(0.5)) {
-      XBT_ERROR("Unexpected error while sleeping");
-      return 1;
-    }
+    MSG_process_sleep(0.5);
+
     XBT_INFO("Turning off the slave host");
     MSG_host_off(jupiter);
 
@@ -95,15 +93,14 @@ int main(int argc, char *argv[])
   platform_file = argv[1];
   application_file = argv[2];
 
-  {                             /*  Simulation setting */
-    MSG_create_environment(platform_file);
-  }
-  {                             /*   Application deployment */
-    MSG_function_register("master", master);
-    MSG_function_register("slave", slave);
+  /*  Simulation setting */
+  MSG_create_environment(platform_file);
+  
+  /*   Application deployment */
+  MSG_function_register("master", master);
+  MSG_function_register("slave", slave);
+  MSG_launch_application(application_file);
 
-    MSG_launch_application(application_file);
-  }
   res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());

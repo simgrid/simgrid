@@ -25,10 +25,7 @@ int master(int argc, char *argv[])
   TRY {
     msg_host_t jupiter = MSG_host_by_name("Jupiter");
     XBT_INFO("Master waiting");
-    if(MSG_process_sleep(1)) {
-      XBT_ERROR("Unexpected error while sleeping");
-      return 1;
-    }
+    MSG_process_sleep(1);
 
     XBT_INFO("Turning off the slave host");
     MSG_host_off(jupiter);
