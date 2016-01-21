@@ -22,6 +22,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
 
  XBT
  * Kill the setset datacontainer: it's unused since a while.
+ * Kill the queue datacontainer: it made more sense with GRAS.
  
  JAVA:
  * Remove the ability to write internal plugins in Java. 

@@ -284,7 +284,6 @@ set(XBT_SRC
   src/xbt/xbt_os_time.c
   src/xbt/xbt_os_file.c
   src/xbt/xbt_peer.c
-  src/xbt/xbt_queue.c
   src/xbt/xbt_replay.c
   src/xbt/xbt_sg_synchro.c
   src/xbt/xbt_sha.c
@@ -718,7 +717,6 @@ set(headers_to_install
   include/xbt/module.h
   include/xbt/parmap.h
   include/xbt/peer.h
-  include/xbt/queue.h
   include/xbt/replay.h
   include/xbt/set.h
   include/xbt/str.h
