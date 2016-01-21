@@ -16,6 +16,7 @@
 #include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
+XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 
 /**************************************/
 /*** Resource Creation & Destruction **/
@@ -29,7 +30,7 @@ static void ptask_netlink_parse_init(sg_platf_link_cbarg_t link)
 
 void surf_host_model_init_ptask_L07(void)
 {
-  XBT_INFO("Switching to the L07 model to handle parallel tasks.");
+  XBT_CINFO(xbt_cfg,"Switching to the L07 model to handle parallel tasks.");
   xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
   xbt_assert(!surf_network_model, "network model type already defined");
 
