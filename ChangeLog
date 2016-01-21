@@ -19,6 +19,8 @@ SimGrid (3.13) UNRELEASED; urgency=low
  * BC breaks:
    - The option smpi/async_small_thres was renamed to smpi/async_small_thresh
      as we attempt to unify our naming schemes -> smpi/send_is_detached_thresh
+ * Remove old default barrier/bcast buggy algorithms (see #18407)
+ * Various bugfixes to handle more codes
 
  XBT
  * Kill the setset data container: MC don't use it anymore.
