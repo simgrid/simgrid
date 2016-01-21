@@ -35,7 +35,7 @@ public class Task {
 	 * * Constructors * *
 	 * *              * */
 	/**
-	 * Construct an new task with the specified processing amount and amount
+	 * Construct a new task with the specified processing amount and amount
 	 * of data needed.
 	 *
 	 * @param name	Task's name
@@ -53,7 +53,7 @@ public class Task {
 		this.messageSize = bytesAmount;
 	}
 	/**
-	 * Construct an new parallel task with the specified processing amount and amount for each host
+	 * Construct a new parallel task with the specified processing amount and amount for each host
 	 * implied.
 	 *
 	 * @param name		The name of the parallel task.
@@ -68,7 +68,7 @@ public class Task {
 	/**
 	 * The natively implemented method to create a MSG task.
 	 *
-	 * @param name            The name of th task.
+	 * @param name            The name of the task.
 	 * @param flopsAmount    A value of the processing amount (in flop) needed 
 	 *                        to process the task. If 0, then it cannot be executed
 	 *                        with the execute() method. This value has to be >= 0.
@@ -100,7 +100,7 @@ public class Task {
 	/* *                   * *
 	 * * Getters / Setters * *
 	 * *                   * */
-	/** Gets the name of a task */
+	/** Gets the name of the task */
 	public String getName() {
 		return name;
 	}
