@@ -62,7 +62,7 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file s
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
-> [0.006875] [instr_config/INFO] No categories declared, ignoring generation of viva graph configuration
+> [0.003952] [instr_config/INFO] No categories declared, ignoring generation of viva graph configuration
 
 p Testing with parameters but without activating them with the safe switch (-trace)
 $ ../../smpi_script/bin/smpirun -trace-resource -trace-viva -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
