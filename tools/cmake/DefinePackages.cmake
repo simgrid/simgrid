@@ -1008,6 +1008,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/bittorrent/CMakeLists.txt
   examples/java/chord/CMakeLists.txt
   examples/java/cloud/CMakeLists.txt
+  examples/java/cloud/energy/CMakeLists.txt
   examples/java/cloud/migration/CMakeLists.txt
   examples/java/commTime/CMakeLists.txt
   examples/java/energy/CMakeLists.txt

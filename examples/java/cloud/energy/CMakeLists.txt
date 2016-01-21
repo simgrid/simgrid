@@ -19,7 +19,7 @@ endif()
 
 set(tesh_files
   ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/energyVM.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/energy.tesh
   PARENT_SCOPE
   )
 set(xml_files
@@ -36,7 +36,6 @@ set(bin_files
   PARENT_SCOPE
   )
 set(txt_files
-  ${CMAKE_CURRENT_SOURCE_DIR}/README
   ${txt_files}
   PARENT_SCOPE
   )
