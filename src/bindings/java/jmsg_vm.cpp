@@ -168,6 +168,7 @@ Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm) {
   msg_host_t host = MSG_vm_get_pm(vm);
 
   if (!host->extension(JAVA_HOST_LEVEL)) {
+    THROW_DEADCODE;
     /* the native host not yet associated with the java host instance */
 
     /* instanciate a new java host instance */

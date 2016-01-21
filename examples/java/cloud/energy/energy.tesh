@@ -1,0 +1,16 @@
+#! tesh
+
+$ java -classpath ${classpath:=.} cloud/energy/Main ${srcdir:=.}/../platforms/energy_platform.xml
+> [0.000000] [jmsg/INFO] Using regular java threads.
+> [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Creating and starting two VMs
+> [0.000000] [surf_vm/INFO] Create VM(vmHost1)@PM(MyHost1) with 0 mounted disks
+> [0.000000] [surf_vm/INFO] Create VM(vmHost3)@PM(MyHost3) with 0 mounted disks
+> [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Create two tasks on Host1: one inside a VM, the other directly on the host
+> [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Create two tasks on Host2: both directly on the host
+> [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Create two tasks on Host3: both inside a VM
+> [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, so they run for 6 seconds)
+> [MyHost1:energy VM runner:(1) 5.000000] [jmsg/INFO] Wait another 5 seconds. The tasks stop at some point in between
+> [10.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [10.000000] [surf_energy/INFO] Total energy of host MyHost1: 1000.000000 Joules
+> [10.000000] [surf_energy/INFO] Total energy of host MyHost2: 1000.000000 Joules
+> [10.000000] [surf_energy/INFO] Total energy of host MyHost3: 1000.000000 Joules
