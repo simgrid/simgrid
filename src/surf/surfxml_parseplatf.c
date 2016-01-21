@@ -98,17 +98,7 @@ void parse_platform_file(const char *file)
    * written in lua). If not, we will use the (old?) XML parser
    */
   if (is_lua) {
-    // NOTE: After executing the lua_pcall() below,
-    // sglua_get_maestro() will not be NULL, since the
-    // SimGrid module was loaded!
-    // C. Heinrich 01/2016: Not sure if this is still required after I
-    // ripped out most of that bloody Lua simulation stuff. We may
-    // want to check and maybe we can clean that up.
-    lua_State* L;
-
-    if (L == NULL) {
-        L = luaL_newstate();
-    }
+    lua_State* L = luaL_newstate();
     luaL_openlibs(L);
 
     luaL_loadfile(L, file); // This loads the file without executing it.

@@ -89,9 +89,6 @@ static int dump(lua_State* L) {
 
         lua_pushvalue(L, -2); /* table key val key */
 
-        const char *key = lua_tostring(L, -1); /* table key val key */
-        const char *val = lua_tostring(L, -2); /* table key val key */
-
         XBT_DEBUG("%s", sglua_keyvalue_tostring(L, -1, -2));
       }
 
