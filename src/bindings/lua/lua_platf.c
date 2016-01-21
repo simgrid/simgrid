@@ -579,33 +579,33 @@ void sglua_register_platf_functions(lua_State* L)
   lua_pop(L, 1);                   /* -- */
 }
 
-void sglua_register_routing_constants(lua_State* L)
-{
-  lua_getglobal(L, "simgrid");     /* simgrid */
-  lua_newtable(L);                 /* simgrid simgrid.routing */
-
-  lua_pushstring(L, "Cluster");    /* simgrid simgrid.routing Cluster */
-  lua_setfield(L, -2, "CLUSTER");     /* simgrid simgrid.routing */
-
-  lua_pushstring(L, "Dijkstra");    /* simgrid simgrid.routing Dijkstra */
-  lua_setfield(L, -2, "DIJKSTRA");     /* simgrid simgrid.routing */
-
-  lua_pushstring(L, "DijkstraCache");    /* simgrid simgrid.routing DijkstraCache */
-  lua_setfield(L, -2, "DIJKSTRA_CACHE");     /* simgrid simgrid.routing */
-
-  lua_pushstring(L, "Floyd");    /* simgrid simgrid.routing Floyd */
-  lua_setfield(L, -2, "FLOYD");     /* simgrid simgrid.routing */
-
-  lua_pushstring(L, "Full");       /* simgrid simgrid.routing Full */
-  lua_setfield(L, -2, "FULL");     /* simgrid simgrid.routing */
-
-  lua_pushstring(L, "None");    /* simgrid simgrid.routing None */
-  lua_setfield(L, -2, "NONE");     /* simgrid simgrid.routing */
-
-  lua_pushstring(L, "Vivaldi");    /* simgrid simgrid.routing Vivaldi */
-  lua_setfield(L, -2, "FULL");     /* simgrid simgrid.routing */
-
-  lua_setfield(L, -2, "routing");  /* simgrid */
-
-  lua_pop(L, 1);                   /* -- */
-}
+//void sglua_register_routing_constants(lua_State* L)
+//{
+//  lua_getglobal(L, "simgrid");     /* simgrid */
+//  lua_newtable(L);                 /* simgrid simgrid.routing */
+//
+//  lua_pushstring(L, "Cluster");    /* simgrid simgrid.routing Cluster */
+//  lua_setfield(L, -2, "CLUSTER");     /* simgrid simgrid.routing */
+//
+//  lua_pushstring(L, "Dijkstra");    /* simgrid simgrid.routing Dijkstra */
+//  lua_setfield(L, -2, "DIJKSTRA");     /* simgrid simgrid.routing */
+//
+//  lua_pushstring(L, "DijkstraCache");    /* simgrid simgrid.routing DijkstraCache */
+//  lua_setfield(L, -2, "DIJKSTRA_CACHE");     /* simgrid simgrid.routing */
+//
+//  lua_pushstring(L, "Floyd");    /* simgrid simgrid.routing Floyd */
+//  lua_setfield(L, -2, "FLOYD");     /* simgrid simgrid.routing */
+//
+//  lua_pushstring(L, "Full");       /* simgrid simgrid.routing Full */
+//  lua_setfield(L, -2, "FULL");     /* simgrid simgrid.routing */
+//
+//  lua_pushstring(L, "None");    /* simgrid simgrid.routing None */
+//  lua_setfield(L, -2, "NONE");     /* simgrid simgrid.routing */
+//
+//  lua_pushstring(L, "Vivaldi");    /* simgrid simgrid.routing Vivaldi */
+//  lua_setfield(L, -2, "FULL");     /* simgrid simgrid.routing */
+//
+//  lua_setfield(L, -2, "routing");  /* simgrid */
+//
+//  lua_pop(L, 1);                   /* -- */
+//}
