@@ -68,8 +68,8 @@ COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
 
 s_mpi_coll_description_t mpi_coll_barrier_description[] = {
   {"default",
-   "barrier default collective - ompi selector",
-   smpi_coll_tuned_barrier_ompi},
+   "barrier default collective",
+   smpi_mpi_barrier},
 COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -97,8 +97,8 @@ COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
 
 s_mpi_coll_description_t mpi_coll_bcast_description[] = {
   {"default",
-   "bcast default collective - ompi selector",
-   smpi_coll_tuned_bcast_ompi},
+   "bcast default collective ",
+   smpi_mpi_bcast},
 COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };

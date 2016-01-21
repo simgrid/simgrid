@@ -1086,14 +1086,12 @@ int smpi_mpi_testsome(int incount, MPI_Request requests[], int *indices,
 void smpi_mpi_bcast(void *buf, int count, MPI_Datatype datatype, int root,
                     MPI_Comm comm)
 {
-  // use openMPI selector as default one, as naive one was removed
-    smpi_coll_tuned_bcast_ompi(buf, count, datatype, root, comm);
+    smpi_coll_tuned_bcast_binomial_tree(buf, count, datatype, root, comm);
 }
 
 void smpi_mpi_barrier(MPI_Comm comm)
 {
-  // use openMPI selector as default one, as naive one was removed
-    smpi_coll_tuned_barrier_ompi(comm);
+    smpi_coll_tuned_barrier_ompi_basic_linear(comm);
 }
 
 void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
