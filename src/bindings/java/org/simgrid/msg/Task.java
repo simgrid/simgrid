@@ -58,8 +58,13 @@ public class Task {
 	 *
 	 * @param name		The name of the parallel task.
 	 * @param hosts		The list of hosts implied by the parallel task.
-	 * @param flopsAmount	The amount of operations to be performed by each host of \a hosts.
-	 * @param bytesAmount	A matrix describing the amount of data to exchange between hosts.
+	 * @param flopsAmount	The amount of operations to be performed by each host of hosts. 
+	 *                      flopsAmount[i] is the total number of operations that have to be 
+	 *                      performed on hosts[i].
+	 * @param bytesAmount	A matrix describing the amount of data to exchange between hosts. The 
+	 *                      length of this array must be hosts.length * hosts.length. It is actually 
+	 *                      used as a matrix with the lines being the source and the columns being 
+	 *                      the destination of the communications.
 	 */ 
 	public Task(String name, Host[]hosts, double[]flopsAmount, double[]bytesAmount) {
 		parallelCreate(name, hosts, flopsAmount, bytesAmount);
@@ -86,7 +91,7 @@ public class Task {
 	 * The natively implemented method to create a MSG parallel task.
 	 *
 	 * @param name                The name of the parallel task.
-	 * @param hosts                The list of hosts implied by the parallel task.
+	 * @param hosts               The list of hosts implied by the parallel task.
 	 * @param flopsAmount         The total number of operations that have to be performed
 	 *                            on the hosts.
 	 * @param bytesAmount        An array of doubles
