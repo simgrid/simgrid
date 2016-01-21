@@ -63,7 +63,7 @@ typedef struct tmgr_trace {
 typedef struct tmgr_trace_iterator {
   tmgr_trace_t trace;
   unsigned int idx;
-  void *model;
+  void *resource;
   int free_me;
 } s_tmgr_trace_event_t;
 

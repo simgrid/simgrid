@@ -386,14 +386,14 @@ XBT_INLINE void tmgr_trace_free(tmgr_trace_t trace)
 tmgr_trace_iterator_t tmgr_history_add_trace(tmgr_fes_t h,
                                           tmgr_trace_t trace,
                                           double start_time,
-                                          unsigned int offset, void *model)
+                                          unsigned int offset, void *resource)
 {
   tmgr_trace_iterator_t trace_iterator = NULL;
 
   trace_iterator = xbt_new0(s_tmgr_trace_event_t, 1);
   trace_iterator->trace = trace;
   trace_iterator->idx = offset;
-  trace_iterator->model = model;
+  trace_iterator->resource = resource;
 
   if(trace->type == e_trace_list) {
     xbt_assert((trace_iterator->idx < xbt_dynar_length(trace->s_list.event_list)),
@@ -416,7 +416,7 @@ XBT_INLINE double tmgr_history_next_date(tmgr_fes_t h)
 tmgr_trace_iterator_t tmgr_history_get_next_event_leq(tmgr_fes_t h,
                                                    double date,
                                                    double *value,
-                                                   void **model)
+                                                   void** resource)
 {
   double event_date = tmgr_history_next_date(h);
   tmgr_trace_iterator_t trace_iterator = NULL;
@@ -431,7 +431,7 @@ tmgr_trace_iterator_t tmgr_history_get_next_event_leq(tmgr_fes_t h,
     return NULL;
 
   trace = trace_iterator->trace;
-  *model = trace_iterator->model;
+  *resource = trace_iterator->resource;
 
   switch(trace->type) {
     case e_trace_list:
