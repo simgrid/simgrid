@@ -14,8 +14,7 @@
 #include <ctype.h>
 #include <lauxlib.h>
 
-#include "src/msg/msg_private.h"
-#include "src/simix/smx_host_private.h"
+#include <simgrid/host.h>
 #include "src/surf/surf_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_platf, bindings, "Lua bindings (platform module)");
@@ -555,12 +554,12 @@ int console_host_set_property(lua_State *L) {
   prop_value = lua_tostring(L,-1);
   lua_pop(L, 1);
 
-  msg_host_t host = MSG_host_by_name(name);
+  sg_host_t host = sg_host_by_name(name);
   if (!host) {
     XBT_ERROR("no host '%s' found",name);
     return -1;
   }
-  xbt_dict_t props = MSG_host_get_properties(host);
+  xbt_dict_t props = sg_host_get_properties(host);
   xbt_dict_set(props,prop_id,xbt_strdup(prop_value),NULL);
 
   return 0;

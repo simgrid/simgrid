@@ -8,27 +8,32 @@
 
 #include "lua_private.h"
 #include <lauxlib.h>
+#include <simgrid/host.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_host, bindings, "Lua bindings (host module)");
 
 #define HOST_MODULE_NAME "simgrid.host"
-
+#define HOST_FIELDNAME   "__simgrid_host"
 /* ********************************************************************************* */
 /*                                simgrid.host API                                   */
 /* ********************************************************************************* */
 
 /**
  * \brief Ensures that a value in the stack is a host and returns it.
+ *
+ * This function is called from C and helps to verify that a specific
+ * userdatum on the stack is in fact a sg_host_t.
+ *
  * \param L a Lua state
  * \param index an index in the Lua stack
  * \return the C host corresponding to this Lua host
  */
-msg_host_t sglua_check_host(lua_State * L, int index)
+sg_host_t sglua_check_host(lua_State * L, int index)
 {
-  msg_host_t *pi, ht;
+  sg_host_t *pi, ht;
   luaL_checktype(L, index, LUA_TTABLE);
-  lua_getfield(L, index, "__simgrid_host");
-  pi = (msg_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
+  lua_getfield(L, index, HOST_FIELDNAME);
+  pi = (sg_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
   if (pi == NULL)
     XBT_ERROR("luaL_checkudata() returned NULL");
   ht = *pi;
@@ -39,27 +44,30 @@ msg_host_t sglua_check_host(lua_State * L, int index)
 }
 
 /**
- * \brief Returns a host given its name.
+ * \brief Returns a host given its name. This is a lua function.
+ *
  * \param L a Lua state
  * \return number of values returned to Lua
  *
  * - Argument 1 (string): name of a host
- * - Return value (host): the corresponding host
+ * - Return value (host): the corresponding host will be pushed onto the stack
  */
 static int l_host_get_by_name(lua_State * L)
 {
   const char *name = luaL_checkstring(L, 1);
-  XBT_DEBUG("Getting Host from name...");
-  msg_host_t msg_host = MSG_host_by_name(name);
-  if (!msg_host) {
-    XBT_ERROR("MSG_get_host_by_name failed, requested hostname: %s", name);
+  XBT_DEBUG("Getting host by name...");
+  sg_host_t host = sg_host_by_name(name);
+  if (!host) {
+    XBT_ERROR("sg_get_host_by_name failed, requested hostname: %s", name);
   }
-  lua_newtable(L);              /* create a table, put the userdata on top of it */
-  msg_host_t *lua_host = (msg_host_t *) lua_newuserdata(L, sizeof(msg_host_t));
-  *lua_host = msg_host;
-  luaL_getmetatable(L, HOST_MODULE_NAME);
-  lua_setmetatable(L, -2);
-  lua_setfield(L, -2, "__simgrid_host");        /* put the userdata as field of the table */
+  lua_newtable(L);                        /* table */
+  sg_host_t *lua_host = (sg_host_t *) lua_newuserdata(L, sizeof(sg_host_t));
+                                          /* table userdatum */
+  *lua_host = host;
+  luaL_getmetatable(L, HOST_MODULE_NAME); /* table userdatum metatable */
+  lua_setmetatable(L, -2);                /* table userdatum */
+  lua_setfield(L, -2, HOST_FIELDNAME);  /* table -- put the userdata as field of the table */
+
   /* remove the args from the stack */
   lua_remove(L, 1);
   return 1;
@@ -75,8 +83,8 @@ static int l_host_get_by_name(lua_State * L)
  */
 static int l_host_get_name(lua_State * L)
 {
-  msg_host_t ht = sglua_check_host(L, 1);
-  lua_pushstring(L, MSG_host_get_name(ht));
+  sg_host_t ht = sglua_check_host(L, 1);
+  lua_pushstring(L, sg_host_get_name(ht));
   return 1;
 }
 
@@ -89,7 +97,7 @@ static int l_host_get_name(lua_State * L)
  */
 static int l_host_number(lua_State * L)
 {
-  xbt_dynar_t hosts = MSG_hosts_as_dynar();
+  xbt_dynar_t hosts = sg_hosts_as_dynar();
   lua_pushinteger(L, xbt_dynar_length(hosts));
   xbt_dynar_free(&hosts);
   return 1;
@@ -106,14 +114,14 @@ static int l_host_number(lua_State * L)
 static int l_host_at(lua_State * L)
 {
   int index = luaL_checkinteger(L, 1);
-  xbt_dynar_t hosts = MSG_hosts_as_dynar();
-  msg_host_t host = xbt_dynar_get_as(hosts,index - 1,msg_host_t);// lua indexing start by 1 (lua[1] <=> C[0])
+  xbt_dynar_t hosts = sg_hosts_as_dynar();
+  sg_host_t host = xbt_dynar_get_as(hosts,index - 1,sg_host_t);// lua indexing start by 1 (lua[1] <=> C[0])
   lua_newtable(L);              /* create a table, put the userdata on top of it */
-  msg_host_t *lua_host = (msg_host_t *) lua_newuserdata(L, sizeof(msg_host_t));
+  sg_host_t *lua_host = (sg_host_t *) lua_newuserdata(L, sizeof(sg_host_t));
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME);
   lua_setmetatable(L, -2);
-  lua_setfield(L, -2, "__simgrid_host");        /* put the userdata as field of the table */
+  lua_setfield(L, -2, HOST_FIELDNAME);        /* put the userdata as field of the table */
   xbt_dynar_free(&hosts);
   return 1;
 }
@@ -129,9 +137,9 @@ static int l_host_at(lua_State * L)
  */
 static int l_host_get_property_value(lua_State * L)
 {
-  msg_host_t ht = sglua_check_host(L, 1);
+  sg_host_t ht = sglua_check_host(L, 1);
   const char *prop = luaL_checkstring(L, 2);
-  lua_pushstring(L,MSG_host_get_property_value(ht,prop));
+  lua_pushstring(L, sg_host_get_property_value(ht,prop));
   return 1;
 }
 
@@ -144,7 +152,7 @@ static int l_host_get_property_value(lua_State * L)
  */
 static int l_host_destroy(lua_State *L)
 {
-  //msg_host_t ht = sglua_check_host(L, 1);
+  //sg_host_t ht = sglua_check_host(L, 1);
   //FIXME: not working..__MSG_host_priv_free(MSG_host_priv(ht));
   return 0;
 }
