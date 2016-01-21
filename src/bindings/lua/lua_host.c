@@ -119,31 +119,6 @@ static int l_host_at(lua_State * L)
 }
 
 /**
- * \brief Returns the host where the current process is located.
- * \param L a Lua state
- * \return number of values returned to Lua
- *
- * - Return value (host): the current host
- */
-static int l_host_self(lua_State * L)
-{
-                                  /* -- */
-  msg_host_t host = MSG_host_self();
-  lua_newtable(L);
-                                  /* table */
-  msg_host_t* lua_host = (msg_host_t*) lua_newuserdata(L, sizeof(msg_host_t));
-                                  /* table ud */
-  *lua_host = host;
-  luaL_getmetatable(L, HOST_MODULE_NAME);
-                                  /* table ud mt */
-  lua_setmetatable(L, -2);
-                                  /* table ud */
-  lua_setfield(L, -2, "__simgrid_host");
-                                  /* table */
-  return 1;
-}
-
-/**
  * \brief Returns the value of a host property.
  * \param L a Lua state
  * \return number of values returned to Lua
@@ -179,7 +154,6 @@ static const luaL_Reg host_functions[] = {
   {"name", l_host_get_name},
   {"number", l_host_number},
   {"at", l_host_at},
-  {"self", l_host_self},
   {"get_prop_value", l_host_get_property_value},
   {"destroy", l_host_destroy},
   // Bypass XML Methods
