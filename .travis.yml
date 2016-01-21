@@ -15,14 +15,14 @@ compiler:
 #                                                                    ^~~~
 #
 addons:
-  apt: # Get recent versions of the compiler, even on Ubuntu Precise
-      sources:
-      - ubuntu-toolchain-r-test
-      packages:
-      - gcc-4.7
-      - g++-4.7
+- apt: # Get recent versions of the compiler, even on Ubuntu Precise
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.7
+    - g++-4.7
 #      - clang
-  coverity_scan:
+- coverity_scan:
     project:
       name: "mquinson/simgrid"
     notification_email: martin.quinson@loria.fr
