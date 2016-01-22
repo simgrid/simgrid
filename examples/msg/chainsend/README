@@ -1,12 +1,2 @@
-====================================================
-           Chainsend MSG implementation
-====================================================
-Directory : SG_INSTALL_DIR/examples/msg/chainsend
-Content   : Chainsend MSG implementation
-Author    : Maximiliano Geier
-====================================================
-
-
-This directory contains an implementation of a
-file broadcasting system, similar to Kastafior, 
-the one found in Kadeploy, using MSG. 
+This directory contains a MSG implementation of a file broadcasting
+system, similar to Kastafior (from the Kadeploy).
