@@ -1216,7 +1216,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/update_tesh.pl
   tools/cmake/UnitTesting.cmake
   tools/cmake/src/internal_config.h.in
-  tools/cmake/src/simgrid.nsi.in
   tools/cmake/test_prog/prog_AC_CHECK_MCSC.c
   tools/cmake/test_prog/prog_gnu_dynlinker.c
   tools/cmake/test_prog/prog_mutex_timedlock.c

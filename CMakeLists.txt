@@ -182,15 +182,6 @@ if(WIN32)
   set(INCLUDES ${INCLUDES} ${CMAKE_INCLUDE_WIN})
   unset(CMAKE_INCLUDE_WIN)
 
-  find_program(NSIS_PROGRAM NAMES makensi)
-  set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITEW6432})
-  if(NSIS_WIN_VERSION MATCHES "")
-    set(NSIS_WIN_VERSION $ENV{PROCESSOR_ARCHITECTURE})
-  endif()
-  if(${NSIS_WIN_VERSION})
-    string(TOLOWER ${NSIS_WIN_VERSION} NSIS_WIN_VERSION)
-  endif()
-
   set(_XBT_WIN32 1)
 
   message(STATUS "C_COMPILER                    ${CMAKE_C_COMPILER} ${CMAKE_C_COMPILER_VERSION}")
@@ -1133,8 +1124,6 @@ endif()
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
   "${generated_files_to_clean}")
-
-configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/simgrid.nsi.in" "${CMAKE_BINARY_DIR}/simgrid.nsi" @ONLY IMMEDIATE)
 
 ### Define source packages for Libs
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/DefinePackages.cmake)

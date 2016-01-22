@@ -359,15 +359,4 @@ add_custom_target(maintainer-clean
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
 
-if(WIN32)
-  if(NSIS_PROGRAM)
-    ADD_CUSTOM_TARGET(nsis
-      COMMENT "Generating the SimGrid installer for Windows..."
-      DEPENDS simgrid simgrid graphicator simgrid-colorizer simgrid_update_xml
-      COMMAND ${NSIS_PROGRAM} simgrid.nsi
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/
-    )
-  endif()
-endif()
-
 include(CPack)
