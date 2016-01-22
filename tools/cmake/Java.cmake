@@ -135,9 +135,6 @@ if(enable_lib_in_jar)
 
   # Find what to copy
   set(JAVALIBS ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO} ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO})
-  if (HAVE_BOOST_CONTEXT)
-    set(JAVALIBS ${JAVALIBS} ${Boost_CONTEXT_LIBRARY_RELEASE})
-  endif()
   if(MINGW)
     find_library(WINPTHREAD_DLL
       NAME winpthread winpthread-1
