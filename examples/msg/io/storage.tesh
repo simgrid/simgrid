@@ -106,4 +106,4 @@ $ ${bindir:=.}/io/storage$EXEEXT ${srcdir:=.}/examples/platforms/storage/storage
 > [  0.006000] (1:(null)@denise) /doc/simgrid/examples/platforms/g5k.xml size: 17028 bytes
 > [  0.006000] (1:(null)@denise) /include/surf/simgrid_dtd.h size: 23583 bytes
 > [  0.006000] (1:(null)@denise) /bin/smpicc size: 918 bytes
-> [  0.006000] (0:@) Simulated time: 0.006
+> [  0.006000] (0:maestro@) Simulated time: 0.006

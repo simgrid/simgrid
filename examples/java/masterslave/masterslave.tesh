@@ -3,7 +3,7 @@
 ! output sort 19
 
 $ java -classpath ${classpath:=.} masterslave/Masterslave ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/masterslave/masterslaveDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Using regular java threads.
+> [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (1:masterslave.Master@Jacquelin) Hello! Got 7 slaves and 5 tasks to process
 > [  0.000000] (2:masterslave.Forwarder@Jackson) Receiving on 'slave_0'
 > [  0.000000] (3:masterslave.Forwarder@Casavant) Receiving on 'slave_1'
@@ -27,6 +27,6 @@ $ java -classpath ${classpath:=.} masterslave/Masterslave ${srcdir:=.}/../platfo
 > [ 13.977355] (5:masterslave.Slave@Bousquet) Received Finalize. I'm done. See you!
 > [ 15.421041] (6:masterslave.Slave@Soucy) Received Finalize. I'm done. See you!
 > [ 16.278350] (7:masterslave.Slave@Kuenning) Received Finalize. I'm done. See you!
-> [ 17.251680] (0:@) MSG_main finished; Cleaning up the simulation...
+> [ 17.251680] (0:maestro@) MSG_main finished; Cleaning up the simulation...
 > [ 17.251680] (1:masterslave.Master@Jacquelin) Goodbye now!
 > [ 17.251680] (8:masterslave.Slave@Browne) Received Finalize. I'm done. See you!

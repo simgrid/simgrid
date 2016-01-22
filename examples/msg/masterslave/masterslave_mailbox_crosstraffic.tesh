@@ -30,4 +30,4 @@ $ $SG_TEST_EXENV masterslave/masterslave_mailbox$EXEEXT ${srcdir:=.}/../platform
 > [  4.122236] (4:slave@Fafard) I'm done. See you!
 > [  4.965689] (5:slave@Ginette) I'm done. See you!
 > [  5.133855] (6:slave@Bourassa) I'm done. See you!
-> [  5.133855] (0:@) Simulation time 5.13386
+> [  5.133855] (0:maestro@) Simulation time 5.13386

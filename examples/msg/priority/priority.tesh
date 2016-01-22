@@ -7,5 +7,5 @@ $ $SG_TEST_EXENV priority/priority$EXEEXT ${srcdir:=.}/../platforms/small_platfo
 > [  0.000000] (1:test@Fafard) Hello! Running a task of size 7.6296e+07 with priority 1
 > [  0.000000] (2:test@Fafard) Hello! Running a task of size 7.6296e+07 with priority 2
 > [  1.500000] (2:test@Fafard) Goodbye now!
-> [  2.000000] (0:@) Simulation time 2
+> [  2.000000] (0:maestro@) Simulation time 2
 > [  2.000000] (1:test@Fafard) Goodbye now!

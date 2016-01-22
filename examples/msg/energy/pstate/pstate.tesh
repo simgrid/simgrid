@@ -2,7 +2,6 @@
 
 p Testing the DVFS-related functions
 
-! output sort 19
 $ $SG_TEST_EXENV energy/pstate/pstate$EXEEXT ${srcdir:=.}/../platforms/energy_platform.xml ${srcdir:=.}/energy/pstate/deployment_pstate.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:dvfs_test@MyHost1) Count of Processor states=3
 > [  0.000000] (2:dvfs_test@MyHost2) Count of Processor states=3
@@ -15,9 +14,9 @@ $ $SG_TEST_EXENV energy/pstate/pstate$EXEEXT ${srcdir:=.}/../platforms/energy_pl
 > [  1.000000] (1:dvfs_test@MyHost1) Current power peak=20000000.000000
 > [  1.000000] (2:dvfs_test@MyHost2) Current power peak=20000000.000000
 > [  6.000000] (1:dvfs_test@MyHost1) Task2 simulation time: 5.000000e+00
-> [  6.000000] (2:dvfs_test@MyHost2) Task2 simulation time: 5.000000e+00
 > [  6.000000] (1:dvfs_test@MyHost1) Count of Processor states=3
+> [  6.000000] (2:dvfs_test@MyHost2) Task2 simulation time: 5.000000e+00
 > [  6.000000] (2:dvfs_test@MyHost2) Count of Processor states=3
 > [  6.000000] (1:dvfs_test@MyHost1) Current power peak=20000000.000000
 > [  6.000000] (2:dvfs_test@MyHost2) Current power peak=20000000.000000
-> [  6.000000] (0:@) Total simulation time: 6.000000e+00
+> [  6.000000] (0:maestro@) Total simulation time: 6.000000e+00

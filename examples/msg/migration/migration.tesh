@@ -8,7 +8,7 @@ $ $SG_TEST_EXENV migration/migration ${srcdir:=.}/../platforms/platform.xml ${sr
 > [  0.000000] (1:emigrant@Boivin) Yeah, found something to do
 > [  0.000000] (2:policeman@Boivin) Wait a bit before migrating the emigrant.
 > [  3.000000] (1:emigrant@Boivin) Moving back home after work
-> [  7.000000] (0:@) Simulation time 7
+> [  7.000000] (0:maestro@) Simulation time 7
 > [  7.000000] (1:emigrant@Jacquelin) I've been moved on this new host: Jacquelin
 > [  7.000000] (1:emigrant@Jacquelin) Uh, nothing to do here. Stopping now
 > [  7.000000] (2:policeman@Boivin) I moved the emigrant

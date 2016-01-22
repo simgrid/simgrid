@@ -3,7 +3,7 @@
 ! expect return 1
 ! timeout 20
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning --cfg=contexts/stack_size:256
-> [  0.000000] (0:@) Check a safety property
+> [  0.000000] (0:maestro@) Check a safety property
 > [  0.000000] (2:client@HostB) Send 1!
 > [  0.000000] (3:client@HostC) Send 2!
 > [  0.000000] (1:server@HostA) Received 1
@@ -882,17 +882,17 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged2 "--log=root.fmt:[%10
 > [  0.000000] (1:server@HostA) Received 2
 > [  0.000000] (3:client@HostC) Send 2!
 > [  0.000000] (1:server@HostA) Received 2
-> [  0.000000] (0:@) **************************
-> [  0.000000] (0:@) *** PROPERTY NOT VALID ***
-> [  0.000000] (0:@) **************************
-> [  0.000000] (0:@) Counter-example execution trace:
-> [  0.000000] (0:@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
-> [  0.000000] (0:@) [(3)HostC (client)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
-> [  0.000000] (0:@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
-> [  0.000000] (0:@) Expanded states = 461
-> [  0.000000] (0:@) Visited states = 2271
-> [  0.000000] (0:@) Executed transitions = 2117
+> [  0.000000] (0:maestro@) **************************
+> [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
+> [  0.000000] (0:maestro@) **************************
+> [  0.000000] (0:maestro@) Counter-example execution trace:
+> [  0.000000] (0:maestro@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@) [(3)HostC (client)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@) Expanded states = 461
+> [  0.000000] (0:maestro@) Visited states = 2271
+> [  0.000000] (0:maestro@) Executed transitions = 2117

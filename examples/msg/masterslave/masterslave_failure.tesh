@@ -4,7 +4,7 @@ p Testing a simple master/slave example application handling failures
 
 ! output sort 19
 $ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/../platforms/small_platform_with_failures.xml ${srcdir:=.}/masterslave/deployment_masterslave.xml --cfg=path:${srcdir} --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Cannot launch process 'slave' on failed host 'Fafard'
+> [  0.000000] (0:maestro@) Cannot launch process 'slave' on failed host 'Fafard'
 > [  0.000000] (1:master@Tremblay) Got 5 slave(s) :
 > [  0.000000] (1:master@Tremblay) Jupiter
 > [  0.000000] (1:master@Tremblay) Fafard
@@ -12,10 +12,10 @@ $ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_l
 > [  0.000000] (1:master@Tremblay) Bourassa
 > [  0.000000] (1:master@Tremblay) Tremblay
 > [  0.000000] (1:master@Tremblay) Got 20 task to process :
-> [  1.000000] (0:@) Restart processes on host: Fafard
+> [  1.000000] (0:maestro@) Restart processes on host: Fafard
 > [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'Jupiter'. Nevermind. Let's keep going!
 > [  1.000000] (3:slave@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
-> [  2.000000] (0:@) Restart processes on host: Jupiter
+> [  2.000000] (0:maestro@) Restart processes on host: Jupiter
 > [ 11.000000] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
 > [ 12.030928] (1:master@Tremblay) Send completed
 > [ 12.030928] (4:slave@Ginette) Received "Task"
@@ -92,7 +92,7 @@ $ masterslave/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_l
 > [ 50.319588] (6:slave@Jupiter) I'm done. See you!
 > [ 51.319588] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
 > [ 52.309278] (5:slave@Bourassa) "Task" done
-> [ 52.319588] (0:@) Simulation time 52.3196
+> [ 52.319588] (0:maestro@) Simulation time 52.3196
 > [ 52.319588] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Ginette'. Nevermind. Let's keep going!
 > [ 52.319588] (1:master@Tremblay) Goodbye now!
 > [ 52.319588] (2:slave@Tremblay) "Task" done

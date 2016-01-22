@@ -3,7 +3,7 @@ p Testing the bypassing of the flexml parser
 
 ! output sort 19
 $ $SG_TEST_EXENV masterslave/masterslave_bypass --log=no_loc  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
+> [  0.000000] (0:maestro@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [  0.000000] (1:master@host A) Got 1 slave(s) :
 > [  0.000000] (1:master@host A) 	 host B
 > [  0.000000] (1:master@host A) Got 20 task to process :
@@ -129,7 +129,7 @@ $ $SG_TEST_EXENV masterslave/masterslave_bypass --log=no_loc  "--log=root.fmt:[%
 > [ 53.206495] (2:slave@host B) Received "Task_19"
 > [ 53.206495] (2:slave@host B) Processing "Task_19"
 > [ 53.256495] (2:slave@host B) "Task_19" done
-> [ 55.858495] (0:@) Simulation time 55.8585
+> [ 55.858495] (0:maestro@) Simulation time 55.8585
 > [ 55.858495] (1:master@host A) Goodbye now!
 > [ 55.858495] (2:slave@host B) Received "finalize"
 > [ 55.858495] (2:slave@host B) I'm done. See you!

@@ -452,12 +452,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT -nb_bits=6 ${srcdir:=.}/../../platfor
 > [577.413922] (3:node@iRMX)   54  |  38
 > [577.413922] (3:node@iRMX)    6  |  38
 > [577.413922] (3:node@iRMX) Predecessor: 32
-> [804.365058] (0:@) Messages created: 788
-> [804.365058] (0:@) Simulated time: 804.365
+> [804.365058] (0:maestro@) Messages created: 788
+> [804.365058] (0:maestro@) Simulated time: 804.365
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/../../platforms/routing_none.xml ${srcdir:=.}/chord10.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant
-> [   0.000000] (0:@) Configuration change: Set 'network/model' to 'Constant'
+> [   0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Constant'
 > [   0.000000] (1:node@node-0.acme.org) My finger table:
 > [   0.000000] (1:node@node-0.acme.org) Start | Succ
 > [   0.000000] (1:node@node-0.acme.org)   43  |  42
@@ -2951,5 +2951,5 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/../../platforms/routing_
 > [ 990.991700] (8:node@node-7.acme.org)  14199064  | 10004760
 > [ 990.991700] (8:node@node-7.acme.org)  1616152  | 10004760
 > [ 990.991700] (8:node@node-7.acme.org) Predecessor: 6518808
-> [1201.991400] (0:@) Messages created: 2208
-> [1201.991400] (0:@) Simulated time: 1201.99
+> [1201.991400] (0:maestro@) Messages created: 2208
+> [1201.991400] (0:maestro@) Simulated time: 1201.99

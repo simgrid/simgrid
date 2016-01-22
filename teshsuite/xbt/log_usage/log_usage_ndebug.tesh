@@ -1,17 +1,17 @@
 #! ./tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:@] Test with the settings ''
-> [  0.000000] [0:@] val=2
-> [  0.000000] [0:@] false alarm!
-> [  0.000000] [0:@] Test with the settings ' '
-> [  0.000000] [0:@] val=2
-> [  0.000000] [0:@] false alarm!
-> [  0.000000] [0:@] Test with the settings ' test.thres:info root.thres:info  '
-> [  0.000000] [0:@] val=2
-> [  0.000000] [0:@] false alarm!
-> [  0.000000] [0:@] Test with the settings ' test.thres:verbose root.thres:error '
-> [  0.000000] [0:@] val=2
-> [  0.000000] [0:@] false alarm!
-> [  0.000000] [0:@] Test with the settings ' test.thres:critical '
-> [  0.000000] [0:@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ''
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:info root.thres:info  '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:verbose root.thres:error '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:critical '
+> [  0.000000] [0:maestro@] false alarm!

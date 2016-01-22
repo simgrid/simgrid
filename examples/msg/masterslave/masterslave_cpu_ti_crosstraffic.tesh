@@ -4,7 +4,7 @@ p Testing a simple master/slave example application
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml masterslave/deployment_masterslave.xml --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:master@Tremblay) Got 5 slaves and 20 tasks to process
 > [  0.000000] (1:master@Tremblay) Sending "Task_0" to "Jupiter"
 > [  0.169155] (1:master@Tremblay) Sent
@@ -119,7 +119,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platf
 > [  5.106151] (6:slave@Bourassa) "Task_18" done
 > [  5.131590] (6:slave@Bourassa) Received "finalize"
 > [  5.131590] (6:slave@Bourassa) I'm done. See you!
-> [  5.131785] (0:@) Simulation time 5.13179
+> [  5.131785] (0:maestro@) Simulation time 5.13179
 > [  5.131785] (1:master@Tremblay) Goodbye now!
 > [  5.131785] (2:slave@Tremblay) Received "finalize"
 > [  5.131785] (2:slave@Tremblay) I'm done. See you!
@@ -129,7 +129,7 @@ p Testing a master/slave example application with a forwarder module
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platforms/platform.xml masterslave/deployment_masterslave_forwarder.xml --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:master@Jacquelin) Got 5 slaves and 20 tasks to process
 > [  0.000000] (1:master@Jacquelin) Sending "Task_0" to "iRMX"
 > [  3.222579] (1:master@Jacquelin) Sent
@@ -270,7 +270,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platf
 > [ 40.792212] (7:slave@Kuenning) I'm done. See you!
 > [ 42.596677] (8:slave@Browne) Received "finalize"
 > [ 42.596677] (8:slave@Browne) I'm done. See you!
-> [ 45.299152] (0:@) Simulation time 45.2992
+> [ 45.299152] (0:maestro@) Simulation time 45.2992
 > [ 45.299152] (2:forwarder@Jackson) I'm done. See you!
 > [ 45.299152] (9:slave@Stephen) Received "finalize"
 > [ 45.299152] (9:slave@Stephen) I'm done. See you!
@@ -280,7 +280,7 @@ p Testing a simple master/slave example application handling failures
 
 ! output sort 19
 $ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/../platforms/small_platform_with_failures.xml masterslave/deployment_masterslave.xml --cfg=path:${srcdir} --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Cannot launch process 'slave' on failed host 'Fafard'
+> [  0.000000] (0:maestro@) Cannot launch process 'slave' on failed host 'Fafard'
 > [  0.000000] (1:master@Tremblay) Got 5 slave(s) :
 > [  0.000000] (1:master@Tremblay) Jupiter
 > [  0.000000] (1:master@Tremblay) Fafard
@@ -288,10 +288,10 @@ $ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_
 > [  0.000000] (1:master@Tremblay) Bourassa
 > [  0.000000] (1:master@Tremblay) Tremblay
 > [  0.000000] (1:master@Tremblay) Got 20 task to process :
-> [  1.000000] (0:@) Restart processes on host: Fafard
+> [  1.000000] (0:maestro@) Restart processes on host: Fafard
 > [  1.000000] (1:master@Tremblay) Mmh. Something went wrong with 'Jupiter'. Nevermind. Let's keep going!
 > [  1.000000] (3:slave@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
-> [  2.000000] (0:@) Restart processes on host: Jupiter
+> [  2.000000] (0:maestro@) Restart processes on host: Jupiter
 > [ 11.000000] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
 > [ 12.082474] (1:master@Tremblay) Send completed
 > [ 12.082474] (4:slave@Ginette) Received "Task"
@@ -368,7 +368,7 @@ $ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_
 > [ 50.785567] (6:slave@Jupiter) I'm done. See you!
 > [ 51.785567] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
 > [ 52.774742] (5:slave@Bourassa) "Task" done
-> [ 52.785567] (0:@) Simulation time 52.7856
+> [ 52.785567] (0:maestro@) Simulation time 52.7856
 > [ 52.785567] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Ginette'. Nevermind. Let's keep going!
 > [ 52.785567] (1:master@Tremblay) Goodbye now!
 > [ 52.785567] (2:slave@Tremblay) "Task" done
@@ -381,8 +381,8 @@ p Testing the bypassing of the flexml parser
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [  0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:maestro@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [  0.000000] (1:master@host A) Got 1 slave(s) :
 > [  0.000000] (1:master@host A) 	 host B
 > [  0.000000] (1:master@host A) Got 20 task to process :
@@ -508,7 +508,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI
 > [ 53.206495] (2:slave@host B) Received "Task_19"
 > [ 53.206495] (2:slave@host B) Processing "Task_19"
 > [ 53.256495] (2:slave@host B) "Task_19" done
-> [ 55.858495] (0:@) Simulation time 55.8585
+> [ 55.858495] (0:maestro@) Simulation time 55.8585
 > [ 55.858495] (1:master@host A) Goodbye now!
 > [ 55.858495] (2:slave@host B) Received "finalize"
 > [ 55.858495] (2:slave@host B) I'm done. See you!

@@ -4,14 +4,14 @@ p Testing a MSG application with properties in the XML for Hosts, Links and Proc
 
 ! output sort 19
 $ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml ${srcdir:=.}/properties/deployment_properties.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) There are 7 hosts in the environment
-> [  0.000000] (0:@) Host 'node-3.acme.org' runs at 1000000000 flops/s
-> [  0.000000] (0:@) Host 'node-0.acme.org' runs at 1000000000 flops/s
-> [  0.000000] (0:@) Host 'node-4.acme.org' runs at 1000000000 flops/s
-> [  0.000000] (0:@) Host 'node-1.acme.org' runs at 1000000000 flops/s
-> [  0.000000] (0:@) Host 'node-2.acme.org' runs at 1000000000 flops/s
-> [  0.000000] (0:@) Host 'host1' runs at 1000000000 flops/s
-> [  0.000000] (0:@) Host 'host2' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) There are 7 hosts in the environment
+> [  0.000000] (0:maestro@) Host 'node-3.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'node-0.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'node-4.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'node-1.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'node-2.acme.org' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'host1' runs at 1000000000 flops/s
+> [  0.000000] (0:maestro@) Host 'host2' runs at 1000000000 flops/s
 > [  0.000000] (1:alice@host1) == Print the properties of the host 'host1'
 > [  0.000000] (1:alice@host1)   Host property: 'mem' -> '4'
 > [  0.000000] (1:alice@host1)   Host property: 'Hdd' -> '180'

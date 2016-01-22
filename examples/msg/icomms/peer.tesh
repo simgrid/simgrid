@@ -24,7 +24,7 @@ $ ./peer ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml ${srcdir:=.}/de
 > [  6.829130] (2:receiver@Ruby) "Task_2" done
 > [  6.829130] (2:receiver@Ruby) Wait to receive a task
 > [  6.900000] (1:sender@Tremblay) Goodbye now!
-> [  6.929130] (0:@) Simulation time 6.92913
+> [  6.929130] (0:maestro@) Simulation time 6.92913
 > [  6.929130] (2:receiver@Ruby) Received "finalize"
 > [  6.929130] (2:receiver@Ruby) I'm done. See you!
 
@@ -52,7 +52,7 @@ $ ./peer ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml ${srcdir:=.}/de
 > [  6.829130] (2:receiver@Ruby) "Task_2" done
 > [  6.829130] (2:receiver@Ruby) Wait to receive a task
 > [  6.900000] (1:sender@Tremblay) Goodbye now!
-> [  6.929130] (0:@) Simulation time 6.92913
+> [  6.929130] (0:maestro@) Simulation time 6.92913
 > [  6.929130] (2:receiver@Ruby) Received "finalize"
 > [  6.929130] (2:receiver@Ruby) I'm done. See you!
 
@@ -79,7 +79,7 @@ $ ./peer ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml ${srcdir:=.}/de
 > [  6.031485] (2:receiver@Ruby) Processing "Task_2"
 > [  6.541195] (2:receiver@Ruby) "Task_2" done
 > [  6.541195] (2:receiver@Ruby) Wait to receive a task
-> [  6.543146] (0:@) Simulation time 6.54315
+> [  6.543146] (0:maestro@) Simulation time 6.54315
 > [  6.543146] (1:sender@Tremblay) Goodbye now!
 > [  6.543146] (2:receiver@Ruby) Received "finalize"
 > [  6.543146] (2:receiver@Ruby) I'm done. See you!
@@ -108,7 +108,7 @@ $ ./peer ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml ${srcdir:=.}/de
 > [  6.031485] (2:receiver@Ruby) Processing "Task_2"
 > [  6.541195] (2:receiver@Ruby) "Task_2" done
 > [  6.541195] (2:receiver@Ruby) Wait to receive a task
-> [  6.543146] (0:@) Simulation time 6.54315
+> [  6.543146] (0:maestro@) Simulation time 6.54315
 > [  6.543146] (1:sender@Tremblay) Goodbye now!
 > [  6.543146] (2:receiver@Ruby) Received "finalize"
 > [  6.543146] (2:receiver@Ruby) I'm done. See you!
@@ -134,7 +134,7 @@ $ ./peer2 ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml ${srcdir:=.}/d
 > [ 11.031485] (2:receiver@Ruby) Processing "Task_2"
 > [ 11.541195] (2:receiver@Ruby) "Task_2" done
 > [ 11.541195] (2:receiver@Ruby) Wait to receive a task
-> [ 11.543146] (0:@) Simulation time 11.5431
+> [ 11.543146] (0:maestro@) Simulation time 11.5431
 > [ 11.543146] (1:sender@Tremblay) Goodbye now!
 > [ 11.543146] (2:receiver@Ruby) Received "finalize"
 > [ 11.543146] (2:receiver@Ruby) I'm done. See you!

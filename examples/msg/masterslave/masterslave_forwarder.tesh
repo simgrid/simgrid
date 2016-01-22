@@ -4,7 +4,7 @@ p Testing a master/slave example application with a forwarder module
 
 ! output sort 19
 $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/masterslave/deployment_masterslave_forwarder.xml --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'network/crosstraffic' to '0'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000000] (1:master@Jacquelin) Got 5 slaves and 20 tasks to process
 > [  0.000000] (1:master@Jacquelin) Sending "Task_0" to "iRMX"
 > [  3.214059] (1:master@Jacquelin) Sent
@@ -145,7 +145,7 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platfo
 > [ 40.685835] (7:slave@Kuenning) I'm done. See you!
 > [ 42.490301] (8:slave@Browne) Received "finalize"
 > [ 42.490301] (8:slave@Browne) I'm done. See you!
-> [ 45.192775] (0:@) Simulation time 45.1928
+> [ 45.192775] (0:maestro@) Simulation time 45.1928
 > [ 45.192775] (2:forwarder@Jackson) I'm done. See you!
 > [ 45.192775] (9:slave@Stephen) Received "finalize"
 > [ 45.192775] (9:slave@Stephen) I'm done. See you!

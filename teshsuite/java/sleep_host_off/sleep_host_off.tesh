@@ -1,5 +1,5 @@
 $ java -classpath ${classpath:=.} sleep_host_off.Main ${srcdir:=.}/../../examples/platforms/small_platform.xml ${srcdir:=.}/sleep_host_off/sleep_host_off_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Using regular java threads.
+> [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (1:sleep_host_off.SleepHostOff@Tremblay) **** **** **** ***** ***** Test Sleep ***** ***** **** **** ****
 > [  0.000000] (1:sleep_host_off.SleepHostOff@Tremblay) Test sleep: Create a process on Jupiter, the process simply make periodic sleep, turn off Jupiter
 > [  0.000000] (2:sleep@Jupiter) I'm not dead
@@ -10,4 +10,4 @@ $ java -classpath ${classpath:=.} sleep_host_off.Main ${srcdir:=.}/../../example
 > [  0.020000] (1:sleep_host_off.SleepHostOff@Tremblay) Jupiter has been stopped
 > [  0.320000] (1:sleep_host_off.SleepHostOff@Tremblay) Test sleep seems ok, cool !(number of Process : 1, it should be 1 (i.e. the Test one))
 >
-> [  0.320000] (0:@) MSG_main finished; Cleaning up the simulation...
+> [  0.320000] (0:maestro@) MSG_main finished; Cleaning up the simulation...

@@ -19,7 +19,7 @@ $ $SG_TEST_EXENV exception/exception ${srcdir:=.}/../platforms/platform.xml ${sr
 > ** SimGrid: UNCAUGHT EXCEPTION received on exception/exception(2): category: action canceled; value: 0
 > ** Canceled
 > ** Thrown by () on process 0
-> [  0.000000] (0:@) Configuration change: Set 'exception/cutpath' to '1'
+> [  0.000000] (0:maestro@) Configuration change: Set 'exception/cutpath' to '1'
 > [  3.000000] (2:victim@Jacquelin) Canceled
 >
 > **   In SIMIX_execution_finish() at smx_host.c
@@ -33,4 +33,4 @@ $ $SG_TEST_EXENV exception/exception ${srcdir:=.}/../platforms/platform.xml ${sr
 > [  6.000000] (2:victim@Jacquelin) The MSG_process_sleep caught the exception for me and returned 8)
 > [  6.000000] (2:victim@Jacquelin) Let's try a last time to do something on something
 > [ 16.000000] (2:victim@Jacquelin) That's enough now. I quit.
-> [ 16.000000] (0:@) Simulation time 16
+> [ 16.000000] (0:maestro@) Simulation time 16

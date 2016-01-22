@@ -1,5 +1,5 @@
 $ ./storage_basic$EXEEXT --cfg=path:${srcdir:=.} ${srcdir:=.}/../../../examples/platforms/storage/storage.xml ${srcdir:=.}/deployment.xml 0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) The custom configuration 'path' is already defined by user!
+> [  0.000000] (0:maestro@) The custom configuration 'path' is already defined by user!
 > [  0.000000] (1:server@alice) *** Storage info on alice ***
 > [  0.000000] (1:server@alice) 	Storage name: Disk2, mount name: c:
 > [  0.000000] (1:server@alice) 		Free size: 534479374867 bytes
@@ -106,4 +106,4 @@ $ ./storage_basic$EXEEXT --cfg=path:${srcdir:=.} ${srcdir:=.}/../../../examples/
 > [  1.207952] (1:server@alice) Storage Disk2 is attached to alice
 > [  1.207952] (1:server@alice) Storage Disk3 is attached to carl
 > [  1.207952] (1:server@alice) Storage Disk4 is attached to denise
-> [  1.207952] (0:@) Simulated time: 1.20795
+> [  1.207952] (0:maestro@) Simulated time: 1.20795

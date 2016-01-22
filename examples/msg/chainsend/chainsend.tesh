@@ -13,4 +13,4 @@ $ $SG_TEST_EXENV ${bindir:=.}/chainsend ${srcdir:=.}/../../platforms/platform.xm
 > [  873.276724] (7:peer@iRMX) ### 873.276733 16777216 bytes (Avg 0.018322 MB/s); copy finished (simulated).
 > [  873.752754] (9:peer@Gatien) ### 873.752747 16777216 bytes (Avg 0.018312 MB/s); copy finished (simulated).
 > [  873.752754] (8:peer@McGee) ### 873.752747 16777216 bytes (Avg 0.018312 MB/s); copy finished (simulated).
-> [  873.752754] (0:@) Total simulation time: 8.737528e+02
+> [  873.752754] (0:maestro@) Total simulation time: 8.737528e+02

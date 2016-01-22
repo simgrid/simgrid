@@ -3,7 +3,7 @@
 ! expect return 1
 ! timeout 20
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --log=xbt_cfg.thresh:warning --cfg=contexts/stack_size:256
-> [  0.000000] (0:@) Check a safety property
+> [  0.000000] (0:maestro@) Check a safety property
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (1:server@HostA) OK
@@ -17,20 +17,20 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1 "--log=root.fmt:[%10
 > [  0.000000] (2:client@HostB) Sent!
 > [  0.000000] (3:client@HostC) Sent!
 > [  0.000000] (2:client@HostB) Sent!
-> [  0.000000] (0:@) **************************
-> [  0.000000] (0:@) *** PROPERTY NOT VALID ***
-> [  0.000000] (0:@) **************************
-> [  0.000000] (0:@) Counter-example execution trace:
-> [  0.000000] (0:@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)HostB (client)] iSend(src=(2)HostB (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)HostA (server)] Wait(comm=(verbose only) [(2)HostB (client)-> (1)HostA (server)])
-> [  0.000000] (0:@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)HostB (client)] Wait(comm=(verbose only) [(2)HostB (client)-> (1)HostA (server)])
-> [  0.000000] (0:@) [(4)HostD (client)] iSend(src=(4)HostD (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)HostA (server)] Wait(comm=(verbose only) [(4)HostD (client)-> (1)HostA (server)])
-> [  0.000000] (0:@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
-> [  0.000000] (0:@) Expanded states = 22
-> [  0.000000] (0:@) Visited states = 56
-> [  0.000000] (0:@) Executed transitions = 52
+> [  0.000000] (0:maestro@) **************************
+> [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
+> [  0.000000] (0:maestro@) **************************
+> [  0.000000] (0:maestro@) Counter-example execution trace:
+> [  0.000000] (0:maestro@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)HostB (client)] iSend(src=(2)HostB (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)HostA (server)] Wait(comm=(verbose only) [(2)HostB (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)HostB (client)] Wait(comm=(verbose only) [(2)HostB (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@) [(4)HostD (client)] iSend(src=(4)HostD (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)HostA (server)] Wait(comm=(verbose only) [(4)HostD (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@) [(1)HostA (server)] iRecv(dst=(1)HostA (server), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(3)HostC (client)] iSend(src=(3)HostC (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)HostA (server)] Wait(comm=(verbose only) [(3)HostC (client)-> (1)HostA (server)])
+> [  0.000000] (0:maestro@) Expanded states = 22
+> [  0.000000] (0:maestro@) Visited states = 56
+> [  0.000000] (0:maestro@) Executed transitions = 52

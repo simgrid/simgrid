@@ -434,12 +434,12 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT -nb_bits=6 ${srcdir:=.}/../msg_platfo
 > [577.866994] (4:node@Geoff)   48  |  32 
 > [577.866994] (4:node@Geoff)    0  |  32 
 > [577.866994] (4:node@Geoff) Predecessor: 21
-> [803.668999] (0:@) Messages created: 768
-> [803.668999] (0:@) Simulated time: 803.669
+> [803.668999] (0:maestro@) Messages created: 768
+> [803.668999] (0:maestro@) Simulated time: 803.669
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/../../platforms/cluster.xml ${srcdir:=.}/chord10.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant
-> [   0.000000] (0:@) Configuration change: Set 'network/model' to 'Constant'
+> [   0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Constant'
 > [   0.000000] (10:node@node-9.acme.org) Joining the ring with id 2015253, knowing node 1319738
 > [   0.000000] (1:node@node-0.acme.org) My finger table:
 > [   0.000000] (1:node@node-0.acme.org) Start | Succ 
@@ -3014,5 +3014,5 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/../../platforms/cluster.
 > [ 982.000000] (1:node@node-0.acme.org)  4194346  |  42 
 > [ 982.000000] (1:node@node-0.acme.org)  8388650  |  42 
 > [ 982.000000] (1:node@node-0.acme.org) Predecessor: 16728096
-> [1154.000000] (0:@) Messages created: 2049
-> [1154.000000] (0:@) Simulated time: 1154
+> [1154.000000] (0:maestro@) Messages created: 2049
+> [1154.000000] (0:maestro@) Simulated time: 1154

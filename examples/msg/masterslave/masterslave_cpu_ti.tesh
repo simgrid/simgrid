@@ -4,8 +4,8 @@ p Testing a simple master/slave example application
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml masterslave/deployment_masterslave.xml --cfg=network/crosstraffic:0 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'network/crosstraffic' to '0'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:master@Tremblay) Got 5 slaves and 20 tasks to process
 > [  0.000000] (1:master@Tremblay) Sending "Task_0" to "Jupiter"
 > [  0.165962] (1:master@Tremblay) Sent
@@ -120,7 +120,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platf
 > [  5.512455] (6:slave@Bourassa) "Task_18" done
 > [  5.532791] (6:slave@Bourassa) Received "finalize"
 > [  5.532791] (6:slave@Bourassa) I'm done. See you!
-> [  5.532947] (0:@) Simulation time 5.53295
+> [  5.532947] (0:maestro@) Simulation time 5.53295
 > [  5.532947] (1:master@Tremblay) Goodbye now!
 > [  5.532947] (2:slave@Tremblay) Received "finalize"
 > [  5.532947] (2:slave@Tremblay) I'm done. See you!
@@ -129,8 +129,8 @@ p Testing a master/slave example application with a forwarder module
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT msg_platform.xml masterslave/deployment_masterslave_forwarder.xml --cfg=network/crosstraffic:0 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'network/crosstraffic' to '0'
-> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:master@Jacquelin) Got 5 slaves and 20 tasks to process
 > [  0.000000] (1:master@Jacquelin) Sending "Task_0" to "iRMX"
 > [  4.772530] (1:master@Jacquelin) Sent
@@ -271,7 +271,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT msg_platform.xml mast
 > [ 54.529294] (7:slave@Kuenning) I'm done. See you!
 > [ 55.971757] (8:slave@Browne) Received "finalize"
 > [ 55.971757] (8:slave@Browne) I'm done. See you!
-> [ 58.132075] (0:@) Simulation time 58.1321
+> [ 58.132075] (0:maestro@) Simulation time 58.1321
 > [ 58.132075] (2:forwarder@Jackson) I'm done. See you!
 > [ 58.132075] (9:slave@Stephen) Received "finalize"
 > [ 58.132075] (9:slave@Stephen) I'm done. See you!
@@ -280,7 +280,7 @@ p Testing a simple master/slave example application handling failures
 
 ! output sort 19
 $ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc small_platform_with_failures.xml masterslave/deployment_masterslave.xml --cfg=network/crosstraffic:0 --cfg=path:${srcdir} --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Cannot launch process 'slave' on failed host 'Fafard'
+> [  0.000000] (0:maestro@) Cannot launch process 'slave' on failed host 'Fafard'
 > [  0.000000] (1:master@Tremblay) Got 5 slave(s) :
 > [  0.000000] (1:master@Tremblay) Jupiter
 > [  0.000000] (1:master@Tremblay) Fafard
@@ -365,7 +365,7 @@ $ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_
 > [ 73.473416] (4:slave@Ginette) I'm done. See you!
 > [ 73.493752] (5:slave@Bourassa) Received "finalize"
 > [ 73.493752] (5:slave@Bourassa) I'm done. See you!
-> [ 73.493908] (0:@) Simulation time 73.4939
+> [ 73.493908] (0:maestro@) Simulation time 73.4939
 > [ 73.493908] (1:master@Tremblay) Goodbye now!
 > [ 73.493908] (2:slave@Tremblay) Received "finalize"
 > [ 73.493908] (2:slave@Tremblay) I'm done. See you!
@@ -374,8 +374,8 @@ p Testing the bypassing of the flexml parser
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:@) Configuration change: Set 'cpu/optim' to 'TI'
-> [  0.000000] (0:@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (0:maestro@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
 > [  0.000000] (1:master@host A) Got 1 slave(s) :
 > [  0.000000] (1:master@host A) 	 host B
 > [  0.000000] (1:master@host A) Got 20 task to process :
@@ -501,7 +501,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI
 > [ 82.550000] (2:slave@host B) Received "Task_19"
 > [ 82.550000] (2:slave@host B) Processing "Task_19"
 > [ 82.600000] (2:slave@host B) "Task_19" done
-> [ 84.680000] (0:@) Simulation time 84.68
+> [ 84.680000] (0:maestro@) Simulation time 84.68
 > [ 84.680000] (1:master@host A) Goodbye now!
 > [ 84.680000] (2:slave@host B) Received "finalize"
 > [ 84.680000] (2:slave@host B) I'm done. See you!

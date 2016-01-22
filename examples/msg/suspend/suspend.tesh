@@ -19,6 +19,6 @@ $ $SG_TEST_EXENV suspend/suspend ${srcdir:=.}/../platforms/platform.xml ${srcdir
 > [ 30.000000] (1:dream_master@Jacquelin) This time, don't let him finish his siesta.
 > [ 32.000000] (1:dream_master@Jacquelin) Wake up, lazy guy!
 > [ 32.000000] (1:dream_master@Jacquelin) OK, goodbye now.
-> [ 35.000000] (0:@) Simulation time 35
+> [ 35.000000] (0:maestro@) Simulation time 35
 > [ 35.000000] (2:Lazy@Jacquelin) Waking up once for all!
 > [ 35.000000] (2:Lazy@Jacquelin) Mmmh, goodbye now.

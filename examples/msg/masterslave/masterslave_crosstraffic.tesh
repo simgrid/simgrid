@@ -120,4 +120,4 @@ $ $SG_TEST_EXENV masterslave/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platfo
 > [  5.131785] (2:slave@Tremblay) Received "finalize"
 > [  5.131785] (2:slave@Tremblay) I'm done. See you!
 > [  5.131785] (1:master@Tremblay) Goodbye now!
-> [  5.131785] (0:@) Simulation time 5.13179
+> [  5.131785] (0:maestro@) Simulation time 5.13179

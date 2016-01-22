@@ -3,7 +3,7 @@
 ! expect return 2
 ! timeout 90
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/deploy_bugged1_liveness_visited.xml --log=xbt_cfg.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=model-check/visited:100 --cfg=contexts/stack_size:256  --cfg=model-check/property:promela_bugged1_liveness
-> [  0.000000] (0:@) Check the liveness property promela_bugged1_liveness
+> [  0.000000] (0:maestro@) Check the liveness property promela_bugged1_liveness
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (3:client@Fafard) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
@@ -69,62 +69,62 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${srcdir:=.
 > [  0.000000] (2:client@Boivin) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
 > [  0.000000] (2:client@Boivin) 2 got the answer. Sleep a bit and release it
-> [  0.000000] (0:@) Pair 58 already reached (equal to pair 46) !
-> [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-> [  0.000000] (0:@) |             ACCEPTANCE CYCLE            |
-> [  0.000000] (0:@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-> [  0.000000] (0:@) Counter-example that violates formula :
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)Fafard (client)] iSend(src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(3)Fafard (client)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
-> [  0.000000] (0:@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
-> [  0.000000] (0:@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:@) Expanded pairs = 58
-> [  0.000000] (0:@) Visited pairs = 201
-> [  0.000000] (0:@) Executed transitions = 207
-> [  0.000000] (0:@) Counter-example depth : 51
+> [  0.000000] (0:maestro@) Pair 58 already reached (equal to pair 46) !
+> [  0.000000] (0:maestro@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+> [  0.000000] (0:maestro@) |             ACCEPTANCE CYCLE            |
+> [  0.000000] (0:maestro@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+> [  0.000000] (0:maestro@) Counter-example that violates formula :
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] iSend(src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(2)Boivin (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iRecv(dst=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (2)Boivin (client)])
+> [  0.000000] (0:maestro@) [(2)Boivin (client)] iSend(src=(2)Boivin (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) Expanded pairs = 58
+> [  0.000000] (0:maestro@) Visited pairs = 201
+> [  0.000000] (0:maestro@) Executed transitions = 207
+> [  0.000000] (0:maestro@) Counter-example depth : 51

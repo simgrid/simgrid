@@ -8,7 +8,7 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/
 > [ 20.703314] (2:p1@Ruby) p1 send p0 1e10 20.703314
 > [ 20.703314] (1:p0@Tremblay) p0 compute 12 0.000000
 > [ 32.703314] (2:p1@Ruby) p1 sleep 12 12.000000
-> [ 32.703314] (0:@) Simulation time 32.7033
+> [ 32.703314] (0:maestro@) Simulation time 32.7033
 
 ! output sort 19
 $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_allReduce.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
@@ -21,7 +21,7 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/
 > [ 12.268239] (2:p1@Ruby) p1 compute 5e8 5.097100
 > [ 12.268239] (1:p0@Tremblay) p0 compute 5e8 5.097100
 > [ 12.268239] (3:p2@Perl) p2 compute 5e8 5.097100
-> [ 12.268239] (0:@) Simulation time 12.2682
+> [ 12.268239] (0:maestro@) Simulation time 12.2682
 
 ! output sort 19
 $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_barrier.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
@@ -35,7 +35,7 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/
 > [  0.063430] (3:p2@Perl) p2 compute 4E6 0.040777
 > [  0.063430] (2:p1@Ruby) p1 compute 4E6 0.040777
 > [  0.068527] (1:p0@Tremblay) p0 compute 4.5E6 0.045874
-> [  0.068527] (0:@) Simulation time 0.0685268
+> [  0.068527] (0:maestro@) Simulation time 0.0685268
 
 ! output sort 19
 $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_bcast.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
@@ -57,7 +57,7 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/
 > [ 13.305258] (2:p1@Ruby) p1 reduce 5e8 5e8 4.095279
 > [ 13.305258] (3:p2@Perl) p2 reduce 5e8 5e8 1.037020
 > [ 18.402358] (1:p0@Tremblay) p0 reduce 5e8 5e8 6.134119
-> [ 18.402358] (0:@) Simulation time 18.4024
+> [ 18.402358] (0:maestro@) Simulation time 18.4024
 
 ! output sort 19
 $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_reduce.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
@@ -70,7 +70,7 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/
 > [  6.134119] (1:p0@Tremblay) p0 reduce 5e8 5e8 6.134119
 > [  6.134119] (3:p2@Perl) p2 compute 5e8 5.097100
 > [ 11.231219] (1:p0@Tremblay) p0 compute 5e8 5.097100
-> [ 11.231219] (0:@) Simulation time 11.2312
+> [ 11.231219] (0:maestro@) Simulation time 11.2312
 
 ! output sort 19
 $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_with_isend.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
@@ -88,4 +88,4 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/
 > [ 12.266287] (3:p2@Perl) p2 Isend p0 1e9 0.000000
 > [ 14.338375] (1:p0@Tremblay) p0 recv p2 2.072088
 > [ 17.363387] (3:p2@Perl) p2 compute 5e8 5.097100
-> [ 17.363387] (0:@) Simulation time 17.3634
+> [ 17.363387] (0:maestro@) Simulation time 17.3634

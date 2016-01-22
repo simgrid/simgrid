@@ -18,8 +18,8 @@ $ $SG_TEST_EXENV energy/onoff/onoff$EXEEXT ${srcdir:=.}/energy/onoff/platform_on
 > [ 26.997901] (1:onoff_test@MyHost2) Switch to virtual pstate 3, that encodes the shutting down state in the XML file of that example
 > [ 26.997901] (1:onoff_test@MyHost2) Actually start the host
 > [ 26.997901] (1:onoff_test@MyHost2) Simulate the boot up by executing one flop on that host
-> [176.997893] (0:@) Total simulation time: 177.00
-> [176.997893] (0:@) Total energy of host MyHost1: 19819.768169 Joules
-> [176.997893] (0:@) Total energy of host MyHost2: 17699.789313 Joules
+> [176.997893] (0:maestro@) Total simulation time: 177.00
+> [176.997893] (0:maestro@) Total energy of host MyHost1: 19819.768169 Joules
+> [176.997893] (0:maestro@) Total energy of host MyHost2: 17699.789313 Joules
 > [176.997893] (1:onoff_test@MyHost2) Switch back to previously selected pstate 0
 > [176.997893] (1:onoff_test@MyHost2) Host1 is now ON again. Current peak speed=1E+08 flop/s; Energy dissipated=19820 J

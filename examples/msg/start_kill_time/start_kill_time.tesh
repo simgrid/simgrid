@@ -6,7 +6,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/plat
 > [  0.000000] (1:sleeper@node-0.acme.org) Hello! I go to sleep.
 > [ 10.000000] (1:sleeper@node-0.acme.org) Done sleeping.
 > [ 10.000000] (1:sleeper@node-0.acme.org) Exiting now (done sleeping or got killed).
-> [ 10.000000] (0:@) Simulation time 10
+> [ 10.000000] (0:maestro@) Simulation time 10
 
 p Test1 Process with start time
 
@@ -29,7 +29,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/plat
 > [ 14.000000] (5:sleeper@node-4.acme.org) Exiting now (done sleeping or got killed).
 > [ 15.000000] (6:sleeper@node-5.acme.org) Done sleeping.
 > [ 15.000000] (6:sleeper@node-5.acme.org) Exiting now (done sleeping or got killed).
-> [ 15.000000] (0:@) Simulation time 15
+> [ 15.000000] (0:maestro@) Simulation time 15
 
 p Test1 Process with kill time
 
@@ -41,7 +41,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/plat
 > [  6.000000] (2:sleeper@node-2.acme.org) Exiting now (done sleeping or got killed).
 > [  6.000000] (3:sleeper@node-3.acme.org) Done sleeping.
 > [  6.000000] (3:sleeper@node-3.acme.org) Exiting now (done sleeping or got killed).
-> [  6.000000] (0:@) Simulation time 6
+> [  6.000000] (0:maestro@) Simulation time 6
 
 p Test2 Process with start and kill times
 
@@ -60,4 +60,4 @@ $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/plat
 > [  7.000000] (4:sleeper@node-3.acme.org) Exiting now (done sleeping or got killed).
 > [  9.000000] (5:sleeper@node-4.acme.org) Exiting now (done sleeping or got killed).
 > [ 10.000000] (6:sleeper@node-5.acme.org) Exiting now (done sleeping or got killed).
-> [ 10.000000] (0:@) Simulation time 10
+> [ 10.000000] (0:maestro@) Simulation time 10
