@@ -14,9 +14,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/gtnets-dogbone-gtnets.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/gtnets-onelink-lv08.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing-gtnets-dogbone-lv08.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/tracing-gtnets-waxman.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/gtnets-dogbone-lv08.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/gtnets-waxman.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing-gtnets-onelink-gtnets.tesh
   PARENT_SCOPE
   )
@@ -27,8 +25,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/dogbone-p.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/onelink-d.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/onelink-p.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/waxman-d.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/waxman-p.xml
   PARENT_SCOPE
   )
 set(examples_src
