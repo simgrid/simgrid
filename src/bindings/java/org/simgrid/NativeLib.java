@@ -23,9 +23,6 @@ public final class NativeLib {
 		if (System.getProperty("os.name").toLowerCase().startsWith("win"))
 			NativeLib.nativeInit("winpthread-1");
 
-		try {
-			NativeLib.nativeInit("boost_context");
-		} catch (Exception e) {/* Dont care */}
 		NativeLib.nativeInit("simgrid");
 		NativeLib.nativeInit("simgrid-java");      
 		isNativeInited = true;
