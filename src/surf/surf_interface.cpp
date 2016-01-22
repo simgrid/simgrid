@@ -30,7 +30,6 @@ xbt_dynar_t all_existing_models = NULL; /* to destroy models correctly */
 xbt_dynar_t model_list_invoke = NULL;  /* for invoking callbacks */
 
 tmgr_fes_t history = NULL;
-lmm_system_t maxmin_system = NULL;
 xbt_dynar_t surf_path = NULL;
 xbt_dynar_t host_that_restart = NULL;
 xbt_dict_t watched_hosts_lib;
@@ -369,10 +368,6 @@ void surf_exit(void)
 
   simgrid::surf::surfExitCallbacks();
 
-  if (maxmin_system) {
-    lmm_system_free(maxmin_system);
-    maxmin_system = NULL;
-  }
   if (history) {
     tmgr_history_free(history);
     history = NULL;
