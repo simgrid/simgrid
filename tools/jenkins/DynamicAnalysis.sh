@@ -87,7 +87,7 @@ ctest -D ExperimentalTest || true
 ctest -D ExperimentalCoverage || true
 
 if [ -f Testing/TAG ] ; then
-   /usr/local/gcovr-3.1/scripts/gcovr -r .. --xml-pretty --exclude teshsuite.* --exclude build.* -u -o $WORKSPACE/xml_coverage.xml
+   /usr/local/gcovr-3.1/scripts/gcovr -r .. --xml-pretty -e teshsuite.* -u -o $WORKSPACE/xml_coverage.xml
    xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults_memcheck.xml
    mv CTestResults_memcheck.xml $WORKSPACE
 fi
