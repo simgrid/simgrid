@@ -920,11 +920,6 @@ set(DOC_SOURCES
   doc/msg-tuto-src/masterworker2.c
   doc/msg-tuto-src/masterworker3.c
   doc/msg-tuto-src/masterworker4.c
-  doc/msg-tuto-src/platforms/cloud.xml
-  doc/msg-tuto-src/platforms/g5k.xml
-  doc/msg-tuto-src/platforms/griffon.xml
-  doc/msg-tuto-src/platforms/peers.xml
-  doc/msg-tuto-src/platforms/platform.xml
 
   CITATION.bib
   )

@@ -154,8 +154,11 @@ sudo apt-get install vite
 \anchor intro_setup
 ## Setting up and Compiling
 
-The corresponding archive with all source files and platform files
-can be obtained [here](http://simgrid.gforge.inria.fr/tutorials/msg-tuto/msg-tuto.tgz).
+The corresponding archive with all source files can be obtained
+[here](http://simgrid.gforge.inria.fr/tutorials/msg-tuto/msg-tuto.tgz),
+while the simgrid archive contains
+[several platform files](https://github.com/mquinson/simgrid/tree/master/examples/platforms)
+(click on the "Raw" button of files you want to download from GitHub).
 
 ~~~~{.sh}
 tar zxf msg-tuto.tgz
