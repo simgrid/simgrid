@@ -47,10 +47,10 @@ namespace surf {
  * @brief SURF Host model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class HostModel : public Model{
+class HostModel : public Model {
 public:
   HostModel() : Model() {}
-  ~HostModel() {}
+  ~HostModel() override {}
 
   Host *createHost(const char *name, NetCard *net, Cpu *cpu, xbt_dict_t props);
   void addTraces() override {DIE_IMPOSSIBLE;}

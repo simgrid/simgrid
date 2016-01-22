@@ -224,22 +224,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_done_action_set(surf_model_t model)
 XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t model);
 
 /**
- * @brief Pop an action from the ready actions set
- *
- * @param model The model from which the action is extracted
- * @return An action in ready state
- */
-XBT_PUBLIC(surf_action_t) surf_model_extract_ready_action_set(surf_model_t model);
-
-/**
- * @brief Pop an action from the running actions set
- *
- * @param model The model from which the action is extracted
- * @return An action in running state
- */
-XBT_PUBLIC(surf_action_t) surf_model_extract_running_action_set(surf_model_t model);
-
-/**
  * @brief Get the size of the running action set of a model
  *
  * @param model The model

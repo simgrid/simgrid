@@ -185,22 +185,6 @@ surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
   return res;
 }
 
-surf_action_t surf_model_extract_ready_action_set(surf_model_t model){
-  if (model->getReadyActionSet()->empty())
-	return NULL;
-  surf_action_t res = &model->getReadyActionSet()->front();
-  model->getReadyActionSet()->pop_front();
-  return res;
-}
-
-surf_action_t surf_model_extract_running_action_set(surf_model_t model){
-  if (model->getRunningActionSet()->empty())
-	return NULL;
-  surf_action_t res = &model->getRunningActionSet()->front();
-  model->getRunningActionSet()->pop_front();
-  return res;
-}
-
 int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
