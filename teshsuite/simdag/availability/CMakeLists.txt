@@ -14,11 +14,6 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/availability_test.tesh
   PARENT_SCOPE
   )
-set(xml_files
-  ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/simulacrum_7_hosts.xml
-  PARENT_SCOPE
-  )
 set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/availability_test.c

@@ -1254,6 +1254,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/conf/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/config_tracing.xml
+  examples/platforms/trace/linkBandwidth7.bw
   examples/platforms/trace/trace_A_failure.txt
   examples/platforms/trace/trace_A.txt
   examples/platforms/trace/trace_B.txt
@@ -1274,6 +1275,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/routing_cluster.xml
   examples/platforms/routing_cluster.lua
   examples/platforms/routing_none.xml
+  examples/platforms/simulacrum_7_hosts.xml
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
   examples/platforms/storage/content/win_storage_content.txt

@@ -17,7 +17,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/Montage_25.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/simulacrum_7_hosts.xml
   PARENT_SCOPE
   )
 set(examples_src
