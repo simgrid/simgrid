@@ -47,8 +47,5 @@ int main(int argc, char *argv[])
   MSG_launch_application(argv[2]);
   res = MSG_main();
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }

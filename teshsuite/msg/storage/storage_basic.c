@@ -205,10 +205,7 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   /* Check the arguments */
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file \n", argv[0]);
-    return -1;
-  }
+  xbt_assert(argc > 2,"Usage: %s platform_file deployment_file \n", argv[0]);
 
   const char *platform_file = argv[1];
   const char *deployment_file = argv[2];
@@ -222,8 +219,5 @@ int main(int argc, char *argv[])
   msg_error_t res = MSG_main();
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }

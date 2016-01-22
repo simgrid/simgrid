@@ -65,12 +65,10 @@ static int sender(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  if (argc != 3) {
-    printf("Usage: %s platform_file deployment_file\n", argv[0]);
-    printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
-    exit(1);
-  }
-  const char *platform_file = argv[1];
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+	     "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+
+   const char *platform_file = argv[1];
   const char *application_file = argv[2];
   MSG_create_environment(platform_file);
   MSG_function_register("receiver", receiver);
@@ -86,8 +84,5 @@ int main(int argc, char *argv[])
 #endif
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }

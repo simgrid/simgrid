@@ -274,8 +274,5 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }                               /* end_of_main */

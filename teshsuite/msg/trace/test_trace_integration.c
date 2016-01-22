@@ -53,10 +53,7 @@ int main(int argc, char *argv[])
 
   /* Verify if the platform xml file was passed by command line. */
   MSG_init(&argc, argv);
-  if (argc < 2) {
-    printf("Usage: %s test_trace_integration_model.xml\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2, "Usage: %s test_trace_integration_model.xml deployment.xml\n", argv[0]);
 
   /* Register SimGrid process function. */
   MSG_function_register("test_trace", test_trace);
@@ -66,8 +63,5 @@ int main(int argc, char *argv[])
   /* Run the example. */
   res = MSG_main();
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }
