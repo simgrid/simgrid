@@ -7,16 +7,16 @@
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
 
-#include "surf/surf_private.h"
-#include "surf/surf_resource.h"
+#include "src/surf/surf_private.h"
 #include "surf/surf.h"
 
-#include "instr/jedule/jedule_sd_binding.h"
-#include "instr/jedule/jedule_events.h"
-#include "instr/jedule/jedule_platform.h"
-#include "instr/jedule/jedule_output.h"
+#include "simgrid/jedule/jedule_sd_binding.h"
+#include "simgrid/jedule/jedule_events.h"
+#include "simgrid/jedule/jedule_platform.h"
+#include "simgrid/jedule/jedule_output.h"
 
-#include "simdag/private.h"
+#include "simgrid/simdag.h"
+#include "src/simdag/simdag_private.h"
 
 #include <stdio.h>
 
@@ -39,7 +39,7 @@ void jedule_log_sd_event(SD_task_t task)
   host_list = xbt_dynar_new(sizeof(char*), NULL);
 
   for(i=0; i<task->workstation_nb; i++) {
-    char *hostname = sg_host_name(task->workstation_list[i]);
+    const char *hostname = sg_host_get_name(task->workstation_list[i]);
     xbt_dynar_push(host_list, &hostname);
   }
 
@@ -74,7 +74,7 @@ static void create_hierarchy(AS_t current_comp,
     hosts = xbt_dynar_new(sizeof(char*), NULL);
 
     xbt_dynar_foreach(table, dynar_cursor, host_elem) {
-      xbt_dynar_push_as(hosts, char*, sg_host_name(host_elem));
+      xbt_dynar_push_as(hosts, const char*, sg_host_get_name(host_elem));
     }
 
     jed_simgrid_add_resources(current_container, hosts);

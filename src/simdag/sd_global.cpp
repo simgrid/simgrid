@@ -24,7 +24,7 @@
 #endif
 
 #ifdef HAVE_JEDULE
-#include "instr/jedule/jedule_sd_binding.h"
+#include "simgrid/jedule/jedule_sd_binding.h"
 #endif
 
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");

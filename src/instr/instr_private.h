@@ -465,7 +465,7 @@ typedef struct s_instr_extra_data {
 SG_END_DECL()
 
 #ifdef HAVE_JEDULE
-#include "instr/jedule/jedule_sd_binding.h"
+#include "simgrid/jedule/jedule_sd_binding.h"
 #endif
 
 #endif /* INSTR_PRIVATE_H_ */

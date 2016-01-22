@@ -12,17 +12,17 @@
 
 #ifdef HAVE_JEDULE
 
-void jedule_log_sd_event(SD_task_t task);
+XBT_PUBLIC(void) jedule_log_sd_event(SD_task_t task);
 
-void jedule_setup_platform(void);
+XBT_PUBLIC(void) jedule_setup_platform(void);
 
-void jedule_sd_init(void);
+XBT_PUBLIC(void) jedule_sd_init(void);
 
-void jedule_sd_cleanup(void);
+XBT_PUBLIC(void) jedule_sd_cleanup(void);
 
-void jedule_sd_exit(void);
+XBT_PUBLIC(void) jedule_sd_exit(void);
 
-void jedule_sd_dump(void);
+XBT_PUBLIC(void) jedule_sd_dump(void);
 
 #endif /* JEDULE_SD_BINDING_H_ */
 

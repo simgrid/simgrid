@@ -9,7 +9,7 @@
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
 
-#include "instr/jedule/jedule_platform.h"
+#include "simgrid/jedule/jedule_platform.h"
 
 #ifdef HAVE_JEDULE
 

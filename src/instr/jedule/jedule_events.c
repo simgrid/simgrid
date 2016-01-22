@@ -12,8 +12,8 @@
 #include "xbt/dynar.h"
 #include "xbt/asserts.h"
 
-#include "instr/jedule/jedule_events.h"
-#include "instr/jedule/jedule_platform.h"
+#include "simgrid/jedule/jedule_events.h"
+#include "simgrid/jedule/jedule_platform.h"
 
 #ifdef HAVE_JEDULE
 

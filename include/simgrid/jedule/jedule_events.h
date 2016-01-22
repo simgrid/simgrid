@@ -12,7 +12,7 @@
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 
-#include "instr/jedule/jedule_platform.h"
+#include "simgrid/jedule/jedule_platform.h"
 
 
 #ifdef HAVE_JEDULE
