@@ -685,7 +685,7 @@ const char* SIMIX_process_self_get_name(void) {
 
   smx_process_t process = SIMIX_process_self();
   if (process == NULL || process == simix_global->maestro_process)
-    return "";
+    return "maestro";
 
   return SIMIX_process_get_name(process);
 }

@@ -40,7 +40,7 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t l,
 
   /* Display the proc info if available */
   procname = xbt_procname();
-  if (procname && *procname) {
+  if (procname && strcmp(procname,"maestro")) {
     len = snprintf(p, rem_size, "%s:%s:(%d) ",
                    SIMIX_host_self_get_name(), procname, xbt_getpid());
     check_overflow(len);

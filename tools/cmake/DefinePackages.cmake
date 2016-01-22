@@ -281,10 +281,10 @@ set(XBT_SRC
   src/xbt/xbt_log_layout_simple.c
   src/xbt/xbt_main.c
   src/xbt/xbt_matrix.c
-  src/xbt/xbt_os_time.c
   src/xbt/xbt_os_file.c
+  src/xbt/xbt_os_synchro.c
+  src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.c
-  src/xbt/xbt_sg_synchro.c
   src/xbt/xbt_sha.c
   src/xbt/xbt_str.c
   src/xbt/xbt_strbuff.c

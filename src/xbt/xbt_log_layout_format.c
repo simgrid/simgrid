@@ -130,7 +130,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
         show_string(SIMIX_host_self_get_name());
         break;
       case 't':                 /* thread name; LOG4J compliant */
-        show_string(xbt_thread_self_name());
+        show_string(SIMIX_process_self_get_name());
         break;
       case 'P':                 /* process name; SimGrid extension */
         show_string(xbt_procname());

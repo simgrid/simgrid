@@ -21,51 +21,11 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_synchro
  *  @brief XBT synchronization tools
  * 
- *  This section describes the XBT synchronization tools. It defines types and 
- *  functions very close to the pthread API, but widly usable. When used from 
- *  the simulator, you will lock simulated processes as expected. When used 
- *  from GRAS programs compiled for in-situ execution, you have synchronization 
- *  mecanism portable to windows and UNIX. Nice, isn't it?
+ *  This section describes the XBT synchronization tools.
+ *  This is a portability layer (for windows and UNIX) of a pthread-like API. Nice, isn't it?
  * 
  *  @{
  */
-  /** @brief Thread data type (opaque object)
-   *  @hideinitializer
-   */
-typedef struct s_xbt_thread_ *xbt_thread_t;
-
-/** @brief Creates a new thread.
- * 
- * @param name          the name used in the logs for the newly created thread
- * @param start_routine function to run
- * @param param         parameter to pass to the function to run
- * @param joinable      whether the new thread should be started joinable or detached
- */
-XBT_PUBLIC(xbt_thread_t) xbt_thread_create(const char *name,
-                                           void_f_pvoid_t start_routine,
-                                           void *param, int joinable);
-
-/** @brief Get a reference to the currently running thread */
-XBT_PUBLIC(xbt_thread_t) xbt_thread_self(void);
-
-/** @brief Get the name of a given thread */
-XBT_PUBLIC(const char *) xbt_thread_name(xbt_thread_t t);
-
-/** @brief Get a reference to the name of the currently running thread */
-XBT_PUBLIC(const char *) xbt_thread_self_name(void);
-
-/** @brief Wait for the termination of the given thread, and free it (ie the XBT wrapper around it, the OS frees the rest) */
-XBT_PUBLIC(void) xbt_thread_join(xbt_thread_t thread);
-
-/** @brief Ends the life of the poor victim (not always working if it's computing, but working if it's blocked in the OS) */
-XBT_PUBLIC(void) xbt_thread_cancel(xbt_thread_t thread);
-
-/** @brief commit suicide */
-XBT_PUBLIC(void) xbt_thread_exit(void);
-
-/** @brief the current thread passes control to any possible thread wanting it */
-XBT_PUBLIC(void) xbt_thread_yield(void);
-
 
 
 /** @brief Thread mutex data type (opaque object)

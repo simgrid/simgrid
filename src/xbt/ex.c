@@ -54,6 +54,7 @@
 #include "src/xbt/ex_interface.h"
 #include "simgrid/sg_config.h"  /* Configuration mechanism of SimGrid */
 
+#include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
 
 #undef HAVE_BACKTRACE
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
@@ -100,8 +101,8 @@ void xbt_backtrace_display(xbt_ex_t * e)
   } else {
     int i;
 
-    fprintf(stderr, "Backtrace (displayed in thread %p):\n",
-            (void *) xbt_thread_self());
+    fprintf(stderr, "Backtrace (displayed in process %s):\n",
+        SIMIX_process_self_get_name());
     for (i = 1; i < e->used; i++)       /* no need to display "xbt_backtrace_display" */
       fprintf(stderr, "---> %s\n", e->bt_strings[i] + 4);
   }
