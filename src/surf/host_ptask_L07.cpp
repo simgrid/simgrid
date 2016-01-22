@@ -73,7 +73,8 @@ CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
 	}
 CpuL07Model::~CpuL07Model() {
 	surf_cpu_model_pm = NULL;
-	p_maxminSystem = NULL; // Avoid multi-free
+	lmm_system_free(p_maxminSystem);
+	p_maxminSystem = NULL;
 }
 NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
 	: NetworkModel()
