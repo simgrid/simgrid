@@ -159,3 +159,16 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
   return host->properties();
 }
 
+
+/** \ingroup m_host_management
+ * \brief Returns the value of a given host property
+ *
+ * \param host a host
+ * \param name a property name
+ * \return value of a property (or NULL if property not set)
+*/
+const char *sg_host_get_property_value(sg_host_t host, const char *name)
+{
+  return (const char*) xbt_dict_get_or_null(sg_host_get_properties(host), name);
+}
+

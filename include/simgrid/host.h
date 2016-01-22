@@ -61,7 +61,8 @@ XBT_PUBLIC(int) sg_host_get_nb_pstates(sg_host_t host);
 XBT_PUBLIC(int) sg_host_get_pstate(sg_host_t host);
 XBT_PUBLIC(void) sg_host_set_pstate(sg_host_t host,int pstate);
 XBT_PUBLIC(xbt_dict_t) sg_host_get_properties(sg_host_t host);
-
+XBT_PUBLIC(const char *) sg_host_get_property_value(sg_host_t host,
+                                                     const char *name);
 SG_END_DECL()
 
 #endif /* SIMGRID_HOST_H_ */
