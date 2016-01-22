@@ -23,8 +23,3 @@ set(bin_files
   ${bin_files}
   PARENT_SCOPE
   )
-set(txt_files
-  ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/linkBandwidth7.bw
-  PARENT_SCOPE
-  )
