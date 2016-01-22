@@ -186,6 +186,8 @@ void HostEnergy::initWattsRangeList()
       atof(xbt_dynar_get_as(current_power_values, 0, char*)),
       atof(xbt_dynar_get_as(current_power_values, 1, char*))
     ));
+
+    xbt_dynar_free(&current_power_values);
 	}
 	xbt_dynar_free(&all_power_values);
 }
