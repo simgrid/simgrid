@@ -151,8 +151,5 @@ int main(int argc, char *argv[])
   msg_error_t res = MSG_main();
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }

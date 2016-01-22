@@ -94,15 +94,10 @@ int main(int argc, char *argv[])
   sg_energy_plugin_init();
   MSG_init(&argc, argv);
 
-  if (argc != 3) {
-    XBT_CRITICAL("Usage: %s platform_file deployment_file\n",
-              argv[0]);
-    XBT_CRITICAL
-        ("example: %s msg_platform.xml msg_deployment.xml\n",
-         argv[0]);
-    exit(1);
-  }
-
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+	          "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
+	          argv[0], argv[0]);
+ 
   MSG_create_environment(argv[1]);
 
   /*   Application deployment */
@@ -114,9 +109,6 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Total simulation time: %.2f", MSG_get_clock());
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }
 

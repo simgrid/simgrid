@@ -102,11 +102,10 @@ int main(int argc, char *argv[])
   const char *application_file;
 
   MSG_init(&argc, argv);
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file\n", argv[0]);
-    printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+	          "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
+	          argv[0], argv[0]);
+  
   platform_file = argv[1];
   application_file = argv[2];
 
@@ -122,8 +121,5 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
-}                               /* end_of_main */
+  return res != MSG_OK;
+}

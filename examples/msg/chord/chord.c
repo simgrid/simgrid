@@ -1026,11 +1026,10 @@ static void random_lookup(node_t node)
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  if (argc < 3) {
-    printf("Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n", argv[0]);
-    printf("example: %s ../msg_platform.xml chord.xml\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2, 
+	     "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
+	     "\tExample: %s ../msg_platform.xml chord.xml\n", 
+	     argv[0], argv[0]);
 
   char **options = &argv[1];
   while (!strncmp(options[0], "-", 1)) {
@@ -1070,8 +1069,5 @@ int main(int argc, char *argv[])
 
   chord_exit();
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }

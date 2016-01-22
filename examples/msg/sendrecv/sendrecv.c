@@ -161,11 +161,8 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
-  if (argc != 3) {
-    XBT_CRITICAL("Usage: %s platform_file deployment_file\n",
-              argv[0]);
-    xbt_die("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
-  }
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+	     "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
   res = test_all(argv[1], argv[2]);
 
@@ -175,8 +172,5 @@ int main(int argc, char *argv[])
   _set_output_format(prev_exponent_format);
 #endif
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }                               /* end_of_main */

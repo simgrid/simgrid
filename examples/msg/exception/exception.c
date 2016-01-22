@@ -114,50 +114,18 @@ int main(int argc, char *argv[]) {
   msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
-  if (argc < 3) {
-    XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+	         "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
+	         argv[0], argv[0]);
 
   MSG_function_register("terrorist", terrorist);
   MSG_create_environment(argv[1]);
   MSG_launch_application(argv[2]);
 
-  /*
-  // Simplistic platform with only one host
-  sg_platf_begin();
-  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
-  sg_platf_new_AS_begin(&AS);
-
-  s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
-  host.id = "host0";
-  sg_platf_new_host(&host);
-
-  sg_platf_new_AS_end();
-  sg_platf_end();
-
-  // Add one process -- super heavy just to launch an application!
-  SIMIX_init_application();
-  sg_platf_begin();
-
-  s_sg_platf_process_cbarg_t process = SG_PLATF_PROCESS_INITIALIZER;
-  process.argc=1;
-  process.argv = malloc(sizeof(char*)*2);
-  process.argv[0] = "terrorist";
-  process.argv[1] = NULL;
-  process.host = "host0";
-  process.function = "terrorist";
-  process.start_time = 0;
-  sg_platf_new_process(&process);
-  sg_platf_end();
-*/
 
   // Launch the simulation
   res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }

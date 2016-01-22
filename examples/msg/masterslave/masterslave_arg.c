@@ -85,7 +85,9 @@ int slave(int argc, char *argv[])
     MSG_task_destroy(task);
     task = NULL;
   }
-  XBT_DEBUG("I'm done. See you!");
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+	          "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
+	          argv[0], argv[0]);XBT_DEBUG("I'm done. See you!");
   return 0;
 }                               /* end_of_slave */                              /* end_of_test_all */
 
@@ -96,11 +98,9 @@ int main(int argc, char *argv[])
   long i;
 
   MSG_init(&argc, argv);
-  if (argc < 4) {
-    printf("Usage: %s platform_file number_of_jobs number_of_slaves\n", argv[0]);
-    printf("example: %s msg_platform.xml 10 5\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 3, "Usage: %s platform_file number_of_jobs number_of_slaves\n"
+	          "\tExample: %s msg_platform.xml 10 5\n", 
+	          argv[0], argv[0]);
 
   MSG_function_register("master", master);
   MSG_function_register("slave", slave);
@@ -138,8 +138,5 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
-}                               /* end_of_main */
+  return res != MSG_OK;
+}

@@ -95,15 +95,9 @@ int main(int argc, char *argv[])
   msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
-  if (argc < 2) {
-    printf("Usage: %s platform_file\n", argv[0]);
-    printf("example: %s msg_platform.xml\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 1, "Usage: %s platform_file\n"
+	     "\tExample: %s msg_platform.xml", argv[0], argv[0]);
   res = test_all(argv[1]);
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }

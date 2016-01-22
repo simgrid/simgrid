@@ -44,8 +44,6 @@ msg_error_t test_all(const char *platform_file,
 
   msg_error_t res = MSG_OK;
 
-
-
   XBT_DEBUG("test_all");
 
   /*  Simulation setting */
@@ -94,8 +92,5 @@ int main(int argc, char *argv[])
   _set_output_format(prev_exponent_format);
 #endif
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
-}                               /* end_of_main */
+  return res != MSG_OK;
+}

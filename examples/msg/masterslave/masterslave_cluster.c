@@ -221,8 +221,5 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
   res = test_all(argv[1]);
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
-}                               /* end_of_main */
+  return res != MSG_OK;
+}

@@ -76,12 +76,9 @@ int main(int argc, char *argv[])
 
   /* Argument checking */
   MSG_init(&argc, argv);
-  if (argc < 3) {
-    XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
-    XBT_CRITICAL("example: %s msg_platform.xml msg_deployment_suspend.xml\n",
-              argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+	          "\tExample: %s msg_platform.xml msg_deployment_suspend.xml\n", 
+	          argv[0], argv[0]);
 
   /* Simulation setting */
   MSG_create_environment(argv[1]);
@@ -99,8 +96,5 @@ int main(int argc, char *argv[])
   xbt_cond_destroy(cond);
   xbt_mutex_destroy(mutex);
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
-}                               /* end_of_main */
+  return res != MSG_OK;
+}

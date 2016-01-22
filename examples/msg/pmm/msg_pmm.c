@@ -295,10 +295,7 @@ int main(int argc, char *argv[])
 #endif
   XBT_CRITICAL("Simulated time: %g", MSG_get_clock());
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }
 
 static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)

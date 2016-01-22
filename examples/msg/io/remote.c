@@ -102,8 +102,5 @@ int main(int argc, char **argv)
   xbt_dynar_free_container(&storages);
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }

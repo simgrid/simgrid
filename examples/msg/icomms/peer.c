@@ -171,15 +171,11 @@ int main(int argc, char *argv[])
   msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file\n", argv[0]);
-    printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+	         "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
+	         argv[0], argv[0]);
+
   res = test_all(argv[1], argv[2]);
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
-}                               /* end_of_main */
+  return res != MSG_OK;
+}

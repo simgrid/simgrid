@@ -481,16 +481,14 @@ int main(int argc, char *argv[])
   /* Explicit initialization of the action module is required now*/
   MSG_action_init();
 
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file [action_files]\n", argv[0]);
-    printf
-        ("example: %s msg_platform.xml msg_deployment.xml actions # if all actions are in the same file\n",
-         argv[0]);
-    printf
-        ("example: %s msg_platform.xml msg_deployment.xml # if actions are in separate files, specified in deployment\n",
-         argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2,
+	     "Usage: %s platform_file deployment_file [action_files]\n"
+	     "\t# if all actions are in the same file\n"
+	     "\tExample: %s msg_platform.xml msg_deployment.xml actions\n"
+	     "\t# if actions are in separate files, specified in deployment\n"
+	     "\tExample: %s msg_platform.xml msg_deployment.xml ",
+	     argv[0],argv[0],argv[0]);
+
   printf("WARNING: THIS BINARY IS KINDA DEPRECATED\n"
 	 "This example is still relevant if you want to learn about MSG-based trace replay, "
 	 "but if you want to simulate MPI-like traces, you should use the newer version "
@@ -527,8 +525,5 @@ int main(int argc, char *argv[])
   /* Explicit finalization of the action module is required now*/
   MSG_action_exit();
 
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
+  return res != MSG_OK;
 }                               /* end_of_main */
