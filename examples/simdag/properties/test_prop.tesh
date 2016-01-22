@@ -8,7 +8,7 @@ $ $SG_TEST_EXENV properties/sd_prop ${srcdir:=.}/../platforms/prop.xml
 > [0.000000] [test/INFO] 	Property: mem has value: 4
 > [0.000000] [test/INFO] 	Property: NewProp has value: newValue
 > [0.000000] [test/INFO] 	Property: Hdd has value: 180
-> [0.000000] [test/INFO] 	Property: NoProp is undefined
+> [0.000000] [test/INFO] 	Property: NoProp has value: Undefined (NULL)
 > [0.000000] [test/INFO] Property list for workstation host2
 > [0.000000] [test/INFO] 	Property: Hdd on host: 120
 > [0.000000] [test/INFO] Modify an existing property

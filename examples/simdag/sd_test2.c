@@ -60,11 +60,10 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
 
   /* creation of the environment */
-  if (strstr(argv[1],".xml"))
-    SD_create_environment(argv[1]);
-  else
-    xbt_die("Unsupported platform description style (not XML): %s",
-            argv[1]);
+  xbt_assert(strstr(argv[1],".xml"), 
+	     "Unsupported platform description style (not XML): %s",
+	     argv[1]);
+  SD_create_environment(argv[1]);
 
   /* getting platform infos */
   n_hosts = SD_workstation_get_count();

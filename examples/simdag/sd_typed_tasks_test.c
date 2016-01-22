@@ -32,11 +32,8 @@ int main(int argc, char **argv)
 
   /*  xbt_log_control_set("sd.thres=debug"); */
 
-  if (argc < 2) {
-    XBT_INFO("Usage: %s platform_file", argv[0]);
-    XBT_INFO("example: %s sd_platform.xml", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 1, "Usage: %s platform_file\n"
+	     "\nExample: %s two_clusters.xml", argv[0], argv[0]);
 
   /* creation of the environment */
   platform_file = argv[1];

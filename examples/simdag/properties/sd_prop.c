@@ -29,11 +29,10 @@ int main(int argc, char **argv)
 
   /* SD initialization */
   SD_init(&argc, argv);
-  if (argc < 2) {
-    XBT_INFO("Usage: %s platform_file", argv[0]);
-    XBT_INFO("example: %s sd_platform.xml", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 1,
+	     "Usage: %s platform_file\n\tExample: %s ../two_hosts.xml", 
+	     argv[0], argv[0]);
+
   SD_create_environment(argv[1]);
 
   /* init of platform elements */
@@ -61,10 +60,7 @@ int main(int argc, char **argv)
   /* Try to get a property that does not exist */
 
   value = SD_workstation_get_property_value(w1, noexist);
-  if (value == NULL)
-    XBT_INFO("\tProperty: %s is undefined", noexist);
-  else
-    XBT_INFO("\tProperty: %s has value: %s", noexist, value);
+  XBT_INFO("\tProperty: %s has value: %s", noexist, value?value:"Undefined (NULL)");
 
 
   XBT_INFO("Property list for workstation %s", name2);
@@ -90,10 +86,7 @@ int main(int argc, char **argv)
 
   /* Test if we have changed the value */
   value = SD_workstation_get_property_value(w2, exist);
-  if (value == NULL)
-    XBT_INFO("\tProperty: %s is undefined", exist);
-  else
-    XBT_INFO("\tProperty: %s new value: %s", exist, value);
+  XBT_INFO("\tProperty: %s new value: %s", exist, value?value:"Undefined (NULL)");
 
   /* Test if properties are displayed by SD_workstation_dump */
   SD_workstation_dump(w2);

@@ -107,10 +107,10 @@ static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
       if (SD_task_get_kind(parent) == SD_TASK_COMM_E2E) {
         grand_parents = SD_task_get_parents(parent);
 
-        if (xbt_dynar_length(grand_parents) > 1) {
-          XBT_ERROR("Warning: transfer %s has 2 parents",
-                 SD_task_get_name(parent));
-        }
+        xbt_assert(xbt_dynar_length(grand_parents) <2, 
+		   "Error: transfer %s has 2 parents", 
+		   SD_task_get_name(parent));
+        
         xbt_dynar_get_cpy(grand_parents, 0, &grand_parent);
 
         grand_parent_workstation_list =
@@ -261,24 +261,16 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
 
   /* Check our arguments */
-  if (argc < 3) {
-    XBT_INFO("Usage: %s platform_file dax_file [jedule_file]", argv[0]);
-    XBT_INFO
-        ("example: %s simulacrum_7_hosts.xml Montage_25.xml Montage_25.jed",
-         argv[0]);
-    exit(1);
-  }
-  char *tracefilename;
-  if (argc == 3) {
-    char *last = strrchr(argv[2], '.');
+  xbt_assert(argc > 2, "Usage: %s platform_file dax_file [jedule_file]\n"
+	     "\tExample: %s simulacrum_7_hosts.xml Montage_25.xml Montage_25.jed", 
+	     argv[0], argv[0]);
 
-    tracefilename = bprintf("%.*s.jed",
-                            (int) (last ==
-                                   NULL ? strlen(argv[2]) : last -
-                                   argv[2]), argv[2]);
-  } else {
+  char *last = strrchr(argv[2], '.');
+  char * tracefilename = bprintf("%.*s.jed",(int) (last == NULL ? 
+						   strlen(argv[2]) : 
+						   last - argv[2]), argv[2]);  
+  if (argc == 4)
     tracefilename = xbt_strdup(argv[3]);
-  }
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
