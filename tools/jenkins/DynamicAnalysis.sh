@@ -73,11 +73,11 @@ fi
 
 make clean
 
-cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON \
+cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON -Denable_tracing=ON \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
-      -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF -Denable_mallocators=OFF \
-      -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_model-checking=OFF  \
-      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_MPICH3_testsuite=ON -Denable_coverage=ON $WORKSPACE
+      -Denable_latency_bound_tracking=ON -Denable_jedule=ON -Denable_mallocators=ON \
+      -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=ON  \
+      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=ON $WORKSPACE
 
 make
 ctest -D ExperimentalStart || true
