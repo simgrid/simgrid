@@ -27,7 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
  * The callback functions of cpu_model and network_model will be called from
  * those of these host models. */
 xbt_dynar_t all_existing_models = NULL; /* to destroy models correctly */
-xbt_dynar_t model_list_invoke = NULL;  /* for invoking callbacks */
+xbt_dynar_t model_list_invoke = NULL;  /* to invoke callbacks */
 
 tmgr_fes_t history = NULL;
 xbt_dynar_t surf_path = NULL;
