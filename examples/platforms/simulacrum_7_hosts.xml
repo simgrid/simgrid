@@ -1,4 +1,9 @@
 <?xml version='1.0'?>
+
+<!-- This is a random platform, generated with Simulacrum. 
+        http://pda.gforge.inria.fr/tools/download.html     
+     Unfortunately, the generation parameters were lost with the years. -->
+
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
   <AS  id="AS0" routing="Full">
