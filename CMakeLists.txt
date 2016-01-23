@@ -282,7 +282,8 @@ endif()
 CHECK_LIBRARY_EXISTS(dl      dlopen                  "" HAVE_DLOPEN_IN_LIBDL)
 CHECK_LIBRARY_EXISTS(execinfo backtrace              "" HAVE_BACKTRACE_IN_LIBEXECINFO)
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
-if(NOT WIN32)
+
+if(NOT WIN32) # We don't want to have winpthread-1.dll in the jarfile
   CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
   CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
   CHECK_LIBRARY_EXISTS(pthread sem_open                "" HAVE_SEM_OPEN_LIB)
