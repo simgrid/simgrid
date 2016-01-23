@@ -357,22 +357,6 @@ double surf_action_get_remains(surf_action_t action){
   return action->getRemains();
 }
 
-void surf_action_suspend(surf_action_t action){
-  action->suspend();
-}
-
-void surf_action_resume(surf_action_t action){
-  action->resume();
-}
-
-void surf_action_cancel(surf_action_t action){
-  action->cancel();
-}
-
-void surf_action_set_priority(surf_action_t action, double priority){
-  action->setPriority(priority);
-}
-
 void surf_action_set_category(surf_action_t action, const char *category){
   action->setCategory(category);
 }

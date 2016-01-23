@@ -529,36 +529,6 @@ XBT_PUBLIC(double) surf_action_get_finish_time(surf_action_t action);
 XBT_PUBLIC(double) surf_action_get_remains(surf_action_t action);
 
 /**
- * @brief Suspend an action
- *
- * @param action The surf action
- */
-XBT_PUBLIC(void) surf_action_suspend(surf_action_t action);
-
-/**
- * @brief Resume an action
- *
- * @param action The surf action
- */
-XBT_PUBLIC(void) surf_action_resume(surf_action_t action);
-
-/**
- * @brief Cancel an action
- *
- * @param action The surf action
- */
-XBT_PUBLIC(void) surf_action_cancel(surf_action_t action);
-
-/**
- * @brief Set the priority of an action
- * @details [long description]
- *
- * @param action The surf action
- * @param priority The new priority [TODO]
- */
-XBT_PUBLIC(void) surf_action_set_priority(surf_action_t action, double priority);
-
-/**
  * @brief Set the category of an action
  * @details [long description]
  *
