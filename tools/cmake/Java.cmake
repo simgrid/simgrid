@@ -14,6 +14,14 @@ find_package(JNI REQUIRED)
 message("-- [Java] JNI found: ${JNI_FOUND}")
 message("-- [Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
 
+if(WIN32)
+  exec_program("java -d32 -version" OUTPUT_VARIABLE IS_32_BITS_JVM)
+  STRING( FIND ${IS_32_BITS_JVM} "Error" POSITION )
+  if(NOT ${POSITION} GREATER -1)
+    message(fatal_error "SimGrid can only use Java 64 bits")
+  endif()
+endif()
+
 # find_package(SWIG)
 # if(${SWIG_FOUND})
 #   include(UseSWIG)
@@ -24,9 +32,13 @@ message("-- [Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
 #mark_as_advanced(SWIG_EXECUTABLE)
 
 # Rules to build libsimgrid-java
-#
+################################
+
 add_library(simgrid-java SHARED ${JMSG_C_SRC})
-set_target_properties(simgrid-java PROPERTIES VERSION ${libsimgrid-java_version})
+set_target_properties(simgrid-java PROPERTIES VERSION          ${libsimgrid-java_version})
+set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
+
+target_link_libraries(simgrid-java simgrid)
 
 get_target_property(COMMON_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
 if (COMMON_INCLUDES)
@@ -40,19 +52,8 @@ endif()
 get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
 message("-- [Java] simgrid-java includes: ${CHECK_INCLUDES}")
 
-target_link_libraries(simgrid-java simgrid)
-
-
-if(WIN32)
-  exec_program("java -d32 -version" OUTPUT_VARIABLE IS_32_BITS_JVM)
-  STRING( FIND ${IS_32_BITS_JVM} "Error" POSITION )
-  if(NOT ${POSITION} GREATER -1)
-    message(fatal_error "SimGrid can only use Java 64 bits")
-  endif()
-endif()
-
 # Rules to build simgrid.jar
-#
+############################
 
 ## Files to include in simgrid.jar
 ##
@@ -73,6 +74,9 @@ if(CMAKE_VERSION VERSION_LESS "2.8.12")
 else()
   add_jar(simgrid-java_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
 endif()
+
+add_dependencies(simgrid-java_jar simgrid-java)
+add_dependencies(simgrid-java_jar simgrid)
 
 if (enable_documentation)
   add_custom_command(
@@ -127,26 +131,6 @@ if(enable_lib_in_jar)
     set(JAVA_NATIVE_PATH NATIVE/${SG_SYSTEM_NAME}/arm) # Default arm (soft-float ABI)
   endif()
 
-  # Find how to copy
-  set(SHEXE sh)
-  if(WIN32)
-    set(SHEXE sh.exe)
-  endif()
-
-  # Find what to copy
-  set(JAVALIBS ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO} ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO})
-  if(MINGW)
-    find_library(WINPTHREAD_DLL
-      NAME winpthread winpthread-1
-      PATHS C:\\MinGW C:\\MinGW64 C:\\MinGW\\bin C:\\MinGW64\\bin C:\\msys64\\mingw32\\bin C:\\msys64\\mingw32 C:\\msys\\mingw32\\bin C:\\msys\\mingw32 C:\\msys64\\mingw64\\bin C:\\msys64\\mingw64 C:\\msys\\mingw64\\bin C:\\msys\\mingw64
-    )
-    if(${WINPTHREAD_DLL})
-      set(JAVALIBS ${JAVALIBS} ${WINPTHREAD_DLL})
-    endif()
-  endif(MINGW)
-  string(REPLACE ";" " " JAVALIBS "${JAVALIBS}")
-  message("-- [Java] Native Libs: ${JAVALIBS}")
-
   add_custom_command(
     TARGET simgrid-java_jar POST_BUILD
     COMMENT "Add the native libs into simgrid.jar..."
@@ -155,24 +139,14 @@ if(enable_lib_in_jar)
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
     
-    COMMAND echo cp ${JAVALIBS} ${JAVA_NATIVE_PATH} # Just display what's going on
-    # So, first of all, I'm sorry for the next few lines. Here is what's going on.
-    # I need to copy some files, depending on the environment. 
-    # I cannot use several POST_BUILD commands because cmake does
-    #     force them to run sequentially, so it fails if we build with -j
-    # So I add some content to the JAVALIBS cmake variable, and copy them in one shoot.
-    # But cmake list variables are ; separated, not space separated.
-    # So I string(REPLACE a bit above to change ; into spaces.
-    # But if I do so, cmake still passes the space-separated list as a single argument to cp.
-    # So I have to fire a sh -c, just to correctly parse the cp parameters.
-    # Yup. That's the ways it goes. cmake is so lovely, that's wonderful.
-    COMMAND ${SHEXE} -c "cp ${JAVALIBS} ${JAVA_NATIVE_PATH}" # cp is less portable, but cmake cannot copy several files at once
-    
     ## strip seems to fail on Mac on binaries that are already stripped.
     ## It then spits: "symbols referenced by indirect symbol table entries that can't be stripped"
     #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}      || true
     #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO} || true
 
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH} 
+    
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
     
@@ -183,10 +157,3 @@ if(enable_lib_in_jar)
 endif(enable_lib_in_jar)
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
-
-set_target_properties(simgrid-java PROPERTIES SKIP_BUILD_RPATH ON)
-
-add_dependencies(simgrid-java_jar simgrid-java)
-add_dependencies(simgrid-java_jar simgrid)
-
-
