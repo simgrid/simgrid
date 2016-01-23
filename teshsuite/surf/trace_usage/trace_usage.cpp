@@ -6,7 +6,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf/trace_mgr.h"
 #include "surf/surf.h"
 
 #include "xbt/log.h"
@@ -14,12 +13,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "src/surf/trace_mgr.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
                              "Messages specific for surf example");
 
-void test(void);
-void test(void)
+static void test(void)
 {
   tmgr_fes_t history = tmgr_history_new();
   tmgr_trace_t trace_A = tmgr_trace_new_from_file("trace_A.txt");

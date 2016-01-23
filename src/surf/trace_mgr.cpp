@@ -8,7 +8,7 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/dict.h"
-#include "trace_mgr_private.h"
+#include "src/surf/trace_mgr.hpp"
 #include "surf_private.h"
 #include "xbt/RngStream.h"
 #include <math.h>
@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
 static xbt_dict_t trace_list = NULL;
 
-XBT_INLINE tmgr_fes_t tmgr_history_new(void)
+tmgr_fes_t tmgr_history_new(void)
 {
   tmgr_fes_t h;
 
@@ -28,7 +28,7 @@ XBT_INLINE tmgr_fes_t tmgr_history_new(void)
   return h;
 }
 
-XBT_INLINE void tmgr_history_free(tmgr_fes_t h)
+void tmgr_history_free(tmgr_fes_t h)
 {
   xbt_heap_free(h->heap);
   free(h);
@@ -261,7 +261,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
   char *val;
 
   if (trace_list) {
-    trace = xbt_dict_get_or_null(trace_list, id);
+    trace = (tmgr_trace_t)xbt_dict_get_or_null(trace_list, id);
     if (trace) {
       XBT_WARN("Ignoring redefinition of trace %s", id);
       return trace;
@@ -305,9 +305,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
       }
     }
     xbt_dynar_push(trace->s_list.event_list, &event);
-    last_event =
-        xbt_dynar_get_ptr(trace->s_list.event_list,
-                          xbt_dynar_length(trace->s_list.event_list) - 1);
+    last_event = (tmgr_event_t)xbt_dynar_get_ptr(trace->s_list.event_list, xbt_dynar_length(trace->s_list.event_list) - 1);
   }
   if (last_event)
     last_event->delta = periodicity;
@@ -331,7 +329,7 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
     return NULL;
 
   if (trace_list) {
-    trace = xbt_dict_get_or_null(trace_list, filename);
+    trace = (tmgr_trace_t)xbt_dict_get_or_null(trace_list, filename);
     if (trace) {
       XBT_WARN("Ignoring redefinition of trace %s", filename);
       return trace;
@@ -367,7 +365,7 @@ tmgr_trace_t tmgr_empty_trace_new(void)
   return trace;
 }
 
-XBT_INLINE void tmgr_trace_free(tmgr_trace_t trace)
+void tmgr_trace_free(tmgr_trace_t trace)
 {
   if (!trace)
     return;
@@ -427,7 +425,7 @@ tmgr_trace_iterator_t tmgr_history_get_next_event_leq(tmgr_fes_t h,
   if (event_date > date)
     return NULL;
 
-  if (!(trace_iterator = xbt_heap_pop(h->heap)))
+  if (!(trace_iterator = (tmgr_trace_iterator_t)xbt_heap_pop(h->heap)))
     return NULL;
 
   trace = trace_iterator->trace;
@@ -436,7 +434,7 @@ tmgr_trace_iterator_t tmgr_history_get_next_event_leq(tmgr_fes_t h,
   switch(trace->type) {
     case e_trace_list:
 
-      event = xbt_dynar_get_ptr(trace->s_list.event_list, trace_iterator->idx);
+      event = (tmgr_event_t)xbt_dynar_get_ptr(trace->s_list.event_list, trace_iterator->idx);
 
       *value = event->value;
 
@@ -476,7 +474,7 @@ tmgr_trace_iterator_t tmgr_history_get_next_event_leq(tmgr_fes_t h,
   return trace_iterator;
 }
 
-XBT_INLINE void tmgr_finalize(void)
+void tmgr_finalize(void)
 {
   xbt_dict_free(&trace_list);
 }

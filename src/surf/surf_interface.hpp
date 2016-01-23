@@ -17,12 +17,12 @@
 
 #include <xbt/signal.hpp>
 
-#include "surf/trace_mgr.h"
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
 #include "simgrid/platf_interface.h"
 #include "surf/surf.h"
 #include "src/surf/surf_private.h"
+#include "src/surf/trace_mgr.hpp"
 #include "src/internal_config.h"
 
 extern XBT_PRIVATE tmgr_fes_t history;

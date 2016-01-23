@@ -16,7 +16,6 @@ set(EXTRA_DIST
   src/include/surf/random_mgr.h
   src/include/surf/surf.h
   src/include/surf/surfxml_parse_values.h
-  src/include/surf/trace_mgr.h
   src/include/xbt/win32_ucontext.h
   src/include/xbt/wine_dbghelp.h
   src/msg/msg_mailbox.h
@@ -83,7 +82,6 @@ set(EXTRA_DIST
   src/surf/surf_routing_private.hpp
   src/surf/surf_routing_vivaldi.hpp
   src/surf/surfxml_parse.c
-  src/surf/trace_mgr_private.h
   src/surf/vm_hl13.hpp
   src/surf/PropertyHolder.hpp
   src/surf/virtual_machine.hpp
@@ -345,7 +343,8 @@ set(SURF_SRC
   src/surf/surf_routing_vivaldi.cpp
   src/surf/surfxml_parse.c
   src/surf/surfxml_parseplatf.c
-  src/surf/trace_mgr.c
+  src/surf/trace_mgr.hpp
+  src/surf/trace_mgr.cpp
   src/surf/vm_hl13.cpp
   src/surf/virtual_machine.cpp
   src/surf/host_clm03.cpp

@@ -11,10 +11,10 @@
 
 #include "surf/surf.h"
 #include "surf/maxmin.h"
-#include "surf/trace_mgr.h"
 #include "xbt/log.h"
 #include "surf/surfxml_parse.h"
 #include "surf/random_mgr.h"
+#include "src/surf/trace_mgr.hpp"
 #include "src/instr/instr_private.h"
 #include "surf/surfxml_parse_values.h"
 

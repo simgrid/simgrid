@@ -6,8 +6,8 @@
 
 #include <xbt/base.h>
 
-#include "cpu_interface.hpp"
-#include "trace_mgr_private.h"
+#include "src/surf/cpu_interface.hpp"
+#include "src/surf/trace_mgr.hpp"
 #include "surf/surf_routing.h"
 
 /* Epsilon */

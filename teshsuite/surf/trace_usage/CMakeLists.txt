@@ -1,10 +1,10 @@
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-add_executable(trace_usage ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/trace_usage/trace_usage.c)
+add_executable(trace_usage ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/trace_usage/trace_usage.cpp)
 
 ### Add definitions for compile
 if(NOT WIN32)
-  target_link_libraries(trace_usage simgrid m )
+  target_link_libraries(trace_usage simgrid m)
 else()
   target_link_libraries(trace_usage simgrid )
 endif()
@@ -20,7 +20,7 @@ set(xml_files
   )
 set(testsuite_src
   ${testsuite_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/trace_usage.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/trace_usage.cpp
   PARENT_SCOPE
   )
 set(bin_files

@@ -5,8 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "cpu_ti.hpp"
-#include "trace_mgr_private.h"
 #include "xbt/heap.h"
+#include "src/surf/trace_mgr.hpp"
 #include "src/surf/platform.hpp"
 
 #ifndef SURF_MODEL_CPUTI_H_
