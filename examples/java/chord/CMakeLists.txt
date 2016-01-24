@@ -32,9 +32,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/chord.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord10.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord100.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/chord90.xml
   PARENT_SCOPE
   )
 set(examples_src
