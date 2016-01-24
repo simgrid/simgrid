@@ -403,7 +403,7 @@ tmgr_trace_iterator_t tmgr_history_add_trace(tmgr_fes_t h,
   return trace_iterator;
 }
 
-XBT_INLINE double tmgr_history_next_date(tmgr_fes_t h)
+double tmgr_history_next_date(tmgr_fes_t h)
 {
   if (xbt_heap_size(h->heap))
     return (xbt_heap_maxkey(h->heap));
