@@ -15,7 +15,7 @@ compiler:
 #                                                                    ^~~~
 #
 addons:
-- apt: # Get recent versions of the compiler, even on Ubuntu Precise
+  apt: # Get recent versions of the compiler, even on Ubuntu Precise
     sources:
     - ubuntu-toolchain-r-test
     packages:
