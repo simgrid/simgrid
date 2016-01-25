@@ -7,19 +7,19 @@ p throughoutly test NS3.
 
 p 3hosts 2links
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3hosts_2links_d.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3hosts_2links_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
 
 p 6hosts 3links
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
 > [Ginette:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
 > [Lovelace:slave(6)] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d-timer.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d-timer.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
 > [Ginette:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
@@ -28,12 +28,12 @@ $ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${s
 
 p One cluster
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/ns3/One_cluster-d.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/ns3/One_cluster-d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [node-6.acme.org:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-2.acme.org to node-6.acme.org
 
 p Two clusters
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}/examples/msg/ns3/Two_clusters-d.xml --cfg=network/model:NS3 --log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}/examples/msg/ns3/Two_clusters-d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [node16.acme.org:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node3.acme.org to node16.acme.org
