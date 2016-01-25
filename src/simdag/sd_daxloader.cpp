@@ -22,11 +22,6 @@ bool children_are_marked(SD_task_t task);
 bool parents_are_marked(SD_task_t task);
 
 /* Parsing helpers */
-static void dax_parse_error(char *msg)
-{
-  fprintf(stderr, "Parse error on line %d: %s\n", dax_lineno, msg);
-  xbt_abort();
-}
 
 static double dax_parse_double(const char *string)
 {
@@ -34,8 +29,8 @@ static double dax_parse_double(const char *string)
   double value;
 
   ret = sscanf(string, "%lg", &value);
-  if (ret != 1)
-    dax_parse_error(bprintf("%s is not a double", string));
+  xbt_assert (ret == 1, "Parse error on line %d: %s is not a double",
+              dax_lineno, string);
   return value;
 }
 
@@ -412,10 +407,9 @@ static SD_task_t current_child;
 void STag_dax__child(void)
 {
   current_child = (SD_task_t)xbt_dict_get_or_null(jobs, A_dax__child_ref);
-  if (current_child == NULL)
-    dax_parse_error(bprintf
-                    ("Asked to add dependencies to the non-existent %s task",
-                     A_dax__child_ref));
+  xbt_assert(current_child != NULL,"Parse error on line %d:"
+             "Asked to add dependencies to the non-existent %s task",
+             dax_lineno, A_dax__child_ref);
 }
 
 void ETag_dax__child(void)
@@ -426,11 +420,10 @@ void ETag_dax__child(void)
 void STag_dax__parent(void)
 {
   SD_task_t parent = (SD_task_t)xbt_dict_get_or_null(jobs, A_dax__parent_ref);
-  if (parent == NULL)
-    dax_parse_error(bprintf
-                    ("Asked to add a dependency from %s to %s, but %s does not exist",
-                     current_child->name, A_dax__parent_ref,
-                     A_dax__parent_ref));
+  xbt_assert(parent != NULL, "Parse error on line %d: "
+             "Asked to add a dependency from %s to %s, but %s does not exist",
+             dax_lineno, current_child->name, A_dax__parent_ref,
+             A_dax__parent_ref);
   SD_task_dependency_add(NULL, NULL, parent, current_child);
   XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name,
          parent->name);
