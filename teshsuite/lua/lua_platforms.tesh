@@ -1,4 +1,4 @@
-$ ${srcdir:=.}/../../examples/msg/masterslave/masterslave_arg ${srcdir:=.}/../../examples/platforms/small_platform.lua 4 5
+$ ${bindir:=.}/../../examples/msg/masterslave/masterslave_arg ${srcdir:=.}/../../examples/platforms/small_platform.lua 4 5
 > [0.000000] [msg_test/INFO] Got 5 slaves, 4 tasks to process, and 5 hosts
 > [3.095754] [msg_test/INFO] Simulation time 3.09575
 
