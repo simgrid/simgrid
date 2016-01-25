@@ -372,6 +372,7 @@ void tmgr_trace_free(tmgr_trace_t trace)
   free(trace);
 }
 
+/** Register a new trace into the future event set, and get an iterator over the integrated trace  */
 tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(
     tmgr_trace_t trace,
     double start_time,
