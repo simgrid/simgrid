@@ -64,6 +64,7 @@ static node_job_t wait_job(int selfid);
 static void broadcast_matrix(xbt_matrix_t M, int num_nodes, int *nodes);
 static void get_sub_matrix(xbt_matrix_t *sM, int selfid);
 static void receive_results(result_t *results);
+static void task_cleanup(void *arg);
 
 int node(int argc, char **argv)
 {
@@ -236,7 +237,7 @@ static void broadcast_matrix(xbt_matrix_t M, int num_nodes, int *nodes)
     snprintf(node_mbox, MAILBOX_NAME_SIZE - 1, "%d", nodes[node]);
     sM = xbt_matrix_new_sub(M, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, 0, 0, NULL);
     task = MSG_task_create("sub-matrix", 100, 100, sM);
-    MSG_task_dsend(task, node_mbox, NULL);
+    MSG_task_dsend(task, node_mbox, task_cleanup);
     XBT_DEBUG("sub-matrix sent to %s", node_mbox);
   }
 
@@ -255,6 +256,13 @@ static void get_sub_matrix(xbt_matrix_t *sM, int selfid)
   if (err != MSG_OK)
     xbt_die("Error while receiving from %s (%d)", node_mbox, (int)err);
   *sM = (xbt_matrix_t)MSG_task_get_data(task);
+  MSG_task_destroy(task);
+}
+
+static void task_cleanup(void *arg){
+  msg_task_t task = (msg_task_t)arg;
+  xbt_matrix_t m = (xbt_matrix_t)MSG_task_get_data(task);
+  xbt_matrix_free(m);
   MSG_task_destroy(task);
 }
 
