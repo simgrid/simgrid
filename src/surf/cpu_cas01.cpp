@@ -123,7 +123,7 @@ void CpuCas01Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->setStateEvent(future_evt_set->add_trace(trace, 0.0, host));
+    host->p_stateEvent = future_evt_set->add_trace(trace, 0.0, host);
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
@@ -133,7 +133,7 @@ void CpuCas01Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->setPowerEvent(future_evt_set->add_trace(trace, 0.0, host));
+    host->p_speedEvent = future_evt_set->add_trace(trace, 0.0, host);
   }
 }
 
@@ -148,7 +148,6 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t s
 	speedPeak, pstate,
 	core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
     initiallyOn) {
-  p_speedEvent = NULL;
 
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_speedPeak, m_pstate);
 
@@ -164,16 +163,6 @@ CpuCas01::~CpuCas01()
 {
   if (getModel() == surf_cpu_model_pm)
     xbt_dynar_free(&p_speedPeakList);
-}
-
-void CpuCas01::setStateEvent(tmgr_trace_iterator_t stateEvent)
-{
-  p_stateEvent = stateEvent;
-}
-
-void CpuCas01::setPowerEvent(tmgr_trace_iterator_t powerEvent)
-{
-  p_speedEvent = powerEvent;
 }
 
 xbt_dynar_t CpuCas01::getSpeedPeakList(){
@@ -217,7 +206,7 @@ void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, doubl
     onSpeedChange();
 
     if (tmgr_trace_event_free(event_type))
-      p_speedEvent = NULL;
+      p_speedEvent = nullptr;
   } else if (event_type == p_stateEvent) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
@@ -243,10 +232,9 @@ void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, doubl
       }
     }
     if (tmgr_trace_event_free(event_type))
-      p_stateEvent = NULL;
+      p_stateEvent = nullptr;
   } else {
-    XBT_CRITICAL("Unknown event ! \n");
-    xbt_abort();
+    xbt_die("Unknown event!\n");
   }
 
   return;
