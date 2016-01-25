@@ -339,7 +339,6 @@ IF(NOT enable_memcheck)
   ADD_TESH(simdag-prop                           --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/properties/test_prop.tesh)
   ADD_TESH(simdag-minmin-scheduling              --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
   ADD_TESH(simdag-io                             --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/simdag/io/io.tesh)
-  ADD_TESH(tracing-simdag                      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_tracing.tesh)
   # END TESH TESTS
 
   IF(WIN32)

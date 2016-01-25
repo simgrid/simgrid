@@ -87,8 +87,6 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
 
   sd_global->task_number++;
 
-  TRACE_sd_task_create(task);
-
   return task;
 }
 
@@ -121,9 +119,6 @@ SD_task_t SD_task_create_comm_e2e(const char *name, void *data,
   res->bytes_amount[2] = amount;
   res->kind = SD_TASK_COMM_E2E;
 
-  TRACE_category("COMM_E2E");
-  TRACE_sd_set_task_category(res, "COMM_E2E");
-
   return res;
 }
 
@@ -148,9 +143,6 @@ SD_task_t SD_task_create_comp_seq(const char *name, void *data,
   SD_task_t res = SD_task_create_sized(name, data, flops_amount, 1);
   res->flops_amount[0] = flops_amount;
   res->kind = SD_TASK_COMP_SEQ;
-
-  TRACE_category("COMP_SEQ");
-  TRACE_sd_set_task_category(res, "COMP_SEQ");
 
   return res;
 }
@@ -182,9 +174,6 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data,
   res->alpha = alpha;
   res->kind = SD_TASK_COMP_PAR_AMDAHL;
 
-  TRACE_category("COMP_PAR_AMDAHL");
-  TRACE_sd_set_task_category(res, "COMP_PAR_AMDAHL");
-
   return res;
 }
 
@@ -213,9 +202,6 @@ SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data,
   SD_task_t res = SD_task_create(name, data, amount);
   res->workstation_list=NULL;
   res->kind = SD_TASK_COMM_PAR_MXN_1D_BLOCK;
-
-  TRACE_category("COMM_PAR_MXN_1D_BLOCK");
-  TRACE_sd_set_task_category(res, "COMM_PAR_MXN_1D_BLOCK");
 
   return res;
 }
@@ -251,8 +237,6 @@ void SD_task_destroy(SD_task_t task)
   xbt_free(task->workstation_list);
   xbt_free(task->bytes_amount);
   xbt_free(task->flops_amount);
-
-  TRACE_sd_task_destroy(task);
 
   xbt_mallocator_release(sd_global->task_mallocator,task);
   sd_global->task_number--;

@@ -299,13 +299,6 @@ xbt_dynar_t SD_daxload(const char *filename)
         newfile = SD_task_create_comm_e2e(file->name, NULL, file->amount);
         SD_task_dependency_add(NULL, NULL, root_task, newfile);
         SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
-        if (depafter->src){
-          const char *category = depafter->src->category;
-          if (category){
-            TRACE_category (category);
-            TRACE_sd_set_task_category(newfile, category);
-          }
-        }
         xbt_dynar_push(result, &newfile);
       }
     } else if (xbt_dynar_is_empty(file->tasks_after)) {
@@ -313,13 +306,6 @@ xbt_dynar_t SD_daxload(const char *filename)
         newfile = SD_task_create_comm_e2e(file->name, NULL, file->amount);
         SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
         SD_task_dependency_add(NULL, NULL, newfile, end_task);
-        if (depbefore->src){
-          const char *category = depbefore->src->category;
-          if (category){
-            TRACE_category (category);
-            TRACE_sd_set_task_category(newfile, category);
-          }
-        }
         xbt_dynar_push(result, &newfile);
       }
     } else {
@@ -333,13 +319,6 @@ xbt_dynar_t SD_daxload(const char *filename)
           newfile = SD_task_create_comm_e2e(file->name, NULL, file->amount);
           SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
           SD_task_dependency_add(NULL, NULL, newfile, depafter->dst);
-          if (depbefore->src){
-            const char *category = depbefore->src->category;
-            if (category){
-              TRACE_category (category);
-              TRACE_sd_set_task_category(newfile, category);
-            }
-          }
           xbt_dynar_push(result, &newfile);
         }
       }
@@ -397,11 +376,6 @@ void STag_dax__job(void)
   runtime *= 4200000000.;       /* Assume that timings were done on a 4.2GFlops machine. I mean, why not? */
 //  XBT_INFO("See <job id=%s runtime=%s %.0f>",A_dax__job_id,A_dax__job_runtime,runtime);
   current_job = SD_task_create_comp_seq(name, NULL, runtime);
-  char *category = A_dax__job_name;
-  if (category){
-    TRACE_category (category);
-    TRACE_sd_set_task_category(current_job, category);
-  }
   xbt_dict_set(jobs, A_dax__job_id, current_job, NULL);
   free(name);
   xbt_dynar_push(result, &current_job);

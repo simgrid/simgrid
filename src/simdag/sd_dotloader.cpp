@@ -45,18 +45,6 @@ static void dot_task_p_free(void *task) {
   SD_task_destroy(*t);
 }
 
-static void TRACE_sd_dotloader (SD_task_t task, const char *category) {
-  if (category && strlen (category)){
-    if (task->category)
-      XBT_DEBUG("Change the category of %s from %s to %s",
-          task->name, task->category, category);
-    else
-      XBT_DEBUG("Set the category of %s to %s",task->name, category);
-    TRACE_category (category);
-    TRACE_sd_set_task_category(task, category);
-  }
-}
-
 /** @brief loads a DOT file describing a DAG
  * 
  * See http://www.graphviz.org/doc/info/lang.html
@@ -190,7 +178,6 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
       } else {
         task = SD_task_create_comp_par_amdahl(name, NULL , amount, alpha);
       }
-      TRACE_sd_dotloader (task, agget (node, (char*)"category"));
       xbt_dict_set(jobs, name, task, NULL);
       if (!strcmp(name, "root")){
       /* by design the root task is always SCHEDULABLE */
@@ -329,7 +316,6 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
             task = SD_task_create_comm_e2e(name, NULL , size);
           else
             task = SD_task_create_comm_par_mxn_1d_block(name, NULL , size);
-          TRACE_sd_dotloader (task, agget (node, (char*)"category"));
           SD_task_dependency_add(NULL, NULL, src, task);
           SD_task_dependency_add(NULL, NULL, task, dst);
           xbt_dict_set(jobs, name, task, NULL);

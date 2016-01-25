@@ -434,7 +434,6 @@ set(MSG_SRC
   )
 
 set(SIMDAG_SRC
-  src/simdag/instr_sd_task.cpp
   src/simdag/sd_daxloader.cpp
   src/simdag/sd_global.cpp
   src/simdag/sd_task.cpp
