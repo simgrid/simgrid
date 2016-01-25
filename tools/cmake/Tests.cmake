@@ -341,10 +341,6 @@ IF(NOT enable_memcheck)
   ADD_TESH(simdag-io                             --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/simdag/io/io.tesh)
   # END TESH TESTS
 
-  IF(WIN32)
-    # expect this one to fail on Windows, as generated random colors will be different
-    set_property(TEST tracing-simdag PROPERTY WILL_FAIL TRUE)
-  ENDIF()
   ### SMPI ###
   IF(enable_smpi)
     # BEGIN TESH TESTS
