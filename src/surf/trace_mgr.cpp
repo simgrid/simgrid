@@ -375,14 +375,13 @@ void tmgr_trace_free(tmgr_trace_t trace)
 tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(
     tmgr_trace_t trace,
     double start_time,
-    unsigned int offset,
     void *resource)
 {
   tmgr_trace_iterator_t trace_iterator = NULL;
 
   trace_iterator = xbt_new0(s_tmgr_trace_event_t, 1);
   trace_iterator->trace = trace;
-  trace_iterator->idx = offset;
+  trace_iterator->idx = 0;
   trace_iterator->resource = resource;
 
   if(trace->type == e_trace_list) {

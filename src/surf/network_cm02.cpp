@@ -479,7 +479,7 @@ void NetworkCm02Model::addTraces(){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_stateEvent = future_evt_set->add_trace(trace, 0.0, 0, link);
+    link->p_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
@@ -492,7 +492,7 @@ void NetworkCm02Model::addTraces(){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_speed.event = future_evt_set->add_trace(trace, 0.0, 0, link);
+    link->p_speed.event = future_evt_set->add_trace(trace, 0.0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
@@ -505,7 +505,7 @@ void NetworkCm02Model::addTraces(){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_latEvent = future_evt_set->add_trace(trace, 0.0, 0, link);
+    link->p_latEvent = future_evt_set->add_trace(trace, 0.0, link);
   }
 }
 
@@ -533,13 +533,13 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
   p_speed.scale = 1.0;
   p_speed.peak = metric_peak;
   if (metric_trace)
-    p_speed.event = fes->add_trace(metric_trace, 0.0, 0, this);
+    p_speed.event = fes->add_trace(metric_trace, 0.0, this);
   else
     p_speed.event = NULL;
 
   m_latCurrent = lat_initial;
   if (lat_trace)
-	p_latEvent = fes->add_trace(lat_trace, 0.0, 0, this);
+	p_latEvent = fes->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
 	lmm_constraint_shared(getConstraint());

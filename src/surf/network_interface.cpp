@@ -207,7 +207,7 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
   PropertyHolder(props)
 {
   if (state_trace)
-    p_stateEvent = fes->add_trace(state_trace, 0.0, 0, this);
+    p_stateEvent = fes->add_trace(state_trace, 0.0, this);
 
   links->insert({name, this});
   XBT_DEBUG("Create link '%s'",name);

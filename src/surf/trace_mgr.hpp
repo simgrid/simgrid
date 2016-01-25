@@ -108,7 +108,6 @@ public:
   tmgr_trace_iterator_t add_trace(
       tmgr_trace_t trace,
       double start_time,
-      unsigned int offset,
       void *model);
 
 private:

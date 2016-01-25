@@ -515,7 +515,7 @@ void CpuTiModel::addTraces()
       continue;
     }
     XBT_DEBUG("Add state trace: %s to CPU(%s)", trace_name, elm);
-    cpu->p_stateEvent = future_evt_set->add_trace(trace, 0.0, 0, cpu);
+    cpu->p_stateEvent = future_evt_set->add_trace(trace, 0.0, cpu);
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
@@ -538,7 +538,7 @@ void CpuTiModel::addTraces()
                         xbt_dynar_length(trace->s_list.event_list) - 1, &val);
       if (val.delta == 0) {
         cpu->p_speedEvent =
-            future_evt_set->add_trace(tmgr_empty_trace_new(), cpu->p_availTrace->m_lastTime, 0, cpu);
+            future_evt_set->add_trace(tmgr_empty_trace_new(), cpu->p_availTrace->m_lastTime, cpu);
       }
     }
   }
@@ -564,7 +564,7 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
   XBT_DEBUG("CPU create: peak=%f", m_speedPeak);
 
   if (stateTrace)
-    p_stateEvent = future_evt_set->add_trace(stateTrace, 0.0, 0, this);
+    p_stateEvent = future_evt_set->add_trace(stateTrace, 0.0, this);
 
   if (speedTrace && xbt_dynar_length(speedTrace->s_list.event_list) > 1) {
 	s_tmgr_event_t val;
@@ -573,7 +573,7 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
                       xbt_dynar_length(speedTrace->s_list.event_list) - 1, &val);
     if (val.delta == 0) {
       p_speedEvent =
-          future_evt_set->add_trace(tmgr_empty_trace_new(), p_availTrace->m_lastTime, 0, this);
+          future_evt_set->add_trace(tmgr_empty_trace_new(), p_availTrace->m_lastTime, this);
     }
   }
 }

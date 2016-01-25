@@ -29,8 +29,8 @@ static void test(void)
   char *host_A = strdup("Host A");
   char *host_B = strdup("Host B");
 
-  fes->add_trace(trace_A, 1.0, 2, host_A);
-  fes->add_trace(trace_B, 0.0, 0, host_B);
+  fes->add_trace(trace_A, 1.0, host_A);
+  fes->add_trace(trace_B, 0.0, host_B);
 
   while ((next_event_date = fes->next_date()) != -1.0) {
     XBT_DEBUG("%g" " : \n", next_event_date);
