@@ -79,9 +79,6 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON -Denable_traci
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=ON \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=ON $WORKSPACE
 
-# libdw seems to be too ancient on debian wheezy for model-checking.
-# We need to update the slave before activating model-checking here.
-
 make
 ctest -D ExperimentalStart || true
 ctest -D ExperimentalConfigure || true
