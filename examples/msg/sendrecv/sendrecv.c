@@ -50,10 +50,7 @@ int sender(int argc, char *argv[])
 
   host = MSG_host_by_name(argv[1]);
 
-  if (host == NULL) {
-    XBT_INFO("Unknown host %s. Stopping Now! ", argv[1]);
-    abort();
-  }
+  xbt_assert(host != NULL, "Unknown host %s. Stopping Now! ", argv[1]);
 
   /* Latency */
   time = MSG_get_clock();
@@ -91,36 +88,33 @@ int receiver(int argc, char *argv[])
 
   /* Get Latency */
   a = MSG_task_receive(&task_la,MSG_host_get_name(MSG_host_self()));
-  if (a == MSG_OK) {
-    time1 = MSG_get_clock();
-    sender_time = *((double *) (task_la->data));
-    time = sender_time;
-    communication_time = time1 - time;
-    XBT_INFO("Task received : %s", task_la->name);
-    xbt_free(task_la->data);
-    MSG_task_destroy(task_la);
-    XBT_INFO("Communic. time %e", communication_time);
-    XBT_INFO("--- la %f ----", communication_time);
-  } else {
-    xbt_die("Unexpected behavior");
-  }
+
+  xbt_assert(a == MSG_OK, "Unexpected behavior");
+
+  time1 = MSG_get_clock();
+  sender_time = *((double *) (task_la->data));
+  time = sender_time;
+  communication_time = time1 - time;
+  XBT_INFO("Task received : %s", task_la->name);
+  xbt_free(task_la->data);
+  MSG_task_destroy(task_la);
+  XBT_INFO("Communic. time %e", communication_time);
+  XBT_INFO("--- la %f ----", communication_time);
 
   /* Get Bandwidth */
   a = MSG_task_receive(&task_bw,MSG_host_get_name(MSG_host_self()));
-  if (a == MSG_OK) {
-    time1 = MSG_get_clock();
-    sender_time = *((double *) (task_bw->data));
-    time = sender_time;
-    communication_time = time1 - time;
-    XBT_INFO("Task received : %s", task_bw->name);
-    xbt_free(task_bw->data);
-    MSG_task_destroy(task_bw);
-    XBT_INFO("Communic. time %e", communication_time);
-    XBT_INFO("--- bw %f ----", task_comm_size_bw / communication_time);
-  } else {
-    xbt_die("Unexpected behavior");
-  }
 
+  xbt_assert(a == MSG_OK, "Unexpected behavior");
+
+  time1 = MSG_get_clock();
+  sender_time = *((double *) (task_bw->data));
+  time = sender_time;
+  communication_time = time1 - time;
+  XBT_INFO("Task received : %s", task_bw->name);
+  xbt_free(task_bw->data);
+  MSG_task_destroy(task_bw);
+  XBT_INFO("Communic. time %e", communication_time);
+  XBT_INFO("--- bw %f ----", task_comm_size_bw / communication_time);
 
   return 0;
 }                               /* end_of_receiver */
