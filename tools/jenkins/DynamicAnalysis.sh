@@ -60,7 +60,7 @@ cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_model-checking=OFF \
       -Denable_memcheck_xml=ON $WORKSPACE
 
-ctest -D ExperimentalBuild || true
+ctest -D ExperimentalBuild -V || true
 ctest -D ExperimentalMemCheck || true
 
 cd $WORKSPACE/build
@@ -78,7 +78,7 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON -Denable_traci
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=ON \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=ON $WORKSPACE
 
-ctest -D ExperimentalBuild || true
+ctest -D ExperimentalBuild -V || true
 ctest -D ExperimentalTest || true
 ctest -D ExperimentalCoverage || true
 
