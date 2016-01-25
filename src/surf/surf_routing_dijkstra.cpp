@@ -93,7 +93,7 @@ xbt_node_t AsDijkstra::routeGraphNewNode(int id, int graph_id)
   elm = xbt_new0(struct graph_node_map_element, 1);
   elm->node = node;
   xbt_dict_set_ext(p_graphNodeMap, (char *) (&id), sizeof(int),
-      (xbt_set_elm_t) elm, NULL);
+      (xbt_dictelm_t) elm, NULL);
 
   return node;
 }
@@ -391,7 +391,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     elm->pred_arr = pred_arr;
     elm->size = size;
     xbt_dict_set_ext(p_routeCache, (char *) (&src_id), sizeof(int),
-        (xbt_set_elm_t) elm, NULL);
+        (xbt_dictelm_t) elm, NULL);
   }
 
   if (!m_cached)
