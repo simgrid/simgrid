@@ -1,7 +1,7 @@
 #! ./tesh
 
 ! expect return 2
-! timeout 90
+! timeout 10
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/deploy_bugged1_liveness_visited.xml --log=xbt_cfg.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=model-check/visited:100 --cfg=contexts/stack_size:256  --cfg=model-check/property:promela_bugged1_liveness
 > [  0.000000] (0:maestro@) Check the liveness property promela_bugged1_liveness
 > [  0.000000] (2:client@Boivin) Ask the request
