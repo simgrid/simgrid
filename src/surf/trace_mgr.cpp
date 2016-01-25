@@ -312,8 +312,6 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input,
 
 tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
 {
-  char *tstr = NULL;
-  FILE *f = NULL;
   tmgr_trace_t trace = NULL;
 
   if ((!filename) || (strcmp(filename, "") == 0))
@@ -327,12 +325,11 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
     }
   }
 
-  f = surf_fopen(filename, "r");
-  if (f == NULL)
-    xbt_die("Cannot open file '%s' (path=%s)", filename,
-            xbt_str_join(surf_path, ":"));
+  FILE *f = surf_fopen(filename, "r");
+  xbt_assert(f != NULL,
+      "Cannot open file '%s' (path=%s)", filename, xbt_str_join(surf_path, ":"));
 
-  tstr = xbt_str_from_file(f);
+  char *tstr = xbt_str_from_file(f);
   fclose(f);
   trace = tmgr_trace_new_from_string(filename, tstr, 0.);
   xbt_free(tstr);

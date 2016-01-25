@@ -206,20 +206,17 @@ void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
   tmgr_trace_t tmgr_trace;
   if (!trace->file || strcmp(trace->file, "") != 0) {
     tmgr_trace = tmgr_trace_new_from_file(trace->file);
-  } else if (strcmp(trace->pc_data, "") == 0) {
-    tmgr_trace = NULL;
   } else {
-    tmgr_trace =
-          tmgr_trace_new_from_string(trace->id, trace->pc_data,
-                                     trace->periodicity);
+    xbt_assert(strcmp(trace->pc_data, ""),
+        "Trace '%s' must have either a content, or point to a file on disk.",trace->id);
+    tmgr_trace = tmgr_trace_new_from_string(trace->id, trace->pc_data, trace->periodicity);
   }
   xbt_dict_set(traces_set_list, trace->id, (void *) tmgr_trace, NULL);
 }
 
 void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
 {
-  xbt_assert(xbt_dict_get_or_null
-              (traces_set_list, trace_connect->trace),
+  xbt_assert(xbt_dict_get_or_null(traces_set_list, trace_connect->trace),
               "Cannot connect trace %s to %s: trace unknown",
               trace_connect->trace,
               trace_connect->element);
