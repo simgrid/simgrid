@@ -583,7 +583,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_mallocator);
   XBT_LOG_CONNECT(xbt_matrix);
   XBT_LOG_CONNECT(xbt_parmap);
-  XBT_LOG_CONNECT(xbt_set);
   XBT_LOG_CONNECT(xbt_sync);
   XBT_LOG_CONNECT(xbt_sync_os);
 

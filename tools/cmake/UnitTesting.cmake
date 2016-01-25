@@ -6,7 +6,6 @@ set(TEST_CFILES
   src/xbt/ex.c
   src/xbt/dynar.c
   src/xbt/dict.c
-  src/xbt/set.c
   src/xbt/swag.c
   src/xbt/xbt_str.c
   src/xbt/xbt_strbuff.c
@@ -18,7 +17,6 @@ set(TEST_UNITS
   ${CMAKE_CURRENT_BINARY_DIR}/src/ex_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/dynar_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/dict_unit.c
-  ${CMAKE_CURRENT_BINARY_DIR}/src/set_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/swag_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_str_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_strbuff_unit.c

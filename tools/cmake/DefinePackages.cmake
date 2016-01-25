@@ -270,7 +270,6 @@ set(XBT_SRC
   src/xbt/memory_map.cpp
   src/xbt/memory_map.hpp
   src/xbt/parmap.cpp
-  src/xbt/set.c
   src/xbt/snprintf.c
   src/xbt/string.cpp
   src/xbt/swag.c
@@ -714,7 +713,6 @@ set(headers_to_install
   include/xbt/module.h
   include/xbt/parmap.h
   include/xbt/replay.h
-  include/xbt/set.h
   include/xbt/str.h
   include/xbt/strbuff.h
   include/xbt/swag.h
