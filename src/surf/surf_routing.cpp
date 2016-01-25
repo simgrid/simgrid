@@ -542,7 +542,7 @@ namespace surf {
  */
 void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t* route, double *latency)
 {
-  XBT_DEBUG("routing_get_route_and_latency from %s to %s", src->getName(), dst->getName());
+  XBT_DEBUG("getRouteAndLatency from %s to %s", src->getName(), dst->getName());
   if (NULL == *route) {
     xbt_dynar_reset(routing_platf->p_lastRoute);
     *route = routing_platf->p_lastRoute;

@@ -76,10 +76,6 @@ XBT_PUBLIC(void) routing_register_callbacks(void);
 XBT_PUBLIC(void) generic_free_route(sg_platf_route_cbarg_t route); // FIXME rename to routing_route_free
  // FIXME: make previous function private to routing again?
 
-
-XBT_PUBLIC(void) routing_get_route_and_latency(sg_netcard_t src, sg_netcard_t dst,
-                              xbt_dynar_t * route, double *latency);
-
 XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
 /**
  * Resource protected methods

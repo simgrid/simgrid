@@ -307,8 +307,7 @@ Link* NetworkNS3Model::createLink(const char *name,
 xbt_dynar_t NetworkNS3Model::getRoute(NetCard *src, NetCard *dst)
 {
   xbt_dynar_t route = NULL;
-  routing_get_route_and_latency(src, dst, &route, NULL);
-  //routing_platf->getRouteAndLatency(src, dst, &route, NULL);
+  routing_platf->getRouteAndLatency(src, dst, &route, NULL);
   return route;
 }
 
@@ -379,7 +378,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
     	xbt_dynar_t route = NULL;
 
-    	routing_get_route_and_latency (action->p_srcElm, action->p_dstElm, &route, NULL);
+    	routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, &route, NULL);
     	unsigned int i;
     	for (i = 0; i < xbt_dynar_length (route); i++){
     		NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr(route, i));

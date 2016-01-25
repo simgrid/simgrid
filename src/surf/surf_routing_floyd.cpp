@@ -120,7 +120,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
 
     if (p_hierarchy == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL
         && strcmp(prev_dst_gw->getName(), e_route->gw_src->getName())) {
-      routing_get_route_and_latency(prev_dst_gw, e_route->gw_src,
+      routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src,
                                     &res->link_list, lat);
     }
 

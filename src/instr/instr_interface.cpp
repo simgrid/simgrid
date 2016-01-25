@@ -6,6 +6,7 @@
 
 #include "simgrid_config.h"
 
+#include "src/surf/network_interface.hpp"
 #include "src/instr/instr_private.h"
 #include "surf/surf.h"
 #include "src/surf/surf_private.h"
@@ -370,7 +371,7 @@ static void instr_user_srcdst_variable(double time,
   sg_netcard_t dst_elm = sg_netcard_by_name_or_null(dst);
   if(!dst_elm) xbt_die("Element '%s' not found!",dst);
 
-  routing_get_route_and_latency (src_elm, dst_elm, &route,NULL);
+  routing_platf->getRouteAndLatency (src_elm, dst_elm, &route,NULL);
   unsigned int i;
   surf_cpp_resource_t link;
   xbt_dynar_foreach (route, i, link) {

@@ -14,7 +14,7 @@
 #include <string.h>
 #include <math.h>
 
-
+#include "src/surf/network_interface.hpp"
 #include "simgrid/simdag.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
             ,dst);
         xbt_dynar_t route=NULL;
         value2 = sg_host_by_name(dst)->pimpl_netcard;
-        routing_get_route_and_latency(value1, value2, &route,NULL);
+        routing_platf->getRouteAndLatency(value1, value2, &route,NULL);
         for(i=0;i<xbt_dynar_length(route) ;i++)
         {
           void *link = xbt_dynar_get_as(route,i,void *);
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
               ,dst);
           xbt_dynar_t route=NULL;
           value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-          routing_get_route_and_latency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
+          routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
           for(i=0;i<xbt_dynar_length(route) ;i++)
           {
             void *link = xbt_dynar_get_as(route,i,void *);
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
                 ,dst);
             xbt_dynar_t route=NULL;
             value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-            routing_get_route_and_latency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
+            routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
             for(i=0;i<xbt_dynar_length(route) ;i++)
             {
               void *link = xbt_dynar_get_as(route,i,void *);
@@ -265,7 +265,7 @@ int main(int argc, char **argv)
               ,src, dst);
           xbt_dynar_t route=NULL;
           value2 = sg_host_by_name(dst)->pimpl_netcard;
-          routing_get_route_and_latency((sg_netcard_t)value1,(sg_netcard_t)value2,&route, NULL);
+          routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route, NULL);
           for(i=0;i<xbt_dynar_length(route) ;i++)
           {
             void *link = xbt_dynar_get_as(route,i,void *);
