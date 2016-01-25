@@ -42,8 +42,6 @@ typedef enum {
 
 XBT_PRIVATE FILE *surf_fopen(const char *name, const char *mode);
 
-extern XBT_PRIVATE tmgr_fes_t history;
-
 /* The __surf_is_absolute_file_path() returns 1 if
  * file_path is a absolute file path, in the other
  * case the function returns 0.

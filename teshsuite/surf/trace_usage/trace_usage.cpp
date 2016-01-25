@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
 
 static void test(void)
 {
-  tmgr_fes_t history = tmgr_history_new();
+  simgrid::trace_mgr::future_evt_set *fes = new simgrid::trace_mgr::future_evt_set();
   tmgr_trace_t trace_A = tmgr_trace_new_from_file("trace_A.txt");
   tmgr_trace_t trace_B = tmgr_trace_new_from_file("trace_B.txt");
   double next_event_date = -1.0;
@@ -29,20 +29,19 @@ static void test(void)
   char *host_A = strdup("Host A");
   char *host_B = strdup("Host B");
 
-  tmgr_history_add_trace(history, trace_A, 1.0, 2, host_A);
-  tmgr_history_add_trace(history, trace_B, 0.0, 0, host_B);
+  fes->add_trace(trace_A, 1.0, 2, host_A);
+  fes->add_trace(trace_B, 0.0, 0, host_B);
 
-  while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
+  while ((next_event_date = fes->next_date()) != -1.0) {
     XBT_DEBUG("%g" " : \n", next_event_date);
-    while (tmgr_history_get_next_event_leq(history, next_event_date,
-                                           &value, (void **) &resource)) {
+    while (fes->pop_leq(next_event_date, &value, (void **) &resource)) {
       XBT_DEBUG("\t %s : " "%g" "\n", resource, value);
     }
     if (next_event_date > 1000)
       break;
   }
 
-  tmgr_history_free(history);
+  delete fes;
   free(host_B);
   free(host_A);
 }

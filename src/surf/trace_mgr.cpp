@@ -17,21 +17,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
 static xbt_dict_t trace_list = NULL;
 
-tmgr_fes_t tmgr_history_new(void)
-{
-  tmgr_fes_t h;
-
-  h = xbt_new0(s_tmgr_history_t, 1);
-
-  h->heap = xbt_heap_new(8, xbt_free_f);        /* Why 8 ? Well, why not... */
-
-  return h;
+simgrid::trace_mgr::future_evt_set::future_evt_set() {
 }
 
-void tmgr_history_free(tmgr_fes_t h)
+simgrid::trace_mgr::future_evt_set::~future_evt_set()
 {
-  xbt_heap_free(h->heap);
-  free(h);
+  xbt_heap_free(p_heap);
 }
 
 
@@ -381,10 +372,11 @@ void tmgr_trace_free(tmgr_trace_t trace)
   free(trace);
 }
 
-tmgr_trace_iterator_t tmgr_history_add_trace(tmgr_fes_t h,
-                                          tmgr_trace_t trace,
-                                          double start_time,
-                                          unsigned int offset, void *resource)
+tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(
+    tmgr_trace_t trace,
+    double start_time,
+    unsigned int offset,
+    void *resource)
 {
   tmgr_trace_iterator_t trace_iterator = NULL;
 
@@ -398,25 +390,25 @@ tmgr_trace_iterator_t tmgr_history_add_trace(tmgr_fes_t h,
               "You're referring to an event that does not exist!");
   }
 
-  xbt_heap_push(h->heap, trace_iterator, start_time);
+  xbt_heap_push(p_heap, trace_iterator, start_time);
 
   return trace_iterator;
 }
 
-double tmgr_history_next_date(tmgr_fes_t h)
+double simgrid::trace_mgr::future_evt_set::next_date()
 {
-  if (xbt_heap_size(h->heap))
-    return (xbt_heap_maxkey(h->heap));
+  if (xbt_heap_size(p_heap))
+    return (xbt_heap_maxkey(p_heap));
   else
     return -1.0;
 }
 
-tmgr_trace_iterator_t tmgr_history_get_next_event_leq(tmgr_fes_t h,
-                                                   double date,
-                                                   double *value,
-                                                   void** resource)
+tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(
+    double date,
+    double *value,
+    void** resource)
 {
-  double event_date = tmgr_history_next_date(h);
+  double event_date = next_date();
   tmgr_trace_iterator_t trace_iterator = NULL;
   tmgr_event_t event = NULL;
   tmgr_trace_t trace = NULL;
@@ -425,7 +417,7 @@ tmgr_trace_iterator_t tmgr_history_get_next_event_leq(tmgr_fes_t h,
   if (event_date > date)
     return NULL;
 
-  if (!(trace_iterator = (tmgr_trace_iterator_t)xbt_heap_pop(h->heap)))
+  if (!(trace_iterator = (tmgr_trace_iterator_t)xbt_heap_pop(p_heap)))
     return NULL;
 
   trace = trace_iterator->trace;
@@ -439,10 +431,10 @@ tmgr_trace_iterator_t tmgr_history_get_next_event_leq(tmgr_fes_t h,
       *value = event->value;
 
       if (trace_iterator->idx < xbt_dynar_length(trace->s_list.event_list) - 1) {
-        xbt_heap_push(h->heap, trace_iterator, event_date + event->delta);
+        xbt_heap_push(p_heap, trace_iterator, event_date + event->delta);
         trace_iterator->idx++;
       } else if (event->delta > 0) {        /* Last element, checking for periodicity */
-        xbt_heap_push(h->heap, trace_iterator, event_date + event->delta);
+        xbt_heap_push(p_heap, trace_iterator, event_date + event->delta);
         trace_iterator->idx = 1; /* not 0 as the first event is a placeholder to handle when events really start */
       } else {                      /* We don't need this trace_event anymore */
         trace_iterator->free_me = 1;
@@ -465,7 +457,7 @@ tmgr_trace_iterator_t tmgr_history_get_next_event_leq(tmgr_fes_t h,
         event_delta = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[0]);
         *value = tmgr_event_generator_next_value(trace->s_probabilist.event_generator[1]);
       }
-      xbt_heap_push(h->heap, trace_iterator, event_date + event_delta);
+      xbt_heap_push(p_heap, trace_iterator, event_date + event_delta);
       XBT_DEBUG("Generating a new event at date %f, with value %f", event_date + event_delta, *value);
 
       break;

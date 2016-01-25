@@ -351,7 +351,7 @@ void HostL07Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, host);
+    host->p_stateEvent = future_evt_set->add_trace(trace, 0.0, 0, host);
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
@@ -361,7 +361,7 @@ void HostL07Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_speedEvent = tmgr_history_add_trace(history, trace, 0.0, 0, host);
+    host->p_speedEvent = future_evt_set->add_trace(trace, 0.0, 0, host);
   }
 
   /* Connect traces relative to network */
@@ -372,7 +372,7 @@ void HostL07Model::addTraces()
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    link->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+    link->p_stateEvent = future_evt_set->add_trace(trace, 0.0, 0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
@@ -382,7 +382,7 @@ void HostL07Model::addTraces()
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    link->p_bwEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+    link->p_bwEvent = future_evt_set->add_trace(trace, 0.0, 0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
@@ -392,7 +392,7 @@ void HostL07Model::addTraces()
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    link->p_latEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+    link->p_latEvent = future_evt_set->add_trace(trace, 0.0, 0, link);
   }
 }
 
@@ -410,12 +410,12 @@ CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host,
   p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,pstate,double) * speedScale);
 
   if (speedTrace)
-    p_speedEvent = tmgr_history_add_trace(history, speedTrace, 0.0, 0, this);
+    p_speedEvent = future_evt_set->add_trace(speedTrace, 0.0, 0, this);
   else
     p_speedEvent = NULL;
 
   if (state_trace)
-	p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
+	p_stateEvent = future_evt_set->add_trace(state_trace, 0.0, 0, this);
 }
 
 CpuL07::~CpuL07()
@@ -430,11 +430,11 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
 		         int initiallyOn,
 		         tmgr_trace_t state_trace,
 		         e_surf_link_sharing_policy_t policy)
- : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), history, state_trace)
+ : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), future_evt_set, state_trace)
 {
   m_bwCurrent = bw_initial;
   if (bw_trace)
-    p_bwEvent = tmgr_history_add_trace(history, bw_trace, 0.0, 0, this);
+    p_bwEvent = future_evt_set->add_trace(bw_trace, 0.0, 0, this);
 
   if (initiallyOn)
     turnOn();
@@ -443,7 +443,7 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
   m_latCurrent = lat_initial;
 
   if (lat_trace)
-	p_latEvent = tmgr_history_add_trace(history, lat_trace, 0.0, 0, this);
+    p_latEvent = future_evt_set->add_trace(lat_trace, 0.0, 0, this);
 
   if (policy == SURF_LINK_FATPIPE)
 	lmm_constraint_shared(getConstraint());

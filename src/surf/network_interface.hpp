@@ -185,12 +185,12 @@ public:
    * @param name The name of the Link
    * @param props Dictionary of properties associated to this Link
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
-   * @param history [TODO]
+   * @param fes Future Event Set in which our events must be registered
    * @param state_trace [TODO]
    */
   Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
               lmm_constraint_t constraint,
-              tmgr_fes_t history,
+              sg_future_evt_set_t fes,
               tmgr_trace_t state_trace);
 
   /* Link destruction logic */

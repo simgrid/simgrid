@@ -21,10 +21,9 @@ namespace simgrid {
     class As;
     class Link;
   }
-}
-
-namespace simgrid {
-
+  namespace trace_mgr {
+    class future_evt_set;
+  }
 }
 
 typedef simgrid::s4u::Host simgrid_Host;
@@ -32,6 +31,7 @@ typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::NetCard surf_NetCard;
 typedef simgrid::surf::As surf_As;
 typedef simgrid::surf::Link Link;
+typedef simgrid::trace_mgr::future_evt_set sg_future_evt_set;
 
 #else
 
@@ -40,13 +40,14 @@ typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_NetCard surf_NetCard;
 typedef struct surf_As surf_As;
 typedef struct Link Link;
-
+typedef struct future_evt_set sg_future_evt_set;
 #endif
 
 typedef simgrid_Host* sg_host_t;
 typedef surf_Cpu *surf_cpu_t;
 typedef surf_NetCard *sg_netcard_t;
 typedef surf_As *AS_t;
+typedef sg_future_evt_set *sg_future_evt_set_t;
 
 // Types which are in fact dictelmt:
 typedef xbt_dictelm_t sg_storage_t;

@@ -16,7 +16,6 @@ typedef struct lmm_constraint *lmm_constraint_t;
 typedef struct lmm_constraint_light *lmm_constraint_light_t;
 typedef struct lmm_system *lmm_system_t;
 
-typedef struct tmgr_fes *tmgr_fes_t;
 typedef struct tmgr_trace_iterator *tmgr_trace_iterator_t;
 
 

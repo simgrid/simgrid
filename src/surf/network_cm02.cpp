@@ -209,7 +209,7 @@ Link* NetworkCm02Model::createLink(const char *name,
              "Link '%s' declared several times in the platform",
              name);
 
-  Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial, history,
+  Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial, future_evt_set,
 				             initiallyOn, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
   Link::onCreation(link);
   return link;
@@ -479,7 +479,7 @@ void NetworkCm02Model::addTraces(){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_stateEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+    link->p_stateEvent = future_evt_set->add_trace(trace, 0.0, 0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
@@ -492,7 +492,7 @@ void NetworkCm02Model::addTraces(){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_speed.event = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+    link->p_speed.event = future_evt_set->add_trace(trace, 0.0, 0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
@@ -505,7 +505,7 @@ void NetworkCm02Model::addTraces(){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_latEvent = tmgr_history_add_trace(history, trace, 0.0, 0, link);
+    link->p_latEvent = future_evt_set->add_trace(trace, 0.0, 0, link);
   }
 }
 
@@ -515,7 +515,7 @@ void NetworkCm02Model::addTraces(){
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
 	                           lmm_system_t system,
 	                           double constraint_value,
-	                           tmgr_fes_t history,
+	                           sg_future_evt_set_t fes,
 	                           int initiallyOn,
 	                           tmgr_trace_t state_trace,
 	                           double metric_peak,
@@ -523,7 +523,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
 	                           double lat_initial,
 	                           tmgr_trace_t lat_trace,
 	                           e_surf_link_sharing_policy_t policy)
-: Link(model, name, props, lmm_constraint_new(system, this, constraint_value), history, state_trace)
+: Link(model, name, props, lmm_constraint_new(system, this, constraint_value), fes, state_trace)
 {
   if (initiallyOn)
     turnOn();
@@ -533,13 +533,13 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
   p_speed.scale = 1.0;
   p_speed.peak = metric_peak;
   if (metric_trace)
-    p_speed.event = tmgr_history_add_trace(history, metric_trace, 0.0, 0, this);
+    p_speed.event = fes->add_trace(metric_trace, 0.0, 0, this);
   else
     p_speed.event = NULL;
 
   m_latCurrent = lat_initial;
   if (lat_trace)
-	p_latEvent = tmgr_history_add_trace(history, lat_trace, 0.0, 0, this);
+	p_latEvent = fes->add_trace(lat_trace, 0.0, 0, this);
 
   if (policy == SURF_LINK_FATPIPE)
 	lmm_constraint_shared(getConstraint());

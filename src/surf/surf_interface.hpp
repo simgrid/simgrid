@@ -25,7 +25,7 @@
 #include "src/surf/trace_mgr.hpp"
 #include "src/internal_config.h"
 
-extern XBT_PRIVATE tmgr_fes_t history;
+extern XBT_PRIVATE sg_future_evt_set_t future_evt_set;
 #define NO_MAX_DURATION -1.0
 
 /*********

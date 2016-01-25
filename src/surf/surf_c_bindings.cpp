@@ -38,11 +38,10 @@ void surf_presolve(void)
   unsigned int iter;
 
   XBT_DEBUG ("Consume all trace events occurring before the starting time.");
-  while ((next_event_date = tmgr_history_next_date(history)) != -1.0) {
+  while ((next_event_date = future_evt_set->next_date()) != -1.0) {
     if (next_event_date > NOW)
       break;
-    while ((event =
-            tmgr_history_get_next_event_leq(history, next_event_date,
+    while ((event = future_evt_set->pop_leq(next_event_date,
                                             &value,
                                             (void **) &resource))) {
       if (value >= 0){
@@ -94,7 +93,7 @@ double surf_solve(double max_date)
   do {
     XBT_DEBUG("Next TRACE event : %f", next_event_date);
 
-    next_event_date = tmgr_history_next_date(history);
+    next_event_date = future_evt_set->next_date();
 
     if(! surf_network_model->shareResourcesIsIdempotent()){ // NS3, I see you
       if(next_event_date!=-1.0 && surf_min!=-1.0) {
@@ -120,8 +119,7 @@ double surf_solve(double max_date)
     if ((surf_min == -1.0) || (next_event_date > NOW + surf_min)) break;
 
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", surf_min, NOW, next_event_date);
-    while ((event =
-            tmgr_history_get_next_event_leq(history, next_event_date,
+    while ((event = future_evt_set->pop_leq(next_event_date,
                                             &value,
                                             (void **) &resource))) {
       if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->getName())) {

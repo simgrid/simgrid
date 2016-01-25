@@ -123,7 +123,7 @@ void CpuCas01Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->setStateEvent(tmgr_history_add_trace(history, trace, 0.0, 0, host));
+    host->setStateEvent(future_evt_set->add_trace(trace, 0.0, 0, host));
   }
 
   xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
@@ -133,7 +133,7 @@ void CpuCas01Model::addTraces()
     xbt_assert(host, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->setPowerEvent(tmgr_history_add_trace(history, trace, 0.0, 0, host));
+    host->setPowerEvent(future_evt_set->add_trace(trace, 0.0, 0, host));
   }
 }
 
@@ -154,10 +154,10 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t s
 
   m_core = core;
   if (speedTrace)
-    p_speedEvent = tmgr_history_add_trace(history, speedTrace, 0.0, 0, this);
+    p_speedEvent = future_evt_set->add_trace(speedTrace, 0.0, 0, this);
 
   if (stateTrace)
-    p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, this);
+    p_stateEvent = future_evt_set->add_trace(stateTrace, 0.0, 0, this);
 }
 
 CpuCas01::~CpuCas01()

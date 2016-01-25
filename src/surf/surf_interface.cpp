@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 xbt_dynar_t all_existing_models = NULL; /* to destroy models correctly */
 xbt_dynar_t model_list_invoke = NULL;  /* to invoke callbacks */
 
-tmgr_fes_t history = NULL;
+sg_future_evt_set_t future_evt_set = nullptr;
 xbt_dynar_t surf_path = NULL;
 xbt_dynar_t host_that_restart = NULL;
 xbt_dict_t watched_hosts_lib;
@@ -327,8 +327,8 @@ void surf_init(int *argc, char **argv)
     all_existing_models = xbt_dynar_new(sizeof(simgrid::surf::Model*), NULL);
   if (!model_list_invoke)
     model_list_invoke = xbt_dynar_new(sizeof(simgrid::surf::Model*), NULL);
-  if (!history)
-    history = tmgr_history_new();
+  if (!future_evt_set)
+    future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
   TRACE_add_start_function(TRACE_surf_alloc);
   TRACE_add_end_function(TRACE_surf_release);
@@ -368,9 +368,9 @@ void surf_exit(void)
 
   simgrid::surf::surfExitCallbacks();
 
-  if (history) {
-    tmgr_history_free(history);
-    history = NULL;
+  if (future_evt_set) {
+    delete future_evt_set;
+    future_evt_set = nullptr;
   }
 
 #ifdef CONTEXT_THREADS

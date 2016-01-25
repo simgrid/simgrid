@@ -201,13 +201,13 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 
 Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
 		                 lmm_constraint_t constraint,
-	                     tmgr_fes_t history,
+	                   sg_future_evt_set_t fes,
 	                     tmgr_trace_t state_trace)
 : Resource(model, name, constraint),
   PropertyHolder(props)
 {
   if (state_trace)
-    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
+    p_stateEvent = fes->add_trace(state_trace, 0.0, 0, this);
 
   links->insert({name, this});
   XBT_DEBUG("Create link '%s'",name);

@@ -12,6 +12,7 @@
 #include "surf/maxmin.h"
 #include "surf/datatypes.h"
 #include "simgrid/platf_interface.h"
+#include "simgrid/forward.h"
 
 SG_BEGIN_DECL()
 #include "xbt/base.h"
@@ -74,18 +75,9 @@ typedef struct tmgr_trace_iterator {
   int free_me;
 } s_tmgr_trace_event_t;
 
-/* Future Event Set (collection of iterators over the traces)
- * That's useful to quickly know which is the next occurring event in a set of traces. */
-typedef struct tmgr_fes {
-  xbt_heap_t heap; /* Content: only trace_events */
-} s_tmgr_history_t;
-
 XBT_PRIVATE double tmgr_event_generator_next_value(probabilist_event_generator_t generator);
 
 /* Creation functions */
-XBT_PUBLIC(tmgr_fes_t) tmgr_history_new(void);
-XBT_PUBLIC(void) tmgr_history_free(tmgr_fes_t history);
-
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
 XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 /**
@@ -97,21 +89,34 @@ XBT_PUBLIC(void) tmgr_trace_free(tmgr_trace_t trace);
 */
 XBT_PUBLIC(int) tmgr_trace_event_free(tmgr_trace_iterator_t trace_event);
 
-XBT_PUBLIC(tmgr_trace_iterator_t) tmgr_history_add_trace(tmgr_fes_t
-                                                      history,
-                                                      tmgr_trace_t trace,
-                                                      double start_time,
-                                                      unsigned int offset,
-                                                      void *model);
-
-/* Access functions */
-XBT_PUBLIC(double) tmgr_history_next_date(tmgr_fes_t history);
-XBT_PUBLIC(tmgr_trace_iterator_t)
-    tmgr_history_get_next_event_leq(tmgr_fes_t history, double date,
-                                double *value, void **model);
-
 XBT_PUBLIC(void) tmgr_finalize(void);
 
 SG_END_DECL()
+
+#ifdef __cplusplus
+namespace simgrid {
+  namespace trace_mgr {
+
+/* Future Event Set (collection of iterators over the traces)
+ * That's useful to quickly know which is the next occurring event in a set of traces. */
+XBT_PUBLIC_CLASS future_evt_set {
+public:
+  future_evt_set();
+  virtual ~future_evt_set();
+  double next_date();
+  tmgr_trace_iterator_t pop_leq(double date, double *value, void** resource);
+  tmgr_trace_iterator_t add_trace(
+      tmgr_trace_t trace,
+      double start_time,
+      unsigned int offset,
+      void *model);
+
+private:
+  // TODO: use a boost type for the heap (or a ladder queue)
+  xbt_heap_t p_heap = xbt_heap_new(8, xbt_free_f); /* Content: only trace_events (yep, 8 is an arbitrary value) */
+};
+
+}} // namespace simgrid::trace_mgr
+#endif /* C++ only */
 
 #endif                          /* _SURF_TMGR_H */
