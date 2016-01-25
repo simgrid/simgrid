@@ -23,7 +23,6 @@
 
 #include <xbt/dynar.h>
 #include <xbt/dict.h>
-#include <xbt/set.h>
 #include <xbt/swag.h>
 #include <xbt/heap.h>
 #include <xbt/parmap.h>
