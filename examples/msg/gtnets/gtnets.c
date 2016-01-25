@@ -20,7 +20,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
-int timer(int argc, char *argv[]);
 msg_error_t test_all(const char *platform_file,
                      const char *application_file);
 
@@ -37,8 +36,6 @@ const char *masternames[NTASKS];
 int gl_task_array_id = 0;
 int count_finished = 0;
 
-#define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
-
 /** master */
 int master(int argc, char *argv[])
 {
@@ -49,9 +46,8 @@ int master(int argc, char *argv[])
   //unique id to control statistics
   int id = -1;
 
-  if (argc != 4) {
-    XBT_INFO("Strange number of arguments expected 3 got %d", argc - 1);
-  }
+  xbt_assert(argc == 4, "Strange number of arguments expected 3 got %d",
+             argc - 1);
 
   /* data size */
   int read;
@@ -88,31 +84,6 @@ int master(int argc, char *argv[])
   return 0;
 }                               /* end_of_master */
 
-
-/** Timer function  */
-int timer(int argc, char *argv[])
-{
-  int sleep_time;
-  int first_sleep;
-
-  if (argc != 3) {
-    XBT_INFO("Strange number of arguments expected 2 got %d", argc - 1);
-  }
-
-  sscanf(argv[1], "%d", &first_sleep);
-  sscanf(argv[2], "%d", &sleep_time);
-
-  if(first_sleep){
-      MSG_process_sleep(first_sleep);
-  }
-
-  while(timer_start){
-      MSG_process_sleep(sleep_time);
-  }
-
-  return 0;
-}
-
 /** Receiver function  */
 int slave(int argc, char *argv[])
 {
@@ -126,9 +97,8 @@ int slave(int argc, char *argv[])
   double remaining = 0;
   char id_alias[10];
 
-  if (argc != 2) {
-    XBT_INFO("Strange number of arguments expected 1 got %d", argc - 1);
-  }
+  xbt_assert(argc == 2, "Strange number of arguments expected 1 got %d",
+             argc - 1);
 
   id = atoi(argv[1]);
   sprintf(id_alias, "%d", id);
@@ -141,19 +111,13 @@ int slave(int argc, char *argv[])
       timer_start = 0;
   }
 
-
-
-  if (a != MSG_OK) {
-    XBT_INFO("Hey?! What's up?");
-    xbt_die("Unexpected behavior.");
-  }
+ xbt_assert(a == MSG_OK,"Hey?! What's up? Unexpected behavior");
 
   elapsed_time = MSG_get_clock() - start_time;
-  
-  
+
   if (!bool_printed) {
     bool_printed = 1;
-    
+
     for (id = 0; id < NTASKS; id++) {
       if (gl_task_array[id] == NULL) continue;
       if (gl_task_array[id] == task) {
@@ -215,7 +179,6 @@ msg_error_t test_all(const char *platform_file,
   {                             /*   Application deployment */
     MSG_function_register("master", master);
     MSG_function_register("slave", slave);
-    MSG_function_register("timer", timer);
 
     MSG_launch_application(application_file);
   }
