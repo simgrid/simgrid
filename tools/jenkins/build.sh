@@ -146,20 +146,3 @@ fi
 echo "XX"
 echo "XX Done. Return the results to cmake"
 echo "XX"
-
-if [ "$build_mode" = "DynamicAnalysis" ]
-then
-  ctest -D ContinuousStart
-  ctest -D ContinuousConfigure
-  ctest -D ContinuousBuild
-  ctest -D ContinuousMemCheck
-  ctest -D ContinuousSubmit
-fi
-
-ctest -D ContinuousStart
-ctest -D ContinuousConfigure
-ctest -D ContinuousBuild
-ctest -D ContinuousTest
-ctest -D ContinuousSubmit
-
-rm -rf `cat VERSION`
