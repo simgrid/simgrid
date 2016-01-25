@@ -21,7 +21,7 @@ endif()
 
 if(VALGRIND_EXE)
   exec_program("${VALGRIND_EXE} --version " OUTPUT_VARIABLE "VALGRIND_VERSION")
-  string(REGEX MATCH "[0-9].[0-9].[0-9]" NEW_VALGRIND_VERSION "${VALGRIND_VERSION}")
+  string(REGEX MATCH "[0-9]+.[0-9]+.[0-9]+" NEW_VALGRIND_VERSION "${VALGRIND_VERSION}")
   if(NEW_VALGRIND_VERSION)
     message(STATUS "Valgrind version: ${NEW_VALGRIND_VERSION}")
     exec_program("${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/generate_memcheck_tests.pl ${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Tests.cmake > ${CMAKE_HOME_DIRECTORY}/tools/cmake/memcheck_tests.cmake" OUTPUT_VARIABLE SHUTT)
