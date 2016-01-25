@@ -42,7 +42,7 @@ void TRACE_sd_task_execute_start(SD_task_t task)
 //    int i;
 //    for (i = 0; i < task->workstation_nb; i++){
 //      container_t workstation_container =
-//          PJ_container_get (SD_workstation_get_name(task->workstation_list[i]));
+//          PJ_container_get (sg_host_get_name(task->workstation_list[i]));
 //      char name[1024];
 //      type_t type = PJ_type_get ("power_used", workstation_container->type);
 //      sprintf(name, "%s_ws_%d", SD_task_get_name(task), i);
@@ -59,7 +59,7 @@ void TRACE_sd_task_execute_end(SD_task_t task)
 //    int i;
 //    for (i = 0; i < task->workstation_nb; i++){
 //      container_t workstation_container =
-//          PJ_container_get (SD_workstation_get_name(task->workstation_list[i]));
+//          PJ_container_get (sg_host_get_name(task->workstation_list[i]));
 //      type_t type = PJ_type_get ("power_used", workstation_container->type);
 //      new_pajePopState (SD_get_clock(), workstation_container, type);
 //    }

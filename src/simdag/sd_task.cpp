@@ -1246,8 +1246,8 @@ void SD_task_schedulev(SD_task_t task, int count,
   if (task->kind == SD_TASK_COMM_E2E) {
     XBT_VERB("Schedule comm task %s between %s -> %s. It costs %.f bytes",
           SD_task_get_name(task),
-          SD_workstation_get_name(task->workstation_list[0]),
-          SD_workstation_get_name(task->workstation_list[1]),
+          sg_host_get_name(task->workstation_list[0]),
+          sg_host_get_name(task->workstation_list[1]),
           task->bytes_amount[2]);
 
   }
@@ -1257,7 +1257,7 @@ void SD_task_schedulev(SD_task_t task, int count,
   if (task->kind == SD_TASK_COMP_SEQ) {
     XBT_VERB("Schedule computation task %s on %s. It costs %.f flops",
           SD_task_get_name(task),
-          SD_workstation_get_name(task->workstation_list[0]),
+          sg_host_get_name(task->workstation_list[0]),
           task->flops_amount[0]);
 
     xbt_dynar_foreach(task->tasks_before, cpt, dep) {
@@ -1271,8 +1271,8 @@ void SD_task_schedulev(SD_task_t task, int count,
           XBT_VERB
               ("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
                SD_task_get_name(before),
-               SD_workstation_get_name(before->workstation_list[0]),
-               SD_workstation_get_name(before->workstation_list[1]),
+               sg_host_get_name(before->workstation_list[0]),
+               sg_host_get_name(before->workstation_list[1]),
                before->bytes_amount[2]);
         }
       }
@@ -1287,8 +1287,8 @@ void SD_task_schedulev(SD_task_t task, int count,
           XBT_VERB
               ("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
                SD_task_get_name(after),
-               SD_workstation_get_name(after->workstation_list[0]),
-               SD_workstation_get_name(after->workstation_list[1]),
+               sg_host_get_name(after->workstation_list[0]),
+               sg_host_get_name(after->workstation_list[1]),
                after->bytes_amount[2]);
 
         }
@@ -1344,8 +1344,8 @@ void SD_task_schedulev(SD_task_t task, int count,
               dst_start = j*before->amount/dst_nb;
               dst_end = dst_start + before->amount/dst_nb;
               XBT_VERB("(%s->%s): (%.2f, %.2f)-> (%.2f, %.2f)",
-                  SD_workstation_get_name(before->workstation_list[i]),
-                  SD_workstation_get_name(before->workstation_list[src_nb+j]),
+                  sg_host_get_name(before->workstation_list[i]),
+                  sg_host_get_name(before->workstation_list[src_nb+j]),
                   src_start, src_end, dst_start, dst_end);
               if ((src_end <= dst_start) || (dst_end <= src_start)) {
                 before->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;

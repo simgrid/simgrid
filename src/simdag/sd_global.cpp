@@ -177,8 +177,8 @@ void SD_create_environment(const char *platform_file)
       __SD_storage_create(surf_storage[SURF_STORAGE_LEVEL], NULL);
   }
 
-  XBT_DEBUG("Workstation number: %d, link number: %d",
-         SD_workstation_get_count(), sg_link_count());
+  XBT_DEBUG("Workstation number: %lu, link number: %d",
+         sg_host_count(), sg_link_count());
 #ifdef HAVE_JEDULE
   jedule_setup_platform();
 #endif

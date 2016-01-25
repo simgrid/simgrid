@@ -58,11 +58,11 @@ SD_workstation_t SD_workstation_get_by_name(const char *name)
 /**
  * \brief Returns the workstation list
  *
- * Use SD_workstation_get_number() to know the array size.
+ * Use SD_workstation_get_count() to know the array size.
  * 
  * \return an array of \ref SD_workstation_t containing all workstations
  * \remark The workstation order in the returned array is generally different from the workstation creation/declaration order in the XML platform (we use a hash table internally).
- * \see SD_workstation_get_number()
+ * \see SD_workstation_get_count()
  */
 const SD_workstation_t *SD_workstation_get_list(void) {
   xbt_assert(SD_workstation_get_count() > 0, "There is no workstation!");
@@ -132,7 +132,7 @@ const char *SD_workstation_get_name(SD_workstation_t workstation)
 const char *SD_workstation_get_property_value(SD_workstation_t ws,
                                               const char *name)
 {
-  return (const char*) xbt_dict_get_or_null(SD_workstation_get_properties(ws), name);
+  return (const char*) xbt_dict_get_or_null(sg_host_get_properties(ws), name);
 }
 
 
@@ -155,10 +155,10 @@ void SD_workstation_dump(SD_workstation_t ws)
   xbt_dict_cursor_t cursor=NULL;
   char *key,*data;
 
-  XBT_INFO("Displaying workstation %s", SD_workstation_get_name(ws));
-  XBT_INFO("  - speed: %.0f", SD_workstation_get_speed(ws));
-  XBT_INFO("  - available speed: %.2f", SD_workstation_get_available_speed(ws));
-  props = SD_workstation_get_properties(ws);
+  XBT_INFO("Displaying workstation %s", sg_host_get_name(ws));
+  XBT_INFO("  - speed: %.0f", ws->speed());
+  XBT_INFO("  - available speed: %.2f", surf_host_get_available_speed(ws));
+  props = sg_host_get_properties(ws);
   
   if (!xbt_dict_is_empty(props)){
     XBT_INFO("  - properties:");
@@ -258,7 +258,7 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
 {
   xbt_assert(flops_amount >= 0,
               "flops_amount must be greater than or equal to zero");
-  return flops_amount / SD_workstation_get_speed(workstation);
+  return flops_amount / workstation->speed();
 }
 
 /**
