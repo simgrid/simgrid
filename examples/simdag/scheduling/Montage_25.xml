@@ -189,89 +189,24 @@
     <uses file="shrunken_ID00023_ID00023.jpg" link="output" register="true" transfer="true" optional="false" type="data" size="204856"/>
   </job>
 <!-- part 3: list of control-flow dependencies (may be empty) -->
-  <child ref="ID00005">
-    <parent ref="ID00001"/>
-    <parent ref="ID00000"/>
-  </child>
-  <child ref="ID00006">
-    <parent ref="ID00001"/>
-    <parent ref="ID00000"/>
-  </child>
-  <child ref="ID00007">
-    <parent ref="ID00001"/>
-    <parent ref="ID00003"/>
-  </child>
-  <child ref="ID00008">
-    <parent ref="ID00002"/>
-    <parent ref="ID00000"/>
-  </child>
-  <child ref="ID00009">
-    <parent ref="ID00002"/>
-    <parent ref="ID00001"/>
-  </child>
-  <child ref="ID00010">
-    <parent ref="ID00002"/>
-  </child>
-  <child ref="ID00011">
-    <parent ref="ID00001"/>
-    <parent ref="ID00003"/>
-  </child>
-  <child ref="ID00012">
-    <parent ref="ID00001"/>
-    <parent ref="ID00004"/>
-  </child>
-  <child ref="ID00013">
-    <parent ref="ID00004"/>
-    <parent ref="ID00003"/>
-  </child>
-  <child ref="ID00014">
-    <parent ref="ID00012"/>
-    <parent ref="ID00013"/>
-    <parent ref="ID00010"/>
-    <parent ref="ID00011"/>
-    <parent ref="ID00006"/>
-    <parent ref="ID00005"/>
-    <parent ref="ID00009"/>
-    <parent ref="ID00008"/>
-    <parent ref="ID00007"/>
-  </child>
-  <child ref="ID00015">
-    <parent ref="ID00014"/>
-  </child>
-  <child ref="ID00016">
-    <parent ref="ID00000"/>
-    <parent ref="ID00015"/>
-  </child>
-  <child ref="ID00017">
-    <parent ref="ID00001"/>
-    <parent ref="ID00015"/>
-  </child>
-  <child ref="ID00018">
-    <parent ref="ID00002"/>
-    <parent ref="ID00015"/>
-  </child>
-  <child ref="ID00019">
-    <parent ref="ID00003"/>
-    <parent ref="ID00015"/>
-  </child>
-  <child ref="ID00020">
-    <parent ref="ID00004"/>
-    <parent ref="ID00015"/>
-  </child>
-  <child ref="ID00021">
-    <parent ref="ID00020"/>
-    <parent ref="ID00016"/>
-    <parent ref="ID00017"/>
-    <parent ref="ID00018"/>
-    <parent ref="ID00019"/>
-  </child>
-  <child ref="ID00022">
-    <parent ref="ID00021"/>
-  </child>
-  <child ref="ID00023">
-    <parent ref="ID00022"/>
-  </child>
-  <child ref="ID00024">
-    <parent ref="ID00023"/>
-  </child>
+  <child ref="ID00005"><parent ref="ID00001"/><parent ref="ID00000"/></child>
+  <child ref="ID00006"><parent ref="ID00001"/><parent ref="ID00000"/></child>
+  <child ref="ID00007"><parent ref="ID00001"/><parent ref="ID00003"/></child>
+  <child ref="ID00008"><parent ref="ID00002"/><parent ref="ID00000"/></child>
+  <child ref="ID00009"><parent ref="ID00002"/><parent ref="ID00001"/></child>
+  <child ref="ID00010"><parent ref="ID00002"/></child>
+  <child ref="ID00011"><parent ref="ID00001"/><parent ref="ID00003"/></child>
+  <child ref="ID00012"><parent ref="ID00001"/><parent ref="ID00004"/></child>
+  <child ref="ID00013"><parent ref="ID00004"/><parent ref="ID00003"/></child>
+  <child ref="ID00014"><parent ref="ID00012"/><parent ref="ID00013"/><parent ref="ID00010"/><parent ref="ID00011"/><parent ref="ID00006"/><parent ref="ID00005"/><parent ref="ID00009"/><parent ref="ID00008"/><parent ref="ID00007"/></child>
+  <child ref="ID00015"><parent ref="ID00014"/></child>
+  <child ref="ID00016"><parent ref="ID00000"/><parent ref="ID00015"/></child>
+  <child ref="ID00017"><parent ref="ID00001"/><parent ref="ID00015"/></child>
+  <child ref="ID00018"><parent ref="ID00002"/><parent ref="ID00015"/></child>
+  <child ref="ID00019"><parent ref="ID00003"/><parent ref="ID00015"/></child>
+  <child ref="ID00020"><parent ref="ID00004"/><parent ref="ID00015"/></child>
+  <child ref="ID00021"><parent ref="ID00020"/><parent ref="ID00016"/><parent ref="ID00017"/><parent ref="ID00018"/><parent ref="ID00019"/></child>
+  <child ref="ID00022"><parent ref="ID00021"/></child>
+  <child ref="ID00023"><parent ref="ID00022"/></child>
+  <child ref="ID00024"><parent ref="ID00023"/></child>
 </adag>
