@@ -571,8 +571,7 @@ void LinkL07::updateLatency(double value, double date)
  **********/
 
 L07Action::~L07Action(){
-  if (p_communicationAmount != NULL)
-    free(p_communicationAmount);
+  free(p_communicationAmount);
   free(p_computationAmount);
 }
 
