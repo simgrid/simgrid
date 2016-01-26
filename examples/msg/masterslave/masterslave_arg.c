@@ -14,9 +14,6 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
                              "Messages specific for this msg example");
 
-int master(int argc, char *argv[]);
-int slave(int argc, char *argv[]);
-
 #define task_comp_size 50000000
 #define task_comm_size 1000000
 
@@ -29,7 +26,7 @@ static long my_random(long n)
 }
 
 /** Emitter function  */
-int master(int argc, char *argv[])
+static int master(int argc, char *argv[])
 {
   int i;
 
@@ -40,17 +37,14 @@ int master(int argc, char *argv[])
 
     sprintf(mailbox, "slave-%ld", i % number_of_slaves);
     sprintf(sprintf_buffer, "Task_%d", i);
-    task =
-        MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size,
-                        NULL);
+    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
     XBT_DEBUG("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name,
           number_of_jobs, mailbox);
 
     MSG_task_send(task, mailbox);
   }
 
-  XBT_DEBUG
-      ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+  XBT_DEBUG("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < number_of_slaves; i++) {
     char mailbox[80];
 
@@ -64,7 +58,7 @@ int master(int argc, char *argv[])
 }                               /* end_of_master */
 
 /** Receiver function  */
-int slave(int argc, char *argv[])
+static int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
@@ -85,9 +79,6 @@ int slave(int argc, char *argv[])
     MSG_task_destroy(task);
     task = NULL;
   }
-/*  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"*/
-/*	          "\tExample: %s msg_platform.xml msg_deployment.xml\n", */
-/*	          argv[0], argv[0]);XBT_DEBUG("I'm done. See you!");*/
   return 0;
 }                               /* end_of_slave */                              /* end_of_test_all */
 
@@ -114,19 +105,15 @@ int main(int argc, char *argv[])
   XBT_INFO("Got %ld slaves, %ld tasks to process, and %ld hosts", number_of_slaves, number_of_jobs,number_max);
 
   msg_host_t *host_table =  xbt_dynar_to_array(host_dynar);
-  //xbt_dynar_free(&host_dynar);
 
-  MSG_process_create( "master",
-                      master,
+  MSG_process_create( "master", master,
                       NULL,
                       host_table[my_random(number_max)]
                       );
 
-  for(i = 0 ; i<number_of_slaves; i++)
-  {
+  for(i = 0 ; i<number_of_slaves; i++) {
     char* name_host = bprintf("slave-%ld",i);
-      MSG_process_create( name_host,
-                          slave,
+      MSG_process_create( name_host, slave,
                           NULL,
                           host_table[my_random(number_max)]
                           );
