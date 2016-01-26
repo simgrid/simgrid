@@ -1,36 +1,34 @@
-! output sort
-
 $ simdag/availability/availability_test ${srcdir:=.}/../examples/platforms/simulacrum_7_hosts.xml --cfg=path:${srcdir:=.}/simdag/availability/ ${srcdir:=.}/../examples/simdag/scheduling/Montage_25.xml --cfg=network/TCP_gamma:4194304 --log=sd_daxparse.thresh:critical
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
-> Scheduling DAX...
-> Scheduling root to node: Host 26
-> Scheduling ID00000@mProjectPP to node: Host 27
-> Scheduling ID00001@mProjectPP to node: Host 28
-> Scheduling ID00002@mProjectPP to node: Host 29
-> Scheduling ID00003@mProjectPP to node: Host 30
-> Scheduling ID00004@mProjectPP to node: Host 31
-> Scheduling ID00005@mDiffFit to node: Host 32
-> Scheduling ID00006@mDiffFit to node: Host 26
-> Scheduling ID00007@mDiffFit to node: Host 27
-> Scheduling ID00008@mDiffFit to node: Host 28
-> Scheduling ID00009@mDiffFit to node: Host 29
-> Scheduling ID00010@mDiffFit to node: Host 30
-> Scheduling ID00011@mDiffFit to node: Host 31
-> Scheduling ID00012@mDiffFit to node: Host 32
-> Scheduling ID00013@mDiffFit to node: Host 26
-> Scheduling ID00014@mConcatFit to node: Host 27
-> Scheduling ID00015@mBgModel to node: Host 28
-> Scheduling ID00016@mBackground to node: Host 29
-> Scheduling ID00017@mBackground to node: Host 30
-> Scheduling ID00018@mBackground to node: Host 31
-> Scheduling ID00019@mBackground to node: Host 32
-> Scheduling ID00020@mBackground to node: Host 26
-> Scheduling ID00021@mImgTbl to node: Host 27
-> Scheduling ID00022@mAdd to node: Host 28
-> Scheduling ID00023@mShrink to node: Host 29
-> Scheduling ID00024@mJPEG to node: Host 30
-> Scheduling end to node: Host 26
-> DAX scheduled
-> Simulation end. Time: 164.052870
+> [0.000000] [test/INFO] Scheduling DAX...
+> [0.000000] [test/INFO] Scheduling root to node: Host 26
+> [0.000000] [test/INFO] Scheduling ID00000@mProjectPP to node: Host 27
+> [0.000000] [test/INFO] Scheduling ID00001@mProjectPP to node: Host 28
+> [0.000000] [test/INFO] Scheduling ID00002@mProjectPP to node: Host 29
+> [0.000000] [test/INFO] Scheduling ID00003@mProjectPP to node: Host 30
+> [0.000000] [test/INFO] Scheduling ID00004@mProjectPP to node: Host 31
+> [0.000000] [test/INFO] Scheduling ID00005@mDiffFit to node: Host 32
+> [0.000000] [test/INFO] Scheduling ID00006@mDiffFit to node: Host 26
+> [0.000000] [test/INFO] Scheduling ID00007@mDiffFit to node: Host 27
+> [0.000000] [test/INFO] Scheduling ID00008@mDiffFit to node: Host 28
+> [0.000000] [test/INFO] Scheduling ID00009@mDiffFit to node: Host 29
+> [0.000000] [test/INFO] Scheduling ID00010@mDiffFit to node: Host 30
+> [0.000000] [test/INFO] Scheduling ID00011@mDiffFit to node: Host 31
+> [0.000000] [test/INFO] Scheduling ID00012@mDiffFit to node: Host 32
+> [0.000000] [test/INFO] Scheduling ID00013@mDiffFit to node: Host 26
+> [0.000000] [test/INFO] Scheduling ID00014@mConcatFit to node: Host 27
+> [0.000000] [test/INFO] Scheduling ID00015@mBgModel to node: Host 28
+> [0.000000] [test/INFO] Scheduling ID00016@mBackground to node: Host 29
+> [0.000000] [test/INFO] Scheduling ID00017@mBackground to node: Host 30
+> [0.000000] [test/INFO] Scheduling ID00018@mBackground to node: Host 31
+> [0.000000] [test/INFO] Scheduling ID00019@mBackground to node: Host 32
+> [0.000000] [test/INFO] Scheduling ID00020@mBackground to node: Host 26
+> [0.000000] [test/INFO] Scheduling ID00021@mImgTbl to node: Host 27
+> [0.000000] [test/INFO] Scheduling ID00022@mAdd to node: Host 28
+> [0.000000] [test/INFO] Scheduling ID00023@mShrink to node: Host 29
+> [0.000000] [test/INFO] Scheduling ID00024@mJPEG to node: Host 30
+> [0.000000] [test/INFO] Scheduling end to node: Host 26
+> [0.000000] [test/INFO] DAX scheduled
+> [164.052870] [test/INFO] Simulation done.
 
