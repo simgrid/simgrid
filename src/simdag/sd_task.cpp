@@ -50,8 +50,8 @@ void SD_task_recycle_f(void *t)
   task->is_not_ready = 0;
 
   /* scheduling parameters */
-  task->workstation_nb = 0;
-  task->workstation_list = NULL;
+  task->host_count = 0;
+  task->host_list = NULL;
   task->flops_amount = NULL;
   task->bytes_amount = NULL;
   task->rate = -1;
@@ -97,8 +97,8 @@ static XBT_INLINE SD_task_t SD_task_create_sized(const char *name,
   SD_task_t task = SD_task_create(name, data, amount);
   task->bytes_amount = xbt_new0(double, ws_count * ws_count);
   task->flops_amount = xbt_new0(double, ws_count);
-  task->workstation_nb = ws_count;
-  task->workstation_list = xbt_new0(SD_workstation_t, ws_count);
+  task->host_count = ws_count;
+  task->host_list = xbt_new0(sg_host_t, ws_count);
   return task;
 }
 
@@ -200,7 +200,7 @@ SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data,
                                                double amount)
 {
   SD_task_t res = SD_task_create(name, data, amount);
-  res->workstation_list=NULL;
+  res->host_list=NULL;
   res->kind = SD_TASK_COMM_PAR_MXN_1D_BLOCK;
 
   return res;
@@ -234,7 +234,7 @@ void SD_task_destroy(SD_task_t task)
   if (task->surf_action != NULL)
     task->surf_action->unref();
 
-  xbt_free(task->workstation_list);
+  xbt_free(task->host_list);
   xbt_free(task->bytes_amount);
   xbt_free(task->flops_amount);
 
@@ -429,7 +429,7 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
  */
 int SD_task_get_workstation_count(SD_task_t task)
 {
-  return task->workstation_nb;
+  return task->host_count;
 }
 
 /**
@@ -438,9 +438,9 @@ int SD_task_get_workstation_count(SD_task_t task)
  * Only call this on already scheduled tasks!
  * \param task a task
  */
-SD_workstation_t *SD_task_get_workstation_list(SD_task_t task)
+sg_host_t *SD_task_get_workstation_list(SD_task_t task)
 {
-  return task->workstation_list;
+  return task->host_list;
 }
 
 /**
@@ -886,7 +886,7 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
  */
 double SD_task_get_execution_time(SD_task_t task,
                                   int workstation_nb,
-                                  const SD_workstation_t *
+                                  const sg_host_t *
                                   workstation_list,
                                   const double *flops_amount,
                                   const double *bytes_amount)
@@ -901,7 +901,7 @@ double SD_task_get_execution_time(SD_task_t task,
     time = 0.0;
     if (flops_amount != NULL)
       time =
-          SD_workstation_get_computation_time(workstation_list[i],
+          sg_host_computation_time(workstation_list[i],
                                               flops_amount[i]);
 
     if (bytes_amount != NULL)
@@ -950,13 +950,13 @@ static XBT_INLINE void SD_task_do_schedule(SD_task_t task)
  * \see SD_task_unschedule()
  */
 void SD_task_schedule(SD_task_t task, int workstation_count,
-                      const SD_workstation_t * workstation_list,
+                      const sg_host_t * workstation_list,
                       const double *flops_amount,
                       const double *bytes_amount, double rate)
 {
   xbt_assert(workstation_count > 0, "workstation_nb must be positive");
 
-  task->workstation_nb = workstation_count;
+  task->host_count = workstation_count;
   task->rate = rate;
 
   if (flops_amount) {
@@ -980,11 +980,11 @@ void SD_task_schedule(SD_task_t task, int workstation_count,
     task->bytes_amount = NULL;
   }
 
-  task->workstation_list = (SD_workstation_t*)
-    xbt_realloc(task->workstation_list,
-                sizeof(SD_workstation_t) * workstation_count);
-  memcpy(task->workstation_list, workstation_list,
-         sizeof(SD_workstation_t) * workstation_count);
+  task->host_list = (sg_host_t*)
+    xbt_realloc(task->host_list,
+                sizeof(sg_host_t) * workstation_count);
+  memcpy(task->host_list, workstation_list,
+         sizeof(sg_host_t) * workstation_count);
 
   SD_task_do_schedule(task);
 }
@@ -1013,9 +1013,9 @@ void SD_task_unschedule(SD_task_t task)
       && ((task->kind == SD_TASK_COMP_PAR_AMDAHL) ||
           (task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK))) { /* Don't free scheduling data for typed tasks */
     __SD_task_destroy_scheduling_data(task);
-    xbt_free(task->workstation_list);
-    task->workstation_list=NULL;
-    task->workstation_nb = 0;
+    xbt_free(task->host_list);
+    task->host_list=NULL;
+    task->host_count = 0;
   }
 
   if (SD_task_get_state(task) == SD_RUNNING)
@@ -1059,18 +1059,18 @@ void SD_task_run(SD_task_t task)
   xbt_assert(SD_task_get_state(task) == SD_RUNNABLE,
              "Task '%s' is not runnable! Task state: %d",
              SD_task_get_name(task), (int)SD_task_get_state(task));
-  xbt_assert(task->workstation_list != NULL,
+  xbt_assert(task->host_list != NULL,
               "Task '%s': workstation_list is NULL!",
               SD_task_get_name(task));
 
   XBT_DEBUG("Running task '%s'", SD_task_get_name(task));
 
   /* Copy the elements of the task into the action */
-  int host_nb = task->workstation_nb;
+  int host_nb = task->host_count;
   hosts = xbt_new(sg_host_t, host_nb);
 
   for (i = 0; i < host_nb; i++)
-    hosts[i] =  task->workstation_list[i];
+    hosts[i] =  task->host_list[i];
 
   double *flops_amount = xbt_new0(double, host_nb);
   double *bytes_amount = xbt_new0(double, host_nb * host_nb);
@@ -1165,9 +1165,9 @@ void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
               SD_task_get_name(task));  
   task->flops_amount = xbt_new0(double, ws_count);
   task->bytes_amount = xbt_new0(double, ws_count * ws_count);
-  xbt_free(task->workstation_list);
-  task->workstation_nb = ws_count;
-  task->workstation_list = xbt_new0(SD_workstation_t, ws_count);
+  xbt_free(task->host_list);
+  task->host_count = ws_count;
+  task->host_list = xbt_new0(sg_host_t, ws_count);
   
   for(i=0;i<ws_count;i++){
     task->flops_amount[i] = 
@@ -1198,7 +1198,7 @@ void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
  *    comm cost alongside to comp one)
  */
 void SD_task_schedulev(SD_task_t task, int count,
-                       const SD_workstation_t * list)
+                       const sg_host_t * list)
 {
   int i, j;
   SD_dependency_t dep;
@@ -1211,11 +1211,11 @@ void SD_task_schedulev(SD_task_t task, int count,
     SD_task_distribute_comp_amdahl(task, count);
   case SD_TASK_COMM_E2E:
   case SD_TASK_COMP_SEQ:
-    xbt_assert(task->workstation_nb == count,
+    xbt_assert(task->host_count == count,
                "Got %d locations, but were expecting %d locations",
-               count,task->workstation_nb);
+               count,task->host_count);
     for (i = 0; i < count; i++)
-      task->workstation_list[i] = list[i];
+      task->host_list[i] = list[i];
     if (SD_task_get_kind(task)== SD_TASK_COMP_SEQ && !task->flops_amount){
       /*This task has failed and is rescheduled. Reset the flops_amount*/
       task->flops_amount = xbt_new0(double, 1);
@@ -1230,8 +1230,8 @@ void SD_task_schedulev(SD_task_t task, int count,
   if (task->kind == SD_TASK_COMM_E2E) {
     XBT_VERB("Schedule comm task %s between %s -> %s. It costs %.f bytes",
           SD_task_get_name(task),
-          sg_host_get_name(task->workstation_list[0]),
-          sg_host_get_name(task->workstation_list[1]),
+          sg_host_get_name(task->host_list[0]),
+          sg_host_get_name(task->host_list[1]),
           task->bytes_amount[2]);
 
   }
@@ -1241,22 +1241,22 @@ void SD_task_schedulev(SD_task_t task, int count,
   if (task->kind == SD_TASK_COMP_SEQ) {
     XBT_VERB("Schedule computation task %s on %s. It costs %.f flops",
           SD_task_get_name(task),
-          sg_host_get_name(task->workstation_list[0]),
+          sg_host_get_name(task->host_list[0]),
           task->flops_amount[0]);
 
     xbt_dynar_foreach(task->tasks_before, cpt, dep) {
       SD_task_t before = dep->src;
       if (before->kind == SD_TASK_COMM_E2E) {
-        before->workstation_list[1] = task->workstation_list[0];
+        before->host_list[1] = task->host_list[0];
 
-        if (before->workstation_list[0] &&
+        if (before->host_list[0] &&
             (SD_task_get_state(before)< SD_SCHEDULED)) {
           SD_task_do_schedule(before);
           XBT_VERB
               ("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
                SD_task_get_name(before),
-               sg_host_get_name(before->workstation_list[0]),
-               sg_host_get_name(before->workstation_list[1]),
+               sg_host_get_name(before->host_list[0]),
+               sg_host_get_name(before->host_list[1]),
                before->bytes_amount[2]);
         }
       }
@@ -1264,15 +1264,15 @@ void SD_task_schedulev(SD_task_t task, int count,
     xbt_dynar_foreach(task->tasks_after, cpt, dep) {
       SD_task_t after = dep->dst;
       if (after->kind == SD_TASK_COMM_E2E) {
-        after->workstation_list[0] = task->workstation_list[0];
-        if (after->workstation_list[1]
+        after->host_list[0] = task->host_list[0];
+        if (after->host_list[1]
             && (SD_task_get_state(after)< SD_SCHEDULED)) {
           SD_task_do_schedule(after);
           XBT_VERB
               ("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes",
                SD_task_get_name(after),
-               sg_host_get_name(after->workstation_list[0]),
-               sg_host_get_name(after->workstation_list[1]),
+               sg_host_get_name(after->host_list[0]),
+               sg_host_get_name(after->host_list[1]),
                after->bytes_amount[2]);
 
         }
@@ -1284,42 +1284,42 @@ void SD_task_schedulev(SD_task_t task, int count,
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
     XBT_VERB("Schedule computation task %s on %d workstations. %.f flops"
              " will be distributed following Amdahl's Law",
-          SD_task_get_name(task), task->workstation_nb,
+          SD_task_get_name(task), task->host_count,
           task->flops_amount[0]);
     xbt_dynar_foreach(task->tasks_before, cpt, dep) {
       SD_task_t before = dep->src;
       if (before->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
-        if (!before->workstation_list){
+        if (!before->host_list){
           XBT_VERB("Sender side of Task %s is not scheduled yet",
              SD_task_get_name(before));
-          before->workstation_list = xbt_new0(SD_workstation_t, count);
-          before->workstation_nb = count;
+          before->host_list = xbt_new0(sg_host_t, count);
+          before->host_count = count;
           XBT_VERB("Fill the workstation list with list of Task '%s'",
             SD_task_get_name(task));
           for (i=0;i<count;i++)
-            before->workstation_list[i] = task->workstation_list[i];
+            before->host_list[i] = task->host_list[i];
         } else {
           XBT_VERB("Build communication matrix for task '%s'",
              SD_task_get_name(before));
           int src_nb, dst_nb;
           double src_start, src_end, dst_start, dst_end;
-          src_nb = before->workstation_nb;
+          src_nb = before->host_count;
           dst_nb = count;
-          before->workstation_list = (SD_workstation_t*) xbt_realloc(
-             before->workstation_list,
-             (before->workstation_nb+count)*sizeof(s_SD_workstation_t));
+          before->host_list = (sg_host_t*) xbt_realloc(
+             before->host_list,
+             (before->host_count+count)*sizeof(sg_host_t));
           for(i=0; i<count; i++)
-            before->workstation_list[before->workstation_nb+i] =
-               task->workstation_list[i];
+            before->host_list[before->host_count+i] =
+               task->host_list[i];
 
-          before->workstation_nb += count;
+          before->host_count += count;
           xbt_free(before->flops_amount);
           xbt_free(before->bytes_amount);
           before->flops_amount = xbt_new0(double,
-                                                before->workstation_nb);
+                                                before->host_count);
           before->bytes_amount = xbt_new0(double,
-                                                  before->workstation_nb*
-                                                  before->workstation_nb);
+                                                  before->host_count*
+                                                  before->host_count);
 
           for(i=0;i<src_nb;i++){
             src_start = i*before->amount/src_nb;
@@ -1328,8 +1328,8 @@ void SD_task_schedulev(SD_task_t task, int count,
               dst_start = j*before->amount/dst_nb;
               dst_end = dst_start + before->amount/dst_nb;
               XBT_VERB("(%s->%s): (%.2f, %.2f)-> (%.2f, %.2f)",
-                  sg_host_get_name(before->workstation_list[i]),
-                  sg_host_get_name(before->workstation_list[src_nb+j]),
+                  sg_host_get_name(before->host_list[i]),
+                  sg_host_get_name(before->host_list[src_nb+j]),
                   src_start, src_end, dst_start, dst_end);
               if ((src_end <= dst_start) || (dst_end <= src_start)) {
                 before->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
@@ -1354,37 +1354,37 @@ void SD_task_schedulev(SD_task_t task, int count,
     xbt_dynar_foreach(task->tasks_after, cpt, dep) {
       SD_task_t after = dep->dst;
       if (after->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
-        if (!after->workstation_list){
+        if (!after->host_list){
           XBT_VERB("Receiver side of Task '%s' is not scheduled yet",
               SD_task_get_name(after));
-          after->workstation_list = xbt_new0(SD_workstation_t, count);
-          after->workstation_nb = count;
+          after->host_list = xbt_new0(sg_host_t, count);
+          after->host_count = count;
           XBT_VERB("Fill the workstation list with list of Task '%s'",
             SD_task_get_name(task));
           for (i=0;i<count;i++)
-            after->workstation_list[i] = task->workstation_list[i];
+            after->host_list[i] = task->host_list[i];
         } else {
           int src_nb, dst_nb;
           double src_start, src_end, dst_start, dst_end;
           src_nb = count;
-          dst_nb = after->workstation_nb;
-          after->workstation_list = (SD_workstation_t*) xbt_realloc(
-            after->workstation_list,
-            (after->workstation_nb+count)*sizeof(s_SD_workstation_t));
-          for(i=after->workstation_nb - 1; i>=0; i--)
-            after->workstation_list[count+i] = after->workstation_list[i];
+          dst_nb = after->host_count;
+          after->host_list = (sg_host_t*) xbt_realloc(
+            after->host_list,
+            (after->host_count+count)*sizeof(sg_host_t));
+          for(i=after->host_count - 1; i>=0; i--)
+            after->host_list[count+i] = after->host_list[i];
           for(i=0; i<count; i++)
-            after->workstation_list[i] = task->workstation_list[i];
+            after->host_list[i] = task->host_list[i];
 
-          after->workstation_nb += count;
+          after->host_count += count;
 
           xbt_free(after->flops_amount);
           xbt_free(after->bytes_amount);
 
-          after->flops_amount = xbt_new0(double, after->workstation_nb);
+          after->flops_amount = xbt_new0(double, after->host_count);
           after->bytes_amount = xbt_new0(double,
-                                                 after->workstation_nb*
-                                                 after->workstation_nb);
+                                                 after->host_count*
+                                                 after->host_count);
 
           for(i=0;i<src_nb;i++){
             src_start = i*after->amount/src_nb;
@@ -1426,11 +1426,11 @@ void SD_task_schedulev(SD_task_t task, int count,
 void SD_task_schedulel(SD_task_t task, int count, ...)
 {
   va_list ap;
-  SD_workstation_t *list = xbt_new(SD_workstation_t, count);
+  sg_host_t *list = xbt_new(sg_host_t, count);
   int i;
   va_start(ap, count);
   for (i = 0; i < count; i++) {
-    list[i] = va_arg(ap, SD_workstation_t);
+    list[i] = va_arg(ap, sg_host_t);
   }
   va_end(ap);
   SD_task_schedulev(task, count, list);

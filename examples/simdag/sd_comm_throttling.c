@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 {
   unsigned int ctr;
   const char *platform_file;
-  const SD_workstation_t *workstations;
+  const sg_host_t *workstations;
   SD_task_t task, taskA, taskB, taskC, taskD, taskE;
   xbt_dynar_t changed_tasks;
 
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
   platform_file = argv[1];
   SD_create_environment(platform_file);
  
-  workstations = SD_workstation_get_list();
+  workstations = sg_host_list();
 
   /* creation of some typed tasks and their dependencies */
   /* chain of five tasks, three compute tasks with two data transfers */

@@ -7,6 +7,7 @@
 #include "src/surf/host_interface.hpp"
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
+#include "simgrid/host.h"
 #include <simgrid/s4u/host.hpp>
 #include "xbt/dict.h"
 #include "xbt/lib.h"
@@ -43,113 +44,25 @@ void __SD_storage_destroy(void *storage)
 }
 
 /**
- * \brief Returns a workstation given its name
- *
- * If there is no such workstation, the function returns \c NULL.
- *
- * \param name workstation name
- * \return the workstation, or \c NULL if there is no such workstation
- */
-SD_workstation_t SD_workstation_get_by_name(const char *name)
-{
-  return sg_host_by_name(name);
-}
-
-/**
  * \brief Returns the workstation list
  *
- * Use SD_workstation_get_count() to know the array size.
+ * Use sg_host_count() to know the array size.
  * 
- * \return an array of \ref SD_workstation_t containing all workstations
+ * \return an array of \ref sg_host_t containing all workstations
  * \remark The workstation order in the returned array is generally different from the workstation creation/declaration order in the XML platform (we use a hash table internally).
- * \see SD_workstation_get_count()
+ * \see sg_host_count()
  */
-const SD_workstation_t *SD_workstation_get_list(void) {
-  xbt_assert(SD_workstation_get_count() > 0, "There is no workstation!");
+const sg_host_t *sg_host_list(void) {
+  xbt_assert(sg_host_count() > 0, "There is no workstation!");
 
-  if (sd_global->workstation_list == NULL)     /* this is the first time the function is called */
-    sd_global->workstation_list = (SD_workstation_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
+  if (sd_global->host_list == NULL)     /* this is the first time the function is called */
+    sd_global->host_list = (sg_host_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
 
-  return sd_global->workstation_list;
+  return sd_global->host_list;
 }
-
-/**
- * \brief Returns the number of workstations
- *
- * \return the number of existing workstations
- * \see SD_workstation_get_list()
- */
-int SD_workstation_get_count(void)
-{
-  return sg_host_count();
-}
-
-/**
- * \brief Returns the user data of a workstation
- *
- * \param workstation a workstation
- * \return the user data associated with this workstation (can be \c NULL)
- * \see SD_workstation_set_data()
- */
-void *SD_workstation_get_data(SD_workstation_t workstation)
-{
-  return sg_host_user(workstation);
-}
-
-/**
- * \brief Sets the user data of a workstation
- *
- * The new data can be \c NULL. The old data should have been freed first
- * if it was not \c NULL.
- *
- * \param workstation a workstation
- * \param data the new data you want to associate with this workstation
- * \see SD_workstation_get_data()
- */
-void SD_workstation_set_data(SD_workstation_t workstation, void *data)
-{
-	sg_host_user_set(workstation, data);
-}
-
-/**
- * \brief Returns the name of a workstation
- *
- * \param workstation a workstation
- * \return the name of this workstation (cannot be \c NULL)
- */
-const char *SD_workstation_get_name(SD_workstation_t workstation)
-{
-  return sg_host_get_name(workstation);
-}
-
-/**
- * \brief Returns the value of a given workstation property
- *
- * \param ws a workstation
- * \param name a property name
- * \return value of a property (or NULL if property not set)
- */
-const char *SD_workstation_get_property_value(SD_workstation_t ws,
-                                              const char *name)
-{
-  return (const char*) xbt_dict_get_or_null(sg_host_get_properties(ws), name);
-}
-
-
-/**
- * \brief Returns a #xbt_dict_t consisting of the list of properties assigned to this workstation
- *
- * \param workstation a workstation
- * \return the dictionary containing the properties associated with the workstation
- */
-xbt_dict_t SD_workstation_get_properties(SD_workstation_t workstation)
-{
-  return sg_host_get_properties(workstation);
-}
-
 
 /** @brief Displays debugging informations about a workstation */
-void SD_workstation_dump(SD_workstation_t ws)
+void sg_host_dump(sg_host_t ws)
 {
   xbt_dict_t props;
   xbt_dict_cursor_t cursor=NULL;
@@ -157,7 +70,7 @@ void SD_workstation_dump(SD_workstation_t ws)
 
   XBT_INFO("Displaying workstation %s", sg_host_get_name(ws));
   XBT_INFO("  - speed: %.0f", ws->speed());
-  XBT_INFO("  - available speed: %.2f", surf_host_get_available_speed(ws));
+  XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(ws));
   props = sg_host_get_properties(ws);
   
   if (!xbt_dict_is_empty(props)){
@@ -179,8 +92,33 @@ void SD_workstation_dump(SD_workstation_t ws)
  * \return a new array of \ref SD_link_t representing the route between these two workstations
  * \see SD_route_get_size(), SD_link_t
  */
-const SD_link_t *SD_route_get_list(SD_workstation_t src,
-                                   SD_workstation_t dst)
+double sg_host_speed(sg_host_t workstation)
+{
+  return workstation->speed();
+}
+int sg_host_core_count(sg_host_t workstation) {
+  return workstation->core_count();
+}
+
+
+double sg_host_computation_time(sg_host_t workstation,
+                                           double flops_amount)
+{
+  xbt_assert(flops_amount >= 0,
+              "flops_amount must be greater than or equal to zero");
+  return flops_amount / workstation->speed();
+}
+
+xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t workstation){
+  return workstation->extension<simgrid::surf::Host>()->getMountedStorageList();
+}
+
+xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t workstation){
+  return surf_host_get_attached_storage_list(workstation);
+}
+
+const SD_link_t *SD_route_get_list(sg_host_t src,
+                                   sg_host_t dst)
 {
   xbt_dynar_t surf_route;
   void *surf_link;
@@ -207,7 +145,7 @@ const SD_link_t *SD_route_get_list(SD_workstation_t src,
  * \return the number of links on the route between these two workstations
  * \see SD_route_get_list()
  */
-int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
+int SD_route_get_size(sg_host_t src, sg_host_t dst)
 {
   return xbt_dynar_length(surf_host_model_get_route(
 		    (surf_host_model_t)surf_host_model, src, dst));
@@ -218,34 +156,14 @@ int SD_route_get_size(SD_workstation_t src, SD_workstation_t dst)
  *
  * \param workstation a workstation
  * \return the total speed of this workstation
- * \see SD_workstation_get_available_speed()
+ * \see sg_host_get_available_speed()
  */
-double SD_workstation_get_speed(SD_workstation_t workstation)
-{
-  return workstation->speed();
-}
 /**
  * \brief Returns the amount of cores of a workstation
  *
  * \param workstation a workstation
  * \return the amount of cores of this workstation
  */
-int SD_workstation_get_cores(SD_workstation_t workstation) {
-  return workstation->core_count();
-}
-
-/**
- * \brief Returns the proportion of available speed in a workstation
- *
- * \param workstation a workstation
- * \return the proportion of speed currently available in this workstation (normally a number between 0 and 1)
- * \see SD_workstation_get_speed()
- */
-double SD_workstation_get_available_speed(SD_workstation_t workstation)
-{
-  return surf_host_get_available_speed(workstation);
-}
-
 /**
  * \brief Returns an approximative estimated time for the given computation amount on a workstation
  *
@@ -253,14 +171,6 @@ double SD_workstation_get_available_speed(SD_workstation_t workstation)
  * \param flops_amount the computation amount you want to evaluate (in flops)
  * \return an approximative estimated computation time for the given computation amount on this workstation (in seconds)
  */
-double SD_workstation_get_computation_time(SD_workstation_t workstation,
-                                           double flops_amount)
-{
-  xbt_assert(flops_amount >= 0,
-              "flops_amount must be greater than or equal to zero");
-  return flops_amount / workstation->speed();
-}
-
 /**
  * \brief Returns the latency of the route between two workstations.
  *
@@ -269,7 +179,7 @@ double SD_workstation_get_computation_time(SD_workstation_t workstation,
  * \return the latency of the route between the two workstations (in seconds)
  * \see SD_route_get_bandwidth()
  */
-double SD_route_get_latency(SD_workstation_t src, SD_workstation_t dst)
+double SD_route_get_latency(sg_host_t src, sg_host_t dst)
 {
   xbt_dynar_t route = NULL;
   double latency = 0;
@@ -290,7 +200,7 @@ double SD_route_get_latency(SD_workstation_t src, SD_workstation_t dst)
  * (in bytes/second)
  * \see SD_route_get_latency()
  */
-double SD_route_get_bandwidth(SD_workstation_t src, SD_workstation_t dst)
+double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
 {
 
   const SD_link_t *links;
@@ -322,8 +232,8 @@ double SD_route_get_bandwidth(SD_workstation_t src, SD_workstation_t dst)
  * \return an approximative estimated communication time for the given bytes amount
  * between the workstations (in seconds)
  */
-double SD_route_get_communication_time(SD_workstation_t src,
-                                       SD_workstation_t dst,
+double SD_route_get_communication_time(sg_host_t src,
+                                       sg_host_t dst,
                                        double bytes_amount)
 {
 
@@ -366,20 +276,12 @@ double SD_route_get_communication_time(SD_workstation_t src,
  * \param workstation a workstation
  * \return a dynar containing all mounted storages on the workstation
  */
-xbt_dict_t SD_workstation_get_mounted_storage_list(SD_workstation_t workstation){
-  return workstation->extension<simgrid::surf::Host>()->getMountedStorageList();
-}
-
 /**
  * \brief Return the list of mounted storages on a workstation.
  *
  * \param workstation a workstation
  * \return a dynar containing all mounted storages on the workstation
  */
-xbt_dynar_t SD_workstation_get_attached_storage_list(SD_workstation_t workstation){
-  return surf_host_get_attached_storage_list(workstation);
-}
-
 /**
  * \brief Returns the host name the storage is attached to
  *

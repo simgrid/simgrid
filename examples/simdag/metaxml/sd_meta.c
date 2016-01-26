@@ -23,10 +23,10 @@ int main(int argc, char **argv)
 {
 
   const char *platform_file;
-  const SD_workstation_t *workstations;
+  const sg_host_t *workstations;
   int ws_nr;
-  SD_workstation_t w1 = NULL;
-  SD_workstation_t w2 = NULL;
+  sg_host_t w1 = NULL;
+  sg_host_t w2 = NULL;
   const char *name1, *name2;
   int i, j, k;
 
@@ -46,8 +46,8 @@ int main(int argc, char **argv)
   SD_create_environment(platform_file);
 
   /* test the estimation functions */
-  workstations = SD_workstation_get_list();
-  ws_nr = SD_workstation_get_count();
+  workstations = sg_host_list();
+  ws_nr = sg_host_count();
 
 
   /* Show routes between all workstation */
@@ -58,8 +58,8 @@ int main(int argc, char **argv)
       int route_size;
       w1 = workstations[i];
       w2 = workstations[j];
-      name1 = SD_workstation_get_name(w1);
-      name2 = SD_workstation_get_name(w2);
+      name1 = sg_host_get_name(w1);
+      name2 = sg_host_get_name(w2);
       XBT_INFO("Route between %s and %s:", name1, name2);
       route = SD_route_get_list(w1, w2);
       route_size = SD_route_get_size(w1, w2);

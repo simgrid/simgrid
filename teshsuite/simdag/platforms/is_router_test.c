@@ -29,8 +29,8 @@ int main(int argc, char **argv)
 
   size = xbt_dict_length(host_list) + xbt_lib_length(as_router_lib);
 
-  printf("Workstation number: %d, link number: %d, elmts number: %d\n",
-         SD_workstation_get_count(), sg_link_count(), size);
+  printf("Workstation number: %zu, link number: %d, elmts number: %d\n",
+         sg_host_count(), sg_link_count(), size);
 
   xbt_dict_foreach(host_list, cursor, key, data) {
     printf("   - Seen: \"%s\" is type : %d\n", key,

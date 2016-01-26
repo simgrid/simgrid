@@ -18,14 +18,14 @@ int main(int argc, char **argv)
   int i;
   unsigned int ctr;
   const char *platform_file;
-  const SD_workstation_t *workstations;
+  const sg_host_t *workstations;
   SD_task_t task, seq_comp1, e2e_comm, seq_comp2;
   SD_task_t par_comp1, redist, par_comp2, par_comp3;
   xbt_dynar_t changed_tasks;
 
   double computation_amount[4];
   double communication_amount[16] = { 0 };
-  SD_workstation_t workstation_list[4];
+  sg_host_t workstation_list[4];
   
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
   platform_file = argv[1];
   SD_create_environment(platform_file);
  
-  workstations = SD_workstation_get_list();
+  workstations = sg_host_list();
 
   /* creation of some typed tasks and their dependencies */
   seq_comp1 = SD_task_create_comp_seq("Seq. comp. 1", NULL, 1e9);

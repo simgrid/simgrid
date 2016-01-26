@@ -18,7 +18,7 @@ int main(int argc, char **argv)
   SD_task_t task;
   double computation_amount[1];
   double communication_amount[2] = { 0 };
-  SD_workstation_t workstation_list[1];
+  sg_host_t workstation_list[1];
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   XBT_INFO("Schedule task '%s' on workstation 'Faulty Host'",
            SD_task_get_name(task));
 
-  SD_task_schedulel(task, 1, SD_workstation_get_by_name("Faulty Host"));
+  SD_task_schedulel(task, 1, sg_host_by_name("Faulty Host"));
 
   SD_simulate(-1.0);
 
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
   XBT_INFO("let's unschedule task '%s' and reschedule it on the 'Safe Host'",
            SD_task_get_name(task));
   SD_task_unschedule(task);
-  SD_task_schedulel(task, 1, SD_workstation_get_by_name("Safe Host"));
+  SD_task_schedulel(task, 1, sg_host_by_name("Safe Host"));
 
   XBT_INFO("Run the simulation again");
   SD_simulate(-1.0);
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
   XBT_INFO("Schedule task '%s' on workstation 'Faulty Host'",
              SD_task_get_name(task));
 
-  workstation_list[0] = SD_workstation_get_by_name("Faulty Host");
+  workstation_list[0] = sg_host_by_name("Faulty Host");
   SD_task_schedule(task, 1, workstation_list,
           computation_amount, communication_amount,-1);
 
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
            SD_task_get_name(task));
   SD_task_unschedule(task);
 
-  workstation_list[0] = SD_workstation_get_by_name("Safe Host");
+  workstation_list[0] = sg_host_by_name("Safe Host");
 
   SD_task_schedule(task, 1, workstation_list,
                    computation_amount, communication_amount,-1);

@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 
   task = SD_task_create("Comm 1", NULL, 1.0);
 
-  SD_task_schedule(task, 2, SD_workstation_get_list(), no_cost,
+  SD_task_schedule(task, 2, sg_host_list(), no_cost,
                    communication_amount, -1.0);
 
   SD_simulate(-1.0);

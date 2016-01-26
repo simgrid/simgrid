@@ -96,16 +96,6 @@ msg_host_priv_t sg_host_msg(sg_host_t host) {
 void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
   host->extension_set(MSG_HOST_LEVEL, smx_host);
 }
-// ========== SimDag Layer ==============
-SD_workstation_priv_t sg_host_sd(sg_host_t host) {
-  return (SD_workstation_priv_t) host->extension(SD_HOST_LEVEL);
-}
-void sg_host_sd_set(sg_host_t host, SD_workstation_priv_t smx_host) {
-  host->extension_set(SD_HOST_LEVEL, smx_host);
-}
-void sg_host_sd_destroy(sg_host_t host) {
-  host->extension_set(SD_HOST_LEVEL, nullptr);
-}
 
 // ========== Simix layer =============
 smx_host_priv_t sg_host_simix(sg_host_t host){

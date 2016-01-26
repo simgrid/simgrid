@@ -18,15 +18,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
 
 static int nameCompareHosts(const void *n1, const void *n2)
 {
-  return strcmp(SD_workstation_get_name(*((SD_workstation_t *) n1)),
-                SD_workstation_get_name(*((SD_workstation_t *) n2)));
+  return strcmp(sg_host_get_name(*((sg_host_t *) n1)),
+                sg_host_get_name(*((sg_host_t *) n2)));
 }
 
 int main(int argc, char **argv)
 {
   int i, j;
   int n_hosts;
-  const SD_workstation_t *hosts;
+  const sg_host_t *hosts;
   SD_task_t taskInit;
   SD_task_t PtoPComm1;
   SD_task_t PtoPComm2;
@@ -36,23 +36,23 @@ int main(int argc, char **argv)
   SD_task_t InterRedist;
   SD_task_t taskFinal;
   SD_task_t ParComp_wcomm2;
-  SD_workstation_t PtoPcomm1_hosts[2];
-  SD_workstation_t PtoPcomm2_hosts[2];
+  sg_host_t PtoPcomm1_hosts[2];
+  sg_host_t PtoPcomm2_hosts[2];
   double PtoPcomm1_table[] = { 0, 12500000, 0, 0 };     /* 100Mb */
   double PtoPcomm2_table[] = { 0, 1250000, 0, 0 };      /* 10Mb */
   double ParComp_wocomm_cost[] = { 1e+9, 1e+9, 1e+9, 1e+9, 1e+9 };      /* 1 Gflop per Proc */
   double *ParComp_wocomm_table;
-  SD_workstation_t ParComp_wocomm_hosts[5];
+  sg_host_t ParComp_wocomm_hosts[5];
   double *IntraRedist_cost;
   double *IntraRedist_table;
-  SD_workstation_t IntraRedist_hosts[5];
+  sg_host_t IntraRedist_hosts[5];
   double ParComp_wcomm1_cost[] = { 1e+9, 1e+9, 1e+9, 1e+9, 1e+9 };      /* 1 Gflop per Proc */
   double *ParComp_wcomm1_table;
-  SD_workstation_t ParComp_wcomm1_hosts[5];
+  sg_host_t ParComp_wcomm1_hosts[5];
   double *InterRedist_cost;
   double *InterRedist_table;
   double ParComp_wcomm2_cost[] = { 1e+8, 1e+8, 1e+8, 1e+8, 1e+8 };      /* 1 Gflop per Proc (0.02sec duration) */
-  SD_workstation_t ParComp_wcomm2_hosts[5];
+  sg_host_t ParComp_wcomm2_hosts[5];
   double final_cost = 5e+9;
   double *ParComp_wcomm2_table;
 
@@ -66,11 +66,11 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /* getting platform infos */
-  n_hosts = SD_workstation_get_count();
-  hosts = SD_workstation_get_list();
+  n_hosts = sg_host_count();
+  hosts = sg_host_list();
 
   /* sorting hosts by hostname */
-  qsort((void *) hosts, n_hosts, sizeof(SD_workstation_t),
+  qsort((void *) hosts, n_hosts, sizeof(sg_host_t),
         nameCompareHosts);
 
   /* creation of the tasks */

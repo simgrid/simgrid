@@ -14,15 +14,6 @@
 #include "simgrid/link.h"
 
 SG_BEGIN_DECL()
-/** @brief Workstation datatype
-    @ingroup SD_datatypes_management
-
-    A workstation is a place where a task can be executed.
-    A workstation is represented as a <em>physical
-    resource with computing capabilities</em> and has a <em>name</em>.
-
-    @see SD_workstation_management */
-typedef sg_host_t SD_workstation_t;
 
 /** @brief Link datatype
     @ingroup SD_datatypes_management
@@ -84,7 +75,7 @@ typedef xbt_dictelm_t SD_storage_t;
 
 /************************** Workstation handling ****************************/
 
-/** @defgroup SD_workstation_management Workstations
+/** @defgroup sg_host_management Workstations
  *  @brief Functions for managing the workstations
  *
  *  This section describes the functions for managing the workstations.
@@ -95,48 +86,34 @@ typedef xbt_dictelm_t SD_storage_t;
  *
  *  The workstations are created when you call the function SD_create_environment.
  *
- *  @see SD_workstation_t
+ *  @see sg_host_t
  *  @{
  */
-XBT_PUBLIC(SD_workstation_t) SD_workstation_get_by_name(const char *name);
-XBT_PUBLIC(const SD_workstation_t *) SD_workstation_get_list(void);
-XBT_PUBLIC(int) SD_workstation_get_count(void);
-XBT_PUBLIC(void) SD_workstation_set_data(SD_workstation_t workstation,
-                                         void *data);
-XBT_PUBLIC(void *) SD_workstation_get_data(SD_workstation_t workstation);
-XBT_PUBLIC(const char *) SD_workstation_get_name(SD_workstation_t
-                                                 workstation);
-/*property handling functions*/
-XBT_PUBLIC(xbt_dict_t) SD_workstation_get_properties(SD_workstation_t
-                                                     workstation);
-XBT_PUBLIC(const char *) SD_workstation_get_property_value(SD_workstation_t
-                                                           workstation,
-                                                           const char
-                                                           *name);
-XBT_PUBLIC(void) SD_workstation_dump(SD_workstation_t ws);
-XBT_PUBLIC(const SD_link_t *) SD_route_get_list(SD_workstation_t src,
-                                                SD_workstation_t dst);
-XBT_PUBLIC(int) SD_route_get_size(SD_workstation_t src,
-                                  SD_workstation_t dst);
-XBT_PUBLIC(double) SD_workstation_get_speed(SD_workstation_t workstation);
-XBT_PUBLIC(double) SD_workstation_get_available_speed(SD_workstation_t
-                                                      workstation);
-XBT_PUBLIC(int) SD_workstation_get_cores(SD_workstation_t workstation);
+XBT_PUBLIC(const sg_host_t *) sg_host_list(void);
 
-XBT_PUBLIC(double) SD_workstation_get_computation_time(SD_workstation_t workstation,
+XBT_PUBLIC(void) sg_host_dump(sg_host_t ws);
+XBT_PUBLIC(double) sg_host_speed(sg_host_t workstation);
+XBT_PUBLIC(int) sg_host_core_count(sg_host_t workstation);
+XBT_PUBLIC(double) sg_host_computation_time(sg_host_t workstation,
                                                        double flops_amount);
-XBT_PUBLIC(double) SD_route_get_latency(SD_workstation_t src,
-                                                SD_workstation_t dst);
-XBT_PUBLIC(double) SD_route_get_bandwidth(SD_workstation_t src,
-                                                  SD_workstation_t dst);
-XBT_PUBLIC(double) SD_route_get_communication_time(SD_workstation_t src,
-                                                   SD_workstation_t dst,
+XBT_PUBLIC(xbt_dict_t)
+    sg_host_get_mounted_storage_list(sg_host_t workstation);
+XBT_PUBLIC(xbt_dynar_t)
+    sg_host_get_attached_storage_list(sg_host_t workstation);
+
+XBT_PUBLIC(const SD_link_t *) SD_route_get_list(sg_host_t src,
+                                                sg_host_t dst);
+XBT_PUBLIC(int) SD_route_get_size(sg_host_t src,
+                                  sg_host_t dst);
+
+XBT_PUBLIC(double) SD_route_get_latency(sg_host_t src,
+                                                sg_host_t dst);
+XBT_PUBLIC(double) SD_route_get_bandwidth(sg_host_t src,
+                                                  sg_host_t dst);
+XBT_PUBLIC(double) SD_route_get_communication_time(sg_host_t src,
+                                                   sg_host_t dst,
                                                    double bytes_amount);
 
-XBT_PUBLIC(xbt_dict_t)
-    SD_workstation_get_mounted_storage_list(SD_workstation_t workstation);
-XBT_PUBLIC(xbt_dynar_t)
-    SD_workstation_get_attached_storage_list(SD_workstation_t workstation);
 XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
 /** @} */
 
@@ -173,13 +150,13 @@ XBT_PUBLIC(double) SD_task_get_alpha(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_remaining_amount(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task,
                                               int workstation_nb,
-                                              const SD_workstation_t *
+                                              const sg_host_t *
                                               workstation_list,
                                               const double *flops_amount,
                                               const double *bytes_amount);
 XBT_PUBLIC(e_SD_task_kind_t) SD_task_get_kind(SD_task_t task);
 XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb,
-                                  const SD_workstation_t *
+                                  const sg_host_t *
                                   workstation_list,
                                   const double *flops_amount,
                                   const double *bytes_amount,
@@ -190,7 +167,7 @@ XBT_PUBLIC(double) SD_task_get_finish_time(SD_task_t task);
 XBT_PUBLIC(xbt_dynar_t) SD_task_get_parents(SD_task_t task);
 XBT_PUBLIC(xbt_dynar_t) SD_task_get_children(SD_task_t task);
 XBT_PUBLIC(int) SD_task_get_workstation_count(SD_task_t task);
-XBT_PUBLIC(SD_workstation_t *) SD_task_get_workstation_list(SD_task_t
+XBT_PUBLIC(sg_host_t *) SD_task_get_workstation_list(SD_task_t
                                                             task);
 XBT_PUBLIC(void) SD_task_destroy(SD_task_t task);
 XBT_PUBLIC(void) SD_task_dump(SD_task_t task);
@@ -210,7 +187,7 @@ XBT_PUBLIC(SD_task_t) SD_task_create_comm_par_mxn_1d_block(const char *name,
 
 XBT_PUBLIC(void) SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count);
 XBT_PUBLIC(void) SD_task_schedulev(SD_task_t task, int count,
-                                   const SD_workstation_t * list);
+                                   const sg_host_t * list);
 XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
 

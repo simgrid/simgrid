@@ -18,8 +18,8 @@ extern routing_platf_t routing_platf;
 
 int main(int argc, char **argv)
 {
-  SD_workstation_t w1, w2;
-  const SD_workstation_t *workstations;
+  sg_host_t w1, w2;
+  const sg_host_t *workstations;
   int i, j;
   int list_size;
   xbt_os_timer_t timer = xbt_os_timer_new();
@@ -30,8 +30,8 @@ int main(int argc, char **argv)
   /* creation of the environment */
   SD_create_environment(argv[1]);
 
-  workstations = SD_workstation_get_list();
-  list_size = SD_workstation_get_count();
+  workstations = sg_host_list();
+  list_size = sg_host_count();
 
   /* Random number initialization */
   srand( (int) (xbt_os_time()*1000) );

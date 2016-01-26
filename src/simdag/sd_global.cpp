@@ -50,7 +50,7 @@ void SD_init(int *argc, char **argv)
   xbt_assert(sd_global == NULL, "SD_init() already called");
 
   sd_global = xbt_new(s_SD_global_t, 1);
-  sd_global->workstation_list = NULL;
+  sd_global->host_list = NULL;
   sd_global->link_list = NULL;
   sd_global->recyclable_route = NULL;
   sd_global->watch_point_reached = 0;
@@ -148,12 +148,12 @@ void SD_application_reinit(void)
 /**
  * \brief Creates the environment
  *
- * The environment (i.e. the \ref SD_workstation_management "workstations"
+ * The environment (i.e. the \ref sg_host_management "hosts"
  * and the \ref SD_link_management "links") is created with the data stored
  * in the given XML platform file.
  *
  * \param platform_file name of an XML file describing the environment to create
- * \see SD_workstation_management, SD_link_management
+ * \see sg_host_management, SD_link_management
  *
  * The XML file follows this DTD:
  *
@@ -380,7 +380,7 @@ void SD_exit(void)
   xbt_mallocator_free(sd_global->task_mallocator);
 
   XBT_DEBUG("Destroying workstation and link arrays...");
-  xbt_free(sd_global->workstation_list);
+  xbt_free(sd_global->host_list);
   xbt_free(sd_global->link_list);
   xbt_free(sd_global->recyclable_route);
 

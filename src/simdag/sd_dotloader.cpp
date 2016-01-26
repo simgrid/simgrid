@@ -76,7 +76,7 @@ xbt_dynar_t SD_dotload_with_sched(const char *filename) {
     xbt_dynar_t computer = NULL;
     xbt_dict_cursor_t dict_cursor;
     char *computer_name;
-    const SD_workstation_t *workstations = SD_workstation_get_list ();
+    const sg_host_t *workstations = sg_host_list ();
     xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
       int count_computer = atoi(computer_name);
       unsigned int count=0;

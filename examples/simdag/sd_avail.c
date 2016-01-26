@@ -45,13 +45,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_avail,
 int main(int argc, char **argv)
 {
   unsigned int ctr;
-  const SD_workstation_t *workstations;
+  const sg_host_t *workstations;
   SD_task_t t1, c1, t2, c2, t3, c3, t4, task;
   xbt_dynar_t changed_tasks;
 
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
-  workstations = SD_workstation_get_list();
+  workstations = sg_host_list();
 
   t1 = SD_task_create_comp_seq("t1", NULL, 25000000);
   c1 = SD_task_create_comm_e2e("c1", NULL, 125000000);
@@ -90,11 +90,11 @@ int main(int argc, char **argv)
              SD_route_get_bandwidth(workstations[0], workstations[1]),
              SD_route_get_latency(workstations[0], workstations[1]));
     XBT_INFO("Jupiter: speed=%.0f",
-             SD_workstation_get_speed(workstations[0])*
-             SD_workstation_get_available_speed(workstations[0]));
+             sg_host_speed(workstations[0])*
+             sg_host_get_available_speed(workstations[0]));
     XBT_INFO("Tremblay: speed=%.0f",
-             SD_workstation_get_speed(workstations[1])*
-             SD_workstation_get_available_speed(workstations[1]));
+             sg_host_speed(workstations[1])*
+             sg_host_get_available_speed(workstations[1]));
     xbt_dynar_foreach(changed_tasks, ctr, task) {
       XBT_INFO("Task '%s' start time: %f, finish time: %f",
            SD_task_get_name(task),

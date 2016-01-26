@@ -16,8 +16,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 
 int main(int argc, char **argv)
 {
-  SD_workstation_t w1;
-  SD_workstation_t w2;
+  sg_host_t w1;
+  sg_host_t w2;
   const char *name1;
   const char *name2;
   xbt_dict_t props;
@@ -36,17 +36,17 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /* init of platform elements */
-  w1 = SD_workstation_get_by_name("host1");
-  w2 = SD_workstation_get_by_name("host2");
-  name1 = SD_workstation_get_name(w1);
-  name2 = SD_workstation_get_name(w2);
+  w1 = sg_host_by_name("host1");
+  w2 = sg_host_by_name("host2");
+  name1 = sg_host_get_name(w1);
+  name2 = sg_host_get_name(w2);
 
 
-  /* The host properties can be retrived from all interfaces */
+  /* The host properties can be retrieved from all interfaces */
 
   XBT_INFO("Property list for workstation %s", name1);
   /* Get the property list of the workstation 1 */
-  props = SD_workstation_get_properties(w1);
+  props = sg_host_get_properties(w1);
 
 
   /* Trying to set a new property */
@@ -59,13 +59,13 @@ int main(int argc, char **argv)
 
   /* Try to get a property that does not exist */
 
-  value = SD_workstation_get_property_value(w1, noexist);
+  value = sg_host_get_property_value(w1, noexist);
   XBT_INFO("\tProperty: %s has value: %s", noexist, value?value:"Undefined (NULL)");
 
 
   XBT_INFO("Property list for workstation %s", name2);
   /* Get the property list of the workstation 2 */
-  props = SD_workstation_get_properties(w2);
+  props = sg_host_get_properties(w2);
   cursor = NULL;
 
   /* Print the properties of the workstation 2 */
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
   /* Modify an existing property test. First check it exists */
   XBT_INFO("Modify an existing property");
 
-  value = SD_workstation_get_property_value(w2, exist);
+  value = sg_host_get_property_value(w2, exist);
   if (value == NULL)
     XBT_INFO("\tProperty: %s is undefined", exist);
   else {
@@ -85,11 +85,11 @@ int main(int argc, char **argv)
   }
 
   /* Test if we have changed the value */
-  value = SD_workstation_get_property_value(w2, exist);
+  value = sg_host_get_property_value(w2, exist);
   XBT_INFO("\tProperty: %s new value: %s", exist, value?value:"Undefined (NULL)");
 
-  /* Test if properties are displayed by SD_workstation_dump */
-  SD_workstation_dump(w2);
+  /* Test if properties are displayed by sg_host_dump */
+  sg_host_dump(w2);
 
   SD_exit();
   return 0;

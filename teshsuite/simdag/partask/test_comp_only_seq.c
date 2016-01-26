@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   task = SD_task_create("seqtask", NULL, 1.0);
-  SD_task_schedule(task, 1, SD_workstation_get_list(), comp_cost,
+  SD_task_schedule(task, 1, sg_host_list(), comp_cost,
                    comm_amount, -1.0);
 
   SD_simulate(-1.0);

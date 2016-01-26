@@ -39,12 +39,12 @@ int main(int argc, char **argv)
   // xbt_assert( check max tcp win size, "MAX TCP WIN SIZE is 20000");
 
   root = SD_task_create("Root", NULL, 1.0);
-  SD_task_schedule(root, 1, SD_workstation_get_list(), no_cost, no_cost,
+  SD_task_schedule(root, 1, sg_host_list(), no_cost, no_cost,
                    -1.0);
 
   for (i = 0; i < TASK_NUM; i++) {
     task[i] = SD_task_create("Comm", NULL, 1.0);
-    SD_task_schedule(task[i], 2, SD_workstation_get_list(), no_cost,
+    SD_task_schedule(task[i], 2, sg_host_list(), no_cost,
                      communication_amount, -1.0);
     SD_task_dependency_add(NULL, NULL, root, task[i]);
   }

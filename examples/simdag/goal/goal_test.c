@@ -26,7 +26,7 @@ typedef struct {
 } s_bcast_task_t,*bcast_task_t;
 
 
-const SD_workstation_t* ws_list;
+const sg_host_t* ws_list;
 int count = 0;
 
 xbt_dynar_t reclaimed;
@@ -68,12 +68,12 @@ int main(int argc, char **argv) {
     SD_create_environment("../../platforms/One_cluster_no_backbone.xml");
   }
 
-  ws_list = SD_workstation_get_list();
+  ws_list = sg_host_list();
   reclaimed = xbt_dynar_new(sizeof(bcast_task_t),xbt_free_ref);
   xbt_dynar_t done = NULL;
 
   xbt_os_cputimer_start(timer);
-  send_one(0,SD_workstation_get_count());
+  send_one(0,sg_host_count());
   do {
     if (done != NULL && !xbt_dynar_is_empty(done)) {
       unsigned int cursor;

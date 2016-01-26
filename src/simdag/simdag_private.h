@@ -20,8 +20,8 @@ SG_BEGIN_DECL()
 /* Global variables */
 
 typedef struct SD_global {
-  SD_workstation_t *workstation_list;   /* array of workstations, created only if
-                                           necessary in SD_workstation_get_list */
+  sg_host_t *host_list;   /* array of workstations, created only if
+                             necessary in sg_host_list() */
   SD_link_t *link_list;         /* array of links */
   SD_link_t *recyclable_route;  /* array returned by SD_route_get_list
                                    and mallocated only once */
@@ -40,9 +40,6 @@ typedef struct SD_global {
 } s_SD_global_t, *SD_global_t;
 
 extern XBT_PRIVATE SD_global_t sd_global;
-
-/* Workstation */
-typedef s_xbt_dictelm_t s_SD_workstation_t;
 
 /* Storage */
 typedef s_xbt_dictelm_t s_SD_storage_t;
@@ -78,8 +75,8 @@ typedef struct SD_task {
   unsigned int is_not_ready;
 
   /* scheduling parameters (only exist in state SD_SCHEDULED) */
-  int workstation_nb;
-  SD_workstation_t *workstation_list;   /* surf workstations */
+  int host_count;
+  sg_host_t *host_list;
   double *flops_amount;
   double *bytes_amount;
   double rate;
@@ -119,13 +116,6 @@ static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
 /********** Storage **********/
 XBT_PRIVATE SD_storage_t __SD_storage_create(void *surf_storage, void *data);
 XBT_PRIVATE void __SD_storage_destroy(void *storage);
-
-/********** Tracing **********/
-/* declaration of instrumentation functions from sd_task_instr.c */
-XBT_PRIVATE void TRACE_sd_task_create(SD_task_t task);
-XBT_PRIVATE void TRACE_sd_task_execute_start(SD_task_t task);
-XBT_PRIVATE void TRACE_sd_task_execute_end(SD_task_t task);
-XBT_PRIVATE void TRACE_sd_task_destroy(SD_task_t task);
 
 SG_END_DECL()
 

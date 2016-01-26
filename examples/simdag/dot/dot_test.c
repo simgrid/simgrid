@@ -73,9 +73,9 @@ int main(int argc, char **argv)
 
   /* Schedule them all on the first workstation */
   XBT_INFO("------------------- Schedule tasks ---------------------------");
-  const SD_workstation_t *ws_list = SD_workstation_get_list();
+  const sg_host_t *ws_list = sg_host_list();
 
-  int count = SD_workstation_get_count();
+  int count = sg_host_count();
   xbt_dynar_foreach(dot, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {
       if (!strcmp(SD_task_get_name(task), "end"))
@@ -98,21 +98,21 @@ int main(int argc, char **argv)
 
   xbt_dynar_foreach(dot, cursor, task) {
     int kind = SD_task_get_kind(task);
-    SD_workstation_t *wsl = SD_task_get_workstation_list(task);
+    sg_host_t *wsl = SD_task_get_workstation_list(task);
     switch (kind) {
     case SD_TASK_COMP_SEQ:
       fprintf(out, "[%f->%f] %s compute %f flops # %s\n",
           SD_task_get_start_time(task),
           SD_task_get_finish_time(task),
-          SD_workstation_get_name(wsl[0]), SD_task_get_amount(task),
+          sg_host_get_name(wsl[0]), SD_task_get_amount(task),
           SD_task_get_name(task));
       break;
     case SD_TASK_COMM_E2E:
       fprintf(out, "[%f -> %f] %s -> %s transfer of %.0f bytes # %s\n",
           SD_task_get_start_time(task),
           SD_task_get_finish_time(task),
-          SD_workstation_get_name(wsl[0]),
-          SD_workstation_get_name(wsl[1]), SD_task_get_amount(task),
+          sg_host_get_name(wsl[0]),
+          sg_host_get_name(wsl[1]), SD_task_get_amount(task),
           SD_task_get_name(task));
       break;
     default:

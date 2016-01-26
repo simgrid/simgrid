@@ -27,7 +27,7 @@ int main(int argc, char **argv)
   SD_task_t taskInit;
   SD_task_t taskA, taskB, taskC, taskD;
 
-  const SD_workstation_t *workstation;
+  const sg_host_t *workstation;
 
   double communication_amount1 = 1e9;
   double no_cost = 0.0;
@@ -48,14 +48,14 @@ int main(int argc, char **argv)
 
   /* scheduling parameters */
 
-  workstation = SD_workstation_get_list();
+  workstation = sg_host_list();
 
   SD_task_dependency_add(NULL, NULL, taskInit, taskA);
   SD_task_dependency_add(NULL, NULL, taskInit, taskB);
   SD_task_dependency_add(NULL, NULL, taskC, taskD);
 
   /* let's launch the simulation! */
-  SD_task_schedule(taskInit, 1, SD_workstation_get_list(), &no_cost,
+  SD_task_schedule(taskInit, 1, sg_host_list(), &no_cost,
                    &no_cost, -1.0);
   SD_task_schedule(taskA, 1, &workstation[0], &no_cost,
                      &communication_amount1, -1.0);

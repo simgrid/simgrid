@@ -12,8 +12,8 @@ int main(int argc, char **argv)
 {
   /* SD initialization */
 
-  SD_workstation_t w1, w2;
-  const SD_workstation_t *workstations;
+  sg_host_t w1, w2;
+  const sg_host_t *workstations;
   const SD_link_t *route;
   const char *name1;
   const char *name2;
@@ -31,16 +31,16 @@ int main(int argc, char **argv)
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
-  printf("Workstation number: %d, link number: %d\n",
-         SD_workstation_get_count(), sg_link_count());
+  printf("Workstation number: %zu, link number: %d\n",
+         sg_host_count(), sg_link_count());
 
   if (argc >= 3) {
     if (!strcmp(argv[2], "ONE_LINK")) {
-      workstations = SD_workstation_get_list();
+      workstations = sg_host_list();
       w1 = workstations[0];
       w2 = workstations[1];
-      name1 = SD_workstation_get_name(w1);
-      name2 = SD_workstation_get_name(w2);
+      name1 = sg_host_get_name(w1);
+      name2 = sg_host_get_name(w2);
 
       printf("Route between %s and %s\n", name1, name2);
       route = SD_route_get_list(w1, w2);
@@ -57,14 +57,14 @@ int main(int argc, char **argv)
          SD_route_get_bandwidth(w1, w2));
     }
     if (!strcmp(argv[2], "FULL_LINK")) {
-      workstations = SD_workstation_get_list();
-      list_size = SD_workstation_get_count();
+      workstations = sg_host_list();
+      list_size = sg_host_count();
       for (i = 0; i < list_size; i++) {
       w1 = workstations[i];
-      name1 = SD_workstation_get_name(w1);
+      name1 = sg_host_get_name(w1);
       for (j = 0; j < list_size; j++) {
         w2 = workstations[j];
-        name2 = SD_workstation_get_name(w2);
+        name2 = sg_host_get_name(w2);
         printf("Route between %s and %s\n", name1, name2);
         route = SD_route_get_list(w1, w2);
         route_size = SD_route_get_size(w1, w2);
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
     }
     if (!strcmp(argv[2], "PROP")) {
       printf("SG_TEST_mem: %s\n",
-          SD_workstation_get_property_value(SD_workstation_get_by_name("host1"),
+          sg_host_get_property_value(sg_host_by_name("host1"),
           "SG_TEST_mem"));
     }
   }

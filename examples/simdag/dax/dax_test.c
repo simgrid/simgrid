@@ -19,8 +19,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,
 static int name_compare_hosts(const void *n1, const void *n2)
 {
   char name1[80], name2[80];
-  strcpy(name1, SD_workstation_get_name(*((SD_workstation_t *) n1)));
-  strcpy(name2, SD_workstation_get_name(*((SD_workstation_t *) n2)));
+  strcpy(name1, sg_host_get_name(*((sg_host_t *) n1)));
+  strcpy(name2, sg_host_get_name(*((sg_host_t *) n2)));
 
   return strcmp(name1, name2);
 }
@@ -75,12 +75,12 @@ int main(int argc, char **argv)
 
   /* Schedule them all on the first workstation */
   XBT_INFO("------------------- Schedule tasks ---------------------------");
-  const SD_workstation_t *ws_list = SD_workstation_get_list();
-  int totalHosts = SD_workstation_get_count();
-  qsort((void *) ws_list, totalHosts, sizeof(SD_workstation_t),
+  const sg_host_t *ws_list = sg_host_list();
+  int totalHosts = sg_host_count();
+  qsort((void *) ws_list, totalHosts, sizeof(sg_host_t),
         name_compare_hosts);
 
-  int count = SD_workstation_get_count();
+  int count = sg_host_count();
   xbt_dynar_foreach(dax, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {
       if (!strcmp(SD_task_get_name(task), "end"))
@@ -102,24 +102,24 @@ int main(int argc, char **argv)
 
   xbt_dynar_foreach(dax, cursor, task) {
     int kind = SD_task_get_kind(task);
-    SD_workstation_t *wsl = SD_task_get_workstation_list(task);
+    sg_host_t *wsl = SD_task_get_workstation_list(task);
     switch (kind) {
     case SD_TASK_COMP_SEQ:
       fprintf(out, "[%f] %s compute %f # %s\n",
               SD_task_get_start_time(task),
-              SD_workstation_get_name(wsl[0]), SD_task_get_amount(task),
+              sg_host_get_name(wsl[0]), SD_task_get_amount(task),
               SD_task_get_name(task));
       break;
     case SD_TASK_COMM_E2E:
       fprintf(out, "[%f] %s send %s %f # %s\n",
               SD_task_get_start_time(task),
-              SD_workstation_get_name(wsl[0]),
-              SD_workstation_get_name(wsl[1]), SD_task_get_amount(task),
+              sg_host_get_name(wsl[0]),
+              sg_host_get_name(wsl[1]), SD_task_get_amount(task),
               SD_task_get_name(task));
       fprintf(out, "[%f] %s recv %s %f # %s\n",
               SD_task_get_finish_time(task),
-              SD_workstation_get_name(wsl[1]),
-              SD_workstation_get_name(wsl[0]), SD_task_get_amount(task),
+              sg_host_get_name(wsl[1]),
+              sg_host_get_name(wsl[0]), SD_task_get_amount(task),
               SD_task_get_name(task));
       break;
     default:

@@ -39,11 +39,11 @@ int main(int argc, char **argv)
   taskFin = SD_task_create("Task Fin", NULL, 1.0);
 
   /* let's launch the simulation! */
-  SD_task_schedule(taskInit, 1, SD_workstation_get_list(), no_cost,
+  SD_task_schedule(taskInit, 1, sg_host_list(), no_cost,
                    no_cost, -1.0);
-  SD_task_schedule(taskA, 2, SD_workstation_get_list(), no_cost, no_cost,
+  SD_task_schedule(taskA, 2, sg_host_list(), no_cost, no_cost,
                    -1.0);
-  SD_task_schedule(taskFin, 1, SD_workstation_get_list(), no_cost, no_cost,
+  SD_task_schedule(taskFin, 1, sg_host_list(), no_cost, no_cost,
                    -1.0);
 
   SD_task_dependency_add(NULL, NULL, taskInit, taskA);

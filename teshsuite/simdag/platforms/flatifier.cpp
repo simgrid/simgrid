@@ -32,8 +32,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier,
 static int name_compare_hosts(const void *n1, const void *n2)
 {
   char name1[80], name2[80];
-  strcpy(name1, SD_workstation_get_name(*((SD_workstation_t *) n1)));
-  strcpy(name2, SD_workstation_get_name(*((SD_workstation_t *) n2)));
+  strcpy(name1, sg_host_get_name(*((sg_host_t *) n1)));
+  strcpy(name2, sg_host_get_name(*((sg_host_t *) n2)));
 
   return strcmp(name1, name2);
 }
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
   sg_netcard_t value1;
   sg_netcard_t value2;
 
-  const SD_workstation_t *hosts;
+  const sg_host_t *hosts;
   const SD_link_t *links;
   xbt_os_timer_t parse_time = xbt_os_timer_new();
 
@@ -127,8 +127,8 @@ int main(int argc, char **argv)
   create_environment(parse_time, platformFile);
 
   if (timings) {
-    XBT_INFO("Parsing time: %fs (%d hosts, %d links)",
-          xbt_os_timer_elapsed(parse_time),SD_workstation_get_count(),
+    XBT_INFO("Parsing time: %fs (%zu hosts, %d links)",
+          xbt_os_timer_elapsed(parse_time),sg_host_count(),
           sg_link_count());
   } else {
     printf("<?xml version='1.0'?>\n");
@@ -138,18 +138,18 @@ int main(int argc, char **argv)
       printf("<AS id=\"AS0\" routing=\"Full\">\n");
 
     // Hosts
-    totalHosts = SD_workstation_get_count();
-    hosts = SD_workstation_get_list();
-    qsort((void *) hosts, totalHosts, sizeof(SD_workstation_t),
+    totalHosts = sg_host_count();
+    hosts = sg_host_list();
+    qsort((void *) hosts, totalHosts, sizeof(sg_host_t),
         name_compare_hosts);
 
     for (i = 0; i < totalHosts; i++) {
       printf("  <host id=\"%s\" power=\"%.0f\"",
-          SD_workstation_get_name(hosts[i]),
-          SD_workstation_get_speed(hosts[i]));
-      props = SD_workstation_get_properties(hosts[i]);
-      if (SD_workstation_get_cores(hosts[i])>1) {
-        printf(" core=\"%d\"", SD_workstation_get_cores(hosts[i]));
+          sg_host_get_name(hosts[i]),
+          sg_host_speed(hosts[i]));
+      props = sg_host_get_properties(hosts[i]);
+      if (sg_host_core_count(hosts[i])>1) {
+        printf(" core=\"%d\"", sg_host_core_count(hosts[i]));
       }
       if (props && !xbt_dict_is_empty(props)) {
         printf(">\n");

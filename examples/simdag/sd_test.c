@@ -18,7 +18,7 @@ int main(int argc, char **argv)
   int i;
   unsigned int ctr;
   const char *platform_file;
-  const SD_workstation_t *workstations;
+  const sg_host_t *workstations;
   const char *name1;
   const char *name2;
   double computation_amount1;
@@ -31,11 +31,11 @@ int main(int argc, char **argv)
   xbt_dynar_t changed_tasks;
   xbt_ex_t ex;
   const int workstation_number = 2;
-  SD_workstation_t workstation_list[2];
+  sg_host_t workstation_list[2];
   double computation_amount[2];
   double communication_amount[4] = { 0 };
   double rate = -1.0;
-  SD_workstation_t w1, w2;
+  sg_host_t w1, w2;
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -50,20 +50,20 @@ int main(int argc, char **argv)
   SD_create_environment(platform_file);
 
   /* test the estimation functions */
-  workstations = SD_workstation_get_list();
+  workstations = sg_host_list();
   w1 = workstations[0];
   w2 = workstations[1];
-  name1 = SD_workstation_get_name(w1);
-  name2 = SD_workstation_get_name(w2);
+  name1 = sg_host_get_name(w1);
+  name2 = sg_host_get_name(w2);
   computation_amount1 = 2000000;
   computation_amount2 = 1000000;
   communication_amount12 = 2000000;
   communication_amount21 = 3000000;
   XBT_INFO("Computation time for %f flops on %s: %f", computation_amount1,
-        name1, SD_workstation_get_computation_time(w1,
+        name1, sg_host_computation_time(w1,
                                                    computation_amount1));
   XBT_INFO("Computation time for %f flops on %s: %f", computation_amount2,
-        name2, SD_workstation_get_computation_time(w2,
+        name2, sg_host_computation_time(w2,
                                                    computation_amount2));
 
   XBT_INFO("Route between %s and %s:", name1, name2);

@@ -28,7 +28,7 @@ static SD_task_t create_empty_cost_root()
   SD_task_t root;
 
   root = SD_task_create("Root", NULL, 1.0);
-  SD_task_schedule(root, 1, SD_workstation_get_list(), no_cost, no_cost,
+  SD_task_schedule(root, 1, sg_host_list(), no_cost, no_cost,
                    -1.0);
 
   return root;
@@ -68,7 +68,7 @@ static SD_task_t create_root_with_costs()
   SD_task_t root;
 
   root = SD_task_create("Root", NULL, 1.0);
-  SD_task_schedule(root, 2, SD_workstation_get_list(), comp_cost,
+  SD_task_schedule(root, 2, sg_host_list(), comp_cost,
                    comm_cost, -1.0);
 
   return root;

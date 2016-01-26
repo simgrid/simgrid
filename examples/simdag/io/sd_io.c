@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_io,
 int main(int argc, char **argv)
 {
   unsigned int ctr;
-  const SD_workstation_t *workstations;
+  const sg_host_t *workstations;
   int total_nworkstations;
   xbt_dict_t current_storage_list;
   char *mount_name;
@@ -28,14 +28,14 @@ int main(int argc, char **argv)
    */
   SD_config("host/model", "default");
   SD_create_environment(argv[1]);
-  workstations = SD_workstation_get_list();
-  total_nworkstations = SD_workstation_get_count();
+  workstations = sg_host_list();
+  total_nworkstations = sg_host_count();
 
   for (ctr=0; ctr<total_nworkstations;ctr++){
-    current_storage_list = SD_workstation_get_mounted_storage_list(workstations[ctr]);
+    current_storage_list = sg_host_get_mounted_storage_list(workstations[ctr]);
     xbt_dict_foreach(current_storage_list,cursor,mount_name,storage_name)
       XBT_INFO("Workstation '%s' mounts '%s'",
-         SD_workstation_get_name(workstations[ctr]), mount_name);
+         sg_host_get_name(workstations[ctr]), mount_name);
     xbt_dict_free(&current_storage_list);
   }
   SD_exit();

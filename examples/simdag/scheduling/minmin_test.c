@@ -23,47 +23,47 @@ struct _WorkstationAttribute {
   SD_task_t last_scheduled_task;
 };
 
-static void SD_workstation_allocate_attribute(SD_workstation_t workstation)
+static void sg_host_allocate_attribute(sg_host_t workstation)
 {
   void *data;
   data = calloc(1, sizeof(struct _WorkstationAttribute));
-  SD_workstation_set_data(workstation, data);
+  sg_host_user_set(workstation, data);
 }
 
-static void SD_workstation_free_attribute(SD_workstation_t workstation)
+static void sg_host_free_attribute(sg_host_t workstation)
 {
-  free(SD_workstation_get_data(workstation));
-  SD_workstation_set_data(workstation, NULL);
+  free(sg_host_user(workstation));
+  sg_host_user_set(workstation, NULL);
 }
 
-static double SD_workstation_get_available_at(SD_workstation_t workstation)
+static double sg_host_get_available_at(sg_host_t workstation)
 {
   WorkstationAttribute attr =
-      (WorkstationAttribute) SD_workstation_get_data(workstation);
+      (WorkstationAttribute) sg_host_user(workstation);
   return attr->available_at;
 }
 
-static void SD_workstation_set_available_at(SD_workstation_t workstation,
+static void sg_host_set_available_at(sg_host_t workstation,
                                             double time)
 {
   WorkstationAttribute attr =
-      (WorkstationAttribute) SD_workstation_get_data(workstation);
+      (WorkstationAttribute) sg_host_user(workstation);
   attr->available_at = time;
-  SD_workstation_set_data(workstation, attr);
+  sg_host_user_set(workstation, attr);
 }
 
-static SD_task_t SD_workstation_get_last_scheduled_task( SD_workstation_t workstation){
+static SD_task_t sg_host_get_last_scheduled_task( sg_host_t workstation){
   WorkstationAttribute attr =
-      (WorkstationAttribute) SD_workstation_get_data(workstation);
+      (WorkstationAttribute) sg_host_user(workstation);
   return attr->last_scheduled_task;
 }
 
-static void SD_workstation_set_last_scheduled_task(SD_workstation_t workstation,
+static void sg_host_set_last_scheduled_task(sg_host_t workstation,
     SD_task_t task){
   WorkstationAttribute attr =
-      (WorkstationAttribute) SD_workstation_get_data(workstation);
+      (WorkstationAttribute) sg_host_user(workstation);
   attr->last_scheduled_task=task;
-  SD_workstation_set_data(workstation, attr);
+  sg_host_user_set(workstation, attr);
 }
 
 static xbt_dynar_t get_ready_tasks(xbt_dynar_t dax)
@@ -84,7 +84,7 @@ static xbt_dynar_t get_ready_tasks(xbt_dynar_t dax)
   return ready_tasks;
 }
 
-static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
+static double finish_on_at(SD_task_t task, sg_host_t workstation)
 {
   volatile double result;
   unsigned int i;
@@ -94,7 +94,7 @@ static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
   SD_task_t parent, grand_parent;
   xbt_dynar_t parents, grand_parents;
 
-  SD_workstation_t *grand_parent_workstation_list;
+  sg_host_t *grand_parent_workstation_list;
 
   parents = SD_task_get_parents(task);
 
@@ -138,27 +138,27 @@ static double finish_on_at(SD_task_t task, SD_workstation_t workstation)
 
     xbt_dynar_free_container(&parents);
 
-    result = MAX(SD_workstation_get_available_at(workstation),
+    result = MAX(sg_host_get_available_at(workstation),
                last_data_available) +
-        SD_workstation_get_computation_time(workstation,
+        sg_host_computation_time(workstation,
                                             SD_task_get_amount(task));
   } else {
     xbt_dynar_free_container(&parents);
 
-    result = SD_workstation_get_available_at(workstation) +
-        SD_workstation_get_computation_time(workstation,
+    result = sg_host_get_available_at(workstation) +
+        sg_host_computation_time(workstation,
                                             SD_task_get_amount(task));
   }
   return result;
 }
 
-static SD_workstation_t SD_task_get_best_workstation(SD_task_t task)
+static sg_host_t SD_task_get_best_workstation(SD_task_t task)
 {
   int i;
   double EFT, min_EFT = -1.0;
-  const SD_workstation_t *workstations = SD_workstation_get_list();
-  int nworkstations = SD_workstation_get_count();
-  SD_workstation_t best_workstation;
+  const sg_host_t *workstations = sg_host_list();
+  int nworkstations = sg_host_count();
+  sg_host_t best_workstation;
 
   best_workstation = workstations[0];
   min_EFT = finish_on_at(task, workstations[0]);
@@ -167,7 +167,7 @@ static SD_workstation_t SD_task_get_best_workstation(SD_task_t task)
     EFT = finish_on_at(task, workstations[i]);
     XBT_DEBUG("%s finishes on %s at %f",
            SD_task_get_name(task),
-           SD_workstation_get_name(workstations[i]), EFT);
+           sg_host_get_name(workstations[i]), EFT);
 
     if (EFT < min_EFT) {
       min_EFT = EFT;
@@ -182,10 +182,10 @@ static void output_xml(FILE * out, xbt_dynar_t dax)
 {
   unsigned int i, j, k;
   int current_nworkstations;
-  const int nworkstations = SD_workstation_get_count();
-  const SD_workstation_t *workstations = SD_workstation_get_list();
+  const int nworkstations = sg_host_count();
+  const sg_host_t *workstations = sg_host_list();
   SD_task_t task;
-  SD_workstation_t *list;
+  sg_host_t *list;
 
   fprintf(out, "<?xml version=\"1.0\"?>\n");
   fprintf(out, "<grid_schedule>\n");
@@ -227,8 +227,8 @@ static void output_xml(FILE * out, xbt_dynar_t dax)
     list = SD_task_get_workstation_list(task);
     for (j = 0; j < current_nworkstations; j++) {
       for (k = 0; k < nworkstations; k++) {
-        if (!strcmp(SD_workstation_get_name(workstations[k]),
-                    SD_workstation_get_name(list[j]))) {
+        if (!strcmp(sg_host_get_name(workstations[k]),
+                    sg_host_get_name(list[j]))) {
           fprintf(out, "               <hosts start=\"%u\" nb=\"1\"/>\n",
                   k);
           fprintf(out,
@@ -251,9 +251,9 @@ int main(int argc, char **argv)
   double finish_time, min_finish_time = -1.0;
   SD_task_t task, selected_task = NULL, last_scheduled_task;
   xbt_dynar_t ready_tasks;
-  SD_workstation_t workstation, selected_workstation = NULL;
+  sg_host_t workstation, selected_workstation = NULL;
   int total_nworkstations = 0;
-  const SD_workstation_t *workstations = NULL;
+  const sg_host_t *workstations = NULL;
   xbt_dynar_t dax;
   FILE *out = NULL;
 
@@ -276,11 +276,11 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /*  Allocating the workstation attribute */
-  total_nworkstations = SD_workstation_get_count();
-  workstations = SD_workstation_get_list();
+  total_nworkstations = sg_host_count();
+  workstations = sg_host_list();
 
   for (cursor = 0; cursor < total_nworkstations; cursor++)
-    SD_workstation_allocate_attribute(workstations[cursor]);
+    sg_host_allocate_attribute(workstations[cursor]);
 
 
   /* load the DAX file */
@@ -320,7 +320,7 @@ int main(int argc, char **argv)
     }
 
     XBT_INFO("Schedule %s on %s", SD_task_get_name(selected_task),
-          SD_workstation_get_name(selected_workstation));
+          sg_host_get_name(selected_workstation));
 
     SD_task_schedulel(selected_task, 1, selected_workstation);
 
@@ -336,19 +336,19 @@ int main(int argc, char **argv)
     */
 
     last_scheduled_task = 
-      SD_workstation_get_last_scheduled_task(selected_workstation);
+      sg_host_get_last_scheduled_task(selected_workstation);
     if (last_scheduled_task && 
   (SD_task_get_state(last_scheduled_task) != SD_DONE) &&
   (SD_task_get_state(last_scheduled_task) != SD_FAILED) &&
   !SD_task_dependency_exists(
-     SD_workstation_get_last_scheduled_task(selected_workstation),
+     sg_host_get_last_scheduled_task(selected_workstation),
      selected_task))
       SD_task_dependency_add("resource", NULL,
            last_scheduled_task, selected_task);
     
-    SD_workstation_set_last_scheduled_task(selected_workstation, selected_task);
+    sg_host_set_last_scheduled_task(selected_workstation, selected_task);
     
-    SD_workstation_set_available_at(selected_workstation, min_finish_time);
+    sg_host_set_available_at(selected_workstation, min_finish_time);
 
     xbt_dynar_free_container(&ready_tasks);
     /* reset the min_finish_time for the next set of ready tasks */
@@ -380,7 +380,7 @@ int main(int argc, char **argv)
   xbt_dynar_free_container(&dax);
 
   for (cursor = 0; cursor < total_nworkstations; cursor++)
-    SD_workstation_free_attribute(workstations[cursor]);
+    sg_host_free_attribute(workstations[cursor]);
 
   /* exit */
   SD_exit();

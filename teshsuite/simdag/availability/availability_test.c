@@ -57,8 +57,8 @@ static void checkParameters(int argc, char *argv[])
 static int name_compare_hosts(const void *n1, const void *n2)
 {
   char name1[80], name2[80];
-  strcpy(name1, SD_workstation_get_name(*((SD_workstation_t *) n1)));
-  strcpy(name2, SD_workstation_get_name(*((SD_workstation_t *) n2)));
+  strcpy(name1, sg_host_get_name(*((sg_host_t *) n1)));
+  strcpy(name2, sg_host_get_name(*((sg_host_t *) n2)));
 
   return strcmp(name1, name2);
 }
@@ -68,9 +68,9 @@ static void scheduleDAX(xbt_dynar_t dax)
   unsigned int cursor;
   SD_task_t task;
 
-  const SD_workstation_t *ws_list = SD_workstation_get_list();
-  int totalHosts = SD_workstation_get_count();
-  qsort((void *) ws_list, totalHosts, sizeof(SD_workstation_t),
+  const sg_host_t *ws_list = sg_host_list();
+  int totalHosts = sg_host_count();
+  qsort((void *) ws_list, totalHosts, sizeof(sg_host_t),
         name_compare_hosts);
 
   //fprintf(stdout, "No. workstations: %d, %d\n", totalHosts, (dax != NULL));
@@ -80,11 +80,11 @@ static void scheduleDAX(xbt_dynar_t dax)
       if (!strcmp(SD_task_get_name(task), "end")
           || !strcmp(SD_task_get_name(task), "root")) {
         fprintf(stdout, "Scheduling %s to node: %s\n", SD_task_get_name(task),
-                SD_workstation_get_name(ws_list[0]));
+                sg_host_get_name(ws_list[0]));
         SD_task_schedulel(task, 1, ws_list[0]);
       } else {
         fprintf(stdout, "Scheduling %s to node: %s\n", SD_task_get_name(task),
-                SD_workstation_get_name(ws_list[(cursor) % totalHosts]));
+                sg_host_get_name(ws_list[(cursor) % totalHosts]));
         SD_task_schedulel(task, 1, ws_list[(cursor) % totalHosts]);
       }
     }
