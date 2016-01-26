@@ -663,7 +663,10 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_synchro);
   XBT_LOG_CONNECT(msg_task);
   XBT_LOG_CONNECT(msg_vm);
-   
+
+  /* sg */
+  XBT_LOG_CONNECT(sg_host);
+
   /* simdag */
   XBT_LOG_CONNECT(sd);
   XBT_LOG_CONNECT(sd_daxparse);
@@ -672,7 +675,6 @@ static void xbt_log_connect_categories(void)
 #endif
   XBT_LOG_CONNECT(sd_kernel);
   XBT_LOG_CONNECT(sd_task);
-  XBT_LOG_CONNECT(sd_workstation);
 
   /* simix */
   XBT_LOG_CONNECT(simix);

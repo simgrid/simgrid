@@ -14,9 +14,6 @@
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_workstation, sd,
-                                "Logging specific to SimDag (workstation)");
-
 /* Creates a storage and registers it in SD.
  */
 SD_storage_t __SD_storage_create(void *surf_storage, void *data)
@@ -43,43 +40,11 @@ void __SD_storage_destroy(void *storage)
   xbt_free(s);
 }
 
-/**
- * \brief Returns the workstation list
- *
- * Use sg_host_count() to know the array size.
- * 
- * \return an array of \ref sg_host_t containing all workstations
- * \remark The workstation order in the returned array is generally different from the workstation creation/declaration order in the XML platform (we use a hash table internally).
- * \see sg_host_count()
- */
-const sg_host_t *sg_host_list(void) {
-  xbt_assert(sg_host_count() > 0, "There is no workstation!");
-
-  if (sd_global->host_list == NULL)     /* this is the first time the function is called */
-    sd_global->host_list = (sg_host_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
-
-  return sd_global->host_list;
-}
-
-/** @brief Displays debugging informations about a workstation */
-void sg_host_dump(sg_host_t ws)
+double sg_host_computation_time(sg_host_t host, double flops_amount)
 {
-  xbt_dict_t props;
-  xbt_dict_cursor_t cursor=NULL;
-  char *key,*data;
-
-  XBT_INFO("Displaying workstation %s", sg_host_get_name(ws));
-  XBT_INFO("  - speed: %.0f", ws->speed());
-  XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(ws));
-  props = sg_host_get_properties(ws);
-  
-  if (!xbt_dict_is_empty(props)){
-    XBT_INFO("  - properties:");
-
-    xbt_dict_foreach(props,cursor,key,data) {
-      XBT_INFO("    %s->%s",key,data);
-    }
-  }
+  xbt_assert(flops_amount >= 0,
+              "flops_amount must be greater than or equal to zero");
+  return flops_amount / sg_host_speed(host);
 }
 
 /**
@@ -92,31 +57,6 @@ void sg_host_dump(sg_host_t ws)
  * \return a new array of \ref SD_link_t representing the route between these two workstations
  * \see SD_route_get_size(), SD_link_t
  */
-double sg_host_speed(sg_host_t workstation)
-{
-  return workstation->speed();
-}
-int sg_host_core_count(sg_host_t workstation) {
-  return workstation->core_count();
-}
-
-
-double sg_host_computation_time(sg_host_t workstation,
-                                           double flops_amount)
-{
-  xbt_assert(flops_amount >= 0,
-              "flops_amount must be greater than or equal to zero");
-  return flops_amount / workstation->speed();
-}
-
-xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t workstation){
-  return workstation->extension<simgrid::surf::Host>()->getMountedStorageList();
-}
-
-xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t workstation){
-  return surf_host_get_attached_storage_list(workstation);
-}
-
 const SD_link_t *SD_route_get_list(sg_host_t src,
                                    sg_host_t dst)
 {
@@ -151,19 +91,6 @@ int SD_route_get_size(sg_host_t src, sg_host_t dst)
 		    (surf_host_model_t)surf_host_model, src, dst));
 }
 
-/**
- * \brief Returns the total speed of a workstation
- *
- * \param workstation a workstation
- * \return the total speed of this workstation
- * \see sg_host_get_available_speed()
- */
-/**
- * \brief Returns the amount of cores of a workstation
- *
- * \param workstation a workstation
- * \return the amount of cores of this workstation
- */
 /**
  * \brief Returns an approximative estimated time for the given computation amount on a workstation
  *

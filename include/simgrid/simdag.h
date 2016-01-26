@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2006-2010, 2012-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -75,41 +75,29 @@ typedef xbt_dictelm_t SD_storage_t;
 
 /************************** Workstation handling ****************************/
 
-/** @defgroup sg_host_management Workstations
- *  @brief Functions for managing the workstations
+/** @defgroup sg_host_management Hosts
+ *  @brief Functions for managing the Hosts
  *
- *  This section describes the functions for managing the workstations.
+ *  This section describes the functions for managing the hosts.
  *
- *  A workstation is a place where a task can be executed.
- *  A workstation is represented as a <em>physical
- *  resource with computing capabilities</em> and has a <em>name</em>.
+ *  A host is a place where a task can be executed.
+ *  A host is represented as a <em>physical resource with computing
+ *  capabilities</em> and has a <em>name</em>.
  *
- *  The workstations are created when you call the function SD_create_environment.
+ *  The hosts are created when you call the function SD_create_environment.
  *
  *  @see sg_host_t
  *  @{
  */
-XBT_PUBLIC(const sg_host_t *) sg_host_list(void);
-
-XBT_PUBLIC(void) sg_host_dump(sg_host_t ws);
-XBT_PUBLIC(double) sg_host_speed(sg_host_t workstation);
-XBT_PUBLIC(int) sg_host_core_count(sg_host_t workstation);
-XBT_PUBLIC(double) sg_host_computation_time(sg_host_t workstation,
-                                                       double flops_amount);
-XBT_PUBLIC(xbt_dict_t)
-    sg_host_get_mounted_storage_list(sg_host_t workstation);
-XBT_PUBLIC(xbt_dynar_t)
-    sg_host_get_attached_storage_list(sg_host_t workstation);
+XBT_PUBLIC(double) sg_host_computation_time(sg_host_t host,
+                                            double flops_amount);
 
 XBT_PUBLIC(const SD_link_t *) SD_route_get_list(sg_host_t src,
                                                 sg_host_t dst);
-XBT_PUBLIC(int) SD_route_get_size(sg_host_t src,
-                                  sg_host_t dst);
+XBT_PUBLIC(int) SD_route_get_size(sg_host_t src, sg_host_t dst);
 
-XBT_PUBLIC(double) SD_route_get_latency(sg_host_t src,
-                                                sg_host_t dst);
-XBT_PUBLIC(double) SD_route_get_bandwidth(sg_host_t src,
-                                                  sg_host_t dst);
+XBT_PUBLIC(double) SD_route_get_latency(sg_host_t src, sg_host_t dst);
+XBT_PUBLIC(double) SD_route_get_bandwidth(sg_host_t src, sg_host_t dst);
 XBT_PUBLIC(double) SD_route_get_communication_time(sg_host_t src,
                                                    sg_host_t dst,
                                                    double bytes_amount);
