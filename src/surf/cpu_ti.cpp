@@ -614,8 +614,7 @@ void CpuTi::updateState(tmgr_trace_iterator_t event_type,
 
     p_availTrace = trace;
 
-    if (tmgr_trace_event_free(event_type))
-      p_speedEvent = NULL;
+    tmgr_trace_event_unref(&p_speedEvent);
 
   } else if (event_type == p_stateEvent) {
     if (value > 0) {
@@ -643,14 +642,10 @@ void CpuTi::updateState(tmgr_trace_iterator_t event_type,
         }
       }
     }
-    if (tmgr_trace_event_free(event_type))
-      p_stateEvent = NULL;
+    tmgr_trace_event_unref(&p_stateEvent);
   } else {
-    XBT_CRITICAL("Unknown event ! \n");
-    xbt_abort();
+    xbt_die("Unknown event!\n");
   }
-
-  return;
 }
 
 void CpuTi::updateActionsFinishTime(double now)

@@ -503,49 +503,40 @@ bool LinkL07::isUsed(){
   return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
 }
 
-void CpuL07::updateState(tmgr_trace_iterator_t event_type, double value, double /*date*/){
+void CpuL07::updateState(tmgr_trace_iterator_t triggered, double value, double /*date*/){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
-  if (event_type == p_speedEvent) {
-	m_speedScale = value;
-	onSpeedChange();
-    if (tmgr_trace_event_free(event_type))
-      p_speedEvent = NULL;
-  } else if (event_type == p_stateEvent) {
+  if (triggered == p_speedEvent) {
+    m_speedScale = value;
+    onSpeedChange();
+    tmgr_trace_event_unref(&p_speedEvent);
+  } else if (triggered == p_stateEvent) {
     if (value > 0)
       turnOn();
     else
       turnOff();
-    if (tmgr_trace_event_free(event_type))
-      p_stateEvent = NULL;
+    tmgr_trace_event_unref(&p_stateEvent);
   } else {
-    XBT_CRITICAL("Unknown event ! \n");
-    xbt_abort();
+    xbt_die("Unknown event!\n");
   }
-  return;
 }
 
-void LinkL07::updateState(tmgr_trace_iterator_t event_type, double value, double date) {
+void LinkL07::updateState(tmgr_trace_iterator_t triggered, double value, double date) {
   XBT_DEBUG("Updating link %s (%p) with value=%f for date=%g", getName(), this, value, date);
-  if (event_type == p_bwEvent) {
+  if (triggered == p_bwEvent) {
     updateBandwidth(value, date);
-    if (tmgr_trace_event_free(event_type))
-      p_bwEvent = NULL;
-  } else if (event_type == p_latEvent) {
+    tmgr_trace_event_unref(&p_bwEvent);
+  } else if (triggered == p_latEvent) {
     updateLatency(value, date);
-    if (tmgr_trace_event_free(event_type))
-      p_latEvent = NULL;
-  } else if (event_type == p_stateEvent) {
+    tmgr_trace_event_unref(&p_latEvent);
+  } else if (triggered == p_stateEvent) {
     if (value > 0)
       turnOn();
     else
       turnOff();
-    if (tmgr_trace_event_free(event_type))
-      p_stateEvent = NULL;
+    tmgr_trace_event_unref(&p_stateEvent);
   } else {
-    XBT_CRITICAL("Unknown event ! \n");
-    xbt_abort();
+    xbt_die("Unknown event ! \n");
   }
-  return;
 }
 
 double LinkL07::getBandwidth()

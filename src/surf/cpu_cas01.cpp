@@ -205,8 +205,7 @@ void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, doubl
     m_speedScale = value;
     onSpeedChange();
 
-    if (tmgr_trace_event_free(event_type))
-      p_speedEvent = nullptr;
+    tmgr_trace_event_unref(&p_speedEvent);
   } else if (event_type == p_stateEvent) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
@@ -231,8 +230,7 @@ void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, doubl
         }
       }
     }
-    if (tmgr_trace_event_free(event_type))
-      p_stateEvent = nullptr;
+    tmgr_trace_event_unref(&p_stateEvent);
   } else {
     xbt_die("Unknown event!\n");
   }

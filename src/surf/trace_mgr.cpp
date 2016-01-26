@@ -468,11 +468,10 @@ void tmgr_finalize(void)
   xbt_dict_free(&trace_list);
 }
 
-int tmgr_trace_event_free(tmgr_trace_iterator_t trace_event)
+void tmgr_trace_event_unref(tmgr_trace_iterator_t *trace_event)
 {
-  if (trace_event->free_me) {
-    xbt_free(trace_event);
-    return 1;
+  if ((*trace_event)->free_me) {
+    xbt_free(*trace_event);
+    *trace_event = nullptr;
   }
-  return 0;
 }

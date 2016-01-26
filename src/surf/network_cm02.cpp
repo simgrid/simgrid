@@ -554,22 +554,19 @@ void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
   /* Find out which of my iterators was triggered, and react accordingly */
   if (triggered == p_speed.event) {
     updateBandwidth(value, date);
-    if (tmgr_trace_event_free(triggered))
-      p_speed.event = NULL;
+    tmgr_trace_event_unref(&p_speed.event);
   } else if (triggered == p_latEvent) {
     updateLatency(value, date);
-    if (tmgr_trace_event_free(triggered))
-      p_latEvent = NULL;
+    tmgr_trace_event_unref(&p_latEvent);
   } else if (triggered == p_stateEvent) {
     if (value > 0)
       turnOn();
     else {
-      lmm_constraint_t cnst = getConstraint();
       lmm_variable_t var = NULL;
       lmm_element_t elem = NULL;
 
       turnOff();
-      while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
+      while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
         Action *action = static_cast<Action*>( lmm_variable_id(var) );
 
         if (action->getState() == SURF_ACTION_RUNNING ||
@@ -579,17 +576,14 @@ void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
         }
       }
     }
-    if (tmgr_trace_event_free(triggered))
-      p_stateEvent = NULL;
+    tmgr_trace_event_unref(&p_stateEvent);
   } else {
-    XBT_CRITICAL("Unknown event ! \n");
-    xbt_abort();
+    xbt_die("Unknown event!\n");
   }
 
   XBT_DEBUG
-      ("There were a resource state event, need to update actions related to the constraint (%p)",
+      ("There was a resource state event, need to update actions related to the constraint (%p)",
        getConstraint());
-  return;
 }
 
 void NetworkCm02Link::updateBandwidth(double value, double date){
