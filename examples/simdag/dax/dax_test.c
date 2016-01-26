@@ -18,11 +18,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,
 
 static int name_compare_hosts(const void *n1, const void *n2)
 {
-  char name1[80], name2[80];
-  strcpy(name1, sg_host_get_name(*((sg_host_t *) n1)));
-  strcpy(name2, sg_host_get_name(*((sg_host_t *) n2)));
-
-  return strcmp(name1, name2);
+  return strcmp(
+      sg_host_get_name(*(sg_host_t *) n1),
+      sg_host_get_name(*(sg_host_t *) n2)
+  );
 }
 
 int main(int argc, char **argv)
