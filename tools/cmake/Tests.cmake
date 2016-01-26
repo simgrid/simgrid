@@ -476,7 +476,7 @@ IF(NOT enable_memcheck)
     # like this
     #
     # ~$ ./masterslave platform.lua deploy.lua
-    ADD_TESH(lua-platform-masterslave                --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/lua lua_platforms.tesh)
+    ADD_TESH(lua-platform-masterslave                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/lua --cd ${CMAKE_BINARY_DIR}/examples/lua ${CMAKE_HOME_DIRECTORY}/teshsuite/lua/lua_platforms.tesh)
     SET_TESTS_PROPERTIES(lua-platform-masterslave    PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
   ENDIF()
   # END TESH TESTS
