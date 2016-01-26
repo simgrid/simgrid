@@ -85,9 +85,9 @@ int slave(int argc, char *argv[])
     MSG_task_destroy(task);
     task = NULL;
   }
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-	          "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-	          argv[0], argv[0]);XBT_DEBUG("I'm done. See you!");
+/*  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"*/
+/*	          "\tExample: %s msg_platform.xml msg_deployment.xml\n", */
+/*	          argv[0], argv[0]);XBT_DEBUG("I'm done. See you!");*/
   return 0;
 }                               /* end_of_slave */                              /* end_of_test_all */
 
