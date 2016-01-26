@@ -155,11 +155,13 @@ smx_synchro_t simcall_process_parallel_execute(const char *name,
   int i,j;
   /* checking for infinite values */
   for (i = 0 ; i < host_nb ; ++i) {
-     xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
-     for (j = 0 ; j < host_nb ; ++j) {
+    xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
+    if (bytes_amount != NULL) {
+      for (j = 0 ; j < host_nb ; ++j) {
         xbt_assert(std::isfinite(bytes_amount[i + host_nb * j]),
-             "bytes_amount[%d+%d*%d] is not finite!", i, host_nb, j);
-     }
+                   "bytes_amount[%d+%d*%d] is not finite!", i, host_nb, j);
+      }
+    }
   }
 
   xbt_assert(std::isfinite(amount), "amount is not finite!");
