@@ -89,9 +89,6 @@ typedef xbt_dictelm_t SD_storage_t;
  *  @see sg_host_t
  *  @{
  */
-XBT_PUBLIC(double) sg_host_computation_time(sg_host_t host,
-                                            double flops_amount);
-
 XBT_PUBLIC(const SD_link_t *) SD_route_get_list(sg_host_t src,
                                                 sg_host_t dst);
 XBT_PUBLIC(int) SD_route_get_size(sg_host_t src, sg_host_t dst);

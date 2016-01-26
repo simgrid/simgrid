@@ -60,11 +60,9 @@ int main(int argc, char **argv)
   communication_amount12 = 2000000;
   communication_amount21 = 3000000;
   XBT_INFO("Computation time for %f flops on %s: %f", computation_amount1,
-        name1, sg_host_computation_time(w1,
-                                                   computation_amount1));
+        name1, computation_amount1/sg_host_speed(w1));
   XBT_INFO("Computation time for %f flops on %s: %f", computation_amount2,
-        name2, sg_host_computation_time(w2,
-                                                   computation_amount2));
+        name2, computation_amount2/sg_host_speed(w2));
 
   XBT_INFO("Route between %s and %s:", name1, name2);
   route = SD_route_get_list(w1, w2);

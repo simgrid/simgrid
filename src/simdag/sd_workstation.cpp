@@ -40,13 +40,6 @@ void __SD_storage_destroy(void *storage)
   xbt_free(s);
 }
 
-double sg_host_computation_time(sg_host_t host, double flops_amount)
-{
-  xbt_assert(flops_amount >= 0,
-              "flops_amount must be greater than or equal to zero");
-  return flops_amount / sg_host_speed(host);
-}
-
 /**
  * \brief Returns the route between two workstations
  *

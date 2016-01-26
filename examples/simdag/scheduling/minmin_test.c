@@ -140,14 +140,12 @@ static double finish_on_at(SD_task_t task, sg_host_t workstation)
 
     result = MAX(sg_host_get_available_at(workstation),
                last_data_available) +
-        sg_host_computation_time(workstation,
-                                            SD_task_get_amount(task));
+             SD_task_get_amount(task)/sg_host_speed(workstation);
   } else {
     xbt_dynar_free_container(&parents);
 
     result = sg_host_get_available_at(workstation) +
-        sg_host_computation_time(workstation,
-                                            SD_task_get_amount(task));
+              SD_task_get_amount(task)/sg_host_speed(workstation);
   }
   return result;
 }
