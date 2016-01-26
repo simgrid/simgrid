@@ -75,17 +75,16 @@ int main(int argc, char **argv)
   /* Schedule them all on the first workstation */
   XBT_INFO("------------------- Schedule tasks ---------------------------");
   const sg_host_t *ws_list = sg_host_list();
-  int totalHosts = sg_host_count();
-  qsort((void *) ws_list, totalHosts, sizeof(sg_host_t),
+  int hosts_count = sg_host_count();
+  qsort((void *) ws_list, hosts_count, sizeof(sg_host_t),
         name_compare_hosts);
 
-  int count = sg_host_count();
   xbt_dynar_foreach(dax, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {
       if (!strcmp(SD_task_get_name(task), "end"))
         SD_task_schedulel(task, 1, ws_list[0]);
       else
-        SD_task_schedulel(task, 1, ws_list[cursor % count]);
+        SD_task_schedulel(task, 1, ws_list[cursor % hosts_count]);
     }
   }
 
