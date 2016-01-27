@@ -95,6 +95,9 @@ XBT_PUBLIC(int) SD_route_get_size(sg_host_t src, sg_host_t dst);
 
 XBT_PUBLIC(double) SD_route_get_latency(sg_host_t src, sg_host_t dst);
 XBT_PUBLIC(double) SD_route_get_bandwidth(sg_host_t src, sg_host_t dst);
+XBT_PUBLIC(double) SD_route_get_communication_time(sg_host_t src,
+                                                   sg_host_t dst,
+                                                   double bytes_amount);
 
 XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
 /** @} */
