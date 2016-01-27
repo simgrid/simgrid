@@ -904,12 +904,13 @@ double SD_task_get_execution_time(SD_task_t task,
 
     if (bytes_amount != NULL)
       for (j = 0; j < workstation_nb; j++) {
-        time +=
-            SD_route_get_communication_time(workstation_list[i],
-                                            workstation_list[j],
-                                            bytes_amount[i *
-                                                                 workstation_nb
-                                                                 + j]);
+        if (bytes_amount[i * workstation_nb + j] !=0 ) {
+          time += (SD_route_get_latency(workstation_list[i],
+                                        workstation_list[j]) +
+                   bytes_amount[i * workstation_nb + j] /
+                   SD_route_get_bandwidth(workstation_list[i],
+                                          workstation_list[j]));
+        }
       }
 
     if (time > max_time) {

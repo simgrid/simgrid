@@ -129,31 +129,6 @@ double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
   return min_bandwidth;
 }
 
-/**
- * \brief Returns an approximative estimated time for the given
- * communication amount between two hosts
- *
- * \param src the first host
- * \param dst the second host
- * \param bytes_amount the communication amount you want to evaluate (in bytes)
- * \return an approximative estimated communication time for the given bytes amount
- * between the workstations (in seconds)
- */
-double SD_route_get_communication_time(sg_host_t src,sg_host_t dst,
-                                       double bytes_amount)
-{
-  /* total time = latency + transmission time of the slowest link
-     transmission time of a link = communication amount / link bandwidth */
-
-  xbt_assert(bytes_amount >= 0, "bytes_amount must be greater than or equal to zero");
-
-
-  if (bytes_amount == 0.0)
-    return 0.0;
-
-  return SD_route_get_latency(src, dst) +
-          (bytes_amount / SD_route_get_bandwidth(src,dst));
-}
 
 /**
  * \brief Returns the host name the storage is attached to

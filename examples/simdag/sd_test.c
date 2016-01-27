@@ -78,10 +78,12 @@ int main(int argc, char **argv)
         SD_route_get_bandwidth(w1, w2));
   XBT_INFO("Communication time for %f bytes between %s and %s: %f",
         communication_amount12, name1, name2,
-        SD_route_get_communication_time(w1, w2, communication_amount12));
+        SD_route_get_latency(w1, w2) +
+        communication_amount12 / SD_route_get_bandwidth(w1, w2));
   XBT_INFO("Communication time for %f bytes between %s and %s: %f",
         communication_amount21, name2, name1,
-        SD_route_get_communication_time(w2, w1, communication_amount21));
+        SD_route_get_latency(w2, w1) +
+        communication_amount21 / SD_route_get_bandwidth(w2, w1));
 
   /* creation of the tasks and their dependencies */
   taskA = SD_task_create("Task A", NULL, 10.0);

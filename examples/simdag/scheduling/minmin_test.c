@@ -116,10 +116,16 @@ static double finish_on_at(SD_task_t task, sg_host_t workstation)
         grand_parent_workstation_list =
             SD_task_get_workstation_list(grand_parent);
         /* Estimate the redistribution time from this parent */
-        redist_time =
-            SD_route_get_communication_time(grand_parent_workstation_list
-                                            [0], workstation,
-                                            SD_task_get_amount(parent));
+        if (SD_task_get_amount(parent) == 0){
+          redist_time= 0;
+        } else {
+          redist_time =
+            SD_route_get_latency(grand_parent_workstation_list[0],
+                                 workstation) +
+            SD_task_get_amount(parent) /
+            SD_route_get_bandwidth(grand_parent_workstation_list[0],
+                                 workstation);
+        }
         data_available =
             SD_task_get_finish_time(grand_parent) + redist_time;
 
