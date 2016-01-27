@@ -220,7 +220,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
 /**
  * \brief Restart the list of processes that have been registered to the host
  */
-void SIMIX_host_restart_processes(sg_host_t host)
+void SIMIX_host_autorestart(sg_host_t host)
 {
   unsigned int cpt;
   smx_process_arg_t arg;
@@ -263,13 +263,6 @@ void SIMIX_host_restart_processes(sg_host_t host)
   xbt_dynar_reset(process_list);
 }
 
-void SIMIX_host_autorestart(sg_host_t host)
-{
-  if(simix_global->autorestart)
-    simix_global->autorestart(host);
-  else
-    xbt_die("No function for simix_global->autorestart");
-}
 smx_synchro_t simcall_HANDLER_process_execute(smx_simcall_t simcall,
 		const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
 	return SIMIX_process_execute(simcall->issuer, name,flops_amount,priority,bound,affinity_mask);

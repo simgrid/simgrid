@@ -214,7 +214,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->synchro_mallocator = xbt_mallocator_new(65536,
         SIMIX_synchro_mallocator_new_f, SIMIX_synchro_mallocator_free_f,
         SIMIX_synchro_mallocator_reset_f);
-    simix_global->autorestart = SIMIX_host_restart_processes;
     simix_global->mutex = xbt_os_mutex_init();
 
     surf_init(argc, argv);      /* Initialize SURF structures */

@@ -77,7 +77,6 @@ typedef struct s_smx_global {
   /** Callback used when killing a SMX_process */
   void_pfn_smxprocess_t cleanup_process_function;
   xbt_mallocator_t synchro_mallocator;
-  void_pfn_sghost_t autorestart;
 
 #ifdef TIME_BENCH_AMDAHL
   xbt_os_timer_t timer_seq; /* used to bench the sequential and parallel parts of the simulation, if requested to */
