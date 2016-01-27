@@ -40,34 +40,29 @@ void __SD_storage_destroy(void *storage)
   xbt_free(s);
 }
 
-/**
- * \brief Returns the route between two workstations
+/** @brief Returns the route between two workstations
  *
  * Use SD_route_get_size() to know the array size.
  *
- * \param src a workstation
- * \param dst another workstation
- * \return a new array of \ref SD_link_t representing the route between these two workstations
+ * \param src a host
+ * \param dst another host
+ * \return an array of the \ref SD_link_t composing the route
  * \see SD_route_get_size(), SD_link_t
  */
-const SD_link_t *SD_route_get_list(sg_host_t src,
-                                   sg_host_t dst)
+const SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
 {
   xbt_dynar_t surf_route;
+  SD_link_t* list;
   void *surf_link;
   unsigned int cpt;
+  surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model,
+                                         src, dst);
 
-  if (sd_global->recyclable_route == NULL) {
-    /* first run */
-    sd_global->recyclable_route = xbt_new(SD_link_t, sg_link_count());
-  }
-
-  surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model, src, dst);
-
+  list = xbt_new(SD_link_t, xbt_dynar_length(surf_route));
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
-    sd_global->recyclable_route[cpt] = (SD_link_t)surf_link;
+    list[cpt] = (SD_link_t)surf_link;
   }
-  return sd_global->recyclable_route;
+  return list;
 }
 
 /**
@@ -81,16 +76,9 @@ const SD_link_t *SD_route_get_list(sg_host_t src,
 int SD_route_get_size(sg_host_t src, sg_host_t dst)
 {
   return xbt_dynar_length(surf_host_model_get_route(
-		    (surf_host_model_t)surf_host_model, src, dst));
+      (surf_host_model_t)surf_host_model, src, dst));
 }
 
-/**
- * \brief Returns an approximative estimated time for the given computation amount on a workstation
- *
- * \param workstation a workstation
- * \param flops_amount the computation amount you want to evaluate (in flops)
- * \return an approximative estimated computation time for the given computation amount on this workstation (in seconds)
- */
 /**
  * \brief Returns the latency of the route between two workstations.
  *
@@ -122,19 +110,18 @@ double SD_route_get_latency(sg_host_t src, sg_host_t dst)
  */
 double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
 {
-
-  const SD_link_t *links;
-  int nb_links;
+  xbt_dynar_t route = NULL;
+  unsigned int cpt;
+  double latency = 0;
   double bandwidth;
-  double min_bandwidth;
-  int i;
+  double min_bandwidth = -1.0;
+  SD_link_t link;
 
-  links = SD_route_get_list(src, dst);
-  nb_links = SD_route_get_size(src, dst);
-  min_bandwidth = -1.0;
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard,
+                                    &route, &latency);
 
-  for (i = 0; i < nb_links; i++) {
-    bandwidth = sg_link_bandwidth(links[i]);
+  xbt_dynar_foreach(route, cpt, link){
+    bandwidth = sg_link_bandwidth(link);
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }
@@ -144,29 +131,19 @@ double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
 
 /**
  * \brief Returns an approximative estimated time for the given
- * communication amount between two workstations
+ * communication amount between two hosts
  *
- * \param src the first workstation
- * \param dst the second workstation
+ * \param src the first host
+ * \param dst the second host
  * \param bytes_amount the communication amount you want to evaluate (in bytes)
  * \return an approximative estimated communication time for the given bytes amount
  * between the workstations (in seconds)
  */
-double SD_route_get_communication_time(sg_host_t src,
-                                       sg_host_t dst,
+double SD_route_get_communication_time(sg_host_t src,sg_host_t dst,
                                        double bytes_amount)
 {
-
-
   /* total time = latency + transmission time of the slowest link
      transmission time of a link = communication amount / link bandwidth */
-
-  const SD_link_t *links;
-  xbt_dynar_t route = NULL;
-  int nb_links;
-  double bandwidth, min_bandwidth;
-  double latency = 0;
-  int i;
 
   xbt_assert(bytes_amount >= 0, "bytes_amount must be greater than or equal to zero");
 
@@ -174,34 +151,10 @@ double SD_route_get_communication_time(sg_host_t src,
   if (bytes_amount == 0.0)
     return 0.0;
 
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard,
-                                    &route, &latency);
-
-  links = SD_route_get_list(src, dst);
-  nb_links = SD_route_get_size(src, dst);
-  min_bandwidth = -1.0;
-
-  for (i = 0; i < nb_links; i++) {
-    bandwidth = sg_link_bandwidth(links[i]);
-    if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
-      min_bandwidth = bandwidth;
-  }
-
-  return latency + (bytes_amount / min_bandwidth);
+  return SD_route_get_latency(src, dst) +
+          (bytes_amount / SD_route_get_bandwidth(src,dst));
 }
 
-/**
- * \brief Return the list of mounted storages on a workstation.
- *
- * \param workstation a workstation
- * \return a dynar containing all mounted storages on the workstation
- */
-/**
- * \brief Return the list of mounted storages on a workstation.
- *
- * \param workstation a workstation
- * \return a dynar containing all mounted storages on the workstation
- */
 /**
  * \brief Returns the host name the storage is attached to
  *

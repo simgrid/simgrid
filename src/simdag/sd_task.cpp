@@ -900,9 +900,7 @@ double SD_task_get_execution_time(SD_task_t task,
   for (i = 0; i < workstation_nb; i++) {
     time = 0.0;
     if (flops_amount != NULL)
-      time =
-          sg_host_computation_time(workstation_list[i],
-                                              flops_amount[i]);
+      time = flops_amount[i] / sg_host_speed(workstation_list[i]);
 
     if (bytes_amount != NULL)
       for (j = 0; j < workstation_nb; j++) {
