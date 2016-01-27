@@ -38,8 +38,8 @@ void jedule_log_sd_event(SD_task_t task)
 
   host_list = xbt_dynar_new(sizeof(char*), NULL);
 
-  for(i=0; i<task->workstation_nb; i++) {
-    const char *hostname = sg_host_get_name(task->workstation_list[i]);
+  for(i=0; i<task->host_count; i++) {
+    const char *hostname = sg_host_get_name(task->host_list[i]);
     xbt_dynar_push(host_list, &hostname);
   }
 
