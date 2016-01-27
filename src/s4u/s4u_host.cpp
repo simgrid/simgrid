@@ -57,6 +57,19 @@ Host *Host::by_name(std::string name) {
 		xbt_die("No such host: %s", name.c_str());
 	return host;
 }
+Host* Host::by_name_or_null(const char* name)
+{
+  return (Host*) xbt_dict_get_or_null(host_list, name);
+}
+Host* Host::by_name_or_create(const char* name)
+{
+  Host* host = by_name_or_null(name);
+  if (host == nullptr) {
+    host = new Host(name);
+    xbt_dict_set(host_list, name, host, NULL);
+  }
+  return host;
+}
 
 Host *Host::current(){
 	smx_process_t smx_proc = SIMIX_process_self();
@@ -138,21 +151,6 @@ double Host::speed() {
 /** @brief Returns the number of core of the processor. */
 int Host::core_count() {
 	return pimpl_cpu->getCore();
-}
-
-Host* Host::by_name_or_null(const char* name)
-{
-  return (Host*) xbt_dict_get_or_null(host_list, name);
-}
-
-Host* Host::by_name_or_create(const char* name)
-{
-  Host* host = by_name_or_null(name);
-  if (host == nullptr) {
-    host = new Host(name);
-    xbt_dict_set(host_list, name, host, NULL);
-  }
-  return host;
 }
 
 /** @brief Set the pstate at which the host should run */
