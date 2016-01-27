@@ -40,8 +40,6 @@ namespace s4u {
 XBT_PUBLIC_CLASS Host :
   public simgrid::xbt::Extendable<Host> {
 
-	// friend Actor;
-	// friend File;
 private:
 	Host(const char *name);
 public: // TODO, make me private

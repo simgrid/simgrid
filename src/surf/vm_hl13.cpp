@@ -158,7 +158,6 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
-  // vm_ws->cpu_action = surf_cpu_model_pm->extension.cpu.execute(host_PM, GUESTOS_NOISE);
   p_action = sub_cpu->execute(0);
 
   XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks",
