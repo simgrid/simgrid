@@ -1,0 +1,9 @@
+! output sort
+$ ./parallel_task_create  ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/parallel_task_create.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+> [  0.000000] (1:launcher@Tremblay) Launching
+> [  0.000000] (1:launcher@Tremblay) Starting a parallel task
+> [ 27.743650] (1:launcher@Tremblay) Done
+> [ 27.743650] (1:launcher@Tremblay) Starting a parallel task with no communication
+> [ 29.054335] (1:launcher@Tremblay) Done
+> [ 29.054335] (1:launcher@Tremblay) Exiting
