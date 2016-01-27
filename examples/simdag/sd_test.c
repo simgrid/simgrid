@@ -60,11 +60,9 @@ int main(int argc, char **argv)
   communication_amount12 = 2000000;
   communication_amount21 = 3000000;
   XBT_INFO("Computation time for %f flops on %s: %f", computation_amount1,
-        name1, sg_host_computation_time(w1,
-                                                   computation_amount1));
+        name1, computation_amount1/sg_host_speed(w1));
   XBT_INFO("Computation time for %f flops on %s: %f", computation_amount2,
-        name2, sg_host_computation_time(w2,
-                                                   computation_amount2));
+        name2, computation_amount2/sg_host_speed(w2));
 
   XBT_INFO("Route between %s and %s:", name1, name2);
   route = SD_route_get_list(w1, w2);
@@ -80,10 +78,12 @@ int main(int argc, char **argv)
         SD_route_get_bandwidth(w1, w2));
   XBT_INFO("Communication time for %f bytes between %s and %s: %f",
         communication_amount12, name1, name2,
-        SD_route_get_communication_time(w1, w2, communication_amount12));
+        SD_route_get_latency(w1, w2) +
+        communication_amount12 / SD_route_get_bandwidth(w1, w2));
   XBT_INFO("Communication time for %f bytes between %s and %s: %f",
         communication_amount21, name2, name1,
-        SD_route_get_communication_time(w2, w1, communication_amount21));
+        SD_route_get_latency(w2, w1) +
+        communication_amount21 / SD_route_get_bandwidth(w2, w1));
 
   /* creation of the tasks and their dependencies */
   taskA = SD_task_create("Task A", NULL, 10.0);

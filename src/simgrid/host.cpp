@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-201. The SimGrid Team.
+/* Copyright (c) 2013-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,9 +13,25 @@
 #include "src/simix/smx_private.hpp"
 #include "src/surf/host_interface.hpp"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
+
 size_t sg_host_count()
 {
   return xbt_dict_length(host_list);
+}
+/** @brief Returns the host list
+ *
+ * Uses sg_host_count() to know the array size.
+ *
+ * \return an array of \ref sg_host_t containing all the hosts in the platform.
+ * \remark The host order in this array is generally different from the
+ * creation/declaration order in the XML platform (we use a hash table
+ * internally).
+ * \see sg_host_count()
+ */
+const sg_host_t *sg_host_list(void) {
+  xbt_assert(sg_host_count() > 0, "There is no host!");
+  return (sg_host_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
 }
 
 const char *sg_host_get_name(sg_host_t host)
@@ -108,17 +124,40 @@ void sg_host_simix_destroy(sg_host_t host) {
   host->extension_set(SIMIX_HOST_LEVEL, nullptr);
 }
 
+// ========= storage related functions ============
+xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
+  return host->extension<simgrid::surf::Host>()->getMountedStorageList();
+}
+
+xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
+  return host->extension<simgrid::surf::Host>()->getAttachedStorageList();
+}
+
+
 // =========== user-level functions ===============
 // ================================================
+
+/** @brief Returns the total speed of a host
+ */
+double sg_host_speed(sg_host_t host)
+{
+  return host->speed();
+}
 
 double sg_host_get_available_speed(sg_host_t host){
   return surf_host_get_available_speed(host);
 }
+/** @brief Returns the number of cores of a host
+*/
+int sg_host_core_count(sg_host_t host) {
+  return host->core_count();
+}
+
 /** @brief Returns the state of a host.
  *  @return 1 if the host is active or 0 if it has crashed.
  */
 int sg_host_is_on(sg_host_t host) {
-	return host->is_on();
+  return host->is_on();
 }
 
 /** @brief Returns the number of power states for a host.
@@ -149,7 +188,6 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
   return host->properties();
 }
 
-
 /** \ingroup m_host_management
  * \brief Returns the value of a given host property
  *
@@ -162,3 +200,23 @@ const char *sg_host_get_property_value(sg_host_t host, const char *name)
   return (const char*) xbt_dict_get_or_null(sg_host_get_properties(host), name);
 }
 
+/** @brief Displays debugging informations about a host */
+void sg_host_dump(sg_host_t host)
+{
+  xbt_dict_t props;
+  xbt_dict_cursor_t cursor=NULL;
+  char *key,*data;
+
+  XBT_INFO("Displaying host %s", sg_host_get_name(host));
+  XBT_INFO("  - speed: %.0f", sg_host_speed(host));
+  XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
+  props = sg_host_get_properties(host);
+
+  if (!xbt_dict_is_empty(props)){
+    XBT_INFO("  - properties:");
+
+    xbt_dict_foreach(props,cursor,key,data) {
+      XBT_INFO("    %s->%s",key,data);
+    }
+  }
+}

@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -21,6 +21,8 @@
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(size_t) sg_host_count();
+XBT_PUBLIC(const sg_host_t *) sg_host_list(void);
+
 XBT_PUBLIC(size_t) sg_host_extension_create(void(*deleter)(void*));
 XBT_PUBLIC(void*) sg_host_extension_get(sg_host_t host, size_t rank);
 XBT_PUBLIC(sg_host_t) sg_host_by_name(const char *name);
@@ -47,8 +49,13 @@ XBT_PUBLIC(void) sg_host_simix_destroy(sg_host_t host);
 // Module initializer. Won't survive the conversion to C++. Hopefully.
 XBT_PUBLIC(void) sg_host_init(void);
 
+// ========= storage related functions ============
+XBT_PUBLIC(xbt_dict_t) sg_host_get_mounted_storage_list(sg_host_t host);
+XBT_PUBLIC(xbt_dynar_t) sg_host_get_attached_storage_list(sg_host_t host);
 // =========== user-level functions ===============
+XBT_PUBLIC(double) sg_host_speed(sg_host_t host);
 XBT_PUBLIC(double) sg_host_get_available_speed(sg_host_t host);
+XBT_PUBLIC(int) sg_host_core_count(sg_host_t host);
 XBT_PUBLIC(int) sg_host_is_on(sg_host_t host);
 
 XBT_PUBLIC(int) sg_host_get_nb_pstates(sg_host_t host);
@@ -57,6 +64,7 @@ XBT_PUBLIC(void) sg_host_set_pstate(sg_host_t host,int pstate);
 XBT_PUBLIC(xbt_dict_t) sg_host_get_properties(sg_host_t host);
 XBT_PUBLIC(const char *) sg_host_get_property_value(sg_host_t host,
                                                      const char *name);
+XBT_PUBLIC(void) sg_host_dump(sg_host_t ws);
 SG_END_DECL()
 
 #endif /* SIMGRID_HOST_H_ */

@@ -23,8 +23,6 @@ typedef struct SD_global {
   sg_host_t *host_list;   /* array of workstations, created only if
                              necessary in sg_host_list() */
   SD_link_t *link_list;         /* array of links */
-  SD_link_t *recyclable_route;  /* array returned by SD_route_get_list
-                                   and mallocated only once */
 
   xbt_mallocator_t task_mallocator; /* to not remalloc new tasks */
 

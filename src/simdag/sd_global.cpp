@@ -50,9 +50,6 @@ void SD_init(int *argc, char **argv)
   xbt_assert(sd_global == NULL, "SD_init() already called");
 
   sd_global = xbt_new(s_SD_global_t, 1);
-  sd_global->host_list = NULL;
-  sd_global->link_list = NULL;
-  sd_global->recyclable_route = NULL;
   sd_global->watch_point_reached = 0;
 
   sd_global->task_mallocator=xbt_mallocator_new(65536, SD_task_new_f,
@@ -96,7 +93,6 @@ void SD_config(const char *key, const char *value){
   xbt_assert(sd_global,"ERROR: Please call SD_init() before using SD_config()");
   xbt_cfg_set_as_string(_sg_cfg_set, key, value);
 }
-
 
 /**
  * \brief Reinits the application part of the simulation (experimental feature)
@@ -378,11 +374,6 @@ void SD_exit(void)
   TRACE_surf_resource_utilization_release();
 
   xbt_mallocator_free(sd_global->task_mallocator);
-
-  XBT_DEBUG("Destroying workstation and link arrays...");
-  xbt_free(sd_global->host_list);
-  xbt_free(sd_global->link_list);
-  xbt_free(sd_global->recyclable_route);
 
   XBT_DEBUG("Destroying the dynars ...");
   xbt_dynar_free_container(&(sd_global->initial_task_set));

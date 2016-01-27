@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
   /* The host properties can be retrieved from all interfaces */
 
-  XBT_INFO("Property list for workstation %s", name1);
+  XBT_INFO("Property list for host %s", name1);
   /* Get the property list of the workstation 1 */
   props = sg_host_get_properties(w1);
 
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
   XBT_INFO("\tProperty: %s has value: %s", noexist, value?value:"Undefined (NULL)");
 
 
-  XBT_INFO("Property list for workstation %s", name2);
+  XBT_INFO("Property list for host %s", name2);
   /* Get the property list of the workstation 2 */
   props = sg_host_get_properties(w2);
   cursor = NULL;

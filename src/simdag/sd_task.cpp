@@ -900,18 +900,17 @@ double SD_task_get_execution_time(SD_task_t task,
   for (i = 0; i < workstation_nb; i++) {
     time = 0.0;
     if (flops_amount != NULL)
-      time =
-          sg_host_computation_time(workstation_list[i],
-                                              flops_amount[i]);
+      time = flops_amount[i] / sg_host_speed(workstation_list[i]);
 
     if (bytes_amount != NULL)
       for (j = 0; j < workstation_nb; j++) {
-        time +=
-            SD_route_get_communication_time(workstation_list[i],
-                                            workstation_list[j],
-                                            bytes_amount[i *
-                                                                 workstation_nb
-                                                                 + j]);
+        if (bytes_amount[i * workstation_nb + j] !=0 ) {
+          time += (SD_route_get_latency(workstation_list[i],
+                                        workstation_list[j]) +
+                   bytes_amount[i * workstation_nb + j] /
+                   SD_route_get_bandwidth(workstation_list[i],
+                                          workstation_list[j]));
+        }
       }
 
     if (time > max_time) {
