@@ -20,10 +20,6 @@ SG_BEGIN_DECL()
 /* Global variables */
 
 typedef struct SD_global {
-  sg_host_t *host_list;   /* array of workstations, created only if
-                             necessary in sg_host_list() */
-  SD_link_t *link_list;         /* array of links */
-
   xbt_mallocator_t task_mallocator; /* to not remalloc new tasks */
 
   int watch_point_reached;      /* has a task just reached a watch point? */
