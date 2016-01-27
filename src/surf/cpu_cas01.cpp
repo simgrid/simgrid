@@ -238,7 +238,7 @@ void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, doubl
   return;
 }
 
-CpuAction *CpuCas01::execute(double size)
+CpuAction *CpuCas01::execution_start(double size)
 {
 
   XBT_IN("(%s,%g)", getName(), size);

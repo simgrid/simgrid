@@ -786,7 +786,7 @@ void CpuTi::updateRemainingAmount(double now)
   m_lastUpdate = now;
 }
 
-CpuAction *CpuTi::execute(double size)
+CpuAction *CpuTi::execution_start(double size)
 {
   XBT_IN("(%s,%g)", getName(), size);
   CpuTiAction *action = new CpuTiAction(static_cast<CpuTiModel*>(getModel()), size, isOff(), this);

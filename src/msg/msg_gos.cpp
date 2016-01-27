@@ -73,7 +73,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       simdata->isused = (void*)1;
 
     if (simdata->host_nb > 0) {
-      simdata->compute = simcall_process_parallel_execute(task->name,
+      simdata->compute = simcall_execution_parallel_start(task->name,
                                                        simdata->host_nb,
                                                        simdata->host_list,
                                                        simdata->flops_parallel_amount,
@@ -84,7 +84,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       unsigned long affinity_mask = (unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host, sizeof(msg_host_t));
       XBT_DEBUG("execute %s@%s with affinity(0x%04lx)", MSG_task_get_name(task), MSG_host_get_name(p_simdata->m_host), affinity_mask);
 
-      simdata->compute = simcall_process_execute(task->name,
+      simdata->compute = simcall_execution_start(task->name,
                                               simdata->flops_amount,
                                               simdata->priority,
                                               simdata->bound,
@@ -94,7 +94,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
     }
     simcall_set_category(simdata->compute, task->category);
     p_simdata->waiting_action = simdata->compute;
-    comp_state = simcall_process_execution_wait(simdata->compute);
+    comp_state = simcall_execution_wait(simdata->compute);
 
     p_simdata->waiting_action = NULL;
 

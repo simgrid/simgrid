@@ -154,9 +154,9 @@ void smpi_execute_(double *duration)
 void smpi_execute_flops(double flops) {
   smx_synchro_t action;
   XBT_DEBUG("Handle real computation time: %f flops", flops);
-  action = simcall_process_execute("computation", flops, 1, 0, 0);
+  action = simcall_execution_start("computation", flops, 1, 0, 0);
   simcall_set_category (action, TRACE_internal_smpi_get_category());
-  simcall_process_execution_wait(action);
+  simcall_execution_wait(action);
   smpi_switch_data_segment(smpi_process_index());
 }
 

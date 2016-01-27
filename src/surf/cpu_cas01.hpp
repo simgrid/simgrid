@@ -49,7 +49,7 @@ public:
         int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuCas01();
   void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
-  CpuAction *execute(double size) override;
+  CpuAction *execution_start(double size) override;
   CpuAction *sleep(double duration) override;
 
   bool isUsed() override;
@@ -69,7 +69,7 @@ private:
  * Action *
  **********/
 class CpuCas01Action: public CpuAction {
-  friend CpuAction *CpuCas01::execute(double size);
+  friend CpuAction *CpuCas01::execution_start(double size);
   friend CpuAction *CpuCas01::sleep(double duration);
 public:
   CpuCas01Action(Model *model, double cost, bool failed, double speed,

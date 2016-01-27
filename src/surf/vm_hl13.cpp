@@ -158,7 +158,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
-  p_action = sub_cpu->execute(0);
+  p_action = sub_cpu->execution_start(0);
 
   XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks",
     name, p_hostPM->name().c_str(), xbt_dynar_length(p_storage));
@@ -212,7 +212,7 @@ void VMHL13::migrate(sg_host_t host_dest)
    /* Update vcpu's action for the new pm */
    {
      /* create a cpu action bound to the pm model at the destination. */
-     CpuAction *new_cpu_action = static_cast<CpuAction*>(host_dest->pimpl_cpu->execute(0));
+     CpuAction *new_cpu_action = static_cast<CpuAction*>(host_dest->pimpl_cpu->execution_start(0));
 
      e_surf_action_state_t state = p_action->getState();
      if (state != SURF_ACTION_DONE)

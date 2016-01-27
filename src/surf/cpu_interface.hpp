@@ -116,7 +116,7 @@ public:
    * @param size The value of the processing amount (in flop) needed to process
    * @return The CpuAction corresponding to the processing
    */
-  virtual simgrid::surf::Action *execute(double size)=0;
+  virtual simgrid::surf::Action *execution_start(double size)=0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)

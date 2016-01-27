@@ -273,7 +273,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
 
   action = task->simdata->compute;
   if (action)
-    simcall_process_execution_destroy(action);
+    simcall_execution_destroy(action);
 
   /* parallel tasks only */
   xbt_free(task->simdata->host_list);
@@ -298,7 +298,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
   xbt_assert((task != NULL), "Cannot cancel a NULL task");
 
   if (task->simdata->compute) {
-    simcall_process_execution_cancel(task->simdata->compute);
+    simcall_execution_cancel(task->simdata->compute);
   }
   else if (task->simdata->comm) {
     simdata_task_t simdata = task->simdata;
@@ -319,7 +319,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
 double MSG_task_get_flops_amount(msg_task_t task) {
 
 	if (task->simdata->compute) {
-		return simcall_process_execution_get_remains(task->simdata->compute);
+		return simcall_execution_get_remains(task->simdata->compute);
 	} else {
 		return task->simdata->flops_amount;
 	}
@@ -410,8 +410,8 @@ void MSG_task_set_priority(msg_task_t task, double priority)
 
   task->simdata->priority = 1 / priority;
   if (task->simdata->compute)
-    simcall_process_execution_set_priority(task->simdata->compute,
-                                      task->simdata->priority);
+    simcall_execution_set_priority(task->simdata->compute,
+        task->simdata->priority);
 }
 
 
@@ -431,7 +431,7 @@ void MSG_task_set_bound(msg_task_t task, double bound)
 
   task->simdata->bound = bound;
   if (task->simdata->compute)
-    simcall_process_execution_set_bound(task->simdata->compute,
+    simcall_execution_set_bound(task->simdata->compute,
                                       task->simdata->bound);
 }
 
@@ -517,6 +517,6 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
     }
 
     XBT_INFO("set affinity(0x%04lx@%s) for %s", mask, MSG_host_get_name(host), MSG_task_get_name(task));
-    simcall_process_execution_set_affinity(task->simdata->compute, host, mask);
+    simcall_execution_set_affinity(task->simdata->compute, host, mask);
   }
 }

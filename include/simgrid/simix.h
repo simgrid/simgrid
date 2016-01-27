@@ -258,24 +258,25 @@ XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
 XBT_PUBLIC(double) simcall_host_get_current_power_peak(sg_host_t host);
 XBT_PUBLIC(double) simcall_host_get_power_peak_at(sg_host_t host, int pstate_index);
 
-XBT_PUBLIC(smx_synchro_t) simcall_process_execute(const char *name,
+XBT_PUBLIC(smx_synchro_t) simcall_execution_start(const char *name,
                                                 double flops_amount,
                                                 double priority, double bound, unsigned long affinity_mask);
-XBT_PUBLIC(smx_synchro_t) simcall_process_parallel_execute(const char *name,
+XBT_PUBLIC(smx_synchro_t) simcall_execution_parallel_start(const char *name,
                                                      int host_nb,
                                                      sg_host_t *host_list,
                                                      double *flops_amount,
                                                      double *bytes_amount,
                                                      double amount,
                                                      double rate);
-XBT_PUBLIC(void) simcall_process_execution_destroy(smx_synchro_t execution);
-XBT_PUBLIC(void) simcall_process_execution_cancel(smx_synchro_t execution);
-XBT_PUBLIC(double) simcall_process_execution_get_remains(smx_synchro_t execution);
-XBT_PUBLIC(e_smx_state_t) simcall_process_execution_get_state(smx_synchro_t execution);
-XBT_PUBLIC(void) simcall_process_execution_set_priority(smx_synchro_t execution, double priority);
-XBT_PUBLIC(void) simcall_process_execution_set_bound(smx_synchro_t execution, double bound);
-XBT_PUBLIC(void) simcall_process_execution_set_affinity(smx_synchro_t execution, sg_host_t host, unsigned long mask);
-XBT_PUBLIC(e_smx_state_t) simcall_process_execution_wait(smx_synchro_t execution);
+XBT_PUBLIC(void) simcall_execution_destroy(smx_synchro_t execution);
+XBT_PUBLIC(void) simcall_execution_cancel(smx_synchro_t execution);
+XBT_PUBLIC(double) simcall_execution_get_remains(smx_synchro_t execution);
+XBT_PUBLIC(e_smx_state_t) simcall_execution_get_state(smx_synchro_t execution);
+XBT_PUBLIC(void) simcall_execution_set_priority(smx_synchro_t execution, double priority);
+XBT_PUBLIC(void) simcall_execution_set_bound(smx_synchro_t execution, double bound);
+XBT_PUBLIC(void) simcall_execution_set_affinity(smx_synchro_t execution, sg_host_t host, unsigned long mask);
+XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_synchro_t execution);
+
 XBT_PUBLIC(xbt_dict_t) simcall_host_get_mounted_storage_list(sg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) simcall_host_get_attached_storage_list(sg_host_t host);
 XBT_PUBLIC(void) simcall_host_get_params(sg_host_t vm, vm_params_t param);

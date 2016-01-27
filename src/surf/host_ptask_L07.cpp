@@ -450,7 +450,7 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
 	lmm_constraint_shared(getConstraint());
 }
 
-Action *CpuL07::execute(double size)
+Action *CpuL07::execution_start(double size)
 {
   sg_host_t*host_list = xbt_new0(sg_host_t, 1);
   double *flops_amount = xbt_new0(double, 1);
@@ -459,23 +459,17 @@ Action *CpuL07::execute(double size)
   host_list[0] = getHost();
   flops_amount[0] = size;
 
-  return static_cast<CpuL07Model*>(getModel())
-    ->p_hostModel
+  return static_cast<CpuL07Model*>(getModel())->p_hostModel
     ->executeParallelTask( 1, host_list, flops_amount, bytes_amount, -1);
 }
 
 Action *CpuL07::sleep(double duration)
 {
-  L07Action *action = NULL;
-
-  XBT_IN("(%s,%g)", getName(), duration);
-
-  action = static_cast<L07Action*>(execute(1.0));
+  L07Action *action = static_cast<L07Action*>(execution_start(1.0));
   action->m_maxDuration = duration;
   action->m_suspended = 2;
   lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), 0.0);
 
-  XBT_OUT();
   return action;
 }
 

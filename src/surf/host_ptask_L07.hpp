@@ -103,7 +103,7 @@ public:
   ~CpuL07();
   bool isUsed() override;
   void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
-  Action *execute(double size) override;
+  Action *execution_start(double size) override;
   Action *sleep(double duration) override;
 protected:
   void onSpeedChange() override;
@@ -134,12 +134,12 @@ public:
  * Action *
  **********/
 class L07Action : public CpuAction {
-  friend Action *CpuL07::execute(double size);
+  friend Action *CpuL07::execution_start(double size);
   friend Action *CpuL07::sleep(double duration);
   friend Action *HostL07Model::executeParallelTask(int host_nb,
                                                    sg_host_t*host_list,
                                                    double *flops_amount,
-												   double *bytes_amount,
+                                                   double *bytes_amount,
                                                    double rate);
 public:
   L07Action(Model *model, int host_nb,

@@ -62,8 +62,8 @@ void test(char *platform)
   XBT_DEBUG("%s : %p", surf_cpu_name(hostB->pimpl_cpu), hostB);
 
   /* Let's do something on it */
-  actionA = hostA->pimpl_cpu->execute(1000.0);
-  actionB = hostB->pimpl_cpu->execute(1000.0);
+  actionA = hostA->pimpl_cpu->execution_start(1000.0);
+  actionB = hostB->pimpl_cpu->execution_start(1000.0);
   actionC = surf_host_sleep(hostB, 7.32);
 
   /* Use whatever calling style you want... */

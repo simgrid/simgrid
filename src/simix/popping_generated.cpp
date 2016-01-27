@@ -38,16 +38,16 @@ const char* simcall_names[] = {
   "SIMCALL_PROCESS_IS_SUSPENDED",
   "SIMCALL_PROCESS_JOIN",
   "SIMCALL_PROCESS_SLEEP",
-  "SIMCALL_PROCESS_EXECUTE",
-  "SIMCALL_PROCESS_PARALLEL_EXECUTE",
-  "SIMCALL_PROCESS_EXECUTION_DESTROY",
-  "SIMCALL_PROCESS_EXECUTION_CANCEL",
-  "SIMCALL_PROCESS_EXECUTION_GET_REMAINS",
-  "SIMCALL_PROCESS_EXECUTION_GET_STATE",
-  "SIMCALL_PROCESS_EXECUTION_SET_PRIORITY",
-  "SIMCALL_PROCESS_EXECUTION_SET_BOUND",
-  "SIMCALL_PROCESS_EXECUTION_SET_AFFINITY",
-  "SIMCALL_PROCESS_EXECUTION_WAIT",
+  "SIMCALL_EXECUTION_START",
+  "SIMCALL_EXECUTION_PARALLEL_START",
+  "SIMCALL_EXECUTION_DESTROY",
+  "SIMCALL_EXECUTION_CANCEL",
+  "SIMCALL_EXECUTION_GET_REMAINS",
+  "SIMCALL_EXECUTION_GET_STATE",
+  "SIMCALL_EXECUTION_SET_PRIORITY",
+  "SIMCALL_EXECUTION_SET_BOUND",
+  "SIMCALL_EXECUTION_SET_AFFINITY",
+  "SIMCALL_EXECUTION_WAIT",
   "SIMCALL_PROCESS_ON_EXIT",
   "SIMCALL_PROCESS_AUTO_RESTART_SET",
   "SIMCALL_PROCESS_RESTART",
@@ -202,53 +202,53 @@ case SIMCALL_PROCESS_SLEEP:
        simcall_HANDLER_process_sleep(simcall ,  simcall->args[0].d);
        break;  
 
-case SIMCALL_PROCESS_EXECUTE:
-      simcall->result.dp = simcall_HANDLER_process_execute(simcall ,  simcall->args[0].cc,  simcall->args[1].d,  simcall->args[2].d,  simcall->args[3].d,  simcall->args[4].ul);
+case SIMCALL_EXECUTION_START:
+      simcall->result.dp = simcall_HANDLER_execution_start(simcall ,  simcall->args[0].cc,  simcall->args[1].d,  simcall->args[2].d,  simcall->args[3].d,  simcall->args[4].ul);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_PARALLEL_EXECUTE:
-      simcall->result.dp = SIMIX_process_parallel_execute( simcall->args[0].cc, simcall->args[1].i,(sg_host_t*) simcall->args[2].dp,(double*) simcall->args[3].dp,(double*) simcall->args[4].dp, simcall->args[5].d, simcall->args[6].d);
+case SIMCALL_EXECUTION_PARALLEL_START:
+      simcall->result.dp = SIMIX_execution_parallel_start( simcall->args[0].cc, simcall->args[1].i,(sg_host_t*) simcall->args[2].dp,(double*) simcall->args[3].dp,(double*) simcall->args[4].dp, simcall->args[5].d, simcall->args[6].d);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_EXECUTION_DESTROY:
-       SIMIX_process_execution_destroy((smx_synchro_t) simcall->args[0].dp);
+case SIMCALL_EXECUTION_DESTROY:
+       SIMIX_execution_destroy((smx_synchro_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_EXECUTION_CANCEL:
-       SIMIX_process_execution_cancel((smx_synchro_t) simcall->args[0].dp);
+case SIMCALL_EXECUTION_CANCEL:
+       SIMIX_execution_cancel((smx_synchro_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_EXECUTION_GET_REMAINS:
-      simcall->result.d = SIMIX_process_execution_get_remains((smx_synchro_t) simcall->args[0].dp);
+case SIMCALL_EXECUTION_GET_REMAINS:
+      simcall->result.d = SIMIX_execution_get_remains((smx_synchro_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_EXECUTION_GET_STATE:
-      simcall->result.i = SIMIX_process_execution_get_state((smx_synchro_t) simcall->args[0].dp);
+case SIMCALL_EXECUTION_GET_STATE:
+      simcall->result.i = SIMIX_execution_get_state((smx_synchro_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_EXECUTION_SET_PRIORITY:
-       SIMIX_process_execution_set_priority((smx_synchro_t) simcall->args[0].dp, simcall->args[1].d);
+case SIMCALL_EXECUTION_SET_PRIORITY:
+       SIMIX_execution_set_priority((smx_synchro_t) simcall->args[0].dp, simcall->args[1].d);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_EXECUTION_SET_BOUND:
-       SIMIX_process_execution_set_bound((smx_synchro_t) simcall->args[0].dp, simcall->args[1].d);
+case SIMCALL_EXECUTION_SET_BOUND:
+       SIMIX_execution_set_bound((smx_synchro_t) simcall->args[0].dp, simcall->args[1].d);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_EXECUTION_SET_AFFINITY:
-       SIMIX_process_execution_set_affinity((smx_synchro_t) simcall->args[0].dp,(sg_host_t) simcall->args[1].dp, simcall->args[2].ul);
+case SIMCALL_EXECUTION_SET_AFFINITY:
+       SIMIX_execution_set_affinity((smx_synchro_t) simcall->args[0].dp,(sg_host_t) simcall->args[1].dp, simcall->args[2].ul);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_PROCESS_EXECUTION_WAIT:
-       simcall_HANDLER_process_execution_wait(simcall , (smx_synchro_t) simcall->args[0].dp);
+case SIMCALL_EXECUTION_WAIT:
+       simcall_HANDLER_execution_wait(simcall , (smx_synchro_t) simcall->args[0].dp);
        break;  
 
 case SIMCALL_PROCESS_ON_EXIT:

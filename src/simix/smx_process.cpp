@@ -375,7 +375,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
     case SIMIX_SYNC_EXECUTE:
     case SIMIX_SYNC_PARALLEL_EXECUTE:
-      SIMIX_process_execution_destroy(process->waiting_synchro);
+      SIMIX_execution_destroy(process->waiting_synchro);
       break;
 
     case SIMIX_SYNC_COMMUNICATE:
@@ -432,7 +432,7 @@ void SIMIX_process_throw(smx_process_t process, xbt_errcat_t cat, int value, con
 
     case SIMIX_SYNC_EXECUTE:
     case SIMIX_SYNC_PARALLEL_EXECUTE:
-      SIMIX_process_execution_cancel(process->waiting_synchro);
+      SIMIX_execution_cancel(process->waiting_synchro);
       break;
 
     case SIMIX_SYNC_COMMUNICATE:
@@ -512,7 +512,7 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t proces
   } else {
     xbt_fifo_push(sync_suspend->simcalls, simcall);
     process->waiting_synchro = sync_suspend;
-    SIMIX_host_execution_suspend(process->waiting_synchro);
+    SIMIX_execution_suspend(process->waiting_synchro);
   }
   /* If we are suspending ourselves, then just do not finish the simcall now */
 }
@@ -538,7 +538,7 @@ smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 
         case SIMIX_SYNC_EXECUTE:
         case SIMIX_SYNC_PARALLEL_EXECUTE:
-          SIMIX_host_execution_suspend(process->waiting_synchro);
+          SIMIX_execution_suspend(process->waiting_synchro);
           break;
 
         case SIMIX_SYNC_COMMUNICATE:
@@ -564,7 +564,7 @@ smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
     }
   } else {
     /* FIXME: computation size is zero. Is it okay that bound is zero ? */
-    return SIMIX_process_execute(process, "suspend", 0.0, 1.0, 0.0, 0);
+    return SIMIX_execution_start(process, "suspend", 0.0, 1.0, 0.0, 0);
   }
 }
 
@@ -594,7 +594,7 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
 
         case SIMIX_SYNC_EXECUTE:
         case SIMIX_SYNC_PARALLEL_EXECUTE:
-          SIMIX_host_execution_resume(process->waiting_synchro);
+          SIMIX_execution_resume(process->waiting_synchro);
           break;
 
         case SIMIX_SYNC_COMMUNICATE:

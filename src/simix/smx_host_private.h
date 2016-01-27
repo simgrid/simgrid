@@ -37,22 +37,22 @@ XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
 
 XBT_PRIVATE void SIMIX_host_restart_processes(sg_host_t host);
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
-XBT_PRIVATE smx_synchro_t SIMIX_process_execute(smx_process_t issuer, const char *name,
+XBT_PRIVATE smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name,
     double flops_amount, double priority, double bound, unsigned long affinity_mask);
-XBT_PRIVATE smx_synchro_t SIMIX_process_parallel_execute(const char *name,
+XBT_PRIVATE smx_synchro_t SIMIX_execution_parallel_start(const char *name,
     int host_nb, sg_host_t *host_list,
     double *flops_amount, double *bytes_amount,
     double amount, double rate);
-XBT_PRIVATE void SIMIX_process_execution_destroy(smx_synchro_t synchro);
-XBT_PRIVATE void SIMIX_process_execution_cancel(smx_synchro_t synchro);
-XBT_PRIVATE double SIMIX_process_execution_get_remains(smx_synchro_t synchro);
-XBT_PRIVATE e_smx_state_t SIMIX_process_execution_get_state(smx_synchro_t synchro);
-XBT_PRIVATE void SIMIX_process_execution_set_priority(smx_synchro_t synchro, double priority);
-XBT_PRIVATE void SIMIX_process_execution_set_bound(smx_synchro_t synchro, double bound);
-XBT_PRIVATE void SIMIX_process_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask);
+XBT_PRIVATE void SIMIX_execution_destroy(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_execution_cancel(smx_synchro_t synchro);
+XBT_PRIVATE double SIMIX_execution_get_remains(smx_synchro_t synchro);
+XBT_PRIVATE e_smx_state_t SIMIX_execution_get_state(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_execution_set_priority(smx_synchro_t synchro, double priority);
+XBT_PRIVATE void SIMIX_execution_set_bound(smx_synchro_t synchro, double bound);
+XBT_PRIVATE void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask);
 
-XBT_PRIVATE void SIMIX_host_execution_suspend(smx_synchro_t synchro);
-XBT_PRIVATE void SIMIX_host_execution_resume(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_execution_suspend(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_execution_resume(smx_synchro_t synchro);
 
 XBT_PRIVATE void SIMIX_post_host_execute(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_set_category(smx_synchro_t synchro, const char *category);
