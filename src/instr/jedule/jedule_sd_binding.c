@@ -43,11 +43,8 @@ void jedule_log_sd_event(SD_task_t task)
     xbt_dynar_push(host_list, &hostname);
   }
 
-  create_jed_event(&event,
-      (char*)SD_task_get_name(task),
-      task->start_time,
-      task->finish_time,
-      "SD");
+  create_jed_event(&event, (char*)SD_task_get_name(task),
+      task->start_time, task->finish_time,"SD");
 
   jed_event_add_resources(event, host_list);
   jedule_store_event(event);
