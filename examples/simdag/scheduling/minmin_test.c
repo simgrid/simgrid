@@ -186,73 +186,6 @@ static sg_host_t SD_task_get_best_workstation(SD_task_t task)
   return best_workstation;
 }
 
-static void output_xml(FILE * out, xbt_dynar_t dax)
-{
-  unsigned int i, j, k;
-  int current_nworkstations;
-  const int nworkstations = sg_host_count();
-  const sg_host_t *workstations = sg_host_list();
-  SD_task_t task;
-  sg_host_t *list;
-
-  fprintf(out, "<?xml version=\"1.0\"?>\n");
-  fprintf(out, "<grid_schedule>\n");
-  fprintf(out, "   <grid_info>\n");
-  fprintf(out, "      <info name=\"nb_clusters\" value=\"1\"/>\n");
-  fprintf(out, "         <clusters>\n");
-  fprintf(out,
-          "            <cluster id=\"1\" hosts=\"%d\" first_host=\"0\"/>\n",
-          nworkstations);
-  fprintf(out, "         </clusters>\n");
-  fprintf(out, "      </grid_info>\n");
-  fprintf(out, "   <node_infos>\n");
-
-  xbt_dynar_foreach(dax, i, task) {
-    fprintf(out, "      <node_statistics>\n");
-    fprintf(out, "         <node_property name=\"id\" value=\"%s\"/>\n",
-            SD_task_get_name(task));
-    fprintf(out, "         <node_property name=\"type\" value=\"");
-    if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ)
-      fprintf(out, "computation\"/>\n");
-    if (SD_task_get_kind(task) == SD_TASK_COMM_E2E)
-      fprintf(out, "transfer\"/>\n");
-
-    fprintf(out,
-            "         <node_property name=\"start_time\" value=\"%.3f\"/>\n",
-            SD_task_get_start_time(task));
-    fprintf(out,
-            "         <node_property name=\"end_time\" value=\"%.3f\"/>\n",
-            SD_task_get_finish_time(task));
-    fprintf(out, "         <configuration>\n");
-
-    current_nworkstations = SD_task_get_workstation_count(task);
-
-    fprintf(out,
-            "            <conf_property name=\"host_nb\" value=\"%d\"/>\n",
-            current_nworkstations);
-
-    fprintf(out, "            <host_lists>\n");
-    list = SD_task_get_workstation_list(task);
-    for (j = 0; j < current_nworkstations; j++) {
-      for (k = 0; k < nworkstations; k++) {
-        if (!strcmp(sg_host_get_name(workstations[k]),
-                    sg_host_get_name(list[j]))) {
-          fprintf(out, "               <hosts start=\"%u\" nb=\"1\"/>\n",
-                  k);
-          fprintf(out,
-                  "            <conf_property name=\"cluster_id\" value=\"0\"/>\n");
-          break;
-        }
-      }
-    }
-    fprintf(out, "            </host_lists>\n");
-    fprintf(out, "         </configuration>\n");
-    fprintf(out, "      </node_statistics>\n");
-  }
-  fprintf(out, "   </node_infos>\n");
-  fprintf(out, "</grid_schedule>\n");
-}
-
 int main(int argc, char **argv)
 {
   unsigned int cursor;
@@ -262,21 +195,16 @@ int main(int argc, char **argv)
   sg_host_t workstation, selected_workstation = NULL;
   int total_nworkstations = 0;
   const sg_host_t *workstations = NULL;
+  char * tracefilename = NULL;
   xbt_dynar_t dax;
-  FILE *out = NULL;
 
   /* initialization of SD */
   SD_init(&argc, argv);
 
   /* Check our arguments */
   xbt_assert(argc > 2, "Usage: %s platform_file dax_file [jedule_file]\n"
-	     "\tExample: %s simulacrum_7_hosts.xml Montage_25.xml Montage_25.jed", 
-	     argv[0], argv[0]);
+             "\tExample: %s simulacrum_7_hosts.xml Montage_25.xml Montage_25.jed", argv[0], argv[0]);
 
-  char *last = strrchr(argv[2], '.');
-  char * tracefilename = bprintf("%.*s.jed",(int) (last == NULL ? 
-						   strlen(argv[2]) : 
-						   last - argv[2]), argv[2]);  
   if (argc == 4)
     tracefilename = xbt_strdup(argv[3]);
 
@@ -365,23 +293,12 @@ int main(int argc, char **argv)
 
   XBT_INFO("Simulation Time: %f", SD_get_clock());
 
-
-
-
-  XBT_INFO
-      ("------------------- Produce the trace file---------------------------");
-  XBT_INFO("Producing the trace of the run into %s", tracefilename);
-  out = fopen(tracefilename, "w");
-  xbt_assert(out, "Cannot write to %s", tracefilename);
-  free(tracefilename);
-
-  output_xml(out, dax);
-
-  fclose(out);
-
+  XBT_INFO("------------------- Produce the trace file---------------------------");
+  XBT_INFO("Producing a jedule output (if active) of the run into %s", tracefilename?tracefilename:"minmin_test.jed");
 #ifdef HAVE_JEDULE
-  jedule_sd_dump();
+  jedule_sd_dump(tracefilename);
 #endif
+  free(tracefilename);
 
   xbt_dynar_free_container(&ready_tasks);
 
