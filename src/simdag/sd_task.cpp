@@ -220,8 +220,8 @@ void SD_task_destroy(SD_task_t task)
   XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
 
   __SD_task_remove_dependencies(task);
-  /* if the task was scheduled or runnable we have to free the scheduling parameters */
-  if (__SD_task_is_scheduled_or_runnable(task))
+
+  if (task->state == SD_SCHEDULED || task->state == SD_RUNNABLE)
     __SD_task_destroy_scheduling_data(task);
 
   idx = xbt_dynar_search_or_negative(sd_global->return_set, &task);
@@ -635,14 +635,14 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src,
 
   state = SD_task_get_state(src);
   if (state != SD_NOT_SCHEDULED && state != SD_SCHEDULABLE &&
-      state != SD_RUNNING && !__SD_task_is_scheduled_or_runnable(src))
+      state != SD_RUNNING && state != SD_SCHEDULED && state != SD_RUNNABLE)
     THROWF(arg_error, 0,
            "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED,"
            " SD_RUNNABLE or SD_RUNNING", SD_task_get_name(src));
 
   state = SD_task_get_state(dst);
   if (state != SD_NOT_SCHEDULED && state != SD_SCHEDULABLE &&
-      !__SD_task_is_scheduled_or_runnable(dst))
+      state != SD_SCHEDULED && state != SD_RUNNABLE)
     THROWF(arg_error, 0,
            "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED,"
            "or SD_RUNNABLE", SD_task_get_name(dst));
@@ -1008,7 +1008,8 @@ void SD_task_unschedule(SD_task_t task)
            "Task %s: the state must be SD_SCHEDULED, SD_RUNNABLE, SD_RUNNING or SD_FAILED",
            SD_task_get_name(task));
 
-  if (__SD_task_is_scheduled_or_runnable(task)  /* if the task is scheduled or runnable */
+  if ((task->state == SD_SCHEDULED || task->state == SD_RUNNABLE)
+      /* if the task is scheduled or runnable */
       && ((task->kind == SD_TASK_COMP_PAR_AMDAHL) ||
           (task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK))) { /* Don't free scheduling data for typed tasks */
     __SD_task_destroy_scheduling_data(task);
@@ -1035,7 +1036,7 @@ void SD_task_unschedule(SD_task_t task)
  */
 static void __SD_task_destroy_scheduling_data(SD_task_t task)
 {
-  if (!__SD_task_is_scheduled_or_runnable(task))
+  if (task->state != SD_SCHEDULED && task->state != SD_RUNNABLE)
     THROWF(arg_error, 0,
            "Task '%s' must be SD_SCHEDULED or SD_RUNNABLE",
            SD_task_get_name(task));

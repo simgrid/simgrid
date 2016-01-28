@@ -8,7 +8,6 @@
 #define SIMDAG_PRIVATE_H
 
 #include "xbt/base.h"
-#include "xbt/dict.h"
 #include "xbt/dynar.h"
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
@@ -88,14 +87,5 @@ XBT_PRIVATE void* SD_task_new_f(void);
 XBT_PRIVATE void SD_task_recycle_f(void *t);
 XBT_PRIVATE void SD_task_free_f(void *t);
 
-/* Functions to test if the task is in a given state. */
-
-/* Returns whether the given task is scheduled or runnable. */
-static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
-{
-  return task->state == SD_SCHEDULED || task->state == SD_RUNNABLE;
-}
-
 SG_END_DECL()
-
 #endif
