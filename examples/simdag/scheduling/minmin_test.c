@@ -294,7 +294,7 @@ int main(int argc, char **argv)
   XBT_INFO("Simulation Time: %f", SD_get_clock());
 
   XBT_INFO("------------------- Produce the trace file---------------------------");
-  XBT_INFO("Producing a jedule output (if active) of the run into %s", tracefilename?tracefilename:"./minmin_test.jed");
+  XBT_INFO("Producing a jedule output (if active) of the run into %s", tracefilename?tracefilename:"minmin_test.jed");
 #ifdef HAVE_JEDULE
   jedule_sd_dump(tracefilename);
 #endif
