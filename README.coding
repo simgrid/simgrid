@@ -46,11 +46,11 @@ The tree is not split on projects, but on file finality:
 Most files use the Kernighan & Ritchie coding style with 2 spaces of
 indentation. The indent program can help you to stick to it:
 
-indent -kr -l80 -nut -i2 -lps -npcs -br -brs -ce -cdw -bbo -npsl <myfile>
+indent -kr -l120 -nut -i2 -lps -npcs -br -brs -ce -cdw -bbo -npsl <myfile>
 
-The script ./tools/indent runs indent with the appropriate options.
+The script ./tools/internal/indent runs indent with the appropriate options.
 
-FIXME: this list of arguments is still to be discussed, maybe
+If you use Eclipse, please import the settings in ./tools/internal/eclipse-formating.xml
 
 **
 ** Type naming standard
