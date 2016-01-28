@@ -124,15 +124,13 @@ void jedule_sd_exit(void)
   }
 }
 
-void jedule_sd_dump()
+void jedule_sd_dump(const char * fname)
 {
   if (jedule) {
     FILE *fh;
-    char fname[1024];
-
-    fname[0] = '\0';
-    strcat(fname, xbt_binary_name);
-    strcat(fname, ".jed\0");
+    if (!fname) {
+      fname = bprintf("%s.jed", xbt_binary_name);
+    }
 
     fh = fopen(fname, "w");
 
