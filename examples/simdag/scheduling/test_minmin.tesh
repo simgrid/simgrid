@@ -35,4 +35,4 @@ $ $SG_TEST_EXENV ${bindir:=.}/minmin_test --log=sd_daxparse.thresh:critical ${sr
 > [98.184618] [test/INFO] Producing the trace of the run into ./Montage_25.jed
 
 
-$ cmake -E remove -f ${srcdir:=.}/Montage_25.jed
+$ cmake -E remove -f ${srcdir:=.}/Montage_25.jed ${srcdir:=.}/minmin_test.jed

@@ -13,6 +13,10 @@
 #include "xbt/ex.h"
 #include <string.h>
 
+#ifdef HAVE_JEDULE
+#include "simgrid/jedule/jedule_sd_binding.h"
+#endif
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,
                              "Logging specific to this SimDag example");
 
@@ -375,6 +379,9 @@ int main(int argc, char **argv)
 
   fclose(out);
 
+#ifdef HAVE_JEDULE
+  jedule_sd_dump();
+#endif
 
   xbt_dynar_free_container(&ready_tasks);
 

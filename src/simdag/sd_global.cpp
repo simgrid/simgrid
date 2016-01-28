@@ -132,7 +132,6 @@ void SD_application_reinit(void)
 
 
 #ifdef HAVE_JEDULE
-  jedule_sd_dump();
   jedule_sd_cleanup();
   jedule_sd_init();
 #endif
@@ -374,7 +373,6 @@ void SD_exit(void)
   sd_global = NULL;
 
 #ifdef HAVE_JEDULE
-  jedule_sd_dump();
   jedule_sd_cleanup();
   jedule_sd_exit();
 #endif
