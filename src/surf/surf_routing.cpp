@@ -41,7 +41,6 @@ int MSG_FILE_LEVEL;             //Msg file level
 
 int SIMIX_STORAGE_LEVEL;        //Simix storage level
 int MSG_STORAGE_LEVEL;          //Msg storage level
-int SD_STORAGE_LEVEL;           //Simdag storage level
 
 xbt_lib_t as_router_lib;
 int ROUTING_ASR_LEVEL;          //Routing level

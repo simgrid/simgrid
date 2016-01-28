@@ -14,7 +14,6 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC_DATA(xbt_dict_t) host_list;
 XBT_PUBLIC_DATA(int) SIMIX_STORAGE_LEVEL; //Simix storage level
-XBT_PUBLIC_DATA(int) SD_STORAGE_LEVEL;    //Simdag storage level
 XBT_PUBLIC_DATA(int) COORD_HOST_LEVEL;    //Coordinates level
 
 XBT_PUBLIC_DATA(xbt_lib_t) as_router_lib;

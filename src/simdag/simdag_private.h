@@ -35,17 +35,6 @@ typedef struct SD_global {
 
 extern XBT_PRIVATE SD_global_t sd_global;
 
-/* Storage */
-typedef s_xbt_dictelm_t s_SD_storage_t;
-typedef struct SD_storage {
-  void *data;                   /* user data */
-  const char *host;
-} s_SD_storage_priv_t, *SD_storage_priv_t;
-
-static inline SD_storage_priv_t SD_storage_priv(SD_storage_t storage){
-  return (SD_storage_priv_t)xbt_lib_get_level(storage, SD_STORAGE_LEVEL);
-}
-
 /* Task */
 typedef struct SD_task {
   e_SD_task_state_t state;
@@ -106,10 +95,6 @@ static XBT_INLINE int __SD_task_is_scheduled_or_runnable(SD_task_t task)
 {
   return task->state == SD_SCHEDULED || task->state == SD_RUNNABLE;
 }
-
-/********** Storage **********/
-XBT_PRIVATE SD_storage_t __SD_storage_create(void *surf_storage, void *data);
-XBT_PRIVATE void __SD_storage_destroy(void *storage);
 
 SG_END_DECL()
 

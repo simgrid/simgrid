@@ -72,9 +72,6 @@ void SD_init(int *argc, char **argv)
   jedule_sd_init();
 #endif
 
-  XBT_DEBUG("ADD SD LEVELS");
-  SD_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,__SD_storage_destroy);
-
   if (_sg_cfg_exit_asap) {
     SD_exit();
     exit(0);
@@ -161,17 +158,7 @@ void SD_application_reinit(void)
  */
 void SD_create_environment(const char *platform_file)
 {
-  xbt_lib_cursor_t cursor = NULL;
-  char *name = NULL;
-  void **surf_storage = NULL;
-
   parse_platform_file(platform_file);
-
-  /* now let's create the SD wrappers for storage elements */
-  xbt_lib_foreach(storage_lib, cursor, name, surf_storage) {
-    if(surf_storage[SURF_STORAGE_LEVEL])
-      __SD_storage_create(surf_storage[SURF_STORAGE_LEVEL], NULL);
-  }
 
   XBT_DEBUG("Workstation number: %zu, link number: %d",
          sg_host_count(), sg_link_count());

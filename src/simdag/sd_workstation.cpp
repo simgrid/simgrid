@@ -14,32 +14,6 @@
 #include "xbt/sysdep.h"
 #include "surf/surf.h"
 
-/* Creates a storage and registers it in SD.
- */
-SD_storage_t __SD_storage_create(void *surf_storage, void *data)
-{
-
-  SD_storage_priv_t storage;
-  const char *name;
-
-  storage = xbt_new(s_SD_storage_priv_t, 1);
-  storage->data = data;     /* user data */
-  name = surf_resource_name((surf_cpp_resource_t)surf_storage);
-  storage->host = (const char*)surf_storage_get_host( (surf_resource_t )surf_storage_resource_by_name(name));
-  xbt_lib_set(storage_lib,name, SD_STORAGE_LEVEL, storage);
-  return xbt_lib_get_elm_or_null(storage_lib, name);
-}
-
-/* Destroys a storage.
- */
-void __SD_storage_destroy(void *storage)
-{
-  SD_storage_priv_t s;
-
-  s = (SD_storage_priv_t) storage;
-  xbt_free(s);
-}
-
 /** @brief Returns the route between two workstations
  *
  * Use SD_route_get_size() to know the array size.
@@ -127,16 +101,4 @@ double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
   }
 
   return min_bandwidth;
-}
-
-
-/**
- * \brief Returns the host name the storage is attached to
- *
- * This functions checks whether a storage is a valid pointer or not and return its name.
- */
-const char *SD_storage_get_host(msg_storage_t storage) {
-  xbt_assert((storage != NULL), "Invalid parameters");
-  SD_storage_priv_t priv = SD_storage_priv(storage);
-  return priv->host;
 }
