@@ -31,23 +31,6 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
 {
   msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
 
-#ifdef MSG_USE_DEPRECATED
-  int i;
-  char alias[MAX_ALIAS_NAME + 1] = { 0 };       /* buffer used to build the key of the mailbox */
-
-  priv->mailboxes = (msg_global->max_channel > 0) ?
-    xbt_new0(msg_mailbox_t, msg_global->max_channel) : NULL;
-
-  for (i = 0; i < msg_global->max_channel; i++) {
-    sprintf(alias, "%s:%d", name, i);
-
-    /* the key of the mailbox (in this case) is build from the name of the host and the channel number */
-    priv->mailboxes[i] = MSG_mailbox_new(alias);
-    memset(alias, 0, MAX_ALIAS_NAME + 1);
-  }
-#endif
-
-
   priv->dp_objs = xbt_dict_new();
   priv->dp_enabled = 0;
   priv->dp_updated_by_deleted_tasks = 0;
@@ -145,9 +128,6 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
   xbt_dict_free(&priv->dp_objs);
   xbt_dict_free(&priv->affinity_mask_db);
   xbt_dynar_free(&priv->file_descriptor_table);
-#ifdef MSG_USE_DEPRECATED
-  free(priv->mailboxes);
-#endif
 
   free(priv);
 }
@@ -159,25 +139,6 @@ int MSG_get_host_number(void)
 {
   return xbt_dict_length(host_list);
 }
-
-#ifdef MSG_USE_DEPRECATED
-msg_host_t *MSG_get_host_table(void)
-{
-  if (xbt_dict_is_empty(host_list))
-    return nullptr;
-
-  void **array = xbt_new0(void *, xbt_dict_length(host_list));
-
-    xbt_lib_cursor_t cursor;
-    const char *id;
-    simgrid::s4u::Host* host;
-    xbt_dict_foreach(host_list, cursor, id, host)
-      if(routing_get_network_element_type(key) == SURF_NETWORK_ELEMENT_HOST)
-        array[i++] = host->facet(MSG_HOST_LEVEL);
-
-    return (msg_host_t *)array;
-}
-#endif
 
 /** \ingroup m_host_management
  * \brief Return a dynar containing all the hosts declared at a given point of time

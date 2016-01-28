@@ -6,7 +6,11 @@ SimGrid (3.13) UNRELEASED; urgency=low
  * s4u::Host is now the prefered public interface to the Host features.
    sg_host_* functions are C bindings to the exact same behavior
    MSG_host_* and SD_workstation_* are #define to the sg_host_* ones
-   
+
+ MSG
+ * Kill all deprecated functions. They were deprecated since a few
+   releases anyway, and probably did not even compile anymore.
+
  Simix
  * simgrid::simix::kernel() is the closure callback. It ensures that
     the lambda or closure passed as a parameter will run in kernel mode.

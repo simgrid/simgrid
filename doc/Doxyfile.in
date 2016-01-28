@@ -1468,8 +1468,7 @@ PREDEFINED             = DOXYGEN \
                          XBT_IMPORT_NO_EXPORT(type)=type \
                          XBT_PUBLIC_DATA(type)="extern type" \
                          XBT_PUBLIC_CLASS=class \
-                         XBT_INLINE= \
-                         MSG_USE_DEPRECATED
+                         XBT_INLINE= 
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.

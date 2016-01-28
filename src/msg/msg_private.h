@@ -84,9 +84,6 @@ typedef struct simdata_gpu_task {
 typedef struct simdata_process {
   msg_host_t m_host;              /* the host on which the process is running */
   msg_host_t put_host;            /* used for debugging purposes */
-#ifdef MSG_USE_DEPRECATED
-  m_channel_t put_channel;      /* used for debugging purposes */
-#endif
   smx_synchro_t waiting_action;
   msg_task_t waiting_task;
   char **argv;                  /* arguments table if any */
@@ -130,9 +127,6 @@ XBT_PUBLIC_DATA(const char*) MSG_vm_get_name(msg_vm_t vm);
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
   xbt_fifo_t host;
-#ifdef MSG_USE_DEPRECATED
-  int max_channel;
-#endif
   int session;
   int debug_multiple_use;
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
@@ -146,17 +140,8 @@ XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
 /*************************************************************/
 
-#ifdef MSG_USE_DEPRECATED
-#  define PROCESS_SET_ERRNO(val) \
-  (((simdata_process_t) SIMIX_process_self_get_data(SIMIX_process_self()))->last_errno=val)
-#  define PROCESS_GET_ERRNO() \
-  (((simdata_process_t) SIMIX_process_self_get_data(SIMIX_process_self()))->last_errno)
-#define MSG_RETURN(val) do {PROCESS_SET_ERRNO(val);return(val);} while(0)
-/* #define CHECK_ERRNO()  ASSERT((PROCESS_GET_ERRNO()!=MSG_HOST_FAILURE),"Host failed, you cannot call this function.") */
-
-#else
+// FIXME: KILLME
 #  define MSG_RETURN(val) return(val)
-#endif
 
 XBT_PRIVATE msg_host_t __MSG_host_create(sg_host_t host);
 XBT_PRIVATE msg_storage_t __MSG_storage_create(smx_storage_t storage);

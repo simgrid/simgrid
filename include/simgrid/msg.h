@@ -54,10 +54,6 @@ typedef struct s_msg_host_priv {
 
   xbt_dict_t affinity_mask_db;
   xbt_dynar_t file_descriptor_table;
-
-#ifdef MSG_USE_DEPRECATED
-  msg_mailbox_t *mailboxes;     /**< the channels  */
-#endif
 } s_msg_host_priv_t;
 
 /* ******************************** Task ************************************ */
@@ -181,19 +177,6 @@ typedef struct msg_comm *msg_comm_t;
     processes.
  */
 typedef struct s_smx_process *msg_process_t;
-
-#ifdef MSG_USE_DEPRECATED
-
-/* Compatibility typedefs */
-typedef int                     m_channel_t;
-typedef msg_gpu_task_t          m_gpu_task_t;
-typedef msg_host_t              m_host_t;
-typedef msg_process_t           m_process_t;
-typedef msg_task_t              m_task_t;
-typedef s_msg_gpu_task_t        s_m_gpu_task_t;
-typedef s_msg_host_t            s_m_host_t;
-typedef s_msg_task_t            s_m_task_t;
-#endif
 
 /** @brief Return code of most MSG functions
     @ingroup msg_simulation
@@ -413,11 +396,6 @@ XBT_PUBLIC(void) MSG_task_set_name(msg_task_t task, const char *name);
 XBT_PUBLIC(msg_error_t) MSG_task_cancel(msg_task_t task);
 XBT_PUBLIC(msg_error_t) MSG_task_destroy(msg_task_t task);
 
-XBT_PUBLIC(msg_error_t) MSG_task_receive_from_host(msg_task_t * task, const char *alias,
-                                       msg_host_t host);
-XBT_PUBLIC(msg_error_t) MSG_task_receive_from_host_bounded(msg_task_t * task, const char *alias,
-                                       msg_host_t host, double rate);
-
 XBT_PUBLIC(msg_error_t) MSG_task_execute(msg_task_t task);
 XBT_PUBLIC(msg_error_t) MSG_parallel_task_execute(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_priority(msg_task_t task, double priority);
@@ -529,55 +507,6 @@ XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
 XBT_PUBLIC(msg_error_t) MSG_action_trace_run(char *path);
 XBT_PUBLIC(void) MSG_action_init(void);
 XBT_PUBLIC(void) MSG_action_exit(void);
-
-#ifdef MSG_USE_DEPRECATED
-
-typedef msg_error_t MSG_error_t;
-
-#define MSG_global_init(argc, argv)      MSG_init(argc,argv)
-#define MSG_global_init_args(argc, argv) MSG_init(argc,argv)
-
-/* these are the functions which are deprecated. Do not use them, they may get removed in future releases */
-XBT_PUBLIC(msg_host_t *) MSG_get_host_table(void);
-
-#define MSG_host_is_avail(h) MSG_host_is_on(h)
-
-#define MSG_TIMEOUT_FAILURE MSG_TIMEOUT
-#define MSG_TASK_CANCELLED MSG_TASK_CANCELED
-#define MSG_mailbox_put_with_time_out(mailbox, task, timeout) \
-        MSG_mailbox_put_with_timeout(mailbox, task, timeout)
-
-#define MSG_process_change_host(h) MSG_process_migrate(MSG_process_self(),h);
-XBT_PUBLIC(msg_error_t) MSG_get_errno(void);
-
-XBT_PUBLIC(msg_error_t) MSG_clean(void);
-
-XBT_PUBLIC(msg_error_t) MSG_task_get(msg_task_t * task, m_channel_t channel);
-XBT_PUBLIC(msg_error_t) MSG_task_get_with_timeout(msg_task_t * task,
-                                                  m_channel_t channel,
-                                                  double max_duration);
-XBT_PUBLIC(msg_error_t) MSG_task_get_from_host(msg_task_t * task,
-                                               int channel, msg_host_t host);
-XBT_PUBLIC(msg_error_t) MSG_task_get_ext(msg_task_t * task, int channel,
-                                         double max_duration,
-                                         msg_host_t host);
-XBT_PUBLIC(msg_error_t) MSG_task_put(msg_task_t task, msg_host_t dest,
-                                     m_channel_t channel);
-XBT_PUBLIC(msg_error_t) MSG_task_put_bounded(msg_task_t task,
-                                             msg_host_t dest,
-                                             m_channel_t channel,
-                                             double max_rate);
-XBT_PUBLIC(msg_error_t) MSG_task_put_with_timeout(msg_task_t task,
-                                                  msg_host_t dest,
-                                                  m_channel_t channel,
-                                                  double max_duration);
-XBT_PUBLIC(int) MSG_task_Iprobe(m_channel_t channel);
-XBT_PUBLIC(int) MSG_task_probe_from(m_channel_t channel);
-XBT_PUBLIC(int) MSG_task_probe_from_host(int channel, msg_host_t host);
-
-XBT_PUBLIC(msg_error_t) MSG_set_channel_number(int number);
-XBT_PUBLIC(int) MSG_get_channel_number(void);
-#endif
 
 /** @brief Opaque type representing a semaphore
  *  @ingroup msg_synchro

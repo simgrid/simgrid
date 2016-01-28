@@ -58,9 +58,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     SIMIX_global_init(argc, argv);
 
-#ifdef MSG_USE_DEPRECATED
-    msg_global->max_channel = 0;
-#endif
     msg_global->sent_msg = 0;
     msg_global->task_copy_callback = NULL;
     msg_global->process_data_cleanup = NULL;
@@ -84,42 +81,6 @@ void MSG_init_nocheck(int *argc, char **argv) {
   MSG_FILE_LEVEL = xbt_lib_add_level(file_lib, (void_f_pvoid_t) __MSG_file_destroy);
   if(sg_cfg_get_boolean("clean_atexit")) atexit(MSG_exit);
 }
-
-#ifdef MSG_USE_DEPRECATED
-
-/* This deprecated function has to be called to fix the number of channel in the
-   simulation before creating any host. Indeed, each channel is
-   represented by a different mailbox on each #m_host_t. This
-   function can then be called only once. This function takes only one
-   parameter.
- * \param number the number of channel in the simulation. It has to be >0
- */
-msg_error_t MSG_set_channel_number(int number)
-{
-  XBT_WARN("DEPRECATED! Please use aliases instead");
-  xbt_assert((msg_global)
-              && (msg_global->max_channel == 0),
-              "Channel number already set!");
-
-  msg_global->max_channel = number;
-
-  return MSG_OK;
-}
-
-/* This deprecated function has to be called once the number of channel is fixed. I can't
-   figure out a reason why anyone would like to call this function but nevermind.
- * \return the number of channel in the simulation.
- */
-int MSG_get_channel_number(void)
-{
-  XBT_WARN("DEPRECATED! Please use aliases instead");
-  xbt_assert((msg_global)
-              && (msg_global->max_channel != 0),
-              "Channel number not set yet!");
-
-  return msg_global->max_channel;
-}
-#endif
 
 /** \ingroup msg_simulation
  * \brief Launch the MSG simulation
@@ -193,9 +154,3 @@ unsigned long int MSG_get_sent_msg()
 {
   return msg_global->sent_msg;
 }
-
-#ifdef MSG_USE_DEPRECATED
-msg_error_t MSG_clean(void) {
-  return MSG_OK;
-}
-#endif

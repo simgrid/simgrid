@@ -31,7 +31,6 @@ us before digging into these badly documented internal modules).
    - \ref msg_synchro
    - \ref msg_trace_driven
    - \ref MSG_examples
-   - \ref msg_deprecated_functions
 
 
   Also make sure to visit the page @ref MSG_examples.
@@ -166,19 +165,6 @@ MSG comes with an extensive set of examples. It is sometimes difficult to find t
 \section msg_bsc_ex Basic examples
 
 */
-
-/**
-@defgroup msg_deprecated_functions MSG Deprecated
-@ingroup MSG_API
-@brief This section describes the deprecated functions. PLEASE STOP USING THEM.
-
-We don't remove them because the ability to run old scientific
-code is something important to us. But these functionalities are
-not actively supported anymore.
-
-To access these functions, you should define the relevant option
-at configuration time in ccmake.
- */
 
 
 

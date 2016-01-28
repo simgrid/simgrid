@@ -182,12 +182,6 @@ accepts several options, as listed below.
       course, it is then impossible to get any debug message from
       SimGrid if something goes wrong.
 
-  @li <b>enable_msg_deprecated</b> (ON/OFF): enable this option if
-      your code used a feature of Simgrid that was dropped or modified
-      in recent releases of SimGrid. You should update your code if
-      possible, but with this option, SimGrid will try to emulate its
-      old behavior.
-
   @li <b>enable_model-checking</b> (ON/OFF): Only enable this if you
       actually plan to use the model-checking aspect of SimGrid. This
       mode of execution is still under heavy work, but it should be
