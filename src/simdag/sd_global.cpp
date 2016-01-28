@@ -17,11 +17,6 @@
 #include "xbt/str.h"
 #include "xbt/config.h"
 #include "surf/surfxml_parse.h"
-#ifdef HAVE_LUA
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-#endif
 
 #ifdef HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
