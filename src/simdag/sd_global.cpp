@@ -128,6 +128,8 @@ void SD_create_environment(const char *platform_file)
 #ifdef HAVE_JEDULE
   jedule_setup_platform();
 #endif
+  XBT_VERB("Starting simulation...");
+  surf_presolve();            /* Takes traces into account */
 }
 
 /**
@@ -153,14 +155,6 @@ xbt_dynar_t SD_simulate(double how_long) {
   SD_dependency_t dependency;
   surf_action_t action;
   unsigned int iter, depcnt;
-  static int first_time = 1;
-
-  if (first_time) {
-    XBT_VERB("Starting simulation...");
-
-    surf_presolve();            /* Takes traces into account */
-    first_time = 0;
-  }
 
   XBT_VERB("Run simulation for %f seconds", how_long);
   sd_global->watch_point_reached = 0;
@@ -180,8 +174,6 @@ xbt_dynar_t SD_simulate(double how_long) {
   while (elapsed_time >= 0.0 && (how_long < 0.0 || 0.00001 < (how_long -total_time)) &&
          !sd_global->watch_point_reached) {
     surf_model_t model = NULL;
-    /* dumb variables */
-
 
     XBT_DEBUG("Total time: %f", total_time);
 
@@ -203,7 +195,7 @@ xbt_dynar_t SD_simulate(double how_long) {
         task->surf_action = NULL;
 
         /* the state has changed. Add it only if it's the first change */
-        if (xbt_dynar_search_or_negative(sd_global->return_set, &task) < 0) {
+        if (!xbt_dynar_member(sd_global->return_set, &task)) {
           xbt_dynar_push(sd_global->return_set, &task);
         }
 
@@ -216,8 +208,7 @@ xbt_dynar_t SD_simulate(double how_long) {
             dst->is_not_ready--;
 
           XBT_DEBUG("Released a dependency on %s: %d remain(s). Became schedulable if %d=0",
-             SD_task_get_name(dst), dst->unsatisfied_dependencies,
-             dst->is_not_ready);
+             SD_task_get_name(dst), dst->unsatisfied_dependencies, dst->is_not_ready);
 
           if (!(dst->unsatisfied_dependencies)) {
             if (SD_task_get_state(dst) == SD_SCHEDULED)
