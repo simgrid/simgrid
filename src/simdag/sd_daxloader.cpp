@@ -29,13 +29,11 @@ static double dax_parse_double(const char *string)
   double value;
 
   ret = sscanf(string, "%lg", &value);
-  xbt_assert (ret == 1, "Parse error on line %d: %s is not a double",
-              dax_lineno, string);
+  xbt_assert (ret == 1, "Parse error on line %d: %s is not a double", dax_lineno, string);
   return value;
 }
 
-/* Ensure that transfer tasks have unique names even though a file is used
- * several times */
+/* Ensure that transfer tasks have unique names even though a file is used several times */
 
 void uniq_transfer_task_name(SD_task_t task)
 {
@@ -49,9 +47,7 @@ void uniq_transfer_task_name(SD_task_t task)
   xbt_dynar_get_cpy(children, 0, &child);
   xbt_dynar_get_cpy(parents, 0, &parent);
 
-  new_name = bprintf("%s_%s_%s",
-                     SD_task_get_name(parent),
-                     SD_task_get_name(task), SD_task_get_name(child));
+  new_name = bprintf("%s_%s_%s", SD_task_get_name(parent), SD_task_get_name(task), SD_task_get_name(child));
 
   SD_task_set_name(task, new_name);
 
@@ -247,8 +243,7 @@ static void dax_task_free(void *task)
 
 /** @brief loads a DAX file describing a DAG
  * 
- * See https://confluence.pegasus.isi.edu/display/pegasus/WorkflowGenerator
- * for more details.
+ * See https://confluence.pegasus.isi.edu/display/pegasus/WorkflowGenerator for more details.
  */
 xbt_dynar_t SD_daxload(const char *filename)
 {
@@ -308,8 +303,8 @@ xbt_dynar_t SD_daxload(const char *filename)
         xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
           if (depbefore->src == depafter->dst) {
             XBT_WARN
-                ("File %s is produced and consumed by task %s. This loop dependency will prevent the execution of the task.",
-                 file->name, depbefore->src->name);
+                ("File %s is produced and consumed by task %s."
+                 "This loop dependency will prevent the execution of the task.", file->name, depbefore->src->name);
           }
           newfile = SD_task_create_comm_e2e(file->name, NULL, file->amount);
           SD_task_dependency_add(NULL, NULL, depbefore->src, newfile);
@@ -343,11 +338,10 @@ xbt_dynar_t SD_daxload(const char *filename)
   }
 
   if (!acyclic_graph_detail(result)){
-    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", 
-	      xbt_basename(filename));
+    XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", xbt_basename(filename));
     xbt_dynar_foreach(result, cpt, file)
       SD_task_destroy(file);
-     xbt_dynar_free_container(&result);
+    xbt_dynar_free_container(&result);
     return NULL;
   } else {
     return result;
@@ -359,9 +353,7 @@ void STag_dax__adag(void)
   XBT_ATTRIB_UNUSED double version;
   version = dax_parse_double(A_dax__adag_version);
 
-  xbt_assert(version == 2.1,
-              "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file",
-              version);
+  xbt_assert(version == 2.1, "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file", version);
 }
 
 void STag_dax__job(void)
@@ -386,11 +378,11 @@ void STag_dax__uses(void)
   file = (SD_task_t)xbt_dict_get_or_null(files, A_dax__uses_file);
   if (file == NULL) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, NULL, size);
+    xbt_dynar_pop(sd_global->initial_task_set,NULL);
     xbt_dict_set(files, A_dax__uses_file, file, NULL);
   } else {
     if (SD_task_get_amount(file) != size) {
-      XBT_WARN("Ignoring file %s size redefinition from %.0f to %.0f",
-            A_dax__uses_file, SD_task_get_amount(file), size);
+      XBT_WARN("Ignore file %s size redefinition from %.0f to %.0f", A_dax__uses_file, SD_task_get_amount(file), size);
     }
   }
   if (is_input) {
@@ -407,8 +399,7 @@ static SD_task_t current_child;
 void STag_dax__child(void)
 {
   current_child = (SD_task_t)xbt_dict_get_or_null(jobs, A_dax__child_ref);
-  xbt_assert(current_child != NULL,"Parse error on line %d:"
-             "Asked to add dependencies to the non-existent %s task",
+  xbt_assert(current_child != NULL,"Parse error on line %d: Asked to add dependencies to the non-existent %s task",
              dax_lineno, A_dax__child_ref);
 }
 
@@ -420,13 +411,10 @@ void ETag_dax__child(void)
 void STag_dax__parent(void)
 {
   SD_task_t parent = (SD_task_t)xbt_dict_get_or_null(jobs, A_dax__parent_ref);
-  xbt_assert(parent != NULL, "Parse error on line %d: "
-             "Asked to add a dependency from %s to %s, but %s does not exist",
-             dax_lineno, current_child->name, A_dax__parent_ref,
-             A_dax__parent_ref);
+  xbt_assert(parent != NULL, "Parse error on line %d: Asked to add a dependency from %s to %s, but %s does not exist",
+             dax_lineno, current_child->name, A_dax__parent_ref, A_dax__parent_ref);
   SD_task_dependency_add(NULL, NULL, parent, current_child);
-  XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name,
-         parent->name);
+  XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name, parent->name);
 }
 
 void ETag_dax__adag(void)

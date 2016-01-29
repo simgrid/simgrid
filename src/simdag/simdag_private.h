@@ -28,7 +28,6 @@ typedef struct SD_global {
   xbt_dynar_t completed_task_set;
 
   xbt_dynar_t return_set;
-  int task_number;
 
 } s_SD_global_t, *SD_global_t;
 
