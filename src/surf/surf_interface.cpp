@@ -801,7 +801,7 @@ void Action::setPriority(double priority)
   lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), priority);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY)
-	heapRemove(getModel()->getActionHeap());
+    heapRemove(getModel()->getActionHeap());
   XBT_OUT();
 }
 

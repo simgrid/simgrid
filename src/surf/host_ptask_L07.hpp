@@ -154,8 +154,6 @@ public:
   int unref() override;
   void suspend() override;
   void resume() override;
-  void setMaxDuration(double duration) override;
-  void setPriority(double priority) override;
   double getRemains() override;
 
   std::vector<NetCard*> * p_netcardList = new std::vector<NetCard*>();

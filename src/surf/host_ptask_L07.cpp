@@ -637,20 +637,6 @@ void L07Action::resume()
   XBT_OUT();
 }
 
-void L07Action::setMaxDuration(double duration)
-{                               /* FIXME: should inherit */
-  XBT_IN("(%p,%g)", this, duration);
-  m_maxDuration = duration;
-  XBT_OUT();
-}
-
-void L07Action::setPriority(double priority)
-{                               /* FIXME: should inherit */
-  XBT_IN("(%p,%g)", this, priority);
-  m_priority = priority;
-  XBT_OUT();
-}
-
 double L07Action::getRemains()
 {
   XBT_IN("(%p)", this);
