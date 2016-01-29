@@ -4,19 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/surf_interface.hpp"
-#include "src/simdag/simdag_private.h"
 #include "instr/instr_interface.h"
-#include "xbt/sysdep.h"
-#include "xbt/dynar.h"
-#include "surf/surf.h"
 #include "simgrid/sg_config.h"
 #include "simgrid/host.h"
-#include "xbt/ex.h"
+#include "src/simdag/simdag_private.h"
+#include "src/surf/surf_interface.hpp"
+
+#include "xbt/dynar.h"
 #include "xbt/log.h"
-#include "xbt/str.h"
-#include "xbt/config.h"
-#include "surf/surfxml_parse.h"
+#include "xbt/sysdep.h"
 
 #ifdef HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
@@ -69,8 +65,8 @@ void SD_init(int *argc, char **argv)
 
 /** \brief set a configuration variable
  *
- * Do --help on any simgrid binary to see the list of currently existing
- * configuration variables, and see Section @ref options.
+ * Do --help on any simgrid binary to see the list of currently existing configuration variables, and
+ * see Section @ref options.
  *
  * Example:
  * SD_config("host/model","default");
@@ -96,11 +92,6 @@ void SD_config(const char *key, const char *value){
 void SD_application_reinit(void)
 {
   xbt_die("This function is not working since the C++ links and others. Please report the problem if you really need that function.");
-
-#ifdef HAVE_JEDULE
-  jedule_sd_cleanup();
-  jedule_sd_init();
-#endif
 }
 
 /**
@@ -202,8 +193,7 @@ xbt_dynar_t SD_simulate(double how_long) {
         /* remove the dependencies after this task */
         xbt_dynar_foreach(task->tasks_after, depcnt, dependency) {
           dst = dependency->dst;
-          if (dst->unsatisfied_dependencies > 0)
-            dst->unsatisfied_dependencies--;
+          dst->unsatisfied_dependencies--;
           if (dst->is_not_ready > 0)
             dst->is_not_ready--;
 
@@ -281,11 +271,7 @@ xbt_dynar_t SD_simulate(double how_long) {
   return sd_global->return_set;
 }
 
-/**
- * \brief Returns the current clock
- *
- * \return the current clock, in second
- */
+/** @brief Returns the current clock, in seconds */
 double SD_get_clock(void) {
   return surf_get_clock();
 }
@@ -293,33 +279,27 @@ double SD_get_clock(void) {
 /**
  * \brief Destroys all SD internal data
  *
- * This function should be called when the simulation is over. Don't forget
- * to destroy too.
+ * This function should be called when the simulation is over. Don't forget to destroy too.
  *
  * \see SD_init(), SD_task_destroy()
  */
 void SD_exit(void)
 {
   TRACE_surf_resource_utilization_release();
-
-  xbt_mallocator_free(sd_global->task_mallocator);
-
-  XBT_DEBUG("Destroying the dynars ...");
-  xbt_dynar_free_container(&(sd_global->initial_task_set));
-  xbt_dynar_free_container(&(sd_global->executable_task_set));
-  xbt_dynar_free_container(&(sd_global->completed_task_set));
-  xbt_dynar_free_container(&(sd_global->return_set));
-
   TRACE_end();
-
-  xbt_free(sd_global);
-  sd_global = NULL;
 
 #ifdef HAVE_JEDULE
   jedule_sd_cleanup();
   jedule_sd_exit();
 #endif
 
-  XBT_DEBUG("Exiting Surf...");
+  xbt_mallocator_free(sd_global->task_mallocator);
+  xbt_dynar_free_container(&(sd_global->initial_task_set));
+  xbt_dynar_free_container(&(sd_global->executable_task_set));
+  xbt_dynar_free_container(&(sd_global->completed_task_set));
+  xbt_dynar_free_container(&(sd_global->return_set));
+  xbt_free(sd_global);
+  sd_global = NULL;
+
   surf_exit();
 }

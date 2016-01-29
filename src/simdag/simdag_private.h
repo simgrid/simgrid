@@ -7,7 +7,6 @@
 #ifndef SIMDAG_PRIVATE_H
 #define SIMDAG_PRIVATE_H
 
-#include "xbt/base.h"
 #include "xbt/dynar.h"
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
