@@ -1,4 +1,4 @@
--- Copyright (c) 2011, 2014. The SimGrid Team.
+-- Copyright (c) 2011-2016. The SimGrid Team.
 -- All rights reserved.
 
 -- This program is free software; you can redistribute it and/or modify it
@@ -17,7 +17,7 @@
   function my_cluster(args)
     -- args is a table with the following keys
     --   -
-    local required_args = {"id", "prefix", "suffix", "radical", "power", "bw", "lat" }
+    local required_args = {"id", "prefix", "suffix", "radical", "speed", "bw", "lat" }
     for _,val in pairs(required_args) do
       if args[val] == nil then simgrid.critical("Must specify '" .. val .. "' attribute. See docs for details.") end
     end
@@ -48,7 +48,7 @@
         for _,i in pairs(args.radical) do
             local hostname = args.prefix .. i .. args.suffix
             local linkname = args.id .."_link_" .. i
-            simgrid.platf.host_new{id=hostname, speed=args.power,core=args.core,power_trace=args.availability_file,state_trace=args.state_file};
+            simgrid.platf.host_new{id=hostname, speed=args.speed,core=args.core,power_trace=args.availability_file,state_trace=args.state_file};
             simgrid.platf.link_new{id=linkname, bandwidth=args.bw,latency=args.lat, sharing_policy=args.sharing_sharing_policy};
             simgrid.platf.host_link_new{id=hostname,up=linkname.."_UP",down=linkname.."_DOWN"};
 
