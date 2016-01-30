@@ -85,23 +85,22 @@ double surf_solve(double max_date)
 		  surf_min = next_event_virt;
   }
 
-  XBT_DEBUG("Min for resources (remember that NS3 don't update that value) : %f", surf_min);
+  XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", surf_min);
 
   XBT_DEBUG("Looking for next trace event");
 
-  do {
-    XBT_DEBUG("Next TRACE event : %f", next_event_date);
-
+  while (1) { // Handle next occurring events until none remains
     next_event_date = future_evt_set->next_date();
+    XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
     if(! surf_network_model->shareResourcesIsIdempotent()){ // NS3, I see you
-      if(next_event_date!=-1.0 && surf_min!=-1.0) {
+      if (next_event_date!=-1.0 && surf_min!=-1.0) {
         surf_min = MIN(next_event_date - NOW, surf_min);
       } else{
         surf_min = MAX(next_event_date - NOW, surf_min);
       }
 
-      XBT_DEBUG("Run for network at most %f", surf_min);
+      XBT_DEBUG("Run the NS3 network at most %fs", surf_min);
       // run until min or next flow
       model_next_action_end = surf_network_model->shareResources(surf_min);
 
@@ -116,38 +115,36 @@ double surf_solve(double max_date)
     }
 
     if ((surf_min == -1.0) || (next_event_date > NOW + surf_min))
-      break;
+      break; // next event occurs after the next resource change, bail out
 
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", surf_min, NOW, next_event_date);
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
       if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->getName())) {
         surf_min = next_event_date - NOW;
-        XBT_DEBUG
-            ("This event will modify model state. Next event set to %f",
-             surf_min);
+        XBT_DEBUG("This event will modify model state. Next event set to %f", surf_min);
       }
-      /* update state of model_obj according to new value. Does not touch lmm.
+      /* update state of the corresponding resource to the new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      XBT_DEBUG("Calling update_resource_state for resource %s with min %f",
-             resource->getName(), surf_min);
+      XBT_DEBUG("Calling update_resource_state for resource %s with min %f", resource->getName(), surf_min);
       resource->updateState(event, value, next_event_date);
     }
-  } while (1);
+  }
 
   /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are with availability = 0.
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
    * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
   if (surf_min == -1.0) {
-  XBT_DEBUG("No next event at all. Bail out now.");
+    XBT_DEBUG("No next event at all. Bail out now.");
     return -1.0;
   }
 
   XBT_DEBUG("Duration set to %f", surf_min);
 
+  // Bump the time: jump into the future
   NOW = NOW + surf_min;
-  /* FIXME: model_list or model_list_invoke? revisit here later */
-  /* sequential version */
+
+  // Inform the models of the date change
   xbt_dynar_foreach(all_existing_models, iter, model) {
 	  model->updateActionsState(NOW, surf_min);
   }
