@@ -191,6 +191,38 @@ exchanged in the trace, both in the links and on the states. For collective, siz
 \endverbatim
 
 \li <b>\c
+tracing/smpi/sleeping
+</b>:
+TODO
+\verbatim
+TODO
+\endverbatim
+
+\li <b>\c
+tracing/smpi/format
+</b>:
+TODO
+\verbatim
+TODO
+\endverbatim
+
+\li <b>\c
+tracing/smpi/format/ti_one_file
+</b>:
+TODO
+\verbatim
+TODO
+\endverbatim
+
+\li <b>\c
+tracing/msg/vm
+</b>:
+TODO
+\verbatim
+TODO
+\endverbatim
+
+\li <b>\c
 tracing/msg/process
 </b>:
   This option only has effect if this simulator is MSG-based. It traces the
@@ -224,6 +256,22 @@ register the topology within an AS.  Routes among AS continue to be
 traced as usual.
 \verbatim
 --cfg=tracing/onelink_only:yes
+\endverbatim
+
+\li <b>\c
+tracing/disable_link
+</b>:
+TODO
+\verbatim
+TODO
+\endverbatim
+
+\li <b>\c
+tracing/disable_power
+</b>:
+TODO
+\verbatim
+TODO
 \endverbatim
 
 \li <b>\c
@@ -261,6 +309,30 @@ tracing/comment_file
 Use this to add the contents of a file to the top of the trace file as comment.
 \verbatim
 --cfg=tracing/comment_file:textual_file.txt
+\endverbatim
+
+\li <b>\c
+tracing/precision
+</b>:
+TODO
+\verbatim
+TODO
+\endverbatim
+
+\li <b>\c
+tracing/platform
+</b>:
+TODO
+\verbatim
+TODO
+\endverbatim
+
+\li <b>\c
+tracing/platform/topology
+</b>:
+TODO
+\verbatim
+TODO
 \endverbatim
 
 \li <b>\c
