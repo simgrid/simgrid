@@ -374,7 +374,6 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
         break;
       }
     }
-    lmm_variable_concurrency_share_set(action->getVariable(),2);
   }
 
   action = new NetworkCm02Action(this, size, failed);
@@ -451,6 +450,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
       link = static_cast<NetworkCm02Link*>(_link);
       lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), .05);
     }
+    lmm_variable_concurrency_share_set(action->getVariable(),2);
   }
 
   xbt_dynar_free(&route);

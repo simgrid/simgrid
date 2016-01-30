@@ -58,35 +58,6 @@ inline void lmm_increase_concurrency(lmm_constraint_t cnstr){
   xbt_assert(cnstr->concurrency_limit<0 || cnstr->concurrency_current<=cnstr->concurrency_limit,"Concurrency limit overflow!");
 }
 
-void lmm_check_concurrency(lmm_system_t sys){
-  void* _cnst;
-  void* _elem;
-  lmm_element_t elem;
-  lmm_constraint_t cnst;
-  int concurrency;
-  if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
-  
-    xbt_swag_foreach(_cnst, &(sys->constraint_set)) {
-      cnst = (lmm_constraint_t) _cnst;
-      concurrency=0;
-      if(cnst->concurrency_limit<0)
-	continue;
-      xbt_swag_foreach(_elem, &(cnst->element_set)) {
-	elem = (lmm_element_t)_elem;
-	if (elem->variable->weight > 0) 
-	  concurrency++;
-	else {
-	  //We should have staged variables only if conccurency is reached
-	  xbt_assert(elem->variable->staged_weight==0 || (cnst->concurrency_limit>0 && cnst->concurrency_limit < concurrency+elem->variable->concurrency_share),"should not have staged variable!");
-	    }
-      }
-      xbt_assert(cnst->concurrency_limit<0 || cnst->concurrency_limit >= concurrency,"concurrency check failed!");
-      xbt_assert(cnst->concurrency_current == concurrency, "concurrency_current is out-of-date!");
-    }
-
-  }
-}
-
 lmm_system_t lmm_system_new(int selective_update)
 {
   lmm_system_t l = NULL;
@@ -1011,7 +982,6 @@ void lmm_enable_var(lmm_system_t sys, lmm_variable_t var){
   lmm_element_t elem;
   
   xbt_assert(lmm_can_enable_var(var));
-  lmm_check_concurrency(sys);
 
   var->weight = var->staged_weight;
   var->staged_weight = 0;
@@ -1279,4 +1249,33 @@ double lmm_constraint_get_usage(lmm_constraint_t cnst) {
   return usage;
 }
 
+void lmm_check_concurrency(lmm_system_t sys){
+  void* _cnst;
+  void* _elem;
+  lmm_element_t elem;
+  lmm_constraint_t cnst;
+  int concurrency;
 
+  //These checks are very expensive, so do them only if we want to debug SURF LMM
+  if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
+  
+    xbt_swag_foreach(_cnst, &(sys->constraint_set)) {
+      cnst = (lmm_constraint_t) _cnst;
+      concurrency=0;
+      if(cnst->concurrency_limit<0)
+	continue;
+      xbt_swag_foreach(_elem, &(cnst->element_set)) {
+	elem = (lmm_element_t)_elem;
+	if (elem->variable->weight > 0) 
+	  concurrency++;
+	else {
+	  //We should have staged variables only if conccurency is reached in some constraint
+	  xbt_assert(cnst->concurrency_limit<0 || elem->variable->staged_weight==0 || lmm_cnstrs_min_concurrency_slack(elem->variable) < elem->variable->concurrency_share,"should not have staged variable!");
+	    }
+      }
+      xbt_assert(cnst->concurrency_limit<0 || cnst->concurrency_limit >= concurrency,"concurrency check failed!");
+      xbt_assert(cnst->concurrency_current == concurrency, "concurrency_current is out-of-date!");
+    }
+
+  }
+}
