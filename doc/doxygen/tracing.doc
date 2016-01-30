@@ -144,17 +144,6 @@ tracing/filename
   If you do not provide this parameter, the trace file will be named simgrid.trace.
 
 \li <b>\c
-tracing/onelink_only
-</b>:
-  By default, the tracing system uses all routes in the platform file
-  to re-create a "graph" of the platform and register it in the trace file.
-  This option let the user tell the tracing system to use only the routes
-  that are composed with just one link.
-\verbatim
---cfg=tracing/onelink_only:yes
-\endverbatim
-
-\li <b>\c
 tracing/smpi
 </b>:
   This option only has effect if this simulator is SMPI-based. Traces the MPI
