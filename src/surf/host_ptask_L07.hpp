@@ -152,9 +152,6 @@ public:
   void updateBound();
 
   int unref() override;
-  void suspend() override;
-  void resume() override;
-  double getRemains() override;
 
   std::vector<NetCard*> * p_netcardList = new std::vector<NetCard*>();
   double *p_computationAmount;

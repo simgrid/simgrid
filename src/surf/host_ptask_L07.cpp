@@ -617,32 +617,5 @@ int L07Action::unref()
   return 0;
 }
 
-void L07Action::suspend()
-{
-  XBT_IN("(%p))", this);
-  if (m_suspended != 2) {
-    m_suspended = 1;
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
-  }
-  XBT_OUT();
-}
-
-void L07Action::resume()
-{
-  XBT_IN("(%p)", this);
-  if (m_suspended != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 1.0);
-    m_suspended = 0;
-  }
-  XBT_OUT();
-}
-
-double L07Action::getRemains()
-{
-  XBT_IN("(%p)", this);
-  XBT_OUT();
-  return m_remains;
-}
-
 }
 }
