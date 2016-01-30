@@ -508,7 +508,7 @@ void CpuTiModel::addTraces()
     cpu->p_stateEvent = future_evt_set->add_trace(trace, 0.0, cpu);
   }
 
-  xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     CpuTi *cpu = static_cast<CpuTi*>(sg_host_by_name(elm)->pimpl_cpu);
 

@@ -227,7 +227,7 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
         xbt_strdup(trace_connect->element), NULL);
     break;
   case SURF_TRACE_CONNECT_KIND_POWER:
-    xbt_dict_set(trace_connect_list_power, trace_connect->trace,
+    xbt_dict_set(trace_connect_list_host_speed, trace_connect->trace,
         xbt_strdup(trace_connect->element), NULL);
     break;
   case SURF_TRACE_CONNECT_KIND_LINK_AVAIL:
@@ -236,12 +236,12 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
         xbt_strdup(trace_connect->element), NULL);
     break;
   case SURF_TRACE_CONNECT_KIND_BANDWIDTH:
-    xbt_dict_set(trace_connect_list_bandwidth,
+    xbt_dict_set(trace_connect_list_link_bw,
         trace_connect->trace,
         xbt_strdup(trace_connect->element), NULL);
     break;
   case SURF_TRACE_CONNECT_KIND_LATENCY:
-    xbt_dict_set(trace_connect_list_latency, trace_connect->trace,
+    xbt_dict_set(trace_connect_list_link_lat, trace_connect->trace,
         xbt_strdup(trace_connect->element), NULL);
     break;
   default:

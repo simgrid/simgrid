@@ -62,10 +62,10 @@ void surfxml_bufferstack_pop(int new)
 
 xbt_dict_t traces_set_list = NULL;
 xbt_dict_t trace_connect_list_host_avail = NULL;
-xbt_dict_t trace_connect_list_power = NULL;
+xbt_dict_t trace_connect_list_host_speed = NULL;
 xbt_dict_t trace_connect_list_link_avail = NULL;
-xbt_dict_t trace_connect_list_bandwidth = NULL;
-xbt_dict_t trace_connect_list_latency = NULL;
+xbt_dict_t trace_connect_list_link_bw = NULL;
+xbt_dict_t trace_connect_list_link_lat = NULL;
 
 /* ***************************************** */
 
@@ -123,10 +123,10 @@ void parse_platform_file(const char *file)
 
     traces_set_list = xbt_dict_new_homogeneous(NULL);
     trace_connect_list_host_avail = xbt_dict_new_homogeneous(free);
-    trace_connect_list_power = xbt_dict_new_homogeneous(free);
+    trace_connect_list_host_speed = xbt_dict_new_homogeneous(free);
     trace_connect_list_link_avail = xbt_dict_new_homogeneous(free);
-    trace_connect_list_bandwidth = xbt_dict_new_homogeneous(free);
-    trace_connect_list_latency = xbt_dict_new_homogeneous(free);
+    trace_connect_list_link_bw = xbt_dict_new_homogeneous(free);
+    trace_connect_list_link_lat = xbt_dict_new_homogeneous(free);
 
     /* Init my data */
     if (!surfxml_bufferstack_stack)
@@ -137,10 +137,10 @@ void parse_platform_file(const char *file)
 
     /* Free my data */
     xbt_dict_free(&trace_connect_list_host_avail);
-    xbt_dict_free(&trace_connect_list_power);
+    xbt_dict_free(&trace_connect_list_host_speed);
     xbt_dict_free(&trace_connect_list_link_avail);
-    xbt_dict_free(&trace_connect_list_bandwidth);
-    xbt_dict_free(&trace_connect_list_latency);
+    xbt_dict_free(&trace_connect_list_link_bw);
+    xbt_dict_free(&trace_connect_list_link_lat);
     xbt_dict_free(&traces_set_list);
     xbt_dict_free(&random_data_list);
     xbt_dynar_free(&surfxml_bufferstack_stack);

@@ -354,7 +354,7 @@ void HostL07Model::addTraces()
     host->p_stateEvent = future_evt_set->add_trace(trace, 0.0, host);
   }
 
-  xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     CpuL07 *host = static_cast<CpuL07*>(sg_host_by_name(elm)->pimpl_cpu);
 
@@ -375,7 +375,7 @@ void HostL07Model::addTraces()
     link->p_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
   }
 
-  xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
 
@@ -385,7 +385,7 @@ void HostL07Model::addTraces()
     link->p_bwEvent = future_evt_set->add_trace(trace, 0.0, link);
   }
 
-  xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
 
