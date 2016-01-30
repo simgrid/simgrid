@@ -385,17 +385,6 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
 }
 }
 
-/*************
- * CallBacks *
- *************/
-
-static void cpu_ti_define_callbacks()
-{
-  simgrid::surf::on_postparse.connect([]() {
-    surf_cpu_model_pm->addTraces();
-  });
-}
-
 /*********
  * Model *
  *********/
@@ -406,13 +395,14 @@ void surf_cpu_model_init_ti()
   xbt_assert(!surf_cpu_model_vm,"CPU model already initialized. This should not happen.");
 
   surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
-  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
+  xbt_dynar_push(all_existing_models, &surf_cpu_model_pm);
 
-  cpu_ti_define_callbacks();
-  simgrid::surf::Model *model_pm = static_cast<simgrid::surf::Model*>(surf_cpu_model_pm);
-  simgrid::surf::Model *model_vm = static_cast<simgrid::surf::Model*>(surf_cpu_model_vm);
-  xbt_dynar_push(all_existing_models, &model_pm);
-  xbt_dynar_push(all_existing_models, &model_vm);
+  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
+  xbt_dynar_push(all_existing_models, &surf_cpu_model_vm);
+
+  simgrid::surf::on_postparse.connect([]() {
+    surf_cpu_model_pm->addTraces();
+  });
 }
 
 namespace simgrid {
