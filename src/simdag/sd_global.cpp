@@ -273,7 +273,7 @@ xbt_dynar_t SD_simulate(double how_long) {
 
   if (!sd_global->watch_point_reached && how_long<0){
     if (!xbt_dynar_is_empty(sd_global->initial_task_set)) {
-        XBT_WARN("Simulation is finished but %zu tasks are still not done",
+        XBT_WARN("Simulation is finished but %lu tasks are still not done",
             xbt_dynar_length(sd_global->initial_task_set));
         static const char* state_names[] =
           { "SD_NOT_SCHEDULED", "SD_SCHEDULABLE", "SD_SCHEDULED", "SD_RUNNABLE", "SD_RUNNING", "SD_DONE","SD_FAILED" };
