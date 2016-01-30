@@ -202,7 +202,6 @@ L07Action::L07Action(Model *model, int host_nb,
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
   double latency = 0.0;
 
-  xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
 
   this->p_netcardList->reserve(host_nb);
   for (int i = 0; i<host_nb; i++)
@@ -210,6 +209,8 @@ L07Action::L07Action(Model *model, int host_nb,
 
   /* Compute the number of affected resources... */
   if(bytes_amount != NULL) {
+    xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
+
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
         xbt_dynar_t route=NULL;
@@ -231,33 +232,31 @@ L07Action::L07Action(Model *model, int host_nb,
         }
       }
     }
-  }
 
-  nb_link = xbt_dict_length(ptask_parallel_task_link_set);
-  xbt_dict_free(&ptask_parallel_task_link_set);
+    nb_link = xbt_dict_length(ptask_parallel_task_link_set);
+    xbt_dict_free(&ptask_parallel_task_link_set);
+  }
 
   for (int i = 0; i < host_nb; i++)
     if (flops_amount[i] > 0)
       nb_used_host++;
 
-  XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
-         this, host_nb, nb_link);
+  XBT_DEBUG("Creating a parallel task (%p) with %d hosts and %d unique links.", this, host_nb, nb_link);
   this->p_computationAmount = flops_amount;
   this->p_communicationAmount = bytes_amount;
   this->m_latency = latency;
   this->m_rate = rate;
 
   this->p_variable = lmm_variable_new(model->getMaxminSystem(), this, 1.0,
-                                        (rate > 0 ? rate : -1.0),
-										host_nb + nb_link);
+      (rate > 0 ? rate : -1.0),
+      host_nb + nb_link);
 
   if (this->m_latency > 0)
     lmm_update_variable_weight(model->getMaxminSystem(), this->getVariable(), 0.0);
 
   for (int i = 0; i < host_nb; i++)
-    lmm_expand(model->getMaxminSystem(),
-    	       host_list[i]->pimpl_cpu->getConstraint(),
-               this->getVariable(), flops_amount[i]);
+    lmm_expand(model->getMaxminSystem(), host_list[i]->pimpl_cpu->getConstraint(),
+        this->getVariable(), flops_amount[i]);
 
   if(bytes_amount != NULL) {
     for (int i = 0; i < host_nb; i++) {
@@ -298,9 +297,7 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
   host_list[1] = sg_host_by_name(dst->getName());
   bytes_amount[1] = size;
 
-  res = p_hostModel->executeParallelTask(2, host_list,
-                                    flops_amount,
-                                    bytes_amount, rate);
+  res = p_hostModel->executeParallelTask(2, host_list, flops_amount, bytes_amount, rate);
 
   return res;
 }
@@ -454,13 +451,12 @@ Action *CpuL07::execution_start(double size)
 {
   sg_host_t*host_list = xbt_new0(sg_host_t, 1);
   double *flops_amount = xbt_new0(double, 1);
-  double *bytes_amount = xbt_new0(double, 1);
 
   host_list[0] = getHost();
   flops_amount[0] = size;
 
   return static_cast<CpuL07Model*>(getModel())->p_hostModel
-    ->executeParallelTask( 1, host_list, flops_amount, bytes_amount, -1);
+    ->executeParallelTask( 1, host_list, flops_amount, NULL, -1);
 }
 
 Action *CpuL07::sleep(double duration)
