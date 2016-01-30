@@ -16,6 +16,9 @@
 
 /** @ingroup SURF_lmm
  * @brief LMM element
+ * Elements can be seen as glue between constraint objects and variable objects.
+ * Basically, each variable will have a set of elements, one for each constraint where it is involved.
+ * Then, it is used to list all variables involved in constraint through constraint's element_set lists, or vice-versa list all constraints for a given variable.  
  */
 typedef struct lmm_element {
   /* hookup to constraint */
@@ -36,6 +39,12 @@ typedef struct lmm_constraint_light {
 
 /** @ingroup SURF_lmm
  * @brief LMM constraint
+ * Each constraint contains several partially overlapping logical sets of elements: 
+ * \li Disabled elements which variable's weight is zero. This variables are not at all processed by LMM, but eventually the corresponding action will enable it (at least this is the idea).
+ * \li Enabled elements which variable's weight is non-zero. They are utilized in some LMM functions.
+ * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero. LMM_solve iterates over active elements during resolution, dynamically making them active or unactive. 
+ * 
+ * Also note that we maintain element_set such that all enabled elements (i.e. var->weight>0) come before disabled elements.
  */
 typedef struct lmm_constraint {
   /* hookup to system */
@@ -44,11 +53,18 @@ typedef struct lmm_constraint {
   s_xbt_swag_hookup_t modified_constraint_set_hookup;
   s_xbt_swag_hookup_t saturated_constraint_set_hookup;
 
+  //TODO we could split element_set in, say, enabled_element_set and disabled_element_set depending on var->weight
+  //Could make code more readable and should not pose implementation issues (only lmm_print does not stop at the end of enabled elements
   s_xbt_swag_t element_set;     /* a list of lmm_element_t */
   s_xbt_swag_t active_element_set;      /* a list of lmm_element_t */
   double remaining;
   double usage;
   double bound;
+  int concurrency_limit; /* The maximum number of variables that may be enabled at any time (stage variables if necessary) */
+  //TODO MARTIN Check maximum value across resources at the end of simulation and give a warning is more than e.g. 500 
+  int concurrency_current; /* The current concurrency */
+  int concurrency_maximum; /* The maximum number of (enabled and disabled) variables associated to the constraint at any given time (essentially for tracing)*/
+  
   int sharing_policy; /* see @e_surf_link_sharing_policy_t (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
   void *id;
   int id_int;
@@ -59,6 +75,8 @@ typedef struct lmm_constraint {
 
 /** @ingroup SURF_lmm
  * @brief LMM variable
+ * 
+ * When something prevents us from enabling a variable, we "stage" the weight that we would have like to set, so that as soon as possible we enable the variable with desired weight
  */
 typedef struct lmm_variable {
   /* hookup to system */
@@ -68,9 +86,11 @@ typedef struct lmm_variable {
   s_lmm_element_t *cnsts;
   int cnsts_size;
   int cnsts_number;
-  double weight;
+  double weight; /* weight > 0 means variable is considered by LMM, weight == 0 means variable is not considered by LMM*/
+  double staged_weight; /* If non-zero, variable is staged for addition as soon as maxconcurrency constraints will be met */
   double bound;
   double value;
+  short int concurrency_share; /* The maximum number of elements that variable will add to a constraint */
   void *id;
   int id_int;
   unsigned visited;             /* used by lmm_update_modified_set */
@@ -89,7 +109,7 @@ typedef struct lmm_variable {
 typedef struct lmm_system {
   int modified;
   int selective_update_active;  /* flag to update partially the system only selecting changed portions */
-  unsigned visited_counter;     /* used by lmm_update_modified_set */
+  unsigned visited_counter;     /* used by lmm_update_modified_set  and lmm_remove_modified_set to cleverly (un-)flag the constraints (more details in these functions)*/
   s_xbt_swag_t variable_set;    /* a list of lmm_variable_t */
   s_xbt_swag_t constraint_set;  /* a list of lmm_constraint_t */
 
@@ -128,3 +148,5 @@ extern XBT_PRIVATE double (*func_fp_def) (lmm_variable_t, double);
 extern XBT_PRIVATE double (*func_fpi_def) (lmm_variable_t, double);
 
 #endif                          /* _SURF_MAXMIN_PRIVATE_H */
+
+

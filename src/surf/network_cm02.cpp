@@ -374,6 +374,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
         break;
       }
     }
+    lmm_variable_concurrency_share_set(action->getVariable(),2);
   }
 
   action = new NetworkCm02Action(this, size, failed);
