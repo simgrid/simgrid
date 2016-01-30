@@ -41,9 +41,8 @@ void surf_presolve(void)
   while ((next_event_date = future_evt_set->next_date()) != -1.0) {
     if (next_event_date > NOW)
       break;
-    while ((event = future_evt_set->pop_leq(next_event_date,
-                                            &value,
-                                            (void **) &resource))) {
+
+    while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
       if (value >= 0){
         resource->updateState(event, value, NOW);
       }
@@ -116,12 +115,12 @@ double surf_solve(double max_date)
       break;
     }
 
-    if ((surf_min == -1.0) || (next_event_date > NOW + surf_min)) break;
+    if ((surf_min == -1.0) || (next_event_date > NOW + surf_min))
+      break;
 
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", surf_min, NOW, next_event_date);
-    while ((event = future_evt_set->pop_leq(next_event_date,
-                                            &value,
-                                            (void **) &resource))) {
+
+    while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
       if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->getName())) {
         surf_min = next_event_date - NOW;
         XBT_DEBUG
