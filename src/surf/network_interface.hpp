@@ -211,9 +211,9 @@ public:
    *  Signature: void(Link*) */
   static simgrid::xbt::signal<void(simgrid::surf::Link*)> onDestruction;
 
-  /** @brief Callback signal fired when the state of a Link changes
-   *  Signature: `void(LinkAction *action, int previouslyOn, int currentlyOn)` */
-  static simgrid::xbt::signal<void(simgrid::surf::Link*, int, int)> onStateChange;
+  /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off)
+   *  Signature: `void(Link*)` */
+  static simgrid::xbt::signal<void(simgrid::surf::Link*)> onStateChange;
 
 
   /** @brief Get the bandwidth in bytes per second of current Link */
