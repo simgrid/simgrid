@@ -10,6 +10,7 @@
 #include "xbt/dict.h"
 #include "simgrid/platf.h"
 #include "surf/surfxml_parse.h"
+#include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_private.h"
 
 #ifdef HAVE_LUA
@@ -134,6 +135,21 @@ void parse_platform_file(const char *file)
 
     /* Do the actual parsing */
     parse_status = surf_parse();
+
+    /* connect all traces relative to hosts */
+    xbt_dict_cursor_t cursor = NULL;
+    char *trace_name, *elm;
+
+    xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
+      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+      xbt_assert(trace, "Trace %s undefined", trace_name);
+
+      simgrid::s4u::Host *host = sg_host_by_name(elm);
+      xbt_assert(host, "Host %s undefined", elm);
+      simgrid::surf::Cpu *cpu = host->pimpl_cpu;
+
+      cpu->set_state_trace(trace);
+    }
 
     /* Free my data */
     xbt_dict_free(&trace_connect_list_host_avail);

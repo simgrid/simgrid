@@ -128,8 +128,6 @@ public:
   void modified(bool modified);
 
   CpuTiTgmr *p_availTrace;       /*< Structure with data needed to integrate trace file */
-  tmgr_trace_iterator_t p_stateEvent = NULL; /*< trace file with states events (ON or OFF) */
-  tmgr_trace_iterator_t p_speedEvent = NULL; /*< trace file with availability events */
   ActionTiList *p_actionSet;        /*< set with all actions running on cpu */
   double m_sumPriority;          /*< the sum of actions' priority that are running on cpu */
   double m_lastUpdate = 0;       /*< last update of actions' remaining amount done */

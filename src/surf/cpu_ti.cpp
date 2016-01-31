@@ -492,22 +492,6 @@ void CpuTiModel::addTraces()
   called = 1;
 
 /* connect all traces relative to hosts */
-  xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuTi *cpu = static_cast<CpuTi*>(sg_host_by_name(elm)->pimpl_cpu);
-
-    xbt_assert(cpu, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    if (cpu->p_stateEvent) {
-      XBT_DEBUG("Trace already configured for this CPU(%s), ignoring it",
-             elm);
-      continue;
-    }
-    XBT_DEBUG("Add state trace: %s to CPU(%s)", trace_name, elm);
-    cpu->p_stateEvent = future_evt_set->add_trace(trace, 0.0, cpu);
-  }
-
   xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     CpuTi *cpu = static_cast<CpuTi*>(sg_host_by_name(elm)->pimpl_cpu);
@@ -527,8 +511,7 @@ void CpuTiModel::addTraces()
       xbt_dynar_get_cpy(trace->s_list.event_list,
                         xbt_dynar_length(trace->s_list.event_list) - 1, &val);
       if (val.delta == 0) {
-        cpu->p_speedEvent =
-            future_evt_set->add_trace(tmgr_empty_trace_new(), cpu->p_availTrace->m_lastTime, cpu);
+        cpu->set_speed_trace(tmgr_empty_trace_new());
       }
     }
   }
