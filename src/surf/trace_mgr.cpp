@@ -391,7 +391,7 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(
 }
 
 /** @brief returns the date of the next occurring event (pure function) */
-double simgrid::trace_mgr::future_evt_set::next_date()
+double simgrid::trace_mgr::future_evt_set::next_date() const
 {
   if (xbt_heap_size(p_heap))
     return (xbt_heap_maxkey(p_heap));

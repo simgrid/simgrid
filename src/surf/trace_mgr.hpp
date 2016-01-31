@@ -103,7 +103,7 @@ XBT_PUBLIC_CLASS future_evt_set {
 public:
   future_evt_set();
   virtual ~future_evt_set();
-  double next_date();
+  double next_date() const;
   tmgr_trace_iterator_t pop_leq(double date, double *value, simgrid::surf::Resource** resource);
   tmgr_trace_iterator_t add_trace(tmgr_trace_t trace, double start_time, simgrid::surf::Resource *resource);
 
