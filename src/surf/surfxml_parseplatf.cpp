@@ -36,9 +36,9 @@ static char *old_buff = NULL;
 XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack_ptr;
 XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack[1024];
 
-void surfxml_bufferstack_push(int new)
+void surfxml_bufferstack_push(int new_one)
 {
-  if (!new)
+  if (!new_one)
     old_buff = surfxml_bufferstack;
   else {
     xbt_dynar_push(surfxml_bufferstack_stack, &surfxml_bufferstack);
@@ -46,9 +46,9 @@ void surfxml_bufferstack_push(int new)
   }
 }
 
-void surfxml_bufferstack_pop(int new)
+void surfxml_bufferstack_pop(int new_one)
 {
-  if (!new)
+  if (!new_one)
     surfxml_bufferstack = old_buff;
   else {
     free(surfxml_bufferstack);

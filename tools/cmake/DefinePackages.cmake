@@ -341,7 +341,7 @@ set(SURF_SRC
   src/surf/surf_routing_none.cpp
   src/surf/surf_routing_vivaldi.cpp
   src/surf/surfxml_parse.c
-  src/surf/surfxml_parseplatf.c
+  src/surf/surfxml_parseplatf.cpp
   src/surf/trace_mgr.hpp
   src/surf/trace_mgr.cpp
   src/surf/vm_hl13.cpp
