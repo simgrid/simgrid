@@ -42,7 +42,6 @@ public:
  ************/
 
 class CpuCas01 : public Cpu {
-  friend CpuCas01Model;
 public:
   CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
@@ -58,11 +57,6 @@ public:
 
 protected:
   void onSpeedChange() override;
-
-private:
-
-  tmgr_trace_iterator_t p_stateEvent = nullptr;
-  tmgr_trace_iterator_t p_speedEvent = nullptr;
 };
 
 /**********

@@ -245,6 +245,20 @@ int Cpu::getCore()
   return m_core;
 }
 
+void Cpu::set_state_trace(tmgr_trace_t trace)
+{
+  xbt_assert(p_stateEvent==NULL,"Cannot set a second state trace to Host %s", m_host->name().c_str());
+
+  p_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
+}
+void Cpu::set_speed_trace(tmgr_trace_t trace)
+{
+  xbt_assert(p_speedEvent==NULL,"Cannot set a second speed trace to Host %s", m_host->name().c_str());
+
+  p_speedEvent = future_evt_set->add_trace(trace, 0.0, this);
+}
+
+
 /**********
  * Action *
  **********/

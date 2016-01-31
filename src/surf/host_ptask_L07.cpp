@@ -346,22 +346,22 @@ void HostL07Model::addTraces()
   /* Connect traces relative to cpu */
   xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07 *host = static_cast<CpuL07*>(sg_host_by_name(elm)->pimpl_cpu);
+    Cpu *cpu = sg_host_by_name(elm)->pimpl_cpu;
 
-    xbt_assert(host, "Host %s undefined", elm);
+    xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_stateEvent = future_evt_set->add_trace(trace, 0.0, host);
+    cpu->set_state_trace(trace);
   }
 
   xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07 *host = static_cast<CpuL07*>(sg_host_by_name(elm)->pimpl_cpu);
+    Cpu *cpu = sg_host_by_name(elm)->pimpl_cpu;
 
-    xbt_assert(host, "Host %s undefined", elm);
+    xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_speedEvent = future_evt_set->add_trace(trace, 0.0, host);
+    cpu->set_speed_trace(trace);
   }
 
   /* Connect traces relative to network */
