@@ -54,12 +54,11 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list,
   xbt_swag_foreach(_cnst, cnst_list) {
 	cnst = (lmm_constraint_t)_cnst;
     tmp = 0;
-    elem_list = &(cnst->element_set);
+    elem_list = &(cnst->enabled_element_set);
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
       var = elem->variable;
-      if (var->weight <= 0)
-        continue;
+      xbt_assert(var->weight > 0);
       tmp += var->value;
     }
 
@@ -501,16 +500,14 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
   double sigma_i = 0.0;
 
   XBT_IN();
-  elem_list = &(cnst->element_set);
+  elem_list = &(cnst->enabled_element_set);
 
   XBT_CDEBUG(surf_lagrange_dichotomy, "Computing diff of cnst (%p)", cnst);
 
   xbt_swag_foreach(_elem, elem_list) {
 	elem = (lmm_element_t)_elem;
     var = elem->variable;
-    if (var->weight <= 0)
-      continue;
-
+    xbt_assert(var->weight > 0);
     XBT_CDEBUG(surf_lagrange_dichotomy, "Computing sigma_i for var (%p)",
             var);
     // Initialize the summation variable

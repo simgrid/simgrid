@@ -18,11 +18,12 @@
  * @brief LMM element
  * Elements can be seen as glue between constraint objects and variable objects.
  * Basically, each variable will have a set of elements, one for each constraint where it is involved.
- * Then, it is used to list all variables involved in constraint through constraint's element_set lists, or vice-versa list all constraints for a given variable.  
+ * Then, it is used to list all variables involved in constraint through constraint's xxx_element_set lists, or vice-versa list all constraints for a given variable.  
  */
 typedef struct lmm_element {
   /* hookup to constraint */
-  s_xbt_swag_hookup_t element_set_hookup;
+  s_xbt_swag_hookup_t enabled_element_set_hookup;
+  s_xbt_swag_hookup_t disabled_element_set_hookup;
   s_xbt_swag_hookup_t active_element_set_hookup;
 
   lmm_constraint_t constraint;
@@ -44,7 +45,6 @@ typedef struct lmm_constraint_light {
  * \li Enabled elements which variable's weight is non-zero. They are utilized in some LMM functions.
  * \li Active elements which variable's weight is non-zero (i.e. it is enabled) AND its element value is non-zero. LMM_solve iterates over active elements during resolution, dynamically making them active or unactive. 
  * 
- * Also note that we maintain element_set such that all enabled elements (i.e. var->weight>0) come before disabled elements.
  */
 typedef struct lmm_constraint {
   /* hookup to system */
@@ -53,9 +53,8 @@ typedef struct lmm_constraint {
   s_xbt_swag_hookup_t modified_constraint_set_hookup;
   s_xbt_swag_hookup_t saturated_constraint_set_hookup;
 
-  //TODO we could split element_set in, say, enabled_element_set and disabled_element_set depending on var->weight
-  //Could make code more readable and should not pose implementation issues (only lmm_print does not stop at the end of enabled elements
-  s_xbt_swag_t element_set;     /* a list of lmm_element_t */
+  s_xbt_swag_t enabled_element_set;     /* a list of lmm_element_t */
+  s_xbt_swag_t disabled_element_set;     /* a list of lmm_element_t */
   s_xbt_swag_t active_element_set;      /* a list of lmm_element_t */
   double remaining;
   double usage;
