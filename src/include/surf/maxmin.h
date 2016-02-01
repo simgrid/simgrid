@@ -49,6 +49,7 @@
  * \f$\sum_if(x_i)\f$, where \f$f\f$ is a strictly increasing concave
  * function.
  *
+ *
  * Constraint: 
  *  - bound (set)
  *  - shared (set)
@@ -89,7 +90,40 @@
  * This is usefull for the sharing of resources for various models.
  * For instance, for the network model, each link is associated 
  * to a constraint and each communication to a variable. 
+ *    
+ *
+ * Implementation details
+ *
+ * For implementation reasons, we are interested in distinguishing variables that actually participate to the computation of constraints, and those who are part of the equations but are stuck to zero. 
+ * We call enabled variables, those which var.weight is strictly positive. Zero-weight variables are called disabled variables.
+ * Unfortunately this concept of enabled/disabled variables intersects with active/inactive variable.
+ * Semantically, the intent is similar, but the conditions under which a variable is active is slightly more strict than the conditions for it to be enabled. 
+ * A variable is active only if its var.value is non-zero (and, by construction, its var.weight is non-zero).
+ * In general, variables remain disabled after their creation, which often models an initialization phase (e.g. first packet propagating in the network). Then, it is enabled by the corresponding model. Afterwards, the max-min solver (lmm_solve()) activates it when appropriate. It is possible that the variable is again disabled, e.g. to model the pausing of an action.   
+ *
+ *
+ * Concurrency limit and maximum 
  * 
+ * We call concurrency, the number of variables that can be enabled at any time for each constraint. 
+ * From a model perspective, this "concurrency" often represents the number of actions that actually compete for one constraint. 
+ * The LMM solver is able to limit the concurrency for each constraint, and to monitor its maximum value.
+ * 
+ * One may want to limit the concurrency of constraints for essentially three reasons:
+ *  - Keep LMM system in a size that can be solved (it does not react very well with tens of thousands of variables per constraint)
+ *  - Stay within parameters where the fluid model is accurate enough.      
+ *  - Model serialization effects
+ *
+ * The concurrency limit can also be set to a negative value to disable concurrency limit. This can improve performance slightly.
+ * 
+ * Overall, each constraint contains three fields related to concurrency:
+ *  - concurrency_limit which is the limit enforced by the solver
+ *  - concurrency_current which is the current concurrency
+ *  - concurrency_maximum which is the observed maximum concurrency 
+ *
+ * Variables also have one field related to concurrency: concurrency_share. 
+ * In effect, in some cases, one variable is involved multiple times (i.e. two elements) in a constraint.
+ * For example, cross-traffic is modeled using 2 elements per constraint.
+ * concurrency_share formally corresponds to the maximum number of elements that associate the variable and any given constraint.   
  */
 
 XBT_PUBLIC_DATA(double) sg_maxmin_precision;
@@ -176,6 +210,33 @@ XBT_PUBLIC(void) lmm_constraint_free(lmm_system_t sys, lmm_constraint_t cnst);
 XBT_PUBLIC(double) lmm_constraint_get_usage(lmm_constraint_t cnst);
 
 /**
+ * @brief Sets the concurrency limit for this constraint
+ * 
+ * @param cnst A constraint
+ * @param concurrency_limit The concurrency limit to use for this constraint
+ */
+XBT_PUBLIC(void) lmm_constraint_concurrency_limit_set(lmm_constraint_t cnst, int concurrency_limit);
+
+
+/**
+ * @brief Reset the concurrency maximum for a given variable (we will update the maximum to reflect constraint evolution).
+ *
+ * @param cnst A constraint
+ *
+*/
+XBT_PUBLIC(void) lmm_constraint_concurrency_maximum_reset(lmm_constraint_t cnst);
+
+
+/**
+ * @brief Get the concurrency maximum for a given variable (which reflects constraint evolution).
+ * 
+ * @param cnst A constraint
+ * @return the maximum concurrency of the constraint
+ */
+XBT_PUBLIC(int) lmm_constraint_concurrency_maximum_get(lmm_constraint_t cnst);
+
+			     
+/**
  * @brief Create a new Linear MaxMin variable
  * 
  * @param sys The system in which we add a constaint
@@ -211,6 +272,14 @@ XBT_PUBLIC(double) lmm_variable_getvalue(lmm_variable_t var);
  * @return The bound of the variable
  */
 XBT_PUBLIC(double) lmm_variable_getbound(lmm_variable_t var);
+
+/**
+ * @brief Set the concurrent share of the variable
+ * 
+ * @param var A variable
+ * @param concurrency_share The new concurrency share
+ */
+XBT_PUBLIC(void) lmm_variable_concurrency_share_set(lmm_variable_t var, short int concurrency_share);
 
 /**
  * @brief Remove a variable from a constraint
