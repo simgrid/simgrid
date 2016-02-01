@@ -877,7 +877,7 @@ set(DOC_SOURCES
   doc/doxygen/header.html
   doc/doxygen/help.doc
   doc/doxygen/index.doc
-  doc/doxygen/inside_ci.doc
+  doc/doxygen/inside_tests.doc
   doc/doxygen/inside_cmake.doc
   doc/doxygen/inside_doxygen.doc
   doc/doxygen/inside_extending.doc
