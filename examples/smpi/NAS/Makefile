@@ -17,10 +17,6 @@ EP: ep
 ep: header
 	cd EP; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
 
-EP-sampling: ep-sampling
-ep-sampling: header
-	cd EP-sampling; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
-
 DT: dt
 dt: header
 	cd DT; $(MAKE) CLASS=$(CLASS)

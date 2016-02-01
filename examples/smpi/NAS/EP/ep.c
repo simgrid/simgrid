@@ -17,7 +17,6 @@
 #define true 1
 #define false 0
 
-
 //---NOTE : all the timers function have been modified to
 //          avoid global timers (privatize these). 
       // ----------------------- timers ---------------------
@@ -160,7 +159,7 @@
            *   point print statement (internal file)
            */
           fprintf(stdout," NAS Parallel Benchmarks 3.2 -- EP Benchmark");
-          sprintf(size,"%d",pow(2,m+1));
+          sprintf(size,"%d",(int)pow(2,m+1));
           //size = size.replace('.', ' ');
           fprintf(stdout," Number of random numbers generated: %s\n",size);
           fprintf(stdout," Number of active processes: %d\n",no_nodes);
@@ -405,13 +404,13 @@
     Mops = (pow(2.0, m+1))/tm/1000;
 
     fprintf(stdout,"EP Benchmark Results:\n");
-    fprintf(stdout,"CPU Time=%d\n",tm);
+    fprintf(stdout,"CPU Time=%d\n",(int) tm);
     fprintf(stdout,"N = 2^%d\n",m);
-    fprintf(stdout,"No. Gaussain Pairs =%d\n",gc);
-    fprintf(stdout,"Sum = %f %ld\n",sx,sy);
+    fprintf(stdout,"No. Gaussain Pairs =%d\n",(int) gc);
+    fprintf(stdout,"Sum = %f %ld\n",sx,(long) sy);
     fprintf(stdout,"Count:");
     for(i = 0; i < nq; i++) {
-      fprintf(stdout,"%d\t %ld\n",i,q[i]);
+      fprintf(stdout,"%d\t %ld\n",i,(long) q[i]);
     }
 
     /*
