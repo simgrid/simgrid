@@ -10,7 +10,7 @@
 <tr><td width="50%">
 @endhtmlonly
 
-- @subpage introduction
+- @subpage tutorial
 - @subpage platform
 - @subpage options
 - @subpage deployment
@@ -19,9 +19,13 @@
   - @ref bindings
   - @ref pls
   - @ref tracing
-  - @ref contributing
 - @subpage FAQ
-- @subpage internals
+- @subpage inside
+  - @ref inside_tests
+  - @ref inside_doxygen
+  - @ref inside_extending
+  - @ref inside_cmake
+  - @ref inside_release
 - @subpage contributing
 
 @htmlonly

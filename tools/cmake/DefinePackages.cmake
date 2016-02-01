@@ -877,14 +877,14 @@ set(DOC_SOURCES
   doc/doxygen/header.html
   doc/doxygen/help.doc
   doc/doxygen/index.doc
+  doc/doxygen/inside.doc
   doc/doxygen/inside_tests.doc
   doc/doxygen/inside_cmake.doc
   doc/doxygen/inside_doxygen.doc
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
   doc/doxygen/install.doc
-  doc/doxygen/internals.doc
-  doc/doxygen/introduction.doc
+  doc/doxygen/tutorial.doc
   doc/doxygen/module-msg.doc
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc

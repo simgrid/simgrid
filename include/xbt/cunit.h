@@ -76,9 +76,9 @@ XBT_PUBLIC(void) xbt_test_exit(void);
  * Note that if you want to test a full binary (such as an example),
  * you want to use our integration testing mechanism, not our unit
  * testing one. Please refer to Section \ref
- * inside_cmake_addtest_integration
+ * inside_tests_add_integration
  * 
- * Some more information on our unit testing is available in Section @ref inside_cmake_addtest_unit.  
+ * Some more information on our unit testing is available in Section @ref inside_tests_add_units.
  * 
  * All code intended to be executed as a unit test will be extracted
  * by a script (tools/sg_unit_extract.pl), and must thus be protected

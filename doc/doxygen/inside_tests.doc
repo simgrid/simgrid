@@ -100,8 +100,10 @@ any other) to see how it works in practice. Do not hesitate to stress
 test your code this way, but make sure that it runs reasonably fast,
 or nobody will run "ctest" before commiting code.
 
-For more details on how the tests are extracted from the module
-source, check the tools/sg_unit_extractor.pl script directly.
+For more details on the macro used to write unit tests, see their
+reference guide: @ref XBT_cunit.  For details on on how the tests are
+extracted from the module source, check the tools/sg_unit_extractor.pl
+script directly.
 
 
 \section inside_tests_add_integration Adding integration tests

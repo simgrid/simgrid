@@ -325,7 +325,7 @@ make VERBOSE=1
 
 Once everything is built, you may want to test the result. SimGrid
 comes with an extensive set of regression tests (see @ref
-inside_cmake_addtest "that page of the insider manual" for more
+inside_tests "that page of the insider manual" for more
 details). Running the tests is done using the ctest binary that comes
 with cmake. These tests are run for every commit and the result is
 publicly <a href="https://ci.inria.fr/simgrid/">available</a>.
