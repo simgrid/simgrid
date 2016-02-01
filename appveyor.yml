@@ -84,8 +84,6 @@ build_script:
 artifacts:
 - path: simgrid.jar
   name: jarfile
-- path: C:/mingw64/bin/libwinpthread-1.dll
-  name: libwinpthread-1.dll
 
 # notifications:
 # - irc: "irc.debian.org#simgrid" # Not implemented by AppVeyor yet :(
