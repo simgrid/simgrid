@@ -14,11 +14,13 @@
 #include "src/surf/surf_private.h"
 
 #ifdef HAVE_LUA
+extern "C" {
 #include "src/bindings/lua/simgrid_lua.h"
 
 #include <lua.h>                /* Always include this when calling Lua */
 #include <lauxlib.h>            /* Always include this when calling Lua */
 #include <lualib.h>             /* Prototype for luaL_openlibs(), */
+}
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
