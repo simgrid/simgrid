@@ -147,7 +147,8 @@ if(enable_lib_in_jar)
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}
     # There is no way to disable the dependency of mingw-64 on that lib, unfortunately
-    COMMAND if test -e C:/mingw64/bin/libwinpthread-1.dll ; then cp C:/mingw64/bin/libwinpthread-1.dll ${JAVA_NATIVE_PATH} ; fi
+    # nor to script cmake -E properly, so let's be brutal
+    COMMAND ${CMAKE_COMMAND} -E copy C:/mingw64/bin/libwinpthread-1.dll  ${JAVA_NATIVE_PATH} || true
     
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
