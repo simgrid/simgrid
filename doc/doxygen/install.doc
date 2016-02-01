@@ -5,10 +5,10 @@
 
 The easiest way to install SimGrid is to go for a binary package.
 Under Debian or Ubuntu, this is very easy as SimGrid is directly
-integrated to the official repositories. Under Windows, SimGrid can be
-installed in a few clicks once you downloaded the installer from
-gforge. If you just want to use Java, simply copy the jar file on your
-disk and you're set.
+integrated to the official repositories.  If you just want to use
+Java, simply copy the jar file on your disk and you're set. Note that
+under Windows, you should go for Java, as the native C interface is
+not supported on that OS.
 
 Recompiling an official archive is not much more complex, actually.
 SimGrid has very few dependencies and rely only on very standard
@@ -46,24 +46,6 @@ On other Linux variants, you probably want to go for a source install.
 Please contact us if you want to contribute the build scripts for your
 preferred distribution.
 
-@subsection install_binary_win Installation wizard for Windows
-
-Before starting the installation, make sure that you have the following dependencies:
-  @li cmake 2.8 <a href="http://www.cmake.org/cmake/resources/software.html">(download page)</a>
-  @li MinGW <a href="http://sourceforge.net/projects/mingw/files/MinGW/">(download page)</a>
-  @li perl <a href="http://www.activestate.com/activeperl/downloads">(download page)</a>
-  @li git <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">(download page)</a>
-
-Then download the package <a href="https://gforge.inria.fr/frs/?group_id=12">SimGrid Installer</a>,
-execute it and follow instructions.
-
-@image html win_install_01.png Step 1: Accept the license.
-@image html win_install_02.png Step 2: Select packets to install.
-@image html win_install_03.png Step 3: Choice where to install packets previously selected. Please don't use spaces in path.
-@image html win_install_04.png Step 4: Add CLASSPATH to environment variables.
-@image html win_install_05.png Step 5: Add PATH to environment variables.
-@image html win_install_06.png Step 6: Restart your computer to take in consideration environment variables.
-
 @subsection install_binary_java Using the binary jar file
 
 The easiest way to install the Java bindings of SimGrid is to grab the
@@ -80,6 +62,24 @@ If the jarfile fails on you, complaining that your architecture is not
 supported, drop us an email: we may extend the jarfile for you, if we
 have access to your architecture to build SimGrid on it.
 
+If the error message is about the boost-context library, then you
+should install that library on your machine. This is a known issue in
+the 3.12 release that will be fixed in the next release.
+
+You can retrieve a nightly build of the jar file from our autobuilders. 
+For Windows, head to 
+<a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>.
+Click on the artefact link on the right, and grab your file. If the
+latest build failed, there will be no artefact so you will need to
+first click on "History" on the top to search for the last successful
+build.
+For non-Windows systems (Linux, Mac or FreeBSD), head to 
+<a href="https://ci.inria.fr/simgrid/job/SimGrid-Multi">Jenkins</a>.
+In the build history, pick the last green (or at least yellow) build
+that is not blinking (ie, that is done building). In the list, pick a
+system that is close to your system, and click on the ball in the
+Debug row. The build artefact appear on the top of the resulting page.
+
 @section install_src Installing from source
 
 @subsection install_src_deps Resolving the dependencies
@@ -89,27 +89,25 @@ SimGrid only uses very standard tools:
   - perl (but you may try to go without it)
   - We use cmake to configure our compilation
       (<a href="http://www.cmake.org/cmake/resources/software.html">download page</a>).
-      You need cmake version 2.8 or higher. You may want to use ccmake
+      You need cmake version 2.8.8 or higher. You may want to use ccmake
       for a graphical interface over cmake.
   - LibBoost:
     - osX: with <a href="http://www.finkproject.org/">fink</a>: `sudo fink install boost1.53.nopython`
-    - debian: `apt-get install libboost-dev`
+    - debian: `apt-get install libboost-dev libboost-context-dev`
 
 On MacOSX, it is advised to use the clang compiler (version 3.0 or
-higher), from either MacPort or XCode. If you insist on using gcc on
-this system, you still need a recent version of this compiler, so you
-need an unofficial gcc47 from MacPort because the version provided by
-Apple is ways to ancient to suffice. See also @ref install_cmake_mac.
+higher), from either MacPort or XCode.  See also @ref install_cmake_mac.
 
-On Windows, it is strongly advised to use the
-<a href="http://sourceforge.net/projects/mingw/files/MinGW/">MinGW
-environment</a> to build SimGrid, with <a href="http://www.mingw.org/wiki/MSYS">
-MSYS tools</a> installed. Any other compilers are not tested
-(and thus probably broken). We usually use the
+Building from the source on Windows, may be something of an adventure.
+We never managed to compile SimGrid with something else than MinGW-64
+ourselves. We usually use the
 <a href="http://www.activestate.com/activeperl/downloads">activestate</a>
 version of Perl, and the
 <a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">msys</a>
-version of git on this architecture, but YMMV. See also @ref install_cmake_win.
+version of git on this architecture, but YMMV. You can have a look at
+the configuration scripts in the appveyor.yml file, but you are
+basically on your own here. Sorry. We are not fluent with Windows so
+we cannot really help. 
 
 @subsection install_src_fetch Retrieving the source
 
@@ -257,16 +255,6 @@ cmake [options] ..
 make
 @endverbatim
 
-\subsubsection install_cmake_win Cmake on Windows (with MinGW + MSYS)
-
-Cmake can produce several kind of of makefiles. Under Windows, it has
-no way of determining what kind you want to use, so you have to hint it:
-
-@verbatim
-cmake -G "MSYS Makefiles" (other options) .
-make
-@endverbatim
-
 \subsubsection install_cmake_mac Cmake on Mac OS X
 
 SimGrid compiles like a charm with clang on Mac OS X:
@@ -343,7 +331,7 @@ ctest -R msg- -j5 --output-on-failure # You changed MSG and want to check that y
 
 \section install_setting_own Setting up your own code
 
-\subsection install_setting_MSG MSG code on Unix (Linux or Mac OSX)
+\subsection install_setting_MSG MSG code on Unix
 
 Do not build your simulator by modifying the SimGrid examples.  Go
 outside the SimGrid source tree and create your own working directory
@@ -418,57 +406,6 @@ More generally, if you have never written a Makefile by yourself, type
 in a terminal: <tt>info make</tt> and read the introduction. The
 previous example should be enough for a first try but you may want to
 perform some more complex compilations...
-
-
-\subsection install_setting_win_provided Compile the "HelloWorld" project on Windows
-
-In the SimGrid install directory you should have an HelloWorld project to explain you how to start
-compiling a source file. There are:
-\verbatim
-- HelloWorld.c		The example source file.
-- CMakeLists.txt	It allows to configure the project.
-- README 		This explanation.
-\endverbatim
-
-Now let's compile this example:
-\li Run windows shell "cmd".
-\li Open HelloWorld Directory ('cd' command line).
-\li Create a build directory and change directory. (optional)
-\li Type 'cmake -G"MinGW Makefiles" \<path_to_HelloWorld_project\>'
-\li Run mingw32-make
-\li You should obtain a runnable example ("HelloWorld.exe").
-
-For compiling your own code you can simply copy the HelloWorld project and rename source name. It will
-create a target with the same name of the source.
-
-
-\subsection install_setting_win_new Adding and Compiling a new example on Windows
-
-\li Put your source file into the helloWord directory.
-\li Edit CMakeLists.txt by removing the Find Targets section and add those two lines into this section
-\verbatim
-################
-# FIND TARGETS #
-################
-#It creates a target called 'TARGET_NAME.exe' with the sources 'SOURCES'
-add_executable(TARGET_NAME SOURCES)
-#Links TARGET_NAME with simgrid
-target_link_libraries(TARGET_NAME simgrid)
-\endverbatim
-\li To initialize and build your project, you'll need to run
-\verbatim
-cmake -G"MinGW Makefiles" <path_to_HelloWorld_project>
-\endverbatim
-\li Run "mingw32-make"
-\li You should obtain "TARGET_NAME.exe".
-
-\subsection install_Win_ruby Setup a virtualbox to use SimGrid-Ruby on windows
-
-Allan Espinosa made these set of Vagrant rules available so that you
-can use the SimGrid Ruby bindings in a virtual machine using
-VirtualBox. Thanks to him for that. You can find his project here:
-https://github.com/aespinosa/simgrid-vagrant
-
 
 
 */

@@ -952,12 +952,6 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_pair_16.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_ring_16.png
   )

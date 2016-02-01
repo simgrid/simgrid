@@ -1,14 +1,13 @@
 /*! @page tutorial SimGrid First Tutorial
 
+SimGrid is a toolkit providing the core functionalities for the
+simulation of distributed applications in heterogeneous distributed
+environments.
 
-[SimGrid](http://simgrid.gforge.inria.fr/) is a toolkit
-that provides core functionalities for the simulation of distributed
-applications in heterogeneous distributed environments.
-
-The specific goal of the project is to facilitate research in the area of
-distributed and parallel application scheduling on distributed computing
-platforms ranging from simple network of workstations to Computational
-Grids.
+The project goal is both to facilitate research and to help improving
+real applications in the area of distributed and parallel systems,
+ranging from simple network of workstations to Computational Grids to
+Clouds and to supercomputers.
 
 \tableofcontents
 
