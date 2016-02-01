@@ -91,20 +91,89 @@ changes should look similar to:
 
 Then, you want to actually add your tests in the source file. All the
 tests must be protected by "#ifdef SIMGRID_TEST" so that they don't
-get included in the regular build. Then, you want to add a test suite
-that will contain a bunch of tests (in Junit, that would be a test
-unit) with the macro #XBT_TEST_SUITE, and populate it with a bunch of
-actual tests with the macro #XBT_TEST_UNIT (sorry for the mischosen
-names if you are used to junit). Just look at the dynar example (or
-any other) to see how it works in practice. Do not hesitate to stress
-test your code this way, but make sure that it runs reasonably fast,
-or nobody will run "ctest" before commiting code.
+get included in the regular build. The line SIMGRID_TEST must also be
+written on the endif line for the extraction script to work properly. 
+
+Tests are subdivided in three levels. The top-level, called <b>test
+suite</b>, is created with the macro #XBT_TEST_SUITE. There can be
+only one suite per source file. A suite contains <b>test units</b>
+that you create with the #XBT_TEST_UNIT macro.  Finally, you start
+<b>actual tests</b> with #xbt_test_add. There is no closing marker of
+any sort, and an unit is closed when the next unit starts, or when the
+end of file is reached. 
+
+Once a given test is started with #xbt_test_add, you use
+#xbt_test_assert to specify that it was actually an assert, or
+#xbt_test_fail to specify that it failed (if your test cannot easily
+be written as an assert). #xbt_test_exception can be used to report
+that it failed with an exception. There is nothing to do to report
+that a given test succeeded, just start the next test without
+reporting any issue. Finally, #xbt_test_log can be used to report
+intermediate steps. The messages will be shown only if the
+corresponding test fails.
+
+Here is a recaping example, inspired from the dynar implementation.
+@code
+/* The rest of your module implementation */
+
+#ifdef SIMGRID_TEST
+
+XBT_TEST_SUITE("dynar", "Dynar data container");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dyn); // Just the regular logging stuff
+
+XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
+{
+  int i, cpt;
+  unsigned int cursor;
+
+  xbt_test_add("==== Traverse the empty dynar");
+  xbt_dynar_t d = xbt_dynar_new(sizeof(int), NULL);
+  xbt_dynar_foreach(d, cursor, i) {
+    xbt_test_fail( "Damnit, there is something in the empty dynar");
+  }
+  xbt_dynar_free(&d);
+
+  xbt_test_add("==== Push %d int and re-read them",  NB_ELEM);
+  d = xbt_dynar_new(sizeof(int), NULL);
+  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+    xbt_test_log("Push %d, length=%lu", cpt, xbt_dynar_length(d));
+    xbt_dynar_push_as(d, int, cpt);
+  }
+
+  for (cursor = 0; cursor < NB_ELEM; cursor++) {
+    int *iptr = xbt_dynar_get_ptr(d, cursor);
+    xbt_test_assert(cursor == *iptr,
+       "The retrieved value is not the same than the injected one (%u!=%d)",cursor, cpt);
+  }
+  
+  xbt_test_add("==== Check the size of that %d-long dynar",  NB_ELEM);
+  xbt_test_assert(xbt_dynar_size(d) == NB_ELEM);
+  xbt_dynar_free(&d); 
+}
+
+XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dynar_remove functions")
+{
+  xbt_dynar_t d = xbt_dynar_new(sizeof(unsigned int), NULL);
+  unsigned int cursor;
+  int cpt;
+
+  xbt_test_add("==== Insert %d int, traverse them, remove them",NB_ELEM);
+  // BLA BLA BLA
+}
+
+#endif  /* SIMGRID_TEST <-- that string must appear on the endif line */
+@endcode
 
 For more details on the macro used to write unit tests, see their
 reference guide: @ref XBT_cunit.  For details on on how the tests are
 extracted from the module source, check the tools/sg_unit_extractor.pl
 script directly.
 
+Last note: please try to keep your tests fast. We run them very very
+very often, and you should strive to make it as fast as possible, to
+not upset the other developers. Do not hesitate to stress test your
+code with such unit tests, but make sure that it runs reasonably fast,
+or nobody will run "ctest" before commiting code.
 
 \section inside_tests_add_integration Adding integration tests
 
