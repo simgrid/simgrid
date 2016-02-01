@@ -6,6 +6,8 @@
 #include "mpi.h"
 #include "npbparams.h"
 
+#include "simgrid/instr.h" //TRACE_
+
 #include "randlc.h"
 
 #ifndef CLASS
@@ -140,6 +142,8 @@
       double *x = (double *) malloc (2*nk*sizeof(double));
       double *q = (double *) malloc (nq*sizeof(double));
 
+      TRACE_smpi_set_category ("start");
+
       MPI_Init( &argc, &argv );
       MPI_Comm_size( MPI_COMM_WORLD, &no_nodes);
       MPI_Comm_rank( MPI_COMM_WORLD, &node);
@@ -204,6 +208,8 @@
       c---------------------------------------------------------------------
     */
         MPI_Barrier( MPI_COMM_WORLD );
+
+        TRACE_smpi_set_category ("ep");
 
         timer_clear(&(elapsed[1]));
         timer_clear(&(elapsed[2]));
@@ -331,6 +337,8 @@
          //if (timers_enabled)  timer_stop(2);
     timer_stop(2,elapsed,start);
       }
+
+    TRACE_smpi_set_category ("finalize");
 
       //int MPI_Allreduce(void *sbuf, void *rbuf, int count, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)   
   MPI_Allreduce(&sx, x, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);

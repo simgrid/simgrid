@@ -44,6 +44,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "simgrid/instr.h" //TRACE_
+
 /******************/
 /* default values */
 /******************/
@@ -1025,13 +1027,17 @@ int main( int argc, char **argv )
     timer_start(gd, 2 );
 #endif
 
+    char smpi_category[100];
+    snprintf (smpi_category, 100, "%d", gd->my_rank);
+    TRACE_smpi_set_category (smpi_category);
+
 /*  This is the main iteration */
     for( iteration=1; iteration<=MAX_ITERATIONS; iteration++ )
     {
         if( gd->my_rank == 0 && CLASS != 'S' ) printf( "        %d\n", iteration );
         rank(gd,  iteration );
     }
-
+    TRACE_smpi_set_category (NULL);
 
 #ifdef  TIMING_ENABLED
     timer_stop(gd, 2 );
