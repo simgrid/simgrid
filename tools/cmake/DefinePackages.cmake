@@ -121,6 +121,7 @@ set(EXTRA_DIST
   src/xbt/probes.h
   src/xbt/win32_ucontext.c
   tools/tesh/generate_tesh
+  tools/lualib.patch
   examples/smpi/mc/only_send_deterministic.tesh
   examples/smpi/mc/non_deterministic.tesh
   )
