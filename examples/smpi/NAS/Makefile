@@ -1,5 +1,5 @@
 SHELL=/bin/sh
-CLASS=U
+CLASS=S
 NPROCS=1
 SUBTYPE=
 VERSION=
@@ -12,17 +12,10 @@ IS: is
 is: header
 	cd IS; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
 
-IS-trace: is-trace
-is-trace: header
-	cd IS-trace; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
 
 EP: ep
 ep: header
 	cd EP; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
-
-EP-trace: ep-trace
-ep-trace: header
-	cd EP-trace; $(MAKE) NPROCS=$(NPROCS) CLASS=$(CLASS)
 
 EP-sampling: ep-sampling
 ep-sampling: header
@@ -31,14 +24,6 @@ ep-sampling: header
 DT: dt
 dt: header
 	cd DT; $(MAKE) CLASS=$(CLASS)
-
-DT-trace: dt-trace
-dt-trace: header
-	cd DT-trace; $(MAKE) CLASS=$(CLASS)
-
-DT-folding: dt-folding
-dt-folding: header
-	cd DT-folding; $(MAKE) CLASS=$(CLASS)
 
 # Awk script courtesy cmg@cray.com, modified by Haoqiang Jin
 suite:
@@ -49,16 +34,12 @@ suite:
 # are defined) but on a really clean system this will won't work
 # because those makefiles need config/make.def
 clean:
-	- rm -f core 
-	- rm -f *~ */core */*~ */*.o */npbparams.h */*.obj */*.exe
-	- rm -f MPI_dummy/test MPI_dummy/libmpi.a
+	- rm -f *~  */*~ */*.o */npbparams.h 
 	- rm -f sys/setparams sys/makesuite sys/setparams.h
-	- rm -f btio.*.out*
 
 veryclean: clean
 	- rm -f config/make.def config/suite.def 
-	- rm -f bin/sp.* bin/lu.* bin/mg.* bin/ft.* bin/bt.* bin/is.* 
-	- rm -f bin/ep.* bin/cg.* bin/dt.*
+	- rm -f bin/is.* bin/ep.* bin/dt.*
 
 header:
 	@ sys/print_header
