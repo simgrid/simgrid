@@ -93,9 +93,6 @@ public:
  ************/
 
 class CpuL07 : public Cpu {
-  friend void HostL07Model::addTraces();
-  tmgr_trace_iterator_t p_stateEvent = nullptr;
-  tmgr_trace_iterator_t p_speedEvent = nullptr;
 public:
   CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeakList, int pstate,
 		 double power_scale, tmgr_trace_t power_trace,
@@ -152,9 +149,6 @@ public:
   void updateBound();
 
   int unref() override;
-  void suspend() override;
-  void resume() override;
-  double getRemains() override;
 
   std::vector<NetCard*> * p_netcardList = new std::vector<NetCard*>();
   double *p_computationAmount;

@@ -614,10 +614,10 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_setdefault_int(_sg_cfg_set, "model-check/checkpoint", 0);
 
     /* do stateful model-checking */
-    xbt_cfg_register(&_sg_cfg_set, "model-check/sparse-checkpoint",
+    xbt_cfg_register(&_sg_cfg_set, "model-check/sparse_checkpoint",
                      "Use sparse per-page snapshots.",
                      xbt_cfgelm_boolean, 1, 1, _mc_cfg_cb_sparse_checkpoint, NULL);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/sparse-checkpoint", "no");
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "model-check/sparse_checkpoint", "no");
 
     /* do stateful model-checking */
     xbt_cfg_register(&_sg_cfg_set, "model-check/soft-dirty",

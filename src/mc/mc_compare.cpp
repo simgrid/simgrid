@@ -321,7 +321,7 @@ static int compare_local_variables(int process_index,
       current_var1 = &stack1->local_variables[cursor];
       current_var2 = &stack1->local_variables[cursor];
       if (current_var1->name != current_var2->name
-          || current_var1->subprogram != current_var1->subprogram
+          || current_var1->subprogram != current_var2->subprogram
           || current_var1->ip != current_var2->ip) {
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
         XBT_VERB
@@ -469,7 +469,7 @@ int snapshot_compare(void *state1, void *state2)
   mc_snapshot_stack_t stack1, stack2;
   while (cursor < s1->stacks.size()) {
     stack1 = &s1->stacks[cursor];
-    stack2 = &s1->stacks[cursor];
+    stack2 = &s2->stacks[cursor];
 
     if (stack1->process_index != stack2->process_index) {
       diff_local = 1;

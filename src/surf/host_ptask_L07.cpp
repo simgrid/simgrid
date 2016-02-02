@@ -202,7 +202,6 @@ L07Action::L07Action(Model *model, int host_nb,
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
   double latency = 0.0;
 
-  xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
 
   this->p_netcardList->reserve(host_nb);
   for (int i = 0; i<host_nb; i++)
@@ -210,6 +209,8 @@ L07Action::L07Action(Model *model, int host_nb,
 
   /* Compute the number of affected resources... */
   if(bytes_amount != NULL) {
+    xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
+
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
         xbt_dynar_t route=NULL;
@@ -231,33 +232,31 @@ L07Action::L07Action(Model *model, int host_nb,
         }
       }
     }
-  }
 
-  nb_link = xbt_dict_length(ptask_parallel_task_link_set);
-  xbt_dict_free(&ptask_parallel_task_link_set);
+    nb_link = xbt_dict_length(ptask_parallel_task_link_set);
+    xbt_dict_free(&ptask_parallel_task_link_set);
+  }
 
   for (int i = 0; i < host_nb; i++)
     if (flops_amount[i] > 0)
       nb_used_host++;
 
-  XBT_DEBUG("Creating a parallel task (%p) with %d cpus and %d links.",
-         this, host_nb, nb_link);
+  XBT_DEBUG("Creating a parallel task (%p) with %d hosts and %d unique links.", this, host_nb, nb_link);
   this->p_computationAmount = flops_amount;
   this->p_communicationAmount = bytes_amount;
   this->m_latency = latency;
   this->m_rate = rate;
 
   this->p_variable = lmm_variable_new(model->getMaxminSystem(), this, 1.0,
-                                        (rate > 0 ? rate : -1.0),
-										host_nb + nb_link);
+      (rate > 0 ? rate : -1.0),
+      host_nb + nb_link);
 
   if (this->m_latency > 0)
     lmm_update_variable_weight(model->getMaxminSystem(), this->getVariable(), 0.0);
 
   for (int i = 0; i < host_nb; i++)
-    lmm_expand(model->getMaxminSystem(),
-    	       host_list[i]->pimpl_cpu->getConstraint(),
-               this->getVariable(), flops_amount[i]);
+    lmm_expand(model->getMaxminSystem(), host_list[i]->pimpl_cpu->getConstraint(),
+        this->getVariable(), flops_amount[i]);
 
   if(bytes_amount != NULL) {
     for (int i = 0; i < host_nb; i++) {
@@ -298,9 +297,7 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
   host_list[1] = sg_host_by_name(dst->getName());
   bytes_amount[1] = size;
 
-  res = p_hostModel->executeParallelTask(2, host_list,
-                                    flops_amount,
-                                    bytes_amount, rate);
+  res = p_hostModel->executeParallelTask(2, host_list, flops_amount, bytes_amount, rate);
 
   return res;
 }
@@ -343,28 +340,18 @@ void HostL07Model::addTraces()
   xbt_dict_cursor_t cursor = NULL;
   char *trace_name, *elm;
 
-  if (!trace_connect_list_host_avail)
+  if (!trace_connect_list_host_speed)
     return;
 
   /* Connect traces relative to cpu */
-  xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07 *host = static_cast<CpuL07*>(sg_host_by_name(elm)->pimpl_cpu);
+    Cpu *cpu = sg_host_by_name(elm)->pimpl_cpu;
 
-    xbt_assert(host, "Host %s undefined", elm);
+    xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    host->p_stateEvent = future_evt_set->add_trace(trace, 0.0, host);
-  }
-
-  xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuL07 *host = static_cast<CpuL07*>(sg_host_by_name(elm)->pimpl_cpu);
-
-    xbt_assert(host, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    host->p_speedEvent = future_evt_set->add_trace(trace, 0.0, host);
+    cpu->set_speed_trace(trace);
   }
 
   /* Connect traces relative to network */
@@ -378,7 +365,7 @@ void HostL07Model::addTraces()
     link->p_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
   }
 
-  xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
 
@@ -388,7 +375,7 @@ void HostL07Model::addTraces()
     link->p_bwEvent = future_evt_set->add_trace(trace, 0.0, link);
   }
 
-  xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
 
@@ -454,13 +441,12 @@ Action *CpuL07::execution_start(double size)
 {
   sg_host_t*host_list = xbt_new0(sg_host_t, 1);
   double *flops_amount = xbt_new0(double, 1);
-  double *bytes_amount = xbt_new0(double, 1);
 
   host_list[0] = getHost();
   flops_amount[0] = size;
 
   return static_cast<CpuL07Model*>(getModel())->p_hostModel
-    ->executeParallelTask( 1, host_list, flops_amount, bytes_amount, -1);
+    ->executeParallelTask( 1, host_list, flops_amount, NULL, -1);
 }
 
 Action *CpuL07::sleep(double duration)
@@ -615,33 +601,6 @@ int L07Action::unref()
     return 1;
   }
   return 0;
-}
-
-void L07Action::suspend()
-{
-  XBT_IN("(%p))", this);
-  if (m_suspended != 2) {
-    m_suspended = 1;
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
-  }
-  XBT_OUT();
-}
-
-void L07Action::resume()
-{
-  XBT_IN("(%p)", this);
-  if (m_suspended != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 1.0);
-    m_suspended = 0;
-  }
-  XBT_OUT();
-}
-
-double L07Action::getRemains()
-{
-  XBT_IN("(%p)", this);
-  XBT_OUT();
-  return m_remains;
 }
 
 }

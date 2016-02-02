@@ -121,6 +121,7 @@ set(EXTRA_DIST
   src/xbt/probes.h
   src/xbt/win32_ucontext.c
   tools/tesh/generate_tesh
+  tools/lualib.patch
   examples/smpi/mc/only_send_deterministic.tesh
   examples/smpi/mc/non_deterministic.tesh
   )
@@ -341,7 +342,7 @@ set(SURF_SRC
   src/surf/surf_routing_none.cpp
   src/surf/surf_routing_vivaldi.cpp
   src/surf/surfxml_parse.c
-  src/surf/surfxml_parseplatf.c
+  src/surf/surfxml_parseplatf.cpp
   src/surf/trace_mgr.hpp
   src/surf/trace_mgr.cpp
   src/surf/vm_hl13.cpp
@@ -877,14 +878,14 @@ set(DOC_SOURCES
   doc/doxygen/header.html
   doc/doxygen/help.doc
   doc/doxygen/index.doc
-  doc/doxygen/inside_ci.doc
+  doc/doxygen/inside.doc
+  doc/doxygen/inside_tests.doc
   doc/doxygen/inside_cmake.doc
   doc/doxygen/inside_doxygen.doc
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
   doc/doxygen/install.doc
-  doc/doxygen/internals.doc
-  doc/doxygen/introduction.doc
+  doc/doxygen/tutorial.doc
   doc/doxygen/module-msg.doc
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
@@ -952,12 +953,6 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_01.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_02.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_03.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_04.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_05.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/win_install_06.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_pair_16.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_ring_16.png
   )

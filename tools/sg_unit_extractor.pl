@@ -1,10 +1,11 @@
 #! /usr/bin/env perl
 
-# Copyright (c) 2005-2012, 2014. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2005-2012, 2014. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
+
+
 
 use strict;
 
@@ -16,11 +17,12 @@ my $progname="sg_unit_extractor";
 
 sub usage($) {
     my $ret;
-    print "USAGE: $progname [--root=part/to/cut] [--path=where/to/search NOT WORKING] [--outdir=where/to/generate/files] infile [infile+]\n";
+    print "USAGE: $progname [--root=part/to/cut] [--outdir=where/to/generate/files] infile [infile+]\n\n";
+    print "This program is in charge of extracting the unit tests out of the SimGrid source code.\n";
+    print "See http://simgrid.gforge.inria.fr/doc/latest/inside_tests.html for more details.\n";
     exit $ret;
 }
 
-my $path=undef;
 my $outdir=undef;
 my $root;
 my $help;
@@ -29,7 +31,6 @@ Getopt::Long::config('permute','no_getopt_compat', 'no_auto_abbrev');
 GetOptions(
         'help|h'                => sub {usage(0)},
         'root=s' =>\$root,
-        'path=s' =>\$path,
         'outdir=s' =>\$outdir) or usage(1);
 
 usage(1) if (scalar @ARGV == 0);

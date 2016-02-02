@@ -97,7 +97,7 @@ void Link::linksExit() {
 
 simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onCreation;
 simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onDestruction;
-simgrid::xbt::signal<void(simgrid::surf::Link*, int, int)> Link::onStateChange; // signature: wasOn, currentlyOn
+simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onStateChange;
 
 simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)> networkActionStateChangedCallbacks;
 simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)> networkCommunicateCallbacks;
@@ -254,13 +254,13 @@ int Link::sharingPolicy()
 void Link::turnOn(){
   if (isOff()) {
     Resource::turnOn();
-    onStateChange(this, 0, 1);
+    onStateChange(this);
   }
 }
 void Link::turnOff(){
   if (isOn()) {
     Resource::turnOff();
-    onStateChange(this, 1, 0);
+    onStateChange(this);
   }
 }
 

@@ -61,9 +61,9 @@ char **argv;
    
     for(j=0; j<2;j++ )
       for(i=0; i<3;i++ )
-      printf("%d ", tab[j][i]);
+        printf("%d ", tab[j][i]);
 
-      printf("\n");
+    printf("\n");
 
 
     /* Clean up the type */

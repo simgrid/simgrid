@@ -44,6 +44,8 @@
 #include "mpi.h"
 #include "npbparams.h"
 
+#include "simgrid/instr.h" //TRACE_
+
 #ifndef CLASS
 #define CLASS 'S'
 #define NUM_PROCS            1                 
@@ -537,6 +539,7 @@ int SendResults(DGraph *dg,DGNode *nd,Arr *feat){
   DGArc *ar=NULL;
   DGNode *head=NULL;
   if(!feat) return 0;
+  TRACE_smpi_set_category ("SendResults");
   for(i=0;i<nd->outDegree;i++){
     ar=nd->outArc[i];
     if(ar->tail!=nd) continue;
@@ -547,6 +550,7 @@ int SendResults(DGraph *dg,DGNode *nd,Arr *feat){
       MPI_Send(feat->val,feat->len,MPI_DOUBLE,head->address,tag,MPI_COMM_WORLD);
     }
   }
+  TRACE_smpi_set_category (NULL);
   return 1;
 }
 Arr* CombineStreams(DGraph *dg,DGNode *nd){
@@ -605,6 +609,8 @@ double ReduceStreams(DGraph *dg,DGNode *nd){
   Arr *feat=NULL;
   double retv=0.0;
 
+  TRACE_smpi_set_category ("ReduceStreams");
+
   for(i=0;i<nd->inDegree;i++){
     ar=nd->inArc[i];
     if(ar->head!=nd) continue;
@@ -635,6 +641,8 @@ int ProcessNodes(DGraph *dg,int me){
   double rchksum=0.0;
   MPI_Status status;
 
+  TRACE_smpi_set_category ("ProcessNodes");
+
   for(i=0;i<dg->numNodes;i++){
     nd=dg->node[i];
     if(nd->address!=me) continue;
@@ -650,6 +658,9 @@ int ProcessNodes(DGraph *dg,int me){
       SendResults(dg,nd,feat);
     }
   }
+
+  TRACE_smpi_set_category ("ProcessNodes");
+
   if(me==0){ /* Report node */
     rchksum=0.0;
     chksum=0.0;
@@ -675,6 +686,7 @@ int main(int argc,char **argv ){
     MPI_Init( &argc, &argv );
     MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
     MPI_Comm_size( MPI_COMM_WORLD, &comm_size );
+    TRACE_smpi_set_category ("begin");
 
      if(argc!=2||
                 (  strncmp(argv[1],"BH",2)!=0
@@ -726,7 +738,8 @@ int main(int argc,char **argv ){
       timer_start(0);
     }
     verified=ProcessNodes(dg,my_rank);
-    
+    TRACE_smpi_set_category ("end");
+
     featnum=NUM_SAMPLES*fielddim;
     bytes_sent=featnum*dg->numArcs;
     bytes_sent/=1048576;

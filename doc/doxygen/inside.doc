@@ -1,4 +1,4 @@
-/*! @page internals SimGrid Developer Guide
+/*! @page inside SimGrid Developer Guide
 
 This page does not exist yet, sorry. We are currently refurbishing the
 user documentation -- the internal documentation will follow (FIXME).
@@ -18,11 +18,11 @@ SimGrid project, ie how to extend the framework in any way, how the
 automatic tests are run, and so on. These informations are split on
 several pages, as follows:
 
+ - @subpage inside_tests
  - @subpage inside_doxygen
  - @subpage inside_extending
  - @subpage inside_cmake
  - @subpage inside_release
- - @subpage inside_ci
 
 
 \htmlonly

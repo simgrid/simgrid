@@ -50,12 +50,12 @@ public:
   {
     return remote_ptr<T>(address_ - n * sizeof(T));
   }
-  remote_ptr<T>& operator+=(std::uint64_t n) const
+  remote_ptr<T>& operator+=(std::uint64_t n)
   {
     address_ += n * sizeof(T);
     return *this;
   }
-  remote_ptr<T>& operator-=(std::uint64_t n) const
+  remote_ptr<T>& operator-=(std::uint64_t n)
   {
     address_ -= n * sizeof(T);
     return *this;

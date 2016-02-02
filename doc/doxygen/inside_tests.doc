@@ -1,0 +1,311 @@
+/*! 
+@page inside_tests Testing SimGrid
+
+This page will teach you how to run the tests, selecting the ones you
+want, and how to add new tests to the archive.
+
+\tableofcontents
+
+SimGrid code coverage is usually between 70% and 80%, which is much
+more than most projects out there. This is because we consider SimGrid
+to be a rather complex project, and we want to modify it with less fear.
+
+We have two sets of tests in SimGrid: Each of the 10,000+ unit tests
+check one specific case for one specific function, while the 500+
+integration tests run a given simulation specifically intended to
+exercise a larger amount of functions together. Every example provided
+in examples/ is used as an integration test, while some other torture
+tests and corner cases integration tests are located in teshsuite/.
+For each integration test, we ensure that the output exactly matches
+the defined expectations. Since SimGrid displays the timestamp of
+every loggued line, this ensures that every change of the models'
+prediction will be noticed. All these tests should ensure that SimGrid
+is safe to use and to depend on.
+
+\section inside_tests_runintegration Running the tests
+
+Running the tests is done using the ctest binary that comes with
+cmake. These tests are run for every commit and the result is publicly
+<a href="https://ci.inria.fr/simgrid/">available</a>.
+
+\verbatim
+ctest		 	  # Launch all tests
+ctest -R msg              # Launch only the tests which name match the string "msg"
+ctest -j4                 # Launch all tests in parallel, at most 4 at the same time
+ctest --verbose           # Display all details on what's going on
+ctest --output-on-failure # Only get verbose for the tests that fail
+
+ctest -R msg- -j5 --output-on-failure # You changed MSG and want to check that you didn't break anything, huh?
+                                      # That's fine, I do so all the time myself.
+\endverbatim
+
+\section inside_tests_rununit Running the unit tests
+
+All unit tests are packed into the testall binary, that lives in src/.
+These tests are run when you launch ctest, don't worry.
+
+\verbatim
+make testall                        # Rebuild the test runner on need
+./src/testall                       # Launch all tests
+./src/testall --help                # revise how it goes if you forgot
+./src/testall --tests=-all          # run no test at all (yeah, that's useless)
+./src/testall --dump-only           # Display all existing test suite
+./src/testall --tests=-all,+dict    # Only launch the tests from the dict testsuite
+./src/testall --tests=-all,+foo:bar # run only the bar test from the foo suite.
+\endverbatim
+
+
+\section inside_tests_add_units Adding unit tests
+
+If you want to test a specific function or set of functions, you need
+a unit test. Edit
+<project/directory>/tools/cmake/UnitTesting.cmake to add your
+source file to the TEST_CFILES list, and add the corresponding unit
+file to the TEST_UNITS list. For example, if your file is toto.c,
+your unit file will be toto_unit.c. The full path to your file must be
+provided, but the unit file will always be in src/ directly.
+
+If you want to create unit tests in the file src/xbt/toto.c, your
+changes should look similar to:
+
+\verbatim
+--- a/tools/cmake/UnitTesting.cmake
++++ b/tools/cmake/UnitTesting.cmake
+@@ -11,6 +11,7 @@ set(TEST_CFILES
+   src/xbt/xbt_strbuff.c
+   src/xbt/xbt_sha.c
+   src/xbt/config.c
++  src/xbt/toto.c
+   )
+ set(TEST_UNITS
+   ${CMAKE_CURRENT_BINARY_DIR}/src/cunit_unit.c
+@@ -22,6 +23,7 @@ set(TEST_UNITS
+   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_strbuff_unit.c
+   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_sha_unit.c
+   ${CMAKE_CURRENT_BINARY_DIR}/src/config_unit.c
++  ${CMAKE_CURRENT_BINARY_DIR}/src/toto_unit.c
+ 
+   ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c
+   )
+\endverbatim
+
+Then, you want to actually add your tests in the source file. All the
+tests must be protected by "#ifdef SIMGRID_TEST" so that they don't
+get included in the regular build. The line SIMGRID_TEST must also be
+written on the endif line for the extraction script to work properly. 
+
+Tests are subdivided in three levels. The top-level, called <b>test
+suite</b>, is created with the macro #XBT_TEST_SUITE. There can be
+only one suite per source file. A suite contains <b>test units</b>
+that you create with the #XBT_TEST_UNIT macro.  Finally, you start
+<b>actual tests</b> with #xbt_test_add. There is no closing marker of
+any sort, and an unit is closed when the next unit starts, or when the
+end of file is reached. 
+
+Once a given test is started with #xbt_test_add, you use
+#xbt_test_assert to specify that it was actually an assert, or
+#xbt_test_fail to specify that it failed (if your test cannot easily
+be written as an assert). #xbt_test_exception can be used to report
+that it failed with an exception. There is nothing to do to report
+that a given test succeeded, just start the next test without
+reporting any issue. Finally, #xbt_test_log can be used to report
+intermediate steps. The messages will be shown only if the
+corresponding test fails.
+
+Here is a recaping example, inspired from the dynar implementation.
+@code
+/* The rest of your module implementation */
+
+#ifdef SIMGRID_TEST
+
+XBT_TEST_SUITE("dynar", "Dynar data container");
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dyn); // Just the regular logging stuff
+
+XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
+{
+  int i, cpt;
+  unsigned int cursor;
+
+  xbt_test_add("==== Traverse the empty dynar");
+  xbt_dynar_t d = xbt_dynar_new(sizeof(int), NULL);
+  xbt_dynar_foreach(d, cursor, i) {
+    xbt_test_fail( "Damnit, there is something in the empty dynar");
+  }
+  xbt_dynar_free(&d);
+
+  xbt_test_add("==== Push %d int and re-read them",  NB_ELEM);
+  d = xbt_dynar_new(sizeof(int), NULL);
+  for (cpt = 0; cpt < NB_ELEM; cpt++) {
+    xbt_test_log("Push %d, length=%lu", cpt, xbt_dynar_length(d));
+    xbt_dynar_push_as(d, int, cpt);
+  }
+
+  for (cursor = 0; cursor < NB_ELEM; cursor++) {
+    int *iptr = xbt_dynar_get_ptr(d, cursor);
+    xbt_test_assert(cursor == *iptr,
+       "The retrieved value is not the same than the injected one (%u!=%d)",cursor, cpt);
+  }
+  
+  xbt_test_add("==== Check the size of that %d-long dynar",  NB_ELEM);
+  xbt_test_assert(xbt_dynar_size(d) == NB_ELEM);
+  xbt_dynar_free(&d); 
+}
+
+XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dynar_remove functions")
+{
+  xbt_dynar_t d = xbt_dynar_new(sizeof(unsigned int), NULL);
+  unsigned int cursor;
+  int cpt;
+
+  xbt_test_add("==== Insert %d int, traverse them, remove them",NB_ELEM);
+  // BLA BLA BLA
+}
+
+#endif  /* SIMGRID_TEST <-- that string must appear on the endif line */
+@endcode
+
+For more details on the macro used to write unit tests, see their
+reference guide: @ref XBT_cunit.  For details on on how the tests are
+extracted from the module source, check the tools/sg_unit_extractor.pl
+script directly.
+
+Last note: please try to keep your tests fast. We run them very very
+very often, and you should strive to make it as fast as possible, to
+not upset the other developers. Do not hesitate to stress test your
+code with such unit tests, but make sure that it runs reasonably fast,
+or nobody will run "ctest" before commiting code.
+
+\section inside_tests_add_integration Adding integration tests
+
+TESH (the TEsting SHell) is the test runner that we wrote for our
+integration tests. It is distributed with the SimGrid source file, and
+even comes with a man page. TESH ensures that the output produced by a
+command perfectly matches the expected output. This is very precious
+to ensure that no change modifies the timings computed by the models
+without notice.
+
+To add a new integration test, you thus have 3 things to do:
+
+ - <b>Write the code exercising the feature you target</b>. You should
+   strive to make this code clear, well documented and informative for
+   the users. If you manage to do so, put this somewhere under
+   examples/ and modify the cmake files as explained on this page:
+   \ref inside_cmake_examples. If you feel like you should write a
+   torture test that is not interesting to the users (because nobody
+   would sainly write something similar in user code), then put it under 
+   teshsuite/ somewhere.
+ - <b>Write the tesh file</b>, containing the command to run, the
+   provided input (if any, but almost no SimGrid test provide such an
+   input) and the expected output. Check the tesh man page for more
+   details. \n
+   Tesh is sometimes annoying as you have to ensure that the expected
+   output will always be exactly the same. In particular, your should
+   not output machine dependent informations, nor memory adresses as
+   they would change on each run. Several steps can be used here, such
+   as the obfucation of the memory adresses unless the verbose logs
+   are displayed (using the #XBT_LOG_ISENABLED() macro), or the
+   modification of the log formats to hide the timings when they
+   depend on the host machine.
+ - <b>Add your test in the cmake infrastructure</b>. For that, modify
+   the file <project/directory>/tools/cmake/Tests.cmake. Make sure to
+   pick a wise name for your test. It is often useful to check a
+   category of tests together. The only way to do so in ctest is to
+   use the -R argument that specifies a regular expression that the
+   test names must match. For example, you can run all MSG test with
+   "ctest -R msg". That explains the importance of the test names.
+
+Once the name is chosen, create a new test by adding a line similar to
+the following (assuming that you use tesh as expected).
+
+\verbatim
+# Usage: ADD_TEST(test-name ${CMAKE_BINARY_DIR}/bin/tesh <options> <tesh-file>)
+#  option --setenv bindir set the directory containing the binary
+#         --setenv srcdir set the directory containing the source file
+#         --cd set the working directory
+ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh 
+         --setenv bindir=${CMAKE_BINARY_DIR}/examples/my-test/
+         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/my-test/
+         --cd ${CMAKE_HOME_DIRECTORY}/examples/my-test/
+         ${CMAKE_HOME_DIRECTORY}/examples/msg/io/io.tesh
+)
+\endverbatim             
+
+As usual, you must run "make distcheck" after modifying the cmake files,
+to ensure that you did not forget any files in the distributed archive.
+
+\section inside_tests_ci Continous Integration
+
+We use several systems to automatically test SimGrid with a large set
+of parameters, across as many platforms as possible. 
+We use <a href="https://ci.inria.fr/simgrid/">Jenkins on Inria
+servers</a> as a workhorse: it runs all of our tests for many
+configurations. It takes a long time to answer, and it often reports
+issues but when it's green, then you know that SimGrid is very fit!
+We use <a href="https://travis-ci.org/mquinson/simgrid">Travis</a> to
+quickly run some tests on Linux and Mac. It answers quickly but may
+miss issues. And we use <a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>
+to build and somehow test SimGrid on windows. 
+
+\subsection inside_tests_jenkins Jenkins on the Inria CI servers
+
+You should not have to change the configuration of the Jenkins tool
+yourself, although you could have to change the slaves' configuration
+using the <a href="https://ci.inria.fr">CI interface of INRIA</a> --
+refer to the <a href="https://wiki.inria.fr/ciportal/">CI documentation</a>.
+
+The result can be seen here: https://ci.inria.fr/simgrid/
+
+We have 3 projects on Jenkins:
+\li <a href="https://ci.inria.fr/simgrid/job/SimGrid-Multi/">SimGrid-Multi</a>
+    is the main project, running the tests that we spoke about.\n It is
+    configured (on Jenkins) to run the script <tt>tools/jenkins/build.sh</tt>
+\li <a href="https://ci.inria.fr/simgrid/job/SimGrid-DynamicAnalysis/">SimGrid-DynamicAnalysis</a>
+    runs the tests both under valgrind to find the memory errors and
+    under gcovr to report the achieved test coverage.\n It is configured
+    (on Jenkins) to run the script <tt>tools/jenkins/DynamicAnalysis.sh</tt>
+\li <a href="https://ci.inria.fr/simgrid/job/SimGrid-Windows/">SimGrid-Windows</a>
+    is an ongoing attempt to get Windows tested on Jenkins too.
+
+In each case, SimGrid gets built in
+/builds/workspace/$PROJECT/build_mode/$CONFIG/label/$SERVER/build 
+with $PROJECT being for instance "SimGrid-Multi", $CONFIG "DEBUG" or
+"ModelChecker" and $SERVER for instance "simgrid-fedora20-64-clang".
+
+If some configurations are known to fail on some systems (such as
+model-checking on non-linux systems), go to your Project and click on
+"Configuration". There, find the field "combination filter" (if your
+interface language is English) and tick the checkbox; then add a
+groovy-expression to disable a specific configuration. For example, in
+order to disable the "ModelChecker" build on host
+"small-freebsd-64-clang", use:
+
+\verbatim
+(label=="small-freebsd-64-clang").implies(build_mode!="ModelChecker")
+\endverbatim
+
+\subsection inside_tests_travis Travis
+
+Travis is a free (as in free beer) Continuous Integration system that
+open-sourced project can use freely. It is very well integrated in the
+GitHub ecosystem. There is a plenty of documentation out there. Our
+configuration is in the file .travis.yml as it should be, and the
+result is here: https://travis-ci.org/mquinson/simgrid
+
+\subsection inside_tests_appveyor AppVeyor
+
+AppVeyor aims at becoming the Travis of Windows. It is maybe less
+mature than Travis, or maybe it is just that I'm less trained in
+Windows. Our configuration is in the file appveyor.yml as it should
+be, and the result is here: https://ci.appveyor.com/project/mquinson/simgrid
+
+It should be noted that I miserably failed to use the environment
+provided by AppVeyor, since SimGrid does not build with Microsoft
+Visual Studio. Instead, we download a whole development environment
+from the internet at each build. That's an archive of already compiled
+binaries that are unpacked on the appveyor systems each time we start.
+We re-use the ones from the 
+<a href="https://github.com/symengine/symengine">symengine</a>
+project. Thanks to them for compiling sane tools and constituting that
+archive, it saved my mind! 
+
+*/

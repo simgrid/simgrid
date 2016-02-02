@@ -182,7 +182,7 @@ int console_add_host(lua_State *L) {
     XBT_ERROR("Attribute 'speed' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
   }
   host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
-  xbt_dynar_push_as(host.speed_peak, double, get_cpu_speed(lua_tostring(L, -1)));
+  xbt_dynar_push_as(host.speed_peak, double, parse_cpu_speed(lua_tostring(L, -1)));
   lua_pop(L, 1);
 
   // get core

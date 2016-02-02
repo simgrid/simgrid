@@ -483,7 +483,7 @@ void NetworkCm02Model::addTraces(){
     link->p_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
   }
 
-  xbt_dict_foreach(trace_connect_list_bandwidth, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     NetworkCm02Link *link = static_cast<NetworkCm02Link*>( Link::byName(elm) );
 
@@ -496,7 +496,7 @@ void NetworkCm02Model::addTraces(){
     link->p_speed.event = future_evt_set->add_trace(trace, 0.0, link);
   }
 
-  xbt_dict_foreach(trace_connect_list_latency, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     NetworkCm02Link *link = static_cast<NetworkCm02Link*>(Link::byName(elm));;
 

@@ -149,7 +149,6 @@ public:
   virtual void setPState(int pstate_index);
   virtual int  getPState();
 
-  void addTraces(void);
   simgrid::s4u::Host* getHost() { return m_host; }
 
 public:
@@ -165,6 +164,12 @@ public:
   lmm_constraint_t *p_constraintCore=NULL;
   void **p_constraintCoreId=NULL;
 
+public:
+  void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF) */
+  void set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load) */
+protected:
+  tmgr_trace_iterator_t p_stateEvent = nullptr;
+  tmgr_trace_iterator_t p_speedEvent = nullptr;
 };
 
 /**********

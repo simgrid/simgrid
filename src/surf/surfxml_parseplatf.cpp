@@ -10,14 +10,17 @@
 #include "xbt/dict.h"
 #include "simgrid/platf.h"
 #include "surf/surfxml_parse.h"
+#include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_private.h"
 
 #ifdef HAVE_LUA
+extern "C" {
 #include "src/bindings/lua/simgrid_lua.h"
 
 #include <lua.h>                /* Always include this when calling Lua */
 #include <lauxlib.h>            /* Always include this when calling Lua */
 #include <lualib.h>             /* Prototype for luaL_openlibs(), */
+}
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
@@ -36,9 +39,9 @@ static char *old_buff = NULL;
 XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack_ptr;
 XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack[1024];
 
-void surfxml_bufferstack_push(int new)
+void surfxml_bufferstack_push(int new_one)
 {
-  if (!new)
+  if (!new_one)
     old_buff = surfxml_bufferstack;
   else {
     xbt_dynar_push(surfxml_bufferstack_stack, &surfxml_bufferstack);
@@ -46,9 +49,9 @@ void surfxml_bufferstack_push(int new)
   }
 }
 
-void surfxml_bufferstack_pop(int new)
+void surfxml_bufferstack_pop(int new_one)
 {
-  if (!new)
+  if (!new_one)
     surfxml_bufferstack = old_buff;
   else {
     free(surfxml_bufferstack);
@@ -62,10 +65,10 @@ void surfxml_bufferstack_pop(int new)
 
 xbt_dict_t traces_set_list = NULL;
 xbt_dict_t trace_connect_list_host_avail = NULL;
-xbt_dict_t trace_connect_list_power = NULL;
+xbt_dict_t trace_connect_list_host_speed = NULL;
 xbt_dict_t trace_connect_list_link_avail = NULL;
-xbt_dict_t trace_connect_list_bandwidth = NULL;
-xbt_dict_t trace_connect_list_latency = NULL;
+xbt_dict_t trace_connect_list_link_bw = NULL;
+xbt_dict_t trace_connect_list_link_lat = NULL;
 
 /* ***************************************** */
 
@@ -123,10 +126,10 @@ void parse_platform_file(const char *file)
 
     traces_set_list = xbt_dict_new_homogeneous(NULL);
     trace_connect_list_host_avail = xbt_dict_new_homogeneous(free);
-    trace_connect_list_power = xbt_dict_new_homogeneous(free);
+    trace_connect_list_host_speed = xbt_dict_new_homogeneous(free);
     trace_connect_list_link_avail = xbt_dict_new_homogeneous(free);
-    trace_connect_list_bandwidth = xbt_dict_new_homogeneous(free);
-    trace_connect_list_latency = xbt_dict_new_homogeneous(free);
+    trace_connect_list_link_bw = xbt_dict_new_homogeneous(free);
+    trace_connect_list_link_lat = xbt_dict_new_homogeneous(free);
 
     /* Init my data */
     if (!surfxml_bufferstack_stack)
@@ -135,12 +138,27 @@ void parse_platform_file(const char *file)
     /* Do the actual parsing */
     parse_status = surf_parse();
 
+    /* connect all traces relative to hosts */
+    xbt_dict_cursor_t cursor = NULL;
+    char *trace_name, *elm;
+
+    xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
+      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+      xbt_assert(trace, "Trace %s undefined", trace_name);
+
+      simgrid::s4u::Host *host = sg_host_by_name(elm);
+      xbt_assert(host, "Host %s undefined", elm);
+      simgrid::surf::Cpu *cpu = host->pimpl_cpu;
+
+      cpu->set_state_trace(trace);
+    }
+
     /* Free my data */
     xbt_dict_free(&trace_connect_list_host_avail);
-    xbt_dict_free(&trace_connect_list_power);
+    xbt_dict_free(&trace_connect_list_host_speed);
     xbt_dict_free(&trace_connect_list_link_avail);
-    xbt_dict_free(&trace_connect_list_bandwidth);
-    xbt_dict_free(&trace_connect_list_latency);
+    xbt_dict_free(&trace_connect_list_link_bw);
+    xbt_dict_free(&trace_connect_list_link_lat);
     xbt_dict_free(&traces_set_list);
     xbt_dict_free(&random_data_list);
     xbt_dynar_free(&surfxml_bufferstack_stack);

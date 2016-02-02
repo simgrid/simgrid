@@ -443,7 +443,7 @@ void ETag_surfxml_host(void)    {
   XBT_DEBUG("Buffer: %s", buf);
   host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
   if (strchr(buf, ',') == NULL){
-	  double speed = get_cpu_speed(A_surfxml_host_power);
+	  double speed = parse_cpu_speed(A_surfxml_host_power);
 	  xbt_dynar_push_as(host.speed_peak,double, speed);
   }
   else {
@@ -455,7 +455,7 @@ void ETag_surfxml_host(void)    {
 
 		  xbt_dynar_get_cpy(pstate_list, i, &speed_str);
 		  xbt_str_trim(speed_str, NULL);
-		  speed = get_cpu_speed(speed_str);
+		  speed = parse_cpu_speed(speed_str);
 		  xbt_dynar_push_as(host.speed_peak, double, speed);
 		  XBT_DEBUG("Speed value: %f", speed);
 	  }
@@ -1061,7 +1061,7 @@ int_f_void_t surf_parse = _surf_parse;
  * With XML parser
  */
 
-double get_cpu_speed(const char *str_speed)
+double parse_cpu_speed(const char *str_speed)
 {
   double speed = 0.0;
   const char *p, *q;

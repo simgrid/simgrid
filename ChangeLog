@@ -16,6 +16,12 @@ SimGrid (3.13) UNRELEASED; urgency=low
     the lambda or closure passed as a parameter will run in kernel mode.
    Every callbacks should be rewritten to that interface at some point.
    
+ MC
+ * BC breaks:
+   - The option "model-check/sparse-checkpoint" was renamed to
+     "model-check/sparse_checkpoint" as we attempt to unify our naming
+     schemes.
+
  Surf
  * Reorganizing and cleaning the internals all around the place.
 

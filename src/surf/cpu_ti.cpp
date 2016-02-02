@@ -385,17 +385,6 @@ int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
 }
 }
 
-/*************
- * CallBacks *
- *************/
-
-static void cpu_ti_define_callbacks()
-{
-  simgrid::surf::on_postparse.connect([]() {
-    surf_cpu_model_pm->addTraces();
-  });
-}
-
 /*********
  * Model *
  *********/
@@ -406,13 +395,14 @@ void surf_cpu_model_init_ti()
   xbt_assert(!surf_cpu_model_vm,"CPU model already initialized. This should not happen.");
 
   surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
-  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
+  xbt_dynar_push(all_existing_models, &surf_cpu_model_pm);
 
-  cpu_ti_define_callbacks();
-  simgrid::surf::Model *model_pm = static_cast<simgrid::surf::Model*>(surf_cpu_model_pm);
-  simgrid::surf::Model *model_vm = static_cast<simgrid::surf::Model*>(surf_cpu_model_vm);
-  xbt_dynar_push(all_existing_models, &model_pm);
-  xbt_dynar_push(all_existing_models, &model_vm);
+  surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
+  xbt_dynar_push(all_existing_models, &surf_cpu_model_vm);
+
+  simgrid::surf::on_postparse.connect([]() {
+    surf_cpu_model_pm->addTraces();
+  });
 }
 
 namespace simgrid {
@@ -502,23 +492,7 @@ void CpuTiModel::addTraces()
   called = 1;
 
 /* connect all traces relative to hosts */
-  xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuTi *cpu = static_cast<CpuTi*>(sg_host_by_name(elm)->pimpl_cpu);
-
-    xbt_assert(cpu, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    if (cpu->p_stateEvent) {
-      XBT_DEBUG("Trace already configured for this CPU(%s), ignoring it",
-             elm);
-      continue;
-    }
-    XBT_DEBUG("Add state trace: %s to CPU(%s)", trace_name, elm);
-    cpu->p_stateEvent = future_evt_set->add_trace(trace, 0.0, cpu);
-  }
-
-  xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
+  xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
     tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
     CpuTi *cpu = static_cast<CpuTi*>(sg_host_by_name(elm)->pimpl_cpu);
 
@@ -537,8 +511,7 @@ void CpuTiModel::addTraces()
       xbt_dynar_get_cpy(trace->s_list.event_list,
                         xbt_dynar_length(trace->s_list.event_list) - 1, &val);
       if (val.delta == 0) {
-        cpu->p_speedEvent =
-            future_evt_set->add_trace(tmgr_empty_trace_new(), cpu->p_availTrace->m_lastTime, cpu);
+        cpu->set_speed_trace(tmgr_empty_trace_new());
       }
     }
   }

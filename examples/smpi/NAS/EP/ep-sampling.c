@@ -6,8 +6,6 @@
 #include "mpi.h"
 #include "npbparams.h"
 
-#include "simgrid/instr.h" //TRACE_
-
 #include "randlc.h"
 
 #ifndef CLASS
@@ -142,8 +140,6 @@
       double *x = (double *) malloc (2*nk*sizeof(double));
       double *q = (double *) malloc (nq*sizeof(double));
 
-      TRACE_smpi_set_category ("start");
-
       MPI_Init( &argc, &argv );
       MPI_Comm_size( MPI_COMM_WORLD, &no_nodes);
       MPI_Comm_rank( MPI_COMM_WORLD, &node);
@@ -160,7 +156,7 @@
            *   point print statement (internal file)
            */
           fprintf(stdout," NAS Parallel Benchmarks 3.2 -- EP Benchmark");
-          sprintf(size,"%d",pow(2,m+1));
+          sprintf(size,"%d",(int) pow(2,m+1));
           //size = size.replace('.', ' ');
           fprintf(stdout," Number of random numbers generated: %s\n",size);
           fprintf(stdout," Number of active processes: %d\n",no_nodes);
@@ -209,9 +205,6 @@
     */
         MPI_Barrier( MPI_COMM_WORLD );
 
-
-      TRACE_smpi_set_category ("ep");
-
         timer_clear(&(elapsed[1]));
         timer_clear(&(elapsed[2]));
         timer_clear(&(elapsed[3]));
@@ -253,7 +246,7 @@
          k_offset = no_large_nodes*(np+1) + (node-no_large_nodes)*np -1;
      
       int stop = false;
-      for(k = 1; k <= np; k++) {
+      for(k = 1; k <= np; k++) SMPI_SAMPLE_LOCAL(0.25 * np, 0.03) {
          stop = false;
          kk = k_offset + k ;
          t1 = s;
@@ -339,8 +332,6 @@
     timer_stop(2,elapsed,start);
       }
 
-      TRACE_smpi_set_category ("finalize");
-
       //int MPI_Allreduce(void *sbuf, void *rbuf, int count, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)   
   MPI_Allreduce(&sx, x, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
   sx = x[0]; //FIXME :  x[0] or x[1] => x[0] because fortran starts with 1
@@ -406,13 +397,13 @@
     Mops = (pow(2.0, m+1))/tm/1000;
 
     fprintf(stdout,"EP Benchmark Results:\n");
-    fprintf(stdout,"CPU Time=%d\n",tm);
+    fprintf(stdout,"CPU Time=%d\n",(int) tm);
     fprintf(stdout,"N = 2^%d\n",m);
-    fprintf(stdout,"No. Gaussain Pairs =%d\n",gc);
-    fprintf(stdout,"Sum = %f %ld\n",sx,sy);
+    fprintf(stdout,"No. Gaussain Pairs =%d\n",(int) gc);
+    fprintf(stdout,"Sum = %f %ld\n",sx,(long) sy);
     fprintf(stdout,"Count:");
     for(i = 0; i < nq; i++) {
-      fprintf(stdout,"%d\t %ld\n",i,q[i]);
+      fprintf(stdout,"%d\t %ld\n",i,(long) q[i]);
     }
 
     /*

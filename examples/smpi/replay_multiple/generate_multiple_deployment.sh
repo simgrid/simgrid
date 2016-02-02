@@ -116,7 +116,7 @@ fi
 
 ##-------------------------------- DEFAULT APPLICATION --------------------------------------
 
-APPLICATIONTMP=$(echo ${PROC_ARGS}|cut -d' ' -f2)
+APPLICATIONTMP=$(echo ${PROC_ARGS}|cut -d' ' -f2 -s)
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>

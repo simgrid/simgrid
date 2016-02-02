@@ -71,7 +71,7 @@ typedef struct tmgr_trace {
 typedef struct tmgr_trace_iterator {
   tmgr_trace_t trace;
   unsigned int idx;
-  void *resource;
+  sg_resource_t resource;
   int free_me;
 } s_tmgr_trace_event_t;
 
@@ -103,12 +103,9 @@ XBT_PUBLIC_CLASS future_evt_set {
 public:
   future_evt_set();
   virtual ~future_evt_set();
-  double next_date();
-  tmgr_trace_iterator_t pop_leq(double date, double *value, void** resource);
-  tmgr_trace_iterator_t add_trace(
-      tmgr_trace_t trace,
-      double start_time,
-      void *model);
+  double next_date() const;
+  tmgr_trace_iterator_t pop_leq(double date, double *value, simgrid::surf::Resource** resource);
+  tmgr_trace_iterator_t add_trace(tmgr_trace_t trace, double start_time, simgrid::surf::Resource *resource);
 
 private:
   // TODO: use a boost type for the heap (or a ladder queue)

@@ -439,7 +439,7 @@ reach GiB ou Tib of memory. However, for many workloads, the memory does not
 change much between different snapshots and taking a complete copy of each
 snapshot is a waste of memory.
 
-The \b model-check/sparse-checkpoint option item can be set to \b yes in order
+The \b model-check/sparse_checkpoint option item can be set to \b yes in order
 to avoid making a complete copy of each snapshot: instead, each snapshot will be
 decomposed in blocks which will be stored separately.
 If multiple snapshots share the same block (or if the same block
@@ -465,7 +465,7 @@ really meaningful: you should expect the contribution of the memory
 consumption of the snapshots to be \f$ \mbox{number of processes}
 \times \mbox{stack size} \times \mbox{number of states} \f$.
 
-The \b model-check/sparse-checkpoint can be used to reduce the memory
+The \b model-check/sparse_checkpoint can be used to reduce the memory
 consumption by trying to share memory between the different snapshots.
 
 When compiled against the model checker, the stacks are not
@@ -1092,7 +1092,7 @@ silently overflow on other parts of the memory.
 - \c model-check/reduction: \ref options_modelchecking_reduction
 - \c model-check/replay: \ref options_modelchecking_recordreplay
 - \c model-check/send_determinism: \ref options_modelchecking_sparse_checkpoint
-- \c model-check/sparse-checkpoint: \ref options_modelchecking_sparse_checkpoint
+- \c model-check/sparse_checkpoint: \ref options_modelchecking_sparse_checkpoint
 - \c model-check/termination: \ref options_modelchecking_termination
 - \c model-check/timeout: \ref options_modelchecking_timeout
 - \c model-check/visited: \ref options_modelchecking_visited
