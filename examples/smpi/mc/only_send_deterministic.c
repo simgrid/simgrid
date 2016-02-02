@@ -1,4 +1,4 @@
-/* ../../../smpi_script/bin/smpirun -hostfile hostfile_send_deterministic -platform ../../platforms/cluster.xml -np 3 --cfg=smpi/send_is_detached_thres:0 gdb\ --args\ ./send_deterministic */
+/* ../../../smpi_script/bin/smpirun -hostfile hostfile_send_deterministic -platform ../../platforms/cluster.xml -np 3 --cfg=smpi/send_is_detached_thresh:0 gdb\ --args\ ./send_deterministic */
 
 /* Copyright (c) 2009-2015. The SimGrid Team.
  * All rights reserved.                                                     */

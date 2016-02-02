@@ -411,7 +411,7 @@ static void smpi_check_options(){
   //check correctness of MPI parameters
 
    xbt_assert(sg_cfg_get_int("smpi/async_small_thresh") <=
-              sg_cfg_get_int("smpi/send_is_detached_thres"));
+              sg_cfg_get_int("smpi/send_is_detached_thresh"));
 
    if (sg_cfg_is_default_value("smpi/running_power")) {
      XBT_INFO("You did not set the power of the host running the simulation.  "

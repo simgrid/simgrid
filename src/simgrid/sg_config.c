@@ -836,10 +836,10 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_int, 1, 1, NULL, NULL);
     xbt_cfg_setdefault_int(_sg_cfg_set, "smpi/async_small_thresh", 0);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/send_is_detached_thres",
+    xbt_cfg_register(&_sg_cfg_set, "smpi/send_is_detached_thresh",
                      "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend",
                      xbt_cfgelm_int, 1, 1, NULL, NULL);
-    xbt_cfg_setdefault_int(_sg_cfg_set, "smpi/send_is_detached_thres", 65536);
+    xbt_cfg_setdefault_int(_sg_cfg_set, "smpi/send_is_detached_thresh", 65536);
 
     xbt_cfg_register(&_sg_cfg_set, "smpi/privatize_global_variables",
                      "Boolean indicating whether we should privatize global variable at runtime.",
