@@ -465,7 +465,8 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
   if (!res) {
     xbt_cfg_help(cfg);
     THROWF(not_found_error, 0,
-           "No registered variable '%s' in this config set", name);
+           "No registered variable '%s' in this config set. It is possible that this "\
+           "configuration option has been renamed; please read the file ChangeLog carefully!", name);
   }
 
   xbt_assert(type == xbt_cfgelm_any || res->type == type,
