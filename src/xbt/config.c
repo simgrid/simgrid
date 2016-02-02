@@ -212,8 +212,7 @@ void xbt_cfgelm_free(void *data)
  *  @param cb_rm callback function called when a value is removed
  */
 
-void
-xbt_cfg_register(xbt_cfg_t * cfg,
+void xbt_cfg_register(xbt_cfg_t * cfg,
                  const char *name, const char *desc,
                  e_xbt_cfgelm_type_t type, int min,
                  int max, xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm)
