@@ -1158,27 +1158,6 @@ inline static smx_mutex_t simcall_BODY_mutex_init() {
     return (smx_mutex_t) self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_mutex_destroy(smx_mutex_t mutex) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_mutex_destroy(mutex);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_MUTEX_DESTROY;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) mutex;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
-  }
-  
 inline static void simcall_BODY_mutex_lock(smx_mutex_t mutex) {
     smx_process_t self = SIMIX_process_self();
 
@@ -1261,27 +1240,6 @@ inline static smx_cond_t simcall_BODY_cond_init() {
       SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return (smx_cond_t) self->simcall.result.dp;
-  }
-  
-inline static void simcall_BODY_cond_destroy(smx_cond_t cond) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_cond_destroy(cond);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_COND_DESTROY;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) cond;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
   }
   
 inline static void simcall_BODY_cond_signal(smx_cond_t cond) {
@@ -1390,27 +1348,6 @@ inline static smx_sem_t simcall_BODY_sem_init(unsigned int capacity) {
       SIMIX_simcall_handle(&self->simcall, 0);
     }    
     return (smx_sem_t) self->simcall.result.dp;
-  }
-  
-inline static void simcall_BODY_sem_destroy(smx_sem_t sem) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_sem_destroy(sem);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_SEM_DESTROY;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) sem;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
   }
   
 inline static void simcall_BODY_sem_release(smx_sem_t sem) {

@@ -941,13 +941,6 @@ static inline void simcall_mutex_init__set__result(smx_simcall_t simcall, void* 
     simcall->result.dp = result;
 }
 
-static inline smx_mutex_t simcall_mutex_destroy__get__mutex(smx_simcall_t simcall) {
-  return (smx_mutex_t) simcall->args[0].dp;
-}
-static inline void simcall_mutex_destroy__set__mutex(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-
 static inline smx_mutex_t simcall_mutex_lock__get__mutex(smx_simcall_t simcall) {
   return (smx_mutex_t) simcall->args[0].dp;
 }
@@ -980,13 +973,6 @@ static inline smx_cond_t simcall_cond_init__get__result(smx_simcall_t simcall){
 }
 static inline void simcall_cond_init__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
-}
-
-static inline smx_cond_t simcall_cond_destroy__get__cond(smx_simcall_t simcall) {
-  return (smx_cond_t) simcall->args[0].dp;
-}
-static inline void simcall_cond_destroy__set__cond(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
 }
 
 static inline smx_cond_t simcall_cond_signal__get__cond(smx_simcall_t simcall) {
@@ -1046,13 +1032,6 @@ static inline smx_sem_t simcall_sem_init__get__result(smx_simcall_t simcall){
 }
 static inline void simcall_sem_init__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
-}
-
-static inline smx_sem_t simcall_sem_destroy__get__sem(smx_simcall_t simcall) {
-  return (smx_sem_t) simcall->args[0].dp;
-}
-static inline void simcall_sem_destroy__set__sem(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
 }
 
 static inline smx_sem_t simcall_sem_release__get__sem(smx_simcall_t simcall) {

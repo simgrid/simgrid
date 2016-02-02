@@ -230,8 +230,8 @@ static void action_barrier(const char *const *action)
 
   processes_arrived_sofar--;
   if (!processes_arrived_sofar) {
-    simcall_cond_destroy(cond);
-    simcall_mutex_destroy(mutex);
+    SIMIX_cond_destroy(cond);
+    SIMIX_mutex_destroy(mutex);
     mutex = NULL;
   }
 }

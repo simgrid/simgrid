@@ -45,7 +45,7 @@ void xbt_mutex_release(xbt_mutex_t mutex)
 
 void xbt_mutex_destroy(xbt_mutex_t mutex)
 {
-  simcall_mutex_destroy((smx_mutex_t) mutex);
+  SIMIX_mutex_destroy((smx_mutex_t) mutex);
 }
 
 /***** condition related functions *****/
@@ -80,7 +80,7 @@ void xbt_cond_broadcast(xbt_cond_t cond)
 
 void xbt_cond_destroy(xbt_cond_t cond)
 {
-  simcall_cond_destroy((smx_cond_t) cond);
+  SIMIX_cond_destroy((smx_cond_t) cond);
 }
 
 /***** barrier related functions *****/

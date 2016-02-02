@@ -410,13 +410,13 @@ XBT_PUBLIC(void) simcall_set_category(smx_synchro_t synchro, const char *categor
 
 /************************** Synchro simcalls **********************************/
 XBT_PUBLIC(smx_mutex_t) simcall_mutex_init(void);
-XBT_PUBLIC(void) simcall_mutex_destroy(smx_mutex_t mutex);
+XBT_PUBLIC(void) SIMIX_mutex_destroy(smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_mutex_lock(smx_mutex_t mutex);
 XBT_PUBLIC(int) simcall_mutex_trylock(smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_mutex_unlock(smx_mutex_t mutex);
 
 XBT_PUBLIC(smx_cond_t) simcall_cond_init(void);
-XBT_PUBLIC(void) simcall_cond_destroy(smx_cond_t cond);
+XBT_PUBLIC(void) SIMIX_cond_destroy(smx_cond_t cond);
 XBT_PUBLIC(void) simcall_cond_signal(smx_cond_t cond);
 XBT_PUBLIC(void) simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_cond_wait_timeout(smx_cond_t cond,
@@ -425,7 +425,7 @@ XBT_PUBLIC(void) simcall_cond_wait_timeout(smx_cond_t cond,
 XBT_PUBLIC(void) simcall_cond_broadcast(smx_cond_t cond);
 
 XBT_PUBLIC(smx_sem_t) simcall_sem_init(int capacity);
-XBT_PUBLIC(void) simcall_sem_destroy(smx_sem_t sem);
+XBT_PUBLIC(void) SIMIX_sem_destroy(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_release(smx_sem_t sem);
 XBT_PUBLIC(int) simcall_sem_would_block(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire(smx_sem_t sem);
