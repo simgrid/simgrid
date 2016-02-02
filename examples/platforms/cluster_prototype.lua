@@ -27,15 +27,6 @@
     if args.topology ~= "TORUS" and args.topology ~= "FAT_TREE" then
         args.topology = "Cluster"
     end
-    --if args.core==nil   then args.core = 1 end
-    --if args.core==nil   then args.core = 1 end
-    --if args.core==nil   then args.core = 1 end
-    --if args.core==nil   then args.core = 1 end
-    --if args.core==nil   then args.core = 1 end
-    --if args.core==nil   then args.core = 1 end
-    --if args.core==nil   then args.core = 1 end
-    --if args.core==nil   then args.core = 1 end
-    --if args.core==nil   then args.core = 1 end
 
     -- Check the mode = Cluster here
     return function()

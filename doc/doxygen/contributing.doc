@@ -72,7 +72,7 @@ contains a large amount of glitches and issues. When you find one,
 don't assume that it's here because we don't care. It survived only
 because nobody told us. We unfortunately cannot endlessly review our
 large code and documentation base. So please, <b>report any issue you
-find to us</b>, be it a typo in the documentation, a paragraph that
+find</b>, be it a typo in the documentation, a paragraph that
 needs to be reworded, a bug in the code or any other problem. The best
 way to do so is to open a bug on our 
 <a href="https://gforge.inria.fr/tracker/?atid=165&group_id=12&func=browse">Bug

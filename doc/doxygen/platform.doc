@@ -145,14 +145,14 @@ routing         | yes       | Full\| Floyd\| Dijkstra\| DijkstraCache\| None\| V
 
 
 <b>Example:</b>
-\verbatim
+\code
 <AS id="AS0" routing="Full">
    <host id="host1" power="1000000000"/>
    <host id="host2" power="1000000000"/>
    <link id="link1" bandwidth="125000000" latency="0.000100"/>
    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
 </AS>
-\endverbatim
+\endcode
 
 In this example, AS0 contains two hosts (host1 and host2). The route
 between the hosts goes through link1.

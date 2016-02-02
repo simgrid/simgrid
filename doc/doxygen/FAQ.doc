@@ -193,7 +193,7 @@ would have to do out of the simulator, and thus gives you information that
 you could also get in real settings to not hinder the realism of your
 simulation.
 
-\verbatim
+\code
 double get_host_load() {
    m_task_t task = MSG_task_create("test", 0.001, 0, NULL);
    double date = MSG_get_clock();
@@ -203,7 +203,7 @@ double get_host_load() {
    MSG_task_destroy(task);
    return (0.001/date);
 }
-\endverbatim
+\endcode
 
 Of course, it may not match your personal definition of "host load". In this
 case, please detail what you mean on the mailing list, and we will extend
@@ -218,7 +218,7 @@ account the time spent waiting for the other party to be
 ready). However, getting the *real* communication time is not really
 hard either. The following solution is a good starting point.
 
-\verbatim
+\code
 int sender()
 {
   m_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
@@ -243,7 +243,7 @@ int receiver()
   MSG_task_destroy(task);
   return 0;
 }
-\endverbatim
+\endcode
 
 \subsection faq_MIA_SimDag SimDag related questions
 
@@ -256,10 +256,10 @@ model a data dependency between two DAG tasks t1 and t2, you have to
 create 3 SD_tasks: t1, t2 and c and add dependencies in the following
 way:
 
-\verbatim
+\code
 SD_task_dependency_add(NULL, NULL, t1, c);
 SD_task_dependency_add(NULL, NULL, c, t2);
-\endverbatim
+\endcode
 
 This way task t2 cannot start before the termination of communication c
 which in turn cannot start before t1 ends.
@@ -281,7 +281,7 @@ communicating process to make the whole scheduling process
 distributed. Here is an example of how you could do that. Assume T1
 has to be done before T2.
 
-\verbatim
+\code
  int your_agent(int argc, char *argv[] {
    ...
    T1 = MSG_task_create(...);
@@ -298,7 +298,7 @@ has to be done before T2.
      }
    }
  }
-\endverbatim
+\endcode
 
 If you decide that the distributed part is not that much important and that
 DAG is really the level of abstraction you want to work with, then you should

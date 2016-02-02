@@ -62,7 +62,7 @@ XBT_PUBLIC(void) xbt_test_exit(void);
 
 /** 
  * @addtogroup XBT_cunit
- * @brief Unit test mechanism (to test a set of functions)
+ * @brief Unit testing implementation (see @ref inside_tests_add_units)
  *  
  * This module is mainly intended to allow the tests of SimGrid
  * itself and may lack the level of genericity that you would expect
@@ -73,28 +73,9 @@ XBT_PUBLIC(void) xbt_test_exit(void);
  * feature of SimGrid (and this code is sufficient to cover our
  * needs, actually, so why should we bother switching?)
  * 
- * Note that if you want to test a full binary (such as an example),
- * you want to use our integration testing mechanism, not our unit
- * testing one. Please refer to Section \ref
- * inside_cmake_addtest_integration
+ * Unit testing is not intended to write integration tests.
+ * Please refer to \ref inside_tests_add_integration for that instead.
  * 
- * Some more information on our unit testing is available in Section @ref inside_cmake_addtest_unit.  
- * 
- * All code intended to be executed as a unit test will be extracted
- * by a script (tools/sg_unit_extract.pl), and must thus be protected
- * between preprocessor definitions, as follows. Note that
- * SIMGRID_TEST string must appear on the endif line too for the
- * script to work, and that this script does not allow to have more
- * than one suite per file. For now, but patches are naturally
- * welcome.
- * 
-@verbatim
-#ifdef SIMGRID_TEST
-
-<your code>
-
-#endif  // SIMGRID_TEST
-@endverbatim
  * 
  *
  * @{ 
@@ -102,8 +83,8 @@ XBT_PUBLIC(void) xbt_test_exit(void);
 /** @brief Provide informations about the suite declared in this file
  *  @hideinitializer
  * 
- * Actually, this macro is not used by C, but by the script
- * extracting the test units, but that should be transparent for you.
+ * Actually, this macro is only used by the script extracting the test 
+ * units, but that should be transparent for you. 
  *
  * @param suite_name the short name of this suite, to be used in the --tests argument of testall afterward. Avoid spaces and any other strange chars
  * @param suite_title instructive title that testall should display when your suite is run
@@ -156,6 +137,8 @@ XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt,
                                                                 __VA_ARGS__)
 #define _xbt_test_assert_CHECK(cond, ...)                       \
   do { if (!(cond)) xbt_test_fail(__VA_ARGS__); } while (0)
+/** @brief Report some details to help debugging when the test fails (shown only on failure)
+ *  @hideinitializer  */
 #define xbt_test_log(...)       _xbt_test_log(__FILE__, __LINE__, __VA_ARGS__)
 
 /** @brief Declare that the lastly started test failed because of the provided exception */

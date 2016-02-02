@@ -1,3 +1,11 @@
+This patch is to be applied to the Lua 5.3 source file to get a shared
+library. This is because the authors of Lua don't bother distributing
+a working build system for their software, so we have to make one...
+
+As unfortunate as it may be, there is nothing else we can do.
+
+                                            -- Da SimGrid team.
+
 diff --git a/Makefile b/Makefile
 index 5ee5601..93830a3 100644
 --- a/Makefile

@@ -16,18 +16,18 @@ own needs. This page gives you a brief overview of available resources.
 
 \section gs_introduction Introduction, Installation and how we can help
 
-| Document name     | Description                                       |
-| ----------------- | ------------------------------------------------- |
-| \ref introduction | Introduces the user to basic features of SimGrid. |
-| \ref install      | Explains how SimGrid can be installed; this covers Windows as well as Linux; plus, it shows how to install from a package or how to install from source. |
-| \ref FAQ          | Our FAQ                                           |
-| \ref help         | There are many ways to find answers to your questions. This document lists them. |
+| Document name   | Description                                       |
+| --------------- | ------------------------------------------------- |
+| \ref tutorial   | Introduces the user to basic features of SimGrid. |
+| \ref install    | Explains how SimGrid can be installed; this covers Windows as well as Linux; plus, it shows how to install from a package or how to install from source. |
+| \ref FAQ        | Our FAQ                                           |
+| \ref help       | There are many ways to find answers to your questions. This document lists them. |
 
 \section gs_new_users Documentation for new users
 
 | Document name     | Description                                       |
 | ----------------- | ------------------------------------------------- |
-| \ref introduction | Introduces the user to basic features of SimGrid. |
+| \ref tutorial     | Introduces the user to basic features of SimGrid. |
 | \ref install      | Explains how SimGrid can be installed; this covers Windows as well as Linux; plus, it shows how to install from a package or how to install from source. |
 | [Tutorials](http://simgrid.gforge.inria.fr/tutorials.html) | These tutorials cover most of the basics and might be valuable for what you want to do, especially the [SimGrid User 101](http://simgrid.gforge.inria.fr/tutorials/simgrid-use-101.pdf). |
 | \ref MSG_examples | This document explains several tests that we wrote for MSG; these tests are working simulations and you may learn something from looking at them. |
@@ -45,7 +45,7 @@ In order to actually use SimGrid, three steps are necessary:
 | \ref tracing      | Shows how the behavior of a program can be written to a file so that it can be analyzed. |
 | \ref bindings     | SimGrid supports many different bindings for languages such as Lua, Ruby, Java, ... You can run your simulations with those! |
 | \ref pls          | Although SimGrid is not a packet level simulator, it does have bindings to two such simulators. |
-| \ref internals    | If you want to contribute or obtain a deeper understanding of SimGrid, this is the right location. |
+| \ref inside       | If you want to contribute or obtain a deeper understanding of SimGrid, this is the right location. |
 
 \section gs_examples Examples shipped with SimGrid
 

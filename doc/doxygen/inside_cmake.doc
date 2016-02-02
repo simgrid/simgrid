@@ -68,29 +68,26 @@ Don't forget to run the "make distcheck" target after any modification
 to the cmake files: it checks whether all necessary files are present
 in the distribution.
 
-\section cmake_dev_guide_ex How to add examples?
+\section inside_cmake_examples How to add an example?
 
-First of all, are you sure that you want to create an example, or is
-it merely a new test case? The examples located in examples/ must be
-interesting to the users. It is expected that the users will take one
-of these examples and start editing it to make it fit their needs. If
-what you are about to write is merly a test, exercising a specific
-part of the tool suite but not really interesting to the users, then
-you want to add it to the teshsuite/ directory. 
+The first rule is that the content of examples/ must be interesting to
+the users. It is expected that the users will take one of these
+examples and start editing it to make it fit their needs.
+So, it should be self-contained, informative and should use only the
+public APIs.
 
-Actually, the examples are also used as regresion tests by adding tesh
-files and registering them to the testing infrastructure (for that,
-don't forget to add a tesh file and follow the instructions of 
-section \ref inside_cmake_addtest). The main difference is that
-examples must be interesting to the users in addition.
+To ensure that all examples actually work as expected, every examples
+are also used as integration test (see \ref inside_tests), but you
+should still strive to keep the code under examples/ as informative as
+possible for the users. In particular, torture test cases should be
+placed in teshsuite/, not examples/, so that the users don't stumble
+upon them by error.
 
-In both cases, you have to create a CMakeList.txt in the chosen source
+To add a new example, create a CMakeList.txt in the chosen source
 directory. It must specify where to create the executable, the source
 list, dependencies and the name of the binary.
 
 \verbatim
-cmake_minimum_required(VERSION 2.6)
-
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(Hello Hello.c)
@@ -138,118 +135,12 @@ set(CMAKE_SOURCE_FILES
   )
 \endverbatim
 
-\li if you add tesh files (and you should), please refer to the
-following section to register them to the testing infrastructure.
+\li Add the tesh file and register your example to the testing
+  infrastructure. See \ref inside_tests_add_integration for more
+  details.
 
-Once you're done, you should check with "make distcheck" that you did
+Once you're done, you must run "make distcheck" to ensure that you did
 not forget to add any file to the distributed archives.
 
-\section inside_cmake_addtest How to add tests?
-
-\subsection inside_cmake_addtest_unit Unit testing in SimGrid
-
-If you want to test a specific function or set of functions, you need
-a unit test. Edit
-<project/directory>/tools/cmake/UnitTesting.cmake to add your
-source file to the TEST_CFILES list, and add the corresponding unit
-file to the TEST_UNITS list. For example, if your file is toto.c,
-your unit file will be toto_unit.c. The full path to your file must be
-provided, but the unit file will always be in src/ directly.
-
-Then, you want to actually add your tests in the source file. All the
-tests must be protected by "#ifdef SIMGRID_TEST" so that they don't
-get included in the regular build. Then, you want to add a test suite
-that will contain a bunch of tests (in Junit, that would be a test
-unit) with the macro #XBT_TEST_SUITE, and populate it with a bunch of
-actual tests with the macro #XBT_TEST_UNIT (sorry for the mischosen
-names if you are used to junit). Just look at the dynar example (or
-any other) to see how it works in practice. Do not hesitate to stress
-test your code this way, but make sure that it runs reasonably fast,
-or nobody will run "ctest" before commiting code.
-
-If you are interested in the mechanic turning this into an actual
-test, check the <project/directory>/tools/sg_unit_extractor.pl script.
-
-To actually run your tests once you're done, run "make testall", that
-builds the binary containing all our unit tests and run it. This
-binary allows you to chose which suite you want to test:
-
-\verbatim
-$ testall --help # revise how it goes if you forgot
-$ testall --dump-only # learn about all existing test suites
-$ testall --tests=-all # run no test at all
-$ testall --tests=-all,+foo # run only the foo test suite.
-$ testall --tests=-all,+foo:bar # run only the bar test from the foo suite.
-$ testall --tests=-foo:bar # run all tests but the bar test from the foo suite.
-\endverbatim
-
-\subsection inside_cmake_addtest_integration Integration testing in SimGrid
-
-If you want to test a full binary (such as an example), then you
-probably want to use the tesh binary that ensures that the output
-produced by a command perfectly matches the expected output. In
-particular, this is very precious to ensure that no change modifies
-the timings computed by the models without notice. 
-
-The first step is to write a tesh file for your test, containing the
-command to run, the provided input (if any, but almost no SimGrid test
-provide such an input) and the expected output. Check the tesh man
-page for more details. 
-
-Tesh is sometimes annoying as you have to ensure that the expected
-output will always be exactly the same. In particular, your should not
-output machine dependent informations, nor memory adresses as they
-would change on each run. Several steps can be used here, such as the
-obfucation of the memory adresses unless the verbose logs are
-displayed (using the #XBT_LOG_ISENABLED() macro), or the modification
-of the log formats to hide the timings when they depend on the host
-machine.
-
-Then you have to request cmake to run your test when "ctest" is
-launched. For that, you have to modify source
-<project/directory>/tools/cmake/Tests.cmake. Make sure to pick
-a wise name for your test. It is often useful to check a category of
-tests together. The only way to do so in ctest is to use the -R
-argument that specifies a regular expression that the test names must
-match. For example, you can run all MSG test with "ctest -R msg" That
-explains the importance of the test names.
-
-Once the name is chosen, create a new test by adding a line similar to
-the following (assuming that you use tesh as expected).
-
-\verbatim
-#  ADD_TEST(test-name ${CMAKE_BINARY_DIR}/bin/tesh <options> <tesh-file>)
-#  option --setenv bindir set the directory containing the binary
-#         --setenv srcdir set the directory containing the source file
-#         --cd set the working directory
-ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh 
-         --setenv bindir=${CMAKE_BINARY_DIR}/examples/my-test/
-         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/my-test/
-         --cd ${CMAKE_HOME_DIRECTORY}/examples/my-test/
-         ${CMAKE_HOME_DIRECTORY}/examples/msg/io/io.tesh
-)
-\endverbatim             
-
-If you prefer to not use tesh for some reasons, prefer the following
-form:
-
-\verbatim
-# ADD_TEST(NAME <name>]
-#          [WORKING_DIRECTORY dir]
-#          COMMAND <command> [arg1 [arg2 ...]])
-ADD_TEST(NAME my-test-name 
-         WORKING_DIRECTORY  ${CMAKE_BINARY_DIR}/examples/my-test/
-         COMMAND Hello
-)
-\endverbatim 
-
-As usual, you must run "make distcheck" after modifying the cmake files,
-to ensure that you did not forget any files in the distributed archive.
-
-\subsection inside_cmake_ci Continous Integration
-
-We are using Continous Integration to help us provide a stable build
-across as many platforms as possible. %As this is not related to cmake,
-you have to head over to Section \ref inside_ci.
 
 */
