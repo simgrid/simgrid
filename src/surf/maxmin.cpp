@@ -1144,7 +1144,7 @@ XBT_INLINE lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t
 }
 
 #ifdef HAVE_LATENCY_BOUND_TRACKING
-XBT_INLINE int lmm_is_variable_limited_by_latency(lmm_variable_t var)
+XBT_PUBLIC(int) lmm_is_variable_limited_by_latency(lmm_variable_t var)
 {
   return (double_equals(var->bound, var->value, var->bound*sg_maxmin_precision));
 }
