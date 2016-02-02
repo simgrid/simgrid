@@ -106,17 +106,14 @@ XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
  *
  *  This section describes the functions for managing the tasks.
  *
- *  A task is some <em>working amount</em> that can be executed
- *  in parallel on several workstations. A task may depend on other
- *  tasks, this means that the task cannot start until the other tasks are done.
- *  Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether
- *  the task is scheduled, running, done, etc.
+ *  A task is some <em>working amount</em> that can be executed in parallel on several hosts. A task may depend on other
+ *  tasks, this means that the task cannot start until the other tasks are done. Each task has a
+ *  <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, etc.
  *
  *  @see SD_task_t, SD_task_dependency_management
  *  @{
  */
-XBT_PUBLIC(SD_task_t) SD_task_create(const char *name, void *data,
-                                     double amount);
+XBT_PUBLIC(SD_task_t) SD_task_create(const char *name, void *data, double amount);
 XBT_PUBLIC(void *) SD_task_get_data(SD_task_t task);
 XBT_PUBLIC(void) SD_task_set_data(SD_task_t task, void *data);
 XBT_PUBLIC(e_SD_task_state_t) SD_task_get_state(SD_task_t task);
@@ -130,46 +127,29 @@ XBT_PUBLIC(double) SD_task_get_amount(SD_task_t task);
 XBT_PUBLIC(void) SD_task_set_amount(SD_task_t task, double amount);
 XBT_PUBLIC(double) SD_task_get_alpha(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_remaining_amount(SD_task_t task);
-XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task,
-                                              int workstation_nb,
-                                              const sg_host_t *
-                                              workstation_list,
-                                              const double *flops_amount,
-                                              const double *bytes_amount);
+XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
+                                              const double *flops_amount, const double *bytes_amount);
 XBT_PUBLIC(e_SD_task_kind_t) SD_task_get_kind(SD_task_t task);
-XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb,
-                                  const sg_host_t *
-                                  workstation_list,
-                                  const double *flops_amount,
-                                  const double *bytes_amount,
-                                  double rate);
+XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
+                                  const double *flops_amount, const double *bytes_amount, double rate);
 XBT_PUBLIC(void) SD_task_unschedule(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_start_time(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_finish_time(SD_task_t task);
 XBT_PUBLIC(xbt_dynar_t) SD_task_get_parents(SD_task_t task);
 XBT_PUBLIC(xbt_dynar_t) SD_task_get_children(SD_task_t task);
 XBT_PUBLIC(int) SD_task_get_workstation_count(SD_task_t task);
-XBT_PUBLIC(sg_host_t *) SD_task_get_workstation_list(SD_task_t
-                                                            task);
+XBT_PUBLIC(sg_host_t *) SD_task_get_workstation_list(SD_task_t task);
 XBT_PUBLIC(void) SD_task_destroy(SD_task_t task);
 XBT_PUBLIC(void) SD_task_dump(SD_task_t task);
 XBT_PUBLIC(void) SD_task_dotty(SD_task_t task, void *out_FILE);
 
-XBT_PUBLIC(SD_task_t) SD_task_create_comp_seq(const char *name, void *data,
-                                              double amount);
-XBT_PUBLIC(SD_task_t) SD_task_create_comp_par_amdahl(const char *name,
-                                                     void *data,
-                                                     double amount,
-                                                     double alpha);
-XBT_PUBLIC(SD_task_t) SD_task_create_comm_e2e(const char *name, void *data,
-                                              double amount);
-XBT_PUBLIC(SD_task_t) SD_task_create_comm_par_mxn_1d_block(const char *name,
-                                                           void *data,
-                                                           double amount);
+XBT_PUBLIC(SD_task_t) SD_task_create_comp_seq(const char *name, void *data, double amount);
+XBT_PUBLIC(SD_task_t) SD_task_create_comp_par_amdahl(const char *name, void *data, double amount, double alpha);
+XBT_PUBLIC(SD_task_t) SD_task_create_comm_e2e(const char *name, void *data, double amount);
+XBT_PUBLIC(SD_task_t) SD_task_create_comm_par_mxn_1d_block(const char *name, void *data, double amount);
 
 XBT_PUBLIC(void) SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count);
-XBT_PUBLIC(void) SD_task_schedulev(SD_task_t task, int count,
-                                   const sg_host_t * list);
+XBT_PUBLIC(void) SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list);
 XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
 
@@ -177,11 +157,7 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
  *
  *  For example, create a pure computation task (no comm) like this:
  *
- *  SD_task_schedule(task, my_workstation_nb,
- *                   my_workstation_list,
- *                   my_flops_amount,
- *                   SD_TASK_SCHED_NO_COST,
- *                   my_rate);
+ *  SD_task_schedule(task, my_host_count, my_host_list, my_flops_amount, SD_TASK_SCHED_NO_COST, my_rate);
  */
 #define SD_SCHED_NO_COST NULL
 
@@ -196,13 +172,10 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
  *  @see SD_task_management
  *  @{
  */
-XBT_PUBLIC(void) SD_task_dependency_add(const char *name, void *data,
-                                        SD_task_t src, SD_task_t dst);
+XBT_PUBLIC(void) SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(void) SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(const char *) SD_task_dependency_get_name(SD_task_t src,
-                                                     SD_task_t dst);
-XBT_PUBLIC(void *) SD_task_dependency_get_data(SD_task_t src,
-                                               SD_task_t dst);
+XBT_PUBLIC(const char *) SD_task_dependency_get_name(SD_task_t src, SD_task_t dst);
+XBT_PUBLIC(void *) SD_task_dependency_get_data(SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @} */
 
@@ -211,8 +184,7 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @defgroup SD_simulation Simulation
  *  @brief Functions for creating the environment and launching the simulation
  *
- *  This section describes the functions for initializing SimDag, launching
- *  the simulation and exiting SimDag.
+ *  This section describes the functions for initializing SimDag, launching the simulation and exiting SimDag.
  *
  *  @{
  */
@@ -229,6 +201,38 @@ XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload_with_sched(const char *filename);
 
 /** @} */
+
+/* Support some backward compatibility */
+#define SD_workstation_t sg_host_t
+
+#define SD_link_get_name sg_link_name
+#define SD_link_get_current_latency sg_link_latency
+#define SD_link_get_current_bandwidth sg_link_bandwidth
+
+#define SD_route_get_current_latency SD_route_get_latency
+#define SD_route_get_current_bandwidth SD_route_get_bandwidth
+
+#define SD_workstation_get_list sg_host_list
+#define SD_workstation_get_number sg_host_count
+
+#define SD_workstation_get_name sg_host_get_name
+#define SD_workstation_get_by_name sg_host_by_name
+#define SD_workstation_dump sg_host_dump
+#define SD_workstation_get_data sg_host_user
+#define SD_workstation_set_data sg_host_user_set
+#define SD_workstation_get_properties sg_host_get_properties
+#define SD_workstation_get_property_value sg_host_get_property_value
+#define SD_workstation_get_power sg_host_speed
+#define SD_workstation_get_available_power sg_host_get_available_speed
+
+#define SD_workstation_get_mounted_storage_list sg_host_get_mounted_storage_list
+// Lost functions
+//SD_workstation_get_access_mode
+//SD_workstation_set_access_mode
+//SD_workstation_get_current_task
+//SD_route_get_communication_time => SG_route_get_latency() + amount / SD_route_get_bandwidth()
+//SD_workstation_get_computation_time => amount / sg_host_speed()
+//TRACE_sd_set_task_category
 
 SG_END_DECL()
 
