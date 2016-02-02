@@ -6,11 +6,9 @@
 
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
-#include "xbt/misc.h"
 #include "xbt/log.h"
 #include <stdbool.h>
 #include <string.h>
-#include <libgen.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 
@@ -21,8 +19,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 #elif HAVE_AGRAPH_H
 #include <graphviz/agraph.h>
 #define agnxtnode(dot, node)    agnxtnode(node)
-#define agfstin(dot, node)      agfstin(node)
-#define agnxtin(dot, edge)      agnxtin(edge)
 #define agfstout(dot, node)     agfstout(node)
 #define agnxtout(dot, edge)     agnxtout(edge)
 #endif
@@ -32,15 +28,11 @@ typedef enum {
   parallel
 } seq_par_t;
 
-xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par);
+xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool schedule);
 
-static xbt_dict_t jobs;
-static xbt_dict_t computers;
-static bool schedule = false;
 
 static void dot_task_p_free(void *task) {
-  SD_task_t *t = (SD_task_t *)task;
-  SD_task_destroy(*t);
+  SD_task_destroy(*(SD_task_t *)task);
 }
 
 /** @brief loads a DOT file describing a DAG
@@ -52,56 +44,15 @@ static void dot_task_p_free(void *task) {
  * If this attribute is ommited, the default value is zero.
  */
 xbt_dynar_t SD_dotload(const char *filename) {
-  return SD_dotload_generic(filename, sequential);
+  return SD_dotload_generic(filename, sequential, false);
 }
 
 xbt_dynar_t SD_PTG_dotload(const char * filename) {
-  return SD_dotload_generic(filename, parallel);
+  return SD_dotload_generic(filename, parallel, false);
 }
 
 xbt_dynar_t SD_dotload_with_sched(const char *filename) {
-  schedule = true;
-  xbt_dynar_t result = SD_dotload_generic(filename, sequential);
-
-  if(schedule){
-    xbt_dynar_t computer = NULL;
-    xbt_dict_cursor_t dict_cursor;
-    char *computer_name;
-    const sg_host_t *workstations = sg_host_list ();
-    xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
-      int count_computer = atoi(computer_name);
-      unsigned int count=0;
-      SD_task_t task;
-      SD_task_t task_previous = NULL;
-      xbt_dynar_foreach(computer,count,task){
-        /* add dependency between the previous and the task to avoid parallel execution */
-        if(task != NULL ){
-          if(task_previous != NULL && !SD_task_dependency_exists(task_previous, task))
-            SD_task_dependency_add(NULL, NULL, task_previous, task);
-
-          SD_task_schedulel(task, 1, workstations[count_computer]);
-          task_previous = task;
-        }
-      }
-      xbt_dynar_free(&computer);
-    }
-    xbt_dict_free(&computers);
-    if(acyclic_graph_detail(result))
-      return result;
-    else
-      XBT_WARN("There is at least one cycle in the provided task graph");
-  }else{
-    XBT_WARN("The scheduling is ignored");
-  }
-  xbt_dynar_t computer = NULL;
-  xbt_dict_cursor_t dict_cursor;
-  char *computer_name;
-  xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
-    xbt_dynar_free(&computer);
-  }
-  xbt_dict_free(&computers);
-  xbt_dynar_free(&result);
-  return NULL;
+  return SD_dotload_generic(filename, sequential, true);
 }
 
 #ifdef HAVE_CGRAPH_H
@@ -113,16 +64,24 @@ static int edge_compare(const void *a, const void *b)
 }
 #endif
 
-xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
+xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool schedule){
   xbt_assert(filename, "Unable to use a null file descriptor\n");
   unsigned int i;
+  SD_task_t root, end, task;
+  xbt_dict_t computers;
+  xbt_dynar_t computer = NULL;
+  char *computer_name;
+  xbt_dict_cursor_t dict_cursor;
+  bool schedule_success = true;
+
   xbt_dynar_t result = xbt_dynar_new(sizeof(SD_task_t), dot_task_p_free);
-  jobs = xbt_dict_new_homogeneous(NULL);
+  xbt_dict_t jobs = xbt_dict_new_homogeneous(NULL);
+
   FILE *in_file = fopen(filename, "r");
   if (in_file == NULL)
     xbt_die("Failed to open file: %s", filename);
+
   Agraph_t * dag_dot = agread(in_file, NIL(Agdisc_t *));
-  SD_task_t root, end, task;
 
   if (schedule)
     computers = xbt_dict_new_homogeneous(NULL);
@@ -161,7 +120,8 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
         }
       }
 
-      if((seq_or_par == sequential) && (schedule || XBT_LOG_ISENABLED(sd_dotparse, xbt_log_priority_verbose))){
+      if((seq_or_par == sequential) &&
+        ((schedule && schedule_success) || XBT_LOG_ISENABLED(sd_dotparse, xbt_log_priority_verbose))){
         /* try to take the information to schedule the task only if all is right*/
         int performer, order;
         char *char_performer = agget(node, (char *) "performer");
@@ -187,7 +147,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
               task_test = (SD_task_t *)xbt_dynar_get_ptr(computer,order);
             if(task_test != NULL && *task_test != NULL && *task_test != task){
               /* the user gives the same order to several tasks */
-              schedule = false;
+              schedule_success = false;
               XBT_VERB("The task %s starts on the computer %s at the position : %s like the task %s",
                      (*task_test)->name, char_performer, char_order, task->name);
             }else{
@@ -197,13 +157,13 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
           }else{
             /* the platform has not enough processors to schedule the DAG like
              * the user wants*/
-            schedule = false;
+            schedule_success = false;
             XBT_VERB("The schedule is ignored, there are not enough computers");
           }
         }
         else {
           /* one of required parameters is not given */
-          schedule = false;
+          schedule_success = false;
           XBT_VERB("The schedule is ignored, the task %s is not correctly scheduled", task->name);
         }
       }
@@ -306,6 +266,39 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par){
   agclose(dag_dot);
   xbt_dict_free(&jobs);
   fclose(in_file);
+
+  if(schedule){
+    if (schedule_success) {
+      const sg_host_t *workstations = sg_host_list ();
+      xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
+        int count_computer = atoi(computer_name);
+        unsigned int count=0;
+        SD_task_t task;
+        SD_task_t task_previous = NULL;
+        xbt_dynar_foreach(computer,count,task){
+          /* add dependency between the previous and the task to avoid parallel execution */
+          if(task != NULL ){
+            if(task_previous != NULL && !SD_task_dependency_exists(task_previous, task))
+              SD_task_dependency_add(NULL, NULL, task_previous, task);
+
+            SD_task_schedulel(task, 1, workstations[count_computer]);
+            task_previous = task;
+          }
+        }
+        xbt_dynar_free(&computer);
+      }
+      xbt_dict_free(&computers);
+    } else {
+      XBT_WARN("The scheduling is ignored");
+      xbt_dict_foreach(computers,dict_cursor,computer_name,computer){
+        xbt_dynar_free(&computer);
+      }
+
+      xbt_dict_free(&computers);
+      xbt_dynar_free(&result);
+      result = NULL;
+    }
+  }
 
   if (!acyclic_graph_detail(result)) {
     XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", basename((char*)filename));
