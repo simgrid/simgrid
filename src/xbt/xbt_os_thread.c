@@ -291,14 +291,10 @@ void xbt_os_thread_exit(int *retval)
 
 xbt_os_thread_t xbt_os_thread_self(void)
 {
-  xbt_os_thread_t res;
-
   if (!thread_mod_inited)
     return NULL;
 
-  res = pthread_getspecific(xbt_self_thread_key);
-
-  return res;
+  return pthread_getspecific(xbt_self_thread_key);
 }
 
 void xbt_os_thread_key_create(xbt_os_thread_key_t* key) {
@@ -1303,8 +1299,7 @@ void xbt_os_thread_set_extra_data(void *data)
 
 void *xbt_os_thread_get_extra_data(void)
 {
-  xbt_os_thread_t self = xbt_os_thread_self();
-  return self? self->extra_data : NULL;
+  return xbt_os_thread_self()->extra_data;
 }
 
 xbt_os_rmutex_t xbt_os_rmutex_init(void)

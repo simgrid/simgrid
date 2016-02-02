@@ -155,7 +155,6 @@ void SIMIX_create_maestro_process()
   maestro->context = SIMIX_context_new(NULL, 0, NULL, NULL, maestro);
   maestro->simcall.issuer = maestro;
   simix_global->maestro_process = maestro;
-  return;
 }
 /**
  * \brief Stops a process.
