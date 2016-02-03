@@ -1,13 +1,12 @@
-$ java -classpath ${classpath:=.} sleep_host_off.Main ${srcdir:=.}/../../examples/platforms/small_platform.xml ${srcdir:=.}/sleep_host_off/sleep_host_off_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -classpath ${classpath:=.} sleep_host_off.SleepHostOff ${srcdir:=.}/../../examples/platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.
-> [  0.000000] (1:sleep_host_off.SleepHostOff@Tremblay) **** **** **** ***** ***** Test Sleep ***** ***** **** **** ****
-> [  0.000000] (1:sleep_host_off.SleepHostOff@Tremblay) Test sleep: Create a process on Jupiter, the process simply make periodic sleep, turn off Jupiter
-> [  0.000000] (2:sleep@Jupiter) I'm not dead
-> [  0.010000] (2:sleep@Jupiter) I'm not dead
-> [  0.020000] (1:sleep_host_off.SleepHostOff@Tremblay) Stop Jupiter
-> [  0.020000] (2:sleep@Jupiter) I'm not dead
-> [  0.020000] (2:sleep@Jupiter) catch HostException: Host Failure (null)
-> [  0.020000] (1:sleep_host_off.SleepHostOff@Tremblay) Jupiter has been stopped
-> [  0.320000] (1:sleep_host_off.SleepHostOff@Tremblay) Test sleep seems ok, cool !(number of Process : 1, it should be 1 (i.e. the Test one))
->
+> [  0.000000] (1:TestRunner@Fafard) **** **** **** ***** ***** Test Sleep ***** ***** **** **** ****
+> [  0.000000] (1:TestRunner@Fafard) Test sleep: Create a process on Tremblay that simply make periodic sleep, turn off Tremblay
+> [  0.000000] (2:Sleeper@Tremblay) I'm not dead
+> [  0.010000] (2:Sleeper@Tremblay) I'm not dead
+> [  0.020000] (1:TestRunner@Fafard) Stop Tremblay
+> [  0.020000] (2:Sleeper@Tremblay) I'm not dead
+> [  0.020000] (2:Sleeper@Tremblay) catch HostException: Host Failure (null)
+> [  0.020000] (1:TestRunner@Fafard) Tremblay has been stopped
+> [  0.320000] (1:TestRunner@Fafard) Test sleep seems ok, cool! (number of Process : 1, it should be 1 (i.e. the Test one))
 > [  0.320000] (0:maestro@) MSG_main finished; Cleaning up the simulation...
