@@ -27,12 +27,6 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/dax_test.c
   PARENT_SCOPE
   )
-set(bin_files
-  ${bin_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/generate_forkjoin.pl
-  ${CMAKE_CURRENT_SOURCE_DIR}/generate_strassen.pl
-  PARENT_SCOPE
-  )
 set(txt_files
   ${txt_files}
   PARENT_SCOPE
