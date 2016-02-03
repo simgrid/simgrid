@@ -1065,6 +1065,7 @@ set(EXAMPLES_CMAKEFILES_TXT
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/bug-17132/CMakeLists.txt
   teshsuite/java/CMakeLists.txt
+  teshsuite/java/semaphore/CMakeLists.txt
   teshsuite/java/sleep_host_off/CMakeLists.txt
   teshsuite/lua/lua_platforms.tesh
   teshsuite/mc/CMakeLists.txt
