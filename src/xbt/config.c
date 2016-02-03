@@ -212,8 +212,7 @@ void xbt_cfgelm_free(void *data)
  *  @param cb_rm callback function called when a value is removed
  */
 
-void
-xbt_cfg_register(xbt_cfg_t * cfg,
+void xbt_cfg_register(xbt_cfg_t * cfg,
                  const char *name, const char *desc,
                  e_xbt_cfgelm_type_t type, int min,
                  int max, xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm)
@@ -465,7 +464,8 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
   if (!res) {
     xbt_cfg_help(cfg);
     THROWF(not_found_error, 0,
-           "No registered variable '%s' in this config set", name);
+           "No registered variable '%s' in this config set. It is possible that this "\
+           "configuration option has been renamed; please read the file ChangeLog carefully!", name);
   }
 
   xbt_assert(type == xbt_cfgelm_any || res->type == type,

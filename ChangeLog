@@ -1,6 +1,19 @@
 SimGrid (3.13) UNRELEASED; urgency=low
 
  The Easter Trim Release.
+
+ Backwards Compatibility breaks
+   - The option "model-check/sparse-checkpoint" was renamed to
+     "model-check/sparse_checkpoint" as we attempt to unify our naming
+     schemes.
+   - The option smpi/async_small_thres was renamed to smpi/async_small_thresh
+     as we attempt to unify our naming schemes. 
+   - The option smpi/send_is_detached_thres was renamed to
+     smpi/send_is_detached_thresh as we attempt to unify our naming schemes.
+ 
+   - We removed support for writing your simulation in Lua; you can use
+     the Java bindings.
+    
  
  S4U
  * s4u::Host is now the prefered public interface to the Host features.
@@ -16,19 +29,10 @@ SimGrid (3.13) UNRELEASED; urgency=low
     the lambda or closure passed as a parameter will run in kernel mode.
    Every callbacks should be rewritten to that interface at some point.
    
- MC
- * BC breaks:
-   - The option "model-check/sparse-checkpoint" was renamed to
-     "model-check/sparse_checkpoint" as we attempt to unify our naming
-     schemes.
-
  Surf
  * Reorganizing and cleaning the internals all around the place.
 
  SMPI
- * BC breaks:
-   - The option smpi/async_small_thres was renamed to smpi/async_small_thresh
-     as we attempt to unify our naming schemes -> smpi/send_is_detached_thresh
  * Remove old default barrier/bcast buggy algorithms (see #18407)
  * Various bugfixes to handle more codes
 
