@@ -140,7 +140,7 @@ while ( defined( $line = <MAKETEST> ) ) {
                     }
                     if ( $command =~ /^mkfile\s+(\S+)/) {
                         my $file = $1;
-                        # don't ask me to explain why so many backslashes...
+                        # don't ask me why so many backslashes. http://xkcd.com/1638/
                         $input =~ s/\\/\\\\\\\\/g;
                         $input =~ s/\n/\\\\n/g;
                         $input =~ s/"/\\\\042/g;
