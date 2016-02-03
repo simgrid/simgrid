@@ -1256,8 +1256,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/g5k.xml
   examples/platforms/generation_scripts/create_hierarchical_clusters.pl
   examples/platforms/generation_scripts/enhancedDTDwithHierarchicalCluster.pl
-  examples/platforms/generation_scripts/generate_g5k_platform.pl
-  examples/platforms/generation_scripts/generate_g5k_platform_cabinets.pl
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
