@@ -36,7 +36,6 @@ set(xml_files
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/tesh.pl
-  ${CMAKE_CURRENT_SOURCE_DIR}/colorize.pl
   ${CMAKE_CURRENT_SOURCE_DIR}/generate_tesh
   PARENT_SCOPE
   )
