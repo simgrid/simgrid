@@ -8,8 +8,10 @@
 
 #include "surf/surfxml_parse.h"
 
+SG_BEGIN_DECL()
+
 void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
 
-
+SG_END_DECL()
 
 #endif /* SRC_SURF_SURFXML_PRIVATE_H_ */

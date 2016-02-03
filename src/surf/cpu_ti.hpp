@@ -118,6 +118,8 @@ public:
         int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuTi();
 
+  void set_speed_trace(tmgr_trace_t trace);
+
   void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
   void updateActionsFinishTime(double now);
   bool isUsed() override;

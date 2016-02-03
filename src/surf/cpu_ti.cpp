@@ -499,21 +499,7 @@ void CpuTiModel::addTraces()
     xbt_assert(cpu, "Host %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    XBT_DEBUG("Add speed trace: %s to CPU(%s)", trace_name, elm);
-    if (cpu->p_availTrace)
-      delete cpu->p_availTrace;
-
-    cpu->p_availTrace = new CpuTiTgmr(trace, cpu->m_speedScale);
-
-    /* add a fake trace event if periodicity == 0 */
-    if (trace && xbt_dynar_length(trace->s_list.event_list) > 1) {
-      s_tmgr_event_t val;
-      xbt_dynar_get_cpy(trace->s_list.event_list,
-                        xbt_dynar_length(trace->s_list.event_list) - 1, &val);
-      if (val.delta == 0) {
-        cpu->set_speed_trace(tmgr_empty_trace_new());
-      }
-    }
+    cpu->set_speed_trace(trace);
   }
 }
 
@@ -556,6 +542,23 @@ CpuTi::~CpuTi()
   modified(false);
   delete p_availTrace;
   delete p_actionSet;
+}
+void CpuTi::set_speed_trace(tmgr_trace_t trace)
+{
+  if (p_availTrace)
+    delete p_availTrace;
+
+  p_availTrace = new CpuTiTgmr(trace, m_speedScale);
+
+  /* add a fake trace event if periodicity == 0 */
+  if (trace && xbt_dynar_length(trace->s_list.event_list) > 1) {
+    s_tmgr_event_t val;
+    xbt_dynar_get_cpy(trace->s_list.event_list,
+                      xbt_dynar_length(trace->s_list.event_list) - 1, &val);
+    if (val.delta == 0) {
+      p_speedEvent = future_evt_set->add_trace(tmgr_empty_trace_new(), 0.0, this);
+    }
+  }
 }
 
 void CpuTi::updateState(tmgr_trace_iterator_t event_type,
