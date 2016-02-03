@@ -9,9 +9,9 @@
 #include "xbt/str.h"
 #include "xbt/dict.h"
 #include "simgrid/platf.h"
-#include "surf/surfxml_parse.h"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_private.h"
+#include "src/surf/surfxml_private.h"
 
 #ifdef HAVE_LUA
 extern "C" {
@@ -69,6 +69,45 @@ xbt_dict_t trace_connect_list_host_speed = NULL;
 xbt_dict_t trace_connect_list_link_avail = NULL;
 xbt_dict_t trace_connect_list_link_bw = NULL;
 xbt_dict_t trace_connect_list_link_lat = NULL;
+
+void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
+{
+  xbt_assert(xbt_dict_get_or_null(traces_set_list, trace_connect->trace),
+              "Cannot connect trace %s to %s: trace unknown",
+              trace_connect->trace,
+              trace_connect->element);
+
+  switch (trace_connect->kind) {
+  case SURF_TRACE_CONNECT_KIND_HOST_AVAIL:
+    xbt_dict_set(trace_connect_list_host_avail,
+        trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_POWER:
+    xbt_dict_set(trace_connect_list_host_speed, trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_LINK_AVAIL:
+    xbt_dict_set(trace_connect_list_link_avail,
+        trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_BANDWIDTH:
+    xbt_dict_set(trace_connect_list_link_bw,
+        trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  case SURF_TRACE_CONNECT_KIND_LATENCY:
+    xbt_dict_set(trace_connect_list_link_lat, trace_connect->trace,
+        xbt_strdup(trace_connect->element), NULL);
+    break;
+  default:
+  surf_parse_error("Cannot connect trace %s to %s: kind of trace unknown",
+        trace_connect->trace, trace_connect->element);
+    break;
+  }
+}
+
 
 /* ***************************************** */
 

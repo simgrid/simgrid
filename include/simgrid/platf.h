@@ -68,7 +68,6 @@ XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); 
 XBT_PUBLIC(void) sg_platf_new_bypassASroute (sg_platf_route_cbarg_t bypassASroute); // Add an bypassASroute
 
 XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
-XBT_PUBLIC(void) sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
 
 XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage);

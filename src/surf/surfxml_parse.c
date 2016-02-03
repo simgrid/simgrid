@@ -13,10 +13,10 @@
 #include "xbt/str.h"
 #include "xbt/file.h"
 #include "xbt/dict.h"
-#include "surf/surfxml_parse.h"
 #include "src/surf/surf_private.h"
 #include "surf/random_mgr.h"
 #include "simgrid/sg_config.h"
+#include "surfxml_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
                                 "Logging specific to the SURF parsing module");
