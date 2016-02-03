@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* This test ensures that the used semaphores are not garbage-collected while we still use it.
- * This was reported as bug #... on gforge.
+ * This was reported as bug #19893 on gforge.
  */
 
 package semaphore;
