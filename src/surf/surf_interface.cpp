@@ -130,7 +130,7 @@ s_surf_model_description_t surf_storage_model_description[] = {
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
-#ifdef CONTEXT_THREADS
+#ifdef HAVE_THREAD_CONTEXTS
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
@@ -373,7 +373,7 @@ void surf_exit(void)
     future_evt_set = nullptr;
   }
 
-#ifdef CONTEXT_THREADS
+#ifdef HAVE_THREAD_CONTEXTS
   xbt_parmap_destroy(surf_parmap);
 #endif
 

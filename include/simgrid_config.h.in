@@ -76,7 +76,7 @@
 #define MALLOCATOR_COMPILED_IN @MALLOCATOR_IS_WANTED@
 
 /* Define if xbt contexts are based on our threads implementation or not */
-#cmakedefine CONTEXT_THREADS @CONTEXT_THREADS@
+#cmakedefine HAVE_THREAD_CONTEXTS @HAVE_THREAD_CONTEXTS@
 
 /* Jedule output  */
 #cmakedefine HAVE_JEDULE @HAVE_JEDULE@

@@ -83,13 +83,13 @@
 #cmakedefine __VA_COPY_USE_C99(d, s) @__VA_COPY_USE_C99@
 
 /* Define if xbt contexts are based on our threads implementation or not */
-#cmakedefine CONTEXT_THREADS @CONTEXT_THREADS@
+#cmakedefine HAVE_THREAD_CONTEXTS @HAVE_THREAD_CONTEXTS@
 
 /* Define to 1 if you have the <ucontext.h> header file. */
 #cmakedefine HAVE_UCONTEXT_H @HAVE_UCONTEXT_H@
 
 /* Define if xbt contexts are based on ucontext or not */
-#cmakedefine CONTEXT_UCONTEXT @CONTEXT_UCONTEXT@
+#cmakedefine HAVE_UCONTEXT_CONTEXTS @HAVE_UCONTEXT_CONTEXTS@
 
 /* Predefined possible va_copy() implementation (id: CPP) */
 #cmakedefine __VA_COPY_USE_CPP(d, s) @__VA_COPY_USE_CPP@
@@ -110,8 +110,8 @@
 #cmakedefine PROCESSOR_i686 @PROCESSOR_i686@
 #cmakedefine PROCESSOR_x86_64 @PROCESSOR_x86_64@
 #cmakedefine CMAKE_SYSTEM_PROCESSOR @CMAKE_SYSTEM_PROCESSOR@
-#cmakedefine HAVE_RAWCTX @HAVE_RAWCTX@
-#cmakedefine HAVE_BOOST_CONTEXT @HAVE_BOOST_CONTEXT@
+#cmakedefine HAVE_RAW_CONTEXTS @HAVE_RAW_CONTEXTS@
+#cmakedefine HAVE_BOOST_CONTEXTS @HAVE_BOOST_CONTEXTS@
 
 /* Define to 1 if you have the GNU ld library */
 #cmakedefine HAVE_GNU_LD @HAVE_GNU_LD@

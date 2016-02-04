@@ -387,7 +387,7 @@ else()
 endif()
 
 # Boost context may not be available
-if (HAVE_BOOST_CONTEXT)
+if (HAVE_BOOST_CONTEXTS)
   set(SIMIX_SRC
       ${SIMIX_SRC}
       src/simix/BoostContext.hpp
@@ -730,8 +730,8 @@ set(source_of_generated_headers
   src/context_sysv_config.h.in)
 
 ### depend of some variables setted upper
-# -->CONTEXT_THREADS CONTEXT_UCONTEXT
-if(${CONTEXT_THREADS}) #pthread
+# -->HAVE_THREAD_CONTEXTS HAVE_UCONTEXT_CONTEXTS
+if(${HAVE_THREAD_CONTEXTS}) #pthread
   set(SURF_SRC
     ${SURF_SRC}
     src/simix/ThreadContext.cpp
@@ -745,7 +745,7 @@ else() # NOT pthread
     )
 endif()
 
-if(${CONTEXT_THREADS}) #pthread
+if(${HAVE_THREAD_CONTEXTS}) #pthread
   set(SURF_SRC
     ${SURF_SRC}
     src/xbt/xbt_os_thread.c
@@ -757,7 +757,7 @@ else() # NOT pthread
     )
 endif()
 
-if(${CONTEXT_UCONTEXT}) #ucontext
+if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
   set(SURF_SRC
     ${SURF_SRC}
     src/simix/UContext.cpp

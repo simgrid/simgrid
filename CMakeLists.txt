@@ -214,7 +214,7 @@ IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
   if (MSVC)
     message(STATUS "Disable fast raw contextes on Microsoft Visual.")
   else()
-    set(HAVE_RAWCTX 1)
+    set(HAVE_RAW_CONTEXTS 1)
   endif()
 
 ENDIF()
@@ -267,15 +267,15 @@ if(Boost_FOUND AND Boost_CONTEXT_FOUND)
   # We should use feature detection for this instead:
   if (Boost_VERSION LESS 105600)
     message("Found Boost.Context API v1")
-    set(HAVE_BOOST_CONTEXT 1)
+    set(HAVE_BOOST_CONTEXTS 1)
   else()
     message("Found Boost.Context API v2")
-    set(HAVE_BOOST_CONTEXT 2)
+    set(HAVE_BOOST_CONTEXTS 2)
   endif()
 else()
   message ("   boost        : found.")
   message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
-  set(HAVE_BOOST_CONTEXT 0)
+  set(HAVE_BOOST_CONTEXTS 0)
 endif()
 
 # Checks for header libraries functions.
@@ -383,8 +383,8 @@ if(WIN32) # Those files are not detected despite being present
   set(HAVE_MAKECONTEXT 1)
 endif()
 
-set(CONTEXT_UCONTEXT 0)
-set(CONTEXT_THREADS 0)
+set(HAVE_UCONTEXT_CONTEXTS 0)
+set(HAVE_THREAD_CONTEXTS 0)
 
 if(enable_jedule)
   set(HAVE_JEDULE 1)
@@ -626,12 +626,12 @@ endif()
 #If can have both context
 
 if(HAVE_UCONTEXT)
-  set(CONTEXT_UCONTEXT 1)
+  set(HAVE_UCONTEXT_CONTEXTS 1)
   message("-- Support for ucontext factory")
 endif()
 
 if(HAVE_PTHREAD)
-  set(CONTEXT_THREADS 1)
+  set(HAVE_THREAD_CONTEXTS 1)
   message("-- Support for thread context factory")
 endif()
 

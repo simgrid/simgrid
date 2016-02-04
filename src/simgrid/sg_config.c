@@ -711,11 +711,11 @@ void sg_config_init(int *argc, char **argv)
         sprintf(description,
                 "Context factory to use in SIMIX. Possible values: %s",
                 dflt_ctx_fact);
-#ifdef CONTEXT_UCONTEXT
+#ifdef HAVE_UCONTEXT_CONTEXTS
       dflt_ctx_fact = "ucontext";
       p += sprintf(p, ", %s", dflt_ctx_fact);
 #endif
-#ifdef HAVE_RAWCTX
+#ifdef HAVE_RAW_CONTEXTS
       dflt_ctx_fact = "raw";
       p += sprintf(p, ", %s", dflt_ctx_fact);
 #endif
