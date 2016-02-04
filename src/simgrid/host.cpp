@@ -61,15 +61,15 @@ sg_host_t sg_host_by_name_or_create(const char *name)
 
 xbt_dynar_t sg_hosts_as_dynar(void)
 {
-	xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),NULL);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),NULL);
 
   xbt_dict_cursor_t cursor = nullptr;
   const char* name = nullptr;
   simgrid::s4u::Host* host = nullptr;
-	xbt_dict_foreach(host_list, cursor, name, host)
-		if(routing_get_network_element_type(name) == SURF_NETWORK_ELEMENT_HOST)
-			xbt_dynar_push(res, &host);
-	return res;
+  xbt_dict_foreach(host_list, cursor, name, host)
+    if(routing_get_network_element_type(name) == SURF_NETWORK_ELEMENT_HOST)
+       xbt_dynar_push(res, &host);
+  return res;
 }
 
 // ========= Layering madness ==============*

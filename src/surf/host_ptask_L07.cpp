@@ -283,6 +283,7 @@ L07Action::L07Action(Model *model, int host_nb,
     this->setCost(1.0);
     this->setRemains(0.0);
   }
+  xbt_free(host_list);
 }
 
 Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
@@ -594,7 +595,7 @@ int L07Action::unref()
   m_refcount--;
   if (!m_refcount) {
     if (action_hook.is_linked())
-	  p_stateSet->erase(p_stateSet->iterator_to(*this));
+      p_stateSet->erase(p_stateSet->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
     delete this;

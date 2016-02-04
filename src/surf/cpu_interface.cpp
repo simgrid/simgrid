@@ -185,6 +185,8 @@ Cpu::~Cpu()
   }
   if (p_constraintCoreId)
     xbt_free(p_constraintCoreId);
+  if (p_speedPeakList)
+    xbt_dynar_free(&p_speedPeakList);
 }
 
 double Cpu::getCurrentPowerPeak()
