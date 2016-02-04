@@ -19,6 +19,7 @@ void surf_network_model_init_Constant()
 {
   xbt_assert(surf_network_model == NULL);
   surf_network_model = new simgrid::surf::NetworkConstantModel();
+  xbt_dynar_push(all_existing_models, &surf_network_model);
 
   routing_model_create(NULL);
 
@@ -26,10 +27,6 @@ void surf_network_model_init_Constant()
       xbt_die("There is no link in the Constant network model. "
           "Please remove any link from your platform (and switch to routing='None')");
   });
-
-
-  simgrid::surf::Model *model = surf_network_model;
-  xbt_dynar_push(all_existing_models, &model);
 }
 
 namespace simgrid {
