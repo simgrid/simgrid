@@ -160,6 +160,9 @@ while ( defined( $line = <MAKETEST> ) ) {
                         }elsif( $factory =~ /^ucontext/) {
                             print "${indent}if(CONTEXT_UCONTEXT)\n";
                             $close=1;
+                        }elsif( $factory =~ /^thread/) {
+                            print "${indent}if(CONTEXT_THREADS)\n";
+                            $close=1;
                         }
                         print "${indent}ADD_TEST(NAME memcheck-$name_test-$factory-$count\n";
                         print "${indent}         WORKING_DIRECTORY $path\/\n";
