@@ -202,10 +202,9 @@ L07Action::L07Action(Model *model, int host_nb,
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
   double latency = 0.0;
 
-
   this->p_netcardList->reserve(host_nb);
   for (int i = 0; i<host_nb; i++)
-	  this->p_netcardList->push_back(host_list[i]->pimpl_netcard);
+    this->p_netcardList->push_back(host_list[i]->pimpl_netcard);
 
   /* Compute the number of affected resources... */
   if(bytes_amount != NULL) {
@@ -552,6 +551,7 @@ void LinkL07::updateLatency(double value, double date)
  **********/
 
 L07Action::~L07Action(){
+  delete p_netcardList;
   free(p_communicationAmount);
   free(p_computationAmount);
 }
