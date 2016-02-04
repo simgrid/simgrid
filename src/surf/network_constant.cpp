@@ -11,12 +11,6 @@
 #include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
-static int host_number_int = 0;
-
-static void netcste_parse_nolink(sg_platf_link_cbarg_t link){
-	xbt_die("There is no link in the Constant network model. "
-			"Please remove any link from your platform (and switch to routing='None')");
-}
 
 /*********
  * Model *
@@ -28,10 +22,11 @@ void surf_network_model_init_Constant()
 
   routing_model_create(NULL);
 
-  simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host&) {
-    host_number_int++;
+  simgrid::surf::on_link.connect([](sg_platf_link_cbarg_t link){
+      xbt_die("There is no link in the Constant network model. "
+          "Please remove any link from your platform (and switch to routing='None')");
   });
-  simgrid::surf::on_link.connect(netcste_parse_nolink);
+
 
   simgrid::surf::Model *model = surf_network_model;
   xbt_dynar_push(all_existing_models, &model);
