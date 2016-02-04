@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
+/* Copyright (c) 2013-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -12,8 +12,7 @@
 #include <string.h>
 #include <libgen.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(test,
-                             "Logging specific to this SimDag example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logging specific to this SimDag example");
 
 /* simple test trying to load a Parallel Task Graph (PTG) as a DOT file.    */
 int main(int argc, char **argv){
@@ -25,11 +24,7 @@ int main(int argc, char **argv){
   SD_init(&argc, argv);
 
   /* Check our arguments */
-  if (argc < 2) {
-    XBT_INFO("Usage: %s platform_file dot_file ", argv[0]);
-    XBT_INFO("example: %s ../2clusters.xml ptg.dot", argv[0]);
-    exit(1);
-  }
+  xbt_assert (argc > 1,"Usage: %s platform_file dot_file example: %s ../2clusters.xml ptg.dot", argv[0], argv[0]);
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
@@ -42,8 +37,7 @@ int main(int argc, char **argv){
   }
 
   /* Display all the tasks */
-  XBT_INFO
-      ("------------------- Display all tasks of the loaded DAG ---------------------------");
+  XBT_INFO("------------------- Display all tasks of the loaded DAG ---------------------------");
   xbt_dynar_foreach(dot, cursor, task) {
     SD_task_dump(task);
   }
@@ -66,8 +60,7 @@ int main(int argc, char **argv){
     }
   }
 
-  XBT_INFO
-      ("------------------- Run the schedule ---------------------------");
+  XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);
   XBT_INFO("Makespan: %f", SD_get_clock());
   xbt_dynar_foreach(dot, cursor, task) {

@@ -14,8 +14,7 @@
 #include <string.h>
 #include <libgen.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(test,
-                             "Logging specific to this SimDag example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logging specific to this SimDag example");
 
 int main(int argc, char **argv)
 {
@@ -27,11 +26,8 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
 
   /* Check our arguments */
-  if (argc < 3) {
-    XBT_INFO("Usage: %s platform_file dot_file [trace_file]", argv[0]);
-    XBT_INFO("example: %s ../2clusters.xml dag.dot dag.mytrace", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2, "Usage: %s platform_file dot_file [trace_file]"
+             "example: %s ../2clusters.xml dag.dot dag.mytrace", argv[0], argv[0]);
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
@@ -45,20 +41,13 @@ int main(int argc, char **argv)
   }
 
   char *tracefilename;
-  if (argc == 3) {
-    char *last = strrchr(argv[2], '.');
-
-    tracefilename =
-        bprintf("%.*s.trace",
-                (int) (last == NULL ? strlen(argv[2]) : last - argv[2]),
-                argv[2]);
-  } else {
+  char *last = strrchr(argv[2], '.');
+  tracefilename = bprintf("%.*s.trace", (int) (last == NULL ? strlen(argv[2]) : last - argv[2]),argv[2]);
+  if (argc == 4) 
     tracefilename = xbt_strdup(argv[3]);
-  }
 
   /* Display all the tasks */
-  XBT_INFO
-      ("------------------- Display all tasks of the loaded DAG ---------------------------");
+  XBT_INFO("------------------- Display all tasks of the loaded DAG ---------------------------");
   xbt_dynar_foreach(dot, cursor, task) {
     SD_task_dump(task);
   }
@@ -85,12 +74,10 @@ int main(int argc, char **argv)
     }
   }
 
-  XBT_INFO
-      ("------------------- Run the schedule ---------------------------");
+  XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);
 
-  XBT_INFO
-      ("------------------- Produce the trace file---------------------------");
+  XBT_INFO("------------------- Produce the trace file---------------------------");
   XBT_INFO("Producing the trace of the run into %s", basename(tracefilename));
   FILE *out = fopen(tracefilename, "w");
   xbt_assert(out, "Cannot write to %s", tracefilename);
@@ -102,22 +89,16 @@ int main(int argc, char **argv)
     switch (kind) {
     case SD_TASK_COMP_SEQ:
       fprintf(out, "[%f->%f] %s compute %f flops # %s\n",
-          SD_task_get_start_time(task),
-          SD_task_get_finish_time(task),
-          sg_host_get_name(wsl[0]), SD_task_get_amount(task),
-          SD_task_get_name(task));
+          SD_task_get_start_time(task), SD_task_get_finish_time(task),
+          sg_host_get_name(wsl[0]), SD_task_get_amount(task), SD_task_get_name(task));
       break;
     case SD_TASK_COMM_E2E:
       fprintf(out, "[%f -> %f] %s -> %s transfer of %.0f bytes # %s\n",
-          SD_task_get_start_time(task),
-          SD_task_get_finish_time(task),
-          sg_host_get_name(wsl[0]),
-          sg_host_get_name(wsl[1]), SD_task_get_amount(task),
-          SD_task_get_name(task));
+          SD_task_get_start_time(task), SD_task_get_finish_time(task),
+          sg_host_get_name(wsl[0]), sg_host_get_name(wsl[1]), SD_task_get_amount(task), SD_task_get_name(task));
       break;
     default:
-      xbt_die("Task %s is of unknown kind %d", SD_task_get_name(task),
-              SD_task_get_kind(task));
+      xbt_die("Task %s is of unknown kind %d", SD_task_get_name(task), SD_task_get_kind(task));
     }
     SD_task_destroy(task);
   }
