@@ -212,20 +212,17 @@ L07Action::L07Action(Model *model, int host_nb,
 
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
-        xbt_dynar_t route=NULL;
 
         if (bytes_amount[i * host_nb + j] > 0) {
           double lat=0.0;
-          unsigned int cpt;
-          void *_link;
-          LinkL07 *link;
+          xbt_dynar_t route=NULL;
 
-          routing_platf->getRouteAndLatency((*this->p_netcardList)[i], (*this->p_netcardList)[j],
-                                                        &route, &lat);
+          routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], &route, &lat);
           latency = MAX(latency, lat);
 
+          void *_link;
           xbt_dynar_foreach(route, cpt, _link) {
-            link = static_cast<LinkL07*>(_link);
+            LinkL07 *link = static_cast<LinkL07*>(_link);
             xbt_dict_set(ptask_parallel_task_link_set, link->getName(), link, NULL);
           }
         }
@@ -260,15 +257,15 @@ L07Action::L07Action(Model *model, int host_nb,
   if(bytes_amount != NULL) {
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
-        void *_link;
 
         xbt_dynar_t route=NULL;
         if (bytes_amount[i * host_nb + j] == 0.0)
           continue;
 
-        routing_platf->getRouteAndLatency((*this->p_netcardList)[i], (*this->p_netcardList)[j],
+        routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j],
                                                     &route, NULL);
 
+        void *_link;
         xbt_dynar_foreach(route, cpt, _link) {
           LinkL07 *link = static_cast<LinkL07*>(_link);
           lmm_expand_add(model->getMaxminSystem(), link->getConstraint(),
