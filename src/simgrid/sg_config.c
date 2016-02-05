@@ -772,7 +772,7 @@ void sg_config_init(int *argc, char **argv)
     //test is if( size >= thresholdN ) return valueN;
     //Values can be modified with command line --cfg=smpi/bw_factor:"threshold0:value0;threshold1:value1;...;thresholdN:valueN"
     //  or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
-    // SMPI model can be used without enable_smpi, so keep this the ifdef.
+    // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
     xbt_cfg_register(&_sg_cfg_set, "smpi/bw_factor",
                      "Bandwidth factors for smpi.",
                      xbt_cfgelm_string, 1, 1, NULL);
