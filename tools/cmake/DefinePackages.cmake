@@ -13,7 +13,6 @@ set(EXTRA_DIST
   src/include/smpi/smpi_interface.h
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
-  src/include/surf/random_mgr.h
   src/include/surf/surf.h
   src/include/surf/surfxml_parse_values.h
   src/include/xbt/win32_ucontext.h
@@ -61,7 +60,6 @@ set(EXTRA_DIST
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
   src/surf/ns3/red-queue.h
-  src/surf/platf_generator_private.h
   src/surf/platform.hpp
   src/surf/plugins/energy.hpp
   src/surf/simgrid.dtd
@@ -322,10 +320,8 @@ set(SURF_SRC
   src/surf/network_interface.cpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
-  src/surf/platf_generator.c
   src/surf/plugins/energy.cpp
   src/surf/PropertyHolder.cpp
-  src/surf/random_mgr.c
   src/surf/sg_platf.cpp
   src/surf/storage_interface.cpp
   src/surf/storage_n11.cpp
@@ -661,7 +657,6 @@ set(headers_to_install
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
   include/simgrid/platf.h
-  include/simgrid/platf_generator.h
   include/simgrid/simix.h
   include/simgrid/simix.hpp
   include/simgrid/host.h

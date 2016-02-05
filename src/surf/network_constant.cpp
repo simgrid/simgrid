@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "network_constant.hpp"
-#include "surf/random_mgr.h"
 
 #include "host_interface.hpp"
 #include "src/surf/platform.hpp"

@@ -695,8 +695,6 @@ static void xbt_log_connect_categories(void)
 
   /* surf */
   XBT_LOG_CONNECT(surf);
-  XBT_LOG_CONNECT(platf_generator);
-  XBT_LOG_CONNECT(random);
   XBT_LOG_CONNECT(surf_config);
   XBT_LOG_CONNECT(surf_cpu);
   XBT_LOG_CONNECT(surf_cpu_cas);

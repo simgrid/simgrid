@@ -14,7 +14,6 @@
 #include "xbt/file.h"
 #include "xbt/dict.h"
 #include "src/surf/surf_private.h"
-#include "surf/random_mgr.h"
 #include "simgrid/sg_config.h"
 #include "surfxml_private.h"
 
@@ -1062,31 +1061,9 @@ int_f_void_t surf_parse = _surf_parse;
  */
 
 double parse_cpu_speed(const char *str_speed)
-{
-  double speed = 0.0;
-  const char *p, *q;
-  char *generator;
-  random_data_t random = NULL;
-  /* randomness is inserted like this: power="$rand(my_random)" */
-  if (((p = strstr(str_speed, "$rand(")) != NULL)
-      && ((q = strstr(str_speed, ")")) != NULL)) {
-    if (p < q) {
-      generator = xbt_malloc(q - (p + 6) + 1);
-      memcpy(generator, p + 6, q - (p + 6));
-      generator[q - (p + 6)] = '\0';
-      random = xbt_dict_get_or_null(random_data_list, generator);
-      xbt_assert(random, "Random generator %s undefined", generator);
-      speed = random_generate(random);
-    }
-  } else {
-    speed = surf_parse_get_speed(str_speed);
-  }
-  return speed;
+{ // FIXME deadcode
+  return surf_parse_get_speed(str_speed);
 }
-
-double random_min, random_max, random_mean, random_std_deviation;
-e_random_generator_t random_generator;
-char *random_id;
 
 xbt_dict_t get_as_router_properties(const char* name)
 {
