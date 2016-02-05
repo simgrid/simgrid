@@ -17,7 +17,7 @@
 #include "simgrid/modelchecker.h"
 
 
-#ifdef _WIN32
+#ifdef _XBT_WIN32
 #include <windows.h>
 #include <malloc.h>
 #else

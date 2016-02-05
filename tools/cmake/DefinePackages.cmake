@@ -679,7 +679,6 @@ set(headers_to_install
   include/simgrid/plugins/energy.h
   include/smpi/mpi.h
   include/smpi/smpi.h
-  include/smpi/smpi_cocci.h
   include/smpi/smpi_main.h
   include/surf/simgrid_dtd.h
   include/surf/surf_routing.h
@@ -1241,9 +1240,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/clusters_routing_full.xml
   examples/platforms/crosstraffic.xml
   examples/platforms/conf/gridpp_grid_2004.conf
-  examples/platforms/conf/gridpp_grid_2004.xml
   examples/platforms/conf/lcg_sept2004_grid.conf
-  examples/platforms/conf/lcg_sept2004_grid.xml
   examples/platforms/conf/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/config_tracing.xml

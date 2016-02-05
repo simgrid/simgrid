@@ -128,7 +128,7 @@ __asm__ (
    ".text\n"
    ".globl _raw_makecontext\n"
    "_raw_makecontext:\n"
-#elif defined(_WIN32)
+#elif defined(_XBT_WIN32)
    ".text\n"
    ".globl raw_makecontext\n"
    "raw_makecontext:\n"
@@ -164,7 +164,7 @@ __asm__ (
    ".text\n"
    ".globl _raw_swapcontext\n"
    "_raw_swapcontext:\n"
-#elif defined(_WIN32)
+#elif defined(_XBT_WIN32)
    ".text\n"
    ".globl raw_swapcontext\n"
    "raw_swapcontext:\n"
@@ -204,7 +204,7 @@ __asm__ (
 );
 #elif PROCESSOR_i686
 __asm__ (
-#if defined(APPLE) || defined(_WIN32)
+#if defined(APPLE) || defined(_XBT_WIN32)
    ".text\n"
    ".globl _raw_makecontext\n"
    "_raw_makecontext:\n"
@@ -231,7 +231,7 @@ __asm__ (
 );
 
 __asm__ (
-#if defined(APPLE) || defined(_WIN32)
+#if defined(APPLE) || defined(_XBT_WIN32)
    ".text\n"
    ".globl _raw_swapcontext\n"
    "_raw_swapcontext:\n"
