@@ -108,7 +108,8 @@ int main(int argc, char **argv)
 void comm_tests(MPI_Comm comm)
 {
     int comm_size, comm_rank;
-    double rtime, max_time;
+    double rtime = rtime;       /* stop warning about unused variable */
+    double max_time;
     long long msg_size;
     MPI_Comm_size(comm, &comm_size);
     MPI_Comm_rank(comm, &comm_rank);
