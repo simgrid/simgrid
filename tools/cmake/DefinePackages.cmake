@@ -679,7 +679,6 @@ set(headers_to_install
   include/simgrid/plugins/energy.h
   include/smpi/mpi.h
   include/smpi/smpi.h
-  include/smpi/smpi_cocci.h
   include/smpi/smpi_main.h
   include/surf/simgrid_dtd.h
   include/surf/surf_routing.h
