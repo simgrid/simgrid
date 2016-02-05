@@ -898,6 +898,8 @@ XBT_PUBLIC(void) SMPI_app_instance_register(const char *name, xbt_main_func_t co
 XBT_PUBLIC(void) SMPI_init(void);
 XBT_PUBLIC(void) SMPI_finalize(void);
 
+XBT_PUBLIC(void) smpi_register_static(void* arg, void_f_pvoid_t free_fn);
+XBT_PUBLIC(void) smpi_free_static(void);
 
 
 
