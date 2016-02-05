@@ -548,10 +548,10 @@ set(JEDULE_SRC
   include/simgrid/jedule/jedule_output.h
   include/simgrid/jedule/jedule_platform.h
   include/simgrid/jedule/jedule_sd_binding.h
-  src/instr/jedule/jedule_events.c
-  src/instr/jedule/jedule_output.c
-  src/instr/jedule/jedule_platform.c
-  src/instr/jedule/jedule_sd_binding.c
+  src/instr/jedule/jedule_events.cpp
+  src/instr/jedule/jedule_output.cpp
+  src/instr/jedule/jedule_platform.cpp
+  src/instr/jedule/jedule_sd_binding.cpp
   )
 
 set(MC_SRC_BASE

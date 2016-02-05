@@ -153,8 +153,8 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup,
   xbt_dynar_foreach(hostgroup, iter, host_name) {
     jed_simgrid_container_t parent;
     xbt_assert( host_name != NULL );
-    parent = xbt_dict_get(host2_simgrid_parent_container, host_name);
-    id_str = xbt_dict_get(parent->name2id, host_name);
+    parent = (jed_simgrid_container_t)xbt_dict_get(host2_simgrid_parent_container, host_name);
+    id_str = (char*)xbt_dict_get(parent->name2id, host_name);
     xbt_dynar_push(id_list, &id_str);
   }
 
@@ -215,15 +215,12 @@ void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list,
   //  group by parent container
 
   xbt_dynar_foreach(host_names, iter, host_name) {
-    jed_simgrid_container_t parent;
-    xbt_dynar_t hostgroup;
-
     //printf("checking %s \n", host_name);
 
-    parent = xbt_dict_get(host2_simgrid_parent_container, host_name);
+    jed_simgrid_container_t parent = (jed_simgrid_container_t)xbt_dict_get(host2_simgrid_parent_container, host_name);
     xbt_assert( parent != NULL );
 
-    hostgroup = xbt_dict_get_or_null (parent2hostgroup, parent->name);
+    xbt_dynar_t hostgroup = (xbt_dynar_t)xbt_dict_get_or_null (parent2hostgroup, parent->name);
     if( hostgroup == NULL ) {
       hostgroup = xbt_dynar_new(sizeof(char*), NULL);
       xbt_dict_set(parent2hostgroup, parent->name, hostgroup, NULL);
@@ -239,7 +236,7 @@ void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list,
     jed_simgrid_container_t parent;
 
     xbt_dict_foreach(parent2hostgroup,cursor,parent_name,hostgroup) {
-      parent = xbt_dict_get(container_name2container, parent_name);
+      parent = (jed_simgrid_container_t)xbt_dict_get(container_name2container, parent_name);
       // printf("subset parent >>> %s\n", parent->name);
       add_subsets_to(subset_list, hostgroup, parent);
     }

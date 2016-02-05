@@ -14,6 +14,8 @@
 
 #ifdef HAVE_JEDULE
 
+SG_BEGIN_DECL()
+
 typedef struct jed_simgrid_container s_jed_simgrid_container_t,
     *jed_simgrid_container_t;
 
@@ -89,6 +91,8 @@ void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list,
       list_chunks <- chunk( list )   -> [ 1, 3-5, 7-9 ]
 
 */
+
+SG_END_DECL()
 
 #endif
 

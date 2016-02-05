@@ -17,6 +17,8 @@
 
 #ifdef HAVE_JEDULE
 
+SG_BEGIN_DECL()
+
 struct jed_event {
   int event_id;
   char *name;
@@ -41,6 +43,8 @@ void jed_event_add_resources(jed_event_t event, xbt_dynar_t host_selection);
 void jed_event_add_characteristic(jed_event_t event, char *characteristic);
 
 void jed_event_add_info(jed_event_t event, char *key, char *value);
+
+SG_END_DECL()
 
 #endif
 

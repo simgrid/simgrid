@@ -78,7 +78,7 @@ static void get_hierarchy_string(jed_simgrid_container_t container,
     xbt_dynar_t hier_list;
     unsigned int iter;
     int number;
-    int length;
+    unsigned int length;
     
     outbuf[0] = '\0';
     hier_list = xbt_dynar_new(sizeof(int), NULL);
@@ -127,7 +127,7 @@ static void print_container(jed_simgrid_container_t container) {
 }
 
 static void print_resources(jed_simgrid_container_t resource_parent) {
-  int res_nb;
+  unsigned int res_nb;
   unsigned int i;
   char *res_name;
     char resid[1024];
