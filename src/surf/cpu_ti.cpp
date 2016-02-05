@@ -36,11 +36,11 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
   double time = 0;
   int i = 0;
   p_timePoints = (double*) xbt_malloc0(sizeof(double) *
-                  (xbt_dynar_length(speedTrace->s_list.event_list) + 1));
+                  (xbt_dynar_length(speedTrace->event_list) + 1));
   p_integral = (double*) xbt_malloc0(sizeof(double) *
-                  (xbt_dynar_length(speedTrace->s_list.event_list) + 1));
-  m_nbPoints = xbt_dynar_length(speedTrace->s_list.event_list) + 1;
-  xbt_dynar_foreach(speedTrace->s_list.event_list, cpt, val) {
+                  (xbt_dynar_length(speedTrace->event_list) + 1));
+  m_nbPoints = xbt_dynar_length(speedTrace->event_list) + 1;
+  xbt_dynar_foreach(speedTrace->event_list, cpt, val) {
     p_timePoints[i] = time;
     p_integral[i] = integral;
     integral += val.delta * val.value;
@@ -302,7 +302,7 @@ double CpuTiTgmr::getPowerScale(double a)
   reduced_a = a - floor(a / m_lastTime) * m_lastTime;
   point = p_trace->binarySearch(p_trace->p_timePoints, reduced_a, 0,
                                 p_trace->m_nbPoints - 1);
-  xbt_dynar_get_cpy(p_speedTrace->s_list.event_list, point, &val);
+  xbt_dynar_get_cpy(p_speedTrace->event_list, point, &val);
   return val.value;
 }
 
@@ -330,8 +330,8 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)
   }
 
   /* only one point available, fixed trace */
-  if (xbt_dynar_length(speedTrace->s_list.event_list) == 1) {
-    xbt_dynar_get_cpy(speedTrace->s_list.event_list, 0, &val);
+  if (xbt_dynar_length(speedTrace->event_list) == 1) {
+    xbt_dynar_get_cpy(speedTrace->event_list, 0, &val);
     m_type = TRACE_FIXED;
     m_value = val.value;
     return;
@@ -341,7 +341,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)
   p_speedTrace = speedTrace;
 
   /* count the total time of trace file */
-  xbt_dynar_foreach(speedTrace->s_list.event_list, cpt, val) {
+  xbt_dynar_foreach(speedTrace->event_list, cpt, val) {
     total_time += val.delta;
   }
   p_trace = new CpuTiTrace(speedTrace);
@@ -525,11 +525,11 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
   if (stateTrace)
     p_stateEvent = future_evt_set->add_trace(stateTrace, 0.0, this);
 
-  if (speedTrace && xbt_dynar_length(speedTrace->s_list.event_list) > 1) {
+  if (speedTrace && xbt_dynar_length(speedTrace->event_list) > 1) {
 	s_tmgr_event_t val;
     // add a fake trace event if periodicity == 0
-    xbt_dynar_get_cpy(speedTrace->s_list.event_list,
-                      xbt_dynar_length(speedTrace->s_list.event_list) - 1, &val);
+    xbt_dynar_get_cpy(speedTrace->event_list,
+                      xbt_dynar_length(speedTrace->event_list) - 1, &val);
     if (val.delta == 0) {
       p_speedEvent =
           future_evt_set->add_trace(tmgr_empty_trace_new(), p_availTrace->m_lastTime, this);
@@ -551,10 +551,10 @@ void CpuTi::set_speed_trace(tmgr_trace_t trace)
   p_availTrace = new CpuTiTgmr(trace, m_speedScale);
 
   /* add a fake trace event if periodicity == 0 */
-  if (trace && xbt_dynar_length(trace->s_list.event_list) > 1) {
+  if (trace && xbt_dynar_length(trace->event_list) > 1) {
     s_tmgr_event_t val;
-    xbt_dynar_get_cpy(trace->s_list.event_list,
-                      xbt_dynar_length(trace->s_list.event_list) - 1, &val);
+    xbt_dynar_get_cpy(trace->event_list,
+                      xbt_dynar_length(trace->event_list) - 1, &val);
     if (val.delta == 0) {
       p_speedEvent = future_evt_set->add_trace(tmgr_empty_trace_new(), 0.0, this);
     }
@@ -579,8 +579,8 @@ void CpuTi::updateState(tmgr_trace_iterator_t event_type,
     modified(true);
 
     speedTrace = p_availTrace->p_speedTrace;
-    xbt_dynar_get_cpy(speedTrace->s_list.event_list,
-                      xbt_dynar_length(speedTrace->s_list.event_list) - 1, &val);
+    xbt_dynar_get_cpy(speedTrace->event_list,
+                      xbt_dynar_length(speedTrace->event_list) - 1, &val);
     /* free old trace */
     delete p_availTrace;
     m_speedScale = val.value;
