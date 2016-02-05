@@ -898,10 +898,62 @@ XBT_PUBLIC(void) SMPI_app_instance_register(const char *name, xbt_main_func_t co
 XBT_PUBLIC(void) SMPI_init(void);
 XBT_PUBLIC(void) SMPI_finalize(void);
 
+/* Manual global privatization fallback */
 XBT_PUBLIC(void) smpi_register_static(void* arg, void_f_pvoid_t free_fn);
 XBT_PUBLIC(void) smpi_free_static(void);
 
+#define SMPI_VARINIT_GLOBAL(name,type)                          \
+type *name = NULL;                                              \
+static void __attribute__((constructor)) __preinit_##name(void) { \
+   if(!name)                                                    \
+      name = (type*)calloc(smpi_global_size(), sizeof(type));   \
+}                                                               \
+static void __attribute__((destructor)) __postfini_##name(void) { \
+   free(name);                                                  \
+   name = NULL;                                                 \
+}
 
+#define SMPI_VARINIT_GLOBAL_AND_SET(name,type,expr)             \
+type *name = NULL;                                              \
+static void __attribute__((constructor)) __preinit_##name(void) { \
+   size_t size = smpi_global_size();                            \
+   size_t i;                                                    \
+   type value = expr;                                           \
+   if(!name) {                                                  \
+      name = (type*)malloc(size * sizeof(type));                \
+      for(i = 0; i < size; i++) {                               \
+         name[i] = value;                                       \
+      }                                                         \
+   }                                                            \
+}                                                               \
+static void __attribute__((destructor)) __postfini_##name(void) { \
+   free(name);                                                  \
+   name = NULL;                                                 \
+}
+
+#define SMPI_VARGET_GLOBAL(name) name[smpi_process_index()]
+
+#define SMPI_VARINIT_STATIC(name,type)                      \
+static type *name = NULL;                                   \
+if(!name) {                                                 \
+   name = (type*)calloc(smpi_global_size(), sizeof(type));  \
+   smpi_register_static(name, xbt_free_f);                  \
+}
+
+#define SMPI_VARINIT_STATIC_AND_SET(name,type,expr) \
+static type *name = NULL;                           \
+if(!name) {                                         \
+   size_t size = smpi_global_size();                \
+   size_t i;                                        \
+   type value = expr;                               \
+   name = (type*)malloc(size * sizeof(type));       \
+   for(i = 0; i < size; i++) {                      \
+      name[i] = value;                              \
+   }                                                \
+   smpi_register_static(name, xbt_free_f);          \
+}
+
+#define SMPI_VARGET_STATIC(name) name[smpi_process_index()]
 
 SG_END_DECL()
 #endif
