@@ -23,7 +23,6 @@
 + contrib/.*
 
 + examples/msg/actions/NAS_LU_S_4/.*
-+ examples/msg/chainsend/generate_deployment_file\.rb
 + examples/msg/chord/chord3\.xml
 
 + examples/smpi/MM/command_exemple
