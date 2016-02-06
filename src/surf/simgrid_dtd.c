@@ -202,7 +202,7 @@ extern FILE *surf_parse_in, *surf_parse_out;
      */
     #define  YY_LESS_LINENO(n) \
             do { \
-                int yyl;\
+                unsigned int yyl;\
                 for ( yyl = n; yyl < surf_parse_leng; ++yyl )\
                     if ( surf_parse_text[yyl] == '\n' )\
                         --surf_parse_lineno;\

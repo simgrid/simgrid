@@ -79,7 +79,7 @@ set(EXTRA_DIST
   src/surf/surf_routing_none.hpp
   src/surf/surf_routing_private.hpp
   src/surf/surf_routing_vivaldi.hpp
-  src/surf/surfxml_parse.c
+  src/surf/surfxml_parse.cpp
   src/surf/vm_hl13.hpp
   src/surf/PropertyHolder.hpp
   src/surf/virtual_machine.hpp
@@ -312,7 +312,7 @@ set(SURF_SRC
   src/surf/cpu_ti.cpp
   src/surf/fair_bottleneck.cpp
   src/surf/instr_routing.cpp
-  src/surf/instr_surf.c
+  src/surf/instr_surf.cpp
   src/surf/lagrange.cpp
   src/surf/maxmin.cpp
   src/surf/network_cm02.cpp
@@ -338,7 +338,7 @@ set(SURF_SRC
   src/surf/surf_routing_none.cpp
   src/surf/surf_routing_vivaldi.cpp
   src/surf/surfxml_private.h
-  src/surf/surfxml_parse.c
+  src/surf/surfxml_parse.cpp
   src/surf/surfxml_parseplatf.cpp
   src/surf/trace_mgr.hpp
   src/surf/trace_mgr.cpp

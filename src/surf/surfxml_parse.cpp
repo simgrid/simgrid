@@ -447,7 +447,7 @@ void ETag_surfxml_host(void)    {
   }
   else {
 	  xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
-	  int i;
+	  unsigned int i;
 	  for (i = 0; i < xbt_dynar_length(pstate_list); i++) {
 		  double speed;
 		  char* speed_str;
@@ -884,7 +884,7 @@ void STag_surfxml_AS(void){
 void ETag_surfxml_AS(void){
   if(as_prop_nb){
     char *name      = as_name_tab[as_prop_nb-1];
-    xbt_dict_t dict = as_dict_tab[as_prop_nb-1];
+    xbt_dict_t dict = (xbt_dict_t) as_dict_tab[as_prop_nb-1];
     as_prop_nb--;
     XBT_DEBUG("POP prop %p for AS '%s'",dict,name);
     xbt_lib_set(as_router_lib,
@@ -962,7 +962,7 @@ void ETag_surfxml_process(void){
 
 void STag_surfxml_argument(void){
   argc++;
-  argv = xbt_realloc(argv, (argc) * sizeof(char *));
+  argv = (char**)xbt_realloc(argv, (argc) * sizeof(char **));
   argv[(argc) - 1] = xbt_strdup(A_surfxml_argument_value);
 }
 
@@ -1067,6 +1067,6 @@ double parse_cpu_speed(const char *str_speed)
 
 xbt_dict_t get_as_router_properties(const char* name)
 {
-  return xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
+  return (xbt_dict_t)xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
 }
 

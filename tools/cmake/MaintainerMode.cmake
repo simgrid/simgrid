@@ -202,6 +202,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${FLEX_EXE} -o src/surf/simgrid_dtd.c -Psurf_parse_ --noline src/surf/simgrid_dtd.l
       COMMAND ${SED_EXE} -i ${string9} src/surf/simgrid_dtd.c
       COMMAND ${SED_EXE} -i ${string15} src/surf/simgrid_dtd.c
+      COMMAND ${SED_EXE} -i "s/int yyl;/unsigned int yyl;/" src/surf/simgrid_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "surf/simgrid_dtd.c"
 
       #xbt/graphxml.c: xbt/graphxml.l

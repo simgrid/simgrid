@@ -247,7 +247,7 @@ typedef struct {
   sg_size_t size;
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
 
-#define SG_PLATF_STORAGE_TYPE_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL}
+#define SG_PLATF_STORAGE_TYPE_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL,0}
 
 typedef struct {
   const char* type_id;

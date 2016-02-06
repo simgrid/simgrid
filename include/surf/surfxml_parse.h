@@ -11,15 +11,14 @@
 #include "xbt/misc.h"
 #include "xbt/function_types.h"
 #include "xbt/dict.h"
-#include "surf/simgrid_dtd.h"
 
+SG_BEGIN_DECL()
+#include "surf/simgrid_dtd.h"
 
 #ifndef YY_TYPEDEF_YY_SIZE_T
 #define YY_TYPEDEF_YY_SIZE_T
 typedef size_t yy_size_t;
 #endif
-
-SG_BEGIN_DECL()
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);
