@@ -25,14 +25,14 @@ JNIEnv *get_current_thread_env(void);
 void jmsg_throw_status(JNIEnv *env, msg_error_t status);
 
 /*
- * Class		org_simgrid_msg_Msg
- * Method		getClock
- * Signature	()D
+ * Class    org_simgrid_msg_Msg
+ * Method    getClock
+ * Signature  ()D
  */
 JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv *, jclass);
 /**
- * Class		org_simgrid_msg_Msg
- * Method		run
+ * Class    org_simgrid_msg_Msg
+ * Method    run
  */
 JNIEXPORT void JNICALL
     JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls);

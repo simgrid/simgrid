@@ -72,8 +72,8 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
 
   /* get the C string from the java string */
   if (jname == NULL) {
-  	jxbt_throw_null(env,bprintf("No host can have a null name"));
-  	return NULL;
+    jxbt_throw_null(env,bprintf("No host can have a null name"));
+    return NULL;
   }
   const char *name = env->GetStringUTFChars(jname, 0);
   /* get the host by name       (the hosts are created during the grid resolution) */
@@ -267,29 +267,29 @@ Java_org_simgrid_msg_Host_getMountedStorage(JNIEnv * env, jobject jhost){
   }
 
   int index = 0;
-	jobjectArray jtable;
-	xbt_dict_t dict =  MSG_host_get_mounted_storage_list(host);
-	int count = xbt_dict_length(dict);
-	jclass cls = env->FindClass("org/simgrid/msg/Storage");
+  jobjectArray jtable;
+  xbt_dict_t dict =  MSG_host_get_mounted_storage_list(host);
+  int count = xbt_dict_length(dict);
+  jclass cls = env->FindClass("org/simgrid/msg/Storage");
 
-	jtable = env->NewObjectArray((jsize) count, cls, NULL);
+  jtable = env->NewObjectArray((jsize) count, cls, NULL);
 
-	if (!jtable) {
-	 jxbt_throw_jni(env, "Storages table allocation failed");
-	 return NULL;
-	}
+  if (!jtable) {
+   jxbt_throw_jni(env, "Storages table allocation failed");
+   return NULL;
+  }
 
-	xbt_dict_cursor_t cursor=NULL;
-	const char *mount_name, *storage_name;
+  xbt_dict_cursor_t cursor=NULL;
+  const char *mount_name, *storage_name;
 
-	xbt_dict_foreach(dict,cursor,mount_name,storage_name) {
-		jname = env->NewStringUTF(storage_name);
-	  jstorage = Java_org_simgrid_msg_Storage_getByName(env,cls,jname);
-	  env->SetObjectArrayElement(jtable, index, jstorage);
+  xbt_dict_foreach(dict,cursor,mount_name,storage_name) {
+    jname = env->NewStringUTF(storage_name);
+    jstorage = Java_org_simgrid_msg_Storage_getByName(env,cls,jname);
+    env->SetObjectArrayElement(jtable, index, jstorage);
     index++;
-	}
-	xbt_dict_free(&dict);
-	return jtable;
+  }
+  xbt_dict_free(&dict);
+  return jtable;
 }
 
 JNIEXPORT jobjectArray JNICALL
@@ -363,7 +363,7 @@ Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
       jname = env->NewStringUTF(MSG_host_get_name(host));
 
       jhost =
-      		Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
+          Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
       /* FIXME: leak of jname ? */
     }
 

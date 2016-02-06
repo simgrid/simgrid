@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 3, "Usage: %s platform_file number_of_jobs number_of_slaves\n"
-	          "\tExample: %s msg_platform.xml 10 5\n", 
-	          argv[0], argv[0]);
+            "\tExample: %s msg_platform.xml 10 5\n", 
+            argv[0], argv[0]);
 
   MSG_function_register("master", master);
   MSG_function_register("slave", slave);

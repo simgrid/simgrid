@@ -23,26 +23,26 @@ namespace s4u {
  * sender and receiver.
  */
 XBT_PUBLIC_CLASS Mailbox {
-	friend Comm;
+  friend Comm;
 
 private:
-	Mailbox(const char*name, smx_rdv_t inferior);
+  Mailbox(const char*name, smx_rdv_t inferior);
 public:
-	~Mailbox();
-	
+  ~Mailbox();
+  
 protected:
-	smx_rdv_t getInferior() { return p_inferior; }
+  smx_rdv_t getInferior() { return p_inferior; }
 
 public:
-	/** Get the name of that mailbox */
-	const char *getName();
-	/** Retrieve the mailbox associated to the given string */
-	static Mailbox *byName(const char *name);
+  /** Get the name of that mailbox */
+  const char *getName();
+  /** Retrieve the mailbox associated to the given string */
+  static Mailbox *byName(const char *name);
 
 private:
-	std::string p_name;
-	smx_rdv_t p_inferior;
-	static boost::unordered_map<std::string, Mailbox *> *mailboxes;
+  std::string p_name;
+  smx_rdv_t p_inferior;
+  static boost::unordered_map<std::string, Mailbox *> *mailboxes;
 };
 }} // namespace simgrid::s4u
 

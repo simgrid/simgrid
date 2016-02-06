@@ -35,7 +35,7 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   s_surf_parsing_link_up_down_t info;
 
   XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]",
-		  src->getName(), src->getId(), dst->getName(), dst->getId());
+      src->getName(), src->getId(), dst->getName(), dst->getId());
 
   if(src->getRcType() == SURF_NETWORK_ELEMENT_AS) {
     char *src_name = ROUTER_PEER(src->getName());

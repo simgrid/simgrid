@@ -35,13 +35,13 @@ int main(int argc, char **argv)
 
   /* Check our arguments */
   xbt_assert(argc > 2, "Usage: %s platform_file dax_file [jedule_file]\n"
-	     "\tExample: %s simulacrum_7_hosts.xml Montage_25.xml Montage_25.jed", 
-	     argv[0], argv[0]);
+       "\tExample: %s simulacrum_7_hosts.xml Montage_25.xml Montage_25.jed", 
+       argv[0], argv[0]);
 
   char *last = strrchr(argv[2], '.');
   char * tracefilename = bprintf("%.*s.trace",(int) (last == NULL ? 
-						   strlen(argv[2]) : 
-						   last - argv[2]), argv[2]);  
+               strlen(argv[2]) : 
+               last - argv[2]), argv[2]);  
   if (argc == 4)
     tracefilename = xbt_strdup(argv[3]);
  

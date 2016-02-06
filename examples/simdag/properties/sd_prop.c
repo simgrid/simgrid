@@ -30,8 +30,8 @@ int main(int argc, char **argv)
   /* SD initialization */
   SD_init(&argc, argv);
   xbt_assert(argc > 1,
-	     "Usage: %s platform_file\n\tExample: %s ../two_hosts.xml", 
-	     argv[0], argv[0]);
+       "Usage: %s platform_file\n\tExample: %s ../two_hosts.xml", 
+       argv[0], argv[0]);
 
   SD_create_environment(argv[1]);
 

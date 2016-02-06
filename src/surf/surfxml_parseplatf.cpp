@@ -114,7 +114,7 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
 static int after_config_done;
 void parse_after_config() {
   if (!after_config_done) {
-	  TRACE_start();
+    TRACE_start();
 
     /* Register classical callbacks */
     storage_register_callbacks();

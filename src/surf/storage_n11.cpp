@@ -222,7 +222,7 @@ StorageN11::StorageN11(StorageModel *model, const char* name,
     double bwrite, double bconnection, const char* type_id, char *content_name,
     char *content_type, sg_size_t size, char *attach)
  : Storage(model, name, properties,
-    	   maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size, attach) {
+         maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size, attach) {
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 }
 
@@ -263,7 +263,7 @@ StorageAction *StorageN11::close(surf_file_t fd)
   StorageAction *write_action;
   unsigned int i;
   xbt_dynar_foreach(p_writeActions, i, _write_action) {
-	write_action = static_cast<StorageAction*>(_write_action);
+  write_action = static_cast<StorageAction*>(_write_action);
     if ((write_action->p_file) == fd) {
       xbt_dynar_cursor_rm(p_writeActions, &i);
       write_action->unref();
@@ -316,8 +316,8 @@ StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
 
 StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Storage *storage, e_surf_action_storage_type_t type)
   : StorageAction(model, cost, failed,
-    		      lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0 , 3),
-    		      storage, type) {
+              lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0 , 3),
+              storage, type) {
   XBT_IN("(%s,%g", storage->getName(), cost);
 
   // Must be less than the max bandwidth for all actions
@@ -348,8 +348,8 @@ int StorageN11Action::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-	if (action_hook.is_linked())
-	  p_stateSet->erase(p_stateSet->iterator_to(*this));
+  if (action_hook.is_linked())
+    p_stateSet->erase(p_stateSet->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
     xbt_free(getCategory());

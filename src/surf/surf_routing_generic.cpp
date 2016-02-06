@@ -337,7 +337,7 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
 
   sg_platf_route_cbarg_t new_e_route = NULL;
   if (e_route_bypass) {
-	  Link* link;
+    Link* link;
     unsigned int cpt = 0;
     new_e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
     new_e_route->gw_src = e_route_bypass->gw_src;

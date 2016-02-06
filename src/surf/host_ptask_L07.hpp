@@ -46,8 +46,8 @@ public:
   double shareResources(double now) override;
   void updateActionsState(double now, double delta) override;
   Action *executeParallelTask(int host_nb, sg_host_t *host_list,
-							  double *flops_amount, double *bytes_amount,
-							  double rate) override;
+                double *flops_amount, double *bytes_amount,
+                double rate) override;
 
   void addTraces() override;
 };
@@ -72,14 +72,14 @@ public:
   NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys);
   ~NetworkL07Model();
   Link* createLink(const char *name,
-		  double bw_initial,
-		  tmgr_trace_t bw_trace,
-		  double lat_initial,
-		  tmgr_trace_t lat_trace,
-		  int initiallyOn,
-		  tmgr_trace_t state_trace,
-		  e_surf_link_sharing_policy_t policy,
-		  xbt_dict_t properties) override;
+      double bw_initial,
+      tmgr_trace_t bw_trace,
+      double lat_initial,
+      tmgr_trace_t lat_trace,
+      int initiallyOn,
+      tmgr_trace_t state_trace,
+      e_surf_link_sharing_policy_t policy,
+      xbt_dict_t properties) override;
 
   Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
   void addTraces() override {DIE_IMPOSSIBLE;};
@@ -95,7 +95,7 @@ public:
 class CpuL07 : public Cpu {
 public:
   CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeakList, int pstate,
-		 double power_scale, tmgr_trace_t power_trace,
+     double power_scale, tmgr_trace_t power_trace,
      int core, int initiallyOn, tmgr_trace_t state_trace);
   ~CpuL07();
   bool isUsed() override;
@@ -109,7 +109,7 @@ protected:
 class LinkL07 : public Link {
 public:
   LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
-		  double bw_initial,
+      double bw_initial,
           tmgr_trace_t bw_trace,
           double lat_initial,
           tmgr_trace_t lat_trace,
@@ -142,7 +142,7 @@ public:
   L07Action(Model *model, int host_nb,
           sg_host_t*host_list,
           double *flops_amount,
-		   double *bytes_amount,
+       double *bytes_amount,
           double rate);
  ~L07Action();
 

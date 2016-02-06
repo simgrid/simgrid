@@ -125,7 +125,7 @@ void Host::classInit()
 }
 
 Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
-		                 xbt_dynar_t storage, Cpu *cpu)
+                     xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name)
  , PropertyHolder(props)
  , p_storage(storage), p_cpu(cpu)
@@ -134,7 +134,7 @@ Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
 }
 
 Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
-				         xbt_dynar_t storage, Cpu *cpu)
+                 xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name, constraint)
  , PropertyHolder(props)
  , p_storage(storage), p_cpu(cpu)
@@ -215,11 +215,11 @@ xbt_dynar_t Host::getAttachedStorageList()
   xbt_dynar_t result = xbt_dynar_new(sizeof(void*), NULL);
   xbt_lib_foreach(storage_lib, cursor, key, data) {
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
-	  simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-	  if(!strcmp((const char*)storage->p_attach,this->getName())){
-	    xbt_dynar_push_as(result, void *, (void*)storage->getName());
-	  }
-	}
+    simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
+    if(!strcmp((const char*)storage->p_attach,this->getName())){
+      xbt_dynar_push_as(result, void *, (void*)storage->getName());
+    }
+  }
   }
   return result;
 }
@@ -251,12 +251,12 @@ Action *Host::open(const char* fullpath) {
   }
   if(longest_prefix_length>0)
   { /* Mount point found, split fullpath into mount_name and path+filename*/
-	path = (char *) xbt_malloc ((strlen(fullpath)-longest_prefix_length+1));
-	mount_name = (char *) xbt_malloc ((longest_prefix_length+1));
-	strncpy(mount_name, fullpath, longest_prefix_length+1);
-	strncpy(path, fullpath+longest_prefix_length, strlen(fullpath)-longest_prefix_length+1);
-	path[strlen(fullpath)-longest_prefix_length] = '\0';
-	mount_name[longest_prefix_length] = '\0';
+  path = (char *) xbt_malloc ((strlen(fullpath)-longest_prefix_length+1));
+  mount_name = (char *) xbt_malloc ((longest_prefix_length+1));
+  strncpy(mount_name, fullpath, longest_prefix_length+1);
+  strncpy(path, fullpath+longest_prefix_length, strlen(fullpath)-longest_prefix_length+1);
+  path[strlen(fullpath)-longest_prefix_length] = '\0';
+  mount_name[longest_prefix_length] = '\0';
   }
   else
     xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());

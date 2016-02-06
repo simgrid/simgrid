@@ -278,18 +278,18 @@ static XBT_INLINE void surf_storage_free(void *r)
 void sg_version_check(int lib_version_major,int lib_version_minor,int lib_version_patch) {
     if ((lib_version_major != SIMGRID_VERSION_MAJOR) || (lib_version_minor != SIMGRID_VERSION_MINOR)) {
       fprintf(stderr,
-    		  "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
-    		  "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
+          "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
+          "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
               SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,
-			  lib_version_major,lib_version_minor,lib_version_patch);
+        lib_version_major,lib_version_minor,lib_version_patch);
       abort();
     }
     if (lib_version_patch != SIMGRID_VERSION_PATCH) {
         fprintf(stderr,
-      		  "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
-      		  "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
+            "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
+            "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
                 SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,
-  			  lib_version_major,lib_version_minor,lib_version_patch);
+          lib_version_major,lib_version_minor,lib_version_patch);
     }
 }
 
@@ -537,7 +537,7 @@ double Model::shareResourcesMaxMin(ActionList *running_actions,
 
 
   for (++it; it != itend; ++it) {
-	action = &*it;
+  action = &*it;
     value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
       if (action->getRemains() > 0)
@@ -562,11 +562,11 @@ double Model::shareResourcesMaxMin(ActionList *running_actions,
 void Model::updateActionsState(double now, double delta)
 {
   if (p_updateMechanism == UM_FULL)
-	updateActionsStateFull(now, delta);
+  updateActionsStateFull(now, delta);
   else if (p_updateMechanism == UM_LAZY)
-	updateActionsStateLazy(now, delta);
+  updateActionsStateLazy(now, delta);
   else
-	xbt_die("Invalid cpu update mechanism!");
+  xbt_die("Invalid cpu update mechanism!");
 }
 
 void Model::updateActionsStateLazy(double /*now*/, double /*delta*/)

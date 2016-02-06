@@ -38,7 +38,7 @@ simgrid::xbt::signal<void(simgrid::surf::StorageAction*, e_surf_action_state_t, 
  *********/
 
 StorageModel::StorageModel()
-	: Model()
+  : Model()
 {
   p_storageList = NULL;
 }

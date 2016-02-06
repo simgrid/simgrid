@@ -80,10 +80,10 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
           void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
           Onelink *onelink;
           if (p_hierarchy == SURF_ROUTING_BASE) {
-        	NetCard *tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_netcard_t);
+          NetCard *tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_netcard_t);
             tmp_src->setId(src);
-        	NetCard *tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_netcard_t);
-        	tmp_dst->setId(dst);
+          NetCard *tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_netcard_t);
+          tmp_dst->setId(dst);
             onelink = new Onelink(link, tmp_src, tmp_dst);
           } else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
             onelink = new Onelink(link, route->gw_src, route->gw_dst);
@@ -213,11 +213,11 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
       XBT_DEBUG("Load ASroute from \"%s\" to \"%s\"", src, dst);
       if (!route->gw_src ||
           route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-    	surf_parse_error("The src_gateway \"%s\" does not exist!",
+      surf_parse_error("The src_gateway \"%s\" does not exist!",
                 route->gw_src ? route->gw_src->getName() : "(null)");
       if (!route->gw_dst ||
           route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-    	surf_parse_error("The dst_gateway \"%s\" does not exist!",
+      surf_parse_error("The dst_gateway \"%s\" does not exist!",
                 route->gw_dst ? route->gw_dst->getName() : "(null)");
       XBT_DEBUG("ASroute goes from \"%s\" to \"%s\"",
                 route->gw_src->getName(), route->gw_dst->getName());

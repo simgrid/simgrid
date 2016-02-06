@@ -488,7 +488,7 @@ lmm_variable_t lmm_get_var_from_cnst(lmm_system_t /*sys*/,
       //Look at enabled_element_set, and jump to disabled_element_set when finished
       *elem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->enabled_element_set.offset);
       if (!(*elem))
-	*elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
+  *elem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
     } else {
       *elem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->disabled_element_set.offset);      
     }
@@ -525,7 +525,7 @@ lmm_variable_t lmm_get_var_from_cnst_safe(lmm_system_t /*sys*/,
       //Look at enabled_element_set, and jump to disabled_element_set when finished
       *nextelem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->enabled_element_set.offset);
       if (!(*nextelem))
-	*nextelem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
+  *nextelem = (lmm_element_t) xbt_swag_getFirst(&(cnst->disabled_element_set));
     } else {
       *nextelem = (lmm_element_t) xbt_swag_getNext(*elem, cnst->disabled_element_set.offset);      
     }
@@ -610,7 +610,7 @@ void lmm_print(lmm_system_t sys)
       xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
   strcat(trace_buf, print_buf);
   xbt_swag_foreach(_var, var_list) {
-	var = (lmm_variable_t)_var;
+  var = (lmm_variable_t)_var;
     sprintf(print_buf, "'%d'(%f) ", var->id_int, var->weight);
     trace_buf = (char*)
         xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
@@ -627,7 +627,7 @@ void lmm_print(lmm_system_t sys)
   /* Printing Constraints */
   cnst_list = &(sys->active_constraint_set);
   xbt_swag_foreach(_cnst, cnst_list) {
-	cnst = (lmm_constraint_t)_cnst;
+  cnst = (lmm_constraint_t)_cnst;
     sum = 0.0;
     //Show  the enabled variables
     elem_list = &(cnst->enabled_element_set);
@@ -649,9 +649,9 @@ void lmm_print(lmm_system_t sys)
                       strlen(trace_buf) + strlen(print_buf) + 1);
       strcat(trace_buf, print_buf);
       if(cnst->sharing_policy)
-    	  sum += elem->value * elem->variable->value;
+        sum += elem->value * elem->variable->value;
       else 
-    	  sum = MAX(sum,elem->value * elem->variable->value);
+        sum = MAX(sum,elem->value * elem->variable->value);
     }
     //TODO: Adding disabled elements only for test compatibility, but do we really want them to be printed?
     elem_list = &(cnst->disabled_element_set);
@@ -664,9 +664,9 @@ void lmm_print(lmm_system_t sys)
                       strlen(trace_buf) + strlen(print_buf) + 1);
       strcat(trace_buf, print_buf);
       if(cnst->sharing_policy)
-    	  sum += elem->value * elem->variable->value;
+        sum += elem->value * elem->variable->value;
       else 
-    	  sum = MAX(sum,elem->value * elem->variable->value);
+        sum = MAX(sum,elem->value * elem->variable->value);
     }
     
     sprintf(print_buf, "0) <= %f ('%d')", cnst->bound, cnst->id_int);
@@ -691,7 +691,7 @@ void lmm_print(lmm_system_t sys)
   XBT_DEBUG("Variables");
   /* Printing Result */
   xbt_swag_foreach(_var, var_list) {
-	var = (lmm_variable_t)_var;
+  var = (lmm_variable_t)_var;
     if (var->bound > 0) {
       XBT_DEBUG("'%d'(%f) : %f (<=%f)", var->id_int, var->weight, var->value,
              var->bound);
@@ -734,7 +734,7 @@ void lmm_solve(lmm_system_t sys)
   XBT_DEBUG("Active constraints : %d", xbt_swag_size(cnst_list));
   /* Init: Only modified code portions: reset the value of active variables */
   xbt_swag_foreach(_cnst, cnst_list) {
-	cnst = (lmm_constraint_t)_cnst;
+  cnst = (lmm_constraint_t)_cnst;
     elem_list = &(cnst->enabled_element_set);
     //XBT_DEBUG("Variable set : %d", xbt_swag_size(elem_list));
     xbt_swag_foreach(_elem, elem_list) {
@@ -751,7 +751,7 @@ void lmm_solve(lmm_system_t sys)
   saturated_constraint_set->data = xbt_new0(int, saturated_constraint_set->size);
 
   xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
-	cnst = (lmm_constraint_t)_cnst;
+  cnst = (lmm_constraint_t)_cnst;
     /* INIT: Collect constraints that actually need to be saturated (i.e remaining  and usage are strictly positive) into cnst_light_tab. */
     cnst->remaining = cnst->bound;
     if (!double_positive(cnst->remaining, cnst->bound*sg_maxmin_precision))
@@ -821,17 +821,17 @@ void lmm_solve(lmm_system_t sys)
       int i;
 
       if (min_bound < 0) {
-	//If no variable could reach its bound, deal iteratively the constraints usage ( at worst one constraint is saturated at each cycle) 
+  //If no variable could reach its bound, deal iteratively the constraints usage ( at worst one constraint is saturated at each cycle) 
         var->value = min_usage / var->weight;
         XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
       } else {
-	//If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
-	    if (double_equals(min_bound, var->bound*var->weight, sg_maxmin_precision)){
+  //If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
+      if (double_equals(min_bound, var->bound*var->weight, sg_maxmin_precision)){
           var->value = var->bound;
           XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
         }
         else {
-	  // Variables which bound is different are not considered for this cycle, but they will be afterwards.  
+    // Variables which bound is different are not considered for this cycle, but they will be afterwards.  
           XBT_DEBUG("Do not consider %p (%d) \n", var, var->id_int);
           xbt_swag_remove(var, var_list);
           continue;
@@ -846,15 +846,15 @@ void lmm_solve(lmm_system_t sys)
         elem = &var->cnsts[i];
         cnst = elem->constraint;
         if (cnst->sharing_policy) {
-	  //Remember: shared constraints require that sum(elem->value * var->value) < cnst->bound
+    //Remember: shared constraints require that sum(elem->value * var->value) < cnst->bound
           double_update(&(cnst->remaining),  elem->value * var->value, cnst->bound*sg_maxmin_precision);
           double_update(&(cnst->usage), elem->value / var->weight, sg_maxmin_precision);
-	  //If the constraint is saturated, remove it from the set of active constraints (light_tab)
+    //If the constraint is saturated, remove it from the set of active constraints (light_tab)
           if(!double_positive(cnst->usage,sg_maxmin_precision) || !double_positive(cnst->remaining,cnst->bound*sg_maxmin_precision)) {
             if (cnst->cnst_light) {
               int index = (cnst->cnst_light-cnst_light_tab);
               XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ",
-			index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab, cnst->usage, cnst->remaining, cnst->bound);
+      index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab, cnst->usage, cnst->remaining, cnst->bound);
               cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
               cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
               cnst_light_num--;
@@ -865,23 +865,23 @@ void lmm_solve(lmm_system_t sys)
           }
           make_elem_inactive(elem);
         } else {
-	  //Remember: non-shared constraints only require that max(elem->value * var->value) < cnst->bound
+    //Remember: non-shared constraints only require that max(elem->value * var->value) < cnst->bound
           cnst->usage = 0.0;
           make_elem_inactive(elem);
           elem_list = &(cnst->enabled_element_set);
           xbt_swag_foreach(_elem, elem_list) {
-	    elem = (lmm_element_t)_elem;
-	    xbt_assert(elem->variable->weight > 0);
-	    if (elem->variable->value > 0) continue;
-	    if (elem->value > 0)
-	      cnst->usage = MAX(cnst->usage, elem->value / elem->variable->weight);
+      elem = (lmm_element_t)_elem;
+      xbt_assert(elem->variable->weight > 0);
+      if (elem->variable->value > 0) continue;
+      if (elem->value > 0)
+        cnst->usage = MAX(cnst->usage, elem->value / elem->variable->weight);
           }
-	  //If the constraint is saturated, remove it from the set of active constraints (light_tab)
+    //If the constraint is saturated, remove it from the set of active constraints (light_tab)
           if(!double_positive(cnst->usage,sg_maxmin_precision) || !double_positive(cnst->remaining,cnst->bound*sg_maxmin_precision)) {
             if(cnst->cnst_light) {
               int index = (cnst->cnst_light-cnst_light_tab);
               XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ",
-			index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab, cnst->usage, cnst->remaining, cnst->bound);
+      index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab, cnst->usage, cnst->remaining, cnst->bound);
               cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
               cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
               cnst_light_num--;
@@ -908,7 +908,7 @@ void lmm_solve(lmm_system_t sys)
           pos,
           saturated_constraint_set,
           &min_usage);
-	}
+  }
 
     saturated_variable_set_update(  cnst_light_tab,
                                     saturated_constraint_set,
@@ -1072,12 +1072,12 @@ void lmm_on_disabled_var(lmm_system_t sys, lmm_constraint_t cnstr){
 
     if (elem->variable->staged_weight>0 )
       {
-	//Found a staged variable
-	//TODOLATER: Add random timing function to model reservation protocol fuzziness? Then how to make sure that staged variables will eventually be called?
-	if(lmm_can_enable_var(elem->variable)){
-	  lmm_enable_var(sys,elem->variable);
-	  concurrency++;
-	}	      
+  //Found a staged variable
+  //TODOLATER: Add random timing function to model reservation protocol fuzziness? Then how to make sure that staged variables will eventually be called?
+  if(lmm_can_enable_var(elem->variable)){
+    lmm_enable_var(sys,elem->variable);
+    concurrency++;
+  }        
       }
 
     xbt_assert(concurrency<=cnstr->concurrency_limit,"Concurrency overflow!");
@@ -1093,7 +1093,7 @@ void lmm_on_disabled_var(lmm_system_t sys, lmm_constraint_t cnstr){
  * @return Returns whether a change was made
  */
 void lmm_update_variable_weight(lmm_system_t sys, lmm_variable_t var,
-			       double weight)
+             double weight)
 {
   int minslack;
   
@@ -1232,7 +1232,7 @@ static void lmm_remove_all_modified_set(lmm_system_t sys)
   //To be clean, when visited counter has wrapped around, we force these var->visited values so that variables that were in the modified a long (long long) time ago are not wrongly skipped here, which would lead to very nasty bugs (i.e. not readibily reproducible, and requiring a lot of run time before happening).  
   if (++sys->visited_counter == 1) {
     /* the counter wrapped around, reset each variable->visited */
-	void *_var;
+  void *_var;
     xbt_swag_foreach(_var, &sys->variable_set)
       ((lmm_variable_t)_var)->visited = 0;
   }
@@ -1254,7 +1254,7 @@ double lmm_constraint_get_usage(lmm_constraint_t cnst) {
    lmm_element_t elem = NULL;
 
    xbt_swag_foreach(_elem, elem_list) {
-	 elem = (lmm_element_t)_elem;
+   elem = (lmm_element_t)_elem;
      if ((elem->value > 0)) {
        if (cnst->sharing_policy)
          usage += elem->value * elem->variable->value;
@@ -1280,15 +1280,15 @@ void lmm_check_concurrency(lmm_system_t sys){
       concurrency=0;
      
       xbt_swag_foreach(_elem, &(cnst->enabled_element_set)) {
-	elem = (lmm_element_t)_elem;
-	xbt_assert(elem->variable->weight > 0);
-	  concurrency++;
+  elem = (lmm_element_t)_elem;
+  xbt_assert(elem->variable->weight > 0);
+    concurrency++;
       }
 
       xbt_swag_foreach(_elem, &(cnst->disabled_element_set)) {
-	elem = (lmm_element_t)_elem;
-	//We should have staged variables only if conccurency is reached in some constraint
-	xbt_assert(cnst->concurrency_limit<0 || elem->variable->staged_weight==0 || lmm_cnstrs_min_concurrency_slack(elem->variable) < elem->variable->concurrency_share,"should not have staged variable!");
+  elem = (lmm_element_t)_elem;
+  //We should have staged variables only if conccurency is reached in some constraint
+  xbt_assert(cnst->concurrency_limit<0 || elem->variable->staged_weight==0 || lmm_cnstrs_min_concurrency_slack(elem->variable) < elem->variable->concurrency_share,"should not have staged variable!");
       }
       
       xbt_assert(cnst->concurrency_limit<0 || cnst->concurrency_limit >= concurrency,"concurrency check failed!");

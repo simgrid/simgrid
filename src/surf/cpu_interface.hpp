@@ -87,9 +87,9 @@ public:
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
     lmm_constraint_t constraint,
-	  xbt_dynar_t speedPeakList, int pstate,
-	  int core, double speedPeak, double speedScale,
-	  int initiallyOn);
+    xbt_dynar_t speedPeakList, int pstate,
+    int core, double speedPeak, double speedScale,
+    int initiallyOn);
 
   /**
    * @brief Cpu constructor
@@ -105,8 +105,8 @@ public:
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
       xbt_dynar_t speedPeakList, int pstate,
-	  int core, double speedPeak, double speedScale,
-	  int initiallyOn);
+    int core, double speedPeak, double speedScale,
+    int initiallyOn);
 
   ~Cpu();
 

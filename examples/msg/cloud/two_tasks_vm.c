@@ -70,9 +70,9 @@ static int master_main(int argc, char *argv[])
   launch_computation_worker(vm0);
 
   while(MSG_get_clock()<100) {
-	if (atask != NULL)
-	  XBT_INFO("aTask remaining duration: %g", MSG_task_get_flops_amount(atask));
-	MSG_process_sleep(1);
+  if (atask != NULL)
+    XBT_INFO("aTask remaining duration: %g", MSG_task_get_flops_amount(atask));
+  MSG_process_sleep(1);
   }
 
   MSG_process_sleep(10000);

@@ -108,16 +108,16 @@ double VMHL13Model::shareResources(double now)
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
       this, typeid(surf_cpu_model_pm ).name(), min_by_cpu,
-	        typeid(surf_network_model).name(), min_by_net,
+          typeid(surf_network_model).name(), min_by_net,
             typeid(surf_storage_model).name(), min_by_sto);
 
   double ret = std::max(std::max(min_by_cpu, min_by_net), min_by_sto);
   if (min_by_cpu >= 0.0 && min_by_cpu < ret)
-	ret = min_by_cpu;
+  ret = min_by_cpu;
   if (min_by_net >= 0.0 && min_by_net < ret)
-	ret = min_by_net;
+  ret = min_by_net;
   if (min_by_sto >= 0.0 && min_by_sto < ret)
-	ret = min_by_sto;
+  ret = min_by_sto;
 
   return ret;
 }

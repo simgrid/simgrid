@@ -428,8 +428,8 @@ CpuTiModel::~CpuTiModel()
 }
 
 Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host,
-	                       xbt_dynar_t speedPeak,
-	                       int pstate,
+                         xbt_dynar_t speedPeak,
+                         int pstate,
                            double speedScale,
                            tmgr_trace_t speedTrace,
                            int core,
@@ -440,7 +440,7 @@ Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host,
   xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory speed attribute?");
   CpuTi *cpu = new CpuTi(this, host, speedPeak, pstate, speedScale, speedTrace,
-		           core, initiallyOn, stateTrace);
+               core, initiallyOn, stateTrace);
   return cpu;
 }
 
@@ -526,7 +526,7 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
     p_stateEvent = future_evt_set->add_trace(stateTrace, 0.0, this);
 
   if (speedTrace && xbt_dynar_length(speedTrace->event_list) > 1) {
-	s_tmgr_event_t val;
+  s_tmgr_event_t val;
     // add a fake trace event if periodicity == 0
     xbt_dynar_get_cpy(speedTrace->event_list,
                       xbt_dynar_length(speedTrace->event_list) - 1, &val);
@@ -603,7 +603,7 @@ void CpuTi::updateState(tmgr_trace_iterator_t event_type,
       /* put all action running on cpu to failed */
       for(ActionTiList::iterator it(p_actionSet->begin()), itend(p_actionSet->end())
           ; it != itend ; ++it) {
-	      action = &*it;
+        action = &*it;
         if (action->getState() == SURF_ACTION_RUNNING
          || action->getState() == SURF_ACTION_READY
          || action->getState() == SURF_ACTION_NOT_IN_THE_SYSTEM) {
@@ -787,7 +787,7 @@ CpuAction *CpuTi::sleep(double duration)
   if (duration == NO_MAX_DURATION) {
    /* Move to the *end* of the corresponding action set. This convention
       is used to speed up update_resource_state  */
-	action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
+  action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
     action->p_stateSet = static_cast<CpuTiModel*>(getModel())->p_runningActionSetThatDoesNotNeedBeingChecked;
     action->getStateSet()->push_back(*action);
   }
@@ -816,7 +816,7 @@ void CpuTi::modified(bool modified){
  **********/
 
 CpuTiAction::CpuTiAction(CpuTiModel *model_, double cost, bool failed,
-		                 CpuTi *cpu)
+                     CpuTi *cpu)
  : CpuAction(model_, cost, failed)
 {
   p_cpu = cpu;
@@ -839,8 +839,8 @@ int CpuTiAction::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-	if (action_hook.is_linked())
-	  getStateSet()->erase(getStateSet()->iterator_to(*this));
+  if (action_hook.is_linked())
+    getStateSet()->erase(getStateSet()->iterator_to(*this));
     /* remove from action_set */
     if (action_ti_hook.is_linked())
       p_cpu->p_actionSet->erase(p_cpu->p_actionSet->iterator_to(*this));

@@ -264,8 +264,8 @@ void SIMIX_host_autorestart(sg_host_t host)
 }
 
 smx_synchro_t simcall_HANDLER_execution_start(smx_simcall_t simcall,
-		const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
-	return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound,affinity_mask);
+    const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
+  return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound,affinity_mask);
 }
 smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name,
      double flops_amount, double priority, double bound, unsigned long affinity_mask){
@@ -342,7 +342,7 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name,
   if (!MC_is_active() && !MC_record_replay_is_active()) {
     synchro->execution.surf_exec =
       surf_host_model->executeParallelTask(
-    		  host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
+          host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
 
     synchro->execution.surf_exec->setData(synchro);
   }

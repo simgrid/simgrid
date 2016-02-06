@@ -39,9 +39,9 @@ public:
   AsDijkstra();
   AsDijkstra(bool cached);
   ~AsDijkstra();
-	xbt_node_t routeGraphNewNode(int id, int graph_id);
-	graph_node_map_element_t nodeMapSearch(int id);
-	void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);
+  xbt_node_t routeGraphNewNode(int id, int graph_id);
+  graph_node_map_element_t nodeMapSearch(int id);
+  void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);
     /**
      * For each vertex (node) already in the graph,
      * make sure it also has a loopback link; this loopback
@@ -54,13 +54,13 @@ public:
      * After this function returns, any node in the graph
      * will have a loopback attached to it.
      */
-	void addLoopback();
-	void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat) override;
-	xbt_dynar_t getOneLinkRoutes() override;
-	void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat); // FIXME: this function is dangerously not overriding because of diverging prototype
-	void parseASroute(sg_platf_route_cbarg_t route) override;
-	void parseRoute(sg_platf_route_cbarg_t route) override;
-	void end();
+  void addLoopback();
+  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat) override;
+  xbt_dynar_t getOneLinkRoutes() override;
+  void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat); // FIXME: this function is dangerously not overriding because of diverging prototype
+  void parseASroute(sg_platf_route_cbarg_t route) override;
+  void parseRoute(sg_platf_route_cbarg_t route) override;
+  void end();
 
   xbt_graph_t p_routeGraph = nullptr;      /* xbt_graph */
   xbt_dict_t p_graphNodeMap = nullptr;    /* map */

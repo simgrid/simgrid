@@ -556,13 +556,13 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
             break;
           }
           rank += ranges[i][2]; /* Stride */
-	  if (ranges[i][0]<ranges[i][1]){
-	      if(rank > ranges[i][1])
-	        break;
-	  }else{
-	      if(rank < ranges[i][1])
-	        break;
-	  }
+    if (ranges[i][0]<ranges[i][1]){
+        if(rank > ranges[i][1])
+          break;
+    }else{
+        if(rank < ranges[i][1])
+          break;
+    }
         }
       }
 
@@ -579,13 +579,13 @@ int PMPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
             break;
           }
           rank += ranges[i][2]; /* Stride */
-	  if (ranges[i][0]<ranges[i][1]){
-	    if(rank > ranges[i][1])
-	      break;
-	  }else{
-	    if(rank < ranges[i][1])
-	      break;
-	  }
+    if (ranges[i][0]<ranges[i][1]){
+      if(rank > ranges[i][1])
+        break;
+    }else{
+      if(rank < ranges[i][1])
+        break;
+    }
         }
       }
     }
@@ -622,13 +622,13 @@ int PMPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
             break;
           }
           rank += ranges[i][2]; /* Stride */
-	  if (ranges[i][0]<ranges[i][1]){
-	      if(rank > ranges[i][1])
-	        break;
-	  }else{
-	      if(rank < ranges[i][1])
-	        break;
-	  }
+    if (ranges[i][0]<ranges[i][1]){
+        if(rank > ranges[i][1])
+          break;
+    }else{
+        if(rank < ranges[i][1])
+          break;
+    }
         }
       }
       if (size == 0) {

@@ -58,7 +58,7 @@ static void action_open(const char *const *action) {
   double clock = MSG_get_clock();       /* this "call" is free thanks to inlining */
 
   sprintf(full_name, "%s:%s", MSG_process_get_name(MSG_process_self()), 
-	  file_name);
+    file_name);
 
   ACT_DEBUG("Entering Open: %s (filename: %s)", NAME, file_name);
   file = MSG_file_open(file_name, NULL);

@@ -210,8 +210,8 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-	          "\tExample: %s platform.xml deployment.xml\n", 
-	          argv[0], argv[0]);
+            "\tExample: %s platform.xml deployment.xml\n", 
+            argv[0], argv[0]);
    
 
   res = test_all(argv[1], argv[2]);

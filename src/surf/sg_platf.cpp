@@ -54,7 +54,7 @@ void sg_platf_exit(void) {
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
   xbt_assert(! sg_host_by_name(host->id),
-		     "Refusing to create a second host named '%s'.", host->id);
+         "Refusing to create a second host named '%s'.", host->id);
 
   simgrid::surf::NetCard *net = NULL;
   simgrid::surf::As* current_routing = routing_get_current();
@@ -63,7 +63,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
 
   sg_host_t h = simgrid::s4u::Host::by_name_or_create(host->id);
   simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu(
-		h,
+    h,
         host->speed_peak,
         host->pstate,
         host->speed_scale,
@@ -166,13 +166,13 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
       ((storage_type_t) stype)->type_id,
       storage->content,
       storage->content_type,
-	  storage->properties);
+    storage->properties);
 
   surf_storage_model->createStorage(storage->id,
                                      ((storage_type_t) stype)->type_id,
                                      storage->content,
                                      storage->content_type,
-									 storage->properties,
+                   storage->properties,
                                      storage->attach);
 }
 void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){

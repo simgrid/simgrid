@@ -29,7 +29,7 @@ void AsNone::getRouteAndLatency(NetCard * /*src*/, NetCard * /*dst*/,
 
 void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*edges*/)
 {
-	XBT_INFO("No routing no graph");
+  XBT_INFO("No routing no graph");
 }
 
 sg_platf_route_cbarg_t AsNone::getBypassRoute(NetCard * /*src*/, NetCard * /*dst*/, double * /*lat*/) {

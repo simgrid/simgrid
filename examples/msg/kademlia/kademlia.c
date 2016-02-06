@@ -474,8 +474,8 @@ int main(int argc, char *argv[])
 
   /* Check the arguments */
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-	     "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-	     argv[0], argv[0]);
+       "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
+       argv[0], argv[0]);
 
   const char *platform_file = argv[1];
   const char *deployment_file = argv[2];

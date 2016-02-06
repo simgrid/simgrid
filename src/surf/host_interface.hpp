@@ -73,8 +73,8 @@ public:
  * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
 class Host :
- 	 public simgrid::surf::Resource,
-	 public simgrid::surf::PropertyHolder {
+    public simgrid::surf::Resource,
+   public simgrid::surf::PropertyHolder {
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
 
@@ -90,7 +90,7 @@ public:
    * @param cpu The Cpu associated to this Host
    */
   Host(HostModel *model, const char *name, xbt_dict_t props,
-		      xbt_dynar_t storage, Cpu *cpu);
+          xbt_dynar_t storage, Cpu *cpu);
 
   /**
    * @brief Host constructor

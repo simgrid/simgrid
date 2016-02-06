@@ -96,7 +96,7 @@ namespace surf {
 
 NetworkSmpiModel::NetworkSmpiModel()
  : NetworkCm02Model() {
-	m_haveGap=true;
+  m_haveGap=true;
 }
 
 NetworkSmpiModel::~NetworkSmpiModel(){

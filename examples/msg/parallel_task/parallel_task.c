@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n"
-	     "\tExample: %s msg_platform.xml", argv[0], argv[0]);
+       "\tExample: %s msg_platform.xml", argv[0], argv[0]);
   res = test_all(argv[1]);
 
   return res != MSG_OK;

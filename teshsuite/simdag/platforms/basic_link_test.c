@@ -13,8 +13,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic_link_test, sd,
                                 "SimDag test basic_link_test");
 
 static int cmp_link(const void*a, const void*b) {
-	const char *nameA = sg_link_name(*(SD_link_t*)a);
-	const char *nameB = sg_link_name(*(SD_link_t*)b);
+  const char *nameA = sg_link_name(*(SD_link_t*)a);
+  const char *nameB = sg_link_name(*(SD_link_t*)b);
   return strcmp( nameA, nameB );
 }
 

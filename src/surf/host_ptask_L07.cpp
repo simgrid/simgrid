@@ -54,10 +54,10 @@ HostL07Model::HostL07Model() : HostModel() {
   surf_cpu_model_pm = new CpuL07Model(this,p_maxminSystem);
 
   routing_model_create(surf_network_model->createLink("__loopback__",
-	                                                  498000000, NULL,
-	                                                  0.000015, NULL,
-	                                                  1/*ON*/, NULL,
-	                                                  SURF_LINK_FATPIPE, NULL));
+                                                    498000000, NULL,
+                                                    0.000015, NULL,
+                                                    1/*ON*/, NULL,
+                                                    SURF_LINK_FATPIPE, NULL));
 }
 
 HostL07Model::~HostL07Model() {
@@ -66,26 +66,26 @@ HostL07Model::~HostL07Model() {
 }
 
 CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
-	: CpuModel()
-	, p_hostModel(hmodel)
-	{
-	  p_maxminSystem = sys;
-	}
+  : CpuModel()
+  , p_hostModel(hmodel)
+  {
+    p_maxminSystem = sys;
+  }
 CpuL07Model::~CpuL07Model() {
-	surf_cpu_model_pm = NULL;
-	lmm_system_free(p_maxminSystem);
-	p_maxminSystem = NULL;
+  surf_cpu_model_pm = NULL;
+  lmm_system_free(p_maxminSystem);
+  p_maxminSystem = NULL;
 }
 NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
-	: NetworkModel()
-	, p_hostModel(hmodel)
-	{
-	  p_maxminSystem = sys;
-	}
+  : NetworkModel()
+  , p_hostModel(hmodel)
+  {
+    p_maxminSystem = sys;
+  }
 NetworkL07Model::~NetworkL07Model()
 {
-	surf_network_model = NULL;
-	p_maxminSystem = NULL; // Avoid multi-free
+  surf_network_model = NULL;
+  p_maxminSystem = NULL; // Avoid multi-free
 }
 
 
@@ -99,8 +99,8 @@ double HostL07Model::shareResources(double /*now*/)
                                               bottleneck_solve);
 
   for(ActionList::iterator it(running_actions->begin()), itend(running_actions->end())
-	 ; it != itend ; ++it) {
-	action = static_cast<L07Action*>(&*it);
+   ; it != itend ; ++it) {
+  action = static_cast<L07Action*>(&*it);
     if (action->m_latency > 0) {
       if (min < 0) {
         min = action->m_latency;
@@ -125,9 +125,9 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
   ActionList *actionSet = getRunningActionSet();
 
   for(ActionList::iterator it = actionSet->begin(), itNext = it
-	 ; it != actionSet->end()
-	 ; it =  itNext) {
-	++itNext;
+   ; it != actionSet->end()
+   ; it =  itNext) {
+  ++itNext;
     action = static_cast<L07Action*>(&*it);
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
@@ -184,18 +184,18 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
 }
 
 Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t *host_list,
-		  double *flops_amount, double *bytes_amount,
-		  double rate) {
-	return new L07Action(this, host_nb, host_list, flops_amount, bytes_amount, rate);
+      double *flops_amount, double *bytes_amount,
+      double rate) {
+  return new L07Action(this, host_nb, host_list, flops_amount, bytes_amount, rate);
 }
 
 
 L07Action::L07Action(Model *model, int host_nb,
-		sg_host_t*host_list,
-		double *flops_amount,
-		double *bytes_amount,
-		double rate)
-	: CpuAction(model, 1, 0)
+    sg_host_t*host_list,
+    double *flops_amount,
+    double *bytes_amount,
+    double rate)
+  : CpuAction(model, 1, 0)
 {
   unsigned int cpt;
   int nb_link = 0;
@@ -321,13 +321,13 @@ Link* NetworkL07Model::createLink(const char *name,
                                  xbt_dict_t properties)
 {
   xbt_assert(!Link::byName(name),
-	         "Link '%s' declared several times in the platform file.", name);
+           "Link '%s' declared several times in the platform file.", name);
 
   Link* link = new LinkL07(this, name, properties,
-		             bw_initial, bw_trace,
-					 lat_initial, lat_trace,
-					 initiallyOn, state_trace,
-					 policy);
+                 bw_initial, bw_trace,
+           lat_initial, lat_trace,
+           initiallyOn, state_trace,
+           policy);
   Link::onCreation(link);
   return link;
 }
@@ -388,11 +388,11 @@ void HostL07Model::addTraces()
  ************/
 
 CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host,
-	             xbt_dynar_t speedPeakList, int pstate,
-				 double speedScale, tmgr_trace_t speedTrace,
-		         int core, int initiallyOn, tmgr_trace_t state_trace)
+               xbt_dynar_t speedPeakList, int pstate,
+         double speedScale, tmgr_trace_t speedTrace,
+             int core, int initiallyOn, tmgr_trace_t state_trace)
  : Cpu(model, host, speedPeakList, pstate,
-	   core, xbt_dynar_get_as(speedPeakList,pstate,double), speedScale, initiallyOn)
+     core, xbt_dynar_get_as(speedPeakList,pstate,double), speedScale, initiallyOn)
 {
   p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,pstate,double) * speedScale);
 
@@ -408,13 +408,13 @@ CpuL07::~CpuL07()
 }
 
 LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
-		         double bw_initial,
-		         tmgr_trace_t bw_trace,
-		         double lat_initial,
-		         tmgr_trace_t lat_trace,
-		         int initiallyOn,
-		         tmgr_trace_t state_trace,
-		         e_surf_link_sharing_policy_t policy)
+             double bw_initial,
+             tmgr_trace_t bw_trace,
+             double lat_initial,
+             tmgr_trace_t lat_trace,
+             int initiallyOn,
+             tmgr_trace_t state_trace,
+             e_surf_link_sharing_policy_t policy)
  : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), future_evt_set, state_trace)
 {
   m_bwCurrent = bw_initial;
@@ -431,7 +431,7 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
     p_latEvent = future_evt_set->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
-	lmm_constraint_shared(getConstraint());
+  lmm_constraint_shared(getConstraint());
 }
 
 Action *CpuL07::execution_start(double size)
@@ -462,8 +462,8 @@ bool CpuL07::isUsed(){
 
 /** @brief take into account changes of speed (either load or max) */
 void CpuL07::onSpeedChange() {
-	lmm_variable_t var = NULL;
-	lmm_element_t elem = NULL;
+  lmm_variable_t var = NULL;
+  lmm_element_t elem = NULL;
 
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), m_speedPeak * m_speedScale);
     while ((var = lmm_get_var_from_cnst
@@ -475,7 +475,7 @@ void CpuL07::onSpeedChange() {
                                 m_speedScale * m_speedPeak);
     }
 
-	Cpu::onSpeedChange();
+  Cpu::onSpeedChange();
 }
 
 

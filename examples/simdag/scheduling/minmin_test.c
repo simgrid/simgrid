@@ -112,8 +112,8 @@ static double finish_on_at(SD_task_t task, sg_host_t workstation)
         grand_parents = SD_task_get_parents(parent);
 
         xbt_assert(xbt_dynar_length(grand_parents) <2, 
-		   "Error: transfer %s has 2 parents", 
-		   SD_task_get_name(parent));
+       "Error: transfer %s has 2 parents", 
+       SD_task_get_name(parent));
         
         xbt_dynar_get_cpy(grand_parents, 0, &grand_parent);
 

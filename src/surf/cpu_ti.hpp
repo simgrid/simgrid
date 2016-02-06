@@ -55,7 +55,7 @@ class CpuTiTgmr {
 public:
   CpuTiTgmr(trace_type type, double value)
     : m_type(type), m_value(value)
-	{};
+  {};
   CpuTiTgmr(tmgr_trace_t speedTrace, double value);
   ~CpuTiTgmr();
 

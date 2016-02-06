@@ -408,7 +408,7 @@ void smpi_mpi_start(MPI_Request request)
 
     int rank = request->src;
     if (TRACE_smpi_view_internals()) {
-    	TRACE_smpi_send(rank, rank, receiver,request->size);
+      TRACE_smpi_send(rank, rank, receiver,request->size);
     }
     print_request("New send", request);
     
@@ -501,7 +501,7 @@ void smpi_mpi_start(MPI_Request request)
 
     /* FIXME: detached sends are not traceable (request->action == NULL) */
     if (request->action)
-    	simcall_set_category(request->action, TRACE_internal_smpi_get_category());
+      simcall_set_category(request->action, TRACE_internal_smpi_get_category());
 
     if (async_small_thresh != 0 || request->flags & RMA)
       xbt_mutex_release(mut);
@@ -1419,10 +1419,10 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count,
       if(src != root) {
         // FIXME: possibly overkill we we have contiguous/noncontiguous data
         //  mapping...
-   	    if (!smpi_process_get_replaying())
+         if (!smpi_process_get_replaying())
           tmpbufs[index] = xbt_malloc(count * dataext);
-   	    else
-   	      tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
+         else
+           tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
         requests[index] =
           smpi_irecv_init(tmpbufs[index], count, datatype, src,
                           system_tag, comm);

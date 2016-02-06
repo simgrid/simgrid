@@ -36,7 +36,7 @@
 
 SG_BEGIN_DECL()
 
-/********************************** Configuration of MC **************************************/	
+/********************************** Configuration of MC **************************************/  
 
 extern XBT_PUBLIC(int) _sg_do_model_check;
 extern XBT_PRIVATE int _sg_do_model_check_record;

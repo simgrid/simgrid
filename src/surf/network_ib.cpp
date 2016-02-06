@@ -145,9 +145,9 @@ void NetworkIBModel::computeIBfactors(IBNode *root) {
 
     if(num_comm_out!=1){
       if((*it)->destination->nbActiveCommsDown > 2)//number of comms sent to the receiving node
-	my_penalty_out = num_comm_out * Bs * ys;
+  my_penalty_out = num_comm_out * Bs * ys;
       else
-	my_penalty_out = num_comm_out * Bs;
+  my_penalty_out = num_comm_out * Bs;
     }
 
     max_penalty_out = std::max(max_penalty_out,my_penalty_out);
@@ -160,8 +160,8 @@ void NetworkIBModel::computeIBfactors(IBNode *root) {
     int nb_comms = (*it)->destination->nbActiveCommsDown;//total number of incoming comms
     if(nb_comms!=1)
       my_penalty_in = ((*it)->destination->ActiveCommsDown)[root] //number of comm sent to dest by root node
-		      * Be 
-		      * (*it)->destination->ActiveCommsDown.size();//number of different nodes sending to dest
+          * Be 
+          * (*it)->destination->ActiveCommsDown.size();//number of different nodes sending to dest
     
     double penalty = std::max(my_penalty_in,max_penalty_out);
     
@@ -214,11 +214,11 @@ void NetworkIBModel::updateIBfactors(NetworkAction *action, IBNode *from, IBNode
 
     to->nbActiveCommsDown--;
     for (std::vector<ActiveComm*>::iterator it= from->ActiveCommsUp.begin(); 
-	 it != from->ActiveCommsUp.end(); ++it) {
+   it != from->ActiveCommsUp.end(); ++it) {
       if((*it)->action==action){
-	comm=(*it);
-	from->ActiveCommsUp.erase(it);
-	break;
+  comm=(*it);
+  from->ActiveCommsUp.erase(it);
+  break;
       }
     }
     action->unref();

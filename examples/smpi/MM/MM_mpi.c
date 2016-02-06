@@ -81,16 +81,16 @@ int main(int argc, char ** argv)
       case 'h':
         XBT_INFO(
                     "Usage: mxm_cblas_test [options]\n"
-                    "	-M I	M size (default: %zu)\n"
-                    "	-N I	N size (default: %zu)\n"
-                    "	-K I	K size (default: %zu)\n"
-                    "	-B I	Block size on the k dimension(default: %zu)\n"
-                    "	-G I	Number of processor groups(default: %zu)\n"
-                    "	-g I	group index(default: %zu)\n"
-                    "	-k I	group rank(default: %zu)\n"
-                    "	-r I	processor row size (default: %zu)\n"
-                    "	-c I	processor col size (default: %zu)\n"
-                    "	-h	help\n",
+                    "  -M I  M size (default: %zu)\n"
+                    "  -N I  N size (default: %zu)\n"
+                    "  -K I  K size (default: %zu)\n"
+                    "  -B I  Block size on the k dimension(default: %zu)\n"
+                    "  -G I  Number of processor groups(default: %zu)\n"
+                    "  -g I  group index(default: %zu)\n"
+                    "  -k I  group rank(default: %zu)\n"
+                    "  -r I  processor row size (default: %zu)\n"
+                    "  -c I  processor col size (default: %zu)\n"
+                    "  -h  help\n",
                     m, n, k, Block_size, NB_groups, group, key, row, col);
         return 0;
       case 'M':

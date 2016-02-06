@@ -13,9 +13,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 
 extern "C" {
-	#undef CLEANUP
-	#include "dax_dtd.h"
-	#include "dax_dtd.c"
+  #undef CLEANUP
+  #include "dax_dtd.h"
+  #include "dax_dtd.c"
 }
 
 bool children_are_marked(SD_task_t task);

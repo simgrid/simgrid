@@ -68,12 +68,12 @@ public:
 
   /** @brief Destructor */
   ~NetworkModel() {
-	if (p_maxminSystem)
-	  lmm_system_free(p_maxminSystem);
-	if (p_actionHeap)
-	  xbt_heap_free(p_actionHeap);
-	if (p_modifiedSet)
-	  delete p_modifiedSet;
+  if (p_maxminSystem)
+    lmm_system_free(p_maxminSystem);
+  if (p_actionHeap)
+    xbt_heap_free(p_actionHeap);
+  if (p_modifiedSet)
+    delete p_modifiedSet;
   }
 
   /**
@@ -113,7 +113,7 @@ public:
    * @return The action representing the communication
    */
   virtual Action *communicate(NetCard *src, NetCard *dst,
-		                           double size, double rate)=0;
+                               double size, double rate)=0;
 
   /** @brief Function pointer to the function to use to solve the lmm_system_t
    *
@@ -166,8 +166,8 @@ public:
   * @details A Link represents the link between two [hosts](\ref Host)
   */
 class Link :
-		public simgrid::surf::Resource,
-		public simgrid::surf::PropertyHolder {
+    public simgrid::surf::Resource,
+    public simgrid::surf::PropertyHolder {
 public:
   /**
    * @brief Link constructor
@@ -198,9 +198,9 @@ public:
 protected:
   ~Link();
 public:
-	void destroy(); // Must be called instead of the destructor
+  void destroy(); // Must be called instead of the destructor
 private:
-	bool currentlyDestroying_ = false;
+  bool currentlyDestroying_ = false;
 
 public:
   /** @brief Callback signal fired when a new Link is created.

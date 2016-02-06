@@ -18,73 +18,73 @@ void jvm_bind(JNIEnv *env, jobject jvm, msg_vm_t vm);
 msg_vm_t jvm_get_native(JNIEnv *env, jobject jvm);
 
 /*
- * Class			org_simgrid_msg_VM
- * Method			nativeInit
- * Signature	()V
+ * Class      org_simgrid_msg_VM
+ * Method      nativeInit
+ * Signature  ()V
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass);
 
 /**
- * Class			org_simgrid_msg_VM
- * Method			isCreated
- * Signature	()B
+ * Class      org_simgrid_msg_VM
+ * Method      isCreated
+ * Signature  ()B
  */
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_VM_isCreated(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			isRunning
- * Signature	()B
+ * Class      org_simgrid_msg_VM
+ * Method      isRunning
+ * Signature  ()B
  */
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_VM_isRunning(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			isMigrating
- * Signature	()B
+ * Class      org_simgrid_msg_VM
+ * Method      isMigrating
+ * Signature  ()B
  */
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_VM_isMigrating(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			isSuspended
- * Signature	()B
+ * Class      org_simgrid_msg_VM
+ * Method      isSuspended
+ * Signature  ()B
  */
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_VM_isSuspended(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			isResuming
- * Signature	()B
+ * Class      org_simgrid_msg_VM
+ * Method      isResuming
+ * Signature  ()B
  */
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_VM_isResuming(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			isSuspended
- * Signature	()B
+ * Class      org_simgrid_msg_VM
+ * Method      isSuspended
+ * Signature  ()B
  */
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_VM_isSaving(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			isSave
- * Signature	()B
+ * Class      org_simgrid_msg_VM
+ * Method      isSave
+ * Signature  ()B
  */
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_VM_isSaved(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			isResuming
- * Signature	()B
+ * Class      org_simgrid_msg_VM
+ * Method      isResuming
+ * Signature  ()B
  */
 JNIEXPORT jint JNICALL
 Java_org_simgrid_msg_VM_isRestoring(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			setBound
- * Signature	()B
+ * Class      org_simgrid_msg_VM
+ * Method      setBound
+ * Signature  ()B
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jint load); 
@@ -96,7 +96,7 @@ Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jint load);
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring jname,
-		               jint jncore, jint jramsize, jint jnetcap, jstring jdiskpath, jint jdisksize, jint dprate, jint mig_netspeed);
+                   jint jncore, jint jramsize, jint jnetcap, jstring jdiskpath, jint jdisksize, jint dprate, jint mig_netspeed);
 
 /**
  * Class            org_simgrid_msg_VM
@@ -106,37 +106,37 @@ Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_nativeFinalize(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			start
- * Signature	(I)V
+ * Class      org_simgrid_msg_VM
+ * Method      start
+ * Signature  (I)V
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_start(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			nativeMigrate
- * Signature	(Lorg/simgrid/msg/Host;)V
+ * Class      org_simgrid_msg_VM
+ * Method      nativeMigrate
+ * Signature  (Lorg/simgrid/msg/Host;)V
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject jvm, jobject jhost);
 /**
- * Class			org_simgrid_msg_VM
- * Method			suspend
- * Signature	()V
+ * Class      org_simgrid_msg_VM
+ * Method      suspend
+ * Signature  ()V
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_suspend(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			resume
- * Signature	()V
+ * Class      org_simgrid_msg_VM
+ * Method      resume
+ * Signature  ()V
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_resume(JNIEnv *env, jobject jvm);
 /**
- * Class			org_simgrid_msg_VM
- * Method			shutdown
- * Signature	()V
+ * Class      org_simgrid_msg_VM
+ * Method      shutdown
+ * Signature  ()V
  */
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_shutdown(JNIEnv *env, jobject jvm);

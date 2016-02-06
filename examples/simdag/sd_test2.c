@@ -61,8 +61,8 @@ int main(int argc, char **argv)
 
   /* creation of the environment */
   xbt_assert(strstr(argv[1],".xml"), 
-	     "Unsupported platform description style (not XML): %s",
-	     argv[1]);
+       "Unsupported platform description style (not XML): %s",
+       argv[1]);
   SD_create_environment(argv[1]);
 
   /* getting platform infos */

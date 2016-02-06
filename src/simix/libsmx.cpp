@@ -628,7 +628,7 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
  * \brief Get the kill time of a process (or 0 if unset).
  */
 double simcall_process_get_kill_time(smx_process_t process) {
-	return SIMIX_timer_get_date(process->kill_timer);
+  return SIMIX_timer_get_date(process->kill_timer);
 }
 
 /**

@@ -65,8 +65,8 @@ Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls,
 
   /* get the C string from the java string */
   if (jname == NULL) {
-  	jxbt_throw_null(env,bprintf("No host can have a null name"));
-  	return NULL;
+    jxbt_throw_null(env,bprintf("No host can have a null name"));
+    return NULL;
   }
   const char *name = env->GetStringUTFChars(jname, 0);
   storage = MSG_storage_get_by_name(name);
@@ -170,7 +170,7 @@ Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, jobject jstorage, jobject 
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject jname, jobject jvalue) {
-	msg_storage_t storage = jstorage_get_native(env, jstorage);
+  msg_storage_t storage = jstorage_get_native(env, jstorage);
 
   if (!storage) {
     jxbt_throw_notbound(env, "storage", jstorage);

@@ -76,13 +76,13 @@ double surf_solve(double max_date)
   XBT_DEBUG("Looking for next event in physical models");
   double next_event_phy = surf_host_model->shareResources(NOW);
   if ((surf_min < 0.0 || next_event_phy < surf_min) && next_event_phy >= 0.0) {
-	  surf_min = next_event_phy;
+    surf_min = next_event_phy;
   }
   if (surf_vm_model != NULL) {
-	  XBT_DEBUG("Looking for next event in virtual models");
-	  double next_event_virt = surf_vm_model->shareResources(NOW);
-	  if ((surf_min < 0.0 || next_event_virt < surf_min) && next_event_virt >= 0.0)
-		  surf_min = next_event_virt;
+    XBT_DEBUG("Looking for next event in virtual models");
+    double next_event_virt = surf_vm_model->shareResources(NOW);
+    if ((surf_min < 0.0 || next_event_virt < surf_min) && next_event_virt >= 0.0)
+      surf_min = next_event_virt;
   }
 
   XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", surf_min);
@@ -146,7 +146,7 @@ double surf_solve(double max_date)
 
   // Inform the models of the date change
   xbt_dynar_foreach(all_existing_models, iter, model) {
-	  model->updateActionsState(NOW, surf_min);
+    model->updateActionsState(NOW, surf_min);
   }
 
   TRACE_paje_dump_buffer (0);
@@ -160,7 +160,7 @@ double surf_solve(double max_date)
 
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
   if (model->getDoneActionSet()->empty())
-	return NULL;
+  return NULL;
   surf_action_t res = &model->getDoneActionSet()->front();
   model->getDoneActionSet()->pop_front();
   return res;
@@ -168,7 +168,7 @@ surf_action_t surf_model_extract_done_action_set(surf_model_t model){
 
 surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
   if (model->getFailedActionSet()->empty())
-	return NULL;
+  return NULL;
   surf_action_t res = &model->getFailedActionSet()->front();
   model->getFailedActionSet()->pop_front();
   return res;
@@ -198,7 +198,7 @@ const char *surf_resource_name(surf_cpp_resource_t resource){
 }
 
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
-	return host->pimpl_cpu->sleep(duration);
+  return host->pimpl_cpu->sleep(duration);
 }
 
 

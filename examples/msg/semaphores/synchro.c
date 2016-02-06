@@ -72,9 +72,9 @@ int main(int argc, char* argv[]) {
  
 
   MSG_process_create_with_arguments(xbt_strdup("Alice"), peer, NULL, 
-				    h, 8, aliceTimes);
+            h, 8, aliceTimes);
   MSG_process_create_with_arguments(xbt_strdup("Bob"), peer, NULL, 
-				    h, 8, bobTimes);
+            h, 8, bobTimes);
 
   msg_error_t res = MSG_main();
   printf("Finished\n");

@@ -145,7 +145,7 @@ void sg_platf_new_netcard(sg_platf_host_link_cbarg_t netcard)
   // If dynar is is greater than netcard id and if the host_link is already defined
   if((int)xbt_dynar_length(current_routing->p_linkUpDownList) > info->getId() &&
       xbt_dynar_get_as(current_routing->p_linkUpDownList, info->getId(), void*))
-	surf_parse_error("Host_link for '%s' is already defined!",netcard->id);
+  surf_parse_error("Host_link for '%s' is already defined!",netcard->id);
 
   XBT_DEBUG("Push Host_link for host '%s' to position %d", info->getName(), info->getId());
   xbt_dynar_set_as(current_routing->p_linkUpDownList, info->getId(), s_surf_parsing_link_up_down_t, link_up_down);
@@ -160,13 +160,13 @@ simgrid::surf::NetCard *routing_add_host(
   if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
     current_routing->p_hierarchy = SURF_ROUTING_BASE;
   xbt_assert(!sg_host_by_name(host->id),
-		     "Reading a host, processing unit \"%s\" already exists", host->id);
+         "Reading a host, processing unit \"%s\" already exists", host->id);
 
   simgrid::surf::NetCard *netcard =
     new simgrid::surf::NetCardImpl(xbt_strdup(host->id),
-		                                    -1,
-		                                    SURF_NETWORK_ELEMENT_HOST,
-		                                    current_routing);
+                                        -1,
+                                        SURF_NETWORK_ELEMENT_HOST,
+                                        current_routing);
   netcard->setId(current_routing->parsePU(netcard));
   sg_host_t h = sg_host_by_name_or_create(host->id);
   h->pimpl_netcard = netcard;
@@ -791,13 +791,13 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
       memset(&host, 0, sizeof(host));
       host.id = host_id;
       if ((cluster->properties != NULL) && (!xbt_dict_is_empty(cluster->properties))) {
-    	  xbt_dict_cursor_t cursor=NULL;
-    	  char *key,*data;
-    	  host.properties = xbt_dict_new();
+        xbt_dict_cursor_t cursor=NULL;
+        char *key,*data;
+        host.properties = xbt_dict_new();
 
-    	  xbt_dict_foreach(cluster->properties,cursor,key,data) {
-    		  xbt_dict_set(host.properties, key, xbt_strdup(data),free);
-    	  }
+        xbt_dict_foreach(cluster->properties,cursor,key,data) {
+          xbt_dict_set(host.properties, key, xbt_strdup(data),free);
+        }
       }
       if (cluster->availability_trace && strcmp(cluster->availability_trace, "")) {
         xbt_dict_set(patterns, "radical", bprintf("%d", i), NULL);
@@ -895,7 +895,7 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
       }
       else {
       static_cast<AsCluster*>(current_routing)->create_links_for_node(cluster, i, rankId, rankId*
-    		  static_cast<AsCluster*>(current_routing)->p_nb_links_per_node
+          static_cast<AsCluster*>(current_routing)->p_nb_links_per_node
           + static_cast<AsCluster*>(current_routing)->p_has_loopback
           + static_cast<AsCluster*>(current_routing)->p_has_limiter );
       }
@@ -1174,10 +1174,10 @@ static void check_disk_attachment()
   simgrid::surf::NetCard *host_elm;
   xbt_lib_foreach(storage_lib, cursor, key, data) {
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
-	  simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-	  host_elm = sg_netcard_by_name_or_null(storage->p_attach);
-	  if(!host_elm)
-		  surf_parse_error("Unable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->p_attach);
+    simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
+    host_elm = sg_netcard_by_name_or_null(storage->p_attach);
+    if(!host_elm)
+      surf_parse_error("Unable to attach storage %s: host %s doesn't exist.", storage->getName(), storage->p_attach);
     }
   }
 }
@@ -1220,8 +1220,8 @@ namespace surf {
 
 RoutingPlatf::~RoutingPlatf()
 {
-	xbt_dynar_free(&p_lastRoute);
-	finalize_rec(p_root);
+  xbt_dynar_free(&p_lastRoute);
+  finalize_rec(p_root);
 }
 
 }

@@ -442,23 +442,23 @@ void ETag_surfxml_host(void)    {
   XBT_DEBUG("Buffer: %s", buf);
   host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
   if (strchr(buf, ',') == NULL){
-	  double speed = parse_cpu_speed(A_surfxml_host_power);
-	  xbt_dynar_push_as(host.speed_peak,double, speed);
+    double speed = parse_cpu_speed(A_surfxml_host_power);
+    xbt_dynar_push_as(host.speed_peak,double, speed);
   }
   else {
-	  xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
-	  unsigned int i;
-	  for (i = 0; i < xbt_dynar_length(pstate_list); i++) {
-		  double speed;
-		  char* speed_str;
+    xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
+    unsigned int i;
+    for (i = 0; i < xbt_dynar_length(pstate_list); i++) {
+      double speed;
+      char* speed_str;
 
-		  xbt_dynar_get_cpy(pstate_list, i, &speed_str);
-		  xbt_str_trim(speed_str, NULL);
-		  speed = parse_cpu_speed(speed_str);
-		  xbt_dynar_push_as(host.speed_peak, double, speed);
-		  XBT_DEBUG("Speed value: %f", speed);
-	  }
-	  xbt_dynar_free(&pstate_list);
+      xbt_dynar_get_cpy(pstate_list, i, &speed_str);
+      xbt_str_trim(speed_str, NULL);
+      speed = parse_cpu_speed(speed_str);
+      xbt_dynar_push_as(host.speed_peak, double, speed);
+      XBT_DEBUG("Speed value: %f", speed);
+    }
+    xbt_dynar_free(&pstate_list);
   }
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);

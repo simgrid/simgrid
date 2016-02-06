@@ -158,7 +158,7 @@ namespace simgrid {
 namespace surf {
 
 NetworkCm02Model::NetworkCm02Model()
-	:NetworkModel()
+  :NetworkModel()
 {
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "network/optim");
   int select =
@@ -180,18 +180,18 @@ NetworkCm02Model::NetworkCm02Model()
   }
 
   if (!p_maxminSystem)
-	p_maxminSystem = lmm_system_new(m_selectiveUpdate);
+  p_maxminSystem = lmm_system_new(m_selectiveUpdate);
 
   routing_model_create(createLink("__loopback__",
-	                              498000000, NULL, 0.000015, NULL,
-	                              1 /*SURF_RESOURCE_ON*/, NULL,
-	                              SURF_LINK_FATPIPE, NULL));
+                                498000000, NULL, 0.000015, NULL,
+                                1 /*SURF_RESOURCE_ON*/, NULL,
+                                SURF_LINK_FATPIPE, NULL));
 
   if (p_updateMechanism == UM_LAZY) {
-	p_actionHeap = xbt_heap_new(8, NULL);
-	xbt_heap_set_update_callback(p_actionHeap, surf_action_lmm_update_index_heap);
-	p_modifiedSet = new ActionLmmList();
-	p_maxminSystem->keep_track = p_modifiedSet;
+  p_actionHeap = xbt_heap_new(8, NULL);
+  xbt_heap_set_update_callback(p_actionHeap, surf_action_lmm_update_index_heap);
+  p_modifiedSet = new ActionLmmList();
+  p_maxminSystem->keep_track = p_modifiedSet;
   }
 }
 
@@ -210,7 +210,7 @@ Link* NetworkCm02Model::createLink(const char *name,
              name);
 
   Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial, future_evt_set,
-				             initiallyOn, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
+                     initiallyOn, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
   Link::onCreation(link);
   return link;
 }
@@ -273,7 +273,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
 
   for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
      ; it != itend ; it=itNext) {
-	++itNext;
+  ++itNext;
 
     action = static_cast<NetworkCm02Action*> (&*it);
     XBT_DEBUG("Something happened to action %p", action);
@@ -359,14 +359,14 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
              src->getName(), dst->getName());
 
   xbt_dynar_foreach(route, i, _link) {
-	link = static_cast<NetworkCm02Link*>(_link);
+  link = static_cast<NetworkCm02Link*>(_link);
     if (link->isOff()) {
       failed = 1;
       break;
     }
   }
   if (sg_network_crosstraffic == 1) {
-	  routing_platf->getRouteAndLatency(dst, src, &back_route, NULL);
+    routing_platf->getRouteAndLatency(dst, src, &back_route, NULL);
     xbt_dynar_foreach(back_route, i, _link) {
       link = static_cast<NetworkCm02Link*>(_link);
       if (link->isOff()) {
@@ -397,7 +397,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
     }
   }
   xbt_dynar_foreach(route, i, _link) {
-	link = static_cast<NetworkCm02Link*>(_link);
+  link = static_cast<NetworkCm02Link*>(_link);
     double bb = bandwidthFactor(size) * link->getBandwidth();
     bandwidth_bound =
         (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
@@ -440,7 +440,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
   }
 
   xbt_dynar_foreach(route, i, _link) {
-	link = static_cast<NetworkCm02Link*>(_link);
+  link = static_cast<NetworkCm02Link*>(_link);
     lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), 1.0);
   }
 
@@ -514,16 +514,16 @@ void NetworkCm02Model::addTraces(){
  * Resource *
  ************/
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
-	                           lmm_system_t system,
-	                           double constraint_value,
-	                           sg_future_evt_set_t fes,
-	                           int initiallyOn,
-	                           tmgr_trace_t state_trace,
-	                           double metric_peak,
-	                           tmgr_trace_t metric_trace,
-	                           double lat_initial,
-	                           tmgr_trace_t lat_trace,
-	                           e_surf_link_sharing_policy_t policy)
+                             lmm_system_t system,
+                             double constraint_value,
+                             sg_future_evt_set_t fes,
+                             int initiallyOn,
+                             tmgr_trace_t state_trace,
+                             double metric_peak,
+                             tmgr_trace_t metric_trace,
+                             double lat_initial,
+                             tmgr_trace_t lat_trace,
+                             e_surf_link_sharing_policy_t policy)
 : Link(model, name, props, lmm_constraint_new(system, this, constraint_value), fes, state_trace)
 {
   if (initiallyOn)
@@ -540,10 +540,10 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
 
   m_latCurrent = lat_initial;
   if (lat_trace)
-	p_latEvent = fes->add_trace(lat_trace, 0.0, this);
+  p_latEvent = fes->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
-	lmm_constraint_shared(getConstraint());
+  lmm_constraint_shared(getConstraint());
 }
 
 

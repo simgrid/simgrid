@@ -208,7 +208,7 @@ XBT_PUBLIC(void) MSG_config(const char *key, const char *value);
  *  We allow to link against compiled versions that differ in the patch level.
  */
 #define MSG_init(argc,argv)  do {                                                          \
-	sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
+  sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
     MSG_init_nocheck(argc,argv);                                                        \
   } while (0)
 

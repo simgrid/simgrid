@@ -87,7 +87,7 @@ static int __can_be_started(sg_host_t vm)
   }
 
   xbt_dynar_free(&dyn_vms);
-	return 1;
+  return 1;
 }
 
 void SIMIX_vm_start(sg_host_t ind_vm)

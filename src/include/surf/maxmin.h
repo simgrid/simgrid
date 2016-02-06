@@ -235,7 +235,7 @@ XBT_PUBLIC(void) lmm_constraint_concurrency_maximum_reset(lmm_constraint_t cnst)
  */
 XBT_PUBLIC(int) lmm_constraint_concurrency_maximum_get(lmm_constraint_t cnst);
 
-			     
+           
 /**
  * @brief Create a new Linear MaxMin variable
  * 

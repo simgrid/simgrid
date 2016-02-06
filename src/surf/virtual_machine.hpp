@@ -62,7 +62,7 @@ public:
    * @param host The host
    */
   VirtualMachine(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
-		        simgrid::s4u::Host *host);
+            simgrid::s4u::Host *host);
 
   /** @brief Destructor */
   ~VirtualMachine();

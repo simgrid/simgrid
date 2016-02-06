@@ -46,16 +46,16 @@ Host::Host(const char* name)
 }
 
 Host::~Host() {
-	delete pimpl_cpu;
-	delete mounts;
+  delete pimpl_cpu;
+  delete mounts;
 }
 
 Host *Host::by_name(std::string name) {
-	Host* host = Host::by_name_or_null(name.c_str());
-	// TODO, raise an exception instead?
-	if (host == nullptr)
-		xbt_die("No such host: %s", name.c_str());
-	return host;
+  Host* host = Host::by_name_or_null(name.c_str());
+  // TODO, raise an exception instead?
+  if (host == nullptr)
+    xbt_die("No such host: %s", name.c_str());
+  return host;
 }
 Host* Host::by_name_or_null(const char* name)
 {
@@ -72,14 +72,14 @@ Host* Host::by_name_or_create(const char* name)
 }
 
 Host *Host::current(){
-	smx_process_t smx_proc = SIMIX_process_self();
-	if (smx_proc == NULL)
-		xbt_die("Cannot call Host::current() from the maestro context");
-	return SIMIX_process_get_host(smx_proc);
+  smx_process_t smx_proc = SIMIX_process_self();
+  if (smx_proc == NULL)
+    xbt_die("Cannot call Host::current() from the maestro context");
+  return SIMIX_process_get_host(smx_proc);
 }
 
 void Host::turn_on() {
-	simgrid::simix::kernel(std::bind(SIMIX_host_on, this));
+  simgrid::simix::kernel(std::bind(SIMIX_host_on, this));
 }
 
 void Host::turn_off() {
@@ -87,37 +87,37 @@ void Host::turn_off() {
 }
 
 bool Host::is_on() {
-	return this->pimpl_cpu->isOn();
+  return this->pimpl_cpu->isOn();
 }
 
 int Host::pstates_count() const {
-	return this->pimpl_cpu->getNbPStates();
+  return this->pimpl_cpu->getNbPStates();
 }
 
 boost::unordered_map<std::string, Storage*> const& Host::mounted_storages() {
-	if (mounts == NULL) {
-		mounts = new boost::unordered_map<std::string, Storage*> ();
+  if (mounts == NULL) {
+    mounts = new boost::unordered_map<std::string, Storage*> ();
 
-		xbt_dict_t dict = this->mounted_storages_as_dict();
+    xbt_dict_t dict = this->mounted_storages_as_dict();
 
-		xbt_dict_cursor_t cursor;
-		char *mountname;
-		char *storagename;
-		xbt_dict_foreach(dict, cursor, mountname, storagename) {
-			mounts->insert({mountname, &Storage::byName(storagename)});
-		}
-		xbt_dict_free(&dict);
-	}
+    xbt_dict_cursor_t cursor;
+    char *mountname;
+    char *storagename;
+    xbt_dict_foreach(dict, cursor, mountname, storagename) {
+      mounts->insert({mountname, &Storage::byName(storagename)});
+    }
+    xbt_dict_free(&dict);
+  }
 
-	return *mounts;
+  return *mounts;
 }
 
 /** Get the properties assigned to a host */
 xbt_dict_t Host::properties() {
   return simgrid::simix::kernel([&] {
-		simgrid::surf::Host* surf_host = this->extension<simgrid::surf::Host>();
-		return surf_host->getProperties();
-	});
+    simgrid::surf::Host* surf_host = this->extension<simgrid::surf::Host>();
+    return surf_host->getProperties();
+  });
 }
 
 /** Get the processes attached to the host */
@@ -146,11 +146,11 @@ double Host::power_peak_at(int pstate_index)
 
 /** @brief Get the speed of the cpu associated to a host */
 double Host::speed() {
-	return pimpl_cpu->getSpeed(1.0);
+  return pimpl_cpu->getSpeed(1.0);
 }
 /** @brief Returns the number of core of the processor. */
 int Host::core_count() {
-	return pimpl_cpu->getCore();
+  return pimpl_cpu->getCore();
 }
 
 /** @brief Set the pstate at which the host should run */

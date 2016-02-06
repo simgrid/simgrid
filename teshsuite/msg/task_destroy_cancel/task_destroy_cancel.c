@@ -124,9 +124,9 @@ int slave(int argc, char *argv[])
     MSG_task_execute(task);
     end = MSG_get_clock();
     XBT_INFO("Task \"%s\" done in %f (amount %f)"
-    		, MSG_task_get_name(task)
-    		, end - start
-    		, MSG_task_get_flops_amount(task));
+        , MSG_task_get_name(task)
+        , end - start
+        , MSG_task_get_flops_amount(task));
 
     MSG_task_destroy(task);
     task = NULL;
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-	     "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+       "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
   
   platform_file = argv[1];
   application_file = argv[2];

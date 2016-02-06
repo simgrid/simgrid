@@ -285,14 +285,14 @@ NetworkNS3Model::~NetworkNS3Model() {
 }
 
 Link* NetworkNS3Model::createLink(const char *name,
-	                                 double bw_initial,
-	                                 tmgr_trace_t bw_trace,
-	                                 double lat_initial,
-	                                 tmgr_trace_t lat_trace,
-	                                 int initiallyOn,
-	                                 tmgr_trace_t state_trace,
-	                                 e_surf_link_sharing_policy_t policy,
-	                                 xbt_dict_t properties){
+                                   double bw_initial,
+                                   tmgr_trace_t bw_trace,
+                                   double lat_initial,
+                                   tmgr_trace_t lat_trace,
+                                   int initiallyOn,
+                                   tmgr_trace_t state_trace,
+                                   e_surf_link_sharing_policy_t policy,
+                                   xbt_dict_t properties){
   if (bw_trace)
     XBT_INFO("The NS3 network model doesn't support bandwidth state traces");
   if (lat_trace)
@@ -312,7 +312,7 @@ xbt_dynar_t NetworkNS3Model::getRoute(NetCard *src, NetCard *dst)
 }
 
 Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst,
-		                               double size, double rate)
+                                   double size, double rate)
 {
   XBT_DEBUG("Communicate from %s to %s", src->getName(), dst->getName());
   NetworkNS3Action *action = new NetworkNS3Action(this, size, 0);
@@ -372,23 +372,23 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     action->setRemains(action->getCost() - ns3_get_socket_sent(data));
 
     if (TRACE_is_enabled() &&
-    		action->getState() == SURF_ACTION_RUNNING){
-    	double data_sent = ns3_get_socket_sent(data);
-    	double data_delta_sent = data_sent - action->m_lastSent;
+        action->getState() == SURF_ACTION_RUNNING){
+      double data_sent = ns3_get_socket_sent(data);
+      double data_delta_sent = data_sent - action->m_lastSent;
 
-    	xbt_dynar_t route = NULL;
+      xbt_dynar_t route = NULL;
 
-    	routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, &route, NULL);
-    	unsigned int i;
-    	for (i = 0; i < xbt_dynar_length (route); i++){
-    		NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr(route, i));
-    		TRACE_surf_link_set_utilization (link->getName(),
-    				action->getCategory(),
-					(data_delta_sent)/delta,
-					now-delta,
-					delta);
-    	}
-    	action->m_lastSent = data_sent;
+      routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, &route, NULL);
+      unsigned int i;
+      for (i = 0; i < xbt_dynar_length (route); i++){
+        NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr(route, i));
+        TRACE_surf_link_set_utilization (link->getName(),
+            action->getCategory(),
+          (data_delta_sent)/delta,
+          now-delta,
+          delta);
+      }
+      action->m_lastSent = data_sent;
     }
 
     if(ns3_get_socket_is_finished(data) == 1){
@@ -415,7 +415,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
  ************/
 
 NetworkNS3Link::NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props,
-		                       double bw_initial, double lat_initial)
+                           double bw_initial, double lat_initial)
  : Link(model, name, props)
  , p_lat(bprintf("%f", lat_initial))
  , p_bdw(bprintf("%f", bw_initial))
@@ -466,10 +466,10 @@ int NetworkNS3Action::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-	if (action_hook.is_linked())
-	  p_stateSet->erase(p_stateSet->iterator_to(*this));
+  if (action_hook.is_linked())
+    p_stateSet->erase(p_stateSet->iterator_to(*this));
     XBT_DEBUG ("Removing action %p", this);
-	delete this;
+  delete this;
     return 1;
   }
   return 0;

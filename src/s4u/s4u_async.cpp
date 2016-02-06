@@ -22,7 +22,7 @@ s4u::Async::~Async() {
 }
 
 void s4u::Async::setRemains(double remains) {
-	xbt_assert(p_state == inited, "Cannot change the remaining amount of work once the Async is started");
-	p_remains = remains;
+  xbt_assert(p_state == inited, "Cannot change the remaining amount of work once the Async is started");
+  p_remains = remains;
 }
 

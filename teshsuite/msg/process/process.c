@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
   xbt_assert(argc == 3, "Usage: %s platform_file deployment_file\n"
-	     "\n Example: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+       "\n Example: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
  
   platform_file = argv[1];
   application_file = argv[2];

@@ -180,9 +180,9 @@ int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount,
                                    int recvcount, MPI_Datatype recvtype,
                                    MPI_Comm comm)
 {
-  int size, sendsize;	
-  size = smpi_comm_size(comm);	
-  sendsize = smpi_datatype_size(sendtype) * sendcount;	
+  int size, sendsize;  
+  size = smpi_comm_size(comm);  
+  sendsize = smpi_datatype_size(sendtype) * sendcount;  
   if (sendsize < 200 && size > 12) {
     return
         smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, sendtype,

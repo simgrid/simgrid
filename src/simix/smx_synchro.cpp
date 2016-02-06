@@ -212,8 +212,8 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
 
   /* If the mutex is not owned by the issuer, that's not good */
   if (issuer != mutex->owner)
-	  THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%d), not by you.",
-			  SIMIX_process_get_name(mutex->owner),SIMIX_process_get_PID(mutex->owner));
+    THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%d), not by you.",
+        SIMIX_process_get_name(mutex->owner),SIMIX_process_get_PID(mutex->owner));
 
   if (xbt_swag_size(mutex->sleeping) > 0) {
     /*process to wake up */
@@ -284,7 +284,7 @@ void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex
  * \param simcall the simcall
  */
 void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond,
-		                 smx_mutex_t mutex, double timeout)
+                     smx_mutex_t mutex, double timeout)
 {
   XBT_IN("(%p)",simcall);
   smx_process_t issuer = simcall->issuer;

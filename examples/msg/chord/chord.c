@@ -714,19 +714,19 @@ static int remote_find_successor(node_t node, int ask_to, int id)
         XBT_DEBUG("Received a task (%p)", task_received);
         task_data_t ans_data = MSG_task_get_data(task_received);
 
-	// Once upon a time, our code assumed that here, task_received != task_sent all the time
-	//
-	// This assumption is wrong (as messages from differing round can interleave), leading to a bug in our code.
-	// We failed to find this bug directly, as it only occured on large platforms, leading to hardly usable traces.
-	// Instead, we used the model-checker to track down the issue by adding the following test here in the code:
-	//   if (MC_is_active()) {
-	//      MC_assert(task_received == task_sent);
+  // Once upon a time, our code assumed that here, task_received != task_sent all the time
+  //
+  // This assumption is wrong (as messages from differing round can interleave), leading to a bug in our code.
+  // We failed to find this bug directly, as it only occured on large platforms, leading to hardly usable traces.
+  // Instead, we used the model-checker to track down the issue by adding the following test here in the code:
+  //   if (MC_is_active()) {
+  //      MC_assert(task_received == task_sent);
         //   }
-	// That explained the bug in a snap, with a very cool example and everything.
-	//
-	// This MC_assert is now desactivated as the case is now properly handled in our code and we don't want the
-	//   MC to fail any further under that condition, but this comment is here to as a memorial for this first
-	//   brillant victory of the model-checking in the SimGrid community :)
+  // That explained the bug in a snap, with a very cool example and everything.
+  //
+  // This MC_assert is now desactivated as the case is now properly handled in our code and we don't want the
+  //   MC to fail any further under that condition, but this comment is here to as a memorial for this first
+  //   brillant victory of the model-checking in the SimGrid community :)
 
         if (task_received != task_sent ||
             ans_data->type != TASK_FIND_SUCCESSOR_ANSWER) {
@@ -1027,9 +1027,9 @@ int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, 
-	     "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
-	     "\tExample: %s ../msg_platform.xml chord.xml\n", 
-	     argv[0], argv[0]);
+       "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
+       "\tExample: %s ../msg_platform.xml chord.xml\n", 
+       argv[0], argv[0]);
 
   char **options = &argv[1];
   while (!strncmp(options[0], "-", 1)) {

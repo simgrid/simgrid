@@ -96,7 +96,7 @@ public:
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
 class Storage : public simgrid::surf::Resource,
-				public simgrid::surf::PropertyHolder {
+        public simgrid::surf::PropertyHolder {
 public:
   /**
    * @brief Storage constructor

@@ -932,14 +932,14 @@ void xbt_cfg_set_boolean(xbt_cfg_t cfg, const char *name, const char *val)
   variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
 
   for (i = 0; xbt_cfgelm_boolean_values[i].true_val != NULL; i++) {
-	if (strcmp(val, xbt_cfgelm_boolean_values[i].true_val) == 0){
-	  bval = 1;
-	  break;
-	}
-	if (strcmp(val, xbt_cfgelm_boolean_values[i].false_val) == 0){
-	  bval = 0;
-	  break;
-	}
+  if (strcmp(val, xbt_cfgelm_boolean_values[i].true_val) == 0){
+    bval = 1;
+    break;
+  }
+  if (strcmp(val, xbt_cfgelm_boolean_values[i].false_val) == 0){
+    bval = 0;
+    break;
+  }
   }
   if (xbt_cfgelm_boolean_values[i].true_val == NULL) {
     xbt_die("Value of option '%s' not valid. Should be a boolean (yes,no,on,off,true,false,0,1)", val);

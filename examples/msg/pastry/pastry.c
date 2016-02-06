@@ -141,11 +141,11 @@ static int closest_in_namespace_set(node_t node, int dest) {
     int i, dist;
     for (i=0; i<NAMESPACE_SIZE; i++) {
       if (node->namespace_set[i]!=-1) {
-	dist = abs(node->namespace_set[i] - dest);
-	if (dist<best_dist) {
-	  best_dist = dist;
-          res = node->namespace_set[i];	  
-	}
+  dist = abs(node->namespace_set[i] - dest);
+  if (dist<best_dist) {
+    best_dist = dist;
+          res = node->namespace_set[i];    
+  }
       }
     }
   }
@@ -226,7 +226,7 @@ static void handle_task(node_t node, msg_task_t task) {
       if (next!=node->id) {
         get_mailbox(next, mailbox);
         task_data->sender_id = node->id;
-	task_data->steps++;
+  task_data->steps++;
         task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, task_data);
         MSG_task_send_with_timeout(task_sent, mailbox, timeout);
         type = TASK_JOIN_REPLY;
@@ -259,7 +259,7 @@ static void handle_task(node_t node, msg_task_t task) {
 
       // if first node touched reply, copy its neighborood set
       if (task_data->sender_id == node->known_id) {
-	node->neighborhood_set[0] = task_data->sender_id;
+  node->neighborhood_set[0] = task_data->sender_id;
         for (i=1; i<NEIGHBORHOOD_SIZE; i++)
             node->neighborhood_set[i] = task_data->state->neighborhood_set[i-1]; 
       }
@@ -270,7 +270,7 @@ static void handle_task(node_t node, msg_task_t task) {
       for (i=min;i<max;i++) {
         d = domain(node->id, i); 
         for (j=0; j<LEVEL_SIZE; j++)
-	  if (d!=j)
+    if (d!=j)
             node->routing_table[i][j] =  task_data->state->routing_table[i][j];
       }
 
@@ -280,15 +280,15 @@ static void handle_task(node_t node, msg_task_t task) {
         XBT_DEBUG("Node %i is ready!!!", node->id);
 
         while(xbt_fifo_size(node->pending_tasks))
-	  handle_task(node, xbt_fifo_pop(node->pending_tasks));
+    handle_task(node, xbt_fifo_pop(node->pending_tasks));
 
-	for (i=0; i<NAMESPACE_SIZE; i++) {
+  for (i=0; i<NAMESPACE_SIZE; i++) {
           j = node->namespace_set[i];
           if (j!=-1) {
             XBT_DEBUG("Send update to %i", j);
             get_mailbox(j, mailbox);
-	    
-	    req_data = xbt_new0(s_task_data_t,1);
+      
+      req_data = xbt_new0(s_task_data_t,1);
             req_data->answer_id = node->id;
             req_data->steps = 0;
             req_data->type = TASK_UPDATE;
@@ -320,65 +320,65 @@ static void handle_task(node_t node, msg_task_t task) {
       i=0;
       for (; i<NAMESPACE_SIZE/2; i++){
         curr_namespace_set[i] = node->namespace_set[i];
-	task_namespace_set[i] = task_data->state->namespace_set[i];
+  task_namespace_set[i] = task_data->state->namespace_set[i];
       }
       task_namespace_set[i] = task_data->state->id;
       for (; i<NAMESPACE_SIZE; i++){
-        curr_namespace_set[i] = node->namespace_set[i];	
-	task_namespace_set[i+1] = task_data->state->namespace_set[i];	
+        curr_namespace_set[i] = node->namespace_set[i];  
+  task_namespace_set[i+1] = task_data->state->namespace_set[i];  
       }
 
       // get the index of values before and after node->id in task_namespace
       min = -1;
       max = -1;
       for (i=0; i<=NAMESPACE_SIZE; i++) {
-	j = task_namespace_set[i];
+  j = task_namespace_set[i];
         if (i<NAMESPACE_SIZE)
-	  printf("%08x %08x | ", j, curr_namespace_set[i]);
-	if (j != -1 && j < node->id) min = i;
-	if (j != -1 && max == -1 && j > node->id) max = i;
+    printf("%08x %08x | ", j, curr_namespace_set[i]);
+  if (j != -1 && j < node->id) min = i;
+  if (j != -1 && max == -1 && j > node->id) max = i;
       }
       printf("\n");
 
       // add lower elements
       j = NAMESPACE_SIZE/2-1;
       for (i=NAMESPACE_SIZE/2-1; i>=0; i--) {
-	printf("i:%i, j:%i, min:%i, currj:%08x, taskmin:%08x\n", i, j, min, curr_namespace_set[j], task_namespace_set[min]);
+  printf("i:%i, j:%i, min:%i, currj:%08x, taskmin:%08x\n", i, j, min, curr_namespace_set[j], task_namespace_set[min]);
         if (min<0) {
-	  node->namespace_set[i] = curr_namespace_set[j];
-	  j--; 
-	} else if (curr_namespace_set[j] == task_namespace_set[min]) {
-	  node->namespace_set[i] = curr_namespace_set[j];
-	  j--; min--;
-	} else if (curr_namespace_set[j] > task_namespace_set[min]) {
+    node->namespace_set[i] = curr_namespace_set[j];
+    j--; 
+  } else if (curr_namespace_set[j] == task_namespace_set[min]) {
+    node->namespace_set[i] = curr_namespace_set[j];
+    j--; min--;
+  } else if (curr_namespace_set[j] > task_namespace_set[min]) {
           node->namespace_set[i] = curr_namespace_set[j];
-	  j--;
-	} else {
+    j--;
+  } else {
           node->namespace_set[i] = task_namespace_set[min];
-	  min--;
-	}
+    min--;
+  }
       }
 
       // add greater elements
       j = NAMESPACE_SIZE/2;
       for (i=NAMESPACE_SIZE/2; i<NAMESPACE_SIZE; i++) {
-	printf("i:%i, j:%i, max:%i, currj:%08x, taskmax:%08x\n", i, j, max, curr_namespace_set[j], task_namespace_set[max]);	      
+  printf("i:%i, j:%i, max:%i, currj:%08x, taskmax:%08x\n", i, j, max, curr_namespace_set[j], task_namespace_set[max]);        
         if (min<0 || max>=NAMESPACE_SIZE) {
-	  node->namespace_set[i] = curr_namespace_set[j];
-	  j++;
-	} else if (curr_namespace_set[j] == -1) {
-	  node->namespace_set[i] = task_namespace_set[max];
-	  max++;
-	} else if (curr_namespace_set[j] == task_namespace_set[max]) {
-	  node->namespace_set[i] = curr_namespace_set[j];
-	  j++; max++;
-	} else if (curr_namespace_set[j] < task_namespace_set[max]) {
+    node->namespace_set[i] = curr_namespace_set[j];
+    j++;
+  } else if (curr_namespace_set[j] == -1) {
+    node->namespace_set[i] = task_namespace_set[max];
+    max++;
+  } else if (curr_namespace_set[j] == task_namespace_set[max]) {
+    node->namespace_set[i] = curr_namespace_set[j];
+    j++; max++;
+  } else if (curr_namespace_set[j] < task_namespace_set[max]) {
           node->namespace_set[i] = curr_namespace_set[j];
-	  j++;
-	} else {
+    j++;
+  } else {
           node->namespace_set[i] = task_namespace_set[max];
-	  max++;
-	}
+    max++;
+  }
       }
       print_node_namespace_set(node);
 
@@ -389,7 +389,7 @@ static void handle_task(node_t node, msg_task_t task) {
             node->routing_table[i][j] = task_data->state->routing_table[i][j];
         }
       }
-  }    	   
+  }         
 }
 
 /**
@@ -437,7 +437,7 @@ static void print_node(node_t node) {
  * Print the node id
  */
 static void print_node_id(node_t node) {
-  int i;	
+  int i;  
   printf(" id: %i '%08x' ", node->id, node->id);
   for (i=0;i<LEVELS_COUNT;i++)
     printf(" %x", domain(node->id, i));
@@ -448,7 +448,7 @@ static void print_node_id(node_t node) {
  * Print the node neighborood set
  */
 static void print_node_neighborood_set(node_t node) {
-  int i;	
+  int i;  
   printf(" neighborood:\n");
   for (i=0; i<NEIGHBORHOOD_SIZE; i++)
     printf("  %08x\n", node->neighborhood_set[i]);
@@ -458,7 +458,7 @@ static void print_node_neighborood_set(node_t node) {
  * Print the routing table
  */
 static void print_node_routing_table(node_t node) {
-  int i,j;	
+  int i,j;  
   printf(" routing table:\n");
   for (i=0; i<LEVELS_COUNT; i++){
     printf("  ");
@@ -484,7 +484,7 @@ static void print_node_namespace_set(node_t node) {
  * Get the corresponding state of a node
  */
 static state_t node_get_state(node_t node) {
-  int i,j;	
+  int i,j;  
   state_t state = xbt_new0(s_state_t,1);
   state->id = node->id;
   for (i=0; i<NEIGHBORHOOD_SIZE; i++)
@@ -614,9 +614,9 @@ int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, 
-	     "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
-	     "\tExample: %s ../msg_platform.xml pastry10.xml\n", 
-	     argv[0], argv[0]);
+       "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
+       "\tExample: %s ../msg_platform.xml pastry10.xml\n", 
+       argv[0], argv[0]);
   
   char **options = &argv[1];
   while (!strncmp(options[0], "-", 1)) {

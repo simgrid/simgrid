@@ -38,12 +38,12 @@ AsFloyd::~AsFloyd(){
   int table_size;
   table_size = (int)xbt_dynar_length(p_indexNetworkElm);
   if (p_linkTable == NULL) // Dealing with a parse error in the file?
-	  return;
+    return;
   /* Delete link_table */
   for (i = 0; i < table_size; i++)
-	  for (j = 0; j < table_size; j++) {
-		  generic_free_route(TO_FLOYD_LINK(i, j));
-	  }
+    for (j = 0; j < table_size; j++) {
+      generic_free_route(TO_FLOYD_LINK(i, j));
+    }
   xbt_free(p_linkTable);
   /* Delete bypass dict */
   xbt_dict_free(&p_bypassRoutes);
@@ -260,7 +260,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
             route->gw_src->getName(), src, route->gw_dst->getName());
 
       TO_FLOYD_LINK(dst_net_elm->getId(), src_net_elm->getId()) =
-    		 newExtendedRoute(p_hierarchy, route, 0);
+         newExtendedRoute(p_hierarchy, route, 0);
       TO_FLOYD_PRED(dst_net_elm->getId(), src_net_elm->getId()) = dst_net_elm->getId();
       TO_FLOYD_COST(dst_net_elm->getId(), src_net_elm->getId()) =
           ((TO_FLOYD_LINK(dst_net_elm->getId(), src_net_elm->getId()))->link_list)->used;   /* count of links, old model assume 1 */

@@ -140,7 +140,7 @@ void xbt_replay_action_unregister(const char *action_name)
 int _xbt_replay_action_init(void)
 {
   if (xbt_action_funs)
-	  return 0;
+    return 0;
   is_replay_active = 1;
   xbt_action_funs = xbt_dict_new_homogeneous(NULL);
   xbt_action_queues = xbt_dict_new_homogeneous(NULL);

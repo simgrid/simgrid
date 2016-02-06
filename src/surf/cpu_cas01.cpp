@@ -88,7 +88,7 @@ CpuCas01Model::~CpuCas01Model()
 }
 
 Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-		                  int pstate, double speedScale,
+                      int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,
                           tmgr_trace_t state_trace)
@@ -134,9 +134,9 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t s
                          int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
                          int initiallyOn, tmgr_trace_t stateTrace)
 : Cpu(model, host,
-	lmm_constraint_new(model->getMaxminSystem(), this, core * speedScale * xbt_dynar_get_as(speedPeak, pstate, double)),
-	speedPeak, pstate,
-	core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
+  lmm_constraint_new(model->getMaxminSystem(), this, core * speedScale * xbt_dynar_get_as(speedPeak, pstate, double)),
+  speedPeak, pstate,
+  core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
     initiallyOn) {
 
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_speedPeak, m_pstate);
@@ -166,8 +166,8 @@ bool CpuCas01::isUsed()
 
 /** @brief take into account changes of speed (either load or max) */
 void CpuCas01::onSpeedChange() {
-	lmm_variable_t var = NULL;
-	lmm_element_t elem = NULL;
+  lmm_variable_t var = NULL;
+  lmm_element_t elem = NULL;
 
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
                                 m_core * m_speedScale * m_speedPeak);
@@ -180,7 +180,7 @@ void CpuCas01::onSpeedChange() {
                                 m_speedScale * m_speedPeak);
     }
 
-	Cpu::onSpeedChange();
+  Cpu::onSpeedChange();
 }
 
 void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, double date)
@@ -280,8 +280,8 @@ CpuAction *CpuCas01::sleep(double duration)
 
 CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double speed, lmm_constraint_t constraint)
  : CpuAction(model, cost, failed,
-		     lmm_variable_new(model->getMaxminSystem(), this,
-		     1.0, speed, 1))
+         lmm_variable_new(model->getMaxminSystem(), this,
+         1.0, speed, 1))
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
     m_indexHeap = -1;

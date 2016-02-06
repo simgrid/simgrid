@@ -29,9 +29,9 @@ static int worker_main(int argc, char *argv[])
 
 
 struct task_data {
-	msg_task_t task;
-	double prev_computation_amount;
-	double prev_clock;
+  msg_task_t task;
+  double prev_computation_amount;
+  double prev_clock;
 };
 
 

@@ -18,35 +18,35 @@ namespace s4u {
  */
 XBT_PUBLIC_CLASS Engine {
 public:
-	/** Constructor, taking the command line parameters of your main function */
-	Engine(int *argc, char **argv);
+  /** Constructor, taking the command line parameters of your main function */
+  Engine(int *argc, char **argv);
 
-	/** @brief Load a platform file describing the environment
-	 *
-	 * The environment is either a XML file following the simgrid.dtd formalism, or a lua file.
-	 * Some examples can be found in the directory examples/platforms.
-	 */
-	void loadPlatform(const char *platf);
+  /** @brief Load a platform file describing the environment
+   *
+   * The environment is either a XML file following the simgrid.dtd formalism, or a lua file.
+   * Some examples can be found in the directory examples/platforms.
+   */
+  void loadPlatform(const char *platf);
 
-	/** Registers the main function of an actor that will be launched from the deployment file */
-	void register_function(const char*name, int (*code)(int,char**));
+  /** Registers the main function of an actor that will be launched from the deployment file */
+  void register_function(const char*name, int (*code)(int,char**));
 
-	/** Registers a function as the default main function of actors
-	 *
-	 * It will be used as fallback when the function requested from the deployment file was not registered.
-	 * It is used for trace-based simulations (see examples/msg/actions).
-	 */
-	void register_default(int (*code)(int,char**));
+  /** Registers a function as the default main function of actors
+   *
+   * It will be used as fallback when the function requested from the deployment file was not registered.
+   * It is used for trace-based simulations (see examples/msg/actions).
+   */
+  void register_default(int (*code)(int,char**));
 
-	/** @brief Load a deployment file and launch the actors that it contains */
-	void loadDeployment(const char *deploy);
+  /** @brief Load a deployment file and launch the actors that it contains */
+  void loadDeployment(const char *deploy);
 
-	/** @brief Run the simulation */
-	void run();
+  /** @brief Run the simulation */
+  void run();
 
-	/** @brief Retrieve the simulation time */
-	static double getClock();
-	
+  /** @brief Retrieve the simulation time */
+  static double getClock();
+  
 };
 }} // namespace simgrid::sgo
 

@@ -257,7 +257,7 @@ XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t mo
  */
 XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
 static inline const char * surf_cpu_name(surf_cpu_t cpu) {
-	return surf_resource_name((surf_cpp_resource_t)cpu);
+  return surf_resource_name((surf_cpp_resource_t)cpu);
 }
 
 /** @brief Get the available speed of cpu associated to a host */

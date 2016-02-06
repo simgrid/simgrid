@@ -36,7 +36,7 @@ const sg_host_t *sg_host_list(void) {
 
 const char *sg_host_get_name(sg_host_t host)
 {
-	return host->name().c_str();
+  return host->name().c_str();
 }
 
 void* sg_host_extension_get(sg_host_t host, size_t ext)
@@ -86,7 +86,7 @@ void sg_host_init()
   });
 
   ROUTING_HOST_LEVEL = simgrid::s4u::Host::extension_create([](void *p) {
-	  delete static_cast<simgrid::surf::NetCard*>(p);
+    delete static_cast<simgrid::surf::NetCard*>(p);
   });
 
   SD_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
@@ -107,7 +107,7 @@ void sg_host_user_destroy(sg_host_t host) {
 
 // ========== MSG Layer ==============
 msg_host_priv_t sg_host_msg(sg_host_t host) {
-	return (msg_host_priv_t) host->extension(MSG_HOST_LEVEL);
+  return (msg_host_priv_t) host->extension(MSG_HOST_LEVEL);
 }
 void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
   host->extension_set(MSG_HOST_LEVEL, smx_host);

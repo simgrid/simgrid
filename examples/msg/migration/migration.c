@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
   /* Argument checking */
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-	          "\tExample: %s msg_platform.xml msg_deployment_suspend.xml\n", 
-	          argv[0], argv[0]);
+            "\tExample: %s msg_platform.xml msg_deployment_suspend.xml\n", 
+            argv[0], argv[0]);
 
   /* Simulation setting */
   MSG_create_environment(argv[1]);

@@ -150,8 +150,8 @@ void xbt_ex_display(xbt_ex_t * e)
   xbt_free(thrower);
 
   if (xbt_initialized==0 || smx_cleaned) {
-	  fprintf(stderr, "Ouch. SimGrid is not initialized yet, or already closing. No backtrace available.\n");
-	  return; /* Not started yet or already closing. Trying to generate a backtrace would probably fail */
+    fprintf(stderr, "Ouch. SimGrid is not initialized yet, or already closing. No backtrace available.\n");
+    return; /* Not started yet or already closing. Trying to generate a backtrace would probably fail */
   }
 
   if (!e->bt_strings)

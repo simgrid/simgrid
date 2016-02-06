@@ -435,7 +435,7 @@ void AsDijkstra::end()
 
   /* Create the topology graph */
   if(!p_routeGraph)
-	p_routeGraph = xbt_graph_new_graph(1, NULL);
+  p_routeGraph = xbt_graph_new_graph(1, NULL);
   if(!p_graphNodeMap)
     p_graphNodeMap = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 

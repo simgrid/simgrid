@@ -56,12 +56,12 @@ public:
   : NetworkAction(model_, size, false)
   , m_latInit(latency)
   {
-	m_latency = latency;
-	if (m_latency <= 0.0) {
-	  p_stateSet = getModel()->getDoneActionSet();
-	  p_stateSet->push_back(*this);
-	}
-	p_variable = NULL;
+  m_latency = latency;
+  if (m_latency <= 0.0) {
+    p_stateSet = getModel()->getDoneActionSet();
+    p_stateSet->push_back(*this);
+  }
+  p_variable = NULL;
   };
   int unref() override;
   void cancel() override;

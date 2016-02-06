@@ -43,7 +43,7 @@ int main(int argc, char **argv)
   /*  xbt_log_control_set("sd.thres=debug"); */
 
   xbt_assert(argc > 1, "Usage: %s platform_file\n"
-	     "\nExample: %s two_clusters.xml", argv[0], argv[0]);
+       "\nExample: %s two_clusters.xml", argv[0], argv[0]);
 
   /* creation of the environment */
   platform_file = argv[1];

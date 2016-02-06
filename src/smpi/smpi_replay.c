@@ -60,7 +60,7 @@ static void set_reqq_self(xbt_dynar_t mpi_request){
 //allocate a single buffer for all sends, growing it if needed
 void* smpi_get_tmp_sendbuffer(int size){
   if (!smpi_process_get_replaying())
-	return xbt_malloc(size);
+  return xbt_malloc(size);
   if (sendbuffer_size<size){
     sendbuffer=xbt_realloc(sendbuffer,size);
     sendbuffer_size=size;
@@ -70,7 +70,7 @@ void* smpi_get_tmp_sendbuffer(int size){
 //allocate a single buffer for all recv
 void* smpi_get_tmp_recvbuffer(int size){
   if (!smpi_process_get_replaying())
-	return xbt_malloc(size);
+  return xbt_malloc(size);
   if (recvbuffer_size<size){
     recvbuffer=xbt_realloc(recvbuffer,size);
     recvbuffer_size=size;
@@ -393,20 +393,20 @@ static void action_test(const char *const *action){
   //Different times in traced application and replayed version may lead to this 
   //In this case, ignore the extra calls.
   if(request){
-	  int rank = smpi_process_index();
-	  instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-	  extra->type=TRACING_TEST;
-	  TRACE_smpi_testing_in(rank, extra);
+    int rank = smpi_process_index();
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+    extra->type=TRACING_TEST;
+    TRACE_smpi_testing_in(rank, extra);
 
-	  flag = smpi_mpi_test(&request, &status);
+    flag = smpi_mpi_test(&request, &status);
 
-	  XBT_DEBUG("MPI_Test result: %d", flag);
-	  /* push back request in dynar to be caught by a subsequent wait. if the test
-	   * did succeed, the request is now NULL.
-	   */
-	  xbt_dynar_push_as(get_reqq_self(),MPI_Request, request);
+    XBT_DEBUG("MPI_Test result: %d", flag);
+    /* push back request in dynar to be caught by a subsequent wait. if the test
+     * did succeed, the request is now NULL.
+     */
+    xbt_dynar_push_as(get_reqq_self(),MPI_Request, request);
 
-	  TRACE_smpi_testing_out(rank);
+    TRACE_smpi_testing_out(rank);
   }
   log_timed_action (action, clock);
 }
