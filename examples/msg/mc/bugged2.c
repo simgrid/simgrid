@@ -25,13 +25,13 @@ int server(int argc, char *argv[])
   long val1, val2;
 
   MSG_task_receive(&task1, "mymailbox");
-  val1 = (long) MSG_task_get_data(task1);
+  val1 = xbt_str_parse_int(MSG_task_get_name(task1), "Task name is not a numerical ID: %s");
   MSG_task_destroy(task1);
   task1 = NULL;
   XBT_INFO("Received %lu", val1);
 
   MSG_task_receive(&task2, "mymailbox");
-  val2 = (long) MSG_task_get_data(task2);
+  val2 = xbt_str_parse_int(MSG_task_get_name(task2), "Task name is not a numerical ID: %s");
   MSG_task_destroy(task2);
   task2 = NULL;
   XBT_INFO("Received %lu", val2);
@@ -39,12 +39,12 @@ int server(int argc, char *argv[])
   MC_assert(min(val1, val2) == 1);
 
   MSG_task_receive(&task1, "mymailbox");
-  val1 = (long) MSG_task_get_data(task1);
+  val1 = xbt_str_parse_int(MSG_task_get_name(task1), "Task name is not a numerical ID: %s");
   MSG_task_destroy(task1);
   XBT_INFO("Received %lu", val1);
 
   MSG_task_receive(&task2, "mymailbox");
-  val2 = (long) MSG_task_get_data(task2);
+  val2 = xbt_str_parse_int(MSG_task_get_name(task2), "Task name is not a numerical ID: %s");
   MSG_task_destroy(task2);
   XBT_INFO("Received %lu", val2);
 
@@ -54,14 +54,13 @@ int server(int argc, char *argv[])
 
 int client(int argc, char *argv[])
 {
-  int ID = xbt_str_parse_int(argv[1], "Arg 1 is not a numerical ID: %s");
-  msg_task_t task1 = MSG_task_create("task", 0, 10000, (void *) ID);
-  msg_task_t task2 = MSG_task_create("task", 0, 10000, (void *) ID);
+  msg_task_t task1 = MSG_task_create(argv[1], 0, 10000, NULL);
+  msg_task_t task2 = MSG_task_create(argv[1], 0, 10000, NULL);
 
-  XBT_INFO("Send %d!", ID);
+  XBT_INFO("Send %s", argv[1]);
   MSG_task_send(task1, "mymailbox");
 
-  XBT_INFO("Send %d!", ID);
+  XBT_INFO("Send %s", argv[1]);
   MSG_task_send(task2, "mymailbox");
 
   return 0;
@@ -74,9 +73,7 @@ int main(int argc, char *argv[])
   MSG_create_environment("platform.xml");
 
   MSG_function_register("server", server);
-
   MSG_function_register("client", client);
-
   MSG_launch_application("deploy_bugged2.xml");
 
   MSG_main();

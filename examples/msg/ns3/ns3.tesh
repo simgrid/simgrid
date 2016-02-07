@@ -1,9 +1,7 @@
 #! ./tesh
 
-p In the NS3 tests, the timings are not shown because the exact values
-p may vary with your NS3 version. We just want to check that the NS3
-p bindings of SimGrid are working correctly, we don't want to
-p throughoutly test NS3.
+p In the NS3 tests, the timings are not shown because the exact values may vary with your NS3 version. 
+p We just want to check that the NS3 bindings of SimGrid are working correctly, we don't want to throughoutly test NS3.
 
 p 3hosts 2links
 
