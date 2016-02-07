@@ -517,12 +517,9 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
                              lmm_system_t system,
                              double constraint_value,
                              sg_future_evt_set_t fes,
-                             int initiallyOn,
-                             tmgr_trace_t state_trace,
-                             double metric_peak,
-                             tmgr_trace_t metric_trace,
-                             double lat_initial,
-                             tmgr_trace_t lat_trace,
+                             int initiallyOn, tmgr_trace_t state_trace,
+                             double bw_peak, tmgr_trace_t bw_trace,
+                             double lat_initial, tmgr_trace_t lat_trace,
                              e_surf_link_sharing_policy_t policy)
 : Link(model, name, props, lmm_constraint_new(system, this, constraint_value), fes, state_trace)
 {
@@ -532,15 +529,15 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
     turnOff();
 
   p_speed.scale = 1.0;
-  p_speed.peak = metric_peak;
-  if (metric_trace)
-    p_speed.event = fes->add_trace(metric_trace, 0.0, this);
+  p_speed.peak = bw_peak;
+  if (bw_trace)
+    p_speed.event = fes->add_trace(bw_trace, 0.0, this);
   else
     p_speed.event = NULL;
 
   m_latCurrent = lat_initial;
   if (lat_trace)
-  p_latEvent = fes->add_trace(lat_trace, 0.0, this);
+    p_latEvent = fes->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
   lmm_constraint_shared(getConstraint());

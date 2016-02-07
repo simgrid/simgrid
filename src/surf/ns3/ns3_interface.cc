@@ -227,7 +227,7 @@ static char* transformIpv4Address (Ipv4Address from){
 
 void ns3_add_link(int src, e_ns3_network_element_type_t type_src,
 					int dst, e_ns3_network_element_type_t type_dst,
-					char * bw,char * lat)
+					char *bw, char *lat)
 {
 	if(number_of_links == 1 ) {
 		LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
