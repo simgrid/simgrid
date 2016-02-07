@@ -27,6 +27,7 @@ set(tesh_files
   )
 set(xml_files
   ${xml_files}
+  examples/msg/io/remote_io.deployment.xml
   PARENT_SCOPE
   )
 set(examples_src

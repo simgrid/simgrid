@@ -1262,7 +1262,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
   examples/platforms/storage/content/win_storage_content.txt
-  examples/platforms/storage/remote_io.deployment.xml
   examples/platforms/storage/remote_io.xml
   examples/platforms/storage/storage.xml
   examples/platforms/small_platform.xml
