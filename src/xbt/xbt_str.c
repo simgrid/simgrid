@@ -874,8 +874,45 @@ int xbt_str_start_with(const char* str, const char* start)
   return 1;
 }
 
+/** @brief Parse an integer out of a string, or raise an error
+ *
+ * The #str is passed as argument to your #error_msg, as follows:
+ *       THROWF(arg_error, 0, error_msg, str);
+ */
+long int xbt_str_parse_int(const char* str, const char* error_msg)
+{
+  char *endptr;
+  if (str == NULL || str[0] == '\0')
+    THROWF(arg_error, 0, error_msg, str);
+
+  long int res = strtol(str, &endptr, 10);
+  if (endptr[0] != '\0')
+    THROWF(arg_error, 0, error_msg, str);
+
+  return res;
+}
+/** @brief Parse a double out of a string, or raise an error
+ *
+ * The #str is passed as argument to your #error_msg, as follows:
+ *       THROWF(arg_error, 0, error_msg, str);
+ */
+double xbt_str_parse_double(const char* str, const char* error_msg)
+{
+  char *endptr;
+  if (str == NULL || str[0] == '\0')
+    THROWF(arg_error, 0, error_msg, str);
+
+  double res = strtod(str, &endptr);
+  if (endptr[0] != '\0')
+    THROWF(arg_error, 0, error_msg, str);
+
+  return res;
+}
+
 #ifdef SIMGRID_TEST
 #include "xbt/str.h"
+
+XBT_TEST_SUITE("xbt_str", "String Handling");
 
 #define mytest(name, input, expected) \
   xbt_test_add(name); \
@@ -886,8 +923,6 @@ int xbt_str_start_with(const char* str, const char* start)
                    input,s,expected);\
                    free(s); \
                    xbt_dynar_free(&d);
-
-XBT_TEST_SUITE("xbt_str", "String Handling");
 XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_str_split_quoted")
 {
   xbt_dynar_t d;
@@ -1060,6 +1095,56 @@ XBT_TEST_UNIT("xbt_str_diff", test_diff, "test the function xbt_str_diff")
     mytest_diff(s2, "a\nb\nc\nd\n", res,
                 "compare subset (%s) with (abcd)", d2);
   }
+}
+
+#define test_parse_error(function, name, variable, str)                 \
+  do {                                                                  \
+    xbt_test_add(name);                                                 \
+    TRY {                                                               \
+      variable = function(str, "Parse error");                          \
+      xbt_test_fail("The test '%s' did not detect the problem",name );  \
+    } CATCH(e) {                                                        \
+      if (e.category != arg_error) {                                    \
+        xbt_test_exception(e);                                          \
+      } else {                                                          \
+        xbt_ex_free(e);                                                 \
+      }                                                                 \
+    }                                                                   \
+  } while (0)
+#define test_parse_ok(function, name, variable, str, value)             \
+  do {                                                                  \
+    xbt_test_add(name);                                                 \
+    TRY {                                                               \
+      variable = function(str, "Parse error");                          \
+    } CATCH(e) {                                                        \
+      xbt_test_exception(e);                                            \
+    }                                                                   \
+    xbt_test_assert(variable == value, "Fail to parse '%s'", str);      \
+  } while (0)
+
+XBT_TEST_UNIT("xbt_str_parse", test_parse, "Test the parsing functions")
+{
+  xbt_ex_t e;
+  int rint;
+  test_parse_ok(xbt_str_parse_int, "Parse int", rint, "42", 42);
+  test_parse_ok(xbt_str_parse_int, "Parse 0 as an int", rint, "0", 0);
+  test_parse_ok(xbt_str_parse_int, "Parse -1 as an int", rint, "-1", -1);
+
+  test_parse_error(xbt_str_parse_int, "Parse int + noise", rint, "342 cruft");
+  test_parse_error(xbt_str_parse_int, "Parse NULL as an int", rint, NULL);
+  test_parse_error(xbt_str_parse_int, "Parse '' as an int", rint, "");
+  test_parse_error(xbt_str_parse_int, "Parse cruft as an int", rint, "cruft");
+
+  double rdouble;
+  test_parse_ok(xbt_str_parse_double, "Parse 42 as a double", rdouble, "42", 42);
+  test_parse_ok(xbt_str_parse_double, "Parse 42.5 as a double", rdouble, "42.5", 42.5);
+  test_parse_ok(xbt_str_parse_double, "Parse 0 as a double", rdouble, "0", 0);
+  test_parse_ok(xbt_str_parse_double, "Parse -1 as a double", rdouble, "-1", -1);
+
+  test_parse_error(xbt_str_parse_double, "Parse double + noise", rdouble, "342 cruft");
+  test_parse_error(xbt_str_parse_double, "Parse NULL as a double", rdouble, NULL);
+  test_parse_error(xbt_str_parse_double, "Parse '' as a double", rdouble, "");
+  test_parse_error(xbt_str_parse_double, "Parse cruft as a double", rdouble, "cruft");
 }
 
 #endif                          /* SIMGRID_TEST */
