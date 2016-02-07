@@ -514,13 +514,13 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
   xbt_assert(core==1,"Multi-core not handled by this model yet");
   m_core = core;
 
-  m_speedScale = speedScale;
+  p_speed.scale = speedScale;
   p_availTrace = new CpuTiTgmr(speedTrace, speedScale);
 
   p_actionSet = new ActionTiList();
 
-  xbt_dynar_get_cpy(speedPeak, 0, &m_speedPeak);
-  XBT_DEBUG("CPU create: peak=%f", m_speedPeak);
+  xbt_dynar_get_cpy(speedPeak, 0, &p_speed.peak);
+  XBT_DEBUG("CPU create: peak=%f", p_speed.peak);
 
   if (stateTrace)
     p_stateEvent = future_evt_set->add_trace(stateTrace, 0.0, this);
@@ -531,7 +531,7 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
     xbt_dynar_get_cpy(speedTrace->event_list,
                       xbt_dynar_length(speedTrace->event_list) - 1, &val);
     if (val.delta == 0) {
-      p_speedEvent =
+      p_speed.event =
           future_evt_set->add_trace(tmgr_empty_trace_new(), p_availTrace->m_lastTime, this);
     }
   }
@@ -548,24 +548,22 @@ void CpuTi::set_speed_trace(tmgr_trace_t trace)
   if (p_availTrace)
     delete p_availTrace;
 
-  p_availTrace = new CpuTiTgmr(trace, m_speedScale);
+  p_availTrace = new CpuTiTgmr(trace, p_speed.scale);
 
   /* add a fake trace event if periodicity == 0 */
   if (trace && xbt_dynar_length(trace->event_list) > 1) {
     s_tmgr_event_t val;
-    xbt_dynar_get_cpy(trace->event_list,
-                      xbt_dynar_length(trace->event_list) - 1, &val);
-    if (val.delta == 0) {
-      p_speedEvent = future_evt_set->add_trace(tmgr_empty_trace_new(), 0.0, this);
-    }
+    xbt_dynar_get_cpy(trace->event_list, xbt_dynar_length(trace->event_list) - 1, &val);
+    if (val.delta == 0)
+      p_speed.event = future_evt_set->add_trace(tmgr_empty_trace_new(), 0.0, this);
   }
 }
 
-void CpuTi::apply_event(tmgr_trace_iterator_t event_type, double value)
+void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
 {
   CpuTiAction *action;
 
-  if (event_type == p_speedEvent) {
+  if (event == p_speed.event) {
     tmgr_trace_t speedTrace;
     CpuTiTgmr *trace;
     s_tmgr_event_t val;
@@ -581,16 +579,16 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event_type, double value)
                       xbt_dynar_length(speedTrace->event_list) - 1, &val);
     /* free old trace */
     delete p_availTrace;
-    m_speedScale = val.value;
+    p_speed.scale = val.value;
 
     trace = new CpuTiTgmr(TRACE_FIXED, val.value);
     XBT_DEBUG("value %f", val.value);
 
     p_availTrace = trace;
 
-    tmgr_trace_event_unref(&p_speedEvent);
+    tmgr_trace_event_unref(&p_speed.event);
 
-  } else if (event_type == p_stateEvent) {
+  } else if (event == p_stateEvent) {
     if (value > 0) {
       if(isOff())
         xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
@@ -667,7 +665,7 @@ void CpuTi::updateActionsFinishTime(double now)
           (action->getRemains()) * sum_priority *
            action->getPriority();
 
-      total_area /= m_speedPeak;
+      total_area /= p_speed.peak;
 
       action->setFinishTime(p_availTrace->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
@@ -709,7 +707,7 @@ bool CpuTi::isUsed()
 
 double CpuTi::getAvailableSpeed()
 {
-  m_speedScale = p_availTrace->getPowerScale(surf_get_clock());
+  p_speed.scale = p_availTrace->getPowerScale(surf_get_clock());
   return Cpu::getAvailableSpeed();
 }
 
@@ -724,7 +722,7 @@ void CpuTi::updateRemainingAmount(double now)
     return;
 
   /* compute the integration area */
-  area_total = p_availTrace->integrate(m_lastUpdate, now) * m_speedPeak;
+  area_total = p_availTrace->integrate(m_lastUpdate, now) * p_speed.peak;
   XBT_DEBUG("Flops total: %f, Last update %f", area_total,
          m_lastUpdate);
 

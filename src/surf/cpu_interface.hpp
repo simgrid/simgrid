@@ -153,8 +153,6 @@ public:
 
 public:
   int m_core = 1;                /* Amount of cores */
-  double m_speedPeak;            /*< CPU speed peak, ie max value */
-  double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
   simgrid::s4u::Host* m_host;
 
   xbt_dynar_t p_speedPeakList = NULL; /*< List of supported CPU capacities (pstate related) */
@@ -167,9 +165,9 @@ public:
 public:
   void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF) */
   void set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load) */
-protected:
+
   tmgr_trace_iterator_t p_stateEvent = nullptr;
-  tmgr_trace_iterator_t p_speedEvent = nullptr;
+  s_surf_metric_t p_speed = {1.0, 0, nullptr};
 };
 
 /**********

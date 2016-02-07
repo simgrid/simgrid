@@ -138,11 +138,11 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t s
   core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
     initiallyOn) {
 
-  XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_speedPeak, m_pstate);
+  XBT_DEBUG("CPU create: peak=%f, pstate=%d", p_speed.peak, m_pstate);
 
   m_core = core;
   if (speedTrace)
-    p_speedEvent = future_evt_set->add_trace(speedTrace, 0.0, this);
+    p_speed.event = future_evt_set->add_trace(speedTrace, 0.0, this);
 
   if (stateTrace)
     p_stateEvent = future_evt_set->add_trace(stateTrace, 0.0, this);
@@ -169,33 +169,33 @@ void CpuCas01::onSpeedChange() {
   lmm_element_t elem = NULL;
 
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
-                                m_core * m_speedScale * m_speedPeak);
+                                m_core * p_speed.scale * p_speed.peak);
     while ((var = lmm_get_var_from_cnst
             (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
       CpuCas01Action *action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
       lmm_update_variable_bound(getModel()->getMaxminSystem(),
                                 action->getVariable(),
-                                m_speedScale * m_speedPeak);
+                                p_speed.scale * p_speed.peak);
     }
 
   Cpu::onSpeedChange();
 }
 
-void CpuCas01::apply_event(tmgr_trace_iterator_t event_type, double value)
+void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
 {
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
 
-  if (event_type == p_speedEvent) {
+  if (event == p_speed.event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(m_core == 1, "FIXME: add speed scaling code also for constraint_core[i]");
 
-    m_speedScale = value;
+    p_speed.scale = value;
     onSpeedChange();
 
-    tmgr_trace_event_unref(&p_speedEvent);
-  } else if (event_type == p_stateEvent) {
+    tmgr_trace_event_unref(&p_speed.event);
+  } else if (event == p_stateEvent) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
 
@@ -233,7 +233,7 @@ CpuAction *CpuCas01::execution_start(double size)
 
   XBT_IN("(%s,%g)", getName(), size);
   CpuCas01Action *action = new CpuCas01Action(getModel(), size, isOff(),
-      m_speedScale * m_speedPeak, getConstraint());
+      p_speed.scale * p_speed.peak, getConstraint());
 
   XBT_OUT();
   return action;
@@ -246,7 +246,7 @@ CpuAction *CpuCas01::sleep(double duration)
 
   XBT_IN("(%s,%g)", getName(), duration);
   CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, isOff(),
-      m_speedScale * m_speedPeak, getConstraint());
+      p_speed.scale * p_speed.peak, getConstraint());
 
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand

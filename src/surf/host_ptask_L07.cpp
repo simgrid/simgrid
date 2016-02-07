@@ -397,7 +397,7 @@ CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host,
   p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,pstate,double) * speedScale);
 
   if (speedTrace)
-    p_speedEvent = future_evt_set->add_trace(speedTrace, 0.0, this);
+    p_speed.event = future_evt_set->add_trace(speedTrace, 0.0, this);
 
   if (state_trace)
     p_stateEvent = future_evt_set->add_trace(state_trace, 0.0, this);
@@ -462,14 +462,14 @@ void CpuL07::onSpeedChange() {
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
 
-    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), m_speedPeak * m_speedScale);
+    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), p_speed.peak * p_speed.scale);
     while ((var = lmm_get_var_from_cnst
             (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
       Action *action = static_cast<Action*>(lmm_variable_id(var));
 
       lmm_update_variable_bound(getModel()->getMaxminSystem(),
                                 action->getVariable(),
-                                m_speedScale * m_speedPeak);
+                                p_speed.scale * p_speed.peak);
     }
 
   Cpu::onSpeedChange();
@@ -482,10 +482,10 @@ bool LinkL07::isUsed(){
 
 void CpuL07::apply_event(tmgr_trace_iterator_t triggered, double value){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
-  if (triggered == p_speedEvent) {
-    m_speedScale = value;
+  if (triggered == p_speed.event) {
+    p_speed.scale = value;
     onSpeedChange();
-    tmgr_trace_event_unref(&p_speedEvent);
+    tmgr_trace_event_unref(&p_speed.event);
   } else if (triggered == p_stateEvent) {
     if (value > 0)
       turnOn();
