@@ -101,25 +101,8 @@ double VMHL13Model::next_occuring_event(double now)
   /* 2. Calculate resource share at the virtual machine layer. */
   adjustWeightOfDummyCpuActions();
 
-  double min_by_cpu = surf_cpu_model_vm->next_occuring_event(now);
-  double min_by_net = surf_network_model->next_occuring_event_isIdempotent() ? surf_network_model->next_occuring_event(now) : -1;
-  // Fixme: take storage into account once it's implemented
-  double min_by_sto = -1;
-
-  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
-      this, typeid(surf_cpu_model_pm ).name(), min_by_cpu,
-          typeid(surf_network_model).name(), min_by_net,
-            typeid(surf_storage_model).name(), min_by_sto);
-
-  double ret = std::max(std::max(min_by_cpu, min_by_net), min_by_sto);
-  if (min_by_cpu >= 0.0 && min_by_cpu < ret)
-  ret = min_by_cpu;
-  if (min_by_net >= 0.0 && min_by_net < ret)
-  ret = min_by_net;
-  if (min_by_sto >= 0.0 && min_by_sto < ret)
-  ret = min_by_sto;
-
-  return ret;
+  /* 3. Ready. Get the next occuring event */
+  return surf_cpu_model_vm->next_occuring_event(now);
 }
 
 /************
