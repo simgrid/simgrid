@@ -56,12 +56,8 @@ int count_finished = 0;
 /** master */
 int master(int argc, char *argv[])
 {
-  char *slavename = NULL;
   double task_comm_size = 0;
   msg_task_t todo;
-  char id_alias[10];
-  //unique id to control statistics
-  int id = -1;
 
   xbt_assert(argc==4,"Strange number of arguments expected 3 got %d", argc - 1);
 
@@ -73,17 +69,16 @@ int master(int argc, char *argv[])
   xbt_assert(read, "Invalid argument %s\n", argv[1]);
 
   /* slave name */
-  slavename = argv[2];
-  id = atoi(argv[3]);
-  sprintf(id_alias, "flow_%d", id);
+  char *slavename = argv[2];
+  int id = atoi(argv[3]);   //unique id to control statistics
+  char *id_alias = bprintf("flow_%d", id);
   slavenames[id] = slavename;
   TRACE_category(id_alias);
 
   masternames[id] = MSG_host_get_name(MSG_host_self());
 
   {                             /*  Task creation.  */
-    char sprintf_buffer[64] = "Task_0";
-    todo = MSG_task_create(sprintf_buffer, 100*task_comm_size, task_comm_size, NULL);
+    todo = MSG_task_create("Task_0", 100*task_comm_size, task_comm_size, NULL);
     MSG_task_set_category(todo, id_alias);
     //keep track of running tasks
     gl_task_array[id] = todo;
@@ -100,11 +95,11 @@ int master(int argc, char *argv[])
   /* time measurement */
   sprintf(id_alias, "%d", id);
   start_time = MSG_get_clock();
-  //MSG_task_execute(todo);
   MSG_task_send(todo, id_alias);
   end_time = MSG_get_clock();
 
   XBT_DEBUG ("Finished");
+  xbt_free(id_alias);
   return 0;
 }                               /* end_of_master */
 
