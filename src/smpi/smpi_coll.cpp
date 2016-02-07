@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
 s_mpi_coll_description_t mpi_coll_gather_description[] = {
   {"default",
    "gather default collective",
-   smpi_mpi_gather},
+   (void*)smpi_mpi_gather},
 COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -29,7 +29,7 @@ COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA),
 s_mpi_coll_description_t mpi_coll_allgather_description[] = {
   {"default",
    "allgather default collective",
-   smpi_mpi_allgather},
+   (void*)smpi_mpi_allgather},
 COLL_ALLGATHERS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -37,7 +37,7 @@ COLL_ALLGATHERS(COLL_DESCRIPTION, COLL_COMMA),
 s_mpi_coll_description_t mpi_coll_allgatherv_description[] = {
   {"default",
    "allgatherv default collective",
-   smpi_mpi_allgatherv},
+   (void*)smpi_mpi_allgatherv},
 COLL_ALLGATHERVS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -45,7 +45,7 @@ COLL_ALLGATHERVS(COLL_DESCRIPTION, COLL_COMMA),
 s_mpi_coll_description_t mpi_coll_allreduce_description[] = {
   {"default",
    "allreduce default collective",
-   smpi_mpi_allreduce},
+   (void*)smpi_mpi_allreduce},
 COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -53,7 +53,7 @@ COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA),
 s_mpi_coll_description_t mpi_coll_reduce_scatter_description[] = {
   {"default",
    "reduce_scatter default collective",
-   smpi_mpi_reduce_scatter},
+   (void*)smpi_mpi_reduce_scatter},
 COLL_REDUCE_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -61,7 +61,7 @@ COLL_REDUCE_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
 s_mpi_coll_description_t mpi_coll_scatter_description[] = {
   {"default",
    "scatter default collective",
-   smpi_mpi_scatter},
+   (void*)smpi_mpi_scatter},
 COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -69,28 +69,28 @@ COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
 s_mpi_coll_description_t mpi_coll_barrier_description[] = {
   {"default",
    "barrier default collective",
-   smpi_mpi_barrier},
+   (void*)smpi_mpi_barrier},
 COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 s_mpi_coll_description_t mpi_coll_alltoall_description[] = {
   {"default",
    "Ompi alltoall default collective",
-   smpi_coll_tuned_alltoall_ompi2},
+   (void*)smpi_coll_tuned_alltoall_ompi2},
 COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA),
   {"bruck",
    "Alltoall Bruck (SG) collective",
-   smpi_coll_tuned_alltoall_bruck},
+   (void*)smpi_coll_tuned_alltoall_bruck},
   {"basic_linear",
    "Alltoall basic linear (SG) collective",
-   smpi_coll_tuned_alltoall_basic_linear},
+   (void*)smpi_coll_tuned_alltoall_basic_linear},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_alltoallv_description[] = {
   {"default",
    "Ompi alltoallv default collective",
-   smpi_coll_basic_alltoallv},
+   (void*)smpi_coll_basic_alltoallv},
 COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -98,7 +98,7 @@ COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
 s_mpi_coll_description_t mpi_coll_bcast_description[] = {
   {"default",
    "bcast default collective ",
-   smpi_mpi_bcast},
+   (void*)smpi_mpi_bcast},
 COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -106,7 +106,7 @@ COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
 s_mpi_coll_description_t mpi_coll_reduce_description[] = {
   {"default",
    "reduce default collective",
-   smpi_mpi_reduce},
+   (void*)smpi_mpi_reduce},
 COLL_REDUCES(COLL_DESCRIPTION, COLL_COMMA),
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
@@ -152,9 +152,8 @@ int find_coll_description(s_mpi_coll_description_t * table,
     xbt_die("No collective is valid for '%s'! This is a bug.",name);
   name_list = xbt_strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
-    name_list =
-        xbt_realloc(name_list,
-                    strlen(name_list) + strlen(table[i].name) + 3);
+    name_list = static_cast<char*>(xbt_realloc(name_list,
+                    strlen(name_list) + strlen(table[i].name) + 3));
     strcat(name_list, ", ");
     strcat(name_list, table[i].name);
   }

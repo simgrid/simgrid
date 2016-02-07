@@ -86,31 +86,31 @@ typedef double doublereal;
 typedef struct { real r, i; } complex;
 typedef struct { doublereal r, i; } doublecomplex;
 
-XBT_PUBLIC(doublereal) smpi_get_host_power_peak_at_(integer *pstate_index);
+extern "C" XBT_PUBLIC(doublereal) smpi_get_host_power_peak_at_(integer *pstate_index);
 doublereal smpi_get_host_power_peak_at_(integer *pstate_index)
 {
   return (doublereal)smpi_get_host_power_peak_at((int)*pstate_index);
 }
 
-XBT_PUBLIC(doublereal) smpi_get_host_current_power_peak_(void);
+extern "C" XBT_PUBLIC(doublereal) smpi_get_host_current_power_peak_(void);
 doublereal smpi_get_host_current_power_peak_(void)
 {
   return smpi_get_host_current_power_peak();
 }
 
-XBT_PUBLIC(integer) smpi_get_host_nb_pstates_(void);
+extern "C" XBT_PUBLIC(integer) smpi_get_host_nb_pstates_(void);
 integer smpi_get_host_nb_pstates_(void)
 {
   return (integer)smpi_get_host_nb_pstates();
 }
 
-XBT_PUBLIC(void) smpi_set_host_pstate_(integer *pstate_index);
+extern "C" XBT_PUBLIC(void) smpi_set_host_pstate_(integer *pstate_index);
 void smpi_set_host_pstate_(integer *pstate_index)
 {
   smpi_set_host_pstate((int)*pstate_index);
 }
 
-XBT_PUBLIC(doublereal) smpi_get_host_consumed_energy_(void);
+extern "C" XBT_PUBLIC(doublereal) smpi_get_host_consumed_energy_(void);
 doublereal smpi_get_host_consumed_energy_(void)
 {
   return (doublereal)smpi_get_host_consumed_energy();

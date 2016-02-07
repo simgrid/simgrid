@@ -119,7 +119,7 @@ int smpi_group_rank(MPI_Group group, int index)
   char * key;
   int size = asprintf(&key, "%d", index);
   if (size!=-1){
-    ptr_rank = xbt_dict_get_or_null(group->index_to_rank_map, key);
+    ptr_rank = static_cast<int*>(xbt_dict_get_or_null(group->index_to_rank_map, key));
     xbt_free(key);
   }else
     xbt_die("could not allocate memory for asprintf");

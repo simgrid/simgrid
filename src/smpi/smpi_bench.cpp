@@ -139,13 +139,13 @@ void smpi_bench_destroy(void)
   xbt_dict_free(&calls);
 }
 
-XBT_PUBLIC(void) smpi_execute_flops_(double *flops);
+extern "C" XBT_PUBLIC(void) smpi_execute_flops_(double *flops);
 void smpi_execute_flops_(double *flops)
 {
   smpi_execute_flops(*flops);
 }
 
-XBT_PUBLIC(void) smpi_execute_(double *duration);
+extern "C" XBT_PUBLIC(void) smpi_execute_(double *duration);
 void smpi_execute_(double *duration)
 {
   smpi_execute(*duration);
@@ -327,7 +327,7 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   if (!samples)
     samples = xbt_dict_new_homogeneous(free);
 
-  data = xbt_dict_get_or_null(samples, loc);
+  data = static_cast<local_data_t *>(xbt_dict_get_or_null(samples, loc));
   if (!data) {
     xbt_assert(threshold>0 || iters>0,
         "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
@@ -362,7 +362,7 @@ int smpi_sample_2(int global, const char *file, int line)
   int res;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  data = xbt_dict_get(samples, loc);
+  data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
   XBT_DEBUG("sample2 %s",loc);
   xbt_free(loc);
 
@@ -391,7 +391,7 @@ void smpi_sample_3(int global, const char *file, int line)
   local_data_t *data;
 
   xbt_assert(samples, "Y U NO use SMPI_SAMPLE_* macros? Stop messing directly with smpi_sample_* functions!");
-  data = xbt_dict_get(samples, loc);
+  data = static_cast<local_data_t *>(xbt_dict_get(samples, loc));
   XBT_DEBUG("sample3 %s",loc);
   xbt_free(loc);
 
@@ -424,7 +424,7 @@ void smpi_sample_3(int global, const char *file, int line)
 #ifndef WIN32
 static void smpi_shared_alloc_free(void *p)
 {
-  shared_data_t *data = p;
+  shared_data_t *data = static_cast<shared_data_t *>(p);
   xbt_free(data->loc);
   xbt_free(data);
 }
@@ -439,7 +439,7 @@ static char *smpi_shared_alloc_hash(char *loc)
   xbt_sha(loc, hash);
   hash[41] = '\0';
   s[6] = '\0';
-  loc = xbt_realloc(loc, 30);
+  loc = static_cast<char *>(xbt_realloc(loc, 30));
   loc[0] = '/';
   for (i = 0; i < 40; i += 6) { /* base64 encode */
     memcpy(s, hash + i, 6);
@@ -466,7 +466,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
     if (!allocs) {
       allocs = xbt_dict_new_homogeneous(smpi_shared_alloc_free);
     }
-    data = xbt_dict_get_or_null(allocs, loc);
+    data = static_cast<shared_data_t *>(xbt_dict_get_or_null(allocs, loc));
     if (!data) {
       fd = shm_open(loc, O_RDWR | O_CREAT | O_EXCL,
                     S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
@@ -652,7 +652,7 @@ void smpi_initialize_global_memory_segments(){
   return;
 #else
 
-  unsigned int i = 0;
+  int i = 0;
   smpi_get_executable_global_size();
 
   XBT_DEBUG ("bss+data segment found : size %d starting at %p",

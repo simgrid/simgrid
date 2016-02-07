@@ -67,9 +67,8 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
     return;
   }
 
-  s_smpi_mpi_instance_t* instance = xbt_dict_get_or_null(smpi_instances, instance_id);
-  if (!instance)
-    xbt_die("Error, unknown instance %s", instance_id);
+  s_smpi_mpi_instance_t* instance = static_cast<s_smpi_mpi_instance_t*>(xbt_dict_get_or_null(smpi_instances, instance_id));
+  xbt_assert(instance, "Error, unknown instance %s", instance_id);
 
   if(instance->comm_world == MPI_COMM_NULL){
     MPI_Group group = smpi_group_new(instance->size);

@@ -227,24 +227,24 @@ set(SMPI_SRC
   src/smpi/colls/smpi_intel_mpi_selector.c
   src/smpi/colls/smpi_openmpi_selector.c
   src/smpi/colls/smpi_mvapich2_selector.c
-  src/smpi/instr_smpi.c
-  src/smpi/smpi_base.c
-  src/smpi/smpi_bench.c
+  src/smpi/instr_smpi.cpp
+  src/smpi/smpi_base.cpp
+  src/smpi/smpi_bench.cpp
   src/smpi/smpi_memory.cpp
-  src/smpi/smpi_c99.c
-  src/smpi/smpi_coll.c
-  src/smpi/smpi_comm.c
-  src/smpi/smpi_deployment.c
-  src/smpi/smpi_dvfs.c
-  src/smpi/smpi_global.c
-  src/smpi/smpi_group.c
-  src/smpi/smpi_mpi.c
-  src/smpi/smpi_mpi_dt.c
-  src/smpi/smpi_pmpi.c
-  src/smpi/smpi_replay.c
-  src/smpi/smpi_rma.c
-  src/smpi/smpi_topo.c
-  src/smpi/smpi_f77.c
+  src/smpi/smpi_c99.cpp
+  src/smpi/smpi_coll.cpp
+  src/smpi/smpi_comm.cpp
+  src/smpi/smpi_deployment.cpp
+  src/smpi/smpi_dvfs.cpp
+  src/smpi/smpi_global.cpp
+  src/smpi/smpi_group.cpp
+  src/smpi/smpi_mpi.cpp
+  src/smpi/smpi_mpi_dt.cpp
+  src/smpi/smpi_pmpi.cpp
+  src/smpi/smpi_replay.cpp
+  src/smpi/smpi_rma.cpp
+  src/smpi/smpi_topo.cpp
+  src/smpi/smpi_f77.cpp
   )
 
 set(XBT_SRC

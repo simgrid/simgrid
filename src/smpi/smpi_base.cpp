@@ -94,7 +94,7 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
   unsigned int iter = 0;
   s_smpi_factor_t fact;
   fact.nb_values=0;
-  int i=0;
+  unsigned int i=0;
   xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = NULL;
 
   smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), NULL);
@@ -242,7 +242,7 @@ static MPI_Request build_request(void *buf, int count,
 
   request = xbt_new(s_smpi_mpi_request_t, 1);
 
-  s_smpi_subtype_t *subtype = datatype->substruct;
+  s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
 
   if(((flags & RECV) && (flags & ACCUMULATE)) || (datatype->has_subtype == 1)){
     // This part handles the problem of non-contiguous memory
@@ -298,7 +298,7 @@ void smpi_empty_status(MPI_Status * status)
 
 static void smpi_mpi_request_free_voidp(void* request)
 {
-  MPI_Request req = request;
+  MPI_Request req = static_cast<MPI_Request>(request);
   smpi_mpi_request_free(&req);
 }
 
@@ -351,7 +351,7 @@ void smpi_mpi_start(MPI_Request request)
     if (async_small_thresh == 0 && !(request->flags & RMA)) {
       mailbox = smpi_process_mailbox();
     }
-    else if (request->flags & RMA || request->size < async_small_thresh){
+    else if (request->flags & RMA || static_cast<int>(request->size) < async_small_thresh){
     //We have to check both mailboxes (because SSEND messages are sent to the large mbox). begin with the more appropriate one : the small one.
       mailbox = smpi_process_mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %p (in case of SSEND)?", mailbox);
@@ -399,7 +399,7 @@ void smpi_mpi_start(MPI_Request request)
                                          request, -1.0);
         XBT_DEBUG("recv simcall posted");
 
-    if (async_small_thresh != 0 || request->flags & RMA)
+    if (async_small_thresh != 0 || (request->flags & RMA))
       xbt_mutex_release(mut);
   } else {
 
@@ -428,13 +428,13 @@ void smpi_mpi_start(MPI_Request request)
 
     xbt_mutex_t mut=smpi_process_remote_mailboxes_mutex(receiver);
 
-    if (async_small_thresh != 0 || request->flags & RMA)
+    if (async_small_thresh != 0 || (request->flags & RMA))
       xbt_mutex_acquire(mut);
 
-    if (!(async_small_thresh != 0 || request->flags & RMA)) {
+    if (!(async_small_thresh != 0 || (request->flags & RMA))) {
       mailbox = smpi_process_remote_mailbox(receiver);
     }
-    else if (request->flags & RMA || request->size < async_small_thresh) { // eager mode
+    else if (request->flags & RMA || static_cast<int>(request->size) < async_small_thresh) { // eager mode
       mailbox = smpi_process_remote_mailbox(receiver);
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
       smx_synchro_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, (void*)request);
@@ -460,7 +460,7 @@ void smpi_mpi_start(MPI_Request request)
     }
 
     void* buf = request->buf;
-    if ( (! (request->flags & SSEND)) && (request->size < sg_cfg_get_int("smpi/send_is_detached_thresh"))) {
+    if ( (! (request->flags & SSEND)) && (static_cast<int>(request->size) < sg_cfg_get_int("smpi/send_is_detached_thresh"))) {
       void *oldbuf = NULL;
       request->detached = 1;
       XBT_DEBUG("Send request %p is detached", request);
@@ -719,7 +719,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
       if(datatype->has_subtype == 1){
         // This part handles the problem of non-contignous memory
         // the unserialization at the reception
-        s_smpi_subtype_t *subtype = datatype->substruct;
+        s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
         if(req->flags & RECV)
           subtype->unserialize(req->buf, req->old_buf, req->real_size/smpi_datatype_size(datatype) , datatype->substruct, req->op);
         if(req->detached == 0) free(req->buf);

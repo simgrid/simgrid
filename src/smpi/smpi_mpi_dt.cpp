@@ -183,7 +183,7 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
   memcpy(*new_t, datatype, sizeof(s_smpi_mpi_datatype_t));
   if (datatype->has_subtype){
     //FIXME: may copy too much information.
-    (*new_t)->substruct=xbt_malloc(sizeof(s_smpi_mpi_struct_t));
+    (*new_t)->substruct=xbt_new(s_smpi_mpi_struct_t,1);
     memcpy((*new_t)->substruct, datatype->substruct, sizeof(s_smpi_mpi_struct_t));
   }
   if(datatype->name)
@@ -196,7 +196,7 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
       void* value_in;
       void* value_out;
       xbt_dict_foreach(datatype->attributes, cursor, key, value_in){
-        smpi_type_key_elem elem = xbt_dict_get_or_null_ext(smpi_type_keyvals,  (const char*)key, sizeof(int));
+        smpi_type_key_elem elem = static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals,  (const char*)key, sizeof(int)));
         if(elem && elem->copy_fn!=MPI_NULL_COPY_FN){
           ret = elem->copy_fn(datatype, *key, NULL, value_in, &value_out, &flag );
           if(ret!=MPI_SUCCESS){
@@ -259,21 +259,21 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     }
     else if (sendtype->has_subtype == 0)
     {
-      s_smpi_subtype_t *subtype =  recvtype->substruct;
+      s_smpi_subtype_t *subtype =  static_cast<s_smpi_subtype_t*>(recvtype->substruct);
       subtype->unserialize( sendbuf, recvbuf, recvcount/smpi_datatype_size(recvtype), subtype, MPI_REPLACE);
     }
     else if (recvtype->has_subtype == 0)
     {
-      s_smpi_subtype_t *subtype =  sendtype->substruct;
+      s_smpi_subtype_t *subtype =  static_cast<s_smpi_subtype_t*>(sendtype->substruct);
       subtype->serialize(sendbuf, recvbuf, sendcount/smpi_datatype_size(sendtype), subtype);
     }else{
-      s_smpi_subtype_t *subtype =  sendtype->substruct;
+      s_smpi_subtype_t *subtype =  static_cast<s_smpi_subtype_t*>(sendtype->substruct);
 
 
       void * buf_tmp = xbt_malloc(count);
 
       subtype->serialize( sendbuf, buf_tmp,count/smpi_datatype_size(sendtype), subtype);
-      subtype =  recvtype->substruct;
+      subtype =  static_cast<s_smpi_subtype_t*>(recvtype->substruct);
       subtype->unserialize( buf_tmp, recvbuf,count/smpi_datatype_size(recvtype), subtype, MPI_REPLACE);
 
       free(buf_tmp);
@@ -386,7 +386,7 @@ s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride,
 }
 
 void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int has_subtype,
-                          void *struct_type, int flags){
+    void *struct_type, int flags){
   MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
   new_t->name = NULL;
   new_t->size = size;
@@ -413,7 +413,7 @@ void smpi_datatype_free(MPI_Datatype* type){
       void * value;
       int flag;
       xbt_dict_foreach((*type)->attributes, cursor, key, value){
-        smpi_type_key_elem elem = xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)key, sizeof(int));
+        smpi_type_key_elem elem = static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)key, sizeof(int)));
         if(elem &&  elem->delete_fn)
           elem->delete_fn(*type,*key, value, &flag);
       }
@@ -1060,7 +1060,8 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
     if(indices[i]+smpi_datatype_lb(old_type)<lb) lb = indices[i]+smpi_datatype_lb(old_type);
     if(indices[i]+blocklens[i]*smpi_datatype_ub(old_type)>ub) ub = indices[i]+blocklens[i]*smpi_datatype_ub(old_type);
 
-    if ( (i< count -1) && (indices[i]+blocklens[i]*smpi_datatype_size(old_type) != indices[i+1]) )contiguous=0;
+    if ( (i< count -1) && (indices[i]+blocklens[i]*static_cast<int>(smpi_datatype_size(old_type)) != indices[i+1]) )
+      contiguous=0;
   }
   if (old_type->has_subtype == 1 || lb!=0)
     contiguous=0;
@@ -1247,7 +1248,8 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
     if(!forced_lb && indices[i]+smpi_datatype_lb(old_types[i])<lb) lb = indices[i];
     if(!forced_ub && indices[i]+blocklens[i]*smpi_datatype_ub(old_types[i])>ub) ub = indices[i]+blocklens[i]*smpi_datatype_ub(old_types[i]);
 
-    if ( (i< count -1) && (indices[i]+blocklens[i]*smpi_datatype_size(old_types[i]) != indices[i+1]) )contiguous=0;
+    if ( (i< count -1) && (indices[i]+blocklens[i]*static_cast<int>(smpi_datatype_size(old_types[i])) != indices[i+1]) )
+      contiguous=0;
   }
 
   if(!contiguous){
@@ -1676,7 +1678,7 @@ void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len,
 }
 
 int smpi_type_attr_delete(MPI_Datatype type, int keyval){
-  smpi_type_key_elem elem = xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)&keyval, sizeof(int));
+  smpi_type_key_elem elem = static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)&keyval, sizeof(int)));
   if(!elem)
     return MPI_ERR_ARG;
   if(elem->delete_fn!=MPI_NULL_DELETE_FN){
@@ -1695,7 +1697,7 @@ int smpi_type_attr_delete(MPI_Datatype type, int keyval){
 }
 
 int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag){
-  smpi_type_key_elem elem = xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)&keyval, sizeof(int));
+  smpi_type_key_elem elem = static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)&keyval, sizeof(int)));
   if(!elem)
     return MPI_ERR_ARG;
   xbt_ex_t ex;
@@ -1717,7 +1719,7 @@ int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* fla
 int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
   if(!smpi_type_keyvals)
   smpi_type_keyvals = xbt_dict_new();
-  smpi_type_key_elem elem = xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)&keyval, sizeof(int));
+  smpi_type_key_elem elem = static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)&keyval, sizeof(int)));
   if(!elem )
     return MPI_ERR_ARG;
   int flag;
@@ -1751,7 +1753,7 @@ int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delet
 }
 
 int smpi_type_keyval_free(int* keyval){
-  smpi_type_key_elem elem = xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)keyval, sizeof(int));
+  smpi_type_key_elem elem = static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)keyval, sizeof(int)));
   if(!elem){
     return MPI_ERR_ARG;
   }
@@ -1762,7 +1764,7 @@ int smpi_type_keyval_free(int* keyval){
 
 int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int outcount, int* position, MPI_Comm comm){
   size_t size = smpi_datatype_size(type);
-  if (outcount - *position < incount*size)
+  if (outcount - *position < incount*static_cast<int>(size))
     return MPI_ERR_BUFFER;
   smpi_datatype_copy(inbuf, incount, type,
                    (char*)outbuf + *position, outcount, MPI_CHAR);
@@ -1771,7 +1773,7 @@ int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int
 }
 
 int smpi_mpi_unpack(void* inbuf, int insize, int* position, void* outbuf, int outcount, MPI_Datatype type, MPI_Comm comm){
-  size_t size = smpi_datatype_size(type);
+  int size = static_cast<int>(smpi_datatype_size(type));
   if (outcount*size> insize)
     return MPI_ERR_BUFFER;
   smpi_datatype_copy((char*)inbuf + *position, insize, MPI_CHAR,

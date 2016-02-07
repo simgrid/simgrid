@@ -1826,7 +1826,7 @@ int PMPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   if(!known)
     dt_size_recv = smpi_datatype_size(recvtype);
   if((smpi_comm_rank(comm)==root)){
-  extra->recvcounts= xbt_malloc(size*sizeof(int));
+  extra->recvcounts= xbt_new(int,size);
   for(i=0; i< size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
   }
@@ -1930,7 +1930,7 @@ int PMPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   int dt_size_recv = 1;
   if(!known)
     dt_size_recv = smpi_datatype_size(recvtype);
-  extra->recvcounts= xbt_malloc(size*sizeof(int));
+  extra->recvcounts= xbt_new(int, size);
   for(i=0; i< size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i]*dt_size_recv;
 
@@ -2030,7 +2030,7 @@ int PMPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
   if(!known)
     dt_size_send = smpi_datatype_size(sendtype);
   if((smpi_comm_rank(comm)==root)){
-  extra->sendcounts= xbt_malloc(size*sizeof(int));
+  extra->sendcounts= xbt_new(int, size);
   for(i=0; i< size; i++)//copy data to avoid bad free
     extra->sendcounts[i] = sendcounts[i]*dt_size_send;
   }
@@ -2244,7 +2244,7 @@ int PMPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
   if(!known)
     dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = 0;
-  extra->recvcounts= xbt_malloc(size*sizeof(int));
+  extra->recvcounts= xbt_new(int, size);
   for(i=0; i< size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i]*dt_size_send;
   TRACE_smpi_collective_in(rank, -1, __FUNCTION__,extra);
@@ -2290,7 +2290,7 @@ int PMPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
   if(!known)
     dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = 0;
-  extra->recvcounts= xbt_malloc(count*sizeof(int));
+  extra->recvcounts= xbt_new(int, count);
   for(i=0; i< count; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcount*dt_size_send;
 
@@ -2373,8 +2373,8 @@ int PMPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
   extra->type = TRACING_ALLTOALLV;
   extra->send_size = 0;
   extra->recv_size = 0;
-  extra->recvcounts= xbt_malloc(size*sizeof(int));
-  extra->sendcounts= xbt_malloc(size*sizeof(int));
+  extra->recvcounts= xbt_new(int, size);
+  extra->sendcounts= xbt_new(int, size);
   int known=0;
   extra->datatype1 = encode_datatype(sendtype, &known);
   int dt_size_send = 1;
@@ -3255,7 +3255,7 @@ int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
   *flag=FALSE;
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
   if(tmpvalue){
-    memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < valuelen) ?
+    memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < static_cast<size_t>(valuelen)) ?
                          strlen(tmpvalue) + 1 : valuelen);
     *flag=TRUE;
   }
@@ -3315,7 +3315,7 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
 }
 
 int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
-  if (info == NULL || key == NULL || valuelen <0)
+  if (info == NULL || key == NULL || *valuelen <0)
     return MPI_ERR_ARG;
   *flag=FALSE;
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);

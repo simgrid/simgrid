@@ -107,7 +107,7 @@ void smpi_process_init(int *argc, char ***argv)
     data->replaying = 0;
     //xbt_free(simcall_process_get_data(proc));
 
-  simdata_process_t simdata = simcall_process_get_data(proc);
+  simdata_process_t simdata = static_cast<simdata_process_t>(simcall_process_get_data(proc));
   simdata->data = data;
 
     if (*argc > 3) {
@@ -124,8 +124,8 @@ void smpi_process_init(int *argc, char ***argv)
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
 
   }
-  if (smpi_process_data() == NULL)
-    xbt_die("smpi_process_data() returned NULL. You probably gave a NULL parameter to MPI_Init. Although it's required by MPI-2, this is currently not supported by SMPI.");
+  xbt_assert(smpi_process_data(),
+      "smpi_process_data() returned NULL. You probably gave a NULL parameter to MPI_Init. Although it's required by MPI-2, this is currently not supported by SMPI.");
 }
 
 void smpi_process_destroy(void)
@@ -218,8 +218,8 @@ int smpi_global_size(void)
 
 smpi_process_data_t smpi_process_data(void)
 {
-  simdata_process_t simdata = SIMIX_process_self_get_data(SIMIX_process_self());
-  return simdata->data;
+  simdata_process_t simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data(SIMIX_process_self()));
+  return static_cast<smpi_process_data_t>(simdata->data);
 }
 
 smpi_process_data_t smpi_process_remote_data(int index)
@@ -537,13 +537,16 @@ int __attribute__ ((weak)) main(int argc, char **argv)
 
 #endif
 
+extern "C" {
 static void smpi_init_logs(){
 
   /* Connect log categories.  See xbt/log.c */
+
   XBT_LOG_CONNECT(smpi);        /* Keep this line as soon as possible in this
                                    function: xbt_log_appender_file.c depends on it
                                    DO NOT connect this in XBT or so, or it will be
                                    useless to xbt_log_appender_file.c */
+
   XBT_LOG_CONNECT(instr_smpi);
   XBT_LOG_CONNECT(smpi_base);
   XBT_LOG_CONNECT(smpi_bench);
@@ -558,9 +561,8 @@ static void smpi_init_logs(){
   XBT_LOG_CONNECT(smpi_pmpi);
   XBT_LOG_CONNECT(smpi_replay);
   XBT_LOG_CONNECT(smpi_rma);
-
 }
-
+}
 
 static void smpi_init_options(){
   int gather_id = find_coll_description(mpi_coll_gather_description,

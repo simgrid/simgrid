@@ -97,7 +97,7 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
   //get the dynar for src#dst
   char aux[INSTR_DEFAULT_STR_SIZE];
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
-  xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
+  xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
 
 
   if(!xbt_dynar_is_empty(d)){
@@ -127,7 +127,7 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
 {
   char aux[INSTR_DEFAULT_STR_SIZE];
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
-  xbt_dynar_t d = xbt_dict_get_or_null(keys, aux);
+  xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
 
  // xbt_assert(!xbt_dynar_is_empty(d),
  //     "Trying to get a link key (for message reception) that has no corresponding send (%s).", __FUNCTION__);
@@ -177,7 +177,7 @@ const char *TRACE_internal_smpi_get_category (void)
 
   char processid[INSTR_DEFAULT_STR_SIZE];
   snprintf (processid, INSTR_DEFAULT_STR_SIZE, "%p", SIMIX_process_self());
-  return xbt_dict_get_or_null (process_category, processid);
+  return static_cast<char*>(xbt_dict_get_or_null (process_category, processid));
 }
 
 void TRACE_smpi_alloc()

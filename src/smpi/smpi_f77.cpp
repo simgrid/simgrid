@@ -45,8 +45,8 @@ typedef unsigned long int uinteger;
    ? (val) : (void *)(addr))
 #define FORT_BOTTOM(addr)          FORT_ADDR(addr, MPI_BOTTOM)
 #define FORT_IN_PLACE(addr)        FORT_ADDR(addr, MPI_IN_PLACE)
-#define FORT_STATUS_IGNORE(addr)   FORT_ADDR(addr, MPI_STATUS_IGNORE)
-#define FORT_STATUSES_IGNORE(addr) FORT_ADDR(addr, MPI_STATUSES_IGNORE)
+#define FORT_STATUS_IGNORE(addr)   static_cast<MPI_Status*>(FORT_ADDR(addr, MPI_STATUS_IGNORE))
+#define FORT_STATUSES_IGNORE(addr) static_cast<MPI_Status*>(FORT_ADDR(addr, MPI_STATUSES_IGNORE))
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
@@ -786,7 +786,7 @@ void mpi_win_set_name_ (int*  win, char * name, int* ierr, int size){
    size --;
    name++;
  }
- char* tname = xbt_malloc((size+1)*sizeof(char));
+ char* tname = xbt_new(char,size+1);
  strncpy(tname, name, size);
  tname[size]='\0';
  *ierr = MPI_Win_set_name(smpi_win_f2c(*win), tname);
@@ -813,7 +813,7 @@ void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int k
    keylen --;
    key++;
  }
- char* tkey = xbt_malloc((keylen+1)*sizeof(char));
+ char* tkey = xbt_new(char,keylen+1);
  strncpy(tkey, key, keylen);
  tkey[keylen]='\0';  
  
@@ -822,7 +822,7 @@ void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int k
    valuelen --;
    value++;
  }
- char* tvalue = xbt_malloc((valuelen+1)*sizeof(char));
+ char* tvalue = xbt_new(char,valuelen+1);
  strncpy(tvalue, value, valuelen);
  
  tvalue[valuelen]='\0'; 
@@ -835,7 +835,7 @@ void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, i
  while(*key==' '){//handle leading blanks
    keylen --;
    key++;
- }  char* tkey = xbt_malloc((keylen+1)*sizeof(char));
+ }  char* tkey = xbt_new(char,keylen+1);
  strncpy(tkey, key, keylen);
  tkey[keylen]='\0';
  *ierr = MPI_Info_get(smpi_info_f2c(*info),tkey,*valuelen, value, flag);
@@ -913,7 +913,7 @@ void mpi_type_dup_ (int*  datatype, int* newdatatype, int* ierr){
 }
 
 void mpi_type_set_name_ (int*  datatype, char * name, int* ierr, int size){
- char* tname = xbt_malloc((size+1)*sizeof(char));
+ char* tname = xbt_new(char, size+1);
  strncpy(tname, name, size);
  tname[size]='\0';
  *ierr = MPI_Type_set_name(smpi_type_f2c(*datatype), tname);
@@ -1570,7 +1570,7 @@ void mpi_exscan_ (void *sendbuf, void *recvbuf, int* count, int* datatype, int* 
 }
 
 void mpi_comm_set_name_ (int* comm, char* name, int* ierr, int size){
- char* tname = xbt_malloc((size+1)*sizeof(char));
+ char* tname = xbt_new(char, size+1);
  strncpy(tname, name, size);
  tname[size]='\0';
  *ierr = MPI_Comm_set_name (smpi_comm_f2c(*comm), tname);
@@ -1640,7 +1640,7 @@ void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, in
    keylen --;
    key++;
  }
- char* tkey = xbt_malloc((keylen+1)*sizeof(char));
+ char* tkey = xbt_new(char, keylen+1);
  strncpy(tkey, key, keylen);
  tkey[keylen]='\0';
  *ierr = MPI_Info_get_valuelen( smpi_info_f2c(*info), tkey, valuelen, flag);
@@ -1653,7 +1653,7 @@ void mpi_info_delete_ (int* info, char *key, int* ierr, unsigned int keylen){
    keylen --;
    key++;
  }
- char* tkey = xbt_malloc((keylen+1)*sizeof(char));
+ char* tkey = xbt_new(char, keylen+1);
  strncpy(tkey, key, keylen);
  tkey[keylen]='\0';
  *ierr = MPI_Info_delete(smpi_info_f2c(*info), tkey);
@@ -1666,7 +1666,7 @@ void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr){
 
 void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, unsigned int keylen){
  *ierr = MPI_Info_get_nthkey( smpi_info_f2c(*info), *n, key);
- int i = 0;
+ unsigned int i = 0;
  for (i=strlen(key); i<keylen; i++)
  key[i]=' ';
 }

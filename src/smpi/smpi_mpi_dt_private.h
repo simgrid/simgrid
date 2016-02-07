@@ -13,6 +13,8 @@
 
 #include "private.h"
 
+SG_BEGIN_DECL()
+
 #define DT_FLAG_DESTROYED     0x0001  /**< user destroyed but some other layers still have a reference */
 #define DT_FLAG_COMMITED      0x0002  /**< ready to be used for a send/recv operation */
 #define DT_FLAG_CONTIGUOUS    0x0004  /**< contiguous datatype */
@@ -212,5 +214,7 @@ XBT_PRIVATE s_smpi_mpi_struct_t* smpi_datatype_struct_create(int* block_lengths,
                                                   MPI_Aint* block_indices,
                                                   int block_count,
                                                   MPI_Datatype* old_types);
+
+SG_END_DECL()
 
 #endif

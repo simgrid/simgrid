@@ -50,7 +50,7 @@ MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info 
   win->opened = 0;
   win->group = MPI_GROUP_NULL;
   win->requests = xbt_dynar_new(sizeof(MPI_Request), NULL);
-  win->connected_wins = xbt_malloc0(comm_size*sizeof(MPI_Win));
+  win->connected_wins = xbt_new0(MPI_Win, comm_size);
   win->connected_wins[rank] = win;
   
   if(rank==0){
@@ -132,7 +132,7 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
       if (req->flags & PREPARED) smpi_mpi_start(req);
     }
 
-    MPI_Request* treqs = xbt_dynar_to_array(reqs);
+    MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqs));
     smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
     xbt_free(treqs);
     win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
@@ -382,7 +382,7 @@ int smpi_mpi_win_complete(MPI_Win win){
     if (req->flags & PREPARED) smpi_mpi_start(req);
   }
 
-  MPI_Request* treqs = xbt_dynar_to_array(reqqs);
+  MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   xbt_free(treqs);
   win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
@@ -433,7 +433,7 @@ int smpi_mpi_win_wait(MPI_Win win){
     if (req->flags & PREPARED) smpi_mpi_start(req);
   }
 
-  MPI_Request* treqs = xbt_dynar_to_array(reqqs);
+  MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   xbt_free(treqs);
   win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);

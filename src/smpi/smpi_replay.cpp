@@ -62,7 +62,7 @@ void* smpi_get_tmp_sendbuffer(int size){
   if (!smpi_process_get_replaying())
   return xbt_malloc(size);
   if (sendbuffer_size<size){
-    sendbuffer=xbt_realloc(sendbuffer,size);
+    sendbuffer=static_cast<char*>(xbt_realloc(sendbuffer,size));
     sendbuffer_size=size;
   }
   return sendbuffer;
@@ -72,7 +72,7 @@ void* smpi_get_tmp_recvbuffer(int size){
   if (!smpi_process_get_replaying())
   return xbt_malloc(size);
   if (recvbuffer_size<size){
-    recvbuffer=xbt_realloc(recvbuffer,size);
+    recvbuffer=static_cast<char*>(xbt_realloc(recvbuffer,size));
     recvbuffer_size=size;
   }
   return recvbuffer;
@@ -470,7 +470,7 @@ static void action_waitall(const char *const *action){
    xbt_dynar_t srcs = xbt_dynar_new(sizeof(int), NULL);
    xbt_dynar_t dsts = xbt_dynar_new(sizeof(int), NULL);
    xbt_dynar_t recvs = xbt_dynar_new(sizeof(int), NULL);
-   for (i = 0; i < count_requests; i++) {
+   for (i = 0; (int)i < count_requests; i++) {
     if(requests[i]){
       int *asrc = xbt_new(int, 1);
       int *adst = xbt_new(int, 1);
@@ -500,7 +500,7 @@ static void action_waitall(const char *const *action){
 
    smpi_mpi_waitall(count_requests, requests, status);
 
-   for (i = 0; i < count_requests; i++) {
+   for (i = 0; (int)i < count_requests; i++) {
     int src_traced, dst_traced, is_wait_for_receive;
     xbt_dynar_get_cpy(srcs, i, &src_traced);
     xbt_dynar_get_cpy(dsts, i, &dst_traced);
@@ -776,7 +776,7 @@ static void action_gatherv(const char *const *action) {
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_GATHERV;
   extra->send_size = send_size;
-  extra->recvcounts= xbt_malloc(comm_size*sizeof(int));
+  extra->recvcounts= xbt_new(int,comm_size);
   for(i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
   extra->root = root;
@@ -835,7 +835,7 @@ static void action_reducescatter(const char *const *action) {
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_REDUCE_SCATTER;
   extra->send_size = 0;
-  extra->recvcounts= xbt_malloc(comm_size*sizeof(int));
+  extra->recvcounts= xbt_new(int, comm_size);
   for(i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
@@ -952,7 +952,7 @@ static void action_allgatherv(const char *const *action) {
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLGATHERV;
   extra->send_size = sendcount;
-  extra->recvcounts= xbt_malloc(comm_size*sizeof(int));
+  extra->recvcounts= xbt_new(int, comm_size);
   for(i=0; i< comm_size; i++)//copy data to avoid bad free
     extra->recvcounts[i] = recvcounts[i];
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, NULL);
@@ -1019,8 +1019,8 @@ static void action_allToAllv(const char *const *action) {
   int rank = smpi_process_index();
   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
   extra->type = TRACING_ALLTOALLV;
-  extra->recvcounts= xbt_malloc(comm_size*sizeof(int));
-  extra->sendcounts= xbt_malloc(comm_size*sizeof(int));
+  extra->recvcounts= xbt_new(int, comm_size);
+  extra->sendcounts= xbt_new(int, comm_size);
   extra->num_processes = comm_size;
 
   for(i=0; i< comm_size; i++){//copy data to avoid bad free

@@ -214,7 +214,8 @@ typedef enum MPIR_Combiner_enum{
 typedef enum MPIR_Topo_type {
   MPI_GRAPH=1,
   MPI_CART=2,
-  MPI_DIST_GRAPH=3
+  MPI_DIST_GRAPH=3,
+  MPI_INVALID_TOPO=-1
 } MPIR_Topo_type;
 
 typedef ptrdiff_t MPI_Aint;
@@ -832,9 +833,6 @@ XBT_PUBLIC(int) smpi_global_size(void);
 XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
 XBT_PUBLIC(void*) smpi_process_get_user_data(void);
 XBT_PUBLIC(void) smpi_process_set_user_data(void *);
-/*
-XBT_PUBLIC(void) smpi_exit(int);
-*/
 
 XBT_PUBLIC(void) smpi_execute_flops(double flops);
 XBT_PUBLIC(void) smpi_execute(double duration);

@@ -67,7 +67,7 @@ void smpi_topo_destroy(MPI_Topology topo) {
 }
 
 MPI_Topology smpi_topo_create(MPIR_Topo_type kind) {
-    MPI_Topology newTopo = xbt_malloc(sizeof(*newTopo));
+    MPI_Topology newTopo = static_cast<MPI_Topology>(xbt_malloc(sizeof(*newTopo)));
     newTopo->kind = kind;
     // Allocate and initialize the right topo should be done by the caller
     return newTopo;
@@ -93,12 +93,12 @@ void smpi_cart_topo_destroy(MPIR_Cart_Topology cart) {
 
 MPI_Topology smpi_cart_topo_create(int ndims) {
     MPI_Topology newTopo = smpi_topo_create(MPI_CART);
-    MPIR_Cart_Topology newCart = xbt_malloc(sizeof(*newCart));
+    MPIR_Cart_Topology newCart = static_cast<MPIR_Cart_Topology>(xbt_malloc(sizeof(*newCart)));
     newCart->nnodes = 0;
     newCart->ndims = ndims;
-    newCart->dims = xbt_malloc(ndims * sizeof(*newCart->dims));
-    newCart->periodic = xbt_malloc(ndims * sizeof(*newCart->periodic));
-    newCart->position = xbt_malloc(ndims * sizeof(*newCart->position));
+    newCart->dims = xbt_new(int, ndims);
+    newCart->periodic = xbt_new(int, ndims);
+    newCart->position = xbt_new(int, ndims);
     newTopo->topo.cart = newCart;
     return newTopo;
 }
@@ -178,8 +178,8 @@ int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm)
     }
   
     if (newNDims > 0) {
-        newDims = xbt_malloc(newNDims * sizeof(*newDims));
-        newPeriodic = xbt_malloc(newNDims * sizeof(*newPeriodic));
+        newDims = xbt_new(int, newNDims);
+        newPeriodic = xbt_new(int, newNDims);
 
         // that should not segfault
         for (i = 0 ; j < newNDims ; i++) {
