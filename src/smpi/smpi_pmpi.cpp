@@ -3248,11 +3248,11 @@ int PMPI_Info_free( MPI_Info *info){
 }
 
 int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
+  *flag=FALSE;
   if (info == NULL || key == NULL || valuelen <0)
     return MPI_ERR_ARG;
   if (value == NULL)
     return MPI_ERR_INFO_VALUE;
-  *flag=FALSE;
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
   if(tmpvalue){
     memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < static_cast<size_t>(valuelen)) ?
@@ -3281,7 +3281,7 @@ int PMPI_Info_delete(MPI_Info info, char *key){
   if (info == NULL || key==NULL)
     return MPI_ERR_ARG;
   TRY {
-  xbt_dict_remove(info->info_dict, key);
+    xbt_dict_remove(info->info_dict, key);
   }CATCH(e){
     xbt_ex_free(e);
     return MPI_ERR_INFO_NOKEY;
@@ -3315,9 +3315,9 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
 }
 
 int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
-  if (info == NULL || key == NULL || *valuelen <0)
-    return MPI_ERR_ARG;
   *flag=FALSE;
+  if (info == NULL || key == NULL || valuelen==NULL || *valuelen <0)
+    return MPI_ERR_ARG;
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
   if(tmpvalue){
     *valuelen=strlen(tmpvalue);
