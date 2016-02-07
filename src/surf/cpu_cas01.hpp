@@ -32,7 +32,7 @@ public:
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,
                           tmgr_trace_t state_trace) override;
-  double shareResourcesFull(double now) override;
+  double next_occuring_event_full(double now) override;
   void addTraces() override;
   ActionList *p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 };

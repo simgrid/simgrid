@@ -301,9 +301,9 @@ Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst,
   return (surf_action_t) action;
 }
 
-double NetworkNS3Model::shareResources(double now)
+double NetworkNS3Model::next_occuring_event(double now)
 {
-  XBT_DEBUG("ns3_share_resources");
+  XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
   if (!getRunningActionSet()->size() || now == 0.0)

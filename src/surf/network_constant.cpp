@@ -31,7 +31,7 @@ void surf_network_model_init_Constant()
 namespace simgrid {
 namespace surf {
 
-double NetworkConstantModel::shareResources(double /*now*/)
+double NetworkConstantModel::next_occuring_event(double /*now*/)
 {
   NetworkConstantAction *action = NULL;
   double min = -1.0;

@@ -56,7 +56,7 @@ void surf_presolve(void)
 
 double surf_solve(double max_date)
 {
-  double surf_min = -1.0; /* duration */
+  double time_delta = -1.0; /* duration */
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
@@ -68,24 +68,26 @@ double surf_solve(double max_date)
   if(!host_that_restart)
     host_that_restart = xbt_dynar_new(sizeof(char*), NULL);
 
-  if (max_date > 0.0 && max_date != NOW) {
-    surf_min = max_date - NOW;
+  if (max_date > 0.0) {
+    xbt_assert(max_date > NOW,"You asked to simulate up to %f, but that's in the past already", max_date);
+
+    time_delta = max_date - NOW;
   }
 
   /* Physical models MUST be resolved first */
   XBT_DEBUG("Looking for next event in physical models");
-  double next_event_phy = surf_host_model->shareResources(NOW);
-  if ((surf_min < 0.0 || next_event_phy < surf_min) && next_event_phy >= 0.0) {
-    surf_min = next_event_phy;
+  double next_event_phy = surf_host_model->next_occuring_event(NOW);
+  if ((time_delta < 0.0 || next_event_phy < time_delta) && next_event_phy >= 0.0) {
+    time_delta = next_event_phy;
   }
   if (surf_vm_model != NULL) {
     XBT_DEBUG("Looking for next event in virtual models");
-    double next_event_virt = surf_vm_model->shareResources(NOW);
-    if ((surf_min < 0.0 || next_event_virt < surf_min) && next_event_virt >= 0.0)
-      surf_min = next_event_virt;
+    double next_event_virt = surf_vm_model->next_occuring_event(NOW);
+    if ((time_delta < 0.0 || next_event_virt < time_delta) && next_event_virt >= 0.0)
+      time_delta = next_event_virt;
   }
 
-  XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", surf_min);
+  XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", time_delta);
 
   XBT_DEBUG("Looking for next trace event");
 
@@ -93,20 +95,20 @@ double surf_solve(double max_date)
     next_event_date = future_evt_set->next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    if(! surf_network_model->shareResourcesIsIdempotent()){ // NS3, I see you
-      if (next_event_date!=-1.0 && surf_min!=-1.0) {
-        surf_min = MIN(next_event_date - NOW, surf_min);
+    if(! surf_network_model->next_occuring_event_isIdempotent()){ // NS3, I see you
+      if (next_event_date!=-1.0 && time_delta!=-1.0) {
+        time_delta = MIN(next_event_date - NOW, time_delta);
       } else {
-        surf_min = MAX(next_event_date - NOW, surf_min); // Get the positive component
+        time_delta = MAX(next_event_date - NOW, time_delta); // Get the positive component
       }
 
-      XBT_DEBUG("Run the NS3 network at most %fs", surf_min);
+      XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
       // run until min or next flow
-      model_next_action_end = surf_network_model->shareResources(surf_min);
+      model_next_action_end = surf_network_model->next_occuring_event(time_delta);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if(model_next_action_end>=0.0)
-        surf_min = model_next_action_end;
+        time_delta = model_next_action_end;
     }
 
     if (next_event_date < 0.0) {
@@ -114,15 +116,15 @@ double surf_solve(double max_date)
       break;
     }
 
-    if ((surf_min == -1.0) || (next_event_date > NOW + surf_min))
+    if ((time_delta == -1.0) || (next_event_date > NOW + time_delta))
       break; // next event occurs after the next resource change, bail out
 
-    XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", surf_min, NOW, next_event_date);
+    XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
       if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->getName())) {
-        surf_min = next_event_date - NOW;
-        XBT_DEBUG("This event will modify model state. Next event set to %f", surf_min);
+        time_delta = next_event_date - NOW;
+        XBT_DEBUG("This event will modify model state. Next event set to %f", time_delta);
       }
       // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min will work
       double round_start = NOW;
@@ -138,24 +140,24 @@ double surf_solve(double max_date)
   /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are with availability = 0.
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
    * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
-  if (surf_min == -1.0) {
+  if (time_delta == -1.0) {
     XBT_DEBUG("No next event at all. Bail out now.");
     return -1.0;
   }
 
-  XBT_DEBUG("Duration set to %f", surf_min);
+  XBT_DEBUG("Duration set to %f", time_delta);
 
   // Bump the time: jump into the future
-  NOW = NOW + surf_min;
+  NOW = NOW + time_delta;
 
   // Inform the models of the date change
   xbt_dynar_foreach(all_existing_models, iter, model) {
-    model->updateActionsState(NOW, surf_min);
+    model->updateActionsState(NOW, time_delta);
   }
 
   TRACE_paje_dump_buffer (0);
 
-  return surf_min;
+  return time_delta;
 }
 
 /*********

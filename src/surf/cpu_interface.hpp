@@ -59,7 +59,7 @@ public:
 
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
-  bool shareResourcesIsIdempotent() {return true;}
+  bool next_occuring_event_isIdempotent() {return true;}
 };
 
 /************

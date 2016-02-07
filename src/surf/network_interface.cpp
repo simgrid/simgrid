@@ -158,7 +158,7 @@ double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /
   return rate;
 }
 
-double NetworkModel::shareResourcesFull(double now)
+double NetworkModel::next_occuring_event_full(double now)
 {
   NetworkAction *action = NULL;
   ActionList *runningActions = surf_network_model->getRunningActionSet();

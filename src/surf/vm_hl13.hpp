@@ -34,7 +34,7 @@ public:
   ~VMHL13Model(){};
 
   VirtualMachine *createVM(const char *name, sg_host_t host_PM) override;
-  double shareResources(double now) override;
+  double next_occuring_event(double now) override;
   void adjustWeightOfDummyCpuActions() override {};
   void updateActionsState(double /*now*/, double /*delta*/) override;
 };

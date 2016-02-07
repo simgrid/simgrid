@@ -155,7 +155,7 @@ public:
    * @return The new bandwidth.
    */
   virtual double bandwidthConstraint(double rate, double bound, double size);
-  double shareResourcesFull(double now);
+  double next_occuring_event_full(double now) override;
 };
 
 /************

@@ -114,7 +114,7 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
   return storage;
 }
 
-double StorageN11Model::shareResources(double /*now*/)
+double StorageN11Model::next_occuring_event(double /*now*/)
 {
   XBT_DEBUG("storage_share_resources");
   unsigned int i, j;

@@ -49,7 +49,7 @@ VirtualMachine *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
 // const double virt_overhead = 0.95;
 const double virt_overhead = 1;
 
-double VMHL13Model::shareResources(double now)
+double VMHL13Model::next_occuring_event(double now)
 {
   /* TODO: update action's cost with the total cost of processes on the VM. */
 
@@ -101,8 +101,8 @@ double VMHL13Model::shareResources(double now)
   /* 2. Calculate resource share at the virtual machine layer. */
   adjustWeightOfDummyCpuActions();
 
-  double min_by_cpu = surf_cpu_model_vm->shareResources(now);
-  double min_by_net = surf_network_model->shareResourcesIsIdempotent() ? surf_network_model->shareResources(now) : -1;
+  double min_by_cpu = surf_cpu_model_vm->next_occuring_event(now);
+  double min_by_net = surf_network_model->next_occuring_event_isIdempotent() ? surf_network_model->next_occuring_event(now) : -1;
   // Fixme: take storage into account once it's implemented
   double min_by_sto = -1;
 

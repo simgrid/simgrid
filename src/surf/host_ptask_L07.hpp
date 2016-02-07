@@ -43,7 +43,7 @@ public:
   HostL07Model();
   ~HostL07Model();
 
-  double shareResources(double now) override;
+  double next_occuring_event(double now) override;
   void updateActionsState(double now, double delta) override;
   Action *executeParallelTask(int host_nb, sg_host_t *host_list,
                 double *flops_amount, double *bytes_amount,
@@ -83,7 +83,7 @@ public:
 
   Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
   void addTraces() override {DIE_IMPOSSIBLE;};
-  bool shareResourcesIsIdempotent() override {return true;}
+  bool next_occuring_event_isIdempotent() override {return true;}
 
   HostL07Model *p_hostModel;
 };

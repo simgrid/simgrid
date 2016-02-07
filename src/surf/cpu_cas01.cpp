@@ -100,10 +100,9 @@ Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
   return cpu;
 }
 
-double CpuCas01Model::shareResourcesFull(double /*now*/)
+double CpuCas01Model::next_occuring_event_full(double /*now*/)
 {
-  return Model::shareResourcesMaxMin(getRunningActionSet(),
-                             p_maxminSystem, lmm_solve);
+  return Model::shareResourcesMaxMin(getRunningActionSet(), p_maxminSystem, lmm_solve);
 }
 
 void CpuCas01Model::addTraces()

@@ -46,12 +46,12 @@ void surf_host_model_init_compound()
 namespace simgrid {
 namespace surf {
 
-double HostCLM03Model::shareResources(double now){
+double HostCLM03Model::next_occuring_event(double now){
   adjustWeightOfDummyCpuActions();
 
-  double min_by_cpu = surf_cpu_model_pm->shareResources(now);
-  double min_by_net = surf_network_model->shareResourcesIsIdempotent() ? surf_network_model->shareResources(now) : -1;
-  double min_by_sto = surf_storage_model->shareResources(now);
+  double min_by_cpu = surf_cpu_model_pm->next_occuring_event(now);
+  double min_by_net = surf_network_model->next_occuring_event_isIdempotent() ? surf_network_model->next_occuring_event(now) : -1;
+  double min_by_sto = surf_storage_model->next_occuring_event(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
       this, typeid(surf_cpu_model_pm).name(), min_by_cpu,

@@ -62,7 +62,7 @@ public:
       double *bytes_amount,
       double rate);
 
-  bool shareResourcesIsIdempotent() override {return true;}
+  bool next_occuring_event_isIdempotent() override {return true;}
 };
 
 /************

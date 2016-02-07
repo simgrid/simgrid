@@ -83,7 +83,7 @@ public:
                                     xbt_dict_t properties,
                                     const char *attach) = 0;
 
-  bool shareResourcesIsIdempotent() {return true;}
+  bool next_occuring_event_isIdempotent() {return true;}
 
   xbt_dynar_t p_storageList;
 };

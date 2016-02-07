@@ -53,12 +53,11 @@ public:
                                      e_surf_link_sharing_policy_t policy,
                                      xbt_dict_t properties);
   xbt_dynar_t getRoute(NetCard *src, NetCard *dst);
-  Action *communicate(NetCard *src, NetCard *dst,
-                               double size, double rate);
-  double shareResources(double now);
-  void updateActionsState(double now, double delta);
-  void addTraces(){DIE_IMPOSSIBLE;}
-  bool shareResourcesIsIdempotent() {return false;}
+  Action *communicate(NetCard *src, NetCard *dst, double size, double rate);
+  double next_occuring_event(double now) override;
+  void updateActionsState(double now, double delta) override;
+  void addTraces() override {DIE_IMPOSSIBLE;}
+  bool next_occuring_event_isIdempotent() {return false;}
 };
 
 /************

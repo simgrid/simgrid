@@ -444,7 +444,7 @@ Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host,
   return cpu;
 }
 
-double CpuTiModel::shareResources(double now)
+double CpuTiModel::next_occuring_event(double now)
 {
   double min_action_duration = -1;
 

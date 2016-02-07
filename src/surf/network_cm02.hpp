@@ -60,7 +60,7 @@ public:
   void updateActionsStateFull(double now, double delta) override;
   Action *communicate(NetCard *src, NetCard *dst,
                                double size, double rate) override;
-  bool shareResourcesIsIdempotent() override {return true;}
+  bool next_occuring_event_isIdempotent() override {return true;}
   virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
 protected:
   bool m_haveGap = false;

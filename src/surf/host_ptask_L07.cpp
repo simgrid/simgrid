@@ -89,7 +89,7 @@ NetworkL07Model::~NetworkL07Model()
 }
 
 
-double HostL07Model::shareResources(double /*now*/)
+double HostL07Model::next_occuring_event(double /*now*/)
 {
   L07Action *action;
 

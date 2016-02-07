@@ -312,12 +312,11 @@ public:
    * @param now The current time of the simulation
    * @return The delta of time till the next action will finish
    */
-  virtual double shareResources(double now);
-  virtual double shareResourcesLazy(double now);
-  virtual double shareResourcesFull(double now);
+  virtual double next_occuring_event(double now);
+  virtual double next_occuring_event_lazy(double now);
+  virtual double next_occuring_event_full(double now);
   double shareResourcesMaxMin(ActionList* running_actions,
-                                      lmm_system_t sys,
-                                      void (*solve) (lmm_system_t));
+      lmm_system_t sys, void (*solve) (lmm_system_t));
 
   /**
    * @brief Update action to the current time
@@ -334,7 +333,7 @@ public:
    * The only model that is not is NS3: computing the next timestamp moves the model up to that point,
    * so we need to call it only when the next timestamp of other sources is computed.
    */
-  virtual bool shareResourcesIsIdempotent()=0;
+  virtual bool next_occuring_event_isIdempotent()=0;
 
 protected:
   ActionLmmListPtr p_modifiedSet;

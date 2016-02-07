@@ -412,18 +412,18 @@ Model::~Model(){
   delete p_doneActionSet;
 }
 
-double Model::shareResources(double now)
+double Model::next_occuring_event(double now)
 {
   //FIXME: set the good function once and for all
   if (p_updateMechanism == UM_LAZY)
-    return shareResourcesLazy(now);
+    return next_occuring_event_lazy(now);
   else if (p_updateMechanism == UM_FULL)
-    return shareResourcesFull(now);
+    return next_occuring_event_full(now);
   else
     xbt_die("Invalid cpu update mechanism!");
 }
 
-double Model::shareResourcesLazy(double now)
+double Model::next_occuring_event_lazy(double now)
 {
   Action *action = NULL;
   double min = -1;
@@ -500,7 +500,7 @@ double Model::shareResourcesLazy(double now)
   return min;
 }
 
-double Model::shareResourcesFull(double /*now*/) {
+double Model::next_occuring_event_full(double /*now*/) {
   THROW_UNIMPLEMENTED;
 }
 
