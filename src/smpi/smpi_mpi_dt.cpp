@@ -1446,7 +1446,7 @@ static void land_func(void *a, void *b, int *length,
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
     APPLY_FUNC(a, b, length, unsigned char, LAND_OP);
   } else if (*datatype == MPI_C_BOOL) {
-    APPLY_FUNC(a, b, length, _Bool, LAND_OP);
+    APPLY_FUNC(a, b, length, bool, LAND_OP);
   }
 }
 
@@ -1470,7 +1470,7 @@ static void lor_func(void *a, void *b, int *length,
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
     APPLY_FUNC(a, b, length, unsigned char, LOR_OP);
   } else if (*datatype == MPI_C_BOOL) {
-    APPLY_FUNC(a, b, length, _Bool, LOR_OP);
+    APPLY_FUNC(a, b, length, bool, LOR_OP);
   }
 }
 
@@ -1494,7 +1494,7 @@ static void lxor_func(void *a, void *b, int *length,
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
     APPLY_FUNC(a, b, length, unsigned char, LXOR_OP);
   } else if (*datatype == MPI_C_BOOL) {
-    APPLY_FUNC(a, b, length, _Bool, LXOR_OP);
+    APPLY_FUNC(a, b, length, bool, LXOR_OP);
   }
 }
 
