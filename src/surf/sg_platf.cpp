@@ -271,8 +271,27 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     xbt_die("Cannot create process without SIMIX.");
 
   sg_host_t host = sg_host_by_name(process->host);
-  if (!host)
-    THROWF(arg_error, 0, "Host '%s' unknown", process->host);
+  if (!host) {
+    // The requested host does not exist. Do a nice message to the user
+    char *tmp = bprintf("Cannot create process '%s': host '%s' does not exist\nExisting hosts: '",process->function, process->host);
+    xbt_strbuff_t msg = xbt_strbuff_new_from(tmp);
+    free(tmp);
+    xbt_dynar_t all_hosts = xbt_dynar_sort_strings(sg_hosts_as_dynar());
+    simgrid::s4u::Host* host;
+    unsigned int cursor;
+    xbt_dynar_foreach(all_hosts,cursor, host) {
+      xbt_strbuff_append(msg,host->name().c_str());
+      xbt_strbuff_append(msg,"', '");
+      if (msg->used > 1024) {
+        msg->data[msg->used-3]='\0';
+        msg->used -= 3;
+
+        xbt_strbuff_append(msg," ...(list truncated)......");// That will be shortened by 3 chars when existing the loop
+      }
+    }
+    msg->data[msg->used-3]='\0';
+    xbt_die(msg->data);
+  }
   xbt_main_func_t parse_code = SIMIX_get_registered_function(process->function);
   xbt_assert(parse_code, "Function '%s' unknown", process->function);
 
