@@ -209,7 +209,7 @@ Link* NetworkCm02Model::createLink(const char *name,
              "Link '%s' declared several times in the platform",
              name);
 
-  Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial, future_evt_set,
+  Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial,
                      initiallyOn, state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
   Link::onCreation(link);
   return link;
@@ -516,12 +516,11 @@ void NetworkCm02Model::addTraces(){
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
                              lmm_system_t system,
                              double constraint_value,
-                             sg_future_evt_set_t fes,
                              int initiallyOn, tmgr_trace_t state_trace,
                              double bw_peak, tmgr_trace_t bw_trace,
                              double lat_initial, tmgr_trace_t lat_trace,
                              e_surf_link_sharing_policy_t policy)
-: Link(model, name, props, lmm_constraint_new(system, this, constraint_value), fes, state_trace)
+: Link(model, name, props, lmm_constraint_new(system, this, constraint_value), state_trace)
 {
   if (initiallyOn)
     turnOn();
@@ -531,14 +530,14 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
   m_bandwidth.scale = 1.0;
   m_bandwidth.peak = bw_peak;
   if (bw_trace)
-    m_bandwidth.event = fes->add_trace(bw_trace, 0.0, this);
+    m_bandwidth.event = future_evt_set->add_trace(bw_trace, 0.0, this);
   else
     m_bandwidth.event = NULL;
 
   m_latency.scale = 1.0;
   m_latency.peak = lat_initial;
   if (lat_trace)
-    m_latency.event = fes->add_trace(lat_trace, 0.0, this);
+    m_latency.event = future_evt_set->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
   lmm_constraint_shared(getConstraint());

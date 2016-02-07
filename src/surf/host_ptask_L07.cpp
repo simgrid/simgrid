@@ -408,14 +408,11 @@ CpuL07::~CpuL07()
 }
 
 LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
-             double bw_initial,
-             tmgr_trace_t bw_trace,
-             double lat_initial,
-             tmgr_trace_t lat_trace,
-             int initiallyOn,
-             tmgr_trace_t state_trace,
+             double bw_initial, tmgr_trace_t bw_trace,
+             double lat_initial, tmgr_trace_t lat_trace,
+             int initiallyOn, tmgr_trace_t state_trace,
              e_surf_link_sharing_policy_t policy)
- : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), future_evt_set, state_trace)
+ : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), state_trace)
 {
   m_bandwidth.peak = bw_initial;
   if (bw_trace)

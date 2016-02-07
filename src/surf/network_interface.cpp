@@ -203,7 +203,6 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 
 Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
                      lmm_constraint_t constraint,
-                     sg_future_evt_set_t fes,
                        tmgr_trace_t state_trace)
 : Resource(model, name, constraint),
   PropertyHolder(props)
@@ -211,7 +210,7 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
   m_latency.scale = 1;
   m_bandwidth.scale = 1;
   if (state_trace)
-    m_stateEvent = fes->add_trace(state_trace, 0.0, this);
+    m_stateEvent = future_evt_set->add_trace(state_trace, 0.0, this);
 
   links->insert({name, this});
   XBT_DEBUG("Create link '%s'",name);

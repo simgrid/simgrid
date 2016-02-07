@@ -75,7 +75,6 @@ public:
   NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
                              lmm_system_t system,
                              double constraint_value,
-                             sg_future_evt_set_t fes,
                              int initiallyOn,
                              tmgr_trace_t state_trace,
                              double metric_peak,

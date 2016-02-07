@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 xbt_dynar_t all_existing_models = NULL; /* to destroy models correctly */
 xbt_dynar_t model_list_invoke = NULL;  /* to invoke callbacks */
 
-sg_future_evt_set_t future_evt_set = nullptr;
+simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 xbt_dynar_t surf_path = NULL;
 xbt_dynar_t host_that_restart = NULL;
 xbt_dict_t watched_hosts_lib;

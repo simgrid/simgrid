@@ -65,6 +65,9 @@ typedef enum {
   SURF_ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
 } e_surf_routing_hierarchy_t;
 
+extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set *future_evt_set;
+
+
 XBT_PUBLIC(void) routing_model_create(void *loopback);
 XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) storage_register_callbacks(void);
