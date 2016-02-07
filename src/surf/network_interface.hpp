@@ -218,13 +218,13 @@ public:
   virtual double getBandwidth();
 
   /** @brief Update the bandwidth in bytes per second of current Link */
-  virtual void updateBandwidth(double value, double date=surf_get_clock())=0;
+  virtual void updateBandwidth(double value)=0;
 
   /** @brief Get the latency in seconds of current Link */
   virtual double getLatency();
 
   /** @brief Update the latency in seconds of current Link */
-  virtual void updateLatency(double value, double date=surf_get_clock())=0;
+  virtual void updateLatency(double value)=0;
 
   /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
   virtual int sharingPolicy();

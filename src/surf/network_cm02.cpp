@@ -170,10 +170,7 @@ NetworkCm02Model::NetworkCm02Model()
   } else if (!strcmp(optim, "Lazy")) {
     p_updateMechanism = UM_LAZY;
     m_selectiveUpdate = 1;
-    xbt_assert((select == 1)
-               ||
-               (xbt_cfg_is_default_value
-                (_sg_cfg_set, "network/maxmin_selective_update")),
+    xbt_assert((select == 1) || (xbt_cfg_is_default_value(_sg_cfg_set, "network/maxmin_selective_update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim);
@@ -545,16 +542,15 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
 
 
 
-void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
-                                      double value, double date)
+void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered, double value)
 {
 
   /* Find out which of my iterators was triggered, and react accordingly */
   if (triggered == m_bandwidth.event) {
-    updateBandwidth(value, date);
+    updateBandwidth(value);
     tmgr_trace_event_unref(&m_bandwidth.event);
   } else if (triggered == m_latency.event) {
-    updateLatency(value, date);
+    updateLatency(value);
     tmgr_trace_event_unref(&m_latency.event);
   } else if (triggered == m_stateEvent) {
     if (value > 0)
@@ -562,6 +558,7 @@ void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
     else {
       lmm_variable_t var = NULL;
       lmm_element_t elem = NULL;
+      double now = surf_get_clock();
 
       turnOff();
       while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
@@ -569,7 +566,7 @@ void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
 
         if (action->getState() == SURF_ACTION_RUNNING ||
             action->getState() == SURF_ACTION_READY) {
-          action->setFinishTime(date);
+          action->setFinishTime(now);
           action->setState(SURF_ACTION_FAILED);
         }
       }
@@ -584,7 +581,7 @@ void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
        getConstraint());
 }
 
-void NetworkCm02Link::updateBandwidth(double value, double date){
+void NetworkCm02Link::updateBandwidth(double value) {
   double delta = sg_weight_S_parameter / value - sg_weight_S_parameter /
                  (m_bandwidth.peak * m_bandwidth.scale);
   lmm_variable_t var = NULL;
@@ -599,7 +596,7 @@ void NetworkCm02Link::updateBandwidth(double value, double date){
                               getConstraint(),
                               sg_bandwidth_factor *
                               (m_bandwidth.peak * m_bandwidth.scale));
-  TRACE_surf_link_set_bandwidth(date, getName(), sg_bandwidth_factor * m_bandwidth.peak * m_bandwidth.scale);
+  TRACE_surf_link_set_bandwidth(surf_get_clock(), getName(), sg_bandwidth_factor * m_bandwidth.peak * m_bandwidth.scale);
   if (sg_weight_S_parameter > 0) {
     while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
       action = (NetworkCm02Action*) lmm_variable_id(var);
@@ -610,7 +607,7 @@ void NetworkCm02Link::updateBandwidth(double value, double date){
   }
 }
 
-void NetworkCm02Link::updateLatency(double value, double date){
+void NetworkCm02Link::updateLatency(double value){
   double delta = value - m_latency.peak;
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;

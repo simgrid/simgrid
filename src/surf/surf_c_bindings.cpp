@@ -44,7 +44,7 @@ void surf_presolve(void)
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
       if (value >= 0){
-        resource->updateState(event, value, NOW);
+        resource->updateState(event, value);
       }
     }
   }
@@ -68,7 +68,7 @@ double surf_solve(double max_date)
   if(!host_that_restart)
     host_that_restart = xbt_dynar_new(sizeof(char*), NULL);
 
-  if (max_date != -1.0 && max_date != NOW) {
+  if (max_date > 0.0 && max_date != NOW) {
     surf_min = max_date - NOW;
   }
 
@@ -96,8 +96,8 @@ double surf_solve(double max_date)
     if(! surf_network_model->shareResourcesIsIdempotent()){ // NS3, I see you
       if (next_event_date!=-1.0 && surf_min!=-1.0) {
         surf_min = MIN(next_event_date - NOW, surf_min);
-      } else{
-        surf_min = MAX(next_event_date - NOW, surf_min);
+      } else {
+        surf_min = MAX(next_event_date - NOW, surf_min); // Get the positive component
       }
 
       XBT_DEBUG("Run the NS3 network at most %fs", surf_min);
@@ -124,10 +124,14 @@ double surf_solve(double max_date)
         surf_min = next_event_date - NOW;
         XBT_DEBUG("This event will modify model state. Next event set to %f", surf_min);
       }
+      // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min will work
+      double round_start = NOW;
+      NOW = next_event_date;
       /* update state of the corresponding resource to the new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      XBT_DEBUG("Calling update_resource_state for resource %s with min %f", resource->getName(), surf_min);
-      resource->updateState(event, value, next_event_date);
+      XBT_DEBUG("Calling update_resource_state for resource %s", resource->getName());
+      resource->updateState(event, value);
+      NOW = round_start;
     }
   }
 

@@ -561,8 +561,7 @@ void CpuTi::set_speed_trace(tmgr_trace_t trace)
   }
 }
 
-void CpuTi::updateState(tmgr_trace_iterator_t event_type,
-                        double value, double date)
+void CpuTi::updateState(tmgr_trace_iterator_t event_type, double value)
 {
   CpuTiAction *action;
 
@@ -571,10 +570,9 @@ void CpuTi::updateState(tmgr_trace_iterator_t event_type,
     CpuTiTgmr *trace;
     s_tmgr_event_t val;
 
-    XBT_DEBUG("Finish trace date: %f value %f date %f", surf_get_clock(),
-           value, date);
+    XBT_DEBUG("Finish trace date: value %f", value);
     /* update remaining of actions and put in modified cpu swag */
-    updateRemainingAmount(date);
+    updateRemainingAmount(surf_get_clock());
 
     modified(true);
 
@@ -599,6 +597,7 @@ void CpuTi::updateState(tmgr_trace_iterator_t event_type,
       turnOn();
     } else {
       turnOff();
+      double date = surf_get_clock();
 
       /* put all action running on cpu to failed */
       for(ActionTiList::iterator it(p_actionSet->begin()), itend(p_actionSet->end())

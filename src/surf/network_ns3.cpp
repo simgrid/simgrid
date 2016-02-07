@@ -401,9 +401,9 @@ NetworkNS3Link::~NetworkNS3Link()
 {
 }
 
-void NetworkNS3Link::updateState(tmgr_trace_iterator_t event_type, double value, double date)
+void NetworkNS3Link::updateState(tmgr_trace_iterator_t event_type, double value)
 {
-
+  THROW_UNIMPLEMENTED;
 }
 
 /**********

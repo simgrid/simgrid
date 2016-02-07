@@ -183,7 +183,7 @@ void CpuCas01::onSpeedChange() {
   Cpu::onSpeedChange();
 }
 
-void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, double date)
+void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value)
 {
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
@@ -206,6 +206,7 @@ void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, doubl
       turnOn();
     } else {
       lmm_constraint_t cnst = getConstraint();
+      double date = surf_get_clock();
 
       turnOff();
 

@@ -480,7 +480,7 @@ bool LinkL07::isUsed(){
   return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
 }
 
-void CpuL07::updateState(tmgr_trace_iterator_t triggered, double value, double /*date*/){
+void CpuL07::updateState(tmgr_trace_iterator_t triggered, double value){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
   if (triggered == p_speedEvent) {
     m_speedScale = value;
@@ -497,13 +497,13 @@ void CpuL07::updateState(tmgr_trace_iterator_t triggered, double value, double /
   }
 }
 
-void LinkL07::updateState(tmgr_trace_iterator_t triggered, double value, double date) {
-  XBT_DEBUG("Updating link %s (%p) with value=%f for date=%g", getName(), this, value, date);
+void LinkL07::updateState(tmgr_trace_iterator_t triggered, double value) {
+  XBT_DEBUG("Updating link %s (%p) with value=%f", getName(), this, value);
   if (triggered == m_bandwidth.event) {
-    updateBandwidth(value, date);
+    updateBandwidth(value);
     tmgr_trace_event_unref(&m_bandwidth.event);
   } else if (triggered == m_latency.event) {
-    updateLatency(value, date);
+    updateLatency(value);
     tmgr_trace_event_unref(&m_latency.event);
   } else if (triggered == m_stateEvent) {
     if (value > 0)
@@ -516,13 +516,13 @@ void LinkL07::updateState(tmgr_trace_iterator_t triggered, double value, double 
   }
 }
 
-void LinkL07::updateBandwidth(double value, double date)
+void LinkL07::updateBandwidth(double value)
 {
   m_bandwidth.peak = value;
   lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), m_bandwidth.peak * m_bandwidth.scale);
 }
 
-void LinkL07::updateLatency(double value, double date)
+void LinkL07::updateLatency(double value)
 {
   lmm_variable_t var = NULL;
   L07Action *action;

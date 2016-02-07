@@ -120,8 +120,10 @@ public:
 
   void set_speed_trace(tmgr_trace_t trace);
 
-  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
+  void updateState(tmgr_trace_iterator_t event_type, double value) override;
   void updateActionsFinishTime(double now);
+  void updateRemainingAmount(double now);
+
   bool isUsed() override;
   CpuAction *execution_start(double size) override;
   CpuAction *sleep(double duration) override;
@@ -136,7 +138,6 @@ public:
 
   double current_frequency;
 
-  void updateRemainingAmount(double now);
 public:
   boost::intrusive::list_member_hook<> cpu_ti_hook;
 };

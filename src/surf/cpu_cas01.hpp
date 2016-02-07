@@ -47,7 +47,7 @@ public:
         int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
         int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuCas01();
-  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
+  void updateState(tmgr_trace_iterator_t event_type, double value) override;
   CpuAction *execution_start(double size) override;
   CpuAction *sleep(double duration) override;
 
