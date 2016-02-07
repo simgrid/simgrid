@@ -84,41 +84,41 @@ int main(int argc, char ** argv)
                     "  -M I  M size (default: %zu)\n"
                     "  -N I  N size (default: %zu)\n"
                     "  -K I  K size (default: %zu)\n"
-                    "  -B I  Block size on the k dimension(default: %zu)\n"
-                    "  -G I  Number of processor groups(default: %zu)\n"
-                    "  -g I  group index(default: %zu)\n"
-                    "  -k I  group rank(default: %zu)\n"
+                    "  -B I  Block size on the k dimension (default: %zu)\n"
+                    "  -G I  Number of processor groups (default: %zu)\n"
+                    "  -g I  group index (default: %zu)\n"
+                    "  -k I  group rank (default: %zu)\n"
                     "  -r I  processor row size (default: %zu)\n"
                     "  -c I  processor col size (default: %zu)\n"
                     "  -h  help\n",
                     m, n, k, Block_size, NB_groups, group, key, row, col);
         return 0;
       case 'M':
-        m = atoi(optarg);
+        m = xbt_str_parse_int(optarg, "Invalid M size: %s");
         break;
       case 'N':
-        n   = atoi(optarg);
+        n = xbt_str_parse_int(optarg, "Invalid N size: %s");
         break;
       case 'K':
-        k  = atoi(optarg);
+        k = xbt_str_parse_int(optarg, "Invalid K size: %s");
         break;
       case 'B':
-        Block_size = atoi(optarg);
+        Block_size = xbt_str_parse_int(optarg, "Invalid block size: %s");
         break;
       case 'G':
-        NB_groups = atoi(optarg);
+        NB_groups = xbt_str_parse_int(optarg, "Invalid number of processor groups: %s");
         break;
       case 'g':
-        group = atoi(optarg);
+        group = xbt_str_parse_int(optarg, "Invalid group index: %s");
         break;
       case 'k':
-        key = atoi(optarg);
+        key = xbt_str_parse_int(optarg, "Invalid group rank: %s");
         break;
       case 'r':
-        size_row = atoi(optarg);
+        size_row = xbt_str_parse_int(optarg, "Invalid processor row size: %s");
         break;
       case 'c':
-        size_col = atoi(optarg);
+        size_col = xbt_str_parse_int(optarg, "Invalid processor col size: %s");
         break;
         /*case 'P':
           str_mask = strdup(optarg);

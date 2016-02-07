@@ -155,7 +155,7 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup,
   nb_ids = xbt_dynar_length(id_list);
   id_ar = xbt_new0(int,nb_ids);
   xbt_dynar_foreach(id_list, iter, id_str) {
-    id_ar[iter] = atoi(id_str);
+    id_ar[iter] = xbt_str_parse_int(id_str, "Parse error: not a number: %s");
   }
 
   qsort (id_ar, nb_ids, sizeof(int), &compare_ids);

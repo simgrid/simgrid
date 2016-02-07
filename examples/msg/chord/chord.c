@@ -322,9 +322,8 @@ int node(int argc, char *argv[])
 
   // initialize my node
   s_node_t node = {0};
-  node.id = atoi(argv[1]);
-  node.stream =
-    (RngStream)MSG_host_get_property_value(MSG_host_self(), "stream");
+  node.id = xbt_str_parse_int(argv[1],"Invalid ID: %s");
+  node.stream = (RngStream)MSG_host_get_property_value(MSG_host_self(), "stream");
   get_mailbox(node.id, node.mailbox);
   node.next_finger_to_fix = 0;
   node.fingers = xbt_new0(s_finger_t, nb_bits);
@@ -336,14 +335,14 @@ int node(int argc, char *argv[])
   }
 
   if (argc == 3) { // first ring
-    deadline = atof(argv[2]);
+    deadline = xbt_str_parse_double(argv[2],"Invalid deadline: %s");
     create(&node);
     join_success = 1;
-  }
-  else {
-    int known_id = atoi(argv[2]);
+
+  } else {
+    int known_id = xbt_str_parse_int(argv[2],"Invalid root ID: %s");
     //double sleep_time = atof(argv[3]);
-    deadline = atof(argv[4]);
+    deadline = xbt_str_parse_double(argv[4],"Invalid deadline: %s");
 
     /*
     // sleep before starting
@@ -1036,14 +1035,14 @@ int main(int argc, char *argv[])
 
     int length = strlen("-nb_bits=");
     if (!strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
-      nb_bits = atoi(options[0] + length);
+      nb_bits = xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter: %s");
       XBT_DEBUG("Set nb_bits to %d", nb_bits);
     }
     else {
 
       length = strlen("-timeout=");
       if (!strncmp(options[0], "-timeout=", length) && strlen(options[0]) > length) {
-        timeout = atoi(options[0] + length);
+        timeout = xbt_str_parse_int(options[0] + length, "Invalid timeout parameter: %s");
         XBT_DEBUG("Set timeout to %d", timeout);
       }
       else {

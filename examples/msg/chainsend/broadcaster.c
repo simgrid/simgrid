@@ -118,11 +118,11 @@ int broadcaster(int argc, char *argv[])
   XBT_DEBUG("broadcaster");
 
   /* Add every mailbox given by the hostcount in argv[1] to a dynamic array */
-  host_list = build_hostlist_from_hostcount(atoi(argv[1]));
+  host_list = build_hostlist_from_hostcount(xbt_str_parse_int(argv[1], "Invalid number of peers: %s"));
 
   /* argv[2] is the number of pieces */
   if (argc > 2) {
-    piece_count = atoi(argv[2]);
+    piece_count = xbt_str_parse_int(argv[2], "Invalid number of pieces: %s");
     XBT_DEBUG("piece_count set to %d", piece_count);
   } else {
     XBT_DEBUG("No piece_count specified, defaulting to %d", piece_count);

@@ -47,12 +47,12 @@ int peer(int argc, char *argv[])
   xbt_assert(argc == 3 || argc == 4, "Wrong number of arguments");
   //Build peer object
   if (argc == 4) {
-    peer_init(&peer, atoi(argv[1]), 1);
+    peer_init(&peer, xbt_str_parse_int(argv[1],"Invalid ID: %s"), 1);
   } else {
-    peer_init(&peer, atoi(argv[1]), 0);
+    peer_init(&peer, xbt_str_parse_int(argv[1],"Invalid ID: %s"), 0);
   }
   //Retrieve deadline
-  double deadline = atof(argv[2]);
+  double deadline = xbt_str_parse_double(argv[2],"Invalid deadline: %s");
   xbt_assert(deadline > 0, "Wrong deadline supplied");
   XBT_INFO("Hi, I'm joining the network with id %d", peer.id);
   //Getting peer data from the tracker.

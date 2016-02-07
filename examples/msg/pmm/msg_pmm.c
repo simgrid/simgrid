@@ -77,7 +77,7 @@ int node(int argc, char **argv)
   xbt_assert(argc != 1, "Wrong number of arguments for this node");
 
   /* Initialize the node's data-structures */
-  myid = atoi(argv[1]);
+  myid = xbt_str_parse_int(argv[1], "Invalid ID received as first node parameter: %s");
   snprintf(my_mbox, MAILBOX_NAME_SIZE - 1, "%d", myid);
   sC = xbt_matrix_double_new_zeros(NODE_MATRIX_SIZE, NODE_MATRIX_SIZE);
 

@@ -58,7 +58,7 @@ int main(int argc, char *argv[]){
 
     const char** line_char= xbt_dynar_to_array(elems);
     instance_id = line_char[0];
-    instance_size = atoi(line_char[2]);
+    instance_size = xbt_str_parse_int(line_char[2], "Invalid size: %s");
 
     XBT_INFO("Initializing instance %s of size %d", instance_id, instance_size);
     SMPI_app_instance_register(instance_id, smpi_replay,instance_size);

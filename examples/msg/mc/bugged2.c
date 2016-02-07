@@ -54,15 +54,14 @@ int server(int argc, char *argv[])
 
 int client(int argc, char *argv[])
 {
-  msg_task_t task1 =
-      MSG_task_create("task", 0, 10000, (void *) atol(argv[1]));
-  msg_task_t task2 =
-      MSG_task_create("task", 0, 10000, (void *) atol(argv[1]));
+  int ID = xbt_str_parse_int(argv[1], "Arg 1 is not a numerical ID: %s");
+  msg_task_t task1 = MSG_task_create("task", 0, 10000, (void *) ID);
+  msg_task_t task2 = MSG_task_create("task", 0, 10000, (void *) ID);
 
-  XBT_INFO("Send %d!", atoi(argv[1]));
+  XBT_INFO("Send %d!", ID);
   MSG_task_send(task1, "mymailbox");
 
-  XBT_INFO("Send %d!", atoi(argv[1]));
+  XBT_INFO("Send %d!", ID);
   MSG_task_send(task2, "mymailbox");
 
   return 0;

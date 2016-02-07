@@ -9,7 +9,7 @@
   <process host="Boivin" function="peer">
     <argument value="00000002"/>        <!-- my id -->
     <argument value="5000" /> 			<!-- end time -->	
-    <argument value="1" /> 			<!-- indicates if the peer is a seed at the begining of the simulation -->	
+    <argument value="1" /> 			<!-- indicates if the peer is a seed at the beginning of the simulation -->	
   </process>
   <process host="Jean_Yves" function="peer">
     <argument value="00000003"/>        <!-- my id -->
@@ -22,7 +22,7 @@
   <process host="Geoff" function="peer">
     <argument value="00000005"/>        <!-- my id -->
     <argument value="5000" /> 			<!-- end time -->	
-    <argument value="1" /> 			<!-- indicates if the peer is a seed at the begining of the simulation -->	
+    <argument value="1" /> 			<!-- indicates if the peer is a seed at the beginning of the simulation -->	
   </process>
   <process host="Disney" function="peer">
     <argument value="00000006"/>        <!-- my id -->

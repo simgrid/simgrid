@@ -431,7 +431,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
   }
 
   // The first parts of topo_parameters should be the levels number
-  this->levels = std::atoi(parameters[0].c_str()); // stoi() only in C++11...
+  this->levels = xbt_str_parse_int(parameters[0].c_str(), "First parameter is not the amount of levels: %s");
   
   // Then, a l-sized vector standing for the childs number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
@@ -440,7 +440,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
                      ", see the documentation for more informations"); 
   }
   for(size_t i = 0 ; i < tmp.size() ; i++){
-    this->lowerLevelNodesNumber.push_back(std::atoi(tmp[i].c_str())); 
+    this->lowerLevelNodesNumber.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid lower level node number: %s"));
   }
   
   // Then, a l-sized vector standing for the parents number by level
@@ -450,7 +450,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
                      ", see the documentation for more informations"); 
   }
   for(size_t i = 0 ; i < tmp.size() ; i++){
-    this->upperLevelNodesNumber.push_back(std::atoi(tmp[i].c_str())); 
+    this->upperLevelNodesNumber.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid upper level node number: %s"));
   }
   
   // Finally, a l-sized vector standing for the ports number with the lower level
@@ -461,7 +461,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
     
   }
   for(size_t i = 0 ; i < tmp.size() ; i++){
-    this->lowerLevelPortsNumber.push_back(std::atoi(tmp[i].c_str())); 
+    this->lowerLevelPortsNumber.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid lower level node number: %s"));
   }
   this->cluster = cluster;
 }

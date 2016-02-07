@@ -497,7 +497,7 @@ static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)
   struct dirent* fd_number;
   while ((fd_number = readdir(fd_dir))) {
 
-    int fd_value = atoi(fd_number->d_name);
+    int fd_value = xbt_str_parse_int(fd_number->d_name, "Found a non-numerical FD: %s. Freaking out!");
 
     if(fd_value < 3)
       continue;

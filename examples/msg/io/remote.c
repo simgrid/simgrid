@@ -54,7 +54,7 @@ int host(int argc, char *argv[]){
     msg_host_t src, dest;
     src= MSG_host_self();
     dest = MSG_host_by_name(argv[3]);
-    if (atoi(argv[5])){
+    if (xbt_str_parse_int(argv[5], "Argument 5 (move or copy) must be an int, not '%s'")) {
       XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename,
            MSG_file_get_size(file), MSG_host_get_name(src),
            argv[3]);

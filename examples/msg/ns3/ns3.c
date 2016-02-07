@@ -56,7 +56,6 @@ int count_finished = 0;
 /** master */
 int master(int argc, char *argv[])
 {
-  double task_comm_size = 0;
   msg_task_t todo;
 
   xbt_assert(argc==4,"Strange number of arguments expected 3 got %d", argc - 1);
@@ -64,13 +63,11 @@ int master(int argc, char *argv[])
   XBT_DEBUG ("Master started");
 
   /* data size */
-  int read;
-  read = sscanf(argv[1], "%lg", &task_comm_size);
-  xbt_assert(read, "Invalid argument %s\n", argv[1]);
+  double task_comm_size = xbt_str_parse_double(argv[1], "Invalid task communication size: %s");
 
   /* slave name */
   char *slavename = argv[2];
-  int id = atoi(argv[3]);   //unique id to control statistics
+  int id = xbt_str_parse_int(argv[3], "Invalid ID as argument 3: %s");   //unique id to control statistics
   char *id_alias = bprintf("flow_%d", id);
   slavenames[id] = slavename;
   TRACE_category(id_alias);
@@ -86,7 +83,7 @@ int master(int argc, char *argv[])
   }
 
   {                             /* Process organization */
-    MSG_get_host_by_name(slavename);
+    MSG_host_by_name(slavename);
   }
 
   count_finished++;
@@ -143,7 +140,7 @@ int slave(int argc, char *argv[])
 
   XBT_DEBUG ("Slave started");
 
-  id = atoi(argv[1]);
+  id = xbt_str_parse_int(argv[1], "Invalid id: %s");
   sprintf(id_alias, "%d", id);
 
   a = MSG_task_receive(&(task), id_alias);

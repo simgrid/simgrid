@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "simgrid/msg.h"
-#include "src/surf/surf_private.h"
 
 int host(int argc, char *argv[]);
 unsigned int task_comp_size = 50000000;
@@ -30,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(ring,
 
 int host(int argc, char *argv[])
 {
-  int host_number = atoi(MSG_process_get_name(MSG_process_self()));
+  int host_number = xbt_str_parse_int(MSG_process_get_name(MSG_process_self()), "Process name must be an integer but is: %s");
   char mailbox[256];
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;

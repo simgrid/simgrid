@@ -43,15 +43,13 @@ int server(int argc, char *argv[])
 
 int client(int argc, char *argv[])
 {
-  msg_comm_t comm;
-  char *mbox;
-  msg_task_t task1 =
-      MSG_task_create("task", 0, 10000, (void *) atol(argv[1]));
+  int ID = xbt_str_parse_int(argv[1], "Arg 1 is not a numerical ID: %s");
+  msg_task_t task1 = MSG_task_create("task", 0, 10000, (void *) ID);
 
-  mbox = bprintf("mymailbox%s", argv[1]);
+  char *mbox = bprintf("mymailbox%s", argv[1]);
 
-  XBT_INFO("Send %d!", atoi(argv[1]));
-  comm = MSG_task_isend(task1, mbox);
+  XBT_INFO("Send %d!", ID);
+  msg_comm_t comm = MSG_task_isend(task1, mbox);
   MSG_comm_wait(comm, -1);
 
   xbt_free(mbox);
@@ -66,9 +64,7 @@ int main(int argc, char *argv[])
   MSG_create_environment("platform.xml");
 
   MSG_function_register("server", server);
-
   MSG_function_register("client", client);
-
   MSG_launch_application("deploy_bugged3.xml");
 
   MSG_main();

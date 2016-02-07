@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
       exit(USAGE_ERROR);
     }
 
-    N = atoi(argv[1]);
+    N = xbt_str_parse_int(argv[1], "Invalid size: %s");
 
     start_time = (struct timeval *) malloc(sizeof(struct timeval));
     stop_time = (struct timeval *) malloc(sizeof(struct timeval));

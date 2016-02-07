@@ -99,8 +99,7 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-
-  size = atoi(argv[1]);
+  size = xbt_str_parse_int(argv[1], "Invalid size: %s");
 
   /* create a new scheduler */
   sched = sched_new(size);
@@ -113,10 +112,7 @@ int main(int argc, char *argv[])
   __argv = xbt_new0(char *, MAX_ARGS);
 
   for (i = 0; i < MAX_ARGS; i++) {
-    sprintf(arg, "arg_%d", i);
-    __argv[i] = strdup(arg);
-    memset(arg, 0, MAX_ARG);
-
+    __argv[i] = bprintf("arg_%d", i);
   }
 
   for (i = 0; i < size; i++)

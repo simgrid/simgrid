@@ -82,7 +82,7 @@ void smpi_process_init(int *argc, char ***argv)
     //FIXME: dirty cleanup method to avoid using msg cleanup functions on these processes when using MSG+SMPI
     SIMIX_process_set_cleanup_function(proc, SIMIX_process_cleanup);
     char* instance_id = (*argv)[1];
-    int rank = atoi((*argv)[2]);
+    int rank = xbt_str_parse_int((*argv)[2], "Invalid rank: %s");
     index = smpi_process_index_of_smx_process(proc);
 
     if(!index_to_process_data){
@@ -207,13 +207,9 @@ int smpi_process_get_replaying(){
 int smpi_global_size(void)
 {
   char *value = getenv("SMPI_GLOBAL_SIZE");
+  xbt_assert(value,"Please set env var SMPI_GLOBAL_SIZE to the expected number of processes.");
 
-  if (!value) {
-    fprintf(stderr,
-            "Please set env var SMPI_GLOBAL_SIZE to expected number of processes.\n");
-    xbt_abort();
-  }
-  return atoi(value);
+  return xbt_str_parse_int(value, "SMPI_GLOBAL_SIZE contains a non-numerical value: %s");
 }
 
 smpi_process_data_t smpi_process_data(void)

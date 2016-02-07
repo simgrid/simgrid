@@ -517,7 +517,7 @@ static int node(int argc, char *argv[])
   double deadline;
   xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
   s_node_t node = {0};
-  node.id = atoi(argv[1]);
+  node.id = xbt_str_parse_int(argv[1], "Invalid ID: %s");
   node.known_id = -1;
   node.ready = -1;
   node.pending_tasks = xbt_fifo_new();
@@ -539,14 +539,14 @@ static int node(int argc, char *argv[])
 
   if (argc == 3) { // first ring
     XBT_DEBUG("Hey! Let's create the system.");
-    deadline = atof(argv[2]);
+    deadline = xbt_str_parse_double(argv[2], "Invalid deadline: %s");
     create(&node);
     join_success = 1;
   }
   else {
-    node.known_id = atoi(argv[2]);
-    double sleep_time = atof(argv[3]);
-    deadline = atof(argv[4]);
+    node.known_id = xbt_str_parse_int(argv[2], "Invalid known ID: %s");
+    double sleep_time = xbt_str_parse_double(argv[3], "Invalid sleep time: %s");
+    deadline = xbt_str_parse_double(argv[4], "Invalid deadline: %s");
 
     // sleep before starting
     XBT_DEBUG("Let's sleep during %f", sleep_time);
@@ -623,14 +623,14 @@ int main(int argc, char *argv[])
 
     int length = strlen("-nb_bits=");
     if (!strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
-      nb_bits = atoi(options[0] + length);
+      nb_bits = xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter: %s");
       XBT_DEBUG("Set nb_bits to %d", nb_bits);
     }
     else {
 
       length = strlen("-timeout=");
       if (!strncmp(options[0], "-timeout=", length) && strlen(options[0]) > length) {
-        timeout = atoi(options[0] + length);
+        timeout = xbt_str_parse_int(options[0] + length, "Invalid timeout parameter: %s");
         XBT_DEBUG("Set timeout to %d", timeout);
       }
       else {
