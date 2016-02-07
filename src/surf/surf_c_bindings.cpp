@@ -65,9 +65,6 @@ double surf_solve(double max_date)
   tmgr_trace_iterator_t event = NULL;
   unsigned int iter;
 
-  if(!host_that_restart)
-    host_that_restart = xbt_dynar_new(sizeof(char*), NULL);
-
   if (max_date > 0.0) {
     xbt_assert(max_date > NOW,"You asked to simulate up to %f, but that's in the past already", max_date);
 
@@ -124,7 +121,7 @@ double surf_solve(double max_date)
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
       if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->getName())) {
         time_delta = next_event_date - NOW;
-        XBT_DEBUG("This event will modify model state. Next event set to %f", time_delta);
+        XBT_DEBUG("This event invalidates the next_occuring_event() computation of models. Next event set to %f", time_delta);
       }
       // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min will work
       double round_start = NOW;
