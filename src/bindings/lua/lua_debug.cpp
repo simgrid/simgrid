@@ -12,11 +12,11 @@
  *
  */
  /* SimGrid Lua debug functions                                             */
+extern "C" {
 #include <lauxlib.h>
+}
 #include "lua_utils.h"
 #include "xbt.h"
-#include "xbt/log.h"
-
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_debug, bindings, "Lua helper functions");
 
@@ -221,7 +221,7 @@ int sglua_memory_writer(lua_State* L, const void* source, size_t size,
   sglua_buffer_t buffer = (sglua_buffer_t) userdata;
   while (buffer->capacity < buffer->size + size) {
     buffer->capacity *= 2;
-    buffer->data = xbt_realloc(buffer->data, buffer->capacity);
+    buffer->data = (char*)xbt_realloc(buffer->data, buffer->capacity);
   }
   memcpy(buffer->data + buffer->size, source, size);
   buffer->size += size;
