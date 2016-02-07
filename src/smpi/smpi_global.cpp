@@ -107,8 +107,8 @@ void smpi_process_init(int *argc, char ***argv)
     data->replaying = 0;
     //xbt_free(simcall_process_get_data(proc));
 
-  simdata_process_t simdata = static_cast<simdata_process_t>(simcall_process_get_data(proc));
-  simdata->data = data;
+    simdata_process_t simdata = static_cast<simdata_process_t>(simcall_process_get_data(proc));
+    simdata->data = data;
 
     if (*argc > 3) {
       free((*argv)[1]);
@@ -439,15 +439,15 @@ void smpi_global_init(void)
   smpi_universe_size = process_count;
   process_data = xbt_new0(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {
-    process_data[i] = xbt_new(s_smpi_process_data_t, 1);
-    //process_data[i]->index = i;
-    process_data[i]->argc    = NULL;
-    process_data[i]->argv    = NULL;
-    process_data[i]->mailbox = simcall_rdv_create(get_mailbox_name(name, i));
-    process_data[i]->mailbox_small =
+    process_data[i]                       = xbt_new(s_smpi_process_data_t, 1);
+    //process_data[i]->index              = i;
+    process_data[i]->argc                 = NULL;
+    process_data[i]->argv                 = NULL;
+    process_data[i]->mailbox              = simcall_rdv_create(get_mailbox_name(name, i));
+    process_data[i]->mailbox_small        =
         simcall_rdv_create(get_mailbox_name_small(name, i));
-    process_data[i]->mailboxes_mutex = xbt_mutex_init();
-    process_data[i]->timer           = xbt_os_timer_new();
+    process_data[i]->mailboxes_mutex      = xbt_mutex_init();
+    process_data[i]->timer                = xbt_os_timer_new();
     if (MC_is_active())
       MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
     process_data[i]->comm_self            = MPI_COMM_NULL;
