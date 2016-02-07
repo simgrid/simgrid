@@ -182,7 +182,7 @@ void CpuCas01::onSpeedChange() {
   Cpu::onSpeedChange();
 }
 
-void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value)
+void CpuCas01::apply_event(tmgr_trace_iterator_t event_type, double value)
 {
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;

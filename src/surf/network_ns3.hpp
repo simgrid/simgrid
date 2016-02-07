@@ -55,9 +55,9 @@ public:
   xbt_dynar_t getRoute(NetCard *src, NetCard *dst);
   Action *communicate(NetCard *src, NetCard *dst, double size, double rate);
   double next_occuring_event(double now) override;
+  bool next_occuring_event_isIdempotent() {return false;}
   void updateActionsState(double now, double delta) override;
   void addTraces() override {DIE_IMPOSSIBLE;}
-  bool next_occuring_event_isIdempotent() {return false;}
 };
 
 /************
@@ -69,7 +69,7 @@ public:
                double bw_initial, double lat_initial);
   ~NetworkNS3Link();
 
-  void updateState(tmgr_trace_iterator_t event_type, double value) override;
+  void apply_event(tmgr_trace_iterator_t event_type, double value) override;
   void updateBandwidth(double value) override {THROW_UNIMPLEMENTED;}
   void updateLatency(double value) override {THROW_UNIMPLEMENTED;}
 

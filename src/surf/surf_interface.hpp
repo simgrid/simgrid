@@ -417,7 +417,7 @@ public:
    * @param event_type [TODO]
    * @param value [TODO]
    */
-  virtual void updateState(tmgr_trace_iterator_t event_type, double value)=0;
+  virtual void apply_event(tmgr_trace_iterator_t event_type, double value)=0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool isUsed()=0;

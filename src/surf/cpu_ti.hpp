@@ -120,7 +120,7 @@ public:
 
   void set_speed_trace(tmgr_trace_t trace);
 
-  void updateState(tmgr_trace_iterator_t event_type, double value) override;
+  void apply_event(tmgr_trace_iterator_t event_type, double value) override;
   void updateActionsFinishTime(double now);
   void updateRemainingAmount(double now);
 

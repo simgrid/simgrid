@@ -140,7 +140,7 @@ bool Storage::isUsed()
   return false;
 }
 
-void Storage::updateState(tmgr_trace_iterator_t /*event_type*/, double /*value*/)
+void Storage::apply_event(tmgr_trace_iterator_t /*event_type*/, double /*value*/)
 {
   THROW_UNIMPLEMENTED;
 }

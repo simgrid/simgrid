@@ -480,7 +480,7 @@ bool LinkL07::isUsed(){
   return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
 }
 
-void CpuL07::updateState(tmgr_trace_iterator_t triggered, double value){
+void CpuL07::apply_event(tmgr_trace_iterator_t triggered, double value){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
   if (triggered == p_speedEvent) {
     m_speedScale = value;
@@ -497,7 +497,7 @@ void CpuL07::updateState(tmgr_trace_iterator_t triggered, double value){
   }
 }
 
-void LinkL07::updateState(tmgr_trace_iterator_t triggered, double value) {
+void LinkL07::apply_event(tmgr_trace_iterator_t triggered, double value) {
   XBT_DEBUG("Updating link %s (%p) with value=%f", getName(), this, value);
   if (triggered == m_bandwidth.event) {
     updateBandwidth(value);

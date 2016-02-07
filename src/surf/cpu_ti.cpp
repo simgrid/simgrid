@@ -561,7 +561,7 @@ void CpuTi::set_speed_trace(tmgr_trace_t trace)
   }
 }
 
-void CpuTi::updateState(tmgr_trace_iterator_t event_type, double value)
+void CpuTi::apply_event(tmgr_trace_iterator_t event_type, double value)
 {
   CpuTiAction *action;
 

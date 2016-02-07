@@ -542,7 +542,7 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
 
 
 
-void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered, double value)
+void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
 {
 
   /* Find out which of my iterators was triggered, and react accordingly */

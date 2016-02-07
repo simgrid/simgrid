@@ -82,7 +82,7 @@ public:
                              double lat_initial,
                              tmgr_trace_t lat_trace,
                                e_surf_link_sharing_policy_t policy);
-  void updateState(tmgr_trace_iterator_t event_type, double value) override;
+  void apply_event(tmgr_trace_iterator_t event_type, double value) override;
   void updateBandwidth(double value) override;
   void updateLatency(double value) override;
   virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};

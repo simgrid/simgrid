@@ -44,7 +44,7 @@ void surf_presolve(void)
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
       if (value >= 0){
-        resource->updateState(event, value);
+        resource->apply_event(event, value);
       }
     }
   }
@@ -132,7 +132,7 @@ double surf_solve(double max_date)
       /* update state of the corresponding resource to the new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       XBT_DEBUG("Calling update_resource_state for resource %s", resource->getName());
-      resource->updateState(event, value);
+      resource->apply_event(event, value);
       NOW = round_start;
     }
   }
