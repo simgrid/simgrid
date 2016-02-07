@@ -62,12 +62,14 @@ static int match_send(void* a, void* b,smx_synchro_t ignored) {
 }
 
 
-typedef struct s_smpi_os_factor *smpi_os_factor_t;
-typedef struct s_smpi_os_factor {
+// Methods used to parse and store the values for timing injections in smpi
+// These are taken from surf/network.c and generalized to have more values for each factor
+typedef struct s_smpi_factor_multival *smpi_os_factor_multival_t;
+typedef struct s_smpi_factor_multival { // FIXME: this should be merged (deduplicated) with s_smpi_factor defined in network_smpi.c
   long factor;
   int nb_values;
   double values[4];//arbitrary set to 4
-} s_smpi_os_factor_t;
+} s_smpi_factor_multival_t;
 xbt_dynar_t smpi_os_values = NULL;
 xbt_dynar_t smpi_or_values = NULL;
 xbt_dynar_t smpi_ois_values = NULL;
@@ -76,15 +78,10 @@ double smpi_wtime_sleep = 0.0;
 double smpi_iprobe_sleep = 1e-4;
 double smpi_test_sleep = 1e-4;
 
-
-// Methods used to parse and store the values for timing injections in smpi
-// These are taken from surf/network.c and generalized to have more factors
-// FIXME: These methods should be merged with those in surf/network.c (moved somewhere in xbt ?)
-
 static int factor_cmp(const void *pa, const void *pb)
 {
-  return (((s_smpi_os_factor_t*)pa)->factor > ((s_smpi_os_factor_t*)pb)->factor) ? 1 :
-         (((s_smpi_os_factor_t*)pa)->factor < ((s_smpi_os_factor_t*)pb)->factor) ? -1 : 0;
+  return (((s_smpi_factor_multival_t*)pa)->factor > ((s_smpi_factor_multival_t*)pb)->factor) ? 1 :
+         (((s_smpi_factor_multival_t*)pa)->factor < ((s_smpi_factor_multival_t*)pb)->factor) ? -1 : 0;
 }
 
 
@@ -92,18 +89,18 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 {
   char *value = NULL;
   unsigned int iter = 0;
-  s_smpi_os_factor_t fact;
+  s_smpi_factor_multival_t fact;
   fact.nb_values=0;
   unsigned int i=0;
   xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = NULL;
 
-  smpi_factor = xbt_dynar_new(sizeof(s_smpi_os_factor_t), NULL);
+  smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_multival_t), NULL);
   radical_elements = xbt_str_split(smpi_coef_string, ";");
   xbt_dynar_foreach(radical_elements, iter, value) {
-    memset(&fact, 0, sizeof(s_smpi_os_factor_t));
+    memset(&fact, 0, sizeof(s_smpi_factor_multival_t));
     radical_elements2 = xbt_str_split(value, ":");
     if (xbt_dynar_length(radical_elements2) <2 || xbt_dynar_length(radical_elements2) > 5)
-      xbt_die("Malformed radical for smpi factor!");
+      xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string);
     for(i =0; i<xbt_dynar_length(radical_elements2);i++ ){
         if (i==0){
            fact.factor = atol(xbt_dynar_get_as(radical_elements2, i, char *));
@@ -113,7 +110,7 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
         }
     }
 
-    xbt_dynar_push_as(smpi_factor, s_smpi_os_factor_t, fact);
+    xbt_dynar_push_as(smpi_factor, s_smpi_factor_multival_t, fact);
     XBT_DEBUG("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
     xbt_dynar_free(&radical_elements2);
   }
@@ -133,7 +130,7 @@ static double smpi_os(double size)
     smpi_register_static(smpi_os_values, xbt_dynar_free_voidp);
   }
   unsigned int iter = 0;
-  s_smpi_os_factor_t fact;
+  s_smpi_factor_multival_t fact;
   double current=0.0;
   // Iterate over all the sections that were specified and find the right
   // value. (fact.factor represents the interval sizes; we want to find the
@@ -162,7 +159,7 @@ static double smpi_ois(double size)
     smpi_register_static(smpi_ois_values, xbt_dynar_free_voidp);
   }
   unsigned int iter = 0;
-  s_smpi_os_factor_t fact;
+  s_smpi_factor_multival_t fact;
   double current=0.0;
   // Iterate over all the sections that were specified and find the right
   // value. (fact.factor represents the interval sizes; we want to find the
@@ -191,7 +188,7 @@ static double smpi_or(double size)
     smpi_register_static(smpi_or_values, xbt_dynar_free_voidp);
   }
   unsigned int iter = 0;
-  s_smpi_os_factor_t fact;
+  s_smpi_factor_multival_t fact;
   double current=0.0;
   // Iterate over all the sections that were specified and find the right
   // value. (fact.factor represents the interval sizes; we want to find the

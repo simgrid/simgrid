@@ -19,7 +19,7 @@ xbt_dynar_t smpi_bw_factor = NULL;
 xbt_dynar_t smpi_lat_factor = NULL;
 
 typedef struct s_smpi_factor *smpi_factor_t;
-typedef struct s_smpi_factor {
+typedef struct s_smpi_factor { // FIXME: s_smpi_factor_multival (defined in smpi_base) should be used instead to dedupplicate this code
   long factor;
   double value;
 } s_smpi_factor_t;
@@ -100,17 +100,9 @@ NetworkSmpiModel::NetworkSmpiModel()
 }
 
 NetworkSmpiModel::~NetworkSmpiModel(){
-  if (gap_lookup) {
-    xbt_dict_free(&gap_lookup);
-  }
-  if (smpi_bw_factor) {
-    xbt_dynar_free(&smpi_bw_factor);
-    smpi_bw_factor = NULL;
-  }
-  if (smpi_lat_factor) {
-    xbt_dynar_free(&smpi_lat_factor);
-    smpi_lat_factor = NULL;
-  }
+  xbt_dict_free(&gap_lookup);
+  xbt_dynar_free(&smpi_bw_factor);
+  xbt_dynar_free(&smpi_lat_factor);
 }
 
 void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *act)
