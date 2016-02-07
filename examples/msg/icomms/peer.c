@@ -34,12 +34,12 @@ msg_error_t test_all(const char *platform_file,
 /** Sender function  */
 int sender(int argc, char *argv[])
 {
-  long number_of_tasks = atol(argv[1]);
-  double task_comp_size = atof(argv[2]);
-  double task_comm_size = atof(argv[3]);
-  long receivers_count = atol(argv[4]);
-  double sleep_start_time = atof(argv[5]);
-  double sleep_test_time = atof(argv[6]);
+  long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
+  double task_comp_size = xbt_str_parse_double(argv[2], "Invalid compute size: %s");
+  double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
+  long receivers_count = xbt_str_parse_int(argv[4], "Invalid amount of receivers: %s");
+  double sleep_start_time = xbt_str_parse_double(argv[5], "Invalid sleep start time: %s");
+  double sleep_test_time = xbt_str_parse_double(argv[6], "Invalid test time: %s");
 
   XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time,
         sleep_test_time);

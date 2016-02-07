@@ -19,18 +19,17 @@ int slave(int argc, char *argv[]);
 int master_mpi(int argc, char *argv[]);
 int alltoall_mpi(int argc, char *argv[]);
 
-/** Emitter function  */
+/** sender function  */
 int master(int argc, char *argv[])
 {
-  long number_of_tasks = atol(argv[1]);
-  double task_comp_size = atof(argv[2]);
-  double task_comm_size = atof(argv[3]);
-  long slaves_count = atol(argv[4]);
+  long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
+  double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
+  double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
+  long slaves_count = xbt_str_parse_int(argv[4], "Invalid amount of slaves: %s");
 
   int i;
 
-  XBT_INFO("Got %ld slaves and %ld tasks to process", slaves_count,
-        number_of_tasks);
+  XBT_INFO("Got %ld slaves and %ld tasks to process", slaves_count, number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++) {
     char mailbox[256];

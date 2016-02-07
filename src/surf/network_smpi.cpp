@@ -47,8 +47,12 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
     radical_elements2 = xbt_str_split(value, ":");
     if (xbt_dynar_length(radical_elements2) != 2)
       surf_parse_error("Malformed radical for smpi factor!");
-    fact.factor = atol(xbt_dynar_get_as(radical_elements2, 0, char *));
-    fact.value = atof(xbt_dynar_get_as(radical_elements2, 1, char *));
+
+    fact.factor = xbt_str_parse_int(xbt_dynar_get_as(radical_elements2, 0, char *),
+        bprintf("Invalid factor in chunk #%d: %%s", iter+1));
+    fact.value = xbt_str_parse_double(xbt_dynar_get_as(radical_elements2, 1, char *),
+        bprintf("Invalid factor value in chunk #%d: %%s", iter+1));
+
     xbt_dynar_push_as(smpi_factor, s_smpi_factor_t, fact);
     XBT_DEBUG("smpi_factor:\t%ld : %f", fact.factor, fact.value);
     xbt_dynar_free(&radical_elements2);

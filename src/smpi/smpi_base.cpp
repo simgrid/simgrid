@@ -103,9 +103,11 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
       xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string);
     for(i =0; i<xbt_dynar_length(radical_elements2);i++ ){
         if (i==0){
-           fact.factor = atol(xbt_dynar_get_as(radical_elements2, i, char *));
+           fact.factor = xbt_str_parse_int(xbt_dynar_get_as(radical_elements2, i, char *),
+               bprintf("Invalid factor in chunk #%d: %%s", iter+1));
         }else{
-           fact.values[fact.nb_values] = atof(xbt_dynar_get_as(radical_elements2, i, char *));
+           fact.values[fact.nb_values] = xbt_str_parse_double(xbt_dynar_get_as(radical_elements2, i, char *),
+               bprintf("Invalid factor value %d in chunk #%d: %%s", i, iter+1));
            fact.nb_values++;
         }
     }
