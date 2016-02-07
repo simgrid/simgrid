@@ -119,12 +119,8 @@ public:
   ~LinkL07(){ };
   bool isUsed() override;
   void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
-  double getBandwidth() override;
   void updateBandwidth(double value, double date=surf_get_clock()) override;
   void updateLatency(double value, double date=surf_get_clock()) override;
-
-  double m_bwCurrent;
-  tmgr_trace_iterator_t p_bwEvent;
 };
 
 /**********

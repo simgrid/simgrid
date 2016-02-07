@@ -359,7 +359,7 @@ void HostL07Model::addTraces()
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    link->p_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
+    link->m_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
@@ -369,7 +369,7 @@ void HostL07Model::addTraces()
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    link->p_bwEvent = future_evt_set->add_trace(trace, 0.0, link);
+    link->m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
@@ -379,7 +379,7 @@ void HostL07Model::addTraces()
     xbt_assert(link, "Link %s undefined", elm);
     xbt_assert(trace, "Trace %s undefined", trace_name);
 
-    link->p_latEvent = future_evt_set->add_trace(trace, 0.0, link);
+    link->m_latency.event = future_evt_set->add_trace(trace, 0.0, link);
   }
 }
 
@@ -417,18 +417,18 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
              e_surf_link_sharing_policy_t policy)
  : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), future_evt_set, state_trace)
 {
-  m_bwCurrent = bw_initial;
+  m_bandwidth.peak = bw_initial;
   if (bw_trace)
-    p_bwEvent = future_evt_set->add_trace(bw_trace, 0.0, this);
+    m_bandwidth.event = future_evt_set->add_trace(bw_trace, 0.0, this);
 
   if (initiallyOn)
     turnOn();
   else
     turnOff();
-  m_latCurrent = lat_initial;
 
+  m_latency.peak = lat_initial;
   if (lat_trace)
-    p_latEvent = future_evt_set->add_trace(lat_trace, 0.0, this);
+    m_latency.event = future_evt_set->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
   lmm_constraint_shared(getConstraint());
@@ -502,32 +502,27 @@ void CpuL07::updateState(tmgr_trace_iterator_t triggered, double value, double /
 
 void LinkL07::updateState(tmgr_trace_iterator_t triggered, double value, double date) {
   XBT_DEBUG("Updating link %s (%p) with value=%f for date=%g", getName(), this, value, date);
-  if (triggered == p_bwEvent) {
+  if (triggered == m_bandwidth.event) {
     updateBandwidth(value, date);
-    tmgr_trace_event_unref(&p_bwEvent);
-  } else if (triggered == p_latEvent) {
+    tmgr_trace_event_unref(&m_bandwidth.event);
+  } else if (triggered == m_latency.event) {
     updateLatency(value, date);
-    tmgr_trace_event_unref(&p_latEvent);
-  } else if (triggered == p_stateEvent) {
+    tmgr_trace_event_unref(&m_latency.event);
+  } else if (triggered == m_stateEvent) {
     if (value > 0)
       turnOn();
     else
       turnOff();
-    tmgr_trace_event_unref(&p_stateEvent);
+    tmgr_trace_event_unref(&m_stateEvent);
   } else {
     xbt_die("Unknown event ! \n");
   }
 }
 
-double LinkL07::getBandwidth()
-{
-  return m_bwCurrent;
-}
-
 void LinkL07::updateBandwidth(double value, double date)
 {
-  m_bwCurrent = value;
-  lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), m_bwCurrent);
+  m_bandwidth.peak = value;
+  lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), m_bandwidth.peak * m_bandwidth.scale);
 }
 
 void LinkL07::updateLatency(double value, double date)
@@ -536,7 +531,7 @@ void LinkL07::updateLatency(double value, double date)
   L07Action *action;
   lmm_element_t elem = NULL;
 
-  m_latCurrent = value;
+  m_latency.peak = value;
   while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
     action = static_cast<L07Action*>(lmm_variable_id(var));
     action->updateBound();

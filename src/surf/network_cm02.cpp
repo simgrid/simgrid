@@ -480,7 +480,7 @@ void NetworkCm02Model::addTraces(){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
+    link->m_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
@@ -493,7 +493,7 @@ void NetworkCm02Model::addTraces(){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_speed.event = future_evt_set->add_trace(trace, 0.0, link);
+    link->m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, link);
   }
 
   xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
@@ -506,7 +506,7 @@ void NetworkCm02Model::addTraces(){
                "Cannot connect trace %s to link %s: trace undefined",
                trace_name, elm);
 
-    link->p_latEvent = future_evt_set->add_trace(trace, 0.0, link);
+    link->m_latency.event = future_evt_set->add_trace(trace, 0.0, link);
   }
 }
 
@@ -528,16 +528,17 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
   else
     turnOff();
 
-  p_speed.scale = 1.0;
-  p_speed.peak = bw_peak;
+  m_bandwidth.scale = 1.0;
+  m_bandwidth.peak = bw_peak;
   if (bw_trace)
-    p_speed.event = fes->add_trace(bw_trace, 0.0, this);
+    m_bandwidth.event = fes->add_trace(bw_trace, 0.0, this);
   else
-    p_speed.event = NULL;
+    m_bandwidth.event = NULL;
 
-  m_latCurrent = lat_initial;
+  m_latency.scale = 1.0;
+  m_latency.peak = lat_initial;
   if (lat_trace)
-    p_latEvent = fes->add_trace(lat_trace, 0.0, this);
+    m_latency.event = fes->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
   lmm_constraint_shared(getConstraint());
@@ -550,13 +551,13 @@ void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
 {
 
   /* Find out which of my iterators was triggered, and react accordingly */
-  if (triggered == p_speed.event) {
+  if (triggered == m_bandwidth.event) {
     updateBandwidth(value, date);
-    tmgr_trace_event_unref(&p_speed.event);
-  } else if (triggered == p_latEvent) {
+    tmgr_trace_event_unref(&m_bandwidth.event);
+  } else if (triggered == m_latency.event) {
     updateLatency(value, date);
-    tmgr_trace_event_unref(&p_latEvent);
-  } else if (triggered == p_stateEvent) {
+    tmgr_trace_event_unref(&m_latency.event);
+  } else if (triggered == m_stateEvent) {
     if (value > 0)
       turnOn();
     else {
@@ -574,7 +575,7 @@ void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
         }
       }
     }
-    tmgr_trace_event_unref(&p_stateEvent);
+    tmgr_trace_event_unref(&m_stateEvent);
   } else {
     xbt_die("Unknown event!\n");
   }
@@ -586,7 +587,7 @@ void NetworkCm02Link::updateState(tmgr_trace_iterator_t triggered,
 
 void NetworkCm02Link::updateBandwidth(double value, double date){
   double delta = sg_weight_S_parameter / value - sg_weight_S_parameter /
-                 (p_speed.peak * p_speed.scale);
+                 (m_bandwidth.peak * m_bandwidth.scale);
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
   lmm_element_t nextelem = NULL;
@@ -594,12 +595,12 @@ void NetworkCm02Link::updateBandwidth(double value, double date){
 
   NetworkCm02Action *action = NULL;
 
-  p_speed.peak = value;
+  m_bandwidth.peak = value;
   lmm_update_constraint_bound(getModel()->getMaxminSystem(),
                               getConstraint(),
                               sg_bandwidth_factor *
-                              (p_speed.peak * p_speed.scale));
-  TRACE_surf_link_set_bandwidth(date, getName(), sg_bandwidth_factor * p_speed.peak * p_speed.scale);
+                              (m_bandwidth.peak * m_bandwidth.scale));
+  TRACE_surf_link_set_bandwidth(date, getName(), sg_bandwidth_factor * m_bandwidth.peak * m_bandwidth.scale);
   if (sg_weight_S_parameter > 0) {
     while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
       action = (NetworkCm02Action*) lmm_variable_id(var);
@@ -611,14 +612,14 @@ void NetworkCm02Link::updateBandwidth(double value, double date){
 }
 
 void NetworkCm02Link::updateLatency(double value, double date){
-  double delta = value - m_latCurrent;
+  double delta = value - m_latency.peak;
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
   lmm_element_t nextelem = NULL;
   int numelem = 0;
   NetworkCm02Action *action = NULL;
 
-  m_latCurrent = value;
+  m_latency.peak = value;
   while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
     action = (NetworkCm02Action*) lmm_variable_id(var);
     action->m_latCurrent += delta;

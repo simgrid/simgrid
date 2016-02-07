@@ -237,14 +237,9 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  /* Using this object with the public part of
-    model does not make sense */
-  double m_latCurrent = 0;
-  tmgr_trace_iterator_t p_latEvent = NULL;
-
-  /* LMM */
-  tmgr_trace_iterator_t p_stateEvent = NULL;
-  s_surf_metric_t p_speed;
+  tmgr_trace_iterator_t m_stateEvent = NULL;
+  s_surf_metric_t m_latency = {1.0,0,NULL};
+  s_surf_metric_t m_bandwidth = {1.0,0,NULL};
 
   /* User data */
 public:

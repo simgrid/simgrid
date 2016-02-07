@@ -196,6 +196,8 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 {
   links->insert({name, this});
 
+  m_latency.scale = 1;
+  m_bandwidth.scale = 1;
   XBT_DEBUG("Create link '%s'",name);
 }
 
@@ -206,8 +208,10 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 : Resource(model, name, constraint),
   PropertyHolder(props)
 {
+  m_latency.scale = 1;
+  m_bandwidth.scale = 1;
   if (state_trace)
-    p_stateEvent = fes->add_trace(state_trace, 0.0, this);
+    m_stateEvent = fes->add_trace(state_trace, 0.0, this);
 
   links->insert({name, this});
   XBT_DEBUG("Create link '%s'",name);
@@ -238,12 +242,12 @@ bool Link::isUsed()
 
 double Link::getLatency()
 {
-  return m_latCurrent;
+  return m_latency.peak * m_latency.scale;
 }
 
 double Link::getBandwidth()
 {
-  return p_speed.peak * p_speed.scale;
+  return m_bandwidth.peak * m_bandwidth.scale;
 }
 
 int Link::sharingPolicy()

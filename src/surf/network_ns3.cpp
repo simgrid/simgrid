@@ -393,9 +393,8 @@ NetworkNS3Link::NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dic
  : Link(model, name, props)
  , m_created(1)
 {
-  p_speed.scale = 1.0;
-  p_speed.peak = bw_initial;
-  m_latCurrent = lat_initial;
+  m_bandwidth.peak = bw_initial;
+  m_latency.peak = lat_initial;
 }
 
 NetworkNS3Link::~NetworkNS3Link()
