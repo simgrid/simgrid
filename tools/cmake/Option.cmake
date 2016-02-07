@@ -60,7 +60,7 @@ endif()
 option(enable_smpi_ISP_testsuite "Whether the test suite from ISP should be built." off)
 
 if(enable_scala AND NOT enable_java)
-  message(WARNING "For using scala you must turn java on with this command:\ncmake -Denable_java=on .")
+  message(WARNING "To use scala, you must enable java too (pass -Denable_java=on to Cmake for that)")
 endif()
 
 mark_as_advanced(HAVE_SSH)
