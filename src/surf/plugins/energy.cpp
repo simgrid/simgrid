@@ -103,10 +103,10 @@ HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) :
   initWattsRangeList();
 
   if (host->properties() != NULL) {
-    char* off_power_str = (char*)xbt_dict_get_or_null(
-      host->properties(), "watt_off");
+    char* off_power_str = (char*)xbt_dict_get_or_null(host->properties(), "watt_off");
     if (off_power_str != NULL)
-      watts_off = atof(off_power_str);
+      watts_off = xbt_str_parse_double(off_power_str,
+          bprintf("Invalid value for property watt_off of host %s: %%s",host->name().c_str()));
     else
       watts_off = 0;
   }
@@ -183,8 +183,10 @@ void HostEnergy::initWattsRangeList()
     /* min_power corresponds to the idle power (cpu load = 0) */
     /* max_power is the power consumed at 100% cpu load       */
     power_range_watts_list.push_back(power_range(
-      atof(xbt_dynar_get_as(current_power_values, 0, char*)),
-      atof(xbt_dynar_get_as(current_power_values, 1, char*))
+      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 0, char*),
+          bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->name().c_str())),
+      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 1, char*),
+          bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->name().c_str()))
     ));
 
     xbt_dynar_free(&current_power_values);

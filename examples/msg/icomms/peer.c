@@ -101,8 +101,8 @@ int receiver(int argc, char *argv[])
   int id = -1;
   char mailbox[80];
   msg_comm_t res_irecv;
-  double sleep_start_time = atof(argv[2]);
-  double sleep_test_time = atof(argv[3]);
+  double sleep_start_time = xbt_str_parse_double(argv[2], "Invalid sleep start parameter: %s");
+  double sleep_test_time = xbt_str_parse_double(argv[3], "Invalid sleep test parameter: %s");
   XBT_INFO("sleep_start_time : %f , sleep_test_time : %f", sleep_start_time,
         sleep_test_time);
 

@@ -19,13 +19,13 @@ static int peer(int argc, char* argv[]){
   int i = 0; 
   
   while(i < argc) {
-    double wait_time = atof(argv[i++]);
+    double wait_time = xbt_str_parse_double(argv[i++],"Invalid wait time: %s");
     MSG_process_sleep(wait_time);
     XBT_INFO("Trying to acquire %d", i);
     MSG_sem_acquire(sem);
     XBT_INFO("Acquired %d", i);
 
-    wait_time = atof(argv[i++]);
+    wait_time = xbt_str_parse_double(argv[i++], "Invalid wait time: %s");
     MSG_process_sleep(wait_time);
     XBT_INFO("Releasing %d", i);
     MSG_sem_release(sem);

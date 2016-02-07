@@ -118,9 +118,9 @@ NetworkIBModel::NetworkIBModel()
   if(xbt_dynar_length(radical_elements)!=3)
     surf_parse_error("smpi/IB_penalty_factors should be provided and contain 3 elements, semi-colon separated : for example 0.965;0.925;1.35");
   
-  Be = atof(xbt_dynar_get_as(radical_elements, 0, char *));
-  Bs = atof(xbt_dynar_get_as(radical_elements, 1, char *));
-  ys = atof(xbt_dynar_get_as(radical_elements, 2, char *));
+  Be = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 0, char *), "First part of smpi/IB_penalty_factors is not numerical: %s");
+  Bs = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 1, char *), "Second part of smpi/IB_penalty_factors is not numerical: %s");
+  ys = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 2, char *), "Third part of smpi/IB_penalty_factors is not numerical: %s");
 
   xbt_dynar_free(&radical_elements);
 }

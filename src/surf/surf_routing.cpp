@@ -188,7 +188,7 @@ simgrid::surf::NetCard *routing_add_host(
     xbt_dynar_t ctn_str = xbt_str_split_str(host->coord, " ");
     xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
     xbt_dynar_foreach(ctn_str,cursor, str) {
-      double val = atof(str);
+      double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
       xbt_dynar_push(ctn,&val);
     }
     xbt_dynar_shrink(ctn, 0);

@@ -90,7 +90,7 @@ int receiver(int argc, char *argv[])
   int i;
   char mailbox[80];
   xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  int tasks = atof(argv[2]);
+  int tasks = xbt_str_parse_int(argv[2], "Invalid amount of tasks: %s");
   msg_task_t *task = xbt_new(msg_task_t, tasks);
 
   XBT_ATTRIB_UNUSED int read;
