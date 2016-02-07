@@ -38,10 +38,10 @@ double NetworkConstantModel::shareResources(double /*now*/)
 
   ActionList *actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
-   ; it != itend ; ++it) {
-  action = static_cast<NetworkConstantAction*>(&*it);
-        if (action->m_latency > 0 && (min < 0 || action->m_latency < min))
-            min = action->m_latency;
+      ; it != itend ; ++it) {
+    action = static_cast<NetworkConstantAction*>(&*it);
+    if (action->m_latency > 0 && (min < 0 || action->m_latency < min))
+      min = action->m_latency;
   }
 
   return min;
@@ -52,9 +52,9 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
   NetworkConstantAction *action = NULL;
   ActionList *actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
-     ; it != itend ; it=itNext) {
+      ; it != itend ; it=itNext) {
     ++itNext;
-  action = static_cast<NetworkConstantAction*>(&*it);
+    action = static_cast<NetworkConstantAction*>(&*it);
     if (action->m_latency > 0) {
       if (action->m_latency > delta) {
         double_update(&(action->m_latency), delta, sg_surf_precision);
@@ -70,7 +70,7 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
       action->finish();
       action->setState(SURF_ACTION_DONE);
     } else if ((action->getMaxDuration() != NO_MAX_DURATION)
-               && (action->getMaxDuration() <= 0)) {
+        && (action->getMaxDuration() <= 0)) {
       action->finish();
       action->setState(SURF_ACTION_DONE);
     }
@@ -78,7 +78,7 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 }
 
 Action *NetworkConstantModel::communicate(NetCard *src, NetCard *dst,
-                             double size, double rate)
+    double size, double rate)
 {
   char *src_name = src->getName();
   char *dst_name = dst->getName();
@@ -99,10 +99,10 @@ int NetworkConstantAction::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-  if (action_hook.is_linked())
-    p_stateSet->erase(p_stateSet->iterator_to(*this));
+    if (action_hook.is_linked())
+      p_stateSet->erase(p_stateSet->iterator_to(*this));
     delete this;
-  return 1;
+    return 1;
   }
   return 0;
 }
