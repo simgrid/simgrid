@@ -7,8 +7,10 @@
 /* SimGrid Lua bindings                                                     */
 
 #include "lua_private.h"
-#include <lauxlib.h>
 #include <simgrid/host.h>
+extern "C" {
+#include <lauxlib.h>
+}
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_host, bindings, "Lua bindings (host module)");
 

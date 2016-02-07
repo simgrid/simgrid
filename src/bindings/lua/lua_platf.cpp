@@ -12,7 +12,10 @@
 #include "surf/surf_routing.h"
 #include <string.h>
 #include <ctype.h>
+
+extern "C" {
 #include <lauxlib.h>
+}
 
 #include <simgrid/host.h>
 #include "src/surf/surf_private.h"

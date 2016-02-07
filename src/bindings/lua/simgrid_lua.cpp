@@ -12,12 +12,13 @@
 #include "simgrid/msg.h"
 #include "simgrid/simdag.h"
 #include "surf/surfxml_parse.h"
-#include <lauxlib.h>
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
 
 extern "C" {
+#include <lauxlib.h>
+
 int luaopen_simgrid(lua_State *L);
 static void sglua_register_c_functions(lua_State *L);
 }
