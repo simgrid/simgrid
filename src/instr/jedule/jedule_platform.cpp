@@ -30,12 +30,6 @@ static void jed_free_container(jed_simgrid_container_t container);
 
 /********************************************************************/
 
-static int compare_hostnames(const void *host1, const void *host2) {
-  const char *hp1 = *((const char**) host1);
-  const char *hp2 = *((const char**) host2);
-  return strcmp (hp1, hp2);
-}
-
 static int compare_ids(const void *num1, const void *num2) {
   int *i1 = (int*) num1;
   int *i2 = (int*) num2;
@@ -97,7 +91,7 @@ void jed_simgrid_add_resources(jed_simgrid_container_t parent,
   parent->last_id = 0;
   parent->resource_list = xbt_dynar_new(sizeof(char *), NULL);
 
-  xbt_dynar_sort (host_names,  &compare_hostnames);
+  xbt_dynar_sort_strings(host_names);
 
   xbt_dynar_foreach(host_names, iter, host_name) {
     buf = bprintf("%d", parent->last_id);

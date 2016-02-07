@@ -340,11 +340,6 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
   free(entrycpy);               /* strdup'ed by dict mechanism, but cannot be const */
 }
 
-static int strcmp_voidp(const void *pa, const void *pb)
-{
-  return strcmp(*(const char **)pa, *(const char **)pb);
-}
-
 /** @brief Displays the declared options and their description */
 void xbt_cfg_help(xbt_cfg_t cfg)
 {
@@ -357,7 +352,7 @@ void xbt_cfg_help(xbt_cfg_t cfg)
   xbt_dict_foreach((xbt_dict_t )cfg, dict_cursor, name, variable) {
     xbt_dynar_push(names, &name);
   }
-  xbt_dynar_sort(names, strcmp_voidp);
+  xbt_dynar_sort_strings(names);
 
   xbt_dynar_foreach(names, dynar_cursor, name) {
     int i;

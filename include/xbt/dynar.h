@@ -105,6 +105,7 @@ XBT_PUBLIC(signed int) xbt_dynar_search_or_negative(xbt_dynar_t const dynar, voi
 XBT_PUBLIC(int) xbt_dynar_member(xbt_dynar_t const dynar, void *elem);
 XBT_PUBLIC(void) xbt_dynar_sort(xbt_dynar_t const dynar,
                                 int_f_cpvoid_cpvoid_t compar_fn);
+XBT_PUBLIC(xbt_dynar_t) xbt_dynar_sort_strings(xbt_dynar_t dynar);
 XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
     int_f_pvoid_t color);
 XBT_PUBLIC(int) xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2,
@@ -227,16 +228,6 @@ typedef struct xbt_dynar_s {
   void_f_pvoid_t free_f;
 } s_xbt_dynar_t;
 
-static XBT_INLINE void
-_xbt_dynar_cursor_first(const xbt_dynar_t dynar XBT_ATTRIB_UNUSED,
-                        unsigned int *const cursor)
-{
-  /* iterating over a NULL dynar is a no-op (but we don't want to have uninitialized counters) */
-
-  //XBT_DEBUG("Set cursor on %p to the first position", (void *) dynar);
-  *cursor = 0;
-}
-
 static XBT_INLINE int
 _xbt_dynar_cursor_get(const xbt_dynar_t dynar,
                       unsigned int idx, void *const dst)
@@ -280,19 +271,19 @@ xbt_dynar_foreach (dyn,cpt,str) {
  * break or a return statement. 
  */
 #define xbt_dynar_foreach(_dynar,_cursor,_data) \
-       for (_xbt_dynar_cursor_first(_dynar,&(_cursor))      ; \
-      _xbt_dynar_cursor_get(_dynar,_cursor,&_data) ; \
-            (_cursor)++         )
+       for ( (_cursor) = 0      ; \
+             _xbt_dynar_cursor_get(_dynar,_cursor,&_data) ; \
+             (_cursor)++         )
 
 #ifndef __cplusplus
 #define xbt_dynar_foreach_ptr(_dynar,_cursor,_ptr) \
-       for (_xbt_dynar_cursor_first(_dynar,&(_cursor))       ; \
-      (_ptr = _cursor < _dynar->used ? xbt_dynar_get_ptr(_dynar,_cursor) : NULL) ; \
+       for ((_cursor) = 0       ; \
+            (_ptr = _cursor < _dynar->used ? xbt_dynar_get_ptr(_dynar,_cursor) : NULL) ; \
             (_cursor)++         )
 #else
 #define xbt_dynar_foreach_ptr(_dynar,_cursor,_ptr) \
-       for (_xbt_dynar_cursor_first(_dynar,&(_cursor))       ; \
-      (_ptr = _cursor < _dynar->used ? (decltype(_ptr)) xbt_dynar_get_ptr(_dynar,_cursor) : NULL) ; \
+       for ((_cursor) = 0       ; \
+            (_ptr = _cursor < _dynar->used ? (decltype(_ptr)) xbt_dynar_get_ptr(_dynar,_cursor) : NULL) ; \
             (_cursor)++         )
 #endif
 /** @} */
