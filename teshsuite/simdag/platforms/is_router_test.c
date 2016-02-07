@@ -6,9 +6,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "src/surf/surf_private.h"
-
-extern routing_platf_t routing_platf;
+#include "simgrid/simdag.h"
+#include "surf/surf.h"
 
 int main(int argc, char **argv)
 {

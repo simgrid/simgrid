@@ -10,11 +10,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "simgrid/simdag.h"
-#include "src/surf/surf_private.h"
+#include "surf/surf.h"
 #include "xbt/xbt_os_time.h"
 
 #define BILLION  1000000000L;
-extern routing_platf_t routing_platf;
 
 int main(int argc, char **argv)
 {
