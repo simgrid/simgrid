@@ -1125,7 +1125,7 @@ XBT_TEST_UNIT("xbt_str_diff", test_diff, "test the function xbt_str_diff")
 XBT_TEST_UNIT("xbt_str_parse", test_parse, "Test the parsing functions")
 {
   xbt_ex_t e;
-  int rint;
+  int rint = -9999;
   test_parse_ok(xbt_str_parse_int, "Parse int", rint, "42", 42);
   test_parse_ok(xbt_str_parse_int, "Parse 0 as an int", rint, "0", 0);
   test_parse_ok(xbt_str_parse_int, "Parse -1 as an int", rint, "-1", -1);
@@ -1135,7 +1135,7 @@ XBT_TEST_UNIT("xbt_str_parse", test_parse, "Test the parsing functions")
   test_parse_error(xbt_str_parse_int, "Parse '' as an int", rint, "");
   test_parse_error(xbt_str_parse_int, "Parse cruft as an int", rint, "cruft");
 
-  double rdouble;
+  double rdouble = -9999;
   test_parse_ok(xbt_str_parse_double, "Parse 42 as a double", rdouble, "42", 42);
   test_parse_ok(xbt_str_parse_double, "Parse 42.5 as a double", rdouble, "42.5", 42.5);
   test_parse_ok(xbt_str_parse_double, "Parse 0 as a double", rdouble, "0", 0);
