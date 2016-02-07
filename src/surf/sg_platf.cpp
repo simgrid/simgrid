@@ -290,7 +290,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
       }
     }
     msg->data[msg->used-3]='\0';
-    xbt_die(msg->data);
+    xbt_die("%s", msg->data);
   }
   xbt_main_func_t parse_code = SIMIX_get_registered_function(process->function);
   xbt_assert(parse_code, "Function '%s' unknown", process->function);
