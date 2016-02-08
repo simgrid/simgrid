@@ -432,12 +432,14 @@ void CpuL07::apply_event(tmgr_trace_iterator_t triggered, double value){
     p_speed.scale = value;
     onSpeedChange();
     tmgr_trace_event_unref(&p_speed.event);
+
   } else if (triggered == p_stateEvent) {
     if (value > 0)
       turnOn();
     else
       turnOff();
     tmgr_trace_event_unref(&p_stateEvent);
+
   } else {
     xbt_die("Unknown event!\n");
   }
@@ -448,15 +450,18 @@ void LinkL07::apply_event(tmgr_trace_iterator_t triggered, double value) {
   if (triggered == m_bandwidth.event) {
     updateBandwidth(value);
     tmgr_trace_event_unref(&m_bandwidth.event);
+
   } else if (triggered == m_latency.event) {
     updateLatency(value);
     tmgr_trace_event_unref(&m_latency.event);
+
   } else if (triggered == m_stateEvent) {
     if (value > 0)
       turnOn();
     else
       turnOff();
     tmgr_trace_event_unref(&m_stateEvent);
+
   } else {
     xbt_die("Unknown event ! \n");
   }

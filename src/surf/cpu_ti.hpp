@@ -120,7 +120,7 @@ public:
 
   void set_speed_trace(tmgr_trace_t trace) override;
 
-  void apply_event(tmgr_trace_iterator_t event_type, double value) override;
+  void apply_event(tmgr_trace_iterator_t event, double value) override;
   void updateActionsFinishTime(double now);
   void updateRemainingAmount(double now);
 
@@ -156,8 +156,7 @@ public:
   Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPeak,
                           int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
-                          int initiallyOn,
-                          tmgr_trace_t state_trace) override;
+                          int initiallyOn, tmgr_trace_t state_trace) override;
   double next_occuring_event(double now) override;
   void updateActionsState(double now, double delta) override;
 

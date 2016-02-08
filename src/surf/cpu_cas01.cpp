@@ -159,9 +159,6 @@ void CpuCas01::onSpeedChange() {
 
 void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
 {
-  lmm_variable_t var = NULL;
-  lmm_element_t elem = NULL;
-
   if (event == p_speed.event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(m_core == 1, "FIXME: add speed scaling code also for constraint_core[i]");
@@ -180,6 +177,8 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
       turnOn();
     } else {
       lmm_constraint_t cnst = getConstraint();
+      lmm_variable_t var = NULL;
+      lmm_element_t elem = NULL;
       double date = surf_get_clock();
 
       turnOff();
@@ -196,11 +195,10 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
       }
     }
     tmgr_trace_event_unref(&p_stateEvent);
+
   } else {
     xbt_die("Unknown event!\n");
   }
-
-  return;
 }
 
 CpuAction *CpuCas01::execution_start(double size)

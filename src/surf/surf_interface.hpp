@@ -405,13 +405,12 @@ public:
   const char *getName();
 
   /**
-   * @brief Update the state of the current Resource
-   * @details [TODO]
+   * @brief Apply an event of external load event to that storage
    *
-   * @param event_type [TODO]
+   * @param event What happened
    * @param value [TODO]
    */
-  virtual void apply_event(tmgr_trace_iterator_t event_type, double value)=0;
+  virtual void apply_event(tmgr_trace_iterator_t event, double value)=0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool isUsed()=0;

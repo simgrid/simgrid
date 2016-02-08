@@ -228,7 +228,7 @@ public:
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
   bool isUsed() override {DIE_IMPOSSIBLE;} // FIXME: Host should not be a Resource
-  void apply_event(tmgr_trace_iterator_t event_type, double value) override
+  void apply_event(tmgr_trace_iterator_t event, double value) override
     {THROW_IMPOSSIBLE;} // FIXME: Host should not be a Resource
 
 public:

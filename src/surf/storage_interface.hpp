@@ -140,14 +140,7 @@ public:
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool isUsed() override;
 
-  /**
-   * @brief Update the state of the current Storage
-   *
-   * @param event_type [description]
-   * @param value [description]
-   * @param date [description]
-   */
-  void apply_event(tmgr_trace_iterator_t event_type, double value) override;
+  void apply_event(tmgr_trace_iterator_t event, double value) override;
 
   void turnOn() override;
   void turnOff() override;

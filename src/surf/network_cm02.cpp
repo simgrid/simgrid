@@ -496,9 +496,11 @@ void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
   if (triggered == m_bandwidth.event) {
     updateBandwidth(value);
     tmgr_trace_event_unref(&m_bandwidth.event);
+
   } else if (triggered == m_latency.event) {
     updateLatency(value);
     tmgr_trace_event_unref(&m_latency.event);
+
   } else if (triggered == m_stateEvent) {
     if (value > 0)
       turnOn();

@@ -534,8 +534,6 @@ void CpuTi::set_speed_trace(tmgr_trace_t trace)
 
 void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
 {
-  CpuTiAction *action;
-
   if (event == p_speed.event) {
     tmgr_trace_t speedTrace;
     CpuTiTgmr *trace;
@@ -573,7 +571,8 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
       /* put all action running on cpu to failed */
       for(ActionTiList::iterator it(p_actionSet->begin()), itend(p_actionSet->end())
           ; it != itend ; ++it) {
-        action = &*it;
+
+        CpuTiAction *action = &*it;
         if (action->getState() == SURF_ACTION_RUNNING
          || action->getState() == SURF_ACTION_READY
          || action->getState() == SURF_ACTION_NOT_IN_THE_SYSTEM) {
@@ -589,6 +588,7 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
       }
     }
     tmgr_trace_event_unref(&p_stateEvent);
+
   } else {
     xbt_die("Unknown event!\n");
   }

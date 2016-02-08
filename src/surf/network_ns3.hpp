@@ -68,7 +68,7 @@ public:
                double bw_initial, double lat_initial);
   ~NetworkNS3Link();
 
-  void apply_event(tmgr_trace_iterator_t event_type, double value) override;
+  void apply_event(tmgr_trace_iterator_t event, double value) override;
   void updateBandwidth(double value) override {THROW_UNIMPLEMENTED;}
   void updateLatency(double value) override {THROW_UNIMPLEMENTED;}
 
