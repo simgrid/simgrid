@@ -6,6 +6,7 @@
 
 package master_slave_bypass;
 
+import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.NativeException;
@@ -17,19 +18,14 @@ public class MsBypass {
     * which also contains such a launcher
     */
 
-    public static void main(String[] args) throws NativeException {
+    public static void main(String[] args) throws NativeException,HostNotFoundException {
 
     /* initialize the MSG simulation. Must be done before anything else (even logging). */
     Msg.init(args);
     Msg.createEnvironment(args[0]);
 
     /* bypass deployment */
-    try {
-    	new Master("Boivin","process1").start();
-    }
-    catch (MsgException e){
-    	System.out.println("Create processes failed!");
-    }
+    new Master("Boivin","process1").start();
 
 	/*  execute the simulation. */
     Msg.run();
