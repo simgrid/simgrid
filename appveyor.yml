@@ -34,14 +34,11 @@ environment:
 #- if [%COMPILER%]==[MinGW-w64] 7z x -tzip lua.zip > NULL
 
 install:
-# Perl: The installed version breaks with Perl::IPC 0.94. Get an older one.
-- call .appveyor-download.cmd "http://strawberryperl.com/download/5.18.4.1/strawberry-perl-5.18.4.1-64bit.msi" -FileName strawberry-perl.msi
-- msiexec /i "strawberry-perl.msi" /qn INSTALLDIR="C:\projects\perl"
 # Sane migwin, as installed by symengine
 - if [%COMPILER%]==[MinGW-w64] call .appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z
 - if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ mw64.7z > NUL
 # Take the newly installed stuff in the path
-- set PATH=C:\mingw64\bin;C:\projects\perl\perl\bin;C:\projects\perl\perl\site\bin;C:\projects\perl\c\bin;%PATH%
+- set PATH=C:\mingw64\bin;%PATH%
 - if [%COMPILER%]==[MinGW-w64] rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 
 build_script:
@@ -60,6 +57,7 @@ build_script:
 #- bash -c "cd C:/projects/simgrid; exec 0<&-; ctest --output-on-failure" < nul || true
 
 #test_script:
+# IPC::Run broken on windows. We should switch to https://rt.cpan.org/Public/Bug/Display.html?id=104812#txn-1546043
 #- perl %TESH_ARGS% C:/projects/simgrid/examples/java/async/async.tesh
 #- perl %TESH_ARGS% C:/projects/simgrid/examples/java/bittorrent/bittorrent.tesh
 #- perl %TESH_ARGS% C:/projects/simgrid/examples/java/master_slave_bypass/bypass.tesh
