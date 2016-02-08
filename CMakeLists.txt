@@ -226,9 +226,11 @@ include(CheckIncludeFiles)
 include(CheckLibraryExists)
 include(CheckSymbolExists)
 
+set(HAVE_GRAPHVIZ 0)
 include(FindGraphviz)
 include(FindLibSigc++)
 
+set(HAVE_LUA 0)
 if(enable_lua)
   include(FindLuaSimgrid)
 endif()
