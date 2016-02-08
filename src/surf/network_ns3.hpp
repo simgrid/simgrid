@@ -57,7 +57,6 @@ public:
   double next_occuring_event(double now) override;
   bool next_occuring_event_isIdempotent() {return false;}
   void updateActionsState(double now, double delta) override;
-  void addTraces() override {DIE_IMPOSSIBLE;}
 };
 
 /************

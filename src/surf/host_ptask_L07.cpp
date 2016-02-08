@@ -329,11 +329,6 @@ Link* NetworkL07Model::createLink(const char *name,
   return link;
 }
 
-void HostL07Model::addTraces()
-{
-  THROW_DEADCODE;
-}
-
 /************
  * Resource *
  ************/

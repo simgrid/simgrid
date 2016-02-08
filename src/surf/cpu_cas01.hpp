@@ -33,7 +33,6 @@ public:
                           int initiallyOn,
                           tmgr_trace_t state_trace) override;
   double next_occuring_event_full(double now) override;
-  void addTraces() override;
   ActionList *p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 };
 

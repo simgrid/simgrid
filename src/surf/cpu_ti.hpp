@@ -160,7 +160,6 @@ public:
                           tmgr_trace_t state_trace) override;
   double next_occuring_event(double now) override;
   void updateActionsState(double now, double delta) override;
-  void addTraces() override;
 
   ActionList *p_runningActionSetThatDoesNotNeedBeingChecked;
   CpuTiList *p_modifiedCpu;

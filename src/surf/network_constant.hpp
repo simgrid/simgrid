@@ -41,7 +41,6 @@ public:
       int initiallyOn, tmgr_trace_t state_trace,
       e_surf_link_sharing_policy_t policy,
       xbt_dict_t properties)          override { DIE_IMPOSSIBLE; }
-  void addTraces()                    override { DIE_IMPOSSIBLE; }
 };
 
 /**********

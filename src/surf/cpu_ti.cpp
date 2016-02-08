@@ -476,11 +476,6 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
   }
 }
 
-void CpuTiModel::addTraces()
-{
-THROW_DEADCODE;
-}
-
 /************
  * Resource *
  ************/

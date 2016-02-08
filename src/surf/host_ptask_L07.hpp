@@ -48,8 +48,6 @@ public:
   Action *executeParallelTask(int host_nb, sg_host_t *host_list,
                 double *flops_amount, double *bytes_amount,
                 double rate) override;
-
-  void addTraces() override;
 };
 
 class CpuL07Model : public CpuModel {
@@ -62,8 +60,6 @@ public:
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,
                           tmgr_trace_t state_trace) override;
-  void addTraces() override {DIE_IMPOSSIBLE;};
-
   HostL07Model *p_hostModel;
 };
 
@@ -82,7 +78,6 @@ public:
       xbt_dict_t properties) override;
 
   Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
-  void addTraces() override {DIE_IMPOSSIBLE;};
   bool next_occuring_event_isIdempotent() override {return true;}
 
   HostL07Model *p_hostModel;

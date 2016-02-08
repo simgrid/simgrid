@@ -454,10 +454,6 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
   return action;
 }
 
-void NetworkCm02Model::addTraces(){
-THROW_DEADCODE;
-}
-
 /************
  * Resource *
  ************/

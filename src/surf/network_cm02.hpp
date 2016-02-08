@@ -55,7 +55,6 @@ public:
       tmgr_trace_t state_trace,
       e_surf_link_sharing_policy_t policy,
       xbt_dict_t properties) override;
-  void addTraces() override;
   void updateActionsStateLazy(double now, double delta) override;
   void updateActionsStateFull(double now, double delta) override;
   Action *communicate(NetCard *src, NetCard *dst,

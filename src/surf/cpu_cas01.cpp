@@ -101,11 +101,6 @@ double CpuCas01Model::next_occuring_event_full(double /*now*/)
   return Model::shareResourcesMaxMin(getRunningActionSet(), p_maxminSystem, lmm_solve);
 }
 
-void CpuCas01Model::addTraces()
-{
-  THROW_DEADCODE;
-}
-
 /************
  * Resource *
  ************/

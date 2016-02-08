@@ -53,7 +53,6 @@ public:
   ~HostModel() override {}
 
   Host *createHost(const char *name, NetCard *net, Cpu *cpu, xbt_dict_t props);
-  void addTraces() override {DIE_IMPOSSIBLE;}
 
   virtual void adjustWeightOfDummyCpuActions();
   virtual Action *executeParallelTask(int host_nb,

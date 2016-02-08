@@ -273,8 +273,6 @@ public:
   Model();
   virtual ~Model();
 
-  virtual void addTraces() =0;
-
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
   virtual ActionList* getReadyActionSet() {return p_readyActionSet;}
 
