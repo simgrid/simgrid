@@ -11,18 +11,18 @@
 SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
 SIMGRID_GITHASH="@SIMGRID_GITHASH@"
 
-DEFAULT_LOOPBACK_BANDWIDTH="498000000"
-DEFAULT_LOOPBACK_LATENCY="0.000004"
-DEFAULT_NETWORK_BANDWIDTH="$((26 * 1024 * 1024))"
-DEFAULT_NETWORK_LATENCY="0.000005"
+DEFAULT_LOOPBACK_BANDWIDTH="498000000Bps"
+DEFAULT_LOOPBACK_LATENCY="0.000004s"
+DEFAULT_NETWORK_BANDWIDTH="$((26 * 1024 * 1024))Bps"
+DEFAULT_NETWORK_LATENCY="0.000005s"
 DEFAULT_NUMPROCS="4"
-DEFAULT_POWER="100"
+DEFAULT_SPEED="100flops"
 
 LOOPBACK_BANDWIDTH="${DEFAULT_LOOPBACK_BANDWIDTH}"
 LOOPBACK_LATENCY="${DEFAULT_LOOPBACK_LATENCY}"
 NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
 NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
-POWER="${DEFAULT_POWER}"
+SPEED="${DEFAULT_SPEED}"
 
 SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
 
@@ -347,14 +347,14 @@ if [ -z "${PLATFORM}" ]; then
 
     cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 <AS id="AS0" routing="Full">
 PLATFORMHEAD
 
     i=${NUMPROCS}
     while [ $i -gt 0 ]; do
-        echo "  <host id=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
+        echo "  <host id=\"host$i\" speed=\"${SPEED}\"/>" >> ${PLATFORMTMP}
         echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
         echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
         i=$((i - 1))
@@ -391,8 +391,8 @@ APPLICATIONTMP="$(mktemp smpitmp-appXXXXXX)"
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------

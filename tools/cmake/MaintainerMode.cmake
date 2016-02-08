@@ -156,7 +156,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
 
       #${CMAKE_HOME_DIRECTORY}/src/surf/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
-      COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=http://simgrid.gforge.inria.fr/simgrid.dtd -S src/surf/simgrid_dtd.l -L src/surf/simgrid.dtd
+      COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd -S src/surf/simgrid_dtd.l -L src/surf/simgrid.dtd
       COMMAND ${SED_EXE} -i ${string14} src/surf/simgrid_dtd.l
       COMMAND ${CMAKE_COMMAND} -E echo "src/surf/simgrid_dtd.l"
 
@@ -173,7 +173,7 @@ if(enable_maintainer_mode AND NOT WIN32)
 
       #${CMAKE_HOME_DIRECTORY}/include/surf/simgrid_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/surf/simgrid.dtd
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/include/surf/simgrid.h
-      COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=http://simgrid.gforge.inria.fr/simgrid.dtd -H include/surf/simgrid_dtd.h -L src/surf/simgrid.dtd
+      COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd -H include/surf/simgrid_dtd.h -L src/surf/simgrid.dtd
       COMMAND ${SED_EXE} -i ${string1} include/surf/simgrid_dtd.h
       COMMAND ${SED_EXE} -i ${string2} include/surf/simgrid_dtd.h
       COMMAND ${SED_EXE} -i ${string14} include/surf/simgrid_dtd.h

@@ -85,7 +85,7 @@ int console_add_backbone(lua_State *L) {
   if (type != LUA_TSTRING && type != LUA_TNUMBER) {
     XBT_ERROR("Attribute 'bandwidth' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
   }
-  link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1));
+  link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1),"bandwidth of backbone",link.id);
   lua_pop(L, 1);
 
   lua_pushstring(L, "lat");
@@ -93,7 +93,7 @@ int console_add_backbone(lua_State *L) {
   if (type != LUA_TSTRING && type != LUA_TNUMBER) {
     XBT_ERROR("Attribute 'lat' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
   }
-  link.latency = surf_parse_get_time(lua_tostring(L, -1));
+  link.latency = surf_parse_get_time(lua_tostring(L, -1),"latency of backbone",link.id);
   lua_pop(L, 1);
 
   link.initiallyOn = 1;
@@ -172,7 +172,7 @@ int console_add_host(lua_State *L) {
   // get Id Value
   lua_pushstring(L, "id");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING && type != LUA_TNUMBER) {
+  if (type != LUA_TSTRING) {
     XBT_ERROR("Attribute 'id' must be specified for any host and must be a string.");
   }
   host.id = lua_tostring(L, -1);
@@ -185,7 +185,10 @@ int console_add_host(lua_State *L) {
     XBT_ERROR("Attribute 'speed' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
   }
   host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
-  xbt_dynar_push_as(host.speed_peak, double, parse_cpu_speed(lua_tostring(L, -1)));
+  if (type == LUA_TNUMBER)
+    xbt_dynar_push_as(host.speed_peak, double, lua_tointeger(L, -1));
+  else // LUA_TSTRING
+    xbt_dynar_push_as(host.speed_peak, double, surf_parse_get_speed(lua_tostring(L, -1), "speed of host", host.id));
   lua_pop(L, 1);
 
   // get core
@@ -263,7 +266,10 @@ int  console_add_link(lua_State *L) {
   if (type != LUA_TSTRING && type != LUA_TNUMBER) {
     XBT_ERROR("Attribute 'bandwidth' must be specified for any link and must either be either a string (in the right format; see docs) or a number.");
   }
-  link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1));
+  if (type == LUA_TNUMBER)
+    link.bandwidth = lua_tonumber(L, -1);
+  else // LUA_TSTRING
+    link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1),"bandwidth of link", link.id);
   lua_pop(L, 1);
 
   //get latency value
@@ -272,7 +278,10 @@ int  console_add_link(lua_State *L) {
   if (type != LUA_TSTRING && type != LUA_TNUMBER) {
     XBT_ERROR("Attribute 'lat' must be specified for any link and must either be a string (in the right format; see docs) or a number.");
   }
-  link.latency = surf_parse_get_time(lua_tostring(L, -1));
+  if (type == LUA_TNUMBER)
+    link.latency = lua_tonumber(L, -1);
+  else // LUA_TSTRING
+    link.latency = surf_parse_get_time(lua_tostring(L, -1),"latency of link", link.id);
   lua_pop(L, 1);
 
   /*Optional Arguments  */

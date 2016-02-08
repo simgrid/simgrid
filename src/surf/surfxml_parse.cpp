@@ -72,10 +72,11 @@ struct unit_scale {
   double scale;
 };
 
-/* Note: field `unit' for the last element of parametre `units' should be
+/* Note: field `unit' for the last element of parameter `units' should be
  * NULL. */
-static double surf_parse_get_value_with_unit(const char *string,
-                                             const struct unit_scale *units)
+static double surf_parse_get_value_with_unit(const char *string, const struct unit_scale *units,
+    const char *entity_kind, const char *name,
+    const char *error_msg, const char *default_unit)
 {
   char* ptr;
   double res;
@@ -86,6 +87,13 @@ static double surf_parse_get_value_with_unit(const char *string,
     surf_parse_error("value out of range: %s", string);
   if (ptr == string)
     surf_parse_error("cannot parse number: %s", string);
+  if (ptr[0] == '\0') {
+    if (res == 0)
+      return res; // Ok, 0 can be unit-less
+
+    XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s",string, entity_kind, name, error_msg);
+    ptr = (char*)default_unit;
+  }
   for (i = 0; units[i].unit != NULL && strcmp(ptr, units[i].unit) != 0; i++) {
   }
   if (units[i].unit != NULL)
@@ -95,7 +103,7 @@ static double surf_parse_get_value_with_unit(const char *string,
   return res;
 }
 
-double surf_parse_get_time(const char *string)
+double surf_parse_get_time(const char *string, const char *entity_kind, const char *name)
 {
   const struct unit_scale units[] = {
     { "w",  7 * 24 * 60 * 60 },
@@ -103,17 +111,17 @@ double surf_parse_get_time(const char *string)
     { "h",  60 * 60 },
     { "m",  60 },
     { "s",  1.0 },
-    { "",   1.0 },              /* default unit is seconds */
     { "ms", 1e-3 },
     { "us", 1e-6 },
     { "ns", 1e-9 },
     { "ps", 1e-12 },
     { NULL, 0 }
   };
-  return surf_parse_get_value_with_unit(string, units);
+  return surf_parse_get_value_with_unit(string, units, entity_kind, name,
+      "Append 's' to your time to get seconds", "s");
 }
 
-double surf_parse_get_size(const char *string)
+double surf_parse_get_size(const char *string, const char *entity_kind, const char *name)
 {
   const struct unit_scale units[] = {
     { "TiB", pow(1024, 4) },
@@ -125,7 +133,6 @@ double surf_parse_get_size(const char *string)
     { "MB",  1e6 },
     { "kB",  1e3 },
     { "B",   1.0 },
-    { "",      1.0 },           /* default unit is bytes*/
     { "Tib", 0.125 * pow(1024, 4) },
     { "Gib", 0.125 * pow(1024, 3) },
     { "Mib", 0.125 * pow(1024, 2) },
@@ -137,10 +144,11 @@ double surf_parse_get_size(const char *string)
     { "b",   0.125 },
     { NULL,    0 }
   };
-  return surf_parse_get_value_with_unit(string, units);
+  return surf_parse_get_value_with_unit(string, units, entity_kind, name,
+      "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
 }
 
-double surf_parse_get_bandwidth(const char *string)
+double surf_parse_get_bandwidth(const char *string, const char *entity_kind, const char *name)
 {
   const struct unit_scale units[] = {
     { "TiBps", pow(1024, 4) },
@@ -152,7 +160,6 @@ double surf_parse_get_bandwidth(const char *string)
     { "MBps",  1e6 },
     { "kBps",  1e3 },
     { "Bps",   1.0 },
-    { "",      1.0 },           /* default unit is bytes per second */
     { "Tibps", 0.125 * pow(1024, 4) },
     { "Gibps", 0.125 * pow(1024, 3) },
     { "Mibps", 0.125 * pow(1024, 2) },
@@ -164,10 +171,11 @@ double surf_parse_get_bandwidth(const char *string)
     { "bps",   0.125 },
     { NULL,    0 }
   };
-  return surf_parse_get_value_with_unit(string, units);
+  return surf_parse_get_value_with_unit(string, units, entity_kind, name,
+      "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
 }
 
-double surf_parse_get_speed(const char *string)
+double surf_parse_get_speed(const char *string, const char *entity_kind, const char *name)
 {
   const struct unit_scale units[] = {
     { "yottaflops", 1e24 },
@@ -188,10 +196,10 @@ double surf_parse_get_speed(const char *string)
     { "kf",         1e3 },
     { "flops",      1.0 },
     { "f",          1.0 },
-    { "",           1.0 },      /* default unit is flops */
     { NULL,         0 }
   };
-  return surf_parse_get_value_with_unit(string, units);
+  return surf_parse_get_value_with_unit(string, units, entity_kind, name,
+      "Append 'f' or 'flops' to your speed to get flop per second", "f");
 }
 
 /*
@@ -258,7 +266,8 @@ void ETag_surfxml_storage___type(void)
   storage_type.model            = A_surfxml_storage___type_model;
   storage_type.properties       = current_property_set;
   storage_type.model_properties = current_model_property_set;
-  storage_type.size             = surf_parse_get_size(A_surfxml_storage___type_size);
+  storage_type.size             = surf_parse_get_size(A_surfxml_storage___type_size,
+        "size of storage type", storage_type.id);
   sg_platf_new_storage_type(&storage_type);
   current_property_set       = NULL;
   current_model_property_set = NULL;
@@ -394,6 +403,16 @@ void STag_surfxml_platform(void) {
       "Use simgrid_update_xml to update your file automatically. "
       "This program is installed automatically with SimGrid, or "
       "available in the tools/ directory of the source archive.");
+  xbt_assert((version >= 4.0), "******* FILE %s IS TOO OLD (v:%.1f) *********\n "
+      "Changes introduced in SimGrid 3.13:\n"
+      "  - 'power' attribute of hosts (and others) got renamed to 'speed'.\n"
+      "  - In <trace_connect>, attribute kind=\"POWER\" is now kind=\"SPEED\".\n"
+      "  - DOCTYPE now point to the rignt URL: http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\n"
+      "  - speed, bandwidth and latency attributes now MUST have an explicit unit (f, Bps, s by default)"
+      "\n\n"
+      "Use simgrid_update_xml to update your file automatically. "
+      "This program is installed automatically with SimGrid, or "
+      "available in the tools/ directory of the source archive.",surf_parsed_filename, version);
 
   sg_platf_begin();
 }
@@ -438,11 +457,11 @@ void ETag_surfxml_host(void)    {
 
   host.id = A_surfxml_host_id;
 
-  buf = A_surfxml_host_power;
+  buf = A_surfxml_host_speed;
   XBT_DEBUG("Buffer: %s", buf);
   host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
   if (strchr(buf, ',') == NULL){
-    double speed = parse_cpu_speed(A_surfxml_host_power);
+    double speed = surf_parse_get_speed(A_surfxml_host_speed,"speed of host", host.id);
     xbt_dynar_push_as(host.speed_peak,double, speed);
   }
   else {
@@ -454,7 +473,7 @@ void ETag_surfxml_host(void)    {
 
       xbt_dynar_get_cpy(pstate_list, i, &speed_str);
       xbt_str_trim(speed_str, NULL);
-      speed = parse_cpu_speed(speed_str);
+      speed = surf_parse_get_speed(speed_str,"speed of host", host.id);
       xbt_dynar_push_as(host.speed_peak, double, speed);
       XBT_DEBUG("Speed value: %f", speed);
     }
@@ -511,20 +530,20 @@ void ETag_surfxml_cluster(void){
   cluster.prefix      = A_surfxml_cluster_prefix;
   cluster.suffix      = A_surfxml_cluster_suffix;
   cluster.radical     = A_surfxml_cluster_radical;
-  cluster.speed       = surf_parse_get_speed(A_surfxml_cluster_power);
+  cluster.speed       = surf_parse_get_speed(A_surfxml_cluster_speed, "speed of cluster", cluster.id);
   cluster.core_amount = surf_parse_get_int(A_surfxml_cluster_core);
-  cluster.bw          = surf_parse_get_bandwidth(A_surfxml_cluster_bw);
-  cluster.lat         = surf_parse_get_time(A_surfxml_cluster_lat);
+  cluster.bw          = surf_parse_get_bandwidth(A_surfxml_cluster_bw, "bw of cluster", cluster.id);
+  cluster.lat         = surf_parse_get_time(A_surfxml_cluster_lat, "lat of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_bb___bw,""))
-    cluster.bb_bw = surf_parse_get_bandwidth(A_surfxml_cluster_bb___bw);
+    cluster.bb_bw = surf_parse_get_bandwidth(A_surfxml_cluster_bb___bw, "bb_bw of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_bb___lat,""))
-    cluster.bb_lat = surf_parse_get_time(A_surfxml_cluster_bb___lat);
+    cluster.bb_lat = surf_parse_get_time(A_surfxml_cluster_bb___lat, "bb_lat of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_limiter___link,""))
     cluster.limiter_link = surf_parse_get_double(A_surfxml_cluster_limiter___link);
   if(strcmp(A_surfxml_cluster_loopback___bw,""))
-    cluster.loopback_bw = surf_parse_get_bandwidth(A_surfxml_cluster_loopback___bw);
+    cluster.loopback_bw = surf_parse_get_bandwidth(A_surfxml_cluster_loopback___bw, "loopback_bw of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_loopback___lat,""))
-    cluster.loopback_lat = surf_parse_get_time(A_surfxml_cluster_loopback___lat);
+    cluster.loopback_lat = surf_parse_get_time(A_surfxml_cluster_loopback___lat, "loopback_lat of cluster", cluster.id);
 
   switch(AX_surfxml_cluster_topology){
   case A_surfxml_cluster_topology_FLAT:
@@ -591,9 +610,9 @@ void STag_surfxml_cabinet(void){
   cabinet.id      = A_surfxml_cabinet_id;
   cabinet.prefix  = A_surfxml_cabinet_prefix;
   cabinet.suffix  = A_surfxml_cabinet_suffix;
-  cabinet.speed   = surf_parse_get_speed(A_surfxml_cabinet_power);
-  cabinet.bw      = surf_parse_get_bandwidth(A_surfxml_cabinet_bw);
-  cabinet.lat     = surf_parse_get_time(A_surfxml_cabinet_lat);
+  cabinet.speed   = surf_parse_get_speed(A_surfxml_cabinet_speed, "speed of cabinet", cabinet.id);
+  cabinet.bw      = surf_parse_get_bandwidth(A_surfxml_cabinet_bw, "bw of cabinet", cabinet.id);
+  cabinet.lat     = surf_parse_get_time(A_surfxml_cabinet_lat, "lat of cabinet", cabinet.id);
   cabinet.radical = A_surfxml_cabinet_radical;
 
   sg_platf_new_cabinet(&cabinet);
@@ -604,10 +623,10 @@ void STag_surfxml_peer(void){
   s_sg_platf_peer_cbarg_t peer = SG_PLATF_PEER_INITIALIZER;
   memset(&peer,0,sizeof(peer));
   peer.id                 = A_surfxml_peer_id;
-  peer.speed              = surf_parse_get_speed(A_surfxml_peer_power);
-  peer.bw_in              = surf_parse_get_bandwidth(A_surfxml_peer_bw___in);
-  peer.bw_out             = surf_parse_get_bandwidth(A_surfxml_peer_bw___out);
-  peer.lat                = surf_parse_get_time(A_surfxml_peer_lat);
+  peer.speed              = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id);
+  peer.bw_in              = surf_parse_get_bandwidth(A_surfxml_peer_bw___in, "bw_in of peer", peer.id);
+  peer.bw_out             = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id);
+  peer.lat                = surf_parse_get_time(A_surfxml_peer_lat, "lat of peer", peer.id);
   peer.coord              = A_surfxml_peer_coordinates;
   peer.availability_trace = tmgr_trace_new_from_file(A_surfxml_peer_availability___file);
   peer.state_trace        = tmgr_trace_new_from_file(A_surfxml_peer_state___file);
@@ -627,10 +646,10 @@ void ETag_surfxml_link(void){
   link.properties = current_property_set;
 
   link.id                                            = A_surfxml_link_id;
-  link.bandwidth                                     = surf_parse_get_bandwidth(A_surfxml_link_bandwidth);
+  link.bandwidth                                     = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id);
   //printf("Link bandwidth [%g]\n", link.bandwidth);
   link.bandwidth_trace                               = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
-  link.latency                                       = surf_parse_get_time(A_surfxml_link_latency);
+  link.latency                                       = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id);
   //printf("Link latency [%g]\n", link.latency);
   link.latency_trace                                 = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
 
@@ -695,8 +714,8 @@ void ETag_surfxml_backbone(void){
   link.properties = NULL;
 
   link.id = A_surfxml_backbone_id;
-  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth);
-  link.latency = surf_parse_get_time(A_surfxml_backbone_latency);
+  link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id);
+  link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id);
   link.initiallyOn = 1;
   link.policy = SURF_LINK_SHARED;
 
@@ -851,8 +870,8 @@ void STag_surfxml_trace___connect(void){
 
   switch (A_surfxml_trace___connect_kind) {
   case AU_surfxml_trace___connect_kind:
-  case A_surfxml_trace___connect_kind_POWER:
-    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_POWER;
+  case A_surfxml_trace___connect_kind_SPEED:
+    trace_connect.kind =  SURF_TRACE_CONNECT_KIND_SPEED;
     break;
   case A_surfxml_trace___connect_kind_BANDWIDTH:
     trace_connect.kind =  SURF_TRACE_CONNECT_KIND_BANDWIDTH;
@@ -1059,12 +1078,6 @@ int_f_void_t surf_parse = _surf_parse;
 /**
  * With XML parser
  */
-
-double parse_cpu_speed(const char *str_speed)
-{ // FIXME deadcode
-  return surf_parse_get_speed(str_speed);
-}
-
 xbt_dict_t get_as_router_properties(const char* name)
 {
   return (xbt_dict_t)xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);

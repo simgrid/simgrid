@@ -91,9 +91,12 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
 
   storage_type_t storage_type = (storage_type_t) xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
 
-  double Bread  = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bread"));
-  double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bwrite"));
-  double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"));
+  double Bread  = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bread"),
+      "property Bread, storage",type_id);
+  double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bwrite"),
+      "property Bwrite, storage",type_id);
+  double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"),
+      "property Bconnection, storage",type_id);
 
   Storage *storage = new StorageN11(this, id, properties, p_maxminSystem,
       Bread, Bwrite, Bconnection, type_id, (char *)content_name,

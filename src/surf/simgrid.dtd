@@ -1,4 +1,54 @@
-<!-- Small DTD for SURF based tools. -->
+<!-- 
+             DTD of SimGrid platform and deployment files.
+
+More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
+To upgrade your files, use the tool simgrid_update_xml
+
+* New in DTD version 4 (in SimGrid 3.13):
+   - Rename (power->speed) the attributes describing the amount of flop
+     that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
+
+   - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
+
+   - The DOCTYPE points to the right URL (this file):
+     http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+
+   - A warning is emited for unit-less values (they are still accepted).
+
+     - speed. Default: 'f' or 'flops'. Also defined:
+        'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
+        'yottaflops', 'zettaflops', 'exaflops', 'petaflops', 'teraflops', 'gigaflops', 'megaflops', 'kiloflops'
+
+     - bandwidth. Default: 'Bps' bytes per second (or 'bps' for bits but 1 Bps = 8 bps)
+       Also defined in bytes: 'TiBps', 'GiBps', 'MiBps', 'KiBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
+       And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
+
+     - latency. Default: 's' second. Also defined:
+       'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
+
+* New in DTD version 3 (in SimGrid 3.5):
+   - The AS tag were introduced. Every platform should now
+     contain an englobing AS tag.
+   - Routes are now symmetric by default.
+   - Renamed tags (for sake of XML sanity):
+     - LINK:CTN -> LINK_CTN
+     - TRACE:CONNECT -> TRACE_CONNECT
+
+* New in DTD version 2 (in SimGrid 3.4):
+   - Renamed tags:
+     - CPU -> HOST
+     - NETWORK_LINK -> LINK
+     - ROUTE_ELEMENT ->  LINK:CTN (changed again in v3)
+     - PLATFORM_DESCRIPTION -> PLATFORM
+
+* New in DTD version 1 (in SimGrid 3.3):
+   - DTD is now versionned with the version attribute of platform
+   - Unit change: 
+     - Link bandwidth: from Mb/s to b/s
+     - CPU speed: from MFlop/s to Flop/s
+
+-->
+
 <!ELEMENT platform ((config|random)*,(include|cluster|cabinet|peer|AS|trace|trace_connect)*,(process)*)>
 <!ATTLIST platform version CDATA "0.0">
 
@@ -21,7 +71,7 @@
 <!ATTLIST random generator (DRAND48|RAND|RNGSTREAM|NONE) "DRAND48">
 
 <!ELEMENT trace_connect EMPTY>
-<!ATTLIST trace_connect kind (HOST_AVAIL|POWER|LINK_AVAIL|BANDWIDTH|LATENCY) "HOST_AVAIL">
+<!ATTLIST trace_connect kind (HOST_AVAIL|SPEED|LINK_AVAIL|BANDWIDTH|LATENCY) "HOST_AVAIL">
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
@@ -46,7 +96,7 @@
 
 <!ELEMENT host (prop|mount|mstorage)*>
 <!ATTLIST host id CDATA #REQUIRED>
-<!ATTLIST host power CDATA #REQUIRED>
+<!ATTLIST host speed CDATA #REQUIRED>
 <!ATTLIST host core  CDATA "1">
 <!ATTLIST host availability CDATA "1.0">
 <!ATTLIST host availability_file CDATA "">
@@ -75,7 +125,7 @@
 <!ATTLIST cluster prefix CDATA #REQUIRED>
 <!ATTLIST cluster suffix CDATA #REQUIRED>
 <!ATTLIST cluster radical CDATA #REQUIRED>
-<!ATTLIST cluster power CDATA #REQUIRED>
+<!ATTLIST cluster speed CDATA #REQUIRED>
 <!ATTLIST cluster core CDATA "1">
 <!ATTLIST cluster bw CDATA #REQUIRED>
 <!ATTLIST cluster lat CDATA #REQUIRED>
@@ -83,7 +133,7 @@
 <!ATTLIST cluster topology (FLAT|TORUS|FAT_TREE) "FLAT">
 <!ATTLIST cluster topo_parameters CDATA "">
 <!ATTLIST cluster bb_bw CDATA "">
-<!ATTLIST cluster bb_lat CDATA "">
+<!ATTLIST cluster bb_lat CDATA "0s">
 <!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">
 <!ATTLIST cluster availability_file CDATA "">
 <!ATTLIST cluster state_file CDATA "">
@@ -97,13 +147,13 @@
 <!ATTLIST cabinet prefix CDATA #REQUIRED>
 <!ATTLIST cabinet suffix CDATA #REQUIRED>
 <!ATTLIST cabinet radical CDATA #REQUIRED>
-<!ATTLIST cabinet power CDATA #REQUIRED>
+<!ATTLIST cabinet speed CDATA #REQUIRED>
 <!ATTLIST cabinet bw CDATA #REQUIRED>
 <!ATTLIST cabinet lat CDATA #REQUIRED>
 
 <!ELEMENT peer EMPTY>
 <!ATTLIST peer id CDATA #REQUIRED>
-<!ATTLIST peer power CDATA #REQUIRED>
+<!ATTLIST peer speed CDATA #REQUIRED>
 <!ATTLIST peer bw_in CDATA #REQUIRED>
 <!ATTLIST peer bw_out CDATA #REQUIRED>
 <!ATTLIST peer lat CDATA #REQUIRED>
@@ -124,7 +174,7 @@
 <!ATTLIST link id CDATA #REQUIRED>
 <!ATTLIST link bandwidth CDATA  #REQUIRED>
 <!ATTLIST link bandwidth_file CDATA "">
-<!ATTLIST link latency CDATA "0.0">
+<!ATTLIST link latency CDATA "0">
 <!ATTLIST link latency_file CDATA "">
 <!ATTLIST link state (ON|OFF) "ON">
 <!ATTLIST link state_file CDATA "">

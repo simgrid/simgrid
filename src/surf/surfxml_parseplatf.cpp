@@ -83,7 +83,7 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
         trace_connect->trace,
         xbt_strdup(trace_connect->element), NULL);
     break;
-  case SURF_TRACE_CONNECT_KIND_POWER:
+  case SURF_TRACE_CONNECT_KIND_SPEED:
     xbt_dict_set(trace_connect_list_host_speed, trace_connect->trace,
         xbt_strdup(trace_connect->element), NULL);
     break;
