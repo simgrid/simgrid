@@ -161,7 +161,6 @@ examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
 examples/msg/kademlia/kademlia
 examples/msg/masterslave/masterslave_arg
-examples/msg/masterslave/masterslave_bypass
 examples/msg/masterslave/masterslave_cluster
 examples/msg/masterslave/masterslave_console
 examples/msg/masterslave/masterslave_failure
@@ -204,7 +203,6 @@ examples/msg/simulation.trace
 examples/msg/start_kill_time/sk_time
 examples/msg/suspend/suspend
 examples/msg/tasks.trace
-examples/msg/token_ring/token_bypass
 examples/msg/token_ring/token_ring
 examples/msg/toto.txt
 examples/msg/trace/test_trace_integration
