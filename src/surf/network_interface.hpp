@@ -235,6 +235,10 @@ public:
   void turnOn() override;
   void turnOff() override;
 
+  virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values. */
+  virtual void set_bandwidth_trace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load). Trace must contain percentages (value between 0 and 1). */
+  virtual void set_latency_trace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load). Trace must contain absolute values */
+
   tmgr_trace_iterator_t m_stateEvent = NULL;
   s_surf_metric_t m_latency = {1.0,0,NULL};
   s_surf_metric_t m_bandwidth = {1.0,0,NULL};

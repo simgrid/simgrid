@@ -266,6 +266,25 @@ void Link::turnOff(){
     onStateChange(this);
   }
 }
+void Link::set_state_trace(tmgr_trace_t trace)
+{
+  xbt_assert(m_stateEvent==NULL,"Cannot set a second state trace to Link %s", getName());
+
+  m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
+}
+void Link::set_bandwidth_trace(tmgr_trace_t trace)
+{
+  xbt_assert(m_bandwidth.event==NULL,"Cannot set a second bandwidth trace to Link %s", getName());
+
+  m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, this);
+}
+void Link::set_latency_trace(tmgr_trace_t trace)
+{
+  xbt_assert(m_latency.event==NULL,"Cannot set a second latency trace to Link %s", getName());
+
+  m_latency.event = future_evt_set->add_trace(trace, 0.0, this);
+}
+
 
 /**********
  * Action *

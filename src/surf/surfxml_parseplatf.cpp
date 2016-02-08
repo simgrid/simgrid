@@ -10,7 +10,7 @@
 #include "xbt/dict.h"
 #include "simgrid/platf.h"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/surf_private.h"
+#include "src/surf/network_interface.hpp"
 #include "src/surf/surfxml_private.h"
 
 #ifdef HAVE_LUA
@@ -64,11 +64,11 @@ void surfxml_bufferstack_pop(int new_one)
  */
 
 xbt_dict_t traces_set_list = NULL;
-xbt_dict_t trace_connect_list_host_avail = NULL;
-xbt_dict_t trace_connect_list_host_speed = NULL;
-xbt_dict_t trace_connect_list_link_avail = NULL;
-xbt_dict_t trace_connect_list_link_bw = NULL;
-xbt_dict_t trace_connect_list_link_lat = NULL;
+XBT_PRIVATE xbt_dict_t trace_connect_list_host_avail = NULL;
+XBT_PRIVATE xbt_dict_t trace_connect_list_host_speed = NULL;
+XBT_PRIVATE xbt_dict_t trace_connect_list_link_avail = NULL;
+XBT_PRIVATE xbt_dict_t trace_connect_list_link_bw = NULL;
+XBT_PRIVATE xbt_dict_t trace_connect_list_link_lat = NULL;
 
 void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
 {
@@ -201,7 +201,29 @@ void parse_platform_file(const char *file)
 
       cpu->set_speed_trace(trace);
     }
+    xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
+      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+      xbt_assert(trace, "Trace %s undefined", trace_name);
+      Link *link = Link::byName(elm);
+      xbt_assert(link, "Link %s undefined", elm);
+      link->set_state_trace(trace);
+    }
 
+    xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
+      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+      xbt_assert(trace, "Trace %s undefined", trace_name);
+      Link *link = Link::byName(elm);
+      xbt_assert(link, "Link %s undefined", elm);
+      link->set_bandwidth_trace(trace);
+    }
+
+    xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
+      tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
+      xbt_assert(trace, "Trace %s undefined", trace_name);
+      Link *link = Link::byName(elm);
+      xbt_assert(link, "Link %s undefined", elm);
+      link->set_latency_trace(trace);
+    }
 
     /* Free my data */
     xbt_dict_free(&trace_connect_list_host_avail);

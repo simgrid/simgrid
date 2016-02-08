@@ -163,8 +163,8 @@ public:
   void **p_constraintCoreId=NULL;
 
 public:
-  virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF) */
-  virtual void set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load) */
+  virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
+  virtual void set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
 
   tmgr_trace_iterator_t p_stateEvent = nullptr;
   s_surf_metric_t p_speed = {1.0, 0, nullptr};

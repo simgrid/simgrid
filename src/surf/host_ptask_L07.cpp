@@ -36,9 +36,6 @@ void surf_host_model_init_ptask_L07(void)
 
   // Define the callbacks to parse the XML
   simgrid::surf::on_link.connect(ptask_netlink_parse_init);
-  simgrid::surf::on_postparse.connect([](){
-      surf_host_model->addTraces();
-  });
 
   surf_host_model = new simgrid::surf::HostL07Model();
   xbt_dynar_push(all_existing_models, &surf_host_model);
@@ -334,42 +331,7 @@ Link* NetworkL07Model::createLink(const char *name,
 
 void HostL07Model::addTraces()
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char *trace_name, *elm;
-
-  if (!trace_connect_list_link_avail)
-    return;
-
-  /* Connect traces relative to network */
-  xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
-
-    xbt_assert(link, "Link %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    link->m_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
-  }
-
-  xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
-
-    xbt_assert(link, "Link %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    link->m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, link);
-  }
-
-  xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    LinkL07 *link = static_cast<LinkL07*>(Link::byName(elm));
-
-    xbt_assert(link, "Link %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    link->m_latency.event = future_evt_set->add_trace(trace, 0.0, link);
-  }
+  THROW_DEADCODE;
 }
 
 /************

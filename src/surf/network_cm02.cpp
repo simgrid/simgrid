@@ -29,9 +29,6 @@ void net_define_callbacks(void)
 {
   /* Figuring out the network links */
   simgrid::surf::on_link.connect(netlink_parse_init);
-  simgrid::surf::on_postparse.connect([]() {
-    surf_network_model->addTraces();
-  });
 }
 
 /*********
@@ -458,53 +455,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
 }
 
 void NetworkCm02Model::addTraces(){
-  xbt_dict_cursor_t cursor = NULL;
-  char *trace_name, *elm;
-
-  static int called = 0;
-  if (called)
-    return;
-  called = 1;
-
-  /* connect all traces relative to network */
-  xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02Link *link = static_cast<NetworkCm02Link*>( Link::byName(elm) );
-
-    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
-               trace_name, elm);
-    xbt_assert(trace,
-               "Cannot connect trace %s to link %s: trace undefined",
-               trace_name, elm);
-
-    link->m_stateEvent = future_evt_set->add_trace(trace, 0.0, link);
-  }
-
-  xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02Link *link = static_cast<NetworkCm02Link*>( Link::byName(elm) );
-
-    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
-               trace_name, elm);
-    xbt_assert(trace,
-               "Cannot connect trace %s to link %s: trace undefined",
-               trace_name, elm);
-
-    link->m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, link);
-  }
-
-  xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    NetworkCm02Link *link = static_cast<NetworkCm02Link*>(Link::byName(elm));;
-
-    xbt_assert(link, "Cannot connect trace %s to link %s: link undefined",
-               trace_name, elm);
-    xbt_assert(trace,
-               "Cannot connect trace %s to link %s: trace undefined",
-               trace_name, elm);
-
-    link->m_latency.event = future_evt_set->add_trace(trace, 0.0, link);
-  }
+THROW_DEADCODE;
 }
 
 /************
