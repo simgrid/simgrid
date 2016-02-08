@@ -337,19 +337,8 @@ void HostL07Model::addTraces()
   xbt_dict_cursor_t cursor = NULL;
   char *trace_name, *elm;
 
-  if (!trace_connect_list_host_speed)
+  if (!trace_connect_list_link_avail)
     return;
-
-  /* Connect traces relative to cpu */
-  xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    Cpu *cpu = sg_host_by_name(elm)->pimpl_cpu;
-
-    xbt_assert(cpu, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    cpu->set_speed_trace(trace);
-  }
 
   /* Connect traces relative to network */
   xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {

@@ -399,10 +399,6 @@ void surf_cpu_model_init_ti()
 
   surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
   xbt_dynar_push(all_existing_models, &surf_cpu_model_vm);
-
-  simgrid::surf::on_postparse.connect([]() {
-    surf_cpu_model_pm->addTraces();
-  });
 }
 
 namespace simgrid {
@@ -482,25 +478,7 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
 
 void CpuTiModel::addTraces()
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char *trace_name, *elm;
-
-  static int called = 0;
-
-  if (called)
-    return;
-  called = 1;
-
-/* connect all traces relative to hosts */
-  xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuTi *cpu = static_cast<CpuTi*>(sg_host_by_name(elm)->pimpl_cpu);
-
-    xbt_assert(cpu, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    cpu->set_speed_trace(trace);
-  }
+THROW_DEADCODE;
 }
 
 /************

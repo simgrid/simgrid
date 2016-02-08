@@ -118,7 +118,7 @@ public:
         int initiallyOn, tmgr_trace_t stateTrace) ;
   ~CpuTi();
 
-  void set_speed_trace(tmgr_trace_t trace);
+  void set_speed_trace(tmgr_trace_t trace) override;
 
   void apply_event(tmgr_trace_iterator_t event_type, double value) override;
   void updateActionsFinishTime(double now);

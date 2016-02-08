@@ -32,10 +32,6 @@ void surf_cpu_model_init_Cas01()
 
   surf_cpu_model_vm  = new simgrid::surf::CpuCas01Model();
   xbt_dynar_push(all_existing_models, &surf_cpu_model_vm);
-
-  simgrid::surf::on_postparse.connect([]() {
-    surf_cpu_model_pm->addTraces();
-  });
 }
 
 namespace simgrid {
@@ -107,23 +103,7 @@ double CpuCas01Model::next_occuring_event_full(double /*now*/)
 
 void CpuCas01Model::addTraces()
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char *trace_name, *elm;
-  static int called = 0;
-  if (called)
-    return;
-  called = 1;
-
-  /* connect host speed traces */
-  xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    Cpu *cpu = sg_host_by_name(elm)->pimpl_cpu;
-
-    xbt_assert(cpu, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    cpu->set_speed_trace(trace);
-  }
+  THROW_DEADCODE;
 }
 
 /************
