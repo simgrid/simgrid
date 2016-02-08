@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 	
 <config id="General">
 	<prop id="maxmin/precision" value="0.000010"></prop>
@@ -12,8 +12,8 @@
 </config>
 	
 <AS  id="AS0"  routing="Full">
-   <host id="bob" power="1Gf"/>
-   <host id="alice" power="500Mf"/>
+   <host id="bob" speed="1Gf"/>
+   <host id="alice" speed="500Mf"/>
  
    <link id="link1" bandwidth="125MBps" latency="50us"/>
    <link id="link2" bandwidth="125MBps" latency="50us"/>

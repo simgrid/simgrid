@@ -1,16 +1,16 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 
-<platform version="3">
 <AS id="AS0" routing="Full">
 
   <AS  id="my_cluster1"  routing="Cluster">
     <cabinet id="cabinet1" prefix="host-" suffix=".cluster1" 
-      power="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
+      speed="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
     <cabinet id="cabinet2" prefix="host-" suffix=".cluster1" 
-      power="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
+      speed="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
     <cabinet id="cabinet3" prefix="host-" suffix=".cluster1" 
-      power="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
+      speed="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
     
     <router  id="router1"/>
     <backbone id="backbone1" bandwidth="2.25GBps" latency="500us"/>
@@ -18,11 +18,11 @@
   
   <AS  id="my_cluster2"  routing="Cluster">
     <cabinet id="cabinet1" prefix="host-" suffix=".cluster2" 
-      power="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
+      speed="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
     <cabinet id="cabinet2" prefix="host-" suffix=".cluster2" 
-      power="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
+      speed="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
     <cabinet id="cabinet3" prefix="host-" suffix=".cluster2" 
-      power="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
+      speed="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
     
     <router  id="router2"/>
     <backbone id="backbone2" bandwidth="2.25GBps" latency="500us"/>

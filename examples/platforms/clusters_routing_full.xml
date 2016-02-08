@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 
 <!--                  _________________________________________
                  ____|_____                                    |
@@ -26,11 +26,11 @@
 
 <AS id="AS0" routing="Full">
 	<cluster id="my_cluster_1" prefix="node-" suffix=".acme.org" radical="0-9"
-		power="1Gf" bw="125MBps" lat="50us" bb_bw="2.25GBps"
+		speed="1Gf" bw="125MBps" lat="50us" bb_bw="2.25GBps"
 		bb_lat="500us" />
 
 	<cluster id="my_cluster_2" prefix="node-" suffix=".acme.org" radical="10-19"
-		power="1Gf" bw="125MBps" lat="50us" bb_bw="2.25GBps"
+		speed="1Gf" bw="125MBps" lat="50us" bb_bw="2.25GBps"
 		bb_lat="500us" />
 
 	<link id="backbone" bandwidth="1.25GBps" latency="500us" />

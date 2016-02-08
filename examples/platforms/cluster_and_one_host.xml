@@ -1,13 +1,13 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
  <AS id="AS0"  routing="Full">   
   <cluster id="my_cluster_1" prefix="c-" suffix=".me"
-    	   radical="0-1" power="1Gf" bw="125MBps" lat="50us"
+    	   radical="0-1" speed="1Gf" bw="125MBps" lat="50us"
            router_id="router1"/>
 
   <AS id="AS1" routing="None">
-    <host id="host1" power="1Gf"/>
+    <host id="host1" speed="1Gf"/>
   </AS>
 
   <link id="link1" bandwidth="100kBps" latency="10ms"/>

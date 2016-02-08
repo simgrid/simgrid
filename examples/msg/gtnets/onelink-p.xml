@@ -1,14 +1,16 @@
 <?xml version='1.0'?>
- <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
- <platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+ 
+ 
  <AS  id="AS0"  routing="Full">
  <!---   S1  ________ C1
               link 1
              100MB, 5ms
  -->
  
-   <host id="S1" power="1Gf"/>
-   <host id="C1" power="1Gf"/>
+   <host id="S1" speed="1Gf"/>
+   <host id="C1" speed="1Gf"/>
  
    <link id="1" bandwidth="10kBps" latency="10ms"/>
  

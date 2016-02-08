@@ -1,17 +1,19 @@
 <?xml version='1.0'?>
- <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
- <platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+ 
+ 
  <AS  id="AS0"  routing="Full">
-   <host id="C2-06" power="5Gf"/>
-   <host id="C1-03" power="1Gf"/>
-   <host id="C2-07" power="5Gf"/>
-   <host id="C2-09" power="5Gf"/>
-   <host id="C1-02" power="1Gf"/>
-   <host id="C2-08" power="5Gf"/>
-   <host id="C1-01" power="1Gf"/>
-   <host id="C1-04" power="1Gf"/>
-   <host id="C1-00" power="1Gf"/>
-   <host id="C2-05" power="5Gf"/>
+   <host id="C2-06" speed="5Gf"/>
+   <host id="C1-03" speed="1Gf"/>
+   <host id="C2-07" speed="5Gf"/>
+   <host id="C2-09" speed="5Gf"/>
+   <host id="C1-02" speed="1Gf"/>
+   <host id="C2-08" speed="5Gf"/>
+   <host id="C1-01" speed="1Gf"/>
+   <host id="C1-04" speed="1Gf"/>
+   <host id="C1-00" speed="1Gf"/>
+   <host id="C2-05" speed="5Gf"/>
    <link id="6" bandwidth="125MBps" latency="100us"/>
    <link id="11" bandwidth="125MBps" latency="100us" sharing_policy="FATPIPE" />
    <link id="3" bandwidth="125MBps" latency="100us"/>

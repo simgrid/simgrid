@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 	 <AS  id="AS0"  routing="Full">
   <random id="myRandomGenerator" generator="DRAND48"
 	  min="1000000000" max="2000000000" mean="1600000000"
@@ -9,10 +9,10 @@
   <set id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
        radical="0-3"/>
 
-  <host id="bob" power="$rand(myRandomGenerator)"/>
+  <host id="bob" speed="$rand(myRandomGenerator)"/>
   
   <foreach set_id="bob_cluster">
-    <host id="$1" power="$rand(myRandomGenerator)"/>
+    <host id="$1" speed="$rand(myRandomGenerator)"/>
     <link id="$1" bandwidth="125MBps" latency="50us"/>
   </foreach>
    </AS>

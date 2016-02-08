@@ -1,5 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 <!--             _________
                 |          |
                 |  router  |
@@ -10,10 +11,9 @@
       |                                |
   node-0.acme.org                  node-99.acme.org
 -->
-<platform version="3">
   <cluster id="acme"
            prefix="node-"    suffix=".acme.org"
-           radical="0-99"    power="1Gf" 
+           radical="0-99"    speed="1Gf" 
 	   bw="125MBps"      lat="50us"
            bb_bw="2.25GBps"  bb_lat="500us"/>
 </platform>

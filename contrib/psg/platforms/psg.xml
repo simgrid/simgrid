@@ -1,5 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 <!--             _________
                 |          |
                 |  router  |
@@ -11,13 +12,12 @@
     c-0.me                             c-99.me	
 
 -->
-<platform version="3">
 <config>
 <prop id="network/latency_factor" value="1.0"/>
 </config>
 <AS  id="AS0"  routing="Full">
   <cluster id="my_cluster_1" prefix="" suffix=""
-  		radical="0-50000"	power="1Gf"  bw="200Mbps" lat="0ms"
+  		radical="0-50000"	speed="1Gf"  bw="200Mbps" lat="0ms"
         bb_bw="200Mbps" bb_lat="0ms"/>
 </AS>
 </platform>

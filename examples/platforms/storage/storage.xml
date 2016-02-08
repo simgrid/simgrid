@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 
-<platform version="3">
   <config>
     <prop id="path" value="../examples/platforms/"/>
   </config>
@@ -32,19 +32,19 @@
              content="content/small_content.txt"
              content_type="txt_unix" attach="denise"/>
 
-    <host id="bob" power="1Gf">
+    <host id="bob" speed="1Gf">
       <mount storageId="Disk1" name="/home"/>
     </host>
 
-    <host id="alice" power="1Gf">
+    <host id="alice" speed="1Gf">
       <mount storageId="Disk2" name="c:"/>
     </host>
 
-    <host id="carl" power="1Gf">
+    <host id="carl" speed="1Gf">
       <mount storageId="Disk3" name="/home"/>
     </host>
 
-    <host id="denise" power="1Gf">
+    <host id="denise" speed="1Gf">
       <mount storageId="Disk2" name="c:"/>	
       <mount storageId="Disk4" name="/home"/>	
     </host>

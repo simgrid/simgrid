@@ -1,10 +1,10 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 	<AS id="siteA" routing="Full">
-		<host id="PM0" power="1E8" core="1"/>
-		<host id="PM1" power="1E8" core="2"/>
-		<host id="PM2" power="1E8" core="4"/>
+		<host id="PM0" speed="1E8" core="1"/>
+		<host id="PM1" speed="1E8" core="2"/>
+		<host id="PM2" speed="1E8" core="4"/>
 
 		<!-- <link id="link1" bandwidth="1E6" latency="1E-2" /> -->
 		<link id="link1" bandwidth="12500000" latency="1E-2" />

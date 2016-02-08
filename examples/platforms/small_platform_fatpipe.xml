@@ -1,12 +1,14 @@
 <?xml version='1.0'?>
- <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
- <platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+ 
+ 
  <AS  id="AS0"  routing="Full">
    <!-- ljlkj -->
-   <host id="Tremblay" power="98.095Mf"/>
-   <host id="Ruby" power="98.095Mf"/>
-   <host id="Perl" power="98.095Mf"/>
-   <host id="Java" power="98.095Mf"/>
+   <host id="Tremblay" speed="98.095Mf"/>
+   <host id="Ruby" speed="98.095Mf"/>
+   <host id="Perl" speed="98.095Mf"/>
+   <host id="Java" speed="98.095Mf"/>
 
    <link id="1" bandwidth="498MBps" latency="150us" sharing_policy="FATPIPE"/>
    <link id="2" bandwidth="498MBps" latency="150us" sharing_policy="FATPIPE"/>

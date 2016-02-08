@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
   <process host="Jacquelin" function="async.Master">
      <argument value="5"/>     <!-- Amount of tasks to dispatch -->
      <argument value="50000"/> <!-- Computation size of each task -->

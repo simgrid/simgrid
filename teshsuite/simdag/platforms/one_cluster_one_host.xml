@@ -1,12 +1,14 @@
 <?xml version='1.0'?>
- <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
- <platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+ 
+ 
  <AS  id="AS0"  routing="Full">
    <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
- 	   radical="0-4" power="1Gf" bw="125MBps" lat="50us"
+ 	   radical="0-4" speed="1Gf" bw="125MBps" lat="50us"
  	   bb_bw="2.25GBps" bb_lat="500us"/>
  
-   <host id="trudy" power="250Mf"/>
+   <host id="trudy" speed="250Mf"/>
  
    <link id="backbone" bandwidth="1.25GBps" latency="500us"/>
  

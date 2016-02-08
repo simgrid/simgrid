@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3"><!-- For using with chainsend -->
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+<!-- For using with chainsend -->
 
   <!-- Broadcaster -->
   <process host="Jacquelin" function="broadcaster">

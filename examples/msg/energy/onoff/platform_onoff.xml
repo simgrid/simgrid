@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 <AS  id="AS0"  routing="Full">
 
   <!-- Use the pstate mechanism to encode the boot/shutdown time and energy -->
@@ -35,11 +35,11 @@
        right for you. -->
     
     
-  <host id="MyHost1" power="100.0Mf,50.0Mf,20.0Mf,                         0.006666667f,0.1429f" pstate="0" >
+  <host id="MyHost1" speed="100.0Mf,50.0Mf,20.0Mf,                         0.006666667f,0.1429f" pstate="0" >
         <prop id="watt_per_state"value="95.0:200.0,93.0:170.0,90.0:150.0,       120:120,110:110" />
         <prop id="watt_off" value="10" />
   </host>
-  <host id="MyHost2" power="100.0Mf" >
+  <host id="MyHost2" speed="100.0Mf" >
         <prop id="watt_per_state" value="100.0:200.0" />
         <prop id="watt_off" value="10" />
   </host>

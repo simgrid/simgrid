@@ -120,8 +120,8 @@ APPLICATIONTMP=$(echo ${PROC_ARGS}|cut -d' ' -f2 -s)
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------

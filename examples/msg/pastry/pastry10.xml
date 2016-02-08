@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
   <process host="c-0.me" function="node"><argument value="42"/><argument value="6000000"/></process>
   <process host="c-1.me" function="node"><argument value="366680" /><argument value="42" /><argument value="10" /><argument value="6000000" /></process>
   <process host="c-2.me" function="node"><argument value="533744" /><argument value="366680" /><argument value="20" /><argument value="6000000" /></process>

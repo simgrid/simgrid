@@ -1,8 +1,8 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 <AS id="AS0" routing="Full">
   <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
-   radical="0,2-4,6" power="1Gf" core="6" bw="125MBps" lat="50us"/>
+   radical="0,2-4,6" speed="1Gf" core="6" bw="125MBps" lat="50us"/>
 </AS>
 </platform>

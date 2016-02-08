@@ -1,15 +1,17 @@
 <?xml version='1.0'?>
- <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
- <platform version="3"> 
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+ 
+  
  <AS  id="AS0"  routing="Full">
  <!---  dogbone
  -->
  
  
-   <host id="S1" power="1Gf"/>
-   <host id="C1" power="1Gf"/>
-   <host id="S2" power="1Gf"/>
-   <host id="C2" power="1Gf"/>
+   <host id="S1" speed="1Gf"/>
+   <host id="C1" speed="1Gf"/>
+   <host id="S2" speed="1Gf"/>
+   <host id="C2" speed="1Gf"/>
    <router id="R1"/>
    <router id="R2"/>
  
