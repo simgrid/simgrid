@@ -106,12 +106,6 @@ endif()
 
 if(enable_lib_in_jar)
 
-  # Stripping disabled for the time being to make Java debuggable. We should introduce a proper option for that.
-  #find_program(STRIP_COMMAND strip)
-  #mark_as_advanced(STRIP_COMMAND)
-  #if(NOT STRIP_COMMAND)
-  #  set(STRIP_COMMAND "cmake -E echo (strip not found)")
-  #endif()
   
   set(SG_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
   
@@ -139,11 +133,6 @@ if(enable_lib_in_jar)
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
     
-    ## strip seems to fail on Mac on binaries that are already stripped.
-    ## It then spits: "symbols referenced by indirect symbol table entries that can't be stripped"
-    #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}      || true
-    #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO} || true
-
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}
     # There is no way to disable the dependency of mingw-64 on that lib, unfortunately
