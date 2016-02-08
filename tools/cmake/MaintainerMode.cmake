@@ -202,7 +202,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${FLEX_EXE} -o src/surf/simgrid_dtd.c -Psurf_parse_ --noline src/surf/simgrid_dtd.l
       COMMAND ${SED_EXE} -i ${string9} src/surf/simgrid_dtd.c
       COMMAND ${SED_EXE} -i ${string15} src/surf/simgrid_dtd.c
-      COMMAND ${SED_EXE} -i "s/int yyl;/unsigned int yyl;/" src/surf/simgrid_dtd.c
+      COMMAND ${SED_EXE} -i 's/int yyl\;/unsigned int yyl\;/' src/surf/simgrid_dtd.c
       COMMAND ${SED_EXE} -i "s/register //" src/surf/simgrid_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "surf/simgrid_dtd.c"
 
@@ -212,6 +212,8 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/xbt
       COMMAND ${FLEX_EXE} -o src/xbt/graphxml.c -Pxbt_graph_parse_ --noline src/xbt/graphxml.l
       COMMAND ${SED_EXE} -i ${string9} src/xbt/graphxml.c
+      COMMAND ${SED_EXE} -i 's/int yyl\;/unsigned int yyl\;/' src/xbt/graphxml.c
+      COMMAND ${SED_EXE} -i "s/register //" src/xbt/graphxml.c
       COMMAND ${CMAKE_COMMAND} -E echo "xbt/graphxml.c"
 
       #simdag/dax_dtd.c: simdag/dax_dtd.l
@@ -219,8 +221,9 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${SED_EXE} -i ${string8} src/simdag/dax_dtd.l
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/simdag
       COMMAND ${FLEX_EXE} -o src/simdag/dax_dtd.c -Pdax_ --noline src/simdag/dax_dtd.l
-      COMMAND ${SED_EXE} -i ${string9} src/simdag/dax_dtd.c
-      COMMAND ${CMAKE_COMMAND} -E echo "simdag/dax_dtd.c"
+      COMMAND ${SED_EXE} -i ${string9}                        src/simdag/dax_dtd.c
+      COMMAND ${SED_EXE} -i 's/int yyl\;/unsigned int yyl\;/' src/simdag/dax_dtd.c
+      COMMAND ${CMAKE_COMMAND} -E echo "src/simdag/dax_dtd.c"
 
       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
       COMMENT "Generating files in maintainer mode..."
@@ -228,10 +231,10 @@ if(enable_maintainer_mode AND NOT WIN32)
 
   else()
     if(NOT HAVE_FLEXML)
-      message(STATUS "Error : Install flexml before use maintainer mode.")
+      message(STATUS "Error : Install flexml to use the maintainer mode.")
     endif()
     if(NOT HAVE_FLEX)
-      message(STATUS "Error : Install flex before use maintainer mode.")
+      message(STATUS "Error : Install flex to use the maintainer mode.")
     endif()
     if(NOT SED_EXE)
       message(STATUS "Error : Install sed before use maintainer mode.")
