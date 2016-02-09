@@ -26,7 +26,6 @@ class XBT_PRIVATE HostL07Model;
 class XBT_PRIVATE CpuL07Model;
 class XBT_PRIVATE NetworkL07Model;
 
-class XBT_PRIVATE HostL07;
 class XBT_PRIVATE CpuL07;
 class XBT_PRIVATE LinkL07;
 

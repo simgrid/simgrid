@@ -260,9 +260,8 @@ xbt_dynar_t surf_host_get_vms(sg_host_t host){
   unsigned int cpt;
   simgrid::surf::VirtualMachine *vm;
   xbt_dynar_foreach(vms, cpt, vm) {
-    // TODO, use a backlink from simgrid::surf::Host to simgrid::s4u::Host 
-    sg_host_t vm_ = (sg_host_t) xbt_dict_get_elm_or_null(host_list, vm->getName());
-    xbt_dynar_push(vms_, &vm_);
+    sg_host_t cpy_ = vm->getHost();
+    xbt_dynar_push(vms_, &cpy_);
   }
   xbt_dynar_free(&vms);
   return vms_;

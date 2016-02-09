@@ -10,6 +10,7 @@
 #include "xbt/dict.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
+#include "src/surf/virtual_machine.hpp"
 #include "src/surf/host_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
@@ -323,19 +324,12 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name,
   for (i = 0; i < host_nb; i++)
     host_list_cpy[i] = host_list[i];
 
-
-  /* FIXME: what happens if host_list contains VMs and PMs. If
-   * execute_parallel_task() does not change the state of the model, we can mix
-   * them. */
-  surf_host_model_t ws_model =
-    host_list[0]->extension<simgrid::surf::Host>()->getModel();
+  /* Check that we are not mixing VMs and PMs in the parallel task */
+  simgrid::surf::Host *host = host_list[0]->extension<simgrid::surf::Host>();
+  bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host));
   for (i = 1; i < host_nb; i++) {
-    surf_host_model_t ws_model_tmp =
-      host_list[i]->extension<simgrid::surf::Host>()->getModel();
-    if (ws_model_tmp != ws_model) {
-      XBT_CRITICAL("mixing VMs and PMs is not supported");
-      DIE_IMPOSSIBLE;
-    }
+    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[i]->extension<simgrid::surf::Host>()));
+    xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
   }
 
   /* set surf's synchro */
