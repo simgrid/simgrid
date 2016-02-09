@@ -1,0 +1,6 @@
+<?xml version='1.0'?>
+ <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+ <platform version="3">
+   <!-- Deployment -->
+   <process host="Tremblay" function="launcher"/>
+ </platform>

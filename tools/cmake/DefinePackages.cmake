@@ -1071,6 +1071,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/msg/get_sender/CMakeLists.txt
   teshsuite/msg/host_on_off/CMakeLists.txt
   teshsuite/msg/host_on_off_processes/CMakeLists.txt
+  teshsuite/msg/parallel_task_create/CMakeLists.txt
   teshsuite/msg/pid/CMakeLists.txt
   teshsuite/msg/process/CMakeLists.txt
   teshsuite/msg/process_join/CMakeLists.txt
