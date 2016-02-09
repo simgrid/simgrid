@@ -754,7 +754,7 @@ else()
   elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
     set(PTH_STACKGROWTH "-1")
   else()
-    message(ERROR "Could not figure the stack direction.")
+    message(FATAL_ERROR "Could not figure out the stack direction. Test prog returned: ${stack}; CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
   endif()
 endif()
 
