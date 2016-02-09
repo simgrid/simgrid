@@ -102,14 +102,16 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
     if (xbt_dynar_length(radical_elements2) <2 || xbt_dynar_length(radical_elements2) > 5)
       xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string);
     for(i =0; i<xbt_dynar_length(radical_elements2);i++ ){
-        if (i==0){
-           fact.factor = xbt_str_parse_int(xbt_dynar_get_as(radical_elements2, i, char *),
-               bprintf("Invalid factor in chunk #%d: %%s", iter+1));
-        }else{
-           fact.values[fact.nb_values] = xbt_str_parse_double(xbt_dynar_get_as(radical_elements2, i, char *),
-               bprintf("Invalid factor value %d in chunk #%d: %%s", i, iter+1));
-           fact.nb_values++;
-        }
+      char *errmsg;
+      if (i==0) {
+        errmsg = bprintf("Invalid factor in chunk #%d: %%s", iter+1);
+        fact.factor = xbt_str_parse_int(xbt_dynar_get_as(radical_elements2, i, char *), errmsg);
+      } else {
+        errmsg = bprintf("Invalid factor value %d in chunk #%d: %%s", i, iter+1);
+        fact.values[fact.nb_values] = xbt_str_parse_double(xbt_dynar_get_as(radical_elements2, i, char *), errmsg);
+        fact.nb_values++;
+      }
+      xbt_free(errmsg);
     }
 
     xbt_dynar_push_as(smpi_factor, s_smpi_factor_multival_t, fact);
