@@ -9,6 +9,7 @@ target_link_libraries(sendrecv_main simgrid )
 
 set(tesh_files
   ${tesh_files}
+  ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv/sendrecv_CLM03_main.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv_CLM03.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv_KCCFLN05.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv_Reno.tesh

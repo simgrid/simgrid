@@ -13,6 +13,7 @@
 + \.cproject
 + \.project
 + \.travis.yml
++ \.editorconfig
 + appveyor.yml
 + COPYRIGHT.template
 + README\.(coding|git)
