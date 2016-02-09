@@ -235,9 +235,12 @@ static void onHostDestruction(simgrid::s4u::Host& host) {
   if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host))
     return;
   HostEnergy *host_energy = host.extension<HostEnergy>();
-  host_energy->update();
-  XBT_INFO("Total energy of host %s: %f Joules",
-    host.name().c_str(), host_energy->getConsumedEnergy());
+  if (host_energy != nullptr)
+  {
+    host_energy->update();
+    XBT_INFO("Total energy of host %s: %f Joules",
+             host.name().c_str(), host_energy->getConsumedEnergy());
+  }
 }
 
 /* **************************** Public interface *************************** */
