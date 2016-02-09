@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.0.2"
+#define YYBISON_VERSION "3.0.4"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -143,7 +143,7 @@ extern int xbt_automaton_parser_debug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE YYSTYPE;
+
 union YYSTYPE
 {
 #line 20 "parserPromela.yacc" /* yacc.c:355  */
@@ -155,6 +155,8 @@ union YYSTYPE
 
 #line 157 "parserPromela.tab.cacc" /* yacc.c:355  */
 };
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -168,7 +170,7 @@ int xbt_automaton_parser_parse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 172 "parserPromela.tab.cacc" /* yacc.c:358  */
+#line 174 "parserPromela.tab.cacc" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -1256,53 +1258,53 @@ yyreduce:
         case 4:
 #line 61 "parserPromela.yacc" /* yacc.c:1646  */
     { new_state((yyvsp[-1].string), 1);}
-#line 1260 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1262 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 7:
 #line 65 "parserPromela.yacc" /* yacc.c:1646  */
     { new_transition((yyvsp[-1].string), (yyvsp[-4].label));}
-#line 1266 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1268 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 8:
 #line 68 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = (yyvsp[-1].label); }
-#line 1272 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1274 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 9:
 #line 69 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(0, (yyvsp[-2].label), (yyvsp[0].label)); }
-#line 1278 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1280 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 10:
 #line 70 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(1, (yyvsp[-2].label), (yyvsp[0].label)); }
-#line 1284 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1286 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 11:
 #line 71 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(2, (yyvsp[0].label)); }
-#line 1290 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1292 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 12:
 #line 72 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(4); }
-#line 1296 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1298 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
   case 13:
 #line 73 "parserPromela.yacc" /* yacc.c:1646  */
     { (yyval.label) = new_label(3, (yyvsp[0].string)); }
-#line 1302 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1304 "parserPromela.tab.cacc" /* yacc.c:1646  */
     break;
 
 
-#line 1306 "parserPromela.tab.cacc" /* yacc.c:1646  */
+#line 1308 "parserPromela.tab.cacc" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

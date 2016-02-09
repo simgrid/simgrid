@@ -6037,8 +6037,8 @@ YY_RULE_SETUP
   if (!AX_surfxml_ASroute_src) FAIL("Required attribute `src' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_ASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS: case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
   }
  }
 	YY_BREAK
@@ -6062,8 +6062,8 @@ YY_RULE_SETUP
   ETag_surfxml_ASroute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS: case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
   }
  }
 	YY_BREAK
@@ -8284,30 +8284,24 @@ if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</peer>' expected.");
 	YY_BREAK
 
 /* <!-- 
-  *              DTD of SimGrid platform and deployment files. 
-  * More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html 
+  *              DTD of SimGrid platform and deployment files.
+  * More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
   * To upgrade your files, use the tool simgrid_update_xml
-  * * New in DTD version 4 (in SimGrid 3.13): 
+  * * New in DTD version 4 (in SimGrid 3.13):
   *    - Rename (power->speed) the attributes describing the amount of flop
   *      that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
-  *      
   *    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
-  *      
   *    - The DOCTYPE points to the right URL (this file):
   *      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
-  *      
-  *    - Units are now mandatory in attributes. 
-  *      - speed. Old default: 'f' or 'flops'. Also defined: 
-  *         'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf' 
+  *    - A warning is emited for unit-less values (they are still accepted).
+  *      - speed. Default: 'f' or 'flops'. Also defined:
+  *         'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
   *         'yottaflops', 'zettaflops', 'exaflops', 'petaflops', 'teraflops', 'gigaflops', 'megaflops', 'kiloflops'
-  *         
-  *      - bandwidth. Old default: 'Bps' bytes per second (or 'bps' but 1 Bps = 8 bps)
+  *      - bandwidth. Default: 'Bps' bytes per second (or 'bps' for bits but 1 Bps = 8 bps)
   *        Also defined in bytes: 'TiBps', 'GiBps', 'MiBps', 'KiBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
-  *        And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps' 
-  *        
-  *      - latency. Old default: 's' second. Also defined:
-  *        'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond   
-  *    
+  *        And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
+  *      - latency. Default: 's' second. Also defined:
+  *        'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
   * * New in DTD version 3 (in SimGrid 3.5):
   *    - The AS tag were introduced. Every platform should now
   *      contain an englobing AS tag.
@@ -8326,7 +8320,6 @@ if(!ETag_surfxml_include_state()) FAIL("Premature EOF: `</peer>' expected.");
   *    - Unit change: 
   *      - Link bandwidth: from Mb/s to b/s
   *      - CPU speed: from MFlop/s to Flop/s
-  *    
   * -->  */
 case 393:
 /* rule 393 can match eol */
