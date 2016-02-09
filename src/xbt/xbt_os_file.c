@@ -74,7 +74,10 @@ char *xbt_dirname(const char *path) {
     err = _splitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, NULL,0, NULL,0);
     return bprintf("%s%s",drive,dir);
 #else
-    return dirname(xbt_strdup(path));
+    char *tmp = xbt_strdup(path);
+    char *res = xbt_strdup(dirname(tmp));
+    free(tmp);
+    return res;
 #endif
 }
 /** @brief Returns the file component of a path (reimplementation of POSIX basename)
@@ -89,6 +92,9 @@ char *xbt_basename(const char *path) {
     err = _splitpath_s(path, NULL,0, NULL,0, file,1024, ext,1024);
     return bprintf("%s.%s",file,ext);
 #else
-    return basename(xbt_strdup(path));
+    char *tmp = xbt_strdup(path);
+    char *res = xbt_strdup(basename(tmp));
+    free(tmp);
+    return res;
 #endif
 }
