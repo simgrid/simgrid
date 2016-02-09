@@ -175,13 +175,22 @@ static void SIMIX_storage_create_(smx_storage_t storage)
   SIMIX_storage_create(key, storage, NULL);
 }
 
-static void (*maestro_code)(void*) = nullptr;
-static void* maestro_data = nullptr;
+static std::function<void()> maestro_code;
+
+namespace simgrid {
+namespace simix {
+
+XBT_PUBLIC(void) set_maestro(std::function<void()> code)
+{
+  maestro_code = std::move(code);
+}
+
+}
+}
 
 void SIMIX_set_maestro(void (*code)(void*), void* data)
 {
-  maestro_code = code;
-  maestro_data = data;
+  maestro_code = std::bind(code, data);
 }
 
 /**
@@ -230,7 +239,7 @@ void SIMIX_global_init(int *argc, char **argv)
 
     // Either create a new context with maestro or create
     // a context object with the current context mestro):
-    SIMIX_maestro_create(maestro_code, maestro_data);
+    simgrid::simix::create_maestro(maestro_code);
 
     /* context exception handlers */
     __xbt_running_ctx_fetch = SIMIX_process_get_running_context;

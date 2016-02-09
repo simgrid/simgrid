@@ -232,6 +232,9 @@ public:
   virtual void attach_stop() = 0;
 };
 
+XBT_PUBLIC(void) set_maestro(std::function<void()> code);
+XBT_PUBLIC(void) create_maestro(std::function<void()> code);
+
 }
 }
 

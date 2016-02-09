@@ -139,10 +139,10 @@ void SIMIX_process_empty_trash(void)
   }
 }
 
-/**
- * \brief Creates and runs the maestro process
- */
-void SIMIX_maestro_create(void (*code)(void*), void* data)
+namespace simgrid {
+namespace simix {
+
+void create_maestro(std::function<void()> code)
 {
   smx_process_t maestro = NULL;
   /* Create maestro process and intilialize it */
@@ -150,7 +150,7 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
   maestro->pid = simix_process_maxpid++;
   maestro->ppid = -1;
   maestro->name = (char*) "";
-  maestro->data = data;
+  maestro->data = nullptr;
   maestro->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
 
@@ -160,12 +160,22 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
     if (!simix_global)
       xbt_die("simix is not initialized, please call MSG_init first");
     maestro->context =
-      simix_global->context_factory->create_maestro(
-        std::bind(code, data), maestro);
+      simix_global->context_factory->create_maestro(code, maestro);
   }
 
   maestro->simcall.issuer = maestro;
   simix_global->maestro_process = maestro;
+}
+
+}
+}
+
+/**
+ * \brief Creates and runs the maestro process
+ */
+void SIMIX_maestro_create(void (*code)(void*), void* data)
+{
+  simgrid::simix::create_maestro(std::bind(code, data));
 }
 
 /**
