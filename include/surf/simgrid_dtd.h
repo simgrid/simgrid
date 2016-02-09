@@ -146,12 +146,12 @@ typedef int AT_surfxml_cabinet_id;
 #define AU_surfxml_cabinet_id NULL
 typedef int AT_surfxml_cabinet_lat;
 #define AU_surfxml_cabinet_lat NULL
-typedef int AT_surfxml_cabinet_power;
-#define AU_surfxml_cabinet_power NULL
 typedef int AT_surfxml_cabinet_prefix;
 #define AU_surfxml_cabinet_prefix NULL
 typedef int AT_surfxml_cabinet_radical;
 #define AU_surfxml_cabinet_radical NULL
+typedef int AT_surfxml_cabinet_speed;
+#define AU_surfxml_cabinet_speed NULL
 typedef int AT_surfxml_cabinet_suffix;
 #define AU_surfxml_cabinet_suffix NULL
 typedef int AT_surfxml_cluster_availability___file;
@@ -175,8 +175,6 @@ typedef int AT_surfxml_cluster_loopback___bw;
 #define AU_surfxml_cluster_loopback___bw NULL
 typedef int AT_surfxml_cluster_loopback___lat;
 #define AU_surfxml_cluster_loopback___lat NULL
-typedef int AT_surfxml_cluster_power;
-#define AU_surfxml_cluster_power NULL
 typedef int AT_surfxml_cluster_prefix;
 #define AU_surfxml_cluster_prefix NULL
 typedef int AT_surfxml_cluster_radical;
@@ -184,6 +182,8 @@ typedef int AT_surfxml_cluster_radical;
 typedef int AT_surfxml_cluster_router___id;
 #define AU_surfxml_cluster_router___id NULL
 typedef enum { AU_surfxml_cluster_sharing___policy, A_surfxml_cluster_sharing___policy_SHARED,A_surfxml_cluster_sharing___policy_FULLDUPLEX,A_surfxml_cluster_sharing___policy_FATPIPE } AT_surfxml_cluster_sharing___policy;
+typedef int AT_surfxml_cluster_speed;
+#define AU_surfxml_cluster_speed NULL
 typedef int AT_surfxml_cluster_state___file;
 #define AU_surfxml_cluster_state___file NULL
 typedef int AT_surfxml_cluster_suffix;
@@ -205,10 +205,10 @@ typedef int AT_surfxml_host_core;
 #define AU_surfxml_host_core NULL
 typedef int AT_surfxml_host_id;
 #define AU_surfxml_host_id NULL
-typedef int AT_surfxml_host_power;
-#define AU_surfxml_host_power NULL
 typedef int AT_surfxml_host_pstate;
 #define AU_surfxml_host_pstate NULL
+typedef int AT_surfxml_host_speed;
+#define AU_surfxml_host_speed NULL
 typedef enum { AU_surfxml_host_state, A_surfxml_host_state_ON,A_surfxml_host_state_OFF } AT_surfxml_host_state;
 typedef int AT_surfxml_host_state___file;
 #define AU_surfxml_host_state___file NULL
@@ -261,8 +261,8 @@ typedef int AT_surfxml_peer_id;
 #define AU_surfxml_peer_id NULL
 typedef int AT_surfxml_peer_lat;
 #define AU_surfxml_peer_lat NULL
-typedef int AT_surfxml_peer_power;
-#define AU_surfxml_peer_power NULL
+typedef int AT_surfxml_peer_speed;
+#define AU_surfxml_peer_speed NULL
 typedef int AT_surfxml_peer_state___file;
 #define AU_surfxml_peer_state___file NULL
 typedef int AT_surfxml_platform_version;
@@ -332,7 +332,7 @@ typedef int AT_surfxml_trace_periodicity;
 #define AU_surfxml_trace_periodicity NULL
 typedef int AT_surfxml_trace___connect_element;
 #define AU_surfxml_trace___connect_element NULL
-typedef enum { AU_surfxml_trace___connect_kind, A_surfxml_trace___connect_kind_HOST___AVAIL,A_surfxml_trace___connect_kind_POWER,A_surfxml_trace___connect_kind_LINK___AVAIL,A_surfxml_trace___connect_kind_BANDWIDTH,A_surfxml_trace___connect_kind_LATENCY } AT_surfxml_trace___connect_kind;
+typedef enum { AU_surfxml_trace___connect_kind, A_surfxml_trace___connect_kind_HOST___AVAIL,A_surfxml_trace___connect_kind_SPEED,A_surfxml_trace___connect_kind_LINK___AVAIL,A_surfxml_trace___connect_kind_BANDWIDTH,A_surfxml_trace___connect_kind_LATENCY } AT_surfxml_trace___connect_kind;
 typedef int AT_surfxml_trace___connect_trace;
 #define AU_surfxml_trace___connect_trace NULL
 
@@ -400,15 +400,15 @@ XBT_PUBLIC_DATA(short int) surfxml_cabinet_id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cabinet_lat) AX_surfxml_cabinet_lat;
 #define A_surfxml_cabinet_lat (surfxml_bufferstack + AX_surfxml_cabinet_lat)
 XBT_PUBLIC_DATA(short int) surfxml_cabinet_lat_isset;
-XBT_PUBLIC_DATA(AT_surfxml_cabinet_power) AX_surfxml_cabinet_power;
-#define A_surfxml_cabinet_power (surfxml_bufferstack + AX_surfxml_cabinet_power)
-XBT_PUBLIC_DATA(short int) surfxml_cabinet_power_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cabinet_prefix) AX_surfxml_cabinet_prefix;
 #define A_surfxml_cabinet_prefix (surfxml_bufferstack + AX_surfxml_cabinet_prefix)
 XBT_PUBLIC_DATA(short int) surfxml_cabinet_prefix_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cabinet_radical) AX_surfxml_cabinet_radical;
 #define A_surfxml_cabinet_radical (surfxml_bufferstack + AX_surfxml_cabinet_radical)
 XBT_PUBLIC_DATA(short int) surfxml_cabinet_radical_isset;
+XBT_PUBLIC_DATA(AT_surfxml_cabinet_speed) AX_surfxml_cabinet_speed;
+#define A_surfxml_cabinet_speed (surfxml_bufferstack + AX_surfxml_cabinet_speed)
+XBT_PUBLIC_DATA(short int) surfxml_cabinet_speed_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cabinet_suffix) AX_surfxml_cabinet_suffix;
 #define A_surfxml_cabinet_suffix (surfxml_bufferstack + AX_surfxml_cabinet_suffix)
 XBT_PUBLIC_DATA(short int) surfxml_cabinet_suffix_isset;
@@ -445,9 +445,6 @@ XBT_PUBLIC_DATA(short int) surfxml_cluster_loopback___bw_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_loopback___lat) AX_surfxml_cluster_loopback___lat;
 #define A_surfxml_cluster_loopback___lat (surfxml_bufferstack + AX_surfxml_cluster_loopback___lat)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_loopback___lat_isset;
-XBT_PUBLIC_DATA(AT_surfxml_cluster_power) AX_surfxml_cluster_power;
-#define A_surfxml_cluster_power (surfxml_bufferstack + AX_surfxml_cluster_power)
-XBT_PUBLIC_DATA(short int) surfxml_cluster_power_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_prefix) AX_surfxml_cluster_prefix;
 #define A_surfxml_cluster_prefix (surfxml_bufferstack + AX_surfxml_cluster_prefix)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_prefix_isset;
@@ -460,6 +457,9 @@ XBT_PUBLIC_DATA(short int) surfxml_cluster_router___id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_sharing___policy) AX_surfxml_cluster_sharing___policy;
 #define A_surfxml_cluster_sharing___policy AX_surfxml_cluster_sharing___policy
 XBT_PUBLIC_DATA(short int) surfxml_cluster_sharing___policy_isset;
+XBT_PUBLIC_DATA(AT_surfxml_cluster_speed) AX_surfxml_cluster_speed;
+#define A_surfxml_cluster_speed (surfxml_bufferstack + AX_surfxml_cluster_speed)
+XBT_PUBLIC_DATA(short int) surfxml_cluster_speed_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_state___file) AX_surfxml_cluster_state___file;
 #define A_surfxml_cluster_state___file (surfxml_bufferstack + AX_surfxml_cluster_state___file)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_state___file_isset;
@@ -493,12 +493,12 @@ XBT_PUBLIC_DATA(short int) surfxml_host_core_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_id) AX_surfxml_host_id;
 #define A_surfxml_host_id (surfxml_bufferstack + AX_surfxml_host_id)
 XBT_PUBLIC_DATA(short int) surfxml_host_id_isset;
-XBT_PUBLIC_DATA(AT_surfxml_host_power) AX_surfxml_host_power;
-#define A_surfxml_host_power (surfxml_bufferstack + AX_surfxml_host_power)
-XBT_PUBLIC_DATA(short int) surfxml_host_power_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_pstate) AX_surfxml_host_pstate;
 #define A_surfxml_host_pstate (surfxml_bufferstack + AX_surfxml_host_pstate)
 XBT_PUBLIC_DATA(short int) surfxml_host_pstate_isset;
+XBT_PUBLIC_DATA(AT_surfxml_host_speed) AX_surfxml_host_speed;
+#define A_surfxml_host_speed (surfxml_bufferstack + AX_surfxml_host_speed)
+XBT_PUBLIC_DATA(short int) surfxml_host_speed_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_state) AX_surfxml_host_state;
 #define A_surfxml_host_state AX_surfxml_host_state
 XBT_PUBLIC_DATA(short int) surfxml_host_state_isset;
@@ -583,9 +583,9 @@ XBT_PUBLIC_DATA(short int) surfxml_peer_id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_peer_lat) AX_surfxml_peer_lat;
 #define A_surfxml_peer_lat (surfxml_bufferstack + AX_surfxml_peer_lat)
 XBT_PUBLIC_DATA(short int) surfxml_peer_lat_isset;
-XBT_PUBLIC_DATA(AT_surfxml_peer_power) AX_surfxml_peer_power;
-#define A_surfxml_peer_power (surfxml_bufferstack + AX_surfxml_peer_power)
-XBT_PUBLIC_DATA(short int) surfxml_peer_power_isset;
+XBT_PUBLIC_DATA(AT_surfxml_peer_speed) AX_surfxml_peer_speed;
+#define A_surfxml_peer_speed (surfxml_bufferstack + AX_surfxml_peer_speed)
+XBT_PUBLIC_DATA(short int) surfxml_peer_speed_isset;
 XBT_PUBLIC_DATA(AT_surfxml_peer_state___file) AX_surfxml_peer_state___file;
 #define A_surfxml_peer_state___file (surfxml_bufferstack + AX_surfxml_peer_state___file)
 XBT_PUBLIC_DATA(short int) surfxml_peer_state___file_isset;
