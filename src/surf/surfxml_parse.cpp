@@ -1051,7 +1051,7 @@ void surf_parse_close(void)
   xbt_dynar_free(&surf_parsed_filename_stack);
   if (surf_parsed_filename) {
     char *dir = NULL;
-    xbt_dynar_pop(surf_path, dir);
+    xbt_dynar_pop(surf_path, &dir);
     free(dir);
   }
 
