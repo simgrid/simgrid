@@ -1,16 +1,9 @@
 #! ./tesh
 
-p Testing a simple master/slave example application
-
-! output sort 19
 $ $SG_TEST_EXENV parallel_task/parallel_task$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> [  0.009378] (1:test@Fafard) Goodbye now!
-> [  0.009378] (0:maestro@) Simulation time 0.00937836
-
-! output sort 19
-$ $SG_TEST_EXENV parallel_task/test_ptask$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/parallel_task/test_ptask_deployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> [ 20.625396] (1:execute@Ginette) execution_time=20.6254 
-> [ 83.232398] (2:redistribute@Ginette) redistribution_time=83.2324 
-> [ 83.232398] (0:maestro@) Simulation time 83.2324
+> [  0.000000] (1:test@Fafard) First, build a classical parallel task, with 1 Gflop to execute on each node, and 10MB to exchange between each pair
+> [ 20.625396] (1:test@Fafard) Then, build a parallel task involving only computations and no communication (1 Gflop per node)
+> [ 41.247354] (1:test@Fafard) Finally, trick the ptask to do a 'remote execution', on host Tremblay
+> [ 51.441554] (1:test@Fafard) Goodbye now!
+> [ 51.441554] (0:maestro@) Simulation done.

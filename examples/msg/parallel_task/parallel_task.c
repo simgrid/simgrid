@@ -24,80 +24,73 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
  *   to mix interfaces, but it's not possible ATM).
  */
 
-int test(int argc, char *argv[]);
-msg_error_t test_all(const char *platform_file);
 
-/** Emitter function  */
-int test(int argc, char *argv[])
+/** Function in charge of running the example (that's a simgrid process) */
+static int runner(int argc, char *argv[])
 {
-  xbt_dynar_t slaves_dynar;
-  int slaves_count = 0;
-  msg_host_t *slaves = NULL;
-  double task_comp_size = 100000;
-  double task_comm_size = 10000;
-  double *computation_amount = NULL;
-  double *communication_amount = NULL;
-  msg_task_t ptask = NULL;
   int i, j;
 
-  slaves_dynar = MSG_hosts_as_dynar();
-  slaves_count = xbt_dynar_length(slaves_dynar);
-  slaves = xbt_dynar_to_array(slaves_dynar);
+  /* Retrieve the list of all hosts as an array of hosts */
+  xbt_dynar_t slaves_dynar = MSG_hosts_as_dynar();
+  int slaves_count = xbt_dynar_length(slaves_dynar);
+  msg_host_t *slaves = xbt_dynar_to_array(slaves_dynar);
 
-  computation_amount = xbt_new0(double, slaves_count);
-  communication_amount = xbt_new0(double, slaves_count * slaves_count);
+  XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, and 10MB to exchange between each pair");
+  double *computation_amounts = xbt_new0(double, slaves_count);
+  double *communication_amounts = xbt_new0(double, slaves_count * slaves_count);
 
   for (i = 0; i < slaves_count; i++)
-    computation_amount[i] = task_comp_size;
+    computation_amounts[i] = 1e9; // 1 Gflop
 
   for (i = 0; i < slaves_count; i++)
     for (j = i + 1; j < slaves_count; j++)
-      communication_amount[i * slaves_count + j] = task_comm_size;
+      communication_amounts[i * slaves_count + j] = 1e7; // 10 MB
 
-  ptask = MSG_parallel_task_create("parallel task",
-                                   slaves_count, slaves,
-                                   computation_amount,
-                                   communication_amount, NULL);
+  msg_task_t ptask = MSG_parallel_task_create("parallel task",
+      slaves_count, slaves, computation_amounts, communication_amounts, NULL /* no specific data to attach */);
   MSG_parallel_task_execute(ptask);
-
   MSG_task_destroy(ptask);
-  /* There is no need to free that! */
-/*   free(communication_amount); */
-/*   free(computation_amount); */
+  /* The arrays communication_amounts and computation_amounts are not to be freed manually */
+
+  XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
+  computation_amounts = xbt_new0(double, slaves_count);
+  for (i = 0; i < slaves_count; i++)
+    computation_amounts[i] = 1e9; // 1 Gflop
+  ptask = MSG_parallel_task_create("parallel exec", slaves_count, slaves, computation_amounts, NULL/* no comm */, NULL /* no data */);
+  MSG_parallel_task_execute(ptask);
+  MSG_task_destroy(ptask);
+
+  XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", MSG_host_get_name(slaves[1]));
+  computation_amounts = xbt_new0(double, 1);
+  computation_amounts[0] = 1e9; // 1 Gflop
+  msg_host_t *remote = xbt_new(msg_host_t,1);
+  remote[0] = slaves[1];
+  ptask = MSG_parallel_task_create("remote exec", 1, remote, computation_amounts, NULL/* no comm */, NULL /* no data */);
+  MSG_parallel_task_execute(ptask);
+  MSG_task_destroy(ptask);
+  free(remote);
 
   XBT_INFO("Goodbye now!");
   free(slaves);
   return 0;
 }
 
-/** Test function */
-msg_error_t test_all(const char *platform_file)
-{
-  msg_error_t res = MSG_OK;
-  xbt_dynar_t all_hosts;
-  msg_host_t first_host;
-
-  MSG_config("host/model", "ptask_L07");
-  MSG_create_environment(platform_file);
-
-  all_hosts = MSG_hosts_as_dynar();
-  first_host = xbt_dynar_getfirst_as(all_hosts,msg_host_t);
-  MSG_process_create("test", test, NULL, first_host);
-  res = MSG_main();
-  xbt_dynar_free(&all_hosts);
-
-  XBT_INFO("Simulation time %g", MSG_get_clock());
-  return res;
-}
-
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
-
   MSG_init(&argc, argv);
-  xbt_assert(argc > 1, "Usage: %s platform_file\n"
-       "\tExample: %s msg_platform.xml", argv[0], argv[0]);
-  res = test_all(argv[1]);
+  MSG_config("host/model", "ptask_L07");
+
+  xbt_assert(argc > 1, "Usage: %s <platform file>", argv[0]);
+  MSG_create_environment(argv[1]);
+
+  /* Pick a process, no matter which, from the platform file */
+  xbt_dynar_t all_hosts = MSG_hosts_as_dynar();
+  msg_host_t first_host = xbt_dynar_getfirst_as(all_hosts,msg_host_t);
+  xbt_dynar_free(&all_hosts);
+
+  MSG_process_create("test", runner, NULL, first_host);
+  msg_error_t res = MSG_main();
+  XBT_INFO("Simulation done.");
 
   return res != MSG_OK;
 }
