@@ -3,21 +3,20 @@ SimGrid (3.13) UNRELEASED; urgency=low
  The Easter Trim Release.
 
  Backwards Compatibility breaks
-   - The option "model-check/sparse-checkpoint" was renamed to
-     "model-check/sparse_checkpoint" as we attempt to unify our naming
-     schemes.
-   - The option smpi/async_small_thres was renamed to smpi/async_small_thresh
-     as we attempt to unify our naming schemes. 
-   - The option smpi/send_is_detached_thres was renamed to
-     smpi/send_is_detached_thresh as we attempt to unify our naming schemes.
+   - Some command line options were renamed for consistency sake:
+     - model-check/sparse-checkpoint -> model-check/sparse_checkpoint
+     - smpi/async_small_thres        -> smpi/async_small_thresh
+     - smpi/send_is_detached_thres   -> smpi/send_is_detached_thresh 
  
-   - We removed support for writing your simulation in Lua; you can use
-     the Java bindings.
+   - Removed Lua simulation bindings (switch to C or Java for that).
+     Lua can still be used to describe platforms
+   - Removed Java kernel plugins.
+     Will be reintroduced after the ongoing major internals reorg.
  
  XML platforms:
  * Switch to platform v4 format.
-   - Rename (power->speed) the attributes describing the amount of flop
-     that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
+   - Rename from 'power' to 'speed' the attributes describing the amount of
+     flops that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
    - The DOCTYPE points to the right URL (this file):
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
@@ -30,9 +29,9 @@ SimGrid (3.13) UNRELEASED; urgency=low
        And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
      - latency. Default: 's' second. Also defined:
        'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
- * Use the tool simgrid_update_xml to upgrade your files. It does not
-   convert the unit-less values. Use tools/sg_xml_unit_converter.py
-   for that (or live with the warnings).
+       
+ * bin/simgrid_update_xml can upgrade your files automatically (won't convert unit-less values)
+   tools/sg_xml_unit_converter.py may help (but it's just a warning and will probably ever be).
 
  S4U
  * s4u::Host is now the prefered public interface to the Host features.
@@ -40,8 +39,8 @@ SimGrid (3.13) UNRELEASED; urgency=low
    MSG_host_* and SD_workstation_* are #define to the sg_host_* ones
 
  MSG
- * Kill all deprecated functions. They were deprecated since a few
-   releases anyway, and probably did not even compile anymore.
+ * Kill all deprecated functions (the ones you had when declaring MSG_DEPRECATED). 
+   They were deprecated since a few years, and probably did not even compile anymore.
 
  Simix
  * simgrid::simix::kernel() is the closure callback. It ensures that
@@ -64,10 +63,6 @@ SimGrid (3.13) UNRELEASED; urgency=low
    - xbt_str_parse_int / xbt_str_parse_double, wrapping strtol/strtod
      They throw exceptions on invalid input.
  
- JAVA:
- * Remove the ability to write internal plugins in Java. 
-   It may be reintroduced once the ongoing cleanup is done.
-
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.12) stable; urgency=low
