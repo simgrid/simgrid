@@ -51,27 +51,56 @@ void sg_platf_exit(void) {
   surf_parse_models_setup_already_called = 0;
 }
 
+/** @brief Add an "host" to the current AS */
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
   xbt_assert(! sg_host_by_name(host->id),
-         "Refusing to create a second host named '%s'.", host->id);
+      "Refusing to create a second host named '%s'.", host->id);
 
-  simgrid::surf::NetCard *net = NULL;
   simgrid::surf::As* current_routing = routing_get_current();
-  if (current_routing)
-    net = routing_add_host(current_routing, host);
+  if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
+    current_routing->p_hierarchy = SURF_ROUTING_BASE;
 
+  simgrid::surf::NetCard *netcard =
+      new simgrid::surf::NetCardImpl(xbt_strdup(host->id), -1, SURF_NETWORK_ELEMENT_HOST, current_routing);
+
+  netcard->setId(current_routing->parsePU(netcard));
   sg_host_t h = simgrid::s4u::Host::by_name_or_create(host->id);
-  simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu(
-    h,
-        host->speed_peak,
-        host->pstate,
-        host->speed_scale,
-        host->speed_trace,
-        host->core_amount,
-        host->initiallyOn,
-        host->state_trace);
-  surf_host_model->createHost(host->id, net, cpu, host->properties)->attach(h);
+  h->pimpl_netcard = netcard;
+  simgrid::surf::netcardCreatedCallbacks(netcard);
+
+  if(mount_list){
+    xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
+    mount_list = NULL;
+  }
+
+  if (host->coord && strcmp(host->coord, "")) {
+    unsigned int cursor;
+    char*str;
+
+    if (!COORD_HOST_LEVEL)
+      xbt_die ("To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
+    /* Pre-parse the host coordinates -- FIXME factorize with routers by overloading the routing->parse_PU function*/
+    xbt_dynar_t ctn_str = xbt_str_split_str(host->coord, " ");
+    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
+    xbt_dynar_foreach(ctn_str,cursor, str) {
+      double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
+      xbt_dynar_push(ctn,&val);
+    }
+    xbt_dynar_shrink(ctn, 0);
+    xbt_dynar_free(&ctn_str);
+    h->extension_set(COORD_HOST_LEVEL, (void *) ctn);
+    XBT_DEBUG("Having set host coordinates for '%s'",host->id);
+  }
+
+
+  simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h,
+      host->speed_peak,
+      host->pstate,
+      host->speed_scale, host->speed_trace,
+      host->core_amount,
+      host->initiallyOn, host->state_trace);
+  surf_host_model->createHost(host->id, netcard, cpu, host->properties)->attach(h);
   simgrid::s4u::Host::onCreation(*h);
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
@@ -336,11 +365,11 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
       SIMIX_process_create_from_wrapper((smx_process_arg_t) arg);
     }, arg);
   } else {                      // start_time <= SIMIX_get_clock()
-    XBT_DEBUG("Starting Process %s(%s) right now", process->argv[0], sg_host_get_name(host));
+    XBT_DEBUG("Starting Process %s(%s) right now", arg->name, sg_host_get_name(host));
 
     if (simix_global->create_process_function)
       process_created = simix_global->create_process_function(
-                                            (char*)(process->argv)[0],
+          arg->name,
                                             parse_code,
                                             NULL,
                                             sg_host_get_name(host),
@@ -350,7 +379,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
                                             current_property_set,
                                             auto_restart, NULL);
     else
-      process_created = simcall_process_create((char*)(process->argv)[0], parse_code, NULL, sg_host_get_name(host), kill_time, process->argc,
+      process_created = simcall_process_create(arg->name, parse_code, NULL, sg_host_get_name(host), kill_time, process->argc,
           (char**)process->argv, current_property_set,auto_restart);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */

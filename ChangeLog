@@ -20,6 +20,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
    - The DOCTYPE points to the right URL (this file):
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+     (the file at this address now documents the changelog since its v1)
    - A warning is emitted for unit-less values (they are still accepted).
      - speed. Default: 'f' or 'flops'. Also defined:
         'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'

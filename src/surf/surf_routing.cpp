@@ -151,55 +151,6 @@ void sg_platf_new_netcard(sg_platf_host_link_cbarg_t netcard)
   xbt_dynar_set_as(current_routing->p_linkUpDownList, info->getId(), s_surf_parsing_link_up_down_t, link_up_down);
 }
 
-/**
- * \brief Add a "host" to the network element list
- */
-simgrid::surf::NetCard *routing_add_host(
-  simgrid::surf::As* current_routing, sg_platf_host_cbarg_t host)
-{
-  if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
-    current_routing->p_hierarchy = SURF_ROUTING_BASE;
-  xbt_assert(!sg_host_by_name(host->id),
-         "Reading a host, processing unit \"%s\" already exists", host->id);
-
-  simgrid::surf::NetCard *netcard =
-    new simgrid::surf::NetCardImpl(xbt_strdup(host->id),
-                                        -1,
-                                        SURF_NETWORK_ELEMENT_HOST,
-                                        current_routing);
-  netcard->setId(current_routing->parsePU(netcard));
-  sg_host_t h = sg_host_by_name_or_create(host->id);
-  h->pimpl_netcard = netcard;
-  XBT_DEBUG("Having set name '%s' id '%d'", host->id, netcard->getId());
-  simgrid::surf::netcardCreatedCallbacks(netcard);
-
-  if(mount_list){
-    xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
-    mount_list = NULL;
-  }
-
-  if (host->coord && strcmp(host->coord, "")) {
-    unsigned int cursor;
-    char*str;
-
-    if (!COORD_HOST_LEVEL)
-      xbt_die ("To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
-    /* Pre-parse the host coordinates -- FIXME factorize with routers by overloading the routing->parse_PU function*/
-    xbt_dynar_t ctn_str = xbt_str_split_str(host->coord, " ");
-    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
-    xbt_dynar_foreach(ctn_str,cursor, str) {
-      double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
-      xbt_dynar_push(ctn,&val);
-    }
-    xbt_dynar_shrink(ctn, 0);
-    xbt_dynar_free(&ctn_str);
-    h->extension_set(COORD_HOST_LEVEL, (void *) ctn);
-    XBT_DEBUG("Having set host coordinates for '%s'",host->id);
-  }
-
-  return netcard;
-}
-
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 {
   tmgr_trace_t tmgr_trace;
