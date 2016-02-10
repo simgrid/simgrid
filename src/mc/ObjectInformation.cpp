@@ -127,7 +127,7 @@ void ObjectInformation::remove_global_variable(const char* name)
         end++;
       // Remove the whole range:
       this->global_variables.erase(
-        this->global_variables.begin() + cursor,
+        this->global_variables.begin() + start,
         this->global_variables.begin() + end + 1);
       return;
     } else if (cmp < 0)
