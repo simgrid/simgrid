@@ -7,12 +7,22 @@ SimGrid (3.13) UNRELEASED; urgency=low
      - model-check/sparse-checkpoint -> model-check/sparse_checkpoint
      - smpi/async_small_thres        -> smpi/async_small_thresh
      - smpi/send_is_detached_thres   -> smpi/send_is_detached_thresh 
- 
+
    - Removed Lua simulation bindings (switch to C or Java for that).
      Lua can still be used to describe platforms
-   - Removed Java kernel plugins.
+   - Removed Java kernel plug-ins.
      Will be reintroduced after the ongoing major internals reorg.
- 
+   - In SimDag 
+      - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be 
+        replaced by a more flexible mechanism.
+      - The following functions thus do not exist anymore
+         - SD_workstation_get_access_mode
+         - SD_workstation_set_access_mode
+         - SD_workstation_get_current_task
+      - Basic estimation functions have been removed but can easily be replaced
+        - SD_route_get_communication_time => SG_route_get_latency() + amount / SD_route_get_bandwidth()
+        - SD_workstation_get_computation_time => amount / sg_host_speed()
+
  XML platforms:
  * Switch to platform v4 format.
    - Rename from 'power' to 'speed' the attributes describing the amount of
@@ -35,13 +45,20 @@ SimGrid (3.13) UNRELEASED; urgency=low
    tools/sg_xml_unit_converter.py may help (but it's just a warning and will probably ever be).
 
  S4U
- * s4u::Host is now the prefered public interface to the Host features.
+ * s4u::Host is now the preferred public interface to the Host features.
    sg_host_* functions are C bindings to the exact same behavior
    MSG_host_* and SD_workstation_* are #define to the sg_host_* ones
 
  MSG
  * Kill all deprecated functions (the ones you had when declaring MSG_DEPRECATED). 
    They were deprecated since a few years, and probably did not even compile anymore.
+
+ SimDag
+ * The API has been profoundly modified to directly use the core objects instead of redefining its own. 
+   SD_Workstation_t and SD_link_t are now sg_host_t and sg_link_t respectively.
+   Some functions have also been renamed for consistency. Backward compatibility is maintained, but users are 
+   encouraged to update their codes. A list of the modified functions can be found at the end of 
+   include/simgrid/simdag.h
 
  Simix
  * simgrid::simix::kernel() is the closure callback. It ensures that
@@ -53,7 +70,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
 
  SMPI
  * Remove old default barrier/bcast buggy algorithms (see #18407)
- * Various bugfixes to handle more codes
+ * Various bug fixes to handle more codes
 
  XBT
  * Kill the setset data container: MC don't use it anymore.
