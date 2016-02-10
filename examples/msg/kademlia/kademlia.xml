@@ -2,71 +2,71 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
 
-  <process host="Jacquelin" function="node">
+  <process host="node-0.acme.org" function="node">
     <argument value="0x0000"/>          <!-- my id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
 
-  <process host="Boivin" function="node">
+  <process host="node-1.acme.org" function="node">
     <argument value="0x0001"/>          <!-- my id -->
     <argument value="0"/>               <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
 
-  <process host="Jean_Yves" function="node">
+  <process host="node-2.acme.org" function="node">
     <argument value="0x0003"/>          <!-- my id -->
     <argument value="0x0001"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
 
-  <process host="TeX" function="node">
+  <process host="node-3.acme.org" function="node">
     <argument value="0x0007"/>          <!-- my id -->
     <argument value="0x0003"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
-  <process host="Geoff" function="node">
+  <process host="node-4.acme.org" function="node">
     <argument value="0x000f"/>          <!-- my id -->
     <argument value="0x0007"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
-  <process host="Disney" function="node">
+  <process host="node-5.acme.org" function="node">
     <argument value="0x001f"/>          <!-- my id -->
     <argument value="0x000f"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
-  <process host="iRMX" function="node">
+  <process host="node-6.acme.org" function="node">
     <argument value="0x003f"/>          <!-- my id -->
     <argument value="0x001f"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
-  <process host="McGee" function="node">
+  <process host="node-7.acme.org" function="node">
     <argument value="0x007f"/>          <!-- my id -->
     <argument value="0x003f"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
-  <process host="Gatien" function="node">
+  <process host="node-8.acme.org" function="node">
     <argument value="0x00ff"/>          <!-- my id -->
     <argument value="0x007f"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
-  <process host="Laroche" function="node">
+  <process host="node-9.acme.org" function="node">
     <argument value="0x01ff"/>          <!-- my id -->
     <argument value="0x00ff"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
-  <process host="Tanguay" function="node">
+  <process host="node-10.acme.org" function="node">
     <argument value="0x03ff"/>          <!-- my id -->
     <argument value="0x01ff"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
-   <process host="Morin" function="node">
+   <process host="node-11.acme.org" function="node">
     <argument value="0x07ff"/>          <!-- my id -->
     <argument value="0x03ff"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
-   <process host="Ethernet" function="node">
+   <process host="node-12.acme.org" function="node">
     <argument value="0x0fff"/>          <!-- my id -->
     <argument value="0x0000"/>          <!-- known id -->
-    <argument value ="900"/>            <!-- deadline -->
+    <argument value ="780"/>            <!-- deadline -->
   </process>
 </platform>

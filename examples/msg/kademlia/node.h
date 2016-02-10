@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, 2014-2015. The SimGrid Team.
+/* Copyright (c) 2012, 2014-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,20 +10,16 @@
 #include "simgrid/msg.h"
 
 #include "common.h"
-
 #include "answer.h"
 #include "routing_table.h"
-/**
-  * Information about a foreign node
-  */
+
+/* Information about a foreign node */
 typedef struct s_node_contact {
   unsigned int id;              //The node identifier
   unsigned int distance;        //The distance from the node
 } s_node_contact_t, *node_contact_t;
 
-/*
- * Node data
- */
+/* Node data */
 typedef struct s_node {
   unsigned int id;              //node id - 160 bits
   routing_table_t table;        //node routing table
@@ -39,10 +35,8 @@ typedef struct s_node {
 // node functions
 node_t node_init(unsigned int id);
 void node_free(node_t node);
-
 void node_routing_table_update(node_t node, unsigned int id);
 answer_t node_find_closest(node_t node, unsigned int destination_id);
-
 
 // identifier functions
 unsigned int get_id_in_prefix(unsigned int id, unsigned int prefix);

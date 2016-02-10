@@ -3,32 +3,32 @@
 p Testing the Kademlia implementation with MSG
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/kademlia ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/kademlia.xml "--log=root.fmt:[%10.6r]%e(%02i:%P@%h)%e%m%n"
-> [  0.000000] ( 1:node@Jacquelin) Hi, I'm going to create the network with id 00000000
-> [  0.000000] ( 2:node@Boivin) Hi, I'm going to join the network with id 00000001
-> [  0.000000] ( 3:node@Jean_Yves) Hi, I'm going to join the network with id 00000003
-> [  0.000000] ( 4:node@TeX) Hi, I'm going to join the network with id 00000007
-> [  0.000000] ( 5:node@Geoff) Hi, I'm going to join the network with id 0000000f
-> [  0.000000] ( 6:node@Disney) Hi, I'm going to join the network with id 0000001f
-> [  0.000000] ( 7:node@iRMX) Hi, I'm going to join the network with id 0000003f
-> [  0.000000] ( 8:node@McGee) Hi, I'm going to join the network with id 0000007f
-> [  0.000000] ( 9:node@Gatien) Hi, I'm going to join the network with id 000000ff
-> [  0.000000] (10:node@Laroche) Hi, I'm going to join the network with id 000001ff
-> [  0.000000] (11:node@Tanguay) Hi, I'm going to join the network with id 000003ff
-> [  0.000000] (12:node@Morin) Hi, I'm going to join the network with id 000007ff
-> [  0.000000] (13:node@Ethernet) Hi, I'm going to join the network with id 00000fff
-> [900.000000] ( 0:maestro@) Messages created: 1277
-> [900.000000] ( 0:maestro@) Simulated time: 900
-> [900.000000] ( 1:node@Jacquelin) 8/8 FIND_NODE have succeeded
-> [900.000000] ( 2:node@Boivin) 7/7 FIND_NODE have succeeded
-> [900.000000] ( 3:node@Jean_Yves) 6/6 FIND_NODE have succeeded
-> [900.000000] ( 4:node@TeX) 6/6 FIND_NODE have succeeded
-> [900.000000] ( 5:node@Geoff) 6/6 FIND_NODE have succeeded
-> [900.000000] ( 6:node@Disney) 6/6 FIND_NODE have succeeded
-> [900.000000] ( 7:node@iRMX) 6/6 FIND_NODE have succeeded
-> [900.000000] ( 8:node@McGee) 7/7 FIND_NODE have succeeded
-> [900.000000] ( 9:node@Gatien) 6/6 FIND_NODE have succeeded
-> [900.000000] (10:node@Laroche) 6/6 FIND_NODE have succeeded
-> [900.000000] (11:node@Tanguay) 6/6 FIND_NODE have succeeded
-> [900.000000] (12:node@Morin) 7/7 FIND_NODE have succeeded
-> [900.000000] (13:node@Ethernet) 7/7 FIND_NODE have succeeded
+$ $SG_TEST_EXENV ${bindir:=.}/kademlia ${srcdir:=.}/../../platforms/cluster.xml ${srcdir:=.}/kademlia.xml "--log=root.fmt:[%10.6r]%e(%02i:%P@%h)%e%m%n"
+> [  0.000000] ( 1:node@node-0.acme.org) Hi, I'm going to create the network with id 00000000
+> [  0.000000] ( 2:node@node-1.acme.org) Hi, I'm going to join the network with id 00000001
+> [  0.000000] ( 3:node@node-2.acme.org) Hi, I'm going to join the network with id 00000003
+> [  0.000000] ( 4:node@node-3.acme.org) Hi, I'm going to join the network with id 00000007
+> [  0.000000] ( 5:node@node-4.acme.org) Hi, I'm going to join the network with id 0000000f
+> [  0.000000] ( 6:node@node-5.acme.org) Hi, I'm going to join the network with id 0000001f
+> [  0.000000] ( 7:node@node-6.acme.org) Hi, I'm going to join the network with id 0000003f
+> [  0.000000] ( 8:node@node-7.acme.org) Hi, I'm going to join the network with id 0000007f
+> [  0.000000] ( 9:node@node-8.acme.org) Hi, I'm going to join the network with id 000000ff
+> [  0.000000] (10:node@node-9.acme.org) Hi, I'm going to join the network with id 000001ff
+> [  0.000000] (11:node@node-10.acme.org) Hi, I'm going to join the network with id 000003ff
+> [  0.000000] (12:node@node-11.acme.org) Hi, I'm going to join the network with id 000007ff
+> [  0.000000] (13:node@node-12.acme.org) Hi, I'm going to join the network with id 00000fff
+> [780.000000] ( 7:node@node-6.acme.org) 5/5 FIND_NODE have succeeded
+> [780.000000] ( 9:node@node-8.acme.org) 5/5 FIND_NODE have succeeded
+> [780.000000] ( 3:node@node-2.acme.org) 5/5 FIND_NODE have succeeded
+> [780.000000] ( 2:node@node-1.acme.org) 6/6 FIND_NODE have succeeded
+> [780.000000] (11:node@node-10.acme.org) 6/6 FIND_NODE have succeeded
+> [780.000000] ( 1:node@node-0.acme.org) 7/7 FIND_NODE have succeeded
+> [780.000000] ( 5:node@node-4.acme.org) 6/6 FIND_NODE have succeeded
+> [780.000000] (13:node@node-12.acme.org) 6/6 FIND_NODE have succeeded
+> [780.000000] ( 8:node@node-7.acme.org) 6/6 FIND_NODE have succeeded
+> [780.000000] ( 6:node@node-5.acme.org) 6/6 FIND_NODE have succeeded
+> [780.000000] (10:node@node-9.acme.org) 5/5 FIND_NODE have succeeded
+> [780.000000] (12:node@node-11.acme.org) 6/6 FIND_NODE have succeeded
+> [780.000000] ( 4:node@node-3.acme.org) 5/5 FIND_NODE have succeeded
+> [780.000000] ( 0:maestro@) Messages created: 1179
+> [780.000000] ( 0:maestro@) Simulated time: 780

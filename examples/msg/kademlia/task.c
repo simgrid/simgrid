@@ -1,4 +1,4 @@
-/* Copyright (c) 2012, 2014. The SimGrid Team.
+/* Copyright (c) 2012, 2014, 2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,19 +6,15 @@
 
 #include "task.h"
 #include "answer.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia_task,
-                             "Messages specific for this msg example");
-/**
-  * Creates a new "find node" task
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia_task, "Messages specific for this msg example");
+
+/** @brief Creates a new "find node" task
   * @param sender_id the id of the node who sends the task
   * @param destination_id the id the sender is trying to find
   * @param hostname the hostname of the node, for logging purposes
   */
-msg_task_t task_new_find_node(unsigned int sender_id,
-                              unsigned int destination_id, char *mailbox,
-                              const char *hostname)
+msg_task_t task_new_find_node(unsigned int sender_id, unsigned int destination_id, char *mailbox, const char *hostname)
 {
-
   task_data_t data = xbt_new(s_task_data_t, 1);
 
   data->type = TASK_FIND_NODE;
@@ -28,26 +24,21 @@ msg_task_t task_new_find_node(unsigned int sender_id,
   data->answer_to = mailbox;
   data->issuer_host_name = hostname;
 
-
   msg_task_t task = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, data);
 
   return task;
 }
 
-/**
-  * Creates a new "answer to find node" task
+/** @brief Creates a new "answer to find node" task
   *  @param sender_id the node who sent the task
   *  @param destination_id the node that should be found
   *  @param answer the answer to send
   *  @param mailbox The mailbox of the sender
   *  @param hostname sender hostname
   */
-msg_task_t task_new_find_node_answer(unsigned int sender_id,
-                                     unsigned int destination_id,
-                                     answer_t answer, char *mailbox,
-                                     const char *hostname)
+msg_task_t task_new_find_node_answer(unsigned int sender_id, unsigned int destination_id, answer_t answer,
+                                     char *mailbox, const char *hostname)
 {
-
   task_data_t data = xbt_new(s_task_data_t, 1);
 
   data->type = TASK_FIND_NODE_ANSWER;
@@ -62,16 +53,13 @@ msg_task_t task_new_find_node_answer(unsigned int sender_id,
   return task;
 }
 
-/**
-  * Creates a new "ping" task
+/** @brief Creates a new "ping" task
   * @param sender_id : sender node identifier
   * @param mailbox : mailbox where we should respond
   * @param hostname : hostname of the sender, for debugging purposes
   */
-msg_task_t task_new_ping(unsigned int sender_id, char *mailbox,
-                         const char *hostname)
+msg_task_t task_new_ping(unsigned int sender_id, char *mailbox, const char *hostname)
 {
-
   task_data_t data = xbt_new(s_task_data_t, 1);
 
   data->type = TASK_PING;
@@ -86,16 +74,13 @@ msg_task_t task_new_ping(unsigned int sender_id, char *mailbox,
   return task;
 }
 
-/**
-  * Creates a new "ping answer" task
+/** @brief Creates a new "ping answer" task
   * @param sender_id : sender node identifier
   * @param mailbox : mailbox of the sender
   * @param hostname : hostname of the sender, for debugging purposes
   */
-msg_task_t task_new_ping_answer(unsigned int sender_id, char *mailbox,
-                                const char *hostname)
+msg_task_t task_new_ping_answer(unsigned int sender_id, char *mailbox, const char *hostname)
 {
-
   task_data_t data = xbt_new(s_task_data_t, 1);
 
   data->type = TASK_PING_ANSWER;
@@ -110,8 +95,7 @@ msg_task_t task_new_ping_answer(unsigned int sender_id, char *mailbox,
   return task;
 }
 
-/**
-  * Destroys a task and its data
+/** @brief Destroys a task and its data
   * @param task the task that'll be destroyed
   */
 void task_free(msg_task_t task)
@@ -126,11 +110,9 @@ void task_free(msg_task_t task)
   xbt_free(data);
 
   MSG_task_destroy(task);
-
 }
 
-/**
-  * Destroys a task and its data (taking a void* pointer
+/** @brief Destroys a task and its data (taking a void* pointer
   * @param task The task that'll be destroyed
   */
 void task_free_v(void *task)
