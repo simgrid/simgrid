@@ -2,39 +2,38 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
 
-  <process host="Jacquelin" function="tracker">
-    <argument value="3000" /> 			
+  <process host="node-0.acme.org" function="tracker">
+    <argument value="3000" />
   </process>
 
-  <process host="Boivin" function="peer">
-    <argument value="00000002"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
-    <argument value="1" /> 			<!-- indicates if the peer is a seed at the beginning of the simulation -->	
+  <process host="node-1.acme.org" function="peer">
+    <argument value="00000002"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
+    <argument value="1" />       <!-- indicates if the peer is a seed at the beginning of the simulation --> 
   </process>
-  <process host="Jean_Yves" function="peer">
-    <argument value="00000003"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+  <process host="node-2.acme.org" function="peer">
+    <argument value="00000003"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
   </process>
-  <process host="TeX" function="peer">
-    <argument value="00000004"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+  <process host="node-3.acme.org" function="peer">
+    <argument value="00000004"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
   </process>
-  <process host="Geoff" function="peer">
-    <argument value="00000005"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
-    <argument value="1" /> 			<!-- indicates if the peer is a seed at the beginning of the simulation -->	
+  <process host="node-4.acme.org" function="peer">
+    <argument value="00000005"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
+    <argument value="1" />       <!-- indicates if the peer is a seed at the beginning of the simulation --> 
   </process>
-  <process host="Disney" function="peer">
-    <argument value="00000006"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+  <process host="node-5.acme.org" function="peer">
+    <argument value="00000006"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
   </process>
-  <process host="iRMX" function="peer">
-    <argument value="00000007"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+  <process host="node-6.acme.org" function="peer">
+    <argument value="00000007"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
   </process>
-  <process host="McGee" function="peer">
-    <argument value="00000008"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+  <process host="node-7.acme.org" function="peer">
+    <argument value="00000008"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time --> 
   </process>
-
 </platform>

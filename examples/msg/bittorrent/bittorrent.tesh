@@ -4,20 +4,20 @@ p Testing the Bittorrent implementation with MSG
 
 ! timeout 10
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/bittorrent ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/bittorrent.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
-> [    0.000000] (1:tracker@Jacquelin) Tracker launched.
-> [    0.000000] (2:peer@Boivin) Hi, I'm joining the network with id 2
-> [    0.000000] (3:peer@Jean_Yves) Hi, I'm joining the network with id 3
-> [    0.000000] (4:peer@TeX) Hi, I'm joining the network with id 4
-> [    0.000000] (5:peer@Geoff) Hi, I'm joining the network with id 5
-> [    0.000000] (6:peer@Disney) Hi, I'm joining the network with id 6
-> [    0.000000] (7:peer@iRMX) Hi, I'm joining the network with id 7
-> [    0.000000] (8:peer@McGee) Hi, I'm joining the network with id 8
-> [ 3000.000000] (1:tracker@Jacquelin) Tracker is leaving
-> [ 5000.005340] (5:peer@Geoff) Here is my current status: 1111111111
-> [ 5000.043658] (7:peer@iRMX) Here is my current status: 1111111111
-> [ 5000.048881] (2:peer@Boivin) Here is my current status: 1111111111
-> [ 5000.812587] (4:peer@TeX) Here is my current status: 1111111111
-> [ 5000.823538] (6:peer@Disney) Here is my current status: 1111111111
-> [ 5000.888352] (8:peer@McGee) Here is my current status: 1111111111
-> [ 5000.925088] (3:peer@Jean_Yves) Here is my current status: 1111111111
+$ $SG_TEST_EXENV ${bindir:=.}/bittorrent ${srcdir:=.}/../../platforms/cluster.xml ${srcdir:=.}/bittorrent.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+> [    0.000000] (1:tracker@node-0.acme.org) Tracker launched.
+> [    0.000000] (2:peer@node-1.acme.org) Hi, I'm joining the network with id 2
+> [    0.000000] (3:peer@node-2.acme.org) Hi, I'm joining the network with id 3
+> [    0.000000] (4:peer@node-3.acme.org) Hi, I'm joining the network with id 4
+> [    0.000000] (5:peer@node-4.acme.org) Hi, I'm joining the network with id 5
+> [    0.000000] (6:peer@node-5.acme.org) Hi, I'm joining the network with id 6
+> [    0.000000] (7:peer@node-6.acme.org) Hi, I'm joining the network with id 7
+> [    0.000000] (8:peer@node-7.acme.org) Hi, I'm joining the network with id 8
+> [ 3000.000000] (1:tracker@node-0.acme.org) Tracker is leaving
+> [ 5000.007806] (2:peer@node-1.acme.org) Here is my current status: 1111111111
+> [ 5000.007806] (3:peer@node-2.acme.org) Here is my current status: 1111111111
+> [ 5000.007806] (4:peer@node-3.acme.org) Here is my current status: 1111111111
+> [ 5000.007806] (5:peer@node-4.acme.org) Here is my current status: 1111111111
+> [ 5000.007806] (6:peer@node-5.acme.org) Here is my current status: 1111111111
+> [ 5000.007806] (7:peer@node-6.acme.org) Here is my current status: 1111111111
+> [ 5000.007806] (8:peer@node-7.acme.org) Here is my current status: 1111111111

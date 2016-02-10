@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright (c) 2012, 2014. The SimGrid Team.
+# Copyright (c) 2012, 2014, 2016. The SimGrid Team.
 # All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
@@ -26,9 +26,10 @@ max_id = 2 ** nb_bits - 1
 all_ids = [42]
 
 sys.stdout.write("<?xml version='1.0'?>\n"
-"<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n"
-"<platform version=\"3\">\n"
-"  <process host=\"c-0.me\" function=\"tracker\"><argument value=\"%d\"/></process>\n" % end_date)
+"<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n"
+"<platform version=\"4\">\n"
+"  <process host=\"node-0.acme.org\" function=\"tracker\">\n"
+"    <argument value=\"%d\"/>\n  </process>\n" % end_date)
 
 for i in range(1, nb_nodes):
 
@@ -37,10 +38,11 @@ for i in range(1, nb_nodes):
     my_id = random.randint(0, max_id)
     ok = not my_id in all_ids
   start_date = i * 10
-  line = "  <process host=\"c-%d.me\" function=\"peer\"><argument value=\"%d\" /><argument value=\"%d\" />" % (i, my_id, end_date)
+  line = "  <process host=\"node-%d.acme.org\" function=\"peer\">\n" % i
+  line += "    <argument value=\"%d\"/>\n    <argument value=\"%d\"/>\n" % (my_id, end_date)
   if random.randint(0,100) < seed_percentage:
-    line += "<argument value=\"1\" />"
-  line += "</process>\n";
+    line += "    <argument value=\"1\"/>\n"
+  line += "  </process>\n";
   sys.stdout.write(line)
   all_ids.append(my_id)
 sys.stdout.write("</platform>")
