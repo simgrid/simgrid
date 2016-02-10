@@ -11,7 +11,6 @@
 #include "simgrid/platf.h"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/surfxml_private.h"
 
 #ifdef HAVE_LUA
 extern "C" {

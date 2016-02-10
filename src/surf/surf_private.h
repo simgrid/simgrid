@@ -82,11 +82,13 @@ XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict
 /**
  * Resource protected methods
  */
-XBT_PUBLIC(void) surfxml_bufferstack_push(int _new);
-XBT_PUBLIC(void) surfxml_bufferstack_pop(int _new);
-XBT_PUBLIC(void) parse_after_config(void);
+XBT_PRIVATE void surfxml_bufferstack_push(int _new);
+XBT_PRIVATE void surfxml_bufferstack_pop(int _new);
+XBT_PRIVATE void parse_after_config(void);
 
 XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
+
+XBT_PRIVATE void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
 
 /********** Tracing **********/
 /* from surf_instr.c */
