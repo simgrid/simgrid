@@ -16,7 +16,7 @@
 #include "dict_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
-                                "Dictionaries provide the same functionalities than hash tables");
+                                "Dictionaries provide the same functionalities as hash tables");
 
 /**
  * \brief Constructor
