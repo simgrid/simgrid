@@ -76,6 +76,10 @@ static unsigned long sysv_process_index = 0;   /* index of the next process to r
 static simgrid::simix::UContext* sysv_maestro_context;
 static bool sysv_parallel;
 
+// The name of this function is currently hardcoded in the code (as string).
+// Do not change it without fixing those references as well.
+static void smx_ctx_sysv_wrapper(int first, ...);
+
 namespace simgrid {
 namespace simix {
 
@@ -88,8 +92,6 @@ public:
   UContext(std::function<void()>  code,
     void_pfn_smxprocess_t cleanup_func, smx_process_t process);
   ~UContext();
-protected:
-  static void wrapper(int first, ...);
 };
 
 class SerialUContext : public UContext {
@@ -224,7 +226,7 @@ UContext::UContext(std::function<void()> code,
           this->stack_, smx_context_usable_stack_size);
     this->uc_.uc_stack.ss_size = pth_sksize_makecontext(
           this->stack_, smx_context_usable_stack_size);
-    simgrid_makecontext(&this->uc_, UContext::wrapper, this);
+    simgrid_makecontext(&this->uc_, smx_ctx_sysv_wrapper, this);
   } else {
     if (process != NULL && sysv_maestro_context == NULL)
       sysv_maestro_context = this;
@@ -243,11 +245,14 @@ UContext::~UContext()
   SIMIX_context_stack_delete(this->stack_);
 }
 
-void UContext::wrapper(int first, ...)
+}
+}
+
+static void smx_ctx_sysv_wrapper(int first, ...)
 {
   // Rebuild the Context* pointer from the integers:
   int ctx_addr[CTX_ADDR_LEN];
-  UContext* context;
+  simgrid::simix::UContext* context;
   ctx_addr[0] = first;
   if (CTX_ADDR_LEN > 1) {
     va_list ap;
@@ -256,11 +261,14 @@ void UContext::wrapper(int first, ...)
       ctx_addr[i] = va_arg(ap, int);
     va_end(ap);
   }
-  memcpy(&context, ctx_addr, sizeof(UContext*));
+  memcpy(&context, ctx_addr, sizeof(simgrid::simix::UContext*));
 
   (*context)();
   context->stop();
 }
+
+namespace simgrid {
+namespace simix {
 
 void SerialUContext::stop()
 {
