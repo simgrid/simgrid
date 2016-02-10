@@ -758,9 +758,13 @@ static int compare_heap_area_with_type(struct s_mc_diff *state, int process_inde
                                        int pointer_level)
 {
 top:
-  if (is_stack(real_area1) && is_stack(real_area2))
+  // HACK: This should not happen but in pratice, there is some
+  // DW_TAG_typedef without DW_AT_type. We should fix this somehow.
+  if (type == nullptr)
     return 0;
 
+  if (is_stack(real_area1) && is_stack(real_area2))
+    return 0;
   ssize_t ignore1, ignore2;
 
   if ((check_ignore > 0)
@@ -925,7 +929,7 @@ top:
         void *real_member2 = simgrid::dwarf::resolve_member(
             real_area2, type, &member, (simgrid::mc::AddressSpace*) snapshot2, process_index);
         res =
-            compare_heap_area_with_type(state, process_index, real_member1, real_member2,
+          compare_heap_area_with_type(state, process_index, real_member1, real_member2,
                                         snapshot1, snapshot2,
                                         previous, member.type, -1,
                                         check_ignore, 0);
