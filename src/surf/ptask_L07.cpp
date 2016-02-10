@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "host_ptask_L07.hpp"
+#include "ptask_L07.hpp"
 
 #include "cpu_interface.hpp"
 #include "surf_routing.hpp"

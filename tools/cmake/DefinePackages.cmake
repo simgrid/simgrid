@@ -85,7 +85,7 @@ set(EXTRA_DIST
   src/surf/virtual_machine.hpp
   src/surf/host_clm03.hpp
   src/surf/host_interface.hpp
-  src/surf/host_ptask_L07.hpp
+  src/surf/ptask_L07.hpp
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
   src/xbt/automaton/parserPromela.tab.cacc
@@ -346,7 +346,7 @@ set(SURF_SRC
   src/surf/virtual_machine.cpp
   src/surf/host_clm03.cpp
   src/surf/host_interface.cpp
-  src/surf/host_ptask_L07.cpp
+  src/surf/ptask_L07.cpp
   src/xbt/xbt_sg_stubs.c
   )
 
