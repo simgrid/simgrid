@@ -148,10 +148,11 @@ public:
  */
 XBT_PUBLIC_CLASS RoutingPlatf {
 public:
+  RoutingPlatf(void *loopback);
   ~RoutingPlatf();
-  As *p_root;
+  As *p_root = nullptr;
   void *p_loopback;
-  xbt_dynar_t p_lastRoute;
+  xbt_dynar_t p_lastRoute = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
   xbt_dynar_t getOneLinkRoutes(void);
   xbt_dynar_t recursiveGetOneLinkRoutes(As *rc);
   void getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t * links, double *latency);

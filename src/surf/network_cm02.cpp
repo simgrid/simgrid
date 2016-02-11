@@ -158,8 +158,7 @@ NetworkCm02Model::NetworkCm02Model()
   :NetworkModel()
 {
   char *optim = xbt_cfg_get_string(_sg_cfg_set, "network/optim");
-  int select =
-      xbt_cfg_get_boolean(_sg_cfg_set, "network/maxmin_selective_update");
+  int select = xbt_cfg_get_boolean(_sg_cfg_set, "network/maxmin_selective_update");
 
   if (!strcmp(optim, "Full")) {
     p_updateMechanism = UM_FULL;
@@ -174,7 +173,7 @@ NetworkCm02Model::NetworkCm02Model()
   }
 
   if (!p_maxminSystem)
-  p_maxminSystem = lmm_system_new(m_selectiveUpdate);
+    p_maxminSystem = lmm_system_new(m_selectiveUpdate);
 
   routing_model_create(createLink("__loopback__",
                                 498000000, NULL, 0.000015, NULL,

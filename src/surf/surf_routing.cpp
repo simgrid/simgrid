@@ -46,9 +46,6 @@ int COORD_ASR_LEVEL;            //Coordinates level
 int NS3_ASR_LEVEL;              //host node for ns3
 int ROUTING_PROP_ASR_LEVEL;     //Where the properties are stored
 
-static xbt_dict_t random_value = NULL;
-
-
 /** @brief Retrieve a netcard from its name
  *
  * Netcards are the thing that connect host or routers to the network
@@ -65,9 +62,6 @@ simgrid::surf::NetCard *sg_netcard_by_name_or_null(const char *name)
 /* Global vars */
 simgrid::surf::RoutingPlatf *routing_platf = NULL;
 
-/* global parse functions */
-extern xbt_dynar_t mount_list;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
 /** The current AS in the parsing */
@@ -76,8 +70,6 @@ simgrid::surf::As* routing_get_current()
 {
   return current_routing;
 }
-
-static void routing_parse_postparse(void);
 
 /* this lines are only for replace use like index in the model table */
 typedef enum {
@@ -501,65 +493,11 @@ e_surf_network_element_type_t routing_get_network_element_type(const char *name)
   return SURF_NETWORK_ELEMENT_NULL;
 }
 
-/**
- * \brief Generic method: create the global routing schema
- *
- * Make a global routing structure and set all the parsing functions.
- */
+/** @brief create the root AS */
 void routing_model_create( void *loopback)
 {
-  /* config the uniq global routing */
-  routing_platf = new simgrid::surf::RoutingPlatf();
-  routing_platf->p_root = NULL;
-  routing_platf->p_loopback = loopback;
-  routing_platf->p_lastRoute = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
-  /* no current routing at moment */
-  current_routing = NULL;
+  routing_platf = new simgrid::surf::RoutingPlatf(loopback);
 }
-
-
-/* ************************************************** */
-/* ********** PATERN FOR NEW ROUTING **************** */
-
-/* The minimal configuration of a new routing model need the next functions,
- * also you need to set at the start of the file, the new model in the model
- * list. Remember keep the null ending of the list.
- */
-/*** Routing model structure ***/
-// typedef struct {
-//   s_routing_component_t generic_routing;
-//   /* things that your routing model need */
-// } s_routing_component_NEW_t,*routing_component_NEW_t;
-
-/*** Parse routing model functions ***/
-// static void model_NEW_set_processing_unit(routing_component_t rc, const char* name) {}
-// static void model_NEW_set_autonomous_system(routing_component_t rc, const char* name) {}
-// static void model_NEW_set_route(routing_component_t rc, const char* src, const char* dst, route_t route) {}
-// static void model_NEW_set_ASroute(routing_component_t rc, const char* src, const char* dst, route_extended_t route) {}
-// static void model_NEW_set_bypassroute(routing_component_t rc, const char* src, const char* dst, route_extended_t e_route) {}
-
-/*** Business methods ***/
-// static route_extended_t NEW_get_route(routing_component_t rc, const char* src,const char* dst) {return NULL;}
-// static route_extended_t NEW_get_bypass_route(routing_component_t rc, const char* src,const char* dst) {return NULL;}
-// static void NEW_finalize(routing_component_t rc) { xbt_free(rc);}
-
-/*** Creation routing model functions ***/
-// static void* model_NEW_create(void) {
-//   routing_component_NEW_t new_component =  xbt_new0(s_routing_component_NEW_t,1);
-//   new_component->generic_routing.set_processing_unit = model_NEW_set_processing_unit;
-//   new_component->generic_routing.set_autonomous_system = model_NEW_set_autonomous_system;
-//   new_component->generic_routing.set_route = model_NEW_set_route;
-//   new_component->generic_routing.set_ASroute = model_NEW_set_ASroute;
-//   new_component->generic_routing.set_bypassroute = model_NEW_set_bypassroute;
-//   new_component->generic_routing.get_route = NEW_get_route;
-//   new_component->generic_routing.get_bypass_route = NEW_get_bypass_route;
-//   new_component->generic_routing.finalize = NEW_finalize;
-//   /* initialization of internal structures */
-//   return new_component;
-// } /* mandatory */
-// static void  model_NEW_load(void) {}   /* mandatory */
-// static void  model_NEW_unload(void) {} /* mandatory */
-// static void  model_NEW_end(void) {}    /* mandatory */
 
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
@@ -643,10 +581,6 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     xbt_dynar_free(&radical_ends);
   }
   xbt_dynar_free(&radical_elements);
-}
-
-static void routing_parse_postparse(void) {
-  xbt_dict_free(&random_value);
 }
 
 void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
@@ -874,7 +808,6 @@ static void check_disk_attachment()
 
 void routing_register_callbacks()
 {
-  simgrid::surf::on_postparse.connect(routing_parse_postparse);
   simgrid::surf::on_postparse.connect(check_disk_attachment);
 
   instr_routing_define_callbacks();
@@ -908,11 +841,15 @@ void routing_exit(void) {
 namespace simgrid {
 namespace surf {
 
-RoutingPlatf::~RoutingPlatf()
-{
-  xbt_dynar_free(&p_lastRoute);
-  finalize_rec(p_root);
-}
+  RoutingPlatf::RoutingPlatf(void *loopback)
+  : p_loopback(loopback)
+  {
+  }
+  RoutingPlatf::~RoutingPlatf()
+  {
+    xbt_dynar_free(&p_lastRoute);
+    finalize_rec(p_root);
+  }
 
 }
 }
