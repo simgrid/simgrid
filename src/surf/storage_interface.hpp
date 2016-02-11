@@ -13,8 +13,6 @@
 #ifndef STORAGE_INTERFACE_HPP_
 #define STORAGE_INTERFACE_HPP_
 
-extern xbt_dynar_t mount_list;
-
 namespace simgrid {
 namespace surf {
 

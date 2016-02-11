@@ -18,7 +18,6 @@ int ROUTING_STORAGE_HOST_LEVEL;
 int SURF_STORAGE_LEVEL;
 xbt_lib_t storage_type_lib;
 int ROUTING_STORAGE_TYPE_LEVEL; //Routing for storage_type level
-xbt_dynar_t mount_list = NULL;
 simgrid::surf::StorageModel *surf_storage_model = NULL;
 
 namespace simgrid {

@@ -16,6 +16,8 @@
 #include "src/simix/smx_private.h"
 #include "src/surf/platform.hpp"
 
+#include "surf/surfxml_parse.h"// FIXME: brain dead public header
+
 #include "src/surf/platform.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/host_interface.hpp"
@@ -26,6 +28,8 @@
 #include "src/surf/surf_routing_cluster_fat_tree.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
+
+XBT_PRIVATE xbt_dynar_t mount_list = NULL;
 
 namespace simgrid {
 namespace surf {
@@ -192,15 +196,12 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
   switch (cluster->topology) {
   case SURF_CLUSTER_TORUS:
-    XBT_DEBUG("<AS id=\"%s\"\trouting=\"Torus_Cluster\">", cluster->id);
-    AS.routing = A_surfxml_AS_routing_Cluster___torus;
+    AS.routing = A_surfxml_AS_routing_ClusterTorus;
     break;
   case SURF_CLUSTER_FAT_TREE:
-    XBT_DEBUG("<AS id=\"%s\"\trouting=\"Fat_Tree_Cluster\">", cluster->id);
-    AS.routing = A_surfxml_AS_routing_Cluster___fat___tree;
+    AS.routing = A_surfxml_AS_routing_ClusterFatTree;
     break;
   default:
-    XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
     AS.routing = A_surfxml_AS_routing_Cluster;
     break;
   }
@@ -221,8 +222,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   }
 
 
-  current_routing->p_linkUpDownList
-            = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
+  current_routing->p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
   //Make all hosts
   radical_elements = xbt_str_split(cluster->radical, ",");
@@ -243,8 +243,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       break;
     }
     for (i = start; i <= end; i++) {
-      host_id =
-          bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
+      host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
       link_id = bprintf("%s_link_%d", cluster->id, i);
 
       XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, cluster->speed);
@@ -491,19 +490,6 @@ void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){
 void sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage)
 {
   THROW_UNIMPLEMENTED;
-//  mount_t mnt = xbt_new0(s_mount_t, 1);
-//  mnt->id = xbt_strdup(mstorage->type_id);
-//  mnt->name = xbt_strdup(mstorage->name);
-//
-//  if(!mount_list){
-//    XBT_DEBUG("Creata a Mount list for %s",A_surfxml_host_id);
-//    mount_list = xbt_dynar_new(sizeof(char *), NULL);
-//  }
-//  xbt_dynar_push(mount_list,(void *) mnt);
-//  free(mnt->id);
-//  free(mnt->name);
-//  xbt_free(mnt);
-//  XBT_DEBUG("ROUTING Mount a storage name '%s' with type_id '%s'",mstorage->name, mstorage->id);
 }
 
 static void mount_free(void *p)
@@ -514,10 +500,8 @@ static void mount_free(void *p)
 
 void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
   // Verification of an existing storage
-#ifndef NDEBUG
-  void* storage = xbt_lib_get_or_null(storage_lib, mount->storageId, ROUTING_STORAGE_LEVEL);
-#endif
-  xbt_assert(storage,"Disk id \"%s\" does not exists", mount->storageId);
+  xbt_assert(xbt_lib_get_or_null(storage_lib, mount->storageId, ROUTING_STORAGE_LEVEL),
+      "Cannot mount non-existent disk \"%s\"", mount->storageId);
 
   XBT_DEBUG("ROUTING Mount '%s' on '%s'",mount->storageId, mount->name);
 

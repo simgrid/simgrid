@@ -101,8 +101,8 @@ struct s_model_type routing_models[] = {
    model_none_create},
   {"Vivaldi", "Vivaldi routing", model_vivaldi_create},
   {"Cluster", "Cluster routing", model_cluster_create},
-  {"Torus_Cluster", "Torus Cluster routing", model_torus_cluster_create},
-  {"Fat_Tree_Cluster", "Fat Tree Cluster routing", model_fat_tree_cluster_create},
+  {"TorusCluster", "Torus Cluster routing", model_torus_cluster_create},
+  {"FatTreeCluster", "Fat Tree Cluster routing", model_fat_tree_cluster_create},
   {NULL, NULL, NULL}
 };
 
@@ -178,8 +178,8 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   /* search the routing model */
   switch(AS->routing){
     case A_surfxml_AS_routing_Cluster:               model = &routing_models[SURF_MODEL_CLUSTER];break;
-    case A_surfxml_AS_routing_Cluster___torus:       model = &routing_models[SURF_MODEL_TORUS_CLUSTER];break;
-    case A_surfxml_AS_routing_Cluster___fat___tree:  model = &routing_models[SURF_MODEL_FAT_TREE_CLUSTER];break;
+    case A_surfxml_AS_routing_ClusterTorus:    model = &routing_models[SURF_MODEL_TORUS_CLUSTER];break;
+    case A_surfxml_AS_routing_ClusterFatTree:  model = &routing_models[SURF_MODEL_FAT_TREE_CLUSTER];break;
     case A_surfxml_AS_routing_Dijkstra:              model = &routing_models[SURF_MODEL_DIJKSTRA];break;
     case A_surfxml_AS_routing_DijkstraCache:         model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
     case A_surfxml_AS_routing_Floyd:                 model = &routing_models[SURF_MODEL_FLOYD];break;
