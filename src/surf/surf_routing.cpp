@@ -106,32 +106,29 @@ struct s_model_type routing_models[] = {
   {NULL, NULL, NULL}
 };
 
-/**
- * \brief Add a netcard connecting an host to the network element list
- * FIXME: integrate into host constructor
- */
-void sg_platf_new_netcard(sg_platf_host_link_cbarg_t netcard)
+/** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */
+void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t netcard_arg)
 {
-  simgrid::surf::NetCard *info = sg_host_by_name(netcard->id)->pimpl_netcard;
-  xbt_assert(info, "Host '%s' not found!", netcard->id);
+  simgrid::surf::NetCard *netcard = sg_host_by_name(netcard_arg->id)->pimpl_netcard;
+  xbt_assert(netcard, "Host '%s' not found!", netcard_arg->id);
   xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER] ||
       current_routing->p_modelDesc == &routing_models[SURF_MODEL_VIVALDI],
       "You have to be in model Cluster to use tag host_link!");
 
   s_surf_parsing_link_up_down_t link_up_down;
-  link_up_down.link_up = Link::byName(netcard->link_up);
-  link_up_down.link_down = Link::byName(netcard->link_down);
+  link_up_down.link_up = Link::byName(netcard_arg->link_up);
+  link_up_down.link_down = Link::byName(netcard_arg->link_down);
 
-  xbt_assert(link_up_down.link_up, "Link '%s' not found!",netcard->link_up);
-  xbt_assert(link_up_down.link_down, "Link '%s' not found!",netcard->link_down);
+  xbt_assert(link_up_down.link_up, "Link '%s' not found!",netcard_arg->link_up);
+  xbt_assert(link_up_down.link_down, "Link '%s' not found!",netcard_arg->link_down);
 
   // If dynar is is greater than netcard id and if the host_link is already defined
-  if((int)xbt_dynar_length(current_routing->p_linkUpDownList) > info->getId() &&
-      xbt_dynar_get_as(current_routing->p_linkUpDownList, info->getId(), void*))
-  surf_parse_error("Host_link for '%s' is already defined!",netcard->id);
+  if((int)xbt_dynar_length(current_routing->p_linkUpDownList) > netcard->getId() &&
+      xbt_dynar_get_as(current_routing->p_linkUpDownList, netcard->getId(), void*))
+  surf_parse_error("Host_link for '%s' is already defined!",netcard_arg->id);
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %d", info->getName(), info->getId());
-  xbt_dynar_set_as(current_routing->p_linkUpDownList, info->getId(), s_surf_parsing_link_up_down_t, link_up_down);
+  XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->getName(), netcard->getId());
+  xbt_dynar_set_as(current_routing->p_linkUpDownList, netcard->getId(), s_surf_parsing_link_up_down_t, link_up_down);
 }
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
@@ -553,7 +550,7 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
       host_link.id        = host_id;
       host_link.link_up   = link_up;
       host_link.link_down = link_down;
-      sg_platf_new_netcard(&host_link);
+      sg_platf_new_hostlink(&host_link);
 
       free(host_id);
       free(link_id);
@@ -629,7 +626,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   host_link.id        = host_id;
   host_link.link_up   = link_up;
   host_link.link_down = link_down;
-  sg_platf_new_netcard(&host_link);
+  sg_platf_new_hostlink(&host_link);
 
   XBT_DEBUG("<router id=\"%s\"/>", router_id);
   s_sg_platf_router_cbarg_t router = SG_PLATF_ROUTER_INITIALIZER;

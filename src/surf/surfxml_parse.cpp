@@ -507,7 +507,7 @@ void STag_surfxml_host___link(void){
   host_link.id        = A_surfxml_host___link_id;
   host_link.link_up   = A_surfxml_host___link_up;
   host_link.link_down = A_surfxml_host___link_down;
-  sg_platf_new_netcard(&host_link);
+  sg_platf_new_hostlink(&host_link);
 }
 
 void STag_surfxml_router(void){

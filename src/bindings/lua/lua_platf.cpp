@@ -152,7 +152,7 @@ int console_add_host___link(lua_State *L) {
   lua_pop(L, 1);
 
   XBT_DEBUG("Create a host_link for host %s", netcard.id);
-  sg_platf_new_netcard(&netcard);
+  sg_platf_new_hostlink(&netcard);
 
   return 0;
 }
