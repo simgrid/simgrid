@@ -110,23 +110,23 @@ public:
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  NetCardImpl(const char *name, e_surf_network_element_type_t rcType, As *rcComponent)
-  : p_rcComponent(rcComponent),
-    p_rcType(rcType),
-    p_name(xbt_strdup(name)) {}
-  ~NetCardImpl() { xbt_free(p_name);};
+  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, As *component)
+  : component_(component),
+    componentType_(componentType),
+    name_(xbt_strdup(name)) {}
+  ~NetCardImpl() { xbt_free(name_);};
 
-  int getId() {return m_id;}
-  int *getIdPtr() {return &m_id;}
-  void setId(int id) {m_id = id;}
-  char *getName() {return p_name;}
-  As *getRcComponent() {return p_rcComponent;}
-  e_surf_network_element_type_t getRcType() {return p_rcType;}
+  int getId() {return id_;}
+  int *getIdPtr() {return &id_;}
+  void setId(int id) {id_ = id;}
+  char *getName() {return name_;}
+  As *getRcComponent() {return component_;}
+  e_surf_network_element_type_t getRcType() {return componentType_;}
 private:
-  As *p_rcComponent;
-  e_surf_network_element_type_t p_rcType;
-  int m_id = -1;
-  char *p_name;
+  As *component_;
+  e_surf_network_element_type_t componentType_;
+  int id_ = -1;
+  char *name_;
 };
 
 /** @ingroup SURF_routing_interface
