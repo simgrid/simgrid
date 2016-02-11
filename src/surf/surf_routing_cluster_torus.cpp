@@ -32,16 +32,13 @@ AS_t model_torus_cluster_create(void)
 
 namespace simgrid {
   namespace surf {
-
-    /* Creation routing model functions */
     AsClusterTorus::AsClusterTorus():AsCluster() {
-      p_dimensions = NULL;
+    }
+    AsClusterTorus::~AsClusterTorus() {
+      xbt_dynar_free(&p_dimensions);
     }
 
-    /* Creation routing model functions */ AsClusterTorus::~AsClusterTorus() {
-      if (p_dimensions)
-        xbt_dynar_free(&p_dimensions);
-    } void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) {
+    void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) {
       s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
       char *link_id;
       unsigned int j = 0;

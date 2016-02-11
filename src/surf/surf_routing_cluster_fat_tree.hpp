@@ -133,7 +133,7 @@ public:
    *
    * It will also store the cluster for future use.
    */
-  void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster);
+  void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;
   void addProcessingNode(int id);
   void generateDotFile(const std::string& filename = "fatTree.dot") const;
 

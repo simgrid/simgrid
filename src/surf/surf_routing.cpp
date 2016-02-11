@@ -673,31 +673,28 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_dict_set(patterns, "suffix", xbt_strdup(cluster->suffix), NULL);
   }
 
-  /* parse the topology attribute. If we are not in a flat cluster,
-   * switch to the right mode and initialize the routing with
-   * the parameters in topo_parameters attribute
-   */
+  /* Parse the topology attributes.
+   * Nothing to do in a vanilla cluster, but that's another story for torus and flat_trees */
   s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
   AS.id = cluster->id;
 
-  if(cluster->topology == SURF_CLUSTER_TORUS){
+  switch (cluster->topology) {
+  case SURF_CLUSTER_TORUS:
     XBT_DEBUG("<AS id=\"%s\"\trouting=\"Torus_Cluster\">", cluster->id);
     AS.routing = A_surfxml_AS_routing_Cluster___torus;
-    sg_platf_new_AS_begin(&AS);
-    ((AsClusterTorus*)current_routing)->parse_specific_arguments(cluster);
-  }
-  else if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
+    break;
+  case SURF_CLUSTER_FAT_TREE:
     XBT_DEBUG("<AS id=\"%s\"\trouting=\"Fat_Tree_Cluster\">", cluster->id);
     AS.routing = A_surfxml_AS_routing_Cluster___fat___tree;
-    sg_platf_new_AS_begin(&AS);
-    ((AsClusterFatTree*)current_routing)->parse_specific_arguments(cluster);
-  }
-
-  else{
+    break;
+  default:
     XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", cluster->id);
     AS.routing = A_surfxml_AS_routing_Cluster;
-    sg_platf_new_AS_begin(&AS);
+    break;
   }
+
+  sg_platf_new_AS_begin(&AS);
+  static_cast<AsCluster*>(current_routing)->parse_specific_arguments(cluster);
 
   if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
       ((AsCluster*)current_routing)->p_nb_links_per_node++;
@@ -708,7 +705,6 @@ void routing_new_cluster(sg_platf_cluster_cbarg_t cluster)
       ((AsCluster*)current_routing)->p_nb_links_per_node++;
       ((AsCluster*)current_routing)->p_has_limiter=1;
   }
-
 
 
   current_routing->p_linkUpDownList

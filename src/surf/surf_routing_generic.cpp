@@ -400,25 +400,19 @@ sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hi
 
 As *AsGeneric::asExist(As *to_find)
 {
-  //return to_find; // FIXME: BYPASSERROR OF FOREACH WITH BREAK
   xbt_dict_cursor_t cursor = NULL;
   char *key;
-  int found = 0;
   AsGeneric *elem;
-  xbt_dict_foreach(p_routingSons, cursor, key, elem) {
-    if (to_find == elem || elem->asExist(to_find)) {
-      found = 1;
-      break;
-    }
-  }
-  if (found)
-    return to_find;
+
+  xbt_dict_foreach(p_routingSons, cursor, key, elem)
+    if (to_find == elem || elem->asExist(to_find))
+      return to_find;
+
   return NULL;
 }
 
 As *AsGeneric::autonomousSystemExist(char *element)
 {
-  //return rc; // FIXME: BYPASSERROR OF FOREACH WITH BREAK
   As *element_as, *result, *elem;
   xbt_dict_cursor_t cursor = NULL;
   char *key;

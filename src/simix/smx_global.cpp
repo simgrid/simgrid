@@ -251,8 +251,7 @@ void SIMIX_global_init(int *argc, char **argv)
     signal(SIGINT, inthandler);
 
 #ifndef WIN32
-    /* Install SEGV handler */
-    install_segvhandler();
+    //install_segvhandler();
 #endif
     /* register a function to be called by SURF after the environment creation */
     sg_platf_init();

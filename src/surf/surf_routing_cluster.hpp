@@ -34,6 +34,7 @@ public:
   int parsePU(NetCard *elm) override; /* A host or a router, whatever */
   int parseAS(NetCard *elm) override;
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
+  virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {}
 
   Link* p_backbone = nullptr;
   void *p_loopback = nullptr;
