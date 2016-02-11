@@ -19,35 +19,37 @@ AS_t model_full_create(void)
 
 void model_full_end(AS_t _routing)
 {
+  _routing->Seal();
+}
+
+namespace simgrid {
+namespace surf {
+void AsFull::Seal() {
   int i;
   sg_platf_route_cbarg_t e_route;
 
   /* set utils vars */
-  simgrid::surf::AsFull *routing = static_cast<simgrid::surf::AsFull*>(_routing);
-  int table_size = (int)xbt_dynar_length(routing->p_indexNetworkElm);
+  int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
 
   /* Create table if necessary */
-  if (!routing->p_routingTable)
-    routing->p_routingTable = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
+  if (!p_routingTable)
+    p_routingTable = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Add the loopback if needed */
-  if (routing_platf->p_loopback && routing->p_hierarchy == SURF_ROUTING_BASE) {
+  if (routing_platf->p_loopback && p_hierarchy == SURF_ROUTING_BASE) {
     for (i = 0; i < table_size; i++) {
-      e_route = routing->TO_ROUTE_FULL(i, i);
+      e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {
         e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->gw_src = NULL;
         e_route->gw_dst = NULL;
         e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
         xbt_dynar_push(e_route->link_list, &routing_platf->p_loopback);
-        routing->TO_ROUTE_FULL(i, i) = e_route;
+        TO_ROUTE_FULL(i, i) = e_route;
       }
     }
   }
 }
-
-namespace simgrid {
-namespace surf {
 
 AsFull::~AsFull(){
   if (p_routingTable) {

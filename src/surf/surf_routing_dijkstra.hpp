@@ -37,6 +37,8 @@ class XBT_PRIVATE AsDijkstra;
 class AsDijkstra : public AsGeneric {
 public:
   AsDijkstra();
+  void Seal() override;
+
   AsDijkstra(bool cached);
   ~AsDijkstra();
   xbt_node_t routeGraphNewNode(int id, int graph_id);

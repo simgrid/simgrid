@@ -46,38 +46,38 @@ AS_t model_dijkstracache_create(void){
 
 void model_dijkstra_both_end(AS_t as)
 {
-  simgrid::surf::AsDijkstra *THIS_AS
-    = static_cast<simgrid::surf::AsDijkstra*>(as);
-  xbt_node_t node = NULL;
-  unsigned int cursor2;
-  xbt_dynar_t nodes = NULL;
-
-  /* Create the topology graph */
-  if(!THIS_AS->p_routeGraph)
-    THIS_AS->p_routeGraph = xbt_graph_new_graph(1, NULL);
-  if(!THIS_AS->p_graphNodeMap)
-    THIS_AS->p_graphNodeMap = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
-
-  if (THIS_AS->m_cached && !THIS_AS->p_routeCache)
-    THIS_AS->p_routeCache = xbt_dict_new_homogeneous(&route_cache_elem_free);
-
-  /* Add the loopback if needed */
-  if (routing_platf->p_loopback && as->p_hierarchy == SURF_ROUTING_BASE)
-    THIS_AS->addLoopback();
-
-  /* initialize graph indexes in nodes after graph has been built */
-  nodes = xbt_graph_get_nodes(THIS_AS->p_routeGraph);
-
-  xbt_dynar_foreach(nodes, cursor2, node) {
-    graph_node_data_t data = (graph_node_data_t) xbt_graph_node_get_data(node);
-    data->graph_id = cursor2;
-  }
+  as->Seal();
 }
 
 /* Utility functions */
 
 namespace simgrid {
 namespace surf {
+void AsDijkstra::Seal()
+{
+  /* Create the topology graph */
+  if(!p_routeGraph)
+    p_routeGraph = xbt_graph_new_graph(1, NULL);
+  if(!p_graphNodeMap)
+    p_graphNodeMap = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
+
+  if (m_cached && !p_routeCache)
+    p_routeCache = xbt_dict_new_homogeneous(&route_cache_elem_free);
+
+  /* Add the loopback if needed */
+  if (routing_platf->p_loopback && p_hierarchy == SURF_ROUTING_BASE)
+    addLoopback();
+
+  /* initialize graph indexes in nodes after graph has been built */
+  xbt_dynar_t nodes = xbt_graph_get_nodes(p_routeGraph);
+
+  xbt_node_t node = NULL;
+  unsigned int cursor2;
+  xbt_dynar_foreach(nodes, cursor2, node) {
+    graph_node_data_t data = (graph_node_data_t) xbt_graph_node_get_data(node);
+    data->graph_id = cursor2;
+  }
+}
 
 xbt_node_t AsDijkstra::routeGraphNewNode(int id, int graph_id)
 {

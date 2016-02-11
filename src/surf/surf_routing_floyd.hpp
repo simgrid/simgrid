@@ -29,7 +29,7 @@ public:
   xbt_dynar_t getOneLinkRoutes() override;
   void parseASroute(sg_platf_route_cbarg_t route) override;
   void parseRoute(sg_platf_route_cbarg_t route) override;
-  void end();
+  void Seal() override;
 
 private:
   /* vars to compute the Floyd algorithm. */

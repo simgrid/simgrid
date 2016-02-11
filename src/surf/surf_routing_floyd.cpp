@@ -21,7 +21,7 @@ AS_t model_floyd_create(void)
 
 void model_floyd_end(AS_t current_routing)
 {
-  static_cast<simgrid::surf::AsFloyd*>(current_routing)->end();
+  current_routing->Seal();
 }
 
 namespace simgrid {
@@ -269,7 +269,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
   xbt_dynar_free(&route->link_list);
 }
 
-void AsFloyd::end(){
+void AsFloyd::Seal(){
   unsigned int i, j, a, b, c;
 
   /* set the size of table routing */

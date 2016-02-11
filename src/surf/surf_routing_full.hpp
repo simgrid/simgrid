@@ -23,6 +23,7 @@ class AsFull: public AsGeneric {
 public:
 
   AsFull() {}
+  void Seal() override;
   ~AsFull();
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;

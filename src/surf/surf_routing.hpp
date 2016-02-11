@@ -58,14 +58,10 @@ public:
   NetCard *p_netcard;
   xbt_dynar_t p_linkUpDownList = NULL;
 
-  /**
-   * @brief The As constructor
-   */
   As(){};
+  /* Close that AS: no more content can be added to it */
+  virtual void Seal()=0;
 
-  /**
-   * @brief The As destructor
-   */
   virtual ~As(){
     xbt_dict_free(&p_routingSons);
     xbt_dynar_free(&p_indexNetworkElm);
