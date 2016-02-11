@@ -378,7 +378,7 @@ static void _get_route_and_latency(
   /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */
   if (e_route_bypass) {
     xbt_dynar_merge(links, &e_route_bypass->link_list);
-    generic_free_route(e_route_bypass);
+    routing_route_free(e_route_bypass);
     return;
   }
 

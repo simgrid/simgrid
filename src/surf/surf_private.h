@@ -73,8 +73,7 @@ XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) storage_register_callbacks(void);
 
 XBT_PUBLIC(void) routing_register_callbacks(void);
-XBT_PUBLIC(void) generic_free_route(sg_platf_route_cbarg_t route); // FIXME rename to routing_route_free
- // FIXME: make previous function private to routing again?
+XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route); // FIXME: make previous function private to routing again?
 
 XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
 /**

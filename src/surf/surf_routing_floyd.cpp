@@ -42,7 +42,7 @@ AsFloyd::~AsFloyd(){
   /* Delete link_table */
   for (i = 0; i < table_size; i++)
     for (j = 0; j < table_size; j++) {
-      generic_free_route(TO_FLOYD_LINK(i, j));
+      routing_route_free(TO_FLOYD_LINK(i, j));
     }
   xbt_free(p_linkTable);
   /* Delete bypass dict */

@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic imple
 
 static int no_bypassroute_declared = 1;
 
-void generic_free_route(sg_platf_route_cbarg_t route)
+void routing_route_free(sg_platf_route_cbarg_t route)
 {
   if (route) {
     xbt_dynar_free(&route->link_list);
@@ -48,7 +48,7 @@ void AsGeneric::getRouteAndLatency(NetCard */*src*/, NetCard */*dst*/, sg_platf_
 }
 
 AsGeneric::AsGeneric() {
-  p_bypassRoutes = xbt_dict_new_homogeneous((void (*)(void *)) generic_free_route);
+  p_bypassRoutes = xbt_dict_new_homogeneous((void (*)(void *)) routing_route_free);
 }
 
 AsGeneric::~AsGeneric() {
