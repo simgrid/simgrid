@@ -19,11 +19,6 @@ AS_t model_floyd_create(void)
   return new simgrid::surf::AsFloyd();
 }
 
-void model_floyd_end(AS_t current_routing)
-{
-  current_routing->Seal();
-}
-
 namespace simgrid {
 namespace surf {
 

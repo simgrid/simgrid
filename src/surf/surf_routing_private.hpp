@@ -60,7 +60,6 @@ void generic_src_dst_check(AS_t rc, sg_netcard_t src,
 /* ************************************************************************** */
 /* *************************** FLOYD ROUTING ******************************** */
 XBT_PRIVATE AS_t model_floyd_create(void);  /* create structures for floyd routing model */
-XBT_PRIVATE void model_floyd_end(AS_t as);      /* finalize the creation of floyd routing model */
 XBT_PRIVATE void model_floyd_parse_route(AS_t rc, sg_platf_route_cbarg_t route);
 
 /* ************************************************** */
@@ -82,13 +81,11 @@ XBT_PRIVATE AS_t model_vivaldi_create(void);      /* create structures for vival
 XBT_PRIVATE AS_t model_dijkstra_both_create(int cached);    /* create by calling dijkstra or dijkstracache */
 XBT_PRIVATE AS_t model_dijkstra_create(void);       /* create structures for dijkstra routing model */
 XBT_PRIVATE AS_t model_dijkstracache_create(void);  /* create structures for dijkstracache routing model */
-XBT_PRIVATE void model_dijkstra_both_end(AS_t as);      /* finalize the creation of dijkstra routing model */
 XBT_PRIVATE void model_dijkstra_both_parse_route (AS_t rc, sg_platf_route_cbarg_t route);
 
 /* ************************************************************************** */
 /* *************************** FULL ROUTING ********************************* */
 XBT_PRIVATE AS_t model_full_create(void);   /* create structures for full routing model */
-XBT_PRIVATE void model_full_end(AS_t as);       /* finalize the creation of full routing model */
 XBT_PRIVATE void model_full_set_route(  /* Set the route and ASroute between src and dst */
     AS_t rc, sg_platf_route_cbarg_t route);
 /* ************************************************************************** */

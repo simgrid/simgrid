@@ -17,11 +17,6 @@ AS_t model_full_create(void)
   return new simgrid::surf::AsFull();
 }
 
-void model_full_end(AS_t _routing)
-{
-  _routing->Seal();
-}
-
 namespace simgrid {
 namespace surf {
 void AsFull::Seal() {

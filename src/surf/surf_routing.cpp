@@ -87,27 +87,23 @@ typedef enum {
 struct s_model_type routing_models[] = {
   {"Full",
    "Full routing data (fast, large memory requirements, fully expressive)",
-   model_full_create, model_full_end},
+   model_full_create},
   {"Floyd",
    "Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)",
-   model_floyd_create, model_floyd_end},
+   model_floyd_create},
   {"Dijkstra",
    "Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)",
-   model_dijkstra_create, model_dijkstra_both_end},
+   model_dijkstra_create},
   {"DijkstraCache",
    "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)",
-   model_dijkstracache_create, model_dijkstra_both_end},
+   model_dijkstracache_create},
   {"none", "No routing (Unless you know what you are doing, avoid using this mode in combination with a non Constant network model).",
-   model_none_create,  NULL},
-  {"Vivaldi", "Vivaldi routing",
-   model_vivaldi_create, NULL},
-  {"Cluster", "Cluster routing",
-   model_cluster_create, NULL},
-  {"Torus_Cluster", "Torus Cluster routing",
-   model_torus_cluster_create, NULL},
-  {"Fat_Tree_Cluster", "Fat Tree Cluster routing",
-   model_fat_tree_cluster_create, NULL},
-  {NULL, NULL, NULL, NULL}
+   model_none_create},
+  {"Vivaldi", "Vivaldi routing", model_vivaldi_create},
+  {"Cluster", "Cluster routing", model_cluster_create},
+  {"Torus_Cluster", "Torus Cluster routing", model_torus_cluster_create},
+  {"Fat_Tree_Cluster", "Fat Tree Cluster routing", model_fat_tree_cluster_create},
+  {NULL, NULL, NULL}
 };
 
 /**
@@ -261,8 +257,7 @@ void routing_AS_end()
   if (current_routing == NULL) {
     THROWF(arg_error, 0, "Close an AS, but none was under construction");
   } else {
-    if (current_routing->p_modelDesc->end)
-      current_routing->p_modelDesc->end(current_routing);
+    current_routing->Seal();
     current_routing = current_routing->p_routingFather;
   }
 }

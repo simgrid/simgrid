@@ -44,11 +44,6 @@ AS_t model_dijkstracache_create(void){
   return new simgrid::surf::AsDijkstra(1);
 }
 
-void model_dijkstra_both_end(AS_t as)
-{
-  as->Seal();
-}
-
 /* Utility functions */
 
 namespace simgrid {
