@@ -396,54 +396,6 @@ sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hi
   return result;
 }
 
-
-
-As *AsGeneric::asExist(As *to_find)
-{
-  xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  AsGeneric *elem;
-
-  xbt_dict_foreach(p_routingSons, cursor, key, elem)
-    if (to_find == elem || elem->asExist(to_find))
-      return to_find;
-
-  return NULL;
-}
-
-As *AsGeneric::autonomousSystemExist(char *element)
-{
-  As *element_as, *result, *elem;
-  xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  element_as = ((NetCard*)
-      xbt_lib_get_or_null(as_router_lib, element,
-          ROUTING_ASR_LEVEL))->getRcComponent();
-  result = ((As*) - 1);
-  if (element_as != this)
-    result = asExist(element_as);
-
-  int found = 0;
-  if (result) {
-    xbt_dict_foreach(element_as->p_routingSons, cursor, key, elem) {
-      found = !strcmp(elem->p_name, element);
-      if (found)
-        break;
-    }
-    if (found)
-      return element_as;
-  }
-  return NULL;
-}
-
-As *AsGeneric::processingUnitsExist(char *element)
-{
-  As *element_as = sg_host_by_name(element)->pimpl_netcard ->getRcComponent();
-  if (element_as == this)
-    return element_as;
-  return asExist(element_as);
-}
-
 void AsGeneric::srcDstCheck(NetCard *src, NetCard *dst)
 {
   if (src == NULL || dst == NULL)

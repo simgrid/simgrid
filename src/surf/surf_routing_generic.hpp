@@ -36,9 +36,6 @@ public:
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route) override;
 
   virtual sg_platf_route_cbarg_t newExtendedRoute(e_surf_routing_hierarchy_t hierarchy, sg_platf_route_cbarg_t routearg, int change_order);
-  virtual As *asExist(As *to_find);
-  virtual As *autonomousSystemExist(char *element);
-  virtual As *processingUnitsExist(char *element);
   virtual void srcDstCheck(NetCard *src, NetCard *dst);
 };
 
