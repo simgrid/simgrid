@@ -7,6 +7,8 @@
 #ifndef MC_DATATYPE_H
 #define MC_DATATYPE_H
 
+#include <ucontext.h>
+
 #include "xbt/misc.h"
 #include "xbt/swag.h"
 #include "xbt/fifo.h"
@@ -26,7 +28,7 @@ typedef struct s_mc_transition *mc_transition_t;
 
 typedef struct s_stack_region{
   void *address;
-  void *context;
+  ucontext_t* context;
   size_t size;
   int block;
   int process_index;
