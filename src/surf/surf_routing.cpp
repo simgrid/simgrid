@@ -168,9 +168,8 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   XBT_DEBUG("routing_AS_begin");
   routing_model_description_t model = NULL;
 
-  xbt_assert(!xbt_lib_get_or_null
-             (as_router_lib, AS->id, ROUTING_ASR_LEVEL),
-             "The AS \"%s\" already exists", AS->id);
+  xbt_assert(NULL == xbt_lib_get_or_null(as_router_lib, AS->id, ROUTING_ASR_LEVEL),
+      "Refusing to create a second AS called \"%s\".", AS->id);
 
   _sg_cfg_init_status = 2; /* horrible hack: direct access to the global
                             * controlling the level of configuration to prevent
@@ -253,13 +252,9 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
  */
 void routing_AS_end()
 {
-
-  if (current_routing == NULL) {
-    THROWF(arg_error, 0, "Close an AS, but none was under construction");
-  } else {
-    current_routing->Seal();
-    current_routing = current_routing->p_routingFather;
-  }
+  xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
+  current_routing->Seal();
+  current_routing = current_routing->p_routingFather;
 }
 
 /* Aux Business methods */
