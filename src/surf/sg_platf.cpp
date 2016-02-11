@@ -176,9 +176,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
 
   unsigned int iter;
-  int start, end, i;
-  xbt_dynar_t radical_elements;
-  xbt_dynar_t radical_ends;
 
   if ((cluster->availability_trace && strcmp(cluster->availability_trace, ""))
       || (cluster->state_trace && strcmp(cluster->state_trace, ""))) {
@@ -221,14 +218,13 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   }
 
 
-  current_routing->p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
-
   //Make all hosts
-  radical_elements = xbt_str_split(cluster->radical, ",");
+  xbt_dynar_t radical_elements = xbt_str_split(cluster->radical, ",");
   xbt_dynar_foreach(radical_elements, iter, groups) {
 
-    radical_ends = xbt_str_split(groups, "-");
-    start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+    xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
+    int start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+    int end;
 
     switch (xbt_dynar_length(radical_ends)) {
     case 1:
@@ -241,7 +237,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       surf_parse_error("Malformed radical");
       break;
     }
-    for (i = start; i <= end; i++) {
+    for (int i = start; i <= end; i++) {
       host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
       link_id = bprintf("%s_link_%d", cluster->id, i);
 

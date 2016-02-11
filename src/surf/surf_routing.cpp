@@ -125,9 +125,6 @@ void sg_platf_new_netcard(sg_platf_host_link_cbarg_t netcard)
   xbt_assert(link_up_down.link_up, "Link '%s' not found!",netcard->link_up);
   xbt_assert(link_up_down.link_down, "Link '%s' not found!",netcard->link_down);
 
-  if(!current_routing->p_linkUpDownList)
-    current_routing->p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
-
   // If dynar is is greater than netcard id and if the host_link is already defined
   if((int)xbt_dynar_length(current_routing->p_linkUpDownList) > info->getId() &&
       xbt_dynar_get_as(current_routing->p_linkUpDownList, info->getId(), void*))
@@ -197,13 +194,13 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   new_as->p_hierarchy = SURF_ROUTING_NULL;
   new_as->p_name = xbt_strdup(AS->id);
 
-  simgrid::surf::NetCard *info = new simgrid::surf::NetCardImpl(new_as->p_name, SURF_NETWORK_ELEMENT_AS, current_routing);
+  simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(new_as->p_name, SURF_NETWORK_ELEMENT_AS, current_routing);
   if (current_routing == NULL && routing_platf->p_root == NULL) {
 
     /* it is the first one */
     new_as->p_routingFather = NULL;
     routing_platf->p_root = new_as;
-    info->setId(-1);
+    netcard->setId(-1);
   } else if (current_routing != NULL && routing_platf->p_root != NULL) {
 
     xbt_assert(!xbt_dict_get_or_null
@@ -218,20 +215,20 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     xbt_dict_set(current_routing->p_routingSons, AS->id,
                  (void *) new_as, NULL);
     /* add to the father element list */
-    info->setId(current_routing->parseAS(info));
+    netcard->setId(current_routing->parseAS(netcard));
   } else {
     THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
 
-  xbt_lib_set(as_router_lib, info->getName(), ROUTING_ASR_LEVEL,
-              (void *) info);
-  XBT_DEBUG("Having set name '%s' id '%d'", new_as->p_name, info->getId());
+  xbt_lib_set(as_router_lib, netcard->getName(), ROUTING_ASR_LEVEL,
+              (void *) netcard);
+  XBT_DEBUG("Having set name '%s' id '%d'", new_as->p_name, netcard->getId());
 
   /* set the new current component of the tree */
   current_routing = new_as;
-  current_routing->p_netcard = info;
+  current_routing->p_netcard = netcard;
 
-  simgrid::surf::netcardCreatedCallbacks(info);
+  simgrid::surf::netcardCreatedCallbacks(netcard);
   simgrid::surf::asCreatedCallbacks(new_as);
 }
 
@@ -588,8 +585,6 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   AS.id                    = peer->id;
   AS.routing               = A_surfxml_AS_routing_Cluster;
   sg_platf_new_AS_begin(&AS);
-
-  current_routing->p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
   XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->speed);
   s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;

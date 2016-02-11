@@ -56,7 +56,7 @@ public:
   As *p_routingFather = nullptr;
   xbt_dict_t p_routingSons = xbt_dict_new_homogeneous(NULL);
   NetCard *p_netcard;
-  xbt_dynar_t p_linkUpDownList = NULL;
+  xbt_dynar_t p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
   As(){};
   /* Close that AS: no more content can be added to it */
