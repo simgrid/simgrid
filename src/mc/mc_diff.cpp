@@ -337,7 +337,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   const malloc_info* heapinfos2 = snapshot2->read<malloc_info*>(
     (std::uint64_t)heapinfo_address, simgrid::mc::ProcessIndexMissing);
 
-  while (i1 < state->heaplimit) {
+  while (i1 <= state->heaplimit) {
 
     const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(heap_region1, &heapinfo_temp1, &heapinfos1[i1], sizeof(malloc_info));
     const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(heap_region2, &heapinfo_temp2, &heapinfos2[i1], sizeof(malloc_info));
@@ -401,7 +401,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
       }
 
-      while (i2 < state->heaplimit && !equal) {
+      while (i2 <= state->heaplimit && !equal) {
 
         addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE +
                        (char *) state->std_heap_copy.heapbase;
@@ -486,7 +486,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
 
         }
 
-        while (i2 < state->heaplimit && !equal) {
+        while (i2 <= state->heaplimit && !equal) {
 
           const malloc_info* heapinfo2b = (const malloc_info*) MC_region_read(
             heap_region2, &heapinfo_temp2b, &heapinfos2[i2],
@@ -560,7 +560,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   /* All blocks/fragments are equal to another block/fragment ? */
   size_t i = 1, j = 0;
 
-  for(i = 1; i < state->heaplimit; i++) {
+  for(i = 1; i <= state->heaplimit; i++) {
     const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(
       heap_region1, &heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {
@@ -602,7 +602,7 @@ int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2)
   if (i1 == state->heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap1 : %d", nb_diff1);
 
-  for (i=1; i < state->heaplimit; i++) {
+  for (i=1; i <= state->heaplimit; i++) {
     const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(
       heap_region2, &heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
     if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED) {
