@@ -71,7 +71,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     current_routing->p_hierarchy = SURF_ROUTING_BASE;
 
   simgrid::surf::NetCard *netcard =
-      new simgrid::surf::NetCardImpl(xbt_strdup(host->id), -1, SURF_NETWORK_ELEMENT_HOST, current_routing);
+      new simgrid::surf::NetCardImpl(host->id, SURF_NETWORK_ELEMENT_HOST, current_routing);
 
   netcard->setId(current_routing->parsePU(netcard));
   sg_host_t h = simgrid::s4u::Host::by_name_or_create(host->id);
@@ -129,8 +129,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
 
-  simgrid::surf::NetCard *info = new simgrid::surf::NetCardImpl(
-    xbt_strdup(router->id), -1, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
+  simgrid::surf::NetCard *info = new simgrid::surf::NetCardImpl(router->id, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
   info->setId(current_routing->parsePU(info));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'", router->id, info->getId());

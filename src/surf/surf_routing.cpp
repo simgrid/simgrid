@@ -197,11 +197,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   new_as->p_hierarchy = SURF_ROUTING_NULL;
   new_as->p_name = xbt_strdup(AS->id);
 
-  simgrid::surf::NetCard *info =
-    new simgrid::surf::NetCardImpl(xbt_strdup(new_as->p_name),
-                                            -1,
-                                            SURF_NETWORK_ELEMENT_AS,
-                                            current_routing);
+  simgrid::surf::NetCard *info = new simgrid::surf::NetCardImpl(new_as->p_name, SURF_NETWORK_ELEMENT_AS, current_routing);
   if (current_routing == NULL && routing_platf->p_root == NULL) {
 
     /* it is the first one */
