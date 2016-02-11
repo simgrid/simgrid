@@ -75,10 +75,6 @@ const char *MSG_environment_as_get_property_value(msg_as_t as, const char *name)
   return (char*) xbt_dict_get_or_null(dict, name);
 }
 
-const char *MSG_environment_as_get_model(msg_as_t as) {
-  return surf_AS_get_model(as);
-}
-
 xbt_dynar_t MSG_environment_as_get_hosts(msg_as_t as) {
   return surf_AS_get_hosts(as);
 }

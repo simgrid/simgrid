@@ -876,11 +876,6 @@ xbt_dict_t surf_AS_get_routing_sons(simgrid::surf::As *as)
   return as->p_routingSons;
 }
 
-const char *surf_AS_get_model(simgrid::surf::As *as)
-{
-  return as->p_modelDesc->name;
-}
-
 xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)
 {
   xbt_dynar_t elms = as->p_indexNetworkElm;
