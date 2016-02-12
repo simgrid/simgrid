@@ -23,7 +23,7 @@ class XBT_PRIVATE AsFloyd;
 /** Floyd routing data: slow initialization, fast lookup, lesser memory requirements, shortest path routing only */
 class AsFloyd: public AsGeneric {
 public:
-  AsFloyd();
+  AsFloyd(const char *name);
   ~AsFloyd();
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;

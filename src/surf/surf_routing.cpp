@@ -21,18 +21,28 @@
 #include "src/surf/surf_routing_full.hpp"
 #include "src/surf/surf_routing_vivaldi.hpp"
 
-/*************
- * Callbacks *
- *************/
 
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::signal<void(simgrid::surf::NetCard*)> netcardCreatedCallbacks;
-simgrid::xbt::signal<void(simgrid::surf::As*)> asCreatedCallbacks;
+  /* Callbacks */
+  simgrid::xbt::signal<void(simgrid::surf::NetCard*)> netcardCreatedCallbacks;
+  simgrid::xbt::signal<void(simgrid::surf::As*)> asCreatedCallbacks;
 
-}
-}
+  As::As(const char*name)
+  : p_name(xbt_strdup(name))
+  {}
+  As::~As()
+  {
+    xbt_dict_free(&p_routingSons);
+    xbt_dynar_free(&p_indexNetworkElm);
+    xbt_dynar_free(&p_linkUpDownList);
+    xbt_free(p_name);
+    if (p_netcard)
+      delete p_netcard;
+  }
+
+}} // namespace simgrid::surf
 
 /**
  * @ingroup SURF_build_api
@@ -77,19 +87,6 @@ simgrid::surf::As* routing_get_current()
 {
   return current_routing;
 }
-
-/* this lines are only for replace use like index in the model table */
-typedef enum {
-  SURF_MODEL_FULL = 0,
-  SURF_MODEL_FLOYD,
-  SURF_MODEL_DIJKSTRA,
-  SURF_MODEL_DIJKSTRACACHE,
-  SURF_MODEL_NONE,
-  SURF_MODEL_VIVALDI,
-  SURF_MODEL_CLUSTER,
-  SURF_MODEL_TORUS_CLUSTER,
-  SURF_MODEL_FAT_TREE_CLUSTER,
-} e_routing_types;
 
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t netcard_arg)
@@ -152,38 +149,33 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
                             * any further config now that we created some real content */
 
-  simgrid::surf::As *new_as = NULL;
 
   /* search the routing model */
+  simgrid::surf::As *new_as = NULL;
   switch(AS->routing){
-    case A_surfxml_AS_routing_Cluster:        new_as = new simgrid::surf::AsCluster();        break;
-    case A_surfxml_AS_routing_ClusterTorus:   new_as = new simgrid::surf::AsClusterTorus();   break;
-    case A_surfxml_AS_routing_ClusterFatTree: new_as = new simgrid::surf::AsClusterFatTree(); break;
-    case A_surfxml_AS_routing_Dijkstra:       new_as = new simgrid::surf::AsDijkstra(0);      break;
-    case A_surfxml_AS_routing_DijkstraCache:  new_as = new simgrid::surf::AsDijkstra(1);      break;
-    case A_surfxml_AS_routing_Floyd:          new_as = new simgrid::surf::AsFloyd();          break;
-    case A_surfxml_AS_routing_Full:           new_as = new simgrid::surf::AsFull();           break;
-    case A_surfxml_AS_routing_None:           new_as = new simgrid::surf::AsNone();           break;
-    case A_surfxml_AS_routing_Vivaldi:        new_as = new simgrid::surf::AsVivaldi();        break;
-    default:                                  xbt_die("Not a valid model!");                  break;
+    case A_surfxml_AS_routing_Cluster:        new_as = new simgrid::surf::AsCluster(AS->id);        break;
+    case A_surfxml_AS_routing_ClusterTorus:   new_as = new simgrid::surf::AsClusterTorus(AS->id);   break;
+    case A_surfxml_AS_routing_ClusterFatTree: new_as = new simgrid::surf::AsClusterFatTree(AS->id); break;
+    case A_surfxml_AS_routing_Dijkstra:       new_as = new simgrid::surf::AsDijkstra(AS->id, 0);    break;
+    case A_surfxml_AS_routing_DijkstraCache:  new_as = new simgrid::surf::AsDijkstra(AS->id, 1);    break;
+    case A_surfxml_AS_routing_Floyd:          new_as = new simgrid::surf::AsFloyd(AS->id);          break;
+    case A_surfxml_AS_routing_Full:           new_as = new simgrid::surf::AsFull(AS->id);           break;
+    case A_surfxml_AS_routing_None:           new_as = new simgrid::surf::AsNone(AS->id);           break;
+    case A_surfxml_AS_routing_Vivaldi:        new_as = new simgrid::surf::AsVivaldi(AS->id);        break;
+    default:                                  xbt_die("Not a valid model!");                        break;
   }
 
   /* make a new routing component */
-
-  new_as->p_hierarchy = SURF_ROUTING_NULL;
-  new_as->p_name = xbt_strdup(AS->id);
-
   simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(new_as->p_name, SURF_NETWORK_ELEMENT_AS, current_routing);
-  if (current_routing == NULL && routing_platf->p_root == NULL) {
 
+  if (current_routing == NULL && routing_platf->p_root == NULL) {
     /* it is the first one */
     new_as->p_routingFather = NULL;
     routing_platf->p_root = new_as;
     netcard->setId(-1);
   } else if (current_routing != NULL && routing_platf->p_root != NULL) {
 
-    xbt_assert(!xbt_dict_get_or_null
-               (current_routing->p_routingSons, AS->id),
+    xbt_assert(!xbt_dict_get_or_null(current_routing->p_routingSons, AS->id),
                "The AS \"%s\" already exists", AS->id);
     /* it is a part of the tree */
     new_as->p_routingFather = current_routing;

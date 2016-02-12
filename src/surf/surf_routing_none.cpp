@@ -11,6 +11,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
 
 namespace simgrid {
 namespace surf {
+AsNone::AsNone(const char*name)
+  : As(name)
+{}
+AsNone::~AsNone()
+{}
 
 xbt_dynar_t AsNone::getOneLinkRoutes() {
   return NULL;

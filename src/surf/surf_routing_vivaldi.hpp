@@ -25,7 +25,7 @@ class XBT_PRIVATE AsVivaldi;
 
 class AsVivaldi: public AsGeneric {
 public:
-  AsVivaldi() : AsGeneric() {};
+  AsVivaldi(const char *name);
   void Seal() override {}; // nothing to do
   ~AsVivaldi() {};
 

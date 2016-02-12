@@ -116,7 +116,7 @@ public:
  */
 class XBT_PRIVATE AsClusterFatTree : public AsCluster {
 public:
-  AsClusterFatTree();
+  AsClusterFatTree(const char*name);
   ~AsClusterFatTree();
   virtual void getRouteAndLatency(NetCard *src, NetCard *dst,
                                   sg_platf_route_cbarg_t into,
@@ -140,7 +140,7 @@ public:
 private:
   
   //description of a PGFT (TODO : better doc)
-  unsigned int levels;
+  unsigned int levels = 0;
   std::vector<unsigned int> lowerLevelNodesNumber; // number of children by node
   std::vector<unsigned int> upperLevelNodesNumber; // number of parents by node
   std::vector<unsigned int> lowerLevelPortsNumber; // ports between each level l and l-1

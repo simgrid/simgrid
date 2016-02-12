@@ -23,7 +23,7 @@ class XBT_PRIVATE AsFull;
 class AsFull: public AsGeneric {
 public:
 
-  AsFull() {}
+  AsFull(const char*name);
   void Seal() override;
   ~AsFull();
 

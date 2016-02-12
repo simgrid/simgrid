@@ -48,27 +48,22 @@ public:
  */
 class As {
 public:
-  xbt_dynar_t p_indexNetworkElm = xbt_dynar_new(sizeof(char*),NULL);
-  xbt_dict_t p_bypassRoutes;    /* store bypass routes */
-  e_surf_routing_hierarchy_t p_hierarchy;
+  As(const char*name);
+  /** @brief Close that AS: no more content can be added to it */
+  virtual void Seal()=0;
+  virtual ~As();
+
   char *p_name = nullptr;
+  NetCard *p_netcard = nullptr;
   As *p_routingFather = nullptr;
+
+  xbt_dynar_t p_indexNetworkElm = xbt_dynar_new(sizeof(char*),NULL);
+  xbt_dict_t p_bypassRoutes = nullptr;
+  e_surf_routing_hierarchy_t p_hierarchy = SURF_ROUTING_NULL;
   xbt_dict_t p_routingSons = xbt_dict_new_homogeneous(NULL);
-  NetCard *p_netcard;
   xbt_dynar_t p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
-  As(){};
-  /* Close that AS: no more content can be added to it */
-  virtual void Seal()=0;
 
-  virtual ~As(){
-    xbt_dict_free(&p_routingSons);
-    xbt_dynar_free(&p_indexNetworkElm);
-    xbt_dynar_free(&p_linkUpDownList);
-    xbt_free(p_name);
-    if (p_netcard)
-      delete p_netcard;
-  };
 
   /**
    * @brief Get the characteristics of the routing path between two points

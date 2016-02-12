@@ -15,8 +15,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 
 namespace simgrid {
 namespace surf {
+  AsCluster::AsCluster(const char*name)
+    : AsNone(name)
+  {}
 
-/* Business methods */
 void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;

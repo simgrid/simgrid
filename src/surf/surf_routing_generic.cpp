@@ -47,11 +47,14 @@ void AsGeneric::getRouteAndLatency(NetCard */*src*/, NetCard */*dst*/, sg_platf_
   THROW_IMPOSSIBLE;
 }
 
-AsGeneric::AsGeneric() {
+AsGeneric::AsGeneric(const char*name)
+  : AsNone(name)
+{
   p_bypassRoutes = xbt_dict_new_homogeneous((void (*)(void *)) routing_route_free);
 }
 
-AsGeneric::~AsGeneric() {
+AsGeneric::~AsGeneric()
+{
   xbt_dict_free(&p_bypassRoutes);
 }
 

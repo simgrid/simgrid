@@ -396,10 +396,9 @@ AsDijkstra::~AsDijkstra()
 
 /* Creation routing model functions */
 
-AsDijkstra::AsDijkstra() : AsGeneric() {
-}
-
-AsDijkstra::AsDijkstra(bool cached) : AsGeneric(), m_cached(cached)
+AsDijkstra::AsDijkstra(const char*name, bool cached)
+  : AsGeneric(name)
+  , m_cached(cached)
 {
   p_routeGraph = NULL;
   p_graphNodeMap = NULL;

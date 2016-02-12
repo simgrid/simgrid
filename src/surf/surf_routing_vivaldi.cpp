@@ -24,6 +24,9 @@ static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dyn
 
 namespace simgrid {
 namespace surf {
+  AsVivaldi::AsVivaldi(const char *name)
+    : AsGeneric(name)
+  {}
 
 void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {

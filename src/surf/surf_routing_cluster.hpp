@@ -26,7 +26,7 @@ class XBT_PRIVATE AsCluster;
 
 class AsCluster: public AsNone {
 public:
-  AsCluster() {}
+  AsCluster(const char*name);
   void Seal() override {}; // nothing to do
 
   virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;

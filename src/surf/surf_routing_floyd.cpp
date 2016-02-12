@@ -17,7 +17,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 namespace simgrid {
 namespace surf {
 
-AsFloyd::AsFloyd(): AsGeneric() {
+AsFloyd::AsFloyd(const char*name)
+  : AsGeneric(name)
+{
   p_predecessorTable = NULL;
   p_costTable = NULL;
   p_linkTable = NULL;

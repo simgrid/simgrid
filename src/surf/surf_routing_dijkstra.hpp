@@ -37,10 +37,9 @@ class XBT_PRIVATE AsDijkstra;
 /** Dijkstra routing data: fast initialization, slow lookup, small memory requirements, shortest path routing only */
 class AsDijkstra : public AsGeneric {
 public:
-  AsDijkstra();
+  AsDijkstra(const char*name, bool cached);
   void Seal() override;
 
-  AsDijkstra(bool cached);
   ~AsDijkstra();
   xbt_node_t routeGraphNewNode(int id, int graph_id);
   graph_node_map_element_t nodeMapSearch(int id);
