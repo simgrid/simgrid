@@ -456,13 +456,13 @@ void routing_model_create( void *loopback)
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
 
-void routing_cluster_add_backbone(void* bb) {
+void routing_cluster_add_backbone(simgrid::surf::Link* bb) {
   simgrid::surf::AsCluster *cluster = dynamic_cast<simgrid::surf::AsCluster*>(current_routing);
 
   xbt_assert(cluster, "Only hosts from Cluster can get a backbone.");
   xbt_assert(nullptr == cluster->p_backbone, "Cluster %s already has a backbone link!", cluster->name_);
 
-  cluster->p_backbone = static_cast<simgrid::surf::Link*>(bb);
+  cluster->p_backbone = bb;
   XBT_DEBUG("Add a backbone to AS '%s'", current_routing->name_);
 }
 

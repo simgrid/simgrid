@@ -1004,7 +1004,7 @@ void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *fi
 /********** Routing **********/
 void routing_AS_begin(sg_platf_AS_cbarg_t AS);
 void routing_AS_end(void);
-void routing_cluster_add_backbone(void* bb);
+void routing_cluster_add_backbone(Link* bb);
 surf_As* routing_get_current();
 
 SG_END_DECL()
