@@ -75,7 +75,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
   int isrc;
-  int table_size = xbt_dynar_length(p_indexNetworkElm);
+  int table_size = xbt_dynar_length(vertices_);
 
   NetCard *src;
   xbt_node_t current, previous, backboneNode = NULL, routerNode;
@@ -95,7 +95,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   }
 
   for (isrc = 0; isrc < table_size; isrc++) {
-    src = xbt_dynar_get_as(p_indexNetworkElm, isrc, NetCard*);
+    src = xbt_dynar_get_as(vertices_, isrc, NetCard*);
 
     if (src->getRcType() != SURF_NETWORK_ELEMENT_ROUTER) {
       previous = new_xbt_graph_node(graph, src->getName(), nodes);

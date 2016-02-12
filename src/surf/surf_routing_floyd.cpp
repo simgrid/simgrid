@@ -28,7 +28,7 @@ AsFloyd::AsFloyd(const char*name)
 AsFloyd::~AsFloyd(){
   int i, j;
   int table_size;
-  table_size = (int)xbt_dynar_length(p_indexNetworkElm);
+  table_size = (int)xbt_dynar_length(vertices_);
   if (p_linkTable == NULL) // Dealing with a parse error in the file?
     return;
   /* Delete link_table */
@@ -53,12 +53,12 @@ xbt_dynar_t AsFloyd::getOneLinkRoutes()
 
   int src,dst;
   sg_netcard_t src_elm, dst_elm;
-  int table_size = xbt_dynar_length(p_indexNetworkElm);
+  int table_size = xbt_dynar_length(vertices_);
   for(src=0; src < table_size; src++) {
     for(dst=0; dst< table_size; dst++) {
       xbt_dynar_reset(route->link_list);
-      src_elm = xbt_dynar_get_as(p_indexNetworkElm, src, NetCard*);
-      dst_elm = xbt_dynar_get_as(p_indexNetworkElm, dst, NetCard*);
+      src_elm = xbt_dynar_get_as(vertices_, src, NetCard*);
+      dst_elm = xbt_dynar_get_as(vertices_, dst, NetCard*);
       this->getRouteAndLatency(src_elm, dst_elm, route, NULL);
 
       if (xbt_dynar_length(route->link_list) == 1) {
@@ -82,7 +82,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
 {
 
   /* set utils vars */
-  size_t table_size = xbt_dynar_length(p_indexNetworkElm);
+  size_t table_size = xbt_dynar_length(vertices_);
 
   this->srcDstCheck(src, dst);
 
@@ -144,7 +144,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
   int as_route = 0;
 
   /* set the size of table routing */
-  int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
+  int table_size = (int)xbt_dynar_length(vertices_);
   NetCard *src_net_elm, *dst_net_elm;
 
   src_net_elm = sg_netcard_by_name_or_null(src);
@@ -265,7 +265,7 @@ void AsFloyd::Seal(){
   unsigned int i, j, a, b, c;
 
   /* set the size of table routing */
-  size_t table_size = xbt_dynar_length(p_indexNetworkElm);
+  size_t table_size = xbt_dynar_length(vertices_);
 
   if(!p_linkTable) {
     /* Create Cost, Predecessor and Link tables */

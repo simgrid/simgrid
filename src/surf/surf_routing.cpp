@@ -36,7 +36,7 @@ namespace surf {
   As::~As()
   {
     xbt_dict_free(&sons_);
-    xbt_dynar_free(&p_indexNetworkElm);
+    xbt_dynar_free(&vertices_);
     xbt_dynar_free(&upDownLinks);
     xbt_free(name_);
     if (netcard_)
@@ -45,8 +45,8 @@ namespace surf {
 
   int As::addComponent(NetCard *elm) {
     XBT_DEBUG("Load component \"%s\"", elm->getName());
-    xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
-    return xbt_dynar_length(p_indexNetworkElm)-1;
+    xbt_dynar_push_as(vertices_, NetCard*, elm);
+    return xbt_dynar_length(vertices_)-1;
   }
 
 }} // namespace simgrid::surf
@@ -856,7 +856,7 @@ xbt_dict_t surf_AS_get_routing_sons(simgrid::surf::As *as)
 
 xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)
 {
-  xbt_dynar_t elms = as->p_indexNetworkElm;
+  xbt_dynar_t elms = as->vertices_;
   int count = xbt_dynar_length(elms);
   xbt_dynar_t res =  xbt_dynar_new(sizeof(sg_host_t), NULL);
   for (int index = 0; index < count; index++) {
