@@ -54,6 +54,7 @@ ModelChecker::ModelChecker(pid_t pid, int socket) :
   page_store_(500),
   parent_snapshot_(nullptr)
 {
+  process_ = std::unique_ptr<Process>(new Process(pid_, socket_));
 }
 
 ModelChecker::~ModelChecker()
@@ -109,8 +110,7 @@ void ModelChecker::start()
   if (res < 0 || !WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
-  assert(process_ == nullptr);
-  process_ = std::unique_ptr<Process>(new Process(pid_, socket_));
+
   // TODO, avoid direct dependency on sg_cfg
   process_->privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
 
