@@ -13,6 +13,7 @@
 #include "storage_interface.hpp"
 #include "src/surf/platform.hpp"
 #include "surf/surfxml_parse_values.h"
+#include "src/surf/surf_routing_vivaldi.hpp"
 
 /*************
  * Callbacks *
@@ -102,9 +103,9 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t netcard_arg)
 {
   simgrid::surf::NetCard *netcard = sg_host_by_name(netcard_arg->id)->pimpl_netcard;
   xbt_assert(netcard, "Host '%s' not found!", netcard_arg->id);
-  xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER] ||
-      current_routing->p_modelDesc == &routing_models[SURF_MODEL_VIVALDI],
-      "You have to be in model Cluster to use tag host_link!");
+  xbt_assert(dynamic_cast<simgrid::surf::AsCluster*>(current_routing) ||
+             dynamic_cast<simgrid::surf::AsVivaldi*>(current_routing),
+      "Only hosts from Cluster and Vivaldi ASes can get a host_link.");
 
   s_surf_parsing_link_up_down_t link_up_down;
   link_up_down.link_up = Link::byName(netcard_arg->link_up);
@@ -178,7 +179,6 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   /* make a new routing component */
   simgrid::surf::As *new_as = model->create();
 
-  new_as->p_modelDesc = model;
   new_as->p_hierarchy = SURF_ROUTING_NULL;
   new_as->p_name = xbt_strdup(AS->id);
 
@@ -474,11 +474,12 @@ void routing_model_create( void *loopback)
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */
 
 void routing_cluster_add_backbone(void* bb) {
-  xbt_assert(current_routing->p_modelDesc == &routing_models[SURF_MODEL_CLUSTER],
-        "You have to be in model Cluster to use tag backbone!");
-  xbt_assert(!static_cast<simgrid::surf::AsCluster*>(current_routing)->p_backbone, "The backbone link is already defined!");
-  static_cast<simgrid::surf::AsCluster*>(current_routing)->p_backbone =
-    static_cast<simgrid::surf::Link*>(bb);
+  simgrid::surf::AsCluster *cluster = dynamic_cast<simgrid::surf::AsCluster*>(current_routing);
+
+  xbt_assert(cluster, "Only hosts from Cluster can get a backbone.");
+  xbt_assert(nullptr == cluster->p_backbone, "Cluster %s already has a backbone link!", cluster->p_name);
+
+  cluster->p_backbone = static_cast<simgrid::surf::Link*>(bb);
   XBT_DEBUG("Add a backbone to AS '%s'", current_routing->p_name);
 }
 

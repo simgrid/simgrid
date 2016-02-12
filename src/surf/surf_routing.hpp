@@ -50,7 +50,6 @@ class As {
 public:
   xbt_dynar_t p_indexNetworkElm = xbt_dynar_new(sizeof(char*),NULL);
   xbt_dict_t p_bypassRoutes;    /* store bypass routes */
-  routing_model_description_t p_modelDesc;
   e_surf_routing_hierarchy_t p_hierarchy;
   char *p_name = nullptr;
   As *p_routingFather = nullptr;
