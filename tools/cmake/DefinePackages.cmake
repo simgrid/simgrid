@@ -928,7 +928,6 @@ set(DOC_TOOLS
 
 # these files get copied automatically to the html documentation
 set(DOC_IMG
-  ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css
   ${CMAKE_HOME_DIRECTORY}/doc/sc3-description.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/AS_hierarchy.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
@@ -974,7 +973,6 @@ set(txt_files
   LICENSE-LGPL-2.1
   NEWS
   TODO
-  configure
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
