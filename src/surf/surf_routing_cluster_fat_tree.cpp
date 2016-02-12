@@ -18,11 +18,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_fat_tree, surf, "Routing for fat trees");
 
-AS_t model_fat_tree_cluster_create(void)
-{
-  return new simgrid::surf::AsClusterFatTree();
-}
-
 namespace simgrid {
 namespace surf {
 

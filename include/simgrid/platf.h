@@ -31,11 +31,6 @@ typedef enum {
   SURF_CLUSTER_TORUS = 0
 } e_surf_cluster_topology_t;
 
-
-typedef struct s_model_type {
-  AS_t (*create) ();
-} s_routing_model_description_t, *routing_model_description_t;
-
 /* ***************************************** */
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions

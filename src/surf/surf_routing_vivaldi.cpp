@@ -22,11 +22,6 @@ static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dyn
   return (src_coord-dst_coord)*(src_coord-dst_coord);
 }
 
-AS_t model_vivaldi_create(void)
-{
-  return new simgrid::surf::AsVivaldi();
-}
-
 namespace simgrid {
 namespace surf {
 

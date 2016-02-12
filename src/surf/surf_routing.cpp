@@ -13,6 +13,12 @@
 #include "storage_interface.hpp"
 #include "src/surf/platform.hpp"
 #include "surf/surfxml_parse_values.h"
+
+#include "src/surf/surf_routing_cluster_torus.hpp"
+#include "src/surf/surf_routing_cluster_fat_tree.hpp"
+#include "src/surf/surf_routing_dijkstra.hpp"
+#include "src/surf/surf_routing_floyd.hpp"
+#include "src/surf/surf_routing_full.hpp"
 #include "src/surf/surf_routing_vivaldi.hpp"
 
 /*************
@@ -85,19 +91,6 @@ typedef enum {
   SURF_MODEL_FAT_TREE_CLUSTER,
 } e_routing_types;
 
-struct s_model_type routing_models[] = {
-  {model_full_create},
-  {model_floyd_create},
-  {model_dijkstra_create},
-  {model_dijkstracache_create},
-  {model_none_create},
-  {model_vivaldi_create},
-  {model_cluster_create},
-  {model_torus_cluster_create},
-  {model_fat_tree_cluster_create},
-  {NULL}
-};
-
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */
 void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t netcard_arg)
 {
@@ -152,32 +145,30 @@ void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 {
   XBT_DEBUG("routing_AS_begin");
-  routing_model_description_t model = NULL;
 
   xbt_assert(NULL == xbt_lib_get_or_null(as_router_lib, AS->id, ROUTING_ASR_LEVEL),
       "Refusing to create a second AS called \"%s\".", AS->id);
 
-  _sg_cfg_init_status = 2; /* horrible hack: direct access to the global
-                            * controlling the level of configuration to prevent
-                            * any further config */
+  _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
+                            * any further config now that we created some real content */
+
+  simgrid::surf::As *new_as = NULL;
 
   /* search the routing model */
   switch(AS->routing){
-    case A_surfxml_AS_routing_Cluster:               model = &routing_models[SURF_MODEL_CLUSTER];break;
-    case A_surfxml_AS_routing_ClusterTorus:    model = &routing_models[SURF_MODEL_TORUS_CLUSTER];break;
-    case A_surfxml_AS_routing_ClusterFatTree:  model = &routing_models[SURF_MODEL_FAT_TREE_CLUSTER];break;
-    case A_surfxml_AS_routing_Dijkstra:              model = &routing_models[SURF_MODEL_DIJKSTRA];break;
-    case A_surfxml_AS_routing_DijkstraCache:         model = &routing_models[SURF_MODEL_DIJKSTRACACHE];break;
-    case A_surfxml_AS_routing_Floyd:                 model = &routing_models[SURF_MODEL_FLOYD];break;
-    case A_surfxml_AS_routing_Full:                  model = &routing_models[SURF_MODEL_FULL];break;
-    case A_surfxml_AS_routing_None:                  model = &routing_models[SURF_MODEL_NONE];break;
-    case A_surfxml_AS_routing_Vivaldi:               model = &routing_models[SURF_MODEL_VIVALDI];break;
-    default: xbt_die("Not a valid model!!!");
-    break;
+    case A_surfxml_AS_routing_Cluster:        new_as = new simgrid::surf::AsCluster();        break;
+    case A_surfxml_AS_routing_ClusterTorus:   new_as = new simgrid::surf::AsClusterTorus();   break;
+    case A_surfxml_AS_routing_ClusterFatTree: new_as = new simgrid::surf::AsClusterFatTree(); break;
+    case A_surfxml_AS_routing_Dijkstra:       new_as = new simgrid::surf::AsDijkstra(0);      break;
+    case A_surfxml_AS_routing_DijkstraCache:  new_as = new simgrid::surf::AsDijkstra(1);      break;
+    case A_surfxml_AS_routing_Floyd:          new_as = new simgrid::surf::AsFloyd();          break;
+    case A_surfxml_AS_routing_Full:           new_as = new simgrid::surf::AsFull();           break;
+    case A_surfxml_AS_routing_None:           new_as = new simgrid::surf::AsNone();           break;
+    case A_surfxml_AS_routing_Vivaldi:        new_as = new simgrid::surf::AsVivaldi();        break;
+    default:                                  xbt_die("Not a valid model!");                  break;
   }
 
   /* make a new routing component */
-  simgrid::surf::As *new_as = model->create();
 
   new_as->p_hierarchy = SURF_ROUTING_NULL;
   new_as->p_name = xbt_strdup(AS->id);

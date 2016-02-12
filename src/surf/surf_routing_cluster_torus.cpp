@@ -25,11 +25,6 @@ inline unsigned int *rankId_to_coords(int rankId, xbt_dynar_t dimensions)
 }
 
 
-AS_t model_torus_cluster_create(void)
-{
-  return new simgrid::surf::AsClusterTorus();
-}
-
 namespace simgrid {
   namespace surf {
     AsClusterTorus::AsClusterTorus():AsCluster() {

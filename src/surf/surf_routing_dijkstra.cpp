@@ -36,14 +36,6 @@ static void graph_edge_data_free(void *e) // FIXME: useless code duplication
   }
 }
 
-AS_t model_dijkstra_create(void){
-  return new simgrid::surf::AsDijkstra(0);
-}
-
-AS_t model_dijkstracache_create(void){
-  return new simgrid::surf::AsDijkstra(1);
-}
-
 /* Utility functions */
 
 namespace simgrid {

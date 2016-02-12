@@ -12,11 +12,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
 #define TO_ROUTE_FULL(i,j) p_routingTable[(i)+(j)*table_size]
 
-AS_t model_full_create(void)
-{
-  return new simgrid::surf::AsFull();
-}
-
 namespace simgrid {
 namespace surf {
 void AsFull::Seal() {

@@ -14,11 +14,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 #define TO_FLOYD_PRED(i,j) (p_predecessorTable)[(i)+(j)*table_size]
 #define TO_FLOYD_LINK(i,j) (p_linkTable)[(i)+(j)*table_size]
 
-AS_t model_floyd_create(void)
-{
-  return new simgrid::surf::AsFloyd();
-}
-
 namespace simgrid {
 namespace surf {
 
