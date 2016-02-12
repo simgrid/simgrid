@@ -35,7 +35,7 @@ class RoutingPlatf;
 class NetCard {
 public:
   virtual ~NetCard(){};
-  virtual int getId()=0; // Our rank in the vertices_ array of our englobing AS.
+  virtual int getId()=0; // Our rank in the vertices_ array of our container AS.
   virtual int *getIdPtr()=0;
   virtual void setId(int id)=0;
   virtual char *getName()=0;
