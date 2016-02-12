@@ -45,9 +45,6 @@
 #cmakedefine __VISUALC__ @__VISUALC__@
 #cmakedefine __BORLANDC__ @__BORLANDC__@
 #cmakedefine APPLE @APPLE@
-#ifdef _MSC_VER
-	#define HAVE_VA_COPY
-#endif
 /* Set to true if enable_model-checking is true */
 #cmakedefine MMALLOC_WANT_OVERRIDE_LEGACY @MMALLOC_WANT_OVERRIDE_LEGACY@
 #cmakedefine HAVE_MC @HAVE_MC@
@@ -70,15 +67,6 @@
 /* Path to the addr2line tool */
 #cmakedefine ADDR2LINE "@ADDR2LINE@"
 
-/* Predefined possible va_copy() implementation (id: ASP) */
-#cmakedefine __VA_COPY_USE_ASP(d, s) @__VA_COPY_USE_ASP@
-
-/* Predefined possible va_copy() implementation (id: ASS) */
-#cmakedefine __VA_COPY_USE_ASS(d, s) @__VA_COPY_USE_ASS@
-
-/* Predefined possible va_copy() implementation (id: C99) */
-#cmakedefine __VA_COPY_USE_C99(d, s) @__VA_COPY_USE_C99@
-
 /* Define if xbt contexts are based on our threads implementation or not */
 #cmakedefine HAVE_THREAD_CONTEXTS @HAVE_THREAD_CONTEXTS@
 
@@ -87,21 +75,6 @@
 
 /* Define if xbt contexts are based on ucontext or not */
 #cmakedefine HAVE_UCONTEXT_CONTEXTS @HAVE_UCONTEXT_CONTEXTS@
-
-/* Predefined possible va_copy() implementation (id: CPP) */
-#cmakedefine __VA_COPY_USE_CPP(d, s) @__VA_COPY_USE_CPP@
-
-/* Predefined possible va_copy() implementation (id: CPS) */
-#cmakedefine __VA_COPY_USE_CPS(d, s) @__VA_COPY_USE_CPS@
-
-/* Predefined possible va_copy() implementation (id: GCB) */
-#cmakedefine __VA_COPY_USE_GCB(d, s) @__VA_COPY_USE_GCB@
-
-/* Predefined possible va_copy() implementation (id: GCH) */
-#cmakedefine __VA_COPY_USE_GCH(d, s) @__VA_COPY_USE_GCH@
-
-/* Predefined possible va_copy() implementation (id: GCM) */
-#cmakedefine __VA_COPY_USE_GCM(d, s) @__VA_COPY_USE_GCM@
 
 /* Used to select the flavor of assembly that we need today */
 #cmakedefine PROCESSOR_i686 @PROCESSOR_i686@
@@ -216,10 +189,6 @@
 /* Define to 1 if you have the <valgrind/valgrind.h> header file. */
 #cmakedefine HAVE_VALGRIND_VALGRIND_H @HAVE_VALGRIND_VALGRIND_H@
 
-/* Define if va_copy() macro exists (and no fallback implementation is
-   required) */
-#cmakedefine HAVE_VA_COPY @HAVE_VA_COPY@
-
 /* Define to 1 if you have the `vsnprintf' function. */
 #cmakedefine HAVE_VSNPRINTF @HAVE_VSNPRINTF@
 
@@ -274,22 +243,6 @@
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */
 #cmakedefine YYTEXT_POINTER 
-
-/* Optional va_copy() implementation activation */
-#ifndef HAVE_VA_COPY
-#define va_copy(d, s) __VA_COPY_USE(d, s)
-#endif
-/* Define to id of used va_copy() implementation */
-#cmakedefine __VA_COPY_USE(d, s) @__VA_COPY_USE@
-
-/* Define to empty if `const' does not conform to ANSI C. */
-#cmakedefine const @const@
-
-/* Define to `__inline__' or `__inline' if that's what the C compiler
-   calls it, or to nothing if 'inline' is not supported under any name.  */
-#ifndef __cplusplus
-#cmakedefine inline @inline@
-#endif
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #cmakedefine size_t @size_t@
