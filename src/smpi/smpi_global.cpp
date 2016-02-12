@@ -99,16 +99,16 @@ void smpi_process_init(int *argc, char ***argv)
     MPI_Comm* temp_comm_world;
     xbt_bar_t temp_bar;
     smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world ,&temp_bar);
-    data = smpi_process_remote_data(index);
-    data->comm_world = temp_comm_world;
+    data              = smpi_process_remote_data(index);
+    data->comm_world  = temp_comm_world;
     if(temp_bar != NULL) data->finalization_barrier = temp_bar;
-    data->index = index;
+    data->index       = index;
     data->instance_id = instance_id;
-    data->replaying = 0;
+    data->replaying   = 0;
     //xbt_free(simcall_process_get_data(proc));
 
     simdata_process_t simdata = static_cast<simdata_process_t>(simcall_process_get_data(proc));
-    simdata->data = data;
+    simdata->data             = data;
 
     if (*argc > 3) {
       free((*argv)[1]);
