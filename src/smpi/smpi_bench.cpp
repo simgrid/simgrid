@@ -184,7 +184,9 @@ void smpi_switch_data_segment(int dest);
 
 void smpi_bench_begin(void)
 {
-  smpi_switch_data_segment(smpi_process_index());
+  if (smpi_privatize_global_variables) {
+    smpi_switch_data_segment(smpi_process_index());
+  }
 
   if (MC_is_active() || MC_record_replay_is_active())
     return;
