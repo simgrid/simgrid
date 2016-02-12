@@ -738,11 +738,12 @@ endif()
 
 ### check for stackgrowth
 if (NOT CMAKE_CROSSCOMPILING)
-  try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
+  try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
     ${CMAKE_BINARY_DIR}
     ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
     RUN_OUTPUT_VARIABLE stack
-    )
+    COPY_FILE test_stackgrowth
+  )
 endif()
 if("${stack}" STREQUAL "down")
   set(PTH_STACKGROWTH "-1")
