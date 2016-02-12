@@ -31,7 +31,7 @@ void AsFull::Seal() {
     p_routingTable = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Add the loopback if needed */
-  if (routing_platf->p_loopback && p_hierarchy == SURF_ROUTING_BASE) {
+  if (routing_platf->p_loopback && hierarchy_ == SURF_ROUTING_BASE) {
     for (i = 0; i < table_size; i++) {
       e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {
@@ -76,13 +76,13 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
         if (xbt_dynar_length(route->link_list) == 1) {
           void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
           Onelink *onelink;
-          if (p_hierarchy == SURF_ROUTING_BASE) {
+          if (hierarchy_ == SURF_ROUTING_BASE) {
           NetCard *tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_netcard_t);
             tmp_src->setId(src);
           NetCard *tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_netcard_t);
           tmp_dst->setId(dst);
             onelink = new Onelink(link, tmp_src, tmp_dst);
-          } else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
+          } else if (hierarchy_ == SURF_ROUTING_RECURSIVE)
             onelink = new Onelink(link, route->gw_src, route->gw_dst);
           else
             onelink = new Onelink(link, NULL, NULL);
@@ -219,7 +219,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
       XBT_DEBUG("ASroute goes from \"%s\" to \"%s\"",
                 route->gw_src->getName(), route->gw_dst->getName());
     }
-    TO_ROUTE_FULL(src_net_elm->getId(), dst_net_elm->getId()) = newExtendedRoute(p_hierarchy, route, 1);
+    TO_ROUTE_FULL(src_net_elm->getId(), dst_net_elm->getId()) = newExtendedRoute(hierarchy_, route, 1);
     xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->getId(), dst_net_elm->getId())->link_list, 0);
   }
 
@@ -254,7 +254,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
       else
         XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
             dst, route->gw_src->getName(), src, route->gw_dst->getName());
-      TO_ROUTE_FULL(dst_net_elm->getId(), src_net_elm->getId()) = newExtendedRoute(p_hierarchy, route, 0);
+      TO_ROUTE_FULL(dst_net_elm->getId(), src_net_elm->getId()) = newExtendedRoute(hierarchy_, route, 0);
       xbt_dynar_shrink(TO_ROUTE_FULL(dst_net_elm->getId(), src_net_elm->getId())->link_list, 0);
     }
   }

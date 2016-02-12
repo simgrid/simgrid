@@ -50,12 +50,12 @@ void AsGeneric::getRouteAndLatency(NetCard */*src*/, NetCard */*dst*/, sg_platf_
 AsGeneric::AsGeneric(const char*name)
   : AsNone(name)
 {
-  p_bypassRoutes = xbt_dict_new_homogeneous((void (*)(void *)) routing_route_free);
+  bypassRoutes_ = xbt_dict_new_homogeneous((void (*)(void *)) routing_route_free);
 }
 
 AsGeneric::~AsGeneric()
 {
-  xbt_dict_free(&p_bypassRoutes);
+  xbt_dict_free(&bypassRoutes_);
 }
 
 int AsGeneric::parsePU(NetCard *elm)
@@ -81,7 +81,7 @@ void AsGeneric::parseBypassroute(sg_platf_route_cbarg_t e_route)
     XBT_DEBUG("Load bypassASroute from \"%s\" to \"%s\"", src, dst);
   else
     XBT_DEBUG("Load bypassRoute from \"%s\" to \"%s\"", src, dst);
-  xbt_dict_t dict_bypassRoutes = p_bypassRoutes;
+  xbt_dict_t dict_bypassRoutes = bypassRoutes_;
   char *route_name;
 
   route_name = bprintf("%s#%s", src, dst);
@@ -232,7 +232,7 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
     return NULL;
 
   sg_platf_route_cbarg_t e_route_bypass = NULL;
-  xbt_dict_t dict_bypassRoutes = p_bypassRoutes;
+  xbt_dict_t dict_bypassRoutes = bypassRoutes_;
 
   if(dst->getRcComponent() == this && src->getRcComponent() == this ){
     char *route_name = bprintf("%s#%s", src->getName(), dst->getName());
@@ -253,7 +253,7 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
     if (src == NULL || dst == NULL)
       xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
               src ? src->getName() : "(null)",
-              dst ? dst->getName() : "(null)", p_name);
+              dst ? dst->getName() : "(null)", name_);
 
     src_as = src->getRcComponent();
     dst_as = dst->getRcComponent();
@@ -263,13 +263,13 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
     current = src_as;
     while (current != NULL) {
       xbt_dynar_push(path_src, &current);
-      current = current->p_routingFather;
+      current = current->father_;
     }
     path_dst = xbt_dynar_new(sizeof(As*), NULL);
     current = dst_as;
     while (current != NULL) {
       xbt_dynar_push(path_dst, &current);
-      current = current->p_routingFather;
+      current = current->father_;
     }
 
     /* (3) find the common father */
@@ -297,9 +297,9 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
         if (i <= max_index_src && max <= max_index_dst) {
           char *route_name = bprintf("%s#%s",
               (*(As **)
-                  (xbt_dynar_get_ptr(path_src, i)))->p_name,
+                  (xbt_dynar_get_ptr(path_src, i)))->name_,
                   (*(As **)
-                      (xbt_dynar_get_ptr(path_dst, max)))->p_name);
+                      (xbt_dynar_get_ptr(path_dst, max)))->name_);
           e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
           xbt_free(route_name);
         }
@@ -308,9 +308,9 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
         if (max <= max_index_src && i <= max_index_dst) {
           char *route_name = bprintf("%s#%s",
               (*(As **)
-                  (xbt_dynar_get_ptr(path_src, max)))->p_name,
+                  (xbt_dynar_get_ptr(path_src, max)))->name_,
                   (*(As **)
-                      (xbt_dynar_get_ptr(path_dst, i)))->p_name);
+                      (xbt_dynar_get_ptr(path_dst, i)))->name_);
           e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
           xbt_free(route_name);
         }
@@ -324,9 +324,9 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
       if (max <= max_index_src && max <= max_index_dst) {
         char *route_name = bprintf("%s#%s",
             (*(As **)
-                (xbt_dynar_get_ptr(path_src, max)))->p_name,
+                (xbt_dynar_get_ptr(path_src, max)))->name_,
                 (*(As **)
-                    (xbt_dynar_get_ptr(path_dst, max)))->p_name);
+                    (xbt_dynar_get_ptr(path_dst, max)))->name_);
         e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
         xbt_free(route_name);
       }
@@ -405,24 +405,24 @@ void AsGeneric::srcDstCheck(NetCard *src, NetCard *dst)
     xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
             src ? src->getName() : "(null)",
             dst ? dst->getName() : "(null)",
-            p_name);
+            name_);
 
   As *src_as = src->getRcComponent();
   As *dst_as = dst->getRcComponent();
 
   if (src_as != dst_as)
     xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",
-        src->getName(), src_as->p_name,
-        dst->getName(), dst_as->p_name);
+        src->getName(), src_as->name_,
+        dst->getName(), dst_as->name_);
 
   if (this != dst_as)
     xbt_die
     ("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
         src->getName(),
         dst->getName(),
-        src_as->p_name,
-        dst_as->p_name,
-        p_name);
+        src_as->name_,
+        dst_as->name_,
+        name_);
 }
 
 }

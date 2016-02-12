@@ -60,7 +60,7 @@ static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
 
 static void parse_ns3_add_AS(simgrid::surf::As* as)
 {
-  const char* as_id = as->p_name;
+  const char* as_id = as->name_;
   XBT_DEBUG("NS3_ADD_AS '%s'", as_id);
   xbt_lib_set(as_router_lib, as_id, NS3_ASR_LEVEL, ns3_add_AS(as_id) );
 }

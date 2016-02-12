@@ -51,8 +51,8 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   if(src->getRcType() == SURF_NETWORK_ELEMENT_HOST){
     tmp_src_name = HOST_PEER(src->getName());
 
-    if ((int)xbt_dynar_length(p_linkUpDownList)>src->getId()) {
-      info = xbt_dynar_get_as(p_linkUpDownList, src->getId(), s_surf_parsing_link_up_down_t);
+    if ((int)xbt_dynar_length(upDownLinks)>src->getId()) {
+      info = xbt_dynar_get_as(upDownLinks, src->getId(), s_surf_parsing_link_up_down_t);
       if(info.link_up) { // link up
         xbt_dynar_push_as(route->link_list, void*, info.link_up);
         if (lat)
@@ -74,8 +74,8 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   if(dst->getRcType() == SURF_NETWORK_ELEMENT_HOST){
     tmp_dst_name = HOST_PEER(dst->getName());
 
-    if ((int)xbt_dynar_length(p_linkUpDownList)>dst->getId()) {
-      info = xbt_dynar_get_as(p_linkUpDownList, dst->getId(), s_surf_parsing_link_up_down_t);
+    if ((int)xbt_dynar_length(upDownLinks)>dst->getId()) {
+      info = xbt_dynar_get_as(upDownLinks, dst->getId(), s_surf_parsing_link_up_down_t);
       if(info.link_down) { // link down
         xbt_dynar_push_as(route->link_list,void*,info.link_down);
         if (lat)

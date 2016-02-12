@@ -38,7 +38,7 @@ AsFloyd::~AsFloyd(){
     }
   xbt_free(p_linkTable);
   /* Delete bypass dict */
-  xbt_dict_free(&p_bypassRoutes);
+  xbt_dict_free(&bypassRoutes_);
   /* Delete predecessor and cost table */
   xbt_free(p_predecessorTable);
   xbt_free(p_costTable);
@@ -64,9 +64,9 @@ xbt_dynar_t AsFloyd::getOneLinkRoutes()
       if (xbt_dynar_length(route->link_list) == 1) {
         void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
         Onelink *onelink;
-        if (p_hierarchy == SURF_ROUTING_BASE)
+        if (hierarchy_ == SURF_ROUTING_BASE)
           onelink = new Onelink(link, src_elm, dst_elm);
-        else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
+        else if (hierarchy_ == SURF_ROUTING_RECURSIVE)
           onelink = new Onelink(link, route->gw_src, route->gw_dst);
         else
           onelink = new Onelink(link, NULL, NULL);
@@ -98,7 +98,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
     cur = pred;
   } while (cur != src->getId());
 
-  if (p_hierarchy == SURF_ROUTING_RECURSIVE) {
+  if (hierarchy_ == SURF_ROUTING_RECURSIVE) {
     res->gw_src = xbt_dynar_getlast_as(route_stack, sg_platf_route_cbarg_t)->gw_src;
     res->gw_dst = xbt_dynar_getfirst_as(route_stack, sg_platf_route_cbarg_t)->gw_dst;
   }
@@ -110,7 +110,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
     void *link;
     unsigned int cpt;
 
-    if (p_hierarchy == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL
+    if (hierarchy_ == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL
         && strcmp(prev_dst_gw->getName(), e_route->gw_src->getName())) {
       routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src,
                                     &res->link_list, lat);
@@ -202,7 +202,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
   else
   {
     TO_FLOYD_LINK(src_net_elm->getId(), dst_net_elm->getId()) =
-        newExtendedRoute(p_hierarchy, route, 1);
+        newExtendedRoute(hierarchy_, route, 1);
     TO_FLOYD_PRED(src_net_elm->getId(), dst_net_elm->getId()) = src_net_elm->getId();
     TO_FLOYD_COST(src_net_elm->getId(), dst_net_elm->getId()) =
         ((TO_FLOYD_LINK(src_net_elm->getId(), dst_net_elm->getId()))->link_list)->used;   /* count of links, old model assume 1 */
@@ -252,7 +252,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
             route->gw_src->getName(), src, route->gw_dst->getName());
 
       TO_FLOYD_LINK(dst_net_elm->getId(), src_net_elm->getId()) =
-         newExtendedRoute(p_hierarchy, route, 0);
+         newExtendedRoute(hierarchy_, route, 0);
       TO_FLOYD_PRED(dst_net_elm->getId(), src_net_elm->getId()) = dst_net_elm->getId();
       TO_FLOYD_COST(dst_net_elm->getId(), src_net_elm->getId()) =
           ((TO_FLOYD_LINK(dst_net_elm->getId(), src_net_elm->getId()))->link_list)->used;   /* count of links, old model assume 1 */
@@ -283,7 +283,7 @@ void AsFloyd::Seal(){
   }
 
   /* Add the loopback if needed */
-  if (routing_platf->p_loopback && p_hierarchy == SURF_ROUTING_BASE) {
+  if (routing_platf->p_loopback && hierarchy_ == SURF_ROUTING_BASE) {
     for (i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
       if (!e_route) {

@@ -67,8 +67,8 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
       "Refusing to create a second host named '%s'.", host->id);
 
   simgrid::surf::As* current_routing = routing_get_current();
-  if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
-    current_routing->p_hierarchy = SURF_ROUTING_BASE;
+  if (current_routing->hierarchy_ == SURF_ROUTING_NULL)
+    current_routing->hierarchy_ = SURF_ROUTING_BASE;
 
   simgrid::surf::NetCard *netcard =
       new simgrid::surf::NetCardImpl(host->id, SURF_NETWORK_ELEMENT_HOST, current_routing);
@@ -123,8 +123,8 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 {
   simgrid::surf::As* current_routing = routing_get_current();
 
-  if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
-    current_routing->p_hierarchy = SURF_ROUTING_BASE;
+  if (current_routing->hierarchy_ == SURF_ROUTING_NULL)
+    current_routing->hierarchy_ = SURF_ROUTING_BASE;
   xbt_assert(!xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
              "Reading a router, processing unit \"%s\" already exists",
              router->id);
@@ -315,7 +315,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         info_loop.link_up   = Link::byName(tmp_link);
         info_loop.link_down = info_loop.link_up;
         free(tmp_link);
-        xbt_dynar_set(current_routing->p_linkUpDownList,
+        xbt_dynar_set(current_routing->upDownLinks,
           rankId*(static_cast<AsCluster*>(current_routing))->p_nb_links_per_node, &info_loop);
       }
 
@@ -337,7 +337,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         info_lim.link_down = info_lim.link_up;
         free(tmp_link);
         auto as_cluster = static_cast<AsCluster*>(current_routing);
-        xbt_dynar_set(current_routing->p_linkUpDownList,
+        xbt_dynar_set(current_routing->upDownLinks,
             rankId*(as_cluster)->p_nb_links_per_node + as_cluster->p_has_loopback ,
             &info_lim);
 

@@ -53,15 +53,15 @@ public:
   virtual void Seal()=0;
   virtual ~As();
 
-  char *p_name = nullptr;
-  NetCard *p_netcard = nullptr;
-  As *p_routingFather = nullptr;
+  char *name_ = nullptr;
+  NetCard *netcard_ = nullptr;
+  As *father_ = nullptr;
+  xbt_dict_t sons_ = xbt_dict_new_homogeneous(NULL);
 
-  xbt_dynar_t p_indexNetworkElm = xbt_dynar_new(sizeof(char*),NULL);
-  xbt_dict_t p_bypassRoutes = nullptr;
-  e_surf_routing_hierarchy_t p_hierarchy = SURF_ROUTING_NULL;
-  xbt_dict_t p_routingSons = xbt_dict_new_homogeneous(NULL);
-  xbt_dynar_t p_linkUpDownList = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
+  xbt_dynar_t p_indexNetworkElm = xbt_dynar_new(sizeof(char*),NULL); // TODO: What is it?
+  xbt_dict_t bypassRoutes_ = nullptr;
+  e_surf_routing_hierarchy_t hierarchy_ = SURF_ROUTING_NULL;
+  xbt_dynar_t upDownLinks = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
 
 
@@ -86,10 +86,10 @@ public:
       NetCard *src, NetCard *dst,
       sg_platf_route_cbarg_t into, double *latency)=0;
   virtual xbt_dynar_t getOneLinkRoutes()=0;
+
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
-  virtual sg_platf_route_cbarg_t getBypassRoute(
-      NetCard *src, NetCard *dst,
-      double *lat)=0;
+
+  virtual sg_platf_route_cbarg_t getBypassRoute(NetCard *src, NetCard *dst,double *lat)=0;
 
   /* The parser calls the following functions to inform the routing models
    * that a new element is added to the AS currently built.
@@ -107,7 +107,8 @@ public:
   NetCardImpl(const char *name, e_surf_network_element_type_t componentType, As *component)
   : component_(component),
     componentType_(componentType),
-    name_(xbt_strdup(name)) {}
+    name_(xbt_strdup(name))
+  {}
   ~NetCardImpl() { xbt_free(name_);};
 
   int getId() {return id_;}

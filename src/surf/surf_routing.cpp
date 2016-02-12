@@ -30,16 +30,16 @@ namespace surf {
   simgrid::xbt::signal<void(simgrid::surf::As*)> asCreatedCallbacks;
 
   As::As(const char*name)
-  : p_name(xbt_strdup(name))
+  : name_(xbt_strdup(name))
   {}
   As::~As()
   {
-    xbt_dict_free(&p_routingSons);
+    xbt_dict_free(&sons_);
     xbt_dynar_free(&p_indexNetworkElm);
-    xbt_dynar_free(&p_linkUpDownList);
-    xbt_free(p_name);
-    if (p_netcard)
-      delete p_netcard;
+    xbt_dynar_free(&upDownLinks);
+    xbt_free(name_);
+    if (netcard_)
+      delete netcard_;
   }
 
 }} // namespace simgrid::surf
@@ -105,12 +105,12 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t netcard_arg)
   xbt_assert(link_up_down.link_down, "Link '%s' not found!",netcard_arg->link_down);
 
   // If dynar is is greater than netcard id and if the host_link is already defined
-  if((int)xbt_dynar_length(current_routing->p_linkUpDownList) > netcard->getId() &&
-      xbt_dynar_get_as(current_routing->p_linkUpDownList, netcard->getId(), void*))
+  if((int)xbt_dynar_length(current_routing->upDownLinks) > netcard->getId() &&
+      xbt_dynar_get_as(current_routing->upDownLinks, netcard->getId(), void*))
   surf_parse_error("Host_link for '%s' is already defined!",netcard_arg->id);
 
   XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->getName(), netcard->getId());
-  xbt_dynar_set_as(current_routing->p_linkUpDownList, netcard->getId(), s_surf_parsing_link_up_down_t, link_up_down);
+  xbt_dynar_set_as(current_routing->upDownLinks, netcard->getId(), s_surf_parsing_link_up_down_t, link_up_down);
 }
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
@@ -166,24 +166,24 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   }
 
   /* make a new routing component */
-  simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(new_as->p_name, SURF_NETWORK_ELEMENT_AS, current_routing);
+  simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(new_as->name_, SURF_NETWORK_ELEMENT_AS, current_routing);
 
   if (current_routing == NULL && routing_platf->p_root == NULL) {
     /* it is the first one */
-    new_as->p_routingFather = NULL;
+    new_as->father_ = NULL;
     routing_platf->p_root = new_as;
     netcard->setId(-1);
   } else if (current_routing != NULL && routing_platf->p_root != NULL) {
 
-    xbt_assert(!xbt_dict_get_or_null(current_routing->p_routingSons, AS->id),
+    xbt_assert(!xbt_dict_get_or_null(current_routing->sons_, AS->id),
                "The AS \"%s\" already exists", AS->id);
     /* it is a part of the tree */
-    new_as->p_routingFather = current_routing;
+    new_as->father_ = current_routing;
     /* set the father behavior */
-    if (current_routing->p_hierarchy == SURF_ROUTING_NULL)
-      current_routing->p_hierarchy = SURF_ROUTING_RECURSIVE;
+    if (current_routing->hierarchy_ == SURF_ROUTING_NULL)
+      current_routing->hierarchy_ = SURF_ROUTING_RECURSIVE;
     /* add to the sons dictionary */
-    xbt_dict_set(current_routing->p_routingSons, AS->id,
+    xbt_dict_set(current_routing->sons_, AS->id,
                  (void *) new_as, NULL);
     /* add to the father element list */
     netcard->setId(current_routing->parseAS(netcard));
@@ -193,11 +193,11 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 
   xbt_lib_set(as_router_lib, netcard->getName(), ROUTING_ASR_LEVEL,
               (void *) netcard);
-  XBT_DEBUG("Having set name '%s' id '%d'", new_as->p_name, netcard->getId());
+  XBT_DEBUG("Having set name '%s' id '%d'", new_as->name_, netcard->getId());
 
   /* set the new current component of the tree */
   current_routing = new_as;
-  current_routing->p_netcard = netcard;
+  current_routing->netcard_ = netcard;
 
   simgrid::surf::netcardCreatedCallbacks(netcard);
   simgrid::surf::asCreatedCallbacks(new_as);
@@ -218,7 +218,7 @@ void routing_AS_end()
 {
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->Seal();
-  current_routing = current_routing->p_routingFather;
+  current_routing = current_routing->father_;
 }
 
 /* Aux Business methods */
@@ -263,12 +263,12 @@ static void elements_father(sg_netcard_t src, sg_netcard_t dst,
              "Ask for route \"from\"(%s) or \"to\"(%s) no found", src_name, dst_name);
 
   /* (2) find the path to the root routing component */
-  for (current = src_as; current != NULL; current = current->p_routingFather) {
+  for (current = src_as; current != NULL; current = current->father_) {
     if (index_src >= ELEMENTS_FATHER_MAXDEPTH)
       xbt_die("ELEMENTS_FATHER_MAXDEPTH should be increased for path_src");
     path_src[index_src++] = current;
   }
-  for (current = dst_as; current != NULL; current = current->p_routingFather) {
+  for (current = dst_as; current != NULL; current = current->father_) {
     if (index_dst >= ELEMENTS_FATHER_MAXDEPTH)
       xbt_die("ELEMENTS_FATHER_MAXDEPTH should be increased for path_dst");
     path_dst[index_dst++] = current;
@@ -321,7 +321,7 @@ static void _get_route_and_latency(
   simgrid::surf::As *common_father, *src_father, *dst_father;
   elements_father(src, dst, &common_father, &src_father, &dst_father);
   XBT_DEBUG("elements_father: common father '%s' src_father '%s' dst_father '%s'",
-      common_father->p_name, src_father->p_name, dst_father->p_name);
+      common_father->name_, src_father->name_, dst_father->name_);
 
   /* Check whether a direct bypass is defined */
   sg_platf_route_cbarg_t e_route_bypass = NULL;
@@ -348,8 +348,8 @@ static void _get_route_and_latency(
 
   route.link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
   // Find the net_card corresponding to father
-  simgrid::surf::NetCard *src_father_netcard = src_father->p_netcard;
-  simgrid::surf::NetCard *dst_father_netcard = dst_father->p_netcard;
+  simgrid::surf::NetCard *src_father_netcard = src_father->netcard_;
+  simgrid::surf::NetCard *dst_father_netcard = dst_father->netcard_;
 
   common_father->getRouteAndLatency(src_father_netcard, dst_father_netcard,
                                     &route, latency);
@@ -427,7 +427,7 @@ xbt_dynar_t RoutingPlatf::recursiveGetOneLinkRoutes(As *rc)
   char *key;
   xbt_dict_cursor_t cursor = NULL;
   AS_t rc_child;
-  xbt_dict_foreach(rc->p_routingSons, cursor, key, rc_child) {
+  xbt_dict_foreach(rc->sons_, cursor, key, rc_child) {
     xbt_dynar_t onelink_child = recursiveGetOneLinkRoutes(rc_child);
     if (onelink_child)
       xbt_dynar_merge(&ret,&onelink_child);
@@ -460,10 +460,10 @@ void routing_cluster_add_backbone(void* bb) {
   simgrid::surf::AsCluster *cluster = dynamic_cast<simgrid::surf::AsCluster*>(current_routing);
 
   xbt_assert(cluster, "Only hosts from Cluster can get a backbone.");
-  xbt_assert(nullptr == cluster->p_backbone, "Cluster %s already has a backbone link!", cluster->p_name);
+  xbt_assert(nullptr == cluster->p_backbone, "Cluster %s already has a backbone link!", cluster->name_);
 
   cluster->p_backbone = static_cast<simgrid::surf::Link*>(bb);
-  XBT_DEBUG("Add a backbone to AS '%s'", current_routing->p_name);
+  XBT_DEBUG("Add a backbone to AS '%s'", current_routing->name_);
 }
 
 void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
@@ -779,7 +779,7 @@ static void finalize_rec(simgrid::surf::As *as) {
   char *key;
   AS_t elem;
 
-  xbt_dict_foreach(as->p_routingSons, cursor, key, elem) {
+  xbt_dict_foreach(as->sons_, cursor, key, elem) {
     finalize_rec(elem);
   }
 
@@ -812,7 +812,7 @@ AS_t surf_AS_get_routing_root() {
 }
 
 const char *surf_AS_get_name(simgrid::surf::As *as) {
-  return as->p_name;
+  return as->name_;
 }
 
 static simgrid::surf::As *surf_AS_recursive_get_by_name(
@@ -823,10 +823,10 @@ static simgrid::surf::As *surf_AS_recursive_get_by_name(
   AS_t elem;
   simgrid::surf::As *tmp = NULL;
 
-  if(!strcmp(current->p_name, name))
+  if(!strcmp(current->name_, name))
     return current;
 
-  xbt_dict_foreach(current->p_routingSons, cursor, key, elem) {
+  xbt_dict_foreach(current->sons_, cursor, key, elem) {
     tmp = surf_AS_recursive_get_by_name(elem, name);
     if(tmp != NULL ) {
         break;
@@ -845,7 +845,7 @@ simgrid::surf::As *surf_AS_get_by_name(const char * name)
 
 xbt_dict_t surf_AS_get_routing_sons(simgrid::surf::As *as)
 {
-  return as->p_routingSons;
+  return as->sons_;
 }
 
 xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)

@@ -52,7 +52,7 @@ void AsDijkstra::Seal()
     p_routeCache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
   /* Add the loopback if needed */
-  if (routing_platf->p_loopback && p_hierarchy == SURF_ROUTING_BASE)
+  if (routing_platf->p_loopback && hierarchy_ == SURF_ROUTING_BASE)
     addLoopback();
 
   /* initialize graph indexes in nodes after graph has been built */
@@ -182,9 +182,9 @@ xbt_dynar_t AsDijkstra::getOneLinkRoutes()
       if (xbt_dynar_length(route->link_list) == 1) {
         void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
         Onelink *onelink;
-        if (p_hierarchy == SURF_ROUTING_BASE)
+        if (hierarchy_ == SURF_ROUTING_BASE)
           onelink = new Onelink(link, src_elm, dst_elm);
-        else if (p_hierarchy == SURF_ROUTING_RECURSIVE)
+        else if (hierarchy_ == SURF_ROUTING_RECURSIVE)
           onelink = new Onelink(link, route->gw_src, route->gw_dst);
         else
           onelink = new Onelink(link, NULL, NULL);
@@ -341,7 +341,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     if (v == dst_node_id)
       first_gw = gw_dst;
 
-    if (p_hierarchy == SURF_ROUTING_RECURSIVE && v != dst_node_id
+    if (hierarchy_ == SURF_ROUTING_RECURSIVE && v != dst_node_id
         && strcmp(gw_dst->getName(), prev_gw_src->getName())) {
       xbt_dynar_t e_route_as_to_as=NULL;
 
@@ -367,7 +367,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     size++;
   }
 
-  if (p_hierarchy == SURF_ROUTING_RECURSIVE) {
+  if (hierarchy_ == SURF_ROUTING_RECURSIVE) {
     route->gw_src = gw_src;
     route->gw_dst = first_gw;
   }
@@ -429,7 +429,7 @@ void AsDijkstra::end()
     p_routeCache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
   /* Add the loopback if needed */
-  if (routing_platf->p_loopback && p_hierarchy == SURF_ROUTING_BASE)
+  if (routing_platf->p_loopback && hierarchy_ == SURF_ROUTING_BASE)
     addLoopback();
 
   /* initialize graph indexes in nodes after graph has been built */
@@ -482,7 +482,7 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
   if (m_cached && !p_routeCache)
     p_routeCache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 
-  sg_platf_route_cbarg_t e_route = newExtendedRoute(p_hierarchy, route, 1);
+  sg_platf_route_cbarg_t e_route = newExtendedRoute(hierarchy_, route, 1);
   newRoute(src_net_elm->getId(), dst_net_elm->getId(), e_route);
 
   // Symmetrical YES
@@ -511,7 +511,7 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
       route->gw_src = route->gw_dst;
       route->gw_dst = gw_tmp;
     }
-    sg_platf_route_cbarg_t link_route_back = newExtendedRoute(p_hierarchy, route, 0);
+    sg_platf_route_cbarg_t link_route_back = newExtendedRoute(hierarchy_, route, 0);
     newRoute(dst_net_elm->getId(), src_net_elm->getId(), link_route_back);
   }
   xbt_dynar_free(&route->link_list);
