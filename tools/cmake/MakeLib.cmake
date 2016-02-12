@@ -70,10 +70,9 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
-if(HAVE_LIBSIGC++)
+if(SIMGRID_HAVE_LIBSIG)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")
   add_definitions(-DLIBSIGC)
-  set(SIMGRID_HAVE_LIBSIG 1)
 endif()
 
 if(HAVE_MC)

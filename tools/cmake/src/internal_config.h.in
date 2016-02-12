@@ -55,9 +55,6 @@
 /* If have linux_futex.h */
 #cmakedefine HAVE_FUTEX_H @HAVE_FUTEX_H@
 
-/* Some variable for libsigc++ */
-#cmakedefine HAVE_LIBSIGC @HAVE_LIBSIGC++@
-
 /* Some variable for graphviz */
 #cmakedefine HAVE_GRAPHVIZ @HAVE_GRAPHVIZ@
 #cmakedefine HAVE_GRAPH_H @GRAPH_H@
