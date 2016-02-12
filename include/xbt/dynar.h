@@ -214,12 +214,14 @@ XBT_PUBLIC(void *) xbt_dynar_pop_ptr(xbt_dynar_t const dynar);
 XBT_PUBLIC(void) xbt_dynar_cursor_rm(xbt_dynar_t dynar,
                                      unsigned int *const cursor);
 
-/* do not use this structure internals directly, but use the public interface
- * This was made public to allow:
- *  - the inlining of the foreach elements
- *  - sending such beasts over the network
+/* 
+ * \warning DO NOT USE THIS STRUCTURE DIRECTLY! Instead, use the public interface:
+ *          This was made public to allow:
+ *           - the inlining of the foreach elements
+ *           - sending such beasts over the network
+ *
+ * \see xbt_dynar_length()
  */
-
 typedef struct xbt_dynar_s {
   unsigned long size;
   unsigned long used;
