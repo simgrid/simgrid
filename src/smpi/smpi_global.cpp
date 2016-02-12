@@ -98,7 +98,7 @@ void smpi_process_init(int *argc, char ***argv)
 
     MPI_Comm* temp_comm_world;
     xbt_bar_t temp_bar;
-    smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world ,&temp_bar);
+    smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world, &temp_bar);
     data              = smpi_process_remote_data(index);
     data->comm_world  = temp_comm_world;
     if(temp_bar != NULL) data->finalization_barrier = temp_bar;
