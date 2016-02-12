@@ -101,7 +101,7 @@ set(SIMGRID_VERSION_MINOR "13")
 set(SIMGRID_VERSION_PATCH "0")
 set(SIMGRID_VERSION_EXTRA "-devel") # Extra words to add to version string (e.g. -rc1)
 
-set(SIMGRID_VERSION_DATE  "2015") # Year for copyright information
+set(SIMGRID_VERSION_DATE  "2016") # Year for copyright information
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
