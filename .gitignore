@@ -1070,9 +1070,6 @@ examples/java/tracing/java_tracing_compiled
 examples/java/reservationSurfPlugin/java_reservation_surf_plugin_compiled
 examples/java/surfCpuModel/java_surf_cpu_model_compiled
 examples/java/surfPlugin/java_surf_plugin_compiled
-examples/scala/master_slave_bypass/scala_master_slave_bypass_compiled
-examples/scala/master_slave_kill/scala_master_slave_kill_compiled
-examples/scala/masterslave/scala_masterslave_compiled
 /CMakeCache.txt
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness

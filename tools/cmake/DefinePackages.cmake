@@ -1031,10 +1031,6 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/s4u/CMakeLists.txt
   examples/s4u/basic/CMakeLists.txt
   examples/s4u/io/CMakeLists.txt
-  examples/scala/CMakeLists.txt
-  examples/scala/master_slave_bypass/CMakeLists.txt
-  examples/scala/master_slave_kill/CMakeLists.txt
-  examples/scala/masterslave/CMakeLists.txt
   examples/simdag/CMakeLists.txt
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
@@ -1175,7 +1171,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindRngStream.cmake
   tools/cmake/Modules/FindRubySimgrid.cmake
-  tools/cmake/Modules/FindScala.cmake
   tools/cmake/Modules/FindSimGrid.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake

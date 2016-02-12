@@ -57,11 +57,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/s4u)
 
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala)
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_bypass)
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_kill)
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave)
-
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dax)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dot)

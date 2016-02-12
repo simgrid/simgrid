@@ -519,21 +519,6 @@ IF(NOT enable_memcheck)
     ADD_TESH(tesh-java-sleep-host-off            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java ${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleep_host_off/sleep_host_off.tesh)
     ADD_TESH(tesh-java-semaphore-gc              --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java ${CMAKE_HOME_DIRECTORY}/teshsuite/java/semaphore/semaphore_gc.tesh)
   ENDIF()
-
-
-  ### SCALA ###
-  IF(enable_scala)
-    IF(WIN32)
-      SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/scala/\;${SIMGRID_JAR}\;${SCALA_JARS}")
-      STRING(REPLACE "\;" "§" TESH_CLASSPATH "${TESH_CLASSPATH}")
-    ELSE()
-      SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/scala/:${SIMGRID_JAR}:${SCALA_JARS}")
-    ENDIF()
-    ADD_TESH(scala-bypass                        --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_bypass/bypass.tesh)
-    ADD_TESH(scala-kill                          --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/master_slave_kill/kill.tesh)
-    ADD_TESH(scala-masterslave                   --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/scala --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/scala ${CMAKE_HOME_DIRECTORY}/examples/scala/masterslave/masterslave.tesh)
-  ENDIF()
-
 ENDIF()
 
 
