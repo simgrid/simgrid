@@ -73,7 +73,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   simgrid::surf::NetCard *netcard =
       new simgrid::surf::NetCardImpl(host->id, SURF_NETWORK_ELEMENT_HOST, current_routing);
 
-  netcard->setId(current_routing->parsePU(netcard));
+  netcard->setId(current_routing->addComponent(netcard));
   sg_host_t h = simgrid::s4u::Host::by_name_or_create(host->id);
   h->pimpl_netcard = netcard;
   simgrid::surf::netcardCreatedCallbacks(netcard);
@@ -130,7 +130,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
              router->id);
 
   simgrid::surf::NetCard *info = new simgrid::surf::NetCardImpl(router->id, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
-  info->setId(current_routing->parsePU(info));
+  info->setId(current_routing->addComponent(info));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
   XBT_DEBUG("Having set name '%s' id '%d'", router->id, info->getId());
   simgrid::surf::netcardCreatedCallbacks(info);

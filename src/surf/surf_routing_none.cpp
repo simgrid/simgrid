@@ -36,20 +36,6 @@ sg_platf_route_cbarg_t AsNone::getBypassRoute(NetCard * /*src*/, NetCard * /*dst
   return NULL;
 }
 
-int AsNone::parsePU(NetCard *elm) {
-  XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
-  /* don't care about PUs */
-  return -1;
-}
-
-int AsNone::parseAS(NetCard *elm) {
-  XBT_DEBUG("Load Autonomous system \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
-  /* even don't care about sub-ASes -- I'm as nihilist as an old punk*/
-  return -1;
-}
-
 void AsNone::parseRoute(sg_platf_route_cbarg_t /*route*/){
   THROW_IMPOSSIBLE; /* No. */
 }

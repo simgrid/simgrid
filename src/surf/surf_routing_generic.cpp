@@ -58,20 +58,6 @@ AsGeneric::~AsGeneric()
   xbt_dict_free(&bypassRoutes_);
 }
 
-int AsGeneric::parsePU(NetCard *elm)
-{
-  XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
-  return xbt_dynar_length(p_indexNetworkElm)-1;
-}
-
-int AsGeneric::parseAS(NetCard *elm)
-{
-  XBT_DEBUG("Load Autonomous system \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
-  return xbt_dynar_length(p_indexNetworkElm)-1;
-}
-
 void AsGeneric::parseBypassroute(sg_platf_route_cbarg_t e_route)
 {
   char *src = (char*)(e_route->src);

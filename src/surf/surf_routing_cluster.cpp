@@ -162,17 +162,5 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
   xbt_free(link_id);
 }
 
-int AsCluster::parsePU(NetCard *elm) {
-  XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
-  return xbt_dynar_length(p_indexNetworkElm)-1;
-}
-
-int AsCluster::parseAS(NetCard *elm) {
-  XBT_DEBUG("Load Autonomous system \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
-  return xbt_dynar_length(p_indexNetworkElm)-1;
-}
-
 }
 }

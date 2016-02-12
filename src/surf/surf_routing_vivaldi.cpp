@@ -110,11 +110,5 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   }
 }
 
-int AsVivaldi::parsePU(NetCard *elm) {
-  XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, sg_netcard_t, elm);
-  return xbt_dynar_length(p_indexNetworkElm)-1;
-}
-
 }
 }

@@ -29,8 +29,6 @@ public:
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  virtual int parsePU(NetCard *elm) override; /* A host or a router, whatever */
-  virtual int parseAS(NetCard *elm) override;
   virtual void parseRoute(sg_platf_route_cbarg_t route) override;
   virtual void parseASroute(sg_platf_route_cbarg_t route) override;
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route) override;

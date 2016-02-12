@@ -95,8 +95,7 @@ public:
    * that a new element is added to the AS currently built.
    *
    * Of course, only the routing model of this AS is informed, not every ones */
-  virtual int parsePU(NetCard *elm)=0; /* A host or a router, whatever */
-  virtual int parseAS(NetCard *elm)=0;
+  virtual int addComponent(NetCard *elm); /* A host, a router or an AS, whatever */
   virtual void parseRoute(sg_platf_route_cbarg_t route)=0;
   virtual void parseASroute(sg_platf_route_cbarg_t route)=0;
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;

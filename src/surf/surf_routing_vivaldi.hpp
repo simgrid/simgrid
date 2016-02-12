@@ -30,7 +30,6 @@ public:
   ~AsVivaldi() {};
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
-  int parsePU(NetCard *elm) override;
 };
 
 }

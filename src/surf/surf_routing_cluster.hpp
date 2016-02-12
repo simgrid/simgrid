@@ -32,8 +32,6 @@ public:
   virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 
-  int parsePU(NetCard *elm) override; /* A host or a router, whatever */
-  int parseAS(NetCard *elm) override;
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
   virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {}
 

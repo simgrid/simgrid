@@ -21,6 +21,7 @@
 #include "src/surf/surf_routing_full.hpp"
 #include "src/surf/surf_routing_vivaldi.hpp"
 
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
 namespace simgrid {
 namespace surf {
@@ -40,6 +41,12 @@ namespace surf {
     xbt_free(name_);
     if (netcard_)
       delete netcard_;
+  }
+
+  int As::addComponent(NetCard *elm) {
+    XBT_DEBUG("Load component \"%s\"", elm->getName());
+    xbt_dynar_push_as(p_indexNetworkElm, NetCard*, elm);
+    return xbt_dynar_length(p_indexNetworkElm)-1;
   }
 
 }} // namespace simgrid::surf
@@ -79,7 +86,6 @@ simgrid::surf::NetCard *sg_netcard_by_name_or_null(const char *name)
 /* Global vars */
 simgrid::surf::RoutingPlatf *routing_platf = NULL;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
 /** The current AS in the parsing */
 static simgrid::surf::As *current_routing = NULL;
@@ -186,7 +192,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     xbt_dict_set(current_routing->sons_, AS->id,
                  (void *) new_as, NULL);
     /* add to the father element list */
-    netcard->setId(current_routing->parseAS(netcard));
+    netcard->setId(current_routing->addComponent(netcard));
   } else {
     THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
