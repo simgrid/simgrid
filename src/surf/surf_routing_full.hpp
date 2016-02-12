@@ -19,6 +19,7 @@ namespace surf {
  ***********/
 class XBT_PRIVATE AsFull;
 
+/** Full routing: fast, large memory requirements, fully expressive */
 class AsFull: public AsGeneric {
 public:
 

@@ -20,6 +20,7 @@ namespace surf {
  ***********/
 class XBT_PRIVATE AsFloyd;
 
+/** Floyd routing data: slow initialization, fast lookup, lesser memory requirements, shortest path routing only */
 class AsFloyd: public AsGeneric {
 public:
   AsFloyd();

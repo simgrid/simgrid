@@ -34,6 +34,7 @@ namespace surf {
 
 class XBT_PRIVATE AsDijkstra;
 
+/** Dijkstra routing data: fast initialization, slow lookup, small memory requirements, shortest path routing only */
 class AsDijkstra : public AsGeneric {
 public:
   AsDijkstra();

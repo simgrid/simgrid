@@ -85,25 +85,16 @@ typedef enum {
 } e_routing_types;
 
 struct s_model_type routing_models[] = {
-  {"Full",
-   "Full routing data (fast, large memory requirements, fully expressive)",
-   model_full_create},
-  {"Floyd",
-   "Floyd routing data (slow initialization, fast lookup, lesser memory requirements, shortest path routing only)",
-   model_floyd_create},
-  {"Dijkstra",
-   "Dijkstra routing data (fast initialization, slow lookup, small memory requirements, shortest path routing only)",
-   model_dijkstra_create},
-  {"DijkstraCache",
-   "Dijkstra routing data (fast initialization, fast lookup, small memory requirements, shortest path routing only)",
-   model_dijkstracache_create},
-  {"none", "No routing (Unless you know what you are doing, avoid using this mode in combination with a non Constant network model).",
-   model_none_create},
-  {"Vivaldi", "Vivaldi routing", model_vivaldi_create},
-  {"Cluster", "Cluster routing", model_cluster_create},
-  {"TorusCluster", "Torus Cluster routing", model_torus_cluster_create},
-  {"FatTreeCluster", "Fat Tree Cluster routing", model_fat_tree_cluster_create},
-  {NULL, NULL, NULL}
+  {model_full_create},
+  {model_floyd_create},
+  {model_dijkstra_create},
+  {model_dijkstracache_create},
+  {model_none_create},
+  {model_vivaldi_create},
+  {model_cluster_create},
+  {model_torus_cluster_create},
+  {model_fat_tree_cluster_create},
+  {NULL}
 };
 
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */

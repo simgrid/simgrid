@@ -33,8 +33,6 @@ typedef enum {
 
 
 typedef struct s_model_type {
-  const char *name;
-  const char *desc;
   AS_t (*create) ();
 } s_routing_model_description_t, *routing_model_description_t;
 

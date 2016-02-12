@@ -14,6 +14,7 @@
 namespace simgrid {
 namespace surf {
 
+/** No specific routing. Mainly useful with the constant network model */
 class XBT_PRIVATE AsNone : public As {
 public:
   AsNone() {}
