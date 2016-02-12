@@ -308,4 +308,16 @@ We re-use the ones from the
 project. Thanks to them for compiling sane tools and constituting that
 archive, it saved my mind! 
 
+\subsection inside_tests_debian Debian builders
+
+Since SimGrid is packaged in Debian, we benefit from their huge
+testing infrastructure. That's an interesting torture test for our
+code base. The downside is that it's only for the released versions of
+SimGrid. That is why the Debian build does not stop when the tests
+fail: post-releases fixes do not fit well in our workflow and we fix
+only the most important breakages.
+
+The build results are here:
+https://buildd.debian.org/status/package.php?p=simgrid
+
 */
