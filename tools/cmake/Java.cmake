@@ -58,7 +58,7 @@ message("-- [Java] simgrid-java includes: ${CHECK_INCLUDES}")
 ## Files to include in simgrid.jar
 ##
 set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
-set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF.in")
+set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.in")
 set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
 
 set(LIBSIMGRID_SO
