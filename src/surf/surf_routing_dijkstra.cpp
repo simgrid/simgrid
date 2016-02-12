@@ -171,12 +171,12 @@ xbt_dynar_t AsDijkstra::getOneLinkRoutes()
 
   int src,dst;
   NetCard *src_elm, *dst_elm;
-  int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
+  int table_size = (int)xbt_dynar_length(vertices_);
   for(src=0; src < table_size; src++) {
     for(dst=0; dst< table_size; dst++) {
       xbt_dynar_reset(route->link_list);
-      src_elm = xbt_dynar_get_as(p_indexNetworkElm, src, NetCard*);
-      dst_elm = xbt_dynar_get_as(p_indexNetworkElm, dst, NetCard*);
+      src_elm = xbt_dynar_get_as(vertices_, src, NetCard*);
+      dst_elm = xbt_dynar_get_as(vertices_, dst, NetCard*);
       this->getRouteAndLatency(src_elm, dst_elm,route, NULL);
 
       if (xbt_dynar_length(route->link_list) == 1) {

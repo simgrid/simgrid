@@ -24,7 +24,7 @@ void AsFull::Seal() {
   sg_platf_route_cbarg_t e_route;
 
   /* set utils vars */
-  int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
+  int table_size = (int)xbt_dynar_length(vertices_);
 
   /* Create table if necessary */
   if (!p_routingTable)
@@ -48,7 +48,7 @@ void AsFull::Seal() {
 
 AsFull::~AsFull(){
   if (p_routingTable) {
-    int table_size = (int)xbt_dynar_length(p_indexNetworkElm);
+    int table_size = (int)xbt_dynar_length(vertices_);
     int i, j;
     /* Delete routing table */
     for (i = 0; i < table_size; i++)
@@ -67,7 +67,7 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
   xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
 
   int src, dst;
-  int table_size = xbt_dynar_length(p_indexNetworkElm);
+  int table_size = xbt_dynar_length(vertices_);
 
   for(src=0; src < table_size; src++) {
     for(dst=0; dst< table_size; dst++) {
@@ -77,9 +77,9 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
           void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
           Onelink *onelink;
           if (hierarchy_ == SURF_ROUTING_BASE) {
-          NetCard *tmp_src = xbt_dynar_get_as(p_indexNetworkElm, src, sg_netcard_t);
+          NetCard *tmp_src = xbt_dynar_get_as(vertices_, src, sg_netcard_t);
             tmp_src->setId(src);
-          NetCard *tmp_dst = xbt_dynar_get_as(p_indexNetworkElm, dst, sg_netcard_t);
+          NetCard *tmp_dst = xbt_dynar_get_as(vertices_, dst, sg_netcard_t);
           tmp_dst->setId(dst);
             onelink = new Onelink(link, tmp_src, tmp_dst);
           } else if (hierarchy_ == SURF_ROUTING_RECURSIVE)
@@ -106,7 +106,7 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
       dst->getId());
 
   /* set utils vars */
-  size_t table_size = xbt_dynar_length(p_indexNetworkElm);
+  size_t table_size = xbt_dynar_length(vertices_);
 
   sg_platf_route_cbarg_t e_route = NULL;
   void *link;
@@ -146,7 +146,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
   xbt_assert(src_net_elm, "Network elements %s not found", src);
   xbt_assert(dst_net_elm, "Network elements %s not found", dst);
 
-  size_t table_size = xbt_dynar_length(p_indexNetworkElm);
+  size_t table_size = xbt_dynar_length(vertices_);
 
   xbt_assert(!xbt_dynar_is_empty(route->link_list),
       "Invalid count of links, must be greater than zero (%s,%s)",

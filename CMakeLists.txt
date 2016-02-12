@@ -101,7 +101,7 @@ set(SIMGRID_VERSION_MINOR "13")
 set(SIMGRID_VERSION_PATCH "0")
 set(SIMGRID_VERSION_EXTRA "-devel") # Extra words to add to version string (e.g. -rc1)
 
-set(SIMGRID_VERSION_DATE  "2015") # Year for copyright information
+set(SIMGRID_VERSION_DATE  "2016") # Year for copyright information
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
@@ -738,11 +738,12 @@ endif()
 
 ### check for stackgrowth
 if (NOT CMAKE_CROSSCOMPILING)
-  try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
+  try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
     ${CMAKE_BINARY_DIR}
     ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
     RUN_OUTPUT_VARIABLE stack
-    )
+    COPY_FILE test_stackgrowth
+  )
 endif()
 if("${stack}" STREQUAL "down")
   set(PTH_STACKGROWTH "-1")

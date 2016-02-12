@@ -148,17 +148,17 @@ namespace surf {
 void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
   int src, dst;
-  int table_size = xbt_dynar_length(p_indexNetworkElm);
+  int table_size = xbt_dynar_length(vertices_);
 
 
   for (src = 0; src < table_size; src++) {
     NetCard *my_src =
-        xbt_dynar_get_as(p_indexNetworkElm, src, NetCard*);
+        xbt_dynar_get_as(vertices_, src, NetCard*);
     for (dst = 0; dst < table_size; dst++) {
       if (src == dst)
         continue;
       NetCard *my_dst =
-          xbt_dynar_get_as(p_indexNetworkElm, dst, NetCard*);
+          xbt_dynar_get_as(vertices_, dst, NetCard*);
 
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
       route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);

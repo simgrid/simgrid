@@ -28,13 +28,14 @@ class XBT_PRIVATE Onelink;
 class RoutingPlatf;
 
 /** @ingroup SURF_routing_interface
- * @brief A network card
+ * @brief Network cards are the vertices in the graph representing the network, used to compute paths between nodes.
+ *
  * @details This represents a position in the network. One can route information between two netcards
  */
 class NetCard {
 public:
   virtual ~NetCard(){};
-  virtual int getId()=0;
+  virtual int getId()=0; // Our rank in the vertices_ array of our container AS.
   virtual int *getIdPtr()=0;
   virtual void setId(int id)=0;
   virtual char *getName()=0;
@@ -58,7 +59,7 @@ public:
   As *father_ = nullptr;
   xbt_dict_t sons_ = xbt_dict_new_homogeneous(NULL);
 
-  xbt_dynar_t p_indexNetworkElm = xbt_dynar_new(sizeof(char*),NULL); // TODO: What is it?
+  xbt_dynar_t vertices_ = xbt_dynar_new(sizeof(char*),NULL); // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
   xbt_dict_t bypassRoutes_ = nullptr;
   e_surf_routing_hierarchy_t hierarchy_ = SURF_ROUTING_NULL;
   xbt_dynar_t upDownLinks = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
@@ -66,11 +67,18 @@ public:
 
 
   /**
-   * @brief Get the characteristics of the routing path between two points
+   * @brief Probe the routing path between two points
    *
-   * This function is used by the networking model to find the information it needs when starting a communication.
+   * The networking model uses this function when creating a communication
+   * to retrieve both the list of links that the create communication will use,
+   * and the summed latency that these links represent.
    *
-   * The things are not straightforward because the platform can be routed using several routing models.
+   * The network could recompute the latency by itself from the list, but it would
+   * require an additional link set traversal. This operation being on the critical
+   * path of SimGrid, the routing computes the latency in behalf of the network.
+   *
+   * Things are rather complex here because we have to find the path from ASes to ASes, and within each.
+   * In addition, the different ASes may use differing routing models.
    * Some ASes may be routed in full, others may have only some connection information and use a shortest path on top of that, and so on.
    * Some ASes may even not have any predefined links and use only coordinate informations to compute the latency.
    *
@@ -79,12 +87,11 @@ public:
    * 
    * @param src Initial point of the routing path
    * @param dst Final point of the routing path
-   * @param into Container into which the links should be pushed
-   * @param latency Accumulator in which the latencies should be added
+   * @param into Container into which the traversed links should be pushed
+   * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  virtual void getRouteAndLatency(
-      NetCard *src, NetCard *dst,
-      sg_platf_route_cbarg_t into, double *latency)=0;
+  virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency)=0;
+  /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   virtual xbt_dynar_t getOneLinkRoutes()=0;
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
