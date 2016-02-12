@@ -12,7 +12,13 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${srcdir:=.
 > [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
 > [  0.000000] (3:client@Fafard) Ask the request
 > [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
-> [  0.000000] (0:maestro@) Pair 23 already reached (equal to pair 11) !
+> [  0.000000] (3:client@Fafard) 2 got the answer. Sleep a bit and release it
+> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
+> [  0.000000] (3:client@Fafard) Ask the request
+> [  0.000000] (1:coordinator@Tremblay) CS idle. Grant immediatly
+> [  0.000000] (3:client@Fafard) 2 got the answer. Sleep a bit and release it
+> [  0.000000] (1:coordinator@Tremblay) CS release. resource now idle
+> [  0.000000] (0:maestro@) Pair 42 already reached (equal to pair 30) !
 > [  0.000000] (0:maestro@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 > [  0.000000] (0:maestro@) |             ACCEPTANCE CYCLE            |
 > [  0.000000] (0:maestro@) *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -38,7 +44,26 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/bugged1_liveness ${srcdir:=.
 > [  0.000000] (0:maestro@) [(3)Fafard (client)] iSend(src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
 > [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
 > [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
-> [  0.000000] (0:maestro@) Expanded pairs = 23
-> [  0.000000] (0:maestro@) Visited pairs = 21
-> [  0.000000] (0:maestro@) Executed transitions = 21
-> [  0.000000] (0:maestro@) Counter-example depth : 22
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] iRecv(dst=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (3)Fafard (client)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (3)Fafard (client)])
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] iSend(src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] iSend(src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iSend(src=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] iRecv(dst=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (3)Fafard (client)])
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] iRecv(dst=(1)Tremblay (coordinator), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] Wait(comm=(verbose only) [(1)Tremblay (coordinator)-> (3)Fafard (client)])
+> [  0.000000] (0:maestro@) [(3)Fafard (client)] iSend(src=(3)Fafard (client), buff=(verbose only), size=(verbose only))
+> [  0.000000] (0:maestro@) [(1)Tremblay (coordinator)] Wait(comm=(verbose only) [(3)Fafard (client)-> (1)Tremblay (coordinator)])
+> [  0.000000] (0:maestro@) Expanded pairs = 42
+> [  0.000000] (0:maestro@) Visited pairs = 40
+> [  0.000000] (0:maestro@) Executed transitions = 40
+> [  0.000000] (0:maestro@) Counter-example depth : 41
