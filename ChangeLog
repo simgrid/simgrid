@@ -13,6 +13,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
    - Removed Java kernel plug-ins.
      Will be reintroduced after the ongoing major internals reorg.
    - In SimDag 
+      - the SD_application_reinit function was removed. It was a noop for a while. 
       - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be 
         replaced by a more flexible mechanism.
       - The following functions thus do not exist anymore

@@ -1,8 +1,0 @@
-
-p Reinitialization test
-
-! expect signal SIGABRT
-$ simdag/network/test_reinit_costs ${srcdir:=.}/simdag/network/platform_2p_1sl.xml --cfg=path:${srcdir} --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> [  0.000000] (0:maestro@) This function is not working since the C++ links and others. Please report the problem if you really need that function.
-

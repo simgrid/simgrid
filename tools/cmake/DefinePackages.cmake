@@ -1078,7 +1078,6 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/simdag/basic/CMakeLists.txt
   teshsuite/simdag/incomplete/CMakeLists.txt
-  teshsuite/simdag/network/CMakeLists.txt
   teshsuite/simdag/network/mxn/CMakeLists.txt
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
