@@ -114,7 +114,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmalloc.texi
   src/xbt/mmalloc/mmorecore.c
   src/xbt/mmalloc/mmprivate.h
-  src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
   src/xbt/probes.h
   src/xbt/win32_ucontext.c
