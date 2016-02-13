@@ -3,12 +3,13 @@
 
 @tableofcontents
 
+SimGrid should work out of the box on Linux, Mac OSX, FreeBSD and
+Windows (under windows, only the Java interfaces are available atm).
+
 The easiest way to install SimGrid is to go for a binary package.
 Under Debian or Ubuntu, this is very easy as SimGrid is directly
 integrated to the official repositories.  If you just want to use
-Java, simply copy the jar file on your disk and you're set. Note that
-under Windows, you should go for Java, as the native C interface is
-not supported on that OS.
+Java, simply copy the jar file on your disk and you're set.
 
 Recompiling an official archive is not much more complex, actually.
 SimGrid has very few dependencies and rely only on very standard
@@ -95,19 +96,8 @@ SimGrid only uses very standard tools:
     - osX: with <a href="http://www.finkproject.org/">fink</a>: `sudo fink install boost1.53.nopython`
     - debian: `apt-get install libboost-dev libboost-context-dev`
 
-On MacOSX, it is advised to use the clang compiler (version 3.0 or
-higher), from either MacPort or XCode.  See also @ref install_cmake_mac.
-
-Building from the source on Windows, may be something of an adventure.
-We never managed to compile SimGrid with something else than MinGW-64
-ourselves. We usually use the
-<a href="http://www.activestate.com/activeperl/downloads">activestate</a>
-version of Perl, and the
-<a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">msys</a>
-version of git on this architecture, but YMMV. You can have a look at
-the configuration scripts in the appveyor.yml file, but you are
-basically on your own here. Sorry. We are not fluent with Windows so
-we cannot really help. 
+For platform specific details, please see  @ref install_cmake_mac and
+@ref install_cmake_windows.
 
 @subsection install_src_fetch Retrieving the source
 
@@ -255,9 +245,9 @@ cmake [options] ..
 make
 @endverbatim
 
-\subsubsection install_cmake_mac Cmake on Mac OS X
+\subsubsection install_cmake_mac Building on Mac OS X
 
-SimGrid compiles like a charm with clang on Mac OS X:
+SimGrid compiles like a charm with clang (version 3.0 or higher) on Mac OS X:
 
 @verbatim
 cmake -DCMAKE_C_COMPILER=/path/to/clang -DCMAKE_CXX_COMPILER=/path/to/clang++ .
@@ -276,7 +266,25 @@ warning that the "-pthread" argument is not used, if it appears.
 CMAKE_OSX_SYSROOT:PATH=/Applications/XCode.app/Contents/Developer/Platforms/MacOSX.platform/Developer
 @endverbatim
 
-\subsection install_src_compil Compiling SimGrid
+\subsubsection install_cmake_windows Building on Windows
+
+Building from the source on Windows, may be something of an adventure.
+We never managed to compile SimGrid with something else than MinGW-64
+ourselves. We usually use the
+<a href="http://www.activestate.com/activeperl/downloads">activestate</a>
+version of Perl, and the
+<a href="http://msysgit.googlecode.com/files/Git-1.7.4-preview20110204.exe">msys</a>
+version of git on this architecture, but YMMV. You can have a look at
+the configuration scripts in the appveyor.yml file, but you are
+basically on your own here. Sorry. We are not fluent with Windows so
+we cannot really help. 
+
+The drawback of MinGW-64 is that the produced DLL are not compatible
+with MS Visual C. If you need it, <a href="http://clang.llvm.org/docs/MSVCCompatibility.html">clang-cl</a>
+sounds promising. If you manage to get something working, please tell
+us how you achieved it.
+
+\subsection install_src_compil SimGrid main compilation targets
 
 In most cases, compiling and installing SimGrid is enough:
 
