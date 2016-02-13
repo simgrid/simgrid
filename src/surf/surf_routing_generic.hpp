@@ -21,16 +21,10 @@ public:
   AsGeneric(const char*name);
   ~AsGeneric();
 
-  virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
   virtual sg_platf_route_cbarg_t getBypassRoute(NetCard *src, NetCard *dst, double *lat) override;
 
-  /* The parser calls the following functions to inform the routing models
-   * that a new element is added to the AS currently built.
-   *
-   * Of course, only the routing model of this AS is informed, not every ones */
-  virtual void parseRoute(sg_platf_route_cbarg_t route) override;
-  virtual void parseASroute(sg_platf_route_cbarg_t route) override;
+  /* Add content to the AS, at parsing time */
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route) override;
 
   virtual sg_platf_route_cbarg_t newExtendedRoute(e_surf_routing_hierarchy_t hierarchy, sg_platf_route_cbarg_t routearg, int change_order);

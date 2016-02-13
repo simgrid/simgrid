@@ -35,18 +35,6 @@ void routing_route_free(sg_platf_route_cbarg_t route)
 namespace simgrid {
 namespace surf {
   
-void AsGeneric::parseRoute(sg_platf_route_cbarg_t /*route*/){
-  THROW_IMPOSSIBLE;
-}
-
-void AsGeneric::parseASroute(sg_platf_route_cbarg_t /*route*/){
-  THROW_IMPOSSIBLE;
-}
-
-void AsGeneric::getRouteAndLatency(NetCard */*src*/, NetCard */*dst*/, sg_platf_route_cbarg_t /*into*/, double */*latency*/){
-  THROW_IMPOSSIBLE;
-}
-
 AsGeneric::AsGeneric(const char*name)
   : AsNone(name)
 {

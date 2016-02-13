@@ -35,17 +35,5 @@ void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*
 sg_platf_route_cbarg_t AsNone::getBypassRoute(NetCard * /*src*/, NetCard * /*dst*/, double * /*lat*/) {
   return NULL;
 }
-
-void AsNone::parseRoute(sg_platf_route_cbarg_t /*route*/){
-  THROW_IMPOSSIBLE; /* No. */
-}
-
-void AsNone::parseASroute(sg_platf_route_cbarg_t /*route*/){
-  THROW_IMPOSSIBLE;
-}
-void AsNone::parseBypassroute(sg_platf_route_cbarg_t /*e_route*/){
-  THROW_IMPOSSIBLE;
-}
-
 }
 }

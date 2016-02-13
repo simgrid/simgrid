@@ -49,6 +49,16 @@ namespace surf {
     return xbt_dynar_length(vertices_)-1;
   }
 
+  void As::parseRoute(sg_platf_route_cbarg_t /*route*/){
+    THROW_IMPOSSIBLE; /* No. */
+  }
+  void As::parseASroute(sg_platf_route_cbarg_t /*route*/){
+    THROW_IMPOSSIBLE;
+  }
+  void As::parseBypassroute(sg_platf_route_cbarg_t /*e_route*/){
+    THROW_IMPOSSIBLE;
+  }
+
 }} // namespace simgrid::surf
 
 /**
