@@ -43,6 +43,11 @@ namespace surf {
       delete netcard_;
   }
 
+  sg_platf_route_cbarg_t As::getBypassRoute(NetCard * /*src*/, NetCard * /*dst*/, double * /*lat*/) {
+    return NULL;
+  }
+
+
   int As::addComponent(NetCard *elm) {
     XBT_DEBUG("Load component \"%s\"", elm->getName());
     xbt_dynar_push_as(vertices_, NetCard*, elm);

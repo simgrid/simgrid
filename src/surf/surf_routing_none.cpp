@@ -31,9 +31,5 @@ void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*
 {
   XBT_INFO("No routing no graph");
 }
-
-sg_platf_route_cbarg_t AsNone::getBypassRoute(NetCard * /*src*/, NetCard * /*dst*/, double * /*lat*/) {
-  return NULL;
-}
 }
 }

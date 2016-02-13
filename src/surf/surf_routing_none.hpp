@@ -24,7 +24,6 @@ public:
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
   xbt_dynar_t getOneLinkRoutes() override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
-  sg_platf_route_cbarg_t getBypassRoute(NetCard *src, NetCard *dst, double *lat) override;
 };
 
 }

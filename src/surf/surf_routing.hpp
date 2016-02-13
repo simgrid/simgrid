@@ -96,7 +96,7 @@ public:
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
 
-  virtual sg_platf_route_cbarg_t getBypassRoute(NetCard *src, NetCard *dst,double *lat)=0;
+  virtual sg_platf_route_cbarg_t getBypassRoute(NetCard *src, NetCard *dst,double *lat);
 
   /* Add content to the AS, at parsing time. It should be sealed afterward. */
   virtual int addComponent(NetCard *elm); /* A host, a router or an AS, whatever */
