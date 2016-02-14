@@ -730,9 +730,9 @@ void STag_surfxml_route(void){
 
 void STag_surfxml_ASroute(void){
   xbt_assert(strlen(A_surfxml_ASroute_src) > 0
-             || strlen(A_surfxml_ASroute_dst) > 0
-             || strlen(A_surfxml_ASroute_gw___src) > 0
-             || strlen(A_surfxml_ASroute_gw___dst) > 0,
+             && strlen(A_surfxml_ASroute_dst) > 0
+             && strlen(A_surfxml_ASroute_gw___src) > 0
+             && strlen(A_surfxml_ASroute_gw___dst) > 0,
              "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
              A_surfxml_ASroute_src, A_surfxml_ASroute_dst,
              A_surfxml_ASroute_gw___src, A_surfxml_ASroute_gw___dst);
@@ -741,17 +741,17 @@ void STag_surfxml_ASroute(void){
 
 void STag_surfxml_bypassRoute(void){
   xbt_assert(strlen(A_surfxml_bypassRoute_src) > 0
-             || strlen(A_surfxml_bypassRoute_dst) > 0,
-             "Missing end-points while defining bupass route \"%s\"->\"%s\"",
+             && strlen(A_surfxml_bypassRoute_dst) > 0,
+             "Missing end-points while defining bypass route \"%s\"->\"%s\"",
              A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 void STag_surfxml_bypassASroute(void){
   xbt_assert(strlen(A_surfxml_bypassASroute_src) > 0
-             || strlen(A_surfxml_bypassASroute_dst) > 0
-             || strlen(A_surfxml_bypassASroute_gw___src) > 0
-             || strlen(A_surfxml_bypassASroute_gw___dst) > 0,
+             && strlen(A_surfxml_bypassASroute_dst) > 0
+             && strlen(A_surfxml_bypassASroute_gw___src) > 0
+             && strlen(A_surfxml_bypassASroute_gw___dst) > 0,
              "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
              A_surfxml_bypassASroute_src, A_surfxml_bypassASroute_dst,
              A_surfxml_bypassASroute_gw___src,A_surfxml_bypassASroute_gw___dst);
