@@ -197,7 +197,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
 
   /* set utils vars */
 
-  srcDstCheck(src, dst);
+  getRouteCheckParams(src, dst);
   int src_id = src->id();
   int dst_id = dst->id();
 

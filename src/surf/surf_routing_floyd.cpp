@@ -81,10 +81,9 @@ xbt_dynar_t AsFloyd::getOneLinkRoutes()
 void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t res, double *lat)
 {
 
-  /* set utils vars */
   size_t table_size = xbt_dynar_length(vertices_);
 
-  this->srcDstCheck(src, dst);
+  getRouteCheckParams(src, dst);
 
   /* create a result route */
   xbt_dynar_t route_stack = xbt_dynar_new(sizeof(sg_platf_route_cbarg_t), NULL);
@@ -110,10 +109,8 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
     void *link;
     unsigned int cpt;
 
-    if (hierarchy_ == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL
-        && strcmp(prev_dst_gw->name(), e_route->gw_src->name())) {
-      routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src,
-                                    &res->link_list, lat);
+    if (hierarchy_ == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL && strcmp(prev_dst_gw->name(), e_route->gw_src->name())) {
+      routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src, &res->link_list, lat);
     }
 
     links = e_route->link_list;

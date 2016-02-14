@@ -29,7 +29,7 @@ public:
 
   virtual sg_platf_route_cbarg_t newExtendedRoute(e_surf_routing_hierarchy_t hierarchy, sg_platf_route_cbarg_t routearg, int change_order);
 protected:
-  void srcDstCheck(NetCard *src, NetCard *dst);
+  void getRouteCheckParams(NetCard *src, NetCard *dst);
   void parseRouteCheckParams(sg_platf_route_cbarg_t route);
 };
 
