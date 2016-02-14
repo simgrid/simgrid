@@ -36,7 +36,6 @@ class NetCard {
 public:
   virtual ~NetCard(){};
   virtual int id()=0; // Our rank in the vertices_ array of our containing AS.
-  virtual int *getIdPtr()=0;
   virtual void setId(int id)=0;
   virtual char *name()=0;
   virtual As *containingAS()=0; // This is the AS in which I am
@@ -113,12 +112,11 @@ public:
   {}
   ~NetCardImpl() { xbt_free(name_);};
 
-  int id() {return id_;}
-  int *getIdPtr() {return &id_;}
-  void setId(int id) {id_ = id;}
-  char *name() {return name_;}
-  As *containingAS() {return containingAS_;}
-  e_surf_network_element_type_t getRcType() {return componentType_;}
+  int id()           override {return id_;}
+  void setId(int id) override {id_ = id;}
+  char *name()       override {return name_;}
+  As *containingAS() override {return containingAS_;}
+  e_surf_network_element_type_t getRcType() override {return componentType_;}
 private:
   int id_ = -1;
   char *name_;

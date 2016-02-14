@@ -201,11 +201,8 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
   /* set utils vars */
 
   srcDstCheck(src, dst);
-  int *src_id = src->getIdPtr();
-  int *dst_id = dst->getIdPtr();
-
-  if (!src_id || !dst_id)
-    THROWF(arg_error,0,"No route from '%s' to '%s'",src->name(),dst->name());
+  int src_id = src->id();
+  int dst_id = dst->id();
 
   int *pred_arr = NULL;
   sg_platf_route_cbarg_t e_route;
@@ -215,8 +212,8 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
   xbt_dynar_t nodes = xbt_graph_get_nodes(p_routeGraph);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
-  graph_node_map_element_t src_elm = nodeMapSearch(*src_id);
-  graph_node_map_element_t dst_elm = nodeMapSearch(*dst_id);
+  graph_node_map_element_t src_elm = nodeMapSearch(src_id);
+  graph_node_map_element_t dst_elm = nodeMapSearch(dst_id);
 
   int src_node_id = ((graph_node_data_t) xbt_graph_node_get_data(src_elm->node))->graph_id;
   int dst_node_id = ((graph_node_data_t) xbt_graph_node_get_data(dst_elm->node))->graph_id;
