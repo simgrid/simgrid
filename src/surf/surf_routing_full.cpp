@@ -144,44 +144,18 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
   if (!routingTable_)
     routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
-  if (TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())) {
-    char *link_name;
-    unsigned int i;
-    xbt_dynar_t link_route_to_test =
-        xbt_dynar_new(sizeof(Link*), NULL);
-    xbt_dynar_foreach(route->link_list, i, link_name) {
-      void *link = Link::byName(link_name);
-      xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
-      xbt_dynar_push(link_route_to_test, &link);
-    }
-    if (xbt_dynar_compare(TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list,
-        link_route_to_test, full_pointer_resource_cmp)) {
-      surf_parse_error("A route between \"%s\" and \"%s\" already exists "
-          "with a different content. "
-          "If you are trying to define a reverse route, "
-          "you must set the symmetrical=no attribute to "
-          "your routes tags.", src, dst);
-    } else {
-      surf_parse_warn("Ignoring the identical redefinition of the route "
-          "between \"%s\" and \"%s\"", src, dst);
-    }
-  } else {
-    if (!route->gw_src && !route->gw_dst)
-      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
-    else {
-      XBT_DEBUG("Load ASroute from \"%s\" to \"%s\"", src, dst);
-      if (!route->gw_src || route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-        surf_parse_error("The src_gateway \"%s\" does not exist!",
-            route->gw_src ? route->gw_src->name() : "(null)");
-      if (!route->gw_dst || route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      surf_parse_error("The dst_gateway \"%s\" does not exist!",
-                route->gw_dst ? route->gw_dst->name() : "(null)");
-      XBT_DEBUG("ASroute goes from \"%s\" to \"%s\"",
-                route->gw_src->name(), route->gw_dst->name());
-    }
-    TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()) = newExtendedRoute(hierarchy_, route, 1);
-    xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list, 0);
-  }
+  /* Check that the route does not already exist */
+  if (route->gw_dst) // AS route (to adapt the error message, if any)
+    xbt_assert(nullptr == TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()),
+        "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
+        src,route->gw_src->name(),dst,route->gw_dst->name());
+  else
+    xbt_assert(nullptr == TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()),
+        "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src,dst);
+
+  /* Add the route to the base */
+  TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()) = newExtendedRoute(hierarchy_, route, 1);
+  xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list, 0);
 
   if (route->symmetrical == TRUE) {
     if (route->gw_dst && route->gw_src) {

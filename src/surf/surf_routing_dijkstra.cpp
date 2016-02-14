@@ -378,10 +378,10 @@ AsDijkstra::AsDijkstra(const char*name, bool cached)
 
 void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
 {
-  const char *src = route->src;
-  const char *dst = route->dst;
-  NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
-  NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
+  const char *srcName = route->src;
+  const char *dstName = route->dst;
+  NetCard *src = sg_netcard_by_name_or_null(srcName);
+  NetCard *dst = sg_netcard_by_name_or_null(dstName);
 
   parseRouteCheckParams(route);
 
@@ -391,23 +391,26 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
   if(!graphNodeMap_)
     graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
+  /* we don't check whether the route already exist, because the algorithm may find another path through some other nodes */
+
+  /* Add the route to the base */
   sg_platf_route_cbarg_t e_route = newExtendedRoute(hierarchy_, route, 1);
-  newRoute(src_net_elm->id(), dst_net_elm->id(), e_route);
+  newRoute(src->id(), dst->id(), e_route);
 
   // Symmetrical YES
   if (route->symmetrical == TRUE) {
     if(!route->gw_dst && !route->gw_src)
-      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
+      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
     else
-      XBT_DEBUG("Load ASroute from %s@%s to %s@%s", dst, route->gw_dst->name(), src, route->gw_src->name());
+      XBT_DEBUG("Load ASroute from %s@%s to %s@%s", dstName, route->gw_dst->name(), srcName, route->gw_src->name());
 
     xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
-    xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_net_elm->id(), xbt_node_t);
-    xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst_net_elm->id(), xbt_node_t);
+    xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src->id(), xbt_node_t);
+    xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst->id(), xbt_node_t);
     xbt_edge_t edge = xbt_graph_get_edge(routeGraph_, node_e_v, node_s_v);
 
     if (edge)
-      THROWF(arg_error,0, "Route from %s@%s to %s@%s already exists", dst, route->gw_dst->name(), src, route->gw_src->name());
+      THROWF(arg_error,0, "Route from %s@%s to %s@%s already exists", dstName, route->gw_dst->name(), srcName, route->gw_src->name());
 
     if (route->gw_dst && route->gw_src) {
       NetCard *gw_tmp = route->gw_src;
@@ -415,7 +418,7 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
       route->gw_dst = gw_tmp;
     }
     sg_platf_route_cbarg_t link_route_back = newExtendedRoute(hierarchy_, route, 0);
-    newRoute(dst_net_elm->id(), src_net_elm->id(), link_route_back);
+    newRoute(dst->id(), src->id(), link_route_back);
   }
   xbt_dynar_free(&route->link_list);
 }

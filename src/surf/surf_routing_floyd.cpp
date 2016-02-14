@@ -131,68 +131,50 @@ static int floyd_pointer_resource_cmp(const void *a, const void *b) {
 
 void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
 {
-  const char *src = route->src;
-  const char *dst = route->dst;
-
   /* set the size of table routing */
   int table_size = (int)xbt_dynar_length(vertices_);
 
-  NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
-  NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
+  NetCard *src = sg_netcard_by_name_or_null(route->src);
+  NetCard *dst = sg_netcard_by_name_or_null(route->dst);
 
   parseRouteCheckParams(route);
 
-  if(!linkTable_)
-  {
-    int i,j;
+  if(!linkTable_) {
     /* Create Cost, Predecessor and Link tables */
     costTable_ = xbt_new0(double, table_size * table_size);       /* link cost from host to host */
     predecessorTable_ = xbt_new0(int, table_size * table_size);  /* predecessor host numbers */
     linkTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);    /* actual link between src and dst */
 
     /* Initialize costs and predecessors */
-    for (i = 0; i < table_size; i++)
-      for (j = 0; j < table_size; j++) {
+    for (int i = 0; i < table_size; i++)
+      for (int j = 0; j < table_size; j++) {
         TO_FLOYD_COST(i, j) = DBL_MAX;
         TO_FLOYD_PRED(i, j) = -1;
-        TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
+        TO_FLOYD_LINK(i, j) = NULL;
       }
   }
 
-  if(TO_FLOYD_LINK(src_net_elm->id(), dst_net_elm->id()))
-  {
-
-    char * link_name;
-    unsigned int cpt;
-    xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(Link*), NULL);
-    xbt_dynar_foreach(route->link_list,cpt,link_name)
-    {
-      void *link = Link::byName(link_name);
-      xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
-      xbt_dynar_push(link_route_to_test,&link);
-    }
-    xbt_assert(!xbt_dynar_compare(
-        TO_FLOYD_LINK(src_net_elm->id(), dst_net_elm->id())->link_list,
-        link_route_to_test,
-        (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
-        "The route between \"%s\" and \"%s\" already exists", src,dst);
-  }
+  /* Check that the route does not already exist */
+  if (route->gw_dst) // AS route (to adapt the error message, if any)
+    xbt_assert(nullptr == TO_FLOYD_LINK(src->id(), dst->id()),
+        "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
+        src->name(),route->gw_src->name(),dst->name(),route->gw_dst->name());
   else
-  {
-    TO_FLOYD_LINK(src_net_elm->id(), dst_net_elm->id()) =
-        newExtendedRoute(hierarchy_, route, 1);
-    TO_FLOYD_PRED(src_net_elm->id(), dst_net_elm->id()) = src_net_elm->id();
-    TO_FLOYD_COST(src_net_elm->id(), dst_net_elm->id()) =
-        ((TO_FLOYD_LINK(src_net_elm->id(), dst_net_elm->id()))->link_list)->used;   /* count of links, old model assume 1 */
-  }
+    xbt_assert(nullptr == TO_FLOYD_LINK(src->id(), dst->id()),
+        "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->name(),dst->name());
+
+  TO_FLOYD_LINK(src->id(), dst->id()) = newExtendedRoute(hierarchy_, route, 1);
+  TO_FLOYD_PRED(src->id(), dst->id()) = src->id();
+  TO_FLOYD_COST(src->id(), dst->id()) = ((TO_FLOYD_LINK(src->id(), dst->id()))->link_list)->used;
+
 
   if (route->symmetrical == TRUE) {
-    if(TO_FLOYD_LINK(dst_net_elm->id(), src_net_elm->id()))
+    if(TO_FLOYD_LINK(dst->id(), src->id()))
     {
       if(!route->gw_dst && !route->gw_src)
-        XBT_DEBUG("See Route from \"%s\" to \"%s\"", dst, src);
+        XBT_DEBUG("See Route from \"%s\" to \"%s\"", dst->name(), src->name());
       else
-        XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst, route->gw_src->name(), src, route->gw_dst->name());
+        XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst->name(), route->gw_src->name(), src->name(), route->gw_dst->name());
 
       char * link_name;
       xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(Link*), NULL);
@@ -203,10 +185,10 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
         xbt_dynar_push(link_route_to_test,&link);
       }
       xbt_assert(!xbt_dynar_compare(
-          TO_FLOYD_LINK(dst_net_elm->id(), src_net_elm->id())->link_list,
+          TO_FLOYD_LINK(dst->id(), src->id())->link_list,
           link_route_to_test,
           (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
-          "The route between \"%s\" and \"%s\" already exists", src,dst);
+          "The route between \"%s\" and \"%s\" already exists", src->name(),dst->name());
     }
     else {
 
@@ -217,23 +199,22 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
       }
 
       if(!route->gw_src && !route->gw_dst)
-        XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
+        XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst->name(), src->name());
       else
-        XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
-            route->gw_src->name(), src, route->gw_dst->name());
+        XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst->name(),
+            route->gw_src->name(), src->name(), route->gw_dst->name());
 
-      TO_FLOYD_LINK(dst_net_elm->id(), src_net_elm->id()) =
+      TO_FLOYD_LINK(dst->id(), src->id()) =
          newExtendedRoute(hierarchy_, route, 0);
-      TO_FLOYD_PRED(dst_net_elm->id(), src_net_elm->id()) = dst_net_elm->id();
-      TO_FLOYD_COST(dst_net_elm->id(), src_net_elm->id()) =
-          ((TO_FLOYD_LINK(dst_net_elm->id(), src_net_elm->id()))->link_list)->used;   /* count of links, old model assume 1 */
+      TO_FLOYD_PRED(dst->id(), src->id()) = dst->id();
+      TO_FLOYD_COST(dst->id(), src->id()) =
+          ((TO_FLOYD_LINK(dst->id(), src->id()))->link_list)->used;   /* count of links, old model assume 1 */
     }
   }
   xbt_dynar_free(&route->link_list);
 }
 
 void AsFloyd::Seal(){
-  unsigned int i, j, a, b, c;
 
   /* set the size of table routing */
   size_t table_size = xbt_dynar_length(vertices_);
@@ -245,8 +226,8 @@ void AsFloyd::Seal(){
     linkTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);    /* actual link between src and dst */
 
     /* Initialize costs and predecessors */
-    for (i = 0; i < table_size; i++)
-      for (j = 0; j < table_size; j++) {
+    for (unsigned int i = 0; i < table_size; i++)
+      for (unsigned int j = 0; j < table_size; j++) {
         TO_FLOYD_COST(i, j) = DBL_MAX;
         TO_FLOYD_PRED(i, j) = -1;
         TO_FLOYD_LINK(i, j) = NULL;
@@ -255,7 +236,7 @@ void AsFloyd::Seal(){
 
   /* Add the loopback if needed */
   if (routing_platf->loopback_ && hierarchy_ == SURF_ROUTING_BASE) {
-    for (i = 0; i < table_size; i++) {
+    for (unsigned int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
       if (!e_route) {
         e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
@@ -270,9 +251,9 @@ void AsFloyd::Seal(){
     }
   }
   /* Calculate path costs */
-  for (c = 0; c < table_size; c++) {
-    for (a = 0; a < table_size; a++) {
-      for (b = 0; b < table_size; b++) {
+  for (unsigned int c = 0; c < table_size; c++) {
+    for (unsigned int a = 0; a < table_size; a++) {
+      for (unsigned int b = 0; b < table_size; b++) {
         if (TO_FLOYD_COST(a, c) < DBL_MAX && TO_FLOYD_COST(c, b) < DBL_MAX) {
           if (TO_FLOYD_COST(a, b) == DBL_MAX ||
               (TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b) <
