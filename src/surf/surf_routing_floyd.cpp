@@ -137,8 +137,6 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
   const char *src = route->src;
   const char *dst = route->dst;
 
-  int as_route = 0;
-
   /* set the size of table routing */
   int table_size = (int)xbt_dynar_length(vertices_);
 
@@ -167,7 +165,6 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
   if(!route->gw_dst && !route->gw_src)
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
   else{
-    as_route = 1;
     XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
         route->gw_src->name(), dst, route->gw_dst->name());
     if(route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
@@ -203,10 +200,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
         ((TO_FLOYD_LINK(src_net_elm->id(), dst_net_elm->id()))->link_list)->used;   /* count of links, old model assume 1 */
   }
 
-  if ( (route->symmetrical == TRUE && as_route == 0)
-      || (route->symmetrical == TRUE && as_route == 1)
-  )
-  {
+  if (route->symmetrical == TRUE) {
     if(TO_FLOYD_LINK(dst_net_elm->id(), src_net_elm->id()))
     {
       if(!route->gw_dst && !route->gw_src)
@@ -228,14 +222,12 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
           (int_f_cpvoid_cpvoid_t) floyd_pointer_resource_cmp),
           "The route between \"%s\" and \"%s\" already exists", src,dst);
     }
-    else
-    {
-      if(route->gw_dst && route->gw_src)
-      {
-        sg_netcard_t gw_src = route->gw_src;
-        sg_netcard_t gw_dst = route->gw_dst;
-        route->gw_src = gw_dst;
-        route->gw_dst = gw_src;
+    else {
+
+      if(route->gw_dst && route->gw_src) {
+        NetCard* gw_tmp = route->gw_src;
+        route->gw_src = route->gw_dst;
+        route->gw_dst = gw_tmp;
       }
 
       if(!route->gw_src && !route->gw_dst)

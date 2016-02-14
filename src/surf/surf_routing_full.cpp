@@ -132,8 +132,6 @@ static int full_pointer_resource_cmp(const void *a, const void *b)
 
 void AsFull::parseRoute(sg_platf_route_cbarg_t route)
 {
-  int as_route = 0;
-
   const char *src = route->src;
   const char *dst = route->dst;
   NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
@@ -202,7 +200,6 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
       //                         "in a sub-sub-AS is not allowed), "
       //                         "but '%s' is not in '%s'.",
       //                         route->dst_gateway, subas->name);
-      as_route = 1;
       XBT_DEBUG("Load ASroute from \"%s\" to \"%s\"", src, dst);
       if (!route->gw_src ||
           route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
@@ -219,12 +216,9 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
     xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list, 0);
   }
 
-  if ( (route->symmetrical == TRUE && as_route == 0)
-      || (route->symmetrical == TRUE && as_route == 1)
-  ) {
+  if (route->symmetrical == TRUE) {
     if (route->gw_dst && route->gw_src) {
-      sg_netcard_t gw_tmp;
-      gw_tmp = route->gw_src;
+      NetCard* gw_tmp = route->gw_src;
       route->gw_src = route->gw_dst;
       route->gw_dst = gw_tmp;
     }

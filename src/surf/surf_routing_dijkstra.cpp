@@ -381,13 +381,11 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
   const char *src = route->src;
   const char *dst = route->dst;
 
-  int as_route = 0;
   if(!route->gw_dst && !route->gw_src)
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
   else{
     XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
         route->gw_src->name(), dst, route->gw_dst->name());
-    as_route = 1;
     if(route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
       surf_parse_error("The gw_dst '%s' does not exist!",route->gw_dst->name());
     if(route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
@@ -410,7 +408,7 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
   newRoute(src_net_elm->id(), dst_net_elm->id(), e_route);
 
   // Symmetrical YES
-  if ( (route->symmetrical == TRUE && as_route == 0) || (route->symmetrical == TRUE && as_route == 1) ) {
+  if (route->symmetrical == TRUE) {
     if(!route->gw_dst && !route->gw_src)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
     else
