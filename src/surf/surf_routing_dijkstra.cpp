@@ -376,32 +376,6 @@ AsDijkstra::AsDijkstra(const char*name, bool cached)
     p_routeCache = xbt_dict_new_homogeneous(&route_cache_elem_free);
 }
 
-void AsDijkstra::end()
-{
-  xbt_node_t node = NULL;
-  unsigned int cursor2;
-  xbt_dynar_t nodes = NULL;
-
-  /* Create the topology graph */
-  if(!p_routeGraph)
-  p_routeGraph = xbt_graph_new_graph(1, NULL);
-  if(!p_graphNodeMap)
-    p_graphNodeMap = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
-
-  /* Add the loopback if needed */
-  if (routing_platf->p_loopback && hierarchy_ == SURF_ROUTING_BASE)
-    addLoopback();
-
-  /* initialize graph indexes in nodes after graph has been built */
-  nodes = xbt_graph_get_nodes(p_routeGraph);
-
-  xbt_dynar_foreach(nodes, cursor2, node) {
-    graph_node_data_t data = (graph_node_data_t) xbt_graph_node_get_data(node);
-    data->graph_id = cursor2;
-  }
-
-}
-
 void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
 {
   char *src = (char*)(route->src);
