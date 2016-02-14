@@ -378,8 +378,8 @@ AsDijkstra::AsDijkstra(const char*name, bool cached)
 
 void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
 {
-  char *src = (char*)(route->src);
-  char *dst = (char*)(route->dst);
+  const char *src = route->src;
+  const char *dst = route->dst;
 
   int as_route = 0;
   if(!route->gw_dst && !route->gw_src)
@@ -394,10 +394,8 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
       surf_parse_error("The gw_src '%s' does not exist!",route->gw_src->name());
   }
 
-  NetCard *src_net_elm, *dst_net_elm;
-
-  src_net_elm = sg_netcard_by_name_or_null(src);
-  dst_net_elm = sg_netcard_by_name_or_null(dst);
+  NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
+  NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
 
   xbt_assert(src_net_elm, "Network elements %s not found", src);
   xbt_assert(dst_net_elm, "Network elements %s not found", dst);

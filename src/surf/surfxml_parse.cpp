@@ -54,7 +54,6 @@ double surf_parse_get_double(const char *string) {
   int ret = sscanf(string, "%lg", &res);
   if (ret != 1)
     surf_parse_error("%s is not a double", string);
-  //printf("Parsed double [%g] %s\n", res, string);
   return res;
 }
 

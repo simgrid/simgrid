@@ -133,11 +133,11 @@ static int full_pointer_resource_cmp(const void *a, const void *b)
 void AsFull::parseRoute(sg_platf_route_cbarg_t route)
 {
   int as_route = 0;
-  char *src = (char*)(route->src);
-  char *dst = (char*)(route->dst);
-  NetCard *src_net_elm, *dst_net_elm;
-  src_net_elm = sg_netcard_by_name_or_null(src);
-  dst_net_elm = sg_netcard_by_name_or_null(dst);
+
+  const char *src = route->src;
+  const char *dst = route->dst;
+  NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
+  NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
 
   xbt_assert(src_net_elm, "Network elements %s not found", src);
   xbt_assert(dst_net_elm, "Network elements %s not found", dst);

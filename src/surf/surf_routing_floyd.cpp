@@ -134,17 +134,16 @@ static int floyd_pointer_resource_cmp(const void *a, const void *b) {
 
 void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
 {
-  char *src = (char*)(route->src);
-  char *dst = (char*)(route->dst);
+  const char *src = route->src;
+  const char *dst = route->dst;
 
   int as_route = 0;
 
   /* set the size of table routing */
   int table_size = (int)xbt_dynar_length(vertices_);
-  NetCard *src_net_elm, *dst_net_elm;
 
-  src_net_elm = sg_netcard_by_name_or_null(src);
-  dst_net_elm = sg_netcard_by_name_or_null(dst);
+  NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
+  NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
 
   xbt_assert(src_net_elm, "Network elements %s not found", src);
   xbt_assert(dst_net_elm, "Network elements %s not found", dst);
@@ -213,13 +212,11 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
       if(!route->gw_dst && !route->gw_src)
         XBT_DEBUG("See Route from \"%s\" to \"%s\"", dst, src);
       else
-        XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
-            route->gw_src->name(), src, route->gw_dst->name());
+        XBT_DEBUG("See ASroute from \"%s(%s)\" to \"%s(%s)\"", dst, route->gw_src->name(), src, route->gw_dst->name());
+
       char * link_name;
-      unsigned int i;
       xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-      for(i=xbt_dynar_length(route->link_list) ;i>0 ;i--)
-      {
+      for(int i=xbt_dynar_length(route->link_list) ;i>0 ;i--) {
         link_name = xbt_dynar_get_as(route->link_list,i-1,char *);
         void *link = Link::byName(link_name);
         xbt_assert(link,"Link : '%s' doesn't exists.",link_name);
