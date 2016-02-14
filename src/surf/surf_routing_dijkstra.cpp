@@ -208,26 +208,18 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     THROWF(arg_error,0,"No route from '%s' to '%s'",src->name(),dst->name());
 
   int *pred_arr = NULL;
-  int src_node_id = 0;
-  int dst_node_id = 0;
-  int *nodeid = NULL;
-  int v;
   sg_platf_route_cbarg_t e_route;
   int size = 0;
   unsigned int cpt;
   void *link;
-  xbt_dynar_t links = NULL;
-  route_cache_element_t elm = NULL;
   xbt_dynar_t nodes = xbt_graph_get_nodes(p_routeGraph);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
   graph_node_map_element_t src_elm = nodeMapSearch(*src_id);
   graph_node_map_element_t dst_elm = nodeMapSearch(*dst_id);
 
-  src_node_id = ((graph_node_data_t)
-      xbt_graph_node_get_data(src_elm->node))->graph_id;
-  dst_node_id = ((graph_node_data_t)
-      xbt_graph_node_get_data(dst_elm->node))->graph_id;
+  int src_node_id = ((graph_node_data_t) xbt_graph_node_get_data(src_elm->node))->graph_id;
+  int dst_node_id = ((graph_node_data_t) xbt_graph_node_get_data(dst_elm->node))->graph_id;
 
   /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
@@ -241,8 +233,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
 
     e_route = (sg_platf_route_cbarg_t) xbt_graph_edge_get_data(edge);
 
-    links = e_route->link_list;
-    xbt_dynar_foreach(links, cpt, link) {
+    xbt_dynar_foreach(e_route->link_list, cpt, link) {
       xbt_dynar_unshift(route->link_list, &link);
       if (lat)
         *lat += static_cast<Link*>(link)->getLatency();
@@ -250,28 +241,25 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
 
   }
 
-  if (m_cached) {
-    /*check if there is a cached predecessor list avail */
+  route_cache_element_t elm = NULL;
+  if (m_cached) {  /* cache mode  */
     elm = (route_cache_element_t)
             xbt_dict_get_or_null_ext(p_routeCache, (char *) (&src_id), sizeof(int));
   }
 
   if (elm) {                    /* cached mode and cache hit */
     pred_arr = elm->pred_arr;
-  } else {                      /* not cached mode or cache miss */
-    double *cost_arr = NULL;
-    xbt_heap_t pqueue = NULL;
-    int i = 0;
+  } else {                      /* not cached mode, or cache miss */
 
     int nr_nodes = xbt_dynar_length(nodes);
-    cost_arr = xbt_new0(double, nr_nodes);      /* link cost from src to other hosts */
+    double * cost_arr = xbt_new0(double, nr_nodes);      /* link cost from src to other hosts */
     pred_arr = xbt_new0(int, nr_nodes); /* predecessors in path from src */
-    pqueue = xbt_heap_new(nr_nodes, xbt_free_f);
+    xbt_heap_t pqueue = xbt_heap_new(nr_nodes, xbt_free_f);
 
     /* initialize */
     cost_arr[src_node_id] = 0.0;
 
-    for (i = 0; i < nr_nodes; i++) {
+    for (int i = 0; i < nr_nodes; i++) {
       if (i != src_node_id) {
         cost_arr[i] = DBL_MAX;
       }
@@ -279,7 +267,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
       pred_arr[i] = 0;
 
       /* initialize priority queue */
-      nodeid = xbt_new0(int, 1);
+      int *nodeid = xbt_new0(int, 1);
       *nodeid = i;
       xbt_heap_push(pqueue, nodeid, cost_arr[i]);
 
@@ -289,11 +277,10 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     while (xbt_heap_size(pqueue) > 0) {
       int *v_id = (int *) xbt_heap_pop(pqueue);
       xbt_node_t v_node = xbt_dynar_get_as(nodes, *v_id, xbt_node_t);
-      xbt_dynar_t out_edges = xbt_graph_node_get_outedges(v_node);
       xbt_edge_t edge = NULL;
       unsigned int cursor;
 
-      xbt_dynar_foreach(out_edges, cursor, edge) {
+      xbt_dynar_foreach(xbt_graph_node_get_outedges(v_node), cursor, edge) {
         xbt_node_t u_node = xbt_graph_edge_get_target(edge);
         graph_node_data_t data = (graph_node_data_t) xbt_graph_node_get_data(u_node);
         int u_id = data->graph_id;
@@ -303,7 +290,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
         if (cost_v_u + cost_arr[*v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = *v_id;
           cost_arr[u_id] = cost_v_u + cost_arr[*v_id];
-          nodeid = xbt_new0(int, 1);
+          int *nodeid = xbt_new0(int, 1);
           *nodeid = u_id;
           xbt_heap_push(pqueue, nodeid, cost_arr[u_id]);
         }
@@ -321,12 +308,10 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
   NetCard *gw_src = NULL, *gw_dst, *prev_gw_src, *first_gw = NULL;
   NetCard *gw_dst_net_elm = NULL, *prev_gw_src_net_elm = NULL;
 
-  for (v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
-    xbt_node_t node_pred_v =
-        xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
+  for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
+    xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
     xbt_node_t node_v = xbt_dynar_get_as(nodes, v, xbt_node_t);
-    xbt_edge_t edge =
-        xbt_graph_get_edge(p_routeGraph, node_pred_v, node_v);
+    xbt_edge_t edge = xbt_graph_get_edge(p_routeGraph, node_pred_v, node_v);
 
     if (edge == NULL)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name(), dst->name());
@@ -347,9 +332,8 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
       routing_platf->getRouteAndLatency(gw_dst_net_elm, prev_gw_src_net_elm, &e_route_as_to_as, NULL);
       if (edge == NULL)
         THROWF(arg_error,0,"No route from '%s' to '%s'", src->name(), dst->name());
-      links = e_route_as_to_as;
       int pos = 0;
-      xbt_dynar_foreach(links, cpt, link) {
+      xbt_dynar_foreach(e_route_as_to_as, cpt, link) {
         xbt_dynar_insert_at(route->link_list, pos, &link);
         if (lat)
           *lat += static_cast<Link*>(link)->getLatency();
@@ -357,8 +341,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
       }
     }
 
-    links = e_route->link_list;
-    xbt_dynar_foreach(links, cpt, link) {
+    xbt_dynar_foreach(e_route->link_list, cpt, link) {
       xbt_dynar_unshift(route->link_list, &link);
       if (lat)
         *lat += static_cast<Link*>(link)->getLatency();
@@ -385,11 +368,9 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
 
 AsDijkstra::~AsDijkstra()
 {
-  xbt_graph_free_graph(p_routeGraph, &xbt_free_f,
-      &graph_edge_data_free, &xbt_free_f);
+  xbt_graph_free_graph(p_routeGraph, &xbt_free_f,  &graph_edge_data_free, &xbt_free_f);
   xbt_dict_free(&p_graphNodeMap);
-  if (m_cached)
-    xbt_dict_free(&p_routeCache);
+  xbt_dict_free(&p_routeCache);
 }
 
 /* Creation routing model functions */

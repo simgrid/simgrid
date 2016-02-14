@@ -58,14 +58,14 @@ public:
      */
   void addLoopback();
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat) override;
-  xbt_dynar_t getOneLinkRoutes() override;
   void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat); // FIXME: this function is dangerously not overriding because of diverging prototype
+  xbt_dynar_t getOneLinkRoutes() override;
   void parseRoute(sg_platf_route_cbarg_t route) override;
   void end();
 
-  xbt_graph_t p_routeGraph = nullptr;      /* xbt_graph */
+  xbt_graph_t p_routeGraph = nullptr;     /* xbt_graph */
   xbt_dict_t p_graphNodeMap = nullptr;    /* map */
-  xbt_dict_t p_routeCache = nullptr;       /* use in cache mode */
+  xbt_dict_t p_routeCache = nullptr;      /* use in cache mode */
   bool m_cached = false;
 };
 
