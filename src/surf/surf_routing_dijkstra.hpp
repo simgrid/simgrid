@@ -66,7 +66,6 @@ public:
   xbt_graph_t p_routeGraph = nullptr;     /* xbt_graph */
   xbt_dict_t p_graphNodeMap = nullptr;    /* map */
   xbt_dict_t p_routeCache = nullptr;      /* use in cache mode */
-  bool m_cached = false;
 };
 
 }
