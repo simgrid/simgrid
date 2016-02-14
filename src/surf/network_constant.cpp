@@ -80,8 +80,8 @@ void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
 Action *NetworkConstantModel::communicate(NetCard *src, NetCard *dst,
     double size, double rate)
 {
-  char *src_name = src->getName();
-  char *dst_name = dst->getName();
+  char *src_name = src->name();
+  char *dst_name = dst->name();
 
   XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
   NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);

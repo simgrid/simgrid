@@ -49,7 +49,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 
 static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
 {
-  const char* router_id = router->getName();
+  const char* router_id = router->name();
   XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
   xbt_lib_set(as_router_lib,
               router_id,
@@ -165,8 +165,8 @@ static void create_ns3_topology(void)
   simgrid::surf::Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
-    char *src = onelink->p_src->getName();
-    char *dst = onelink->p_dst->getName();
+    char *src = onelink->p_src->name();
+    char *dst = onelink->p_dst->name();
     simgrid::surf::NetworkNS3Link *link =
       static_cast<simgrid::surf::NetworkNS3Link *>(onelink->p_link);
 
@@ -288,10 +288,10 @@ xbt_dynar_t NetworkNS3Model::getRoute(NetCard *src, NetCard *dst)
 Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst,
                                    double size, double rate)
 {
-  XBT_DEBUG("Communicate from %s to %s", src->getName(), dst->getName());
+  XBT_DEBUG("Communicate from %s to %s", src->name(), dst->name());
   NetworkNS3Action *action = new NetworkNS3Action(this, size, 0);
 
-  ns3_create_flow(src->getName(), dst->getName(), surf_get_clock(), size, action);
+  ns3_create_flow(src->name(), dst->name(), surf_get_clock(), size, action);
 
   action->m_lastSent = 0;
   action->p_srcElm = src;

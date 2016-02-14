@@ -132,7 +132,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
   simgrid::surf::NetCard *info = new simgrid::surf::NetCardImpl(router->id, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
   info->setId(current_routing->addComponent(info));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
-  XBT_DEBUG("Having set name '%s' id '%d'", router->id, info->getId());
+  XBT_DEBUG("Having set name '%s' id '%d'", router->id, info->id());
   simgrid::surf::netcardCreatedCallbacks(info);
 
   if (router->coord && strcmp(router->coord, "")) {

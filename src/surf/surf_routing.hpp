@@ -35,11 +35,11 @@ class RoutingPlatf;
 class NetCard {
 public:
   virtual ~NetCard(){};
-  virtual int getId()=0; // Our rank in the vertices_ array of our container AS.
+  virtual int id()=0; // Our rank in the vertices_ array of our containing AS.
   virtual int *getIdPtr()=0;
   virtual void setId(int id)=0;
-  virtual char *getName()=0;
-  virtual As *getRcComponent()=0;
+  virtual char *name()=0;
+  virtual As *containingAS()=0; // This is the AS in which I am
   virtual e_surf_network_element_type_t getRcType()=0;
 };
 
@@ -106,24 +106,24 @@ public:
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, As *component)
-  : component_(component),
+  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, As *as)
+  : name_(xbt_strdup(name)),
     componentType_(componentType),
-    name_(xbt_strdup(name))
+    containingAS_(as)
   {}
   ~NetCardImpl() { xbt_free(name_);};
 
-  int getId() {return id_;}
+  int id() {return id_;}
   int *getIdPtr() {return &id_;}
   void setId(int id) {id_ = id;}
-  char *getName() {return name_;}
-  As *getRcComponent() {return component_;}
+  char *name() {return name_;}
+  As *containingAS() {return containingAS_;}
   e_surf_network_element_type_t getRcType() {return componentType_;}
 private:
-  As *component_;
-  e_surf_network_element_type_t componentType_;
   int id_ = -1;
   char *name_;
+  e_surf_network_element_type_t componentType_;
+  As *containingAS_;
 };
 
 /** @ingroup SURF_routing_interface

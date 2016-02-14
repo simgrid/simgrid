@@ -287,8 +287,8 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
   double *bytes_amount = xbt_new0(double, 4);
   Action *res = NULL;
 
-  host_list[0] = sg_host_by_name(src->getName());
-  host_list[1] = sg_host_by_name(dst->getName());
+  host_list[0] = sg_host_by_name(src->name());
+  host_list[1] = sg_host_by_name(dst->name());
   bytes_amount[1] = size;
 
   res = p_hostModel->executeParallelTask(2, host_list, flops_amount, bytes_amount, rate);

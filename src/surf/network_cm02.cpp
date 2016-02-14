@@ -344,12 +344,12 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
 
   xbt_dynar_t route = xbt_dynar_new(sizeof(NetCard*), NULL);
 
-  XBT_IN("(%s,%s,%g,%g)", src->getName(), dst->getName(), size, rate);
+  XBT_IN("(%s,%s,%g,%g)", src->name(), dst->name(), size, rate);
 
   routing_platf->getRouteAndLatency(src, dst, &route, &latency);
   xbt_assert(!xbt_dynar_is_empty(route) || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
-             src->getName(), dst->getName());
+             src->name(), dst->name());
 
   xbt_dynar_foreach(route, i, _link) {
   link = static_cast<NetworkCm02Link*>(_link);
@@ -406,7 +406,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
     link = *static_cast<NetworkCm02Link **>(xbt_dynar_get_ptr(route, 0));
     gapAppend(size, link, action);
     XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",
-              action, src->getName(), dst->getName(), action->m_senderGap,
+              action, src->name(), dst->name(), action->m_senderGap,
               action->m_latency);
   }
 

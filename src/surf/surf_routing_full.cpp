@@ -100,10 +100,10 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
 void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t res, double *lat)
 {
   XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]",
-      src->getName(),
-      src->getId(),
-      dst->getName(),
-      dst->getId());
+      src->name(),
+      src->id(),
+      dst->name(),
+      dst->id());
 
   /* set utils vars */
   size_t table_size = xbt_dynar_length(vertices_);
@@ -112,7 +112,7 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
   void *link;
   unsigned int cpt = 0;
 
-  e_route = TO_ROUTE_FULL(src->getId(), dst->getId());
+  e_route = TO_ROUTE_FULL(src->id(), dst->id());
 
   if (e_route) {
     res->gw_src = e_route->gw_src;
@@ -151,7 +151,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
   if (!p_routingTable)
     p_routingTable = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
-  if (TO_ROUTE_FULL(src_net_elm->getId(), dst_net_elm->getId())) {
+  if (TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())) {
     char *link_name;
     unsigned int i;
     xbt_dynar_t link_route_to_test =
@@ -161,7 +161,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
       xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
       xbt_dynar_push(link_route_to_test, &link);
     }
-    if (xbt_dynar_compare(TO_ROUTE_FULL(src_net_elm->getId(), dst_net_elm->getId())->link_list,
+    if (xbt_dynar_compare(TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list,
         link_route_to_test, full_pointer_resource_cmp)) {
       surf_parse_error("A route between \"%s\" and \"%s\" already exists "
           "with a different content. "
@@ -207,16 +207,16 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
       if (!route->gw_src ||
           route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
       surf_parse_error("The src_gateway \"%s\" does not exist!",
-                route->gw_src ? route->gw_src->getName() : "(null)");
+                route->gw_src ? route->gw_src->name() : "(null)");
       if (!route->gw_dst ||
           route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
       surf_parse_error("The dst_gateway \"%s\" does not exist!",
-                route->gw_dst ? route->gw_dst->getName() : "(null)");
+                route->gw_dst ? route->gw_dst->name() : "(null)");
       XBT_DEBUG("ASroute goes from \"%s\" to \"%s\"",
-                route->gw_src->getName(), route->gw_dst->getName());
+                route->gw_src->name(), route->gw_dst->name());
     }
-    TO_ROUTE_FULL(src_net_elm->getId(), dst_net_elm->getId()) = newExtendedRoute(hierarchy_, route, 1);
-    xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->getId(), dst_net_elm->getId())->link_list, 0);
+    TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()) = newExtendedRoute(hierarchy_, route, 1);
+    xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list, 0);
   }
 
   if ( (route->symmetrical == TRUE && as_route == 0)
@@ -228,7 +228,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
       route->gw_src = route->gw_dst;
       route->gw_dst = gw_tmp;
     }
-    if (TO_ROUTE_FULL(dst_net_elm->getId(), src_net_elm->getId())) {
+    if (TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())) {
       char *link_name;
       unsigned int i;
       xbt_dynar_t link_route_to_test =
@@ -239,7 +239,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
         xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
         xbt_dynar_push(link_route_to_test, &link);
       }
-      xbt_assert(!xbt_dynar_compare(TO_ROUTE_FULL(dst_net_elm->getId(), src_net_elm->getId())->link_list,
+      xbt_assert(!xbt_dynar_compare(TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())->link_list,
           link_route_to_test,
           full_pointer_resource_cmp),
           "The route between \"%s\" and \"%s\" already exists", src,
@@ -249,9 +249,9 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
         XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
       else
         XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
-            dst, route->gw_src->getName(), src, route->gw_dst->getName());
-      TO_ROUTE_FULL(dst_net_elm->getId(), src_net_elm->getId()) = newExtendedRoute(hierarchy_, route, 0);
-      xbt_dynar_shrink(TO_ROUTE_FULL(dst_net_elm->getId(), src_net_elm->getId())->link_list, 0);
+            dst, route->gw_src->name(), src, route->gw_dst->name());
+      TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id()) = newExtendedRoute(hierarchy_, route, 0);
+      xbt_dynar_shrink(TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())->link_list, 0);
     }
   }
   xbt_dynar_free(&route->link_list);

@@ -67,25 +67,25 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
 if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER) return;
 
   /* Let's find the source and the destination in our internal structure */
-  tempIter = this->computeNodes.find(src->getId());
+  tempIter = this->computeNodes.find(src->id());
 
   // xbt_die -> assert
   if (tempIter == this->computeNodes.end()) {
-    xbt_die("Could not find the source %s [%d] in the fat tree", src->getName(),
-            src->getId());
+    xbt_die("Could not find the source %s [%d] in the fat tree", src->name(),
+            src->id());
   }
   source = tempIter->second;
-  tempIter = this->computeNodes.find(dst->getId());
+  tempIter = this->computeNodes.find(dst->id());
   if (tempIter == this->computeNodes.end()) {
     xbt_die("Could not find the destination %s [%d] in the fat tree",
-            dst->getName(), dst->getId());
+            dst->name(), dst->id());
   }
 
 
   destination = tempIter->second;
   
   XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree",
-            src->getName(), src->getId(), dst->getName(), dst->getId());
+            src->name(), src->id(), dst->name(), dst->id());
 
   /* In case destination is the source, and there is a loopback, let's get
      through it instead of going up to a switch*/

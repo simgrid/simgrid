@@ -55,12 +55,12 @@ static void IB_action_init_callback(
   if(((NetworkIBModel*)surf_network_model)->active_nodes==NULL)
     xbt_die("IB comm added, without any node connected !");
   
-  IBNode* act_src= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, src->getName());
+  IBNode* act_src= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, src->name());
   if(act_src==NULL)
     xbt_die("could not find src node active comms !");
   //act_src->rate=rate;
   
-  IBNode* act_dst= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, dst->getName());
+  IBNode* act_dst= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, dst->name());
   if(act_dst==NULL)
     xbt_die("could not find dst node active comms !");  
  // act_dst->rate=rate;

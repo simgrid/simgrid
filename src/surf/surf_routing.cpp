@@ -49,7 +49,7 @@ namespace surf {
 
 
   int As::addComponent(NetCard *elm) {
-    XBT_DEBUG("Load component \"%s\"", elm->getName());
+    XBT_DEBUG("Load component \"%s\"", elm->name());
     xbt_dynar_push_as(vertices_, NetCard*, elm);
     return xbt_dynar_length(vertices_)-1;
   }
@@ -123,12 +123,12 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t netcard_arg)
   xbt_assert(link_up_down.link_down, "Link '%s' not found!",netcard_arg->link_down);
 
   // If dynar is is greater than netcard id and if the host_link is already defined
-  if((int)xbt_dynar_length(current_routing->upDownLinks) > netcard->getId() &&
-      xbt_dynar_get_as(current_routing->upDownLinks, netcard->getId(), void*))
+  if((int)xbt_dynar_length(current_routing->upDownLinks) > netcard->id() &&
+      xbt_dynar_get_as(current_routing->upDownLinks, netcard->id(), void*))
   surf_parse_error("Host_link for '%s' is already defined!",netcard_arg->id);
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->getName(), netcard->getId());
-  xbt_dynar_set_as(current_routing->upDownLinks, netcard->getId(), s_surf_parsing_link_up_down_t, link_up_down);
+  XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name(), netcard->id());
+  xbt_dynar_set_as(current_routing->upDownLinks, netcard->id(), s_surf_parsing_link_up_down_t, link_up_down);
 }
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
@@ -209,9 +209,9 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
 
-  xbt_lib_set(as_router_lib, netcard->getName(), ROUTING_ASR_LEVEL,
+  xbt_lib_set(as_router_lib, netcard->name(), ROUTING_ASR_LEVEL,
               (void *) netcard);
-  XBT_DEBUG("Having set name '%s' id '%d'", new_as->name_, netcard->getId());
+  XBT_DEBUG("Having set name '%s' id '%d'", new_as->name_, netcard->id());
 
   /* set the new current component of the tree */
   current_routing = new_as;
@@ -270,11 +270,11 @@ static void elements_father(sg_netcard_t src, sg_netcard_t dst,
   /* (1) find the as where the src and dst are located */
   sg_netcard_t src_data = src;
   sg_netcard_t dst_data = dst;
-  src_as = src_data->getRcComponent();
-  dst_as = dst_data->getRcComponent();
+  src_as = src_data->containingAS();
+  dst_as = dst_data->containingAS();
 #ifndef NDEBUG
-  char* src_name = src_data->getName();
-  char* dst_name = dst_data->getName();
+  char* src_name = src_data->name();
+  char* dst_name = dst_data->name();
 #endif
 
   xbt_assert(src_as && dst_as,
@@ -333,7 +333,7 @@ static void _get_route_and_latency(
   memset(&route,0,sizeof(route));
 
   xbt_assert(src && dst, "bad parameters for \"_get_route_latency\" method");
-  XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src->getName(), dst->getName());
+  XBT_DEBUG("Solve route/latency  \"%s\" to \"%s\"", src->name(), dst->name());
 
   /* Find how src and dst are interconnected */
   simgrid::surf::As *common_father, *src_father, *dst_father;
@@ -373,7 +373,7 @@ static void _get_route_and_latency(
                                     &route, latency);
 
   xbt_assert((route.gw_src != NULL) && (route.gw_dst != NULL),
-      "bad gateways for route from \"%s\" to \"%s\"", src->getName(), dst->getName());
+      "bad gateways for route from \"%s\" to \"%s\"", src->name(), dst->name());
 
   sg_netcard_t src_gateway_net_elm = route.gw_src;
   sg_netcard_t dst_gateway_net_elm = route.gw_dst;
@@ -416,7 +416,7 @@ namespace surf {
  */
 void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t* route, double *latency)
 {
-  XBT_DEBUG("getRouteAndLatency from %s to %s", src->getName(), dst->getName());
+  XBT_DEBUG("getRouteAndLatency from %s to %s", src->name(), dst->name());
   if (NULL == *route) {
     xbt_dynar_reset(routing_platf->p_lastRoute);
     *route = routing_platf->p_lastRoute;
@@ -425,7 +425,7 @@ void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t* r
   _get_route_and_latency(src, dst, route, latency);
 
   xbt_assert(!latency || *latency >= 0.0,
-             "negative latency on route between \"%s\" and \"%s\"", src->getName(), dst->getName());
+             "negative latency on route between \"%s\" and \"%s\"", src->name(), dst->name());
 }
 
 xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
@@ -874,7 +874,7 @@ xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)
   for (int index = 0; index < count; index++) {
      sg_netcard_t relm =
       xbt_dynar_get_as(elms, index, simgrid::surf::NetCard*);
-     sg_host_t delm = simgrid::s4u::Host::by_name_or_null(relm->getName());
+     sg_host_t delm = simgrid::s4u::Host::by_name_or_null(relm->name());
      if (delm!=NULL) {
        xbt_dynar_push(res, &delm);
      }

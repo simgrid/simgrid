@@ -64,7 +64,7 @@ void AsGeneric::parseBypassroute(sg_platf_route_cbarg_t e_route)
       src, dst);
   xbt_assert(!xbt_dict_get_or_null(dict_bypassRoutes, route_name),
       "The bypass route between \"%s\"(\"%s\") and \"%s\"(\"%s\") already exists",
-      src, e_route->gw_src->getName(), dst, e_route->gw_dst->getName());
+      src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
 
   sg_platf_route_cbarg_t new_e_route = NULL;
   if(e_route->gw_dst)
@@ -153,7 +153,7 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       getRouteAndLatency(my_src, my_dst, route, NULL);
 
-      XBT_DEBUG ("get_route_and_latency %s -> %s", my_src->getName(), my_dst->getName());
+      XBT_DEBUG ("get_route_and_latency %s -> %s", my_src->name(), my_dst->name());
 
       unsigned int cpt;
       void *link;
@@ -162,11 +162,11 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       const char *previous_name, *current_name;
 
       if (route->gw_src) {
-        previous = new_xbt_graph_node(graph, route->gw_src->getName(), nodes);
-        previous_name = route->gw_src->getName();
+        previous = new_xbt_graph_node(graph, route->gw_src->name(), nodes);
+        previous_name = route->gw_src->name();
       } else {
-        previous = new_xbt_graph_node(graph, my_src->getName(), nodes);
-        previous_name = my_src->getName();
+        previous = new_xbt_graph_node(graph, my_src->name(), nodes);
+        previous_name = my_src->name();
       }
 
       xbt_dynar_foreach(route->link_list, cpt, link) {
@@ -181,11 +181,11 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
       }
 
       if (route->gw_dst) {
-        current = new_xbt_graph_node(graph, route->gw_dst->getName(), nodes);
-        current_name = route->gw_dst->getName();
+        current = new_xbt_graph_node(graph, route->gw_dst->name(), nodes);
+        current_name = route->gw_dst->name();
       } else {
-        current = new_xbt_graph_node(graph, my_dst->getName(), nodes);
-        current_name = my_dst->getName();
+        current = new_xbt_graph_node(graph, my_dst->name(), nodes);
+        current_name = my_dst->name();
       }
       new_xbt_graph_edge(graph, previous, current, edges);
       XBT_DEBUG ("  %s -> %s", previous_name, current_name);
@@ -201,15 +201,15 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
                                                double *lat)
 {
   // If never set a bypass route return NULL without any further computations
-  XBT_DEBUG("generic_get_bypassroute from %s to %s", src->getName(), dst->getName());
+  XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
   if (no_bypassroute_declared)
     return NULL;
 
   sg_platf_route_cbarg_t e_route_bypass = NULL;
   xbt_dict_t dict_bypassRoutes = bypassRoutes_;
 
-  if(dst->getRcComponent() == this && src->getRcComponent() == this ){
-    char *route_name = bprintf("%s#%s", src->getName(), dst->getName());
+  if(dst->containingAS() == this && src->containingAS() == this ){
+    char *route_name = bprintf("%s#%s", src->name(), dst->name());
     e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
     if(e_route_bypass)
       XBT_DEBUG("Find bypass route with %ld links",xbt_dynar_length(e_route_bypass->link_list));
@@ -226,11 +226,11 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
 
     if (src == NULL || dst == NULL)
       xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-              src ? src->getName() : "(null)",
-              dst ? dst->getName() : "(null)", name_);
+              src ? src->name() : "(null)",
+              dst ? dst->name() : "(null)", name_);
 
-    src_as = src->getRcComponent();
-    dst_as = dst->getRcComponent();
+    src_as = src->containingAS();
+    dst_as = dst->containingAS();
 
     /* (2) find the path to the root routing component */
     path_src = xbt_dynar_new(sizeof(As*), NULL);
@@ -377,26 +377,20 @@ void AsGeneric::srcDstCheck(NetCard *src, NetCard *dst)
 {
   if (src == NULL || dst == NULL)
     xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-            src ? src->getName() : "(null)",
-            dst ? dst->getName() : "(null)",
+            src ? src->name() : "(null)",
+            dst ? dst->name() : "(null)",
             name_);
 
-  As *src_as = src->getRcComponent();
-  As *dst_as = dst->getRcComponent();
+  As *src_as = src->containingAS();
+  As *dst_as = dst->containingAS();
 
   if (src_as != dst_as)
-    xbt_die("The src(%s in %s) and dst(%s in %s) are in differents AS",
-        src->getName(), src_as->name_,
-        dst->getName(), dst_as->name_);
+    xbt_die("The src(%s in %s) and dst(%s in %s) are not in the same AS",
+        src->name(), src_as->name_, dst->name(), dst_as->name_);
 
   if (this != dst_as)
-    xbt_die
-    ("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
-        src->getName(),
-        dst->getName(),
-        src_as->name_,
-        dst_as->name_,
-        name_);
+    xbt_die("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
+        src->name(), dst->name(),  src_as->name_, dst_as->name_,  name_);
 }
 
 }
