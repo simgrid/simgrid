@@ -60,7 +60,6 @@ public:
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat) override;
   xbt_dynar_t getOneLinkRoutes() override;
   void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat); // FIXME: this function is dangerously not overriding because of diverging prototype
-  void parseASroute(sg_platf_route_cbarg_t route) override;
   void parseRoute(sg_platf_route_cbarg_t route) override;
   void end();
 

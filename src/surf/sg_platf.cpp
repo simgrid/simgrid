@@ -516,19 +516,9 @@ void sg_platf_new_route(sg_platf_route_cbarg_t route)
   routing_get_current()->parseRoute(route);
 }
 
-void sg_platf_new_ASroute(sg_platf_route_cbarg_t ASroute)
-{
-  routing_get_current()->parseASroute(ASroute);
-}
-
 void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
 {
   routing_get_current()->parseBypassroute(bypassRoute);
-}
-
-void sg_platf_new_bypassASroute(sg_platf_route_cbarg_t bypassASroute)
-{
-  routing_get_current()->parseBypassroute(bypassASroute);
 }
 
 void sg_platf_new_process(sg_platf_process_cbarg_t process)
@@ -630,15 +620,9 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 void sg_platf_route_begin (sg_platf_route_cbarg_t route){
   route->link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
-void sg_platf_ASroute_begin (sg_platf_route_cbarg_t ASroute){
-  ASroute->link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
 
 void sg_platf_route_end (sg_platf_route_cbarg_t route){
   sg_platf_new_route(route);
-}
-void sg_platf_ASroute_end (sg_platf_route_cbarg_t ASroute){
-  sg_platf_new_ASroute(ASroute);
 }
 
 void sg_platf_route_add_link (const char* link_id, sg_platf_route_cbarg_t route){

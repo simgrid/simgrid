@@ -125,10 +125,6 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
   }
 }
 
-void AsFull::parseASroute(sg_platf_route_cbarg_t route){
-  parseRoute(route);
-}
-
 static int full_pointer_resource_cmp(const void *a, const void *b)
 {
   return a != b;

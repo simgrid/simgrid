@@ -812,7 +812,7 @@ void ETag_surfxml_ASroute(void){
     break;
   }
 
-  sg_platf_new_ASroute(&ASroute);
+  sg_platf_new_route(&ASroute);
   parsed_link_list = NULL;
 }
 
@@ -843,7 +843,7 @@ void ETag_surfxml_bypassASroute(void){
   ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src);
   ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
-  sg_platf_new_bypassASroute(&ASroute);
+  sg_platf_new_bypassRoute(&ASroute);
   parsed_link_list = NULL;
 }
 

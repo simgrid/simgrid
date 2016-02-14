@@ -403,14 +403,6 @@ AsDijkstra::AsDijkstra(const char*name, bool cached)
   p_routeGraph = NULL;
   p_graphNodeMap = NULL;
   p_routeCache = NULL;
-  /*new_component->generic_routing.parse_route = model_dijkstra_both_parse_route;
-  new_component->generic_routing.parse_ASroute = model_dijkstra_both_parse_route;
-  new_component->generic_routing.get_route_and_latency = dijkstra_get_route_and_latency;
-  new_component->generic_routing.get_onelink_routes =
-      dijkstra_get_onelink_routes;
-  new_component->generic_routing.get_graph = generic_get_graph;
-  new_component->generic_routing.finalize = dijkstra_finalize;
-  new_component->cached = cached;*/
 }
 
 void AsDijkstra::end()
@@ -440,11 +432,6 @@ void AsDijkstra::end()
     data->graph_id = cursor2;
   }
 
-}
-
-void AsDijkstra::parseASroute(sg_platf_route_cbarg_t route)
-{
-  parseRoute(route);
 }
 
 void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)

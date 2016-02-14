@@ -268,9 +268,7 @@ XBT_PUBLIC(void) sg_platf_new_cluster(sg_platf_cluster_cbarg_t clust); // Add a 
 XBT_PUBLIC(void) sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet); // Add a cabinet to the currently described AS
 
 XBT_PUBLIC(void) sg_platf_new_route (sg_platf_route_cbarg_t route); // Add a route
-XBT_PUBLIC(void) sg_platf_new_ASroute (sg_platf_route_cbarg_t ASroute); // Add an ASroute
 XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); // Add a bypassRoute
-XBT_PUBLIC(void) sg_platf_new_bypassASroute (sg_platf_route_cbarg_t bypassASroute); // Add an bypassASroute
 
 XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
 
@@ -284,9 +282,6 @@ XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
 // Add route and Asroute without xml file with those functions
 XBT_PUBLIC(void) sg_platf_route_begin (sg_platf_route_cbarg_t route); // Initialize route
 XBT_PUBLIC(void) sg_platf_route_end (sg_platf_route_cbarg_t route); // Finalize and add a route
-
-XBT_PUBLIC(void) sg_platf_ASroute_begin (sg_platf_route_cbarg_t ASroute); // Initialize ASroute
-XBT_PUBLIC(void) sg_platf_ASroute_end (sg_platf_route_cbarg_t ASroute); // Finalize and add a ASroute
 
 XBT_PUBLIC(void) sg_platf_route_add_link (const char* link_id, sg_platf_route_cbarg_t route); // Add a link to link list
 XBT_PUBLIC(void) sg_platf_ASroute_add_link (const char* link_id, sg_platf_route_cbarg_t ASroute); // Add a link to link list
