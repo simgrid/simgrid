@@ -33,9 +33,9 @@ public:
 
 private:
   /* vars to compute the Floyd algorithm. */
-  int *p_predecessorTable;
-  double *p_costTable;
-  sg_platf_route_cbarg_t *p_linkTable;
+  int *predecessorTable_;
+  double *costTable_;
+  sg_platf_route_cbarg_t *linkTable_;
 };
 
 }

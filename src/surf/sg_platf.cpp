@@ -208,13 +208,13 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   static_cast<AsCluster*>(current_routing)->parse_specific_arguments(cluster);
 
   if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
-      ((AsCluster*)current_routing)->p_nb_links_per_node++;
-      ((AsCluster*)current_routing)->p_has_loopback=1;
+      ((AsCluster*)current_routing)->nb_links_per_node_++;
+      ((AsCluster*)current_routing)->has_loopback_=1;
   }
 
   if(cluster->limiter_link!=0){
-      ((AsCluster*)current_routing)->p_nb_links_per_node++;
-      ((AsCluster*)current_routing)->p_has_limiter=1;
+      ((AsCluster*)current_routing)->nb_links_per_node_++;
+      ((AsCluster*)current_routing)->has_limiter_=1;
   }
 
 
@@ -316,7 +316,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         info_loop.link_down = info_loop.link_up;
         free(tmp_link);
         xbt_dynar_set(current_routing->upDownLinks,
-          rankId*(static_cast<AsCluster*>(current_routing))->p_nb_links_per_node, &info_loop);
+          rankId*(static_cast<AsCluster*>(current_routing))->nb_links_per_node_, &info_loop);
       }
 
       //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -338,7 +338,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         free(tmp_link);
         auto as_cluster = static_cast<AsCluster*>(current_routing);
         xbt_dynar_set(current_routing->upDownLinks,
-            rankId*(as_cluster)->p_nb_links_per_node + as_cluster->p_has_loopback ,
+            rankId*(as_cluster)->nb_links_per_node_ + as_cluster->has_loopback_ ,
             &info_lim);
 
       }
@@ -350,9 +350,9 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       }
       else {
       static_cast<AsCluster*>(current_routing)->create_links_for_node(cluster, i, rankId, rankId*
-          static_cast<AsCluster*>(current_routing)->p_nb_links_per_node
-          + static_cast<AsCluster*>(current_routing)->p_has_loopback
-          + static_cast<AsCluster*>(current_routing)->p_has_limiter );
+          static_cast<AsCluster*>(current_routing)->nb_links_per_node_
+          + static_cast<AsCluster*>(current_routing)->has_loopback_
+          + static_cast<AsCluster*>(current_routing)->has_limiter_ );
       }
       xbt_free(link_id);
       xbt_free(host_id);
@@ -381,7 +381,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         bprintf("%s%s_router%s", cluster->prefix, cluster->id,
                 cluster->suffix);
   sg_platf_new_router(&router);
-  ((AsCluster*)current_routing)->p_router = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
+  ((AsCluster*)current_routing)->router_ = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
   free(newid);
 
   //Make the backbone

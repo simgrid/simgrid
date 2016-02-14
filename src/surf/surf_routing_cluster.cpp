@@ -27,8 +27,8 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
   if (src->getRcType() != SURF_NETWORK_ELEMENT_ROUTER) {    // No specific link for router
 
-    if((src->id() == dst->id()) && p_has_loopback  ){
-      info = xbt_dynar_get_as(upDownLinks, src->id() * p_nb_links_per_node, s_surf_parsing_link_up_down_t);
+    if((src->id() == dst->id()) && has_loopback_  ){
+      info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_, s_surf_parsing_link_up_down_t);
       xbt_dynar_push_as(route->link_list, void *, info.link_up);
       if (lat)
         *lat += static_cast<Link*>(info.link_up)->getLatency();
@@ -36,12 +36,12 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     }
 
 
-    if (p_has_limiter){          // limiter for sender
-      info = xbt_dynar_get_as(upDownLinks, src->id() * p_nb_links_per_node + p_has_loopback, s_surf_parsing_link_up_down_t);
+    if (has_limiter_){          // limiter for sender
+      info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
       xbt_dynar_push_as(route->link_list, void *, info.link_up);
     }
 
-    info = xbt_dynar_get_as(upDownLinks, src->id() * p_nb_links_per_node + p_has_loopback + p_has_limiter, s_surf_parsing_link_up_down_t);
+    info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
     if (info.link_up) {         // link up
       xbt_dynar_push_as(route->link_list, void *, info.link_up);
       if (lat)
@@ -50,23 +50,23 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
   }
 
-  if (p_backbone) {
+  if (backbone_) {
     xbt_dynar_push_as(route->link_list, void *,
-      static_cast<simgrid::surf::Resource*>(p_backbone));
+      static_cast<simgrid::surf::Resource*>(backbone_));
     if (lat)
-      *lat += p_backbone->getLatency();
+      *lat += backbone_->getLatency();
   }
 
   if (dst->getRcType() != SURF_NETWORK_ELEMENT_ROUTER) {    // No specific link for router
-    info = xbt_dynar_get_as(upDownLinks, dst->id() * p_nb_links_per_node + p_has_loopback + p_has_limiter, s_surf_parsing_link_up_down_t);
+    info = xbt_dynar_get_as(upDownLinks, dst->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
 
     if (info.link_down) {       // link down
       xbt_dynar_push_as(route->link_list, void *, info.link_down);
       if (lat)
         *lat += static_cast<Link*>(info.link_down)->getLatency();
     }
-    if (p_has_limiter){          // limiter for receiver
-        info = xbt_dynar_get_as(upDownLinks, dst->id() * p_nb_links_per_node + p_has_loopback, s_surf_parsing_link_up_down_t);
+    if (has_limiter_){          // limiter for receiver
+        info = xbt_dynar_get_as(upDownLinks, dst->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
         xbt_dynar_push_as(route->link_list, void *, info.link_up);
     }
   }
@@ -81,14 +81,14 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   xbt_node_t current, previous, backboneNode = NULL, routerNode;
   s_surf_parsing_link_up_down_t info;
 
-  xbt_assert(p_router,"Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
+  xbt_assert(router_,"Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
 
   /* create the router */
-  char *link_name = p_router->name();
+  char *link_name = router_->name();
   routerNode = new_xbt_graph_node(graph, link_name, nodes);
 
-  if(p_backbone) {
-    const char *link_nameR = p_backbone->getName();
+  if(backbone_) {
+    const char *link_nameR = backbone_->getName();
     backboneNode = new_xbt_graph_node(graph, link_nameR, nodes);
 
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
@@ -109,7 +109,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
-        if (p_backbone) {
+        if (backbone_) {
           new_xbt_graph_edge(graph, current, backboneNode, edges);
         } else {
           new_xbt_graph_edge(graph, current, routerNode, edges);
@@ -123,7 +123,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
-        if (p_backbone) {
+        if (backbone_) {
           new_xbt_graph_edge(graph, current, backboneNode, edges);
         } else {
           new_xbt_graph_edge(graph, current, routerNode, edges);

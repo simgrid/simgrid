@@ -165,10 +165,10 @@ static void create_ns3_topology(void)
   simgrid::surf::Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
-    char *src = onelink->p_src->name();
-    char *dst = onelink->p_dst->name();
+    char *src = onelink->src_->name();
+    char *dst = onelink->dst_->name();
     simgrid::surf::NetworkNS3Link *link =
-      static_cast<simgrid::surf::NetworkNS3Link *>(onelink->p_link);
+      static_cast<simgrid::surf::NetworkNS3Link *>(onelink->link_);
 
     if (strcmp(src,dst) && link->m_created){
       XBT_DEBUG("Route from '%s' to '%s' with link '%s'", src, dst, link->getName());

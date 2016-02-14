@@ -36,12 +36,12 @@ public:
   virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {}
 
 
-  Link* p_backbone = nullptr;
-  void *p_loopback = nullptr;
-  NetCard *p_router = nullptr;
-  int p_has_limiter = 0;
-  int p_has_loopback = 0;
-  int p_nb_links_per_node = 1;
+  Link* backbone_ = nullptr;
+  void *loopback_ = nullptr;
+  NetCard *router_ = nullptr;
+  int has_limiter_ = 0;
+  int has_loopback_ = 0;
+  int nb_links_per_node_ = 1;
 
 };
 

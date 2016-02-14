@@ -55,8 +55,6 @@ typedef xbt_dictelm_t sg_storage_t;
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 
-typedef void *sg_routing_link_t; /* FIXME:The actual type is model-dependent so use void* instead*/
-
 typedef enum {
   SURF_LINK_FULLDUPLEX = 2,
   SURF_LINK_SHARED = 1,

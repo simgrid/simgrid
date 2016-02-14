@@ -149,7 +149,7 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
           xbt_dynar_get_as(vertices_, dst, NetCard*);
 
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-      route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+      route->link_list = xbt_dynar_new(sizeof(Link*), NULL);
 
       getRouteAndLatency(my_src, my_dst, route, NULL);
 
@@ -320,7 +320,7 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
     new_e_route->gw_src = e_route_bypass->gw_src;
     new_e_route->gw_dst = e_route_bypass->gw_dst;
     new_e_route->link_list =
-        xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+        xbt_dynar_new(sizeof(Link*), NULL);
     xbt_dynar_foreach(e_route_bypass->link_list, cpt, link) {
       xbt_dynar_push(new_e_route->link_list, &link);
       if (lat)
@@ -342,7 +342,7 @@ sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hi
   unsigned int cpt;
 
   result = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-  result->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+  result->link_list = xbt_dynar_new(sizeof(Link*), NULL);
 
   xbt_assert(hierarchy == SURF_ROUTING_BASE
       || hierarchy == SURF_ROUTING_RECURSIVE,

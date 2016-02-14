@@ -43,17 +43,17 @@ namespace surf {
 void AsDijkstra::Seal()
 {
   /* Create the topology graph */
-  if(!p_routeGraph)
-    p_routeGraph = xbt_graph_new_graph(1, NULL);
-  if(!p_graphNodeMap)
-    p_graphNodeMap = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
+  if(!routeGraph_)
+    routeGraph_ = xbt_graph_new_graph(1, NULL);
+  if(!graphNodeMap_)
+    graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* Add the loopback if needed */
-  if (routing_platf->p_loopback && hierarchy_ == SURF_ROUTING_BASE)
+  if (routing_platf->loopback_ && hierarchy_ == SURF_ROUTING_BASE)
     addLoopback();
 
   /* initialize graph indexes in nodes after graph has been built */
-  xbt_dynar_t nodes = xbt_graph_get_nodes(p_routeGraph);
+  xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
   xbt_node_t node = NULL;
   unsigned int cursor2;
@@ -72,11 +72,11 @@ xbt_node_t AsDijkstra::routeGraphNewNode(int id, int graph_id)
   data = xbt_new0(struct graph_node_data, 1);
   data->id = id;
   data->graph_id = graph_id;
-  node = xbt_graph_new_node(p_routeGraph, data);
+  node = xbt_graph_new_node(routeGraph_, data);
 
   elm = xbt_new0(struct graph_node_map_element, 1);
   elm->node = node;
-  xbt_dict_set_ext(p_graphNodeMap, (char *) (&id), sizeof(int),
+  xbt_dict_set_ext(graphNodeMap_, (char *) (&id), sizeof(int),
       (xbt_dictelm_t) elm, NULL);
 
   return node;
@@ -85,7 +85,7 @@ xbt_node_t AsDijkstra::routeGraphNewNode(int id, int graph_id)
 graph_node_map_element_t AsDijkstra::nodeMapSearch(int id)
 {
   graph_node_map_element_t elm = (graph_node_map_element_t)
-          xbt_dict_get_or_null_ext(p_graphNodeMap,
+          xbt_dict_get_or_null_ext(graphNodeMap_,
               (char *) (&id),
               sizeof(int));
   return elm;
@@ -100,11 +100,11 @@ void AsDijkstra::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route
   xbt_node_t dst = NULL;
 
   graph_node_map_element_t src_elm = (graph_node_map_element_t)
-          xbt_dict_get_or_null_ext(p_graphNodeMap,
+          xbt_dict_get_or_null_ext(graphNodeMap_,
               (char *) (&src_id),
               sizeof(int));
   graph_node_map_element_t dst_elm = (graph_node_map_element_t)
-          xbt_dict_get_or_null_ext(p_graphNodeMap,
+          xbt_dict_get_or_null_ext(graphNodeMap_,
               (char *) (&dst_id),
               sizeof(int));
 
@@ -129,11 +129,11 @@ void AsDijkstra::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route
   }
 
   /* add link as edge to graph */
-  xbt_graph_new_edge(p_routeGraph, src, dst, e_route);
+  xbt_graph_new_edge(routeGraph_, src, dst, e_route);
 }
 
 void AsDijkstra::addLoopback() {
-  xbt_dynar_t nodes = xbt_graph_get_nodes(p_routeGraph);
+  xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
   xbt_node_t node = NULL;
   unsigned int cursor2;
@@ -153,9 +153,9 @@ void AsDijkstra::addLoopback() {
 
     if (!found) {
       sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-      e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-      xbt_dynar_push(e_route->link_list, &routing_platf->p_loopback);
-      xbt_graph_new_edge(p_routeGraph, node, node, e_route);
+      e_route->link_list = xbt_dynar_new(sizeof(Link*), NULL);
+      xbt_dynar_push(e_route->link_list, &routing_platf->loopback_);
+      xbt_graph_new_edge(routeGraph_, node, node, e_route);
     }
   }
 }
@@ -164,7 +164,7 @@ xbt_dynar_t AsDijkstra::getOneLinkRoutes()
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
   sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
-  route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t),NULL);
+  route->link_list = xbt_dynar_new(sizeof(Link*),NULL);
 
   int src,dst;
   NetCard *src_elm, *dst_elm;
@@ -206,7 +206,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
   int size = 0;
   unsigned int cpt;
   void *link;
-  xbt_dynar_t nodes = xbt_graph_get_nodes(p_routeGraph);
+  xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
   graph_node_map_element_t src_elm = nodeMapSearch(src_id);
@@ -220,7 +220,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
 
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_node_id, xbt_node_t);
     xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst_node_id, xbt_node_t);
-    xbt_edge_t edge = xbt_graph_get_edge(p_routeGraph, node_s_v, node_e_v);
+    xbt_edge_t edge = xbt_graph_get_edge(routeGraph_, node_s_v, node_e_v);
 
     if (edge == NULL)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name(), dst->name());
@@ -236,9 +236,9 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
   }
 
   route_cache_element_t elm = NULL;
-  if (p_routeCache) {  /* cache mode  */
+  if (routeCache_) {  /* cache mode  */
     elm = (route_cache_element_t)
-            xbt_dict_get_or_null_ext(p_routeCache, (char *) (&src_id), sizeof(int));
+            xbt_dict_get_or_null_ext(routeCache_, (char *) (&src_id), sizeof(int));
   }
 
   if (elm) {                    /* cached mode and cache hit */
@@ -305,7 +305,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
   for (int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     xbt_node_t node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
     xbt_node_t node_v = xbt_dynar_get_as(nodes, v, xbt_node_t);
-    xbt_edge_t edge = xbt_graph_get_edge(p_routeGraph, node_pred_v, node_v);
+    xbt_edge_t edge = xbt_graph_get_edge(routeGraph_, node_pred_v, node_v);
 
     if (edge == NULL)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name(), dst->name());
@@ -348,23 +348,23 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     route->gw_dst = first_gw;
   }
 
-  if (p_routeCache && elm == NULL) {
+  if (routeCache_ && elm == NULL) {
     /* add to predecessor list of the current src-host to cache */
     elm = xbt_new0(struct route_cache_element, 1);
     elm->pred_arr = pred_arr;
     elm->size = size;
-    xbt_dict_set_ext(p_routeCache, (char *) (&src_id), sizeof(int), (xbt_dictelm_t) elm, NULL);
+    xbt_dict_set_ext(routeCache_, (char *) (&src_id), sizeof(int), (xbt_dictelm_t) elm, NULL);
   }
 
-  if (!p_routeCache)
+  if (!routeCache_)
     xbt_free(pred_arr);
 }
 
 AsDijkstra::~AsDijkstra()
 {
-  xbt_graph_free_graph(p_routeGraph, &xbt_free_f,  &graph_edge_data_free, &xbt_free_f);
-  xbt_dict_free(&p_graphNodeMap);
-  xbt_dict_free(&p_routeCache);
+  xbt_graph_free_graph(routeGraph_, &xbt_free_f,  &graph_edge_data_free, &xbt_free_f);
+  xbt_dict_free(&graphNodeMap_);
+  xbt_dict_free(&routeCache_);
 }
 
 /* Creation routing model functions */
@@ -373,7 +373,7 @@ AsDijkstra::AsDijkstra(const char*name, bool cached)
   : AsGeneric(name)
 {
   if (cached)
-    p_routeCache = xbt_dict_new_homogeneous(&route_cache_elem_free);
+    routeCache_ = xbt_dict_new_homogeneous(&route_cache_elem_free);
 }
 
 void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
@@ -386,10 +386,10 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
   parseRouteCheckParams(route);
 
   /* Create the topology graph */
-  if(!p_routeGraph)
-    p_routeGraph = xbt_graph_new_graph(1, NULL);
-  if(!p_graphNodeMap)
-    p_graphNodeMap = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
+  if(!routeGraph_)
+    routeGraph_ = xbt_graph_new_graph(1, NULL);
+  if(!graphNodeMap_)
+    graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   sg_platf_route_cbarg_t e_route = newExtendedRoute(hierarchy_, route, 1);
   newRoute(src_net_elm->id(), dst_net_elm->id(), e_route);
@@ -401,10 +401,10 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
     else
       XBT_DEBUG("Load ASroute from %s@%s to %s@%s", dst, route->gw_dst->name(), src, route->gw_src->name());
 
-    xbt_dynar_t nodes = xbt_graph_get_nodes(p_routeGraph);
+    xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_net_elm->id(), xbt_node_t);
     xbt_node_t node_e_v = xbt_dynar_get_as(nodes, dst_net_elm->id(), xbt_node_t);
-    xbt_edge_t edge = xbt_graph_get_edge(p_routeGraph, node_e_v, node_s_v);
+    xbt_edge_t edge = xbt_graph_get_edge(routeGraph_, node_e_v, node_s_v);
 
     if (edge)
       THROWF(arg_error,0, "Route from %s@%s to %s@%s already exists", dst, route->gw_dst->name(), src, route->gw_src->name());

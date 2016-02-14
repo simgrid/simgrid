@@ -31,7 +31,7 @@ public:
   xbt_dynar_t getOneLinkRoutes() override;
   void parseRoute(sg_platf_route_cbarg_t route) override;
 
-  sg_platf_route_cbarg_t *p_routingTable = nullptr;
+  sg_platf_route_cbarg_t *routingTable_ = nullptr;
 };
 
 }

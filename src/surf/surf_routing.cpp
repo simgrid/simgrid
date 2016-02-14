@@ -186,12 +186,12 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
   /* make a new routing component */
   simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(new_as->name_, SURF_NETWORK_ELEMENT_AS, current_routing);
 
-  if (current_routing == NULL && routing_platf->p_root == NULL) {
+  if (current_routing == NULL && routing_platf->root_ == NULL) {
     /* it is the first one */
     new_as->father_ = NULL;
-    routing_platf->p_root = new_as;
+    routing_platf->root_ = new_as;
     netcard->setId(-1);
-  } else if (current_routing != NULL && routing_platf->p_root != NULL) {
+  } else if (current_routing != NULL && routing_platf->root_ != NULL) {
 
     xbt_assert(!xbt_dict_get_or_null(current_routing->sons_, AS->id),
                "The AS \"%s\" already exists", AS->id);
@@ -364,7 +364,7 @@ static void _get_route_and_latency(
 
   /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
 
-  route.link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+  route.link_list = xbt_dynar_new(sizeof(Link*), NULL);
   // Find the net_card corresponding to father
   simgrid::surf::NetCard *src_father_netcard = src_father->netcard_;
   simgrid::surf::NetCard *dst_father_netcard = dst_father->netcard_;
@@ -390,7 +390,7 @@ static void _get_route_and_latency(
 }
 
 AS_t surf_platf_get_root(routing_platf_t platf){
-  return platf->p_root;
+  return platf->root_;
 }
 
 e_surf_network_element_type_t surf_routing_edge_get_rc_type(sg_netcard_t netcard){
@@ -418,8 +418,8 @@ void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t* r
 {
   XBT_DEBUG("getRouteAndLatency from %s to %s", src->name(), dst->name());
   if (NULL == *route) {
-    xbt_dynar_reset(routing_platf->p_lastRoute);
-    *route = routing_platf->p_lastRoute;
+    xbt_dynar_reset(routing_platf->lastRoute_);
+    *route = routing_platf->lastRoute_;
   }
 
   _get_route_and_latency(src, dst, route, latency);
@@ -429,7 +429,7 @@ void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t* r
 }
 
 xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
-  return recursiveGetOneLinkRoutes(p_root);
+  return recursiveGetOneLinkRoutes(root_);
 }
 
 xbt_dynar_t RoutingPlatf::recursiveGetOneLinkRoutes(As *rc)
@@ -478,9 +478,9 @@ void routing_cluster_add_backbone(simgrid::surf::Link* bb) {
   simgrid::surf::AsCluster *cluster = dynamic_cast<simgrid::surf::AsCluster*>(current_routing);
 
   xbt_assert(cluster, "Only hosts from Cluster can get a backbone.");
-  xbt_assert(nullptr == cluster->p_backbone, "Cluster %s already has a backbone link!", cluster->name_);
+  xbt_assert(nullptr == cluster->backbone_, "Cluster %s already has a backbone link!", cluster->name_);
 
-  cluster->p_backbone = bb;
+  cluster->backbone_ = bb;
   XBT_DEBUG("Add a backbone to AS '%s'", current_routing->name_);
 }
 
@@ -627,7 +627,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   router.id = router_id;
   router.coord = peer->coord;
   sg_platf_new_router(&router);
-  static_cast<AsCluster*>(current_routing)->p_router = static_cast<NetCard*>(xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL));
+  static_cast<AsCluster*>(current_routing)->router_ = static_cast<NetCard*>(xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL));
 
   XBT_DEBUG("</AS>");
   sg_platf_new_AS_end();
@@ -813,20 +813,20 @@ namespace simgrid {
 namespace surf {
 
   RoutingPlatf::RoutingPlatf(void *loopback)
-  : p_loopback(loopback)
+  : loopback_(loopback)
   {
   }
   RoutingPlatf::~RoutingPlatf()
   {
-    xbt_dynar_free(&p_lastRoute);
-    finalize_rec(p_root);
+    xbt_dynar_free(&lastRoute_);
+    finalize_rec(root_);
   }
 
 }
 }
 
 AS_t surf_AS_get_routing_root() {
-  return routing_platf->p_root;
+  return routing_platf->root_;
 }
 
 const char *surf_AS_get_name(simgrid::surf::As *as) {
@@ -855,7 +855,7 @@ static simgrid::surf::As *surf_AS_recursive_get_by_name(
 
 simgrid::surf::As *surf_AS_get_by_name(const char * name)
 {
-  simgrid::surf::As *as = surf_AS_recursive_get_by_name(routing_platf->p_root, name);
+  simgrid::surf::As *as = surf_AS_recursive_get_by_name(routing_platf->root_, name);
   if(as == NULL)
     XBT_WARN("Impossible to find an AS with name %s, please check your input", name);
   return as;

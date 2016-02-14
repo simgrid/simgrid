@@ -10,7 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 
-#define TO_ROUTE_FULL(i,j) p_routingTable[(i)+(j)*table_size]
+#define TO_ROUTE_FULL(i,j) routingTable_[(i)+(j)*table_size]
 
 namespace simgrid {
 namespace surf {
@@ -27,19 +27,19 @@ void AsFull::Seal() {
   int table_size = (int)xbt_dynar_length(vertices_);
 
   /* Create table if necessary */
-  if (!p_routingTable)
-    p_routingTable = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
+  if (!routingTable_)
+    routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Add the loopback if needed */
-  if (routing_platf->p_loopback && hierarchy_ == SURF_ROUTING_BASE) {
+  if (routing_platf->loopback_ && hierarchy_ == SURF_ROUTING_BASE) {
     for (i = 0; i < table_size; i++) {
       e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {
         e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->gw_src = NULL;
         e_route->gw_dst = NULL;
-        e_route->link_list = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
-        xbt_dynar_push(e_route->link_list, &routing_platf->p_loopback);
+        e_route->link_list = xbt_dynar_new(sizeof(Link*), NULL);
+        xbt_dynar_push(e_route->link_list, &routing_platf->loopback_);
         TO_ROUTE_FULL(i, i) = e_route;
       }
     }
@@ -47,7 +47,7 @@ void AsFull::Seal() {
 }
 
 AsFull::~AsFull(){
-  if (p_routingTable) {
+  if (routingTable_) {
     int table_size = (int)xbt_dynar_length(vertices_);
     int i, j;
     /* Delete routing table */
@@ -58,7 +58,7 @@ AsFull::~AsFull(){
           xbt_free(TO_ROUTE_FULL(i,j));
         }
       }
-    xbt_free(p_routingTable);
+    xbt_free(routingTable_);
   }
 }
 
@@ -141,14 +141,14 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
 
   size_t table_size = xbt_dynar_length(vertices_);
 
-  if (!p_routingTable)
-    p_routingTable = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
+  if (!routingTable_)
+    routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   if (TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())) {
     char *link_name;
     unsigned int i;
     xbt_dynar_t link_route_to_test =
-        xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+        xbt_dynar_new(sizeof(Link*), NULL);
     xbt_dynar_foreach(route->link_list, i, link_name) {
       void *link = Link::byName(link_name);
       xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
@@ -192,7 +192,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
     if (TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())) {
       char *link_name;
       unsigned int i;
-      xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+      xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(Link*), NULL);
       for (i = xbt_dynar_length(route->link_list); i > 0; i--) {
         link_name = xbt_dynar_get_as(route->link_list, i - 1, char *);
         void *link = Link::byName(link_name);
