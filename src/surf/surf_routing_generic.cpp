@@ -375,21 +375,17 @@ sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hi
 
 void AsGeneric::srcDstCheck(NetCard *src, NetCard *dst)
 {
-  if (src == NULL || dst == NULL)
-    xbt_die("Ask for route \"from\"(%s) or \"to\"(%s) no found at AS \"%s\"",
-            src ? src->name() : "(null)",
-            dst ? dst->name() : "(null)",
-            name_);
+  xbt_assert(src,"Cannot find a route from NULL to %s", dst->name());
+  xbt_assert(dst,"Cannot find a route from %s to NULL", src->name());
 
   As *src_as = src->containingAS();
   As *dst_as = dst->containingAS();
 
-  if (src_as != dst_as)
-    xbt_die("The src(%s in %s) and dst(%s in %s) are not in the same AS",
+  xbt_assert(src_as == dst_as, "Internal error: %s@%s and %s@%s are not in the same AS as expected. Please report that bug.",
         src->name(), src_as->name_, dst->name(), dst_as->name_);
 
-  if (this != dst_as)
-    xbt_die("The routing component of src'%s' and dst'%s' is not the same as the network elements belong (%s?=%s?=%s)",
+  xbt_assert(this == dst_as,
+      "Internal error: route destination %s@%s is not in AS %s as expected (route source: %s@%s). Please report that bug.",
         src->name(), dst->name(),  src_as->name_, dst_as->name_,  name_);
 }
 
