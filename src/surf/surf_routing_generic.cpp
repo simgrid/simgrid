@@ -351,7 +351,7 @@ sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hi
   if (hierarchy == SURF_ROUTING_RECURSIVE) {
 
     xbt_assert(routearg->gw_src && routearg->gw_dst,
-        "NULL is obviously a bad gateway");
+        "NULL is obviously a deficient gateway");
 
     /* remember not erase the gateway names */
     result->gw_src = routearg->gw_src;
@@ -387,6 +387,27 @@ void AsGeneric::srcDstCheck(NetCard *src, NetCard *dst)
   xbt_assert(this == dst_as,
       "Internal error: route destination %s@%s is not in AS %s as expected (route source: %s@%s). Please report that bug.",
         src->name(), dst->name(),  src_as->name_, dst_as->name_,  name_);
+}
+void AsGeneric::parseRouteCheckParams(sg_platf_route_cbarg_t route) {
+  const char *src = route->src;
+  const char *dst = route->dst;
+  NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
+  NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
+
+  if(!route->gw_dst && !route->gw_src) {
+    XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
+    xbt_assert(src_net_elm, "Cannot add a route from %s to %s: %s does not exist.", src, dst, src);
+    xbt_assert(dst_net_elm, "Cannot add a route from %s to %s: %s does not exist.", src, dst, dst);
+    xbt_assert(!xbt_dynar_is_empty(route->link_list), "Empty route (between %s and %s) forbidden.", src, dst);
+  } else {
+    XBT_DEBUG("Load ASroute from %s@%s to %s@%s", src, route->gw_src->name(), dst, route->gw_dst->name());
+    xbt_assert(src_net_elm, "Cannot add a route from %s@%s to %s@%s: %s does not exist.",
+        src,route->gw_src->name(), dst,route->gw_dst->name(), src);
+    xbt_assert(dst_net_elm, "Cannot add a route from %s@%s to %s@%s: %s does not exist.",
+        src,route->gw_src->name(), dst,route->gw_dst->name(), dst);
+    xbt_assert(!xbt_dynar_is_empty(route->link_list), "Empty route (between %s@%s and %s@%s) forbidden.",
+        src,route->gw_src->name(), dst,route->gw_dst->name());
+  }
 }
 
 }

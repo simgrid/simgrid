@@ -143,8 +143,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
   NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
   NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
 
-  xbt_assert(src_net_elm, "Network elements %s not found", src);
-  xbt_assert(dst_net_elm, "Network elements %s not found", dst);
+  parseRouteCheckParams(route);
 
   if(!p_linkTable)
   {
@@ -161,16 +160,6 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
         TO_FLOYD_PRED(i, j) = -1;
         TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
       }
-  }
-  if(!route->gw_dst && !route->gw_src)
-    XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
-  else{
-    XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
-        route->gw_src->name(), dst, route->gw_dst->name());
-    if(route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      surf_parse_error("The dst_gateway '%s' does not exist!",route->gw_dst->name());
-    if(route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      surf_parse_error("The src_gateway '%s' does not exist!",route->gw_src->name());
   }
 
   if(TO_FLOYD_LINK(src_net_elm->id(), dst_net_elm->id()))
@@ -263,7 +252,7 @@ void AsFloyd::Seal(){
       for (j = 0; j < table_size; j++) {
         TO_FLOYD_COST(i, j) = DBL_MAX;
         TO_FLOYD_PRED(i, j) = -1;
-        TO_FLOYD_LINK(i, j) = NULL;       /* fixed, missing in the previous version */
+        TO_FLOYD_LINK(i, j) = NULL;
       }
   }
 

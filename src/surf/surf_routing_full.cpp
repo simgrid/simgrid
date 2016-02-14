@@ -137,14 +137,9 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
   NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
   NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
 
-  xbt_assert(src_net_elm, "Network elements %s not found", src);
-  xbt_assert(dst_net_elm, "Network elements %s not found", dst);
+  parseRouteCheckParams(route);
 
   size_t table_size = xbt_dynar_length(vertices_);
-
-  xbt_assert(!xbt_dynar_is_empty(route->link_list),
-      "Invalid count of links, must be greater than zero (%s,%s)",
-      src, dst);
 
   if (!p_routingTable)
     p_routingTable = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
@@ -174,39 +169,11 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
     if (!route->gw_src && !route->gw_dst)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
     else {
-      // FIXME We can call a gw which is down the current AS (cf g5k.xml) but not upper.
-      //      AS_t subas = xbt_dict_get_or_null(rc->routing_sons, src);
-      //      if (subas == NULL)
-      //        surf_parse_error("The source of an ASroute must be a sub-AS "
-      //                         "declared within the current AS, "
-      //                         "but '%s' is not an AS within '%s'", src, rc->name);
-      //      if (subas->to_index
-      //          && xbt_dict_get_or_null(subas->to_index, route->src_gateway) == NULL)
-      //        surf_parse_error("In an ASroute, source gateway must be part of "
-      //                         "the source sub-AS (in particular, being in a "
-      //                         "sub-sub-AS is not allowed), "
-      //                         "but '%s' is not in '%s'.",
-      //                         route->src_gateway, subas->name);
-      //
-      //      subas = xbt_dict_get_or_null(rc->routing_sons, dst);
-      //      if (subas == NULL)
-      //        surf_parse_error("The destination of an ASroute must be a sub-AS "
-      //                         "declared within the current AS, "
-      //                         "but '%s' is not an AS within '%s'", dst, rc->name);
-      //      if (subas->to_index
-      //          && xbt_dict_get_or_null(subas->to_index, route->dst_gateway) == NULL)
-      //        surf_parse_error("In an ASroute, destination gateway must be "
-      //                         "part of the destination sub-AS (in particular, "
-      //                         "in a sub-sub-AS is not allowed), "
-      //                         "but '%s' is not in '%s'.",
-      //                         route->dst_gateway, subas->name);
       XBT_DEBUG("Load ASroute from \"%s\" to \"%s\"", src, dst);
-      if (!route->gw_src ||
-          route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      surf_parse_error("The src_gateway \"%s\" does not exist!",
-                route->gw_src ? route->gw_src->name() : "(null)");
-      if (!route->gw_dst ||
-          route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
+      if (!route->gw_src || route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
+        surf_parse_error("The src_gateway \"%s\" does not exist!",
+            route->gw_src ? route->gw_src->name() : "(null)");
+      if (!route->gw_dst || route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
       surf_parse_error("The dst_gateway \"%s\" does not exist!",
                 route->gw_dst ? route->gw_dst->name() : "(null)");
       XBT_DEBUG("ASroute goes from \"%s\" to \"%s\"",
@@ -225,8 +192,7 @@ void AsFull::parseRoute(sg_platf_route_cbarg_t route)
     if (TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())) {
       char *link_name;
       unsigned int i;
-      xbt_dynar_t link_route_to_test =
-          xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
+      xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(sg_routing_link_t), NULL);
       for (i = xbt_dynar_length(route->link_list); i > 0; i--) {
         link_name = xbt_dynar_get_as(route->link_list, i - 1, char *);
         void *link = Link::byName(link_name);

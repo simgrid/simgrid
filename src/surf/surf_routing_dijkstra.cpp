@@ -380,23 +380,10 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
 {
   const char *src = route->src;
   const char *dst = route->dst;
-
-  if(!route->gw_dst && !route->gw_src)
-    XBT_DEBUG("Load Route from \"%s\" to \"%s\"", src, dst);
-  else{
-    XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", src,
-        route->gw_src->name(), dst, route->gw_dst->name());
-    if(route->gw_dst->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      surf_parse_error("The gw_dst '%s' does not exist!",route->gw_dst->name());
-    if(route->gw_src->getRcType() == SURF_NETWORK_ELEMENT_NULL)
-      surf_parse_error("The gw_src '%s' does not exist!",route->gw_src->name());
-  }
-
   NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
   NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
 
-  xbt_assert(src_net_elm, "Network elements %s not found", src);
-  xbt_assert(dst_net_elm, "Network elements %s not found", dst);
+  parseRouteCheckParams(route);
 
   /* Create the topology graph */
   if(!p_routeGraph)
@@ -412,8 +399,7 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
     if(!route->gw_dst && !route->gw_src)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
     else
-      XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst,
-          route->gw_dst->name(), src, route->gw_src->name());
+      XBT_DEBUG("Load ASroute from %s@%s to %s@%s", dst, route->gw_dst->name(), src, route->gw_src->name());
 
     xbt_dynar_t nodes = xbt_graph_get_nodes(p_routeGraph);
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src_net_elm->id(), xbt_node_t);
@@ -421,7 +407,7 @@ void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
     xbt_edge_t edge = xbt_graph_get_edge(p_routeGraph, node_e_v, node_s_v);
 
     if (edge)
-      THROWF(arg_error,0, "Route from '%s' to '%s' already exists",src,dst);
+      THROWF(arg_error,0, "Route from %s@%s to %s@%s already exists", dst, route->gw_dst->name(), src, route->gw_src->name());
 
     if (route->gw_dst && route->gw_src) {
       NetCard *gw_tmp = route->gw_src;

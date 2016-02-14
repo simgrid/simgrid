@@ -28,7 +28,9 @@ public:
   virtual void parseBypassroute(sg_platf_route_cbarg_t e_route) override;
 
   virtual sg_platf_route_cbarg_t newExtendedRoute(e_surf_routing_hierarchy_t hierarchy, sg_platf_route_cbarg_t routearg, int change_order);
-  virtual void srcDstCheck(NetCard *src, NetCard *dst);
+protected:
+  void srcDstCheck(NetCard *src, NetCard *dst);
+  void parseRouteCheckParams(sg_platf_route_cbarg_t route);
 };
 
 }
