@@ -976,7 +976,6 @@ set(txt_files
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
-  examples/java/CMakeLists.txt
   examples/java/async/CMakeLists.txt
   examples/java/bittorrent/CMakeLists.txt
   examples/java/chord/CMakeLists.txt
@@ -1126,7 +1125,6 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
   teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/perf/CMakeLists.txt
-  teshsuite/surf/CMakeLists.txt
   teshsuite/surf/lmm_usage/CMakeLists.txt
   teshsuite/surf/maxmin_bench/CMakeLists.txt
   teshsuite/surf/surf_usage/CMakeLists.txt
