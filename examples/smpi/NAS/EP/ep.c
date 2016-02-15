@@ -8,8 +8,6 @@
 
 #include "simgrid/instr.h" //TRACE_
 
-#include "randlc.h"
-
 #ifndef CLASS
 #define CLASS 'S'
 #define NUM_PROCS            1                 

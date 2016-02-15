@@ -1,23 +1,17 @@
-SHELL=/bin/sh
 BENCHMARK=is
-BENCHMARKU=IS
 
 include ../config/make.def
-
 include ../sys/make.common
 
 OBJS = is.o ${COMMON}/c_print_results.o
 
-
-${PROGRAM}: config ${OBJS}
+${PROGRAM}: config ${OBJS} 
 	${CLINK} ${CLINKFLAGS} -o ${PROGRAM} ${OBJS} ${CMPI_LIB}
 
-.c.o:
+.c.o: 
 	${CCOMPILE} $<
 
-is.o:             is.c  npbparams.h
-
+is.o: is.c npbparams.h
 
 clean:
-	- rm -f *.o *~ mputil*
-	- rm -f is npbparams.h core
+	- rm -f *.o *~ is npbparams.h
