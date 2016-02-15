@@ -13,8 +13,8 @@ int main(int argc, char **argv)
   /* SD initialization */
 
   sg_host_t w1, w2;
-  const sg_host_t *workstations;
-  const SD_link_t *route;
+  sg_host_t *workstations;
+  SD_link_t *route;
   const char *name1;
   const char *name2;
   int route_size, i, j, k;
@@ -34,9 +34,9 @@ int main(int argc, char **argv)
   printf("Workstation number: %zu, link number: %d\n",
          sg_host_count(), sg_link_count());
 
+  workstations = sg_host_list();
   if (argc >= 3) {
     if (!strcmp(argv[2], "ONE_LINK")) {
-      workstations = sg_host_list();
       w1 = workstations[0];
       w2 = workstations[1];
       name1 = sg_host_get_name(w1);
@@ -55,9 +55,9 @@ int main(int argc, char **argv)
       printf("Route latency = %f, route bandwidth = %f\n",
          SD_route_get_latency(w1, w2),
          SD_route_get_bandwidth(w1, w2));
+      xbt_free(route);
     }
     if (!strcmp(argv[2], "FULL_LINK")) {
-      workstations = sg_host_list();
       list_size = sg_host_count();
       for (i = 0; i < list_size; i++) {
       w1 = workstations[i];
@@ -78,6 +78,7 @@ int main(int argc, char **argv)
         printf("  Route latency = %f, route bandwidth = %f\n",
            SD_route_get_latency(w1, w2),
            SD_route_get_bandwidth(w1, w2));
+        xbt_free(route);
       }
       }
     }
@@ -87,6 +88,7 @@ int main(int argc, char **argv)
           "SG_TEST_mem"));
     }
   }
+  xbt_free(workstations);
 
   SD_exit();
   return 0;

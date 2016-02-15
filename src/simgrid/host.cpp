@@ -29,7 +29,7 @@ size_t sg_host_count()
  * internally).
  * \see sg_host_count()
  */
-const sg_host_t *sg_host_list(void) {
+sg_host_t *sg_host_list(void) {
   xbt_assert(sg_host_count() > 0, "There is no host!");
   return (sg_host_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
 }

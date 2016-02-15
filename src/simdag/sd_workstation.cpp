@@ -23,7 +23,7 @@
  * \return an array of the \ref SD_link_t composing the route
  * \see SD_route_get_size(), SD_link_t
  */
-const SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
+SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
 {
   xbt_dynar_t surf_route;
   SD_link_t* list;
