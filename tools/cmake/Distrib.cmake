@@ -81,23 +81,6 @@ foreach(file ${examples_to_install})
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
 endforeach(file ${examples_to_install})
 
-# bindings cruft
-
-if(HAVE_LUA)
-  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/lua/5.1")
-  add_custom_target(simgrid_lua ALL
-    DEPENDS simgrid
-    ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-    )
-  add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-    )
-  install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lua/5.1
-    )
-endif()
-
 ###########################################
 ### Fill in the "make uninstall" target ###
 ###########################################
