@@ -1049,7 +1049,6 @@ set(EXAMPLES_CMAKEFILES_TXT
 
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/bug-17132/CMakeLists.txt
-  teshsuite/java/CMakeLists.txt
   teshsuite/java/semaphore/CMakeLists.txt
   teshsuite/java/sleep_host_off/CMakeLists.txt
   teshsuite/lua/lua_platforms.tesh
@@ -1057,7 +1056,6 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/mc/dwarf/CMakeLists.txt
   teshsuite/mc/dwarf_expression/CMakeLists.txt
   teshsuite/mc/replay/CMakeLists.txt
-  teshsuite/msg/CMakeLists.txt
   teshsuite/msg/get_sender/CMakeLists.txt
   teshsuite/msg/host_on_off/CMakeLists.txt
   teshsuite/msg/host_on_off_processes/CMakeLists.txt
