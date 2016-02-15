@@ -17,31 +17,25 @@
 
 int main(int argc, char **argv)
 {
-  sg_host_t w1, w2;
-  const sg_host_t *workstations;
   int i, j;
-  int list_size;
   xbt_os_timer_t timer = xbt_os_timer_new();
 
-  /* SD initialization */
   SD_init(&argc, argv);
-
-  /* creation of the environment */
   SD_create_environment(argv[1]);
 
-  workstations = sg_host_list();
-  list_size = sg_host_count();
+  sg_host_t *workstations = sg_host_list();
+  int list_size = sg_host_count();
 
   /* Random number initialization */
   srand( (int) (xbt_os_time()*1000) );
 
-  do{
+  do {
     i = rand()%list_size;
     j = rand()%list_size;
-  }while(i==j);
+  } while(i==j);
 
-  w1 = workstations[i];
-  w2 = workstations[j];
+  sg_host_t w1 = workstations[i];
+  sg_host_t w2 = workstations[j];
   printf("%d\tand\t%d\t\t",i,j);
 
   xbt_os_cputimer_start(timer);
@@ -50,6 +44,7 @@ int main(int argc, char **argv)
 
   printf("%f\n", xbt_os_timer_elapsed(timer) );
 
+  xbt_free(workstations);
   SD_exit();
 
   return 0;

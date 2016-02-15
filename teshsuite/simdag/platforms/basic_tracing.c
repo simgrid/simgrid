@@ -21,18 +21,14 @@ int host(int argc, char *argv[])
 
 int main(int argc, char **argv)
 {
-  int res;
-  xbt_dynar_t all_hosts;
-  msg_host_t first_host;
   MSG_init(&argc, argv);
   MSG_create_environment(argv[1]);
   MSG_function_register("host", host);
-  all_hosts = MSG_hosts_as_dynar();
-  first_host = xbt_dynar_pop_as(all_hosts,msg_host_t);
-  MSG_process_create( "host", host, NULL, first_host);
+  xbt_dynar_t all_hosts = MSG_hosts_as_dynar();
+  MSG_process_create( "host", host, NULL, xbt_dynar_pop_as(all_hosts,msg_host_t));
   xbt_dynar_free(&all_hosts);
 
-  res = MSG_main();
+  int res = MSG_main();
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
   return res != MSG_OK;

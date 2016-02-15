@@ -15,8 +15,6 @@
 int main(int argc, char **argv)
 {
   xbt_os_timer_t timer = xbt_os_timer_new();
-
-  /* initialization of SD */
   SD_init(&argc, argv);
 
   /* creation of the environment, timed */
@@ -26,8 +24,7 @@ int main(int argc, char **argv)
 
   /* Display the result and exit after cleanup */
   printf( "%f\n", xbt_os_timer_elapsed(timer) );
-    printf("Workstation number: %zu, link number: %d\n",
-           sg_host_count(), sg_link_count());
+  printf("Workstation number: %zu, link number: %d\n", sg_host_count(), sg_link_count());
   if(argv[2]){
     printf("Wait for %ss\n",argv[2]);
     sleep(atoi(argv[2]));
