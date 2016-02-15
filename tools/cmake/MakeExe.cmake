@@ -56,6 +56,8 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/token_ring)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/msg/tracing)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/s4u)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/s4u/basic)
+add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/s4u/io)
 
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dax)
