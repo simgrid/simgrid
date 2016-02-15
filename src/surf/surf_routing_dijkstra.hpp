@@ -56,7 +56,6 @@ public:
      * After this function returns, any node in the graph
      * will have a loopback attached to it.
      */
-  void addLoopback();
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat) override;
   void getRouteAndLatency(sg_platf_route_cbarg_t route, double *lat); // FIXME: this function is dangerously not overriding because of diverging prototype
   xbt_dynar_t getOneLinkRoutes() override;

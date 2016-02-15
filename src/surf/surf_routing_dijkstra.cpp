@@ -42,6 +42,9 @@ namespace simgrid {
 namespace surf {
 void AsDijkstra::Seal()
 {
+  xbt_node_t node = NULL;
+  unsigned int cursor2, cursor;
+
   /* Create the topology graph */
   if(!routeGraph_)
     routeGraph_ = xbt_graph_new_graph(1, NULL);
@@ -49,17 +52,33 @@ void AsDijkstra::Seal()
     graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* Add the loopback if needed */
-  if (routing_platf->loopback_ && hierarchy_ == SURF_ROUTING_BASE)
-    addLoopback();
+  if (routing_platf->loopback_ && hierarchy_ == SURF_ROUTING_BASE) {
+    xbt_dynar_foreach(xbt_graph_get_nodes(routeGraph_), cursor, node) {
+      xbt_edge_t edge = NULL;
+
+      bool found = false;
+      xbt_dynar_foreach(xbt_graph_node_get_outedges(node), cursor2, edge) {
+        if (xbt_graph_edge_get_target(edge) == node) {
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+        e_route->link_list = xbt_dynar_new(sizeof(Link*), NULL);
+        xbt_dynar_push(e_route->link_list, &routing_platf->loopback_);
+        xbt_graph_new_edge(routeGraph_, node, node, e_route);
+      }
+    }
+  }
 
   /* initialize graph indexes in nodes after graph has been built */
   xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
-  xbt_node_t node = NULL;
-  unsigned int cursor2;
-  xbt_dynar_foreach(nodes, cursor2, node) {
+  xbt_dynar_foreach(nodes, cursor, node) {
     graph_node_data_t data = (graph_node_data_t) xbt_graph_node_get_data(node);
-    data->graph_id = cursor2;
+    data->graph_id = cursor;
   }
 }
 
@@ -76,19 +95,14 @@ xbt_node_t AsDijkstra::routeGraphNewNode(int id, int graph_id)
 
   elm = xbt_new0(struct graph_node_map_element, 1);
   elm->node = node;
-  xbt_dict_set_ext(graphNodeMap_, (char *) (&id), sizeof(int),
-      (xbt_dictelm_t) elm, NULL);
+  xbt_dict_set_ext(graphNodeMap_, (char *) (&id), sizeof(int), (xbt_dictelm_t) elm, NULL);
 
   return node;
 }
 
 graph_node_map_element_t AsDijkstra::nodeMapSearch(int id)
 {
-  graph_node_map_element_t elm = (graph_node_map_element_t)
-          xbt_dict_get_or_null_ext(graphNodeMap_,
-              (char *) (&id),
-              sizeof(int));
-  return elm;
+  return (graph_node_map_element_t)xbt_dict_get_or_null_ext(graphNodeMap_, (char *) (&id), sizeof(int));
 }
 
 /* Parsing */
@@ -99,15 +113,8 @@ void AsDijkstra::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route
   xbt_node_t src = NULL;
   xbt_node_t dst = NULL;
 
-  graph_node_map_element_t src_elm = (graph_node_map_element_t)
-          xbt_dict_get_or_null_ext(graphNodeMap_,
-              (char *) (&src_id),
-              sizeof(int));
-  graph_node_map_element_t dst_elm = (graph_node_map_element_t)
-          xbt_dict_get_or_null_ext(graphNodeMap_,
-              (char *) (&dst_id),
-              sizeof(int));
-
+  graph_node_map_element_t src_elm = nodeMapSearch(src_id);
+  graph_node_map_element_t dst_elm = nodeMapSearch(dst_id);
 
   if (src_elm)
     src = src_elm->node;
@@ -132,48 +139,18 @@ void AsDijkstra::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route
   xbt_graph_new_edge(routeGraph_, src, dst, e_route);
 }
 
-void AsDijkstra::addLoopback() {
-  xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
-
-  xbt_node_t node = NULL;
-  unsigned int cursor2;
-  xbt_dynar_foreach(nodes, cursor2, node) {
-    xbt_dynar_t out_edges = xbt_graph_node_get_outedges(node);
-    xbt_edge_t edge = NULL;
-    unsigned int cursor;
-
-    int found = 0;
-    xbt_dynar_foreach(out_edges, cursor, edge) {
-      xbt_node_t other_node = xbt_graph_edge_get_target(edge);
-      if (other_node == node) {
-        found = 1;
-        break;
-      }
-    }
-
-    if (!found) {
-      sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-      e_route->link_list = xbt_dynar_new(sizeof(Link*), NULL);
-      xbt_dynar_push(e_route->link_list, &routing_platf->loopback_);
-      xbt_graph_new_edge(routeGraph_, node, node, e_route);
-    }
-  }
-}
-
 xbt_dynar_t AsDijkstra::getOneLinkRoutes()
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
   sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
   route->link_list = xbt_dynar_new(sizeof(Link*),NULL);
 
-  int src,dst;
-  NetCard *src_elm, *dst_elm;
   int table_size = (int)xbt_dynar_length(vertices_);
-  for(src=0; src < table_size; src++) {
-    for(dst=0; dst< table_size; dst++) {
+  for(int src=0; src < table_size; src++) {
+    for(int dst=0; dst< table_size; dst++) {
       xbt_dynar_reset(route->link_list);
-      src_elm = xbt_dynar_get_as(vertices_, src, NetCard*);
-      dst_elm = xbt_dynar_get_as(vertices_, dst, NetCard*);
+      NetCard *src_elm = xbt_dynar_get_as(vertices_, src, NetCard*);
+      NetCard *dst_elm = xbt_dynar_get_as(vertices_, dst, NetCard*);
       this->getRouteAndLatency(src_elm, dst_elm,route, NULL);
 
       if (xbt_dynar_length(route->link_list) == 1) {
@@ -194,9 +171,6 @@ xbt_dynar_t AsDijkstra::getOneLinkRoutes()
 
 void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
-
-  /* set utils vars */
-
   getRouteCheckParams(src, dst);
   int src_id = src->id();
   int dst_id = dst->id();
@@ -319,8 +293,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     if (v == dst_node_id)
       first_gw = gw_dst;
 
-    if (hierarchy_ == SURF_ROUTING_RECURSIVE && v != dst_node_id
-        && strcmp(gw_dst->name(), prev_gw_src->name())) {
+    if (hierarchy_ == SURF_ROUTING_RECURSIVE && v != dst_node_id && strcmp(gw_dst->name(), prev_gw_src->name())) {
       xbt_dynar_t e_route_as_to_as=NULL;
 
       routing_platf->getRouteAndLatency(gw_dst_net_elm, prev_gw_src_net_elm, &e_route_as_to_as, NULL);
