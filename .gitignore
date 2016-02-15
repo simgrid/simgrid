@@ -29,10 +29,7 @@ src/xbt/graphxml.l
 examples/simdag/scheduling/simgrid.jed
 teshsuite/simdag/platforms/simgrid.jed
 ### Libraries links 
-src/bindings/ruby/simgrid.so
-examples/ruby/simgrid.so
 examples/lua/simgrid.so
-src/bindings/ruby/libsimgrid.so
 examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
 examples/lua/console/simgrid.so
@@ -199,6 +196,7 @@ examples/msg/procmig.trace
 examples/msg/properties/msg_prop
 examples/msg/semaphores/synchro
 examples/msg/sendrecv/sendrecv
+examples/msg/sendrecv/sendrecv_main
 examples/msg/simulation.trace
 examples/msg/start_kill_time/sk_time
 examples/msg/suspend/suspend
