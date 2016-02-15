@@ -102,13 +102,6 @@ int main(int argc, char **argv)
   const SD_link_t *links;
   xbt_os_timer_t parse_time = xbt_os_timer_new();
 
-#ifdef _XBT_WIN32
-  setbuf(stderr, NULL);
-  setbuf(stdout, NULL);
-#else
-  setvbuf(stdout, NULL, _IOLBF, 0);
-#endif
-
   SD_init(&argc, argv);
 
   if (parse_cmdline(&timings, &downgrade, &platformFile, argc, argv) || !platformFile) {

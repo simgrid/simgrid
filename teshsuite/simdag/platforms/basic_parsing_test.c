@@ -20,13 +20,6 @@ int main(int argc, char **argv)
   int route_size, i, j, k;
   int list_size;
 
-#ifdef _XBT_WIN32
-  setbuf(stderr, NULL);
-  setbuf(stdout, NULL);
-#else
-  setvbuf(stdout, NULL, _IOLBF, 0);
-#endif
-
   SD_init(&argc, argv);
 
   /* creation of the environment */

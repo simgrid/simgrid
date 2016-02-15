@@ -16,11 +16,6 @@ int main(int argc, char **argv)
   xbt_lib_cursor_t cursor = NULL;
   char *key, *data;
 
-#ifdef _XBT_WIN32
-  setbuf(stderr, NULL);
-  setbuf(stdout, NULL);
-#endif
-
   SD_init(&argc, argv);
 
   /* creation of the environment */
