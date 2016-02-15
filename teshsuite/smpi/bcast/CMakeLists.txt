@@ -14,29 +14,13 @@ if(enable_smpi)
   target_link_libraries(bcast_coll simgrid)
 endif()
 
-
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.tesh
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bcast_coll.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
-
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

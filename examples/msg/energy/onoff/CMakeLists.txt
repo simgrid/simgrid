@@ -8,23 +8,13 @@ target_link_libraries(onoff simgrid )
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/onoff.tesh
-  PARENT_SCOPE
-  )
-
+  PARENT_SCOPE)
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/platform_onoff.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_onoff.xml
-  PARENT_SCOPE
-  )
-
+  PARENT_SCOPE)
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/onoff.c
-  PARENT_SCOPE
-  )
-
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

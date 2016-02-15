@@ -3,8 +3,7 @@ configure_file("${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.pl"
 
     file(COPY        ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/Diff.pm
          DESTINATION ${CMAKE_BINARY_DIR}/bin
-         FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-                          GROUP_EXECUTE GROUP_READ)
+         FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ)
     file(COPY        ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/IPC
          DESTINATION ${CMAKE_BINARY_DIR}/bin)
 
@@ -29,17 +28,9 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/IO-orders.tesh
   PARENT_SCOPE
   )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/tesh.pl
   ${CMAKE_CURRENT_SOURCE_DIR}/generate_tesh
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
   PARENT_SCOPE
   )

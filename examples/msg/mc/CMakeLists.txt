@@ -3,9 +3,9 @@ if(HAVE_MC)
 
   add_executable(centralized centralized_mutex.c)
   add_executable(bugged1     bugged1.c)
-  add_executable(bugged2      bugged2.c)
-  add_executable(bugged3	   bugged3.c)
-  add_executable(electric_fence	   electric_fence.c)
+  add_executable(bugged2     bugged2.c)
+  add_executable(bugged3     bugged3.c)
+  add_executable(electric_fence   electric_fence.c)
   add_executable(bugged1_liveness bugged1_liveness.c)
   add_executable(bugged2_liveness bugged2_liveness.c)
 
@@ -15,21 +15,18 @@ if(HAVE_MC)
   target_link_libraries(bugged3     simgrid )
   target_link_libraries(electric_fence     simgrid )
   target_link_libraries(bugged1_liveness     simgrid )
-    target_link_libraries(bugged2_liveness     simgrid )
+  target_link_libraries(bugged2_liveness     simgrid )
 
   if(HAVE_C_STACK_CLEANER)
-    add_executable(bugged1_liveness_cleaner_on     bugged1_liveness.c )
+    add_executable(bugged1_liveness_cleaner_on      bugged1_liveness.c )
     add_executable(bugged1_liveness_cleaner_off     bugged1_liveness.c )
 
-    target_link_libraries(bugged1_liveness_cleaner_on     simgrid )
+    target_link_libraries(bugged1_liveness_cleaner_on      simgrid )
     target_link_libraries(bugged1_liveness_cleaner_off     simgrid )
 
-    set_target_properties(bugged1_liveness_cleaner_on
-      PROPERTIES COMPILE_FLAGS "-DGARBAGE_STACK -fstack-cleaner")
-    set_target_properties(bugged1_liveness_cleaner_off
-      PROPERTIES COMPILE_FLAGS "-DGARBAGE_STACK -fno-stack-cleaner")
+    set_target_properties(bugged1_liveness_cleaner_on  PROPERTIES COMPILE_FLAGS "-DGARBAGE_STACK -fstack-cleaner")
+    set_target_properties(bugged1_liveness_cleaner_off PROPERTIES COMPILE_FLAGS "-DGARBAGE_STACK -fno-stack-cleaner")
   endif()
-
 endif()
 
 set(tesh_files
@@ -41,8 +38,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness_sparse.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness_visited_sparse.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized.tesh
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_bugged1_liveness.xml
@@ -54,8 +50,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_electric_fence.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deploy_mutex.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform.xml
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1.c
@@ -67,16 +62,10 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/centralized_mutex.c
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness.h
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged2_liveness.h
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged1_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_liveness
   ${CMAKE_CURRENT_SOURCE_DIR}/bugged1_liveness_stack_cleaner
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

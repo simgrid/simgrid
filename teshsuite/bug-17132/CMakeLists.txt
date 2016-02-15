@@ -5,7 +5,6 @@ if(enable_smpi)
       set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
 
-
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
@@ -18,19 +17,12 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/bug-17132.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bug-17132-surf-debug.tesh
   PARENT_SCOPE)
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE)
 set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/bug-17132.c
-  PARENT_SCOPE)
-set(bin_files
-  ${bin_files}
   PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/hostfile.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/README
   PARENT_SCOPE)
-

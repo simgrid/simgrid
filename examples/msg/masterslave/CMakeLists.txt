@@ -7,20 +7,11 @@ add_executable(masterslave_cluster "masterslave_cluster.c")
 add_executable(masterslave_kill "masterslave_kill.c")
 add_executable(masterslave_arg "masterslave_arg.c")
 
-### Add definitions for compile
-if(WIN32)
-  target_link_libraries(masterslave_forwarder simgrid )
-  target_link_libraries(masterslave_failure simgrid )
-  target_link_libraries(masterslave_mailbox simgrid )
-  target_link_libraries(masterslave_kill simgrid )
-  target_link_libraries(masterslave_arg simgrid )
-else()
-  target_link_libraries(masterslave_forwarder simgrid )
-  target_link_libraries(masterslave_failure simgrid )
-  target_link_libraries(masterslave_mailbox simgrid )
-  target_link_libraries(masterslave_kill simgrid )
-  target_link_libraries(masterslave_arg simgrid )
-endif()
+target_link_libraries(masterslave_forwarder simgrid )
+target_link_libraries(masterslave_failure simgrid )
+target_link_libraries(masterslave_mailbox simgrid )
+target_link_libraries(masterslave_kill simgrid )
+target_link_libraries(masterslave_arg simgrid )
 target_link_libraries(masterslave_cluster simgrid)
 
 set(tesh_files
@@ -39,8 +30,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_failure.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_mailbox_crosstraffic.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_vivaldi.tesh
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_forwarder.xml
@@ -49,8 +39,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_kill.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_mailbox.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave.xml
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_arg.c
@@ -59,14 +48,5 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_forwarder.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_kill.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_mailbox.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 

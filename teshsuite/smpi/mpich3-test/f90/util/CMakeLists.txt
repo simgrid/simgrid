@@ -11,12 +11,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   #F90 version of the mtest library
   add_library(mtest_f90 STATIC ../util/mtestf90.f90)
-
 endif()
-
 
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/../util/mtestf90.f90
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

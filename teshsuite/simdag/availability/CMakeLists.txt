@@ -12,14 +12,8 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/availability_test.tesh
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/availability_test.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

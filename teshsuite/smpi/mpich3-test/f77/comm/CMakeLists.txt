@@ -15,29 +15,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
  # target_link_libraries(commerrf simgrid mtest_f77)
 #  target_link_libraries(commnamef simgrid mtest_f77)
-
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/commerrf.f
   ${CMAKE_CURRENT_SOURCE_DIR}/commnamef.f
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

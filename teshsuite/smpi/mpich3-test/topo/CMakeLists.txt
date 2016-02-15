@@ -10,7 +10,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-
 add_executable(cartcreates cartcreates.c)
 #add_executable(cartmap1 cartmap1.c)
 add_executable(cartshift1 cartshift1.c)
@@ -29,7 +28,6 @@ add_executable(cartzero cartzero.c)
 #  add_executable(topodup topodup.c)
 #add_executable(topotest topotest.c)
 
-
 target_link_libraries(cartcreates simgrid mtest_c)
 # target_link_libraries(cartmap1 simgrid mtest_c)
 target_link_libraries(cartshift1 simgrid mtest_c)
@@ -47,17 +45,8 @@ target_link_libraries(cartzero simgrid mtest_c)
 #  target_link_libraries(neighb_coll simgrid mtest_c)
 #  target_link_libraries(topodup simgrid mtest_c)
 #  target_link_libraries(topotest simgrid mtest_c)
-
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
 set(examples_src
  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/cartcreates.c
@@ -78,14 +67,8 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/testlist
  ${CMAKE_CURRENT_SOURCE_DIR}/topodup.c
  ${CMAKE_CURRENT_SOURCE_DIR}/topotest.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

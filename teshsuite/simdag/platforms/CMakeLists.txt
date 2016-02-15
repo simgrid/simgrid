@@ -37,8 +37,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_gateway.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_disk_attachment.tesh
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_Dijkstra_ns3.xml
@@ -89,8 +88,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/clusterB.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/Dijkstra.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_disk_attachment.xml
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test.c
@@ -100,12 +98,7 @@ set(teshsuite_src
   ${CMAKE_CURRENT_SOURCE_DIR}/Evaluate_parse_time.c
   ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/is_router_test.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/bob0_availability_file.trace
@@ -117,5 +110,4 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/link1.bw
   ${CMAKE_CURRENT_SOURCE_DIR}/link1.fail
   ${CMAKE_CURRENT_SOURCE_DIR}/link1.lat
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

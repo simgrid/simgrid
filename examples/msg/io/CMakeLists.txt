@@ -23,26 +23,15 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/io.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/storage.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/remote.tesh
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(xml_files
   ${xml_files}
   examples/msg/io/remote_io.deployment.xml
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/file.c
   ${CMAKE_CURRENT_SOURCE_DIR}/file_unlink.c
   ${CMAKE_CURRENT_SOURCE_DIR}/storage.c
   ${CMAKE_CURRENT_SOURCE_DIR}/remote.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

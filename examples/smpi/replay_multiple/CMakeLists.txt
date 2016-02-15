@@ -9,21 +9,11 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple.tesh
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/replay_multiple.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/generate_multiple_deployment.sh
@@ -62,6 +52,5 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/ti_traces_32_1/ti_trace29.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/ti_traces_32_1/ti_trace30.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/ti_traces_32_1/ti_trace31.txt
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 

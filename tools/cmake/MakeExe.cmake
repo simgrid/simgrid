@@ -74,7 +74,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/energy)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/f77)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/f90)
 
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/java)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/java/semaphore)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleep_host_off)
 
@@ -83,7 +82,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/dwarf_expression)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/mc/replay)
 
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off_processes)
@@ -160,7 +158,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/info)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/init)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/f90/pt2pt)
 
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/lmm_usage)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/surf_usage)
