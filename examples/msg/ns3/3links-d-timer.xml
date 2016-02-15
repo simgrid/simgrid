@@ -1,52 +1,42 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
   <process host="Tremblay" function="master">
       <argument value="100000"/>
       <argument value="Jupiter"/>
       <argument value="1"/>
   </process>
-
   <process host="Jupiter" function="slave">
     <argument value="1"/>
   </process>
-
   <process host="Fafard" function="master">
       <argument value="1000000"/>
       <argument value="Ginette"/>
       <argument value="2"/>
   </process>
-
   <process host="Ginette" function="slave">
     <argument value="2"/>
   </process>
-
   <process host="Bourassa" function="master">
       <argument value="2000000"/>
       <argument value="Lovelace"/>
       <argument value="3"/>
   </process>
-
   <process host="Lovelace" function="slave">
     <argument value="3"/>
   </process>
-
   <process host="Bourassa" function="master" start_time="2.0">
       <argument value="2000000"/>
       <argument value="Lovelace"/>
       <argument value="4"/>
   </process>
-
   <process host="Lovelace" function="slave">
     <argument value="4"/>
   </process>
-
   <process host="Lovelace" function="timer">
     <argument value="0"/>
     <argument value=".1"/>
   </process>
-
   <process host="Lovelace" function="timer" start_time="2.0">
     <argument value="0"/>
     <argument value=".1"/>
