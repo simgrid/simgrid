@@ -8,11 +8,9 @@
 #include <stdlib.h>
 #include "simgrid/msg.h"
 
-int host(int argc, char *argv[]);
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(basic_tracing,"Messages specific for this example");
 
-int host(int argc, char *argv[])
+static int host(int argc, char *argv[])
 {
   XBT_INFO("Sleep for 1s");
   MSG_process_sleep(1);
