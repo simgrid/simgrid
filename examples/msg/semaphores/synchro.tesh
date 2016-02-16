@@ -39,38 +39,3 @@ $ $SG_TEST_EXENV semaphores/synchro ${srcdir:=.}/../platforms/small_platform.xml
 > [ 65.000000] (2:Bob@Fafard) Done
 > [ 72.000000] (1:Alice@Fafard) Done
 > [ 72.000000] (0:maestro@) Finished
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
