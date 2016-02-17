@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
   <process host="Jacquelin" function="pingPong.Sender">
-      <argument value="Boivin"/>
+    <argument value="Boivin"/>
   </process>
-<process host="Boivin" function="pingPong.Receiver"/>
+  <process host="Boivin" function="pingPong.Receiver"/>
 </platform>
