@@ -362,7 +362,7 @@ static void _sg_cfg_cb__test_sleep(const char *name, int pos){
 /* callback of the inclusion path */
 static void _sg_cfg_cb__surf_path(const char *name, int pos)
 {
-  char *path = xbt_cfg_get_string_at(_sg_cfg_set, name, pos);
+  char *path = xbt_strdup(xbt_cfg_get_string_at(_sg_cfg_set, name, pos));
   xbt_dynar_push(surf_path, &path);
 }
 
@@ -942,7 +942,7 @@ void sg_config_init(int *argc, char **argv)
       xbt_assert((initial_path),
                   "__surf_get_initial_path() failed! Can't resolve current Windows directory");
 
-      surf_path = xbt_dynar_new(sizeof(char *), NULL);
+      surf_path = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
       xbt_cfg_setdefault_string(_sg_cfg_set, "path", initial_path);
     }
 

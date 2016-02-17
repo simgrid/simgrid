@@ -103,12 +103,9 @@ xbt_dict_t Storage::parseContent(const char *filename)
     return NULL;
 
   xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free_f);
-  FILE *file = NULL;
 
-  file = surf_fopen(filename, "r");
-  if (file == NULL)
-    xbt_die("Cannot open file '%s' (path=%s)", filename,
-            xbt_str_join(surf_path, ":"));
+  FILE *file =  surf_fopen(filename, "r");
+  xbt_assert(file, "Cannot open file '%s' (path=%s)", filename, xbt_str_join(surf_path, ":"));
 
   char *line = NULL;
   size_t len = 0;
@@ -118,14 +115,12 @@ xbt_dict_t Storage::parseContent(const char *filename)
 
   while ((read = xbt_getline(&line, &len, file)) != -1) {
     if (read){
-      if(sscanf(line,"%s %llu", path, &size) == 2) {
-        m_usedSize += size;
-        sg_size_t *psize = xbt_new(sg_size_t, 1);
-        *psize = size;
-        xbt_dict_set(parse_content,path,psize,NULL);
-      } else {
-        xbt_die("Be sure of passing a good format for content file.\n");
-      }
+      xbt_assert(sscanf(line,"%s %llu", path, &size) == 2, "Parse error in %s: %s",filename,line);
+
+      m_usedSize += size;
+      sg_size_t *psize = xbt_new(sg_size_t, 1);
+      *psize = size;
+      xbt_dict_set(parse_content,path,psize,NULL);
     }
   }
   free(line);

@@ -314,8 +314,8 @@ void STag_surfxml_include(void)
   xbt_dynar_push(surf_file_to_parse_stack, &surf_file_to_parse); //save old file descriptor
 
   surf_file_to_parse = surf_fopen(A_surfxml_include_file, "r"); // read new file descriptor
-  xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n",
-              A_surfxml_include_file);
+  xbt_assert((surf_file_to_parse), "Unable to open \"%s\"\n", A_surfxml_include_file);
+
   xbt_dynar_push(surf_input_buffer_stack,&surf_input_buffer);
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse_push_buffer_state(surf_input_buffer);

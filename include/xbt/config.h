@@ -90,8 +90,7 @@ SG_BEGIN_DECL()
 typedef void* xbt_cfg_t;
 
 XBT_PUBLIC(void) xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
-XBT_PUBLIC(void) xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name,
-                                   va_list pa);
+XBT_PUBLIC(void) xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
 XBT_PUBLIC(void) xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
 
 
@@ -99,10 +98,8 @@ XBT_PUBLIC(void) xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
   Set the value of the cell \a name in \a cfg with the provided value.
  */
 XBT_PUBLIC(void) xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val);
-XBT_PUBLIC(void) xbt_cfg_set_double(xbt_cfg_t cfg, const char *name,
-                                    double val);
-XBT_PUBLIC(void) xbt_cfg_set_string(xbt_cfg_t cfg, const char *name,
-                                    const char *val);
+XBT_PUBLIC(void) xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val);
+XBT_PUBLIC(void) xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val);
 XBT_PUBLIC(void) xbt_cfg_set_boolean(xbt_cfg_t cfg, const char *name, const char *val);
 XBT_PUBLIC(void*) xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *name, const char *val);
 
@@ -110,34 +107,24 @@ XBT_PUBLIC(void*) xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *name, const c
   Set the default value of the cell \a name in \a cfg with the provided value.
   If it was already set to something (possibly from the command line), do nothing.
  */
-XBT_PUBLIC(void) xbt_cfg_setdefault_int(xbt_cfg_t cfg, const char *name,
-                                        int val);
-XBT_PUBLIC(void) xbt_cfg_setdefault_double(xbt_cfg_t cfg, const char *name,
-                                           double val);
-XBT_PUBLIC(void) xbt_cfg_setdefault_string(xbt_cfg_t cfg, const char *name,
-                                           const char *val);
-XBT_PUBLIC(void) xbt_cfg_setdefault_boolean(xbt_cfg_t cfg, const char *name,
-                                        const char *val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_int(xbt_cfg_t cfg, const char *name, int val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_double(xbt_cfg_t cfg, const char *name, double val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_string(xbt_cfg_t cfg, const char *name, const char *val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_boolean(xbt_cfg_t cfg, const char *name, const char *val);
 
-/*
- Remove the provided value from the cell @name in @cfg.
- */
+/** @brief Remove the provided value from the cell #name in #cfg. */
 XBT_PUBLIC(void) xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val);
-XBT_PUBLIC(void) xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name,
-                                   double val);
-XBT_PUBLIC(void) xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name,
-                                   const char *val);
+XBT_PUBLIC(void) xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, double val);
+XBT_PUBLIC(void) xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val);
 XBT_PUBLIC(void) xbt_cfg_rm_boolean(xbt_cfg_t cfg, const char *name, int val);
 
-/*
- Remove the value at position \e pos from the config \e cfg
- */
+/** @brief Remove the value at position \e pos from the config \e cfg */
 XBT_PUBLIC(void) xbt_cfg_rm_at(xbt_cfg_t cfg, const char *name, int pos);
 
-/* rm every values */
+/** @brief rm every values */
 XBT_PUBLIC(void) xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
 
-/* Return if configuration is set by default*/
+/** @brief Return if configuration is set by default*/
 XBT_PUBLIC(int) xbt_cfg_is_default_value(xbt_cfg_t cfg, const char *name);
 
 /* @} */
@@ -157,7 +144,7 @@ typedef enum {
   xbt_cfgelm_string,
                        /**< char* */
   xbt_cfgelm_boolean,  /**< int */
-
+  xbt_cfgelm_alias,    /**< redirection from a deprecated name to a better one */
   //! @cond
   xbt_cfgelm_any,               /* not shown to users to prevent errors */
   xbt_cfgelm_type_count
@@ -200,8 +187,10 @@ XBT_PUBLIC(void) xbt_cfg_register(xbt_cfg_t * cfg,
                                   e_xbt_cfgelm_type_t type,
                                   int min, int max,
                                   xbt_cfg_cb_t cb_set, xbt_cfg_cb_t cb_rm);
+XBT_PUBLIC(void) xbt_cfg_register_alias(xbt_cfg_t * cfg, const char *newname, const char *oldname);
 XBT_PUBLIC(void) xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
 XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry);
+XBT_PUBLIC(void) xbt_cfg_aliases(xbt_cfg_t cfg);
 XBT_PUBLIC(void) xbt_cfg_help(xbt_cfg_t cfg);
 XBT_PUBLIC(void) xbt_cfg_check(xbt_cfg_t cfg);
 XBT_PUBLIC(e_xbt_cfgelm_type_t) xbt_cfg_get_type(xbt_cfg_t cfg,
