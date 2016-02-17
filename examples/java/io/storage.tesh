@@ -1,0 +1,46 @@
+#! tesh
+
+$ java -classpath ${classpath:=.} io/Storage ${srcdir:=.}/../platforms/storage/storage.xml
+> [0.000000] [jmsg/INFO] Using regular java threads.
+> [denise:0:(1) 0.000000] [jmsg/INFO] ------------------------------------
+> [denise:0:(1) 0.000000] [jmsg/INFO] Disk name: Disk2
+> [denise:0:(1) 0.000000] [jmsg/INFO] Size: 536870912000 bytes.
+> [denise:0:(1) 0.000000] [jmsg/INFO] Free Size: 534479374867 bytes.
+> [denise:0:(1) 0.000000] [jmsg/INFO] Used Size: 2391537133 bytes.
+> [denise:0:(1) 0.000000] [jmsg/INFO] ------------------------------------
+> [denise:0:(1) 0.000000] [jmsg/INFO] Disk name: Disk4
+> [denise:0:(1) 0.000000] [jmsg/INFO] Size: 536870912000 bytes.
+> [denise:0:(1) 0.000000] [jmsg/INFO] Free Size: 536857690006 bytes.
+> [denise:0:(1) 0.000000] [jmsg/INFO] Used Size: 13221994 bytes.
+> [denise:0:(1) 0.000000] [jmsg/INFO] Disk name: Disk2
+> [denise:0:(1) 0.000000] [jmsg/INFO] Attached to host:alice
+> [denise:0:(1) 0.000000] [jmsg/INFO] Property key: Pierre
+> [denise:0:(1) 0.000000] [jmsg/INFO] Property key2: Pierre
+> [denise:0:(1) 0.000000] [jmsg/INFO] Disk attached: Disk4
+> [denise:0:(1) 0.000000] [jmsg/INFO] **************** ALL *************************
+> [denise:0:(1) 0.000000] [jmsg/INFO] Disk: Disk1
+> [denise:0:(1) 0.000000] [jmsg/INFO] Disk: Disk2
+> [denise:0:(1) 0.000000] [jmsg/INFO] Disk: Disk3
+> [denise:0:(1) 0.000000] [jmsg/INFO] Disk: Disk4
+> [0.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+
+$ java -classpath ${classpath:=.} io/IO ${srcdir:=.}/../platforms/storage/storage.xml
+> [0.000000] [jmsg/INFO] Using regular java threads.
+> [0.000000] [jmsg/INFO] Number of hosts:4
+> [denise:0:(1) 0.000000] [jmsg/INFO] Open file /home/doc/simgrid/examples/platforms/g5k.xml
+> [alice:1:(2) 0.000000] [jmsg/INFO] Open file c:\Windows\setupact.log
+> [carl:2:(3) 0.000000] [jmsg/INFO] Open file /home/doc/simgrid/examples/platforms/g5k_cabinets.xml
+> [bob:3:(4) 0.000000] [jmsg/INFO] Open file /home/doc/simgrid/examples/platforms/nancy.xml
+> [bob:3:(4) 0.000040] [jmsg/INFO] Having read 4028 on /home/doc/simgrid/examples/platforms/nancy.xml
+> [bob:3:(4) 0.000040] [jmsg/INFO] Having write 0 on /home/doc/simgrid/examples/platforms/nancy.xml
+> [bob:3:(4) 0.000040] [jmsg/INFO] Having read 0 on /home/doc/simgrid/examples/platforms/nancy.xml
+> [denise:0:(1) 0.000085] [jmsg/INFO] Having read 17028 on /home/doc/simgrid/examples/platforms/g5k.xml
+> [denise:0:(1) 0.000085] [jmsg/INFO] Having write 0 on /home/doc/simgrid/examples/platforms/g5k.xml
+> [denise:0:(1) 0.000085] [jmsg/INFO] Having read 0 on /home/doc/simgrid/examples/platforms/g5k.xml
+> [carl:2:(3) 0.000226] [jmsg/INFO] Having read 22645 on /home/doc/simgrid/examples/platforms/g5k_cabinets.xml
+> [carl:2:(3) 0.000226] [jmsg/INFO] Having write 0 on /home/doc/simgrid/examples/platforms/g5k_cabinets.xml
+> [carl:2:(3) 0.000226] [jmsg/INFO] Having read 0 on /home/doc/simgrid/examples/platforms/g5k_cabinets.xml
+> [alice:1:(2) 0.000508] [jmsg/INFO] Having read 101663 on c:\Windows\setupact.log
+> [alice:1:(2) 0.000508] [jmsg/INFO] Having write 0 on c:\Windows\setupact.log
+> [alice:1:(2) 0.000508] [jmsg/INFO] Having read 0 on c:\Windows\setupact.log
+> [0.000508] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
