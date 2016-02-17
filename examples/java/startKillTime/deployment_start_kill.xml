@@ -1,10 +1,10 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-   <process host="Jacquelin" function="startKillTime.Master"/>
+  <process host="Jacquelin" function="startKillTime.Master"/>
   <process host="Boivin" function="startKillTime.Slave" start_time="1" kill_time="5"/>
-	<process host="Jean_Yves" function="startKillTime.Slave" start_time="2" kill_time="6"/>
-	<process host="TeX" function="startKillTime.Slave" start_time="3" kill_time="7"/>
-	<process host="Geoff" function="startKillTime.Slave" start_time="4" kill_time="8"/>
-	<process host="Disney" function="startKillTime.Slave" start_time="5" kill_time="9"/>
+  <process host="Jean_Yves" function="startKillTime.Slave" start_time="2" kill_time="6"/>
+  <process host="TeX" function="startKillTime.Slave" start_time="3" kill_time="7"/>
+  <process host="Geoff" function="startKillTime.Slave" start_time="4" kill_time="8"/>
+  <process host="Disney" function="startKillTime.Slave" start_time="5" kill_time="9"/>
 </platform>

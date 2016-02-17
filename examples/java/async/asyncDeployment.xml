@@ -7,7 +7,7 @@
      <argument value="10"/>    <!-- Communication size of each one -->
      <argument value="7"/>     <!-- Amount of slaves waiting for orders -->
   </process>
-  
+
   <process host="Jackson" function="async.Forwarder">
      <argument value="0"/>  <!-- Input mailbox -->
      <argument value="7"/>  <!-- First output mailbox -->
@@ -18,7 +18,7 @@
      <argument value="9"/>  <!-- First output mailbox -->
      <argument value="10"/> <!-- Last output mailbox -->
   </process>
-  
+
   <process host="iRMX" function="async.Slave">
      <argument value="2"/>  <!-- Input mailbox -->
   </process>

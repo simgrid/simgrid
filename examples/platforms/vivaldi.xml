@@ -1,50 +1,49 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-	
 <config id="General">
-	<prop id="network/coordinates" value="yes"></prop>
-</config>	
- <AS  id="AS0"  routing="Vivaldi">
-	<host id="100030591" coordinates="25.5 9.4 1.4" speed="1.5Gf" />
-	<host id="100036570" coordinates="-12.7 -9.9 2.1" speed="730Mf" />
-	<host id="100041334" coordinates="-15.7 9.9 14.7" speed="2.8Gf" />
-	<host id="100055671" coordinates="27.1 7.2 19.2" speed="880Mf" />
-	<host id="100066658" coordinates="11.4 10.7 24.8" speed="2Gf" />
-	<host id="100090691" coordinates="27.1 14.9 0.3" speed="1Gf" />
-	<host id="100094952" coordinates="110.1 31.2 43.7" speed="340Mf" />
-	<host id="100117943" coordinates="-21.2 -25.2 4.1" speed="1.2Gf" />
-	<host id="100126290" coordinates="-2.3 1.1 12.0" speed="1.3Gf" />
-	<host id="100144483" coordinates="16.8 -11.1 15.4" speed="1.4Gf" />
-	<host id="100152889" coordinates="-6.8 1.6 0.3" speed="1.6Gf" />
-	<host id="100178474" coordinates="23.0 -4.1 1.0" speed="1.7Gf" />
-	<host id="100180261" coordinates="29.9 -9.2 0.2" speed="2.2Gf" />
-	<host id="100185883" coordinates="-2.2 7.2 11.0" speed="770Mf" />
-	<host id="100186365" coordinates="26.1 -61.9 144.7" speed="840Mf" />
-	<host id="100200866" coordinates="-39.4 1.1 0.6" speed="1.5Gf" />
-	<host id="100207885" coordinates="26.5 -15.1 0.3" speed="1.6Gf" />
-	<host id="100224447" coordinates="15.0 -0.5 34.5" speed="720Mf" />
-	<host id="100238799" coordinates="16.5 11.5 19.2" speed="1.4Gf" />
-	<host id="100273297" coordinates="-37.9 85.0 69.8" speed="2.3Gf" />
-	<host id="100280711" coordinates="-2.6 19.4 6.4" speed="2.3Gf" />
-	<host id="100284574" coordinates="-104.4 -162.5 1.7" speed="2.3Gf" />
-	<host id="100292843" coordinates="-41.8 -30.9 5.8" speed="700Mf" />
-	<host id="100309685" coordinates="-9.9 10.4 1.9" speed="2.3Gf" />
-	<host id="100315281" coordinates="8.5 15.3 31.9" speed="2.2Gf" />
-	<host id="100317715" coordinates="6.0 -12.6 7.0" speed="1.7Gf" />
-	<host id="100324694" coordinates="89.6 26.1 17.9" speed="2.2Gf" />
-	<host id="100326641" coordinates="13.9 -31.4 8.2" speed="1.5Gf" />
-	<host id="100331484" coordinates="13.6 10.0 25.0" speed="2.2Gf" />
-	<host id="100347816" coordinates="32.2 34.0 104.4" speed="2.8Gf" />
-	<host id="100354536" coordinates="23.5 21.2 24.5" speed="2Gf" />
-	<host id="100355017" coordinates="-27.0 -12.1 4.8" speed="1.3Gf" />
-	<host id="100359203" coordinates="18.4 -4.5 1.2" speed="2.3Gf" />
-	<host id="100379397" coordinates="109.3 253.6 2.0" speed="2.5Gf" />
-	<host id="100404046" coordinates="16.5 9.4 4.2" speed="2.3Gf" />
-	<host id="100413314" coordinates="-35.9 -42.6 1.0" speed="2.8Gf" />
-	<host id="100416828" coordinates="30.4 18.9 3.5" speed="1.3Gf" />
-	<host id="100422926" coordinates="-23.1 -7.6 39.9" speed="1.6Gf" />
-	<host id="100427449" coordinates="135.5 -21.0 83.4" speed="1.4Gf" />
-	<host id="100429957" coordinates="17.5 6.7 18.8" speed="830Mf" />
-	</AS>
+  <prop id="network/coordinates" value="yes"></prop>
+</config>  
+<AS id="AS0" routing="Vivaldi">
+  <host id="100030591" coordinates="25.5 9.4 1.4" speed="1.5Gf" />
+  <host id="100036570" coordinates="-12.7 -9.9 2.1" speed="730Mf" />
+  <host id="100041334" coordinates="-15.7 9.9 14.7" speed="2.8Gf" />
+  <host id="100055671" coordinates="27.1 7.2 19.2" speed="880Mf" />
+  <host id="100066658" coordinates="11.4 10.7 24.8" speed="2Gf" />
+  <host id="100090691" coordinates="27.1 14.9 0.3" speed="1Gf" />
+  <host id="100094952" coordinates="110.1 31.2 43.7" speed="340Mf" />
+  <host id="100117943" coordinates="-21.2 -25.2 4.1" speed="1.2Gf" />
+  <host id="100126290" coordinates="-2.3 1.1 12.0" speed="1.3Gf" />
+  <host id="100144483" coordinates="16.8 -11.1 15.4" speed="1.4Gf" />
+  <host id="100152889" coordinates="-6.8 1.6 0.3" speed="1.6Gf" />
+  <host id="100178474" coordinates="23.0 -4.1 1.0" speed="1.7Gf" />
+  <host id="100180261" coordinates="29.9 -9.2 0.2" speed="2.2Gf" />
+  <host id="100185883" coordinates="-2.2 7.2 11.0" speed="770Mf" />
+  <host id="100186365" coordinates="26.1 -61.9 144.7" speed="840Mf" />
+  <host id="100200866" coordinates="-39.4 1.1 0.6" speed="1.5Gf" />
+  <host id="100207885" coordinates="26.5 -15.1 0.3" speed="1.6Gf" />
+  <host id="100224447" coordinates="15.0 -0.5 34.5" speed="720Mf" />
+  <host id="100238799" coordinates="16.5 11.5 19.2" speed="1.4Gf" />
+  <host id="100273297" coordinates="-37.9 85.0 69.8" speed="2.3Gf" />
+  <host id="100280711" coordinates="-2.6 19.4 6.4" speed="2.3Gf" />
+  <host id="100284574" coordinates="-104.4 -162.5 1.7" speed="2.3Gf" />
+  <host id="100292843" coordinates="-41.8 -30.9 5.8" speed="700Mf" />
+  <host id="100309685" coordinates="-9.9 10.4 1.9" speed="2.3Gf" />
+  <host id="100315281" coordinates="8.5 15.3 31.9" speed="2.2Gf" />
+  <host id="100317715" coordinates="6.0 -12.6 7.0" speed="1.7Gf" />
+  <host id="100324694" coordinates="89.6 26.1 17.9" speed="2.2Gf" />
+  <host id="100326641" coordinates="13.9 -31.4 8.2" speed="1.5Gf" />
+  <host id="100331484" coordinates="13.6 10.0 25.0" speed="2.2Gf" />
+  <host id="100347816" coordinates="32.2 34.0 104.4" speed="2.8Gf" />
+  <host id="100354536" coordinates="23.5 21.2 24.5" speed="2Gf" />
+  <host id="100355017" coordinates="-27.0 -12.1 4.8" speed="1.3Gf" />
+  <host id="100359203" coordinates="18.4 -4.5 1.2" speed="2.3Gf" />
+  <host id="100379397" coordinates="109.3 253.6 2.0" speed="2.5Gf" />
+  <host id="100404046" coordinates="16.5 9.4 4.2" speed="2.3Gf" />
+  <host id="100413314" coordinates="-35.9 -42.6 1.0" speed="2.8Gf" />
+  <host id="100416828" coordinates="30.4 18.9 3.5" speed="1.3Gf" />
+  <host id="100422926" coordinates="-23.1 -7.6 39.9" speed="1.6Gf" />
+  <host id="100427449" coordinates="135.5 -21.0 83.4" speed="1.4Gf" />
+  <host id="100429957" coordinates="17.5 6.7 18.8" speed="830Mf" />
+</AS>
 </platform>

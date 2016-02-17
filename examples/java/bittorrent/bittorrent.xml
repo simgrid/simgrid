@@ -1,39 +1,37 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
   <process host="Jacquelin" function="bittorrent.Tracker">
-    <argument value="3000" /> 			
+    <argument value="3000" />
   </process>
 
   <process host="Boivin" function="bittorrent.Peer">
-    <argument value="00000002"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
-    <argument value="1" /> 			<!-- indicates if the bittorrent.Peer is a seed at the begining of the simulation -->	
+    <argument value="00000002"/>      <!-- my id -->
+    <argument value="5000" />      <!-- end time -->
+    <argument value="1" />     <!-- indicates if the bittorrent.Peer is a seed at the begining of the simulation -->
   </process>
   <process host="Jean_Yves" function="bittorrent.Peer">
-    <argument value="00000003"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+    <argument value="00000003"/>         <!-- my id -->
+    <argument value="5000" />         <!-- end time -->
   </process>
   <process host="TeX" function="bittorrent.Peer">
-    <argument value="00000004"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+    <argument value="00000004"/>   <!-- my id -->
+    <argument value="5000" />   <!-- end time -->
   </process>
   <process host="Geoff" function="bittorrent.Peer">
-    <argument value="00000005"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+    <argument value="00000005"/>     <!-- my id -->
+    <argument value="5000" />     <!-- end time -->
   </process>
   <process host="Disney" function="bittorrent.Peer">
-    <argument value="00000006"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+    <argument value="00000006"/>      <!-- my id -->
+    <argument value="5000" />      <!-- end time -->
   </process>
   <process host="iRMX" function="bittorrent.Peer">
-    <argument value="00000007"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+    <argument value="00000007"/>    <!-- my id -->
+    <argument value="5000" />    <!-- end time -->
   </process>
   <process host="McGee" function="bittorrent.Peer">
-    <argument value="00000008"/>        <!-- my id -->
-    <argument value="5000" /> 			<!-- end time -->	
+    <argument value="00000008"/>     <!-- my id -->
+    <argument value="5000" />     <!-- end time -->
   </process>
-
 </platform>

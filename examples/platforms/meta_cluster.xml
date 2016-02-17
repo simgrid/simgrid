@@ -1,40 +1,29 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
 <AS id="AS0" routing="Full">
-
   <AS  id="my_cluster1"  routing="Cluster">
-    <cabinet id="cabinet1" prefix="host-" suffix=".cluster1" 
-      speed="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
-    <cabinet id="cabinet2" prefix="host-" suffix=".cluster1" 
-      speed="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
-    <cabinet id="cabinet3" prefix="host-" suffix=".cluster1" 
-      speed="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
-    
+    <cabinet id="cabinet1" prefix="host-" suffix=".cluster1" speed="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
+    <cabinet id="cabinet2" prefix="host-" suffix=".cluster1" speed="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
+    <cabinet id="cabinet3" prefix="host-" suffix=".cluster1" speed="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
+
     <router  id="router1"/>
     <backbone id="backbone1" bandwidth="2.25GBps" latency="500us"/>
   </AS>
-  
+
   <AS  id="my_cluster2"  routing="Cluster">
-    <cabinet id="cabinet1" prefix="host-" suffix=".cluster2" 
-      speed="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
-    <cabinet id="cabinet2" prefix="host-" suffix=".cluster2" 
-      speed="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
-    <cabinet id="cabinet3" prefix="host-" suffix=".cluster2" 
-      speed="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
-    
+    <cabinet id="cabinet1" prefix="host-" suffix=".cluster2" speed="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
+    <cabinet id="cabinet2" prefix="host-" suffix=".cluster2" speed="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
+    <cabinet id="cabinet3" prefix="host-" suffix=".cluster2" speed="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
+
     <router  id="router2"/>
     <backbone id="backbone2" bandwidth="2.25GBps" latency="500us"/>
   </AS>
-  
+
   <link id="link1-2" bandwidth="2.25GBps" latency="500us"/>
-  
-  <ASroute src="my_cluster1" dst="my_cluster2"
-    gw_src="router1"
-    gw_dst="router2">
+
+  <ASroute src="my_cluster1" dst="my_cluster2" gw_src="router1" gw_dst="router2">
     <link_ctn id="link1-2" />
   </ASroute>
-  
-</AS>	
+</AS>
 </platform>

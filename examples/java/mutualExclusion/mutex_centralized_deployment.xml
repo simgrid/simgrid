@@ -2,14 +2,14 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
   <process host="Tremblay" function="mutualExclusion.Coordinator">
-      <argument value="2"/> <!-- Amount of CS to serve -->
+    <argument value="2"/> <!-- Amount of CS to serve -->
   </process>
   <process host="Jupiter" function="mutualExclusion.Node">
-      <argument value="2"/> <!-- initial sleep time -->
-      <argument value="5"/> <!-- CS time -->
+    <argument value="2"/> <!-- initial sleep time -->
+    <argument value="5"/> <!-- CS time -->
   </process>
   <process host="Fafard" function="mutualExclusion.Node">
-      <argument value="2"/> <!-- initial sleep time -->
-      <argument value="5"/> <!-- CS time -->
+    <argument value="2"/> <!-- initial sleep time -->
+    <argument value="5"/> <!-- CS time -->
   </process>
 </platform>

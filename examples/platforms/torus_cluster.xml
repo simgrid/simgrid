@@ -2,8 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
 <AS id="AS0" routing="Full">
-  <cluster id="bob_cluster" prefix="node-" suffix=".acme.org"
-   radical="0-11" speed="1Gf" bw="125MBps" lat="50us" topology="TORUS" topo_parameters="3,2,2" 
-   loopback_bw="100000000Bps" loopback_lat="0"/>
+  <cluster id="bob_cluster" prefix="node-" suffix=".acme.org" radical="0-11" speed="1Gf" 
+           bw="125MBps" lat="50us" topology="TORUS" topo_parameters="3,2,2" loopback_bw="100MBps" loopback_lat="0"/>
 </AS>
 </platform>

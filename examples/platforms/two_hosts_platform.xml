@@ -5,6 +5,6 @@
     <host id="host0" core="4" speed="8.095Gf"/>
     <host id="host1" core="4" speed="8.095Gf"/>
     <link id="link1" bandwidth="125MBps" latency="100us"/>
-   <route src="host0" dst="host1"><link_ctn id="link1"/></route>
+    <route src="host0" dst="host1"><link_ctn id="link1"/></route>
   </AS>
 </platform>

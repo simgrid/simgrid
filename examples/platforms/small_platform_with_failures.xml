@@ -1,61 +1,40 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
- 
- 
- <AS  id="AS0"  routing="Full">
-   <!-- ljlkj -->
-   <host id="Tremblay" speed="25Mf"/>
-   <host id="Jupiter" speed="25Mf" state_file="jupiter_state.trace"/>
-   <host id="Fafard" speed="25Mf" state_file="fafard_state.trace" />
-   <host id="Ginette" speed="25Mf" state_file="ginette_state.trace"/>
-   <host id="Bourassa" speed="25Mf"state_file="bourassa_state.trace"/>
-   <link id="1" bandwidth="1MBps" latency="0"/>
-   <link id="2" bandwidth="1MBps" latency="0"/>
-   <link id="3" bandwidth="1MBps" latency="0" state_file="link3_state.trace" />
-   <link id="4" bandwidth="1MBps" latency="0" state_file="link4_state.trace" />
-   <link id="5" bandwidth="1MBps" latency="0"/>
-   <link id="6" bandwidth="1MBps" latency="0"/>
-   <link id="7" bandwidth="1MBps" latency="0"/>
-   <link id="8" bandwidth="1MBps" latency="0"/>
-   <link id="9" bandwidth="1MBps" latency="0"/>
-   <link id="10" bandwidth="1MBps" latency="0"/>
-   <link id="loopback_FATPIPE" bandwidth="10MBps" latency="0" sharing_policy="FATPIPE"/>
-   <link id="loopback" bandwidth="100MBps" latency="0"/>
-   <route src="Tremblay" dst="Tremblay"><link_ctn id="loopback"/></route>
-   <route src="Jupiter" dst="Jupiter"><link_ctn id="loopback"/></route>
-   <route src="Fafard" dst="Fafard"><link_ctn id="loopback"/></route>
-   <route src="Ginette" dst="Ginette"><link_ctn id="loopback"/></route>
-   <route src="Bourassa" dst="Bourassa"><link_ctn id="loopback"/></route>
-   <route src="Tremblay" dst="Jupiter">
-     <link_ctn id="1"/>
-   </route>
-   <route src="Tremblay" dst="Fafard">
-     <link_ctn id="2"/>
-   </route>
-   <route src="Tremblay" dst="Ginette">
-     <link_ctn id="3"/>
-   </route>
-   <route src="Tremblay" dst="Bourassa">
-     <link_ctn id="4"/>
-   </route>
-   <route src="Jupiter" dst="Fafard">
-     <link_ctn id="5"/>
-   </route>
-   <route src="Jupiter" dst="Ginette">
-     <link_ctn id="6"/>
-   </route>
-   <route src="Jupiter" dst="Bourassa">
-     <link_ctn id="7"/>
-   </route>
-   <route src="Fafard" dst="Ginette">
-     <link_ctn id="8"/>
-   </route>
-   <route src="Fafard" dst="Bourassa">
-     <link_ctn id="9"/>
-   </route>
-   <route src="Ginette" dst="Bourassa">
-     <link_ctn id="10"/>
-   </route>
- </AS>
- </platform>
+  <AS  id="AS0"  routing="Full">
+    <host id="Tremblay" speed="25Mf"/>
+    <host id="Jupiter" speed="25Mf" state_file="jupiter_state.trace"/>
+    <host id="Fafard" speed="25Mf" state_file="fafard_state.trace" />
+    <host id="Ginette" speed="25Mf" state_file="ginette_state.trace"/>
+    <host id="Bourassa" speed="25Mf"state_file="bourassa_state.trace"/>
+
+    <link id="1" bandwidth="1MBps" latency="0"/>
+    <link id="2" bandwidth="1MBps" latency="0"/>
+    <link id="3" bandwidth="1MBps" latency="0" state_file="link3_state.trace" />
+    <link id="4" bandwidth="1MBps" latency="0" state_file="link4_state.trace" />
+    <link id="5" bandwidth="1MBps" latency="0"/>
+    <link id="6" bandwidth="1MBps" latency="0"/>
+    <link id="7" bandwidth="1MBps" latency="0"/>
+    <link id="8" bandwidth="1MBps" latency="0"/>
+    <link id="9" bandwidth="1MBps" latency="0"/>
+    <link id="10" bandwidth="1MBps" latency="0"/>
+    <link id="loopback_FATPIPE" bandwidth="10MBps" latency="0" sharing_policy="FATPIPE"/>
+    <link id="loopback" bandwidth="100MBps" latency="0"/>
+
+    <route src="Tremblay" dst="Tremblay"><link_ctn id="loopback"/></route>
+    <route src="Jupiter" dst="Jupiter"><link_ctn id="loopback"/></route>
+    <route src="Fafard" dst="Fafard"><link_ctn id="loopback"/></route>
+    <route src="Ginette" dst="Ginette"><link_ctn id="loopback"/></route>
+    <route src="Bourassa" dst="Bourassa"><link_ctn id="loopback"/></route>
+    <route src="Tremblay" dst="Jupiter"><link_ctn id="1"/></route>
+    <route src="Tremblay" dst="Fafard"><link_ctn id="2"/></route>
+    <route src="Tremblay" dst="Ginette"><link_ctn id="3"/></route>
+    <route src="Tremblay" dst="Bourassa"><link_ctn id="4"/></route>
+    <route src="Jupiter" dst="Fafard"><link_ctn id="5"/></route>
+    <route src="Jupiter" dst="Ginette"><link_ctn id="6"/></route>
+    <route src="Jupiter" dst="Bourassa"><link_ctn id="7"/></route>
+    <route src="Fafard" dst="Ginette"><link_ctn id="8"/></route>
+    <route src="Fafard" dst="Bourassa"><link_ctn id="9"/></route>
+    <route src="Ginette" dst="Bourassa"><link_ctn id="10"/></route>
+  </AS>
+</platform>

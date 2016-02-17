@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
+/* Copyright (c) 2006-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,28 +7,20 @@
 package startKillTime;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
- 
-public class StartKillTime  {
 
-   /* This only contains the launcher. If you do nothing more than than you can run 
-    *   java org.simgrid.msg.Msg
-    * which also contains such a launcher
-    */
-    
-    public static void main(String[] args) throws NativeException {    	
-		/* initialize the MSG simulation. Must be done before anything else (even logging). */
-		Msg.init(args);
-		if(args.length < 2) {
-			Msg.info("Usage   : StartKilltime platform_file deployment_file");
-	    	Msg.info("example : StartKilltime platform.xml startKilltime.xml");
-	    	System.exit(1);
-	    	}
-	
-		/* construct the platform and deploy the application */
-		Msg.createEnvironment(args[0]);
-		Msg.deployApplication(args[1]);
-		
-		/*  execute the simulation. */
-	    Msg.run();
+public class StartKillTime {
+  public static void main(String[] args) throws NativeException {    	
+    Msg.init(args);
+    if(args.length < 2) {
+      Msg.info("Usage   : StartKilltime platform_file deployment_file");
+      Msg.info("example : StartKilltime ../platforms/platform.xml deployment_start_kill.xml");
+      System.exit(1);
     }
+    /* construct the platform and deploy the application */
+    Msg.createEnvironment(args[0]);
+    Msg.deployApplication(args[1]);
+
+    /*  execute the simulation. */
+    Msg.run();
+  }
 }

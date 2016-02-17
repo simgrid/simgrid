@@ -1,57 +1,46 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
- 
- 
- <!-- This file describe a super simple platform which main interest is
-      to define some properties on hosts, processes and links. 
-      It is used in several regression cases on properties -->
- 
- 
- <AS  id="AS0"  routing="Full">
-   <prop id="filename" value="prop.xml"/>
-   <prop id="date" value="31-08-12"/>
-   <prop id="author" value="pnavarro"/>
-   
-   <AS  id="AS3"  routing="Full">
-	   <AS id="AS1" routing="None">
-	       <prop id="name" value="AS1"/>
-	   </AS>
-	   
-	   <AS id="AS2" routing="None">
-	       <prop id="name" value="AS2"/>
-	   </AS>
-   </AS>
+  <!-- This file describe a super simple platform which main interest is to define some properties on hosts, 
+      processes and links. It is used in several regression cases on properties -->
+  <AS  id="AS0"  routing="Full">
+    <prop id="filename" value="prop.xml"/>
+    <prop id="date" value="31-08-12"/>
+    <prop id="author" value="pnavarro"/>
 
-   <cluster id="acme"
-            prefix="node-"    suffix=".acme.org"
-            radical="0-4"     speed="1Gf" 
-            bw="125MBps"      lat="50us"
-            bb_bw="2.25GBps"  bb_lat="500us">
-	    
+    <AS id="AS3"  routing="Full">
+       <AS id="AS1" routing="None">
+         <prop id="name" value="AS1"/>
+      </AS>
+      <AS id="AS2" routing="None">
+         <prop id="name" value="AS2"/>
+     </AS>
+    </AS>
+
+    <cluster id="acme" prefix="node-" suffix=".acme.org" radical="0-4" speed="1Gf"
+             bw="125MBps" lat="50us" bb_bw="2.25GBps"  bb_lat="500us">
       <prop id="bla" value="acme cluster"/>
       <prop id="Hdd"  value="180"/>
       <prop id="mem"  value="42"/>
    </cluster>
 
    <AS  id="AS4"  routing="Full">
-	   <host id="host1" speed="1Gf">
-	     <prop id="Hdd" value="180"/>
-	     <prop id="mem" value="4"/>
-	   </host>
-	   
-	   <host id="host2" speed="1Gf">
-	     <prop id="Hdd" value="120"/>
-	   </host>
-	   
-	   <link id="l1" bandwidth="125MBps" latency="100us">
-	     <prop id="type" value="Ethernet"/>
-	   </link>
-	   
-	   <link id="l2" bandwidth="125MBps" latency="100us">
-	     <prop id="type" value="ethernet"/>
-	   </link>
-	   <route src="host1" dst="host2"><link_ctn id="l1"/><link_ctn id="l2"/></route>
+     <host id="host1" speed="1Gf">
+       <prop id="Hdd" value="180"/>
+       <prop id="mem" value="4"/>
+     </host>
+     <host id="host2" speed="1Gf">
+       <prop id="Hdd" value="120"/>
+     </host>
+
+     <link id="l1" bandwidth="125MBps" latency="100us">
+       <prop id="type" value="Ethernet"/>
+     </link>
+     <link id="l2" bandwidth="125MBps" latency="100us">
+       <prop id="type" value="ethernet"/>
+     </link>
+
+     <route src="host1" dst="host2"><link_ctn id="l1"/><link_ctn id="l2"/></route>
    </AS>
- </AS>
- </platform>
+  </AS>
+</platform>

@@ -1,25 +1,16 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-<!--- 
-   S1  _________ C1
-        link 1
-        100MB, 5ms
--->
-
+<!-- S1 _________ C1
+         link 1
+       10kB, 10ms    -->
 <AS id="1" routing="Full">
   <host id="S1" speed="1Gf"/>
   <host id="C1" speed="1Gf"/>
 
   <link id="1" bandwidth="10kBps" latency="10ms" sharing_policy="FULLDUPLEX"/>
 
-  <route src="S1" dst="C1" symmetrical="NO">
-     <link_ctn id="1" direction="DOWN"/>
-  </route>
-
-  <route src="C1" dst="S1" symmetrical="NO">
-     <link_ctn id="1" direction="UP"/>
-  </route>
-
+  <route src="S1" dst="C1" symmetrical="NO"><link_ctn id="1" direction="DOWN"/></route>
+  <route src="C1" dst="S1" symmetrical="NO"><link_ctn id="1" direction="UP"/></route>
 </AS>
 </platform>

@@ -1,7 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
 <trace id="A" periodicity="1.0">
 0.0 1.0
 11.0 0.5
@@ -16,13 +15,15 @@
 10.0 0.8
 20.0 0.4
 </trace>
- <AS  id="AS0"  routing="Full">
-   <host id="Cpu A" speed="10f"/>
-   <host id="Cpu B" speed="10f"/>
-   <link id="LinkA" bandwidth="10MBps" latency="200ms"/>
-   <route src="Cpu A" dst="Cpu B"><link_ctn id="LinkA"/></route>
- </AS>
+
+<AS id="AS0" routing="Full">
+  <host id="Cpu A" speed="10f"/>
+  <host id="Cpu B" speed="10f"/>
+  <link id="LinkA" bandwidth="10MBps" latency="200ms"/>
+  <route src="Cpu A" dst="Cpu B"><link_ctn id="LinkA"/></route>
+</AS>
+
 <trace_connect kind="SPEED" trace="A" element="Cpu A"/>
 <trace_connect kind="HOST_AVAIL" trace="A_failure" element="Cpu A"/>
 <trace_connect kind="SPEED" trace="B" element="Cpu B"/>
- </platform>
+</platform>

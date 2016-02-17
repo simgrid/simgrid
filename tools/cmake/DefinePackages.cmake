@@ -856,10 +856,6 @@ set(DOC_SOURCES
   doc/triva-time_interval.png
   doc/triva-time_interval.svg
 
-  doc/HelloWorld/CMakeLists.txt
-  doc/HelloWorld/HelloWorld.c
-  doc/HelloWorld/README
-
   doc/doxygen/FAQ.doc
   doc/doxygen/advanced.doc
   doc/doxygen/bindings.doc
@@ -1180,12 +1176,8 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/IPC/Run/Win32IO.pm
   tools/cmake/scripts/IPC/Run/Win32Pump.pm
   tools/cmake/scripts/Diff.pm
-  tools/cmake/scripts/Makefile.default
-  tools/cmake/scripts/SimGrid.packproj
   tools/cmake/scripts/generate_memcheck_tests.pl
   tools/cmake/scripts/my_valgrind.pl
-  tools/cmake/scripts/postinstall.sh
-  tools/cmake/scripts/preinstall.sh
   tools/cmake/scripts/update_tesh.pl
   tools/cmake/UnitTesting.cmake
   tools/cmake/src/internal_config.h.in

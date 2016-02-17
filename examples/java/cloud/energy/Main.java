@@ -5,29 +5,28 @@
 
 package cloud.energy;
 
+import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.HostNotFoundException;
-import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
 public class Main {
 
-	public static void main(String[] args) throws NativeException, HostNotFoundException {
-		/* Init. internal values */
-		Msg.energyInit();
-		Msg.init(args);
+  public static void main(String[] args) throws NativeException, HostNotFoundException {
+    Msg.energyInit();
+    Msg.init(args);
 
-		if (args.length < 1) {
-			Msg.info("Usage: Main platform_file.xml");
-			System.exit(1);
-		}
+    if (args.length < 1) {
+      Msg.info("Usage: Main ../platforms/energy_platform_file.xml");
+      System.exit(1);
+    }
 
-		/* construct the platform */
-		Msg.createEnvironment(args[0]);
-		
-		/* Create and start a runner for the experiment */
-		new EnergyVMRunner(Host.all()[0],"energy VM runner",null).start();
+    /* construct the platform */
+    Msg.createEnvironment(args[0]);
+    
+    /* Create and start a runner for the experiment */
+    new EnergyVMRunner(Host.all()[0],"energy VM runner",null).start();
 
-		Msg.run();
-	}
+    Msg.run();
+  }
 }

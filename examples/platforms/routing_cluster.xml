@@ -1,7 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
 <!--              router1 -------------link1-2--------------router2
        __________________________                   _________________________
        |                        |                   |                        |
@@ -12,8 +11,6 @@ l1_up / / l1_down  | l3   l2_up\ \ l2_down   l4_up / / l4_down  | l6   l5_up\ \ 
      / /           |            \ \               / /           |            \ \
     host1         host3         host2           host4         host6          host5
 -->
-
-
 <AS id="AS0" routing="Full">
   <AS  id="my_cluster1"  routing="Cluster">
     <router id="router1"/>
@@ -55,10 +52,8 @@ l1_up / / l1_down  | l3   l2_up\ \ l2_down   l4_up / / l4_down  | l6   l5_up\ \ 
   
   <link id="link1-2" bandwidth="2.25GBps" latency="500us"/>
   
-  <ASroute src="my_cluster1" dst="my_cluster2"
-    gw_src="router1"
-    gw_dst="router2">
+  <ASroute src="my_cluster1" dst="my_cluster2" gw_src="router1" gw_dst="router2">
     <link_ctn id="link1-2" />
   </ASroute>
-</AS>	
+</AS>
 </platform>

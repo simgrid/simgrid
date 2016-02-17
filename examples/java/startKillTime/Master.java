@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
+/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,13 +14,13 @@ import org.simgrid.msg.TransferFailureException;
 
 
 public class Master extends Process {
-	public Master(Host host, String name, String[]args) {
-		super(host,name,args);
-	} 
-	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
-		Msg.info("Hello!");
-		waitFor(10.0);
-		Msg.info("OK, goodbye now.");
-	
+  public Master(Host host, String name, String[]args) {
+    super(host,name,args);
+  }
+
+  public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
+    Msg.info("Hello!");
+    waitFor(10.0);
+    Msg.info("OK, goodbye now.");
   }
 }

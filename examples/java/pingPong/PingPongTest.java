@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
+/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,27 +8,20 @@ package pingPong;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
  
-public class PingPongTest  {
-
-   /* This only contains the launcher. If you do nothing more than than you can run 
-    *   java simgrid.msg.Msg
-    * which also contains such a launcher
-    */
-    
-    public static void main(String[] args) throws NativeException {    	
-		/* initialize the MSG simulation. Must be done before anything else (even logging). */
-		Msg.init(args);
-		if(args.length < 2) {
-			Msg.info("Usage   : PingPong platform_file deployment_file");
-	    	Msg.info("example : PingPong ping_pong_platform.xml ping_pong_deployment.xml");
-	    	System.exit(1);
-	    	}
-	
-		/* construct the platform and deploy the application */
-		Msg.createEnvironment(args[0]);
-		Msg.deployApplication(args[1]);
-		
-		/*  execute the simulation. */
-	    Msg.run();
+public class PingPongTest {
+  public static void main(String[] args) throws NativeException {
+    Msg.init(args);
+    if(args.length < 2) {
+      Msg.info("Usage   : PingPongTest platform_file deployment_file");
+      Msg.info("example : PingPongTest ../platforms/platform.xml pingPongDeployment.xml");
+      System.exit(1);
     }
+
+    /* construct the platform and deploy the application */
+    Msg.createEnvironment(args[0]);
+    Msg.deployApplication(args[1]);
+    
+    /*  execute the simulation. */
+    Msg.run();
+  }
 }

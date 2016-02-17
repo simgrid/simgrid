@@ -1,28 +1,29 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-<AS  id="AS0"  routing="Full">
+<AS id="AS0" routing="Full">
   <!-- Multiple pstate processor capacities can be defined as a list of powers specified for a given host -->
-  <!-- Attribute 'pstate' specifies the initialy selected pstate (here, the lowest pstate corresponds to the highest processor speed) -->
+  <!-- Attribute 'pstate' specifies the initialy selected pstate (here, the lowest pstate corresponds to the highest
+       processor speed) -->
   <host id="MyHost1" speed="100.0Mf,50.0Mf,20.0Mf" pstate="0" >
-        <!--  List of min_power:max_power pairs (in Watts) corresponding to the speed consumed when the processor is idle and when it is fully loaded -->
-        <!--  The list must contain one speed pair for each previously defined pstate-->
-        <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
-        <prop id="watt_off" value="10" />
+    <!--  List of min_power:max_power pairs (in Watts) corresponding to the speed consumed when the processor is idle
+          and when it is fully loaded -->
+    <!--  The list must contain one speed pair for each previously defined pstate-->
+    <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
+    <prop id="watt_off" value="10" />
   </host>
   <host id="MyHost2" speed="100.0Mf,50.0Mf,20.0Mf" pstate="0" >
-        <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
-        <prop id="watt_off" value="10" />
+    <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
+    <prop id="watt_off" value="10" />
   </host>
   <host id="MyHost3" speed="100.0Mf,50.0Mf,20.0Mf" pstate="0" >
-        <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
-        <prop id="watt_off" value="10" />
+    <prop id="watt_per_state" value="100.0:200.0, 93.0:170.0, 90.0:150.0" />
+    <prop id="watt_off" value="10" />
   </host>
 
   <link id="bus" bandwidth="100kBps" latency="0"/>
   <route src="MyHost1" dst="MyHost2"><link_ctn id="bus"/></route>
   <route src="MyHost1" dst="MyHost3"><link_ctn id="bus"/></route>
   <route src="MyHost2" dst="MyHost3"><link_ctn id="bus"/></route>
-  
 </AS>
 </platform>

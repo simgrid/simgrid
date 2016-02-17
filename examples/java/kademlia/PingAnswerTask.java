@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,10 +7,7 @@
 package kademlia;
 
 public class PingAnswerTask extends KademliaTask {
-	/**
-	 * Constructor
-	 */
-	public PingAnswerTask(int senderId) {
-		super(senderId);
-	}
+  public PingAnswerTask(int senderId) {
+    super(senderId);
+  }
 }

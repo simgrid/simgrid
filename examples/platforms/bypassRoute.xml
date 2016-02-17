@@ -1,58 +1,57 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-	<AS  id="AS_Big"  routing="Dijkstra">
-	  <AS id="AS_1" routing="Full">    
-	     <host id="AS_1_host1" speed="1Gf"/>	
-	     <link id="AS_1_link" bandwidth="1.25GBps" latency="500us"/>  
-	     <router id="AS_1_gateway"/>
-	     <route src="AS_1_host1" dst="AS_1_gateway">
-	            <link_ctn id="AS_1_link"/>
-	     </route>	
-	  </AS>
-	  <AS id="AS_2" routing="Floyd">    
-	     <host id="AS_2_host1" speed="1Gf"/>	
-	     <host id="AS_2_host2" speed="1Gf"/>	
-	     <host id="AS_2_host3" speed="1Gf"/>	
-	    
-	     <link id="AS_2_link1" bandwidth="1.25GBps" latency="500us"/>  
-	     <link id="AS_2_link2" bandwidth="1.25GBps" latency="500us"/>  
-	     <link id="AS_2_link3" bandwidth="1.25GBps" latency="500us"/>  
-	     <link id="AS_2_link4" bandwidth="1.25GBps" latency="500us"/>
-	     <link id="AS_2_link5" bandwidth="1.25GBps" latency="500us"/>  
-	     <link id="AS_2_link6" bandwidth="1.25GBps" latency="500us"/>  	       
-	     <link id="AS_2_link7" bandwidth="1.25GBps" latency="500us"/>
-	     
-	     <router id="central_router"/>
-	     <router id="bypass_router1"/>
-	     <router id="bypass_router2"/>
-	     <router id="AS_2_gateway"/>
-	    
-	     <!-- routes providing topological information -->	
-	     <route src="central_router" dst="AS_2_host1"><link_ctn id="AS_2_link1"/></route>	
-	     <route src="central_router" dst="AS_2_host2"><link_ctn id="AS_2_link2"/></route>	
-	     <route src="central_router" dst="AS_2_host3"><link_ctn id="AS_2_link3"/></route>	     
-	     <route src="central_router" dst="AS_2_gateway"><link_ctn id="AS_2_link4"/></route>
-	     
-	     <!--  longer route -->
-	     <route src="bypass_router1" dst="AS_2_host2"><link_ctn id="AS_2_link5"/></route>
-	     <route src="bypass_router1" dst="bypass_router2"><link_ctn id="AS_2_link6"/></route>
-	     <route src="bypass_router2" dst="AS_2_host1"><link_ctn id="AS_2_link7"/></route>
-	     
-	     <!-- bypass route -->
-	     <bypassRoute src="AS_2_host1" dst="AS_2_host2">
-		     <link_ctn id="AS_2_link7"/>
-		     <link_ctn id="AS_2_link6"/>
-		     <link_ctn id="AS_2_link5"/>
-	     </bypassRoute> 	
-	  </AS>
-	  <link id="backbone" bandwidth="1.25GBps" latency="500us"/>  	
-	
-	   <ASroute src="AS_1" dst="AS_2" 
-	gw_src="AS_1_gateway" 
-	gw_dst="AS_2_gateway">
-		<link_ctn id="backbone"/>
-	   </ASroute>
-	   
-	</AS>
+  <AS  id="AS_Big" routing="Dijkstra">
+    <AS id="AS_1" routing="Full">
+       <host id="AS_1_host1" speed="1Gf"/>
+       <link id="AS_1_link" bandwidth="1.25GBps" latency="500us"/>
+       <router id="AS_1_gateway"/>
+       <route src="AS_1_host1" dst="AS_1_gateway">
+         <link_ctn id="AS_1_link"/>
+       </route>
+    </AS>
+
+    <AS id="AS_2" routing="Floyd">
+       <host id="AS_2_host1" speed="1Gf"/>
+       <host id="AS_2_host2" speed="1Gf"/>
+       <host id="AS_2_host3" speed="1Gf"/>
+
+       <link id="AS_2_link1" bandwidth="1.25GBps" latency="500us"/>
+       <link id="AS_2_link2" bandwidth="1.25GBps" latency="500us"/>
+       <link id="AS_2_link3" bandwidth="1.25GBps" latency="500us"/>
+       <link id="AS_2_link4" bandwidth="1.25GBps" latency="500us"/>
+       <link id="AS_2_link5" bandwidth="1.25GBps" latency="500us"/>
+       <link id="AS_2_link6" bandwidth="1.25GBps" latency="500us"/>
+       <link id="AS_2_link7" bandwidth="1.25GBps" latency="500us"/>
+
+       <router id="central_router"/>
+       <router id="bypass_router1"/>
+       <router id="bypass_router2"/>
+       <router id="AS_2_gateway"/>
+
+       <!-- routes providing topological information -->  
+       <route src="central_router" dst="AS_2_host1"><link_ctn id="AS_2_link1"/></route>
+       <route src="central_router" dst="AS_2_host2"><link_ctn id="AS_2_link2"/></route>
+       <route src="central_router" dst="AS_2_host3"><link_ctn id="AS_2_link3"/></route>
+       <route src="central_router" dst="AS_2_gateway"><link_ctn id="AS_2_link4"/></route>
+
+       <!--  longer route -->
+       <route src="bypass_router1" dst="AS_2_host2"><link_ctn id="AS_2_link5"/></route>
+       <route src="bypass_router1" dst="bypass_router2"><link_ctn id="AS_2_link6"/></route>
+       <route src="bypass_router2" dst="AS_2_host1"><link_ctn id="AS_2_link7"/></route>
+
+       <!-- bypass route -->
+       <bypassRoute src="AS_2_host1" dst="AS_2_host2">
+         <link_ctn id="AS_2_link7"/>
+         <link_ctn id="AS_2_link6"/>
+         <link_ctn id="AS_2_link5"/>
+       </bypassRoute>
+    </AS>
+
+    <link id="backbone" bandwidth="1.25GBps" latency="500us"/>
+
+    <ASroute src="AS_1" dst="AS_2" gw_src="AS_1_gateway" gw_dst="AS_2_gateway">
+      <link_ctn id="backbone"/>
+    </ASroute>
+  </AS>
 </platform>

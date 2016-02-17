@@ -6,8 +6,6 @@
 file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html/)
 install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/)
-install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/HelloWorld/"
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/HelloWorld/)
 
 # binaries
 if(enable_smpi)
@@ -229,7 +227,6 @@ endforeach(file ${source_to_pack})
 
 add_custom_command(
   TARGET dist-dir
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
   COMMAND ${CMAKE_COMMAND} -E echo "${GIT_VERSION}" > ${PROJECT_NAME}-${release_version}/.gitversion
   )
 
