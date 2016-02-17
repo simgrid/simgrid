@@ -275,7 +275,10 @@ void xbt_cfg_register_alias(xbt_cfg_t * cfg, const char *newname, const char *ol
     *cfg = xbt_cfg_new();
 
   xbt_cfgelm_t res = xbt_dict_get_or_null((xbt_dict_t) * cfg, oldname);
-  xbt_assert(NULL == res, "Refusing to register the config element '%s' twice.", oldname);
+  xbt_assert(NULL == res, "Refusing to register the option '%s' twice.", oldname);
+
+  res = xbt_dict_get_or_null((xbt_dict_t) * cfg, newname);
+  xbt_assert(res, "Cannot define an alias to the non-existing option '%s'.", newname);
 
   res = xbt_new0(s_xbt_cfgelm_t, 1);
   XBT_DEBUG("Register cfg alias %s -> %s in set %p)",oldname,newname, *cfg);
@@ -724,7 +727,7 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
   TRY {
     while (variable == NULL) {
       variable = xbt_dict_get((xbt_dict_t) cfg, key);
-      if (variable->type == xbt_cfgelm_alias) {
+      while (variable->type == xbt_cfgelm_alias) {
         const char *newname = (const char*)variable->content;
         XBT_INFO("Note: configuration '%s' is deprecated. Please use '%s' instead.", key, newname);
         key = newname;
