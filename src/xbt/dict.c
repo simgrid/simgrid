@@ -21,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
 /**
  * \brief Constructor
  * \return pointer to the destination
- * \see xbt_dict_free()
+ * \see xbt_dict_new_homogenous(), xbt_dict_free()
  *
  * Creates and initialize a new dictionary with a default hashtable size.
  * The dictionary is heterogeneous: each element can have a different free
@@ -156,7 +156,9 @@ static void xbt_dict_rehash(xbt_dict_t dict)
  * \param key_len the size of the \a key
  * \param data the data to add in the dict
  * \param free_ctn function to call with (\a data as argument) when
- *        \a data is removed from the dictionary
+ *        \a data is removed from the dictionary. This param
+ *        will only be considered when the dict was instantiated with
+ *        xbt_dict_new() and not xbt_dict_new_homogeneous()
  *
  * Set the \a data in the structure under the \a key, which can be any kind
  * of data, as long as its length is provided in \a key_len.
@@ -210,7 +212,9 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
  * \param key the key to set the new data
  * \param data the data to add in the dict
  * \param free_ctn function to call with (\a data as argument) when
- *        \a data is removed from the dictionary
+ *        \a data is removed from the dictionary. This param
+ *        will only be considered when the dict was instantiated with
+ *        xbt_dict_new() and not xbt_dict_new_homogeneous()
  *
  * set the \a data in the structure under the \a key, which is a
  * null terminated string.
