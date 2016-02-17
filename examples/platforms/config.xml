@@ -1,28 +1,23 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-	
 <config id="General">
-	<prop id="maxmin/precision" value="0.000010"></prop>
-	<prop id="cpu/optim" value="TI"></prop>
-	<prop id="host/model" value="compound"></prop>
-	<prop id="network/model" value="SMPI"></prop>
-	<prop id="path" value="~/"></prop>
-	<prop id="smpi/bw_factor" value="65472:0.940694;15424:0.697866;9376:0.58729"></prop>
+  <prop id="maxmin/precision" value="0.000010"></prop>
+  <prop id="cpu/optim" value="TI"></prop>
+  <prop id="host/model" value="compound"></prop>
+  <prop id="network/model" value="SMPI"></prop>
+  <prop id="path" value="~/"></prop>
+  <prop id="smpi/bw_factor" value="65472:0.940694;15424:0.697866;9376:0.58729"></prop>
 </config>
-	
+
 <AS  id="AS0"  routing="Full">
    <host id="bob" speed="1Gf"/>
    <host id="alice" speed="500Mf"/>
- 
+
    <link id="link1" bandwidth="125MBps" latency="50us"/>
    <link id="link2" bandwidth="125MBps" latency="50us"/>
    <link id="link3" bandwidth="125MBps" latency="50us"/>
-   
-   <route src="bob" dst="alice" symmetrical="YES">
-     <link_ctn id="link1"/>
-	 <link_ctn id="link2"/>
-	 <link_ctn id="link3"/>
-   </route>
+
+   <route src="bob" dst="alice"><link_ctn id="link1"/><link_ctn id="link2"/><link_ctn id="link3"/></route>
 </AS>
 </platform>

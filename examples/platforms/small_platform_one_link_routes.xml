@@ -1,78 +1,44 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
- 
- 
- <AS  id="AS0"  routing="Full">
+  <AS  id="AS0"  routing="Full">
+    <host id="Tremblay" speed="98.095Mf"/>
+    <host id="Jupiter" speed="76.296Mf"/>
+    <host id="Fafard" speed="76.296Mf"/>
+    <host id="Ginette" speed="48.492Mf"/>
+    <host id="Bourassa" speed="48.492Mf"/>
+    <host id="Lovelace" speed="30.343Mf"/>
 
-   <host id="Tremblay" speed="98.095Mf"/>
-   <host id="Jupiter" speed="76.296Mf"/>
-   <host id="Fafard" speed="76.296Mf"/>
-   <host id="Ginette" speed="48.492Mf"/>
-   <host id="Bourassa" speed="48.492Mf"/>
-   <host id="Lovelace" speed="30.343Mf"/>
+    <link id="0" bandwidth="41.279125MBps" latency="59.904us"/>
+    <link id="1" bandwidth="34.285625MBps" latency="514.433us"/>
+    <link id="2" bandwidth="118.6825MBps" latency="136.931us"/>
+    <link id="3" bandwidth="34.285625MBps" latency="514.433us"/>
+    <link id="4" bandwidth="10.099625MBps" latency="479.78us"/>
+    <link id="5" bandwidth="27.94625MBps" latency="278.066us"/>
+    <link id="6" bandwidth="41.279125MBps" latency="59.904us"/>
+    <link id="7" bandwidth="11.618875MBps" latency="189.98us"/>
+    <link id="8" bandwidth="8.158MBps" latency="270.544us"/>
+    <link id="9" bandwidth="7.20975MBps" latency="1.461517ms"/>
+    <link id="10" bandwidth="4.67975MBps" latency="848.712us"/>
+    <link id="11" bandwidth="252.75kBps" latency="5.70455ms"/>
+    <link id="12" bandwidth="1.792625MBps" latency="7.877863ms"/>
+    <link id="13" bandwidth="1.792625MBps" latency="7.877863ms"/>
+    <link id="14" bandwidth="1.792625MBps" latency="7.877863ms"/>
 
-   <link id="0" bandwidth="41.279125MBps" latency="59.904us"/>
-   <link id="1" bandwidth="34.285625MBps" latency="514.433us"/>
-   <link id="2" bandwidth="118.6825MBps" latency="136.931us"/>
-   <link id="3" bandwidth="34.285625MBps" latency="514.433us"/>
-   <link id="4" bandwidth="10.099625MBps" latency="479.78us"/>
-   <link id="5" bandwidth="27.94625MBps" latency="278.066us"/>
-   <link id="6" bandwidth="41.279125MBps" latency="59.904us"/>
-   <link id="7" bandwidth="11.618875MBps" latency="189.98us"/>
-   <link id="8" bandwidth="8.158MBps" latency="270.544us"/>
-   <link id="9" bandwidth="7.20975MBps" latency="1.461517ms"/>
-   <link id="10" bandwidth="4.67975MBps" latency="848.712us"/>
-   <link id="11" bandwidth="252.75kBps" latency="5.70455ms"/>
-   <link id="12" bandwidth="1.792625MBps" latency="7.877863ms"/>
-   <link id="13" bandwidth="1.792625MBps" latency="7.877863ms"/>
-   <link id="14" bandwidth="1.792625MBps" latency="7.877863ms"/>
-
-   <route src="Tremblay" dst="Jupiter">
-      <link_ctn id="0"/>
-   </route>
-   <route src="Tremblay" dst="Fafard">
-      <link_ctn id="1"/>
-   </route>
-   <route src="Tremblay" dst="Ginette">
-      <link_ctn id="2"/>
-   </route>
-     <route src="Tremblay" dst="Bourassa">
-      <link_ctn id="3"/>
-   </route>
-   <route src="Tremblay" dst="Lovelace">
-      <link_ctn id="4"/>
-   </route>
-   <route src="Jupiter" dst="Fafard">
-      <link_ctn id="5"/>
-   </route>
-   <route src="Jupiter" dst="Ginette">
-      <link_ctn id="6"/>
-   </route>
-   <route src="Jupiter" dst="Bourassa">
-      <link_ctn id="7"/>
-   </route>
-   <route src="Jupiter" dst="Lovelace">
-      <link_ctn id="8"/>
-   </route>
-   <route src="Fafard" dst="Ginette">
-      <link_ctn id="9"/>
-   </route>
-   <route src="Fafard" dst="Bourassa">
-      <link_ctn id="10"/>
-   </route>
-   <route src="Fafard" dst="Lovelace">
-      <link_ctn id="11"/>
-   </route>
-   <route src="Ginette" dst="Bourassa">
-      <link_ctn id="12"/>
-   </route>
-   <route src="Ginette" dst="Lovelace">
-      <link_ctn id="13"/>
-   </route>
-   <route src="Bourassa" dst="Lovelace">
-      <link_ctn id="14"/>
-   </route>
-
- </AS>
- </platform>
+    <route src="Tremblay" dst="Jupiter"><link_ctn id="0"/></route>
+    <route src="Tremblay" dst="Fafard"><link_ctn id="1"/></route>
+    <route src="Tremblay" dst="Ginette"><link_ctn id="2"/></route>
+    <route src="Tremblay" dst="Bourassa"><link_ctn id="3"/></route>
+    <route src="Tremblay" dst="Lovelace"><link_ctn id="4"/></route>
+    <route src="Jupiter" dst="Fafard"><link_ctn id="5"/></route>
+    <route src="Jupiter" dst="Ginette"><link_ctn id="6"/></route>
+    <route src="Jupiter" dst="Bourassa"><link_ctn id="7"/></route>
+    <route src="Jupiter" dst="Lovelace"><link_ctn id="8"/></route>
+    <route src="Fafard" dst="Ginette"><link_ctn id="9"/></route>
+    <route src="Fafard" dst="Bourassa"><link_ctn id="10"/></route>
+    <route src="Fafard" dst="Lovelace"><link_ctn id="11"/></route>
+    <route src="Ginette" dst="Bourassa"><link_ctn id="12"/></route>
+    <route src="Ginette" dst="Lovelace"><link_ctn id="13"/></route>
+    <route src="Bourassa" dst="Lovelace"><link_ctn id="14"/></route>
+  </AS>
+</platform>

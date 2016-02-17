@@ -1,9 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
-<!-- This is a random platform, generated with Simulacrum. 
-        http://pda.gforge.inria.fr/tools/download.html     
+<!-- This is a random platform, generated with Simulacrum.
+        http://pda.gforge.inria.fr/tools/download.html
      Unfortunately, the generation parameters were lost with the years. -->
 
   <AS  id="AS0" routing="Full">
@@ -14,15 +13,14 @@
     <host id="Host 30" speed="2.4818410475340424Gf"/>
     <host id="Host 31" speed="1.773869555571436Gf"/>
     <host id="Host 32" speed="1.7843609176927505Gf"/>
-    
+
     <link id="l152" bandwidth="125MBps" latency="100us"/>
     <link id="l153" bandwidth="125MBps" latency="100us"/>
     <link id="l154" bandwidth="125MBps" latency="100us"/>
     <link id="l155" bandwidth="125MBps" latency="100us"/>
     <link id="l156" bandwidth="125MBps" latency="100us"/>
     <link id="l157" bandwidth="125MBps" latency="100us"/>
-    <link id="l159" bandwidth="125MBps" latency="100us"
-	  bandwidth_file="trace/linkBandwidth7.bw"/>
+    <link id="l159" bandwidth="125MBps" latency="100us" bandwidth_file="trace/linkBandwidth7.bw"/>
     <link id="l160" bandwidth="125MBps" latency="100us"/>
     <link id="l161" bandwidth="125MBps" latency="100us"/>
     <link id="l162" bandwidth="125MBps" latency="100us"/>
@@ -37,70 +35,28 @@
     <link id="l171" bandwidth="125MBps" latency="100us"/>
     <link id="l172" bandwidth="125MBps" latency="100us"/>
     <link id="l173" bandwidth="125MBps" latency="100us"/>
-    
-    <route src="Host 26" dst="Host 27">
-      <link_ctn id="l155"/>
-    </route>
-    <route src="Host 26" dst="Host 28">
-      <link_ctn id="l155"/> <link_ctn id="l154"/><link_ctn id="l156"/>
-    </route>
-    <route src="Host 26" dst="Host 29">
-      <link_ctn id="l152"/><link_ctn id="l157"/>
-    </route>
-    <route src="Host 26" dst="Host 30">
-      <link_ctn id="l152"/><link_ctn id="l161"/>
-    </route>
-    <route src="Host 26" dst="Host 31">
-      <link_ctn id="l166"/>
-    </route>
-    <route src="Host 26" dst="Host 32">
-      <link_ctn id="l152"/><link_ctn id="l169"/>
-    </route>
-    <route src="Host 27" dst="Host 28">
-      <link_ctn id="l154"/><link_ctn id="l156"/>
-    </route>
-    <route src="Host 27" dst="Host 29">
-      <link_ctn id="l159"/>
-    </route>
-    <route src="Host 27" dst="Host 30">
-      <link_ctn id="l162"/>
-    </route>
-    <route src="Host 27" dst="Host 31">
-      <link_ctn id="l167"/>
-    </route>
-    <route src="Host 27" dst="Host 32">
-      <link_ctn id="l154"/><link_ctn id="l170"/>
-    </route>
-    <route src="Host 28" dst="Host 29">
-      <link_ctn id="l160"/>
-    </route>
-    <route src="Host 28" dst="Host 30">
-      <link_ctn id="l163"/>
-    </route>
-    <route src="Host 28" dst="Host 31">
-      <link_ctn id="l163"/><link_ctn id="l168"/>
-    </route>
-    <route src="Host 28" dst="Host 32">
-      <link_ctn id="l156"/><link_ctn id="l170"/>
-    </route>
-    <route src="Host 29" dst="Host 30">
-      <link_ctn id="l164"/>
-    </route>
-    <route src="Host 29" dst="Host 31">
-      <link_ctn id="l159"/><link_ctn id="l167"/>
-    </route>
-    <route src="Host 29" dst="Host 32">
-      <link_ctn id="l171"/>
-    </route>
-    <route src="Host 30" dst="Host 31">
-      <link_ctn id="l168"/>
-    </route>
-    <route src="Host 30" dst="Host 32">
-      <link_ctn id="l172"/>
-    </route>
-    <route src="Host 31" dst="Host 32">
-      <link_ctn id="l173"/>
-    </route>
+
+    <route src="Host 26" dst="Host 27"><link_ctn id="l155"/></route>
+    <route src="Host 26" dst="Host 28"><link_ctn id="l155"/> <link_ctn id="l154"/><link_ctn id="l156"/></route>
+    <route src="Host 26" dst="Host 29"><link_ctn id="l152"/><link_ctn id="l157"/></route>
+    <route src="Host 26" dst="Host 30"><link_ctn id="l152"/><link_ctn id="l161"/></route>
+    <route src="Host 26" dst="Host 31"><link_ctn id="l166"/></route>
+    <route src="Host 26" dst="Host 32"><link_ctn id="l152"/><link_ctn id="l169"/></route>
+    <route src="Host 27" dst="Host 28"><link_ctn id="l154"/><link_ctn id="l156"/></route>
+    <route src="Host 27" dst="Host 29"><link_ctn id="l159"/></route>
+    <route src="Host 27" dst="Host 30"><link_ctn id="l162"/></route>
+    <route src="Host 27" dst="Host 31"><link_ctn id="l167"/></route>
+    <route src="Host 27" dst="Host 32"><link_ctn id="l154"/><link_ctn id="l170"/></route>
+    <route src="Host 28" dst="Host 29"><link_ctn id="l160"/></route>
+    <route src="Host 28" dst="Host 30"><link_ctn id="l163"/></route>
+    <route src="Host 28" dst="Host 31"><link_ctn id="l163"/><link_ctn id="l168"/></route>
+    <route src="Host 28" dst="Host 32"><link_ctn id="l156"/><link_ctn id="l170"/></route>
+    <route src="Host 29" dst="Host 30"><link_ctn id="l164"/></route>
+    <route src="Host 29" dst="Host 31"><link_ctn id="l159"/><link_ctn id="l167"/></route>
+    <route src="Host 29" dst="Host 32"><link_ctn id="l171"/></route>
+    <route src="Host 30" dst="Host 31"><link_ctn id="l168"/></route>
+    <route src="Host 30" dst="Host 32"><link_ctn id="l172"/></route>
+    <route src="Host 31" dst="Host 32"><link_ctn id="l173"/></route>
   </AS>
 </platform>
 

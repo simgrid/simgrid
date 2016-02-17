@@ -1,20 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-	
-<AS  id="AS0"  routing="Vivaldi">	 
-	<peer id="100030591"
-		coordinates="25.5 9.4 1.4"
-		speed="1.5Gf"
-		bw_in="2.25GBps"
-		bw_out="2.25GBps"
-		lat="500us" />
-		
-	<peer id="100036570"
-		coordinates="-12.7 -9.9 2.1"
-		speed="730Mf"	
-		bw_in="2.25GBps"
-		bw_out="2.25GBps"
-		lat="500us" />
+<AS id="AS0" routing="Vivaldi">
+  <peer id="100030591" coordinates="25.5 9.4 1.4" speed="1.5Gf" bw_in="2.25GBps" bw_out="2.25GBps" lat="500us" />
+  <peer id="100036570" coordinates="-12.7 -9.9 2.1" speed="730Mf" bw_in="2.25GBps" bw_out="2.25GBps" lat="500us" />
 </AS>
 </platform>

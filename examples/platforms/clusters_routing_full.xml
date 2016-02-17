@@ -1,14 +1,13 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
 <!--                  _________________________________________
                  ____|_____                                    |
                 |          |                                   |
                 |  router1 |                                   |
     ____________|__________|_____________ backbone1            |
       |   |   |              |     |   |                       | backbone
-    l0|	l1| l2|            l7|   l8|   |l9                     |
+    l0| l1| l2|            l7|   l8|   |l9                     |
       |   |   |   ........   |     |   |                       |
       |                                |                       |
     c-0.me                             c-9.me                  |
@@ -17,27 +16,24 @@
                 |          |
                 |  router2 |
     ____________|__________|_____________ backbone2
-      |   |   |              |     |   |  	
+      |   |   |              |     |   |  
    l10|l11|l12|           l17| l18 |   | l19
       |   |   |   ........   |     |   |
       |                                |
-   c-10.me                             c-19.me	
--->
+   c-10.me                             c-19.me -->
 
 <AS id="AS0" routing="Full">
-	<cluster id="my_cluster_1" prefix="node-" suffix=".acme.org" radical="0-9"
-		speed="1Gf" bw="125MBps" lat="50us" bb_bw="2.25GBps"
-		bb_lat="500us" />
+  <cluster id="my_cluster_1" prefix="node-" suffix=".acme.org" radical="0-9" speed="1Gf" 
+           bw="125MBps" lat="50us" bb_bw="2.25GBps" bb_lat="500us" />
 
-	<cluster id="my_cluster_2" prefix="node-" suffix=".acme.org" radical="10-19"
-		speed="1Gf" bw="125MBps" lat="50us" bb_bw="2.25GBps"
-		bb_lat="500us" />
+  <cluster id="my_cluster_2" prefix="node-" suffix=".acme.org" radical="10-19" speed="1Gf" 
+           bw="125MBps" lat="50us" bb_bw="2.25GBps" bb_lat="500us" />
 
-	<link id="backbone" bandwidth="1.25GBps" latency="500us" />
+  <link id="backbone" bandwidth="1.25GBps" latency="500us" />
 
-	<ASroute src="my_cluster_1" dst="my_cluster_2" gw_src="node-my_cluster_1_router.acme.org"
-		gw_dst="node-my_cluster_2_router.acme.org">
-		<link_ctn id="backbone" />
-	</ASroute>
+  <ASroute src="my_cluster_1" dst="my_cluster_2" gw_src="node-my_cluster_1_router.acme.org"
+    gw_dst="node-my_cluster_2_router.acme.org">
+    <link_ctn id="backbone" />
+  </ASroute>
 </AS>
 </platform>
