@@ -39,8 +39,7 @@ xbt_cfg_t _sg_cfg_set = NULL;
  */
 int _sg_cfg_init_status = 0;
 
-/* instruct the upper layer (simix or simdag) to exit as soon as possible
- */
+/* instruct the upper layer (simix or simdag) to exit as soon as possible */
 int _sg_cfg_exit_asap = 0;
 
 #define sg_cfg_exit_early() do { _sg_cfg_exit_asap = 1; return; } while (0)
@@ -63,24 +62,27 @@ static void sg_config_cmd_line(int *argc, char **argv)
       printf("%s\n", SIMGRID_VERSION_STRING);
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
-      printf
-          ("Description of the configuration accepted by this simulator:\n");
+      printf("Description of the configuration accepted by this simulator:\n");
       xbt_cfg_help(_sg_cfg_set);
       printf(
-"\n"
-"Each of these configurations can be used by adding\n"
-"    --cfg=<option name>:<option value>\n"
-"to the command line.\n"
-"\n"
-"You can also use --help-models to see the details of all models known by this simulator.\n"
-"\n"
-"You can also use --help-tracing to see the details of all tracing options known by this simulator.\n"
-"\n"
-"You can also use --help-logs and --help-log-categories to see the details of logging output.\n"
-"\n"
-"You can also use --version to get SimGrid version information.\n"
-"\n"
+          "\n"
+          "Each of these configurations can be used by adding\n"
+          "    --cfg=<option name>:<option value>\n"
+          "to the command line.\n"
+          "\n"
+          "For more information, please refer to:\n"
+          "   --help-aliases for the list of all option aliases.\n"
+          "   --help-logs and --help-log-categories for the details of logging output.\n"
+          "   --help-models for a list of all models known by this simulator.\n"
+          "   --help-tracing for the details of all tracing options known by this simulator.\n"
+          "   --version to get SimGrid version information.\n"
+          "\n"
         );
+      shall_exit = 1;
+    } else if (!strcmp(argv[i], "--help-aliases")) {
+      printf("Here is a list of all deprecated option names, with their replacement.\n");
+      xbt_cfg_aliases(_sg_cfg_set);
+      printf("Please consider using the recent names\n");
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-models")) {
       int k;
@@ -496,48 +498,32 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "plugin", description,
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__plugin, NULL);
 
-    describe_model(description, surf_cpu_model_description,
-                   "model", "The model to use for the CPU");
-    xbt_cfg_register(&_sg_cfg_set, "cpu/model", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__cpu_model, NULL);
+    describe_model(description, surf_cpu_model_description, "model", "The model to use for the CPU");
+    xbt_cfg_register(&_sg_cfg_set, "cpu/model", description, xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__cpu_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/model", "Cas01");
 
-    describe_model(description, surf_optimization_mode_description,
-                   "optimization mode",
-                   "The optimization modes to use for the CPU");
-    xbt_cfg_register(&_sg_cfg_set, "cpu/optim", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
+    describe_model(description, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the CPU");
+    xbt_cfg_register(&_sg_cfg_set, "cpu/optim", description, xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "cpu/optim", "Lazy");
 
-    describe_model(description, surf_storage_model_description,
-                   "model", "The model to use for the storage");
-    xbt_cfg_register(&_sg_cfg_set, "storage/model", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__storage_mode, NULL);
+    describe_model(description, surf_storage_model_description, "model", "The model to use for the storage");
+    xbt_cfg_register(&_sg_cfg_set, "storage/model", description, xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__storage_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "storage/model", "default");
 
-    describe_model(description, surf_network_model_description,
-                   "model", "The model to use for the network");
-    xbt_cfg_register(&_sg_cfg_set, "network/model", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__network_model, NULL);
+    describe_model(description, surf_network_model_description, "model", "The model to use for the network");
+    xbt_cfg_register(&_sg_cfg_set, "network/model", description, xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__network_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "network/model", "LV08");
 
-    describe_model(description, surf_optimization_mode_description,
-                   "optimization mode",
-                   "The optimization modes to use for the network");
-    xbt_cfg_register(&_sg_cfg_set, "network/optim", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
+    describe_model(description, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the network");
+    xbt_cfg_register(&_sg_cfg_set, "network/optim", description, xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__optimization_mode, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "network/optim", "Lazy");
 
-    describe_model(description, surf_host_model_description,
-                   "model", "The model to use for the host");
-    xbt_cfg_register(&_sg_cfg_set, "host/model", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__host_model, NULL);
+    describe_model(description, surf_host_model_description, "model", "The model to use for the host");
+    xbt_cfg_register(&_sg_cfg_set, "host/model", description, xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__host_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "host/model", "default");
 
-    describe_model(description, surf_vm_model_description,
-                   "model", "The model to use for the vm");
-    xbt_cfg_register(&_sg_cfg_set, "vm/model", description,
-                     xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__vm_model, NULL);
+    describe_model(description, surf_vm_model_description, "model", "The model to use for the vm");
+    xbt_cfg_register(&_sg_cfg_set, "vm/model", description, xbt_cfgelm_string, 1, 1, &_sg_cfg_cb__vm_model, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "vm/model", "default");
 
     xbt_cfg_register(&_sg_cfg_set, "network/TCP_gamma",
@@ -545,21 +531,19 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_double, 1, 1, _sg_cfg_cb__tcp_gamma, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "network/TCP_gamma", 4194304.0);
 
-    xbt_cfg_register(&_sg_cfg_set, "surf/precision",
-                     "Numerical precision used when updating simulation times (hence this value is expressed in seconds)",
+    xbt_cfg_register(&_sg_cfg_set, "surf/precision", "Numerical precision used when updating simulation times (in seconds)",
                      xbt_cfgelm_double, 1, 1, _sg_cfg_cb__surf_precision, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "surf/precision", 0.00001);
 
     xbt_cfg_register(&_sg_cfg_set, "maxmin/precision",
-                     "Numerical precision used when computing resource sharing (hence this value is expressed in ops/sec or bytes/sec)",
+                     "Numerical precision used when computing resource sharing (in ops/sec or bytes/sec)",
                      xbt_cfgelm_double, 1, 1, _sg_cfg_cb__maxmin_precision, NULL);
     xbt_cfg_setdefault_double(_sg_cfg_set, "maxmin/precision", 0.00001);
 
     /* The parameters of network models */
 
-    xbt_cfg_register(&_sg_cfg_set, "network/sender_gap",
-                     "Minimum gap between two overlapping sends",
-                     xbt_cfgelm_double, 1, 1, _sg_cfg_cb__sender_gap, NULL);
+    xbt_cfg_register(&_sg_cfg_set, "network/sender_gap", "Minimum gap between two overlapping sends",
+        xbt_cfgelm_double, 1, 1, _sg_cfg_cb__sender_gap, NULL);
     /* real default for "network/sender_gap" is set in network_smpi.cpp */
     xbt_cfg_setdefault_double(_sg_cfg_set, "network/sender_gap", NAN);
 
@@ -596,8 +580,7 @@ void sg_config_init(int *argc, char **argv)
 
     /* Replay (this part is enabled even if MC it disabled) */
     xbt_cfg_register(&_sg_cfg_set, "model-check/replay",
-      "Uenable replay mode with the given path",
-      xbt_cfgelm_string, 0, 1, _sg_cfg_cb_model_check_replay, NULL);
+      "Enable replay mode with the given path", xbt_cfgelm_string, 0, 1, _sg_cfg_cb_model_check_replay, NULL);
 
 #ifdef HAVE_MC
     /* do model-checking-record */
@@ -939,8 +922,7 @@ void sg_config_init(int *argc, char **argv)
     if (!surf_path) {
       /* retrieves the current directory of the current process */
       const char *initial_path = __surf_get_initial_path();
-      xbt_assert((initial_path),
-                  "__surf_get_initial_path() failed! Can't resolve current Windows directory");
+      xbt_assert((initial_path), "__surf_get_initial_path() failed! Can't resolve current Windows directory");
 
       surf_path = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
       xbt_cfg_setdefault_string(_sg_cfg_set, "path", initial_path);
