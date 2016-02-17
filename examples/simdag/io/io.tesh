@@ -1,7 +1,6 @@
 #! ./tesh
 
 $ ${bindir:=.}/io/sd_io ${srcdir:=.}/examples/platforms/storage/storage.xml 
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'default'
 > [0.000000] [sd_io/INFO] Workstation 'denise' mounts 'c:'
 > [0.000000] [sd_io/INFO] Workstation 'denise' mounts '/home'
 > [0.000000] [sd_io/INFO] Workstation 'alice' mounts 'c:'
