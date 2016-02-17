@@ -1,59 +1,50 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
   <process host="Gatien" function="chord.Node">
     <argument value="48"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
     <argument value="400"/>        <!-- time to sleep before it starts-->
-    <argument value ="600"/>		<!-- deadline -->
+    <argument value ="600"/>    <!-- deadline -->
   </process>
-
   <process host="McGee" function="chord.Node">
     <argument value="42"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
     <argument value="300"/>        <!-- time to sleep before it starts-->
-    <argument value ="600"/>		<!-- deadline -->
+    <argument value ="600"/>    <!-- deadline -->
   </process>
-
   <process host="iRMX" function="chord.Node">
     <argument value="38"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
     <argument value="200"/>         <!-- time to sleep before it starts-->
-    <argument value ="600"/>		<!-- deadline -->
+    <argument value ="600"/>    <!-- deadline -->
   </process>
-
   <process host="Geoff" function="chord.Node">
     <argument value="32"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
     <argument value="100"/>         <!-- time to sleep before it starts-->
-    <argument value ="600"/>		<!-- deadline -->
+    <argument value ="600"/>    <!-- deadline -->
   </process>
-
   <process host="TeX" function="chord.Node">
     <argument value="21"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
     <argument value="40"/>        <!-- time to sleep before it starts-->
-    <argument value ="600"/>		<!-- deadline -->
+    <argument value ="600"/>    <!-- deadline -->
   </process>
-
   <process host="Jean_Yves" function="chord.Node">
     <argument value="14"/>        <!-- my id -->
     <argument value="1"/>         <!-- known id -->
     <argument value="16"/>        <!-- time to sleep before it starts-->
-    <argument value ="600"/>		<!-- deadline -->
+    <argument value ="600"/>    <!-- deadline -->
   </process>
-  
   <process host="Boivin" function="chord.Node">
     <argument value="8"/>         <!-- my id -->
     <argument value="1"/>         <!-- known id -->
     <argument value="1"/>         <!-- time to sleep before it starts-->
-    <argument value ="600"/>		<!-- deadline -->
+    <argument value ="600"/>    <!-- deadline -->
   </process>
-
   <process host="Jacquelin" function="chord.Node">
     <argument value="1"/>         <!-- my id -->
-    <argument value ="600"/>		<!-- deadline -->
+    <argument value ="600"/>    <!-- deadline -->
   </process>
-
 </platform>
