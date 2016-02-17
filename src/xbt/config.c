@@ -127,8 +127,8 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
 
   if (name)
     printf("%s>> Dumping of the config set '%s':\n", indent, name);
-  xbt_dict_foreach(dict, cursor, key, variable) {
 
+  xbt_dict_foreach(dict, cursor, key, variable) {
     printf("%s  %s:", indent, key);
 
     size = xbt_dynar_length(variable->content);
@@ -168,8 +168,13 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
       }
       break;
 
+    case xbt_cfgelm_alias:
+      /* no content */
+      break;
+
     default:
       printf("%s    Invalid type!!\n", indent);
+      break;
     }
 
   }
@@ -179,7 +184,6 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
   fflush(stdout);
 
   xbt_dict_cursor_free(&cursor);
-  return;
 }
 
 /*
@@ -194,7 +198,8 @@ void xbt_cfgelm_free(void *data)
   if (!c)
     return;
   xbt_free(c->desc);
-  xbt_dynar_free(&(c->content));
+  if (c->type != xbt_cfgelm_alias)
+    xbt_dynar_free(&(c->content));
   free(c);
 }
 
@@ -225,16 +230,11 @@ void xbt_cfg_register(xbt_cfg_t * cfg,
               "type of %s not valid (%d should be between %d and %d)",
              name, (int)type, xbt_cfgelm_int, xbt_cfgelm_boolean);
   res = xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
-
-  if (res) {
-    XBT_WARN("Config elem %s registered twice.", name);
-    /* Will be removed by the insertion of the new one */
-  }
+  xbt_assert(NULL == res, "Refusing to register the config element '%s' twice.", name);
 
   res = xbt_new(s_xbt_cfgelm_t, 1);
   XBT_DEBUG("Register cfg elm %s (%s) (%d to %d %s (=%d) @%p in set %p)",
-            name, desc, min, max, xbt_cfgelm_type_name[type], (int)type, res,
-         *cfg);
+            name, desc, min, max, xbt_cfgelm_type_name[type], (int)type, res, *cfg);
 
   res->desc = xbt_strdup(desc);
   res->type = type;
@@ -263,11 +263,32 @@ void xbt_cfg_register(xbt_cfg_t * cfg,
 
   default:
     XBT_ERROR("%d is an invalid type code", (int)type);
+    break;
   }
 
   xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
 }
 
+void xbt_cfg_register_alias(xbt_cfg_t * cfg, const char *newname, const char *oldname)
+{
+  if (*cfg == NULL)
+    *cfg = xbt_cfg_new();
+
+  xbt_cfgelm_t res = xbt_dict_get_or_null((xbt_dict_t) * cfg, oldname);
+  xbt_assert(NULL == res, "Refusing to register the config element '%s' twice.", oldname);
+
+  res = xbt_new0(s_xbt_cfgelm_t, 1);
+  XBT_DEBUG("Register cfg alias %s -> %s in set %p)",oldname,newname, *cfg);
+
+  res->desc = bprintf("Deprecated alias for %s",newname);
+  res->type = xbt_cfgelm_alias;
+  res->min = 1;
+  res->max = 1;
+  res->isdefault = 1;
+  res->content = (xbt_dynar_t)newname;
+
+  xbt_dict_set((xbt_dict_t) * cfg, oldname, res, NULL);
+}
 /** @brief Unregister an element from a config set.
  *
  *  @param cfg the config set
@@ -293,7 +314,7 @@ void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name)
  * Each of them must use the following syntax: \<name\>:\<min nb\>_to_\<max nb\>_\<type\>
  * with type being one of  'string','int' or 'double'.
  *
- * FIXME: this does not allow to set the description
+ * Note that this does not allow to set the description, so you should prefer the other interface
  */
 
 void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
@@ -340,6 +361,26 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
   free(entrycpy);               /* strdup'ed by dict mechanism, but cannot be const */
 }
 
+/** @brief Displays the declared aliases and their description */
+void xbt_cfg_aliases(xbt_cfg_t cfg)
+{
+  xbt_dict_cursor_t dict_cursor;
+  unsigned int dynar_cursor;
+  xbt_cfgelm_t variable;
+  char *name;
+  xbt_dynar_t names = xbt_dynar_new(sizeof(char *), NULL);
+
+  xbt_dict_foreach((xbt_dict_t )cfg, dict_cursor, name, variable)
+    xbt_dynar_push(names, &name);
+  xbt_dynar_sort_strings(names);
+
+  xbt_dynar_foreach(names, dynar_cursor, name) {
+    variable = xbt_dict_get((xbt_dict_t )cfg, name);
+
+    if (variable->type == xbt_cfgelm_alias)
+      printf("   %s: %s\n", name, variable->desc);
+  }
+}
 /** @brief Displays the declared options and their description */
 void xbt_cfg_help(xbt_cfg_t cfg)
 {
@@ -349,15 +390,16 @@ void xbt_cfg_help(xbt_cfg_t cfg)
   char *name;
   xbt_dynar_t names = xbt_dynar_new(sizeof(char *), NULL);
 
-  xbt_dict_foreach((xbt_dict_t )cfg, dict_cursor, name, variable) {
+  xbt_dict_foreach((xbt_dict_t )cfg, dict_cursor, name, variable)
     xbt_dynar_push(names, &name);
-  }
   xbt_dynar_sort_strings(names);
 
   xbt_dynar_foreach(names, dynar_cursor, name) {
     int i;
     int size;
     variable = xbt_dict_get((xbt_dict_t )cfg, name);
+    if (variable->type == xbt_cfgelm_alias)
+      continue;
 
     printf("   %s: %s\n", name, variable->desc);
     printf("       Type: %s; ", xbt_cfgelm_type_name[variable->type]);
@@ -421,6 +463,9 @@ void xbt_cfg_check(xbt_cfg_t cfg)
   XBT_DEBUG("Check cfg set %p", cfg);
 
   xbt_dict_foreach((xbt_dict_t) cfg, cursor, name, variable) {
+    if (variable->type == xbt_cfgelm_alias)
+      continue;
+
     size = xbt_dynar_length(variable->content);
     if (variable->min > size) {
       xbt_dict_cursor_free(&cursor);
@@ -449,18 +494,20 @@ void xbt_cfg_check(xbt_cfg_t cfg)
   xbt_dict_cursor_free(&cursor);
 }
 
-static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg,
-                                   const char *name,
-                                   e_xbt_cfgelm_type_t type)
+static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name, e_xbt_cfgelm_type_t type)
 {
-  xbt_cfgelm_t res = NULL;
+  xbt_cfgelm_t res = xbt_dict_get_or_null((xbt_dict_t) cfg, name);
 
-  res = xbt_dict_get_or_null((xbt_dict_t) cfg, name);
+  // The user used the old name. Switch to the new one after a short warning
+  if (res && res->type == xbt_cfgelm_alias) {
+    const char* newname = (const char *)res->content;
+    XBT_VERB("Option %s has been renamed to %s. Consider switching.", name, newname);
+    res = xbt_cfgelm_get(cfg, newname, type);
+  }
+
   if (!res) {
     xbt_cfg_help(cfg);
-    THROWF(not_found_error, 0,
-           "No registered variable '%s' in this config set. It is possible that this "\
-           "configuration option has been renamed; please read the file ChangeLog carefully!", name);
+    THROWF(not_found_error, 0, "No registered variable '%s' in this config set.", name);
   }
 
   xbt_assert(type == xbt_cfgelm_any || res->type == type,
@@ -643,9 +690,6 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
     }
     *(val++) = '\0';
 
-    if (strncmp(name, "contexts/", strlen("contexts/")) && strncmp(name, "path", strlen("path")))
-      XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
-
     TRY {
       xbt_cfg_set_as_string(cfg,name,val);
     } CATCH_ANONYMOUS {
@@ -673,14 +717,24 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
   int i;
   double d;
 
+  if (strncmp(key, "contexts/", strlen("contexts/")) && strncmp(key, "path", strlen("path")))
+    XBT_INFO("Configuration change: Set '%s' to '%s'", key, value);
+
   TRY {
-    variable = xbt_dict_get((xbt_dict_t) cfg, key);
+    while (variable == NULL) {
+      variable = xbt_dict_get((xbt_dict_t) cfg, key);
+      if (variable->type == xbt_cfgelm_alias) {
+        const char *newname = (const char*)variable->content;
+        XBT_INFO("Note: configuration '%s' is deprecated. Please use '%s' instead.", key, newname);
+        key = newname;
+        variable = NULL;
+      }
+    }
   }
   CATCH(e) {
     if (e.category == not_found_error) {
       xbt_ex_free(e);
-      THROWF(not_found_error, 0,
-          "No registered variable corresponding to '%s'.", key);
+      THROWF(not_found_error, 0, "No registered variable corresponding to '%s'.", key);
     }
     RETHROW;
   }
