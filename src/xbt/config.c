@@ -499,14 +499,15 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name, e_xbt_cfgelm
   xbt_cfgelm_t res = xbt_dict_get_or_null((xbt_dict_t) cfg, name);
 
   // The user used the old name. Switch to the new one after a short warning
-  if (res && res->type == xbt_cfgelm_alias) {
+  while (res && res->type == xbt_cfgelm_alias) {
     const char* newname = (const char *)res->content;
-    XBT_VERB("Option %s has been renamed to %s. Consider switching.", name, newname);
+    XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, newname);
     res = xbt_cfgelm_get(cfg, newname, type);
   }
 
   if (!res) {
     xbt_cfg_help(cfg);
+    fflush(stdout);
     THROWF(not_found_error, 0, "No registered variable '%s' in this config set.", name);
   }
 
@@ -690,6 +691,9 @@ void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options) {
     }
     *(val++) = '\0';
 
+    if (strncmp(name, "contexts/", strlen("contexts/")) && strncmp(name, "path", strlen("path")))
+      XBT_INFO("Configuration change: Set '%s' to '%s'", name, val);
+
     TRY {
       xbt_cfg_set_as_string(cfg,name,val);
     } CATCH_ANONYMOUS {
@@ -716,9 +720,6 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
   volatile xbt_cfgelm_t variable = NULL;
   int i;
   double d;
-
-  if (strncmp(key, "contexts/", strlen("contexts/")) && strncmp(key, "path", strlen("path")))
-    XBT_INFO("Configuration change: Set '%s' to '%s'", key, value);
 
   TRY {
     while (variable == NULL) {
@@ -861,10 +862,9 @@ void xbt_cfg_setdefault_boolean(xbt_cfg_t cfg, const char *name, const char *val
  */
 void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
 {
-  xbt_cfgelm_t variable;
 
   XBT_VERB("Configuration setting: %s=%d", name, val);
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
 
   if (variable->max == 1) {
     if (variable->cb_rm && !xbt_dynar_is_empty(variable->content))
@@ -896,10 +896,9 @@ void xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val)
 
 void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
 {
-  xbt_cfgelm_t variable;
 
   XBT_VERB("Configuration setting: %s=%f", name, val);
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
 
   if (variable->max == 1) {
     if (variable->cb_rm && !xbt_dynar_is_empty(variable->content))
@@ -931,14 +930,13 @@ void xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val)
 
 void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
 {
-  xbt_cfgelm_t variable;
   char *newval = xbt_strdup(val);
 
   XBT_VERB("Configuration setting: %s=%s", name, val);
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
+
   XBT_DEBUG("Variable: %d to %d %s (=%d) @%p",
-         variable->min, variable->max,
-            xbt_cfgelm_type_name[variable->type], (int)variable->type, variable);
+         variable->min, variable->max, xbt_cfgelm_type_name[variable->type], (int)variable->type, variable);
 
   if (variable->max == 1) {
     if (!xbt_dynar_is_empty(variable->content)) {
@@ -974,11 +972,10 @@ void xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val)
  */
 void xbt_cfg_set_boolean(xbt_cfg_t cfg, const char *name, const char *val)
 {
-  xbt_cfgelm_t variable;
   int i, bval;
 
   XBT_VERB("Configuration setting: %s=%s", name, val);
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
 
   for (i = 0; xbt_cfgelm_boolean_values[i].true_val != NULL; i++) {
   if (strcmp(val, xbt_cfgelm_boolean_values[i].true_val) == 0){
@@ -1026,11 +1023,10 @@ void xbt_cfg_set_boolean(xbt_cfg_t cfg, const char *name, const char *val)
 void xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val)
 {
 
-  xbt_cfgelm_t variable;
   unsigned int cpt;
   int seen;
 
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
 
   if (xbt_dynar_length(variable->content) == variable->min)
     THROWF(mismatch_error, 0,
@@ -1060,11 +1056,10 @@ void xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val)
 
 void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, double val)
 {
-  xbt_cfgelm_t variable;
   unsigned int cpt;
   double seen;
 
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
 
   if (xbt_dynar_length(variable->content) == variable->min)
     THROWF(mismatch_error, 0,
@@ -1093,11 +1088,9 @@ void xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, double val)
  */
 void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val)
 {
-  xbt_cfgelm_t variable;
   unsigned int cpt;
   char *seen;
-
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
 
   if (xbt_dynar_length(variable->content) == variable->min)
     THROWF(mismatch_error, 0,
@@ -1127,11 +1120,9 @@ void xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val)
 void xbt_cfg_rm_boolean(xbt_cfg_t cfg, const char *name, int val)
 {
 
-  xbt_cfgelm_t variable;
   unsigned int cpt;
   int seen;
-
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
 
   if (xbt_dynar_length(variable->content) == variable->min)
     THROWF(mismatch_error, 0,
@@ -1157,9 +1148,7 @@ void xbt_cfg_rm_boolean(xbt_cfg_t cfg, const char *name, int val)
 void xbt_cfg_rm_at(xbt_cfg_t cfg, const char *name, int pos)
 {
 
-  xbt_cfgelm_t variable;
-
-  variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_any);
+  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_any);
 
   if (xbt_dynar_length(variable->content) == variable->min)
     THROWF(mismatch_error, 0,
