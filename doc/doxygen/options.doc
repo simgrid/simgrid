@@ -1,4 +1,4 @@
-/*! \page options Step 2: Configure SimGrid
+/*! \page options Configure SimGrid
 
 A number of options can be given at runtime to change the default
 SimGrid behavior. For a complete list of all configuration options

@@ -683,7 +683,9 @@ INPUT                  = doxygen/index.doc \
                          @top_srcdir@/src/xbt/ \
                          @top_srcdir@/src/surf/ \
                          @top_srcdir@/src/surf/plugins/ \
+                         @top_srcdir@/src/s4u/ \
                          @top_srcdir@/src/msg/ \
+                         @top_srcdir@/src/smpi/ \
                          @top_srcdir@/src/simdag \
                          @top_srcdir@/src/simix \
                          @bindir@/src

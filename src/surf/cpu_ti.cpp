@@ -128,10 +128,8 @@ double CpuTiTgmr::integrate(double a, double b)
 /**
  * \brief Auxiliary function to compute the integral between a and b.
  *     It simply computes the integrals at point a and b and returns the difference between them.
- * \param trace    Trace structure
- * \param a        Initial point
+ * \param a  Initial point
  * \param b  Final point
- * \return  Integral
 */
 double CpuTiTrace::integrateSimple(double a, double b)
 {
@@ -140,9 +138,7 @@ double CpuTiTrace::integrateSimple(double a, double b)
 
 /**
  * \brief Auxiliary function to compute the integral at point a.
- * \param trace    Trace structure
  * \param a        point
- * \return  Integral
 */
 double CpuTiTrace::integrateSimplePoint(double a)
 {
