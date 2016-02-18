@@ -24,5 +24,4 @@
   <process host="Bourassa" function="slave">
     <argument value="4"/>
   </process>
-
 </platform>

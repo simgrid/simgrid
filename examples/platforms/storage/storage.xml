@@ -1,22 +1,17 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
-  <config>
-    <prop id="path" value="../examples/platforms/"/>
-  </config>
+  <config><prop id="path" value="../examples/platforms/"/></config>
 
   <AS id="AS0" routing="Full">
-
-    <storage_type id="single_HDD" model="linear_no_lat" 
-                  content="content/storage_content.txt" size="500GiB"
-                  content_type="txt_unix">
+    <storage_type id="single_HDD" size="500GiB" model="linear_no_lat" 
+                  content="content/storage_content.txt" content_type="txt_unix">
        <model_prop id="Bwrite" value="30MBps" />
        <model_prop id="Bread" value="100MBps" />
        <model_prop id="Bconnection" value="120MBps" />
     </storage_type>
 
-    <storage_type id="single_SSD" model="linear_no_lat" size="500GiB"
+    <storage_type id="single_SSD" size="500GiB" model="linear_no_lat"
                   content="content/storage_content.txt" content_type="txt_unix">
        <model_prop id="Bwrite" value="60MBps" />
        <model_prop id="Bread" value="200MBps" />
@@ -24,39 +19,28 @@
     </storage_type>
 
     <storage id="Disk1" typeId="single_HDD" attach="bob" />
-    <storage id="Disk2" typeId="single_SSD"
-             content="content/win_storage_content.txt"
-             content_type="txt_windows" attach="alice" />
+    <storage id="Disk2" typeId="single_SSD" attach="alice"
+             content="content/win_storage_content.txt" content_type="txt_windows" />
     <storage id="Disk3" typeId="single_HDD" attach="carl" />
-    <storage id="Disk4" typeId="single_SSD"
-             content="content/small_content.txt"
-             content_type="txt_unix" attach="denise"/>
+    <storage id="Disk4" typeId="single_SSD" attach="denise"
+             content="content/small_content.txt" content_type="txt_unix" />
 
     <host id="bob" speed="1Gf">
       <mount storageId="Disk1" name="/home"/>
     </host>
-
     <host id="alice" speed="1Gf">
       <mount storageId="Disk2" name="c:"/>
     </host>
-
     <host id="carl" speed="1Gf">
       <mount storageId="Disk3" name="/home"/>
     </host>
-
     <host id="denise" speed="1Gf">
       <mount storageId="Disk2" name="c:"/>	
       <mount storageId="Disk4" name="/home"/>	
     </host>
 
-    <link id="link1" bandwidth="125MBps" latency="50us" />
-    <link id="link2" bandwidth="125MBps" latency="50us" />
-    <link id="link3" bandwidth="125MBps" latency="50us" />
+    <link id="link1" bandwidth="125MBps" latency="150us" />
 
-    <route src="bob" dst="alice" symmetrical="YES">
-      <link_ctn id="link1" />
-      <link_ctn id="link2" />
-      <link_ctn id="link3" />
-    </route>
+    <route src="bob" dst="alice" symmetrical="YES"><link_ctn id="link1" /></route>
   </AS>
 </platform>

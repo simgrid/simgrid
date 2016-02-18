@@ -3,5 +3,4 @@
 <platform version="4">
   <process host="MyHost1" function="dvfs_test" />
   <process host="MyHost2" function="dvfs_test" />
-
 </platform>

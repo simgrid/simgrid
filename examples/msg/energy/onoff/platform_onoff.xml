@@ -4,37 +4,29 @@
 <AS  id="AS0"  routing="Full">
 
   <!-- Use the pstate mechanism to encode the boot/shutdown time and energy -->
-  
-  <!-- That may be seen as a misuse of the pstate mechanism and crude hack, 
-       but this is efficient: we can do what we want without too much burden, 
-       and since the whole intelligence is at user level, we do control the model. 
-       
-       The same could be done to encode the time and energy to switch
-       between pstates. These times seem negligeable in our
-       experiments, but if they are important to you, now you know how
-       to do that. -->
-       
+
+  <!-- That may be seen as a misuse of the pstate mechanism and crude hack, but this is efficient: we can do what 
+       we want without too much burden, and since the whole intelligence is at user level, we do control the model. 
+
+       The same could be done to encode the time and energy to switch between pstates. These times seem negligible 
+       in our experiments, but if they are important to you, now you know how to do that. -->
+
   <!-- pstate values:
-         * 0-2: real pstates
-	   0: p1 100 MFlops/s, [idle: 95W -> full burning: 200W]
-	   1: p2  50 MFlops/s, [idle: 93W -> full burning: 170W]
-	   2: p3  20 MFlops/s, [idel: 90W -> full burning: 150W]
-	 * 3: booting up was measured to take 150s and 18000J.
-	      So we create a pstate with 1 flop/150 s so that the
-                application burns 1 flop in that virtual pstate to
-                simulate a boot. 	      
-	      Multiply everything by 1000 or whatever if this trick is
-  	        too painful to you, that's the same by the end.
-              The energy consumption is 18000/150=120W
-	 * 4: shuting down was measured to take 7 s and 770 J
-	 
-       Please note that we tried to put sensible values in this file
-       but you should still take them with a grain of salt. If you
-       want a realistic simulation, you have to actually benchmark
-       your platform and application, and use the values that are
-       right for you. -->
-    
-    
+    * 0-2: real pstates
+       0: p1 100 MFlops/s, [idle: 95W -> full burning: 200W]
+       1: p2  50 MFlops/s, [idle: 93W -> full burning: 170W]
+       2: p3  20 MFlops/s, [idel: 90W -> full burning: 150W] 
+    * 3: booting up was measured to take 150s and 18000J.
+         So we create a pstate with 1 flop/150 s so that the application burns 1 flop in that virtual pstate to
+         simulate a boot.
+         Multiply everything by 1000 or whatever if this trick is too painful to you, that's the same by the end.
+         The energy consumption is 18000/150=120W
+    * 4: shuting down was measured to take 7 s and 770 J
+
+    Please note that we tried to put sensible values in this file but you should still take them with a grain of salt.
+    If you want a realistic simulation, you have to actually benchmark your platform and application, and use the 
+    values that are right for you. -->
+
   <host id="MyHost1" speed="100.0Mf,50.0Mf,20.0Mf,                         0.006666667f,0.1429f" pstate="0" >
         <prop id="watt_per_state"value="95.0:200.0,93.0:170.0,90.0:150.0,       120:120,110:110" />
         <prop id="watt_off" value="10" />
@@ -46,6 +38,5 @@
 
   <link id="link1" bandwidth="100kBps" latency="0"/>
   <route src="MyHost1" dst="MyHost2"><link_ctn id="link1"/></route>
-  
 </AS>
 </platform>

@@ -14,5 +14,4 @@
   <process host="Fafard" function="slave"/>
   <process host="Ginette" function="slave"/>
   <process host="Bourassa" function="slave"/>
-
 </platform>

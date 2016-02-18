@@ -1,86 +1,46 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-
-
-<config>
-  <prop id="path" value="../examples/platforms/"/>
-</config>
+  <config><prop id="path" value="../examples/platforms/"/></config>
 
   <AS id="AS0" routing="Full">
-    <storage_type id="SATA-II_HDD" size="500GB"
-                  content_type="txt_unix" 
-                  content="content/small_content.txt" 
-                  model="linear_no_lat">
+    <storage_type id="SATA-II_HDD" size="500GB" model="linear_no_lat"
+                  content_type="txt_unix" content="content/small_content.txt">
       <model_prop id="Bread" value="92MBps"/> 
       <model_prop id="Bwrite" value="62MBps"/> 
       <model_prop id="Bconnection" value="122MBps"/> 
     </storage_type>
 
-    <storage id="Disk1" typeId="SATA-II_HDD"
-             attach="carl"/>
+    <storage id="Disk1" typeId="SATA-II_HDD" attach="carl"/>
 
-    <storage id="Disk2" typeId="SATA-II_HDD"
-             attach="dave"
-             content_type="txt_windows" 
-             content="content/win_storage_content.txt" />
+    <storage id="Disk2" typeId="SATA-II_HDD" attach="dave"
+             content_type="txt_windows" content="content/win_storage_content.txt" />
 
     <host id="alice" speed="1Gf">
-      <mount storageId="Disk2" name="c:"/>			
+      <mount storageId="Disk2" name="c:"/>
     </host>
-
     <host id="bob" speed="1Gf">
-      <mount storageId="Disk1" name="/scratch"/>			
+      <mount storageId="Disk1" name="/scratch"/>
     </host>
-
     <host id="carl" speed="1Gf">
-      <mount storageId="Disk1" name="/scratch"/>			
+      <mount storageId="Disk1" name="/scratch"/>
     </host>
-
     <host id="dave" speed="1Gf">
-      <mount storageId="Disk2" name="c:"/>			
+      <mount storageId="Disk2" name="c:"/>
     </host>
 
-    <link id="link1" bandwidth="125MBps" 
-          latency="50us"/>
+    <link id="link1" bandwidth="125MBps" latency="50us"/>
+    <link id="link2" bandwidth="125MBps" latency="50us"/>
+    <link id="link3" bandwidth="125MBps" latency="50us"/>
+    <link id="link4" bandwidth="125MBps" latency="50us"/>
+    <link id="link5" bandwidth="125MBps" latency="50us"/>
+    <link id="link6" bandwidth="125MBps" latency="50us"/>
 
-    <link id="link2" bandwidth="125MBps" 
-          latency="50us"/>
-
-    <link id="link3" bandwidth="125MBps" 
-          latency="50us"/>
-
-    <link id="link4" bandwidth="125MBps" 
-          latency="50us"/>
-
-    <link id="link5" bandwidth="125MBps" 
-          latency="50us"/>
-
-    <link id="link6" bandwidth="125MBps" 
-          latency="50us"/>
-
-    <route src="alice" dst="bob" symmetrical="YES">
-      <link_ctn id="link1"/>
-    </route>
-
-    <route src="alice" dst="carl" symmetrical="YES">
-      <link_ctn id="link2"/>
-    </route>
-
-    <route src="alice" dst="dave" symmetrical="YES">
-      <link_ctn id="link3"/>
-    </route>
-
-    <route src="bob" dst="carl" symmetrical="YES">
-      <link_ctn id="link4"/>
-    </route>
-
-    <route src="bob" dst="dave" symmetrical="YES">
-      <link_ctn id="link5"/>
-    </route>
-
-    <route src="carl" dst="dave" symmetrical="YES">
-      <link_ctn id="link6"/>
-    </route>
+    <route src="alice" dst="bob" symmetrical="YES"><link_ctn id="link1"/></route>
+    <route src="alice" dst="carl" symmetrical="YES"><link_ctn id="link2"/></route>
+    <route src="alice" dst="dave" symmetrical="YES"><link_ctn id="link3"/></route>
+    <route src="bob" dst="carl" symmetrical="YES"><link_ctn id="link4"/></route>
+    <route src="bob" dst="dave" symmetrical="YES"><link_ctn id="link5"/></route>
+    <route src="carl" dst="dave" symmetrical="YES"><link_ctn id="link6"/></route>
   </AS>
 </platform>

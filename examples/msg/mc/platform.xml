@@ -1,8 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
- 
- 
  <AS  id="AS0"  routing="Full">
    <host id="HostA" speed="137.333Mf"/>
    <host id="HostB" speed="98.095Mf"/>
@@ -16,4 +14,3 @@
    <route src="HostA" dst="HostD"><link_ctn id="3"/></route>
  </AS>
  </platform>
- 
