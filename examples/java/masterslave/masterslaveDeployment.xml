@@ -7,7 +7,7 @@
      <argument value="10"/>    <!-- Communication size of each one -->
      <argument value="7"/>     <!-- Amount of slaves waiting for orders -->
   </process>
-  
+
   <process host="Jackson" function="masterslave.Forwarder">
      <argument value="0"/>  <!-- Input mailbox -->
      <argument value="7"/>  <!-- First output mailbox -->
@@ -18,32 +18,14 @@
      <argument value="9"/>  <!-- First output mailbox -->
      <argument value="10"/> <!-- Last output mailbox -->
   </process>
-  
-  <process host="iRMX" function="masterslave.Slave">
-     <argument value="2"/>  <!-- Input mailbox -->
-  </process>
-  <process host="Bousquet" function="masterslave.Slave">
-     <argument value="3"/>  <!-- Input mailbox -->
-  </process>  
-  <process host="Soucy" function="masterslave.Slave">
-     <argument value="4"/>  <!-- Input mailbox -->
-  </process>  
-  <process host="Kuenning" function="masterslave.Slave">
-     <argument value="5"/>  <!-- Input mailbox -->
-  </process>  
-  <process host="Browne" function="masterslave.Slave">
-     <argument value="6"/>  <!-- Input mailbox -->
-  </process>  
-  <process host="Stephen" function="masterslave.Slave">
-     <argument value="7"/>  <!-- Input mailbox -->
-  </process>  
-  <process host="Robert" function="masterslave.Slave">
-     <argument value="8"/>  <!-- Input mailbox -->
-  </process>  
-  <process host="Sirois" function="masterslave.Slave">
-     <argument value="9"/>  <!-- Input mailbox -->
-  </process>  
-  <process host="Monique" function="masterslave.Slave">
-     <argument value="10"/>  <!-- Input mailbox -->
-  </process>  
+
+  <process host="iRMX" function="masterslave.Slave">      <argument value="2"/>  <!-- Input mailbox --> </process>
+  <process host="Bousquet" function="masterslave.Slave">  <argument value="3"/>  <!-- Input mailbox --> </process>
+  <process host="Soucy" function="masterslave.Slave">     <argument value="4"/>  <!-- Input mailbox --> </process>
+  <process host="Kuenning" function="masterslave.Slave">  <argument value="5"/>  <!-- Input mailbox --> </process>
+  <process host="Browne" function="masterslave.Slave">    <argument value="6"/>  <!-- Input mailbox --> </process>
+  <process host="Stephen" function="masterslave.Slave">   <argument value="7"/>  <!-- Input mailbox --> </process>
+  <process host="Robert" function="masterslave.Slave">    <argument value="8"/>  <!-- Input mailbox --> </process>
+  <process host="Sirois" function="masterslave.Slave">    <argument value="9"/>  <!-- Input mailbox --> </process>
+  <process host="Monique" function="masterslave.Slave">   <argument value="10"/> <!-- Input mailbox --> </process>
 </platform>

@@ -7,7 +7,7 @@
       <tab type="user" visible="yes" url="@ref help" title="Getting help" />
     </tab>
     <tab type="mainpage" visible="yes" title="SimGrid User Documentation" />
-  
+
     <!--<tab type="pages" visible="yes" title="Table Of Content" intro="Complete pages list">-->
       <!--<tab type="pages" visible="yes" title="Table Of Content" intro="Complete pages list"/>-->
     <!--</tab>-->

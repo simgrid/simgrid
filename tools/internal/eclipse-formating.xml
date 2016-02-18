@@ -3,7 +3,7 @@
 <!-- This file is an eclipse configuration file, to setup the code formater.
      Open the properties of your SimGrid project, "C/C++ General" -> "Formatter"
      Then, enable project-specific settings, and import this file. -->
-     
+
 <profiles version="1">
 <profile kind="CodeFormatterProfile" name="SimGrid" version="1">
 <setting id="org.eclipse.cdt.core.formatter.insert_space_after_opening_paren_in_exception_specification" value="do not insert"/>

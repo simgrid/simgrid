@@ -9,22 +9,10 @@
      <argument value="6"/>         <!-- Number of slaves -->
   </process>
   <!-- The slave processes (with mailbox to listen on as argument) -->
-  <process host="Tremblay" function="slave">
-    <argument value="0"/>
-  </process>
-  <process host="Tremblay" function="slave">
-    <argument value="1"/>
-  </process>
-  <process host="Tremblay" function="slave">
-    <argument value="2"/>
-  </process>
-  <process host="Tremblay" function="slave">
-    <argument value="3"/>
-  </process>
-  <process host="Tremblay" function="slave">
-    <argument value="4"/>
-  </process>
-  <process host="Tremblay" function="slave">
-    <argument value="5"/>
-  </process>
+  <process host="Tremblay" function="slave">   <argument value="0"/> </process>
+  <process host="Tremblay" function="slave">   <argument value="1"/> </process>
+  <process host="Tremblay" function="slave">   <argument value="2"/> </process>
+  <process host="Tremblay" function="slave">   <argument value="3"/> </process>
+  <process host="Tremblay" function="slave">   <argument value="4"/> </process>
+  <process host="Tremblay" function="slave">   <argument value="5"/> </process>
 </platform>
