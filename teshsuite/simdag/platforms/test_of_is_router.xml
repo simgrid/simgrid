@@ -1,33 +1,31 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-<AS  id="AS"  routing="Full">
-	
-	<AS  id="AS0"  routing="Full">
-	   <host id="host01" speed="1Gf"/>
-	   <host id="host02" speed="500Mf"/>
-	   <router id="router1"/>
-	</AS>
-	<AS  id="AS1"  routing="Floyd">
-	   <host id="host03" speed="1Gf"/>
-	   <host id="host04" speed="500Mf"/>
-	   <router id="router2"/>
-	</AS>
-	<AS  id="AS2"  routing="Dijkstra">
-	   <host id="host05" speed="1Gf"/>
-	   <host id="host06" speed="500Mf"/>
-	   <router id="router3"/>
-	   </AS>
-	<AS  id="AS3"  routing="DijkstraCache">
-	   <host id="host07" speed="1Gf"/>
-	   <host id="host08" speed="500Mf"/>
-	   <router id="router4"/>
-	</AS>
-	<AS  id="AS4"  routing="None">
-	   <host id="host09" speed="1Gf"/>
-	   <host id="host10" speed="500Mf"/>
-	   <router id="router5"/>
-	</AS>
-	
-</AS>
+  <AS  id="AS"  routing="Full">
+    <AS  id="AS0"  routing="Full">
+       <host id="host01" speed="1Gf"/>
+       <host id="host02" speed="500Mf"/>
+       <router id="router1"/>
+    </AS>
+    <AS  id="AS1"  routing="Floyd">
+       <host id="host03" speed="1Gf"/>
+       <host id="host04" speed="500Mf"/>
+       <router id="router2"/>
+    </AS>
+    <AS  id="AS2"  routing="Dijkstra">
+       <host id="host05" speed="1Gf"/>
+       <host id="host06" speed="500Mf"/>
+       <router id="router3"/>
+    </AS>
+   <AS  id="AS3"  routing="DijkstraCache">
+       <host id="host07" speed="1Gf"/>
+       <host id="host08" speed="500Mf"/>
+       <router id="router4"/>
+   </AS>
+   <AS  id="AS4"  routing="None">
+       <host id="host09" speed="1Gf"/>
+       <host id="host10" speed="500Mf"/>
+       <router id="router5"/>
+   </AS>
+  </AS>
 </platform>

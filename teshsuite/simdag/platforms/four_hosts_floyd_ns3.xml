@@ -1,30 +1,19 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
+  <AS  id="AS0"  routing="Floyd">
+    <host id="host1" speed="1Gf"/>
+    <host id="host2" speed="1Gf"/>
+    <host id="host3" speed="1Gf"/>
+    <host id="host4" speed="1Gf"/>
  
- 
- <AS  id="AS0"  routing="Floyd">
-	<host id="host1" speed="1Gf"/>
-	<host id="host2" speed="1Gf"/>
-	<host id="host3" speed="1Gf"/>
-	<host id="host4" speed="1Gf"/>
- 
-	<link id="link1" bandwidth="125GBps" latency="50us"/>
-	<link id="link2" bandwidth="125MBps" latency="5us"/>
-	<link id="link3" bandwidth="125kBps" latency="500ns"/>
-	<link id="link4" bandwidth="1.25kBps" latency="5ns"/>  
-	 
-   <route src="host1" dst="host2">
-     <link_ctn id="link1"/>
-   </route>
-   
-   <route src="host2" dst="host3">
-     <link_ctn id="link3"/>
-   </route>
-      
-   <route src="host3" dst="host4">
-     <link_ctn id="link4"/>
-   </route>
+    <link id="link1" bandwidth="125GBps" latency="50us"/>
+    <link id="link2" bandwidth="125MBps" latency="5us"/>
+    <link id="link3" bandwidth="125kBps" latency="500ns"/>
+    <link id="link4" bandwidth="1.25kBps" latency="5ns"/>  
 
- </AS>
- </platform>
+    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
+    <route src="host2" dst="host3"><link_ctn id="link3"/></route>
+    <route src="host3" dst="host4"><link_ctn id="link4"/></route>
+  </AS>
+</platform>

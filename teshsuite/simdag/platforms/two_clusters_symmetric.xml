@@ -1,26 +1,18 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
- 
- 	
- <AS  id="AS0"  routing="Full">
-   	
-     <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
- 	    radical="0-1" speed="1Gf" bw="125MBps" lat="50us"
- 	    bb_bw="2.25GBps" bb_lat="500us"/>
-   
-     <cluster id="alice_cluster" prefix="alice" suffix=".crepe.fr"
- 	    radical="0-1" speed="1Gf" bw="125MBps" lat="50us"
- 	    bb_bw="2.25GBps" bb_lat="500us"/>  
-       
+  <AS  id="AS0"  routing="Full">
+    <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu" radical="0-1" speed="1Gf" bw="125MBps" lat="50us"
+             bb_bw="2.25GBps" bb_lat="500us"/>
+    <cluster id="alice_cluster" prefix="alice" suffix=".crepe.fr" radical="0-1" speed="1Gf" bw="125MBps" lat="50us"
+             bb_bw="2.25GBps" bb_lat="500us"/>  
+
      <link id="backbone" bandwidth="1.25GBps" latency="500us"/>  
- 	
-     <ASroute src="bob_cluster" dst="alice_cluster" 
-	 gw_src="bobbob_cluster_router.hamburger.edu" 
-	 gw_dst="alicealice_cluster_router.crepe.fr"
-	 symmetrical="YES">
- 		<link_ctn id="backbone"/>
-     </ASroute>        
- </AS>
- </platform>
+
+     <ASroute src="bob_cluster" dst="alice_cluster" gw_src="bobbob_cluster_router.hamburger.edu" 
+              gw_dst="alicealice_cluster_router.crepe.fr" symmetrical="YES">
+        <link_ctn id="backbone"/>
+     </ASroute>
+  </AS>
+</platform>
 

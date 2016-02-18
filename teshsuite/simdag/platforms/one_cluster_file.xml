@@ -2,10 +2,8 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
 <AS id="AS0" routing="Full">
-  <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
-   radical="0,2" speed="1Gf" bw="125MBps" lat="50us"
-   bb_bw="2.25GBps" bb_lat="500us"
-   state_file="${prefix}${radical}_state_file.trace"
-   availability_file="${prefix}${radical}_availability_file.trace"/>
+  <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu" radical="0,2" speed="1Gf" bw="125MBps" lat="50us"
+           bb_bw="2.25GBps" bb_lat="500us" state_file="${prefix}${radical}_state_file.trace"
+           availability_file="${prefix}${radical}_availability_file.trace"/>
 </AS>
 </platform>

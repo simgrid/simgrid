@@ -1,11 +1,6 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-  <!-- The master process (with some arguments) -->
-  <process host="Tremblay" function="master">
-  </process>
-
-  <!-- The slave processes (with mailbox to listen on as argument) -->
-  <process host="Jupiter" function="slave">
-  </process>
+  <process host="Tremblay" function="master"/>
+  <process host="Jupiter" function="slave"/>
 </platform>

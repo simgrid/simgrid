@@ -3,15 +3,18 @@
 <platform version="4">
   <AS id="World" routing="Full">
      <AS id="us" routing="Full">
-                <cluster id="cluster" suffix=".cluster.us" prefix="node-" radical="1-4" core="24" speed="9.27114e8f" bw="938e6Bps" lat="270us"/>
-    </AS>
+        <cluster id="cluster" suffix=".cluster.us" prefix="node-" radical="1-4" core="24" speed="9.27114e8f"
+                 bw="938e6Bps" lat="270us"/>
+      </AS>
     <AS id="fr" routing="Full">
-                <cluster id="grappe" suffix=".grappe.fr" prefix="noeud-" radical="1-4" core="24" speed="9.27114e8f" bw="938e6Bps" lat="270us"/>
+        <cluster id="grappe" suffix=".grappe.fr" prefix="noeud-" radical="1-4" core="24" speed="9.27114e8f"
+                 bw="938e6Bps" lat="270us"/>
     </AS>
 
     <link id="backbone" bandwidth="1.25GBps" latency="500us"/>
 
-    <ASroute src="us" gw_src="nod-cluster_router.cluster.us" dst="fr" gw_dst="noeud-grappe_router.grappe.fr" symmetrical="YES">
+    <ASroute src="us" gw_src="nod-cluster_router.cluster.us" dst="fr" gw_dst="noeud-grappe_router.grappe.fr" 
+             symmetrical="YES">
         <link_ctn id="backbone"/>
     </ASroute>
   </AS>

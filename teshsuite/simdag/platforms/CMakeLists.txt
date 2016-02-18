@@ -47,12 +47,7 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_multi_hop.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_file.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_multicore.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_foreach.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_fullduplex.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_one_host_random.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_one_host.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_properties_foreach.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_properties_override.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_router_id.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_host_availability.xml
@@ -70,7 +65,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/platform_include.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/properties.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/random.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/route_override.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_of_is_router.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/three_hosts_non_symmetric_route.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_one_name.xml

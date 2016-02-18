@@ -764,12 +764,14 @@ endif()
 ### Simgrid Lib sources
 set(simgrid_sources
   ${BINDINGS_SRC}
-  ${S4U_SRC}
+  ${MC_SRC_BASE}
   ${MSG_SRC}
+  ${S4U_SRC}
   ${SIMDAG_SRC}
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
+  ${TRACING_SRC}
   ${XBT_SRC}
   )
 
@@ -791,16 +793,6 @@ if(enable_smpi)
     ${SMPI_SRC}
     )
 endif()
-
-set(simgrid_sources
-    ${simgrid_sources}
-    ${TRACING_SRC}
-    )
-
-set(simgrid_sources
-  ${simgrid_sources}
-  ${MC_SRC_BASE}
-  )
 
 if(HAVE_MC)
   set(simgrid_sources

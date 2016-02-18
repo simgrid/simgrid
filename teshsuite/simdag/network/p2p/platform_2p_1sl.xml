@@ -1,14 +1,12 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
- 
- 
- <AS  id="AS0"  routing="Full">
-   <host id="cpu0" speed="1f"/>
-   <host id="cpu1" speed="1f"/>
-   <link id="link0" bandwidth="1Bps" latency="500ms" sharing_policy="SHARED"/>
-   <route src="cpu0" dst="cpu1">
-     <link_ctn id="link0"/>
-   </route>
- </AS>
- </platform>
+  <AS  id="AS0"  routing="Full">
+    <host id="cpu0" speed="1f"/>
+    <host id="cpu1" speed="1f"/>
+
+    <link id="link0" bandwidth="1Bps" latency="500ms" sharing_policy="SHARED"/>
+
+    <route src="cpu0" dst="cpu1"><link_ctn id="link0"/></route>
+  </AS>
+</platform>

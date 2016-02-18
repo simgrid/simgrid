@@ -1,8 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-	<AS id="main" routing="Full">
-		<include file="clusterA.xml"></include>
-		<include file="clusterB.xml"></include>
-	</AS>
+  <AS id="main" routing="Full">
+    <include file="clusterA.xml"></include>
+    <include file="clusterB.xml"></include>
+  </AS>
 </platform>

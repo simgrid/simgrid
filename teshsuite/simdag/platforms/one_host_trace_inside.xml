@@ -3,7 +3,7 @@
 <platform version="4">
 <AS  id="AS0"  routing="Full">
   <host id="bob" speed="1Gf"/>
-</AS>  
+</AS>
   <trace id="myTrace" periodicity="1.0">
     0.0 1.0
     11.0 0.5
@@ -11,5 +11,4 @@
   </trace>
 
   <trace_connect trace="myTrace" element="bob" kind="SPEED"/>
-
 </platform>

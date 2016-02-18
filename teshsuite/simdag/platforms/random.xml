@@ -26,40 +26,27 @@
 
 <!--  tentative de description de variables linéairement corrélées. À revoir et confirmer... -->
 <random_law_type id="white" type="Gaussion" mean="1000" max="10000"/>
-<random_core_and_power_type 
-id_core="foo" 
-id_power="Core2010" 
-mode="linear" base="NBcore" linear_a="0.5" linear_b="1000" noise="white"/>
+<random_core_and_power_type id_core="foo"id_power="Core2010" mode="linear" base="NBcore" 
+                            linear_a="0.5" linear_b="1000" noise="white"/>
 
 <AS  id="AS0"  routing="Full">
   <!-- Horizontal streams -->
   <host id="foo" speed="123.121kf" state_trace="mystate" availability_trace="mypow_avail"/> 
   <link id="bar" bandwidth=""   bandwidth_trace="mybw" latency_trace="mylat"/>
-  <cluster  id="bob_cluster"
-        prefix="bob"
-        suffix=".hamburger.edu"
-        radical="0-1"
-        speed="100kf"
-        bw=""
-        lat="50us"
-        bb_bw="2.25GBps"
-        bb_lat="500us"
+  <cluster  id="bob_cluster" prefix="bob" suffix=".hamburger.edu" radical="0-1" speed="100kf"
+        bw="" lat="50us" bb_bw="2.25GBps"  bb_lat="500us"
         bw_trace="mybw"
         availability_trace="mywpow_avail"
         state_trace="mystate"
-        />
-        
+   />
+
   <!-- Vertical stream ? -->
-  <peer_set id="peer_home"
-        prefix="home"
-        suffix=".edu"
-        radical="1-10000"
+  <peer_set id="peer_home" prefix="home" suffix=".edu" radical="1-10000"
         speed="CustomPower"
         bw_in_trace="mybw"
         bw_out="CustomBWval"
         lat="50us"
-        />
-   <peer_set 
-     />
-</AS>	
+  />
+  <peer_set/>
+</AS>
 </platform>

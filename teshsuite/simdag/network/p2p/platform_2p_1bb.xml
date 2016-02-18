@@ -1,24 +1,15 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
- 
- 
- <AS  id="AS0"  routing="Full">
-   <host id="cpu0" speed="1f" />
-   <host id="cpu1" speed="1f" />
+  <AS id="AS0" routing="Full">
+    <host id="cpu0" speed="1f"/>
+    <host id="cpu1" speed="1f"/>
 
-   <!-- 
-       large latency backbone
-       10000 because
-       20000 is MAX_TCP_WIN_SIZE
-       max bw = MAX_TCP_WIN_SIZE / ( 2 * latency )
-       which is then 1 and 1 is smallest possible
-   -->
+    <!-- large latency backbone 10000 because 20000 is MAX_TCP_WIN_SIZE
+         max bw = MAX_TCP_WIN_SIZE / ( 2 * latency ) which is then 1 and 1 is smallest possible -->
 
-   <link id="link0" bandwidth="2Bps" latency="2.777777777777777777777777778h" sharing_policy="SHARED" />
+    <link id="link0" bandwidth="2Bps" latency="2.777777777777777777777777778h" sharing_policy="SHARED"/>
 
-   <route src="cpu0" dst="cpu1">
-      <link_ctn id="link0" />
-   </route>
- </AS>
- </platform>
+    <route src="cpu0" dst="cpu1"><link_ctn id="link0"/></route>
+  </AS>
+</platform>

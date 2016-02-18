@@ -1,5 +1,5 @@
 ! expect signal SIGABRT
 $ ${bindir:=.}/flatifier bogus_disk_attachment.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> [  0.000000] [0:maestro@] Parse error at bogus_disk_attachment.xml:26: Unable to attach storage cdisk: host plouf doesn't exist.
+> [  0.000000] [0:maestro@] Parse error at bogus_disk_attachment.xml:21: Unable to attach storage cdisk: host plouf doesn't exist.
 > [  0.000000] [0:maestro@] Exiting now

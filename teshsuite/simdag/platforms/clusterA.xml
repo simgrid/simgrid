@@ -1,5 +1,4 @@
 <AS id="ASA" routing="Full">
-  <cluster id="clusterA" prefix="A" suffix=".hamburger.edu"
-   radical="0,2-4,6" power="1Gf" bw="125MBps" lat="50us"
-   bb_bw="2.25GBps" bb_lat="500us"/>
+  <cluster id="clusterA" prefix="A" suffix=".hamburger.edu" radical="0,2-4,6" power="1Gf" bw="125MBps" lat="50us"
+           bb_bw="2.25GBps" bb_lat="500us"/>
 </AS>

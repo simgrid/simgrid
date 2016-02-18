@@ -2,8 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
 <AS id="AS0" routing="Full">
-  <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu"
-   radical="0,2-4,6" speed="1Gf" bw="125MBps" lat="50us"
-   bb_bw="2.25GBps" bb_lat="500us" router_id="bob_cluster_router"/>
+  <cluster id="bob_cluster" prefix="bob" suffix=".hamburger.edu" radical="0,2-4,6" speed="1Gf" bw="125MBps" lat="50us"
+           bb_bw="2.25GBps" bb_lat="500us" router_id="bob_cluster_router"/>
 </AS>
 </platform>

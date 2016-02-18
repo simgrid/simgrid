@@ -1,16 +1,14 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-	
-<config id="General">
-	<prop id="maxmin/precision" value="0.000010"></prop>
-	<prop id="cpu/optim" value="TI"></prop>
-	<prop id="host/model" value="compound"></prop>
-	<prop id="network/model" value="Vegas"></prop>
-	<prop id="path" value="~/"></prop>
-</config>
-	
-<AS  id="AS0"  routing="Full">
-	<host id="bob" speed="500Mf"/>
-</AS>
+  <config id="General">
+    <prop id="maxmin/precision" value="0.000010"></prop>
+    <prop id="cpu/optim" value="TI"></prop>
+    <prop id="host/model" value="compound"></prop>
+    <prop id="network/model" value="Vegas"></prop>
+    <prop id="path" value="~/"></prop>
+  </config>
+  <AS  id="AS0"  routing="Full">
+     <host id="bob" speed="500Mf"/>
+  </AS>
 </platform>
