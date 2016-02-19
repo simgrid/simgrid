@@ -520,7 +520,6 @@ list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
 list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
 
 set(LUA_SRC
-  src/bindings/lua/factories/host.lua
   src/bindings/lua/lua_host.cpp
   src/bindings/lua/lua_platf.cpp
   src/bindings/lua/lua_debug.cpp
