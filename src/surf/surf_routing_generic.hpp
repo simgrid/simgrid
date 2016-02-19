@@ -31,6 +31,8 @@ public:
 protected:
   void getRouteCheckParams(NetCard *src, NetCard *dst);
   void addRouteCheckParams(sg_platf_route_cbarg_t route);
+private:
+  xbt_dict_t bypassRoutes_ = xbt_dict_new_homogeneous((void (*)(void *)) routing_route_free);
 };
 
 }

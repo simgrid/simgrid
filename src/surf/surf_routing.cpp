@@ -39,8 +39,11 @@ namespace surf {
     xbt_dynar_free(&vertices_);
     xbt_dynar_free(&upDownLinks);
     xbt_free(name_);
-    if (netcard_)
-      delete netcard_;
+    delete netcard_;
+  }
+  void As::Seal()
+  {
+    sealed_ = true;
   }
 
   sg_platf_route_cbarg_t As::getBypassRoute(NetCard * /*src*/, NetCard * /*dst*/, double * /*lat*/) {
@@ -55,10 +58,10 @@ namespace surf {
   }
 
   void As::addRoute(sg_platf_route_cbarg_t /*route*/){
-    THROW_IMPOSSIBLE; /* No. */
+    xbt_die("AS %s does not accept new routes (wrong class).",name_);
   }
   void As::parseBypassroute(sg_platf_route_cbarg_t /*e_route*/){
-    THROW_IMPOSSIBLE;
+    xbt_die("AS %s does not accept new bypass routes (wrong class).",name_);
   }
 
 }} // namespace simgrid::surf

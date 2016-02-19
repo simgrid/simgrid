@@ -26,7 +26,6 @@ class XBT_PRIVATE AsVivaldi;
 class AsVivaldi: public AsGeneric {
 public:
   AsVivaldi(const char *name);
-  void Seal() override {}; // nothing to do
   ~AsVivaldi() {};
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;

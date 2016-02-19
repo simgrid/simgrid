@@ -43,28 +43,29 @@ public:
 };
 
 /** @ingroup SURF_routing_interface
- * @brief The Autonomous System (AS) routing interface
+ * @brief Network Autonomous System (AS)
  * @details [TODO]
  */
 class As {
 public:
   As(const char*name);
   /** @brief Close that AS: no more content can be added to it */
-  virtual void Seal()=0;
+  virtual void Seal();
   virtual ~As();
 
-  char *name_ = nullptr;
-  NetCard *netcard_ = nullptr;
-  As *father_ = nullptr;
-  xbt_dict_t sons_ = xbt_dict_new_homogeneous(NULL);
-
-  xbt_dynar_t vertices_ = xbt_dynar_new(sizeof(char*),NULL); // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
-  xbt_dict_t bypassRoutes_ = nullptr;
   e_surf_routing_hierarchy_t hierarchy_ = SURF_ROUTING_NULL;
   xbt_dynar_t upDownLinks = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
+  char *name_ = nullptr;
+  NetCard *netcard_ = nullptr; // Our representative in the father AS
+  As *father_ = nullptr;
+  xbt_dict_t sons_ = xbt_dict_new_homogeneous(NULL); // sub-ASes
+  xbt_dynar_t vertices_ = xbt_dynar_new(sizeof(char*),NULL); // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
+private:
+  bool sealed_ = false; // We cannot add more content when sealed
 
+public:
   /**
    * @brief Probe the routing path between two points
    *

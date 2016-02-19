@@ -37,8 +37,6 @@ AsFloyd::~AsFloyd(){
       routing_route_free(TO_FLOYD_LINK(i, j));
     }
   xbt_free(linkTable_);
-  /* Delete bypass dict */
-  xbt_dict_free(&bypassRoutes_);
   /* Delete predecessor and cost table */
   xbt_free(predecessorTable_);
   xbt_free(costTable_);

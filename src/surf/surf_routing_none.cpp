@@ -22,10 +22,8 @@ xbt_dynar_t AsNone::getOneLinkRoutes() {
 }
 
 void AsNone::getRouteAndLatency(NetCard * /*src*/, NetCard * /*dst*/,
-                                sg_platf_route_cbarg_t /*res*/, double *lat)
-{
-  *lat = 0.0;
-}
+                                sg_platf_route_cbarg_t /*res*/, double */*lat*/)
+{}
 
 void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*edges*/)
 {

@@ -38,7 +38,6 @@ namespace surf {
 AsGeneric::AsGeneric(const char*name)
   : AsNone(name)
 {
-  bypassRoutes_ = xbt_dict_new_homogeneous((void (*)(void *)) routing_route_free);
 }
 
 AsGeneric::~AsGeneric()
