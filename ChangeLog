@@ -29,7 +29,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
    - Rename from 'power' to 'speed' the attributes describing the amount of
      flops that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
-   - The DOCTYPE points to the right URL (this file):
+   - The DOCTYPE points to the right URL:
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
      (the file at this address now documents the changelog since its v1)
    - A warning is emitted for unit-less values (they are still accepted).
