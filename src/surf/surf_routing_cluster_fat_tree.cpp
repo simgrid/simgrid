@@ -266,12 +266,10 @@ void AsClusterFatTree::generateSwitches() {
   this->nodesByLevel_.resize(this->levels_ + 1, 0);
   unsigned int nodesRequired = 0;
 
-  // We take care of the number of nodes by level
+  // Take care of the number of nodes by level
   this->nodesByLevel_[0] = 1;
-  for (unsigned int i = 0 ; i < this->levels_ ; i++) {
+  for (unsigned int i = 0 ; i < this->levels_ ; i++)
     this->nodesByLevel_[0] *= this->lowerLevelNodesNumber_[i];
-  }
-
      
   if(this->nodesByLevel_[0] != this->nodes_.size()) {
     surf_parse_error("The number of provided nodes does not fit with the wanted topology."
@@ -284,27 +282,23 @@ void AsClusterFatTree::generateSwitches() {
   for (unsigned int i = 0 ; i < this->levels_ ; i++) {
     int nodesInThisLevel = 1;
       
-    for (unsigned int j = 0 ;  j <= i ; j++) {
+    for (unsigned int j = 0 ;  j <= i ; j++)
       nodesInThisLevel *= this->upperLevelNodesNumber_[j];
-    }
       
-    for (unsigned int j = i+1 ; j < this->levels_ ; j++) {
+    for (unsigned int j = i+1 ; j < this->levels_ ; j++)
       nodesInThisLevel *= this->lowerLevelNodesNumber_[j];
-    }
 
     this->nodesByLevel_[i+1] = nodesInThisLevel;
     nodesRequired += nodesInThisLevel;
   }
 
 
-  // We create the switches
+  // Create the switches
   int k = 0;
   for (unsigned int i = 0 ; i < this->levels_ ; i++) {
     for (unsigned int j = 0 ; j < this->nodesByLevel_[i + 1] ; j++) {
-      FatTreeNode* newNode;
-      newNode = new FatTreeNode(this->cluster_, --k, i + 1, j);
-      XBT_DEBUG("We create the switch %d(%d,%d)", newNode->id, newNode->level,
-                newNode->position);
+      FatTreeNode* newNode = new FatTreeNode(this->cluster_, --k, i + 1, j);
+      XBT_DEBUG("We create the switch %d(%d,%d)", newNode->id, newNode->level, newNode->position);
       newNode->children.resize(this->lowerLevelNodesNumber_[i] *
                                this->lowerLevelPortsNumber_[i]);
       if (i != this->levels_ - 1) {
@@ -346,27 +340,19 @@ void AsClusterFatTree::generateLabels() {
       this->nodes_[k]->label.assign(currentLabel.begin(), currentLabel.end());
 
       bool remainder = true;
-      
       unsigned int pos = 0;
-      do {
-        std::stringstream msgBuffer;
-
+      while (remainder && pos < this->levels_) {
         ++currentLabel[pos];
         if (currentLabel[pos] >= maxLabel[pos]) {
           currentLabel[pos] = 0;
           remainder = true;
-        }
-        else {
-          remainder = false;
-        }
-        if (!remainder) {
-          pos = 0;
-        }
-        else {
           ++pos;
         }
+        else {
+          pos = 0;
+          remainder = false;
+        }
       }
-      while(remainder && pos < this->levels_);
       k++;
     }
   }
@@ -374,16 +360,13 @@ void AsClusterFatTree::generateLabels() {
 
 
 int AsClusterFatTree::getLevelPosition(const unsigned  int level) {
-  if (level > this->levels_) {
-    // Well, that should never happen. Maybe should we throw instead.
-    return -1;
-  }
+  xbt_assert(level <= this->levels_, "The impossible did happen. Yet again.");
   int tempPosition = 0;
 
-  for (unsigned int i = 0 ; i < level ; i++) {
+  for (unsigned int i = 0 ; i < level ; i++)
     tempPosition += this->nodesByLevel_[i];
-  }
- return tempPosition;
+
+  return tempPosition;
 }
 
 void AsClusterFatTree::addProcessingNode(int id) {
@@ -402,29 +385,22 @@ void AsClusterFatTree::addLink(FatTreeNode *parent, unsigned int parentPort,
                                FatTreeNode *child, unsigned int childPort) {
   FatTreeLink *newLink;
   newLink = new FatTreeLink(this->cluster_, child, parent);
-  XBT_DEBUG("Creating a link between the parent (%d,%d,%u)"
-            " and the child (%d,%d,%u)", parent->level, parent->position,
-            parentPort, child->level, child->position, childPort);
+  XBT_DEBUG("Creating a link between the parent (%d,%d,%u) and the child (%d,%d,%u)",
+      parent->level, parent->position, parentPort, child->level, child->position, childPort);
   parent->children[parentPort] = newLink;
   child->parents[childPort] = newLink;
 
   this->links_.push_back(newLink);
-
-  
-
 }
 
-void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t 
-                                                cluster) {
+void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {
   std::vector<std::string> parameters;
   std::vector<std::string> tmp;
   boost::split(parameters, cluster->topo_parameters, boost::is_any_of(";"));
- 
 
   // TODO : we have to check for zeros and negative numbers, or it might crash
   if (parameters.size() != 4){
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
-                     ", see the documentation for more informations");
+    surf_parse_error("Fat trees are defined by the levels number and 3 vectors, see the documentation for more informations");
   }
 
   // The first parts of topo_parameters should be the levels number
@@ -466,36 +442,26 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t
 
 void AsClusterFatTree::generateDotFile(const std::string& filename) const {
   std::ofstream file;
-  /* Maybe should we get directly a char*, as open takes strings only beginning
-   * with C++11...
-   */
-  file.open(filename.c_str(), std::ios::out | std::ios::trunc); 
-  
-  if(file.is_open()) {
-    file << "graph AsClusterFatTree {\n";
-    for (unsigned int i = 0 ; i < this->nodes_.size() ; i++) {
-      file << this->nodes_[i]->id;
-      if(this->nodes_[i]->id < 0) {
-        file << " [shape=circle];\n";
-      }
-      else {
-        file << " [shape=hexagon];\n";
-      }
-    }
+  file.open(filename, std::ios::out | std::ios::trunc);
+  xbt_assert(file.is_open(), "Unable to open file %s", filename.c_str());
 
-    for (unsigned int i = 0 ; i < this->links_.size() ; i++ ) {
-      file << this->links_[i]->downNode->id
-             << " -- "
-           << this->links_[i]->upNode->id
-             << ";\n";
-    }
-    file << "}";
-    file.close();
+  file << "graph AsClusterFatTree {\n";
+  for (unsigned int i = 0 ; i < this->nodes_.size() ; i++) {
+    file << this->nodes_[i]->id;
+    if(this->nodes_[i]->id < 0)
+      file << " [shape=circle];\n";
+    else
+      file << " [shape=hexagon];\n";
   }
-  else {
-    XBT_DEBUG("Unable to open file %s", filename.c_str());
-    return;
+
+  for (unsigned int i = 0 ; i < this->links_.size() ; i++ ) {
+    file << this->links_[i]->downNode->id
+        << " -- "
+        << this->links_[i]->upNode->id
+        << ";\n";
   }
+  file << "}";
+  file.close();
 }
 
 FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,

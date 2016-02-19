@@ -31,7 +31,7 @@ namespace simgrid {
       : AsCluster(name) {
     }
     AsClusterTorus::~AsClusterTorus() {
-      xbt_dynar_free(&p_dimensions_);
+      xbt_dynar_free(&dimensions_);
     }
 
     void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) {
@@ -47,10 +47,10 @@ namespace simgrid {
           // we need to iterate over all dimensions
           // and create all links there
           dim_product = 1;      // Needed to calculate the next neighbour_id
-      for (j = 0; j < xbt_dynar_length(p_dimensions_); j++) {
+      for (j = 0; j < xbt_dynar_length(dimensions_); j++) {
 
         memset(&link, 0, sizeof(link));
-        current_dimension = xbt_dynar_get_as(p_dimensions_, j, int);
+        current_dimension = xbt_dynar_get_as(dimensions_, j, int);
         neighbour_rank_id =
             (((int) rank / dim_product) % current_dimension ==
                 current_dimension - 1) ? rank - (current_dimension - 1) * dim_product : rank + dim_product;
@@ -93,7 +93,7 @@ namespace simgrid {
       xbt_dynar_t dimensions = xbt_str_split(cluster->topo_parameters, ",");
 
       if (!xbt_dynar_is_empty(dimensions)) {
-        p_dimensions_ = xbt_dynar_new(sizeof(int), NULL);
+        dimensions_ = xbt_dynar_new(sizeof(int), NULL);
         /**
          * We are in a torus cluster
          * Parse attribute dimensions="dim1,dim2,dim3,...,dimN"
@@ -102,10 +102,10 @@ namespace simgrid {
          */
         xbt_dynar_foreach(dimensions, iter, groups) {
           int tmp = surf_parse_get_int(xbt_dynar_get_as(dimensions, iter, char *));
-          xbt_dynar_set_as(p_dimensions_, iter, int, tmp);
+          xbt_dynar_set_as(dimensions_, iter, int, tmp);
         }
 
-        nb_links_per_node_ = xbt_dynar_length(p_dimensions_);
+        nb_links_per_node_ = xbt_dynar_length(dimensions_);
 
       }
       xbt_dynar_free(&dimensions);
@@ -144,8 +144,8 @@ namespace simgrid {
        * into this dimension or not.
        */
       unsigned int *myCoords, *targetCoords;
-      myCoords = rankId_to_coords(src->id(), p_dimensions_);
-      targetCoords = rankId_to_coords(dst->id(), p_dimensions_);
+      myCoords = rankId_to_coords(src->id(), dimensions_);
+      targetCoords = rankId_to_coords(dst->id(), dimensions_);
       /**
        * linkOffset describes the offset where the link
        * we want to use is stored
@@ -153,15 +153,15 @@ namespace simgrid {
        * which can only be the case if src->m_id == dst->m_id -- see above
        * for this special case)
        */
-      int nodeOffset = (xbt_dynar_length(p_dimensions_) + 1) * src->id();
+      int nodeOffset = (xbt_dynar_length(dimensions_) + 1) * src->id();
 
       int linkOffset = nodeOffset;
       bool use_lnk_up = false;  // Is this link of the form "cur -> next" or "next -> cur"?
       // false means: next -> cur
       while (current_node != dst->id()) {
         dim_product = 1;        // First, we will route in x-dimension
-        for (j = 0; j < xbt_dynar_length(p_dimensions_); j++) {
-          cur_dim = xbt_dynar_get_as(p_dimensions_, j, int);
+        for (j = 0; j < xbt_dynar_length(dimensions_); j++) {
+          cur_dim = xbt_dynar_get_as(dimensions_, j, int);
 
           // current_node/dim_product = position in current dimension
           if ((current_node / dim_product) % cur_dim != (dst->id() / dim_product) % cur_dim) {

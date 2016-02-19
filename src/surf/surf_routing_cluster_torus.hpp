@@ -24,7 +24,8 @@ namespace simgrid {
       void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
       void getRouteAndLatency(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t into, double *latency) override;
       void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;
-      xbt_dynar_t p_dimensions_ = NULL;
+    private:
+      xbt_dynar_t dimensions_ = NULL;
     };
 
   }}
