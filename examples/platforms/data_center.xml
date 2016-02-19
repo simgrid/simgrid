@@ -41,17 +41,9 @@
     </AS>
 
     <!-- internal routes between cabinets -->
-    <ASroute src="cabinet3" dst="cabinet3" gw_src="cb3-cabinet3_router.dc1.acloud.com"
-             gw_dst="cb3-cabinet3_router.dc1.acloud.com" symmetrical="YES">
-      <link_ctn id="link_dc1_cb3"/><link_ctn id="link_dc1_cb3"/>
-    </ASroute>
     <ASroute src="cabinet2" dst="cabinet3" gw_src="cb2-cabinet2_router.dc1.acloud.com"
              gw_dst="cb3-cabinet3_router.dc1.acloud.com" symmetrical="YES">
         <link_ctn id="link_dc1_cb2"/><link_ctn id="link_dc1_cb3"/>
-    </ASroute>
-    <ASroute src="cabinet2" dst="cabinet2" gw_src="cb2-cabinet2_router.dc1.acloud.com"
-             gw_dst="cb2-cabinet2_router.dc1.acloud.com" symmetrical="YES">
-      <link_ctn id="link_dc1_cb2"/><link_ctn id="link_dc1_cb2"/>
     </ASroute>
     <ASroute src="cabinet1" dst="cabinet3" gw_src="cb1-cabinet1_router.dc1.acloud.com"
              gw_dst="cb3-cabinet3_router.dc1.acloud.com" symmetrical="YES">
@@ -60,10 +52,6 @@
     <ASroute src="cabinet1" dst="cabinet2" gw_src="cb1-cabinet1_router.dc1.acloud.com"
              gw_dst="cb2-cabinet2_router.dc1.acloud.com" symmetrical="YES">
       <link_ctn id="link_dc1_cb1"/><link_ctn id="link_dc1_cb2"/>
-    </ASroute>
-    <ASroute src="cabinet1" dst="cabinet1" gw_src="cb1-cabinet1_router.dc1.acloud.com"
-             gw_dst="cb1-cabinet1_router.dc1.acloud.com" symmetrical="YES">
-      <link_ctn id="link_dc1_cb1"/><link_ctn id="link_dc1_cb1"/>
     </ASroute>
   </AS>
 </AS>

@@ -40,17 +40,9 @@
     </AS>
 
     <!-- internal routes between clusters -->
-    <ASroute src="AS1_cb1" dst="AS1_cb1" gw_src="cb1-AS1_cb1_router.dc1.acloud.com"
-             gw_dst="cb1-AS1_cb1_router.dc1.acloud.com" symmetrical="YES">
-      <link_ctn id="link_dc1_cb1"/><link_ctn id="link_dc1_cb1"/>
-    </ASroute>
     <ASroute src="AS1_cb3" dst="AS1_cb1" gw_src="cb3-AS1_cb3_router.dc1.acloud.com"
              gw_dst="cb1-AS1_cb1_router.dc1.acloud.com" symmetrical="YES">
       <link_ctn id="link_dc1_cb3"/><link_ctn id="link_dc1_cb1"/>
-    </ASroute>
-    <ASroute src="AS1_cb3" dst="AS1_cb3" gw_src="cb3-AS1_cb3_router.dc1.acloud.com"
-             gw_dst="cb3-AS1_cb3_router.dc1.acloud.com" symmetrical="YES">
-      <link_ctn id="link_dc1_cb3"/><link_ctn id="link_dc1_cb3"/>
     </ASroute>
     <ASroute src="AS1_cb2" dst="AS1_cb1" gw_src="cb2-AS1_cb2_router.dc1.acloud.com"
              gw_dst="cb1-AS1_cb1_router.dc1.acloud.com" symmetrical="YES">
@@ -60,33 +52,29 @@
              gw_dst="cb3-AS1_cb3_router.dc1.acloud.com" symmetrical="YES">
       <link_ctn id="link_dc1_cb2"/><link_ctn id="link_dc1_cb3"/>
     </ASroute>
-    <ASroute src="AS1_cb2" dst="AS1_cb2" gw_src="cb2-AS1_cb2_router.dc1.acloud.com"
-             gw_dst="cb2-AS1_cb2_router.dc1.acloud.com" symmetrical="YES">
-      <link_ctn id="link_dc1_cb2"/><link_ctn id="link_dc1_cb2"/>
-    </ASroute>
     <!-- routes to exit AS -->
     <ASroute src="AS1_cb1" dst="gw_AS1_dc1" gw_src="cb1-AS1_cb1_router.dc1.acloud.com"
-             gw_dst="gw_dc1_horizdist" symmetrical="NO">
+             gw_dst="gw_dc1_horizdist" symmetrical="YES">
        <link_ctn id="link_dc1_cb1"/>
     </ASroute>
     <ASroute src="AS1_cb3" dst="gw_AS1_dc1" gw_src="cb3-AS1_cb3_router.dc1.acloud.com"
-             gw_dst="gw_dc1_horizdist" symmetrical="NO">
+             gw_dst="gw_dc1_horizdist" symmetrical="YES">
        <link_ctn id="link_dc1_cb3"/>
     </ASroute>
     <ASroute src="AS1_cb2" dst="gw_AS1_dc1" gw_src="cb2-AS1_cb2_router.dc1.acloud.com"
-             gw_dst="gw_dc1_horizdist" symmetrical="NO">
+             gw_dst="gw_dc1_horizdist" symmetrical="YES">
        <link_ctn id="link_dc1_cb2"/>
     </ASroute> 
     <ASroute dst="AS1_cb1" src="gw_AS1_dc1" gw_dst="cb1-AS1_cb1_router.dc1.acloud.com"
-             gw_src="gw_dc1_horizdist" symmetrical="NO">
+             gw_src="gw_dc1_horizdist" symmetrical="YES">
        <link_ctn id="link_dc1_cb1"/>
     </ASroute>
     <ASroute dst="AS1_cb3" src="gw_AS1_dc1" gw_dst="cb3-AS1_cb3_router.dc1.acloud.com"
-             gw_src="gw_dc1_horizdist" symmetrical="NO">
+             gw_src="gw_dc1_horizdist" symmetrical="YES">
        <link_ctn id="link_dc1_cb3"/>
     </ASroute>
     <ASroute dst="AS1_cb2" src="gw_AS1_dc1" gw_dst="cb2-AS1_cb2_router.dc1.acloud.com"
-             gw_src="gw_dc1_horizdist" symmetrical="NO">
+             gw_src="gw_dc1_horizdist" symmetrical="YES">
        <link_ctn id="link_dc1_cb2"/>
     </ASroute>
   </AS>
@@ -135,17 +123,9 @@
     </AS>
 
     <!-- internal routes between clusters -->
-    <ASroute src="AS2_cb6" dst="AS2_cb6" gw_src="cb6-AS2_cb6_router.dc2.acloud.com"
-             gw_dst="cb6-AS2_cb6_router.dc2.acloud.com" symmetrical="YES">
-      <link_ctn id="link_dc2_cb6"/><link_ctn id="link_dc2_cb6"/>
-    </ASroute>
     <ASroute src="AS2_cb4" dst="AS2_cb6" gw_src="cb4-AS2_cb4_router.dc2.acloud.com"
              gw_dst="cb6-AS2_cb6_router.dc2.acloud.com" symmetrical="YES">
        <link_ctn id="link_dc2_cb4"/><link_ctn id="link_dc2_cb6"/>
-    </ASroute>
-    <ASroute src="AS2_cb4" dst="AS2_cb4" gw_src="cb4-AS2_cb4_router.dc2.acloud.com"
-             gw_dst="cb4-AS2_cb4_router.dc2.acloud.com" symmetrical="YES">
-       <link_ctn id="link_dc2_cb4"/><link_ctn id="link_dc2_cb4"/>
     </ASroute>
     <ASroute src="AS2_cb5" dst="AS2_cb6" gw_src="cb5-AS2_cb5_router.dc2.acloud.com"
              gw_dst="cb6-AS2_cb6_router.dc2.acloud.com" symmetrical="YES">
@@ -154,10 +134,6 @@
     <ASroute src="AS2_cb5" dst="AS2_cb4" gw_src="cb5-AS2_cb5_router.dc2.acloud.com"
              gw_dst="cb4-AS2_cb4_router.dc2.acloud.com" symmetrical="YES">
        <link_ctn id="link_dc2_cb5"/><link_ctn id="link_dc2_cb4"/>
-    </ASroute>
-    <ASroute src="AS2_cb5" dst="AS2_cb5" gw_src="cb5-AS2_cb5_router.dc2.acloud.com"
-             gw_dst="cb5-AS2_cb5_router.dc2.acloud.com" symmetrical="YES">
-       <link_ctn id="link_dc2_cb5"/><link_ctn id="link_dc2_cb5"/>
     </ASroute>
     <ASroute src="AS2_cb2" dst="AS2_cb6" gw_src="cb2-AS2_cb2_router.dc2.acloud.com"
              gw_dst="cb6-AS2_cb6_router.dc2.acloud.com" symmetrical="YES">
@@ -170,10 +146,6 @@
     <ASroute src="AS2_cb2" dst="AS2_cb5" gw_src="cb2-AS2_cb2_router.dc2.acloud.com"
              gw_dst="cb5-AS2_cb5_router.dc2.acloud.com" symmetrical="YES">
        <link_ctn id="link_dc2_cb2"/><link_ctn id="link_dc2_cb5"/>
-    </ASroute>
-    <ASroute src="AS2_cb2" dst="AS2_cb2" gw_src="cb2-AS2_cb2_router.dc2.acloud.com"
-             gw_dst="cb2-AS2_cb2_router.dc2.acloud.com" symmetrical="YES">
-       <link_ctn id="link_dc2_cb2"/><link_ctn id="link_dc2_cb2"/>
     </ASroute>
     <ASroute src="AS2_cb3" dst="AS2_cb6" gw_src="cb3-AS2_cb3_router.dc2.acloud.com"
              gw_dst="cb6-AS2_cb6_router.dc2.acloud.com" symmetrical="YES">
@@ -190,10 +162,6 @@
     <ASroute src="AS2_cb3" dst="AS2_cb2" gw_src="cb3-AS2_cb3_router.dc2.acloud.com"
              gw_dst="cb2-AS2_cb2_router.dc2.acloud.com" symmetrical="YES">
        <link_ctn id="link_dc2_cb3"/><link_ctn id="link_dc2_cb2"/>
-    </ASroute>
-    <ASroute src="AS2_cb3" dst="AS2_cb3" gw_src="cb3-AS2_cb3_router.dc2.acloud.com"
-             gw_dst="cb3-AS2_cb3_router.dc2.acloud.com" symmetrical="YES">
-      <link_ctn id="link_dc2_cb3"/><link_ctn id="link_dc2_cb3"/>
     </ASroute>
     <ASroute src="AS2_cb1" dst="AS2_cb6" gw_src="cb1-AS2_cb1_router.dc2.acloud.com"
              gw_dst="cb6-AS2_cb6_router.dc2.acloud.com" symmetrical="YES">
@@ -215,58 +183,54 @@
              gw_dst="cb3-AS2_cb3_router.dc2.acloud.com" symmetrical="YES">
        <link_ctn id="link_dc2_cb1"/><link_ctn id="link_dc2_cb3"/>
     </ASroute>
-    <ASroute src="AS2_cb1" dst="AS2_cb1" gw_src="cb1-AS2_cb1_router.dc2.acloud.com"
-             gw_dst="cb1-AS2_cb1_router.dc2.acloud.com" symmetrical="YES">
-       <link_ctn id="link_dc2_cb1"/><link_ctn id="link_dc2_cb1"/>
-    </ASroute>
 
     <!-- routess to exit AS -->
     <ASroute src="AS2_cb6" dst="gw_AS2_dc2" gw_src="cb6-AS2_cb6_router.dc2.acloud.com"
-             gw_dst="gw_dc2_horizdist" symmetrical="NO">
+             gw_dst="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb6"/>
     </ASroute>
     <ASroute src="AS2_cb4" dst="gw_AS2_dc2" gw_src="cb4-AS2_cb4_router.dc2.acloud.com"
-             gw_dst="gw_dc2_horizdist" symmetrical="NO">
+             gw_dst="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb4"/>
     </ASroute>
     <ASroute src="AS2_cb5" dst="gw_AS2_dc2" gw_src="cb5-AS2_cb5_router.dc2.acloud.com"
-             gw_dst="gw_dc2_horizdist" symmetrical="NO">
+             gw_dst="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb5"/>
     </ASroute>
     <ASroute src="AS2_cb2" dst="gw_AS2_dc2" gw_src="cb2-AS2_cb2_router.dc2.acloud.com"
-             gw_dst="gw_dc2_horizdist" symmetrical="NO">
+             gw_dst="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb2"/>
     </ASroute>
     <ASroute src="AS2_cb3" dst="gw_AS2_dc2" gw_src="cb3-AS2_cb3_router.dc2.acloud.com"
-             gw_dst="gw_dc2_horizdist" symmetrical="NO">
+             gw_dst="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb3"/>
     </ASroute>
     <ASroute src="AS2_cb1" dst="gw_AS2_dc2" gw_src="cb1-AS2_cb1_router.dc2.acloud.com"
-             gw_dst="gw_dc2_horizdist" symmetrical="NO">
+             gw_dst="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb1"/>
     </ASroute> 
     <ASroute dst="AS2_cb6" src="gw_AS2_dc2" gw_dst="cb6-AS2_cb6_router.dc2.acloud.com"
-             gw_src="gw_dc2_horizdist" symmetrical="NO">
+             gw_src="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb6"/>
     </ASroute>
     <ASroute dst="AS2_cb4" src="gw_AS2_dc2" gw_dst="cb4-AS2_cb4_router.dc2.acloud.com"
-             gw_src="gw_dc2_horizdist" symmetrical="NO">
+             gw_src="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb4"/>
     </ASroute>
     <ASroute dst="AS2_cb5" src="gw_AS2_dc2" gw_dst="cb5-AS2_cb5_router.dc2.acloud.com"
-             gw_src="gw_dc2_horizdist" symmetrical="NO">
+             gw_src="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb5"/>
     </ASroute>
     <ASroute dst="AS2_cb2" src="gw_AS2_dc2" gw_dst="cb2-AS2_cb2_router.dc2.acloud.com"
-             gw_src="gw_dc2_horizdist" symmetrical="NO">
+             gw_src="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb2"/>
     </ASroute>
     <ASroute dst="AS2_cb3" src="gw_AS2_dc2" gw_dst="cb3-AS2_cb3_router.dc2.acloud.com"
-             gw_src="gw_dc2_horizdist" symmetrical="NO">
+             gw_src="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb3"/>
     </ASroute>
     <ASroute dst="AS2_cb1" src="gw_AS2_dc2" gw_dst="cb1-AS2_cb1_router.dc2.acloud.com"
-             gw_src="gw_dc2_horizdist" symmetrical="NO">
+             gw_src="gw_dc2_horizdist" symmetrical="YES">
        <link_ctn id="link_dc2_cb1"/>
     </ASroute> 
    </AS>
@@ -309,17 +273,9 @@
      </AS>
 
      <!-- internal routes between clusters -->
-     <ASroute src="AS3_cb3" dst="AS3_cb3" gw_src="cb3-AS3_cb3_router.dc3.acloud.com"
-              gw_dst="cb3-AS3_cb3_router.dc3.acloud.com" symmetrical="YES">
-        <link_ctn id="link_dc3_cb3"/><link_ctn id="link_dc3_cb3"/>
-     </ASroute>
      <ASroute src="AS3_cb2" dst="AS3_cb3" gw_src="cb2-AS3_cb2_router.dc3.acloud.com"
               gw_dst="cb3-AS3_cb3_router.dc3.acloud.com" symmetrical="YES">
         <link_ctn id="link_dc3_cb2"/><link_ctn id="link_dc3_cb3"/>
-     </ASroute>
-     <ASroute src="AS3_cb2" dst="AS3_cb2" gw_src="cb2-AS3_cb2_router.dc3.acloud.com"
-              gw_dst="cb2-AS3_cb2_router.dc3.acloud.com" symmetrical="YES">
-        <link_ctn id="link_dc3_cb2"/><link_ctn id="link_dc3_cb2"/>
      </ASroute>
      <ASroute src="AS3_cb1" dst="AS3_cb3" gw_src="cb1-AS3_cb1_router.dc3.acloud.com"
               gw_dst="cb3-AS3_cb3_router.dc3.acloud.com" symmetrical="YES">
@@ -328,10 +284,6 @@
      <ASroute src="AS3_cb1" dst="AS3_cb2" gw_src="cb1-AS3_cb1_router.dc3.acloud.com"
               gw_dst="cb2-AS3_cb2_router.dc3.acloud.com" symmetrical="YES">
         <link_ctn id="link_dc3_cb1"/><link_ctn id="link_dc3_cb2"/>
-     </ASroute>
-     <ASroute src="AS3_cb1" dst="AS3_cb1" gw_src="cb1-AS3_cb1_router.dc3.acloud.com"
-              gw_dst="cb1-AS3_cb1_router.dc3.acloud.com" symmetrical="YES">
-        <link_ctn id="link_dc3_cb1"/><link_ctn id="link_dc3_cb1"/>
      </ASroute>
      <ASroute src="AS3_cb4" dst="AS3_cb3" gw_src="cb4-AS3_cb4_router.dc3.acloud.com"
               gw_dst="cb3-AS3_cb3_router.dc3.acloud.com" symmetrical="YES">
@@ -345,42 +297,38 @@
               gw_dst="cb1-AS3_cb1_router.dc3.acloud.com" symmetrical="YES">
         <link_ctn id="link_dc3_cb4"/><link_ctn id="link_dc3_cb1"/>
      </ASroute>
-     <ASroute src="AS3_cb4" dst="AS3_cb4" gw_src="cb4-AS3_cb4_router.dc3.acloud.com"
-             gw_dst="cb4-AS3_cb4_router.dc3.acloud.com" symmetrical="YES">
-        <link_ctn id="link_dc3_cb4"/><link_ctn id="link_dc3_cb4"/>
-     </ASroute>
 
      <!-- routes to exit AS -->
      <ASroute src="AS3_cb3" dst="gw_AS3_dc3" gw_src="cb3-AS3_cb3_router.dc3.acloud.com"
-              gw_dst="gw_dc3_horizdist" symmetrical="NO">
+              gw_dst="gw_dc3_horizdist" symmetrical="YES">
         <link_ctn id="link_dc3_cb3"/>
      </ASroute>
      <ASroute src="AS3_cb2" dst="gw_AS3_dc3" gw_src="cb2-AS3_cb2_router.dc3.acloud.com"
-              gw_dst="gw_dc3_horizdist" symmetrical="NO">
+              gw_dst="gw_dc3_horizdist" symmetrical="YES">
        <link_ctn id="link_dc3_cb2"/>
      </ASroute>
      <ASroute src="AS3_cb1" dst="gw_AS3_dc3" gw_src="cb1-AS3_cb1_router.dc3.acloud.com"
-              gw_dst="gw_dc3_horizdist" symmetrical="NO">
+              gw_dst="gw_dc3_horizdist" symmetrical="YES">
         <link_ctn id="link_dc3_cb1"/>
      </ASroute>
      <ASroute src="AS3_cb4" dst="gw_AS3_dc3" gw_src="cb4-AS3_cb4_router.dc3.acloud.com"
-              gw_dst="gw_dc3_horizdist" symmetrical="NO">
+              gw_dst="gw_dc3_horizdist" symmetrical="YES">
         <link_ctn id="link_dc3_cb4"/>
      </ASroute>
      <ASroute dst="AS3_cb3" src="gw_AS3_dc3" gw_dst="cb3-AS3_cb3_router.dc3.acloud.com"
-              gw_src="gw_dc3_horizdist" symmetrical="NO">
+              gw_src="gw_dc3_horizdist" symmetrical="YES">
         <link_ctn id="link_dc3_cb3"/>
      </ASroute>
      <ASroute dst="AS3_cb2" src="gw_AS3_dc3" gw_dst="cb2-AS3_cb2_router.dc3.acloud.com"
-              gw_src="gw_dc3_horizdist" symmetrical="NO">
+              gw_src="gw_dc3_horizdist" symmetrical="YES">
         <link_ctn id="link_dc3_cb2"/>
      </ASroute>
      <ASroute dst="AS3_cb1" src="gw_AS3_dc3" gw_dst="cb1-AS3_cb1_router.dc3.acloud.com"
-              gw_src="gw_dc3_horizdist" symmetrical="NO">
+              gw_src="gw_dc3_horizdist" symmetrical="YES">
         <link_ctn id="link_dc3_cb1"/>
      </ASroute>
      <ASroute dst="AS3_cb4" src="gw_AS3_dc3" gw_dst="cb4-AS3_cb4_router.dc3.acloud.com"
-              gw_src="gw_dc3_horizdist" symmetrical="NO">
+              gw_src="gw_dc3_horizdist" symmetrical="YES">
         <link_ctn id="link_dc3_cb4"/>
      </ASroute>  
   </AS>
