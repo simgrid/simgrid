@@ -14,12 +14,12 @@
 namespace simgrid {
 namespace surf {
 
-class XBT_PRIVATE AsGeneric;
+class XBT_PRIVATE AsRoutedGraph;
 
-class XBT_PRIVATE AsGeneric : public As {
+class XBT_PRIVATE AsRoutedGraph : public As {
 public:
-  AsGeneric(const char*name);
-  ~AsGeneric();
+  AsRoutedGraph(const char*name);
+  ~AsRoutedGraph();
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
   virtual sg_platf_route_cbarg_t getBypassRoute(NetCard *src, NetCard *dst, double *lat) override;

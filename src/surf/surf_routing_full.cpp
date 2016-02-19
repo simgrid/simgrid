@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 namespace simgrid {
 namespace surf {
   AsFull::AsFull(const char*name)
-    : AsGeneric(name)
+    : AsRoutedGraph(name)
   {
   }
 

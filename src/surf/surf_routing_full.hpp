@@ -9,7 +9,7 @@
 
 #include <xbt/base.h>
 
-#include "surf_routing_generic.hpp"
+#include "surf_routing_RoutedGraph.hpp"
 
 namespace simgrid {
 namespace surf {
@@ -20,7 +20,7 @@ namespace surf {
 class XBT_PRIVATE AsFull;
 
 /** Full routing: fast, large memory requirements, fully expressive */
-class AsFull: public AsGeneric {
+class AsFull: public AsRoutedGraph {
 public:
 
   AsFull(const char*name);

@@ -75,7 +75,7 @@ set(EXTRA_DIST
   src/surf/surf_routing_dijkstra.hpp
   src/surf/surf_routing_floyd.hpp
   src/surf/surf_routing_full.hpp
-  src/surf/surf_routing_generic.hpp
+  src/surf/surf_routing_RoutedGraph.hpp
   src/surf/surf_routing_none.hpp
   src/surf/surf_routing_private.hpp
   src/surf/surf_routing_vivaldi.hpp
@@ -333,7 +333,7 @@ set(SURF_SRC
   src/surf/surf_routing_dijkstra.cpp
   src/surf/surf_routing_floyd.cpp
   src/surf/surf_routing_full.cpp
-  src/surf/surf_routing_generic.cpp
+  src/surf/surf_routing_RoutedGraph.cpp
   src/surf/surf_routing_none.cpp
   src/surf/surf_routing_vivaldi.cpp
   src/surf/surfxml_parse.cpp

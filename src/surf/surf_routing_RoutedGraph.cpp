@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "surf_routing_RoutedGraph.hpp"
+
 #include <cstdlib>
 
 #include <algorithm>
@@ -16,7 +18,6 @@
 
 #include "simgrid/platf_interface.h"    // platform creation API internal interface
 
-#include "surf_routing_generic.hpp"
 #include "surf_routing_private.hpp"
 #include "network_interface.hpp"
 
@@ -35,17 +36,17 @@ void routing_route_free(sg_platf_route_cbarg_t route)
 namespace simgrid {
 namespace surf {
   
-AsGeneric::AsGeneric(const char*name)
+AsRoutedGraph::AsRoutedGraph(const char*name)
   : As(name)
 {
 }
 
-AsGeneric::~AsGeneric()
+AsRoutedGraph::~AsRoutedGraph()
 {
   xbt_dict_free(&bypassRoutes_);
 }
 
-void AsGeneric::parseBypassroute(sg_platf_route_cbarg_t e_route)
+void AsRoutedGraph::parseBypassroute(sg_platf_route_cbarg_t e_route)
 {
   char *src = (char*)(e_route->src);
   char *dst = (char*)(e_route->dst);
@@ -132,7 +133,7 @@ xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d,
 namespace simgrid {
 namespace surf {
 
-void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
+void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
   int src, dst;
   int table_size = xbt_dynar_length(vertices_);
@@ -195,7 +196,7 @@ void AsGeneric::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   }
 }
 
-sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
+sg_platf_route_cbarg_t AsRoutedGraph::getBypassRoute(NetCard *src,
                                                NetCard *dst,
                                                double *lat)
 {
@@ -333,7 +334,7 @@ sg_platf_route_cbarg_t AsGeneric::getBypassRoute(NetCard *src,
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hierarchy,
+sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(e_surf_routing_hierarchy_t hierarchy,
       sg_platf_route_cbarg_t routearg, int change_order) {
 
   sg_platf_route_cbarg_t result;
@@ -371,7 +372,7 @@ sg_platf_route_cbarg_t AsGeneric::newExtendedRoute(e_surf_routing_hierarchy_t hi
   return result;
 }
 
-void AsGeneric::getRouteCheckParams(NetCard *src, NetCard *dst)
+void AsRoutedGraph::getRouteCheckParams(NetCard *src, NetCard *dst)
 {
   xbt_assert(src,"Cannot find a route from NULL to %s", dst->name());
   xbt_assert(dst,"Cannot find a route from %s to NULL", src->name());
@@ -386,7 +387,7 @@ void AsGeneric::getRouteCheckParams(NetCard *src, NetCard *dst)
       "Internal error: route destination %s@%s is not in AS %s as expected (route source: %s@%s). Please report that bug.",
         src->name(), dst->name(),  src_as->name_, dst_as->name_,  name_);
 }
-void AsGeneric::addRouteCheckParams(sg_platf_route_cbarg_t route) {
+void AsRoutedGraph::addRouteCheckParams(sg_platf_route_cbarg_t route) {
   const char *srcName = route->src;
   const char *dstName = route->dst;
   NetCard *src = sg_netcard_by_name_or_null(srcName);

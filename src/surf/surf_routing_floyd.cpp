@@ -18,7 +18,7 @@ namespace simgrid {
 namespace surf {
 
 AsFloyd::AsFloyd(const char*name)
-  : AsGeneric(name)
+  : AsRoutedGraph(name)
 {
   predecessorTable_ = NULL;
   costTable_ = NULL;

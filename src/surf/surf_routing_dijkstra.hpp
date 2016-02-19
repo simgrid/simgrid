@@ -6,7 +6,7 @@
 
 #include <xbt/base.h>
 
-#include "surf_routing_generic.hpp"
+#include "surf_routing_RoutedGraph.hpp"
 
 #ifndef SURF_ROUTING_DIJKSTRA_HPP_
 #define SURF_ROUTING_DIJKSTRA_HPP_
@@ -35,7 +35,7 @@ namespace surf {
 class XBT_PRIVATE AsDijkstra;
 
 /** Dijkstra routing data: fast initialization, slow lookup, small memory requirements, shortest path routing only */
-class AsDijkstra : public AsGeneric {
+class AsDijkstra : public AsRoutedGraph {
 public:
   AsDijkstra(const char*name, bool cached);
   void Seal() override;

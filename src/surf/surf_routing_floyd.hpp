@@ -10,7 +10,7 @@
 
 #include <xbt/base.h>
 
-#include "surf_routing_generic.hpp"
+#include "surf_routing_RoutedGraph.hpp"
 
 namespace simgrid {
 namespace surf {
@@ -21,7 +21,7 @@ namespace surf {
 class XBT_PRIVATE AsFloyd;
 
 /** Floyd routing data: slow initialization, fast lookup, lesser memory requirements, shortest path routing only */
-class AsFloyd: public AsGeneric {
+class AsFloyd: public AsRoutedGraph {
 public:
   AsFloyd(const char *name);
   ~AsFloyd();
