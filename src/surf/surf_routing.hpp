@@ -147,7 +147,6 @@ public:
   void *loopback_;
   xbt_dynar_t lastRoute_ = xbt_dynar_new(sizeof(Link*),NULL);
   xbt_dynar_t getOneLinkRoutes(void);
-  xbt_dynar_t recursiveGetOneLinkRoutes(As *rc);
   void getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t * links, double *latency);
 };
 

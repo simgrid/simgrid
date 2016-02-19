@@ -312,18 +312,15 @@ static void elements_father(sg_netcard_t src, sg_netcard_t dst,
 #undef ELEMENTS_FATHER_MAXDEPTH
 }
 
-/* Global Business methods */
-
 /**
- * \brief Recursive function for get_route_latency
+ * \brief Recursive function for get_route_and_latency
  *
  * \param src the source host name
  * \param dst the destination host name
  * \param *route the route where the links are stored. It is either NULL or a ready to use dynar
  * \param *latency the latency, if needed
  *
- * This function is called by "get_route" and "get_latency". It allows to walk
- * recursively through the ASes tree.
+ * This function is called by "get_route" and "get_latency". It allows to walk recursively through the ASes tree.
  */
 static void _get_route_and_latency(
   simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
@@ -341,16 +338,11 @@ static void _get_route_and_latency(
   XBT_DEBUG("elements_father: common father '%s' src_father '%s' dst_father '%s'",
       common_father->name_, src_father->name_, dst_father->name_);
 
-  /* Check whether a direct bypass is defined */
-  sg_platf_route_cbarg_t e_route_bypass = NULL;
-  //FIXME:REMOVE:if (common_father->get_bypass_route)
-
-  e_route_bypass = common_father->getBypassRoute(src, dst, latency);
-
-  /* Common ancestor is kind enough to declare a bypass route from src to dst -- use it and bail out */
-  if (e_route_bypass) {
-    xbt_dynar_merge(links, &e_route_bypass->link_list);
-    routing_route_free(e_route_bypass);
+  /* Check whether a direct bypass is defined. If so, use it and bail out */
+  sg_platf_route_cbarg_t bypassed_route = common_father->getBypassRoute(src, dst, latency);
+  if (bypassed_route) {
+    xbt_dynar_merge(links, &bypassed_route->link_list);
+    routing_route_free(bypassed_route);
     return;
   }
 
@@ -358,7 +350,6 @@ static void _get_route_and_latency(
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
     route.link_list = *links;
     common_father->getRouteAndLatency(src, dst, &route, latency);
-    // if vivaldi latency+=vivaldi(src,dst)
     return;
   }
 
@@ -423,16 +414,9 @@ void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t* r
   }
 
   _get_route_and_latency(src, dst, route, latency);
-
-  xbt_assert(!latency || *latency >= 0.0,
-             "negative latency on route between \"%s\" and \"%s\"", src->name(), dst->name());
 }
 
-xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
-  return recursiveGetOneLinkRoutes(root_);
-}
-
-xbt_dynar_t RoutingPlatf::recursiveGetOneLinkRoutes(As *rc)
+static xbt_dynar_t _recursiveGetOneLinkRoutes(As *rc)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
 
@@ -446,11 +430,15 @@ xbt_dynar_t RoutingPlatf::recursiveGetOneLinkRoutes(As *rc)
   xbt_dict_cursor_t cursor = NULL;
   AS_t rc_child;
   xbt_dict_foreach(rc->sons_, cursor, key, rc_child) {
-    xbt_dynar_t onelink_child = recursiveGetOneLinkRoutes(rc_child);
+    xbt_dynar_t onelink_child = _recursiveGetOneLinkRoutes(rc_child);
     if (onelink_child)
       xbt_dynar_merge(&ret,&onelink_child);
   }
   return ret;
+}
+
+xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
+  return _recursiveGetOneLinkRoutes(root_);
 }
 
 }
