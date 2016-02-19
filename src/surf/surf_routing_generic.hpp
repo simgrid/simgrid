@@ -6,7 +6,7 @@
 
 #include <xbt/base.h>
 
-#include "surf_routing_none.hpp"
+#include "surf_routing.hpp"
 
 #ifndef SURF_ROUTING_GENERIC_HPP_
 #define SURF_ROUTING_GENERIC_HPP_
@@ -16,7 +16,7 @@ namespace surf {
 
 class XBT_PRIVATE AsGeneric;
 
-class XBT_PRIVATE AsGeneric : public AsNone {
+class XBT_PRIVATE AsGeneric : public As {
 public:
   AsGeneric(const char*name);
   ~AsGeneric();

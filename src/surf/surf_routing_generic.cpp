@@ -36,7 +36,7 @@ namespace simgrid {
 namespace surf {
   
 AsGeneric::AsGeneric(const char*name)
-  : AsNone(name)
+  : As(name)
 {
 }
 

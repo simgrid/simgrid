@@ -9,7 +9,7 @@
 
 #include <xbt/base.h>
 
-#include "surf_routing_none.hpp"
+#include "surf_routing.hpp"
 #include "network_interface.hpp"
 
 namespace simgrid {
@@ -24,7 +24,7 @@ class XBT_PRIVATE AsCluster;
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
 
-class AsCluster: public AsNone {
+class AsCluster: public As {
 public:
   AsCluster(const char*name);
 

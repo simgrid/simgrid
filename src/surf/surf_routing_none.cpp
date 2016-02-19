@@ -17,10 +17,6 @@ AsNone::AsNone(const char*name)
 AsNone::~AsNone()
 {}
 
-xbt_dynar_t AsNone::getOneLinkRoutes() {
-  return NULL;
-}
-
 void AsNone::getRouteAndLatency(NetCard * /*src*/, NetCard * /*dst*/,
                                 sg_platf_route_cbarg_t /*res*/, double */*lat*/)
 {}
