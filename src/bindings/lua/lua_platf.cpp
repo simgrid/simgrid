@@ -373,7 +373,7 @@ int console_add_route(lua_State *L) {
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
   if (! lua_istable(L, -1)) {
-    XBT_ERROR("Bad Arguments to create a route. Should be a table with named arguments");
+    XBT_ERROR("Bad Arguments to add a route. Should be a table with named arguments");
     return -1;
   }
 
@@ -448,12 +448,22 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L, "gw_src");
   lua_gettable(L, -2);
-  ASroute.gw_src = sg_netcard_by_name_or_null(lua_tostring(L, -1));
+  char *name = lua_tostring(L, -1);
+  ASroute.gw_src = sg_netcard_by_name_or_null(name);
+  if (ASroute.gw_src == NULL) {
+    XBT_ERROR("Attribute 'gw_src' of AS route does not name a valid machine: %s", name);
+    return -1;
+  }
   lua_pop(L, 1);
 
   lua_pushstring(L, "gw_dst");
   lua_gettable(L, -2);
-  ASroute.gw_dst = sg_netcard_by_name_or_null(lua_tostring(L, -1));
+  name = lua_tostring(L, -1);
+  ASroute.gw_dst = sg_netcard_by_name_or_null(name);
+  if (ASroute.gw_dst == NULL) {
+    XBT_ERROR("Attribute 'gw_dst' of AS route does not name a valid machine: %s", name);
+    return -1;
+  }
   lua_pop(L, 1);
 
   lua_pushstring(L,"links");
@@ -467,9 +477,8 @@ int console_add_ASroute(lua_State *L) {
   lua_gettable(L,-2);
   if (lua_isstring(L, -1)) {
     const char* value = lua_tostring(L, -1);
-    if (strcmp("YES", value) == 0) {
+    if (strcmp("YES", value) == 0)
       ASroute.symmetrical = TRUE;
-    }
     else
       ASroute.symmetrical = FALSE;
   }
