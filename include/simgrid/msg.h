@@ -11,7 +11,6 @@
 #include "xbt/lib.h"
 #include "simgrid/forward.h"
 #include "simgrid/simix.h"
-#include "simgrid/platf.h"
 
 SG_BEGIN_DECL()
 

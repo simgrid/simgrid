@@ -13,7 +13,6 @@
 #include "xbt/function_types.h"
 #include "xbt/parmap.h"
 #include "xbt/swag.h"
-#include "simgrid/platf.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/host.h"
 

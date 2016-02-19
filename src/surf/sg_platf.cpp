@@ -43,9 +43,6 @@ simgrid::xbt::signal<void(void)> on_postparse;
 
 static int surf_parse_models_setup_already_called = 0;
 
-/* one RngStream for the platform, to respect some statistic rules */
-static RngStream sg_platf_rng_stream = NULL;
-
 /** Module management function: creates all internal data structures */
 void sg_platf_init(void) {
 }
@@ -617,23 +614,6 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   current_property_set = NULL;
 }
 
-void sg_platf_route_begin (sg_platf_route_cbarg_t route){
-  route->link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-}
-
-void sg_platf_route_end (sg_platf_route_cbarg_t route){
-  sg_platf_new_route(route);
-}
-
-void sg_platf_route_add_link (const char* link_id, sg_platf_route_cbarg_t route){
-  char *link_name = xbt_strdup(link_id);
-  xbt_dynar_push(route->link_list, &link_name);
-}
-void sg_platf_ASroute_add_link (const char* link_id, sg_platf_route_cbarg_t ASroute){
-  char *link_name = xbt_strdup(link_id);
-  xbt_dynar_push(ASroute->link_list, &link_name);
-}
-
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
 
 void sg_platf_end() {
@@ -674,21 +654,4 @@ void sg_platf_new_AS_end()
   routing_AS_end();
   if (TRACE_is_enabled())
     sg_instr_AS_end();
-}
-/* ***************************************** */
-
-void sg_platf_rng_stream_init(unsigned long seed[6]) {
-  RngStream_SetPackageSeed(seed);
-  sg_platf_rng_stream = RngStream_CreateStream(NULL);
-}
-
-RngStream sg_platf_rng_stream_get(const char* id) {
-  RngStream stream = NULL;
-  unsigned int id_hash;
-
-  stream = RngStream_CopyStream(sg_platf_rng_stream);
-  id_hash = xbt_str_hash(id);
-  RngStream_AdvanceState(stream, 0, (long)id_hash);
-
-  return stream;
 }

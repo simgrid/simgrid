@@ -28,10 +28,6 @@ XBT_PUBLIC(void) sg_platf_exit(void);
  */
 XBT_PUBLIC(void) surf_config_models_setup(void);
 
-/* RngStream management functions */
-XBT_PUBLIC(void) sg_platf_rng_stream_init(unsigned long seed[6]);
-XBT_PUBLIC(RngStream) sg_platf_rng_stream_get(const char* id);
-
 SG_END_DECL()
 
 #endif                          /* SG_PLATF_INTERFACE_H */
