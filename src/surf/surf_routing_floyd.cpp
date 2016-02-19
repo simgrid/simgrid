@@ -129,7 +129,7 @@ static int floyd_pointer_resource_cmp(const void *a, const void *b) {
   return a != b;
 }
 
-void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
+void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
 {
   /* set the size of table routing */
   int table_size = (int)xbt_dynar_length(vertices_);
@@ -137,7 +137,7 @@ void AsFloyd::parseRoute(sg_platf_route_cbarg_t route)
   NetCard *src = sg_netcard_by_name_or_null(route->src);
   NetCard *dst = sg_netcard_by_name_or_null(route->dst);
 
-  parseRouteCheckParams(route);
+  addRouteCheckParams(route);
 
   if(!linkTable_) {
     /* Create Cost, Predecessor and Link tables */

@@ -130,14 +130,14 @@ static int full_pointer_resource_cmp(const void *a, const void *b)
   return a != b;
 }
 
-void AsFull::parseRoute(sg_platf_route_cbarg_t route)
+void AsFull::addRoute(sg_platf_route_cbarg_t route)
 {
   const char *src = route->src;
   const char *dst = route->dst;
   NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
   NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
 
-  parseRouteCheckParams(route);
+  addRouteCheckParams(route);
 
   size_t table_size = xbt_dynar_length(vertices_);
 

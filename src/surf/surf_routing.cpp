@@ -54,7 +54,7 @@ namespace surf {
     return xbt_dynar_length(vertices_)-1;
   }
 
-  void As::parseRoute(sg_platf_route_cbarg_t /*route*/){
+  void As::addRoute(sg_platf_route_cbarg_t /*route*/){
     THROW_IMPOSSIBLE; /* No. */
   }
   void As::parseBypassroute(sg_platf_route_cbarg_t /*e_route*/){

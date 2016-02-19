@@ -387,7 +387,7 @@ void AsGeneric::getRouteCheckParams(NetCard *src, NetCard *dst)
       "Internal error: route destination %s@%s is not in AS %s as expected (route source: %s@%s). Please report that bug.",
         src->name(), dst->name(),  src_as->name_, dst_as->name_,  name_);
 }
-void AsGeneric::parseRouteCheckParams(sg_platf_route_cbarg_t route) {
+void AsGeneric::addRouteCheckParams(sg_platf_route_cbarg_t route) {
   const char *srcName = route->src;
   const char *dstName = route->dst;
   NetCard *src = sg_netcard_by_name_or_null(srcName);

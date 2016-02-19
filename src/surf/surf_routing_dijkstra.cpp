@@ -349,14 +349,14 @@ AsDijkstra::AsDijkstra(const char*name, bool cached)
     routeCache_ = xbt_dict_new_homogeneous(&route_cache_elem_free);
 }
 
-void AsDijkstra::parseRoute(sg_platf_route_cbarg_t route)
+void AsDijkstra::addRoute(sg_platf_route_cbarg_t route)
 {
   const char *srcName = route->src;
   const char *dstName = route->dst;
   NetCard *src = sg_netcard_by_name_or_null(srcName);
   NetCard *dst = sg_netcard_by_name_or_null(dstName);
 
-  parseRouteCheckParams(route);
+  addRouteCheckParams(route);
 
   /* Create the topology graph */
   if(!routeGraph_)

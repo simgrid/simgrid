@@ -510,7 +510,7 @@ void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
 
 void sg_platf_new_route(sg_platf_route_cbarg_t route)
 {
-  routing_get_current()->parseRoute(route);
+  routing_get_current()->addRoute(route);
 }
 
 void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
