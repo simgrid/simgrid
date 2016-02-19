@@ -520,8 +520,7 @@ void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
 
 void sg_platf_new_process(sg_platf_process_cbarg_t process)
 {
-  if (!simix_global)
-    xbt_die("Cannot create process without SIMIX.");
+  xbt_assert(simix_global,"Cannot create process without SIMIX.");
 
   sg_host_t host = sg_host_by_name(process->host);
   if (!host) {

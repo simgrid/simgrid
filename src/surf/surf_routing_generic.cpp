@@ -398,8 +398,24 @@ void AsGeneric::parseRouteCheckParams(sg_platf_route_cbarg_t route) {
     xbt_assert(src, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, srcName);
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
     xbt_assert(!xbt_dynar_is_empty(route->link_list), "Empty route (between %s and %s) forbidden.", srcName, dstName);
+    xbt_assert(src->getRcType()==SURF_NETWORK_ELEMENT_HOST || src->getRcType()==SURF_NETWORK_ELEMENT_ROUTER,
+        "When defining a route, src must be an host or a router but '%s' is not. Did you meant to have an ASroute?", srcName);
+    xbt_assert(dst->getRcType()==SURF_NETWORK_ELEMENT_HOST || dst->getRcType()==SURF_NETWORK_ELEMENT_ROUTER,
+        "When defining a route, dst must be an host or a router but '%s' is not. Did you meant to have an ASroute?", dstName);
   } else {
     XBT_DEBUG("Load ASroute from %s@%s to %s@%s", srcName, route->gw_src->name(), dstName, route->gw_dst->name());
+    xbt_assert(src->getRcType()==SURF_NETWORK_ELEMENT_AS,
+        "When defining an ASroute, src must be an AS but '%s' is not", srcName);
+    xbt_assert(dst->getRcType()==SURF_NETWORK_ELEMENT_AS,
+        "When defining an ASroute, dst must be an AS but '%s' is not", dstName);
+
+    xbt_assert(route->gw_src->getRcType()==SURF_NETWORK_ELEMENT_HOST || route->gw_src->getRcType()==SURF_NETWORK_ELEMENT_ROUTER,
+        "When defining an ASroute, gw_src must be an host or a router but '%s' is not.", srcName);
+    xbt_assert(route->gw_dst->getRcType()==SURF_NETWORK_ELEMENT_HOST || route->gw_dst->getRcType()==SURF_NETWORK_ELEMENT_ROUTER,
+        "When defining an ASroute, gw_dst must be an host or a router but '%s' is not.", dstName);
+
+    xbt_assert(route->gw_src != route->gw_dst, "Cannot define an ASroute from '%s' to itself", route->gw_src->name());
+
     xbt_assert(src, "Cannot add a route from %s@%s to %s@%s: %s does not exist.",
         srcName,route->gw_src->name(), dstName,route->gw_dst->name(), srcName);
     xbt_assert(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.",

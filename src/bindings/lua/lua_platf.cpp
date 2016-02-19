@@ -456,13 +456,6 @@ int console_add_ASroute(lua_State *L) {
   ASroute.gw_dst = sg_netcard_by_name_or_null(lua_tostring(L, -1));
   lua_pop(L, 1);
 
-  /*if (A_surfxml_ASroute_gw___src && !ASroute.gw_src)*/
-    /*surf_parse_error("gw_src=\"%s\" not found for ASroute from \"%s\" to \"%s\"",*/
-                     /*A_surfxml_ASroute_gw___src, ASroute.src, ASroute.dst);*/
-  /*if (A_surfxml_ASroute_gw___dst && !ASroute.gw_dst)*/
-    /*surf_parse_error("gw_dst=\"%s\" not found for ASroute from \"%s\" to \"%s\"",*/
-                     /*A_surfxml_ASroute_gw___dst, ASroute.src, ASroute.dst);*/
-
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
   ASroute.link_list = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
