@@ -448,7 +448,7 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L, "gw_src");
   lua_gettable(L, -2);
-  char *name = lua_tostring(L, -1);
+  const char *name = lua_tostring(L, -1);
   ASroute.gw_src = sg_netcard_by_name_or_null(name);
   if (ASroute.gw_src == NULL) {
     XBT_ERROR("Attribute 'gw_src' of AS route does not name a valid machine: %s", name);
