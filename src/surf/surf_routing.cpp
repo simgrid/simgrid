@@ -256,39 +256,31 @@ static void elements_father(sg_netcard_t src, sg_netcard_t dst,
                             AS_t * res_dst)
 {
   xbt_assert(src && dst, "bad parameters for \"elements_father\" method");
-#define ELEMENTS_FATHER_MAXDEPTH 16     /* increase if it is not enough */
-  simgrid::surf::As *src_as, *dst_as;
-  simgrid::surf::As *path_src[ELEMENTS_FATHER_MAXDEPTH];
-  simgrid::surf::As *path_dst[ELEMENTS_FATHER_MAXDEPTH];
+#define ROUTING_HIERARCHY_MAXDEPTH 16     /* increase if it is not enough */
+  simgrid::surf::As *path_src[ROUTING_HIERARCHY_MAXDEPTH];
+  simgrid::surf::As *path_dst[ROUTING_HIERARCHY_MAXDEPTH];
   int index_src = 0;
   int index_dst = 0;
-  simgrid::surf::As *current;
   simgrid::surf::As *current_src;
   simgrid::surf::As *current_dst;
   simgrid::surf::As *father;
 
-  /* (1) find the as where the src and dst are located */
-  sg_netcard_t src_data = src;
-  sg_netcard_t dst_data = dst;
-  src_as = src_data->containingAS();
-  dst_as = dst_data->containingAS();
-#ifndef NDEBUG
-  char* src_name = src_data->name();
-  char* dst_name = dst_data->name();
-#endif
+  /* (1) find the path to root of src and dst*/
+  simgrid::surf::As *src_as = src->containingAS();
+  simgrid::surf::As *dst_as = dst->containingAS();
 
-  xbt_assert(src_as && dst_as,
-             "Ask for route \"from\"(%s) or \"to\"(%s) no found", src_name, dst_name);
+  xbt_assert(src_as, "Host %s must be in an AS", src->name());
+  xbt_assert(dst_as, "Host %s must be in an AS", dst->name());
 
   /* (2) find the path to the root routing component */
-  for (current = src_as; current != NULL; current = current->father_) {
-    if (index_src >= ELEMENTS_FATHER_MAXDEPTH)
-      xbt_die("ELEMENTS_FATHER_MAXDEPTH should be increased for path_src");
+  for (simgrid::surf::As *current = src_as; current != NULL; current = current->father_) {
+    if (index_src >= ROUTING_HIERARCHY_MAXDEPTH)
+      xbt_die("ROUTING_HIERARCHY_MAXDEPTH should be increased for element %s", src->name());
     path_src[index_src++] = current;
   }
-  for (current = dst_as; current != NULL; current = current->father_) {
-    if (index_dst >= ELEMENTS_FATHER_MAXDEPTH)
-      xbt_die("ELEMENTS_FATHER_MAXDEPTH should be increased for path_dst");
+  for (simgrid::surf::As *current = dst_as; current != NULL; current = current->father_) {
+    if (index_dst >= ROUTING_HIERARCHY_MAXDEPTH)
+      xbt_die("ROUTING_HIERARCHY_MAXDEPTH should be increased for path_dst");
     path_dst[index_dst++] = current;
   }
 
@@ -309,7 +301,7 @@ static void elements_father(sg_netcard_t src, sg_netcard_t dst,
   *res_src = current_src;       /* second the first different father of src */
   *res_dst = current_dst;       /* three  the first different father of dst */
 
-#undef ELEMENTS_FATHER_MAXDEPTH
+#undef ROUTING_HIERARCHY_MAXDEPTH
 }
 
 /**
@@ -322,8 +314,7 @@ static void elements_father(sg_netcard_t src, sg_netcard_t dst,
  *
  * This function is called by "get_route" and "get_latency". It allows to walk recursively through the ASes tree.
  */
-static void _get_route_and_latency(
-  simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
+static void _get_route_and_latency(simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
   xbt_dynar_t * links, double *latency)
 {
   s_sg_platf_route_cbarg_t route = SG_PLATF_ROUTE_INITIALIZER;
@@ -356,27 +347,19 @@ static void _get_route_and_latency(
   /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
 
   route.link_list = xbt_dynar_new(sizeof(Link*), NULL);
-  // Find the net_card corresponding to father
-  simgrid::surf::NetCard *src_father_netcard = src_father->netcard_;
-  simgrid::surf::NetCard *dst_father_netcard = dst_father->netcard_;
 
-  common_father->getRouteAndLatency(src_father_netcard, dst_father_netcard,
-                                    &route, latency);
-
+  common_father->getRouteAndLatency(src_father->netcard_, dst_father->netcard_, &route, latency);
   xbt_assert((route.gw_src != NULL) && (route.gw_dst != NULL),
       "bad gateways for route from \"%s\" to \"%s\"", src->name(), dst->name());
 
-  sg_netcard_t src_gateway_net_elm = route.gw_src;
-  sg_netcard_t dst_gateway_net_elm = route.gw_dst;
-
   /* If source gateway is not our source, we have to recursively find our way up to this point */
-  if (src != src_gateway_net_elm)
-    _get_route_and_latency(src, src_gateway_net_elm, links, latency);
+  if (src != route.gw_src)
+    _get_route_and_latency(src, route.gw_src, links, latency);
   xbt_dynar_merge(links, &route.link_list);
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
-  if (dst_gateway_net_elm != dst)
-    _get_route_and_latency(dst_gateway_net_elm, dst, links, latency);
+  if (route.gw_dst != dst)
+    _get_route_and_latency(route.gw_dst, dst, links, latency);
 
 }
 
