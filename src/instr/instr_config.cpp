@@ -142,7 +142,7 @@ int TRACE_start()
 
     if (TRACE_start_functions != NULL) {
       void (*func) ();
-      unsigned int iter = xbt_dynar_length(TRACE_start_functions);
+      unsigned int iter;
       xbt_dynar_foreach(TRACE_start_functions, iter, func) {
         func();
       }

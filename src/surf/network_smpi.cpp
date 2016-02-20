@@ -60,7 +60,6 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
     xbt_dynar_free(&radical_elements2);
   }
   xbt_dynar_free(&radical_elements);
-  iter=0;
   xbt_dynar_sort(smpi_factor, &factor_cmp);
   xbt_dynar_foreach(smpi_factor, iter, fact) {
     XBT_DEBUG("ordered smpi_factor:\t%ld : %f", fact.factor, fact.value);

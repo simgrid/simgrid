@@ -149,24 +149,22 @@ xbt_automaton_state_t xbt_automaton_state_exists(xbt_automaton_t a, char *id){
 }
 
 void xbt_automaton_display(xbt_automaton_t a){
-  unsigned int cursor = 0;
+  unsigned int cursor;
   xbt_automaton_state_t state = NULL;
 
-  printf("\n\nEtat courant : %s\n", a->current_state->id);
+  printf("\n\nCurrent state: %s\n", a->current_state->id);
 
-  printf("\nListe des états : %lu\n\n", xbt_dynar_length(a->states));
+  printf("\nStates' List: %lu\n\n", xbt_dynar_length(a->states));
  
   
-  xbt_dynar_foreach(a->states, cursor, state){
-    printf("ID : %s, type : %d\n", state->id, state->type);
-  }
+  xbt_dynar_foreach(a->states, cursor, state)
+    printf("ID: %s, type: %d\n", state->id, state->type);
 
-  cursor=0;
-  xbt_automaton_transition_t transition = NULL;
-  printf("\nListe des transitions : %lu\n\n", xbt_dynar_length(a->transitions));
+  xbt_automaton_transition_t transition;
+  printf("\nTransitions: %lu\n\n", xbt_dynar_length(a->transitions));
   
   xbt_dynar_foreach(a->transitions, cursor, transition){
-    printf("label :");
+    printf("label:");
     xbt_automaton_exp_label_display(transition->label);
     printf(", %s -> %s\n", transition->src->id, transition->dst->id);
   }

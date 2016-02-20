@@ -1095,7 +1095,6 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   dot = control_string;
   control_string += strcspn(control_string, ":= ");
   eq = control_string;
-  control_string += strcspn(control_string, " ");
 
   if(*dot != '.' && (*eq == '=' || *eq == ':'))
     xbt_die ("Invalid control string '%s'", orig_control_string);

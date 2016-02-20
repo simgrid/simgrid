@@ -93,7 +93,7 @@ bool parents_are_marked(SD_task_t task){
 }
 
 bool acyclic_graph_detail(xbt_dynar_t dag){
-  unsigned int count=0, count_current=0;
+  unsigned int count, count_current=0;
   bool all_marked = true;
   SD_task_t task = NULL, parent_task = NULL, child_task = NULL;
   SD_dependency_t depbefore = NULL, depafter = NULL;
@@ -106,19 +106,14 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
       xbt_dynar_push(current, &task);
     }
   }
-  task = NULL;
-  count = 0;
   //test if something has to be done for the next iteration
   while(!xbt_dynar_is_empty(current)){
     next = xbt_dynar_new(sizeof(SD_task_t),NULL);
     //test if the current iteration is done
-    count_current=0;
     xbt_dynar_foreach(current,count_current,task){
       if (task == NULL) continue;
-      count = 0;
       //push task in next
       task->marked = 1;
-      count = 0;
       xbt_dynar_foreach(task->tasks_before,count,depbefore){
         parent_task = depbefore->src;
         if(parent_task->kind == SD_TASK_COMM_E2E){
@@ -136,15 +131,12 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
         }
         parent_task = NULL;
       }
-      task = NULL;
-      count = 0;
     }
     xbt_dynar_free(&current);
     current = next;
     next = NULL;
   }
   xbt_dynar_free(&current);
-  current = NULL;
   all_marked = true;
   xbt_dynar_foreach(dag,count,task){
     if(task->kind == SD_TASK_COMM_E2E) continue;
@@ -155,7 +147,6 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
       break;
     }
   }
-  task = NULL;
   if(!all_marked){
     XBT_VERB("there is at least one cycle in your task graph");
 
@@ -167,8 +158,6 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
       }
     }
 
-    count = 0;
-    task = NULL;
     xbt_dynar_foreach(dag,count,task){
       if(task->kind == SD_TASK_COMM_E2E) continue;
       if(xbt_dynar_is_empty(task->tasks_before)){
@@ -176,19 +165,14 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
         xbt_dynar_push(current, &task);
       }
     }
-    task = NULL;
-    count = 0;
     //test if something has to be done for the next iteration
     while(!xbt_dynar_is_empty(current)){
       next = xbt_dynar_new(sizeof(SD_task_t),NULL);
       //test if the current iteration is done
-      count_current=0;
       xbt_dynar_foreach(current,count_current,task){
         if (task == NULL) continue;
-        count = 0;
         //push task in next
         task->marked = 1;
-        count = 0;
         xbt_dynar_foreach(task->tasks_after,count,depafter){
           child_task = depbefore->dst;
           if(child_task->kind == SD_TASK_COMM_E2E){
@@ -206,15 +190,12 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
           }
           child_task = NULL;
         }
-        task = NULL;
-        count = 0;
       }
       xbt_dynar_free(&current);
       current = next;
       next = NULL;
     }
     xbt_dynar_free(&current);
-    current = NULL;
     all_marked = true;
     xbt_dynar_foreach(dag,count,task){
       if(task->kind == SD_TASK_COMM_E2E) continue;
