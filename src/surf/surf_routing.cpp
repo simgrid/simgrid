@@ -514,14 +514,6 @@ static void _get_route_and_latency(simgrid::surf::NetCard *src, simgrid::surf::N
 
 }
 
-AS_t surf_platf_get_root(routing_platf_t platf){
-  return platf->root_;
-}
-
-e_surf_network_element_type_t surf_routing_edge_get_rc_type(sg_netcard_t netcard){
-  return netcard->getRcType();
-}
-
 namespace simgrid {
 namespace surf {
 

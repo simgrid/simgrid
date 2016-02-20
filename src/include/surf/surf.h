@@ -35,8 +35,7 @@ extern XBT_PRIVATE int sg_network_crosstraffic;
 extern XBT_PRIVATE xbt_dynar_t surf_path;
 
 typedef enum {
-  SURF_NETWORK_ELEMENT_NULL = 0, /* NULL */
-  SURF_NETWORK_ELEMENT_HOST,     /* host type */
+  SURF_NETWORK_ELEMENT_HOST=1,     /* host type */
   SURF_NETWORK_ELEMENT_ROUTER,   /* router type */
   SURF_NETWORK_ELEMENT_AS        /* AS type */
 } e_surf_network_element_type_t;
@@ -903,8 +902,6 @@ XBT_PUBLIC_DATA(AS_t) surf_AS_get_by_name(const char * name);
 XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_routing_sons(AS_t as);
 XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
 XBT_PUBLIC_DATA(void) surf_AS_get_graph(AS_t as, xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges);
-XBT_PUBLIC_DATA(AS_t) surf_platf_get_root(routing_platf_t platf);
-XBT_PUBLIC_DATA(e_surf_network_element_type_t) surf_routing_edge_get_rc_type(sg_netcard_t edge);
 
 /*******************************************/
 /*** SURF Globals **************************/
