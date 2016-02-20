@@ -32,7 +32,7 @@ static int factor_cmp(const void *pa, const void *pb)
          (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
 }
 
-
+#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
 static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 {
   char *value = NULL;
@@ -45,8 +45,8 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
   xbt_dynar_foreach(radical_elements, iter, value) {
 
     radical_elements2 = xbt_str_split(value, ":");
-    if (xbt_dynar_length(radical_elements2) != 2)
-      surf_parse_error("Malformed radical for smpi factor!");
+    surf_parse_assert(xbt_dynar_length(radical_elements2) == 2,
+        "Malformed radical '%s' for smpi factor. I was expecting something like 'a:b'", value);
 
     char *errmsg = bprintf("Invalid factor in chunk #%d: %%s", iter+1);
     fact.factor = xbt_str_parse_int(xbt_dynar_get_as(radical_elements2, 0, char *), errmsg);

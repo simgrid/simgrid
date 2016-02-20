@@ -55,6 +55,7 @@ void sg_platf_exit(void) {
 
   /* make sure that we will reinit the models while loading the platf once reinited */
   surf_parse_models_setup_already_called = 0;
+  surf_parse_lex_destroy();
 }
 
 /** @brief Add an "host" to the current AS */

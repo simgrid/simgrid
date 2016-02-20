@@ -8,7 +8,6 @@
 
 #include "simgrid/platf.h"
 #include "simgrid/simix.h"
-#include "surf/surfxml_parse.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "my log messages");

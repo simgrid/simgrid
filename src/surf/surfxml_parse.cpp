@@ -16,6 +16,8 @@
 #include "src/surf/surf_private.h"
 #include "simgrid/sg_config.h"
 
+#include <surf/surfxml_parse.h>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
                                 "Logging specific to the SURF parsing module");
 #undef CLEANUP
@@ -29,6 +31,19 @@ xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link o
 /*
  * Helping functions
  */
+void surf_parse_assert(bool cond, const char *fmt, ...) {
+  if (!cond ) {
+    va_list va;
+    va_start(va,fmt);
+    int lineno = surf_parse_lineno;
+    char *msg = bvprintf(fmt,va);
+    va_end(va);
+    cleanup();
+    XBT_ERROR("Parse error at %s:%d: %s", surf_parsed_filename, lineno, msg);
+    surf_exit();
+    xbt_die("Exiting now");
+  }
+}
 void surf_parse_error(const char *fmt, ...) {
   va_list va;
   va_start(va,fmt);
@@ -358,23 +373,6 @@ int ETag_surfxml_include_state(void)
   xbt_dynar_pop(surf_parsed_filename_stack,&surf_parsed_filename);
 
   return 1;
-}
-
-
-void surf_parse_init_callbacks(void)
-{
-    sg_platf_init();
-}
-
-void surf_parse_reset_callbacks(void)
-{
-  surf_parse_free_callbacks();
-  surf_parse_init_callbacks();
-}
-
-void surf_parse_free_callbacks(void)
-{
-  sg_platf_exit();
 }
 
 /* Stag and Etag parse functions */
@@ -722,44 +720,51 @@ void ETag_surfxml_backbone(void){
 }
 
 void STag_surfxml_route(void){
-  xbt_assert(strlen(A_surfxml_route_src) > 0 || strlen(A_surfxml_route_dst) > 0,
-      "Missing end-points while defining route \"%s\"->\"%s\"",
-      A_surfxml_route_src, A_surfxml_route_dst);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_route_src),
+      "Route src='%s' does name a node.", A_surfxml_route_src);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_route_dst),
+      "Route dst='%s' does name a node.", A_surfxml_route_dst);
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 void STag_surfxml_ASroute(void){
-  xbt_assert(strlen(A_surfxml_ASroute_src) > 0
-             && strlen(A_surfxml_ASroute_dst) > 0
-             && strlen(A_surfxml_ASroute_gw___src) > 0
-             && strlen(A_surfxml_ASroute_gw___dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-             A_surfxml_ASroute_src, A_surfxml_ASroute_dst,
-             A_surfxml_ASroute_gw___src, A_surfxml_ASroute_gw___dst);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_src),
+      "ASroute src='%s' does name a node.", A_surfxml_route_src);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_dst),
+      "ASroute dst='%s' does name a node.", A_surfxml_route_dst);
+
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___src),
+      "ASroute gw_src='%s' does name a node.", A_surfxml_ASroute_gw___src);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___dst),
+      "ASroute gw_dst='%s' does name a node.", A_surfxml_ASroute_gw___dst);
+
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 void STag_surfxml_bypassRoute(void){
-  xbt_assert(strlen(A_surfxml_bypassRoute_src) > 0
-             && strlen(A_surfxml_bypassRoute_dst) > 0,
-             "Missing end-points while defining bypass route \"%s\"->\"%s\"",
-             A_surfxml_bypassRoute_src, A_surfxml_bypassRoute_dst);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassRoute_src),
+      "bypassRoute src='%s' does name a node.", A_surfxml_bypassRoute_src);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassRoute_dst),
+      "bypassRoute dst='%s' does name a node.", A_surfxml_bypassRoute_dst);
+
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 void STag_surfxml_bypassASroute(void){
-  xbt_assert(strlen(A_surfxml_bypassASroute_src) > 0
-             && strlen(A_surfxml_bypassASroute_dst) > 0
-             && strlen(A_surfxml_bypassASroute_gw___src) > 0
-             && strlen(A_surfxml_bypassASroute_gw___dst) > 0,
-             "Missing end-points while defining route \"%s\"->\"%s\" (with %s and %s as gateways)",
-             A_surfxml_bypassASroute_src, A_surfxml_bypassASroute_dst,
-             A_surfxml_bypassASroute_gw___src,A_surfxml_bypassASroute_gw___dst);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_src),
+      "bypassASroute src='%s' does name a node.", A_surfxml_bypassASroute_src);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_dst),
+      "bypassASroute dst='%s' does name a node.", A_surfxml_bypassASroute_dst);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src),
+      "bypassASroute gw_src='%s' does name a node.", A_surfxml_bypassASroute_gw___src);
+  surf_parse_assert(sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst),
+      "bypassASroute gw_dst='%s' does name a node.", A_surfxml_bypassASroute_gw___dst);
+
   parsed_link_list = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
 }
 
 void ETag_surfxml_route(void){
-  s_sg_platf_route_cbarg_t route = SG_PLATF_ROUTE_INITIALIZER;
+  s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
   route.src       = A_surfxml_route_src;
@@ -783,7 +788,7 @@ void ETag_surfxml_route(void){
 }
 
 void ETag_surfxml_ASroute(void){
-  s_sg_platf_route_cbarg_t ASroute = SG_PLATF_ROUTE_INITIALIZER;
+  s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
   ASroute.src = A_surfxml_ASroute_src;
@@ -816,7 +821,7 @@ void ETag_surfxml_ASroute(void){
 }
 
 void ETag_surfxml_bypassRoute(void){
-  s_sg_platf_route_cbarg_t route = SG_PLATF_ROUTE_INITIALIZER;
+  s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
   route.src = A_surfxml_bypassRoute_src;
@@ -831,7 +836,7 @@ void ETag_surfxml_bypassRoute(void){
 }
 
 void ETag_surfxml_bypassASroute(void){
-  s_sg_platf_route_cbarg_t ASroute = SG_PLATF_ROUTE_INITIALIZER;
+  s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
   ASroute.src         = A_surfxml_bypassASroute_src;

@@ -20,6 +20,7 @@
 #include "src/surf/surf_routing_floyd.hpp"
 #include "src/surf/surf_routing_full.hpp"
 #include "src/surf/surf_routing_vivaldi.hpp"
+#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
 
 #include <vector>
 

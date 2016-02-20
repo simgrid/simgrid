@@ -6,6 +6,7 @@
 
 #include "src/surf/surf_routing_private.hpp"
 #include "src/surf/surf_routing_cluster_torus.hpp"
+#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
 

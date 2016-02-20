@@ -65,6 +65,7 @@ static void parse_ns3_add_AS(simgrid::surf::As* as)
   xbt_lib_set(as_router_lib, as_id, NS3_ASR_LEVEL, ns3_add_AS(as_id) );
 }
 
+#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
 static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   const char *groups = NULL;

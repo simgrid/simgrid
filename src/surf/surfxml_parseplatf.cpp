@@ -12,6 +12,8 @@
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 
+#include <surf/surfxml_parse.h>
+
 #ifdef HAVE_LUA
 extern "C" {
 #include "src/bindings/lua/simgrid_lua.h"
@@ -131,7 +133,7 @@ void parse_platform_file(const char *file)
         && file[strlen(file)-1] == 'a');
 #endif
 
-  surf_parse_init_callbacks();
+  sg_platf_init();
 
 #ifdef HAVE_LUA
   /* Check if file extension is "lua". If so, we will use

@@ -16,7 +16,6 @@
 #include "xbt/str.h"
 #include "xbt/config.h"
 #include "xbt/graph.h"
-#include "surf/surfxml_parse.h"
 
 /* ************************************************************************** */
 /* ******************************* NO ROUTING ******************************* */

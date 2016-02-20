@@ -1,11 +1,11 @@
 ! expect signal SIGABRT
 $ ${bindir:=.}/flatifier bogus_missing_src_gateway.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> [  0.000000] [0:maestro@] Parse error at bogus_missing_src_gateway.xml:19: gw_src="nod-cluster_router.cluster.us" not found for ASroute from "us" to "fr"
+> [  0.000000] [0:maestro@] Parse error at bogus_missing_src_gateway.xml:17: ASroute gw_src='nod-cluster_router.cluster.us' does name a node.
 > [  0.000000] [0:maestro@] Exiting now
 
 ! expect signal SIGABRT
 $ ${bindir:=.}/flatifier bogus_missing_dst_gateway.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> [  0.000000] [0:maestro@] Parse error at bogus_missing_dst_gateway.xml:19: gw_dst="neud-grappe_router.grappe.fr" not found for ASroute from "us" to "fr"
+> [  0.000000] [0:maestro@] Parse error at bogus_missing_dst_gateway.xml:17: ASroute gw_dst='neud-grappe_router.grappe.fr' does name a node.
 > [  0.000000] [0:maestro@] Exiting now

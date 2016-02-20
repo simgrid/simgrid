@@ -22,11 +22,10 @@ typedef size_t yy_size_t;
 
 XBT_PUBLIC(void) surf_parse_open(const char *file);
 XBT_PUBLIC(void) surf_parse_close(void);
-XBT_PUBLIC(void) surf_parse_init_callbacks(void);
-XBT_PUBLIC(void) surf_parse_reset_callbacks(void);
-XBT_PUBLIC(void) surf_parse_free_callbacks(void);
+XBT_PUBLIC(void) surf_parse_assert(bool cond, const char *fmt, ...) XBT_ATTRIB_PRINTF(2,3);
 XBT_PUBLIC(void) XBT_ATTRIB_NORETURN surf_parse_error(const char *msg,...) XBT_ATTRIB_PRINTF(1,2);
 XBT_PUBLIC(void) surf_parse_warn(const char *msg,...) XBT_ATTRIB_PRINTF(1,2);
+
 XBT_PUBLIC(double) surf_parse_get_double(const char *string);
 XBT_PUBLIC(int) surf_parse_get_int(const char *string);
 XBT_PUBLIC(double) surf_parse_get_time(const char *string, const char *entity_kind, const char *name);

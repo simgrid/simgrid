@@ -378,8 +378,7 @@ void surf_exit(void)
 #endif
 
   tmgr_finalize();
-  surf_parse_lex_destroy();
-  surf_parse_free_callbacks();
+  sg_platf_exit();
 
   NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
 }

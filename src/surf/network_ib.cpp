@@ -104,6 +104,8 @@ void surf_network_model_init_IB(void)
   
 }
 
+#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
+
 namespace simgrid {
 namespace surf {
 
@@ -115,8 +117,8 @@ NetworkIBModel::NetworkIBModel()
   const char* IB_factors_string=sg_cfg_get_string("smpi/IB_penalty_factors");
   xbt_dynar_t radical_elements = xbt_str_split(IB_factors_string, ";");
   
-  if(xbt_dynar_length(radical_elements)!=3)
-    surf_parse_error("smpi/IB_penalty_factors should be provided and contain 3 elements, semi-colon separated : for example 0.965;0.925;1.35");
+  surf_parse_assert(xbt_dynar_length(radical_elements)==3,
+    "smpi/IB_penalty_factors should be provided and contain 3 elements, semi-colon separated : for example 0.965;0.925;1.35");
   
   Be = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 0, char *), "First part of smpi/IB_penalty_factors is not numerical: %s");
   Bs = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 1, char *), "Second part of smpi/IB_penalty_factors is not numerical: %s");
