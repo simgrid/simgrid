@@ -720,7 +720,7 @@ void *xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *key, const char *value) {
   TRY {
     while (variable == NULL) {
       variable = xbt_dict_get((xbt_dict_t) cfg, key);
-      while (variable->type == xbt_cfgelm_alias) {
+      if (variable->type == xbt_cfgelm_alias) {
         const char *newname = (const char*)variable->content;
         XBT_INFO("Note: configuration '%s' is deprecated. Please use '%s' instead.", key, newname);
         key = newname;
