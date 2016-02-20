@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
+#include "src/surf/surf_routing.hpp"
 
 int main(int argc, char **argv)
 {
@@ -26,10 +27,10 @@ int main(int argc, char **argv)
   printf("Workstation number: %zu, link number: %d, elmts number: %d\n", sg_host_count(), sg_link_count(), size);
 
   xbt_dict_foreach(host_list, cursor, key, data)
-    printf("   - Seen: \"%s\" is type : %d\n", key, (int) routing_get_network_element_type(key));
+    printf("   - Seen: \"%s\" is type : %d\n", key, (int) sg_netcard_by_name_or_null(key)->getRcType());
 
   xbt_lib_foreach(as_router_lib, cursor, key, data)
-    printf("   - Seen: \"%s\" is type : %d\n", key, (int) routing_get_network_element_type(key));
+    printf("   - Seen: \"%s\" is type : %d\n", key, (int) sg_netcard_by_name_or_null(key)->getRcType());
 
   SD_exit();
   return 0;

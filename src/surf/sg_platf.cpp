@@ -122,15 +122,14 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 
   if (current_routing->hierarchy_ == SURF_ROUTING_NULL)
     current_routing->hierarchy_ = SURF_ROUTING_BASE;
-  xbt_assert(!xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
-             "Reading a router, processing unit \"%s\" already exists",
-             router->id);
+  xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
+             "Refusing to create a router named '%s': this name already describes a node.", router->id);
 
-  simgrid::surf::NetCard *info = new simgrid::surf::NetCardImpl(router->id, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
-  info->setId(current_routing->addComponent(info));
-  xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) info);
-  XBT_DEBUG("Having set name '%s' id '%d'", router->id, info->id());
-  simgrid::surf::netcardCreatedCallbacks(info);
+  simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(router->id, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
+  netcard->setId(current_routing->addComponent(netcard));
+  xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) netcard);
+  XBT_DEBUG("Having set name '%s' id '%d'", router->id, netcard->id());
+  simgrid::surf::netcardCreatedCallbacks(netcard);
 
   if (router->coord && strcmp(router->coord, "")) {
     unsigned int cursor;

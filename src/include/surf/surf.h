@@ -133,9 +133,6 @@ typedef surf_RoutingPlatf *routing_platf_t;
 
 typedef struct surf_file *surf_file_t;
 
-XBT_PUBLIC(e_surf_network_element_type_t)
-  routing_get_network_element_type(const char* name);
-
 /** @Brief Specify that we use that action */
 XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
 

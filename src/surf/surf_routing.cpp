@@ -94,10 +94,10 @@ int ROUTING_PROP_ASR_LEVEL;     //Where the properties are stored
 simgrid::surf::NetCard *sg_netcard_by_name_or_null(const char *name)
 {
   sg_host_t h = sg_host_by_name(name);
-  simgrid::surf::NetCard *net_elm = h==NULL?NULL: h->pimpl_netcard;
-  if (!net_elm)
-    net_elm = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
-  return net_elm;
+  simgrid::surf::NetCard *netcard = h==NULL ? NULL: h->pimpl_netcard;
+  if (!netcard)
+    netcard = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
+  return netcard;
 }
 
 /* Global vars */
@@ -166,7 +166,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 {
   XBT_DEBUG("routing_AS_begin");
 
-  xbt_assert(NULL == xbt_lib_get_or_null(as_router_lib, AS->id, ROUTING_ASR_LEVEL),
+  xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, AS->id, ROUTING_ASR_LEVEL),
       "Refusing to create a second AS called \"%s\".", AS->id);
 
   _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
@@ -214,8 +214,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
 
-  xbt_lib_set(as_router_lib, netcard->name(), ROUTING_ASR_LEVEL,
-              (void *) netcard);
+  xbt_lib_set(as_router_lib, netcard->name(), ROUTING_ASR_LEVEL, (void *) netcard);
   XBT_DEBUG("Having set name '%s' id '%d'", new_as->name_, netcard->id());
 
   /* set the new current component of the tree */
@@ -430,15 +429,6 @@ xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
 }
 
 }
-}
-
-e_surf_network_element_type_t routing_get_network_element_type(const char *name)
-{
-  simgrid::surf::NetCard *rc = sg_netcard_by_name_or_null(name);
-  if (rc)
-    return rc->getRcType();
-
-  return SURF_NETWORK_ELEMENT_NULL;
 }
 
 /** @brief create the root AS */

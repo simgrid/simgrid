@@ -89,7 +89,7 @@ typedef enum {
 
 typedef struct s_container *container_t;
 typedef struct s_container {
-  sg_netcard_t net_elm;
+  sg_netcard_t netcard;
   char *name;     /* Unique name of this container */
   char *id;       /* Unique id of this container */
   type_t type;    /* Type of this container */
