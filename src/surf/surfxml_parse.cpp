@@ -827,7 +827,7 @@ void ETag_surfxml_bypassRoute(void){
   route.symmetrical = FALSE;
 
   sg_platf_new_bypassRoute(&route);
-  parsed_link_list = NULL;
+  xbt_dynar_free(&parsed_link_list);
 }
 
 void ETag_surfxml_bypassASroute(void){
@@ -843,7 +843,7 @@ void ETag_surfxml_bypassASroute(void){
   ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
   sg_platf_new_bypassRoute(&ASroute);
-  parsed_link_list = NULL;
+  xbt_dynar_free(&parsed_link_list);
 }
 
 void ETag_surfxml_trace(void){

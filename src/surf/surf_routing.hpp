@@ -13,6 +13,9 @@
 #include "surf_interface.hpp"
 #include <float.h>
 
+#include <vector>
+#include <map>
+
 XBT_PUBLIC(void) routing_model_create( void *loopback);
 
 namespace simgrid {
@@ -64,6 +67,7 @@ public:
 
 private:
   bool sealed_ = false; // We cannot add more content when sealed
+  std::map<std::string, std::vector<Link*>*> *bypassRoutes_ = nullptr;
 
 public:
   /**
@@ -96,12 +100,12 @@ public:
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
 
-  virtual sg_platf_route_cbarg_t getBypassRoute(NetCard *src, NetCard *dst,double *lat);
+  std::vector<Link*> *getBypassRoute(NetCard *src, NetCard *dst);
 
   /* Add content to the AS, at parsing time. It should be sealed afterward. */
   virtual int addComponent(NetCard *elm); /* A host, a router or an AS, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
-  virtual void addBypassRoute(sg_platf_route_cbarg_t e_route);
+  void addBypassRoute(sg_platf_route_cbarg_t e_route);
 };
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {

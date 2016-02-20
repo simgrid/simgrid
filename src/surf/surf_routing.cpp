@@ -21,6 +21,8 @@
 #include "src/surf/surf_routing_full.hpp"
 #include "src/surf/surf_routing_vivaldi.hpp"
 
+#include <vector>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
 namespace simgrid {
@@ -38,6 +40,10 @@ namespace surf {
     xbt_dict_free(&sons_);
     xbt_dynar_free(&vertices_);
     xbt_dynar_free(&upDownLinks);
+    if (nullptr != bypassRoutes_)
+      for (auto &kv : *bypassRoutes_)
+        delete kv.second;
+    delete bypassRoutes_;
     xbt_free(name_);
     delete netcard_;
   }
@@ -46,9 +52,6 @@ namespace surf {
     sealed_ = true;
   }
 
-  sg_platf_route_cbarg_t As::getBypassRoute(NetCard * /*src*/, NetCard * /*dst*/, double * /*lat*/) {
-    return NULL;
-  }
   xbt_dynar_t As::getOneLinkRoutes() {
     return NULL;
   }
@@ -62,8 +65,151 @@ namespace surf {
   void As::addRoute(sg_platf_route_cbarg_t /*route*/){
     xbt_die("AS %s does not accept new routes (wrong class).",name_);
   }
-  void As::addBypassRoute(sg_platf_route_cbarg_t /*e_route*/){
-    xbt_die("AS %s does not accept new bypass routes (wrong class).",name_);
+
+  std::vector<Link*> *As::getBypassRoute(NetCard *src, NetCard *dst)
+  {
+    // If never set a bypass route return NULL without any further computations
+    XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
+    if (bypassRoutes_ == nullptr)
+      return nullptr;
+
+    std::vector<Link*> *bypassedRoute = nullptr;
+
+    if(dst->containingAS() == this && src->containingAS() == this ){
+      char *route_name = bprintf("%s#%s", src->name(), dst->name());
+      if (bypassRoutes_->find(route_name) != bypassRoutes_->end()) {
+        bypassedRoute = bypassRoutes_->at(route_name);
+        XBT_DEBUG("Found a bypass route with %ld links",bypassedRoute->size());
+      }
+      free(route_name);
+      return bypassedRoute;
+    }
+
+    int index_src, index_dst;
+    As **current_src = NULL;
+    As **current_dst = NULL;
+
+    As *src_as = src->containingAS();
+    As *dst_as = dst->containingAS();
+
+    /* (2) find the path to the root routing component */
+    xbt_dynar_t path_src = xbt_dynar_new(sizeof(As*), NULL);
+    As *current = src_as;
+    while (current != NULL) {
+      xbt_dynar_push(path_src, &current);
+      current = current->father_;
+    }
+    xbt_dynar_t path_dst = xbt_dynar_new(sizeof(As*), NULL);
+    current = dst_as;
+    while (current != NULL) {
+      xbt_dynar_push(path_dst, &current);
+      current = current->father_;
+    }
+
+    /* (3) find the common father */
+    index_src = path_src->used - 1;
+    index_dst = path_dst->used - 1;
+    current_src = (As **) xbt_dynar_get_ptr(path_src, index_src);
+    current_dst = (As **) xbt_dynar_get_ptr(path_dst, index_dst);
+    while (index_src >= 0 && index_dst >= 0 && *current_src == *current_dst) {
+      xbt_dynar_pop_ptr(path_src);
+      xbt_dynar_pop_ptr(path_dst);
+      index_src--;
+      index_dst--;
+      current_src = (As **) xbt_dynar_get_ptr(path_src, index_src);
+      current_dst = (As **) xbt_dynar_get_ptr(path_dst, index_dst);
+    }
+
+    int max_index_src = path_src->used - 1;
+    int max_index_dst = path_dst->used - 1;
+
+    int max_index = std::max(max_index_src, max_index_dst);
+
+    for (int max = 0; max <= max_index; max++) {
+      for (int i = 0; i < max; i++) {
+        if (i <= max_index_src && max <= max_index_dst) {
+          char *route_name = bprintf("%s#%s",
+              (*(As **) (xbt_dynar_get_ptr(path_src, i)))->name_,
+              (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
+          if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
+            bypassedRoute = bypassRoutes_->at(route_name);
+          xbt_free(route_name);
+        }
+        if (bypassedRoute)
+          break;
+        if (max <= max_index_src && i <= max_index_dst) {
+          char *route_name = bprintf("%s#%s",
+              (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
+              (*(As **) (xbt_dynar_get_ptr(path_dst, i)))->name_);
+          if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
+            bypassedRoute = bypassRoutes_->at(route_name);
+          xbt_free(route_name);
+        }
+        if (bypassedRoute)
+          break;
+      }
+
+      if (bypassedRoute)
+        break;
+
+      if (max <= max_index_src && max <= max_index_dst) {
+        char *route_name = bprintf("%s#%s",
+            (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
+            (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
+
+        if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
+          bypassedRoute = bypassRoutes_->at(route_name);
+        xbt_free(route_name);
+      }
+      if (bypassedRoute)
+        break;
+    }
+
+    xbt_dynar_free(&path_src);
+    xbt_dynar_free(&path_dst);
+
+    return bypassedRoute;
+  }
+
+  void As::addBypassRoute(sg_platf_route_cbarg_t e_route){
+    const char *src = e_route->src;
+    const char *dst = e_route->dst;
+
+    if(bypassRoutes_ == nullptr)
+      bypassRoutes_ = new std::map<std::string, std::vector<Link*>*>();
+
+    char *route_name = bprintf("%s#%s", src, dst);
+
+    /* Argument validity checks */
+    if (e_route->gw_dst) {
+      XBT_DEBUG("Load bypassASroute from %s@%s to %s@%s",
+          src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
+      xbt_assert(!xbt_dynar_is_empty(e_route->link_list), "Bypass route between %s@%s and %s@%s cannot be empty.",
+          src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
+      xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(),
+          "The bypass route between %s@%s and %s@%s already exists.",
+          src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
+    } else {
+      XBT_DEBUG("Load bypassRoute from %s to %s", src, dst);
+      xbt_assert(!xbt_dynar_is_empty(e_route->link_list),                 "Bypass route between %s and %s cannot be empty.",    src, dst);
+      xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(), "The bypass route between %s and %s already exists.", src, dst);
+    }
+
+    /* Build the value that will be stored in the dict */
+    std::vector<Link*> *newRoute = new std::vector<Link*>();
+    char *linkName;
+    unsigned int cpt;
+    xbt_dynar_foreach(e_route->link_list, cpt, linkName) {
+      Link *link = Link::byName(linkName);
+      if (link)
+        newRoute->push_back(link);
+      else
+        THROWF(mismatch_error, 0, "Link '%s' not found", linkName);
+    }
+
+    /* Store it */
+    bypassRoutes_->insert({route_name, newRoute});
+    xbt_free(route_name);
   }
 
 }} // namespace simgrid::surf
@@ -332,10 +478,13 @@ static void _get_route_and_latency(simgrid::surf::NetCard *src, simgrid::surf::N
       common_father->name_, src_father->name_, dst_father->name_);
 
   /* Check whether a direct bypass is defined. If so, use it and bail out */
-  sg_platf_route_cbarg_t bypassed_route = common_father->getBypassRoute(src, dst, latency);
-  if (bypassed_route) {
-    xbt_dynar_merge(links, &bypassed_route->link_list);
-    routing_route_free(bypassed_route);
+  std::vector<Link*> *bypassed_route = common_father->getBypassRoute(src, dst);
+  if (nullptr != bypassed_route) {
+    for (Link *link : *bypassed_route) {
+      xbt_dynar_push(*links,&link);
+      if (latency)
+        *latency += link->getLatency();
+    }
     return;
   }
 

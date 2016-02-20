@@ -22,17 +22,10 @@ public:
   ~AsRoutedGraph();
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
-  virtual sg_platf_route_cbarg_t getBypassRoute(NetCard *src, NetCard *dst, double *lat) override;
-
-  /* Add content to the AS, at parsing time */
-  virtual void addBypassRoute(sg_platf_route_cbarg_t e_route) override;
-
   virtual sg_platf_route_cbarg_t newExtendedRoute(e_surf_routing_hierarchy_t hierarchy, sg_platf_route_cbarg_t routearg, int change_order);
 protected:
   void getRouteCheckParams(NetCard *src, NetCard *dst);
   void addRouteCheckParams(sg_platf_route_cbarg_t route);
-private:
-  xbt_dict_t bypassRoutes_ = nullptr;;
 };
 
 }
