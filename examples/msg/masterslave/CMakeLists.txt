@@ -3,7 +3,6 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(masterslave_failure "masterslave_failure.c")
 add_executable(masterslave_forwarder "masterslave_forwarder.c")
 add_executable(masterslave_mailbox "masterslave_mailbox.c")
-add_executable(masterslave_cluster "masterslave_cluster.c")
 add_executable(masterslave_kill "masterslave_kill.c")
 add_executable(masterslave_arg "masterslave_arg.c")
 
@@ -12,7 +11,6 @@ target_link_libraries(masterslave_failure simgrid )
 target_link_libraries(masterslave_mailbox simgrid )
 target_link_libraries(masterslave_kill simgrid )
 target_link_libraries(masterslave_arg simgrid )
-target_link_libraries(masterslave_cluster simgrid)
 
 set(tesh_files
   ${tesh_files}
@@ -43,7 +41,6 @@ set(xml_files
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_arg.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_cluster.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_failure.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_forwarder.c
   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_kill.c
