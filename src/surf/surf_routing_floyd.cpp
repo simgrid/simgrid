@@ -27,17 +27,15 @@ AsFloyd::AsFloyd(const char*name)
 
 AsFloyd::~AsFloyd(){
   int i, j;
-  int table_size;
-  table_size = (int)xbt_dynar_length(vertices_);
+  int table_size = (int)xbt_dynar_length(vertices_);
   if (linkTable_ == NULL) // Dealing with a parse error in the file?
     return;
   /* Delete link_table */
   for (i = 0; i < table_size; i++)
-    for (j = 0; j < table_size; j++) {
+    for (j = 0; j < table_size; j++)
       routing_route_free(TO_FLOYD_LINK(i, j));
-    }
   xbt_free(linkTable_);
-  /* Delete predecessor and cost table */
+
   xbt_free(predecessorTable_);
   xbt_free(costTable_);
 }

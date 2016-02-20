@@ -23,8 +23,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
 
-static int no_bypassroute_declared = 1;
-
 void routing_route_free(sg_platf_route_cbarg_t route)
 {
   if (route) {
@@ -51,6 +49,9 @@ void AsRoutedGraph::parseBypassroute(sg_platf_route_cbarg_t e_route)
   char *src = (char*)(e_route->src);
   char *dst = (char*)(e_route->dst);
 
+  if(bypassRoutes_ == nullptr)
+    bypassRoutes_ = xbt_dict_new_homogeneous((void (*)(void *)) routing_route_free);
+
   if(e_route->gw_dst)
     XBT_DEBUG("Load bypassASroute from \"%s\" to \"%s\"", src, dst);
   else
@@ -75,7 +76,6 @@ void AsRoutedGraph::parseBypassroute(sg_platf_route_cbarg_t e_route)
   xbt_dynar_free(&(e_route->link_list));
 
   xbt_dict_set(dict_bypassRoutes, route_name, new_e_route, NULL);
-  no_bypassroute_declared = 0;
   xbt_free(route_name);
 }
 
@@ -196,21 +196,18 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
   }
 }
 
-sg_platf_route_cbarg_t AsRoutedGraph::getBypassRoute(NetCard *src,
-                                               NetCard *dst,
-                                               double *lat)
+sg_platf_route_cbarg_t AsRoutedGraph::getBypassRoute(NetCard *src, NetCard *dst, double *lat)
 {
   // If never set a bypass route return NULL without any further computations
   XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
-  if (no_bypassroute_declared)
+  if (bypassRoutes_ == nullptr)
     return NULL;
 
   sg_platf_route_cbarg_t e_route_bypass = NULL;
-  xbt_dict_t dict_bypassRoutes = bypassRoutes_;
 
   if(dst->containingAS() == this && src->containingAS() == this ){
     char *route_name = bprintf("%s#%s", src->name(), dst->name());
-    e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
+    e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(bypassRoutes_, route_name);
     if(e_route_bypass)
       XBT_DEBUG("Find bypass route with %ld links",xbt_dynar_length(e_route_bypass->link_list));
     free(route_name);
@@ -264,28 +261,23 @@ sg_platf_route_cbarg_t AsRoutedGraph::getBypassRoute(NetCard *src,
     int max_index_dst = path_dst->used - 1;
 
     int max_index = std::max(max_index_src, max_index_dst);
-    int i, max;
 
-    for (max = 0; max <= max_index; max++) {
-      for (i = 0; i < max; i++) {
+    for (int max = 0; max <= max_index; max++) {
+      for (int i = 0; i < max; i++) {
         if (i <= max_index_src && max <= max_index_dst) {
           char *route_name = bprintf("%s#%s",
-              (*(As **)
-                  (xbt_dynar_get_ptr(path_src, i)))->name_,
-                  (*(As **)
-                      (xbt_dynar_get_ptr(path_dst, max)))->name_);
-          e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
+              (*(As **) (xbt_dynar_get_ptr(path_src, i)))->name_,
+              (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
+          e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(bypassRoutes_, route_name);
           xbt_free(route_name);
         }
         if (e_route_bypass)
           break;
         if (max <= max_index_src && i <= max_index_dst) {
           char *route_name = bprintf("%s#%s",
-              (*(As **)
-                  (xbt_dynar_get_ptr(path_src, max)))->name_,
-                  (*(As **)
-                      (xbt_dynar_get_ptr(path_dst, i)))->name_);
-          e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
+              (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
+              (*(As **) (xbt_dynar_get_ptr(path_dst, i)))->name_);
+          e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(bypassRoutes_, route_name);
           xbt_free(route_name);
         }
         if (e_route_bypass)
@@ -297,11 +289,9 @@ sg_platf_route_cbarg_t AsRoutedGraph::getBypassRoute(NetCard *src,
 
       if (max <= max_index_src && max <= max_index_dst) {
         char *route_name = bprintf("%s#%s",
-            (*(As **)
-                (xbt_dynar_get_ptr(path_src, max)))->name_,
-                (*(As **)
-                    (xbt_dynar_get_ptr(path_dst, max)))->name_);
-        e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(dict_bypassRoutes, route_name);
+            (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
+            (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
+        e_route_bypass = (sg_platf_route_cbarg_t) xbt_dict_get_or_null(bypassRoutes_, route_name);
         xbt_free(route_name);
       }
       if (e_route_bypass)

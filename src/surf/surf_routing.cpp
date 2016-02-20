@@ -315,8 +315,6 @@ static void elements_father(sg_netcard_t src, sg_netcard_t dst,
  * \param dst the destination host name
  * \param *route the route where the links are stored. It is either NULL or a ready to use dynar
  * \param *latency the latency, if needed
- *
- * This function is called by "get_route" and "get_latency". It allows to walk recursively through the ASes tree.
  */
 static void _get_route_and_latency(simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
   xbt_dynar_t * links, double *latency)
