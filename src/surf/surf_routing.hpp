@@ -101,7 +101,7 @@ public:
   /* Add content to the AS, at parsing time. It should be sealed afterward. */
   virtual int addComponent(NetCard *elm); /* A host, a router or an AS, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
-  virtual void parseBypassroute(sg_platf_route_cbarg_t e_route);
+  virtual void addBypassRoute(sg_platf_route_cbarg_t e_route);
 };
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {

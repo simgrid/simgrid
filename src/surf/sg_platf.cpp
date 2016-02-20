@@ -514,7 +514,7 @@ void sg_platf_new_route(sg_platf_route_cbarg_t route)
 
 void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
 {
-  routing_get_current()->parseBypassroute(bypassRoute);
+  routing_get_current()->addBypassRoute(bypassRoute);
 }
 
 void sg_platf_new_process(sg_platf_process_cbarg_t process)

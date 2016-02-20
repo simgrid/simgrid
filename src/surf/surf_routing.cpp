@@ -62,7 +62,7 @@ namespace surf {
   void As::addRoute(sg_platf_route_cbarg_t /*route*/){
     xbt_die("AS %s does not accept new routes (wrong class).",name_);
   }
-  void As::parseBypassroute(sg_platf_route_cbarg_t /*e_route*/){
+  void As::addBypassRoute(sg_platf_route_cbarg_t /*e_route*/){
     xbt_die("AS %s does not accept new bypass routes (wrong class).",name_);
   }
 

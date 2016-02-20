@@ -44,7 +44,7 @@ AsRoutedGraph::~AsRoutedGraph()
   xbt_dict_free(&bypassRoutes_);
 }
 
-void AsRoutedGraph::parseBypassroute(sg_platf_route_cbarg_t e_route)
+void AsRoutedGraph::addBypassRoute(sg_platf_route_cbarg_t e_route)
 {
   char *src = (char*)(e_route->src);
   char *dst = (char*)(e_route->dst);
