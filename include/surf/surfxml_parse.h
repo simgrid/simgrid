@@ -50,32 +50,5 @@ XBT_PUBLIC(int) surf_parse_lex_destroy(void);
 /* What is needed to bypass the parser. */
 XBT_PUBLIC_DATA(int_f_void_t) surf_parse;       /* Entry-point to the parser. Set this to your function. */
 
-/* Set of macros to make the bypassing work easier.
- * See examples/msg/masterslave_bypass.c for an example of use */
-
-extern unsigned int surfxml_buffer_stack_stack_ptr;
-extern unsigned int surfxml_buffer_stack_stack[1024];
-
-#define SURFXML_BUFFER_SET(key,val) do { \
-  AX_surfxml_##key=AX_ptr; \
-  strcpy(A_surfxml_##key,val); \
-  AX_ptr+=(int)strlen(val)+1; } while(0)
-
-#define SURFXML_BUFFER_RESET() do { \
-  AX_ptr = 0; \
-  memset(surfxml_bufferstack,0,surfxml_bufferstack_size); } while(0)
-
-#define SURFXML_START_TAG(tag) \
-  do{                                                                   \
-    surfxml_buffer_stack_stack[surfxml_buffer_stack_stack_ptr++] = AX_ptr; \
-    STag_surfxml_##tag();                                               \
-  }while(0)
-
-#define SURFXML_END_TAG(tag)                                            \
-  do{                                                                   \
-    AX_ptr = surfxml_buffer_stack_stack[--surfxml_buffer_stack_stack_ptr]; \
-    ETag_surfxml_##tag();                                               \
-  } while(0)
-
 SG_END_DECL()
 #endif
