@@ -39,9 +39,9 @@ public:
   double integrateSimplePoint(double a);
   double solveSimple(double a, double amount);
 
-  double *p_timePoints;
-  double *p_integral;
-  int m_nbPoints;
+  double *timePoints_;
+  double *integral_;
+  int nbPoints_;
   int binarySearch(double *array, double a, int low, int high);
 };
 
@@ -54,7 +54,7 @@ enum trace_type {
 class CpuTiTgmr {
 public:
   CpuTiTgmr(trace_type type, double value)
-    : m_type(type), m_value(value)
+    : type_(type), value_(value)
   {};
   CpuTiTgmr(tmgr_trace_t speedTrace, double value);
   ~CpuTiTgmr();
@@ -64,15 +64,15 @@ public:
   double solveSomewhatSimple(double a, double amount);
   double getPowerScale(double a);
 
-  trace_type m_type;
-  double m_value;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
+  trace_type type_;
+  double value_;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
   /* Dynamic */
-  double m_lastTime = 0.0;             /*< Integral interval last point (discrete time) */
-  double m_total = 0.0;                 /*< Integral total between 0 and last_pointn */
+  double lastTime_ = 0.0;             /*< Integral interval last point (discrete time) */
+  double total_    = 0.0;             /*< Integral total between 0 and last_pointn */
 
-  CpuTiTrace *p_trace = nullptr;
-  tmgr_trace_t p_speedTrace = nullptr;
+  CpuTiTrace *trace_ = nullptr;
+  tmgr_trace_t speedTrace_ = nullptr;
 };
 
 /**********
@@ -82,8 +82,7 @@ public:
 class CpuTiAction: public CpuAction {
   friend class CpuTi;
 public:
-  CpuTiAction(CpuTiModel *model, double cost, bool failed,
-                   CpuTi *cpu);
+  CpuTiAction(CpuTiModel *model, double cost, bool failed, CpuTi *cpu);
 
   void setState(e_surf_action_state_t state) override;
   int unref() override;
@@ -96,17 +95,15 @@ public:
   double getRemains() override;
   void setAffinity(Cpu * /*cpu*/, unsigned long /*mask*/) override {};
 
-  CpuTi *p_cpu;
-  int m_indexHeap;
-  int m_suspended = 0;
+  CpuTi *cpu_;
+  int indexHeap_;
+  int suspended_ = 0;
 public:
   boost::intrusive::list_member_hook<> action_ti_hook;
 };
 
-typedef boost::intrusive::member_hook<
-  CpuTiAction, boost::intrusive::list_member_hook<>, &CpuTiAction::action_ti_hook> ActionTiListOptions;
-typedef boost::intrusive::list<
-  CpuTiAction, ActionTiListOptions > ActionTiList;
+typedef boost::intrusive::member_hook<CpuTiAction, boost::intrusive::list_member_hook<>, &CpuTiAction::action_ti_hook> ActionTiListOptions;
+typedef boost::intrusive::list<CpuTiAction, ActionTiListOptions > ActionTiList;
 
 /************
  * Resource *
@@ -131,19 +128,18 @@ public:
 
   void modified(bool modified);
 
-  CpuTiTgmr *p_availTrace;       /*< Structure with data needed to integrate trace file */
-  ActionTiList *p_actionSet;        /*< set with all actions running on cpu */
-  double m_sumPriority;          /*< the sum of actions' priority that are running on cpu */
-  double m_lastUpdate = 0;       /*< last update of actions' remaining amount done */
+  CpuTiTgmr *availTrace_;       /*< Structure with data needed to integrate trace file */
+  ActionTiList *actionSet_;        /*< set with all actions running on cpu */
+  double sumPriority_;          /*< the sum of actions' priority that are running on cpu */
+  double lastUpdate_ = 0;       /*< last update of actions' remaining amount done */
 
-  double current_frequency;
+  double currentFrequency_;
 
 public:
   boost::intrusive::list_member_hook<> cpu_ti_hook;
 };
 
-typedef boost::intrusive::member_hook<
-  CpuTi, boost::intrusive::list_member_hook<>, &CpuTi::cpu_ti_hook> CpuTiListOptions;
+typedef boost::intrusive::member_hook<CpuTi, boost::intrusive::list_member_hook<>, &CpuTi::cpu_ti_hook> CpuTiListOptions;
 typedef boost::intrusive::list<CpuTi, CpuTiListOptions> CpuTiList;
 
 /*********
@@ -160,9 +156,9 @@ public:
   double next_occuring_event(double now) override;
   void updateActionsState(double now, double delta) override;
 
-  ActionList *p_runningActionSetThatDoesNotNeedBeingChecked;
-  CpuTiList *p_modifiedCpu;
-  xbt_heap_t p_tiActionHeap;
+  ActionList *runningActionSetThatDoesNotNeedBeingChecked_;
+  CpuTiList *modifiedCpu_;
+  xbt_heap_t tiActionHeap_;
 
 protected:
   void NotifyResourceTurnedOn(simgrid::surf::Resource*){};
