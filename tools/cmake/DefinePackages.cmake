@@ -8,7 +8,6 @@ set(EXTRA_DIST
   src/mc/mc_mmu.h
   src/mc/PageStore.hpp
   src/mc/mc_record.h
-  src/include/simgrid/platf_interface.h
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_interface.h
   src/include/surf/datatypes.h
@@ -60,10 +59,11 @@ set(EXTRA_DIST
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
   src/surf/ns3/red-queue.h
-  src/surf/platform.hpp
   src/surf/plugins/energy.hpp
-  src/surf/simgrid.dtd
-  src/surf/simgrid_dtd.c
+  src/surf/xml/simgrid.dtd
+  src/surf/xml/simgrid_dtd.h
+  src/surf/xml/simgrid_dtd.c
+  src/surf/xml/surfxml_sax_cb.cpp
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -79,7 +79,6 @@ set(EXTRA_DIST
   src/surf/surf_routing_none.hpp
   src/surf/surf_routing_private.hpp
   src/surf/surf_routing_vivaldi.hpp
-  src/surf/surfxml_parse.cpp
   src/surf/vm_hl13.hpp
   src/surf/PropertyHolder.hpp
   src/surf/virtual_machine.hpp
@@ -336,8 +335,10 @@ set(SURF_SRC
   src/surf/surf_routing_RoutedGraph.cpp
   src/surf/surf_routing_none.cpp
   src/surf/surf_routing_vivaldi.cpp
-  src/surf/surfxml_parse.cpp
-  src/surf/surfxml_parseplatf.cpp
+  src/surf/xml/platf.hpp
+  src/surf/xml/platf_private.hpp
+  src/surf/xml/surfxml_sax_cb.cpp
+  src/surf/xml/surfxml_parseplatf.cpp
   src/surf/trace_mgr.hpp
   src/surf/trace_mgr.cpp
   src/surf/vm_hl13.cpp
@@ -653,7 +654,6 @@ set(headers_to_install
   include/simgrid/datatypes.h
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
-  include/simgrid/platf.h
   include/simgrid/simix.h
   include/simgrid/simix.hpp
   include/simgrid/host.h
@@ -672,9 +672,7 @@ set(headers_to_install
   include/smpi/mpi.h
   include/smpi/smpi.h
   include/smpi/smpi_main.h
-  include/surf/simgrid_dtd.h
   include/surf/surf_routing.h
-  include/surf/surfxml_parse.h
   include/xbt.h
   include/xbt/RngStream.h
   include/xbt/asserts.h

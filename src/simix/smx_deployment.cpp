@@ -8,7 +8,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
-#include "surf/surfxml_parse.h"
+#include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
                                 "Logging specific to SIMIX (deployment)");

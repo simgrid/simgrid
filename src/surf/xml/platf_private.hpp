@@ -1,4 +1,4 @@
-/* platf.h - Public interface to the SimGrid platforms                      */
+/* platf_private.h - Interface to the SimGrid platforms which visibility should be limited to this directory */
 
 /* Copyright (c) 2004-2015. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -9,11 +9,16 @@
 #ifndef SG_PLATF_H
 #define SG_PLATF_H
 
-#include <xbt.h>
-#include <simgrid/host.h>
-#include "forward.h"
+#include "simgrid/host.h"
+#include "src/surf/xml/platf.hpp"
 
 SG_BEGIN_DECL()
+#include "src/surf/xml/simgrid_dtd.h"
+
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
 
 static inline char* sg_storage_name(sg_storage_t storage) {
   return storage->key;
@@ -251,6 +256,11 @@ typedef struct s_sg_platf_AS_cbarg {
 /** opaque structure defining a event generator for availability based on a probability distribution */
 typedef struct probabilist_event_generator *probabilist_event_generator_t;
 
+/********** Routing **********/
+void routing_AS_begin(sg_platf_AS_cbarg_t AS);
+void routing_AS_end(void);
+void routing_cluster_add_backbone(Link* bb);
+surf_As* routing_get_current();
 /*** END of the parsing cruft ***/
 
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
@@ -279,6 +289,31 @@ XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
 
+/* Prototypes of the functions offered by flex */
+XBT_PUBLIC(int) surf_parse_lex(void);
+XBT_PUBLIC(int) surf_parse_get_lineno(void);
+XBT_PUBLIC(FILE *) surf_parse_get_in(void);
+XBT_PUBLIC(FILE *) surf_parse_get_out(void);
+XBT_PUBLIC(yy_size_t) surf_parse_get_leng(void);
+XBT_PUBLIC(char *) surf_parse_get_text(void);
+XBT_PUBLIC(void) surf_parse_set_lineno(int line_number);
+XBT_PUBLIC(void) surf_parse_set_in(FILE * in_str);
+XBT_PUBLIC(void) surf_parse_set_out(FILE * out_str);
+XBT_PUBLIC(int) surf_parse_get_debug(void);
+XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
+XBT_PUBLIC(int) surf_parse_lex_destroy(void);
+
+
 SG_END_DECL()
+
+namespace simgrid {
+namespace surf {
+
+extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_link_cbarg_t)> on_link;
+extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
+extern XBT_PRIVATE simgrid::xbt::signal<void(void)> on_postparse;
+
+}
+}
 
 #endif                          /* SG_PLATF_H */

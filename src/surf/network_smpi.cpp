@@ -32,7 +32,7 @@ static int factor_cmp(const void *pa, const void *pb)
          (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
 }
 
-#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 {
   char *value = NULL;

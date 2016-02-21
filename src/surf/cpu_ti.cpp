@@ -7,7 +7,6 @@
 #include "cpu_ti.hpp"
 #include "xbt/heap.h"
 #include "src/surf/trace_mgr.hpp"
-#include "src/surf/platform.hpp"
 
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_

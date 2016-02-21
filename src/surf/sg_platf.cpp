@@ -10,15 +10,13 @@
 #include "xbt/dict.h"
 #include "xbt/RngStream.h"
 #include <xbt/signal.hpp>
-#include "simgrid/platf_interface.h"
 #include "surf/surf.h"
 
 #include "src/simix/smx_private.h"
-#include "src/surf/platform.hpp"
 
-#include "surf/surfxml_parse.h"// FIXME: brain dead public header
+#include "src/include/simgrid/sg_config.h"
+#include "src/surf/xml/platf_private.hpp"
 
-#include "src/surf/platform.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/host_interface.hpp"
 #include "src/surf/network_interface.hpp"
@@ -617,6 +615,75 @@ void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
 
 void sg_platf_end() {
   simgrid::surf::on_postparse();
+}
+
+/* Pick the right models for CPU, net and host, and call their model_init_preparse */
+static void surf_config_models_setup()
+{
+  const char *host_model_name;
+  const char *vm_model_name;
+  int host_id = -1;
+  int vm_id = -1;
+  char *network_model_name = NULL;
+  char *cpu_model_name = NULL;
+  int storage_id = -1;
+  char *storage_model_name = NULL;
+
+  host_model_name = xbt_cfg_get_string(_sg_cfg_set, "host/model");
+  vm_model_name = xbt_cfg_get_string(_sg_cfg_set, "vm/model");
+  network_model_name = xbt_cfg_get_string(_sg_cfg_set, "network/model");
+  cpu_model_name = xbt_cfg_get_string(_sg_cfg_set, "cpu/model");
+  storage_model_name = xbt_cfg_get_string(_sg_cfg_set, "storage/model");
+
+  /* Check whether we use a net/cpu model differing from the default ones, in which case
+   * we should switch to the "compound" host model to correctly dispatch stuff to
+   * the right net/cpu models.
+   */
+
+  if ((!xbt_cfg_is_default_value(_sg_cfg_set, "network/model") ||
+       !xbt_cfg_is_default_value(_sg_cfg_set, "cpu/model")) &&
+      xbt_cfg_is_default_value(_sg_cfg_set, "host/model")) {
+    host_model_name = "compound";
+    xbt_cfg_set_string(_sg_cfg_set, "host/model", host_model_name);
+  }
+
+  XBT_DEBUG("host model: %s", host_model_name);
+  host_id = find_model_description(surf_host_model_description, host_model_name);
+  if (!strcmp(host_model_name, "compound")) {
+    int network_id = -1;
+    int cpu_id = -1;
+
+    xbt_assert(cpu_model_name,
+                "Set a cpu model to use with the 'compound' host model");
+
+    xbt_assert(network_model_name,
+                "Set a network model to use with the 'compound' host model");
+
+    if(surf_cpu_model_init_preparse){
+      surf_cpu_model_init_preparse();
+    } else {
+      cpu_id =
+          find_model_description(surf_cpu_model_description, cpu_model_name);
+      surf_cpu_model_description[cpu_id].model_init_preparse();
+    }
+
+    network_id =
+        find_model_description(surf_network_model_description,
+                               network_model_name);
+    surf_network_model_description[network_id].model_init_preparse();
+  }
+
+  XBT_DEBUG("Call host_model_init");
+  surf_host_model_description[host_id].model_init_preparse();
+
+  XBT_DEBUG("Call vm_model_init");
+  vm_id = find_model_description(surf_vm_model_description, vm_model_name);
+  surf_vm_model_description[vm_id].model_init_preparse();
+
+  XBT_DEBUG("Call storage_model_init");
+  storage_id = find_model_description(surf_storage_model_description, storage_model_name);
+  surf_storage_model_description[storage_id].model_init_preparse();
+
 }
 
 void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)

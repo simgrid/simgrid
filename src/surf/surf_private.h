@@ -15,6 +15,7 @@
 #include "src/surf/trace_mgr.hpp"
 #include "src/instr/instr_private.h"
 #include "surf/surfxml_parse_values.h"
+#include "src/surf/xml/platf_private.hpp"
 
 #define NO_MAX_DURATION -1.0
 

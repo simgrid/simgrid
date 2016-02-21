@@ -10,13 +10,11 @@
 
 #include <algorithm>
 
-#include <xbt/dict.h>
-#include <xbt/log.h>
-#include <xbt/sysdep.h>
-#include <xbt/dynar.h>
-#include <xbt/graph.h>
-
-#include "simgrid/platf_interface.h"    // platform creation API internal interface
+#include "xbt/dict.h"
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
+#include "xbt/dynar.h"
+#include "xbt/graph.h"
 
 #include "surf_routing_private.hpp"
 #include "network_interface.hpp"

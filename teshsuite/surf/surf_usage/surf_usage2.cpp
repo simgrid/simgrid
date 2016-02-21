@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include "simgrid/sg_config.h"
 #include "surf/surf.h"
-#include "surf/surfxml_parse.h" // for reset callback
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/cpu_interface.hpp"
 

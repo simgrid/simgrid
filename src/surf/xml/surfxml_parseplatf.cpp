@@ -8,11 +8,10 @@
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/dict.h"
-#include "simgrid/platf.h"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 
-#include <surf/surfxml_parse.h>
+#include "src/surf/xml/platf.hpp"
 
 #ifdef HAVE_LUA
 extern "C" {

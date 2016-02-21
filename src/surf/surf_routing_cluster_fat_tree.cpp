@@ -16,7 +16,7 @@
 #include <fstream>
 #include <sstream>
 
-#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_fat_tree, surf, "Routing for fat trees");

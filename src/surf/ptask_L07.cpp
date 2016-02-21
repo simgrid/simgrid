@@ -13,7 +13,6 @@
 #include "cpu_interface.hpp"
 #include "surf_routing.hpp"
 #include "xbt/lib.h"
-#include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);

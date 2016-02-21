@@ -8,7 +8,6 @@
 #include "cpu_ti.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
-#include "src/surf/platform.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
                                 "Logging specific to the SURF CPU IMPROVED module");

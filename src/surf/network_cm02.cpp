@@ -9,7 +9,6 @@
 #include "network_cm02.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
-#include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 

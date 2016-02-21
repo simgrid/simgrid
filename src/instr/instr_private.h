@@ -26,7 +26,6 @@ SG_BEGIN_DECL()
 
 #include "xbt/graph.h"
 #include "xbt/dict.h"
-#include "simgrid/platf.h"
 
 typedef enum {
   PAJE_DefineContainerType,

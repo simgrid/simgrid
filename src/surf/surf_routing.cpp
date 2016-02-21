@@ -8,10 +8,8 @@
 #include "surf_routing_private.hpp"
 #include "surf_routing_cluster.hpp"
 
-#include "simgrid/platf_interface.h"    // platform creation API internal interface
 #include "simgrid/sg_config.h"
 #include "storage_interface.hpp"
-#include "src/surf/platform.hpp"
 #include "surf/surfxml_parse_values.h"
 
 #include "src/surf/surf_routing_cluster_torus.hpp"
@@ -20,7 +18,7 @@
 #include "src/surf/surf_routing_floyd.hpp"
 #include "src/surf/surf_routing_full.hpp"
 #include "src/surf/surf_routing_vivaldi.hpp"
-#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 #include <vector>
 

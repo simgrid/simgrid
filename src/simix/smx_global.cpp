@@ -37,7 +37,6 @@
 #endif 
 
 #include "src/mc/mc_record.h"
-#include "src/surf/platform.hpp"
 
 #ifdef HAVE_SMPI
 #include "src/smpi/private.h"

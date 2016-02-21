@@ -6,9 +6,6 @@
 
 #include "network_constant.hpp"
 
-#include "host_interface.hpp"
-#include "src/surf/platform.hpp"
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
 /*********

@@ -8,10 +8,7 @@
 
 #include "lua_private.h"
 #include "lua_utils.h"
-#include "xbt.h"
-#include "simgrid/msg.h"
-#include "simgrid/simdag.h"
-#include "surf/surfxml_parse.h"
+#include "src/surf/xml/platf.hpp"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");

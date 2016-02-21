@@ -7,8 +7,7 @@
 /* SimGrid Lua bindings                                                     */
 
 #include "lua_private.h"
-#include "simgrid/platf_interface.h"
-#include "surf/surfxml_parse.h"
+#include "src/surf/xml/platf.hpp"
 #include "surf/surf_routing.h"
 #include <string.h>
 #include <ctype.h>
@@ -360,8 +359,6 @@ int console_add_router(lua_State* L) {
 
   return 0;
 }
-
-#include "surf/surfxml_parse.h" /* to override surf_parse and bypass the parser */
 
 int console_add_route(lua_State *L) {
   XBT_DEBUG("Adding route");

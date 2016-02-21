@@ -8,7 +8,6 @@
 #include "src/surf/surf_private.h"
 #include "src/surf/host_interface.hpp"
 #include "simgrid/sg_config.h"
-#include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
@@ -65,7 +64,7 @@ static void parse_ns3_add_AS(simgrid::surf::As* as)
   xbt_lib_set(as_router_lib, as_id, NS3_ASR_LEVEL, ns3_add_AS(as_id) );
 }
 
-#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   const char *groups = NULL;

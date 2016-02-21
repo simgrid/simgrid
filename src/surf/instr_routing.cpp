@@ -8,7 +8,6 @@
 
 #include "src/surf/surf_private.h"
 #include "xbt/graph.h"
-#include "src/surf/platform.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 

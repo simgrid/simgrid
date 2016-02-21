@@ -80,7 +80,7 @@ StorageN11Model::~StorageN11Model(){
   storage_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
-#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
     const char* content_name, const char* content_type, xbt_dict_t properties,
     const char* attach)

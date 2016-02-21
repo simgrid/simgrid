@@ -11,7 +11,6 @@
 #include "xbt/dynar.h"
 #include "surf/maxmin.h"
 #include "surf/datatypes.h"
-#include "simgrid/platf_interface.h"
 #include "simgrid/forward.h"
 
 SG_BEGIN_DECL()
@@ -64,8 +63,6 @@ typedef struct tmgr_trace_iterator {
   sg_resource_t resource;
   int free_me;
 } s_tmgr_trace_event_t;
-
-XBT_PRIVATE double tmgr_event_generator_next_value(probabilist_event_generator_t generator);
 
 /* Creation functions */
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);

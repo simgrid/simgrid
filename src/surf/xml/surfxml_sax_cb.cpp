@@ -16,7 +16,7 @@
 #include "src/surf/surf_private.h"
 #include "simgrid/sg_config.h"
 
-#include <surf/surfxml_parse.h>
+#include "src/surf/xml/platf_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
                                 "Logging specific to the SURF parsing module");

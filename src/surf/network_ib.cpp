@@ -104,7 +104,7 @@ void surf_network_model_init_IB(void)
   
 }
 
-#include <surf/surfxml_parse.h> // FIXME: move that back to the parsing area
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 namespace simgrid {
 namespace surf {
