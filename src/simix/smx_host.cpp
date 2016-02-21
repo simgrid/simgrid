@@ -370,7 +370,7 @@ double SIMIX_execution_get_remains(smx_synchro_t synchro)
   double result = 0.0;
 
   if (synchro->state == SIMIX_RUNNING)
-    result = surf_action_get_remains(synchro->execution.surf_exec);
+    result = synchro->execution.surf_exec->getRemains();
 
   return result;
 }

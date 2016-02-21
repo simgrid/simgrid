@@ -209,10 +209,6 @@ double surf_host_get_available_speed(sg_host_t host){
   return host->pimpl_cpu->getAvailableSpeed();
 }
 
-xbt_dynar_t surf_host_get_attached_storage_list(sg_host_t host){
-  return get_casted_host(host)->getAttachedStorageList();
-}
-
 surf_action_t surf_host_open(sg_host_t host, const char* fullpath){
   return get_casted_host(host)->open(fullpath);
 }
@@ -252,27 +248,6 @@ int surf_host_file_seek(sg_host_t host, surf_file_t fd,
 
 int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return get_casted_host(host)->fileMove(fd, fullpath);
-}
-
-xbt_dynar_t surf_host_get_vms(sg_host_t host){
-  xbt_dynar_t vms = get_casted_host(host)->getVms();
-  xbt_dynar_t vms_ = xbt_dynar_new(sizeof(sg_host_t), NULL);
-  unsigned int cpt;
-  simgrid::surf::VirtualMachine *vm;
-  xbt_dynar_foreach(vms, cpt, vm) {
-    sg_host_t cpy_ = vm->getHost();
-    xbt_dynar_push(vms_, &cpy_);
-  }
-  xbt_dynar_free(&vms);
-  return vms_;
-}
-
-void surf_host_get_params(sg_host_t host, vm_params_t params){
-  get_casted_host(host)->getParams(params);
-}
-
-void surf_host_set_params(sg_host_t host, vm_params_t params){
-  get_casted_host(host)->setParams(params);
 }
 
 void surf_vm_destroy(sg_host_t vm){ // FIXME:DEADCODE
@@ -334,42 +309,6 @@ xbt_dict_t surf_storage_get_properties(surf_resource_t resource){
 
 const char* surf_storage_get_host(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->p_attach;
-}
-
-double surf_action_get_start_time(surf_action_t action){
-  return action->getStartTime();
-}
-
-double surf_action_get_finish_time(surf_action_t action){
-  return action->getFinishTime();
-}
-
-double surf_action_get_remains(surf_action_t action){
-  return action->getRemains();
-}
-
-void surf_action_set_category(surf_action_t action, const char *category){
-  action->setCategory(category);
-}
-
-void *surf_action_get_data(surf_action_t action){
-  return action->getData();
-}
-
-void surf_action_set_data(surf_action_t action, void *data){
-  action->setData(data);
-}
-
-e_surf_action_state_t surf_action_get_state(surf_action_t action){
-  return action->getState();
-}
-
-double surf_action_get_cost(surf_action_t action){
-  return action->getCost();
-}
-
-void surf_cpu_action_set_affinity(surf_action_t action, sg_host_t host, unsigned long mask) {
-  static_cast<simgrid::surf::CpuAction*>(action)->setAffinity(host->pimpl_cpu, mask);
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

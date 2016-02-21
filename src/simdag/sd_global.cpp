@@ -222,7 +222,7 @@ xbt_dynar_t SD_simulate(double how_long) {
       /* let's see which tasks have just failed */
       while ((action = surf_model_extract_failed_action_set(model))) {
         task = (SD_task_t) action->getData();
-        task->start_time = surf_action_get_start_time(task->surf_action);
+        task->start_time = task->surf_action->getStartTime();
         task->finish_time = surf_get_clock();
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
         SD_task_set_state(task, SD_FAILED);

@@ -251,9 +251,6 @@ XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t mo
  * @return The name of the surf resource
  */
 XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
-static inline const char * surf_cpu_name(surf_cpu_t cpu) {
-  return surf_resource_name((surf_cpp_resource_t)cpu);
-}
 
 /** @brief Get the available speed of cpu associated to a host */
 XBT_PUBLIC(double) surf_host_get_available_speed(sg_host_t host);
@@ -305,19 +302,6 @@ XBT_PUBLIC(sg_size_t) surf_host_get_free_size(sg_host_t resource, const char* na
  * @return The amount of used space in bytes
  */
 XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* name);
-
-/** @brief Get the list of VMs hosted on the host */
-XBT_PUBLIC(xbt_dynar_t) surf_host_get_vms(sg_host_t resource);
-
-/** @brief Retrieve the params of that VM
- * @details You can use fields ramsize and overcommit on a PM, too.
- */
-XBT_PUBLIC(void) surf_host_get_params(sg_host_t resource, vm_params_t params);
-
-/** @brief Sets the params of that VM/PM
- * @details You can use fields ramsize and overcommit on a PM, too.
- */
-XBT_PUBLIC(void) surf_host_set_params(sg_host_t resource, vm_params_t params);
 
 /**
  * @brief Destroy a VM
@@ -380,14 +364,6 @@ XBT_PUBLIC(void) surf_vm_set_bound(sg_host_t resource, double bound);
  * @param mask [description]
  */
 XBT_PUBLIC(void) surf_vm_set_affinity(sg_host_t resource, sg_host_t cpu, unsigned long mask);
-
-/**
- * @brief Get the list of storages attached to an host
- *
- * @param host The surf host
- * @return Dictionary of storage
- */
-XBT_PUBLIC(xbt_dynar_t) surf_host_get_attached_storage_list(sg_host_t host);
 
 /**
  * @brief Unlink a file descriptor
@@ -481,82 +457,6 @@ XBT_PUBLIC(sg_size_t) surf_storage_get_used_size(surf_resource_t resource);
 
 /** @brief return the properties set associated to that storage */
 XBT_PUBLIC(xbt_dict_t) surf_storage_get_properties(surf_resource_t resource);
-
-/**
- * @brief Get the data associated to the action
- *
- * @param action The surf action
- * @return The data associated to the action
- */
-XBT_PUBLIC(void*) surf_action_get_data(surf_action_t action);
-
-/**
- * @brief Set the data associated to the action
- * @details [long description]
- *
- * @param action The surf action
- * @param data The new data associated to the action
- */
-XBT_PUBLIC(void) surf_action_set_data(surf_action_t action, void *data);
-
-/**
- * @brief Get the start time of an action
- *
- * @param action The surf action
- * @return The start time in seconds from the beginning of the simulation
- */
-XBT_PUBLIC(double) surf_action_get_start_time(surf_action_t action);
-
-/**
- * @brief Get the finish time of an action
- *
- * @param action The surf action
- * @return The finish time in seconds from the beginning of the simulation
- */
-XBT_PUBLIC(double) surf_action_get_finish_time(surf_action_t action);
-
-/**
- * @brief Get the remains amount of work to do of an action
- *
- * @param action The surf action
- * @return  The remains amount of work to do
- */
-XBT_PUBLIC(double) surf_action_get_remains(surf_action_t action);
-
-/**
- * @brief Set the category of an action
- * @details [long description]
- *
- * @param action The surf action
- * @param category The new category of the action
- */
-XBT_PUBLIC(void) surf_action_set_category(surf_action_t action, const char *category);
-
-/**
- * @brief Get the state of an action
- *
- * @param action The surf action
- * @return The state of the action
- */
-XBT_PUBLIC(e_surf_action_state_t) surf_action_get_state(surf_action_t action);
-
-/**
- * @brief Get the cost of an action
- *
- * @param action The surf action
- * @return The cost of the action
- */
-XBT_PUBLIC(double) surf_action_get_cost(surf_action_t action);
-
-/**
- * @brief [brief desrciption]
- * @details [long description]
- *
- * @param action The surf cpu action
- * @param cpu [description]
- * @param mask [description]
- */
-XBT_PUBLIC(void) surf_cpu_action_set_affinity(surf_action_t action, sg_host_t cpu, unsigned long mask);
 
 /**
  * @brief [brief description]

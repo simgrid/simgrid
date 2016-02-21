@@ -983,7 +983,7 @@ double SIMIX_comm_get_remains(smx_synchro_t synchro)
   switch (synchro->state) {
 
   case SIMIX_RUNNING:
-    remains = surf_action_get_remains(synchro->comm.surf_comm);
+    remains = synchro->comm.surf_comm->getRemains();
     break;
 
   case SIMIX_WAITING:

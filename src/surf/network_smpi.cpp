@@ -88,8 +88,8 @@ void surf_network_model_init_SMPI(void)
 
   if (surf_network_model)
     return;
+  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkSmpiModel();
-  net_define_callbacks();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/sender_gap", 10e-6);

@@ -30,12 +30,6 @@ class XBT_PRIVATE NetworkSmpiModel;
 }
 
 /*********
- * Tools *
- *********/
-
-XBT_PRIVATE void net_define_callbacks(void);
-
-/*********
  * Model *
  *********/
 

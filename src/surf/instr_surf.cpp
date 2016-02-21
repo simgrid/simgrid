@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.h"
-#include "src/surf/surf_private.h"
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_surf, instr, "Tracing Surf");
 
@@ -46,5 +46,5 @@ void TRACE_surf_action(surf_action_t surf_action, const char *category)
   if (!category)
     return;
 
-  surf_action_set_category(surf_action, category);
+  surf_action->setCategory(category);
 }

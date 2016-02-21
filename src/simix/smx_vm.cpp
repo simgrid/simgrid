@@ -40,7 +40,7 @@ sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host)
 static long host_get_ramsize(sg_host_t vm, int *overcommit)
 {
   s_vm_params_t params;
-  surf_host_get_params(vm, &params);
+  vm->extension<simgrid::surf::Host>()->getParams(&params);
 
   if (overcommit)
     *overcommit = params.overcommit;
@@ -68,7 +68,7 @@ static int __can_be_started(sg_host_t vm)
   }
 
   long total_ramsize_of_vms = 0;
-  xbt_dynar_t dyn_vms = surf_host_get_vms(pm);
+  xbt_dynar_t dyn_vms = pm->extension<simgrid::surf::Host>()->getVms();
   {
     unsigned int cursor = 0;
     sg_host_t another_vm;
@@ -86,7 +86,6 @@ static int __can_be_started(sg_host_t vm)
     return 0;
   }
 
-  xbt_dynar_free(&dyn_vms);
   return 1;
 }
 
