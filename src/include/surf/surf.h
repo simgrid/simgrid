@@ -211,10 +211,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 
-/** @brief Get the route (dynar of sg_link_t) between two hosts */
-XBT_PUBLIC(xbt_dynar_t) surf_host_model_get_route(
-  surf_host_model_t model, sg_host_t src, sg_host_t dst);
-
 /** @brief Create a new VM on the specified host */
 XBT_PUBLIC(void) surf_vm_model_create(const char *name, sg_host_t host_PM);
 

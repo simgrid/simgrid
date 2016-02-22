@@ -181,13 +181,6 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-xbt_dynar_t surf_host_model_get_route(surf_host_model_t /*model*/,
-                                             sg_host_t src, sg_host_t dst){
-  xbt_dynar_t route = NULL;
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, &route, NULL);
-  return route;
-}
-
 void surf_vm_model_create(const char *name, sg_host_t ind_phys_host){
   surf_vm_model->createVM(name, ind_phys_host);
 }

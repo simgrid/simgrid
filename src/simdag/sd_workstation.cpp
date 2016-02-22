@@ -27,7 +27,8 @@ SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
 {
   void *surf_link;
   unsigned int cpt;
-  xbt_dynar_t surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model, src, dst);
+  xbt_dynar_t surf_route = NULL;
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, &surf_route, NULL);
 
   SD_link_t *list = xbt_new(SD_link_t, xbt_dynar_length(surf_route));
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
@@ -46,7 +47,9 @@ SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
  */
 int SD_route_get_size(sg_host_t src, sg_host_t dst)
 {
-  return xbt_dynar_length(surf_host_model_get_route((surf_host_model_t)surf_host_model, src, dst));
+  xbt_dynar_t surf_route = NULL;
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, &surf_route, NULL);
+  return xbt_dynar_length(surf_route);
 }
 
 /**
