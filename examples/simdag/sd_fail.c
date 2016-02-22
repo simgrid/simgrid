@@ -20,7 +20,7 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
 
   /* creation of the environment */
-  SD_create_environment("./faulty_host.xml");
+  SD_create_environment(argv[1]);
  
   /* creation of a single task that will poorly fail when the workstation
    * will stop */

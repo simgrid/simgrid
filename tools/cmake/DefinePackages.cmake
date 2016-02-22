@@ -1192,6 +1192,7 @@ set(CMAKE_SOURCE_FILES
   )
 
 set(PLATFORMS_EXAMPLES
+  examples/platforms/2clusters.xml
   examples/platforms/bypassASroute.xml
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
@@ -1206,12 +1207,16 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/conf/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/config_tracing.xml
+  examples/platforms/trace/faulty_host.trace
+  examples/platforms/trace/jupiter_speed.trace
+  examples/platforms/trace/link1_avail.trace
   examples/platforms/trace/linkBandwidth7.bw
   examples/platforms/trace/trace_A_failure.txt
   examples/platforms/trace/trace_A.txt
   examples/platforms/trace/trace_B.txt
   examples/platforms/data_center.xml
   examples/platforms/energy_platform.xml
+  examples/platforms/faulty_host.xml
   examples/platforms/fat_tree_cluster.xml
   examples/platforms/g5k.xml
   examples/platforms/griffon.xml
@@ -1243,6 +1248,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/syscoord/median_p2psim.xml
   examples/platforms/torus_cluster.xml
+  examples/platforms/two_hosts.xml
   examples/platforms/two_hosts_platform.xml
   examples/platforms/two_hosts_platform_shared.xml
   examples/platforms/two_hosts_platform_with_availability.xml

@@ -23,12 +23,6 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_avail.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag_fail.tesh
   PARENT_SCOPE)
-set(xml_files
-  ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/2clusters.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/faulty_host.xml
-  PARENT_SCOPE)
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/sd_avail.c
@@ -41,11 +35,4 @@ set(examples_src
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/platform_script.lua
-  ${CMAKE_CURRENT_SOURCE_DIR}/test_simdag.in
-  PARENT_SCOPE)
-set(txt_files
-  ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/faulty_host.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/jupiter_power.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/link1_avail.trace
   PARENT_SCOPE)

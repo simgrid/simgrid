@@ -1,7 +1,7 @@
 #! ./tesh
 p Test the DAX loader on a small DAX instance
 
-$ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ../2clusters.xml ./smalldax.xml
+$ $SG_TEST_EXENV ${bindir:=.}/dax_test --log=no_loc ${srcdir:=.}/../../platforms/2clusters.xml ./smalldax.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_daxparse/WARNING] Ignore file o1 size redefinition from 1000000 to 304
 > [0.000000] [sd_daxparse/WARNING] Ignore file o2 size redefinition from 1000000 to 304
