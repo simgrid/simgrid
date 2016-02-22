@@ -1214,8 +1214,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/energy_platform.xml
   examples/platforms/fat_tree_cluster.xml
   examples/platforms/g5k.xml
-  examples/platforms/generation_scripts/create_hierarchical_clusters.pl
-  examples/platforms/generation_scripts/enhancedDTDwithHierarchicalCluster.pl
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml

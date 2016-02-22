@@ -12,7 +12,6 @@ endif()
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/metaxml_test.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/metaxml_test2.tesh
   PARENT_SCOPE)
 set(examples_src
   ${examples_src}
