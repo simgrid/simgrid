@@ -10,6 +10,7 @@
 #include <string>
 
 #include <xbt/base.h>
+#include <xbt/range.hpp>
 
 #include "src/mc/mc_forward.h"
 #include "src/mc/LocationList.hpp"
@@ -19,14 +20,15 @@
 namespace simgrid {
 namespace mc {
 
+/** Debug information about a given function or scope within a function */
 class Frame {
 public:
   Frame();
 
   int tag;
   std::string name;
-  void *low_pc;
-  void *high_pc;
+  /** Range of instruction addresses for which this scope is valid */
+  simgrid::xbt::range<std::uint64_t> range;
   simgrid::dwarf::LocationList frame_base_location;
   std::vector<Variable> variables;
   unsigned long int id; /* DWARF offset of the subprogram */
@@ -42,8 +44,7 @@ inline
 Frame::Frame()
 {
   this->tag = 0;
-  this->low_pc = nullptr;
-  this->high_pc = nullptr;
+  this->range = {0, 0};
   this->id = 0;
   this->abstract_origin_id = 0;
   this->object_info = nullptr;

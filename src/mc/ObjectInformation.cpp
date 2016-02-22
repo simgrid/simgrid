@@ -84,7 +84,7 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
      * Either we have found the correct function or we do not know
      * any function corresponding to this instruction address.
      * Only at the point do we derefernce the function pointer. */
-    else if (ip < base[k].function->high_pc)
+    else if ((std::uint64_t) ip < base[k].function->range.end())
       return base[k].function;
     else
       return nullptr;

@@ -865,11 +865,11 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   // This is the base address for DWARF addresses.
   // Relocated addresses are offset from this base address.
   // See DWARF4 spec 7.5
-  void *base = info->base_address();
+  std::uint64_t base = (std::uint64_t) info->base_address();
 
   // TODO, support DW_AT_ranges
   uint64_t low_pc = MC_dwarf_attr_integrate_addr(die, DW_AT_low_pc);
-  frame.low_pc = low_pc ? ((char *) base) + low_pc : 0;
+  frame.range.begin() = low_pc ? (std::uint64_t) base + low_pc : 0;
   if (low_pc) {
     // DW_AT_high_pc:
     Dwarf_Attribute attr;
@@ -887,14 +887,14 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
 
       if (dwarf_formsdata(&attr, &offset) != 0)
         xbt_die("Could not read constant");
-      frame.high_pc = (void *) ((char *) frame.low_pc + offset);
+      frame.range.end() = frame.range.begin() + offset;
       break;
 
       // DW_AT_high_pc is a relocatable address:
     case simgrid::dwarf::FormClass::Address:
       if (dwarf_formaddr(&attr, &high_pc) != 0)
         xbt_die("Could not read address");
-      frame.high_pc = ((char *) base) + high_pc;
+      frame.range.begin() = base + high_pc;
       break;
 
     default:
@@ -1055,10 +1055,10 @@ static void MC_make_functions_index(simgrid::mc::ObjectInformation* info)
   info->functions_index.clear();
 
   for (auto& e : info->subprograms) {
-    if (e.second.low_pc == nullptr)
+    if (e.second.range.begin() == 0)
       continue;
     simgrid::mc::FunctionIndexEntry entry;
-    entry.low_pc = e.second.low_pc;
+    entry.low_pc = (void*) e.second.range.begin();
     entry.function = &e.second;
     info->functions_index.push_back(entry);
   }

@@ -269,7 +269,7 @@ static bool mc_valid_variable(simgrid::mc::Variable* var,
                               const void *ip)
 {
   // The variable is not yet valid:
-  if ((const void *) ((const char *) scope->low_pc + var->start_scope) > ip)
+  if (scope->range.begin() + var->start_scope > (std::uint64_t) ip)
     return false;
   else
     return true;
@@ -282,8 +282,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
 
-  void *ip = (void *) stack_frame->ip;
-  if (ip < scope->low_pc || ip >= scope->high_pc)
+  if (!scope->range.contain(stack_frame->ip))
     return;
 
   for(simgrid::mc::Variable& current_variable :
