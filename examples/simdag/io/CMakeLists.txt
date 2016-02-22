@@ -1,13 +1,7 @@
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(sd_io sd_io.c)
-
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(sd_io simgrid pthread m)
-else()
-  target_link_libraries(sd_io simgrid)
-endif()
+target_link_libraries(sd_io simgrid)
 
 set(tesh_files
   ${tesh_files}

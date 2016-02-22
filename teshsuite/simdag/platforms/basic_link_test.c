@@ -5,12 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/simdag.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic_link_test, sd,
-                                "SimDag test basic_link_test");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic_link_test, sd, "SimDag test basic_link_test");
 
 static int cmp_link(const void*a, const void*b) {
   return strcmp(sg_link_name(*(SD_link_t*)a)  , sg_link_name(*(SD_link_t*)b));
@@ -31,7 +29,8 @@ int main(int argc, char **argv)
   qsort((void *)links, count, sizeof(SD_link_t), cmp_link);
    
   for (int i=0; i < count; i++){
-    XBT_INFO("%s: latency = %.5f, bandwidth = %f", sg_link_name(links[i]), sg_link_latency(links[i]), sg_link_bandwidth(links[i]));
+    XBT_INFO("%s: latency = %.5f, bandwidth = %f", sg_link_name(links[i]),
+             sg_link_latency(links[i]), sg_link_bandwidth(links[i]));
     sg_link_data_set(links[i], (void*) user_data);
     xbt_assert(!strcmp(user_data, (const char*)sg_link_data(links[i])),"User data was corrupted.");
   }

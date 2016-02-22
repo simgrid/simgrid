@@ -7,8 +7,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include <stdlib.h>
-
 #include "simgrid/simdag.h"
 
 /*
@@ -24,38 +22,27 @@
 
 int main(int argc, char **argv)
 {
-  double time;
-  SD_task_t task;
 
   double communication_amount[] = { 0.0, 1.0, 2.0, 3.0,
-    0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0,
-    0.0, 0.0, 0.0, 0.0,
-  };
-
+                                    0.0, 0.0, 0.0, 0.0,
+                                    0.0, 0.0, 0.0, 0.0,
+                                    0.0, 0.0, 0.0, 0.0 };
   double no_cost[] = { 0.0, 0.0, 0.0, 0.0 };
-
-
-  /***************************************/
 
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
 
-  task = SD_task_create("Scatter task", NULL, 1.0);
+  SD_task_t task = SD_task_create("Scatter task", NULL, 1.0);
 
-  SD_task_schedule(task, 4, sg_host_list(), no_cost,
-                   communication_amount, -1.0);
+  SD_task_schedule(task, 4, sg_host_list(), no_cost, communication_amount, -1.0);
 
   SD_simulate(-1.0);
 
-  time = SD_get_clock();
-
-  printf("%g\n", time);
+  printf("%g\n", SD_get_clock());
   fflush(stdout);
 
   SD_task_destroy(task);
 
   SD_exit();
-
   return 0;
 }

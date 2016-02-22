@@ -3,8 +3,11 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 add_executable(basic_parsing_test basic_parsing_test.c)
 add_executable(is_router_test is_router_test.cpp)
 add_executable(flatifier flatifier.cpp)
-add_executable(basic_tracing basic_tracing.c)
 add_executable(basic_link_test basic_link_test.c)
+target_link_libraries(basic_parsing_test simgrid)
+target_link_libraries(is_router_test simgrid)
+target_link_libraries(flatifier simgrid)
+target_link_libraries(basic_link_test simgrid)
 
 ### Add definitions for compile
 if(NOT WIN32)
@@ -12,17 +15,6 @@ if(NOT WIN32)
   add_executable(evaluate_get_route_time Evaluate_get_route_time.c)
   target_link_libraries(evaluate_get_route_time simgrid m)
   target_link_libraries(evaluate_parse_time simgrid m)
-  target_link_libraries(basic_parsing_test simgrid m)
-  target_link_libraries(is_router_test simgrid m)
-  target_link_libraries(flatifier simgrid m)
-  target_link_libraries(basic_tracing simgrid m)
-  target_link_libraries(basic_link_test simgrid m)
-else()
-  target_link_libraries(basic_parsing_test simgrid)
-  target_link_libraries(is_router_test simgrid)
-  target_link_libraries(flatifier simgrid)
-  target_link_libraries(basic_tracing simgrid)
-  target_link_libraries(basic_link_test simgrid)
 endif()
 
 set(tesh_files
@@ -86,7 +78,6 @@ set(xml_files
 set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/basic_tracing.c
   ${CMAKE_CURRENT_SOURCE_DIR}/basic_link_test.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Evaluate_get_route_time.c
   ${CMAKE_CURRENT_SOURCE_DIR}/Evaluate_parse_time.c

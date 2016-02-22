@@ -1,13 +1,7 @@
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_executable(availability_test availability_test.c)
-
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(availability_test simgrid m)
-else()
-  target_link_libraries(availability_test simgrid)
-endif()
+target_link_libraries(availability_test simgrid)
 
 set(tesh_files
   ${tesh_files}

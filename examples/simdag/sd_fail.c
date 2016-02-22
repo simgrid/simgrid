@@ -1,24 +1,20 @@
-/* Copyright (c) 2006-2010, 2012-2015. The SimGrid Team.
+/* Copyright (c) 2006-2010, 2012-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/simdag.h"
-#include "xbt/ex.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(sd_fail,
-                             "Logging specific to this SimDag example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(sd_fail, "Logging specific to this SimDag example");
 
 int main(int argc, char **argv)
 {
   SD_task_t task;
   double computation_amount[1];
   double communication_amount[2] = { 0 };
-  sg_host_t workstation_list[1];
+  sg_host_t hosts[1];
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -33,8 +29,7 @@ int main(int argc, char **argv)
   SD_task_watch(task, SD_FAILED);
   SD_task_watch(task, SD_DONE);
 
-  XBT_INFO("Schedule task '%s' on workstation 'Faulty Host'",
-           SD_task_get_name(task));
+  XBT_INFO("Schedule task '%s' on 'Faulty Host'", SD_task_get_name(task));
 
   SD_task_schedulel(task, 1, sg_host_by_name("Faulty Host"));
 
@@ -42,12 +37,10 @@ int main(int argc, char **argv)
 
   SD_task_dump(task);
 
-  XBT_INFO("Task '%s' has failed. %.f flops remain to be done",
-           SD_task_get_name(task),
+  XBT_INFO("Task '%s' has failed. %.f flops remain to be done", SD_task_get_name(task),
            SD_task_get_remaining_amount(task));
 
-  XBT_INFO("let's unschedule task '%s' and reschedule it on the 'Safe Host'",
-           SD_task_get_name(task));
+  XBT_INFO("let's unschedule task '%s' and reschedule it on the 'Safe Host'", SD_task_get_name(task));
   SD_task_unschedule(task);
   SD_task_schedulel(task, 1, sg_host_by_name("Safe Host"));
 
@@ -55,10 +48,8 @@ int main(int argc, char **argv)
   SD_simulate(-1.0);
 
   SD_task_dump(task);
-  XBT_INFO("Task '%s' start time: %f, finish time: %f",
-      SD_task_get_name(task),
-      SD_task_get_start_time(task),
-      SD_task_get_finish_time(task));
+  XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task), SD_task_get_start_time(task),
+           SD_task_get_finish_time(task));
 
   SD_task_destroy(task);
   task=NULL;
@@ -71,37 +62,30 @@ int main(int argc, char **argv)
 
   computation_amount[0] = 2e10;
 
-  XBT_INFO("Schedule task '%s' on workstation 'Faulty Host'",
-             SD_task_get_name(task));
+  XBT_INFO("Schedule task '%s' on 'Faulty Host'", SD_task_get_name(task));
 
-  workstation_list[0] = sg_host_by_name("Faulty Host");
-  SD_task_schedule(task, 1, workstation_list,
-          computation_amount, communication_amount,-1);
+  hosts[0] = sg_host_by_name("Faulty Host");
+  SD_task_schedule(task, 1, hosts, computation_amount, communication_amount,-1);
 
   SD_simulate(-1.0);
 
   SD_task_dump(task);
 
-  XBT_INFO("Task '%s' has failed. %.f flops remain to be done",
-            SD_task_get_name(task),
+  XBT_INFO("Task '%s' has failed. %.f flops remain to be done", SD_task_get_name(task),
             SD_task_get_remaining_amount(task));
 
-  XBT_INFO("let's unschedule task '%s' and reschedule it on the 'Safe Host'",
-           SD_task_get_name(task));
+  XBT_INFO("let's unschedule task '%s' and reschedule it on the 'Safe Host'", SD_task_get_name(task));
   SD_task_unschedule(task);
 
-  workstation_list[0] = sg_host_by_name("Safe Host");
+  hosts[0] = sg_host_by_name("Safe Host");
 
-  SD_task_schedule(task, 1, workstation_list,
-                   computation_amount, communication_amount,-1);
+  SD_task_schedule(task, 1, hosts, computation_amount, communication_amount,-1);
 
   XBT_INFO("Run the simulation again");
   SD_simulate(-1.0);
 
   SD_task_dump(task);
-  XBT_INFO("Task '%s' start time: %f, finish time: %f",
-           SD_task_get_name(task),
-           SD_task_get_start_time(task),
+  XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task), SD_task_get_start_time(task),
            SD_task_get_finish_time(task));
 
   SD_task_destroy(task);

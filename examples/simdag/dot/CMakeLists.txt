@@ -6,21 +6,10 @@ if(HAVE_GRAPHVIZ)
   add_executable(simulate_dot simulate_dot.c)
   add_executable(dot_test2 dot_test2.c)
 
-  if(NOT WIN32)
-    target_link_libraries(dot_test simgrid pthread m)
-    target_link_libraries(ptg_test simgrid pthread m)
-    target_link_libraries(simulate_dot simgrid pthread m)
-    target_link_libraries(dot_test2 simgrid pthread m)
-  else()
-    target_link_libraries(dot_test simgrid)
-    target_link_libraries(ptg_test simgrid)
-    target_link_libraries(simulate_dot simgrid)
-    target_link_libraries(dot_test2 simgrid)
-  endif()
-  get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
-  set_directory_properties(
-    PROPERTIES
-    ADDITIONAL_MAKE_CLEAN_FILES "${extra_clean_files};${CMAKE_CURRENT_BINARY_DIR}/dot_test; ${CMAKE_CURRENT_BINARY_DIR}/simulate_dot;")
+  target_link_libraries(dot_test simgrid)
+  target_link_libraries(ptg_test simgrid)
+  target_link_libraries(simulate_dot simgrid)
+  target_link_libraries(dot_test2 simgrid)
 endif()
 
 set(tesh_files

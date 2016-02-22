@@ -18,9 +18,8 @@ SG_BEGIN_DECL()
 /** @brief Link datatype
     @ingroup SD_datatypes_management
 
-    A link is a network node represented as a <em>name</em>, a <em>current
-    bandwidth</em> and a <em>current latency</em>. A route is a list of
-    links between two workstations.
+    A link is a network node represented as a <em>name</em>, a <em>bandwidth</em> and a <em>latency</em>.
+    A route is a list of links between two workstations.
 
     @see SD_link_management */
 typedef Link *SD_link_t;
@@ -28,11 +27,9 @@ typedef Link *SD_link_t;
 /** @brief Task datatype
     @ingroup SD_datatypes_management
 
-    A task is some <em>computing amount</em> that can be executed
-    in parallel on several workstations. A task may depend on other
-    tasks, this means that the task cannot start until the other tasks are done.
-    Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether
-    the task is scheduled, running, done, etc.
+    A task is some <em>computing amount</em> that can be executed in parallel on several hosts.
+    A task may depend on other tasks, which means that the task cannot start until the other tasks are done.
+    Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
 
     @see SD_task_management */
 typedef struct SD_task *SD_task_t;
@@ -68,8 +65,6 @@ typedef enum {
 /** @brief Storage datatype
     @ingroup SD_datatypes_management
 
- TODO PV: comment it !
-
     @see SD_storage_management */
 typedef xbt_dictelm_t SD_storage_t;
 
@@ -81,8 +76,7 @@ typedef xbt_dictelm_t SD_storage_t;
  *  This section describes the functions for managing the hosts.
  *
  *  A host is a place where a task can be executed.
- *  A host is represented as a <em>physical resource with computing
- *  capabilities</em> and has a <em>name</em>.
+ *  A host is represented as a <em>physical resource with computing capabilities</em> and has a <em>name</em>.
  *
  *  The hosts are created when you call the function SD_create_environment.
  *
@@ -105,9 +99,9 @@ XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
  *
  *  This section describes the functions for managing the tasks.
  *
- *  A task is some <em>working amount</em> that can be executed in parallel on several hosts. A task may depend on other
- *  tasks, this means that the task cannot start until the other tasks are done. Each task has a
- *  <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, etc.
+ *  A task is some <em>working amount</em> that can be executed in parallel on several hosts.
+ *  A task may depend on other tasks, which means that the task cannot start until the other tasks are done.
+ *  Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
  *
  *  @see SD_task_t, SD_task_dependency_management
  *  @{
@@ -195,8 +189,8 @@ XBT_PUBLIC(double) SD_get_clock(void);
 XBT_PUBLIC(void) SD_exit(void);
 XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char *filename);
-XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload_with_sched(const char *filename);
+XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
 
 /** @} */
 

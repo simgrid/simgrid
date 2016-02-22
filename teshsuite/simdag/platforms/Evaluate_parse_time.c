@@ -7,7 +7,6 @@
 //teshsuite/simdag/platforms/evaluate_parse_time ../examples/platforms/nancy.xml
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
 #include "xbt/xbt_os_time.h"

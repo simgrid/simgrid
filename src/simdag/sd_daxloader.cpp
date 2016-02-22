@@ -27,10 +27,9 @@ bool parents_are_marked(SD_task_t task);
 
 static double dax_parse_double(const char *string)
 {
-  int ret = 0;
   double value;
 
-  ret = sscanf(string, "%lg", &value);
+  int ret = sscanf(string, "%lg", &value);
   xbt_assert (ret == 1, "Parse error on line %d: %s is not a double", dax_lineno, string);
   return value;
 }
@@ -40,16 +39,14 @@ static double dax_parse_double(const char *string)
 void uniq_transfer_task_name(SD_task_t task)
 {
   SD_task_t child, parent;
-  xbt_dynar_t children, parents;
-  char *new_name;
 
-  children = SD_task_get_children(task);
-  parents = SD_task_get_parents(task);
+  xbt_dynar_t children = SD_task_get_children(task);
+  xbt_dynar_t parents = SD_task_get_parents(task);
 
   xbt_dynar_get_cpy(children, 0, &child);
   xbt_dynar_get_cpy(parents, 0, &parent);
 
-  new_name = bprintf("%s_%s_%s", SD_task_get_name(parent), SD_task_get_name(task), SD_task_get_name(child));
+  char *new_name = bprintf("%s_%s_%s", SD_task_get_name(parent), SD_task_get_name(task), SD_task_get_name(child));
 
   SD_task_set_name(task, new_name);
 
@@ -59,37 +56,26 @@ void uniq_transfer_task_name(SD_task_t task)
 }
 
 bool children_are_marked(SD_task_t task){
-  SD_task_t child_task = NULL;
-  bool all_marked = true;
   SD_dependency_t depafter = NULL;
   unsigned int count;
+
   xbt_dynar_foreach(task->tasks_after,count,depafter){
-    child_task = depafter->dst;
-    //test marked
-    if(child_task->marked == 0) {
-      all_marked = false;
-      break;
+    if(depafter->dst->marked == 0) {
+      return false;
     }
-    child_task = NULL;
   }
-  return all_marked;
+  return true;
 }
 
 bool parents_are_marked(SD_task_t task){
-  SD_task_t parent_task = NULL;
-  bool all_marked = true;
   SD_dependency_t depbefore = NULL;
   unsigned int count;
   xbt_dynar_foreach(task->tasks_before,count,depbefore){
-    parent_task = depbefore->src;
-    //test marked
-    if(parent_task->marked == 0) {
-      all_marked = false;
-      break;
+    if(depbefore->src->marked == 0) {
+      return false;
     }
-    parent_task = NULL;
   }
-  return all_marked;
+  return true;
 }
 
 bool acyclic_graph_detail(xbt_dynar_t dag){
@@ -208,8 +194,6 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   }
   return all_marked;
 }
-
-
 
 static YY_BUFFER_STATE input_buffer;
 
@@ -353,12 +337,11 @@ void STag_dax__job(void)
 
 void STag_dax__uses(void)
 {
-  SD_task_t file;
   double size = dax_parse_double(A_dax__uses_size);
   int is_input = (A_dax__uses_link == A_dax__uses_link_input);
 
 //  XBT_INFO("See <uses file=%s %s>",A_dax__uses_file,(is_input?"in":"out"));
-  file = (SD_task_t)xbt_dict_get_or_null(files, A_dax__uses_file);
+  SD_task_t file = (SD_task_t)xbt_dict_get_or_null(files, A_dax__uses_file);
   if (file == NULL) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, NULL, size);
     xbt_dynar_pop(sd_global->initial_task_set,NULL);

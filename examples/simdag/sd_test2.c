@@ -4,22 +4,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "simgrid/simdag.h"
 #include "xbt/log.h"
 
-#include "xbt/sysdep.h"         /* calloc, printf */
-
-XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
-                             "Logging specific to this SimDag example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test, "Logging specific to this SimDag example");
 
 static int nameCompareHosts(const void *n1, const void *n2)
 {
-  return strcmp(sg_host_get_name(*((sg_host_t *) n1)),
-                sg_host_get_name(*((sg_host_t *) n2)));
+  return strcmp(sg_host_get_name(*((sg_host_t *) n1)), sg_host_get_name(*((sg_host_t *) n2)));
 }
 
 int main(int argc, char **argv)
@@ -56,13 +50,9 @@ int main(int argc, char **argv)
   double final_cost = 5e+9;
   double *ParComp_wcomm2_table;
 
-  /* SD initialization */
   SD_init(&argc, argv);
 
-  /* creation of the environment */
-  xbt_assert(strstr(argv[1],".xml"), 
-       "Unsupported platform description style (not XML): %s",
-       argv[1]);
+  xbt_assert(strstr(argv[1],".xml"), "Unsupported platform description style (not XML): %s", argv[1]);
   SD_create_environment(argv[1]);
 
   /* getting platform infos */
@@ -70,8 +60,7 @@ int main(int argc, char **argv)
   hosts = sg_host_list();
 
   /* sorting hosts by hostname */
-  qsort((void *) hosts, n_hosts, sizeof(sg_host_t),
-        nameCompareHosts);
+  qsort((void *) hosts, n_hosts, sizeof(sg_host_t), nameCompareHosts);
 
   /* creation of the tasks */
   taskInit = SD_task_create("Initial", NULL, 1.0);
@@ -84,7 +73,6 @@ int main(int argc, char **argv)
   taskFinal = SD_task_create("Final", NULL, 1.0);
   ParComp_wcomm2 = SD_task_create("Par Comp with comm 2", NULL, 1.0);
 
-
   /* creation of the dependencies */
   SD_task_dependency_add(NULL, NULL, taskInit, PtoPComm1);
   SD_task_dependency_add(NULL, NULL, taskInit, PtoPComm2);
@@ -95,9 +83,6 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, InterRedist, ParComp_wcomm2);
   SD_task_dependency_add(NULL, NULL, ParComp_wcomm2, taskFinal);
   SD_task_dependency_add(NULL, NULL, PtoPComm2, taskFinal);
-
-
-  /* scheduling parameters */
 
   /* large point-to-point communication (0.1 sec duration) */
   PtoPcomm1_hosts[0] = hosts[0];
@@ -159,7 +144,6 @@ int main(int argc, char **argv)
 
   /* parallel task with intra communications */
   /* Communication domination (0.1 sec duration) */
-
   ParComp_wcomm2_table = xbt_new0(double, 25);
 
   for (i = 0; i < 5; i++) {
@@ -175,34 +159,21 @@ int main(int argc, char **argv)
     }
   }
 
-  /* Sequential task */
-
-
   /* scheduling the tasks */
-  SD_task_schedule(taskInit, 1, hosts, SD_SCHED_NO_COST, SD_SCHED_NO_COST,
-                   -1.0);
-  SD_task_schedule(PtoPComm1, 2, PtoPcomm1_hosts, SD_SCHED_NO_COST,
-                   PtoPcomm1_table, -1.0);
-  SD_task_schedule(PtoPComm2, 2, PtoPcomm2_hosts, SD_SCHED_NO_COST,
-                   PtoPcomm2_table, -1.0);
-  SD_task_schedule(ParComp_wocomm, 5, ParComp_wocomm_hosts,
-                   ParComp_wocomm_cost, ParComp_wocomm_table, -1.0);
-  SD_task_schedule(IntraRedist, 5, IntraRedist_hosts, IntraRedist_cost,
-                   IntraRedist_table, -1.0);
-  SD_task_schedule(ParComp_wcomm1, 5, ParComp_wcomm1_hosts,
-                   ParComp_wcomm1_cost, ParComp_wcomm1_table, -1.0);
-  SD_task_schedule(InterRedist, 10, hosts, InterRedist_cost,
-                   InterRedist_table, -1.0);
-  SD_task_schedule(ParComp_wcomm2, 5, ParComp_wcomm2_hosts,
-                   ParComp_wcomm2_cost, ParComp_wcomm2_table, -1.0);
-  SD_task_schedule(taskFinal, 1, &(hosts[9]), &final_cost,
-                   SD_SCHED_NO_COST, -1.0);
+  SD_task_schedule(taskInit, 1, hosts, SD_SCHED_NO_COST, SD_SCHED_NO_COST, -1.0);
+  SD_task_schedule(PtoPComm1, 2, PtoPcomm1_hosts, SD_SCHED_NO_COST, PtoPcomm1_table, -1.0);
+  SD_task_schedule(PtoPComm2, 2, PtoPcomm2_hosts, SD_SCHED_NO_COST, PtoPcomm2_table, -1.0);
+  SD_task_schedule(ParComp_wocomm, 5, ParComp_wocomm_hosts, ParComp_wocomm_cost, ParComp_wocomm_table, -1.0);
+  SD_task_schedule(IntraRedist, 5, IntraRedist_hosts, IntraRedist_cost, IntraRedist_table, -1.0);
+  SD_task_schedule(ParComp_wcomm1, 5, ParComp_wcomm1_hosts, ParComp_wcomm1_cost, ParComp_wcomm1_table, -1.0);
+  SD_task_schedule(InterRedist, 10, hosts, InterRedist_cost, InterRedist_table, -1.0);
+  SD_task_schedule(ParComp_wcomm2, 5, ParComp_wcomm2_hosts, ParComp_wcomm2_cost, ParComp_wcomm2_table, -1.0);
+  SD_task_schedule(taskFinal, 1, &(hosts[9]), &final_cost, SD_SCHED_NO_COST, -1.0);
 
   /* let's launch the simulation! */
   SD_simulate(-1.0);
 
   XBT_INFO("Simulation time: %f", SD_get_clock());
-
 
   free(ParComp_wocomm_table);
   free(IntraRedist_cost);

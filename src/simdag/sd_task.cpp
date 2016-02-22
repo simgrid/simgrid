@@ -35,7 +35,6 @@ void SD_task_recycle_f(void *t)
   task->state= SD_NOT_SCHEDULED;
   xbt_dynar_push(sd_global->initial_task_set,&task);
 
-
   task->marked = 0;
 
   task->start_time = -1.0;
@@ -156,7 +155,7 @@ SD_task_t SD_task_create_comp_seq(const char *name, void *data, double flops_amo
 SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data, double flops_amount, double alpha)
 {
   xbt_assert(alpha < 1. && alpha >= 0., "Invalid parameter: alpha must be in [0.;1.[");
-  
+
   SD_task_t res = SD_task_create(name, data, flops_amount);
   res->alpha = alpha;
   res->kind = SD_TASK_COMP_PAR_AMDAHL;
@@ -197,7 +196,6 @@ SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data, dou
  */
 void SD_task_destroy(SD_task_t task)
 {
-  int idx;
   XBT_DEBUG("Destroying task %s...", SD_task_get_name(task));
 
   __SD_task_remove_dependencies(task);
@@ -205,7 +203,7 @@ void SD_task_destroy(SD_task_t task)
   if (task->state == SD_SCHEDULED || task->state == SD_RUNNABLE)
     __SD_task_destroy_scheduling_data(task);
 
-  idx = xbt_dynar_search_or_negative(sd_global->return_set, &task);
+  int idx = xbt_dynar_search_or_negative(sd_global->return_set, &task);
   if (idx >=0) {
     xbt_dynar_remove_at(sd_global->return_set, idx, NULL);
   }
@@ -370,10 +368,9 @@ void SD_task_set_name(SD_task_t task, const char *name)
 xbt_dynar_t SD_task_get_parents(SD_task_t task)
 {
   unsigned int i;
-  xbt_dynar_t parents;
   SD_dependency_t dep;
 
-  parents = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  xbt_dynar_t parents = xbt_dynar_new(sizeof(SD_task_t), NULL);
   xbt_dynar_foreach(task->tasks_before, i, dep) {
     xbt_dynar_push(parents, &(dep->src));
   }
@@ -388,10 +385,9 @@ xbt_dynar_t SD_task_get_parents(SD_task_t task)
 xbt_dynar_t SD_task_get_children(SD_task_t task)
 {
   unsigned int i;
-  xbt_dynar_t children;
   SD_dependency_t dep;
 
-  children = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  xbt_dynar_t children = xbt_dynar_new(sizeof(SD_task_t), NULL);
   xbt_dynar_foreach(task->tasks_after, i, dep) {
     xbt_dynar_push(children, &(dep->dst));
   }
@@ -487,10 +483,9 @@ void SD_task_dump(SD_task_t task)
 {
   unsigned int counter;
   SD_dependency_t dependency;
-  char *statename;
 
   XBT_INFO("Displaying task %s", SD_task_get_name(task));
-  statename = bprintf("%s%s%s%s%s%s%s",
+  char *statename = bprintf("%s%s%s%s%s%s%s",
                       (task->state == SD_NOT_SCHEDULED ? " not scheduled" : ""),
                       (task->state == SD_SCHEDULABLE ? " schedulable" : ""),
                       (task->state == SD_SCHEDULED ? " scheduled" : ""),
@@ -588,20 +583,15 @@ static void __SD_task_dependency_destroy(void *dependency)
  */
 void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst)
 {
-  xbt_dynar_t dynar;
-  unsigned long length;
   int found = 0;
-  unsigned long i;
   SD_dependency_t dependency;
-  e_SD_task_state_t state;
 
-  dynar = src->tasks_after;
-  length = xbt_dynar_length(dynar);
+  unsigned long length = xbt_dynar_length(src->tasks_after);
 
   if (src == dst)
     THROWF(arg_error, 0, "Cannot add a dependency between task '%s' and itself", SD_task_get_name(src));
 
-  state = SD_task_get_state(src);
+  e_SD_task_state_t state = SD_task_get_state(src);
   if (state != SD_NOT_SCHEDULED && state != SD_SCHEDULABLE && state != SD_RUNNING && state != SD_SCHEDULED &&
        state != SD_RUNNABLE)
     THROWF(arg_error, 0, "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, SD_RUNNABLE, or SD_RUNNING",
@@ -613,8 +603,8 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
            SD_task_get_name(dst));
 
   XBT_DEBUG("SD_task_dependency_add: src = %s, dst = %s", SD_task_get_name(src), SD_task_get_name(dst));
-  for (i = 0; i < length && !found; i++) {
-    xbt_dynar_get_cpy(dynar, i, &dependency);
+  for (unsigned long i = 0; i < length && !found; i++) {
+    xbt_dynar_get_cpy(src->tasks_after, i, &dependency);
     found = (dependency->dst == dst);
     XBT_DEBUG("Dependency %lu: dependency->dst = %s", i, SD_task_get_name(dependency->dst));
   }
@@ -643,6 +633,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
     SD_task_set_state(dst, SD_SCHEDULED);
   }
 }
+
 /**
  * \brief Returns the name given as input when dependency has been created..
  *
@@ -672,13 +663,12 @@ const char *SD_task_dependency_get_name(SD_task_t src, SD_task_t dst){
  */
 int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
 {
-  unsigned int counter;
-  SD_dependency_t dependency;
-
   xbt_assert(src != NULL || dst != NULL, "Invalid parameter: both src and dst are NULL");
 
   if (src) {
     if (dst) {
+      unsigned int counter;
+      SD_dependency_t dependency;
       xbt_dynar_foreach(src->tasks_after, counter, dependency) {
         if (dependency->dst == dst)
           return 1;
@@ -701,20 +691,17 @@ int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
  */
 void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 {
-  xbt_dynar_t dynar;
   unsigned long length;
   int found = 0;
-  unsigned long i;
   SD_dependency_t dependency;
 
   /* remove the dependency from src->tasks_after */
-  dynar = src->tasks_after;
-  length = xbt_dynar_length(dynar);
+  length = xbt_dynar_length(src->tasks_after);
 
-  for (i = 0; i < length && !found; i++) {
-    xbt_dynar_get_cpy(dynar, i, &dependency);
+  for (unsigned long i = 0; i < length && !found; i++) {
+    xbt_dynar_get_cpy(src->tasks_after, i, &dependency);
     if (dependency->dst == dst) {
-      xbt_dynar_remove_at(dynar, i, NULL);
+      xbt_dynar_remove_at(src->tasks_after, i, NULL);
       found = 1;
     }
   }
@@ -723,14 +710,13 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
            SD_task_get_name(src), SD_task_get_name(dst), SD_task_get_name(dst), SD_task_get_name(src));
 
   /* remove the dependency from dst->tasks_before */
-  dynar = dst->tasks_before;
-  length = xbt_dynar_length(dynar);
+  length = xbt_dynar_length(dst->tasks_before);
   found = 0;
 
-  for (i = 0; i < length && !found; i++) {
-    xbt_dynar_get_cpy(dynar, i, &dependency);
+  for (unsigned long i = 0; i < length && !found; i++) {
+    xbt_dynar_get_cpy(dst->tasks_before, i, &dependency);
     if (dependency->src == src) {
-      xbt_dynar_remove_at(dynar, i, NULL);
+      xbt_dynar_remove_at(dst->tasks_before, i, NULL);
       __SD_task_dependency_destroy(dependency);
       dst->unsatisfied_dependencies--;
       dst->is_not_ready--;
@@ -742,7 +728,6 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
               SD_task_get_name(dst), SD_task_get_name(src), SD_task_get_name(src), SD_task_get_name(dst));
 
   /* if the task was scheduled and dst->tasks_before is empty now, we can make it runnable */
-
   if (dst->unsatisfied_dependencies == 0) {
     if (SD_task_get_state(dst) == SD_SCHEDULED)
       SD_task_set_state(dst, SD_RUNNABLE);
@@ -764,17 +749,13 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
  */
 void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
 {
-  xbt_dynar_t dynar;
-  unsigned long length;
   int found = 0;
-  unsigned long i;
   SD_dependency_t dependency;
 
-  dynar = src->tasks_after;
-  length = xbt_dynar_length(dynar);
+  unsigned long length = xbt_dynar_length(src->tasks_after);
 
-  for (i = 0; i < length && !found; i++) {
-    xbt_dynar_get_cpy(dynar, i, &dependency);
+  for (unsigned long i = 0; i < length && !found; i++) {
+    xbt_dynar_get_cpy(src->tasks_after, i, &dependency);
     found = (dependency->dst == dst);
   }
   if (!found)
@@ -790,8 +771,7 @@ void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
  * The watch point is then automatically removed.
  *
  * \param task a task
- * \param state the \ref e_SD_task_state_t "state" you want to watch
- * (cannot be #SD_NOT_SCHEDULED)
+ * \param state the \ref e_SD_task_state_t "state" you want to watch (cannot be #SD_NOT_SCHEDULED)
  * \see SD_task_unwatch()
  */
 void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
@@ -812,7 +792,6 @@ void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
 void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
 {
   xbt_assert(state != SD_NOT_SCHEDULED, "SimDag error: Cannot have a watch point for state SD_NOT_SCHEDULED");
-
   task->watch_points = task->watch_points & ~state;
 }
 
@@ -832,19 +811,17 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
 double SD_task_get_execution_time(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
                                   const double *flops_amount, const double *bytes_amount)
 {
-  double time, max_time = 0.0;
-  int i, j;
   xbt_assert(workstation_nb > 0, "Invalid parameter");
+  double max_time = 0.0;
 
   /* the task execution time is the maximum execution time of the parallel tasks */
-
-  for (i = 0; i < workstation_nb; i++) {
-    time = 0.0;
+  for (int i = 0; i < workstation_nb; i++) {
+    double time = 0.0;
     if (flops_amount != NULL)
       time = flops_amount[i] / sg_host_speed(workstation_list[i]);
 
     if (bytes_amount != NULL)
-      for (j = 0; j < workstation_nb; j++) {
+      for (int j = 0; j < workstation_nb; j++) {
         if (bytes_amount[i * workstation_nb + j] !=0 ) {
           time += (SD_route_get_latency(workstation_list[i], workstation_list[j]) +
                    bytes_amount[i * workstation_nb + j] /
@@ -864,7 +841,6 @@ static XBT_INLINE void SD_task_do_schedule(SD_task_t task)
   if (SD_task_get_state(task) > SD_SCHEDULABLE)
     THROWF(arg_error, 0, "Task '%s' has already been scheduled", SD_task_get_name(task));
 
-  /* update the task state */
   if (task->unsatisfied_dependencies == 0)
     SD_task_set_state(task, SD_RUNNABLE);
   else
@@ -878,30 +854,30 @@ static XBT_INLINE void SD_task_do_schedule(SD_task_t task)
  * Once scheduled, a task is executed as soon as possible in \see SD_simulate, i.e. when its dependencies are satisfied.
  *
  * \param task the task you want to schedule
- * \param workstation_count number of workstations on which the task will be executed
+ * \param host_count number of workstations on which the task will be executed
  * \param workstation_list the workstations on which the task will be executed
  * \param flops_amount computation amount for each workstation
  * \param bytes_amount communication amount between each pair of workstations
  * \param rate task execution speed rate
  * \see SD_task_unschedule()
  */
-void SD_task_schedule(SD_task_t task, int workstation_count, const sg_host_t * workstation_list,
+void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * workstation_list,
                       const double *flops_amount, const double *bytes_amount, double rate)
 {
-  xbt_assert(workstation_count > 0, "workstation_nb must be positive");
+  xbt_assert(host_count > 0, "workstation_nb must be positive");
 
-  task->host_count = workstation_count;
+  task->host_count = host_count;
   task->rate = rate;
 
   if (flops_amount) {
-    task->flops_amount = (double*)xbt_realloc(task->flops_amount, sizeof(double) * workstation_count);
-    memcpy(task->flops_amount, flops_amount, sizeof(double) * workstation_count);
+    task->flops_amount = (double*)xbt_realloc(task->flops_amount, sizeof(double) * host_count);
+    memcpy(task->flops_amount, flops_amount, sizeof(double) * host_count);
   } else {
     xbt_free(task->flops_amount);
     task->flops_amount = NULL;
   }
 
-  int communication_nb = workstation_count * workstation_count;
+  int communication_nb = host_count * host_count;
   if (bytes_amount) {
     task->bytes_amount = (double*)xbt_realloc(task->bytes_amount, sizeof(double) * communication_nb);
     memcpy(task->bytes_amount, bytes_amount, sizeof(double) * communication_nb);
@@ -910,8 +886,8 @@ void SD_task_schedule(SD_task_t task, int workstation_count, const sg_host_t * w
     task->bytes_amount = NULL;
   }
 
-  task->host_list = (sg_host_t*) xbt_realloc(task->host_list, sizeof(sg_host_t) * workstation_count);
-  memcpy(task->host_list, workstation_list, sizeof(sg_host_t) * workstation_count);
+  task->host_list = (sg_host_t*) xbt_realloc(task->host_list, sizeof(sg_host_t) * host_count);
+  memcpy(task->host_list, workstation_list, sizeof(sg_host_t) * host_count);
 
   SD_task_do_schedule(task);
 }
@@ -971,9 +947,6 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
 /* Runs a task. */
 void SD_task_run(SD_task_t task)
 {
-  int i;
-  sg_host_t *hosts;
-
   xbt_assert(SD_task_get_state(task) == SD_RUNNABLE, "Task '%s' is not runnable! Task state: %d",
              SD_task_get_name(task), (int)SD_task_get_state(task));
   xbt_assert(task->host_list != NULL, "Task '%s': workstation_list is NULL!", SD_task_get_name(task));
@@ -982,9 +955,9 @@ void SD_task_run(SD_task_t task)
 
   /* Copy the elements of the task into the action */
   int host_nb = task->host_count;
-  hosts = xbt_new(sg_host_t, host_nb);
+  sg_host_t *hosts = xbt_new(sg_host_t, host_nb);
 
-  for (i = 0; i < host_nb; i++)
+  for (int i = 0; i < host_nb; i++)
     hosts[i] =  task->host_list[i];
 
   double *flops_amount = xbt_new0(double, host_nb);
@@ -1006,9 +979,6 @@ void SD_task_run(SD_task_t task)
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   SD_task_set_state(task, SD_RUNNING);
-  xbt_assert(SD_task_get_state(task) == SD_RUNNING, "Bad state of task '%s': %d",
-             SD_task_get_name(task), (int)SD_task_get_state(task));
-
 }
 
 /* 
@@ -1065,7 +1035,6 @@ double SD_task_get_finish_time(SD_task_t task)
 
 void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
 {
-  int i;
   xbt_assert(task->kind == SD_TASK_COMP_PAR_AMDAHL, "Task %s is not a SD_TASK_COMP_PAR_AMDAHL typed task."
               "Cannot use this function.", SD_task_get_name(task));
   task->flops_amount = xbt_new0(double, ws_count);
@@ -1074,7 +1043,7 @@ void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
   task->host_count = ws_count;
   task->host_list = xbt_new0(sg_host_t, ws_count);
   
-  for(i=0;i<ws_count;i++){
+  for(int i=0;i<ws_count;i++){
     task->flops_amount[i] = (task->alpha + (1 - task->alpha)/ws_count) * task->amount;
   }
 } 
@@ -1120,10 +1089,10 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   default:
     xbt_die("Kind of task %s not supported by SD_task_schedulev()", SD_task_get_name(task));
   }
+
   if (task->kind == SD_TASK_COMM_E2E) {
     XBT_VERB("Schedule comm task %s between %s -> %s. It costs %.f bytes", SD_task_get_name(task),
           sg_host_get_name(task->host_list[0]), sg_host_get_name(task->host_list[1]), task->bytes_amount[2]);
-
   }
 
   /* Iterate over all children and parents being COMM_E2E to say where I am located (and start them if runnable) */
@@ -1277,9 +1246,8 @@ void SD_task_schedulel(SD_task_t task, int count, ...)
 {
   va_list ap;
   sg_host_t *list = xbt_new(sg_host_t, count);
-  int i;
   va_start(ap, count);
-  for (i = 0; i < count; i++) {
+  for (int i = 0; i < count; i++) {
     list[i] = va_arg(ap, sg_host_t);
   }
   va_end(ap);

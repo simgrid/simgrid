@@ -4,8 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/simdag.h"
 #include "xbt/asserts.h"
 #include "xbt/log.h"
@@ -26,24 +24,20 @@ int main(int argc, char **argv)
 {
   double comm_cost[] = { 0.0, 0.0, 0.0, 0.0 };
   double comp_cost[] = { 1.0 };
-  SD_task_t taskA, taskB;
   xbt_dynar_t ret;
 
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
 
-  taskA = SD_task_create("Task A", NULL, 1.0);
-  taskB = SD_task_create("Task B", NULL, 1.0);
+  SD_task_t taskA = SD_task_create("Task A", NULL, 1.0);
+  SD_task_t taskB = SD_task_create("Task B", NULL, 1.0);
 
-  SD_task_schedule(taskA, 1, sg_host_list(), comp_cost,
-                   comm_cost, -1.0);
-  SD_task_schedule(taskB, 1, sg_host_list(), comp_cost,
-                   comm_cost, -1.0);
+  SD_task_schedule(taskA, 1, sg_host_list(), comp_cost, comm_cost, -1.0);
+  SD_task_schedule(taskB, 1, sg_host_list(), comp_cost, comm_cost, -1.0);
 
   ret = SD_simulate(-1.0);
-  xbt_assert(xbt_dynar_length(ret) == 2,
-      "I was expecting the completion of 2 tasks, but I got %lu instead",
-      xbt_dynar_length(ret));
+  xbt_assert(xbt_dynar_length(ret) == 2, "I was expecting the completion of 2 tasks, but I got %lu instead",
+             xbt_dynar_length(ret));
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);
 

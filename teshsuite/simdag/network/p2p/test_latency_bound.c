@@ -7,8 +7,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include <stdlib.h>
-
 #include "simgrid/simdag.h"
 
 #define TASK_NUM 3
@@ -18,50 +16,37 @@
  * 3 flows exceed bandwidth
  * should be 10001.5
  * because the max tcp win size is 20000
- * 
- * @todo@ test assumes that max tcp win size is 20000
- * assert this
  */
 
 int main(int argc, char **argv)
 {
-  int i;
-  double time;
   double communication_amount[] = { 0.0, 1.0, 0.0, 0.0 };
   double no_cost[] = { 0.0, 0.0 };
 
-  SD_task_t root;
   SD_task_t task[TASK_NUM];
 
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
 
-  // xbt_assert( check max tcp win size, "MAX TCP WIN SIZE is 20000");
+  SD_task_t root = SD_task_create("Root", NULL, 1.0);
+  SD_task_schedule(root, 1, sg_host_list(), no_cost, no_cost, -1.0);
 
-  root = SD_task_create("Root", NULL, 1.0);
-  SD_task_schedule(root, 1, sg_host_list(), no_cost, no_cost,
-                   -1.0);
-
-  for (i = 0; i < TASK_NUM; i++) {
+  for (int i = 0; i < TASK_NUM; i++) {
     task[i] = SD_task_create("Comm", NULL, 1.0);
-    SD_task_schedule(task[i], 2, sg_host_list(), no_cost,
-                     communication_amount, -1.0);
+    SD_task_schedule(task[i], 2, sg_host_list(), no_cost, communication_amount, -1.0);
     SD_task_dependency_add(NULL, NULL, root, task[i]);
   }
 
   SD_simulate(-1.0);
 
-  time = SD_get_clock();
-
-  printf("%g\n", time);
+  printf("%g\n", SD_get_clock());
   fflush(stdout);
 
-  for (i = 0; i < TASK_NUM; i++) {
+  for (int i = 0; i < TASK_NUM; i++) {
     SD_task_destroy(task[i]);
   }
   SD_task_destroy(root);
 
   SD_exit();
-
   return 0;
 }

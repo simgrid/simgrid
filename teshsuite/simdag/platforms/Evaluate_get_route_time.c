@@ -23,28 +23,28 @@ int main(int argc, char **argv)
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
 
-  sg_host_t *workstations = sg_host_list();
-  int list_size = sg_host_count();
+  sg_host_t *hosts = sg_host_list();
+  int host_count = sg_host_count();
 
   /* Random number initialization */
   srand( (int) (xbt_os_time()*1000) );
 
   do {
-    i = rand()%list_size;
-    j = rand()%list_size;
+    i = rand()%host_count;
+    j = rand()%host_count;
   } while(i==j);
 
-  sg_host_t w1 = workstations[i];
-  sg_host_t w2 = workstations[j];
+  sg_host_t h1 = hosts[i];
+  sg_host_t h2 = hosts[j];
   printf("%d\tand\t%d\t\t",i,j);
 
   xbt_os_cputimer_start(timer);
-  SD_route_get_list(w1, w2);
+  SD_route_get_list(h1, h2);
   xbt_os_cputimer_stop(timer);
 
   printf("%f\n", xbt_os_timer_elapsed(timer) );
 
-  xbt_free(workstations);
+  xbt_free(hosts);
   SD_exit();
 
   return 0;

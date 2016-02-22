@@ -5,7 +5,7 @@ p Test of the management of failed tasks simdag
 $ $SG_TEST_EXENV ${bindir:=.}/sd_fail
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_fail/INFO] First test: COMP_SEQ task
-> [0.000000] [sd_fail/INFO] Schedule task 'Poor task' on workstation 'Faulty Host'
+> [0.000000] [sd_fail/INFO] Schedule task 'Poor task' on 'Faulty Host'
 > [10.000000] [sd_task/INFO] Displaying task Poor task
 > [10.000000] [sd_task/INFO]   - state: not runnable failed
 > [10.000000] [sd_task/INFO]   - kind: sequential computation
@@ -21,7 +21,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/sd_fail
 > [50.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
 > [50.000000] [sd_fail/INFO] Task 'Poor task' start time: 10.000000, finish time: 50.000000
 > [50.000000] [sd_fail/INFO] Second test: NON TYPED task
-> [50.000000] [sd_fail/INFO] Schedule task 'Poor parallel task' on workstation 'Faulty Host'
+> [50.000000] [sd_fail/INFO] Schedule task 'Poor parallel task' on 'Faulty Host'
 > [60.000000] [sd_task/INFO] Displaying task Poor parallel task
 > [60.000000] [sd_task/INFO]   - state: not runnable failed
 > [60.000000] [sd_task/INFO]   - amount: 20000000000
