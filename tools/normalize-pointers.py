@@ -13,11 +13,12 @@ first address encountered will be replaced by 0X0000001, second by 0X0000002, ..
 
 """
 
-import sys, re
+import sys
+import re
 
-if len(sys.argv)!=2:
-  print "Usage ./normalize-pointers.py <filename>"
-  sys.exit(1)
+if len(sys.argv) != 2:
+    print "Usage ./normalize-pointers.py <filename>"
+    sys.exit(1)
 
 f = open(sys.argv[1])
 t = f.read()
@@ -28,15 +29,11 @@ s = r.search(t)
 offset = 0
 pointers = {}
 while (s):
-  if s.group() not in pointers:
-    pointers[s.group()] = "0X%07d"%len(pointers)
-  print t[offset:s.start()],
-  print pointers[s.group()],
-  offset = s.end()
-  s = r.search(t, offset)
+    if s.group() not in pointers:
+        pointers[s.group()] = "0X%07d" % len(pointers)
+    print t[offset:s.start()],
+    print pointers[s.group()],
+    offset = s.end()
+    s = r.search(t, offset)
 
 print t[offset:]
-
-
-
-
