@@ -131,19 +131,6 @@ typedef surf_RoutingPlatf *routing_platf_t;
 
 typedef struct surf_file *surf_file_t;
 
-/** @Brief Specify that we use that action */
-XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
-
-/** @brief Creates a new action.
- *
- * @param size The size is the one of the subtype you want to create
- * @param cost initial value
- * @param model to which model we should attach this action
- * @param failed whether we should start this action in failed mode
- */
-XBT_PUBLIC(void *) surf_action_new(size_t size, double cost,
-                                   surf_model_t model, int failed);
-
 /** \brief Resource model description
  */
 typedef struct surf_model_description {
@@ -152,10 +139,8 @@ typedef struct surf_model_description {
   void_f_void_t model_init_preparse;
 } s_surf_model_description_t, *surf_model_description_t;
 
-XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
-                                       const char *name);
-XBT_PUBLIC(void) model_help(const char *category,
-                            s_surf_model_description_t * table);
+XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table, const char *name);
+XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * table);
 
 /** @ingroup SURF_interface
  *  @brief Action states
