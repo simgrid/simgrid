@@ -132,6 +132,63 @@ const int ProcessIndexDisabled = -2;
  */
 const int ProcessIndexAny = 0;
 
+/** Options for read operations
+ *
+ *  This is a set of flags managed with bitwise operators. Only the
+ *  meaningful operations are defined: addition, conversions to/from
+ *  integers are not allowed.
+ */
+class ReadOptions {
+  std::uint32_t value_;
+  constexpr explicit ReadOptions(std::uint32_t value) : value_(value) {}
+public:
+  constexpr ReadOptions() : value_(0) {}
+
+  constexpr operator bool() const { return value_ != 0; }
+  constexpr operator!() const { return value_ == 0; }
+
+  constexpr ReadOptions operator|(ReadOptions const& that) const
+  {
+    return ReadOptions(value_ | that.value_);
+  }
+  constexpr ReadOptions operator&(ReadOptions const& that) const
+  {
+    return ReadOptions(value_ & that.value_);
+  }
+  constexpr ReadOptions operator^(ReadOptions const& that) const
+  {
+    return ReadOptions(value_ ^ that.value_);
+  }
+  constexpr ReadOptions operator~() const
+  {
+    return ReadOptions(~value_);
+  }
+
+  ReadOptions& operator|=(ReadOptions const& that)
+  {
+    value_ |= that.value_;
+    return *this;
+  }
+  ReadOptions& operator&=(ReadOptions const& that)
+  {
+    value_ &= that.value_;
+    return *this;
+  }
+  ReadOptions& operator^=(ReadOptions const& that)
+  {
+    value_ &= that.value_;
+    return *this;
+  }
+
+  /** Copy the data to the given buffer */
+  static constexpr ReadOptions none() { return ReadOptions(0); }
+
+  /** Allows to return a pointer to another buffer where the data is
+   *  available instead of copying the data into the buffer
+   */
+  static constexpr ReadOptions lazy() { return ReadOptions(1); }
+};
+
 /** A given state of a given process (abstract base class)
  *
  *  Currently, this might either be:
@@ -144,21 +201,6 @@ class AddressSpace {
 private:
   Process* process_;
 public:
-  enum ReadMode {
-
-    /** Copy the data to the given buffer */
-    Normal,
-
-    /** Allows the `read_bytes` to return a pointer to another buffer
-     *  where the data is available instead of copying the data into the
-     *  buffer.
-     *
-     *  This adds quite a level of ugliness but it was found to more
-     *  efficient at some point. We should check if there is still
-     *  a noticeable different and get rid of it.
-     */
-    Lazy
-  };
   AddressSpace(Process* process) : process_(process) {}
   virtual ~AddressSpace();
 
@@ -170,11 +212,11 @@ public:
    *  @param size          number of bytes
    *  @param address       remote source address of the data
    *  @param process_index which process (used for SMPI privatization)
-   *  @param mode
+   *  @param options
    */
   virtual const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
-    ReadMode mode = Normal) const = 0;
+    ReadOptions options = ReadOptions::none()) const = 0;
 
   /** Read a given data structure from the address space */
   template<class T> inline

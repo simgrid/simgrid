@@ -440,11 +440,11 @@ int snapshot_compare(void *state1, void *state2)
   xbt_mheap_t heap1 = (xbt_mheap_t)s1->read_bytes(
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
     remote(process->heap_address),
-    simgrid::mc::ProcessIndexMissing, simgrid::mc::AddressSpace::Lazy);
+    simgrid::mc::ProcessIndexMissing, simgrid::mc::ReadOptions::lazy());
   xbt_mheap_t heap2 = (xbt_mheap_t)s2->read_bytes(
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
     remote(process->heap_address),
-    simgrid::mc::ProcessIndexMissing, simgrid::mc::AddressSpace::Lazy);
+    simgrid::mc::ProcessIndexMissing, simgrid::mc::ReadOptions::lazy());
   res_init = init_heap_information(heap1, heap2, &s1->to_ignore, &s2->to_ignore);
   if (res_init == -1) {
 #ifdef MC_DEBUG
@@ -520,7 +520,8 @@ int snapshot_compare(void *state1, void *state2)
 
     /* Compare global variables */
     is_diff =
-      compare_global_variables(region1->object_info(  ), simgrid::mc::AddressSpace::Normal,
+      compare_global_variables(region1->object_info(),
+        simgrid::mc::ProcessIndexDisabled,
         region1, region2,
         s1, s2);
 

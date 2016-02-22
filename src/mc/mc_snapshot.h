@@ -146,7 +146,7 @@ public:
   ~Snapshot();
   const void* read_bytes(void* buffer, std::size_t size,
     remote_ptr<void> address, int process_index = ProcessIndexAny,
-    ReadMode mode = Normal) const override;
+    ReadOptions options = ReadOptions::none()) const override;
 public: // To be private
   int num_state;
   std::size_t heap_bytes_used;

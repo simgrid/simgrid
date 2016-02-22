@@ -171,12 +171,12 @@ Snapshot::~Snapshot()
 
 const void* Snapshot::read_bytes(void* buffer, std::size_t size,
   remote_ptr<void> address, int process_index,
-  AddressSpace::ReadMode mode) const
+  ReadOptions options) const
 {
   mc_mem_region_t region = mc_get_snapshot_region((void*)address.address(), this, process_index);
   if (region) {
     const void* res = MC_region_read(region, buffer, (void*)address.address(), size);
-    if (buffer == res || mode == AddressSpace::Lazy)
+    if (buffer == res || options & ReadOptions::lazy())
       return res;
     else {
       memcpy(buffer, res, size);
@@ -185,7 +185,7 @@ const void* Snapshot::read_bytes(void* buffer, std::size_t size,
   }
   else
     return this->process()->read_bytes(
-      buffer, size, address, process_index, mode);
+      buffer, size, address, process_index, options);
 }
 
 }
