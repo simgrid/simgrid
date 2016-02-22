@@ -1222,7 +1222,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
-  examples/platforms/platform.lua
   examples/platforms/platform.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
