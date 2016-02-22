@@ -64,7 +64,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dax)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/dot)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/goal)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/io)
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/metaxml)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/properties)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling)
 
