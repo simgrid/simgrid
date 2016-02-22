@@ -145,7 +145,7 @@ public:
   constexpr ReadOptions() : value_(0) {}
 
   constexpr operator bool() const { return value_ != 0; }
-  constexpr operator!() const { return value_ == 0; }
+  constexpr bool operator!() const { return value_ == 0; }
 
   constexpr ReadOptions operator|(ReadOptions const& that) const
   {
