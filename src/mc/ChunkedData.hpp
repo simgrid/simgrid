@@ -19,18 +19,14 @@
 namespace simgrid {
 namespace mc {
 
+/** A byte-string represented as a sequence of chunks from a PageStor */
 class ChunkedData {
-  PageStore* store_;
+  PageStore* store_ = nullptr;
+  /** Indices of the chunks */
   std::vector<std::size_t> pagenos_;
 public:
-  ChunkedData() : store_(nullptr) {}
-  ChunkedData(ChunkedData const& that)
-  {
-    store_ = that.store_;
-    pagenos_ = that.pagenos_;
-    for (std::size_t pageno : pagenos_)
-      store_->ref_page(pageno);
-  }
+
+  ChunkedData() {}
   void clear()
   {
     for (std::size_t pageno : pagenos_)
@@ -42,6 +38,14 @@ public:
     clear();
   }
 
+  // Copy and move
+  ChunkedData(ChunkedData const& that)
+  {
+    store_ = that.store_;
+    pagenos_ = that.pagenos_;
+    for (std::size_t pageno : pagenos_)
+      store_->ref_page(pageno);
+  }
   ChunkedData(ChunkedData&& that)
   {
     store_ = that.store_;
