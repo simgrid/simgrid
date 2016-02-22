@@ -75,7 +75,6 @@ public:
   std::size_t page_count()          const { return pagenos_.size(); }
   std::size_t pageno(std::size_t i) const { return pagenos_[i]; }
   const std::size_t* pagenos()      const { return pagenos_.data(); }
-  std::size_t*       pagenos()            { return pagenos_.data(); }
 
   const void* page(std::size_t i) const
   {
