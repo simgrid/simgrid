@@ -78,7 +78,7 @@ namespace surf {
       char *route_name = bprintf("%s#%s", src->name(), dst->name());
       if (bypassRoutes_->find(route_name) != bypassRoutes_->end()) {
         bypassedRoute = bypassRoutes_->at(route_name);
-        XBT_DEBUG("Found a bypass route with %ld links",bypassedRoute->size());
+        XBT_DEBUG("Found a bypass route with %zu links",bypassedRoute->size());
       }
       free(route_name);
       return bypassedRoute;
