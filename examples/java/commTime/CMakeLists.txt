@@ -1,5 +1,8 @@
 set(example java_commTime)
-set(sources CommTimeTest.java FinalizeTask.java Master.java Slave.java)
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/CommTimeTest.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/FinalizeTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Master.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Slave.java)
 
 if(enable_java)
   add_custom_command(

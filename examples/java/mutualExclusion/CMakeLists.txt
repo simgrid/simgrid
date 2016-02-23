@@ -1,5 +1,10 @@
 set(example java_mutualExclusion)
-set(sources Coordinator.java GrantTask.java MutexCentral.java Node.java ReleaseTask.java RequestTask.java)
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Coordinator.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/GrantTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/MutexCentral.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/Node.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/ReleaseTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/RequestTask.java)
 
 if(enable_java)
   add_custom_command(

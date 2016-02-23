@@ -1,5 +1,7 @@
 set(example java_startKillTime)
-set(sources Master.java Slave.java StartKillTime.java)
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Master.java 
+            ${CMAKE_CURRENT_SOURCE_DIR}/Slave.java 
+	    ${CMAKE_CURRENT_SOURCE_DIR}/StartKillTime.java)
 
 if(enable_java)
   add_custom_command(

@@ -1,5 +1,6 @@
 set(example java_cloud_energy)
-set(sources Main.java EnergyVMRunner.java)
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Main.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/EnergyVMRunner.java)
 
 if(enable_java)
   add_custom_command(

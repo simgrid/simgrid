@@ -1,5 +1,8 @@
 set(example java_master_slave_bypass)
-set(sources FinalizeTask.java Master.java MsBypass.java Slave.java)
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/MsBypass.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/FinalizeTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Master.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Slave.java)
 
 if(enable_java)
   add_custom_command(

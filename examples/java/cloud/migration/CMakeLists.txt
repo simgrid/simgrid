@@ -1,5 +1,9 @@
 set(example java_cloud_migration)
-set(sources Daemon.java Main.java Test.java TestHostOnOff.java XVM.java)
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Daemon.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/Main.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Test.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/TestHostOnOff.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/XVM.java)
 
 if(enable_java)
   add_custom_command(

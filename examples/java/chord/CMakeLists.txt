@@ -1,5 +1,13 @@
 set(example java_chord)
-set(sources Chord.java ChordTask.java Common.java FindSuccessorAnswerTask.java FindSuccessorTask.java GetPredecessorAnswerTask.java GetPredecessorTask.java Node.java NotifyTask.java)
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Chord.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/ChordTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Common.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/FindSuccessorAnswerTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/FindSuccessorTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/GetPredecessorAnswerTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/GetPredecessorTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Node.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/NotifyTask.java)
 
 if(enable_java)
   add_custom_command(
@@ -25,10 +33,4 @@ set(xml_files
 set(examples_src
   ${examples_src}
   ${sources}
-  PARENT_SCOPE)
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE)
-set(txt_files
-  ${txt_files}
   PARENT_SCOPE)
