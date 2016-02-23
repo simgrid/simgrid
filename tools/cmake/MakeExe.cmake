@@ -163,7 +163,6 @@ add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/surf_usage)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/surf/trace_usage)
 
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/graphxml_usage)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/heap_bench)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage)

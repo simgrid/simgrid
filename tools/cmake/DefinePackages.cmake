@@ -97,9 +97,6 @@ set(EXTRA_DIST
   src/xbt/ex_interface.h
   src/xbt/fifo_private.h
   src/xbt/graph_private.h
-  src/xbt/graphxml.c
-  src/xbt/graphxml.dtd
-  src/xbt/graphxml_parse.c
   src/xbt/heap_private.h
   src/xbt/log_private.h
   src/xbt/mallocator_private.h
@@ -259,7 +256,6 @@ set(XBT_SRC
   src/xbt/ex.c
   src/xbt/fifo.c
   src/xbt/graph.c
-  src/xbt/graphxml_parse.c
   src/xbt/heap.c
   src/xbt/lib.c
   src/xbt/log.c
@@ -691,8 +687,6 @@ set(headers_to_install
   include/xbt/file.h
   include/xbt/function_types.h
   include/xbt/graph.h
-  include/xbt/graphxml.h
-  include/xbt/graphxml_parse.h
   include/xbt/hash.h
   include/xbt/heap.h
   include/xbt/lib.h
@@ -1113,7 +1107,6 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/surf/maxmin_bench/CMakeLists.txt
   teshsuite/surf/surf_usage/CMakeLists.txt
   teshsuite/surf/trace_usage/CMakeLists.txt
-  teshsuite/xbt/graphxml_usage/CMakeLists.txt
   teshsuite/xbt/heap_bench/CMakeLists.txt
   teshsuite/xbt/log_large/CMakeLists.txt
   teshsuite/xbt/log_usage/CMakeLists.txt
