@@ -190,8 +190,14 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id,
   return cnst;
 }
 
+int lmm_constraint_concurrency_limit_get(lmm_constraint_t cnst)
+{
+ return cnst->concurrency_limit;
+}
+
 void lmm_constraint_concurrency_limit_set(lmm_constraint_t cnst, int concurrency_limit)
 {
+  xbt_assert(concurrency_limit<0 || cnst->concurrency_maximum<=concurrency_limit,"New concurrency limit should be larger than observed concurrency maximum. Maybe you want to call  lmm_constraint_concurrency_maximum_reset() to reset the maximum?");
   cnst->concurrency_limit = concurrency_limit;
 }
 
@@ -202,6 +208,7 @@ void lmm_constraint_concurrency_maximum_reset(lmm_constraint_t cnst)
 
 int lmm_constraint_concurrency_maximum_get(lmm_constraint_t cnst)
 {
+ xbt_assert(cnst->concurrency_limit<0 || cnst->concurrency_maximum<=cnst->concurrency_limit,"Very bad: maximum observed concurrency is higher than limit. This is a bug of SURF, please report it.");
   return cnst->concurrency_maximum;
 }
 
