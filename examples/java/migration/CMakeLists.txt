@@ -1,9 +1,5 @@
 set(example java_migration)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/Emigrant.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Migration.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Policeman.java
-  )
+set(sources Migration.java Emigrant.java Policeman.java)
 
 if(enable_java)
   add_custom_command(

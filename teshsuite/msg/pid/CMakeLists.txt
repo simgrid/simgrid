@@ -1,13 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(pid pid.c)
-
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(pid simgrid m pthread)
-else()
-  target_link_libraries(pid simgrid)
-endif()
+add_executable       (pid pid.c)
+target_link_libraries(pid simgrid)
 
 set(tesh_files
   ${tesh_files}

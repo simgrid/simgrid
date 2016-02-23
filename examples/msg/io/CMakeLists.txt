@@ -1,22 +1,11 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(file file.c)
-add_executable(file_unlink file_unlink.c)
-add_executable(storage storage.c)
-add_executable(remote remote.c)
-
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(file simgrid pthread)
-  target_link_libraries(file_unlink simgrid pthread)
-  target_link_libraries(remote simgrid pthread)
-  target_link_libraries(storage simgrid pthread)
-else()
-  target_link_libraries(file simgrid)
-  target_link_libraries(file_unlink simgrid)
-  target_link_libraries(remote simgrid)
-  target_link_libraries(storage simgrid)
-endif()
+add_executable       (file        file.c)
+target_link_libraries(file        simgrid)
+add_executable       (file_unlink file_unlink.c)
+target_link_libraries(file_unlink simgrid)
+add_executable       (storage     storage.c)
+target_link_libraries(storage     simgrid)
+add_executable       (remote      remote.c)
+target_link_libraries(remote      simgrid)
 
 set(tesh_files
   ${tesh_files}

@@ -227,7 +227,6 @@ examples/simdag/ex_sd_test2
 examples/simdag/ex_sd_test_console
 examples/simdag/goal/goal_test
 examples/simdag/io/sd_io
-examples/simdag/metaxml/sd_meta
 examples/simdag/properties/sd_prop
 examples/simdag/scheduling/minmin_test
 examples/simdag/scheduling/Montage_25.jed
@@ -268,7 +267,7 @@ examples/smpi/smpi_traced.trace
 examples/smpi/toto.txt
 examples/smpi/ttest01
 src/replay/replay
-src/testall
+testall
 teshsuite/bug-17132/bug-17132
 teshsuite/datadesc_usage.out
 teshsuite/java/semaphore/java_semaphore_gc_compiled

@@ -4,15 +4,13 @@ if(enable_smpi)
   else()
     set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
-
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  add_executable(reduce reduce.c)
-  add_executable(reduce_coll reduce_coll.c)
-  add_executable(reduce_scatter_coll reduce_scatter_coll.c)
-  target_link_libraries(reduce simgrid)
-  target_link_libraries(reduce_coll simgrid)
+
+  add_executable       (reduce              reduce.c)
+  target_link_libraries(reduce              simgrid)
+  add_executable       (reduce_coll         reduce_coll.c)
+  target_link_libraries(reduce_coll         simgrid)
+  add_executable       (reduce_scatter_coll reduce_scatter_coll.c)
   target_link_libraries(reduce_scatter_coll simgrid)
 endif()
 

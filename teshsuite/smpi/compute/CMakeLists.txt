@@ -4,15 +4,13 @@ if(enable_smpi)
   else()
     set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
-
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  add_executable(compute compute.c)
-  add_executable(compute2 compute2.c)
-  add_executable(compute3 compute3.c)
-  target_link_libraries(compute simgrid)
+
+  add_executable       (compute  compute.c)
+  target_link_libraries(compute  simgrid)
+  add_executable       (compute2 compute2.c)
   target_link_libraries(compute2 simgrid)
+  add_executable       (compute3 compute3.c)
   target_link_libraries(compute3 simgrid)
 endif()
 

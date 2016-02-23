@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(priority priority.c)
+add_executable       (priority priority.c)
 target_link_libraries(priority simgrid)
 
 set(tesh_files

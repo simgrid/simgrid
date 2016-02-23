@@ -1,21 +1,17 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(master_worker_vm "master_worker_vm.c")
-add_executable(simple_vm "simple_vm.c")
-add_executable(migrate_vm "migrate_vm.c")
-add_executable(bound "bound.c")
-add_executable(scale "scale.c")
-add_executable(multicore "multicore.c")
-add_executable(two_tasks_vm "two_tasks_vm.c")
-
-### Add definitions for compile
+add_executable       (master_worker_vm master_worker_vm.c)
 target_link_libraries(master_worker_vm simgrid)
-target_link_libraries(simple_vm simgrid)
-target_link_libraries(migrate_vm simgrid)
-target_link_libraries(bound simgrid)
-target_link_libraries(scale simgrid)
-target_link_libraries(multicore simgrid)
-target_link_libraries(two_tasks_vm simgrid)
+add_executable       (simple_vm        simple_vm.c)
+target_link_libraries(simple_vm        simgrid)
+add_executable       (migrate_vm       migrate_vm.c)
+target_link_libraries(migrate_vm       simgrid)
+add_executable       (bound            bound.c)
+target_link_libraries(bound            simgrid)
+add_executable       (scale            scale.c)
+target_link_libraries(scale            simgrid)
+add_executable       (multicore        multicore.c)
+target_link_libraries(multicore        simgrid)
+add_executable       (two_tasks_vm     two_tasks_vm.c)
+target_link_libraries(two_tasks_vm     simgrid)
 
 set(tesh_files
   ${tesh_files}

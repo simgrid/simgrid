@@ -1,7 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
 foreach(x host_on_off host_on_off_wait host_on_off_recv)
-  add_executable(${x} ${x}.c)
+  add_executable       (${x} ${x}.c)
   target_link_libraries(${x} simgrid)
 endforeach()
 

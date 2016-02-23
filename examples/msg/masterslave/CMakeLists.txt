@@ -1,16 +1,13 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(masterslave_failure "masterslave_failure.c")
-add_executable(masterslave_forwarder "masterslave_forwarder.c")
-add_executable(masterslave_mailbox "masterslave_mailbox.c")
-add_executable(masterslave_kill "masterslave_kill.c")
-add_executable(masterslave_arg "masterslave_arg.c")
-
+add_executable       (masterslave_failure   masterslave_failure.c)
+target_link_libraries(masterslave_failure   simgrid)
+add_executable       (masterslave_forwarder masterslave_forwarder.c)
 target_link_libraries(masterslave_forwarder simgrid )
-target_link_libraries(masterslave_failure simgrid )
-target_link_libraries(masterslave_mailbox simgrid )
-target_link_libraries(masterslave_kill simgrid )
-target_link_libraries(masterslave_arg simgrid )
+add_executable       (masterslave_mailbox   masterslave_mailbox.c)
+target_link_libraries(masterslave_mailbox   simgrid)
+add_executable       (masterslave_kill      masterslave_kill.c)
+target_link_libraries(masterslave_kill      simgrid)
+add_executable       (masterslave_arg       masterslave_arg.c)
+target_link_libraries(masterslave_arg       simgrid)
 
 set(tesh_files
   ${tesh_files}

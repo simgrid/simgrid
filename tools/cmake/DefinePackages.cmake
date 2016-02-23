@@ -962,7 +962,6 @@ set(txt_files
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
-  examples/java/CMakeLists.txt
   examples/java/async/CMakeLists.txt
   examples/java/bittorrent/CMakeLists.txt
   examples/java/chord/CMakeLists.txt

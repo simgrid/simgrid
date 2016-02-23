@@ -1,8 +1,7 @@
 if(enable_smpi)
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  add_executable(replay_multiple replay_multiple.c)
+  add_executable       (replay_multiple replay_multiple.c)
   target_link_libraries(replay_multiple simgrid)
 endif()
 

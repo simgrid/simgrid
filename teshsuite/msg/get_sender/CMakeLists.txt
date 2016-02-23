@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(get_sender get_sender.c)
+add_executable       (get_sender get_sender.c)
 target_link_libraries(get_sender simgrid)
 
 set(tesh_files

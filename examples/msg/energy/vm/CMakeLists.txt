@@ -1,8 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(energy_vm energy_vm.c)
-
-### Add definitions for compile
+add_executable       (energy_vm energy_vm.c)
 target_link_libraries(energy_vm simgrid)
 
 set(tesh_files

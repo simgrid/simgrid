@@ -1,13 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(lmm_usage ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/lmm_usage/lmm_usage.c)
-
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(lmm_usage simgrid m )
-else()
-  target_link_libraries(lmm_usage simgrid )
-endif()
+add_executable       (lmm_usage lmm_usage.c)
+target_link_libraries(lmm_usage simgrid)
 
 set(tesh_files
   ${tesh_files}

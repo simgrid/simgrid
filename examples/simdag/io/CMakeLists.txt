@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(sd_io sd_io.c)
+add_executable       (sd_io sd_io.c)
 target_link_libraries(sd_io simgrid)
 
 set(tesh_files

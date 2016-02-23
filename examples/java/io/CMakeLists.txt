@@ -1,10 +1,5 @@
 set(example java_io)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/IO.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Node.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Storage.java
-    ${CMAKE_CURRENT_SOURCE_DIR}/Client.java
-  )
+set(sources IO.java Node.java Storage.java Client.java)
 
 if(enable_java)
   add_custom_command(

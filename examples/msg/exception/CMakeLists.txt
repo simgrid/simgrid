@@ -1,8 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(exception exception.c)
-
-### Add definitions for compile
+add_executable       (exception exception.c)
 target_link_libraries(exception simgrid)
 
 set(tesh_files

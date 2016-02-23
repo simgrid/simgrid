@@ -1,8 +1,6 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-add_executable(actions actions.c)
-add_executable(storage_actions storage_actions.c)
-
-target_link_libraries(actions simgrid)
+add_executable       (actions         actions.c)
+target_link_libraries(actions         simgrid)
+add_executable       (storage_actions storage_actions.c)
 target_link_libraries(storage_actions simgrid)
 
 set(tesh_files

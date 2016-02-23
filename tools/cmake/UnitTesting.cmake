@@ -58,12 +58,6 @@ ADD_CUSTOM_COMMAND(
 
 set_source_files_properties(${TEST_UNITS} PROPERTIES GENERATED true)
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}/src/")
-add_executable(testall ${TEST_UNITS})
+add_executable       (testall ${TEST_UNITS})
+target_link_libraries(testall simgrid)
 
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(testall simgrid m)
-else()
-  target_link_libraries(testall simgrid)
-endif()

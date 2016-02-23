@@ -1,9 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(chord chord.c)
-
-### Add definitions for compile
-target_link_libraries(chord simgrid )
+add_executable       (chord chord.c)
+target_link_libraries(chord simgrid)
 
 set(tesh_files
   ${tesh_files}

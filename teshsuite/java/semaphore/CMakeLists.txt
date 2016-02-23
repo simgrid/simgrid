@@ -1,7 +1,5 @@
 set(example java_semaphore_gc)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/SemaphoreGC.java
-  )
+set(sources SemaphoreGC.java)
 
 if(enable_java)
   add_custom_command(

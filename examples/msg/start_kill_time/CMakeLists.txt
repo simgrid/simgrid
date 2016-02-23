@@ -1,7 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(sk_time "sk_time.c")
-target_link_libraries(sk_time simgrid )
+add_executable       (sk_time sk_time.c)
+target_link_libraries(sk_time simgrid)
 
 set(tesh_files
   ${tesh_files}

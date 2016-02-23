@@ -1,11 +1,7 @@
-if(HAVE_MC)
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-endif()
+add_executable       (with_mutex_handling    mutex_handling.c)
+target_link_libraries(with_mutex_handling    simgrid)
 
-add_executable(with_mutex_handling mutex_handling.c)
-target_link_libraries(with_mutex_handling simgrid)
-
-add_executable(without_mutex_handling mutex_handling.c)
+add_executable       (without_mutex_handling mutex_handling.c)
 target_link_libraries(without_mutex_handling simgrid)
 set_target_properties(without_mutex_handling PROPERTIES COMPILE_FLAGS -DDISABLE_THE_MUTEX=1)
 

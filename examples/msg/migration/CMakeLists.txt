@@ -1,7 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(migration migration.c)
-target_link_libraries(migration simgrid )
+add_executable       (migration migration.c)
+target_link_libraries(migration simgrid)
 
 set(tesh_files
   ${tesh_files}

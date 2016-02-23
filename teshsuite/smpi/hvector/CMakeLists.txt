@@ -4,11 +4,9 @@ if(enable_smpi)
   else()
     set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
-
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  add_executable(hvector_test hvector_test.c)
+
+  add_executable       (hvector_test hvector_test.c)
   target_link_libraries(hvector_test simgrid)
 endif()
 

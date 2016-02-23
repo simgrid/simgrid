@@ -1,8 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(gtnets gtnets.c)
-
-### Add definitions for compile
+add_executable       (gtnets gtnets.c)
 target_link_libraries(gtnets simgrid)
 
 set(tesh_files

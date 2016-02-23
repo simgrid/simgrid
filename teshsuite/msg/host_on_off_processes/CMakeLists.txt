@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(host_on_off_processes host_on_off_processes.c)
+add_executable       (host_on_off_processes host_on_off_processes.c)
 target_link_libraries(host_on_off_processes simgrid)
 
 set(tesh_files

@@ -2,7 +2,6 @@
 ### Load all files declaring binaries (tools, examples and tests) #
 ###################################################################
 
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/async)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/bittorrent)
 add_subdirectory(${CMAKE_HOME_DIRECTORY}/examples/java/chord)

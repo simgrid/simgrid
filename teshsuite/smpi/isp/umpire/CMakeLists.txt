@@ -193,8 +193,6 @@ if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
 
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   foreach (test ${umpire_tests_passing} ${umpire_tests_deadlock} ${umpire_tests_problematic} )

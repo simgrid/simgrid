@@ -1,7 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
 if(HAVE_MMALLOC)
-  add_executable(mmalloc_test mmalloc_test.c)
+  add_executable       (mmalloc_test mmalloc_test.c)
   target_link_libraries(mmalloc_test simgrid)
 endif()
 

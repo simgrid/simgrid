@@ -1,13 +1,5 @@
 set(example java_bittorrent)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/Bittorrent.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Common.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Connection.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/MessageTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Peer.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Tracker.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/TrackerTask.java
-  )
+set(sources Bittorrent.java Common.java Connection.java MessageTask.java Peer.java Tracker.java TrackerTask.java)
 
 if(enable_java)
   add_custom_command(

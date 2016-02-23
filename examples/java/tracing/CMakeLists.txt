@@ -1,10 +1,5 @@
 set(example java_tracing)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/PingPongTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Receiver.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Sender.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/TracingTest.java
-  )
+set(sources PingPongTask.java Receiver.java Sender.java TracingTest.java)
 
 if(enable_java)
   add_custom_command(

@@ -1,21 +1,15 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(basic_parsing_test basic_parsing_test.c)
-add_executable(is_router_test is_router_test.cpp)
-add_executable(flatifier flatifier.cpp)
-add_executable(basic_link_test basic_link_test.c)
-target_link_libraries(basic_parsing_test simgrid)
-target_link_libraries(is_router_test simgrid)
-target_link_libraries(flatifier simgrid)
-target_link_libraries(basic_link_test simgrid)
-
-### Add definitions for compile
-if(NOT WIN32)
-  add_executable(evaluate_parse_time Evaluate_parse_time.c)
-  add_executable(evaluate_get_route_time Evaluate_get_route_time.c)
-  target_link_libraries(evaluate_get_route_time simgrid m)
-  target_link_libraries(evaluate_parse_time simgrid m)
-endif()
+add_executable       (basic_parsing_test      basic_parsing_test.c)
+target_link_libraries(basic_parsing_test      simgrid)
+add_executable       (is_router_test          is_router_test.cpp)
+target_link_libraries(is_router_test          simgrid)
+add_executable       (flatifier               flatifier.cpp)
+target_link_libraries(flatifier               simgrid)
+add_executable       (basic_link_test         basic_link_test.c)
+target_link_libraries(basic_link_test         simgrid)
+add_executable       (evaluate_parse_time     Evaluate_parse_time.c)
+target_link_libraries(evaluate_parse_time     simgrid)
+add_executable       (evaluate_get_route_time Evaluate_get_route_time.c)
+target_link_libraries(evaluate_get_route_time simgrid)
 
 set(tesh_files
   ${tesh_files}

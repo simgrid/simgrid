@@ -1,16 +1,7 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(storage_basic storage_basic.c)
-add_executable(concurrent_rw concurrent_rw.c)
-
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(storage_basic simgrid m pthread )
-  target_link_libraries(concurrent_rw simgrid m pthread )
-else()
-  target_link_libraries(storage_basic simgrid)
-  target_link_libraries(concurrent_rw simgrid)
-endif()
+add_executable       (storage_basic storage_basic.c)
+target_link_libraries(storage_basic simgrid)
+add_executable       (concurrent_rw concurrent_rw.c)
+target_link_libraries(concurrent_rw simgrid)
 
 set(tesh_files
   ${tesh_files}

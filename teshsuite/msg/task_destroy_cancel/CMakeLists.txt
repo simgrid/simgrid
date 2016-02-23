@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(task_destroy_cancel task_destroy_cancel.c)
+add_executable       (task_destroy_cancel task_destroy_cancel.c)
 target_link_libraries(task_destroy_cancel simgrid)
 
 set(tesh_files

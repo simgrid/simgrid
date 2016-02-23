@@ -4,11 +4,9 @@ if(enable_smpi)
   else()
       set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
-
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  add_executable(bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132/bug-17132.c)
+
+  add_executable       (bug-17132 bug-17132.c)
   target_link_libraries(bug-17132 simgrid)
 endif(enable_smpi)
 

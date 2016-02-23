@@ -1,7 +1,5 @@
 set(example java_sleep_host_off)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/SleepHostOff.java
-  )
+set(sources SleepHostOff.java)
 
 if(enable_java)
   add_custom_command(

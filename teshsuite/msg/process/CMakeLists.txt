@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(process process.c)
+add_executable       (process process.c)
 target_link_libraries(process simgrid)
 
 set(tesh_files

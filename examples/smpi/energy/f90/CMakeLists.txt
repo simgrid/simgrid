@@ -1,8 +1,7 @@
 if(enable_smpi AND SMPI_FORTRAN)
   set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90")
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 
-  add_executable(sef90 sef90.f90)
+  add_executable       (sef90 sef90.f90)
   target_link_libraries(sef90 simgrid)
 endif()
 

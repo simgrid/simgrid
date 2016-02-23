@@ -6037,8 +6037,8 @@ YY_RULE_SETUP
   if (!AX_surfxml_ASroute_src) FAIL("Required attribute `src' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_ASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
   }
  }
 	YY_BREAK
@@ -6062,8 +6062,8 @@ YY_RULE_SETUP
   ETag_surfxml_ASroute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_3: case S_surfxml_AS_5: case S_surfxml_AS_6: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_4: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
   }
  }
 	YY_BREAK

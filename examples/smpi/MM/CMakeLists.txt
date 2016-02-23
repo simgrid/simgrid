@@ -1,11 +1,10 @@
 if(enable_smpi)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   if(NOT WIN32)
-    add_executable(MM_mpi MM_mpi.c 2.5D_MM.c Summa.c Matrix_init.c)
-    target_link_libraries(MM_mpi simgrid pthread)
+    add_executable       (MM_mpi MM_mpi.c 2.5D_MM.c Summa.c Matrix_init.c)
+    target_link_libraries(MM_mpi simgrid)
   endif()
 endif()
 
