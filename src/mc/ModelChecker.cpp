@@ -49,9 +49,9 @@ namespace simgrid {
 namespace mc {
 
 ModelChecker::ModelChecker(std::unique_ptr<Process> process) :
-  process_(std::move(process)),
   hostnames_(xbt_dict_new()),
   page_store_(500),
+  process_(std::move(process)),
   parent_snapshot_(nullptr)
 {
 

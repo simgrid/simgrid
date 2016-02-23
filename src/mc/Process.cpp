@@ -207,7 +207,7 @@ namespace simgrid {
 namespace mc {
 
 Process::Process(pid_t pid, int sockfd) :
-  AddressSpace(this), socket_(sockfd), pid_(pid), running_(true)
+   AddressSpace(this),pid_(pid), socket_(sockfd), running_(true)
 {}
 
 void Process::init()
