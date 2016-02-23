@@ -23,13 +23,8 @@
      generate the tarball, or keep using cmake -E tar, but use git-ls-files
      to get the list of files to pack.
 
-* /* FIXME: better place? */
-  int vasprintf  (char **ptr, const char *fmt, va_list ap);
-  char *bprintf(const char*fmt, ...) _XBT_GNUC_PRINTF(1,2);
+* Replace XBT with the C++ standard library
 
-* Replace XBT with the C++ standard library, once everything is ported
-  to C++
-
-* Some XBT datacontainers seem to overlap. Kill some of them?
+* Some XBT datacontainers seem to overlap. Kill some of them all.
     - replace fifo with dynars
     - replace set with SWAG

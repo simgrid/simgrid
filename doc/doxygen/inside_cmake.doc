@@ -120,27 +120,22 @@ set(txt_files
   )
 \endverbatim
 
-Then, you have to follow these steps:
-\li Add the following line to <project/directory>/tools/cmake/MakeExe.cmake:
+Then, you have to add your CMakeLists.txt to CMAKEFILES_TXT in <project/directory>/tools/cmake/DefinePackages.cmake:
 \verbatim
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
-\endverbatim
-
-\li Add your CMakeLists.txt to CMAKE_SOURCE_FILES in <project/directory>/tools/cmake/DefinePackages.cmake:
-\verbatim
-set(CMAKE_SOURCE_FILES
-  CMakeLists.txt
-  ....
+set(CMAKEFILES_TXT
   <path_to_your_CMakeList.txt>
   )
 \endverbatim
 
-\li Add the tesh file and register your example to the testing
-  infrastructure. See \ref inside_tests_add_integration for more
-  details.
+And finally, add the tesh file and register your example to the
+testing infrastructure. See \ref inside_tests_add_integration for more
+details.
 
 Once you're done, you must run "make distcheck" to ensure that you did
-not forget to add any file to the distributed archives.
-
+not forget to add any file to the distributed archives. This ensures
+that everything was commited correctly, so you have to first commit
+before running "make distcheck". If you forgot something, you want to
+"git commit --amend". But never amend a commit that you already pushed
+to public repositories! Do a second commit in that case.
 
 */

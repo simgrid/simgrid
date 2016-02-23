@@ -115,6 +115,7 @@ set(EXTRA_DIST
   src/xbt/win32_ucontext.c
   tools/tesh/generate_tesh
   tools/lualib.patch
+  teshsuite/lua/lua_platforms.tesh
   examples/smpi/mc/only_send_deterministic.tesh
   examples/smpi/mc/non_deterministic.tesh
   )
@@ -956,7 +957,9 @@ set(txt_files
   TODO
   )
 
-set(EXAMPLES_CMAKEFILES_TXT
+# The list of cmake build directories is constructed from the following list. 
+# Add your CMakeLists file here to see your subdir built.
+set(CMAKEFILES_TXT
   examples/java/async/CMakeLists.txt
   examples/java/bittorrent/CMakeLists.txt
   examples/java/chord/CMakeLists.txt
@@ -977,6 +980,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/java/startKillTime/CMakeLists.txt
   examples/java/suspend/CMakeLists.txt
   examples/java/tracing/CMakeLists.txt
+  
   examples/msg/CMakeLists.txt
   examples/msg/actions/CMakeLists.txt
   examples/msg/bittorrent/CMakeLists.txt
@@ -1008,9 +1012,11 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/msg/suspend/CMakeLists.txt
   examples/msg/token_ring/CMakeLists.txt
   examples/msg/tracing/CMakeLists.txt
+  
   examples/s4u/CMakeLists.txt
   examples/s4u/basic/CMakeLists.txt
   examples/s4u/io/CMakeLists.txt
+  
   examples/simdag/CMakeLists.txt
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
@@ -1018,6 +1024,7 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/simdag/io/CMakeLists.txt
   examples/simdag/properties/CMakeLists.txt
   examples/simdag/scheduling/CMakeLists.txt
+  
   examples/smpi/CMakeLists.txt
   examples/smpi/smpi_msg_masterslave/CMakeLists.txt
   examples/smpi/replay_multiple/CMakeLists.txt
@@ -1025,13 +1032,10 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/smpi/energy/CMakeLists.txt
   examples/smpi/energy/f77/CMakeLists.txt
   examples/smpi/energy/f90/CMakeLists.txt
-  )
 
-set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/bug-17132/CMakeLists.txt
   teshsuite/java/semaphore/CMakeLists.txt
   teshsuite/java/sleep_host_off/CMakeLists.txt
-  teshsuite/lua/lua_platforms.tesh
   teshsuite/mc/CMakeLists.txt
   teshsuite/mc/dwarf/CMakeLists.txt
   teshsuite/mc/dwarf_expression/CMakeLists.txt
@@ -1054,6 +1058,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/platforms/CMakeLists.txt
   teshsuite/simix/check_defaults/CMakeLists.txt
   teshsuite/simix/stack_overflow/CMakeLists.txt
+  
   teshsuite/smpi/CMakeLists.txt
   teshsuite/smpi/allgather/CMakeLists.txt
   teshsuite/smpi/allgatherv/CMakeLists.txt
@@ -1103,10 +1108,12 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
   teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/perf/CMakeLists.txt
+  
   teshsuite/surf/lmm_usage/CMakeLists.txt
   teshsuite/surf/maxmin_bench/CMakeLists.txt
   teshsuite/surf/surf_usage/CMakeLists.txt
   teshsuite/surf/trace_usage/CMakeLists.txt
+  
   teshsuite/xbt/heap_bench/CMakeLists.txt
   teshsuite/xbt/log_large/CMakeLists.txt
   teshsuite/xbt/log_usage/CMakeLists.txt
@@ -1115,9 +1122,7 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/xbt/parallel_log/CMakeLists.txt
   teshsuite/xbt/parmap_bench/CMakeLists.txt
   teshsuite/xbt/parmap_test/CMakeLists.txt
-  )
 
-set(TOOLS_CMAKEFILES_TXT
   tools/CMakeLists.txt
   tools/graphicator/CMakeLists.txt
   tools/tesh/CMakeLists.txt

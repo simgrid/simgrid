@@ -1045,7 +1045,11 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Tests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestConfig.cmake)
 
 ### Define subdirectories
-include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeExe.cmake)
+foreach(cmakefile ${CMAKEFILES_TXT})
+  string(REPLACE "/CMakeLists.txt" "" repository ${cmakefile})
+  add_subdirectory("${CMAKE_HOME_DIRECTORY}/${repository}")
+  message(STATUS "${CMAKE_HOME_DIRECTORY}/${repository}")
+endforeach()
 
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
