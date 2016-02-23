@@ -48,10 +48,10 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
-ModelChecker::ModelChecker(pid_t pid, int socket) :
-  pid_(pid), socket_(socket),
+ModelChecker::ModelChecker(std::unique_ptr<Process> process) :
   hostnames_(xbt_dict_new()),
   page_store_(500),
+  process_(std::move(process)),
   parent_snapshot_(nullptr)
 {
 
@@ -74,16 +74,10 @@ const char* ModelChecker::get_host_name(const char* hostname)
   return elt->key;
 }
 
-// HACK, for the unit test only
-void ModelChecker::init_process()
-{
-  // TODO, avoid direct dependency on sg_cfg
-  process_ = std::unique_ptr<Process>(new Process(pid_, socket_));
-  process_->privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
-}
-
 void ModelChecker::start()
 {
+  const pid_t pid = process_->pid();
+
   // Block SIGCHLD (this will be handled with accept/signalfd):
   sigset_t set;
   sigemptyset(&set);
@@ -97,7 +91,7 @@ void ModelChecker::start()
   // Prepare data for poll:
 
   struct pollfd* socket_pollfd = &fds_[SOCKET_FD_INDEX];
-  socket_pollfd->fd = socket_;
+  socket_pollfd->fd = process_->socket();;
   socket_pollfd->events = POLLIN;
   socket_pollfd->revents = 0;
 
@@ -114,11 +108,11 @@ void ModelChecker::start()
   int status;
 
   // The model-checked process SIGSTOP itself to signal it's ready:
-  pid_t res = waitpid(pid_, &status, __WALL);
+  pid_t res = waitpid(pid, &status, __WALL);
   if (res < 0 || !WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
-  this->init_process();
+  process_->init();
 
   /* Initialize statistics */
   mc_stats = xbt_new0(s_mc_stats_t, 1);
@@ -132,8 +126,8 @@ void ModelChecker::start()
 
   setup_ignore();
 
-  ptrace(PTRACE_SETOPTIONS, pid_, nullptr, PTRACE_O_TRACEEXIT);
-  ptrace(PTRACE_CONT, pid_, 0, 0);
+  ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
+  ptrace(PTRACE_CONT, pid, 0, 0);
 }
 
 static const std::pair<const char*, const char*> ignored_local_variables[] = {
@@ -386,7 +380,7 @@ void ModelChecker::handle_waitpid()
 
       // From PTRACE_O_TRACEEXIT:
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
-        if (ptrace(PTRACE_GETEVENTMSG, pid_, 0, &status) == -1)
+        if (ptrace(PTRACE_GETEVENTMSG, this->process().pid(), 0, &status) == -1)
           xbt_die("Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
@@ -397,7 +391,7 @@ void ModelChecker::handle_waitpid()
       // We don't care about signals, just reinject them:
       if (WIFSTOPPED(status)) {
         XBT_DEBUG("Stopped with signal %i", (int) WSTOPSIG(status));
-        if (ptrace(PTRACE_CONT, pid_, 0, WSTOPSIG(status)) == -1)
+        if (ptrace(PTRACE_CONT, this->process().pid(), 0, WSTOPSIG(status)) == -1)
           xbt_die("Could not PTRACE_CONT");
       }
 

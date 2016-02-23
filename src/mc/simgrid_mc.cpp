@@ -99,7 +99,9 @@ static int do_parent(int socket, pid_t child)
     xbt_die("MC server already present");
   try {
     mc_mode = MC_MODE_SERVER;
-    mc_model_checker = new simgrid::mc::ModelChecker(child, socket);
+    std::unique_ptr<simgrid::mc::Process> process(new simgrid::mc::Process(child, socket));
+    process->privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
+    mc_model_checker = new simgrid::mc::ModelChecker(std::move(process));
     mc_model_checker->start();
     int res = 0;
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism)

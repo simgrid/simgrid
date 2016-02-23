@@ -100,7 +100,7 @@ struct s_mc_memory_map_re {
 
 static char* MC_get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
 {
-  const char* map_basename = basename((char*) pathname);
+  const char* map_basename = xbt_basename((char*) pathname);
 
   regmatch_t match;
   if(regexec(&res->so_re, map_basename, 1, &match, 0))
@@ -206,76 +206,68 @@ int open_vm(pid_t pid, int flags)
 namespace simgrid {
 namespace mc {
 
-Process::Process(pid_t pid, int sockfd) : AddressSpace(this)
-{
-  Process* process = this;
-  process->socket_ = sockfd;
-  process->pid_ = pid;
-  process->running_ = true;
-  process->memory_map_ = simgrid::xbt::get_memory_map(pid);
-  process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
-  process->init_memory_map_info();
-  process->clear_refs_fd_ = -1;
-  process->pagemap_fd_ = -1;
-  process->privatized_ = false;
+Process::Process(pid_t pid, int sockfd) :
+   AddressSpace(this),pid_(pid), socket_(sockfd), running_(true)
+{}
 
-  int fd = open_vm(process->pid_, O_RDWR);
+void Process::init()
+{
+  this->memory_map_ = simgrid::xbt::get_memory_map(this->pid_);
+  this->init_memory_map_info();
+
+  int fd = open_vm(this->pid_, O_RDWR);
   if (fd<0)
     xbt_die("Could not open file for process virtual address space");
-  process->memory_file = fd;
+  this->memory_file = fd;
 
   // Read std_heap (is a struct mdesc*):
-  simgrid::mc::Variable* std_heap_var = process->find_variable("__mmalloc_default_mdp");
+  simgrid::mc::Variable* std_heap_var = this->find_variable("__mmalloc_default_mdp");
   if (!std_heap_var)
     xbt_die("No heap information in the target process");
   if(!std_heap_var->address)
     xbt_die("No constant address for this variable");
-  process->read_bytes(&process->heap_address, sizeof(struct mdesc*),
+  this->read_bytes(&this->heap_address, sizeof(struct mdesc*),
     remote(std_heap_var->address),
     simgrid::mc::ProcessIndexDisabled);
 
-  process->smx_process_infos = MC_smx_process_info_list_new();
-  process->smx_old_process_infos = MC_smx_process_info_list_new();
-  process->unw_addr_space = unw_create_addr_space(&mc_unw_accessors  , __BYTE_ORDER);
-  process->unw_underlying_addr_space = unw_create_addr_space(&mc_unw_vmread_accessors, __BYTE_ORDER);
-  process->unw_underlying_context = _UPT_create(pid);
+  this->smx_process_infos = MC_smx_process_info_list_new();
+  this->smx_old_process_infos = MC_smx_process_info_list_new();
+  this->unw_addr_space = unw_create_addr_space(&mc_unw_accessors  , __BYTE_ORDER);
+  this->unw_underlying_addr_space = unw_create_addr_space(&mc_unw_vmread_accessors, __BYTE_ORDER);
+  this->unw_underlying_context = _UPT_create(this->pid_);
 }
 
 Process::~Process()
 {
-  Process* process = this;
-
   if (this->socket_ >= 0 && close(this->socket_) < 0)
     xbt_die("Could not close communication socket");
 
-  process->pid_ = 0;
+  this->maestro_stack_start_ = nullptr;
+  this->maestro_stack_end_ = nullptr;
 
-  process->maestro_stack_start_ = nullptr;
-  process->maestro_stack_end_ = nullptr;
+  xbt_dynar_free(&this->smx_process_infos);
+  xbt_dynar_free(&this->smx_old_process_infos);
 
-  xbt_dynar_free(&process->smx_process_infos);
-  xbt_dynar_free(&process->smx_old_process_infos);
-
-  if (process->memory_file >= 0) {
-    close(process->memory_file);
+  if (this->memory_file >= 0) {
+    close(this->memory_file);
   }
 
-  if (process->unw_underlying_addr_space != unw_local_addr_space) {
-    unw_destroy_addr_space(process->unw_underlying_addr_space);
-    _UPT_destroy(process->unw_underlying_context);
+  if (this->unw_underlying_addr_space != unw_local_addr_space) {
+    unw_destroy_addr_space(this->unw_underlying_addr_space);
+    _UPT_destroy(this->unw_underlying_context);
   }
-  process->unw_underlying_context = NULL;
-  process->unw_underlying_addr_space = NULL;
+  this->unw_underlying_context = NULL;
+  this->unw_underlying_addr_space = NULL;
 
-  unw_destroy_addr_space(process->unw_addr_space);
-  process->unw_addr_space = NULL;
+  unw_destroy_addr_space(this->unw_addr_space);
+  this->unw_addr_space = NULL;
 
-  process->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
+  this->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
 
-  if (process->clear_refs_fd_ >= 0)
-    close(process->clear_refs_fd_);
-  if (process->pagemap_fd_ >= 0)
-    close(process->pagemap_fd_);
+  if (this->clear_refs_fd_ >= 0)
+    close(this->clear_refs_fd_);
+  if (this->pagemap_fd_ >= 0)
+    close(this->pagemap_fd_);
 }
 
 /** Refresh the information about the process

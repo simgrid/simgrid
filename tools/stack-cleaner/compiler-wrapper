@@ -1,34 +1,35 @@
-#!/usr/bin/env perl
+#!/usr/bin/env python
 # Compiler wrapper with stack-cleaner support (enabled by default).
 # Usage: ./compiler-wrapper target-compiler args [-f[no-]stack-cleaner]
 
-use warnings;
+import sys
+import os
+import re
 
-use File::Basename;
+compiler = sys.argv[1]
+enabled = True
+args = []
 
-my $compiler = shift(@ARGV);
+for arg in sys.argv[2:]:
+    if arg == "--help":
+        sys.stderr.write(
+            "Compiler wrapper with stack-cleaner.\n"
+            "Usage: {} compiler [-f[no-]stack-cleaner] [options]\n".format(sys.argv[0]))
+        sys.exit(0)
+    elif arg == "-fno-stack-cleaner":
+        enabled = False
+    elif arg == "-fstack-cleaner":
+        enabled = True
+    else:
+        args.append(arg)
 
-my $enable = 1;
+if enabled:
+    if re.match("^clang", os.path.basename(compiler)):
+        args.insert(0, "-no-integrated-as")
+    args.insert(0, os.path.dirname(sys.argv[0]))
+    args.insert(0, "-B")
+args.insert(0, compiler)
 
-my @args;
-my $arg;
-while($arg=shift(@ARGV)) {
-  if ($arg eq "-fno-stack-cleaner") {
-    $enable = 0;    
-  } elsif ($arg eq "-fstack-cleaner") {
-    $enable = 1;
-  }
-  else {
-    push @args, $arg;
-  }
-}
-
-if ($enable) {
-  if (basename($0) =~ /^clang/) {
-    unshift @args, "-no-integrated-as"
-  }
-  unshift @args, dirname($0);
-  unshift @args, "-B";
-}
-
-exec $compiler, @args
+os.execvp(args[0], args)
+sys.stderr.write("compiler-wrapper: Could not exec\n")
+os.exit(1)

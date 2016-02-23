@@ -80,8 +80,10 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
 
 }
 
-static simgrid::mc::Variable* test_global_variable(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info, const char* name, void* address, long byte_size) {
-
+static simgrid::mc::Variable* test_global_variable(
+  simgrid::mc::Process& process, simgrid::mc::ObjectInformation* info,
+  const char* name, void* address, long byte_size)
+{
   simgrid::mc::Variable* variable = info->find_variable(name);
   xbt_assert(variable, "Global variable %s was not found", name);
   xbt_assert(variable->name == name,
@@ -91,8 +93,8 @@ static simgrid::mc::Variable* test_global_variable(simgrid::mc::Process* process
       "Address mismatch for %s : %p expected but %p found",
       name, address, variable->address);
 
-  auto i = process->binary_info->types.find(variable->type_id);
-  xbt_assert(i != process->binary_info->types.end(), "Missing type for %s", name);
+  auto i = process.binary_info->types.find(variable->type_id);
+  xbt_assert(i != process.binary_info->types.end(), "Missing type for %s", name);
   simgrid::mc::Type* type = &i->second;
   xbt_assert(type->byte_size = byte_size, "Byte size mismatch for %s", name);
   return variable;
@@ -110,11 +112,11 @@ int some_local_variable = 0;
 
 typedef struct foo {int i;} s_foo;
 
-static void test_type_by_name(simgrid::mc::Process* process, s_foo my_foo)
+static void test_type_by_name(simgrid::mc::Process& process, s_foo my_foo)
 {
   assert(
-    process->binary_info->full_types_by_name.find("struct foo") !=
-      process->binary_info->full_types_by_name.end());
+    process.binary_info->full_types_by_name.find("struct foo") !=
+      process.binary_info->full_types_by_name.end());
 }
 
 int main(int argc, char** argv)
@@ -124,25 +126,25 @@ int main(int argc, char** argv)
   simgrid::mc::Variable* var;
   simgrid::mc::Type* type;
 
-  simgrid::mc::Process p(getpid(), -1);
-  simgrid::mc::Process* process = &p;
+  simgrid::mc::Process process(getpid(), -1);
+  process.init();
 
-  test_global_variable(process, process->binary_info.get(),
+  test_global_variable(process, process.binary_info.get(),
     "some_local_variable", &some_local_variable, sizeof(int));
 
-  var = test_global_variable(process, process->binary_info.get(),
+  var = test_global_variable(process, process.binary_info.get(),
     "test_some_array", &test_some_array, sizeof(test_some_array));
-  auto i = process->binary_info->types.find(var->type_id);
-  xbt_assert(i != process->binary_info->types.end(), "Missing type");
+  auto i = process.binary_info->types.find(var->type_id);
+  xbt_assert(i != process.binary_info->types.end(), "Missing type");
   type = &i->second;
   xbt_assert(type->element_count == 6*5*4,
     "element_count mismatch in test_some_array : %i / %i",
     type->element_count, 6*5*4);
 
-  var = test_global_variable(process, process->binary_info.get(),
+  var = test_global_variable(process, process.binary_info.get(),
     "test_some_struct", &test_some_struct, sizeof(test_some_struct));
-  i = process->binary_info->types.find(var->type_id);
-  xbt_assert(i != process->binary_info->types.end(), "Missing type");
+  i = process.binary_info->types.find(var->type_id);
+  xbt_assert(i != process.binary_info->types.end(), "Missing type");
   type = &i->second;
 
   assert(type);
@@ -155,11 +157,11 @@ int main(int argc, char** argv)
   unw_getcontext(&context);
   unw_init_local(&cursor, &context);
 
-  test_local_variable(process->binary_info.get(), "main", "argc", &argc, &cursor);
+  test_local_variable(process.binary_info.get(), "main", "argc", &argc, &cursor);
 
   {
     int lexical_block_variable = 50;
-    test_local_variable(process->binary_info.get(), "main",
+    test_local_variable(process.binary_info.get(), "main",
       "lexical_block_variable", &lexical_block_variable, &cursor);
   }
 

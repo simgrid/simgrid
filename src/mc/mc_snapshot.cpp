@@ -232,8 +232,10 @@ static void test_snapshot(bool sparse_checkpoint) {
   _sg_mc_sparse_checkpoint = sparse_checkpoint;
   xbt_assert(xbt_pagesize == getpagesize());
   xbt_assert(1 << xbt_pagebits == xbt_pagesize);
-  mc_model_checker = new ::simgrid::mc::ModelChecker(getpid(), -1);
-  mc_model_checker->init_process();
+
+  std::unique_ptr<simgrid::mc::Process> process(new simgrid::mc::Process(getpid(), -1));
+  process->init();
+  mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process));
 
   for(int n=1; n!=256; ++n) {
 
