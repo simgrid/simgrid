@@ -1138,7 +1138,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/GCCFlags.cmake
   tools/cmake/Documentation.cmake
   tools/cmake/MaintainerMode.cmake
-  tools/cmake/MakeExe.cmake
   tools/cmake/Java.cmake
   tools/cmake/MakeLib.cmake
   tools/cmake/MakeLibWin.cmake
