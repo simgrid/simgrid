@@ -66,6 +66,7 @@ class Process final : public AddressSpace {
 public:
   Process(pid_t pid, int sockfd);
   ~Process();
+  void init();
 
   Process(Process const&) = delete;
   Process(Process &&) = delete;
@@ -191,22 +192,24 @@ public:
   void unignore_heap(void *address, size_t size);
 
   void ignore_local_variable(const char *var_name, const char *frame_name);
+  int socket() { return socket_; }
 
 private:
   void init_memory_map_info();
   void refresh_heap();
   void refresh_malloc_info();
+
 private:
-  pid_t pid_;
-  int socket_;
-  bool running_;
+  pid_t pid_ = -1;
+  int socket_ = -1;
+  bool running_ = false;
   std::vector<simgrid::xbt::VmMap> memory_map_;
   remote_ptr<void> maestro_stack_start_, maestro_stack_end_;
-  int memory_file;
+  int memory_file = -1;
   std::vector<IgnoredRegion> ignored_regions_;
-  int clear_refs_fd_;
-  int pagemap_fd_;
-  bool privatized_;
+  int clear_refs_fd_ = -1;
+  int pagemap_fd_ = -1;
+  bool privatized_ = false;
   std::vector<s_stack_region_t> stack_areas_;
   std::vector<IgnoredHeapRegion> ignored_heap_;
 
@@ -221,16 +224,16 @@ public: // Copies of MCed SMX data structures
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_process_infos;
+  xbt_dynar_t smx_process_infos = nullptr;
 
   /** Copy of `simix_global->process_to_destroy`
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_old_process_infos;
+  xbt_dynar_t smx_old_process_infos = nullptr;
 
   /** State of the cache (which variables are up to date) */
-  mc_process_cache_flags_t cache_flags;
+  mc_process_cache_flags_t cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
 
   /** Address of the heap structure in the MCed process. */
   void* heap_address;

@@ -28,8 +28,6 @@ namespace mc {
 /** State of the model-checker (global variables for the model checker)
  */
 class ModelChecker {
-  pid_t pid_;
-  int socket_;
   struct pollfd fds_[2];
   /** String pool for host names */
   // TODO, use std::unordered_set with heterogeneous comparison lookup (C++14)
@@ -43,7 +41,7 @@ public:
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
-  ModelChecker(pid_t pid, int socket);
+  ModelChecker(std::unique_ptr<Process> process);
   ~ModelChecker();
 
   Process& process()
@@ -62,7 +60,6 @@ public:
   }
 
   void start();
-  void init_process();
   void shutdown();
   void resume(simgrid::mc::Process& process);
   void loop();
