@@ -96,7 +96,7 @@ LocationList location_list(
     LocationListEntry::range_type range;
     if (start == 0)
       // If start == 0, this is not a location list:
-      range = {0, 0};
+      range = { 0, UINT64_MAX };
     else
       range =  { base_address + start, base_address + end };
 

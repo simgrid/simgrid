@@ -32,14 +32,14 @@ public:
   typedef simgrid::xbt::range<std::uint64_t> range_type;
 private:
   DwarfExpression expression_;
-  range_type range_ = {0, 0};
+  range_type range_ = {0, UINT64_MAX};
 public:
   LocationListEntry() {}
   LocationListEntry(DwarfExpression expression, range_type range)
     : expression_(std::move(expression)), range_(range)
   {}
   LocationListEntry(DwarfExpression expression)
-    : expression_(std::move(expression)), range_({0, 0})
+    : expression_(std::move(expression)), range_({0, UINT64_MAX})
   {}
 
   DwarfExpression& expression()
@@ -50,13 +50,9 @@ public:
   {
     return expression_;
   }
-  bool always_valid() const
-  {
-    return range_.begin() == 0 && range_.end() == 0;
-  }
   bool valid_for_ip(unw_word_t ip) const
   {
-    return always_valid() || range_.contain(ip);
+    return range_.contain(ip);
   }
 };
 
