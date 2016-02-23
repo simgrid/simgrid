@@ -1,5 +1,6 @@
 add_executable       (graphicator graphicator.c)
 target_link_libraries(graphicator simgrid)
+set_target_properties(graphicator PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 ## Clean generated files
 get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
