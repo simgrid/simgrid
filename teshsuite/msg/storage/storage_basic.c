@@ -58,9 +58,9 @@ void display_storage_properties(msg_storage_t storage){
   if (xbt_dict_length(props) > 0){
     XBT_INFO("\tProperties of mounted storage: %s", MSG_storage_get_name(storage));
     xbt_dict_foreach(props, cursor, key, data)
-	  XBT_INFO("\t\t'%s' -> '%s'", key, data);
+    XBT_INFO("\t\t'%s' -> '%s'", key, data);
   }else{
-	XBT_INFO("\tNo property attached.");
+  XBT_INFO("\tNo property attached.");
   }
 }
 

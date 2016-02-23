@@ -1,46 +1,88 @@
 SimGrid (3.13) UNRELEASED; urgency=low
 
  The Easter Trim Release.
- 
+
+ Backwards Compatibility breaks
+   - Some command line options were renamed for consistency sake:
+     - model-check/sparse-checkpoint -> model-check/sparse_checkpoint
+     - smpi/async_small_thres        -> smpi/async_small_thresh
+     - smpi/send_is_detached_thres   -> smpi/send_is_detached_thresh 
+
+   - Removed Lua simulation bindings (switch to C or Java for that).
+     Lua can still be used to describe platforms
+   - Removed Java kernel plug-ins.
+     Will be reintroduced after the ongoing major internals reorg.
+   - In SimDag 
+      - the SD_application_reinit function was removed. It was a noop for a while. 
+      - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be 
+        replaced by a more flexible mechanism.
+      - The following functions thus do not exist anymore
+         - SD_workstation_get_access_mode
+         - SD_workstation_set_access_mode
+         - SD_workstation_get_current_task
+      - Basic estimation functions have been removed but can easily be replaced
+        - SD_route_get_communication_time => SG_route_get_latency() + amount / SD_route_get_bandwidth()
+        - SD_workstation_get_computation_time => amount / sg_host_speed()
+
+ XML platforms:
+ * Switch to platform v4 format.
+   - Rename from 'power' to 'speed' the attributes describing the amount of
+     flops that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
+   - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
+   - The DOCTYPE points to the right URL:
+     http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+     (the file at this address now documents the changelog since its v1)
+   - A warning is emitted for unit-less values (they are still accepted).
+     - speed. Default: 'f' or 'flops'. Also defined:
+        'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
+        'yottaflops', 'zettaflops', 'exaflops', 'petaflops', 'teraflops', 'gigaflops', 'megaflops', 'kiloflops'
+     - bandwidth. Default: 'Bps' bytes per second (or 'bps' for bits but 1 Bps = 8 bps)
+       Also defined in bytes: 'TiBps', 'GiBps', 'MiBps', 'KiBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
+       And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
+     - latency. Default: 's' second. Also defined:
+       'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
+       
+ * bin/simgrid_update_xml can upgrade your files automatically (won't convert unit-less values)
+   tools/sg_xml_unit_converter.py may help (but it's just a warning and will probably ever be).
+
  S4U
- * s4u::Host is now the prefered public interface to the Host features.
+ * s4u::Host is now the preferred public interface to the Host features.
    sg_host_* functions are C bindings to the exact same behavior
    MSG_host_* and SD_workstation_* are #define to the sg_host_* ones
 
  MSG
- * Kill all deprecated functions. They were deprecated since a few
-   releases anyway, and probably did not even compile anymore.
+ * Kill all deprecated functions (the ones you had when declaring MSG_DEPRECATED). 
+   They were deprecated since a few years, and probably did not even compile anymore.
+
+ SimDag
+ * The API has been profoundly modified to directly use the core objects instead of redefining its own. 
+   SD_Workstation_t and SD_link_t are now sg_host_t and sg_link_t respectively.
+   Some functions have also been renamed for consistency. Backward compatibility is maintained, but users are 
+   encouraged to update their codes. A list of the modified functions can be found at the end of 
+   include/simgrid/simdag.h
 
  Simix
  * simgrid::simix::kernel() is the closure callback. It ensures that
     the lambda or closure passed as a parameter will run in kernel mode.
    Every callbacks should be rewritten to that interface at some point.
    
- MC
- * BC breaks:
-   - The option "model-check/sparse-checkpoint" was renamed to
-     "model-check/sparse_checkpoint" as we attempt to unify our naming
-     schemes.
-
  Surf
  * Reorganizing and cleaning the internals all around the place.
 
  SMPI
- * BC breaks:
-   - The option smpi/async_small_thres was renamed to smpi/async_small_thresh
-     as we attempt to unify our naming schemes -> smpi/send_is_detached_thresh
  * Remove old default barrier/bcast buggy algorithms (see #18407)
- * Various bugfixes to handle more codes
+ * Various bug fixes to handle more codes
 
  XBT
  * Kill the setset data container: MC don't use it anymore.
  * Kill the queue data container: it made more sense with GRAS.
  * Kill the xbt_peer_t data type: it's useless without GRAS.
+ * Kill rm_cb feature of config sets: it was never useful.
+ * New functions:
+   - xbt_dynar_sort_strings(), when the content is char*
+   - xbt_str_parse_int / xbt_str_parse_double, wrapping strtol/strtod
+     They throw exceptions on invalid input.
  
- JAVA:
- * Remove the ability to write internal plugins in Java. 
-   It may be reintroduced once the ongoing cleanup is done.
-
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.12) stable; urgency=low

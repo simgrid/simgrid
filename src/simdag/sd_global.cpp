@@ -77,24 +77,6 @@ void SD_config(const char *key, const char *value){
 }
 
 /**
- * \brief Reinits the application part of the simulation (experimental feature)
- *
- * This function allows you to run several simulations on the same platform
- * by resetting the part describing the application.
- *
- * @warning: this function is still experimental and not perfect. For example,
- * the simulation clock (and traces usage) is not reset. So, do not use it if
- * you use traces in your simulation, and do not use absolute timing after
- * using it.
- * That being said, this function is still precious if you want to compare a
- * bunch of heuristics on the same platforms.
- */
-void SD_application_reinit(void)
-{
-  xbt_die("This function is not working since the C++ links and others. Please report the problem if you really need that function.");
-}
-
-/**
  * \brief Creates the environment
  *
  * The environment (i.e. the \ref sg_host_management "hosts" and the \ref SD_link_management "links") is created with
@@ -240,7 +222,7 @@ xbt_dynar_t SD_simulate(double how_long) {
       /* let's see which tasks have just failed */
       while ((action = surf_model_extract_failed_action_set(model))) {
         task = (SD_task_t) action->getData();
-        task->start_time = surf_action_get_start_time(task->surf_action);
+        task->start_time = task->surf_action->getStartTime();
         task->finish_time = surf_get_clock();
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
         SD_task_set_state(task, SD_FAILED);

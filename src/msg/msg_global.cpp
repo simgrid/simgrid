@@ -16,7 +16,7 @@
 #include "xbt/replay.h"
 #include "simgrid/sg_config.h" /* Configuration mechanism of SimGrid */
 #include "src/surf/callbacks.h"
-#include "src/surf/platform.hpp"
+#include "src/surf/xml/platf_private.hpp" // FIXME: KILLME by removing MSG_post_create_environment()
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
@@ -53,7 +53,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     xbt_cfg_register(&_sg_cfg_set, "msg/debug_multiple_use",
                      "Print backtraces of both processes when there is a conflict of multiple use of a task",
-                     xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_msg_debug_multiple_use, NULL);
+                     xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_msg_debug_multiple_use);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "msg/debug_multiple_use", "no");
 
     SIMIX_global_init(argc, argv);

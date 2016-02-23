@@ -17,7 +17,7 @@
 #include "simgrid/modelchecker.h"
 
 
-#ifdef _WIN32
+#ifdef _XBT_WIN32
 #include <windows.h>
 #include <malloc.h>
 #else
@@ -56,7 +56,7 @@ static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAUL
  */
 void SIMIX_context_mod_init(void)
 {
-#if defined(CONTEXT_THREADS) && !defined(HAVE_THREAD_LOCAL_STORAGE)
+#if defined(HAVE_THREAD_CONTEXTS) && !defined(HAVE_THREAD_LOCAL_STORAGE)
   /* the __thread storage class is not available on this platform:
    * use getspecific/setspecific instead to store the current context in each thread */
   xbt_os_thread_key_create(&smx_current_context_key);
@@ -66,37 +66,37 @@ void SIMIX_context_mod_init(void)
     if (simgrid::simix::factory_initializer)
       simix_global->context_factory = simgrid::simix::factory_initializer();
     else { /* use the factory specified by --cfg=contexts/factory:value */
-#if defined(CONTEXT_THREADS)
+#if defined(HAVE_THREAD_CONTEXTS)
       if (!strcmp(smx_context_factory_name, "thread"))
         simix_global->context_factory = simgrid::simix::thread_factory();
 #else
       if (0);
 #endif
-#ifdef CONTEXT_UCONTEXT
+#ifdef HAVE_UCONTEXT_CONTEXTS
       else if (!strcmp(smx_context_factory_name, "ucontext"))
         simix_global->context_factory = simgrid::simix::sysv_factory();
 #endif
-#ifdef HAVE_RAWCTX
+#ifdef HAVE_RAW_CONTEXTS
       else if (!strcmp(smx_context_factory_name, "raw"))
         simix_global->context_factory = simgrid::simix::raw_factory();
 #endif
-#ifdef HAVE_BOOST_CONTEXT
+#ifdef HAVE_BOOST_CONTEXTS
       else if (!strcmp(smx_context_factory_name, "boost"))
         simix_global->context_factory = simgrid::simix::boost_factory();
 #endif
       else {
         XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
-#ifdef HAVE_RAWCTX
+#ifdef HAVE_RAW_CONTEXTS
         XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
 #else
         XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
 #endif
-#ifdef CONTEXT_UCONTEXT
+#ifdef HAVE_UCONTEXT_CONTEXTS
         XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
 #else
         XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
 #endif
-#ifdef HAVE_BOOST_CONTEXT
+#ifdef HAVE_BOOST_CONTEXTS
         XBT_ERROR("  boost: this uses the boost libraries context implementation");
 #else
         XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you install the libboost-context-dev package?)");
@@ -238,7 +238,7 @@ void SIMIX_context_set_nthreads(int nb_threads) {
   }   
   
   if (nb_threads > 1) {
-#ifndef CONTEXT_THREADS
+#ifndef HAVE_THREAD_CONTEXTS
     THROWF(arg_error, 0, "The thread factory cannot be run in parallel");
 #endif
   }

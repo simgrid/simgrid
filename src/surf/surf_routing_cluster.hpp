@@ -9,7 +9,7 @@
 
 #include <xbt/base.h>
 
-#include "surf_routing_none.hpp"
+#include "surf_routing.hpp"
 #include "network_interface.hpp"
 
 namespace simgrid {
@@ -24,23 +24,23 @@ class XBT_PRIVATE AsCluster;
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
 
-class AsCluster: public AsNone {
+class AsCluster: public As {
 public:
-  AsCluster() {}
+  AsCluster(const char*name);
 
   virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 
-  int parsePU(NetCard *elm) override; /* A host or a router, whatever */
-  int parseAS(NetCard *elm) override;
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
+  virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {}
 
-  Link* p_backbone = nullptr;
-  void *p_loopback = nullptr;
-  NetCard *p_router = nullptr;
-  int p_has_limiter = 0;
-  int p_has_loopback = 0;
-  int p_nb_links_per_node = 1;
+
+  Link* backbone_ = nullptr;
+  void *loopback_ = nullptr;
+  NetCard *router_ = nullptr;
+  int has_limiter_ = 0;
+  int has_loopback_ = 0;
+  int nb_links_per_node_ = 1;
 
 };
 

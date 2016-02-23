@@ -27,56 +27,56 @@ class Storage;
  */
 XBT_PUBLIC_CLASS File {
 public:
-	File(const char *fullpath, void* userdata);
-	~File();
+  File(const char *fullpath, void* userdata);
+  ~File();
 private:
-	smx_file_t p_inferior;
-	const char *p_path;
+  smx_file_t p_inferior;
+  const char *p_path;
 
 public:
-	/** Retrieves the path to the file */
-	const char *path() { return p_path;}
+  /** Retrieves the path to the file */
+  const char *path() { return p_path;}
 public:
-	/** Simulates a read action. Returns the size of data actually read
-	 *
-	 *  FIXME: reading from a remotely mounted disk is not implemented yet. Any storage is considered as local, and no network communication ever occur.
-	 */
-	sg_size_t read(sg_size_t size);
-	/** Simulates a write action. Returns the size of data actually written.
-	 *
-	 *  FIXME: reading from a remotely mounted disk is not implemented yet. Any storage is considered as local, and no network communication ever occur.
-	 */
-	sg_size_t write(sg_size_t size);
+  /** Simulates a read action. Returns the size of data actually read
+   *
+   *  FIXME: reading from a remotely mounted disk is not implemented yet. Any storage is considered as local, and no network communication ever occur.
+   */
+  sg_size_t read(sg_size_t size);
+  /** Simulates a write action. Returns the size of data actually written.
+   *
+   *  FIXME: reading from a remotely mounted disk is not implemented yet. Any storage is considered as local, and no network communication ever occur.
+   */
+  sg_size_t write(sg_size_t size);
 
-	/** Allows to store user data on that host */
-	void set_userdata(void *data) {p_userdata = data;}
-	/** Retrieves the previously stored data */
-	void* userdata() {return p_userdata;}
+  /** Allows to store user data on that host */
+  void set_userdata(void *data) {p_userdata = data;}
+  /** Retrieves the previously stored data */
+  void* userdata() {return p_userdata;}
 private:
-	void *p_userdata=NULL;
+  void *p_userdata=NULL;
 
 public:
-	/** Retrieve the datasize */
-	sg_size_t size();
+  /** Retrieve the datasize */
+  sg_size_t size();
 
-	/** Sets the file head to the given position. */
-	void seek(sg_size_t pos);
-	/** Retrieves the current file position */
-	sg_size_t tell();
+  /** Sets the file head to the given position. */
+  void seek(sg_size_t pos);
+  /** Retrieves the current file position */
+  sg_size_t tell();
 
-	/** Rename a file
-	 *
-	 * WARNING: It is forbidden to move the file to another mount point */
-	void move(const char*fullpath);
+  /** Rename a file
+   *
+   * WARNING: It is forbidden to move the file to another mount point */
+  void move(const char*fullpath);
 
-	/** Remove a file from disk */
-	void unlink();
+  /** Remove a file from disk */
+  void unlink();
 
-	/* FIXME: add these to the S4U API:
-	XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);
-	XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
-	XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
-	*/
+  /* FIXME: add these to the S4U API:
+  XBT_PUBLIC(const char *) MSG_file_get_name(msg_file_t file);
+  XBT_PUBLIC(msg_error_t) MSG_file_rcopy(msg_file_t fd, msg_host_t host, const char* fullpath);
+  XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
+  */
 
 };
 

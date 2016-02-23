@@ -29,9 +29,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
 xbt_dynar_t all_existing_models = NULL; /* to destroy models correctly */
 xbt_dynar_t model_list_invoke = NULL;  /* to invoke callbacks */
 
-sg_future_evt_set_t future_evt_set = nullptr;
+simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 xbt_dynar_t surf_path = NULL;
-xbt_dynar_t host_that_restart = NULL;
+xbt_dynar_t host_that_restart = xbt_dynar_new(sizeof(char*), NULL);
 xbt_dict_t watched_hosts_lib;
 
 namespace simgrid {
@@ -130,7 +130,7 @@ s_surf_model_description_t surf_storage_model_description[] = {
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
-#ifdef CONTEXT_THREADS
+#ifdef HAVE_THREAD_CONTEXTS
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
@@ -278,18 +278,18 @@ static XBT_INLINE void surf_storage_free(void *r)
 void sg_version_check(int lib_version_major,int lib_version_minor,int lib_version_patch) {
     if ((lib_version_major != SIMGRID_VERSION_MAJOR) || (lib_version_minor != SIMGRID_VERSION_MINOR)) {
       fprintf(stderr,
-    		  "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
-    		  "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
+          "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
+          "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
               SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,
-			  lib_version_major,lib_version_minor,lib_version_patch);
+        lib_version_major,lib_version_minor,lib_version_patch);
       abort();
     }
     if (lib_version_patch != SIMGRID_VERSION_PATCH) {
         fprintf(stderr,
-      		  "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
-      		  "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
+            "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
+            "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
                 SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,
-  			  lib_version_major,lib_version_minor,lib_version_patch);
+          lib_version_major,lib_version_minor,lib_version_patch);
     }
 }
 
@@ -373,13 +373,12 @@ void surf_exit(void)
     future_evt_set = nullptr;
   }
 
-#ifdef CONTEXT_THREADS
+#ifdef HAVE_THREAD_CONTEXTS
   xbt_parmap_destroy(surf_parmap);
 #endif
 
   tmgr_finalize();
-  surf_parse_lex_destroy();
-  surf_parse_free_callbacks();
+  sg_platf_exit();
 
   NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
 }
@@ -412,18 +411,18 @@ Model::~Model(){
   delete p_doneActionSet;
 }
 
-double Model::shareResources(double now)
+double Model::next_occuring_event(double now)
 {
   //FIXME: set the good function once and for all
   if (p_updateMechanism == UM_LAZY)
-    return shareResourcesLazy(now);
+    return next_occuring_event_lazy(now);
   else if (p_updateMechanism == UM_FULL)
-    return shareResourcesFull(now);
+    return next_occuring_event_full(now);
   else
     xbt_die("Invalid cpu update mechanism!");
 }
 
-double Model::shareResourcesLazy(double now)
+double Model::next_occuring_event_lazy(double now)
 {
   Action *action = NULL;
   double min = -1;
@@ -500,7 +499,7 @@ double Model::shareResourcesLazy(double now)
   return min;
 }
 
-double Model::shareResourcesFull(double /*now*/) {
+double Model::next_occuring_event_full(double /*now*/) {
   THROW_UNIMPLEMENTED;
 }
 
@@ -537,7 +536,7 @@ double Model::shareResourcesMaxMin(ActionList *running_actions,
 
 
   for (++it; it != itend; ++it) {
-	action = &*it;
+  action = &*it;
     value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
       if (action->getRemains() > 0)
@@ -562,11 +561,11 @@ double Model::shareResourcesMaxMin(ActionList *running_actions,
 void Model::updateActionsState(double now, double delta)
 {
   if (p_updateMechanism == UM_FULL)
-	updateActionsStateFull(now, delta);
+  updateActionsStateFull(now, delta);
   else if (p_updateMechanism == UM_LAZY)
-	updateActionsStateLazy(now, delta);
+  updateActionsStateLazy(now, delta);
   else
-	xbt_die("Invalid cpu update mechanism!");
+  xbt_die("Invalid cpu update mechanism!");
 }
 
 void Model::updateActionsStateLazy(double /*now*/, double /*delta*/)

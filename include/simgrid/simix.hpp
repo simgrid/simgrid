@@ -79,6 +79,65 @@ typename std::result_of<F()>::type kernel(F&& code)
   return promise.get_future().get();
 }
 
+class args {
+private:
+  int argc_;
+  char** argv_;
+public:
+
+  // Main constructors
+  args() : argc_(0), argv_(nullptr) {}
+  args(int argc, char** argv) : argc_(argc), argv_(argv) {}
+
+  // Free
+  void clear()
+  {
+    for (int i = 0; i < this->argc_; i++)
+      free(this->argv_[i]);
+    free(this->argv_);
+    this->argc_ = 0;
+    this->argv_ = nullptr;
+  }
+  ~args() { clear(); }
+
+  // Copy
+  args(args const& that) = delete;
+  args& operator=(args const& that) = delete;
+
+  // Move:
+  args(args&& that) : argc_(that.argc_), argv_(that.argv_)
+  {
+    that.argc_ = 0;
+    that.argv_ = nullptr;
+  }
+  args& operator=(args&& that)
+  {
+    this->argc_ = that.argc_;
+    this->argv_ = that.argv_;
+    that.argc_ = 0;
+    that.argv_ = nullptr;
+    return *this;
+  }
+
+  int    argc()            const { return argc_; }
+  char** argv()                  { return argv_; }
+  const char*const* argv() const { return argv_; }
+  char* operator[](std::size_t i) { return argv_[i]; }
+};
+
+inline
+std::function<void()> wrap_main(xbt_main_func_t code, int argc, char **argv)
+{
+  if (code) {
+    auto arg = std::make_shared<simgrid::simix::args>(argc, argv);
+    return [=]() {
+      code(arg->argc(), arg->argv());
+    };
+  }
+  // TODO, we should free argv
+  else return std::function<void()>();
+}
+
 class Context;
 class ContextFactory;
 
@@ -91,6 +150,16 @@ public:
   virtual ~ContextFactory();
   virtual Context* create_context(std::function<void()> code,
     void_pfn_smxprocess_t cleanup, smx_process_t process) = 0;
+
+  // Optional methods for attaching main() as a context:
+
+  /** Creates a context from the current context of execution
+   *
+   *  This will not work on all implementation of `ContextFactory`.
+   */
+  virtual Context* attach(void_pfn_smxprocess_t cleanup_func, smx_process_t process);
+  virtual Context* create_maestro(std::function<void()> code, smx_process_t process);
+
   virtual void run_all() = 0;
   virtual Context* self();
   std::string const& name() const
@@ -142,6 +211,29 @@ public:
   virtual void stop();
   virtual void suspend() = 0;
 };
+
+XBT_PUBLIC_CLASS AttachContext : public Context {
+public:
+
+  AttachContext(std::function<void()> code,
+          void_pfn_smxprocess_t cleanup_func,
+          smx_process_t process)
+    : Context(std::move(code), cleanup_func, process)
+  {}
+
+  ~AttachContext();
+
+  /** Called by the context when it is ready to give control
+   *  to the maestro.
+   */
+  virtual void attach_start() = 0;
+
+  /** Called by the context when it has finished its job */
+  virtual void attach_stop() = 0;
+};
+
+XBT_PUBLIC(void) set_maestro(std::function<void()> code);
+XBT_PUBLIC(void) create_maestro(std::function<void()> code);
 
 }
 }

@@ -121,7 +121,7 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
 {
 
   if (priv == NULL)
-	  return;
+    return;
   unsigned int size = xbt_dict_size(priv->dp_objs);
   if (size > 0)
     XBT_WARN("dp_objs: %u pending task?", size);
@@ -274,8 +274,8 @@ void MSG_host_get_params(msg_host_t host, vm_params_t params)
  * \return Returns the processor speed associated with pstate_index
  */
 double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
-	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-	  return host->power_peak_at(pstate_index);
+    xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+    return host->power_peak_at(pstate_index);
 }
 
 /** \ingroup m_host_management
@@ -285,8 +285,8 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
  * \return Returns the current processor speed
  */
 double MSG_host_get_current_power_peak(msg_host_t host) {
-	  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-	  return host->current_power_peak();
+    xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+    return host->current_power_peak();
 }
 
 /** \ingroup m_host_management
@@ -295,7 +295,7 @@ double MSG_host_get_current_power_peak(msg_host_t host) {
  * \param  host host to test
  */
 int MSG_host_get_nb_pstates(msg_host_t host) {
-	  return sg_host_get_nb_pstates(host);
+    return sg_host_get_nb_pstates(host);
 }
 
 /** \ingroup m_host_management

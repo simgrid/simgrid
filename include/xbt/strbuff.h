@@ -15,6 +15,8 @@
 #include "xbt/str.h"
 #include "xbt/dict.h"
 
+SG_BEGIN_DECL()
+
 /**
  ** Buffer code
  **/
@@ -35,4 +37,5 @@ XBT_PUBLIC(void) xbt_strbuff_trim(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_varsubst(xbt_strbuff_t b,
                                       xbt_dict_t patterns);
 
+SG_END_DECL()
 #endif

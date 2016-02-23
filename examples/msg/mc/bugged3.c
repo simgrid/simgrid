@@ -23,16 +23,14 @@ int client(int argc, char *argv[]);
 
 int server(int argc, char *argv[])
 {
-  msg_task_t task1;
-  long val1;
-  msg_comm_t comm1, comm2;
+  msg_task_t task1,task2;
 
-  comm1 = MSG_task_irecv(&task1, "mymailbox1");
-  comm2 = MSG_task_irecv(&task1, "mymailbox2");
+  msg_comm_t comm1 = MSG_task_irecv(&task1, "mymailbox1");
+  msg_comm_t comm2 = MSG_task_irecv(&task2, "mymailbox2");
   MSG_comm_wait(comm1, -1);
   MSG_comm_wait(comm2, -1);
 
-  val1 = (long) MSG_task_get_data(task1);
+  long val1 = xbt_str_parse_int(MSG_task_get_name(task1), "Task name is not a numerical ID: %s");
   XBT_INFO("Received %lu", val1);
 
   MC_assert(val1 == 2);
@@ -43,15 +41,12 @@ int server(int argc, char *argv[])
 
 int client(int argc, char *argv[])
 {
-  msg_comm_t comm;
-  char *mbox;
-  msg_task_t task1 =
-      MSG_task_create("task", 0, 10000, (void *) atol(argv[1]));
+  msg_task_t task1 = MSG_task_create(argv[1], 0, 10000, NULL);
 
-  mbox = bprintf("mymailbox%s", argv[1]);
+  char *mbox = bprintf("mymailbox%s", argv[1]);
 
-  XBT_INFO("Send %d!", atoi(argv[1]));
-  comm = MSG_task_isend(task1, mbox);
+  XBT_INFO("Send %s!", argv[1]);
+  msg_comm_t comm = MSG_task_isend(task1, mbox);
   MSG_comm_wait(comm, -1);
 
   xbt_free(mbox);
@@ -66,9 +61,7 @@ int main(int argc, char *argv[])
   MSG_create_environment("platform.xml");
 
   MSG_function_register("server", server);
-
   MSG_function_register("client", client);
-
   MSG_launch_application("deploy_bugged3.xml");
 
   MSG_main();

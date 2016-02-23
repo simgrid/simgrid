@@ -199,14 +199,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   set_target_properties(allred PROPERTIES COMPILE_FLAGS "-O0" LINK_FLAGS "-O0")
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
 set(examples_src
   ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/allgather2.c 
@@ -300,14 +292,8 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/scattern.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/scatterv.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/uoplong.c 
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

@@ -13,29 +13,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   add_executable(infotestf90 infotestf90.f90 ../util/mtestf90.f90)
   target_link_libraries(infotest2f90  simgrid mtest_f90)
   target_link_libraries(infotestf90  simgrid mtest_f90)
-
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
 set(examples_src
   ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/infotest2f90.f90 
  ${CMAKE_CURRENT_SOURCE_DIR}/infotestf90.f90 
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

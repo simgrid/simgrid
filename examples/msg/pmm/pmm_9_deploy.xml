@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
   <process host="node-0.acme.org" function="node"><argument value="0"/></process>
   <process host="node-1.acme.org" function="node"><argument value="1"/></process>
   <process host="node-2.acme.org" function="node"><argument value="2"/></process>

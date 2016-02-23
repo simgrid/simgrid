@@ -6,9 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/platf.h"
 #include "simgrid/simix.h"
-#include "surf/surfxml_parse.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "my log messages");
@@ -32,11 +30,11 @@ static int master(int argc, char *argv[])
 {
   XBT_INFO("Launching our nice bugged recursive function...");
   unsigned i = 1;
-  do {
+  while (i <= 0x80000000u) {
     i *= 2;
     unsigned res = collatz(i, i);
     XBT_VERB("collatz(%u, %u) returned %u", i, i, res);
-  } while (i <= 0x80000000u);
+  }
   return 0;
 }
 
@@ -44,10 +42,7 @@ int main(int argc, char *argv[])
 {
   SIMIX_global_init(&argc, argv);
 
-  if (argc != 3) {
-    printf("Usage: %s platform.xml deployment.xml\n", argv[0]);
-    exit(EXIT_FAILURE);
-  }
+  xbt_assert(argc == 3, "Usage: %s platform.xml deployment.xml\n", argv[0]);
 
   SIMIX_function_register("master", master);
   SIMIX_create_environment(argv[1]);

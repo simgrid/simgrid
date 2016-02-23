@@ -11,7 +11,6 @@
 #include "xbt/lib.h"
 #include "simgrid/forward.h"
 #include "simgrid/simix.h"
-#include "simgrid/platf.h"
 
 SG_BEGIN_DECL()
 
@@ -208,7 +207,7 @@ XBT_PUBLIC(void) MSG_config(const char *key, const char *value);
  *  We allow to link against compiled versions that differ in the patch level.
  */
 #define MSG_init(argc,argv)  do {                                                          \
-	sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
+  sg_version_check(SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);\
     MSG_init_nocheck(argc,argv);                                                        \
   } while (0)
 
@@ -233,7 +232,6 @@ XBT_PUBLIC(const char *) MSG_environment_as_get_name(msg_as_t as);
 XBT_PUBLIC(msg_as_t) MSG_environment_as_get_by_name(const char * name);
 XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_as_t as);
 XBT_PUBLIC(const char *) MSG_environment_as_get_property_value(msg_as_t as, const char *name);
-XBT_PUBLIC(const char *) MSG_environment_as_get_model(msg_as_t as);
 XBT_PUBLIC(xbt_dynar_t) MSG_environment_as_get_hosts(msg_as_t as);
 
 /************************** File handling ***********************************/
@@ -336,6 +334,11 @@ XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
                                                             char **argv,
                                                             xbt_dict_t
                                                             properties);
+XBT_PUBLIC(msg_process_t) MSG_process_attach(
+  const char *name, void *data,
+  msg_host_t host, xbt_dict_t properties);
+XBT_PUBLIC(void) MSG_process_detach(void);
+
 XBT_PUBLIC(void) MSG_process_kill(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
 XBT_PUBLIC(msg_error_t) MSG_process_migrate(msg_process_t process, msg_host_t host);

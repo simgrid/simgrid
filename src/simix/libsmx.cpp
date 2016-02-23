@@ -628,7 +628,7 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
  * \brief Get the kill time of a process (or 0 if unset).
  */
 double simcall_process_get_kill_time(smx_process_t process) {
-	return SIMIX_timer_get_date(process->kill_timer);
+  return SIMIX_timer_get_date(process->kill_timer);
 }
 
 /**
@@ -1035,15 +1035,6 @@ smx_mutex_t simcall_mutex_init(void)
  * \ingroup simix_synchro_management
  *
  */
-void simcall_mutex_destroy(smx_mutex_t mutex)
-{
-  simcall_BODY_mutex_destroy(mutex);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
 void simcall_mutex_lock(smx_mutex_t mutex)
 {
   simcall_BODY_mutex_lock(mutex);
@@ -1074,15 +1065,6 @@ void simcall_mutex_unlock(smx_mutex_t mutex)
 smx_cond_t simcall_cond_init(void)
 {
   return simcall_BODY_cond_init();
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
-void simcall_cond_destroy(smx_cond_t cond)
-{
-  simcall_BODY_cond_destroy(cond);
 }
 
 /**
@@ -1131,15 +1113,6 @@ void simcall_cond_broadcast(smx_cond_t cond)
 smx_sem_t simcall_sem_init(int capacity)
 {
   return simcall_BODY_sem_init(capacity);
-}
-
-/**
- * \ingroup simix_synchro_management
- *
- */
-void simcall_sem_destroy(smx_sem_t sem)
-{
-  simcall_BODY_sem_destroy(sem);
 }
 
 /**

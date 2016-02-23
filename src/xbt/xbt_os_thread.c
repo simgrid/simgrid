@@ -1,6 +1,6 @@
 /* xbt_os_thread -- portability layer over the pthread API                  */
 /* Used in RL to get win/lin portability, and in SG when CONTEXT_THREAD     */
-/* in SG, when using CONTEXT_UCONTEXT, xbt_os_thread_stub is used instead   */
+/* in SG, when using HAVE_UCONTEXT_CONTEXTS, xbt_os_thread_stub is used instead   */
 
 /* Copyright (c) 2007-2015. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -103,10 +103,13 @@ void xbt_os_thread_mod_preinit(void)
            "pthread_key_create failed for xbt_self_thread_key");
   
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
+  main_thread->name = NULL;
+  main_thread->detached = 0;
   main_thread->name = (char *) "main";
-  main_thread->start_routine = NULL;
   main_thread->param = NULL;
+  main_thread->start_routine = NULL;
   main_thread->running_ctx = xbt_new(xbt_running_ctx_t, 1);
+  main_thread->extra_data = NULL;
   XBT_RUNNING_CTX_INITIALIZE(main_thread->running_ctx);
 
   if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
@@ -291,14 +294,10 @@ void xbt_os_thread_exit(int *retval)
 
 xbt_os_thread_t xbt_os_thread_self(void)
 {
-  xbt_os_thread_t res;
-
   if (!thread_mod_inited)
     return NULL;
 
-  res = pthread_getspecific(xbt_self_thread_key);
-
-  return res;
+  return pthread_getspecific(xbt_self_thread_key);
 }
 
 void xbt_os_thread_key_create(xbt_os_thread_key_t* key) {
@@ -1303,8 +1302,11 @@ void xbt_os_thread_set_extra_data(void *data)
 
 void *xbt_os_thread_get_extra_data(void)
 {
-  xbt_os_thread_t self = xbt_os_thread_self();
-  return self? self->extra_data : NULL;
+  xbt_os_thread_t thread = xbt_os_thread_self();
+  if (thread)
+    return xbt_os_thread_self()->extra_data;
+  else
+    return NULL;
 }
 
 xbt_os_rmutex_t xbt_os_rmutex_init(void)

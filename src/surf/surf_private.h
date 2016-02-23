@@ -12,11 +12,10 @@
 #include "surf/surf.h"
 #include "surf/maxmin.h"
 #include "xbt/log.h"
-#include "surf/surfxml_parse.h"
-#include "surf/random_mgr.h"
 #include "src/surf/trace_mgr.hpp"
 #include "src/instr/instr_private.h"
 #include "surf/surfxml_parse_values.h"
+#include "src/surf/xml/platf_private.hpp"
 
 #define NO_MAX_DURATION -1.0
 
@@ -52,39 +51,33 @@ XBT_PRIVATE int __surf_is_absolute_file_path(const char *file_path);
  * Routing logic
  */
 
-typedef struct s_model_type {
-  const char *name;
-  const char *desc;
-  AS_t (*create) ();
-  void (*end) (AS_t as);
-} s_routing_model_description_t, *routing_model_description_t;
-
 /* This enum used in the routing structure helps knowing in which situation we are. */
 typedef enum {
   SURF_ROUTING_NULL = 0,   /**< Undefined type                                   */
   SURF_ROUTING_BASE,       /**< Base case: use simple link lists for routing     */
   SURF_ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
 } e_surf_routing_hierarchy_t;
+extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set *future_evt_set;
+
 
 XBT_PUBLIC(void) routing_model_create(void *loopback);
 XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) storage_register_callbacks(void);
 
-XBT_PRIVATE void routing_new_cluster(sg_platf_cluster_cbarg_t cluster);
-
 XBT_PUBLIC(void) routing_register_callbacks(void);
-XBT_PUBLIC(void) generic_free_route(sg_platf_route_cbarg_t route); // FIXME rename to routing_route_free
- // FIXME: make previous function private to routing again?
+XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route); // FIXME: make previous function private to routing again?
 
 XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
 /**
  * Resource protected methods
  */
-XBT_PUBLIC(void) surfxml_bufferstack_push(int _new);
-XBT_PUBLIC(void) surfxml_bufferstack_pop(int _new);
-XBT_PUBLIC(void) parse_after_config(void);
+XBT_PRIVATE void surfxml_bufferstack_push(int _new);
+XBT_PRIVATE void surfxml_bufferstack_pop(int _new);
+XBT_PRIVATE void parse_after_config(void);
 
 XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
+
+XBT_PRIVATE void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
 
 /********** Tracing **********/
 /* from surf_instr.c */

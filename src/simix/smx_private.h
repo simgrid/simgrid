@@ -213,7 +213,7 @@ typedef struct s_smx_synchro {
 XBT_PRIVATE void SIMIX_context_mod_init(void);
 XBT_PRIVATE void SIMIX_context_mod_exit(void);
 
-smx_context_t SIMIX_context_new(
+XBT_PRIVATE smx_context_t SIMIX_context_new(
   xbt_main_func_t code, int argc, char **argv,
   void_pfn_smxprocess_t cleanup_func,
   smx_process_t simix_process);

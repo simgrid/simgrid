@@ -9,7 +9,6 @@
 #include "xbt/log.h"
 #include "xbt/xbt_os_time.h"
 #include "xbt/config.h"
-#include "surf/surfxml_parse.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
                                 "Logging specific to SIMIX (environment)");

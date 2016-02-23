@@ -25,6 +25,7 @@
 									<listOptionValue builtIn="false" value="/usr/lib/jvm/java-7-openjdk-amd64/include"/>
 									<listOptionValue builtIn="false" value="/usr/include/ns3.22"/>
 									<listOptionValue builtIn="false" value="/opt/gtnets/include"/>
+									<listOptionValue builtIn="false" value="/usr/include/lua5.3"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1641160853" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -33,6 +34,7 @@
 									<listOptionValue builtIn="false" value="/usr/lib/jvm/java-7-openjdk-amd64/include"/>
 									<listOptionValue builtIn="false" value="/usr/include/ns3.22"/>
 									<listOptionValue builtIn="false" value="/opt/gtnets/include"/>
+									<listOptionValue builtIn="false" value="/usr/include/lua5.3"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.538328935" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -48,6 +50,7 @@
 									<listOptionValue builtIn="false" value="/usr/lib/jvm/java-7-openjdk-amd64/include"/>
 									<listOptionValue builtIn="false" value="/usr/include/ns3.22"/>
 									<listOptionValue builtIn="false" value="/opt/gtnets/include"/>
+									<listOptionValue builtIn="false" value="/usr/include/lua5.3"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2071407067" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

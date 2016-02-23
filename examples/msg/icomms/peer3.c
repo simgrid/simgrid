@@ -28,11 +28,11 @@ msg_error_t test_all(const char *platform_file,
 /** Sender function  */
 int sender(int argc, char *argv[])
 {
-  long number_of_tasks = atol(argv[1]);
-  double task_comp_size = atof(argv[2]);
-  double task_comm_size = atof(argv[3]);
-  long receivers_count = atol(argv[4]);
-  int diff_com = atol(argv[5]);
+  long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
+  double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
+  double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
+  long receivers_count = xbt_str_parse_int(argv[4], "Invalid amount of receivers: %s");
+  int diff_com = xbt_str_parse_int(argv[5], "Invalid value for diff_comm: %s");
   double coef = 0;
   xbt_dynar_t d = xbt_dynar_new(sizeof(msg_comm_t), NULL);
   int i;
@@ -90,7 +90,7 @@ int receiver(int argc, char *argv[])
   int i;
   char mailbox[80];
   xbt_dynar_t comms = xbt_dynar_new(sizeof(msg_comm_t), NULL);
-  int tasks = atof(argv[2]);
+  int tasks = xbt_str_parse_int(argv[2], "Invalid amount of tasks: %s");
   msg_task_t *task = xbt_new(msg_task_t, tasks);
 
   XBT_ATTRIB_UNUSED int read;

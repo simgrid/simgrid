@@ -24,7 +24,7 @@ class DummyTestResource
 public:
   DummyTestResource(const char *name) : Resource(nullptr,name) {}
   bool isUsed() override {return false;}
-  void updateState(tmgr_trace_iterator_t it, double date, double value) override {}
+  void apply_event(tmgr_trace_iterator_t it, double value) override {}
 };
 
 static void test(void)

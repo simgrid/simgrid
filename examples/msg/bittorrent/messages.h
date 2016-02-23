@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
+/* Copyright (c) 2012-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,8 +8,7 @@
 #define BITTORRENT_MESSAGES_H_
 #include <simgrid/msg.h>
 
-/**
- * Message sizes
+/** Message sizes
  * Sizes based on report by A. Legout et al, Understanding BitTorrent: An Experimental Perspective
  * http://hal.inria.fr/inria-00000156/en
  */
@@ -24,9 +23,7 @@
 #define MESSAGE_PIECE_SIZE 13
 #define MESSAGE_CANCEL_SIZE 17
 
-/**
- * Types of messages exchanged between two peers.
- */
+/** Types of messages exchanged between two peers. */
 typedef enum {
   MESSAGE_HANDSHAKE,
   MESSAGE_CHOKE,
@@ -40,9 +37,7 @@ typedef enum {
   MESSAGE_CANCEL
 } e_message_type;
 
-/**
- * Message data
- */
+/** Message data */
 typedef struct s_message {
   e_message_type type;
   const char *mailbox;
@@ -53,44 +48,24 @@ typedef struct s_message {
   int block_index;
   int block_length;
 } s_message_t, *message_t;
-/**
- * Builds a new value-less message
- */
-msg_task_t task_message_new(e_message_type type,
-                            const char *issuer_host_name,
-                            const char *mailbox, int peer_id, int size);
-/**
- * Builds a new "have/piece" message
- */
-msg_task_t task_message_index_new(e_message_type type,
-                                  const char *issuer_host_name,
-                                  const char *mailbox, int peer_id,
+
+/** Builds a new value-less message */
+msg_task_t task_message_new(e_message_type type, const char *issuer_host_name, const char *mailbox, int peer_id,
+                            int size);
+/** Builds a new "have/piece" message */
+msg_task_t task_message_index_new(e_message_type type, const char *issuer_host_name, const char *mailbox, int peer_id,
                                   int index, int varsize);
-/**
- * Builds a new bitfield message
- */
-msg_task_t task_message_bitfield_new(const char *issuer_host_name,
-                                     const char *mailbox, int peer_id,
-                                     char *bitfield, int bitfield_size);
-/**
- * Builds a new "request" message
- */
-msg_task_t task_message_request_new(const char *issuer_host_name,
-                                    const char *mailbox, int peer_id,
-                                    int index, int block_index,
-                                    int block_length);
-
-/**
- * Build a new "piece" message
- */
-msg_task_t task_message_piece_new(const char *issuer_host_name,
-                                  const char *mailbox, int peer_id, int index,
-                                  int block_index,
-                                  int block_length, int block_size);
-/**
- * Free a message task
- */
+/** Builds a new bitfield message */
+msg_task_t task_message_bitfield_new(const char *issuer_host_name, const char *mailbox, int peer_id, char *bitfield,
+                                     int bitfield_size);
+/** Builds a new "request" message */
+msg_task_t task_message_request_new(const char *issuer_host_name, const char *mailbox, int peer_id, int index,
+                                    int block_index, int block_length);
+/** Build a new "piece" message */
+msg_task_t task_message_piece_new(const char *issuer_host_name, const char *mailbox, int peer_id, int index,
+                                  int block_index, int block_length, int block_size);
+/** Free a message task */
 void task_message_free(void *);
-
 int task_message_size(e_message_type type);
+
 #endif                          /* BITTORRENT_MESSAGES_H_ */

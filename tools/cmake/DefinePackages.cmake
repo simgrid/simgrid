@@ -1,19 +1,17 @@
 ### define source packages
 
 set(EXTRA_DIST
-  src/bindings/java/MANIFEST.MF.in
+  src/bindings/java/MANIFEST.in
   src/include/instr/instr_interface.h
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/mc/mc_mmu.h
   src/mc/PageStore.hpp
   src/mc/mc_record.h
-  src/include/simgrid/platf_interface.h
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_interface.h
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
-  src/include/surf/random_mgr.h
   src/include/surf/surf.h
   src/include/surf/surfxml_parse_values.h
   src/include/xbt/win32_ucontext.h
@@ -61,11 +59,11 @@ set(EXTRA_DIST
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
   src/surf/ns3/red-queue.h
-  src/surf/platf_generator_private.h
-  src/surf/platform.hpp
   src/surf/plugins/energy.hpp
-  src/surf/simgrid.dtd
-  src/surf/simgrid_dtd.c
+  src/surf/xml/simgrid.dtd
+  src/surf/xml/simgrid_dtd.h
+  src/surf/xml/simgrid_dtd.c
+  src/surf/xml/surfxml_sax_cb.cpp
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -77,17 +75,16 @@ set(EXTRA_DIST
   src/surf/surf_routing_dijkstra.hpp
   src/surf/surf_routing_floyd.hpp
   src/surf/surf_routing_full.hpp
-  src/surf/surf_routing_generic.hpp
+  src/surf/surf_routing_RoutedGraph.hpp
   src/surf/surf_routing_none.hpp
   src/surf/surf_routing_private.hpp
   src/surf/surf_routing_vivaldi.hpp
-  src/surf/surfxml_parse.c
   src/surf/vm_hl13.hpp
   src/surf/PropertyHolder.hpp
   src/surf/virtual_machine.hpp
   src/surf/host_clm03.hpp
   src/surf/host_interface.hpp
-  src/surf/host_ptask_L07.hpp
+  src/surf/ptask_L07.hpp
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
   src/xbt/automaton/parserPromela.tab.cacc
@@ -116,7 +113,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmalloc.texi
   src/xbt/mmalloc/mmorecore.c
   src/xbt/mmalloc/mmprivate.h
-  src/xbt/mmalloc/mmtrace.awk
   src/xbt/mmalloc/mrealloc.c
   src/xbt/probes.h
   src/xbt/win32_ucontext.c
@@ -229,24 +225,24 @@ set(SMPI_SRC
   src/smpi/colls/smpi_intel_mpi_selector.c
   src/smpi/colls/smpi_openmpi_selector.c
   src/smpi/colls/smpi_mvapich2_selector.c
-  src/smpi/instr_smpi.c
-  src/smpi/smpi_base.c
-  src/smpi/smpi_bench.c
+  src/smpi/instr_smpi.cpp
+  src/smpi/smpi_base.cpp
+  src/smpi/smpi_bench.cpp
   src/smpi/smpi_memory.cpp
-  src/smpi/smpi_c99.c
-  src/smpi/smpi_coll.c
-  src/smpi/smpi_comm.c
-  src/smpi/smpi_deployment.c
-  src/smpi/smpi_dvfs.c
-  src/smpi/smpi_global.c
-  src/smpi/smpi_group.c
-  src/smpi/smpi_mpi.c
-  src/smpi/smpi_mpi_dt.c
-  src/smpi/smpi_pmpi.c
-  src/smpi/smpi_replay.c
-  src/smpi/smpi_rma.c
-  src/smpi/smpi_topo.c
-  src/smpi/smpi_f77.c
+  src/smpi/smpi_c99.cpp
+  src/smpi/smpi_coll.cpp
+  src/smpi/smpi_comm.cpp
+  src/smpi/smpi_deployment.cpp
+  src/smpi/smpi_dvfs.cpp
+  src/smpi/smpi_global.cpp
+  src/smpi/smpi_group.cpp
+  src/smpi/smpi_mpi.cpp
+  src/smpi/smpi_mpi_dt.cpp
+  src/smpi/smpi_pmpi.cpp
+  src/smpi/smpi_replay.cpp
+  src/smpi/smpi_rma.cpp
+  src/smpi/smpi_topo.cpp
+  src/smpi/smpi_f77.cpp
   )
 
 set(XBT_SRC
@@ -314,7 +310,7 @@ set(SURF_SRC
   src/surf/cpu_ti.cpp
   src/surf/fair_bottleneck.cpp
   src/surf/instr_routing.cpp
-  src/surf/instr_surf.c
+  src/surf/instr_surf.cpp
   src/surf/lagrange.cpp
   src/surf/maxmin.cpp
   src/surf/network_cm02.cpp
@@ -322,10 +318,8 @@ set(SURF_SRC
   src/surf/network_interface.cpp
   src/surf/network_smpi.cpp
   src/surf/network_ib.cpp
-  src/surf/platf_generator.c
   src/surf/plugins/energy.cpp
   src/surf/PropertyHolder.cpp
-  src/surf/random_mgr.c
   src/surf/sg_platf.cpp
   src/surf/storage_interface.cpp
   src/surf/storage_n11.cpp
@@ -338,18 +332,20 @@ set(SURF_SRC
   src/surf/surf_routing_dijkstra.cpp
   src/surf/surf_routing_floyd.cpp
   src/surf/surf_routing_full.cpp
-  src/surf/surf_routing_generic.cpp
+  src/surf/surf_routing_RoutedGraph.cpp
   src/surf/surf_routing_none.cpp
   src/surf/surf_routing_vivaldi.cpp
-  src/surf/surfxml_parse.c
-  src/surf/surfxml_parseplatf.cpp
+  src/surf/xml/platf.hpp
+  src/surf/xml/platf_private.hpp
+  src/surf/xml/surfxml_sax_cb.cpp
+  src/surf/xml/surfxml_parseplatf.cpp
   src/surf/trace_mgr.hpp
   src/surf/trace_mgr.cpp
   src/surf/vm_hl13.cpp
   src/surf/virtual_machine.cpp
   src/surf/host_clm03.cpp
   src/surf/host_interface.cpp
-  src/surf/host_ptask_L07.cpp
+  src/surf/ptask_L07.cpp
   src/xbt/xbt_sg_stubs.c
   )
 
@@ -386,7 +382,7 @@ else()
 endif()
 
 # Boost context may not be available
-if (HAVE_BOOST_CONTEXT)
+if (HAVE_BOOST_CONTEXTS)
   set(SIMIX_SRC
       ${SIMIX_SRC}
       src/simix/BoostContext.hpp
@@ -525,11 +521,10 @@ list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
 list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
 
 set(LUA_SRC
-  src/bindings/lua/factories/host.lua
-  src/bindings/lua/lua_host.c
-  src/bindings/lua/lua_platf.c
-  src/bindings/lua/lua_debug.c
-  src/bindings/lua/simgrid_lua.c
+  src/bindings/lua/lua_host.cpp
+  src/bindings/lua/lua_platf.cpp
+  src/bindings/lua/lua_debug.cpp
+  src/bindings/lua/simgrid_lua.cpp
   )
 
 set(TRACING_SRC
@@ -551,10 +546,10 @@ set(JEDULE_SRC
   include/simgrid/jedule/jedule_output.h
   include/simgrid/jedule/jedule_platform.h
   include/simgrid/jedule/jedule_sd_binding.h
-  src/instr/jedule/jedule_events.c
-  src/instr/jedule/jedule_output.c
-  src/instr/jedule/jedule_platform.c
-  src/instr/jedule/jedule_sd_binding.c
+  src/instr/jedule/jedule_events.cpp
+  src/instr/jedule/jedule_output.cpp
+  src/instr/jedule/jedule_platform.cpp
+  src/instr/jedule/jedule_sd_binding.cpp
   )
 
 set(MC_SRC_BASE
@@ -659,8 +654,6 @@ set(headers_to_install
   include/simgrid/datatypes.h
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
-  include/simgrid/platf.h
-  include/simgrid/platf_generator.h
   include/simgrid/simix.h
   include/simgrid/simix.hpp
   include/simgrid/host.h
@@ -678,11 +671,8 @@ set(headers_to_install
   include/simgrid/plugins/energy.h
   include/smpi/mpi.h
   include/smpi/smpi.h
-  include/smpi/smpi_cocci.h
   include/smpi/smpi_main.h
-  include/surf/simgrid_dtd.h
   include/surf/surf_routing.h
-  include/surf/surfxml_parse.h
   include/xbt.h
   include/xbt/RngStream.h
   include/xbt/asserts.h
@@ -713,6 +703,7 @@ set(headers_to_install
   include/xbt/mmalloc.h
   include/xbt/module.h
   include/xbt/parmap.h
+  include/xbt/range.hpp
   include/xbt/replay.h
   include/xbt/str.h
   include/xbt/strbuff.h
@@ -729,8 +720,8 @@ set(source_of_generated_headers
   src/context_sysv_config.h.in)
 
 ### depend of some variables setted upper
-# -->CONTEXT_THREADS CONTEXT_UCONTEXT
-if(${CONTEXT_THREADS}) #pthread
+# -->HAVE_THREAD_CONTEXTS HAVE_UCONTEXT_CONTEXTS
+if(${HAVE_THREAD_CONTEXTS}) #pthread
   set(SURF_SRC
     ${SURF_SRC}
     src/simix/ThreadContext.cpp
@@ -744,7 +735,7 @@ else() # NOT pthread
     )
 endif()
 
-if(${CONTEXT_THREADS}) #pthread
+if(${HAVE_THREAD_CONTEXTS}) #pthread
   set(SURF_SRC
     ${SURF_SRC}
     src/xbt/xbt_os_thread.c
@@ -756,7 +747,7 @@ else() # NOT pthread
     )
 endif()
 
-if(${CONTEXT_UCONTEXT}) #ucontext
+if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
   set(SURF_SRC
     ${SURF_SRC}
     src/simix/UContext.cpp
@@ -771,12 +762,14 @@ endif()
 ### Simgrid Lib sources
 set(simgrid_sources
   ${BINDINGS_SRC}
-  ${S4U_SRC}
+  ${MC_SRC_BASE}
   ${MSG_SRC}
+  ${S4U_SRC}
   ${SIMDAG_SRC}
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SURF_SRC}
+  ${TRACING_SRC}
   ${XBT_SRC}
   )
 
@@ -798,16 +791,6 @@ if(enable_smpi)
     ${SMPI_SRC}
     )
 endif()
-
-set(simgrid_sources
-    ${simgrid_sources}
-    ${TRACING_SRC}
-    )
-
-set(simgrid_sources
-  ${simgrid_sources}
-  ${MC_SRC_BASE}
-  )
 
 if(HAVE_MC)
   set(simgrid_sources
@@ -862,10 +845,6 @@ set(DOC_SOURCES
   doc/triva-graph_visualization.svg
   doc/triva-time_interval.png
   doc/triva-time_interval.svg
-
-  doc/HelloWorld/CMakeLists.txt
-  doc/HelloWorld/HelloWorld.c
-  doc/HelloWorld/README
 
   doc/doxygen/FAQ.doc
   doc/doxygen/advanced.doc
@@ -935,7 +914,6 @@ set(DOC_TOOLS
 
 # these files get copied automatically to the html documentation
 set(DOC_IMG
-  ${CMAKE_HOME_DIRECTORY}/doc/simgrid.css
   ${CMAKE_HOME_DIRECTORY}/doc/sc3-description.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/AS_hierarchy.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
@@ -981,7 +959,6 @@ set(txt_files
   LICENSE-LGPL-2.1
   NEWS
   TODO
-  configure
   )
 
 set(EXAMPLES_CMAKEFILES_TXT
@@ -1040,16 +1017,11 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/s4u/CMakeLists.txt
   examples/s4u/basic/CMakeLists.txt
   examples/s4u/io/CMakeLists.txt
-  examples/scala/CMakeLists.txt
-  examples/scala/master_slave_bypass/CMakeLists.txt
-  examples/scala/master_slave_kill/CMakeLists.txt
-  examples/scala/masterslave/CMakeLists.txt
   examples/simdag/CMakeLists.txt
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
   examples/simdag/goal/CMakeLists.txt
   examples/simdag/io/CMakeLists.txt
-  examples/simdag/metaxml/CMakeLists.txt
   examples/simdag/properties/CMakeLists.txt
   examples/simdag/scheduling/CMakeLists.txt
   examples/smpi/CMakeLists.txt
@@ -1059,19 +1031,17 @@ set(EXAMPLES_CMAKEFILES_TXT
   examples/smpi/energy/CMakeLists.txt
   examples/smpi/energy/f77/CMakeLists.txt
   examples/smpi/energy/f90/CMakeLists.txt
-  examples/xbt/CMakeLists.txt
   )
 
 set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/bug-17132/CMakeLists.txt
-  teshsuite/java/CMakeLists.txt
+  teshsuite/java/semaphore/CMakeLists.txt
   teshsuite/java/sleep_host_off/CMakeLists.txt
   teshsuite/lua/lua_platforms.tesh
   teshsuite/mc/CMakeLists.txt
   teshsuite/mc/dwarf/CMakeLists.txt
   teshsuite/mc/dwarf_expression/CMakeLists.txt
   teshsuite/mc/replay/CMakeLists.txt
-  teshsuite/msg/CMakeLists.txt
   teshsuite/msg/get_sender/CMakeLists.txt
   teshsuite/msg/host_on_off/CMakeLists.txt
   teshsuite/msg/host_on_off_processes/CMakeLists.txt
@@ -1084,7 +1054,6 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/simdag/basic/CMakeLists.txt
   teshsuite/simdag/incomplete/CMakeLists.txt
-  teshsuite/simdag/network/CMakeLists.txt
   teshsuite/simdag/network/mxn/CMakeLists.txt
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
@@ -1140,7 +1109,6 @@ set(TESHSUITE_CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
   teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/perf/CMakeLists.txt
-  teshsuite/surf/CMakeLists.txt
   teshsuite/surf/lmm_usage/CMakeLists.txt
   teshsuite/surf/maxmin_bench/CMakeLists.txt
   teshsuite/surf/surf_usage/CMakeLists.txt
@@ -1185,7 +1153,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindRngStream.cmake
   tools/cmake/Modules/FindRubySimgrid.cmake
-  tools/cmake/Modules/FindScala.cmake
   tools/cmake/Modules/FindSimGrid.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
@@ -1198,12 +1165,8 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/IPC/Run/Win32IO.pm
   tools/cmake/scripts/IPC/Run/Win32Pump.pm
   tools/cmake/scripts/Diff.pm
-  tools/cmake/scripts/Makefile.default
-  tools/cmake/scripts/SimGrid.packproj
   tools/cmake/scripts/generate_memcheck_tests.pl
   tools/cmake/scripts/my_valgrind.pl
-  tools/cmake/scripts/postinstall.sh
-  tools/cmake/scripts/preinstall.sh
   tools/cmake/scripts/update_tesh.pl
   tools/cmake/UnitTesting.cmake
   tools/cmake/src/internal_config.h.in
@@ -1229,6 +1192,7 @@ set(CMAKE_SOURCE_FILES
   )
 
 set(PLATFORMS_EXAMPLES
+  examples/platforms/2clusters.xml
   examples/platforms/bypassASroute.xml
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
@@ -1239,28 +1203,25 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/clusters_routing_full.xml
   examples/platforms/crosstraffic.xml
   examples/platforms/conf/gridpp_grid_2004.conf
-  examples/platforms/conf/gridpp_grid_2004.xml
   examples/platforms/conf/lcg_sept2004_grid.conf
-  examples/platforms/conf/lcg_sept2004_grid.xml
   examples/platforms/conf/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/config_tracing.xml
+  examples/platforms/trace/faulty_host.trace
+  examples/platforms/trace/jupiter_speed.trace
+  examples/platforms/trace/link1_avail.trace
   examples/platforms/trace/linkBandwidth7.bw
   examples/platforms/trace/trace_A_failure.txt
   examples/platforms/trace/trace_A.txt
   examples/platforms/trace/trace_B.txt
   examples/platforms/data_center.xml
   examples/platforms/energy_platform.xml
+  examples/platforms/faulty_host.xml
   examples/platforms/fat_tree_cluster.xml
   examples/platforms/g5k.xml
-  examples/platforms/generation_scripts/create_hierarchical_clusters.pl
-  examples/platforms/generation_scripts/enhancedDTDwithHierarchicalCluster.pl
-  examples/platforms/generation_scripts/generate_g5k_platform.pl
-  examples/platforms/generation_scripts/generate_g5k_platform_cabinets.pl
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
-  examples/platforms/platform.lua
   examples/platforms/platform.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
@@ -1270,7 +1231,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
   examples/platforms/storage/content/win_storage_content.txt
-  examples/platforms/storage/remote_io.deployment.xml
   examples/platforms/storage/remote_io.xml
   examples/platforms/storage/storage.xml
   examples/platforms/small_platform.xml
@@ -1287,6 +1247,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/syscoord/median_p2psim.xml
   examples/platforms/torus_cluster.xml
+  examples/platforms/two_hosts.xml
   examples/platforms/two_hosts_platform.xml
   examples/platforms/two_hosts_platform_shared.xml
   examples/platforms/two_hosts_platform_with_availability.xml

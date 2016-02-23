@@ -506,7 +506,7 @@ char* Process::read_string(remote_ptr<void> address) const
 
 const void *Process::read_bytes(void* buffer, std::size_t size,
   remote_ptr<void> address, int process_index,
-  AddressSpace::ReadMode mode) const
+  ReadOptions options) const
 {
   if (process_index != simgrid::mc::ProcessIndexDisabled) {
     std::shared_ptr<simgrid::mc::ObjectInformation> const& info =

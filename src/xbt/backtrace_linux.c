@@ -388,7 +388,7 @@ int xbt_libunwind_backtrace(void* bt[XBT_BACKTRACE_SIZE], int size){
   unw_context_t uc;
 
   unw_getcontext (&uc);
-	unw_init_local (&c, &uc);
+  unw_init_local (&c, &uc);
  
   unw_word_t ip;
 

@@ -23,8 +23,8 @@ static void vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
   double mig_end = MSG_get_clock();
 
   XBT_INFO("%s migrated: %s->%s in %g s", MSG_vm_get_name(vm),
-		  MSG_host_get_name(src_pm), MSG_host_get_name(dst_pm),
-		  mig_end - mig_sta);
+      MSG_host_get_name(src_pm), MSG_host_get_name(dst_pm),
+      mig_end - mig_sta);
 }
 
 static int migration_worker_main(int argc, char *argv[])

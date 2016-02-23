@@ -32,16 +32,13 @@ XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t
 XBT_PRIVATE void SIMIX_synchro_destroy(smx_synchro_t synchro);
 
 XBT_PRIVATE smx_mutex_t SIMIX_mutex_init(void);
-XBT_PRIVATE void SIMIX_mutex_destroy(smx_mutex_t mutex);
 XBT_PRIVATE int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer);
 XBT_PRIVATE void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer);
 
 XBT_PRIVATE smx_cond_t SIMIX_cond_init(void);
-XBT_PRIVATE void SIMIX_cond_destroy(smx_cond_t cond);
 XBT_PRIVATE void SIMIX_cond_broadcast(smx_cond_t cond);
 XBT_PRIVATE void SIMIX_cond_signal(smx_cond_t cond);
 
-XBT_PRIVATE void SIMIX_sem_destroy(smx_sem_t sem);
 XBT_PRIVATE XBT_PRIVATE smx_sem_t SIMIX_sem_init(unsigned int value);
 XBT_PRIVATE void SIMIX_sem_release(smx_sem_t sem);
 XBT_PRIVATE int SIMIX_sem_would_block(smx_sem_t sem);

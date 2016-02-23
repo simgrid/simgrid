@@ -168,7 +168,7 @@ static int get_proc_name(unw_addr_space_t as,
   simgrid::mc::Frame* frame = context->process->find_function(remote(addr));
   if (!frame)
     return - UNW_ENOINFO;
-  *offp = (unw_word_t) frame->low_pc - addr;
+  *offp = (unw_word_t) frame->range.begin() - addr;
 
   strncpy(bufp, frame->name.c_str(), buf_len);
   if (bufp[buf_len - 1]) {

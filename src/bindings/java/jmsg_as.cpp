@@ -125,12 +125,6 @@ Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jas, jobject jname) {
   return jproperty;
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_As_getModel(JNIEnv * env, jobject jas) {
-  msg_as_t as = jas_get_native(env, jas);
-  return env->NewStringUTF(MSG_environment_as_get_model(as));
-}
-
 JNIEXPORT jobjectArray JNICALL
 Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
 {

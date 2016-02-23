@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
+/* Copyright (c) 2012-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,9 +13,7 @@
 #include "connection.h"
 #include "bittorrent.h"
 
-/**
- * Peer data
- */
+/** Peer data */
 typedef struct s_peer {
   int id;                       //peer id
 
@@ -45,9 +43,7 @@ typedef struct s_peer {
 
 } s_peer_t, *peer_t;
 
-/**
- * Peer main function
- */
+/** Peer main function */
 int peer(int argc, char *argv[]);
 
 int get_peers_data(peer_t peer);
@@ -66,8 +62,7 @@ void update_choked_peers(peer_t peer);
 
 void update_interested_after_receive(peer_t peer);
 
-void update_bitfield_blocks(peer_t peer, int index, int block_index,
-                            int block_length);
+void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_length);
 int piece_complete(peer_t peer, int index);
 int get_first_block(peer_t peer, int piece);
 
@@ -80,8 +75,7 @@ int partially_downloaded_piece(peer_t peer, connection_t remote_peer);
 
 void request_new_piece_to_peer(peer_t peer, connection_t remote_peer);
 void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece);
-void remove_current_piece(peer_t peer, connection_t remote_peer,
-                          int current_piece);
+void remove_current_piece(peer_t peer, connection_t remote_peer, int current_piece);
 
 void update_active_peers_set(peer_t peer, connection_t remote_peer);
 int select_piece_to_download(peer_t peer, connection_t remote_peer);
@@ -97,9 +91,7 @@ void send_choked(peer_t peer, const char *mailbox);
 void send_unchoked(peer_t peer, const char *mailbox);
 void send_have(peer_t peer, int piece);
 
-void send_request(peer_t peer, const char *mailbox, int piece,
-                  int block_index, int block_length);
-void send_piece(peer_t peer, const char *mailbox, int piece,
-                int block_index, int block_length);
+void send_request(peer_t peer, const char *mailbox, int piece, int block_index, int block_length);
+void send_piece(peer_t peer, const char *mailbox, int piece, int block_index, int block_length);
 
 #endif                          /* BITTORRENT_PEER_H */

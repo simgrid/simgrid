@@ -14,42 +14,63 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class SleepHostOff extends Process{
-  public static Host jupiter = null;
+class Sleeper extends Process {
+	public Sleeper(Host host, String name, String[] args) {
+		super(host,name,args);
+	}
+	public void main(String[] args) {
+		while (true) {
+			Msg.info("I'm not dead");
+			try {
+				Process.sleep(10);
+			} catch (HostFailureException e) {
+				Msg.info("catch HostException: "+e.getLocalizedMessage());
+				break; //Break is needed to finalize the endless loop 
+			}
+		}
+	}	
+}
 
-  public SleepHostOff(Host host, String name, String[]args) {
-    super(host,name,args);
-  }
+class TestRunner extends Process {
 
-  public void main(String[] strings) throws MsgException {
+	public TestRunner(Host host, String name, String[] args) {
+		super(host,name,args);
+	}
 
-    try {
-      jupiter = Host.getByName("Jupiter");
-    } catch (HostNotFoundException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
+	public void main(String[] strings) throws MsgException {
+		Host host = Host.all()[1];
 
-    Msg.info("**** **** **** ***** ***** Test Sleep ***** ***** **** **** ****");
-    Msg.info("Test sleep: Create a process on Jupiter, the process simply make periodic sleep, turn off Jupiter");
-    new Process(jupiter, "sleep", null) {
-      public void main(String[] args) {
-        while (true) {
-          Msg.info("I'm not dead");
-          try {
-            Process.sleep(10);
-          } catch (HostFailureException e) {
-            Msg.info("catch HostException: "+e.getLocalizedMessage());
-            break; //Break is needed to finalize the endless loop 
-          }
-        }
-      }
-    }.start();
 
-    Process.sleep(20);
-    Msg.info("Stop Jupiter");
-    jupiter.off();
-    Msg.info("Jupiter has been stopped");
-    Process.sleep(300);
-    Msg.info("Test sleep seems ok, cool !(number of Process : " + Process.getCount() + ", it should be 1 (i.e. the Test one))\n");
-  }
+		Msg.info("**** **** **** ***** ***** Test Sleep ***** ***** **** **** ****");
+		Msg.info("Test sleep: Create a process on "+host.getName()+" that simply make periodic sleep, turn off "+host.getName());
+		new Sleeper(host, "Sleeper", null).start();
+
+		waitFor(0.02);
+		Msg.info("Stop "+host.getName());
+		host.off();
+		Msg.info(host.getName()+" has been stopped");
+		waitFor(0.3);
+		Msg.info("Test sleep seems ok, cool! (number of Process : " + Process.getCount() + ", it should be 1 (i.e. the Test one))");
+	}
+}
+
+public class SleepHostOff {
+
+	public static void main(String[] args) throws Exception {
+		/* Init. internal values */
+		Msg.init(args);
+
+		if (args.length < 1) {
+			Msg.info("Usage: java -cp simgrid.jar:. sleep_host_off.SleepHostOff <platform.xml>");
+			System.exit(1);
+		}
+
+		/* construct the platform and deploy the application */
+		Msg.createEnvironment(args[0]);
+
+		Host[] hosts = Host.all();
+		new TestRunner(hosts[0], "TestRunner", null).start();
+
+		Msg.run();
+	}
 }

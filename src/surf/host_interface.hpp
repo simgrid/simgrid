@@ -53,7 +53,6 @@ public:
   ~HostModel() override {}
 
   Host *createHost(const char *name, NetCard *net, Cpu *cpu, xbt_dict_t props);
-  void addTraces() override {DIE_IMPOSSIBLE;}
 
   virtual void adjustWeightOfDummyCpuActions();
   virtual Action *executeParallelTask(int host_nb,
@@ -62,7 +61,7 @@ public:
       double *bytes_amount,
       double rate);
 
-  bool shareResourcesIsIdempotent() override {return true;}
+  bool next_occuring_event_isIdempotent() override {return true;}
 };
 
 /************
@@ -73,8 +72,8 @@ public:
  * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
 class Host :
- 	 public simgrid::surf::Resource,
-	 public simgrid::surf::PropertyHolder {
+    public simgrid::surf::Resource,
+   public simgrid::surf::PropertyHolder {
 public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
 
@@ -90,7 +89,7 @@ public:
    * @param cpu The Cpu associated to this Host
    */
   Host(HostModel *model, const char *name, xbt_dict_t props,
-		      xbt_dynar_t storage, Cpu *cpu);
+          xbt_dynar_t storage, Cpu *cpu);
 
   /**
    * @brief Host constructor
@@ -229,7 +228,7 @@ public:
   virtual int fileMove(surf_file_t fd, const char* fullpath);
 
   bool isUsed() override {DIE_IMPOSSIBLE;} // FIXME: Host should not be a Resource
-  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override
+  void apply_event(tmgr_trace_iterator_t event, double value) override
     {THROW_IMPOSSIBLE;} // FIXME: Host should not be a Resource
 
 public:

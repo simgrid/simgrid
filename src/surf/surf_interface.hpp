@@ -19,13 +19,10 @@
 
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
-#include "simgrid/platf_interface.h"
 #include "surf/surf.h"
 #include "src/surf/surf_private.h"
-#include "src/surf/trace_mgr.hpp"
 #include "src/internal_config.h"
 
-extern XBT_PRIVATE sg_future_evt_set_t future_evt_set;
 #define NO_MAX_DURATION -1.0
 
 /*********
@@ -73,11 +70,6 @@ enum heap_action_type{
  *********/
 /* For the trace and trace:connect tag (store their content till the end of the parsing) */
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_host_avail;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_host_speed;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_avail;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_bw;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_lat;
 
 /**********
  * Action *
@@ -280,8 +272,6 @@ public:
   Model();
   virtual ~Model();
 
-  virtual void addTraces() =0;
-
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
   virtual ActionList* getReadyActionSet() {return p_readyActionSet;}
 
@@ -315,12 +305,11 @@ public:
    * @param now The current time of the simulation
    * @return The delta of time till the next action will finish
    */
-  virtual double shareResources(double now);
-  virtual double shareResourcesLazy(double now);
-  virtual double shareResourcesFull(double now);
+  virtual double next_occuring_event(double now);
+  virtual double next_occuring_event_lazy(double now);
+  virtual double next_occuring_event_full(double now);
   double shareResourcesMaxMin(ActionList* running_actions,
-                                      lmm_system_t sys,
-                                      void (*solve) (lmm_system_t));
+      lmm_system_t sys, void (*solve) (lmm_system_t));
 
   /**
    * @brief Update action to the current time
@@ -337,7 +326,7 @@ public:
    * The only model that is not is NS3: computing the next timestamp moves the model up to that point,
    * so we need to call it only when the next timestamp of other sources is computed.
    */
-  virtual bool shareResourcesIsIdempotent()=0;
+  virtual bool next_occuring_event_isIdempotent()=0;
 
 protected:
   ActionLmmListPtr p_modifiedSet;
@@ -415,14 +404,12 @@ public:
   const char *getName();
 
   /**
-   * @brief Update the state of the current Resource
-   * @details [TODO]
+   * @brief Apply an event of external load event to that storage
    *
-   * @param event_type [TODO]
+   * @param event What happened
    * @param value [TODO]
-   * @param date [TODO]
    */
-  virtual void updateState(tmgr_trace_iterator_t event_type, double value, double date)=0;
+  virtual void apply_event(tmgr_trace_iterator_t event, double value)=0;
 
   /** @brief Check if the current Resource is used (if it currently serves an action) */
   virtual bool isUsed()=0;

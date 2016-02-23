@@ -6,7 +6,7 @@ int x = 20;
 
 int main(int argc, char **argv) {
   
-	int recv_x = 1, size, rank;
+  int recv_x = 1, size, rank;
   MPI_Status status;
 
   MPI_Init(&argc, &argv);
@@ -35,5 +35,5 @@ int main(int argc, char **argv) {
 
   MPI_Finalize();
   
-	return 0;
+  return 0;
 }

@@ -30,12 +30,6 @@ class XBT_PRIVATE NetworkSmpiModel;
 }
 
 /*********
- * Tools *
- *********/
-
-XBT_PRIVATE void net_define_callbacks(void);
-
-/*********
  * Model *
  *********/
 
@@ -47,20 +41,15 @@ public:
   NetworkCm02Model();
   ~NetworkCm02Model() { }
   Link* createLink(const char *name,
-		  double bw_initial,
-		  tmgr_trace_t bw_trace,
-		  double lat_initial,
-		  tmgr_trace_t lat_trace,
-		  int initiallyOn,
-		  tmgr_trace_t state_trace,
-		  e_surf_link_sharing_policy_t policy,
-		  xbt_dict_t properties) override;
-  void addTraces() override;
+      double bw_initial, tmgr_trace_t bw_trace,
+      double lat_initial, tmgr_trace_t lat_trace,
+      int initiallyOn, tmgr_trace_t state_trace,
+      e_surf_link_sharing_policy_t policy,
+      xbt_dict_t properties) override;
   void updateActionsStateLazy(double now, double delta) override;
   void updateActionsStateFull(double now, double delta) override;
-  Action *communicate(NetCard *src, NetCard *dst,
-		                           double size, double rate) override;
-  bool shareResourcesIsIdempotent() override {return true;}
+  Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
+  bool next_occuring_event_isIdempotent() override {return true;}
   virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
 protected:
   bool m_haveGap = false;
@@ -73,22 +62,17 @@ protected:
 class NetworkCm02Link : public Link {
 public:
   NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
-	                           lmm_system_t system,
-	                           double constraint_value,
-	                           sg_future_evt_set_t fes,
-	                           int initiallyOn,
-	                           tmgr_trace_t state_trace,
-	                           double metric_peak,
-	                           tmgr_trace_t metric_trace,
-	                           double lat_initial,
-	                           tmgr_trace_t lat_trace,
-                               e_surf_link_sharing_policy_t policy);
-  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
-  void updateBandwidth(double value, double date=surf_get_clock()) override;
-  void updateLatency(double value, double date=surf_get_clock()) override;
+      lmm_system_t system,
+      double constraint_value,
+      int initiallyOn, tmgr_trace_t state_trace,
+      double bw_peak, tmgr_trace_t bw_trace,
+      double lat_initial, tmgr_trace_t lat_trace,
+      e_surf_link_sharing_policy_t policy);
+
+  void apply_event(tmgr_trace_iterator_t event, double value) override;
+  void updateBandwidth(double value) override;
+  void updateLatency(double value) override;
   virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
-
-
 };
 
 

@@ -28,7 +28,7 @@ is modified in place, without any kind of backup. You may want to save a copy
 before running the script.
 
 In SimGrid XML files, the standard version is indicated in the version
-attribute of the platform tag. Current version is 3. Here is a list of major
+attribute of the platform tag. Current version is 4. Here is a list of major
 changes in each version.
 
 =over 4
@@ -65,7 +65,7 @@ Several tags were renamed:
 
 =back
 
-=item B<Version 3:> Introduced in SimGrid 3.5 (this is the current version)
+=item B<Version 3:> Introduced in SimGrid 3.5
 
 =over 4
 
@@ -87,6 +87,42 @@ Several tags were renamed (for sake of XML sanity):
 
 =back
 
+=item B<Version 4:> Introduced in SimGrid 3.13 (this is the current version)
+
+=over 4
+
+=item
+
+Rename the attributes describing the amount of flop that a host / peer / cluster / cabinet can deliver per second.
+
+  <host power=...> -> <host speed=...>
+
+=item
+
+In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
+
+=item
+
+The DOCTYPE points to the right URL: http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+
+=item
+
+Units are now mandatory in attributes. USE THE SCRIPT sg_xml_unit_converter.py TO CONVERT THIS
+
+     - speed. Old default: 'f' or 'flops'. Also defined: 
+        'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf' 
+        'yottaflops', 'zettaflops', 'exaflops', 'petaflops', 'teraflops', 'gigaflops', 'megaflops', 'kiloflops'
+        
+     - bandwidth. Old default: 'Bps' bytes per second (or 'bps' but 1 Bps = 8 bps)
+       Also defined in bytes: 'TiBps', 'GiBps', 'MiBps', 'KiBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
+       And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps' 
+       
+     - latency. Old default: 's' second. Also defined:
+       'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond   
+
+
+=back
+
 =back
 
 =head1 AUTHORS
@@ -95,7 +131,7 @@ Several tags were renamed (for sake of XML sanity):
   
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2006-2014. The SimGrid Team. All rights reserved.
+Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.
   
 This program is free software; you may redistribute it and/or modify it
 under the terms of GNU LGPL (v2.1) license.
@@ -106,15 +142,15 @@ under the terms of GNU LGPL (v2.1) license.
 use strict;
 
 my $fromversion=-1;
-my $toversion=3;
+my $toversion=4;
 
 my($output_string);
 
-$ARGV[0] or die "simgrid_update_xml.pl <platform.xml>\n";
-open INPUT, "$ARGV[0]" or die "Cannot open input file $ARGV[0]: $!\n";
+my $filename = $ARGV[0] or die "simgrid_update_xml.pl <platform.xml>\n";
+open INPUT, "$filename" or die "Cannot open input file $filename: $!\n";
 
 $output_string = "<?xml version='1.0'?>\n".
-    "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n".
+    "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n".
     "<platform version=\"$toversion\">\n";
 
 
@@ -129,18 +165,18 @@ while (defined($line = <INPUT>)) {
     
     if ($line =~ s/<platform(_description)? *>//) {
 	$fromversion = 0;
-	print "version 0\n";
+	print "$filename was using version 0\n";
 	next if !$line =~ /\S/;
     } elsif ($line =~ s/<platform.*version=["]*([0-9.])["]*>//) {
 	$fromversion = $1;
-	print "version $fromversion\n";
 	if ($fromversion == $toversion) {
-	    die "Input platform file version is already $fromversion. This should be a no-op.\n";
+	    die "Input platform file $filename is already conformant to version $fromversion. This should be a no-op.\n";
 	}
 	if ($fromversion > $toversion) {
-	    die "Input platform file version is more recent than this script (file version: $fromversion; script version: $toversion)\n";
+	    die "Input platform file $filename is more recent than this script (file version: $fromversion; script version: $toversion)\n";
 	}
 	next if !$line =~ /\S/;
+	print "$filename was using version $fromversion\n";
     }
     
     if ($fromversion == 0) {
@@ -185,18 +221,23 @@ while (defined($line = <INPUT>)) {
 	    $output_string .=  " <AS  id=\"AS0\"  routing=\"Full\">\n";
 	    $AS_opened=1;
 	}
-    }
 	
 	if($line=~/<route /){$line =~ s/\<route/\<route symmetrical=\"NO\"/g;}
+    }
+    if ($fromversion < 4) {
+	$line =~ s/\bpower\b/speed/g;	
+	$line =~ s/\bkind="POWER"/kind="SPEED"/g;
+    }
+	
     $output_string .= "$line\n";
 }
 
 close INPUT;
 
 if ($fromversion == -1) {
-    die "Cannot retrieve the platform version\n";
+    die "Cannot retrieve the platform version of $filename\n";
 }
 
-open OUTPUT, "> $ARGV[0]";
+open OUTPUT, "> $filename";
 print OUTPUT $output_string;
 close OUTPUT;

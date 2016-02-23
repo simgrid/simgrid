@@ -1,25 +1,20 @@
-
 <!-- THIS FILE IS INVALID.
 
-It declares a storage attached to a nonexistant host (plouf)
-See bogus_disk_attachment.tesh -->
+It declares a storage attached to a nonexistant host (plouf). See bogus_disk_attachment.tesh -->
 
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
   <AS id="AS0" routing="Full">
-    <!-- STORAGE TYPES -->
-    <storage_type id="single_HDD" model="SSD" size="4000">
-      <model_prop id="Bwrite" value="30000000" /> <!-- 30Mo/s -->
-      <model_prop id="Bread" value="100000000" /> <!-- 100Mo/s -->
-      <model_prop id="Bconnection" value="150000000" /> <!-- 150Mo/s -->
+    <storage_type id="single_HDD" model="SSD" size="4kB">
+      <model_prop id="Bwrite" value="30MBps" />
+      <model_prop id="Bread" value="100MBps" />
+      <model_prop id="Bconnection" value="150MBps" /> 
     </storage_type>
 
     <storage id="cdisk" typeId="single_HDD"  attach="plouf" />
 
-    <!-- HOSTS -->
-    <host id="client" power="1000000000">
+    <host id="client" speed="1Gf">
       <mount storageId="cdisk" name="/sd1" />
     </host>
   </AS>

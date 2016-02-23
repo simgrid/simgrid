@@ -1,21 +1,19 @@
 <doxygenlayout version="1.0">
   <!-- Navigation index tabs for HTML output -->
   <navindex>
-    <tab type="usergroup" visible="yes" title="Getting started" intro="Getting started" url="@ref getting_started">
+    <!--<tab type="usergroup" visible="yes" title="Getting started" intro="Getting started" url="@ref getting_started">
       <tab type="user" visible="yes" url="@ref getting_started" title="What to read" />
       <tab type="user" visible="yes" url="@ref install" title="Installing SimGrid" />
       <tab type="user" visible="yes" url="@ref help" title="Getting help" />
-    </tab>
+    </tab>-->
+    
     <tab type="mainpage" visible="yes" title="SimGrid User Documentation" />
-  
-    <!--<tab type="pages" visible="yes" title="Table Of Content" intro="Complete pages list">-->
-      <!--<tab type="pages" visible="yes" title="Table Of Content" intro="Complete pages list"/>-->
-    <!--</tab>-->
-    <tab type="usergroup" visible="yes" title="Technical documentation" intro="Technical documentation">
+
+    <tab type="usergroup" visible="yes" title="Reference documentation" intro="Reference documentation">
       <tab type="namespaces" visible="no" title="">
-        <tab type="namespaces" visible="yes" title="" intro=""/>
-        <tab type="namespacemembers" visible="yes" title="" intro=""/>
-      </tab>
+      <tab type="namespaces" visible="yes" title="" intro=""/>
+      <tab type="namespacemembers" visible="yes" title="" intro=""/>
+    </tab>
       <tab type="classes" visible="no" title="">
         <tab type="classes" visible="yes" title="" intro=""/>
         <tab type="classindex" visible="$ALPHABETICAL_INDEX" title=""/> 

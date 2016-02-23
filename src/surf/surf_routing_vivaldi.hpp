@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "surf_routing_RoutedGraph.hpp"
 #include "xbt/swag.h"
 
-#include "surf_routing_generic.hpp"
 
 #ifndef SURF_ROUTING_VIVALDI_HPP_
 #define SURF_ROUTING_VIVALDI_HPP_
@@ -23,13 +23,12 @@ namespace surf {
  ***********/
 class XBT_PRIVATE AsVivaldi;
 
-class AsVivaldi: public AsGeneric {
+class AsVivaldi: public AsRoutedGraph {
 public:
-  AsVivaldi() : AsGeneric() {};
+  AsVivaldi(const char *name);
   ~AsVivaldi() {};
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
-  int parsePU(NetCard *elm) override;
 };
 
 }

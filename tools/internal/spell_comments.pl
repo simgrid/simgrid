@@ -15,7 +15,7 @@
 use strict;
 use warnings;
 
-die "Please install iamerican to use that script." 
+die "Please install iamerican to use that script.\n"
   unless (-r "/usr/lib/ispell/american.hash");
 
 sub check_content($) {
@@ -31,7 +31,7 @@ die "Call this script from its location or from the SimGrid root directory\n" un
 
 die "Usage: ". ($DICTFILE eq "./spell_dict.txt"? "./":"tools/internal/")."spell_comments.pl "
            ."`find ". ($DICTFILE eq "./spell_dict.txt"? "../../":".")." -name '*.[ch]' -o -name '*.hpp' -o -name '*.cpp' |grep -v umpire|grep -v smpi/mpich3-test|grep -v NAS`\n"
-  unless length(@ARGV)>1;
+  unless scalar(@ARGV)>1;
 
 my $total = 0;
 foreach my $file (@ARGV) {

@@ -27,8 +27,8 @@ namespace surf {
 
 Cpu *getActionCpu(CpuAction *action) {
   return static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var
-		                	 (action->getModel()->getMaxminSystem(),
-		                	 action->getVariable(), 0)));
+                       (action->getModel()->getMaxminSystem(),
+                       action->getVariable(), 0)));
 }
 
 simgrid::xbt::signal<void(CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> cpuActionStateChangedCallbacks;
@@ -90,7 +90,7 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 
   for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
      ; it != itend ; it=itNext) {
-	++itNext;
+  ++itNext;
     action = static_cast<CpuAction*>(&*it);
     if (TRACE_is_enabled()) {
       Cpu *x = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
@@ -128,25 +128,25 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  * Resource *
  ************/
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host,
-	     xbt_dynar_t speedPeakList, int pstate,
-		 int core, double speedPeak, double speedScale,
-		 int initiallyOn)
+       xbt_dynar_t speedPeakList, int pstate,
+     int core, double speedPeak, double speedScale,
+     int initiallyOn)
  : Cpu(model, host, NULL/*constraint*/, speedPeakList, pstate, core, speedPeak, speedScale, initiallyOn)
 {
 }
 
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
-	      xbt_dynar_t speedPeakList, int pstate,
-		  int core, double speedPeak,
+        xbt_dynar_t speedPeakList, int pstate,
+      int core, double speedPeak,
         double speedScale, int initiallyOn)
  : Resource(model, host->name().c_str(), constraint, initiallyOn)
  , m_core(core)
- , m_speedPeak(speedPeak)
- , m_speedScale(speedScale)
  , m_host(host)
 {
+  p_speed.peak = speedPeak;
+  p_speed.scale = speedScale;
   host->pimpl_cpu = this;
-  xbt_assert(m_speedScale > 0, "Available speed has to be >0");
+  xbt_assert(p_speed.scale > 0, "Available speed has to be >0");
 
   // Copy the power peak array:
   p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
@@ -163,14 +163,14 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
     xbt_assert(model == surf_cpu_model_pm);
 
   if (model->getUpdateMechanism() != UM_UNDEFINED) {
-	p_constraintCore = xbt_new(lmm_constraint_t, core);
-	p_constraintCoreId = xbt_new(void*, core);
+  p_constraintCore = xbt_new(lmm_constraint_t, core);
+  p_constraintCoreId = xbt_new(void*, core);
 
     int i;
     for (i = 0; i < core; i++) {
       /* just for a unique id, never used as a string. */
       p_constraintCoreId[i] = bprintf("%s:%i", host->name().c_str(), i);
-      p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], m_speedScale * m_speedPeak);
+      p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], p_speed.scale * p_speed.peak);
     }
   }
 }
@@ -179,17 +179,19 @@ Cpu::~Cpu()
 {
   if (p_constraintCoreId){
     for (int i = 0; i < m_core; i++) {
-	  xbt_free(p_constraintCoreId[i]);
+    xbt_free(p_constraintCoreId[i]);
     }
     xbt_free(p_constraintCore);
   }
   if (p_constraintCoreId)
     xbt_free(p_constraintCoreId);
+  if (p_speedPeakList)
+    xbt_dynar_free(&p_speedPeakList);
 }
 
 double Cpu::getCurrentPowerPeak()
 {
-  return m_speedPeak;
+  return p_speed.peak;
 }
 
 int Cpu::getNbPStates()
@@ -201,11 +203,11 @@ void Cpu::setPState(int pstate_index)
 {
   xbt_dynar_t plist = p_speedPeakList;
   xbt_assert(pstate_index <= (int)xbt_dynar_length(plist),
-		  "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getName(), pstate_index, (int)xbt_dynar_length(plist));
+      "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getName(), pstate_index, (int)xbt_dynar_length(plist));
 
   double new_peak_speed = xbt_dynar_get_as(plist, pstate_index, double);
   m_pstate = pstate_index;
-  m_speedPeak = new_peak_speed;
+  p_speed.peak = new_peak_speed;
 
   onSpeedChange();
 }
@@ -225,18 +227,18 @@ double Cpu::getPowerPeakAt(int pstate_index)
 
 double Cpu::getSpeed(double load)
 {
-  return load * m_speedPeak;
+  return load * p_speed.peak;
 }
 
 double Cpu::getAvailableSpeed()
 {
 /* number between 0 and 1 */
-  return m_speedScale;
+  return p_speed.scale;
 }
 
 void Cpu::onSpeedChange() {
-	TRACE_surf_host_set_speed(surf_get_clock(), getName(),
-			m_core * m_speedScale * m_speedPeak);
+  TRACE_surf_host_set_speed(surf_get_clock(), getName(),
+      m_core * p_speed.scale * p_speed.peak);
 }
 
 
@@ -253,9 +255,9 @@ void Cpu::set_state_trace(tmgr_trace_t trace)
 }
 void Cpu::set_speed_trace(tmgr_trace_t trace)
 {
-  xbt_assert(p_speedEvent==NULL,"Cannot set a second speed trace to Host %s", m_host->name().c_str());
+  xbt_assert(p_speed.event==NULL,"Cannot set a second speed trace to Host %s", m_host->name().c_str());
 
-  p_speedEvent = future_evt_set->add_trace(trace, 0.0, this);
+  p_speed.event = future_evt_set->add_trace(trace, 0.0, this);
 }
 
 

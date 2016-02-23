@@ -138,7 +138,10 @@ xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
   xbt_assert(sep>0);
   data->filename=xbt_strdup(sep+1);
   *sep='\0';
-  data->limit=atol(buf);
+  char *endptr;
+  data->limit=strtol(buf,&endptr,10);
+  xbt_assert(endptr[0]=='\0', "Invalid buffer size: %s", buf);
+  xbt_free(buf);
   if(roll)
     data->count=-1;
   else

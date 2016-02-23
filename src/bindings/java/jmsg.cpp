@@ -8,7 +8,6 @@
 
 #include <simgrid/msg.h>
 #include <simgrid/simix.h>
-#include <surf/surfxml_parse.h>
 #include <locale.h>
 #include <src/simix/smx_private.h>
 

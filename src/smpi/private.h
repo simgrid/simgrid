@@ -15,7 +15,6 @@
 #include "simgrid/simix.h"
 #include "src/include/smpi/smpi_interface.h"
 #include "smpi/smpi.h"
-#include "smpi/smpi_cocci.h"
 #include "src/instr/instr_private.h"
 
 SG_BEGIN_DECL()
@@ -739,7 +738,7 @@ void mpi_comm_get_parent_ ( int*parent, int* ierr);
 
 
 /********** Tracing **********/
-/* from smpi_instr.c */
+/* from instr_smpi.c */
 XBT_PRIVATE void TRACE_internal_smpi_set_category (const char *category);
 XBT_PRIVATE const char *TRACE_internal_smpi_get_category (void);
 XBT_PRIVATE void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra);

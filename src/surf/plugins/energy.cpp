@@ -66,35 +66,35 @@ simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID
 void HostEnergy::update()
 {
   simgrid::surf::Host* surf_host = host->extension<simgrid::surf::Host>();
-	double start_time = this->last_updated;
-	double finish_time = surf_get_clock();
-	double cpu_load;
-	if (surf_host->p_cpu->m_speedPeak == 0)
-		// Some users declare a pstate of speed 0 flops (eg to model boot time).
-		// We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
-		cpu_load = 1;
-	else
-		cpu_load = lmm_constraint_get_usage(surf_host->p_cpu->getConstraint())
-                / surf_host->p_cpu->m_speedPeak;
+  double start_time = this->last_updated;
+  double finish_time = surf_get_clock();
+  double cpu_load;
+  if (surf_host->p_cpu->p_speed.peak == 0)
+    // Some users declare a pstate of speed 0 flops (eg to model boot time).
+    // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
+    cpu_load = 1;
+  else
+    cpu_load = lmm_constraint_get_usage(surf_host->p_cpu->getConstraint())
+                / surf_host->p_cpu->p_speed.peak;
 
-	if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not mores
-	  cpu_load = 1;
+  if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not mores
+    cpu_load = 1;
 
-	double previous_energy = this->total_energy;
+  double previous_energy = this->total_energy;
 
-	double instantaneous_consumption;
-	if (host->is_off())
-		instantaneous_consumption = this->watts_off;
-	else
-		instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
+  double instantaneous_consumption;
+  if (host->is_off())
+    instantaneous_consumption = this->watts_off;
+  else
+    instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
 
-	double energy_this_step = instantaneous_consumption*(finish_time-start_time);
+  double energy_this_step = instantaneous_consumption*(finish_time-start_time);
 
-	this->total_energy = previous_energy + energy_this_step;
-	this->last_updated = finish_time;
+  this->total_energy = previous_energy + energy_this_step;
+  this->last_updated = finish_time;
 
-	XBT_DEBUG("[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
-	    surf_host->getName(), start_time, finish_time, surf_host->p_cpu->m_speedPeak, previous_energy, energy_this_step);
+  XBT_DEBUG("[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
+      surf_host->getName(), start_time, finish_time, surf_host->p_cpu->p_speed.peak, previous_energy, energy_this_step);
 }
 
 HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) :
@@ -103,10 +103,10 @@ HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) :
   initWattsRangeList();
 
   if (host->properties() != NULL) {
-    char* off_power_str = (char*)xbt_dict_get_or_null(
-      host->properties(), "watt_off");
+    char* off_power_str = (char*)xbt_dict_get_or_null(host->properties(), "watt_off");
     if (off_power_str != NULL)
-      watts_off = atof(off_power_str);
+      watts_off = xbt_str_parse_double(off_power_str,
+          bprintf("Invalid value for property watt_off of host %s: %%s",host->name().c_str()));
     else
       watts_off = 0;
   }
@@ -134,7 +134,7 @@ double HostEnergy::getWattMaxAt(int pstate)
 /** @brief Computes the power consumed by the host according to the current pstate and processor load */
 double HostEnergy::getCurrentWattsValue(double cpu_load)
 {
-	xbt_assert(!power_range_watts_list.empty(),
+  xbt_assert(!power_range_watts_list.empty(),
     "No power range properties specified for host %s", host->name().c_str());
 
   /* min_power corresponds to the idle power (cpu load = 0) */
@@ -143,53 +143,55 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
   double min_power = range.first;
   double max_power = range.second;
   double power_slope = max_power - min_power;
-	double current_power = min_power + cpu_load * power_slope;
+  double current_power = min_power + cpu_load * power_slope;
 
-	XBT_DEBUG("[get_current_watts] min_power=%f, max_power=%f, slope=%f", min_power, max_power, power_slope);
-	XBT_DEBUG("[get_current_watts] Current power (watts) = %f, load = %f", current_power, cpu_load);
+  XBT_DEBUG("[get_current_watts] min_power=%f, max_power=%f, slope=%f", min_power, max_power, power_slope);
+  XBT_DEBUG("[get_current_watts] Current power (watts) = %f, load = %f", current_power, cpu_load);
 
-	return current_power;
+  return current_power;
 }
 
 double HostEnergy::getConsumedEnergy()
 {
-	if (last_updated < surf_get_clock()) // We need to simcall this as it modifies the environment
-	  simgrid::simix::kernel(std::bind(&HostEnergy::update, this));
+  if (last_updated < surf_get_clock()) // We need to simcall this as it modifies the environment
+    simgrid::simix::kernel(std::bind(&HostEnergy::update, this));
 
-	return total_energy;
+  return total_energy;
 }
 
 void HostEnergy::initWattsRangeList()
 {
-	if (host->properties() == NULL)
-		return;
-	char* all_power_values_str =
+  if (host->properties() == NULL)
+    return;
+  char* all_power_values_str =
     (char*)xbt_dict_get_or_null(host->properties(), "watt_per_state");
-	if (all_power_values_str == NULL)
-		return;
+  if (all_power_values_str == NULL)
+    return;
 
-	xbt_dynar_t all_power_values = xbt_str_split(all_power_values_str, ",");
-	int pstate_nb = xbt_dynar_length(all_power_values);
+  xbt_dynar_t all_power_values = xbt_str_split(all_power_values_str, ",");
+  int pstate_nb = xbt_dynar_length(all_power_values);
 
-	for (int i=0; i< pstate_nb; i++)
-	{
-		/* retrieve the power values associated with the current pstate */
-		xbt_dynar_t current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
-		xbt_assert(xbt_dynar_length(current_power_values) > 1,
-				"Power properties incorrectly defined - "
+  for (int i=0; i< pstate_nb; i++)
+  {
+    /* retrieve the power values associated with the current pstate */
+    xbt_dynar_t current_power_values = xbt_str_split(xbt_dynar_get_as(all_power_values, i, char*), ":");
+    xbt_assert(xbt_dynar_length(current_power_values) > 1,
+        "Power properties incorrectly defined - "
         "could not retrieve min and max power values for host %s",
-				host->name().c_str());
+        host->name().c_str());
 
-		/* min_power corresponds to the idle power (cpu load = 0) */
-		/* max_power is the power consumed at 100% cpu load       */
+    /* min_power corresponds to the idle power (cpu load = 0) */
+    /* max_power is the power consumed at 100% cpu load       */
     power_range_watts_list.push_back(power_range(
-      atof(xbt_dynar_get_as(current_power_values, 0, char*)),
-      atof(xbt_dynar_get_as(current_power_values, 1, char*))
+      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 0, char*),
+          bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->name().c_str())),
+      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 1, char*),
+          bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->name().c_str()))
     ));
 
     xbt_dynar_free(&current_power_values);
-	}
-	xbt_dynar_free(&all_power_values);
+  }
+  xbt_dynar_free(&all_power_values);
 }
 
 }

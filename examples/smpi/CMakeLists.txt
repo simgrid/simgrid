@@ -10,7 +10,6 @@ if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mc/")
 
-
   add_executable(bcbench bcbench.c)
   add_executable(mvmul mvmul.c)
   add_executable(smpi_traced tracing/smpi_traced.c)
@@ -43,7 +42,7 @@ if(enable_smpi)
     target_link_libraries(smpi_non_termination2 simgrid)
     target_link_libraries(smpi_non_termination3 simgrid)
     target_link_libraries(smpi_non_termination4 simgrid)
-    
+
     set_target_properties(smpi_bugged1 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_bugged2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_bugged1_liveness PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
@@ -53,21 +52,14 @@ if(enable_smpi)
     set_target_properties(smpi_non_termination2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_non_termination3 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
     set_target_properties(smpi_non_termination4 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
-    
   endif()
-  
 endif()
 
 set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/smpi_replay.tesh
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/mvmul.c
@@ -84,8 +76,7 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_termination2.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_termination3.c
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/non_termination4.c
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
@@ -96,8 +87,7 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_only_send_deterministic
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_mutual_exclusion
   ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_non_termination
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.txt
@@ -114,5 +104,4 @@ set(txt_files
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_waitall.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_with_isend.txt
   ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

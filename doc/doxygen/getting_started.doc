@@ -1,9 +1,9 @@
-/*! @page getting_started Getting started with SimGrid!
+/*! @page getting_started Getting started with SimGrid
 
 \tableofcontents
 
-Welcome to SimGrid's documentation! %As you may know, SimGrid is (actively
-developed) research software and contains many features. This documentation is
+Welcome to SimGrid's documentation! %As you may know, SimGrid is an actively
+developed research software and contains many features. This documentation is
 \c "work in progress" (and we need the community's help to improve this
 documentation! If you're ready to step up and help us, see Section \ref
 contributing "Contributing"), but many features are already well described.
@@ -29,30 +29,31 @@ own needs. This page gives you a brief overview of available resources.
 | ----------------- | ------------------------------------------------- |
 | \ref tutorial     | Introduces the user to basic features of SimGrid. |
 | \ref install      | Explains how SimGrid can be installed; this covers Windows as well as Linux; plus, it shows how to install from a package or how to install from source. |
-| [Tutorials](http://simgrid.gforge.inria.fr/tutorials.html) | These tutorials cover most of the basics and might be valuable for what you want to do, especially the [SimGrid User 101](http://simgrid.gforge.inria.fr/tutorials/simgrid-use-101.pdf). |
+| [Online Tutorials](http://simgrid.gforge.inria.fr/tutorials.html) | These tutorials cover most of the basics and might be valuable for what you want to do, especially the [SimGrid User 101](http://simgrid.gforge.inria.fr/tutorials/simgrid-use-101.pdf). |
 | \ref MSG_examples | This document explains several tests that we wrote for MSG; these tests are working simulations and you may learn something from looking at them. |
 
 In order to actually use SimGrid, three steps are necessary:
 
-\li \ref platform
-\li \ref options
-\li \ref deployment
+\li Step 1: \ref platform
+\li Step 2: \ref options
+\li Step 3: \ref deployment
 
 \section gs_experienced_users Documentation for experienced users
 
 | Document name     | Description                                       |
 | ----------------- | ------------------------------------------------- |
 | \ref tracing      | Shows how the behavior of a program can be written to a file so that it can be analyzed. |
-| \ref bindings     | SimGrid supports many different bindings for languages such as Lua, Ruby, Java, ... You can run your simulations with those! |
-| \ref pls          | Although SimGrid is not a packet level simulator, it does have bindings to two such simulators. |
+| \ref bindings     | You can write your application in Java, if you prefer. |
+| \ref pls          | You can use the NS3 simulation models instead of our own. |
 | \ref inside       | If you want to contribute or obtain a deeper understanding of SimGrid, this is the right location. |
 
 \section gs_examples Examples shipped with SimGrid
 
-SimGrid ships with many examples. You can find them in the folder
-\c examples/. Especially when you're looking for examples on how to
-use a specific XML-tag, this will prove valuable, as you can easily
-search through all the files with tools like \c grep.
+SimGrid ships with many examples, detailed in Section \ref
+MSG_examples. You can find them in the folder \c examples/. Especially
+when you're looking for examples on how to use a specific XML-tag,
+this will prove valuable, as you can easily search through all the
+files with tools like \c grep.
 
 
 Here is the output of a quick search for examples for \ref pf_trace "trace_connect":
@@ -64,8 +65,5 @@ Here is the output of a quick search for examples for \ref pf_trace "trace_conne
 ./platforms/two_hosts_platform_with_availability_included.xml:25:<trace_connect kind="HOST_AVAIL" trace="A_failure" element="Cpu A"/>
 ./platforms/two_hosts_platform_with_availability_included.xml:26:<trace_connect kind="POWER" trace="B" element="Cpu B"/>
 \endverbatim
-
-\note
-    There's also a Section on \ref MSG_examples "examples for MSG".
 
 */

@@ -140,7 +140,7 @@ while ( defined( $line = <MAKETEST> ) ) {
                     }
                     if ( $command =~ /^mkfile\s+(\S+)/) {
                         my $file = $1;
-                        # don't ask me to explain why so many backslashes...
+                        # don't ask me why so many backslashes. http://xkcd.com/1638/
                         $input =~ s/\\/\\\\\\\\/g;
                         $input =~ s/\n/\\\\n/g;
                         $input =~ s/"/\\\\042/g;
@@ -152,13 +152,16 @@ while ( defined( $line = <MAKETEST> ) ) {
                       foreach my $factory (split(';', $factories)) {
                         $close=0;
                         if( $factory =~ /^raw/) {
-                            print "${indent}if(HAVE_RAWCTX)\n";
+                            print "${indent}if(HAVE_RAW_CONTEXTS)\n";
                             $close=1;
                         }elsif( $factory =~ /^boost/) {
-                            print "${indent}if(HAVE_BOOST_CONTEXT)\n";
+                            print "${indent}if(HAVE_BOOST_CONTEXTS)\n";
                             $close=1;
                         }elsif( $factory =~ /^ucontext/) {
-                            print "${indent}if(CONTEXT_UCONTEXT)\n";
+                            print "${indent}if(HAVE_UCONTEXT_CONTEXTS)\n";
+                            $close=1;
+                        }elsif( $factory =~ /^thread/) {
+                            print "${indent}if(HAVE_THREAD_CONTEXTS)\n";
                             $close=1;
                         }
                         print "${indent}ADD_TEST(NAME memcheck-$name_test-$factory-$count\n";

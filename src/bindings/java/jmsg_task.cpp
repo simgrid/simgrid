@@ -261,7 +261,7 @@ Java_org_simgrid_msg_Task_getSender(JNIEnv * env,
 
   process = MSG_task_get_sender(task);
   if (process == NULL) {
-  	return NULL;
+    return NULL;
   }
   return (jobject) native_to_java_process(process);
 }
@@ -280,7 +280,7 @@ Java_org_simgrid_msg_Task_getSource(JNIEnv * env,
 
   host = MSG_task_get_source(task);
   if (host == NULL) {
-  	return NULL;
+    return NULL;
   }
   if (!host->extension(JAVA_HOST_LEVEL)) {
     jxbt_throw_jni(env, "MSG_task_get_source() failed");
@@ -304,18 +304,18 @@ Java_org_simgrid_msg_Task_getFlopsAmount(JNIEnv * env, jobject jtask)
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jtask, jobject jname) {
-	msg_task_t task = jtask_to_native_task(jtask, env);
+  msg_task_t task = jtask_to_native_task(jtask, env);
 
-	if (!task) {
-		jxbt_throw_notbound(env, "task", jtask);
-		return;
-	}
-	const char *name = env->GetStringUTFChars((jstring) jname, 0);
+  if (!task) {
+    jxbt_throw_notbound(env, "task", jtask);
+    return;
+  }
+  const char *name = env->GetStringUTFChars((jstring) jname, 0);
 
-	env->SetObjectField(jtask, jtask_field_Task_name, jname);
-	MSG_task_set_name(task, name);
+  env->SetObjectField(jtask, jtask_field_Task_name, jname);
+  MSG_task_set_name(task, name);
 
-	env->ReleaseStringUTFChars((jstring) jname, name);
+  env->ReleaseStringUTFChars((jstring) jname, name);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_setPriority(JNIEnv * env,
@@ -331,26 +331,26 @@ Java_org_simgrid_msg_Task_setPriority(JNIEnv * env,
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_setFlopsAmount
-		(JNIEnv *env, jobject jtask, jdouble computationAmount) {
-	msg_task_t task = jtask_to_native_task(jtask, env);
+    (JNIEnv *env, jobject jtask, jdouble computationAmount) {
+  msg_task_t task = jtask_to_native_task(jtask, env);
 
-	if (!task) {
+  if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
-	}
-	MSG_task_set_flops_amount(task, (double) computationAmount);
+  }
+  MSG_task_set_flops_amount(task, (double) computationAmount);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_setBytesAmount
-		(JNIEnv *env, jobject jtask, jdouble dataSize) {
-	msg_task_t task = jtask_to_native_task(jtask, env);
+    (JNIEnv *env, jobject jtask, jdouble dataSize) {
+  msg_task_t task = jtask_to_native_task(jtask, env);
 
-	if (!task) {
+  if (!task) {
     jxbt_throw_notbound(env, "task", jtask);
     return;
-	}
+  }
   env->SetDoubleField(jtask, jtask_field_Task_messageSize, dataSize);
-	MSG_task_set_bytes_amount(task, (double) dataSize);
+  MSG_task_set_bytes_amount(task, (double) dataSize);
 }
 
 JNIEXPORT void JNICALL
@@ -455,37 +455,37 @@ Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls,
 
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_irecv(JNIEnv * env, jclass cls, jstring jmailbox) {
-	msg_comm_t comm;
-	const char *mailbox;
-	jclass comm_class;
-	//pointer to store the task object pointer.
-	msg_task_t *task = xbt_new(msg_task_t,1);
-	*task = NULL;
-	/* There should be a cache here */
-	comm_class = env->FindClass("org/simgrid/msg/Comm");
+  msg_comm_t comm;
+  const char *mailbox;
+  jclass comm_class;
+  //pointer to store the task object pointer.
+  msg_task_t *task = xbt_new(msg_task_t,1);
+  *task = NULL;
+  /* There should be a cache here */
+  comm_class = env->FindClass("org/simgrid/msg/Comm");
 
-	if (!comm_class) {
-		jxbt_throw_native(env,bprintf("fieldID or methodID or class not found."));
-		return NULL;
-	}
+  if (!comm_class) {
+    jxbt_throw_native(env,bprintf("fieldID or methodID or class not found."));
+    return NULL;
+  }
 
-	jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
-	if (!jcomm) {
-		jxbt_throw_native(env,bprintf("Can't create a Comm object."));
-		return NULL;
-	}
+  jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
+  if (!jcomm) {
+    jxbt_throw_native(env,bprintf("Can't create a Comm object."));
+    return NULL;
+  }
 
-	mailbox = env->GetStringUTFChars(jmailbox, 0);
+  mailbox = env->GetStringUTFChars(jmailbox, 0);
 
-	comm = MSG_task_irecv(task,mailbox);
+  comm = MSG_task_irecv(task,mailbox);
 
-	env->SetLongField(jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
-	env->SetLongField(jcomm, jtask_field_Comm_taskBind, (jlong) (uintptr_t)(task));
-	env->SetBooleanField(jcomm, jtask_field_Comm_receiving, JNI_TRUE);
+  env->SetLongField(jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
+  env->SetLongField(jcomm, jtask_field_Comm_taskBind, (jlong) (uintptr_t)(task));
+  env->SetBooleanField(jcomm, jtask_field_Comm_receiving, JNI_TRUE);
 
-	env->ReleaseStringUTFChars(jmailbox, mailbox);
+  env->ReleaseStringUTFChars(jmailbox, mailbox);
 
-	return jcomm;
+  return jcomm;
 }
 
 
@@ -536,38 +536,38 @@ Java_org_simgrid_msg_Task_receiveBounded(JNIEnv * env, jclass cls,
 
 JNIEXPORT jobject JNICALL
 Java_org_simgrid_msg_Task_irecvBounded(JNIEnv * env, jclass cls,
-		jstring jmailbox, jdouble rate) {
-	msg_comm_t comm;
-	const char *mailbox;
-	jclass comm_class;
-	//pointer to store the task object pointer.
-	msg_task_t *task = xbt_new(msg_task_t,1);
-	*task = NULL;
-	/* There should be a cac hee */
-	comm_class = env->FindClass("org/simgrid/msg/Comm");
+    jstring jmailbox, jdouble rate) {
+  msg_comm_t comm;
+  const char *mailbox;
+  jclass comm_class;
+  //pointer to store the task object pointer.
+  msg_task_t *task = xbt_new(msg_task_t,1);
+  *task = NULL;
+  /* There should be a cac hee */
+  comm_class = env->FindClass("org/simgrid/msg/Comm");
 
-	if (!comm_class) {
-		jxbt_throw_native(env,bprintf("fieldID or methodID or class not found."));
-		return NULL;
-	}
+  if (!comm_class) {
+    jxbt_throw_native(env,bprintf("fieldID or methodID or class not found."));
+    return NULL;
+  }
 
-	jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
-	if (!jcomm) {
-		jxbt_throw_native(env,bprintf("Can't create a Comm object."));
-		return NULL;
-	}
+  jobject jcomm = env->NewObject(comm_class, jtask_method_Comm_constructor);
+  if (!jcomm) {
+    jxbt_throw_native(env,bprintf("Can't create a Comm object."));
+    return NULL;
+  }
 
-	mailbox = env->GetStringUTFChars(jmailbox, 0);
+  mailbox = env->GetStringUTFChars(jmailbox, 0);
 
-	comm = MSG_task_irecv_bounded(task,mailbox, (double) rate);
+  comm = MSG_task_irecv_bounded(task,mailbox, (double) rate);
 
-	env->SetLongField(jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
-	env->SetLongField(jcomm, jtask_field_Comm_taskBind, (jlong) (uintptr_t)(task));
-	env->SetBooleanField(jcomm, jtask_field_Comm_receiving, JNI_TRUE);
+  env->SetLongField(jcomm, jtask_field_Comm_bind, (jlong) (uintptr_t)(comm));
+  env->SetLongField(jcomm, jtask_field_Comm_taskBind, (jlong) (uintptr_t)(task));
+  env->SetBooleanField(jcomm, jtask_field_Comm_receiving, JNI_TRUE);
 
-	env->ReleaseStringUTFChars(jmailbox, mailbox);
+  env->ReleaseStringUTFChars(jmailbox, mailbox);
 
-	return jcomm;
+  return jcomm;
 }
 
 JNIEXPORT jobject JNICALL
@@ -650,14 +650,14 @@ Java_org_simgrid_msg_Task_isendBounded(JNIEnv *env, jobject jtask, jstring jmail
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Task_nativeFinalize(JNIEnv * env, jobject jtask) {
-	  msg_task_t task = jtask_to_native_task(jtask, env);
+    msg_task_t task = jtask_to_native_task(jtask, env);
 
-	  if (!task) {
-	    jxbt_throw_notbound(env, "task", jtask);
-	    return;
-	  }
+    if (!task) {
+      jxbt_throw_notbound(env, "task", jtask);
+      return;
+    }
 
-	  MSG_task_destroy(task);
+    MSG_task_destroy(task);
 }
 
 static void msg_task_cancel_on_failed_dsend(void*t) {

@@ -68,13 +68,16 @@ ssize_t xbt_getline(char **buf, size_t *n, FILE *stream)
  */
 char *xbt_dirname(const char *path) {
 #if _MSC_VER
-	  char drive[_MAX_DRIVE];
-	  char dir[_MAX_DIR];
-	  errno_t err;
-	  err = _splitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, NULL,0, NULL,0);
-	  return bprintf("%s%s",drive,dir);
+    char drive[_MAX_DRIVE];
+    char dir[_MAX_DIR];
+    errno_t err;
+    err = _splitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, NULL,0, NULL,0);
+    return bprintf("%s%s",drive,dir);
 #else
-	  return dirname(xbt_strdup(path));
+    char *tmp = xbt_strdup(path);
+    char *res = xbt_strdup(dirname(tmp));
+    free(tmp);
+    return res;
 #endif
 }
 /** @brief Returns the file component of a path (reimplementation of POSIX basename)
@@ -83,12 +86,15 @@ char *xbt_dirname(const char *path) {
  */
 char *xbt_basename(const char *path) {
 #if _MSC_VER
-	  char file[1024];
-	  char ext[1024];
-	  errno_t err;
-	  err = _splitpath_s(path, NULL,0, NULL,0, file,1024, ext,1024);
-	  return bprintf("%s.%s",file,ext);
+    char file[1024];
+    char ext[1024];
+    errno_t err;
+    err = _splitpath_s(path, NULL,0, NULL,0, file,1024, ext,1024);
+    return bprintf("%s.%s",file,ext);
 #else
-	  return basename(xbt_strdup(path));
+    char *tmp = xbt_strdup(path);
+    char *res = xbt_strdup(basename(tmp));
+    free(tmp);
+    return res;
 #endif
 }

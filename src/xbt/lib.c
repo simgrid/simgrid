@@ -66,7 +66,7 @@ void xbt_lib_set(xbt_lib_t lib, const char *key, int level, void *obj)
     XBT_DEBUG("Replace %p by %p element under key '%s:%d'",
               elts[level], obj, key, level);
     if (lib->free_f[level])
-    	lib->free_f[level](elts[level]);
+      lib->free_f[level](elts[level]);
   }
   elts[level] = obj;
 }

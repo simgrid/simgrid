@@ -32,11 +32,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 int master(int argc, char *argv[]);
 int slave(int argc, char *argv[]);
 
-/** Emitter function  */
+/** sender function  */
 int master(int argc, char *argv[])
 {
-  long number_of_tasks = atol(argv[1]);
-  long slaves_count = atol(argv[4]);
+  long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
+  long slaves_count = xbt_str_parse_int(argv[4], "Invalid amount of slaves: %s");
 
   int i;
   for (i = 0; i < number_of_tasks; i++) {

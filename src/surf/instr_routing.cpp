@@ -8,7 +8,6 @@
 
 #include "src/surf/surf_private.h"
 #include "xbt/graph.h"
-#include "src/surf/platform.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
@@ -331,7 +330,7 @@ static void instr_routing_parse_end_platform ()
   currentContainer = NULL;
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free_f);
   XBT_DEBUG ("Starting graph extraction.");
-  recursiveGraphExtraction (surf_platf_get_root(routing_platf), PJ_container_get_root(), filter);
+  recursiveGraphExtraction (surf_AS_get_routing_root(), PJ_container_get_root(), filter);
   XBT_DEBUG ("Graph extraction finished.");
   xbt_dict_free(&filter);
   platform_created = 1;
@@ -466,7 +465,7 @@ xbt_graph_t instr_routing_platform_graph (void)
   xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
   xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
   xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
-  recursiveXBTGraphExtraction (ret, nodes, edges, surf_platf_get_root(routing_platf), PJ_container_get_root());
+  recursiveXBTGraphExtraction (ret, nodes, edges, surf_AS_get_routing_root(), PJ_container_get_root());
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
   return ret;

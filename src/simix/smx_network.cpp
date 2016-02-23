@@ -335,10 +335,10 @@ void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_rdv
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_synchro_t),
                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),
-				  void *data, double timeout){
+          void *data, double timeout){
   smx_synchro_t comm = simcall_HANDLER_comm_isend(simcall, src, rdv, task_size, rate,
-		                       src_buff, src_buff_size, match_fun, NULL, copy_data_fun,
-				       data, 0);
+                           src_buff, src_buff_size, match_fun, NULL, copy_data_fun,
+               data, 0);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
@@ -348,7 +348,7 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
                                   int (*match_fun)(void *, void *,smx_synchro_t),
                                   void (*clean_fun)(void *), // used to free the synchro in case of problem after a detached send
                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),// used to copy data if not default one
-				                  void *data, int detached)
+                          void *data, int detached)
 {
   XBT_DEBUG("send from %p", rdv);
 
@@ -426,7 +426,7 @@ void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, sm
                          void *data, double timeout, double rate)
 {
   smx_synchro_t comm = SIMIX_comm_irecv(receiver, rdv, dst_buff,
-		                       dst_buff_size, match_fun, copy_data_fun, data, rate);
+                           dst_buff_size, match_fun, copy_data_fun, data, rate);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
@@ -435,10 +435,10 @@ smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t re
                                   void *dst_buff, size_t *dst_buff_size,
                                   int (*match_fun)(void *, void *, smx_synchro_t),
                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),
-				  void *data, double rate)
+          void *data, double rate)
 {
   return SIMIX_comm_irecv(receiver, rdv, dst_buff, dst_buff_size,
-		          match_fun, copy_data_fun, data, rate);
+              match_fun, copy_data_fun, data, rate);
 }
 
 smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
@@ -465,7 +465,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
       other_synchro = this_synchro;
       SIMIX_rdv_push(rdv, this_synchro);
     }else{
-      if(other_synchro->comm.surf_comm && 	SIMIX_comm_get_remains(other_synchro)==0.0)
+      if(other_synchro->comm.surf_comm &&   SIMIX_comm_get_remains(other_synchro)==0.0)
       {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",&(other_synchro->comm));
         other_synchro->state = SIMIX_DONE;
@@ -727,8 +727,8 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
               sg_host_get_name(sender), sg_host_get_name(receiver));
 
     synchro->comm.surf_comm = surf_network_model_communicate(surf_network_model,
-    		                                                    sender, receiver,
-    		                                                    synchro->comm.task_size, synchro->comm.rate);
+                                                            sender, receiver,
+                                                            synchro->comm.task_size, synchro->comm.rate);
 
     synchro->comm.surf_comm->setData(synchro);
 
@@ -906,16 +906,16 @@ void SIMIX_post_comm(smx_synchro_t synchro)
       synchro->comm.src_timeout->getState() == SURF_ACTION_DONE)
     synchro->state = SIMIX_SRC_TIMEOUT;
   else if (synchro->comm.dst_timeout &&
-	  synchro->comm.dst_timeout->getState() == SURF_ACTION_DONE)
+    synchro->comm.dst_timeout->getState() == SURF_ACTION_DONE)
     synchro->state = SIMIX_DST_TIMEOUT;
   else if (synchro->comm.src_timeout &&
-	  synchro->comm.src_timeout->getState() == SURF_ACTION_FAILED)
+    synchro->comm.src_timeout->getState() == SURF_ACTION_FAILED)
     synchro->state = SIMIX_SRC_HOST_FAILURE;
   else if (synchro->comm.dst_timeout &&
       synchro->comm.dst_timeout->getState() == SURF_ACTION_FAILED)
     synchro->state = SIMIX_DST_HOST_FAILURE;
   else if (synchro->comm.surf_comm &&
-	  synchro->comm.surf_comm->getState() == SURF_ACTION_FAILED) {
+    synchro->comm.surf_comm->getState() == SURF_ACTION_FAILED) {
     XBT_DEBUG("Puta madre. Surf says that the link broke");
     synchro->state = SIMIX_LINK_FAILURE;
   } else
@@ -983,7 +983,7 @@ double SIMIX_comm_get_remains(smx_synchro_t synchro)
   switch (synchro->state) {
 
   case SIMIX_RUNNING:
-    remains = surf_action_get_remains(synchro->comm.surf_comm);
+    remains = synchro->comm.surf_comm->getRemains();
     break;
 
   case SIMIX_WAITING:

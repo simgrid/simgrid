@@ -36,7 +36,7 @@ protected: // static
   static unsigned long process_index_;
   static BoostContext* maestro_context_;
 protected:
-#if HAVE_BOOST_CONTEXT == 1
+#if HAVE_BOOST_CONTEXTS == 1
   boost::context::fcontext_t* fc_ = nullptr;
 #else
   boost::context::fcontext_t fc_;

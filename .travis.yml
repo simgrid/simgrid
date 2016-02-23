@@ -21,14 +21,14 @@ addons:
     packages:
     - gcc-4.7
     - g++-4.7
-#      - clang
-#- coverity_scan:
-#    project:
-#      name: "mquinson/simgrid"
-#    notification_email: martin.quinson@loria.fr
-#    build_command_prepend: "cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=OFF -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=OFF ."  coverity_scan:
-#    build_command:   "make VERBOSE=1"
-#    branch_pattern: coverity_scan
+  coverity_scan:
+    project:
+      name: "mquinson/simgrid"
+      description: "Build submitted via Travis CI"
+    notification_email: martin.quinson@ens-rennes.fr
+    build_command_prepend: "cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=OFF -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=OFF ."
+    build_command:   "make VERBOSE=1"
+    branch_pattern: coverity
 
 # Don't install lua from Debian as we need 5.3 and don't have a backport.
 #   Installing lua from the source does not make any dynamic library.
@@ -54,7 +54,7 @@ script:
 #      - master
 notifications:
   recipients:
-    - martin.quinson@loria.fr
+    - martin.quinson@ens-rennes.fr
   email:
     on_success: change
     on_failure: always

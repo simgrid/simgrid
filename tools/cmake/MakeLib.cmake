@@ -25,11 +25,11 @@ endif()
 # Compute the dependencies of SimGrid
 #####################################
 set(SIMGRID_DEP "-lm")
-if (HAVE_BOOST_CONTEXT)
+if (HAVE_BOOST_CONTEXTS)
   set(SIMGRID_DEP "${SIMGRID_DEP} ${Boost_CONTEXT_LIBRARY}")
 endif()
 
-if(HAVE_PTHREAD AND ${CONTEXT_THREADS} AND NOT APPLE)
+if(HAVE_PTHREAD AND ${HAVE_THREAD_CONTEXTS} AND NOT APPLE)
   # Clang on recent Mac OS X is not happy about -pthread.
   SET(SIMGRID_DEP "${SIMGRID_DEP} -pthread")
 endif()
@@ -70,10 +70,9 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
-if(HAVE_LIBSIGC++)
+if(SIMGRID_HAVE_LIBSIG)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")
   add_definitions(-DLIBSIGC)
-  set(SIMGRID_HAVE_LIBSIG 1)
 endif()
 
 if(HAVE_MC)

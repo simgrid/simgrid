@@ -8,7 +8,6 @@
 #include "src/surf/surf_private.h"
 #include "src/surf/host_interface.hpp"
 #include "simgrid/sg_config.h"
-#include "src/surf/platform.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
@@ -22,23 +21,6 @@ extern xbt_dict_t dict_socket;
 /*************
  * Callbacks *
  *************/
-
-static void replace_bdw_ns3(char ** bdw)
-{
-  char *temp = xbt_strdup(*bdw);
-  xbt_free(*bdw);
-  *bdw = bprintf("%fBps",atof(temp));
-  xbt_free(temp);
-
-}
-
-static void replace_lat_ns3(char ** lat)
-{
-  char *temp = xbt_strdup(*lat);
-  xbt_free(*lat);
-  *lat = bprintf("%fs",atof(temp));
-  xbt_free(temp);
-}
 
 static void simgrid_ns3_add_host(simgrid::s4u::Host& host)
 {
@@ -66,7 +48,7 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 
 static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
 {
-  const char* router_id = router->getName();
+  const char* router_id = router->name();
   XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
   xbt_lib_set(as_router_lib,
               router_id,
@@ -77,20 +59,14 @@ static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
 
 static void parse_ns3_add_AS(simgrid::surf::As* as)
 {
-  const char* as_id = as->p_name;
+  const char* as_id = as->name_;
   XBT_DEBUG("NS3_ADD_AS '%s'", as_id);
   xbt_lib_set(as_router_lib, as_id, NS3_ASR_LEVEL, ns3_add_AS(as_id) );
 }
 
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 {
-  const char *cluster_prefix = cluster->prefix;
-  const char *cluster_suffix = cluster->suffix;
-  const char *cluster_radical = cluster->radical;
-  const char *cluster_bb_bw = bprintf("%f",cluster->bb_bw);
-  const char *cluster_bb_lat = bprintf("%f",cluster->bb_lat);
-  const char *cluster_bw = bprintf("%f",cluster->bw);
-  const char *cluster_lat = bprintf("%f",cluster->lat);
   const char *groups = NULL;
 
   int start, end, i;
@@ -102,7 +78,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 
   char *router_id,*host_id;
 
-  radical_elements = xbt_str_split(cluster_radical, ",");
+  radical_elements = xbt_str_split(cluster->radical, ",");
   xbt_dynar_foreach(radical_elements, iter, groups) {
     radical_ends = xbt_str_split(groups, "-");
 
@@ -110,7 +86,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
     case 1:
       start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
       xbt_dynar_push_as(tab_elements_num, int, start);
-      router_id = bprintf("ns3_%s%d%s", cluster_prefix, start, cluster_suffix);
+      router_id = bprintf("ns3_%s%d%s", cluster->prefix, start, cluster->suffix);
       simgrid::s4u::Host::by_name_or_create(router_id)
         ->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
       XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
@@ -122,7 +98,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
       end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
       for (i = start; i <= end; i++){
         xbt_dynar_push_as(tab_elements_num, int, i);
-        router_id = bprintf("ns3_%s%d%s", cluster_prefix, i, cluster_suffix);
+        router_id = bprintf("ns3_%s%d%s", cluster->prefix, i, cluster->suffix);
         simgrid::s4u::Host::by_name_or_create(router_id)
           ->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
         XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
@@ -138,15 +114,13 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   //Create links
   unsigned int cpt;
   int elmts;
-  char * lat = xbt_strdup(cluster_lat);
-  char * bw =  xbt_strdup(cluster_bw);
-  replace_lat_ns3(&lat);
-  replace_bdw_ns3(&bw);
+  char * lat = bprintf("%fs", cluster->lat);
+  char * bw =  bprintf("%fBps", cluster->bw);
 
   xbt_dynar_foreach(tab_elements_num,cpt,elmts)
   {
-    host_id   = bprintf("%s%d%s", cluster_prefix, elmts, cluster_suffix);
-    router_id = bprintf("ns3_%s%d%s", cluster_prefix, elmts, cluster_suffix);
+    host_id   = bprintf("%s%d%s", cluster->prefix, elmts, cluster->suffix);
+    router_id = bprintf("ns3_%s%d%s", cluster->prefix, elmts, cluster->suffix);
     XBT_DEBUG("Create link from '%s' to '%s'",host_id,router_id);
 
     ns3_nodes_t host_src = ns3_find_host(host_id);
@@ -162,14 +136,14 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
     free(router_id);
     free(host_id);
   }
+  xbt_free(lat);
+  xbt_free(bw);
   xbt_dynar_free(&tab_elements_num);
 
 
   //Create link backbone
-  lat = xbt_strdup(cluster_bb_lat);
-  bw =  xbt_strdup(cluster_bb_bw);
-  replace_lat_ns3(&lat);
-  replace_bdw_ns3(&bw);
+  lat = bprintf("%fs", cluster->bb_lat);
+  bw =  bprintf("%fBps", cluster->bb_bw);
   ns3_add_cluster(bw,lat,cluster->id);
   xbt_free(lat);
   xbt_free(bw);
@@ -191,17 +165,15 @@ static void create_ns3_topology(void)
   simgrid::surf::Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
-    char *src = onelink->p_src->getName();
-    char *dst = onelink->p_dst->getName();
+    char *src = onelink->src_->name();
+    char *dst = onelink->dst_->name();
     simgrid::surf::NetworkNS3Link *link =
-      static_cast<simgrid::surf::NetworkNS3Link *>(onelink->p_link);
+      static_cast<simgrid::surf::NetworkNS3Link *>(onelink->link_);
 
     if (strcmp(src,dst) && link->m_created){
       XBT_DEBUG("Route from '%s' to '%s' with link '%s'", src, dst, link->getName());
-      char * link_bdw = xbt_strdup(link->p_bdw);
-      char * link_lat = xbt_strdup(link->p_lat);
-      replace_lat_ns3(&link_lat);
-      replace_bdw_ns3(&link_bdw);
+      char * link_bdw = bprintf("%fBps", link->getBandwidth());
+      char * link_lat = bprintf("%fs", link->getLatency());
       link->m_created = 0;
 
       //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
@@ -209,12 +181,14 @@ static void create_ns3_topology(void)
 
       //create link ns3
       ns3_nodes_t host_src = ns3_find_host(src);
-      if(!host_src) host_src = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(as_router_lib,src,NS3_ASR_LEVEL));
+      if (!host_src)
+        host_src = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(as_router_lib,src,NS3_ASR_LEVEL));
       ns3_nodes_t host_dst = ns3_find_host(dst);
-      if(!host_dst) host_dst = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(as_router_lib,dst,NS3_ASR_LEVEL));
+      if(!host_dst)
+        host_dst = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(as_router_lib,dst,NS3_ASR_LEVEL));
 
-      if(host_src && host_dst){}
-      else xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
+      if (!host_src || !host_dst)
+          xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
 
       ns3_add_link(host_src->node_num,host_src->type,host_dst->node_num,host_dst->type,link_bdw,link_lat);
 
@@ -285,14 +259,14 @@ NetworkNS3Model::~NetworkNS3Model() {
 }
 
 Link* NetworkNS3Model::createLink(const char *name,
-	                                 double bw_initial,
-	                                 tmgr_trace_t bw_trace,
-	                                 double lat_initial,
-	                                 tmgr_trace_t lat_trace,
-	                                 int initiallyOn,
-	                                 tmgr_trace_t state_trace,
-	                                 e_surf_link_sharing_policy_t policy,
-	                                 xbt_dict_t properties){
+                                   double bw_initial,
+                                   tmgr_trace_t bw_trace,
+                                   double lat_initial,
+                                   tmgr_trace_t lat_trace,
+                                   int initiallyOn,
+                                   tmgr_trace_t state_trace,
+                                   e_surf_link_sharing_policy_t policy,
+                                   xbt_dict_t properties){
   if (bw_trace)
     XBT_INFO("The NS3 network model doesn't support bandwidth state traces");
   if (lat_trace)
@@ -312,12 +286,12 @@ xbt_dynar_t NetworkNS3Model::getRoute(NetCard *src, NetCard *dst)
 }
 
 Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst,
-		                               double size, double rate)
+                                   double size, double rate)
 {
-  XBT_DEBUG("Communicate from %s to %s", src->getName(), dst->getName());
+  XBT_DEBUG("Communicate from %s to %s", src->name(), dst->name());
   NetworkNS3Action *action = new NetworkNS3Action(this, size, 0);
 
-  ns3_create_flow(src->getName(), dst->getName(), surf_get_clock(), size, action);
+  ns3_create_flow(src->name(), dst->name(), surf_get_clock(), size, action);
 
   action->m_lastSent = 0;
   action->p_srcElm = src;
@@ -327,9 +301,9 @@ Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst,
   return (surf_action_t) action;
 }
 
-double NetworkNS3Model::shareResources(double now)
+double NetworkNS3Model::next_occuring_event(double now)
 {
-  XBT_DEBUG("ns3_share_resources");
+  XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
   if (!getRunningActionSet()->size() || now == 0.0)
@@ -372,23 +346,23 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     action->setRemains(action->getCost() - ns3_get_socket_sent(data));
 
     if (TRACE_is_enabled() &&
-    		action->getState() == SURF_ACTION_RUNNING){
-    	double data_sent = ns3_get_socket_sent(data);
-    	double data_delta_sent = data_sent - action->m_lastSent;
+        action->getState() == SURF_ACTION_RUNNING){
+      double data_sent = ns3_get_socket_sent(data);
+      double data_delta_sent = data_sent - action->m_lastSent;
 
-    	xbt_dynar_t route = NULL;
+      xbt_dynar_t route = NULL;
 
-    	routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, &route, NULL);
-    	unsigned int i;
-    	for (i = 0; i < xbt_dynar_length (route); i++){
-    		NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr(route, i));
-    		TRACE_surf_link_set_utilization (link->getName(),
-    				action->getCategory(),
-					(data_delta_sent)/delta,
-					now-delta,
-					delta);
-    	}
-    	action->m_lastSent = data_sent;
+      routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, &route, NULL);
+      unsigned int i;
+      for (i = 0; i < xbt_dynar_length (route); i++){
+        NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr(route, i));
+        TRACE_surf_link_set_utilization (link->getName(),
+            action->getCategory(),
+          (data_delta_sent)/delta,
+          now-delta,
+          delta);
+      }
+      action->m_lastSent = data_sent;
     }
 
     if(ns3_get_socket_is_finished(data) == 1){
@@ -415,21 +389,21 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
  ************/
 
 NetworkNS3Link::NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props,
-		                       double bw_initial, double lat_initial)
+                           double bw_initial, double lat_initial)
  : Link(model, name, props)
- , p_lat(bprintf("%f", lat_initial))
- , p_bdw(bprintf("%f", bw_initial))
  , m_created(1)
 {
+  m_bandwidth.peak = bw_initial;
+  m_latency.peak = lat_initial;
 }
 
 NetworkNS3Link::~NetworkNS3Link()
 {
 }
 
-void NetworkNS3Link::updateState(tmgr_trace_iterator_t event_type, double value, double date)
+void NetworkNS3Link::apply_event(tmgr_trace_iterator_t event, double value)
 {
-
+  THROW_UNIMPLEMENTED;
 }
 
 /**********
@@ -466,10 +440,10 @@ int NetworkNS3Action::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-	if (action_hook.is_linked())
-	  p_stateSet->erase(p_stateSet->iterator_to(*this));
+  if (action_hook.is_linked())
+    p_stateSet->erase(p_stateSet->iterator_to(*this));
     XBT_DEBUG ("Removing action %p", this);
-	delete this;
+  delete this;
     return 1;
   }
   return 0;

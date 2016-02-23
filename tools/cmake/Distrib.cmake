@@ -6,8 +6,6 @@
 file(MAKE_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html/)
 install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/html/"
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/html/)
-install(DIRECTORY "${CMAKE_HOME_DIRECTORY}/doc/HelloWorld/"
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/HelloWorld/)
 
 # binaries
 if(enable_smpi)
@@ -80,23 +78,6 @@ foreach(file ${examples_to_install})
   install(FILES "examples/${file}"
     DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/doc/simgrid/examples/${location})
 endforeach(file ${examples_to_install})
-
-# bindings cruft
-
-if(HAVE_LUA)
-  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/lib/lua/5.1")
-  add_custom_target(simgrid_lua ALL
-    DEPENDS simgrid
-    ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-    )
-  add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-    COMMAND ${CMAKE_COMMAND} -E create_symlink ../../libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-    )
-  install(FILES ${CMAKE_BINARY_DIR}/lib/lua/5.1/simgrid.${LIB_EXE}
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/lua/5.1
-    )
-endif()
 
 ###########################################
 ### Fill in the "make uninstall" target ###
@@ -246,7 +227,6 @@ endforeach(file ${source_to_pack})
 
 add_custom_command(
   TARGET dist-dir
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/Makefile.default ${PROJECT_NAME}-${release_version}/Makefile
   COMMAND ${CMAKE_COMMAND} -E echo "${GIT_VERSION}" > ${PROJECT_NAME}-${release_version}/.gitversion
   )
 

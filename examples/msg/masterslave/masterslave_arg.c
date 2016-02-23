@@ -90,16 +90,16 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 3, "Usage: %s platform_file number_of_jobs number_of_slaves\n"
-	          "\tExample: %s msg_platform.xml 10 5\n", 
-	          argv[0], argv[0]);
+            "\tExample: %s msg_platform.xml 10 5\n", 
+            argv[0], argv[0]);
 
   MSG_function_register("master", master);
   MSG_function_register("slave", slave);
 
   MSG_create_environment(argv[1]);
 
-  number_of_jobs = atol(argv[2]);
-  number_of_slaves = atol(argv[3]);
+  number_of_jobs = xbt_str_parse_int(argv[2], "Invalid amount of jobs: %s");
+  number_of_slaves = xbt_str_parse_int(argv[3], "Invalid amount of slaves: %s");
   xbt_dynar_t host_dynar = MSG_hosts_as_dynar();
   long number_max = xbt_dynar_length(host_dynar);
   XBT_INFO("Got %ld slaves, %ld tasks to process, and %ld hosts", number_of_slaves, number_of_jobs,number_max);

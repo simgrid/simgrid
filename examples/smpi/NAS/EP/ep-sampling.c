@@ -6,8 +6,6 @@
 #include "mpi.h"
 #include "npbparams.h"
 
-#include "randlc.h"
-
 #ifndef CLASS
 #define CLASS 'S'
 #define NUM_PROCS            1                 

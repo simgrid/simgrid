@@ -18,15 +18,17 @@ namespace simix {
 class ThreadContext;
 class ThreadContextFactory;
 
-class ThreadContext : public Context {
+class ThreadContext : public AttachContext {
 public:
   friend ThreadContextFactory;
   ThreadContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
-          smx_process_t process);
+          smx_process_t process, bool maestro =false);
   ~ThreadContext();
   void stop() override;
   void suspend() override;
+  void attach_start() override;
+  void attach_stop() override;
 private:
   /** A portable thread */
   xbt_os_thread_t thread_ = nullptr;
@@ -36,6 +38,9 @@ private:
   xbt_os_sem_t end_ = nullptr;
 private:
   static void* wrapper(void *param);
+  static void* maestro_wrapper(void *param);
+public:
+  void start();
 };
 
 class ThreadContextFactory : public ContextFactory {
@@ -46,6 +51,10 @@ public:
     void_pfn_smxprocess_t cleanup_func,  smx_process_t process) override;
   void run_all() override;
   ThreadContext* self() override;
+
+  // Optional methods:
+  ThreadContext* attach(void_pfn_smxprocess_t cleanup_func, smx_process_t process) override;
+  ThreadContext* create_maestro(std::function<void()> code, smx_process_t process) override;
 };
 
 }

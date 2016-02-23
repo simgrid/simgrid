@@ -1,0 +1,41 @@
+#! ./tesh
+
+p Testing synchronization with semaphores
+
+! output sort 19
+$ $SG_TEST_EXENV semaphores/synchro ${srcdir:=.}/../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:Alice@Fafard) Trying to acquire 1
+> [  0.000000] (1:Alice@Fafard) Acquired 1
+> [  0.900000] (2:Bob@Fafard) Trying to acquire 1
+> [  1.000000] (1:Alice@Fafard) Releasing 2
+> [  1.000000] (2:Bob@Fafard) Acquired 1
+> [  1.000000] (1:Alice@Fafard) Released 2
+> [  2.000000] (2:Bob@Fafard) Releasing 2
+> [  2.000000] (2:Bob@Fafard) Released 2
+> [  3.000000] (2:Bob@Fafard) Trying to acquire 3
+> [  3.000000] (2:Bob@Fafard) Acquired 3
+> [  4.000000] (1:Alice@Fafard) Trying to acquire 3
+> [  5.000000] (2:Bob@Fafard) Releasing 4
+> [  5.000000] (1:Alice@Fafard) Acquired 3
+> [  5.000000] (2:Bob@Fafard) Released 4
+> [  7.000000] (2:Bob@Fafard) Trying to acquire 5
+> [ 10.000000] (1:Alice@Fafard) Releasing 4
+> [ 10.000000] (2:Bob@Fafard) Acquired 5
+> [ 10.000000] (1:Alice@Fafard) Released 4
+> [ 10.000000] (2:Bob@Fafard) Releasing 6
+> [ 10.000000] (2:Bob@Fafard) Released 6
+> [ 10.000000] (2:Bob@Fafard) Trying to acquire 7
+> [ 10.000000] (2:Bob@Fafard) Acquired 7
+> [ 11.000000] (1:Alice@Fafard) Trying to acquire 5
+> [ 15.000000] (2:Bob@Fafard) Releasing 8
+> [ 15.000000] (1:Alice@Fafard) Acquired 5
+> [ 15.000000] (2:Bob@Fafard) Released 8
+> [ 17.000000] (1:Alice@Fafard) Releasing 6
+> [ 17.000000] (1:Alice@Fafard) Released 6
+> [ 22.000000] (1:Alice@Fafard) Trying to acquire 7
+> [ 22.000000] (1:Alice@Fafard) Acquired 7
+> [ 22.000000] (1:Alice@Fafard) Releasing 8
+> [ 22.000000] (1:Alice@Fafard) Released 8
+> [ 65.000000] (2:Bob@Fafard) Done
+> [ 72.000000] (1:Alice@Fafard) Done
+> [ 72.000000] (0:maestro@) Finished

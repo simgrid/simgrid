@@ -14,7 +14,6 @@ option(enable_compile_optimizations "Whether to produce efficient code for the S
 option(enable_documentation "Whether to produce documentation" on)
 option(enable_ns3    "Whether ns3 model is activated." off)
 option(enable_java   "Whether the Java bindings are activated." off)
-option(enable_scala  "Whether the Scala bindings are activated." off)
 option(enable_lua    "Whether the Lua bindings are activated." off)
 option(enable_compile_warnings "Whether compilation warnings should be turned into errors." off)
 option(enable_maintainer_mode "Whether flex and flexml files should be rebuilt." off)
@@ -58,10 +57,6 @@ else()
   option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 endif()
 option(enable_smpi_ISP_testsuite "Whether the test suite from ISP should be built." off)
-
-if(enable_scala AND NOT enable_java)
-  message(WARNING "For using scala you must turn java on with this command:\ncmake -Denable_java=on .")
-endif()
 
 mark_as_advanced(HAVE_SSH)
 mark_as_advanced(HAVE_RSYNC)

@@ -44,21 +44,19 @@ public:
 
   ~NetworkNS3Model();
   Link* createLink(const char *name,
-  	                                 double bw_initial,
-  	                                 tmgr_trace_t bw_trace,
-  	                                 double lat_initial,
-  	                                 tmgr_trace_t lat_trace,
-  	                                 int initiallyOn,
-  	                                 tmgr_trace_t state_trace,
-  	                                 e_surf_link_sharing_policy_t policy,
-  	                                 xbt_dict_t properties);
+                                     double bw_initial,
+                                     tmgr_trace_t bw_trace,
+                                     double lat_initial,
+                                     tmgr_trace_t lat_trace,
+                                     int initiallyOn,
+                                     tmgr_trace_t state_trace,
+                                     e_surf_link_sharing_policy_t policy,
+                                     xbt_dict_t properties);
   xbt_dynar_t getRoute(NetCard *src, NetCard *dst);
-  Action *communicate(NetCard *src, NetCard *dst,
-		                           double size, double rate);
-  double shareResources(double now);
-  void updateActionsState(double now, double delta);
-  void addTraces(){DIE_IMPOSSIBLE;}
-  bool shareResourcesIsIdempotent() {return false;}
+  Action *communicate(NetCard *src, NetCard *dst, double size, double rate);
+  double next_occuring_event(double now) override;
+  bool next_occuring_event_isIdempotent() {return false;}
+  void updateActionsState(double now, double delta) override;
 };
 
 /************
@@ -67,19 +65,14 @@ public:
 class NetworkNS3Link : public Link {
 public:
   NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props,
-  		         double bw_initial, double lat_initial);
+               double bw_initial, double lat_initial);
   ~NetworkNS3Link();
 
-  void updateState(tmgr_trace_iterator_t event_type, double value, double date);
-  double getLatency(){THROW_UNIMPLEMENTED;}
-  double getBandwidth(){THROW_UNIMPLEMENTED;}
-  void updateBandwidth(double value, double date=surf_get_clock()){THROW_UNIMPLEMENTED;}
-  void updateLatency(double value, double date=surf_get_clock()){THROW_UNIMPLEMENTED;}
+  void apply_event(tmgr_trace_iterator_t event, double value) override;
+  void updateBandwidth(double value) override {THROW_UNIMPLEMENTED;}
+  void updateLatency(double value) override {THROW_UNIMPLEMENTED;}
 
 //private:
- char *p_id;
- char *p_lat;
- char *p_bdw;
  int m_created;
 };
 

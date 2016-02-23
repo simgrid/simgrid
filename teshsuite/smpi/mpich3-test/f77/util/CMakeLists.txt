@@ -17,5 +17,4 @@ endif()
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/../util/mtestf.f
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

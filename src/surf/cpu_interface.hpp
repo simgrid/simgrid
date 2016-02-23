@@ -59,7 +59,7 @@ public:
 
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
-  bool shareResourcesIsIdempotent() {return true;}
+  bool next_occuring_event_isIdempotent() {return true;}
 };
 
 /************
@@ -87,9 +87,9 @@ public:
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
     lmm_constraint_t constraint,
-	  xbt_dynar_t speedPeakList, int pstate,
-	  int core, double speedPeak, double speedScale,
-	  int initiallyOn);
+    xbt_dynar_t speedPeakList, int pstate,
+    int core, double speedPeak, double speedScale,
+    int initiallyOn);
 
   /**
    * @brief Cpu constructor
@@ -105,8 +105,8 @@ public:
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
       xbt_dynar_t speedPeakList, int pstate,
-	  int core, double speedPeak, double speedScale,
-	  int initiallyOn);
+    int core, double speedPeak, double speedScale,
+    int initiallyOn);
 
   ~Cpu();
 
@@ -153,8 +153,6 @@ public:
 
 public:
   int m_core = 1;                /* Amount of cores */
-  double m_speedPeak;            /*< CPU speed peak, ie max value */
-  double m_speedScale;           /*< Percentage of CPU available according to the trace, in [O,1] */
   simgrid::s4u::Host* m_host;
 
   xbt_dynar_t p_speedPeakList = NULL; /*< List of supported CPU capacities (pstate related) */
@@ -165,11 +163,11 @@ public:
   void **p_constraintCoreId=NULL;
 
 public:
-  void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF) */
-  void set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load) */
-protected:
+  virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
+  virtual void set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
+
   tmgr_trace_iterator_t p_stateEvent = nullptr;
-  tmgr_trace_iterator_t p_speedEvent = nullptr;
+  s_surf_metric_t p_speed = {1.0, 0, nullptr};
 };
 
 /**********

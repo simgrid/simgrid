@@ -18,9 +18,9 @@
 #include "src/xbt_modinter.h"
 #include "xbt/sysdep.h"
 #include "xbt/xbt_os_thread.h"
-#include "src/portable.h"           /* CONTEXT_THREADS */
+#include "src/portable.h"           /* HAVE_THREAD_CONTEXTS */
 
-#ifndef CONTEXT_THREADS
+#ifndef HAVE_THREAD_CONTEXTS
 #ifndef WIN32
 #ifdef HAVE_PTHREAD
 /* xbt_threads is loaded in libsimgrid when they are used to implement the xbt_context.

@@ -32,7 +32,7 @@ int main( int argc, char **argv )
     MPI_Comm_rank( comm, &rank );
     sendbuf = (int *) malloc( size * sizeof(int) );
     for (i=0; i<size; i++) 
-	sendbuf[i] = rank + i;
+  sendbuf[i] = rank + i;
     recvcounts = (int *)malloc( size * sizeof(int) );
     recvbuf = (int *)malloc( size * sizeof(int) );
     for (i=0; i<size; i++) 
@@ -41,14 +41,14 @@ int main( int argc, char **argv )
     sumval = size * rank + ((size - 1) * size)/2;
 /* recvbuf should be size * (rank + i) */
     if (recvbuf[0] != sumval) {
-	err++;
-	fprintf( stdout, "Did not get expected value for reduce scatter\n" );
-	fprintf( stdout, "[%d] Got %d expected %d\n", rank, recvbuf[0], sumval );
+  err++;
+  fprintf( stdout, "Did not get expected value for reduce scatter\n" );
+  fprintf( stdout, "[%d] Got %d expected %d\n", rank, recvbuf[0], sumval );
     }
 
     MPI_Allreduce( &err, &toterr, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
     if (rank == 0 && toterr == 0) {
-	printf( " No Errors\n" );
+  printf( " No Errors\n" );
     }
     free(sendbuf);
     free(recvcounts);

@@ -58,9 +58,9 @@ void display_storage_properties(msg_storage_t storage){
   if (xbt_dict_length(props) > 0){
     XBT_INFO("\tProperties of mounted storage: %s", MSG_storage_get_name(storage));
     xbt_dict_foreach(props, cursor, key, data)
-	  XBT_INFO("\t\t'%s' -> '%s'", key, data);
+    XBT_INFO("\t\t'%s' -> '%s'", key, data);
   }else{
-	XBT_INFO("\tNo property attached.");
+  XBT_INFO("\tNo property attached.");
   }
 }
 
@@ -97,16 +97,16 @@ void display_storage_content(msg_storage_t storage){
 
 int host(int argc, char *argv[])
 {
-	char name[2048];
-	sprintf(name,"%s%i", FILENAME1,MSG_process_self_PID());
-	msg_file_t file = MSG_file_open(name, NULL);
-	//MSG_file_read(file, MSG_file_get_size(file));
-	MSG_file_write(file, 500000);
+  char name[2048];
+  sprintf(name,"%s%i", FILENAME1,MSG_process_self_PID());
+  msg_file_t file = MSG_file_open(name, NULL);
+  //MSG_file_read(file, MSG_file_get_size(file));
+  MSG_file_write(file, 500000);
 
-	XBT_INFO("Size of %s: %llu", MSG_file_get_name(file), MSG_file_get_size(file));
-	MSG_file_close(file);
+  XBT_INFO("Size of %s: %llu", MSG_file_get_name(file), MSG_file_get_size(file));
+  MSG_file_close(file);
 
-	return 1;
+  return 1;
 }
 
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
   MSG_function_register("host", host);
   storage_info(MSG_host_by_name(xbt_strdup("host")));
   for(i = 0 ; i<10; i++){
-  	MSG_process_create(xbt_strdup("host"), host, NULL, MSG_host_by_name(xbt_strdup("host")));
+    MSG_process_create(xbt_strdup("host"), host, NULL, MSG_host_by_name(xbt_strdup("host")));
   }
 
 

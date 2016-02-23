@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_nativeInit(JNIEnv *env, jclass cls) {
   jclass jprocess_class_VM = env->FindClass("org/simgrid/msg/VM");
   jvm_field_bind = jxbt_get_jfield(env, jprocess_class_VM, "bind", "J");
-  if (!jvm_field_bind	) {
+  if (!jvm_field_bind  ) {
     jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
   }
 }
@@ -79,14 +79,14 @@ Java_org_simgrid_msg_VM_isRestoring(JNIEnv * env, jobject jvm) {
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jint load) { 
 
-	msg_vm_t vm = jvm_get_native(env,jvm);
-	double bound = MSG_get_host_speed(vm) * load / 100;
-	MSG_vm_set_bound(vm, bound); 
+  msg_vm_t vm = jvm_get_native(env,jvm);
+  double bound = MSG_get_host_speed(vm) * load / 100;
+  MSG_vm_set_bound(vm, bound); 
 }
 
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring jname,
-		               jint jncore, jint jramsize, jint jnetcap, jstring jdiskpath, jint jdisksize, jint jmig_netspeed, jint jdp_intensity) {
+                   jint jncore, jint jramsize, jint jnetcap, jstring jdiskpath, jint jdisksize, jint jmig_netspeed, jint jdp_intensity) {
 
   msg_host_t host = jhost_get_native(env, jhost);
 
@@ -100,7 +100,7 @@ Java_org_simgrid_msg_VM_create(JNIEnv *env, jobject jvm, jobject jhost, jstring 
   // disk_path = xbt_strdup(disk_path);
 
   msg_vm_t vm = MSG_vm_create(host, name, (int) jncore, (int) jramsize,
-		  (int) jnetcap, NULL, (int) jdisksize, (int) jmig_netspeed, (int) jdp_intensity);
+      (int) jnetcap, NULL, (int) jdisksize, (int) jmig_netspeed, (int) jdp_intensity);
 
   jvm_bind(env,jvm,vm);
 }

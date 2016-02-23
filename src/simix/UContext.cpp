@@ -65,7 +65,7 @@ namespace simix {
 }
 }
 
-#ifdef CONTEXT_THREADS
+#ifdef HAVE_THREAD_CONTEXTS
 static xbt_parmap_t sysv_parmap;
 static simgrid::simix::ParallelUContext** sysv_workers_context;   /* space to save the worker's context in each thread */
 static unsigned long sysv_threads_working;     /* number of threads that have started their work */
@@ -75,6 +75,10 @@ static unsigned long sysv_process_index = 0;   /* index of the next process to r
                                                 * list of runnable processes */
 static simgrid::simix::UContext* sysv_maestro_context;
 static bool sysv_parallel;
+
+// The name of this function is currently hardcoded in the code (as string).
+// Do not change it without fixing those references as well.
+static void smx_ctx_sysv_wrapper(int first, ...);
 
 namespace simgrid {
 namespace simix {
@@ -88,8 +92,6 @@ public:
   UContext(std::function<void()>  code,
     void_pfn_smxprocess_t cleanup_func, smx_process_t process);
   ~UContext();
-protected:
-  static void wrapper(int first, ...);
 };
 
 class SerialUContext : public UContext {
@@ -137,7 +139,7 @@ UContextFactory::UContextFactory() : ContextFactory("UContextFactory")
 {
   if (SIMIX_context_is_parallel()) {
     sysv_parallel = true;
-#ifdef CONTEXT_THREADS  /* To use parallel ucontexts a thread pool is needed */
+#ifdef HAVE_THREAD_CONTEXTS  /* To use parallel ucontexts a thread pool is needed */
     int nthreads = SIMIX_context_get_nthreads();
     sysv_parmap = nullptr;
     sysv_workers_context = xbt_new(ParallelUContext*, nthreads);
@@ -153,7 +155,7 @@ UContextFactory::UContextFactory() : ContextFactory("UContextFactory")
 
 UContextFactory::~UContextFactory()
 {
-#ifdef CONTEXT_THREADS
+#ifdef HAVE_THREAD_CONTEXTS
   if (sysv_parmap)
     xbt_parmap_destroy(sysv_parmap);
   xbt_free(sysv_workers_context);
@@ -167,7 +169,7 @@ UContextFactory::~UContextFactory()
 void UContextFactory::run_all()
 {
   if (sysv_parallel) {
-    #ifdef CONTEXT_THREADS
+    #ifdef HAVE_THREAD_CONTEXTS
       sysv_threads_working = 0;
       // Parmap_apply ensures that every working thread get an index in the
       // process_to_run array (through an atomic fetch_and_add),
@@ -224,14 +226,14 @@ UContext::UContext(std::function<void()> code,
           this->stack_, smx_context_usable_stack_size);
     this->uc_.uc_stack.ss_size = pth_sksize_makecontext(
           this->stack_, smx_context_usable_stack_size);
-    simgrid_makecontext(&this->uc_, UContext::wrapper, this);
+    simgrid_makecontext(&this->uc_, smx_ctx_sysv_wrapper, this);
   } else {
     if (process != NULL && sysv_maestro_context == NULL)
       sysv_maestro_context = this;
   }
 
 #ifdef HAVE_MC
-  if (MC_is_active() && code) {
+  if (MC_is_active() && has_code()) {
     MC_register_stack_area(this->stack_, process,
                       &(this->uc_), smx_context_usable_stack_size);
   }
@@ -243,11 +245,14 @@ UContext::~UContext()
   SIMIX_context_stack_delete(this->stack_);
 }
 
-void UContext::wrapper(int first, ...)
+}
+}
+
+static void smx_ctx_sysv_wrapper(int first, ...)
 {
   // Rebuild the Context* pointer from the integers:
   int ctx_addr[CTX_ADDR_LEN];
-  UContext* context;
+  simgrid::simix::UContext* context;
   ctx_addr[0] = first;
   if (CTX_ADDR_LEN > 1) {
     va_list ap;
@@ -256,11 +261,14 @@ void UContext::wrapper(int first, ...)
       ctx_addr[i] = va_arg(ap, int);
     va_end(ap);
   }
-  memcpy(&context, ctx_addr, sizeof(UContext*));
+  memcpy(&context, ctx_addr, sizeof(simgrid::simix::UContext*));
 
   (*context)();
   context->stop();
 }
+
+namespace simgrid {
+namespace simix {
 
 void SerialUContext::stop()
 {
@@ -306,7 +314,7 @@ void ParallelUContext::stop()
 /** Run one particular simulated process on the current thread. */
 void ParallelUContext::resume()
 {
-#ifdef CONTEXT_THREADS
+#ifdef HAVE_THREAD_CONTEXTS
   // What is my containing body?
   unsigned long worker_id = __sync_fetch_and_add(&sysv_threads_working, 1);
   // Store the number of my containing body in os-thread-specific area :
@@ -347,7 +355,7 @@ void ParallelUContext::resume()
  */
 void ParallelUContext::suspend()
 {
-#ifdef CONTEXT_THREADS
+#ifdef HAVE_THREAD_CONTEXTS
   /* determine the next context */
   // Get the next soul to embody now:
   smx_process_t next_work = (smx_process_t) xbt_parmap_next(sysv_parmap);

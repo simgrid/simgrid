@@ -24,9 +24,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 
 static int worker_main(int argc, char *argv[])
 {
-  double computation_amount = atof(argv[1]);
-  int use_bound = atoi(argv[2]);
-  double bound = atof(argv[3]);
+  double computation_amount = xbt_str_parse_double(argv[1], "Invalid computation amount: %s");
+  int use_bound = xbt_str_parse_int(argv[2], "Second parameter (use_bound) should be 0 or 1 but is: %s");
+  double bound = xbt_str_parse_double(argv[3], "Invalid bound: %s");
 
   {
     double clock_sta = MSG_get_clock();

@@ -10,7 +10,9 @@
 #define XBT_HASH_H
 #include "xbt/str.h"
 
-/* Chord needs a SHA1 algorithm. Let's drop it in there */
+SG_BEGIN_DECL()
+
+/* The classical SHA1 algorithm */
 typedef struct s_xbt_sha_ s_xbt_sha_t, *xbt_sha_t;
 
 XBT_PUBLIC(xbt_sha_t) xbt_sha_new(void);
@@ -25,5 +27,6 @@ XBT_PUBLIC(char *) xbt_sha_read(xbt_sha_t sha);
 
 XBT_PUBLIC(void) xbt_sha(const char *data, char *hash);
 
+SG_END_DECL()
 
 #endif                          /* XBT_HASH_H */

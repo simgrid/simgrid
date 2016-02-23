@@ -45,6 +45,13 @@ static int do_child(int socket, char** argv)
 
 #ifdef __linux__
   // Make sure we do not outlive our parent:
+  sigset_t mask;
+  sigemptyset (&mask);
+  if (sigprocmask(SIG_SETMASK, &mask, nullptr) < 0) {
+    std::perror ("sigprocmask");
+    return SIMGRID_MC_EXIT_ERROR;
+  }
+
   if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0) {
     std::perror("simgrid-mc");
     return SIMGRID_MC_EXIT_ERROR;

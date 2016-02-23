@@ -101,7 +101,7 @@ set(SIMGRID_VERSION_MINOR "13")
 set(SIMGRID_VERSION_PATCH "0")
 set(SIMGRID_VERSION_EXTRA "-devel") # Extra words to add to version string (e.g. -rc1)
 
-set(SIMGRID_VERSION_DATE  "2015") # Year for copyright information
+set(SIMGRID_VERSION_DATE  "2016") # Year for copyright information
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")
@@ -214,7 +214,7 @@ IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
   if (MSVC)
     message(STATUS "Disable fast raw contextes on Microsoft Visual.")
   else()
-    set(HAVE_RAWCTX 1)
+    set(HAVE_RAW_CONTEXTS 1)
   endif()
 
 ENDIF()
@@ -226,14 +226,11 @@ include(CheckIncludeFiles)
 include(CheckLibraryExists)
 include(CheckSymbolExists)
 
+set(HAVE_GRAPHVIZ 0)
 include(FindGraphviz)
 include(FindLibSigc++)
 
-if(enable_scala)
-  find_package(Scala REQUIRED)
-  message("-- [Scala] scalac found: ${SCALA_COMPILE}")
-  set(HAVE_Scala 1)
-endif()
+set(HAVE_LUA 0)
 if(enable_lua)
   include(FindLuaSimgrid)
 endif()
@@ -267,15 +264,15 @@ if(Boost_FOUND AND Boost_CONTEXT_FOUND)
   # We should use feature detection for this instead:
   if (Boost_VERSION LESS 105600)
     message("Found Boost.Context API v1")
-    set(HAVE_BOOST_CONTEXT 1)
+    set(HAVE_BOOST_CONTEXTS 1)
   else()
     message("Found Boost.Context API v2")
-    set(HAVE_BOOST_CONTEXT 2)
+    set(HAVE_BOOST_CONTEXTS 2)
   endif()
 else()
   message ("   boost        : found.")
   message ("   boost-context: missing. Install libboost-context-dev for this optional feature.")
-  set(HAVE_BOOST_CONTEXT 0)
+  set(HAVE_BOOST_CONTEXTS 0)
 endif()
 
 # Checks for header libraries functions.
@@ -383,8 +380,8 @@ if(WIN32) # Those files are not detected despite being present
   set(HAVE_MAKECONTEXT 1)
 endif()
 
-set(CONTEXT_UCONTEXT 0)
-set(CONTEXT_THREADS 0)
+set(HAVE_UCONTEXT_CONTEXTS 0)
+set(HAVE_THREAD_CONTEXTS 0)
 
 if(enable_jedule)
   set(HAVE_JEDULE 1)
@@ -626,12 +623,12 @@ endif()
 #If can have both context
 
 if(HAVE_UCONTEXT)
-  set(CONTEXT_UCONTEXT 1)
+  set(HAVE_UCONTEXT_CONTEXTS 1)
   message("-- Support for ucontext factory")
 endif()
 
 if(HAVE_PTHREAD)
-  set(CONTEXT_THREADS 1)
+  set(HAVE_THREAD_CONTEXTS 1)
   message("-- Support for thread context factory")
 endif()
 
@@ -738,11 +735,12 @@ endif()
 
 ### check for stackgrowth
 if (NOT CMAKE_CROSSCOMPILING)
-  try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
+  try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
     ${CMAKE_BINARY_DIR}
     ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
     RUN_OUTPUT_VARIABLE stack
-    )
+    COPY_FILE test_stackgrowth
+  )
 endif()
 if("${stack}" STREQUAL "down")
   set(PTH_STACKGROWTH "-1")
@@ -754,7 +752,7 @@ else()
   elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
     set(PTH_STACKGROWTH "-1")
   else()
-    message(ERROR "Could not figure the stack direction.")
+    message(FATAL_ERROR "Could not figure out the stack direction. Test prog returned: ${stack}; CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
   endif()
 endif()
 
@@ -762,123 +760,8 @@ endif()
 ## System checks
 ##
 
-#SG_CONFIGURE_PART([System checks...])
-#AC_PROG_CC(xlC gcc cc) -auto
-#AM_SANITY_CHECK -auto
-
-#AC_PROG_MAKE_SET
-
-#AC_CHECK_VA_COPY
-
-set(diff_va "va_copy((d),(s))"
-  "VA_COPY((d),(s))"
-  "__va_copy((d),(s))"
-  "__builtin_va_copy((d),(s))"
-  "do { (d) = (s)\; } while (0)"
-  "do { *(d) = *(s)\; } while (0)"
-  "memcpy((void *)&(d), (void *)&(s), sizeof(s))"
-  "memcpy((void *)(d), (void *)(s), sizeof(*(s)))"
-  )
-
-foreach(fct ${diff_va})
-  write_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_va_copy.c" "#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#define DO_VA_COPY(d,s) ${fct}
-void test(char *str, ...)
-{
-  va_list ap, ap2;
-  int i;
-  va_start(ap, str);
-  DO_VA_COPY(ap2, ap);
-  for (i = 1; i <= 9; i++) {
-    int k = (int)va_arg(ap, int);
-    if (k != i)
-      abort();
-  }
-  DO_VA_COPY(ap, ap2);
-  for (i = 1; i <= 9; i++) {
-    int k = (int)va_arg(ap, int);
-    if (k != i)
-      abort();
-  }
-  va_end(ap);
-}
-int main(void)
-{
-  test(\"test\", 1, 2, 3, 4, 5, 6, 7, 8, 9);
-  exit(0);
-}"
-    )
-
-  execute_process(
-  COMMAND ${CMAKE_C_COMPILER} "${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_va_copy.c"
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-  RESULT_VARIABLE COMPILE_VA_NULL_VAR
-  OUTPUT_QUIET
-  ERROR_QUIET
-  )
-
-  if(NOT COMPILE_VA_NULL_VAR)
-    string(REGEX REPLACE "\;" "" fctbis ${fct})
-    if(${fctbis} STREQUAL "va_copy((d),(s))")
-      set(HAVE_VA_COPY 1)
-      set(ac_cv_va_copy "C99")
-      set(__VA_COPY_USE_C99 "va_copy((d),(s))")
-    endif()
-
-    if(${fctbis} STREQUAL "VA_COPY((d),(s))")
-      set(ac_cv_va_copy "GCM")
-      set(__VA_COPY_USE_GCM "VA_COPY((d),(s))")
-    endif()
-
-    if(${fctbis} STREQUAL "__va_copy((d),(s))")
-      set(ac_cv_va_copy "GCH")
-      set(__VA_COPY_USE_GCH "__va_copy((d),(s))")
-    endif()
-
-    if(${fctbis} STREQUAL "__builtin_va_copy((d),(s))")
-      set(ac_cv_va_copy "GCB")
-      set(__VA_COPY_USE_GCB "__builtin_va_copy((d),(s))")
-    endif()
-
-    if(${fctbis} STREQUAL "do { (d) = (s) } while (0)")
-      set(ac_cv_va_copy "ASS")
-      set(__VA_COPY_USE_ASS "do { (d) = (s); } while (0)")
-    endif()
-
-    if(${fctbis} STREQUAL "do { *(d) = *(s) } while (0)")
-      set(ac_cv_va_copy "ASP")
-      set(__VA_COPY_USE_ASP "do { *(d) = *(s); } while (0)")
-    endif()
-
-    if(${fctbis} STREQUAL "memcpy((void *)&(d), (void *)&(s), sizeof(s))")
-      set(ac_cv_va_copy "CPS")
-      set(__VA_COPY_USE_CPS "memcpy((void *)&(d), (void *)&(s), sizeof(s))")
-    endif()
-
-    if(${fctbis} STREQUAL "memcpy((void *)(d), (void *)(s), sizeof(*(s)))")
-      set(ac_cv_va_copy "CPP")
-      set(__VA_COPY_USE_CPP "memcpy((void *)(d), (void *)(s), sizeof(*(s)))")
-    endif()
-
-    if(NOT STATUS_OK)
-      set(__VA_COPY_USE "__VA_COPY_USE_${ac_cv_va_copy}(d, s)")
-    endif()
-    set(STATUS_OK "1")
-
-  endif()
-
-endforeach(fct ${diff_va})
-
-#--------------------------------------------------------------------------------------------------
 ### check for a working snprintf
 if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
-  if(WIN32)
-    #set(HAVE_SNPRINTF 1)
-    #set(HAVE_VSNPRINTF 1)
-  endif()
-
   if(CMAKE_CROSSCOMPILING)
     set(RUN_SNPRINTF_FUNC "cross")
     #set(PREFER_PORTABLE_SNPRINTF 1)

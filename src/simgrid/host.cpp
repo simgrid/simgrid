@@ -29,14 +29,14 @@ size_t sg_host_count()
  * internally).
  * \see sg_host_count()
  */
-const sg_host_t *sg_host_list(void) {
+sg_host_t *sg_host_list(void) {
   xbt_assert(sg_host_count() > 0, "There is no host!");
   return (sg_host_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
 }
 
 const char *sg_host_get_name(sg_host_t host)
 {
-	return host->name().c_str();
+  return host->name().c_str();
 }
 
 void* sg_host_extension_get(sg_host_t host, size_t ext)
@@ -61,15 +61,15 @@ sg_host_t sg_host_by_name_or_create(const char *name)
 
 xbt_dynar_t sg_hosts_as_dynar(void)
 {
-	xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),NULL);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),NULL);
 
   xbt_dict_cursor_t cursor = nullptr;
   const char* name = nullptr;
   simgrid::s4u::Host* host = nullptr;
-	xbt_dict_foreach(host_list, cursor, name, host)
-		if(routing_get_network_element_type(name) == SURF_NETWORK_ELEMENT_HOST)
-			xbt_dynar_push(res, &host);
-	return res;
+  xbt_dict_foreach(host_list, cursor, name, host)
+    if (host && host->pimpl_netcard && host->pimpl_netcard->getRcType() == SURF_NETWORK_ELEMENT_HOST)
+       xbt_dynar_push(res, &host);
+  return res;
 }
 
 // ========= Layering madness ==============*
@@ -86,7 +86,7 @@ void sg_host_init()
   });
 
   ROUTING_HOST_LEVEL = simgrid::s4u::Host::extension_create([](void *p) {
-	  delete static_cast<simgrid::surf::NetCard*>(p);
+    delete static_cast<simgrid::surf::NetCard*>(p);
   });
 
   SD_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
@@ -107,7 +107,7 @@ void sg_host_user_destroy(sg_host_t host) {
 
 // ========== MSG Layer ==============
 msg_host_priv_t sg_host_msg(sg_host_t host) {
-	return (msg_host_priv_t) host->extension(MSG_HOST_LEVEL);
+  return (msg_host_priv_t) host->extension(MSG_HOST_LEVEL);
 }
 void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
   host->extension_set(MSG_HOST_LEVEL, smx_host);

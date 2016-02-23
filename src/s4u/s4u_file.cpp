@@ -22,37 +22,37 @@ namespace simgrid {
 namespace s4u {
 
 File::File(const char*fullpath, void *userdata) {
-	// this cannot fail because we get a xbt_die if the mountpoint does not exist
-	p_inferior = simcall_file_open(fullpath, Host::current());
-	p_path = fullpath;
+  // this cannot fail because we get a xbt_die if the mountpoint does not exist
+  p_inferior = simcall_file_open(fullpath, Host::current());
+  p_path = fullpath;
 }
 
 File::~File() {
-	simcall_file_close(p_inferior, Host::current());
+  simcall_file_close(p_inferior, Host::current());
 }
 
 sg_size_t File::read(sg_size_t size) {
-	return simcall_file_read(p_inferior, size, Host::current());
+  return simcall_file_read(p_inferior, size, Host::current());
 }
 sg_size_t File::write(sg_size_t size) {
-	return simcall_file_write(p_inferior,size, Host::current());
+  return simcall_file_write(p_inferior,size, Host::current());
 }
 sg_size_t File::size() {
-	return simcall_file_get_size(p_inferior);
+  return simcall_file_get_size(p_inferior);
 }
 
 void File::seek(sg_size_t pos) {
-	simcall_file_seek(p_inferior,pos,SEEK_SET);
+  simcall_file_seek(p_inferior,pos,SEEK_SET);
 }
 sg_size_t File::tell() {
-	return simcall_file_tell(p_inferior);
+  return simcall_file_tell(p_inferior);
 }
 void File::move(const char*fullpath) {
-	simcall_file_move(p_inferior,fullpath);
+  simcall_file_move(p_inferior,fullpath);
 }
 void File::unlink() {
-	sg_host_t attached = Host::current(); // FIXME: we should check where this file is attached
-	simcall_file_unlink(p_inferior,attached);
+  sg_host_t attached = Host::current(); // FIXME: we should check where this file is attached
+  simcall_file_unlink(p_inferior,attached);
 }
 
 }} // namespace simgrid::s4u

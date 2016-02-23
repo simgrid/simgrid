@@ -13,10 +13,12 @@
 #include "xbt/ex.h"
 #include "xbt.h"
 
+SG_BEGIN_DECL()
+
 #define COLL_DESCRIPTION(cat, ret, args, name) \
   {# name,\
    # cat " " # name " collective",\
-   smpi_coll_tuned_ ## cat ## _ ## name}
+   (void*)smpi_coll_tuned_ ## cat ## _ ## name}
 
 #define COLL_PROTO(cat, ret, args, name) \
   ret smpi_coll_tuned_ ## cat ## _ ## name(COLL_UNPAREN args);
@@ -333,5 +335,6 @@ COLL_APPLY(action, COLL_BARRIER_SIG, automatic)
 
 COLL_BARRIERS(COLL_PROTO, COLL_NOsep)
 
+SG_END_DECL()
 
 #endif

@@ -471,8 +471,8 @@ unsigned int xbt_dynar_search(xbt_dynar_t const dynar, void *const elem)
       return it;
     }
 
-  THROWF(not_found_error, 0, "Element %p not part of dynar %p", elem,
-         dynar);
+  THROWF(not_found_error, 0, "Element %p not part of dynar %p", elem, dynar);
+  return -1; // Won't happen, just to please eclipse
 }
 
 /** @brief Returns the position of the element in the dynar (or -1 if not found)
@@ -628,6 +628,16 @@ XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
                                int_f_cpvoid_cpvoid_t compar_fn)
 {
   qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
+}
+
+static int strcmp_voidp(const void *pa, const void *pb) {
+  return strcmp(*(const char **)pa, *(const char **)pb);
+}
+/** @brief Sorts a dynar of strings (ie, char* data) */
+xbt_dynar_t xbt_dynar_sort_strings(xbt_dynar_t dynar)
+{
+  xbt_dynar_sort(dynar, strcmp_voidp);
+  return dynar; // to enable functional uses
 }
 
 /** @brief Sorts a dynar according to their color assuming elements can have only three colors.

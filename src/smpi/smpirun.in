@@ -11,18 +11,18 @@
 SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
 SIMGRID_GITHASH="@SIMGRID_GITHASH@"
 
-DEFAULT_LOOPBACK_BANDWIDTH="498000000"
-DEFAULT_LOOPBACK_LATENCY="0.000004"
-DEFAULT_NETWORK_BANDWIDTH="$((26 * 1024 * 1024))"
-DEFAULT_NETWORK_LATENCY="0.000005"
+DEFAULT_LOOPBACK_BANDWIDTH="498000000Bps"
+DEFAULT_LOOPBACK_LATENCY="0.000004s"
+DEFAULT_NETWORK_BANDWIDTH="$((26 * 1024 * 1024))Bps"
+DEFAULT_NETWORK_LATENCY="0.000005s"
 DEFAULT_NUMPROCS="4"
-DEFAULT_POWER="100"
+DEFAULT_SPEED="100flops"
 
 LOOPBACK_BANDWIDTH="${DEFAULT_LOOPBACK_BANDWIDTH}"
 LOOPBACK_LATENCY="${DEFAULT_LOOPBACK_LATENCY}"
 NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
 NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
-POWER="${DEFAULT_POWER}"
+SPEED="${DEFAULT_SPEED}"
 
 SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
 
@@ -45,10 +45,6 @@ Options:
   -trace-viva                # generate configuration for Viva's GraphView
   -trace-file <tracefile>    # name of the tracefile (simgrid_smpi.trace)
   -ext <value>               # additional parameter (reserved)
-  -foreground                # run the child process in the foreground:
-                             # - it can access the terminal;
-                             # - but we cannot stop it when we receive a signal.
-                             # This is useful with -wrapper "gdb --args".
 
   -version                   # Displays the SimGrid version (human readable)
   -git-version               # Displays the git hash of SimGrid
@@ -72,7 +68,6 @@ HOSTFILE=""
 HOSTFILETMP=0
 
 unset pid
-unset foreground ; foreground=0
 
 trapped_signals="HUP INT QUIT ILL ABRT SEGV FPE ALRM TERM USR1 USR2 BUS"
 
@@ -246,7 +241,7 @@ while true; do
             shift 1
             ;;
         "-foreground")
-            foreground=1
+            # Nothing to do, compatibility.
             shift 1
             ;;
         *)
@@ -347,14 +342,14 @@ if [ -z "${PLATFORM}" ]; then
 
     cat > ${PLATFORMTMP} <<PLATFORMHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 <AS id="AS0" routing="Full">
 PLATFORMHEAD
 
     i=${NUMPROCS}
     while [ $i -gt 0 ]; do
-        echo "  <host id=\"host$i\" power=\"${POWER}\"/>" >> ${PLATFORMTMP}
+        echo "  <host id=\"host$i\" speed=\"${SPEED}\"/>" >> ${PLATFORMTMP}
         echo "  <link id=\"loop$i\" bandwidth=\"${LOOPBACK_BANDWIDTH}\" latency=\"${LOOPBACK_LATENCY}\"/>" >> ${PLATFORMTMP}
         echo "  <link id=\"link$i\" bandwidth=\"${NETWORK_BANDWIDTH}\" latency=\"${NETWORK_LATENCY}\"/>" >> ${PLATFORMTMP}
         i=$((i - 1))
@@ -391,8 +386,8 @@ APPLICATIONTMP="$(mktemp smpitmp-appXXXXXX)"
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
 APPLICATIONHEAD
 
 ##---- cache hostnames of hostfile---------------
@@ -517,16 +512,28 @@ if [ -n "${KEEP}" ] ; then
         echo "Generated unrolled hostfile ${UNROLLEDHOSTFILE} kept." 
     fi
 fi
-if [ "$foreground" = 1 ]; then
-  ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
-  status=$?
-else
-  ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP} &
-  pid=$!
-  wait $pid
-  status=$?
-  pid=""
-fi
+
+# Execute the process
+#
+# The shell still need to be alive for the duration in order to do some cleanup
+# after the process.
+#
+# We are going through great lengths in order to both keep stdin and be able
+# to handle signals:
+#
+# * The job is launched in the background in order to be able to handle
+#   signals.
+#
+# * The FD 3 is used to temporarily store FD 1. This is because the shell
+#   connects FD 1 to /dev/null when the command is launched in the
+#   background: this can be overriden in bash but not in standard bourne shell.
+exec 3<&0
+${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP} <&3 3>&- &
+pid=$!
+exec 3>&-
+wait $pid
+status=$?
+pid=""
 
 smpirun_cleanup
 

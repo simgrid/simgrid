@@ -54,7 +54,7 @@ void MSG_sem_get_capacity(msg_sem_t sem) {
 }
 
 void MSG_sem_destroy(msg_sem_t sem) {
-  simcall_sem_destroy(sem);
+  SIMIX_sem_destroy(sem);
 }
 /** @brief returns a boolean indicating if this semaphore would block at this very specific time
  *

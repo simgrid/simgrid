@@ -7,6 +7,7 @@
 #ifndef SIMGRID_LUA_H
 #define SIMGRID_LUA_H
 
+extern "C" {
 #include <lua.h>
 
 /* ********************************************************************************* */
@@ -27,5 +28,5 @@ int console_AS_open(lua_State*);
 int console_AS_close(lua_State *L);
 int console_set_function(lua_State*);
 int console_host_set_property(lua_State*);
-
+}
 #endif  /* SIMGRID_LUA_H */

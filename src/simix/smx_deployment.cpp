@@ -8,7 +8,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"
-#include "surf/surfxml_parse.h"
+#include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
                                 "Logging specific to SIMIX (deployment)");
@@ -17,7 +17,8 @@ extern int surf_parse_lineno;
 
 void SIMIX_init_application(void)
 {
-  surf_parse_reset_callbacks();
+  sg_platf_exit();
+  sg_platf_init();
 }
 
 /**
@@ -63,11 +64,9 @@ void SIMIX_launch_application(const char *file)
  * \param name the reference name of the function.
  * \param code the function
  */
-void SIMIX_function_register(const char *name,
-                                        xbt_main_func_t code)
+void SIMIX_function_register(const char *name, xbt_main_func_t code)
 {
-  xbt_assert(simix_global,
-              "SIMIX_global_init has to be called before SIMIX_function_register."); 
+  xbt_assert(simix_global, "SIMIX_global_init has to be called before SIMIX_function_register.");
   xbt_dict_set(simix_global->registered_functions, name, (void*) code, NULL);
 }
 

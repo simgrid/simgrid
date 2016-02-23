@@ -8,24 +8,13 @@ add_executable(basic4 basic4.c)
 add_executable(basic5 basic5.c)
 add_executable(basic6 basic6.c)
 
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(basic0 simgrid m pthread )
-  target_link_libraries(basic1 simgrid m pthread )
-  target_link_libraries(basic2 simgrid m pthread )
-  target_link_libraries(basic3 simgrid m pthread )
-  target_link_libraries(basic4 simgrid m pthread )
-  target_link_libraries(basic5 simgrid m pthread )
-  target_link_libraries(basic6 simgrid m pthread )
-else()
-  target_link_libraries(basic0 simgrid)
-  target_link_libraries(basic1 simgrid)
-  target_link_libraries(basic2 simgrid)
-  target_link_libraries(basic3 simgrid)
-  target_link_libraries(basic4 simgrid)
-  target_link_libraries(basic5 simgrid)
-  target_link_libraries(basic6 simgrid)
-endif()
+target_link_libraries(basic0 simgrid)
+target_link_libraries(basic1 simgrid)
+target_link_libraries(basic2 simgrid)
+target_link_libraries(basic3 simgrid)
+target_link_libraries(basic4 simgrid)
+target_link_libraries(basic5 simgrid)
+target_link_libraries(basic6 simgrid)
 
 set(tesh_files
   ${tesh_files}
@@ -36,12 +25,7 @@ set(tesh_files
   ${CMAKE_CURRENT_SOURCE_DIR}/basic4.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/basic5.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/basic6.tesh
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(teshsuite_src
   ${teshsuite_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/basic0.c
@@ -51,13 +35,4 @@ set(teshsuite_src
   ${CMAKE_CURRENT_SOURCE_DIR}/basic4.c
   ${CMAKE_CURRENT_SOURCE_DIR}/basic5.c
   ${CMAKE_CURRENT_SOURCE_DIR}/basic6.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

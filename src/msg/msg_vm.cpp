@@ -15,7 +15,6 @@
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "simgrid/platf.h"
 #include "simgrid/host.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg,

@@ -1,7 +1,7 @@
 #! ./tesh
 p Test the loader of DAG written in the DOT format
 
-$ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag.dot
+$ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../../platforms/2clusters.xml ${srcdir:=.}/dag.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
@@ -214,17 +214,17 @@ $ cat ${srcdir:=.}/dag.trace
 $ rm -f dag.trace
 
 ! expect return 2
-$ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag_with_bad_schedule.dot
+$ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" ${srcdir:=.}/../../platforms/2clusters.xml ${srcdir:=.}/dag_with_bad_schedule.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
-> [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, the task end is not correctly scheduled
-> [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, the task 1 is not correctly scheduled
-> [0.000000] [sd_dotparse/VERBOSE] The task 0 starts on the computer 1 at the position : 1 like the task 2
-> [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, the task 3 is not correctly scheduled
-> [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, the task root is not correctly scheduled
+> [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, task 'end' can not be scheduled on -1 hosts
+> [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, task '1' can not be scheduled on 0 hosts
+> [0.000000] [sd_dotparse/VERBOSE] Task '0' wants to start on performer '1' at the same position '1' as task '2'
+> [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, task '3' can not be scheduled on -1 hosts
+> [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, task 'root' can not be scheduled on -1 hosts
 > [0.000000] [sd_dotparse/WARNING] The scheduling is ignored
 > [0.000000] [test/CRITICAL] The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose
 
-$ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag_with_good_schedule.dot
+$ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../../platforms/2clusters.xml ${srcdir:=.}/dag_with_good_schedule.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
@@ -452,7 +452,7 @@ $ cat ${srcdir:=.}/dag_with_good_schedule.trace
 $ rm -f ${srcdir:=.}/dag_with_good_schedule.trace
 
 ! expect return 2
-$ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:=.}/dag_with_cycle.dot
+$ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../../platforms/2clusters.xml ${srcdir:=.}/dag_with_cycle.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_daxparse/WARNING] the task root is not marked
 > [0.000000] [sd_daxparse/WARNING] the task 0 is in a cycle
@@ -464,3 +464,94 @@ $ $SG_TEST_EXENV ./dot_test --log=no_loc ${srcdir:=.}/../2clusters.xml ${srcdir:
 > [0.000000] [sd_daxparse/WARNING] the task 6 is in a cycle
 > [0.000000] [sd_dotparse/ERROR] The DOT described in dag_with_cycle.dot is not a DAG. It contains a cycle.
 > [0.000000] [test/CRITICAL] No dot loaded. Do you have a cycle in your graph?
+
+$ $SG_TEST_EXENV ./ptg_test --log=no_loc ${srcdir:=.}/../../platforms/2clusters.xml ${srcdir:=.}/ptg.dot
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
+> [0.000000] [sd_task/INFO] Displaying task root
+> [0.000000] [sd_task/INFO]   - state: schedulable not runnable
+> [0.000000] [sd_task/INFO]   - kind: parallel computation following Amdahl's law
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - alpha: 0.00
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     root->c1
+> [0.000000] [sd_task/INFO]     root->c2
+> [0.000000] [sd_task/INFO] Displaying task c1
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: parallel computation following Amdahl's law
+> [0.000000] [sd_task/INFO]   - amount: 1000000000
+> [0.000000] [sd_task/INFO]   - alpha: 0.20
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root->c1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     c1->c3
+> [0.000000] [sd_task/INFO] Displaying task c2
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: parallel computation following Amdahl's law
+> [0.000000] [sd_task/INFO]   - amount: 5000000000
+> [0.000000] [sd_task/INFO]   - alpha: 0.50
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root->c2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     c3
+> [0.000000] [sd_task/INFO] Displaying task c3
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: parallel computation following Amdahl's law
+> [0.000000] [sd_task/INFO]   - amount: 2000000000
+> [0.000000] [sd_task/INFO]   - alpha: 0.00
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     c1->c3
+> [0.000000] [sd_task/INFO]     c2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     c3->end
+> [0.000000] [sd_task/INFO] Displaying task c1->c3
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: MxN data redistribution assuming 1D block distribution
+> [0.000000] [sd_task/INFO]   - amount: 500000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     c1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     c3
+> [0.000000] [sd_task/INFO] Displaying task c3->end
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: MxN data redistribution assuming 1D block distribution
+> [0.000000] [sd_task/INFO]   - amount: 200000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     c3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task root->c1
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: MxN data redistribution assuming 1D block distribution
+> [0.000000] [sd_task/INFO]   - amount: 200000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     c1
+> [0.000000] [sd_task/INFO] Displaying task root->c2
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: MxN data redistribution assuming 1D block distribution
+> [0.000000] [sd_task/INFO]   - amount: 100000000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     c2
+> [0.000000] [sd_task/INFO] Displaying task end
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: parallel computation following Amdahl's law
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - alpha: 0.00
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     c3->end
+> [0.000000] [test/INFO] ------------------- Schedule tasks ---------------------------
+> [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
+> [3.290271] [test/INFO] Makespan: 3.290271

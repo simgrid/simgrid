@@ -1,11 +1,11 @@
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
-	 <AS  id="AS0"  routing="Full">
-  <host id="bob" power="1Gf">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+<AS  id="AS0"  routing="Full">
+  <host id="bob" speed="1Gf">
     <prop id="memory" value="1000000000"/>
     <prop id="disk" value="80E9"/>
     <prop id="OS" value="Linux 2.6.22-14"/>
   </host>
-  </AS>
+</AS>
 </platform>

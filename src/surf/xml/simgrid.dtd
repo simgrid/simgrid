@@ -1,0 +1,228 @@
+<!-- 
+             DTD of SimGrid platform and deployment files.
+
+More info: http://simgrid.gforge.inria.fr/simgrid/latest/doc/platform.html
+To upgrade your files, use the tool simgrid_update_xml
+
+* New in DTD version 4 (in SimGrid 3.13):
+   - Rename (power->speed) the attributes describing the amount of flop
+     that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
+
+   - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
+
+   - The DOCTYPE points to the right URL (this file):
+     http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+
+   - A warning is emited for unit-less values (they are still accepted).
+
+     - speed. Default: 'f' or 'flops'. Also defined:
+        'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
+        'yottaflops', 'zettaflops', 'exaflops', 'petaflops', 'teraflops', 'gigaflops', 'megaflops', 'kiloflops'
+
+     - bandwidth. Default: 'Bps' bytes per second (or 'bps' for bits but 1 Bps = 8 bps)
+       Also defined in bytes: 'TiBps', 'GiBps', 'MiBps', 'KiBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
+       And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
+
+     - latency. Default: 's' second. Also defined:
+       'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
+
+* New in DTD version 3 (in SimGrid 3.5):
+   - The AS tag were introduced. Every platform should now
+     contain an englobing AS tag.
+   - Routes are now symmetric by default.
+   - Renamed tags (for sake of XML sanity):
+     - LINK:CTN -> LINK_CTN
+     - TRACE:CONNECT -> TRACE_CONNECT
+
+* New in DTD version 2 (in SimGrid 3.4):
+   - Renamed tags:
+     - CPU -> HOST
+     - NETWORK_LINK -> LINK
+     - ROUTE_ELEMENT ->  LINK:CTN (changed again in v3)
+     - PLATFORM_DESCRIPTION -> PLATFORM
+
+* New in DTD version 1 (in SimGrid 3.3):
+   - DTD is now versionned with the version attribute of platform
+   - Unit change: 
+     - Link bandwidth: from Mb/s to b/s
+     - CPU speed: from MFlop/s to Flop/s
+
+-->
+
+<!ELEMENT platform ((config|random)*,(include|cluster|cabinet|peer|AS|trace|trace_connect)*,(process)*)>
+<!ATTLIST platform version CDATA "0.0">
+
+<!ELEMENT include (include|cluster|cabinet|peer|AS|trace|trace_connect)*>
+<!ATTLIST include file CDATA #REQUIRED>
+
+<!ELEMENT trace (#PCDATA)>
+<!ATTLIST trace id CDATA #REQUIRED>
+<!ATTLIST trace file CDATA "">
+<!ATTLIST trace periodicity CDATA #REQUIRED>
+
+<!ELEMENT random EMPTY>
+<!ATTLIST random id CDATA #REQUIRED>
+<!ATTLIST random min CDATA #REQUIRED>
+<!ATTLIST random max CDATA #REQUIRED>
+<!ATTLIST random mean CDATA #REQUIRED>
+<!ATTLIST random std_deviation CDATA #REQUIRED>
+<!ATTLIST random seed CDATA "2147483647">
+<!ATTLIST random radical CDATA "">
+<!ATTLIST random generator (DRAND48|RAND|RNGSTREAM|NONE) "DRAND48">
+
+<!ELEMENT trace_connect EMPTY>
+<!ATTLIST trace_connect kind (HOST_AVAIL|SPEED|LINK_AVAIL|BANDWIDTH|LATENCY) "HOST_AVAIL">
+<!ATTLIST trace_connect trace CDATA #REQUIRED>
+<!ATTLIST trace_connect element CDATA #REQUIRED>
+
+<!ELEMENT AS ((prop*), ((AS|ASroute|include|storage_type|storage|link|backbone|cabinet|router|host|gpu|cluster|peer|host_link)*,(route|ASroute|trace|trace_connect|bypassRoute|bypassASroute)*))>
+<!ATTLIST AS id CDATA #REQUIRED>
+<!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree) #REQUIRED>
+
+<!ELEMENT storage_type ((model_prop|prop)*)>
+<!ATTLIST storage_type id       CDATA #REQUIRED>
+<!ATTLIST storage_type model    CDATA #REQUIRED>
+<!ATTLIST storage_type size     CDATA #REQUIRED>
+<!ATTLIST storage_type content  CDATA "">
+<!ATTLIST storage_type content_type  CDATA "txt_unix">
+
+<!ELEMENT mount EMPTY>
+<!ATTLIST mount storageId CDATA #REQUIRED>
+<!ATTLIST mount name CDATA #REQUIRED>
+
+<!ELEMENT mstorage EMPTY>
+<!ATTLIST mstorage typeId CDATA #REQUIRED>
+<!ATTLIST mstorage name CDATA #REQUIRED>
+
+<!ELEMENT host (prop|mount|mstorage)*>
+<!ATTLIST host id CDATA #REQUIRED>
+<!ATTLIST host speed CDATA #REQUIRED>
+<!ATTLIST host core  CDATA "1">
+<!ATTLIST host availability CDATA "1.0">
+<!ATTLIST host availability_file CDATA "">
+<!ATTLIST host state (ON|OFF) "ON">
+<!ATTLIST host state_file CDATA "">
+<!ATTLIST host coordinates  CDATA "">
+<!ATTLIST host pstate CDATA "0.0">
+
+<!ELEMENT storage (prop*)>
+<!ATTLIST storage id CDATA #REQUIRED>
+<!ATTLIST storage typeId CDATA #REQUIRED>
+<!ATTLIST storage content  CDATA "">
+<!ATTLIST storage content_type  CDATA "txt_unix">
+<!ATTLIST storage attach CDATA #REQUIRED>
+
+<!ELEMENT gpu EMPTY>
+<!ATTLIST gpu name CDATA #REQUIRED>
+
+<!ELEMENT host_link EMPTY>
+<!ATTLIST host_link id CDATA #REQUIRED>
+<!ATTLIST host_link up CDATA #REQUIRED>
+<!ATTLIST host_link down CDATA #REQUIRED>
+
+<!ELEMENT cluster (prop*)>
+<!ATTLIST cluster id CDATA #REQUIRED>
+<!ATTLIST cluster prefix CDATA #REQUIRED>
+<!ATTLIST cluster suffix CDATA #REQUIRED>
+<!ATTLIST cluster radical CDATA #REQUIRED>
+<!ATTLIST cluster speed CDATA #REQUIRED>
+<!ATTLIST cluster core CDATA "1">
+<!ATTLIST cluster bw CDATA #REQUIRED>
+<!ATTLIST cluster lat CDATA #REQUIRED>
+<!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "FULLDUPLEX">
+<!ATTLIST cluster topology (FLAT|TORUS|FAT_TREE) "FLAT">
+<!ATTLIST cluster topo_parameters CDATA "">
+<!ATTLIST cluster bb_bw CDATA "">
+<!ATTLIST cluster bb_lat CDATA "0s">
+<!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">
+<!ATTLIST cluster availability_file CDATA "">
+<!ATTLIST cluster state_file CDATA "">
+<!ATTLIST cluster router_id CDATA "">
+<!ATTLIST cluster limiter_link CDATA "">
+<!ATTLIST cluster loopback_bw CDATA "">
+<!ATTLIST cluster loopback_lat CDATA "">
+
+<!ELEMENT cabinet EMPTY>
+<!ATTLIST cabinet id CDATA #REQUIRED>
+<!ATTLIST cabinet prefix CDATA #REQUIRED>
+<!ATTLIST cabinet suffix CDATA #REQUIRED>
+<!ATTLIST cabinet radical CDATA #REQUIRED>
+<!ATTLIST cabinet speed CDATA #REQUIRED>
+<!ATTLIST cabinet bw CDATA #REQUIRED>
+<!ATTLIST cabinet lat CDATA #REQUIRED>
+
+<!ELEMENT peer EMPTY>
+<!ATTLIST peer id CDATA #REQUIRED>
+<!ATTLIST peer speed CDATA #REQUIRED>
+<!ATTLIST peer bw_in CDATA #REQUIRED>
+<!ATTLIST peer bw_out CDATA #REQUIRED>
+<!ATTLIST peer lat CDATA #REQUIRED>
+<!ATTLIST peer coordinates CDATA "">
+<!ATTLIST peer availability_file CDATA "">
+<!ATTLIST peer state_file CDATA "">
+
+<!ELEMENT router EMPTY>
+<!ATTLIST router id CDATA #REQUIRED>
+<!ATTLIST router coordinates  CDATA "">
+
+<!ELEMENT backbone EMPTY>
+<!ATTLIST backbone id CDATA #REQUIRED>
+<!ATTLIST backbone bandwidth CDATA  #REQUIRED>
+<!ATTLIST backbone latency CDATA #REQUIRED>
+
+<!ELEMENT link (prop*)>
+<!ATTLIST link id CDATA #REQUIRED>
+<!ATTLIST link bandwidth CDATA  #REQUIRED>
+<!ATTLIST link bandwidth_file CDATA "">
+<!ATTLIST link latency CDATA "0">
+<!ATTLIST link latency_file CDATA "">
+<!ATTLIST link state (ON|OFF) "ON">
+<!ATTLIST link state_file CDATA "">
+<!ATTLIST link sharing_policy (SHARED|FATPIPE|FULLDUPLEX) "SHARED">
+
+<!ELEMENT route (link_ctn*)>
+<!ATTLIST route src CDATA #REQUIRED>
+<!ATTLIST route dst CDATA #REQUIRED>
+<!ATTLIST route symmetrical (YES|NO) "YES">
+
+<!ELEMENT ASroute (link_ctn*)>
+<!ATTLIST ASroute src CDATA #REQUIRED>
+<!ATTLIST ASroute dst CDATA #REQUIRED>
+<!ATTLIST ASroute gw_src CDATA #REQUIRED>
+<!ATTLIST ASroute gw_dst CDATA #REQUIRED>
+<!ATTLIST ASroute symmetrical (YES|NO) "YES">
+
+<!ELEMENT link_ctn EMPTY>
+<!ATTLIST link_ctn id CDATA #REQUIRED>
+<!ATTLIST link_ctn direction (UP|DOWN|NONE) "NONE">
+
+<!ELEMENT bypassRoute (link_ctn*)>
+<!ATTLIST bypassRoute src CDATA #REQUIRED>
+<!ATTLIST bypassRoute dst CDATA #REQUIRED>
+
+<!ELEMENT bypassASroute (link_ctn*)>
+<!ATTLIST bypassASroute src CDATA #REQUIRED>
+<!ATTLIST bypassASroute dst CDATA #REQUIRED>
+<!ATTLIST bypassASroute gw_src CDATA #REQUIRED>
+<!ATTLIST bypassASroute gw_dst CDATA #REQUIRED>
+
+<!ELEMENT process ((argument|prop)*)>
+<!ATTLIST process host CDATA #REQUIRED>
+<!ATTLIST process function CDATA #REQUIRED>
+<!ATTLIST process start_time CDATA "-1.0">
+<!ATTLIST process kill_time CDATA "-1.0">
+<!ATTLIST process on_failure (DIE|RESTART) "DIE">
+
+<!ELEMENT argument EMPTY>
+<!ATTLIST argument value CDATA #REQUIRED>
+
+<!ELEMENT config (prop*)>
+<!ATTLIST config id CDATA "">
+
+<!ELEMENT prop EMPTY>
+<!ATTLIST prop id CDATA #REQUIRED> <!-- <!ATTLIST prop key CDATA #REQUIRED> -->
+<!ATTLIST prop value CDATA #REQUIRED>
+
+<!ELEMENT model_prop EMPTY>
+<!ATTLIST model_prop id CDATA #REQUIRED> <!-- <!ATTLIST model_prop key CDATA #REQUIRED> -->
+<!ATTLIST model_prop value CDATA #REQUIRED>

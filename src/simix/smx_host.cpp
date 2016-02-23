@@ -10,6 +10,7 @@
 #include "xbt/dict.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
+#include "src/surf/virtual_machine.hpp"
 #include "src/surf/host_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
@@ -264,8 +265,8 @@ void SIMIX_host_autorestart(sg_host_t host)
 }
 
 smx_synchro_t simcall_HANDLER_execution_start(smx_simcall_t simcall,
-		const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
-	return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound,affinity_mask);
+    const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
+  return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound,affinity_mask);
 }
 smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name,
      double flops_amount, double priority, double bound, unsigned long affinity_mask){
@@ -323,26 +324,19 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name,
   for (i = 0; i < host_nb; i++)
     host_list_cpy[i] = host_list[i];
 
-
-  /* FIXME: what happens if host_list contains VMs and PMs. If
-   * execute_parallel_task() does not change the state of the model, we can mix
-   * them. */
-  surf_host_model_t ws_model =
-    host_list[0]->extension<simgrid::surf::Host>()->getModel();
+  /* Check that we are not mixing VMs and PMs in the parallel task */
+  simgrid::surf::Host *host = host_list[0]->extension<simgrid::surf::Host>();
+  bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host));
   for (i = 1; i < host_nb; i++) {
-    surf_host_model_t ws_model_tmp =
-      host_list[i]->extension<simgrid::surf::Host>()->getModel();
-    if (ws_model_tmp != ws_model) {
-      XBT_CRITICAL("mixing VMs and PMs is not supported");
-      DIE_IMPOSSIBLE;
-    }
+    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[i]->extension<simgrid::surf::Host>()));
+    xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
   }
 
   /* set surf's synchro */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
     synchro->execution.surf_exec =
       surf_host_model->executeParallelTask(
-    		  host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
+          host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
 
     synchro->execution.surf_exec->setData(synchro);
   }
@@ -376,7 +370,7 @@ double SIMIX_execution_get_remains(smx_synchro_t synchro)
   double result = 0.0;
 
   if (synchro->state == SIMIX_RUNNING)
-    result = surf_action_get_remains(synchro->execution.surf_exec);
+    result = synchro->execution.surf_exec->getRemains();
 
   return result;
 }

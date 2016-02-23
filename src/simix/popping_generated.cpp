@@ -74,18 +74,15 @@ const char* simcall_names[] = {
   "SIMCALL_COMM_GET_SRC_PROC",
   "SIMCALL_COMM_GET_DST_PROC",
   "SIMCALL_MUTEX_INIT",
-  "SIMCALL_MUTEX_DESTROY",
   "SIMCALL_MUTEX_LOCK",
   "SIMCALL_MUTEX_TRYLOCK",
   "SIMCALL_MUTEX_UNLOCK",
   "SIMCALL_COND_INIT",
-  "SIMCALL_COND_DESTROY",
   "SIMCALL_COND_SIGNAL",
   "SIMCALL_COND_WAIT",
   "SIMCALL_COND_WAIT_TIMEOUT",
   "SIMCALL_COND_BROADCAST",
   "SIMCALL_SEM_INIT",
-  "SIMCALL_SEM_DESTROY",
   "SIMCALL_SEM_RELEASE",
   "SIMCALL_SEM_WOULD_BLOCK",
   "SIMCALL_SEM_ACQUIRE",
@@ -375,11 +372,6 @@ case SIMCALL_MUTEX_INIT:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_MUTEX_DESTROY:
-       SIMIX_mutex_destroy((smx_mutex_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
 case SIMCALL_MUTEX_LOCK:
        simcall_HANDLER_mutex_lock(simcall , (smx_mutex_t) simcall->args[0].dp);
        break;  
@@ -396,11 +388,6 @@ case SIMCALL_MUTEX_UNLOCK:
 
 case SIMCALL_COND_INIT:
       simcall->result.dp = SIMIX_cond_init();
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_COND_DESTROY:
-       SIMIX_cond_destroy((smx_cond_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
@@ -424,11 +411,6 @@ case SIMCALL_COND_BROADCAST:
 
 case SIMCALL_SEM_INIT:
       simcall->result.dp = SIMIX_sem_init( simcall->args[0].ui);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_SEM_DESTROY:
-       SIMIX_sem_destroy((smx_sem_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

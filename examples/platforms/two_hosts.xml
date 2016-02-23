@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+  <AS id="AS0" routing="Full">
+    <host id="Tremblay" speed="25Mf"/>
+    <host id="Jupiter" speed="25Mf" availability_file="trace/jupiter_speed.trace"/>
+
+    <link id="1" bandwidth="125MBps" latency="100us" bandwidth_file="trace/link1_avail.trace"/>
+
+    <route src="Tremblay" dst="Jupiter"><link_ctn id="1"/></route>
+  </AS>
+
+  <trace id="Tremblay_power" periodicity="6.0">
+    1.0 0.5
+    4.0 1.0
+  </trace>
+  <trace_connect trace="Tremblay_power" element="Tremblay" kind="SPEED"/>
+</platform>

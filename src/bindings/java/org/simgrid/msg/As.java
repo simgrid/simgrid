@@ -22,8 +22,6 @@ public class As {
 
 	public native String getProperty(String name);
 
-	public native String getModel();
-
 	public native Host[] getHosts();
 
 	/**

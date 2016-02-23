@@ -18,7 +18,6 @@
 #include "surf/datatypes.h"
 #include "xbt/lib.h"
 #include "surf/surf_routing.h"
-#include "simgrid/platf_interface.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/forward.h"
 
@@ -35,8 +34,7 @@ extern XBT_PRIVATE int sg_network_crosstraffic;
 extern XBT_PRIVATE xbt_dynar_t surf_path;
 
 typedef enum {
-  SURF_NETWORK_ELEMENT_NULL = 0, /* NULL */
-  SURF_NETWORK_ELEMENT_HOST,     /* host type */
+  SURF_NETWORK_ELEMENT_HOST=1,     /* host type */
   SURF_NETWORK_ELEMENT_ROUTER,   /* router type */
   SURF_NETWORK_ELEMENT_AS        /* AS type */
 } e_surf_network_element_type_t;
@@ -133,22 +131,6 @@ typedef surf_RoutingPlatf *routing_platf_t;
 
 typedef struct surf_file *surf_file_t;
 
-XBT_PUBLIC(e_surf_network_element_type_t)
-  routing_get_network_element_type(const char* name);
-
-/** @Brief Specify that we use that action */
-XBT_PUBLIC(void) surf_action_ref(surf_action_t action);
-
-/** @brief Creates a new action.
- *
- * @param size The size is the one of the subtype you want to create
- * @param cost initial value
- * @param model to which model we should attach this action
- * @param failed whether we should start this action in failed mode
- */
-XBT_PUBLIC(void *) surf_action_new(size_t size, double cost,
-                                   surf_model_t model, int failed);
-
 /** \brief Resource model description
  */
 typedef struct surf_model_description {
@@ -157,10 +139,8 @@ typedef struct surf_model_description {
   void_f_void_t model_init_preparse;
 } s_surf_model_description_t, *surf_model_description_t;
 
-XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table,
-                                       const char *name);
-XBT_PUBLIC(void) model_help(const char *category,
-                            s_surf_model_description_t * table);
+XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table, const char *name);
+XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * table);
 
 /** @ingroup SURF_interface
  *  @brief Action states
@@ -231,10 +211,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 
-/** @brief Get the route (dynar of sg_link_t) between two hosts */
-XBT_PUBLIC(xbt_dynar_t) surf_host_model_get_route(
-  surf_host_model_t model, sg_host_t src, sg_host_t dst);
-
 /** @brief Create a new VM on the specified host */
 XBT_PUBLIC(void) surf_vm_model_create(const char *name, sg_host_t host_PM);
 
@@ -256,9 +232,6 @@ XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t mo
  * @return The name of the surf resource
  */
 XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
-static inline const char * surf_cpu_name(surf_cpu_t cpu) {
-	return surf_resource_name((surf_cpp_resource_t)cpu);
-}
 
 /** @brief Get the available speed of cpu associated to a host */
 XBT_PUBLIC(double) surf_host_get_available_speed(sg_host_t host);
@@ -310,19 +283,6 @@ XBT_PUBLIC(sg_size_t) surf_host_get_free_size(sg_host_t resource, const char* na
  * @return The amount of used space in bytes
  */
 XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* name);
-
-/** @brief Get the list of VMs hosted on the host */
-XBT_PUBLIC(xbt_dynar_t) surf_host_get_vms(sg_host_t resource);
-
-/** @brief Retrieve the params of that VM
- * @details You can use fields ramsize and overcommit on a PM, too.
- */
-XBT_PUBLIC(void) surf_host_get_params(sg_host_t resource, vm_params_t params);
-
-/** @brief Sets the params of that VM/PM
- * @details You can use fields ramsize and overcommit on a PM, too.
- */
-XBT_PUBLIC(void) surf_host_set_params(sg_host_t resource, vm_params_t params);
 
 /**
  * @brief Destroy a VM
@@ -385,14 +345,6 @@ XBT_PUBLIC(void) surf_vm_set_bound(sg_host_t resource, double bound);
  * @param mask [description]
  */
 XBT_PUBLIC(void) surf_vm_set_affinity(sg_host_t resource, sg_host_t cpu, unsigned long mask);
-
-/**
- * @brief Get the list of storages attached to an host
- *
- * @param host The surf host
- * @return Dictionary of storage
- */
-XBT_PUBLIC(xbt_dynar_t) surf_host_get_attached_storage_list(sg_host_t host);
 
 /**
  * @brief Unlink a file descriptor
@@ -486,82 +438,6 @@ XBT_PUBLIC(sg_size_t) surf_storage_get_used_size(surf_resource_t resource);
 
 /** @brief return the properties set associated to that storage */
 XBT_PUBLIC(xbt_dict_t) surf_storage_get_properties(surf_resource_t resource);
-
-/**
- * @brief Get the data associated to the action
- *
- * @param action The surf action
- * @return The data associated to the action
- */
-XBT_PUBLIC(void*) surf_action_get_data(surf_action_t action);
-
-/**
- * @brief Set the data associated to the action
- * @details [long description]
- *
- * @param action The surf action
- * @param data The new data associated to the action
- */
-XBT_PUBLIC(void) surf_action_set_data(surf_action_t action, void *data);
-
-/**
- * @brief Get the start time of an action
- *
- * @param action The surf action
- * @return The start time in seconds from the beginning of the simulation
- */
-XBT_PUBLIC(double) surf_action_get_start_time(surf_action_t action);
-
-/**
- * @brief Get the finish time of an action
- *
- * @param action The surf action
- * @return The finish time in seconds from the beginning of the simulation
- */
-XBT_PUBLIC(double) surf_action_get_finish_time(surf_action_t action);
-
-/**
- * @brief Get the remains amount of work to do of an action
- *
- * @param action The surf action
- * @return  The remains amount of work to do
- */
-XBT_PUBLIC(double) surf_action_get_remains(surf_action_t action);
-
-/**
- * @brief Set the category of an action
- * @details [long description]
- *
- * @param action The surf action
- * @param category The new category of the action
- */
-XBT_PUBLIC(void) surf_action_set_category(surf_action_t action, const char *category);
-
-/**
- * @brief Get the state of an action
- *
- * @param action The surf action
- * @return The state of the action
- */
-XBT_PUBLIC(e_surf_action_state_t) surf_action_get_state(surf_action_t action);
-
-/**
- * @brief Get the cost of an action
- *
- * @param action The surf action
- * @return The cost of the action
- */
-XBT_PUBLIC(double) surf_action_get_cost(surf_action_t action);
-
-/**
- * @brief [brief desrciption]
- * @details [long description]
- *
- * @param action The surf cpu action
- * @param cpu [description]
- * @param mask [description]
- */
-XBT_PUBLIC(void) surf_cpu_action_set_affinity(surf_action_t action, sg_host_t cpu, unsigned long mask);
 
 /**
  * @brief [brief description]
@@ -904,11 +780,8 @@ XBT_PUBLIC_DATA(AS_t) surf_AS_get_routing_root(void);
 XBT_PUBLIC_DATA(const char *) surf_AS_get_name(AS_t as);
 XBT_PUBLIC_DATA(AS_t) surf_AS_get_by_name(const char * name);
 XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_routing_sons(AS_t as);
-XBT_PUBLIC_DATA(const char *) surf_AS_get_model(AS_t as);
 XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
 XBT_PUBLIC_DATA(void) surf_AS_get_graph(AS_t as, xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges);
-XBT_PUBLIC_DATA(AS_t) surf_platf_get_root(routing_platf_t platf);
-XBT_PUBLIC_DATA(e_surf_network_element_type_t) surf_routing_edge_get_rc_type(sg_netcard_t edge);
 
 /*******************************************/
 /*** SURF Globals **************************/
@@ -975,12 +848,6 @@ XBT_PUBLIC(void) parse_platform_file(const char *file);
 
 /* For the trace and trace:connect tag (store their content till the end of the parsing) */
 XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_host_speed;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_avail;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_bw;
-XBT_PUBLIC_DATA(xbt_dict_t) trace_connect_list_link_lat;
-
-XBT_PUBLIC(double) parse_cpu_speed(const char *str_speed);
 
 XBT_PUBLIC(xbt_dict_t) get_as_router_properties(const char* name);
 
@@ -1008,12 +875,6 @@ int instr_platform_traced (void);
 xbt_graph_t instr_routing_platform_graph (void);
 void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
-/********** Routing **********/
-void routing_AS_begin(sg_platf_AS_cbarg_t AS);
-void routing_AS_end(void);
-surf_NetCard* routing_add_host(surf_As* as, sg_platf_host_cbarg_t host);
-void routing_cluster_add_backbone(void* bb);
-surf_As* routing_get_current();
 
 SG_END_DECL()
 #endif                          /* _SURF_SURF_H */

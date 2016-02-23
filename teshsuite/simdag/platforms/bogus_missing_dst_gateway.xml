@@ -1,17 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-<platform version="3">
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
   <AS id="World" routing="Full">
-     <AS id="us" routing="Full">
-                <cluster id="cluster" suffix=".cluster.us" prefix="node-" radical="1-4" core="24" power="9.27114e8" bw="938e6" lat="270us"/>
+    <AS id="us" routing="Full">
+       <cluster id="cluster" suffix=".cluster.us" prefix="node-" radical="1-4" core="24" speed="9.27114e8f"
+                bw="938e6Bps" lat="270us"/>
     </AS>
     <AS id="fr" routing="Full">
-                <cluster id="grappe" suffix=".grappe.fr" prefix="noeud-" radical="1-4" core="24" power="9.27114e8" bw="938e6" lat="270us"/>
+       <cluster id="grappe" suffix=".grappe.fr" prefix="noeud-" radical="1-4" core="24" speed="9.27114e8f"
+                bw="938e6Bps" lat="270us"/>
     </AS>
 
     <link id="backbone" bandwidth="1.25GBps" latency="500us"/>
 
-    <ASroute src="us" gw_src="node-cluster_router.cluster.us" dst="fr" gw_dst="neud-grappe_router.grappe.fr" symmetrical="YES">
+    <ASroute src="us" gw_src="node-cluster_router.cluster.us" dst="fr" gw_dst="neud-grappe_router.grappe.fr"
+             symmetrical="YES">
         <link_ctn id="backbone"/>
     </ASroute>
   </AS>

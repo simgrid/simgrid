@@ -10,11 +10,14 @@
 <tr><td width="50%">
 @endhtmlonly
 
+- @subpage getting_started
+  - @ref install
+  - @ref help
 - @subpage tutorial
-- @subpage platform
-- @subpage options
-- @subpage deployment
-- @subpage examples
+  - @subpage platform
+  - @subpage options
+  - @subpage deployment
+  - @subpage examples
 - @subpage advanced
   - @ref bindings
   - @ref pls

@@ -31,7 +31,7 @@ int server(int argc, char *argv[])
     MSG_task_receive(&task, "mymailbox");
     count++;
   }
-  MC_assert(atoi(MSG_task_get_name(task)) == 3);
+  MC_assert(xbt_str_parse_int(MSG_task_get_name(task), "Task names must be integers, not '%s'") == 3);
 
   XBT_INFO("OK");
   return 0;

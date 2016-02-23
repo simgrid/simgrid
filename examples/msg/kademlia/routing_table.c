@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
+/* Copyright (c) 2012-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,11 +9,9 @@
 #include "simgrid/msg.h"
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia_routing_table,
-                             "Messages specific for this msg example");
-/**
-  * \brief Initialization of a node routing table.
-  */
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia_routing_table, "Messages specific for this msg example");
+
+/** @brief Initialization of a node routing table.  */
 routing_table_t routing_table_init(unsigned int node_id)
 {
   unsigned int i;
@@ -27,9 +25,7 @@ routing_table_t routing_table_init(unsigned int node_id)
   return table;
 }
 
-/**
-  * \brief Frees the routing table
-  */
+/** @brief Frees the routing table */
 void routing_table_free(routing_table_t table)
 {
   unsigned int i;
@@ -41,18 +37,14 @@ void routing_table_free(routing_table_t table)
   xbt_free(table);
 }
 
-/**
-  * Returns if the routing table contains the id.
-  */
+/** Returns if the routing table contains the id. */
 unsigned int routing_table_contains(routing_table_t table, unsigned int node_id)
 {
   bucket_t bucket = routing_table_find_bucket(table, node_id);
   return bucket_contains(bucket, node_id);
 }
 
-/**
-  * @brief prints the routing table, to debug stuff.
-  */
+/**@brief prints the routing table, to debug stuff. */
 void routing_table_print(routing_table_t table)
 {
   unsigned int i, j, value;
@@ -68,39 +60,28 @@ void routing_table_print(routing_table_t table)
   }
 }
 
-/**
-  * Finds an identifier in a bucket and returns its position
-  * or returns -1 if it doesn't exists
+/** @brief Finds an identifier in a bucket and returns its position or returns -1 if it doesn't exists
   * @param bucket the bucket in which we try to find our identifier
   * @param id the id
   */
 unsigned int bucket_find_id(bucket_t bucket, unsigned int id)
 {
-  unsigned int i, length = xbt_dynar_length(bucket->nodes);
-  for (i = 0; i < length; i++) {        //TODO: Use foreach maybe ?
-    if (id == xbt_dynar_get_as(bucket->nodes, i, unsigned int)) {
+  unsigned int i, current_id;
+  xbt_dynar_foreach(bucket->nodes, i, current_id){
+    if (id == current_id){
       return i;
     }
   }
   return -1;
 }
 
-/**
-  * Returns if the bucket contains an identifier.
-  */
+/** Returns if the bucket contains an identifier.  */
 unsigned int bucket_contains(bucket_t bucket, unsigned int id)
 {
-  unsigned int length = xbt_dynar_length(bucket->nodes), i = 0;
-  for (i = 0; i < length; i++) {
-    if (id == xbt_dynar_get_as(bucket->nodes, i, unsigned int)) {
-      return 1;
-    }
-  }
-  return 0;
+  return xbt_dynar_member(bucket->nodes, &id);
 }
 
-/**
-  * Fins the corresponding bucket in a routing table for a given identifier
+/** @brief Finds the corresponding bucket in a routing table for a given identifier
   * @param table the routing table
   * @param id the identifier
   * @return the bucket in which the the identifier would be.
@@ -109,9 +90,7 @@ bucket_t routing_table_find_bucket(routing_table_t table, unsigned int id)
 {
   unsigned int xor_number = table->id ^ id;
   unsigned int prefix = get_node_prefix(xor_number, identifier_size);
-  xbt_assert(prefix >= 0
-             && prefix <= identifier_size,
-             "Tried to return a  bucket that doesn't exist.");
+  xbt_assert(prefix >= 0 && prefix <= identifier_size, "Tried to return a  bucket that doesn't exist.");
   bucket_t bucket = &table->buckets[prefix];
   return bucket;
 }

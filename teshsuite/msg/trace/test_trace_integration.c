@@ -22,14 +22,10 @@ int test_trace(int argc, char *argv[])
   double task_comp_size = 2800;
   double task_prio = 1.0;
 
-  if (argc != 3) {
-    printf
-        ("Wrong number of arguments!\nUsage:\n\t1) task computational size in FLOPS\n\t2 task priority\n");
-    exit(1);
-  }
+  xbt_assert (argc == 3,"Wrong number of arguments!\nUsage: %s <task computational size in FLOPS> <task priority>", argv[0]);
 
-  task_comp_size = atof(argv[1]);
-  task_prio = atof(argv[2]);
+  task_comp_size = xbt_str_parse_double(argv[1],"Invalid computational size: %s");
+  task_prio = xbt_str_parse_double(argv[2], "Invalid task priority: %s");
 
   XBT_INFO("Testing the trace integration cpu model: CpuTI");
   XBT_INFO("Task size: %f", task_comp_size);

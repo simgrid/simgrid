@@ -77,7 +77,7 @@ void MC_ignore_global_variable(const char *name)
  *  @param context
  *  @param size    Size of the stack
  */
-void MC_register_stack_area(void *stack, smx_process_t process, void *context, size_t size)
+void MC_register_stack_area(void *stack, smx_process_t process, ucontext_t* context, size_t size)
 {
   if (mc_mode != MC_MODE_CLIENT)
     return;

@@ -22,7 +22,7 @@ static int victim(int argc, char *argv[]) {
   msg_error_t res = MSG_OK;
   
   XBT_INFO("Let's work.");
-  TRY {	
+  TRY {  
     res = MSG_task_execute(MSG_task_create("Task", 1e14, 0, NULL));
     if (res != MSG_OK) {
       XBT_INFO("The MSG_task_execute caught the exception for me and returned %d)",res);
@@ -115,8 +115,8 @@ int main(int argc, char *argv[]) {
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-	         "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-	         argv[0], argv[0]);
+           "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
+           argv[0], argv[0]);
 
   MSG_function_register("terrorist", terrorist);
   MSG_create_environment(argv[1]);

@@ -68,12 +68,12 @@ public:
 
   /** @brief Destructor */
   ~NetworkModel() {
-	if (p_maxminSystem)
-	  lmm_system_free(p_maxminSystem);
-	if (p_actionHeap)
-	  xbt_heap_free(p_actionHeap);
-	if (p_modifiedSet)
-	  delete p_modifiedSet;
+  if (p_maxminSystem)
+    lmm_system_free(p_maxminSystem);
+  if (p_actionHeap)
+    xbt_heap_free(p_actionHeap);
+  if (p_modifiedSet)
+    delete p_modifiedSet;
   }
 
   /**
@@ -113,7 +113,7 @@ public:
    * @return The action representing the communication
    */
   virtual Action *communicate(NetCard *src, NetCard *dst,
-		                           double size, double rate)=0;
+                               double size, double rate)=0;
 
   /** @brief Function pointer to the function to use to solve the lmm_system_t
    *
@@ -155,7 +155,7 @@ public:
    * @return The new bandwidth.
    */
   virtual double bandwidthConstraint(double rate, double bound, double size);
-  double shareResourcesFull(double now);
+  double next_occuring_event_full(double now) override;
 };
 
 /************
@@ -166,8 +166,8 @@ public:
   * @details A Link represents the link between two [hosts](\ref Host)
   */
 class Link :
-		public simgrid::surf::Resource,
-		public simgrid::surf::PropertyHolder {
+    public simgrid::surf::Resource,
+    public simgrid::surf::PropertyHolder {
 public:
   /**
    * @brief Link constructor
@@ -185,12 +185,10 @@ public:
    * @param name The name of the Link
    * @param props Dictionary of properties associated to this Link
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
-   * @param fes Future Event Set in which our events must be registered
    * @param state_trace [TODO]
    */
   Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
               lmm_constraint_t constraint,
-              sg_future_evt_set_t fes,
               tmgr_trace_t state_trace);
 
   /* Link destruction logic */
@@ -198,9 +196,9 @@ public:
 protected:
   ~Link();
 public:
-	void destroy(); // Must be called instead of the destructor
+  void destroy(); // Must be called instead of the destructor
 private:
-	bool currentlyDestroying_ = false;
+  bool currentlyDestroying_ = false;
 
 public:
   /** @brief Callback signal fired when a new Link is created.
@@ -220,13 +218,13 @@ public:
   virtual double getBandwidth();
 
   /** @brief Update the bandwidth in bytes per second of current Link */
-  virtual void updateBandwidth(double value, double date=surf_get_clock())=0;
+  virtual void updateBandwidth(double value)=0;
 
   /** @brief Get the latency in seconds of current Link */
   virtual double getLatency();
 
   /** @brief Update the latency in seconds of current Link */
-  virtual void updateLatency(double value, double date=surf_get_clock())=0;
+  virtual void updateLatency(double value)=0;
 
   /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
   virtual int sharingPolicy();
@@ -237,14 +235,13 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  /* Using this object with the public part of
-    model does not make sense */
-  double m_latCurrent = 0;
-  tmgr_trace_iterator_t p_latEvent = NULL;
+  virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values. */
+  virtual void set_bandwidth_trace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load). Trace must contain percentages (value between 0 and 1). */
+  virtual void set_latency_trace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load). Trace must contain absolute values */
 
-  /* LMM */
-  tmgr_trace_iterator_t p_stateEvent = NULL;
-  s_surf_metric_t p_speed;
+  tmgr_trace_iterator_t m_stateEvent = NULL;
+  s_surf_metric_t m_latency = {1.0,0,NULL};
+  s_surf_metric_t m_bandwidth = {1.0,0,NULL};
 
   /* User data */
 public:

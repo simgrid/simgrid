@@ -7,10 +7,9 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   endif()
 
   set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  
+
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
-
 
   add_executable(commcreatep commcreatep.c)
 #  add_executable(dtpack dtpack.c)
@@ -24,7 +23,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   add_executable(transp-datatype transp-datatype.c)
   add_executable(twovec twovec.c)
 
-
   target_link_libraries(commcreatep simgrid mtest_c)
 #  target_link_libraries(dtpack simgrid mtest_c)
 #  target_link_libraries(indexperf simgrid mtest_c)
@@ -36,20 +34,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   target_link_libraries(timer simgrid mtest_c)
   target_link_libraries(transp-datatype simgrid mtest_c)
   target_link_libraries(twovec simgrid mtest_c)
-
-
-
-
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
 set(examples_src
   ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/allredtrace.c 
@@ -64,15 +50,9 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/timer.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/transp-datatype.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/twovec.c 
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/README
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

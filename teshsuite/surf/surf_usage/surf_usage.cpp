@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include "simgrid/sg_config.h"
 #include "surf/surf.h"
-#include "surf/surfxml_parse.h" // for reset callback
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/cpu_interface.hpp"
 
@@ -58,8 +57,8 @@ void test(char *platform)
   hostB = sg_host_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", surf_cpu_name(hostA->pimpl_cpu), hostA);
-  XBT_DEBUG("%s : %p", surf_cpu_name(hostB->pimpl_cpu), hostB);
+  XBT_DEBUG("%s : %p", sg_host_get_name(hostA), hostA);
+  XBT_DEBUG("%s : %p", sg_host_get_name(hostB), hostB);
 
   /* Let's do something on it */
   actionA = hostA->pimpl_cpu->execution_start(1000.0);

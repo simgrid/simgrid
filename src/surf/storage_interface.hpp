@@ -13,8 +13,6 @@
 #ifndef STORAGE_INTERFACE_HPP_
 #define STORAGE_INTERFACE_HPP_
 
-extern xbt_dynar_t mount_list;
-
 namespace simgrid {
 namespace surf {
 
@@ -83,7 +81,7 @@ public:
                                     xbt_dict_t properties,
                                     const char *attach) = 0;
 
-  bool shareResourcesIsIdempotent() {return true;}
+  bool next_occuring_event_isIdempotent() {return true;}
 
   xbt_dynar_t p_storageList;
 };
@@ -96,7 +94,7 @@ public:
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
 class Storage : public simgrid::surf::Resource,
-				public simgrid::surf::PropertyHolder {
+        public simgrid::surf::PropertyHolder {
 public:
   /**
    * @brief Storage constructor
@@ -140,14 +138,7 @@ public:
   /** @brief Check if the Storage is used (if an action currently uses its resources) */
   bool isUsed() override;
 
-  /**
-   * @brief Update the state of the current Storage
-   *
-   * @param event_type [description]
-   * @param value [description]
-   * @param date [description]
-   */
-  void updateState(tmgr_trace_iterator_t event_type, double value, double date) override;
+  void apply_event(tmgr_trace_iterator_t event, double value) override;
 
   void turnOn() override;
   void turnOff() override;

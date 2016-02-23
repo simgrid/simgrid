@@ -316,7 +316,6 @@ double *xbt_graph_get_length_matrix(xbt_graph_t g)
   }
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
-    in_cursor = 0;
     D(cursor, cursor) = 0;
 
     xbt_dynar_foreach(node->out, in_cursor, edge) {

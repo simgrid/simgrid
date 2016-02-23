@@ -49,10 +49,10 @@ void jprocess_delete_global_ref(jobject jprocess, JNIEnv * env)
 
 void jprocess_join(jobject jprocess, JNIEnv * env)
 {
-	msg_process_t process = jprocess_to_native_process(jprocess,env);
-	simgrid::java::JavaContext* context =
+  msg_process_t process = jprocess_to_native_process(jprocess,env);
+  simgrid::java::JavaContext* context =
     (simgrid::java::JavaContext*) MSG_process_get_smx_ctx(process);
-	xbt_os_thread_join(context->thread,NULL);
+  xbt_os_thread_join(context->thread,NULL);
 }
 
 msg_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
@@ -161,9 +161,9 @@ Java_org_simgrid_msg_Process_create(JNIEnv * env,
               simgrid::java::java_main_jprocess(jprocess);
               return 0;
             }, jprocess,
-						host,
-						/*argc, argv, properties*/
-						0, NULL, NULL);
+            host,
+            /*argc, argv, properties*/
+            0, NULL, NULL);
   MSG_process_set_kill_time(process, (double)jkill);
   /* bind the java process instance to the native process */
   jprocess_bind(jprocess, process, env);
@@ -376,14 +376,14 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_kill(JNIEnv * env,
                                   jobject jprocess)
 {
-	/* get the native instances from the java ones */
+  /* get the native instances from the java ones */
   msg_process_t process = jprocess_to_native_process(jprocess, env);
   if (!process) {
     jxbt_throw_notbound(env, "process", jprocess);
     return;
   }
 
-	MSG_process_kill(process);
+  MSG_process_kill(process);
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_migrate(JNIEnv * env,
@@ -414,8 +414,8 @@ Java_org_simgrid_msg_Process_migrate(JNIEnv * env,
 }
 JNIEXPORT void JNICALL
 Java_org_simgrid_msg_Process_setKillTime (JNIEnv *env , jobject jprocess, jdouble jkilltime) {
-	msg_process_t process = jprocess_to_native_process(jprocess, env);
-	MSG_process_set_kill_time(process, (double)jkilltime);
+  msg_process_t process = jprocess_to_native_process(jprocess, env);
+  MSG_process_set_kill_time(process, (double)jkilltime);
 }
 
 JNIEXPORT jint JNICALL

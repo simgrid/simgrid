@@ -58,7 +58,7 @@ message("-- [Java] simgrid-java includes: ${CHECK_INCLUDES}")
 ## Files to include in simgrid.jar
 ##
 set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
-set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.MF.in")
+set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.in")
 set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
 
 set(LIBSIMGRID_SO
@@ -106,12 +106,6 @@ endif()
 
 if(enable_lib_in_jar)
 
-  # Stripping disabled for the time being to make Java debuggable. We should introduce a proper option for that.
-  #find_program(STRIP_COMMAND strip)
-  #mark_as_advanced(STRIP_COMMAND)
-  #if(NOT STRIP_COMMAND)
-  #  set(STRIP_COMMAND "cmake -E echo (strip not found)")
-  #endif()
   
   set(SG_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
   
@@ -136,22 +130,15 @@ if(enable_lib_in_jar)
     COMMENT "Add the native libs into simgrid.jar..."
     DEPENDS simgrid simgrid-java ${JAVALIBS}
 	  
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
     COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
     
-    ## strip seems to fail on Mac on binaries that are already stripped.
-    ## It then spits: "symbols referenced by indirect symbol table entries that can't be stripped"
-    #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}      || true
-    #COMMAND ${STRIP_COMMAND} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO} || true
-
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
     # There is no way to disable the dependency of mingw-64 on that lib, unfortunately
     # nor to script cmake -E properly, so let's be brutal
-    COMMAND ${CMAKE_COMMAND} -E copy C:/mingw64/bin/libwinpthread-1.dll  ${JAVA_NATIVE_PATH} || true
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/mingw64/bin/libwinpthread-1.dll  ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
     
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  ${JAVA_NATIVE_PATH}
-    COMMAND ${CMAKE_COMMAND} -E remove_directory ${JAVA_NATIVE_PATH}
     
     COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in ${JAVA_NATIVE_PATH}"
     COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib

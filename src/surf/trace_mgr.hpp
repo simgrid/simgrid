@@ -11,7 +11,6 @@
 #include "xbt/dynar.h"
 #include "surf/maxmin.h"
 #include "surf/datatypes.h"
-#include "simgrid/platf_interface.h"
 #include "simgrid/forward.h"
 
 SG_BEGIN_DECL()
@@ -54,17 +53,7 @@ typedef struct probabilist_event_generator {
 } s_probabilist_event_generator_t;
 
 typedef struct tmgr_trace {
-  enum e_trace_type type;
-  union {
-    struct {
-      xbt_dynar_t event_list;
-    } s_list;
-    struct {
-      probabilist_event_generator_t event_generator[2];
-      int is_state_trace;
-      int next_event;
-    } s_probabilist;
-  };
+  xbt_dynar_t event_list;
 } s_tmgr_trace_t;
 
 /* Iterator within a trace */
@@ -74,8 +63,6 @@ typedef struct tmgr_trace_iterator {
   sg_resource_t resource;
   int free_me;
 } s_tmgr_trace_event_t;
-
-XBT_PRIVATE double tmgr_event_generator_next_value(probabilist_event_generator_t generator);
 
 /* Creation functions */
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);
@@ -95,9 +82,33 @@ SG_END_DECL()
 
 #ifdef __cplusplus
 namespace simgrid {
+/** @brief Modeling of the resource variations, such as those due to an external load
+ *
+ * There is 3 main concepts in this module:
+ * - #trace: a set of dated values, ie a list of pair <timestamp, value>
+ * - #trace_iterator: links a given trace to a given simgrid resource. A Cpu for example has 2 iterators: state (ie, is it ON/OFF) and speed, while a link has 3 iterators: state, bandwidth and latency.
+ * - #future_evt_set: makes it easy to find the next occuring event of all traces
+ */
   namespace trace_mgr {
 
-/* Future Event Set (collection of iterators over the traces)
+/** @brief A trace_iterator links a trace to a resource */
+XBT_PUBLIC_CLASS trace_iterator {
+
+};
+
+/** @brief A trace is a set of timed values, encoding the value that a variable takes at what time *
+ *
+ * It is useful to model dynamic platforms, where an external load that makes the resource availability change over time.
+ * To model that, you have to set several traces per resource: one for the on/off state and one for each numerical value (computational speed, bandwidt and latency).
+ */
+XBT_PUBLIC_CLASS trace {
+public:
+  /**  Creates an empty trace */
+  trace() {}
+  virtual ~trace() {}
+};
+
+/** @brief Future Event Set (collection of iterators over the traces)
  * That's useful to quickly know which is the next occurring event in a set of traces. */
 XBT_PUBLIC_CLASS future_evt_set {
 public:

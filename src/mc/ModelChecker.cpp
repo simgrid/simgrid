@@ -54,6 +54,7 @@ ModelChecker::ModelChecker(pid_t pid, int socket) :
   page_store_(500),
   parent_snapshot_(nullptr)
 {
+
 }
 
 ModelChecker::~ModelChecker()
@@ -71,6 +72,14 @@ const char* ModelChecker::get_host_name(const char* hostname)
     assert(elt);
   }
   return elt->key;
+}
+
+// HACK, for the unit test only
+void ModelChecker::init_process()
+{
+  // TODO, avoid direct dependency on sg_cfg
+  process_ = std::unique_ptr<Process>(new Process(pid_, socket_));
+  process_->privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
 }
 
 void ModelChecker::start()
@@ -109,10 +118,7 @@ void ModelChecker::start()
   if (res < 0 || !WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
-  assert(process_ == nullptr);
-  process_ = std::unique_ptr<Process>(new Process(pid_, socket_));
-  // TODO, avoid direct dependency on sg_cfg
-  process_->privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
+  this->init_process();
 
   /* Initialize statistics */
   mc_stats = xbt_new0(s_mc_stats_t, 1);

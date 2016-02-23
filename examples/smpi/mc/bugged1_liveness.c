@@ -11,7 +11,7 @@
 /******************************************************************************/
 
 /* Run :
-  /usr/bin/time -f "clock:%e user:%U sys:%S swapped:%W exitval:%x max:%Mk" "$@" ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster.xml --cfg=contexts/factory:ucontext --cfg=model-check/reduction:none --cfg=model-check/property:promela_bugged1_liveness --cfg=smpi/send_is_detached_thres:0 --cfg=contexts/stack_size:128 --cfg=model-check/visited:100000 --cfg=model-check/max_depth:100000 ./bugged1_liveness */
+  /usr/bin/time -f "clock:%e user:%U sys:%S swapped:%W exitval:%x max:%Mk" "$@" ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster.xml --cfg=contexts/factory:ucontext --cfg=model-check/reduction:none --cfg=model-check/property:promela_bugged1_liveness --cfg=smpi/send_is_detached_thresh:0 --cfg=contexts/stack_size:128 --cfg=model-check/visited:100000 --cfg=model-check/max_depth:100000 ./bugged1_liveness */
 
 #include <stdio.h>
 #include <mpi.h>

@@ -8,7 +8,6 @@
 #include "cpu_ti.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
-#include "src/surf/platform.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
                                 "Logging specific to the SURF CPU IMPROVED module");
@@ -32,10 +31,6 @@ void surf_cpu_model_init_Cas01()
 
   surf_cpu_model_vm  = new simgrid::surf::CpuCas01Model();
   xbt_dynar_push(all_existing_models, &surf_cpu_model_vm);
-
-  simgrid::surf::on_postparse.connect([]() {
-    surf_cpu_model_pm->addTraces();
-  });
 }
 
 namespace simgrid {
@@ -88,7 +83,7 @@ CpuCas01Model::~CpuCas01Model()
 }
 
 Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-		                  int pstate, double speedScale,
+                      int pstate, double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           int initiallyOn,
                           tmgr_trace_t state_trace)
@@ -100,31 +95,9 @@ Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
   return cpu;
 }
 
-double CpuCas01Model::shareResourcesFull(double /*now*/)
+double CpuCas01Model::next_occuring_event_full(double /*now*/)
 {
-  return Model::shareResourcesMaxMin(getRunningActionSet(),
-                             p_maxminSystem, lmm_solve);
-}
-
-void CpuCas01Model::addTraces()
-{
-  xbt_dict_cursor_t cursor = NULL;
-  char *trace_name, *elm;
-  static int called = 0;
-  if (called)
-    return;
-  called = 1;
-
-  /* connect host speed traces */
-  xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    Cpu *cpu = sg_host_by_name(elm)->pimpl_cpu;
-
-    xbt_assert(cpu, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    cpu->set_speed_trace(trace);
-  }
+  return Model::shareResourcesMaxMin(getRunningActionSet(), p_maxminSystem, lmm_solve);
 }
 
 /************
@@ -134,16 +107,16 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t s
                          int pstate, double speedScale, tmgr_trace_t speedTrace, int core,
                          int initiallyOn, tmgr_trace_t stateTrace)
 : Cpu(model, host,
-	lmm_constraint_new(model->getMaxminSystem(), this, core * speedScale * xbt_dynar_get_as(speedPeak, pstate, double)),
-	speedPeak, pstate,
-	core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
+  lmm_constraint_new(model->getMaxminSystem(), this, core * speedScale * xbt_dynar_get_as(speedPeak, pstate, double)),
+  speedPeak, pstate,
+  core, xbt_dynar_get_as(speedPeak, pstate, double), speedScale,
     initiallyOn) {
 
-  XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_speedPeak, m_pstate);
+  XBT_DEBUG("CPU create: peak=%f, pstate=%d", p_speed.peak, m_pstate);
 
   m_core = core;
   if (speedTrace)
-    p_speedEvent = future_evt_set->add_trace(speedTrace, 0.0, this);
+    p_speed.event = future_evt_set->add_trace(speedTrace, 0.0, this);
 
   if (stateTrace)
     p_stateEvent = future_evt_set->add_trace(stateTrace, 0.0, this);
@@ -166,37 +139,34 @@ bool CpuCas01::isUsed()
 
 /** @brief take into account changes of speed (either load or max) */
 void CpuCas01::onSpeedChange() {
-	lmm_variable_t var = NULL;
-	lmm_element_t elem = NULL;
+  lmm_variable_t var = NULL;
+  lmm_element_t elem = NULL;
 
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
-                                m_core * m_speedScale * m_speedPeak);
+                                m_core * p_speed.scale * p_speed.peak);
     while ((var = lmm_get_var_from_cnst
             (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
       CpuCas01Action *action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
       lmm_update_variable_bound(getModel()->getMaxminSystem(),
                                 action->getVariable(),
-                                m_speedScale * m_speedPeak);
+                                p_speed.scale * p_speed.peak);
     }
 
-	Cpu::onSpeedChange();
+  Cpu::onSpeedChange();
 }
 
-void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, double date)
+void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
 {
-  lmm_variable_t var = NULL;
-  lmm_element_t elem = NULL;
-
-  if (event_type == p_speedEvent) {
+  if (event == p_speed.event) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(m_core == 1, "FIXME: add speed scaling code also for constraint_core[i]");
 
-    m_speedScale = value;
+    p_speed.scale = value;
     onSpeedChange();
 
-    tmgr_trace_event_unref(&p_speedEvent);
-  } else if (event_type == p_stateEvent) {
+    tmgr_trace_event_unref(&p_speed.event);
+  } else if (event == p_stateEvent) {
     /* TODO (Hypervisor): do the same thing for constraint_core[i] */
     xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
 
@@ -206,6 +176,9 @@ void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, doubl
       turnOn();
     } else {
       lmm_constraint_t cnst = getConstraint();
+      lmm_variable_t var = NULL;
+      lmm_element_t elem = NULL;
+      double date = surf_get_clock();
 
       turnOff();
 
@@ -221,11 +194,10 @@ void CpuCas01::updateState(tmgr_trace_iterator_t event_type, double value, doubl
       }
     }
     tmgr_trace_event_unref(&p_stateEvent);
+
   } else {
     xbt_die("Unknown event!\n");
   }
-
-  return;
 }
 
 CpuAction *CpuCas01::execution_start(double size)
@@ -233,7 +205,7 @@ CpuAction *CpuCas01::execution_start(double size)
 
   XBT_IN("(%s,%g)", getName(), size);
   CpuCas01Action *action = new CpuCas01Action(getModel(), size, isOff(),
-      m_speedScale * m_speedPeak, getConstraint());
+      p_speed.scale * p_speed.peak, getConstraint());
 
   XBT_OUT();
   return action;
@@ -246,7 +218,7 @@ CpuAction *CpuCas01::sleep(double duration)
 
   XBT_IN("(%s,%g)", getName(), duration);
   CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, isOff(),
-      m_speedScale * m_speedPeak, getConstraint());
+      p_speed.scale * p_speed.peak, getConstraint());
 
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
@@ -280,8 +252,8 @@ CpuAction *CpuCas01::sleep(double duration)
 
 CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double speed, lmm_constraint_t constraint)
  : CpuAction(model, cost, failed,
-		     lmm_variable_new(model->getMaxminSystem(), this,
-		     1.0, speed, 1))
+         lmm_variable_new(model->getMaxminSystem(), this,
+         1.0, speed, 1))
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
     m_indexHeap = -1;

@@ -55,12 +55,12 @@ static void IB_action_init_callback(
   if(((NetworkIBModel*)surf_network_model)->active_nodes==NULL)
     xbt_die("IB comm added, without any node connected !");
   
-  IBNode* act_src= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, src->getName());
+  IBNode* act_src= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, src->name());
   if(act_src==NULL)
     xbt_die("could not find src node active comms !");
   //act_src->rate=rate;
   
-  IBNode* act_dst= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, dst->getName());
+  IBNode* act_dst= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, dst->name());
   if(act_dst==NULL)
     xbt_die("could not find dst node active comms !");  
  // act_dst->rate=rate;
@@ -94,8 +94,9 @@ void surf_network_model_init_IB(void)
 
   if (surf_network_model)
     return;
+
+  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkIBModel();
-  net_define_callbacks();
   xbt_dynar_push(all_existing_models, &surf_network_model);
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
   networkCommunicateCallbacks.connect(IB_action_init_callback);
@@ -103,6 +104,8 @@ void surf_network_model_init_IB(void)
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
   
 }
+
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 namespace simgrid {
 namespace surf {
@@ -115,12 +118,12 @@ NetworkIBModel::NetworkIBModel()
   const char* IB_factors_string=sg_cfg_get_string("smpi/IB_penalty_factors");
   xbt_dynar_t radical_elements = xbt_str_split(IB_factors_string, ";");
   
-  if(xbt_dynar_length(radical_elements)!=3)
-    surf_parse_error("smpi/IB_penalty_factors should be provided and contain 3 elements, semi-colon separated : for example 0.965;0.925;1.35");
+  surf_parse_assert(xbt_dynar_length(radical_elements)==3,
+    "smpi/IB_penalty_factors should be provided and contain 3 elements, semi-colon separated : for example 0.965;0.925;1.35");
   
-  Be = atof(xbt_dynar_get_as(radical_elements, 0, char *));
-  Bs = atof(xbt_dynar_get_as(radical_elements, 1, char *));
-  ys = atof(xbt_dynar_get_as(radical_elements, 2, char *));
+  Be = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 0, char *), "First part of smpi/IB_penalty_factors is not numerical: %s");
+  Bs = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 1, char *), "Second part of smpi/IB_penalty_factors is not numerical: %s");
+  ys = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 2, char *), "Third part of smpi/IB_penalty_factors is not numerical: %s");
 
   xbt_dynar_free(&radical_elements);
 }
@@ -145,9 +148,9 @@ void NetworkIBModel::computeIBfactors(IBNode *root) {
 
     if(num_comm_out!=1){
       if((*it)->destination->nbActiveCommsDown > 2)//number of comms sent to the receiving node
-	my_penalty_out = num_comm_out * Bs * ys;
+  my_penalty_out = num_comm_out * Bs * ys;
       else
-	my_penalty_out = num_comm_out * Bs;
+  my_penalty_out = num_comm_out * Bs;
     }
 
     max_penalty_out = std::max(max_penalty_out,my_penalty_out);
@@ -160,8 +163,8 @@ void NetworkIBModel::computeIBfactors(IBNode *root) {
     int nb_comms = (*it)->destination->nbActiveCommsDown;//total number of incoming comms
     if(nb_comms!=1)
       my_penalty_in = ((*it)->destination->ActiveCommsDown)[root] //number of comm sent to dest by root node
-		      * Be 
-		      * (*it)->destination->ActiveCommsDown.size();//number of different nodes sending to dest
+          * Be 
+          * (*it)->destination->ActiveCommsDown.size();//number of different nodes sending to dest
     
     double penalty = std::max(my_penalty_in,max_penalty_out);
     
@@ -214,11 +217,11 @@ void NetworkIBModel::updateIBfactors(NetworkAction *action, IBNode *from, IBNode
 
     to->nbActiveCommsDown--;
     for (std::vector<ActiveComm*>::iterator it= from->ActiveCommsUp.begin(); 
-	 it != from->ActiveCommsUp.end(); ++it) {
+   it != from->ActiveCommsUp.end(); ++it) {
       if((*it)->action==action){
-	comm=(*it);
-	from->ActiveCommsUp.erase(it);
-	break;
+  comm=(*it);
+  from->ActiveCommsUp.erase(it);
+  break;
       }
     }
     action->unref();

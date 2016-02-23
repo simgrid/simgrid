@@ -13,6 +13,9 @@
 #include "surf_interface.hpp"
 #include <float.h>
 
+#include <vector>
+#include <map>
+
 XBT_PUBLIC(void) routing_model_create( void *loopback);
 
 namespace simgrid {
@@ -28,59 +31,58 @@ class XBT_PRIVATE Onelink;
 class RoutingPlatf;
 
 /** @ingroup SURF_routing_interface
- * @brief A network card
+ * @brief Network cards are the vertices in the graph representing the network, used to compute paths between nodes.
+ *
  * @details This represents a position in the network. One can route information between two netcards
  */
 class NetCard {
 public:
   virtual ~NetCard(){};
-  virtual int getId()=0;
-  virtual int *getIdPtr()=0;
+  virtual int id()=0; // Our rank in the vertices_ array of our containing AS.
   virtual void setId(int id)=0;
-  virtual char *getName()=0;
-  virtual As *getRcComponent()=0;
+  virtual char *name()=0;
+  virtual As *containingAS()=0; // This is the AS in which I am
   virtual e_surf_network_element_type_t getRcType()=0;
 };
 
 /** @ingroup SURF_routing_interface
- * @brief The Autonomous System (AS) routing interface
+ * @brief Network Autonomous System (AS)
  * @details [TODO]
  */
 class As {
 public:
-  xbt_dynar_t p_indexNetworkElm = xbt_dynar_new(sizeof(char*),NULL);
-  xbt_dict_t p_bypassRoutes;    /* store bypass routes */
-  routing_model_description_t p_modelDesc;
-  e_surf_routing_hierarchy_t p_hierarchy;
-  char *p_name = nullptr;
-  As *p_routingFather = nullptr;
-  xbt_dict_t p_routingSons = xbt_dict_new_homogeneous(NULL);
-  NetCard *p_netcard;
-  xbt_dynar_t p_linkUpDownList = NULL;
+  As(const char*name);
+  /** @brief Close that AS: no more content can be added to it */
+  virtual void Seal();
+  virtual ~As();
 
-  /**
-   * @brief The As constructor
-   */
-  As(){};
+  e_surf_routing_hierarchy_t hierarchy_ = SURF_ROUTING_NULL;
+  xbt_dynar_t upDownLinks = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
 
-  /**
-   * @brief The As destructor
-   */
-  virtual ~As(){
-    xbt_dict_free(&p_routingSons);
-    xbt_dynar_free(&p_indexNetworkElm);
-    xbt_dynar_free(&p_linkUpDownList);
-    xbt_free(p_name);
-    if (p_netcard)
-      delete p_netcard;
-  };
+  char *name_ = nullptr;
+  NetCard *netcard_ = nullptr; // Our representative in the father AS
+  As *father_ = nullptr;
+  xbt_dict_t sons_ = xbt_dict_new_homogeneous(NULL); // sub-ASes
+  xbt_dynar_t vertices_ = xbt_dynar_new(sizeof(char*),NULL); // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
+private:
+  bool sealed_ = false; // We cannot add more content when sealed
+  std::map<std::string, std::vector<Link*>*> *bypassRoutes_ = nullptr;
+
+public:
   /**
-   * @brief Get the characteristics of the routing path between two points
+   * @brief Probe the routing path between two points
    *
-   * This function is used by the networking model to find the information it needs when starting a communication.
+   * The networking model uses this function when creating a communication
+   * to retrieve both the list of links that the create communication will use,
+   * and the summed latency that these links represent.
    *
-   * The things are not straightforward because the platform can be routed using several routing models.
+   * The network could recompute the latency by itself from the list, but it would
+   * require an additional link set traversal. This operation being on the critical
+   * path of SimGrid, the routing computes the latency in behalf of the network.
+   *
+   * Things are rather complex here because we have to find the path from ASes to ASes, and within each.
+   * In addition, the different ASes may use differing routing models.
    * Some ASes may be routed in full, others may have only some connection information and use a shortest path on top of that, and so on.
    * Some ASes may even not have any predefined links and use only coordinate informations to compute the latency.
    *
@@ -89,46 +91,42 @@ public:
    * 
    * @param src Initial point of the routing path
    * @param dst Final point of the routing path
-   * @param into Container into which the links should be pushed
-   * @param latency Accumulator in which the latencies should be added
+   * @param into Container into which the traversed links should be pushed
+   * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  virtual void getRouteAndLatency(
-      NetCard *src, NetCard *dst,
-      sg_platf_route_cbarg_t into, double *latency)=0;
-  virtual xbt_dynar_t getOneLinkRoutes()=0;
-  virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
-  virtual sg_platf_route_cbarg_t getBypassRoute(
-      NetCard *src, NetCard *dst,
-      double *lat)=0;
+  virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency)=0;
+  /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
+  virtual xbt_dynar_t getOneLinkRoutes();
 
-  /* The parser calls the following functions to inform the routing models
-   * that a new element is added to the AS currently built.
-   *
-   * Of course, only the routing model of this AS is informed, not every ones */
-  virtual int parsePU(NetCard *elm)=0; /* A host or a router, whatever */
-  virtual int parseAS(NetCard *elm)=0;
-  virtual void parseRoute(sg_platf_route_cbarg_t route)=0;
-  virtual void parseASroute(sg_platf_route_cbarg_t route)=0;
-  virtual void parseBypassroute(sg_platf_route_cbarg_t e_route)=0;
+  virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
+
+  std::vector<Link*> *getBypassRoute(NetCard *src, NetCard *dst);
+
+  /* Add content to the AS, at parsing time. It should be sealed afterward. */
+  virtual int addComponent(NetCard *elm); /* A host, a router or an AS, whatever */
+  virtual void addRoute(sg_platf_route_cbarg_t route);
+  void addBypassRoute(sg_platf_route_cbarg_t e_route);
 };
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  NetCardImpl(char *name, int id, e_surf_network_element_type_t rcType, As *rcComponent)
-  : p_rcComponent(rcComponent), p_rcType(rcType), m_id(id), p_name(name) {}
-  ~NetCardImpl() { xbt_free(p_name);};
+  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, As *as)
+  : name_(xbt_strdup(name)),
+    componentType_(componentType),
+    containingAS_(as)
+  {}
+  ~NetCardImpl() { xbt_free(name_);};
 
-  int getId() {return m_id;}
-  int *getIdPtr() {return &m_id;}
-  void setId(int id) {m_id = id;}
-  char *getName() {return p_name;}
-  As *getRcComponent() {return p_rcComponent;}
-  e_surf_network_element_type_t getRcType() {return p_rcType;}
+  int id()           override {return id_;}
+  void setId(int id) override {id_ = id;}
+  char *name()       override {return name_;}
+  As *containingAS() override {return containingAS_;}
+  e_surf_network_element_type_t getRcType() override {return componentType_;}
 private:
-  As *p_rcComponent;
-  e_surf_network_element_type_t p_rcType;
-  int m_id;
-  char *p_name;
+  int id_ = -1;
+  char *name_;
+  e_surf_network_element_type_t componentType_;
+  As *containingAS_;
 };
 
 /** @ingroup SURF_routing_interface
@@ -137,10 +135,10 @@ private:
 class Onelink {
 public:
   Onelink(void *link, NetCard *src, NetCard *dst)
-    : p_src(src), p_dst(dst), p_link(link) {};
-  NetCard *p_src;
-  NetCard *p_dst;
-  void *p_link;
+    : src_(src), dst_(dst), link_(link) {};
+  NetCard *src_;
+  NetCard *dst_;
+  void *link_;
 };
 
 /** @ingroup SURF_routing_interface
@@ -148,12 +146,12 @@ public:
  */
 XBT_PUBLIC_CLASS RoutingPlatf {
 public:
+  RoutingPlatf(void *loopback);
   ~RoutingPlatf();
-  As *p_root;
-  void *p_loopback;
-  xbt_dynar_t p_lastRoute;
+  As *root_ = nullptr;
+  void *loopback_;
+  xbt_dynar_t lastRoute_ = xbt_dynar_new(sizeof(Link*),NULL);
   xbt_dynar_t getOneLinkRoutes(void);
-  xbt_dynar_t recursiveGetOneLinkRoutes(As *rc);
   void getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t * links, double *latency);
 };
 

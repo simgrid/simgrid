@@ -41,70 +41,70 @@ XBT_PUBLIC_CLASS Host :
   public simgrid::xbt::Extendable<Host> {
 
 private:
-	Host(const char *name);
+  Host(const char *name);
 public: // TODO, make me private
-	~Host();
+  ~Host();
 public:
 
   static Host* by_name_or_null(const char* name);
   static Host* by_name_or_create(const char* name);
-	/** Retrieves an host from its name. */
-	static s4u::Host *by_name(std::string name);
-	/** Retrieves the host on which the current actor is running */
-	static s4u::Host *current();
+  /** Retrieves an host from its name. */
+  static s4u::Host *by_name(std::string name);
+  /** Retrieves the host on which the current actor is running */
+  static s4u::Host *current();
 
-	simgrid::xbt::string const& name() const { return name_; }
+  simgrid::xbt::string const& name() const { return name_; }
 
-	/** Turns that host on if it was previously off
-	 *
-	 * All actors on that host which were marked autorestart will be restarted automatically.
-	 * This call does nothing if the host is already on.
-	 */
-	void turn_on();
-	/** Turns that host off. All actors are forcefully stopped. */
-	void turn_off();
-	/** Returns if that host is currently up and running */
-	bool is_on();
-	bool is_off() { return !is_on(); }
+  /** Turns that host on if it was previously off
+   *
+   * All actors on that host which were marked autorestart will be restarted automatically.
+   * This call does nothing if the host is already on.
+   */
+  void turn_on();
+  /** Turns that host off. All actors are forcefully stopped. */
+  void turn_off();
+  /** Returns if that host is currently up and running */
+  bool is_on();
+  bool is_off() { return !is_on(); }
 
-	double speed();
-	int core_count();
-	xbt_dict_t properties();
-	xbt_swag_t processes();
-	double current_power_peak();
-	double power_peak_at(int pstate_index);
-	void set_pstate(int pstate_index);
-	int pstates_count() const;
-	int pstate();
-	void get_parameters(vm_params_t params);
-	void set_parameters(vm_params_t params);
-	xbt_dict_t mounted_storages_as_dict(); // HACK
-	xbt_dynar_t attached_storages();
+  double speed();
+  int core_count();
+  xbt_dict_t properties();
+  xbt_swag_t processes();
+  double current_power_peak();
+  double power_peak_at(int pstate_index);
+  void set_pstate(int pstate_index);
+  int pstates_count() const;
+  int pstate();
+  void get_parameters(vm_params_t params);
+  void set_parameters(vm_params_t params);
+  xbt_dict_t mounted_storages_as_dict(); // HACK
+  xbt_dynar_t attached_storages();
 
-	/** Get an associative list [mount point]->[Storage] off all local mount points.
-	 *
-	 *	This is defined in the platform file, and cannot be modified programatically (yet).
-	 */
-	boost::unordered_map<std::string, Storage*> const &mounted_storages();
+  /** Get an associative list [mount point]->[Storage] off all local mount points.
+   *
+   *  This is defined in the platform file, and cannot be modified programatically (yet).
+   */
+  boost::unordered_map<std::string, Storage*> const &mounted_storages();
 
 private:
-	simgrid::xbt::string name_ = "noname";
-	boost::unordered_map<std::string, Storage*> *mounts = NULL; // caching
+  simgrid::xbt::string name_ = "noname";
+  boost::unordered_map<std::string, Storage*> *mounts = NULL; // caching
 
 public:
-	// FIXME: these should be protected, but it leads to many errors
-	// Use the extensions stuff for this? Go through simgrid::surf::Host?
+  // FIXME: these should be protected, but it leads to many errors
+  // Use the extensions stuff for this? Go through simgrid::surf::Host?
   // TODO, this could be a unique_ptr
-	surf::Cpu     *pimpl_cpu = nullptr;
-	surf::NetCard *pimpl_netcard = nullptr;
+  surf::Cpu     *pimpl_cpu = nullptr;
+  surf::NetCard *pimpl_netcard = nullptr;
 
 public:
-	/*** Called on each newly created object */
-	static simgrid::xbt::signal<void(Host&)> onCreation;
-	/*** Called just before destructing an object */
-	static simgrid::xbt::signal<void(Host&)> onDestruction;
-	/*** Called when the machine is turned on or off */
-	static simgrid::xbt::signal<void(Host&)> onStateChange;
+  /*** Called on each newly created object */
+  static simgrid::xbt::signal<void(Host&)> onCreation;
+  /*** Called just before destructing an object */
+  static simgrid::xbt::signal<void(Host&)> onDestruction;
+  /*** Called when the machine is turned on or off */
+  static simgrid::xbt::signal<void(Host&)> onStateChange;
 };
 
 }} // namespace simgrid::s4u
@@ -134,75 +134,75 @@ import org.simgrid.msg.Storage;
 Host jacquelin;
 
 try { 
-	jacquelin = Host.getByName("Jacquelin");
+  jacquelin = Host.getByName("Jacquelin");
 } catch(HostNotFoundException e) {
-	System.err.println(e.toString());
+  System.err.println(e.toString());
 }
 ...
 \endverbatim
  *
  */ 
 public class Host {
-	/**
-	 * This static method returns all of the hosts of the installed platform.
-	 *
-	 * @return			An array containing all the hosts installed.
-	 *
-	 */ 
-	public native static Host[] all();
+  /**
+   * This static method returns all of the hosts of the installed platform.
+   *
+   * @return      An array containing all the hosts installed.
+   *
+   */ 
+  public native static Host[] all();
 
-	/** 
-	 * This static method sets a mailbox to receive in asynchronous mode.
-	 * 
-	 * All messages sent to this mailbox will be transferred to 
-	 * the receiver without waiting for the receive call. 
-	 * The receive call will still be necessary to use the received data.
-	 * If there is a need to receive some messages asynchronously, and some not, 
-	 * two different mailboxes should be used.
-	 *
-	 * @param mailboxName The name of the mailbox
-	 */
-	public static native void setAsyncMailbox(String mailboxName);
+  /** 
+   * This static method sets a mailbox to receive in asynchronous mode.
+   * 
+   * All messages sent to this mailbox will be transferred to 
+   * the receiver without waiting for the receive call. 
+   * The receive call will still be necessary to use the received data.
+   * If there is a need to receive some messages asynchronously, and some not, 
+   * two different mailboxes should be used.
+   *
+   * @param mailboxName The name of the mailbox
+   */
+  public static native void setAsyncMailbox(String mailboxName);
 
-	/**
-	 * This method returns the number of tasks currently running on a host.
-	 * The external load (comming from an availability trace) is not taken in account.
-	 *
-	 * @return			The number of tasks currently running on a host.
-	 */ 
-	public native int getLoad();
+  /**
+   * This method returns the number of tasks currently running on a host.
+   * The external load (comming from an availability trace) is not taken in account.
+   *
+   * @return      The number of tasks currently running on a host.
+   */ 
+  public native int getLoad();
 
-	/**
-	 * This method returns the speed of the processor of a host,
-	 * regardless of the current load of the machine.
-	 *
-	 * @return			The speed of the processor of the host in flops.
-	 *
-	 */ 
-	public native double getSpeed();
+  /**
+   * This method returns the speed of the processor of a host,
+   * regardless of the current load of the machine.
+   *
+   * @return      The speed of the processor of the host in flops.
+   *
+   */ 
+  public native double getSpeed();
 
-	/**
-	 * This method returns the number of core of a host.
-	 *
-	 * @return			The speed of the processor of the host in flops.
-	 *
-	 */ 
-	public native double getCoreNumber();
+  /**
+   * This method returns the number of core of a host.
+   *
+   * @return      The speed of the processor of the host in flops.
+   *
+   */ 
+  public native double getCoreNumber();
 
-	/**
-	 * Returns the value of a given host property (set from the platform file).
-	 */
-	public native String getProperty(String name);
+  /**
+   * Returns the value of a given host property (set from the platform file).
+   */
+  public native String getProperty(String name);
 
-	/**
-	 * Change the value of a given host property. 
-	 */
-	public native void setProperty(String name, String value);
+  /**
+   * Change the value of a given host property. 
+   */
+  public native void setProperty(String name, String value);
 
-	/** This methods returns the list of storages attached to an host
-	 * @return An array containing all storages (name) attached to the host
-	 */
-	public native String[] getAttachedStorage();
+  /** This methods returns the list of storages attached to an host
+   * @return An array containing all storages (name) attached to the host
+   */
+  public native String[] getAttachedStorage();
 
 
 } 

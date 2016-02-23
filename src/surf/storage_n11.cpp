@@ -80,20 +80,24 @@ StorageN11Model::~StorageN11Model(){
   storage_running_action_set_that_does_not_need_being_checked = NULL;
 }
 
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
     const char* content_name, const char* content_type, xbt_dict_t properties,
     const char* attach)
 {
 
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
-              "Storage '%s' declared several times in the platform file",
-              id);
+      "Storage '%s' declared several times in the platform file",
+      id);
 
   storage_type_t storage_type = (storage_type_t) xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
 
-  double Bread  = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bread"));
-  double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bwrite"));
-  double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"));
+  double Bread  = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bread"),
+      "property Bread, storage",type_id);
+  double Bwrite = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bwrite"),
+      "property Bwrite, storage",type_id);
+  double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"),
+      "property Bconnection, storage",type_id);
 
   Storage *storage = new StorageN11(this, id, properties, p_maxminSystem,
       Bread, Bwrite, Bconnection, type_id, (char *)content_name,
@@ -114,9 +118,9 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
   return storage;
 }
 
-double StorageN11Model::shareResources(double now)
+double StorageN11Model::next_occuring_event(double /*now*/)
 {
-  XBT_DEBUG("storage_share_resources %f", now);
+  XBT_DEBUG("storage_share_resources");
   unsigned int i, j;
   Storage *storage;
   void *_write_action;
@@ -149,7 +153,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
 
   ActionList *actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
-     ; it != itend ; it=itNext) {
+      ; it != itend ; it=itNext) {
     ++itNext;
     action = static_cast<StorageAction*>(&*it);
 
@@ -163,15 +167,15 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       long int incr = current_progress;
 
       XBT_DEBUG("%s:\n\t progress =  %.2f, current_progress = %.2f, "
-                "incr = %ld, lrint(1) = %ld, lrint(2) = %ld",
-                action->p_file->name,
-                action->progress,  current_progress, incr,
-                lrint(action->progress + current_progress),
-                lrint(action->progress)+ incr);
+          "incr = %ld, lrint(1) = %ld, lrint(2) = %ld",
+          action->p_file->name,
+          action->progress,  current_progress, incr,
+          lrint(action->progress + current_progress),
+          lrint(action->progress)+ incr);
 
       /* take care of rounding error accumulation */
       if (lrint(action->progress + current_progress) >
-          lrint(action->progress)+ incr)
+      lrint(action->progress)+ incr)
         incr++;
 
       action->progress +=current_progress;
@@ -204,7 +208,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       action->finish();
       action->setState(SURF_ACTION_DONE);
     } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
-               (action->getMaxDuration() <= 0))
+        (action->getMaxDuration() <= 0))
     {
       action->finish();
       action->setState(SURF_ACTION_DONE);
@@ -221,8 +225,8 @@ StorageN11::StorageN11(StorageModel *model, const char* name,
     xbt_dict_t properties, lmm_system_t maxminSystem, double bread,
     double bwrite, double bconnection, const char* type_id, char *content_name,
     char *content_type, sg_size_t size, char *attach)
- : Storage(model, name, properties,
-    	   maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size, attach) {
+: Storage(model, name, properties,
+    maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size, attach) {
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 }
 
@@ -263,7 +267,7 @@ StorageAction *StorageN11::close(surf_file_t fd)
   StorageAction *write_action;
   unsigned int i;
   xbt_dynar_foreach(p_writeActions, i, _write_action) {
-	write_action = static_cast<StorageAction*>(_write_action);
+    write_action = static_cast<StorageAction*>(_write_action);
     if ((write_action->p_file) == fd) {
       xbt_dynar_cursor_rm(p_writeActions, &i);
       write_action->unref();
@@ -315,9 +319,9 @@ StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
  **********/
 
 StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Storage *storage, e_surf_action_storage_type_t type)
-  : StorageAction(model, cost, failed,
-    		      lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0 , 3),
-    		      storage, type) {
+: StorageAction(model, cost, failed,
+    lmm_variable_new(model->getMaxminSystem(), this, 1.0, -1.0 , 3),
+    storage, type) {
   XBT_IN("(%s,%g", storage->getName(), cost);
 
   // Must be less than the max bandwidth for all actions
@@ -329,16 +333,16 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
     break;
   case READ:
     lmm_expand(model->getMaxminSystem(), storage->p_constraintRead,
-               getVariable(), 1.0);
+        getVariable(), 1.0);
     break;
   case WRITE:
     lmm_expand(model->getMaxminSystem(), storage->p_constraintWrite,
-               getVariable(), 1.0);
+        getVariable(), 1.0);
 
-//TODO there is something annoying with what's below. Have to sort it out...
-//    Action *action = this;
-//    xbt_dynar_push(storage->p_writeActions, &action);
-//    ref();
+    //TODO there is something annoying with what's below. Have to sort it out...
+    //    Action *action = this;
+    //    xbt_dynar_push(storage->p_writeActions, &action);
+    //    ref();
     break;
   }
   XBT_OUT();
@@ -348,8 +352,8 @@ int StorageN11Action::unref()
 {
   m_refcount--;
   if (!m_refcount) {
-	if (action_hook.is_linked())
-	  p_stateSet->erase(p_stateSet->iterator_to(*this));
+    if (action_hook.is_linked())
+      p_stateSet->erase(p_stateSet->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
     xbt_free(getCategory());
@@ -369,9 +373,7 @@ void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
   if (m_suspended != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(),
-                               getVariable(),
-                               0.0);
+    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
     m_suspended = 1;
   }
   XBT_OUT();

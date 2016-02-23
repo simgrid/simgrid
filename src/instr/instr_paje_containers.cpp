@@ -60,19 +60,19 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   //Search for network_element_t
   switch (kind){
     case INSTR_HOST:
-      newContainer->net_elm = sg_host->pimpl_netcard;
-      if(!newContainer->net_elm) xbt_die("Element '%s' not found",name);
+      newContainer->netcard = sg_host->pimpl_netcard;
+      if(!newContainer->netcard) xbt_die("Element '%s' not found",name);
       break;
     case INSTR_ROUTER:
-      newContainer->net_elm = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL);
-      if(!newContainer->net_elm) xbt_die("Element '%s' not found",name);
+      newContainer->netcard = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL);
+      if(!newContainer->netcard) xbt_die("Element '%s' not found",name);
       break;
     case INSTR_AS:
-      newContainer->net_elm = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL);
-      if(!newContainer->net_elm) xbt_die("Element '%s' not found",name);
+      newContainer->netcard = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL);
+      if(!newContainer->netcard) xbt_die("Element '%s' not found",name);
       break;
     default:
-      newContainer->net_elm = NULL;
+      newContainer->netcard = NULL;
       break;
   }
 

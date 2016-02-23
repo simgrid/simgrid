@@ -695,8 +695,6 @@ static void xbt_log_connect_categories(void)
 
   /* surf */
   XBT_LOG_CONNECT(surf);
-  XBT_LOG_CONNECT(platf_generator);
-  XBT_LOG_CONNECT(random);
   XBT_LOG_CONNECT(surf_config);
   XBT_LOG_CONNECT(surf_cpu);
   XBT_LOG_CONNECT(surf_cpu_cas);
@@ -1097,7 +1095,6 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
   dot = control_string;
   control_string += strcspn(control_string, ":= ");
   eq = control_string;
-  control_string += strcspn(control_string, " ");
 
   if(*dot != '.' && (*eq == '=' || *eq == ':'))
     xbt_die ("Invalid control string '%s'", orig_control_string);
@@ -1123,9 +1120,9 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
 
     if(i<XBT_LOG_STATIC_THRESHOLD){
      fprintf(stderr,
-    		 "Priority '%s' (in setting '%s') is above allowed priority '%s'.\n\n"
-    		 "Compiling SimGrid with -DNDEBUG forbids the levels 'trace' and 'debug'\n"
-    		 "while -DNLOG forbids any logging, at any level.",
+         "Priority '%s' (in setting '%s') is above allowed priority '%s'.\n\n"
+         "Compiling SimGrid with -DNDEBUG forbids the levels 'trace' and 'debug'\n"
+         "while -DNLOG forbids any logging, at any level.",
              eq + 1, name, xbt_log_priority_names[XBT_LOG_STATIC_THRESHOLD]);
      exit(1);
     }else if (i < xbt_log_priority_infinite) {
@@ -1162,9 +1159,9 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     if (!strncmp(neweq, "file:", 5)) {
       set->appender = xbt_log_appender_file_new(neweq + 5);
     }else if (!strncmp(neweq, "rollfile:", 9)) {
-		set->appender = xbt_log_appender2_file_new(neweq + 9,1);
+    set->appender = xbt_log_appender2_file_new(neweq + 9,1);
     }else if (!strncmp(neweq, "splitfile:", 10)) {
-		set->appender = xbt_log_appender2_file_new(neweq + 10,0);
+    set->appender = xbt_log_appender2_file_new(neweq + 10,0);
     } else {
       THROWF(arg_error, 0, "Unknown appender log type: '%s'", neweq);
     }

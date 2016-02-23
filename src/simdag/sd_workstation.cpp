@@ -23,16 +23,14 @@
  * \return an array of the \ref SD_link_t composing the route
  * \see SD_route_get_size(), SD_link_t
  */
-const SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
+SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
 {
-  xbt_dynar_t surf_route;
-  SD_link_t* list;
   void *surf_link;
   unsigned int cpt;
-  surf_route = surf_host_model_get_route((surf_host_model_t)surf_host_model,
-                                         src, dst);
+  xbt_dynar_t surf_route = NULL;
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, &surf_route, NULL);
 
-  list = xbt_new(SD_link_t, xbt_dynar_length(surf_route));
+  SD_link_t *list = xbt_new(SD_link_t, xbt_dynar_length(surf_route));
   xbt_dynar_foreach(surf_route, cpt, surf_link) {
     list[cpt] = (SD_link_t)surf_link;
   }
@@ -49,8 +47,9 @@ const SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
  */
 int SD_route_get_size(sg_host_t src, sg_host_t dst)
 {
-  return xbt_dynar_length(surf_host_model_get_route(
-      (surf_host_model_t)surf_host_model, src, dst));
+  xbt_dynar_t surf_route = NULL;
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, &surf_route, NULL);
+  return xbt_dynar_length(surf_route);
 }
 
 /**
@@ -66,8 +65,7 @@ double SD_route_get_latency(sg_host_t src, sg_host_t dst)
   xbt_dynar_t route = NULL;
   double latency = 0;
 
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard,
-                                    &route, &latency);
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, &route, &latency);
 
   return latency;
 }
@@ -78,8 +76,7 @@ double SD_route_get_latency(sg_host_t src, sg_host_t dst)
  *
  * \param src the first workstation
  * \param dst the second workstation
- * \return the bandwidth of the route between the two workstations
- * (in bytes/second)
+ * \return the bandwidth of the route between the two workstations (in bytes/second)
  * \see SD_route_get_latency()
  */
 double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
@@ -87,15 +84,13 @@ double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
   xbt_dynar_t route = NULL;
   unsigned int cpt;
   double latency = 0;
-  double bandwidth;
   double min_bandwidth = -1.0;
   SD_link_t link;
 
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard,
-                                    &route, &latency);
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, &route, &latency);
 
   xbt_dynar_foreach(route, cpt, link){
-    bandwidth = sg_link_bandwidth(link);
+    double bandwidth = sg_link_bandwidth(link);
     if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
       min_bandwidth = bandwidth;
   }

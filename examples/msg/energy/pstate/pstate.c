@@ -15,11 +15,11 @@
 /** @addtogroup MSG_examples
  *
  * - <b>energy/e1/e1.c</b> Shows how a set of pstates can be defined
- * 		for a host and how the current pstate can be accessed/changed
- * 		with @ref MSG_get_host_current_power_peak and @ref
- * 		MSG_set_host_pstate.
- * 		Make sure to read the platform XML file for details on how
- * 		to declare the CPU capacity for each pstate.
+ *     for a host and how the current pstate can be accessed/changed
+ *     with @ref MSG_get_host_current_power_peak and @ref
+ *     MSG_set_host_pstate.
+ *     Make sure to read the platform XML file for details on how
+ *     to declare the CPU capacity for each pstate.
  *
  */
 
@@ -54,10 +54,10 @@ int dvfs(int argc, char *argv[])
 
   // Change power peak
   if ((new_peak_index >= nb) || (new_peak_index < 0))
-	  {
-	  XBT_INFO("Cannot set pstate %d, host supports only %d pstates", new_peak_index, nb);
-	  return 0;
-	  }
+    {
+    XBT_INFO("Cannot set pstate %d, host supports only %d pstates", new_peak_index, nb);
+    return 0;
+    }
 
   double peak_at = MSG_host_get_power_peak_at(host, new_peak_index);
   XBT_INFO("Changing power peak value to %f (at index %d)", peak_at, new_peak_index);
@@ -93,8 +93,8 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-	          "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-	          argv[0], argv[0]);
+            "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
+            argv[0], argv[0]);
   
   MSG_create_environment(argv[1]);
 

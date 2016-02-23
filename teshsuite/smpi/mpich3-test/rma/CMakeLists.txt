@@ -11,7 +11,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-
   add_executable(accfence1 accfence1.c)
   add_executable(accfence2_am accfence2_am.c)
   add_executable(accfence2 accfence2.c)
@@ -107,8 +106,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  add_executable(win_large_shm win_large_shm.c)
 #  add_executable(win_zero win_zero.c)
 #  add_executable(wintest wintest.c)
-
-
 
   target_link_libraries(accfence1 simgrid mtest_c)
   target_link_libraries(accfence2_am simgrid mtest_c)
@@ -206,8 +203,6 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  target_link_libraries(win_zero simgrid mtest_c)
 #  target_link_libraries(wintest simgrid mtest_c)
 
-
-
  set_target_properties(accfence1 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  set_target_properties(accfence2_am PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
  set_target_properties(accfence2 PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
@@ -303,17 +298,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 # set_target_properties(win_large_shm PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(win_zero PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
 # set_target_properties(wintest PROPERTIES COMPILE_FLAGS "${MPICH_FLAGS}")
-
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
 set(examples_src
   ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/accfence1.c 
@@ -411,16 +397,10 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/win_shared_noncontig.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/win_shared_noncontig_put.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/wintest.c 
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
   ${CMAKE_CURRENT_SOURCE_DIR}/mcs-mutex.h
   ${CMAKE_CURRENT_SOURCE_DIR}/squelch.h
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

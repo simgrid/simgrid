@@ -90,7 +90,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason,
 
 static void xbt_preinit(void) {
   unsigned int seed = 2147483647;
-#ifndef WIN32
+#ifndef _XBT_WIN32
   xbt_pagesize = sysconf(_SC_PAGESIZE);
 #else
   SYSTEM_INFO si;
@@ -115,7 +115,7 @@ static void xbt_preinit(void) {
   xbt_dict_preinit();
    
   srand(seed);
-#ifndef _WIN32
+#ifndef _XBT_WIN32
   srand48(seed);
 #endif
   atexit(xbt_postexit);

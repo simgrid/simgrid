@@ -44,7 +44,7 @@ void surf_presolve(void)
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
       if (value >= 0){
-        resource->updateState(event, value, NOW);
+        resource->apply_event(event, value);
       }
     }
   }
@@ -56,7 +56,7 @@ void surf_presolve(void)
 
 double surf_solve(double max_date)
 {
-  double surf_min = -1.0; /* duration */
+  double time_delta = -1.0; /* duration */
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
@@ -65,27 +65,26 @@ double surf_solve(double max_date)
   tmgr_trace_iterator_t event = NULL;
   unsigned int iter;
 
-  if(!host_that_restart)
-    host_that_restart = xbt_dynar_new(sizeof(char*), NULL);
+  if (max_date > 0.0) {
+    xbt_assert(max_date > NOW,"You asked to simulate up to %f, but that's in the past already", max_date);
 
-  if (max_date != -1.0 && max_date != NOW) {
-    surf_min = max_date - NOW;
+    time_delta = max_date - NOW;
   }
 
   /* Physical models MUST be resolved first */
   XBT_DEBUG("Looking for next event in physical models");
-  double next_event_phy = surf_host_model->shareResources(NOW);
-  if ((surf_min < 0.0 || next_event_phy < surf_min) && next_event_phy >= 0.0) {
-	  surf_min = next_event_phy;
+  double next_event_phy = surf_host_model->next_occuring_event(NOW);
+  if ((time_delta < 0.0 || next_event_phy < time_delta) && next_event_phy >= 0.0) {
+    time_delta = next_event_phy;
   }
   if (surf_vm_model != NULL) {
-	  XBT_DEBUG("Looking for next event in virtual models");
-	  double next_event_virt = surf_vm_model->shareResources(NOW);
-	  if ((surf_min < 0.0 || next_event_virt < surf_min) && next_event_virt >= 0.0)
-		  surf_min = next_event_virt;
+    XBT_DEBUG("Looking for next event in virtual models");
+    double next_event_virt = surf_vm_model->next_occuring_event(NOW);
+    if ((time_delta < 0.0 || next_event_virt < time_delta) && next_event_virt >= 0.0)
+      time_delta = next_event_virt;
   }
 
-  XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", surf_min);
+  XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", time_delta);
 
   XBT_DEBUG("Looking for next trace event");
 
@@ -93,20 +92,20 @@ double surf_solve(double max_date)
     next_event_date = future_evt_set->next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    if(! surf_network_model->shareResourcesIsIdempotent()){ // NS3, I see you
-      if (next_event_date!=-1.0 && surf_min!=-1.0) {
-        surf_min = MIN(next_event_date - NOW, surf_min);
-      } else{
-        surf_min = MAX(next_event_date - NOW, surf_min);
+    if(! surf_network_model->next_occuring_event_isIdempotent()){ // NS3, I see you
+      if (next_event_date!=-1.0 && time_delta!=-1.0) {
+        time_delta = MIN(next_event_date - NOW, time_delta);
+      } else {
+        time_delta = MAX(next_event_date - NOW, time_delta); // Get the positive component
       }
 
-      XBT_DEBUG("Run the NS3 network at most %fs", surf_min);
+      XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
       // run until min or next flow
-      model_next_action_end = surf_network_model->shareResources(surf_min);
+      model_next_action_end = surf_network_model->next_occuring_event(time_delta);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if(model_next_action_end>=0.0)
-        surf_min = model_next_action_end;
+        time_delta = model_next_action_end;
     }
 
     if (next_event_date < 0.0) {
@@ -114,44 +113,48 @@ double surf_solve(double max_date)
       break;
     }
 
-    if ((surf_min == -1.0) || (next_event_date > NOW + surf_min))
+    if ((time_delta == -1.0) || (next_event_date > NOW + time_delta))
       break; // next event occurs after the next resource change, bail out
 
-    XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", surf_min, NOW, next_event_date);
+    XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
 
     while ((event = future_evt_set->pop_leq(next_event_date, &value, &resource))) {
       if (resource->isUsed() || xbt_dict_get_or_null(watched_hosts_lib, resource->getName())) {
-        surf_min = next_event_date - NOW;
-        XBT_DEBUG("This event will modify model state. Next event set to %f", surf_min);
+        time_delta = next_event_date - NOW;
+        XBT_DEBUG("This event invalidates the next_occuring_event() computation of models. Next event set to %f", time_delta);
       }
+      // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min will work
+      double round_start = NOW;
+      NOW = next_event_date;
       /* update state of the corresponding resource to the new value. Does not touch lmm.
          It will be modified if needed when updating actions */
-      XBT_DEBUG("Calling update_resource_state for resource %s with min %f", resource->getName(), surf_min);
-      resource->updateState(event, value, next_event_date);
+      XBT_DEBUG("Calling update_resource_state for resource %s", resource->getName());
+      resource->apply_event(event, value);
+      NOW = round_start;
     }
   }
 
   /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are with availability = 0.
    * This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a trace with periodicity > 0.
    * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed */
-  if (surf_min == -1.0) {
+  if (time_delta == -1.0) {
     XBT_DEBUG("No next event at all. Bail out now.");
     return -1.0;
   }
 
-  XBT_DEBUG("Duration set to %f", surf_min);
+  XBT_DEBUG("Duration set to %f", time_delta);
 
   // Bump the time: jump into the future
-  NOW = NOW + surf_min;
+  NOW = NOW + time_delta;
 
   // Inform the models of the date change
   xbt_dynar_foreach(all_existing_models, iter, model) {
-	  model->updateActionsState(NOW, surf_min);
+    model->updateActionsState(NOW, time_delta);
   }
 
   TRACE_paje_dump_buffer (0);
 
-  return surf_min;
+  return time_delta;
 }
 
 /*********
@@ -160,7 +163,7 @@ double surf_solve(double max_date)
 
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
   if (model->getDoneActionSet()->empty())
-	return NULL;
+  return NULL;
   surf_action_t res = &model->getDoneActionSet()->front();
   model->getDoneActionSet()->pop_front();
   return res;
@@ -168,7 +171,7 @@ surf_action_t surf_model_extract_done_action_set(surf_model_t model){
 
 surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
   if (model->getFailedActionSet()->empty())
-	return NULL;
+  return NULL;
   surf_action_t res = &model->getFailedActionSet()->front();
   model->getFailedActionSet()->pop_front();
   return res;
@@ -176,13 +179,6 @@ surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
 
 int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
-}
-
-xbt_dynar_t surf_host_model_get_route(surf_host_model_t /*model*/,
-                                             sg_host_t src, sg_host_t dst){
-  xbt_dynar_t route = NULL;
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, &route, NULL);
-  return route;
 }
 
 void surf_vm_model_create(const char *name, sg_host_t ind_phys_host){
@@ -198,16 +194,12 @@ const char *surf_resource_name(surf_cpp_resource_t resource){
 }
 
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
-	return host->pimpl_cpu->sleep(duration);
+  return host->pimpl_cpu->sleep(duration);
 }
 
 
 double surf_host_get_available_speed(sg_host_t host){
   return host->pimpl_cpu->getAvailableSpeed();
-}
-
-xbt_dynar_t surf_host_get_attached_storage_list(sg_host_t host){
-  return get_casted_host(host)->getAttachedStorageList();
 }
 
 surf_action_t surf_host_open(sg_host_t host, const char* fullpath){
@@ -249,28 +241,6 @@ int surf_host_file_seek(sg_host_t host, surf_file_t fd,
 
 int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return get_casted_host(host)->fileMove(fd, fullpath);
-}
-
-xbt_dynar_t surf_host_get_vms(sg_host_t host){
-  xbt_dynar_t vms = get_casted_host(host)->getVms();
-  xbt_dynar_t vms_ = xbt_dynar_new(sizeof(sg_host_t), NULL);
-  unsigned int cpt;
-  simgrid::surf::VirtualMachine *vm;
-  xbt_dynar_foreach(vms, cpt, vm) {
-    // TODO, use a backlink from simgrid::surf::Host to simgrid::s4u::Host 
-    sg_host_t vm_ = (sg_host_t) xbt_dict_get_elm_or_null(host_list, vm->getName());
-    xbt_dynar_push(vms_, &vm_);
-  }
-  xbt_dynar_free(&vms);
-  return vms_;
-}
-
-void surf_host_get_params(sg_host_t host, vm_params_t params){
-  get_casted_host(host)->getParams(params);
-}
-
-void surf_host_set_params(sg_host_t host, vm_params_t params){
-  get_casted_host(host)->setParams(params);
 }
 
 void surf_vm_destroy(sg_host_t vm){ // FIXME:DEADCODE
@@ -332,42 +302,6 @@ xbt_dict_t surf_storage_get_properties(surf_resource_t resource){
 
 const char* surf_storage_get_host(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->p_attach;
-}
-
-double surf_action_get_start_time(surf_action_t action){
-  return action->getStartTime();
-}
-
-double surf_action_get_finish_time(surf_action_t action){
-  return action->getFinishTime();
-}
-
-double surf_action_get_remains(surf_action_t action){
-  return action->getRemains();
-}
-
-void surf_action_set_category(surf_action_t action, const char *category){
-  action->setCategory(category);
-}
-
-void *surf_action_get_data(surf_action_t action){
-  return action->getData();
-}
-
-void surf_action_set_data(surf_action_t action, void *data){
-  action->setData(data);
-}
-
-e_surf_action_state_t surf_action_get_state(surf_action_t action){
-  return action->getState();
-}
-
-double surf_action_get_cost(surf_action_t action){
-  return action->getCost();
-}
-
-void surf_cpu_action_set_affinity(surf_action_t action, sg_host_t host, unsigned long mask) {
-  static_cast<simgrid::surf::CpuAction*>(action)->setAffinity(host->pimpl_cpu, mask);
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {

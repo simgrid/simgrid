@@ -22,24 +22,22 @@ static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dyn
   return (src_coord-dst_coord)*(src_coord-dst_coord);
 }
 
-AS_t model_vivaldi_create(void)
-{
-  return new simgrid::surf::AsVivaldi();
-}
-
 namespace simgrid {
 namespace surf {
+  AsVivaldi::AsVivaldi(const char *name)
+    : AsRoutedGraph(name)
+  {}
 
 void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
 
   XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]",
-		  src->getName(), src->getId(), dst->getName(), dst->getId());
+      src->name(), src->id(), dst->name(), dst->id());
 
   if(src->getRcType() == SURF_NETWORK_ELEMENT_AS) {
-    char *src_name = ROUTER_PEER(src->getName());
-    char *dst_name = ROUTER_PEER(dst->getName());
+    char *src_name = ROUTER_PEER(src->name());
+    char *dst_name = ROUTER_PEER(dst->name());
     route->gw_src = (sg_netcard_t) xbt_lib_get_or_null(as_router_lib, src_name, ROUTING_ASR_LEVEL);
     route->gw_dst = (sg_netcard_t) xbt_lib_get_or_null(as_router_lib, dst_name, ROUTING_ASR_LEVEL);
     xbt_free(src_name);
@@ -51,10 +49,10 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   char *tmp_src_name, *tmp_dst_name;
 
   if(src->getRcType() == SURF_NETWORK_ELEMENT_HOST){
-    tmp_src_name = HOST_PEER(src->getName());
+    tmp_src_name = HOST_PEER(src->name());
 
-    if(p_linkUpDownList){
-      info = xbt_dynar_get_as(p_linkUpDownList, src->getId(), s_surf_parsing_link_up_down_t);
+    if ((int)xbt_dynar_length(upDownLinks)>src->id()) {
+      info = xbt_dynar_get_as(upDownLinks, src->id(), s_surf_parsing_link_up_down_t);
       if(info.link_up) { // link up
         xbt_dynar_push_as(route->link_list, void*, info.link_up);
         if (lat)
@@ -63,10 +61,10 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     }
     src_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(tmp_src_name)->extension(COORD_HOST_LEVEL);
     if (src_ctn == nullptr)
-      src_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(src->getName())->extension(COORD_HOST_LEVEL);
+      src_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(src->name())->extension(COORD_HOST_LEVEL);
   }
   else if(src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_AS){
-    tmp_src_name = ROUTER_PEER(src->getName());
+    tmp_src_name = ROUTER_PEER(src->name());
     src_ctn = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_src_name, COORD_ASR_LEVEL);
   }
   else{
@@ -74,10 +72,10 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   }
 
   if(dst->getRcType() == SURF_NETWORK_ELEMENT_HOST){
-    tmp_dst_name = HOST_PEER(dst->getName());
+    tmp_dst_name = HOST_PEER(dst->name());
 
-    if(p_linkUpDownList){
-      info = xbt_dynar_get_as(p_linkUpDownList, dst->getId(), s_surf_parsing_link_up_down_t);
+    if ((int)xbt_dynar_length(upDownLinks)>dst->id()) {
+      info = xbt_dynar_get_as(upDownLinks, dst->id(), s_surf_parsing_link_up_down_t);
       if(info.link_down) { // link down
         xbt_dynar_push_as(route->link_list,void*,info.link_down);
         if (lat)
@@ -87,11 +85,11 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     dst_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(tmp_dst_name)
       ->extension(COORD_HOST_LEVEL);
     if (dst_ctn == nullptr)
-      dst_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(dst->getName())
+      dst_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(dst->name())
         ->extension(COORD_HOST_LEVEL);
   }
   else if(dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || dst->getRcType() == SURF_NETWORK_ELEMENT_AS){
-    tmp_dst_name = ROUTER_PEER(dst->getName());
+    tmp_dst_name = ROUTER_PEER(dst->name());
     dst_ctn = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_dst_name, COORD_ASR_LEVEL);
   }
   else{
@@ -110,12 +108,6 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     XBT_DEBUG("Updating latency %f += %f",*lat,euclidean_dist);
     *lat += euclidean_dist / 1000.0; //From .ms to .s
   }
-}
-
-int AsVivaldi::parsePU(NetCard *elm) {
-  XBT_DEBUG("Load process unit \"%s\"", elm->getName());
-  xbt_dynar_push_as(p_indexNetworkElm, sg_netcard_t, elm);
-  return xbt_dynar_length(p_indexNetworkElm)-1;
 }
 
 }

@@ -23,16 +23,13 @@ CTestResults.xml
 
 ### Maintainer mode
 src/simdag/dax_dtd.l
-src/surf/simgrid_dtd.l
+src/surf/xml/simgrid_dtd.l
 src/xbt/graphxml.l
 ### Jedule
 examples/simdag/scheduling/simgrid.jed
 teshsuite/simdag/platforms/simgrid.jed
 ### Libraries links 
-src/bindings/ruby/simgrid.so
-examples/ruby/simgrid.so
 examples/lua/simgrid.so
-src/bindings/ruby/libsimgrid.so
 examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
 examples/lua/console/simgrid.so
@@ -161,7 +158,6 @@ examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
 examples/msg/kademlia/kademlia
 examples/msg/masterslave/masterslave_arg
-examples/msg/masterslave/masterslave_bypass
 examples/msg/masterslave/masterslave_cluster
 examples/msg/masterslave/masterslave_console
 examples/msg/masterslave/masterslave_failure
@@ -200,11 +196,11 @@ examples/msg/procmig.trace
 examples/msg/properties/msg_prop
 examples/msg/semaphores/synchro
 examples/msg/sendrecv/sendrecv
+examples/msg/sendrecv/sendrecv_main
 examples/msg/simulation.trace
 examples/msg/start_kill_time/sk_time
 examples/msg/suspend/suspend
 examples/msg/tasks.trace
-examples/msg/token_ring/token_bypass
 examples/msg/token_ring/token_ring
 examples/msg/toto.txt
 examples/msg/trace/test_trace_integration
@@ -275,6 +271,7 @@ src/replay/replay
 src/testall
 teshsuite/bug-17132/bug-17132
 teshsuite/datadesc_usage.out
+teshsuite/java/semaphore/java_semaphore_gc_compiled
 teshsuite/java/sleep_host_off/java_sleep_host_off_compiled
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf_expression/dwarf-expression
@@ -1071,9 +1068,6 @@ examples/java/tracing/java_tracing_compiled
 examples/java/reservationSurfPlugin/java_reservation_surf_plugin_compiled
 examples/java/surfCpuModel/java_surf_cpu_model_compiled
 examples/java/surfPlugin/java_surf_plugin_compiled
-examples/scala/master_slave_bypass/scala_master_slave_bypass_compiled
-examples/scala/master_slave_kill/scala_master_slave_kill_compiled
-examples/scala/masterslave/scala_masterslave_compiled
 /CMakeCache.txt
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness

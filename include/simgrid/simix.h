@@ -13,7 +13,6 @@
 #include "xbt/function_types.h"
 #include "xbt/parmap.h"
 #include "xbt/swag.h"
-#include "simgrid/platf.h"
 #include "simgrid/datatypes.h"
 #include "simgrid/host.h"
 
@@ -174,6 +173,11 @@ XBT_PUBLIC(int) SIMIX_is_maestro();
 /* Initialization and exit */
 XBT_PUBLIC(void) SIMIX_global_init(int *argc, char **argv);
 
+/* Set to execute in the maestro
+ *
+ * If no maestro code is registered (the default), the main thread
+ * is assumed to be the maestro. */
+XBT_PUBLIC(void) SIMIX_set_maestro(void (*code)(void*), void* data);
 
 XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function);
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
@@ -209,6 +213,24 @@ XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
                                             xbt_dynar_t arguments,
                                             double process_start_time,
                                             double process_kill_time);
+
+/*********************************** Host *************************************/
+/* Functions for running a process in main()
+ *
+ *  1. create the maestro process
+ *  2. attach (create a context and wait for maestro to give control back to you)
+ *  3. do you process job
+ *  4. detach (this waits for the simulation to terminate)
+ */
+
+XBT_PUBLIC(void) SIMIX_maestro_create(void (*code)(void*), void* data);
+XBT_PUBLIC(smx_process_t) SIMIX_process_attach(
+  const char* name,
+  void *data,
+  const char* hostname,
+  xbt_dict_t properties,
+  smx_process_t parent_process);
+XBT_PUBLIC(void) SIMIX_process_detach(void);
 
 /*********************************** Host *************************************/
 XBT_PUBLIC(sg_host_t) SIMIX_host_self(void);
@@ -410,13 +432,13 @@ XBT_PUBLIC(void) simcall_set_category(smx_synchro_t synchro, const char *categor
 
 /************************** Synchro simcalls **********************************/
 XBT_PUBLIC(smx_mutex_t) simcall_mutex_init(void);
-XBT_PUBLIC(void) simcall_mutex_destroy(smx_mutex_t mutex);
+XBT_PUBLIC(void) SIMIX_mutex_destroy(smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_mutex_lock(smx_mutex_t mutex);
 XBT_PUBLIC(int) simcall_mutex_trylock(smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_mutex_unlock(smx_mutex_t mutex);
 
 XBT_PUBLIC(smx_cond_t) simcall_cond_init(void);
-XBT_PUBLIC(void) simcall_cond_destroy(smx_cond_t cond);
+XBT_PUBLIC(void) SIMIX_cond_destroy(smx_cond_t cond);
 XBT_PUBLIC(void) simcall_cond_signal(smx_cond_t cond);
 XBT_PUBLIC(void) simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_cond_wait_timeout(smx_cond_t cond,
@@ -425,7 +447,7 @@ XBT_PUBLIC(void) simcall_cond_wait_timeout(smx_cond_t cond,
 XBT_PUBLIC(void) simcall_cond_broadcast(smx_cond_t cond);
 
 XBT_PUBLIC(smx_sem_t) simcall_sem_init(int capacity);
-XBT_PUBLIC(void) simcall_sem_destroy(smx_sem_t sem);
+XBT_PUBLIC(void) SIMIX_sem_destroy(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_release(smx_sem_t sem);
 XBT_PUBLIC(int) simcall_sem_would_block(smx_sem_t sem);
 XBT_PUBLIC(void) simcall_sem_acquire(smx_sem_t sem);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
+/* Copyright (c) 2012-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,9 +10,7 @@
 #include <simgrid/msg.h>
 #include <xbt/RngStream.h>
 
-/**
- * Bittorrent example launcher
- */
+/** Bittorrent example launcher */
 int main(int argc, char *argv[])
 {
   xbt_dynar_t host_list;
@@ -22,10 +20,7 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   /* Check the arguments */
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file \n", argv[0]);
-    return -1;
-  }
+  xbt_assert (argc > 2, "Usage: %s platform_file deployment_file", argv[0]);
 
   const char *platform_file = argv[1];
   const char *deployment_file = argv[2];

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2014, 2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,14 +6,8 @@
 
 package kademlia;
 
-/**
- * @brief "PING" task sent by a node to another to see if it is still alive
- */
 public class PingTask extends KademliaTask {
-	/**
-	 * Constructor
-	 */
-	public PingTask(int senderId) {
-		super(senderId);
-	}
+  public PingTask(int senderId) {
+    super(senderId);
+  }
 }

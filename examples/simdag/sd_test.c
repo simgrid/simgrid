@@ -4,86 +4,63 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/simdag.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test,
-                             "Logging specific to this SimDag example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test, "Logging specific to this SimDag example");
 
 int main(int argc, char **argv)
 {
   int i;
   unsigned int ctr;
-  const char *platform_file;
-  const sg_host_t *workstations;
-  const char *name1;
-  const char *name2;
-  double computation_amount1;
-  double computation_amount2;
-  double communication_amount12;
-  double communication_amount21;
+  const sg_host_t *hosts;
+  const char *name1, *name2;
+  double comp_amount1, comp_amount2;
+  double comm_amount12, comm_amount21;
   const SD_link_t *route;
   int route_size;
   SD_task_t task, taskA, taskB, taskC, taskD, checkB, checkD;
   xbt_dynar_t changed_tasks;
   xbt_ex_t ex;
-  const int workstation_number = 2;
-  sg_host_t workstation_list[2];
+  const int host_count = 2;
+  sg_host_t host_list[2];
   double computation_amount[2];
   double communication_amount[4] = { 0 };
   double rate = -1.0;
-  sg_host_t w1, w2;
+  sg_host_t h1, h2;
 
   /* initialization of SD */
   SD_init(&argc, argv);
 
-  /*  xbt_log_control_set("sd.thres=debug"); */
-
-  xbt_assert(argc > 1, "Usage: %s platform_file\n"
-	     "\nExample: %s two_clusters.xml", argv[0], argv[0]);
-
-  /* creation of the environment */
-  platform_file = argv[1];
-  SD_create_environment(platform_file);
+  xbt_assert(argc > 1, "Usage: %s platform_file\n\nExample: %s two_clusters.xml", argv[0], argv[0]);
+  SD_create_environment(argv[1]);
 
   /* test the estimation functions */
-  workstations = sg_host_list();
-  w1 = workstations[0];
-  w2 = workstations[1];
-  name1 = sg_host_get_name(w1);
-  name2 = sg_host_get_name(w2);
-  computation_amount1 = 2000000;
-  computation_amount2 = 1000000;
-  communication_amount12 = 2000000;
-  communication_amount21 = 3000000;
-  XBT_INFO("Computation time for %f flops on %s: %f", computation_amount1,
-        name1, computation_amount1/sg_host_speed(w1));
-  XBT_INFO("Computation time for %f flops on %s: %f", computation_amount2,
-        name2, computation_amount2/sg_host_speed(w2));
+  hosts = sg_host_list();
+  h1 = hosts[0];
+  h2 = hosts[1];
+  name1 = sg_host_get_name(h1);
+  name2 = sg_host_get_name(h2);
+  comp_amount1 = 2000000;
+  comp_amount2 = 1000000;
+  comm_amount12 = 2000000;
+  comm_amount21 = 3000000;
+  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount1, name1, comp_amount1/sg_host_speed(h1));
+  XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, name2, comp_amount2/sg_host_speed(h2));
 
   XBT_INFO("Route between %s and %s:", name1, name2);
-  route = SD_route_get_list(w1, w2);
-  route_size = SD_route_get_size(w1, w2);
+  route = SD_route_get_list(h1, h2);
+  route_size = SD_route_get_size(h1, h2);
   for (i = 0; i < route_size; i++) {
-    XBT_INFO("   Link %s: latency = %f, bandwidth = %f",
-          sg_link_name(route[i]),
-          sg_link_latency(route[i]),
-          sg_link_bandwidth(route[i]));
+    XBT_INFO("   Link %s: latency = %f, bandwidth = %f", sg_link_name(route[i]), sg_link_latency(route[i]),
+             sg_link_bandwidth(route[i]));
   }
-  XBT_INFO("Route latency = %f, route bandwidth = %f",
-        SD_route_get_latency(w1, w2),
-        SD_route_get_bandwidth(w1, w2));
-  XBT_INFO("Communication time for %f bytes between %s and %s: %f",
-        communication_amount12, name1, name2,
-        SD_route_get_latency(w1, w2) +
-        communication_amount12 / SD_route_get_bandwidth(w1, w2));
-  XBT_INFO("Communication time for %f bytes between %s and %s: %f",
-        communication_amount21, name2, name1,
-        SD_route_get_latency(w2, w1) +
-        communication_amount21 / SD_route_get_bandwidth(w2, w1));
+  XBT_INFO("Route latency = %f, route bandwidth = %f", SD_route_get_latency(h1, h2), SD_route_get_bandwidth(h1, h2));
+  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount12, name1, name2,
+        SD_route_get_latency(h1, h2) + comm_amount12 / SD_route_get_bandwidth(h1, h2));
+  XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount21, name2, name1,
+        SD_route_get_latency(h2, h1) + comm_amount21 / SD_route_get_bandwidth(h2, h1));
 
   /* creation of the tasks and their dependencies */
   taskA = SD_task_create("Task A", NULL, 10.0);
@@ -92,8 +69,8 @@ int main(int argc, char **argv)
   taskD = SD_task_create("Task D", NULL, 60.0);
 
   /* try to attach and retrieve user data to a task */
-  SD_task_set_data(taskA, (void*) &computation_amount1);
-  if (computation_amount1 != (*((double*) SD_task_get_data(taskA))))
+  SD_task_set_data(taskA, (void*) &comp_amount1);
+  if (comp_amount1 != (*((double*) SD_task_get_data(taskA))))
       XBT_ERROR("User data was corrupted by a simple set/get");
 
   SD_task_dependency_add(NULL, NULL, taskB, taskA);
@@ -101,8 +78,6 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, taskD, taskB);
   SD_task_dependency_add(NULL, NULL, taskD, taskC);
   SD_task_dependency_add(NULL, NULL, taskB, taskC);
-
-
 
   TRY {
     SD_task_dependency_add(NULL, NULL, taskA, taskA);   /* shouldn't work and must raise an exception */
@@ -144,7 +119,6 @@ int main(int argc, char **argv)
     xbt_ex_free(ex);
   }
 
-
   /* if everything is ok, no exception is forwarded or rethrown by main() */
 
   /* watch points */
@@ -152,56 +126,43 @@ int main(int argc, char **argv)
   SD_task_watch(taskB, SD_DONE);
   SD_task_unwatch(taskD, SD_DONE);
 
-
   /* scheduling parameters */
-  workstation_list[0] = w1;
-  workstation_list[1] = w2;
-  computation_amount[0] = computation_amount1;
-  computation_amount[1] = computation_amount2;
+  host_list[0] = h1;
+  host_list[1] = h2;
+  computation_amount[0] = comp_amount1;
+  computation_amount[1] = comp_amount2;
 
-  communication_amount[1] = communication_amount12;
-  communication_amount[2] = communication_amount21;
+  communication_amount[1] = comm_amount12;
+  communication_amount[2] = comm_amount21;
 
   /* estimated time */
   task = taskD;
-  XBT_INFO("Estimated time for '%s': %f", SD_task_get_name(task),
-        SD_task_get_execution_time(task, workstation_number,
-                                   workstation_list, computation_amount,
-                                   communication_amount));
+  XBT_INFO("Estimated time for '%s': %f", SD_task_get_name(task), SD_task_get_execution_time(task, host_count,
+           host_list, computation_amount, communication_amount));
 
-  /* let's launch the simulation! */
-
-  SD_task_schedule(taskA, workstation_number, workstation_list,
-                   computation_amount, communication_amount, rate);
-  SD_task_schedule(taskB, workstation_number, workstation_list,
-                   computation_amount, communication_amount, rate);
-  SD_task_schedule(taskC, workstation_number, workstation_list,
-                   computation_amount, communication_amount, rate);
-  SD_task_schedule(taskD, workstation_number, workstation_list,
-                   computation_amount, communication_amount, rate);
+  SD_task_schedule(taskA, host_count, host_list, computation_amount, communication_amount, rate);
+  SD_task_schedule(taskB, host_count, host_list, computation_amount, communication_amount, rate);
+  SD_task_schedule(taskC, host_count, host_list, computation_amount, communication_amount, rate);
+  SD_task_schedule(taskD, host_count, host_list, computation_amount, communication_amount, rate);
 
   changed_tasks = SD_simulate(-1.0);
   xbt_dynar_foreach(changed_tasks, ctr, task) {
-    XBT_INFO("Task '%s' start time: %f, finish time: %f",
-          SD_task_get_name(task),
+    XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task),
           SD_task_get_start_time(task), SD_task_get_finish_time(task));
   }
 
   xbt_dynar_get_cpy(changed_tasks, 0, &checkD);
   xbt_dynar_get_cpy(changed_tasks, 1, &checkB);
 
-  xbt_assert(checkD == taskD &&
-              checkB == taskB, "Unexpected simulation results");
+  xbt_assert(checkD == taskD && checkB == taskB, "Unexpected simulation results");
 
   XBT_DEBUG("Destroying tasks...");
-
   SD_task_destroy(taskA);
   SD_task_destroy(taskB);
   SD_task_destroy(taskC);
   SD_task_destroy(taskD);
 
   XBT_DEBUG("Tasks destroyed. Exiting SimDag...");
-
   SD_exit();
   return 0;
 }

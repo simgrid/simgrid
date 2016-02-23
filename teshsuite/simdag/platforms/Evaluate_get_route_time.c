@@ -10,47 +10,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "simgrid/simdag.h"
-#include "src/surf/surf_private.h"
+#include "surf/surf.h"
 #include "xbt/xbt_os_time.h"
 
 #define BILLION  1000000000L;
-extern routing_platf_t routing_platf;
 
 int main(int argc, char **argv)
 {
-  sg_host_t w1, w2;
-  const sg_host_t *workstations;
   int i, j;
-  int list_size;
   xbt_os_timer_t timer = xbt_os_timer_new();
 
-  /* SD initialization */
   SD_init(&argc, argv);
-
-  /* creation of the environment */
   SD_create_environment(argv[1]);
 
-  workstations = sg_host_list();
-  list_size = sg_host_count();
+  sg_host_t *hosts = sg_host_list();
+  int host_count = sg_host_count();
 
   /* Random number initialization */
   srand( (int) (xbt_os_time()*1000) );
 
-  do{
-    i = rand()%list_size;
-    j = rand()%list_size;
-  }while(i==j);
+  do {
+    i = rand()%host_count;
+    j = rand()%host_count;
+  } while(i==j);
 
-  w1 = workstations[i];
-  w2 = workstations[j];
+  sg_host_t h1 = hosts[i];
+  sg_host_t h2 = hosts[j];
   printf("%d\tand\t%d\t\t",i,j);
 
   xbt_os_cputimer_start(timer);
-  SD_route_get_list(w1, w2);
+  SD_route_get_list(h1, h2);
   xbt_os_cputimer_stop(timer);
 
   printf("%f\n", xbt_os_timer_elapsed(timer) );
 
+  xbt_free(hosts);
   SD_exit();
 
   return 0;

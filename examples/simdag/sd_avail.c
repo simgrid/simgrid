@@ -1,17 +1,13 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
+/* Copyright (c) 2012-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/simdag.h"
-#include "xbt/ex.h"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(sd_avail,
-                             "Logging specific to this SimDag example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(sd_avail, "Logging specific to this SimDag example");
 
 /* Test of dynamic availability traces
  * Scenario:
@@ -45,13 +41,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_avail,
 int main(int argc, char **argv)
 {
   unsigned int ctr;
-  const sg_host_t *workstations;
+  const sg_host_t *hosts;
   SD_task_t t1, c1, t2, c2, t3, c3, t4, task;
   xbt_dynar_t changed_tasks;
 
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
-  workstations = sg_host_list();
+  hosts = sg_host_list();
 
   t1 = SD_task_create_comp_seq("t1", NULL, 25000000);
   c1 = SD_task_create_comm_e2e("c1", NULL, 125000000);
@@ -71,10 +67,10 @@ int main(int argc, char **argv)
 
   /* Schedule tasks t1 and w3 on first host, t2 on second host */
   /* Transfers are auto-scheduled */
-  SD_task_schedulel(t1, 1, workstations[0]);
-  SD_task_schedulel(t2, 1, workstations[1]);
-  SD_task_schedulel(t3, 1, workstations[0]);
-  SD_task_schedulel(t4, 1, workstations[1]);
+  SD_task_schedulel(t1, 1, hosts[0]);
+  SD_task_schedulel(t2, 1, hosts[1]);
+  SD_task_schedulel(t3, 1, hosts[0]);
+  SD_task_schedulel(t4, 1, hosts[1]);
 
   /* Add some watchpoint upon task completion */
   SD_task_watch(t1, SD_DONE);
@@ -85,19 +81,13 @@ int main(int argc, char **argv)
   SD_task_watch(c3, SD_DONE);
   SD_task_watch(t4, SD_DONE);
 
-  while (!xbt_dynar_is_empty((changed_tasks = SD_simulate(-1.0)))) {    
-    XBT_INFO("link1: bw=%.0f, lat=%f",
-             SD_route_get_bandwidth(workstations[0], workstations[1]),
-             SD_route_get_latency(workstations[0], workstations[1]));
-    XBT_INFO("Jupiter: speed=%.0f",
-             sg_host_speed(workstations[0])*
-             sg_host_get_available_speed(workstations[0]));
-    XBT_INFO("Tremblay: speed=%.0f",
-             sg_host_speed(workstations[1])*
-             sg_host_get_available_speed(workstations[1]));
+  while (!xbt_dynar_is_empty((changed_tasks = SD_simulate(-1.0)))) {
+    XBT_INFO("link1: bw=%.0f, lat=%f", SD_route_get_bandwidth(hosts[0], hosts[1]),
+             SD_route_get_latency(hosts[0], hosts[1]));
+    XBT_INFO("Jupiter: speed=%.0f", sg_host_speed(hosts[0])* sg_host_get_available_speed(hosts[0]));
+    XBT_INFO("Tremblay: speed=%.0f", sg_host_speed(hosts[1])* sg_host_get_available_speed(hosts[1]));
     xbt_dynar_foreach(changed_tasks, ctr, task) {
-      XBT_INFO("Task '%s' start time: %f, finish time: %f",
-           SD_task_get_name(task),
+      XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task),
            SD_task_get_start_time(task), SD_task_get_finish_time(task));
       if (SD_task_get_state(task)==SD_DONE)
         SD_task_destroy(task);

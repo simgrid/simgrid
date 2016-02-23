@@ -8,7 +8,7 @@
 #define _SMPI_INTERFACE_H
 #include "smpi/smpi.h"
 
-
+SG_BEGIN_DECL()
 
 /** \brief MPI collective description
  */
@@ -122,5 +122,7 @@ XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t * table,
 extern XBT_PRIVATE double smpi_wtime_sleep;
 extern XBT_PRIVATE double smpi_iprobe_sleep;
 extern XBT_PRIVATE double smpi_test_sleep;
+
+SG_END_DECL()
 
 #endif                          /* _SMPI_INTERFAC_H */

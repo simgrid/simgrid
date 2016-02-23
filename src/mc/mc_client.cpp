@@ -47,7 +47,7 @@ void MC_client_init(void)
   if (!fd_env)
     xbt_die("MC socket not found");
 
-  int fd = atoi(fd_env);
+  int fd = xbt_str_parse_int(fd_env,bprintf("Variable %s should contain a number but contains '%%s'", MC_ENV_SOCKET_FD));
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
   int type;

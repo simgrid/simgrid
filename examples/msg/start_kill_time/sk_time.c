@@ -22,7 +22,7 @@ static int sleeper(int argc, char *argv[])
   XBT_INFO("Hello! I go to sleep.");
   MSG_process_on_exit(my_onexit, NULL);
    
-  MSG_process_sleep(atoi(argv[1]));
+  MSG_process_sleep(xbt_str_parse_int(argv[1], "sleeper process expects an integer parameter but got %s"));
   XBT_INFO("Done sleeping.");
   return 0;
 }
@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
    xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-	         "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-	         argv[0], argv[0]);
+           "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
+           argv[0], argv[0]);
   
   test_all(argv[1], argv[2]);
 

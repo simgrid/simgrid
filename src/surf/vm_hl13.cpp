@@ -49,7 +49,7 @@ VirtualMachine *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
 // const double virt_overhead = 0.95;
 const double virt_overhead = 1;
 
-double VMHL13Model::shareResources(double now)
+double VMHL13Model::next_occuring_event(double now)
 {
   /* TODO: update action's cost with the total cost of processes on the VM. */
 
@@ -101,25 +101,8 @@ double VMHL13Model::shareResources(double now)
   /* 2. Calculate resource share at the virtual machine layer. */
   adjustWeightOfDummyCpuActions();
 
-  double min_by_cpu = surf_cpu_model_vm->shareResources(now);
-  double min_by_net = surf_network_model->shareResourcesIsIdempotent() ? surf_network_model->shareResources(now) : -1;
-  // Fixme: take storage into account once it's implemented
-  double min_by_sto = -1;
-
-  XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",
-      this, typeid(surf_cpu_model_pm ).name(), min_by_cpu,
-	        typeid(surf_network_model).name(), min_by_net,
-            typeid(surf_storage_model).name(), min_by_sto);
-
-  double ret = std::max(std::max(min_by_cpu, min_by_net), min_by_sto);
-  if (min_by_cpu >= 0.0 && min_by_cpu < ret)
-	ret = min_by_cpu;
-  if (min_by_net >= 0.0 && min_by_net < ret)
-	ret = min_by_net;
-  if (min_by_sto >= 0.0 && min_by_sto < ret)
-	ret = min_by_sto;
-
-  return ret;
+  /* 3. Ready. Get the next occuring event */
+  return surf_cpu_model_vm->next_occuring_event(now);
 }
 
 /************

@@ -62,6 +62,7 @@ public:
   }
 
   void start();
+  void init_process();
   void shutdown();
   void resume(simgrid::mc::Process& process);
   void loop();

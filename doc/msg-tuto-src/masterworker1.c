@@ -70,13 +70,13 @@ int master(int argc, char *argv[])
     
     for (i = 0; i < workers_count; i++)
       if(host_self == workers[i]) {
-	workers[i] = workers[workers_count-1];
-	workers_count--;
-	break;
+  workers[i] = workers[workers_count-1];
+  workers_count--;
+  break;
       }
 
     for (i = 0; i < workers_count; i++)
-	MSG_process_create("worker", worker, master_name, workers[i]);
+  MSG_process_create("worker", worker, master_name, workers[i]);
   }
 
   XBT_INFO("Got %d workers and %d tasks to process", workers_count,
@@ -84,7 +84,7 @@ int master(int argc, char *argv[])
 
   for (i = 0; i < number_of_tasks; i++) {
     build_channel_name(channel,master_name,
-		       MSG_host_get_name(workers[i % workers_count]));
+           MSG_host_get_name(workers[i % workers_count]));
 
     XBT_INFO("Sending \"%s\" to channel \"%s\"", todo[i]->name, channel);
 
@@ -97,7 +97,7 @@ int master(int argc, char *argv[])
   for (i = 0; i < workers_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
     MSG_task_send(finalize, build_channel_name(channel,master_name,
-		    MSG_host_get_name(workers[i % workers_count])));
+        MSG_host_get_name(workers[i % workers_count])));
   }
 
   XBT_INFO("Goodbye now!");
@@ -114,7 +114,7 @@ int worker(int argc, char *argv[])
   char channel[1024];
 
   build_channel_name(channel,MSG_process_get_data(MSG_process_self()),
-		     MSG_host_get_name(MSG_host_self()));
+         MSG_host_get_name(MSG_host_self()));
 
   XBT_INFO("Receiving on channel \"%s\"", channel);
 

@@ -19,7 +19,7 @@ xbt_dynar_t smpi_bw_factor = NULL;
 xbt_dynar_t smpi_lat_factor = NULL;
 
 typedef struct s_smpi_factor *smpi_factor_t;
-typedef struct s_smpi_factor {
+typedef struct s_smpi_factor { // FIXME: s_smpi_factor_multival (defined in smpi_base) should be used instead to dedupplicate this code
   long factor;
   double value;
 } s_smpi_factor_t;
@@ -32,7 +32,7 @@ static int factor_cmp(const void *pa, const void *pb)
          (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
 }
 
-
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 {
   char *value = NULL;
@@ -45,16 +45,21 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
   xbt_dynar_foreach(radical_elements, iter, value) {
 
     radical_elements2 = xbt_str_split(value, ":");
-    if (xbt_dynar_length(radical_elements2) != 2)
-      surf_parse_error("Malformed radical for smpi factor!");
-    fact.factor = atol(xbt_dynar_get_as(radical_elements2, 0, char *));
-    fact.value = atof(xbt_dynar_get_as(radical_elements2, 1, char *));
+    surf_parse_assert(xbt_dynar_length(radical_elements2) == 2,
+        "Malformed radical '%s' for smpi factor. I was expecting something like 'a:b'", value);
+
+    char *errmsg = bprintf("Invalid factor in chunk #%d: %%s", iter+1);
+    fact.factor = xbt_str_parse_int(xbt_dynar_get_as(radical_elements2, 0, char *), errmsg);
+    xbt_free(errmsg);
+    fact.value = xbt_str_parse_double(xbt_dynar_get_as(radical_elements2, 1, char *), errmsg);
+    errmsg = bprintf("Invalid factor value in chunk #%d: %%s", iter+1);
+    xbt_free(errmsg);
+
     xbt_dynar_push_as(smpi_factor, s_smpi_factor_t, fact);
     XBT_DEBUG("smpi_factor:\t%ld : %f", fact.factor, fact.value);
     xbt_dynar_free(&radical_elements2);
   }
   xbt_dynar_free(&radical_elements);
-  iter=0;
   xbt_dynar_sort(smpi_factor, &factor_cmp);
   xbt_dynar_foreach(smpi_factor, iter, fact) {
     XBT_DEBUG("ordered smpi_factor:\t%ld : %f", fact.factor, fact.value);
@@ -83,8 +88,8 @@ void surf_network_model_init_SMPI(void)
 
   if (surf_network_model)
     return;
+  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkSmpiModel();
-  net_define_callbacks();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/sender_gap", 10e-6);
@@ -96,21 +101,13 @@ namespace surf {
 
 NetworkSmpiModel::NetworkSmpiModel()
  : NetworkCm02Model() {
-	m_haveGap=true;
+  m_haveGap=true;
 }
 
 NetworkSmpiModel::~NetworkSmpiModel(){
-  if (gap_lookup) {
-    xbt_dict_free(&gap_lookup);
-  }
-  if (smpi_bw_factor) {
-    xbt_dynar_free(&smpi_bw_factor);
-    smpi_bw_factor = NULL;
-  }
-  if (smpi_lat_factor) {
-    xbt_dynar_free(&smpi_lat_factor);
-    smpi_lat_factor = NULL;
-  }
+  xbt_dict_free(&gap_lookup);
+  xbt_dynar_free(&smpi_bw_factor);
+  xbt_dynar_free(&smpi_lat_factor);
 }
 
 void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *act)

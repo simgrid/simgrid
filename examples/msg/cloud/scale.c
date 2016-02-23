@@ -24,14 +24,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
  **/
 
 static double time_precise(void) {
-	struct timeval tv;
-	int ret = gettimeofday(&tv, NULL);
+  struct timeval tv;
+  int ret = gettimeofday(&tv, NULL);
   if (ret < 0)
     xbt_die("gettimeofday");
 
-	double now = (double) tv.tv_sec + tv.tv_usec * 0.001 * 0.001;
+  double now = (double) tv.tv_sec + tv.tv_usec * 0.001 * 0.001;
 
-	return now;
+  return now;
 }
 
 static int computation_fun(int argc, char *argv[]) {
@@ -67,33 +67,33 @@ static int master_main(int argc, char *argv[])
 
   int i = 0;
   for (i = 0; i < npm; i++) {
-	  pm[i] = xbt_dynar_get_as(hosts_dynar, i, msg_host_t);
+    pm[i] = xbt_dynar_get_as(hosts_dynar, i, msg_host_t);
   }
 
   for (i = 0; i < nvm; i++) {
-	  int pm_index = i % npm;
-	  char *vm_name = bprintf("vm%d", i);
-	  vm[i] = MSG_vm_create_core(pm[pm_index], vm_name);
-	  MSG_vm_start(vm[i]);
+    int pm_index = i % npm;
+    char *vm_name = bprintf("vm%d", i);
+    vm[i] = MSG_vm_create_core(pm[pm_index], vm_name);
+    MSG_vm_start(vm[i]);
 
     launch_computation_worker(vm[i]);
 
-	  xbt_free(vm_name);
+    xbt_free(vm_name);
   }
 
 
   XBT_INFO("## Test (start)");
 
   for (i = 0; i < 10; i++) {
-	  double clock_sta = time_precise();
-	  MSG_process_sleep(1);
-	  double clock_end = time_precise();
-	  XBT_INFO("duration %f", clock_end - clock_sta);
+    double clock_sta = time_precise();
+    MSG_process_sleep(1);
+    double clock_end = time_precise();
+    XBT_INFO("duration %f", clock_end - clock_sta);
   }
 
 
   for (i = 0; i < nvm; i++) {
-	  MSG_vm_destroy(vm[i]);
+    MSG_vm_destroy(vm[i]);
   }
 
   XBT_INFO("## Test (ended)");

@@ -94,7 +94,8 @@ void TRACE_surf_host_set_utilization(const char *resource,
                                      double delta)
 {
   //only trace host utilization if host is known by tracing mechanism
-  if (!PJ_container_get_or_null(resource))
+  container_t container = PJ_container_get_or_null(resource);
+  if (!container)
     return;
   if (!value)
     return;
@@ -102,7 +103,6 @@ void TRACE_surf_host_set_utilization(const char *resource,
   //trace uncategorized host utilization
   if (TRACE_uncategorized()){
     XBT_DEBUG("UNCAT HOST [%f - %f] %s power_used %f", now, now+delta, resource, value);
-    container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get ("power_used", container->type);
     instr_event (now, delta, type, container, value);
   }
@@ -115,7 +115,6 @@ void TRACE_surf_host_set_utilization(const char *resource,
     char category_type[INSTR_DEFAULT_STR_SIZE];
     snprintf (category_type, INSTR_DEFAULT_STR_SIZE, "p%s", category);
     XBT_DEBUG("CAT HOST [%f - %f] %s %s %f", now, now+delta, resource, category_type, value);
-    container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get (category_type, container->type);
     instr_event (now, delta, type, container, value);
   }

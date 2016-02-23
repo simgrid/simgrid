@@ -38,19 +38,19 @@ double sg_link_latency(Link *link){
   return link->getLatency();
 }
 void* sg_link_data(Link *link) {
-	return link->getData();
+  return link->getData();
 }
 void sg_link_data_set(Link *link,void *data) {
-	link->setData(data);
+  link->setData(data);
 }
 int sg_link_count(void) {
-	return Link::linksCount();
+  return Link::linksCount();
 }
 Link** sg_link_list(void) {
-	return Link::linksList();
+  return Link::linksList();
 }
 void sg_link_exit(void) {
-	Link::linksExit();
+  Link::linksExit();
 }
 
 }
@@ -64,31 +64,31 @@ namespace surf {
 
 boost::unordered_map<std::string,Link *> *Link::links = new boost::unordered_map<std::string,Link *>();
 Link *Link::byName(const char* name) {
-	  Link * res = NULL;
-	  try {
-		  res = links->at(name);
-	  } catch (std::out_of_range& e) {}
+    Link * res = NULL;
+    try {
+      res = links->at(name);
+    } catch (std::out_of_range& e) {}
 
-	  return res;
+    return res;
 }
 /** @brief Returns the amount of links in the platform */
 int Link::linksCount() {
-	  return links->size();
+    return links->size();
 }
 /** @brief Returns a list of all existing links */
 Link **Link::linksList() {
-	  Link **res = xbt_new(Link*, (int)links->size());
-	  int i=0;
-	  for (auto kv : *links) {
-		  res[i++] = kv.second;
-	  }
-	  return res;
+    Link **res = xbt_new(Link*, (int)links->size());
+    int i=0;
+    for (auto kv : *links) {
+      res[i++] = kv.second;
+    }
+    return res;
 }
 /** @brief destructor of the static data */
 void Link::linksExit() {
-	for (auto kv : *links)
-		(kv.second)->destroy();
-	delete links;
+  for (auto kv : *links)
+    (kv.second)->destroy();
+  delete links;
 }
 
 /*************
@@ -127,13 +127,13 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
                       link->state_trace, link->policy, link->properties);
     xbt_free(link_id);
   } else {
-	  surf_network_model->createLink(link->id,
-			  link->bandwidth,
-			  link->bandwidth_trace,
-			  link->latency,
-			  link->latency_trace,
-			  link->initiallyOn,
-			  link->state_trace, link->policy, link->properties);
+    surf_network_model->createLink(link->id,
+        link->bandwidth,
+        link->bandwidth_trace,
+        link->latency,
+        link->latency_trace,
+        link->initiallyOn,
+        link->state_trace, link->policy, link->properties);
   }
 }
 
@@ -158,7 +158,7 @@ double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /
   return rate;
 }
 
-double NetworkModel::shareResourcesFull(double now)
+double NetworkModel::next_occuring_event_full(double now)
 {
   NetworkAction *action = NULL;
   ActionList *runningActions = surf_network_model->getRunningActionSet();
@@ -196,18 +196,21 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 {
   links->insert({name, this});
 
+  m_latency.scale = 1;
+  m_bandwidth.scale = 1;
   XBT_DEBUG("Create link '%s'",name);
 }
 
 Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
-		                 lmm_constraint_t constraint,
-	                   sg_future_evt_set_t fes,
-	                     tmgr_trace_t state_trace)
+                     lmm_constraint_t constraint,
+                       tmgr_trace_t state_trace)
 : Resource(model, name, constraint),
   PropertyHolder(props)
 {
+  m_latency.scale = 1;
+  m_bandwidth.scale = 1;
   if (state_trace)
-    p_stateEvent = fes->add_trace(state_trace, 0.0, this);
+    m_stateEvent = future_evt_set->add_trace(state_trace, 0.0, this);
 
   links->insert({name, this});
   XBT_DEBUG("Create link '%s'",name);
@@ -216,7 +219,7 @@ Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t prop
 
 /** @brief use destroy() instead of this destructor */
 Link::~Link() {
-	xbt_assert(currentlyDestroying_, "Don't delete Links directly. Call destroy() instead.");
+  xbt_assert(currentlyDestroying_, "Don't delete Links directly. Call destroy() instead.");
 }
 /** @brief Fire the require callbacks and destroy the object
  *
@@ -224,11 +227,11 @@ Link::~Link() {
  */
 void Link::destroy()
 {
-	if (!currentlyDestroying_) {
-		currentlyDestroying_ = true;
-		onDestruction(this);
-		delete this;
-	}
+  if (!currentlyDestroying_) {
+    currentlyDestroying_ = true;
+    onDestruction(this);
+    delete this;
+  }
 }
 
 bool Link::isUsed()
@@ -238,12 +241,12 @@ bool Link::isUsed()
 
 double Link::getLatency()
 {
-  return m_latCurrent;
+  return m_latency.peak * m_latency.scale;
 }
 
 double Link::getBandwidth()
 {
-  return p_speed.peak * p_speed.scale;
+  return m_bandwidth.peak * m_bandwidth.scale;
 }
 
 int Link::sharingPolicy()
@@ -263,6 +266,25 @@ void Link::turnOff(){
     onStateChange(this);
   }
 }
+void Link::set_state_trace(tmgr_trace_t trace)
+{
+  xbt_assert(m_stateEvent==NULL,"Cannot set a second state trace to Link %s", getName());
+
+  m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
+}
+void Link::set_bandwidth_trace(tmgr_trace_t trace)
+{
+  xbt_assert(m_bandwidth.event==NULL,"Cannot set a second bandwidth trace to Link %s", getName());
+
+  m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, this);
+}
+void Link::set_latency_trace(tmgr_trace_t trace)
+{
+  xbt_assert(m_latency.event==NULL,"Cannot set a second latency trace to Link %s", getName());
+
+  m_latency.event = future_evt_set->add_trace(trace, 0.0, this);
+}
+
 
 /**********
  * Action *
