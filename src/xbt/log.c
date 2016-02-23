@@ -562,7 +562,6 @@ static void xbt_log_connect_categories(void)
 
   /* xbt */
   XBT_LOG_CONNECT(xbt);
-  XBT_LOG_CONNECT(graphxml_parse);
   XBT_LOG_CONNECT(log);
   XBT_LOG_CONNECT(module);
   XBT_LOG_CONNECT(replay);

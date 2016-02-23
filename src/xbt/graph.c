@@ -10,7 +10,6 @@
 #include "xbt/log.h"
 #include "xbt/graph.h"
 #include "graph_private.h"
-#include "xbt/graphxml_parse.h"
 #include "xbt/dict.h"
 #include "xbt/heap.h"
 #include "xbt/str.h"
@@ -162,7 +161,6 @@ void xbt_graph_free_graph(xbt_graph_t g,
   if (graph_free_function)
     graph_free_function(g->data);
   free(g);
-  xbt_graph_parse_lex_destroy();
 }
 
 
@@ -541,100 +539,6 @@ void xbt_graph_depth_visit(xbt_graph_t g, xbt_node_t n,
     *((int *) (n->xbtdata)) = ALREADY_EXPLORED;
     sorted[(*idx)--] = n;
   }
-}
-
-/********************* Import and Export ******************/
-static xbt_graph_t parsed_graph = NULL;
-static xbt_dict_t parsed_nodes = NULL;
-
-static void *(*__parse_node_label_and_data) (xbt_node_t, const char *,
-                                             const char *) = NULL;
-static void *(*__parse_edge_label_and_data) (xbt_edge_t, const char *,
-                                             const char *) = NULL;
-
-static void __parse_graph_begin(void)
-{
-  XBT_DEBUG("<graph>");
-  if (A_graphxml_graph_isDirected == A_graphxml_graph_isDirected_true)
-    parsed_graph = xbt_graph_new_graph(1, NULL);
-  else
-    parsed_graph = xbt_graph_new_graph(0, NULL);
-
-  parsed_nodes = xbt_dict_new_homogeneous(NULL);
-}
-
-static void __parse_graph_end(void)
-{
-  xbt_dict_free(&parsed_nodes);
-  XBT_DEBUG("</graph>");
-}
-
-static void __parse_node(void)
-{
-  xbt_node_t node = xbt_graph_new_node(parsed_graph, NULL);
-
-  XBT_DEBUG("<node name=\"%s\"/>", A_graphxml_node_name);
-  if (__parse_node_label_and_data)
-    node->data = __parse_node_label_and_data(node, A_graphxml_node_label,
-                                             A_graphxml_node_data);
-  node->position_x = xbt_graph_parse_get_double(A_graphxml_node_position___x);
-  node->position_y = xbt_graph_parse_get_double(A_graphxml_node_position___y);
-
-  xbt_dict_set(parsed_nodes, A_graphxml_node_name, (void *) node, NULL);
-}
-
-static void __parse_edge(void)
-{
-  xbt_edge_t edge = xbt_graph_new_edge(parsed_graph,
-                                       xbt_dict_get(parsed_nodes,
-                                                    A_graphxml_edge_source),
-                                       xbt_dict_get(parsed_nodes,
-                                                    A_graphxml_edge_target),
-                                       NULL);
-
-  if (__parse_edge_label_and_data)
-    edge->data = __parse_edge_label_and_data(edge, A_graphxml_edge_label,
-                                             A_graphxml_edge_data);
-
-  edge->length = xbt_graph_parse_get_double(A_graphxml_edge_length);
-
-  XBT_DEBUG("<edge  source=\"%s\" target=\"%s\" length=\"%f\"/>",
-         (char *) (edge->src)->data,
-         (char *) (edge->dst)->data, xbt_graph_edge_get_length(edge));
-}
-
-/** @brief Import a graph from a file following the GraphXML format */
-xbt_graph_t xbt_graph_read(const char *filename,
-                           void *(*node_label_and_data) (xbt_node_t,
-                                                         const char *,
-                                                         const char *),
-                           void *(*edge_label_and_data) (xbt_edge_t,
-                                                         const char *,
-                                                         const char *))
-{
-
-  xbt_graph_t graph = NULL;
-
-  __parse_node_label_and_data = node_label_and_data;
-  __parse_edge_label_and_data = edge_label_and_data;
-
-  xbt_graph_parse_reset_parser();
-
-  STag_graphxml_graph_fun = __parse_graph_begin;
-  ETag_graphxml_graph_fun = __parse_graph_end;
-  ETag_graphxml_node_fun = __parse_node;
-  ETag_graphxml_edge_fun = __parse_edge;
-
-  xbt_graph_parse_open(filename);
-  XBT_ATTRIB_UNUSED int res;
-  res = xbt_graph_parse();
-  xbt_assert(!res, "Parse error in %s", filename);
-  xbt_graph_parse_close();
-
-  graph = parsed_graph;
-  parsed_graph = NULL;
-
-  return graph;
 }
 
 /** @brief Export the given graph in the GraphViz formatting for visualization */
