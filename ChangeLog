@@ -78,6 +78,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
  * Kill the queue data container: it made more sense with GRAS.
  * Kill the xbt_peer_t data type: it's useless without GRAS.
  * Kill rm_cb feature of config sets: it was never useful.
+ * Kill graphxml parsing feature. It was not used.
  * New functions:
    - xbt_dynar_sort_strings(), when the content is char*
    - xbt_str_parse_int / xbt_str_parse_double, wrapping strtol/strtod
