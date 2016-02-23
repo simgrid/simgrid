@@ -100,7 +100,7 @@ struct s_mc_memory_map_re {
 
 static char* MC_get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
 {
-  const char* map_basename = basename((char*) pathname);
+  const char* map_basename = xbt_basename((char*) pathname);
 
   regmatch_t match;
   if(regexec(&res->so_re, map_basename, 1, &match, 0))

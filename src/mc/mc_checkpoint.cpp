@@ -202,11 +202,11 @@ void MC_find_object_address(
   simgrid::mc::ObjectInformation* result)
 {
   char* file_name = xbt_strdup(result->file_name.c_str());
-  const char *name = basename(file_name);
+  const char *name = xbt_basename(file_name);
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::xbt::VmMap const& reg = maps[i];
     if (maps[i].pathname.empty()
-        || strcmp(basename(maps[i].pathname.c_str()), name)) {
+        || strcmp(xbt_basename(maps[i].pathname.c_str()), name)) {
       // Nothing to do
     } else if ((reg.prot & PROT_WRITE)) {
       xbt_assert(!result->start_rw,
@@ -536,7 +536,7 @@ static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)
       continue;
 
     // If dot_output enabled, do not handle the corresponding file
-    if (dot_output !=  NULL && strcmp(basename(link), _sg_mc_dot_output_file) == 0)
+    if (dot_output !=  NULL && strcmp(xbt_basename(link), _sg_mc_dot_output_file) == 0)
       continue;
 
     // This is probably a shared memory used by lttng-ust:
