@@ -844,19 +844,16 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     xbt_assert(parent_frame, "No parent scope for this scope");
 
   simgrid::mc::Frame frame;
-
   frame.tag = tag;
   frame.id = dwarf_dieoffset(die);
   frame.object_info = info;
 
   if (klass == simgrid::dwarf::TagClass::Subprogram) {
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-    if(ns)
+    if (ns)
       frame.name  = std::string(ns) + "::" + name;
     else if (name)
       frame.name = name;
-    else
-      frame.name.clear();
   }
 
   frame.abstract_origin_id =
@@ -913,13 +910,14 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   // Handle children:
   MC_dwarf_handle_children(info, die, unit, &frame, ns);
 
-  // Someone needs this to be sorted but who?
+  // We sort them in order to have an (somewhat) efficient by name
+  // lookup:
   std::sort(frame.variables.begin(), frame.variables.end(),
     MC_compare_variable);
 
   // Register it:
   if (klass == simgrid::dwarf::TagClass::Subprogram)
-    info->subprograms[frame.id] = frame;
+    info->subprograms[frame.id] = std::move(frame);
   else if (klass == simgrid::dwarf::TagClass::Scope)
     parent_frame->scopes.push_back(std::move(frame));
 }

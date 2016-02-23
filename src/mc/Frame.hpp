@@ -25,16 +25,35 @@ class Frame {
 public:
   Frame();
 
-  int tag;
+  /** Kind of scope (DW_TAG_subprogram, DW_TAG_inlined_subroutine, etc.) */
+  int tag = DW_TAG_invalid;
+
+  /** Name of the function (if it is a function) */
   std::string name;
+
   /** Range of instruction addresses for which this scope is valid */
   simgrid::xbt::range<std::uint64_t> range;
+
   simgrid::dwarf::LocationList frame_base_location;
+
+  /** List of the variables (sorted by name) */
   std::vector<Variable> variables;
-  unsigned long int id; /* DWARF offset of the subprogram */
+
+  /* Unique identifier for this scope (in the object_info)
+   *
+   * This is the global DWARF offset of the DIE. */
+  unsigned long int id = 0;
+
   std::vector<Frame> scopes;
-  unsigned long int abstract_origin_id;
-  simgrid::mc::ObjectInformation* object_info;
+
+  /** Value of `DW_AT_abstract_origin`
+   *
+   *  For inlined subprograms, this is the ID of the
+   *  parent function.
+   */
+  unsigned long int abstract_origin_id = 0;
+
+  simgrid::mc::ObjectInformation* object_info = nullptr;
 
   void* frame_base(unw_cursor_t& unw_cursor) const;
   void remove_variable(char* name);
