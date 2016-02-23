@@ -103,8 +103,14 @@ XBT_PRIVATE void MC_report_crash(int status);
 
 #ifdef __cplusplus
 
-XBT_PRIVATE void MC_find_object_address(
+namespace simgrid {
+namespace mc {
+
+XBT_PRIVATE void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps, simgrid::mc::ObjectInformation* result);
+
+}
+}
 
 #endif
 

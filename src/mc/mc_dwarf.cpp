@@ -1150,7 +1150,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
   std::shared_ptr<simgrid::mc::ObjectInformation> result =
     std::make_shared<simgrid::mc::ObjectInformation>();
   result->file_name = name;
-  MC_find_object_address(maps, result.get());
+  simgrid::mc::find_object_address(maps, result.get());
   MC_dwarf_get_variables(result.get());
   MC_post_process_variables(result.get());
   MC_post_process_types(result.get());

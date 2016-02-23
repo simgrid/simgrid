@@ -177,8 +177,22 @@ mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int pro
 
 static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
-XBT_PRIVATE mc_snapshot_t MC_take_snapshot(int num_state);
-XBT_PRIVATE void MC_restore_snapshot(mc_snapshot_t);
+}
+
+#ifdef __cplusplus
+
+namespace simgrid {
+namespace mc {
+
+XBT_PRIVATE mc_snapshot_t take_snapshot(int num_state);
+XBT_PRIVATE void restore_snapshot(mc_snapshot_t);
+
+}
+}
+
+#endif
+
+extern "C" {
 
 XBT_PRIVATE void mc_restore_page_snapshot_region(
   simgrid::mc::Process* process,

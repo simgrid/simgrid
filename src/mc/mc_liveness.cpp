@@ -180,7 +180,7 @@ static void MC_pre_modelcheck_liveness(void)
   if(_sg_mc_visited > 0)
     visited_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
 
-  initial_global_state->snapshot = MC_take_snapshot(0);
+  initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
   initial_global_state->prev_pair = 0;
 
   unsigned int cursor = 0;

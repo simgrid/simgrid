@@ -483,7 +483,7 @@ int MC_modelcheck_comm_determinism(void)
   MC_pre_modelcheck_comm_determinism();
 
   initial_global_state = xbt_new0(s_mc_global_t, 1);
-  initial_global_state->snapshot = MC_take_snapshot(0);
+  initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
   initial_global_state->initial_communications_pattern_done = 0;
   initial_global_state->recv_deterministic = 1;
   initial_global_state->send_deterministic = 1;

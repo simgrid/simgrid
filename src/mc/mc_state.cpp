@@ -37,7 +37,7 @@ mc_state_t MC_state_new()
   state->incomplete_comm_pattern = NULL;
   /* Stateful model checking */
   if((_sg_mc_checkpoint > 0 && (mc_stats->expanded_states % _sg_mc_checkpoint == 0)) ||  _sg_mc_termination){
-    state->system_state = MC_take_snapshot(state->num);
+    state->system_state = simgrid::mc::take_snapshot(state->num);
     if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
       MC_state_copy_incomplete_communications_pattern(state);
       MC_state_copy_index_communications_pattern(state);

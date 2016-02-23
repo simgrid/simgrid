@@ -202,7 +202,7 @@ void MC_replay(xbt_fifo_t stack)
     start_item = xbt_fifo_get_first_item(stack);
     state = (mc_state_t)xbt_fifo_get_item_content(start_item);
     if(state->system_state){
-      MC_restore_snapshot(state->system_state);
+      simgrid::mc::restore_snapshot(state->system_state);
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
         MC_restore_communications_pattern(state);
       return;
@@ -211,7 +211,7 @@ void MC_replay(xbt_fifo_t stack)
 
 
   /* Restore the initial state */
-  MC_restore_snapshot(initial_global_state->snapshot);
+  simgrid::mc::restore_snapshot(initial_global_state->snapshot);
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
 
@@ -290,13 +290,13 @@ void MC_replay_liveness(xbt_fifo_t stack)
     item = xbt_fifo_get_first_item(stack);
     pair = (mc_pair_t) xbt_fifo_get_item_content(item);
     if(pair->graph_state->system_state){
-      MC_restore_snapshot(pair->graph_state->system_state);
+      simgrid::mc::restore_snapshot(pair->graph_state->system_state);
       return;
     }
   }
 
   /* Restore the initial state */
-  MC_restore_snapshot(initial_global_state->snapshot);
+  simgrid::mc::restore_snapshot(initial_global_state->snapshot);
 
     /* Traverse the stack from the initial state and re-execute the transitions */
     for (item = xbt_fifo_get_last_item(stack);
