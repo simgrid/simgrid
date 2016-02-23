@@ -46,15 +46,32 @@ static int lmm_concurrency_slack(lmm_constraint_t cnstr);
 static int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var);
 
 static void lmm_check_concurrency(lmm_system_t sys);
-  
-inline void lmm_decrease_concurrency(lmm_constraint_t cnstr){
-  xbt_assert(cnstr->concurrency_current>0);
-  cnstr->concurrency_current--;
+
+inline int lmm_element_concurrency(lmm_element_t elem) {
+  //Ignore element with weight less than one (e.g. cross-traffic)
+  return (elem->value>=1)?1:0;
+  //There are other alternatives, but they will change the behaviour of the model..
+  //So do not use it unless you want to make a new model.
+  //If you do, remember to change the variables concurrency share to reflect it.
+  //Potential examples are:
+  //return (elem->weight>0)?1:0;//Include element as soon  as weight is non-zero
+  //return (int)ceil(elem->weight);//Include element as the rounded-up integer value of the element weight
 }
 
-inline void lmm_increase_concurrency(lmm_constraint_t cnstr){
-  if(++cnstr->concurrency_current > cnstr->concurrency_maximum)
-    cnstr->concurrency_maximum=cnstr->concurrency_current;
+inline void lmm_decrease_concurrency(lmm_element_t elem) {
+  xbt_assert(elem->constraint->concurrency_current>=lmm_element_concurrency(elem));
+  elem->constraint->concurrency_current-=lmm_element_concurrency(elem);
+}
+
+inline void lmm_increase_concurrency(lmm_element_t elem) {
+
+  elem->constraint->concurrency_current+= lmm_element_concurrency(elem);
+
+  lmm_constraint_t cnstr=elem->constraint;
+  
+  if(cnstr->concurrency_current > cnstr->concurrency_maximum)
+    cnstr->concurrency_maximum= cnstr->concurrency_current;
+
   xbt_assert(cnstr->concurrency_limit<0 || cnstr->concurrency_current<=cnstr->concurrency_limit,"Concurrency limit overflow!");
 }
 
@@ -133,7 +150,7 @@ static XBT_INLINE void lmm_variable_remove(lmm_system_t sys, lmm_variable_t var)
   for (i = 0; i < var->cnsts_number; i++) {
     elem = &var->cnsts[i];
     if(var->weight>0)
-      lmm_decrease_concurrency(elem->constraint);
+      lmm_decrease_concurrency(elem);
     xbt_swag_remove(elem, &(elem->constraint->element_set));
     xbt_swag_remove(elem, &(elem->constraint->active_element_set));
     nelements=xbt_swag_size(&(elem->constraint->element_set));
@@ -356,7 +373,7 @@ void lmm_shrink(lmm_system_t sys, lmm_constraint_t cnst,
   lmm_update_modified_set(sys, var->cnsts[0].constraint); // will look up element_set of this constraint, and then each var in the element_set, and each var->cnsts[i].
 
   if(xbt_swag_remove(elem, &(elem->constraint->element_set)) && var->weight>0)
-    lmm_decrease_concurrency(elem->constraint);
+    lmm_decrease_concurrency(elem);
 
   xbt_swag_remove(elem, &(elem->constraint->active_element_set));
   elem->constraint = NULL;
@@ -406,7 +423,7 @@ void lmm_expand(lmm_system_t sys, lmm_constraint_t cnst,
   
   if (var->weight){
     xbt_swag_insert_at_head(elem, &(elem->constraint->element_set));
-    lmm_increase_concurrency(elem->constraint);
+    lmm_increase_concurrency(elem);
   }
   else
     xbt_swag_insert_at_tail(elem, &(elem->constraint->element_set));
@@ -934,8 +951,7 @@ int lmm_concurrency_slack(lmm_constraint_t cnstr){
   if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
     xbt_swag_foreach(_elem, &(cnstr->element_set)) {
       elem = (lmm_element_t)_elem;
-      if (elem->variable->weight <= 0) break; //Found an inactive variable
-      concurrency++;
+      concurrency+=lmm_element_concurrency(elem);
     }
       
     slack=cnstr->concurrency_limit-concurrency;
@@ -1001,7 +1017,7 @@ void lmm_enable_var(lmm_system_t sys, lmm_variable_t var){
     elem = &var->cnsts[i];
     xbt_swag_remove(elem, &(elem->constraint->element_set));
     xbt_swag_insert_at_head(elem, &(elem->constraint->element_set));
-    lmm_increase_concurrency(elem->constraint);
+    lmm_increase_concurrency(elem);
   }
   if (var->cnsts_number)
     lmm_update_modified_set(sys, var->cnsts[0].constraint);
@@ -1026,7 +1042,7 @@ void lmm_disable_var(lmm_system_t sys, lmm_variable_t var){
 
     xbt_swag_remove(elem, &(elem->constraint->active_element_set));
 
-    lmm_decrease_concurrency(elem->constraint);
+    lmm_decrease_concurrency(elem);
   }
 
   var->weight=0.0;
@@ -1053,7 +1069,7 @@ void lmm_on_disabled_var(lmm_system_t sys, lmm_constraint_t cnstr){
 
     //active variables are checked to see if we already reached the maximum (SHOULD NOT HAPPEN BECAUSE WE SHOULD HAVE JUST DEACTIVATED ONE)
     if (elem->variable->weight > 0){
-      concurrency++;
+      concurrency+=lmm_element_concurrency(elem);
       xbt_assert(elem->variable->staged_weight==0.0,"Staged weight should have been reset");
     } else if (elem->variable->staged_weight>0 )
       {
@@ -1061,7 +1077,7 @@ void lmm_on_disabled_var(lmm_system_t sys, lmm_constraint_t cnstr){
 	//TODOLATER: Add random timing function to model reservation protocol fuzziness? Then how to make sure that staged variables will eventually be called?
 	if(lmm_can_enable_var(elem->variable)){
 	  lmm_enable_var(sys,elem->variable);
-	  concurrency++;
+	  concurrency+=lmm_element_concurrency(elem);
 	}	      
       }
 
@@ -1274,7 +1290,7 @@ void lmm_check_concurrency(lmm_system_t sys){
       xbt_swag_foreach(_elem, &(cnst->element_set)) {
 	elem = (lmm_element_t)_elem;
 	if (elem->variable->weight > 0) 
-	  concurrency++;
+	  concurrency+=lmm_element_concurrency(elem);
 	else {
 	  //We should have staged variables only if conccurency is reached in some constraint
 	  xbt_assert(cnst->concurrency_limit<0 || elem->variable->staged_weight==0 || lmm_cnstrs_min_concurrency_slack(elem->variable) < elem->variable->concurrency_share,"should not have staged variable!");
