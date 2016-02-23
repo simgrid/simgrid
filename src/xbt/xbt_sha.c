@@ -15,6 +15,7 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/hash.h"
+#include <stdio.h> /* sprintf */
 
 struct s_xbt_sha_ {
   unsigned int hash[5];

@@ -7,8 +7,6 @@
 #ifndef SG_PLATF_TYPES_H
 #define SG_PLATF_TYPES_H
 
-#include <xbt.h>
-
 #ifdef __cplusplus
 
 namespace simgrid {
@@ -51,7 +49,7 @@ typedef surf_NetCard *sg_netcard_t;
 typedef surf_Resource *sg_resource_t;
 
 // Types which are in fact dictelmt:
-typedef xbt_dictelm_t sg_storage_t;
+typedef struct s_xbt_dictelm *sg_storage_t;
 
 typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 

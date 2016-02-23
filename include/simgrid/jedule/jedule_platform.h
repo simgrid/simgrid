@@ -10,7 +10,7 @@
 #include "simgrid_config.h"
 
 #include "xbt/dynar.h"
-#include "xbt/hash.h"
+#include "xbt/dict.h"
 
 #ifdef HAVE_JEDULE
 

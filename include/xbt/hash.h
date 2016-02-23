@@ -8,7 +8,8 @@
 
 #ifndef XBT_HASH_H
 #define XBT_HASH_H
-#include "xbt/str.h"
+
+#include "xbt/misc.h"
 
 SG_BEGIN_DECL()
 

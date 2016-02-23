@@ -11,7 +11,6 @@
 #include <string.h>
 #include <assert.h>
 
-#include <xbt.h>
 #include <mc/mc.h>
 
 #include "mc/datatypes.h"

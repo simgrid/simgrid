@@ -4,12 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
-#include <string.h>
+#include "simgrid/jedule/jedule_platform.h"
+
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
+#include "xbt/str.h"
 
-#include "simgrid/jedule/jedule_platform.h"
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef HAVE_JEDULE
 
