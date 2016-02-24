@@ -128,19 +128,19 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  * Resource *
  ************/
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host,
-    xbt_dynar_t speedPeakList, int core, double speedPeak, double speedScale)
- : Cpu(model, host, NULL/*constraint*/, speedPeakList, core, speedPeak, speedScale)
+    xbt_dynar_t speedPeakList, int core, double speedPeak)
+ : Cpu(model, host, NULL/*constraint*/, speedPeakList, core, speedPeak)
 {
 }
 
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
-    xbt_dynar_t speedPeakList, int core, double speedPeak, double speedScale)
+    xbt_dynar_t speedPeakList, int core, double speedPeak)
  : Resource(model, host->name().c_str(), constraint)
  , m_core(core)
  , m_host(host)
 {
   p_speed.peak = speedPeak;
-  p_speed.scale = speedScale;
+  p_speed.scale = 1;
   host->pimpl_cpu = this;
   xbt_assert(p_speed.scale > 0, "Available speed has to be >0");
 

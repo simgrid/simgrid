@@ -132,7 +132,6 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
 
   p_cpu = surf_cpu_model_vm->createCpu(host_VM, // the machine hosting the VM
       sub_cpu->getSpeedPeakList(),        // host->power_peak,
-      1,                          // host->power_scale,
       NULL,                       // host->power_trace,
       1,                          // host->core_amount,
       NULL);                      // host->state_trace,

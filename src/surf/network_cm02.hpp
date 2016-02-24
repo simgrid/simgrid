@@ -43,7 +43,7 @@ public:
   Link* createLink(const char *name,
       double bw_initial, tmgr_trace_t bw_trace,
       double lat_initial, tmgr_trace_t lat_trace,
-      int initiallyOn, tmgr_trace_t state_trace,
+      tmgr_trace_t state_trace,
       e_surf_link_sharing_policy_t policy,
       xbt_dict_t properties) override;
   void updateActionsStateLazy(double now, double delta) override;
@@ -64,7 +64,7 @@ public:
   NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
       lmm_system_t system,
       double constraint_value,
-      int initiallyOn, tmgr_trace_t state_trace,
+      tmgr_trace_t state_trace,
       double bw_peak, tmgr_trace_t bw_trace,
       double lat_initial, tmgr_trace_t lat_trace,
       e_surf_link_sharing_policy_t policy);

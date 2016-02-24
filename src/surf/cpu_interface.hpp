@@ -43,14 +43,12 @@ public:
    * @brief Create a Cpu
    *
    * @param host The host that will have this CPU
-   * @param speedPeak The peak spead (max speed in Flops)
-   * @param speedScale The speed scale (in [O;1] available speed from peak)
+   * @param speedPeak The peak spead (max speed in Flops when no external load comes from a trace)
    * @param speedTrace Trace variations
    * @param core The number of core of this Cpu
    * @param state_trace [TODO]
    */
   virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-                          double speedScale,
                           tmgr_trace_t speedTrace, int core,
                           tmgr_trace_t state_trace)=0;
 
@@ -78,12 +76,9 @@ public:
    * @param speedPeakList [TODO]
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
-   * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
-    lmm_constraint_t constraint,
-    xbt_dynar_t speedPeakList,
-    int core, double speedPeak, double speedScale);
+    lmm_constraint_t constraint, xbt_dynar_t speedPeakList, int core, double speedPeak);
 
   /**
    * @brief Cpu constructor
@@ -93,11 +88,9 @@ public:
    * @param speedPeakList [TODO]
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
-   * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
-      xbt_dynar_t speedPeakList,
-    int core, double speedPeak, double speedScale);
+      xbt_dynar_t speedPeakList, int core, double speedPeak);
 
   ~Cpu();
 

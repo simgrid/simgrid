@@ -114,7 +114,6 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
                       link->bandwidth_trace,
                       link->latency,
                       link->latency_trace,
-                      link->initiallyOn,
                       link->state_trace, link->policy, link->properties);
     xbt_free(link_id);
     link_id = bprintf("%s_DOWN", link->id);
@@ -123,7 +122,6 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
                       link->bandwidth_trace,
                       link->latency,
                       link->latency_trace,
-                      link->initiallyOn,
                       link->state_trace, link->policy, link->properties);
     xbt_free(link_id);
   } else {
@@ -132,7 +130,6 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
         link->bandwidth_trace,
         link->latency,
         link->latency_trace,
-        link->initiallyOn,
         link->state_trace, link->policy, link->properties);
   }
 }

@@ -9,6 +9,9 @@ To upgrade your files, use the tool simgrid_update_xml
      that a <host>, <peer>, <cluster> or <cabinet> can deliver per second.
 
    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
+   
+   - In <host> and <link>, attributes availability and state are gone.
+     It was redundent with state and availability traces, and with peak values.
 
    - The DOCTYPE points to the right URL (this file):
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
@@ -98,9 +101,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST host id CDATA #REQUIRED>
 <!ATTLIST host speed CDATA #REQUIRED>
 <!ATTLIST host core  CDATA "1">
-<!ATTLIST host availability CDATA "1.0">
 <!ATTLIST host availability_file CDATA "">
-<!ATTLIST host state (ON|OFF) "ON">
 <!ATTLIST host state_file CDATA "">
 <!ATTLIST host coordinates  CDATA "">
 <!ATTLIST host pstate CDATA "0.0">
@@ -176,7 +177,6 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST link bandwidth_file CDATA "">
 <!ATTLIST link latency CDATA "0">
 <!ATTLIST link latency_file CDATA "">
-<!ATTLIST link state (ON|OFF) "ON">
 <!ATTLIST link state_file CDATA "">
 <!ATTLIST link sharing_policy (SHARED|FATPIPE|FULLDUPLEX) "SHARED">
 

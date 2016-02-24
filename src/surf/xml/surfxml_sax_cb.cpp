@@ -477,19 +477,11 @@ void ETag_surfxml_host(void)    {
   }
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
-  host.speed_scale = surf_parse_get_double( A_surfxml_host_availability);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
   host.speed_trace = tmgr_trace_new_from_file(A_surfxml_host_availability___file);
   host.state_trace = tmgr_trace_new_from_file(A_surfxml_host_state___file);
   host.pstate      = surf_parse_get_int(A_surfxml_host_pstate);
-
-  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
-        (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
-  if (A_surfxml_host_state == A_surfxml_host_state_ON)
-    host.initiallyOn = 1;
-  if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-    host.initiallyOn = 1;
-  host.coord = A_surfxml_host_coordinates;
+  host.coord       = A_surfxml_host_coordinates;
 
   sg_platf_new_host(&host);
   xbt_dynar_free(&host.speed_peak);
@@ -639,28 +631,13 @@ void ETag_surfxml_link(void){
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link,0,sizeof(link));
 
-  link.properties = current_property_set;
-
-  link.id                                            = A_surfxml_link_id;
-  link.bandwidth                                     = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id);
-  //printf("Link bandwidth [%g]\n", link.bandwidth);
-  link.bandwidth_trace                               = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
-  link.latency                                       = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id);
-  //printf("Link latency [%g]\n", link.latency);
-  link.latency_trace                                 = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
-
-  switch (A_surfxml_link_state) {
-  case A_surfxml_link_state_ON:
-    link.initiallyOn = 1;
-    break;
-  case A_surfxml_link_state_OFF:
-    link.initiallyOn = 0;
-    break;
-  default:
-    surf_parse_error("invalid state for link %s", link.id);
-    break;
-  }
-  link.state_trace = tmgr_trace_new_from_file(A_surfxml_link_state___file);
+  link.properties          = current_property_set;
+  link.id                  = A_surfxml_link_id;
+  link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id);
+  link.bandwidth_trace     = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
+  link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id);
+  link.latency_trace       = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
+  link.state_trace         = tmgr_trace_new_from_file(A_surfxml_link_state___file);
 
   switch (A_surfxml_link_sharing___policy) {
   case A_surfxml_link_sharing___policy_SHARED:
@@ -712,7 +689,6 @@ void ETag_surfxml_backbone(void){
   link.id = A_surfxml_backbone_id;
   link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id);
   link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id);
-  link.initiallyOn = 1;
   link.policy = SURF_LINK_SHARED;
 
   sg_platf_new_link(&link);

@@ -60,7 +60,6 @@ namespace simgrid {
         link.id = link_id;
         link.bandwidth = cluster->bw;
         link.latency = cluster->lat;
-        link.initiallyOn = 1;
         link.policy = cluster->sharing_policy;
         sg_platf_new_link(&link);
         s_surf_parsing_link_up_down_t info;

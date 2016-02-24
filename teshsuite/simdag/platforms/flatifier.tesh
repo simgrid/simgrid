@@ -315,34 +315,6 @@ $ ${bindir:=.}/flatifier$EXEEXT one_host_state_file.xml "--log=root.fmt:[%10.6r]
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT one_host_state_off.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
-> <AS id="AS0" routing="Full">
->   <host id="bob" power="500000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
->   <route src="bob" dst="bob">
->   <link_ctn id="__loopback__"/>
->   </route>
-> </AS>
-> </platform>
-
-$ ${bindir:=.}/flatifier$EXEEXT one_host_state_on.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
-> <AS id="AS0" routing="Full">
->   <host id="bob" power="500000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
->   <route src="bob" dst="bob">
->   <link_ctn id="__loopback__"/>
->   </route>
-> </AS>
-> </platform>
-
 $ ${bindir:=.}/flatifier$EXEEXT one_host_trace_file.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>

@@ -52,17 +52,14 @@ typedef struct {
   xbt_dynar_t speed_peak;
   int pstate;
   int core_amount;
-  double speed_scale;
   tmgr_trace_t speed_trace;
-  int initiallyOn;
   tmgr_trace_t state_trace;
   const char* coord;
   xbt_dict_t properties;
 } s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 
 #define SG_PLATF_HOST_INITIALIZER { \
-    NULL, 0, 1, 1, 1., NULL, 1/*ON*/, NULL, \
-    NULL, NULL \
+    NULL, 0, 1, 1, NULL, NULL, NULL, NULL \
 }
 
 typedef struct {
@@ -86,15 +83,13 @@ typedef struct {
   tmgr_trace_t bandwidth_trace;
   double latency;
   tmgr_trace_t latency_trace;
-  int initiallyOn;
   tmgr_trace_t state_trace;
   e_surf_link_sharing_policy_t policy;
   xbt_dict_t properties;
 } s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
 
 #define SG_PLATF_LINK_INITIALIZER {\
-  NULL, 0., NULL, 0., NULL, 1/*ON*/, \
-  NULL, SURF_LINK_SHARED, NULL \
+  NULL, 0., NULL, 0., NULL, NULL, SURF_LINK_SHARED, NULL \
 }
 
 typedef struct s_sg_platf_peer_cbarg *sg_platf_peer_cbarg_t;
