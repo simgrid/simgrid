@@ -27,7 +27,6 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_Dijkstra_ns3.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_floyd_bis.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_floyd_ns3.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_floyd.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_multi_hop.xml
