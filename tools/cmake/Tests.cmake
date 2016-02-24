@@ -386,6 +386,7 @@ IF(NOT enable_memcheck)
     FOREACH (ALLREDUCE_COLL_LARGE ompi_ring_segmented)
       ADD_TESH(tesh-smpi-allreduce-coll-large-${ALLREDUCE_COLL_LARGE} --cfg smpi/allreduce:${ALLREDUCE_COLL_LARGE} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce allreduce_coll_large.tesh)
     ENDFOREACH()
+    ADD_TESH(tesh-smpi-allreduce-coll-automatic --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce allreduce_coll_automatic.tesh)
     FOREACH (ALLTOALL_COLL 2dmesh 3dmesh pair pair_rma pair_one_barrier pair_light_barrier
                            pair_mpi_barrier rdb ring ring_light_barrier
                            ring_mpi_barrier ring_one_barrier

@@ -16,6 +16,7 @@ set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll.tesh
   ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll_large.tesh
+  ${CMAKE_CURRENT_SOURCE_DIR}/allreduce_coll_automatic.tesh
   PARENT_SCOPE)
 set(examples_src
   ${examples_src}
