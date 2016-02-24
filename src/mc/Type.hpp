@@ -26,43 +26,59 @@ class Member {
 public:
   Member() {}
 
+  /** Whether this member represent some inherited part of the object */
   bool inheritance = false;
+
+  /** Name of the member (if any) */
   std::string name;
+
+  /** DWARF location expression for locating the location of the member */
   simgrid::dwarf::DwarfExpression location_expression;
+
   std::size_t byte_size = 0; // Do we really need this?
+
   unsigned type_id = 0;
   simgrid::mc::Type* type = nullptr;
 
+  /** Whether the member is at a fixed offset from the base address */
   bool has_offset_location() const
   {
+    // Recognize the expression `DW_OP_plus_uconst(offset)`:
     return location_expression.size() == 1 &&
       location_expression[0].atom == DW_OP_plus_uconst;
   }
 
-  // TODO, check if this shortcut is really necessary
+  /** Get the offset of the member
+  *
+  *  This is only valid is the member is at a fixed offset from the base.
+  *  This is often the case (for C types, C++ type without virtual
+  *  inheritance).
+  *
+  *  If the location is more complex, the location expression has
+  *  to be evaluated (which might need accessing the memory).
+  */
   int offset() const
   {
     xbt_assert(this->has_offset_location());
     return this->location_expression[0].number;
   }
 
+  /** Set the location of the member as a fixed offset */
   void offset(int new_offset)
   {
+    // Set the expression to be `DW_OP_plus_uconst(offset)`:
     Dwarf_Op op;
     op.atom = DW_OP_plus_uconst;
     op.number = new_offset;
     this->location_expression = { op };
   }
+
 };
 
 /** A type in the model-checked program */
 class Type {
 public:
   Type() {}
-  Type(Type const& type) = default;
-  Type& operator=(Type const&) = default;
-  Type(Type&& type) = default;
-  Type& operator=(Type&&) = default;
 
   /** The DWARF TAG of the type (e.g. DW_TAG_array_type) */
   int type = 0;
