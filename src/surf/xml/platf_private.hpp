@@ -288,6 +288,7 @@ XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage
 XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
+XBT_PRIVATE void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
 
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex(void);
@@ -303,6 +304,10 @@ XBT_PUBLIC(int) surf_parse_get_debug(void);
 XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
 XBT_PUBLIC(int) surf_parse_lex_destroy(void);
 
+/* To include files (?) */
+XBT_PRIVATE void surfxml_bufferstack_push(int _new);
+XBT_PRIVATE void surfxml_bufferstack_pop(int _new);
+XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 
 SG_END_DECL()
 
