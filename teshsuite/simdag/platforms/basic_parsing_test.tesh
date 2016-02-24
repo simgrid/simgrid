@@ -28,21 +28,9 @@ $ ${bindir:=.}/basic_parsing_test one_host.xml "--log=root.fmt:[%10.6r]%e(%i:%P@
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_link_availability.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic_parsing_test link_attributes.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 2
-
-$ ${bindir:=.}/basic_parsing_test one_link_fatpipe.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 2
-
-$ ${bindir:=.}/basic_parsing_test one_link_shared.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 2
-
-$ ${bindir:=.}/basic_parsing_test one_link_state_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 2
+> Workstation number: 1, link number: 5
 
 $ ${bindir:=.}/basic_parsing_test three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
