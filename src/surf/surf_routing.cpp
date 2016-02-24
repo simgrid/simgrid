@@ -616,14 +616,11 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     }
     s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
     memset(&host, 0, sizeof(host));
-    host.initiallyOn   = 1;
     host.pstate        = 0;
-    host.speed_scale   = 1.0;
     host.core_amount   = 1;
 
     s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
     memset(&link, 0, sizeof(link));
-    link.initiallyOn = 1;
     link.policy    = SURF_LINK_FULLDUPLEX;
     link.latency   = cabinet->lat;
     link.bandwidth = cabinet->bw;
@@ -683,14 +680,12 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\"/>", host_id, peer->speed);
   s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
   memset(&host, 0, sizeof(host));
-  host.initiallyOn = 1;
   host.id = host_id;
 
   host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
   xbt_dynar_push(host.speed_peak,&peer->speed);
   host.pstate = 0;
   //host.power_peak = peer->power;
-  host.speed_scale = 1.0;
   host.speed_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
@@ -699,7 +694,6 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
 
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link, 0, sizeof(link));
-  link.initiallyOn = 1;
   link.policy  = SURF_LINK_SHARED;
   link.latency = peer->lat;
 

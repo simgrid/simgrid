@@ -16,14 +16,6 @@ $ ${bindir:=.}/basic_parsing_test one_host_state_file.xml "--log=root.fmt:[%10.6
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_host_state_off.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
-
-$ ${bindir:=.}/basic_parsing_test one_host_state_on.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
-
 $ ${bindir:=.}/basic_parsing_test one_host_trace_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 1, link number: 1

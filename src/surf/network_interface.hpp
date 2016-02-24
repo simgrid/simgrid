@@ -84,7 +84,6 @@ public:
    * @param bw_trace The trace associated to the Link bandwidth
    * @param lat_initial The initial latency of the Link in seconds
    * @param lat_trace The trace associated to the Link latency
-   * @param initiallyOn The initial Link (state)[e_surf_resource_state_t]
    * @param state_trace The trace associated to the Link (state)[e_surf_resource_state_t]
    * @param policy The sharing policy of the Link
    * @param properties Dictionary of properties associated to this Resource
@@ -95,7 +94,6 @@ public:
                                    tmgr_trace_t bw_trace,
                                    double lat_initial,
                                    tmgr_trace_t lat_trace,
-                                   int initiallyOn,
                                    tmgr_trace_t state_trace,
                                    e_surf_link_sharing_policy_t policy,
                                    xbt_dict_t properties)=0;

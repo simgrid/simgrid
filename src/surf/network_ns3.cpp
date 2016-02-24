@@ -33,17 +33,13 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 {
   XBT_DEBUG("NS3_ADD_LINK '%s'",link->id);
 
-  if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),free);
+  if(!IPV4addr)
+    IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
   surf_network_model->createLink(link->id,
-                                     link->bandwidth,
-                                     link->bandwidth_trace,
-                                     link->latency,
-                                     link->latency_trace,
-                                     link->initiallyOn,
-                                     link->state_trace,
-                                     link->policy,
-                                     link->properties);
+      link->bandwidth, link->bandwidth_trace,
+      link->latency, link->latency_trace,
+      link->state_trace, link->policy, link->properties);
 }
 
 static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
@@ -259,14 +255,11 @@ NetworkNS3Model::~NetworkNS3Model() {
 }
 
 Link* NetworkNS3Model::createLink(const char *name,
-                                   double bw_initial,
-                                   tmgr_trace_t bw_trace,
-                                   double lat_initial,
-                                   tmgr_trace_t lat_trace,
-                                   int initiallyOn,
-                                   tmgr_trace_t state_trace,
-                                   e_surf_link_sharing_policy_t policy,
-                                   xbt_dict_t properties){
+    double bw_initial, tmgr_trace_t bw_trace,
+    double lat_initial, tmgr_trace_t lat_trace,
+    tmgr_trace_t state_trace,
+    e_surf_link_sharing_policy_t policy,
+    xbt_dict_t properties){
   if (bw_trace)
     XBT_INFO("The NS3 network model doesn't support bandwidth state traces");
   if (lat_trace)

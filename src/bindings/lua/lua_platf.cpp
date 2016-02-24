@@ -95,8 +95,6 @@ int console_add_backbone(lua_State *L) {
   link.latency = surf_parse_get_time(lua_tostring(L, -1),"latency of backbone",link.id);
   lua_pop(L, 1);
 
-  link.initiallyOn = 1;
-
   lua_pushstring(L, "sharing_policy");
   type = lua_gettable(L, -2);
   const char* policy = lua_tostring(L, -1);
@@ -159,12 +157,11 @@ int console_add_host___link(lua_State *L) {
 int console_add_host(lua_State *L) {
   s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
-  int state, type;
+  int type;
 
   // we get values from the table passed as argument
   if (!lua_istable(L, -1)) {
-    XBT_ERROR
-        ("Bad Arguments to create host. Should be a table with named arguments");
+    XBT_ERROR("Bad Arguments to create host. Should be a table with named arguments");
     return -1;
   }
 
@@ -201,30 +198,11 @@ int console_add_host(lua_State *L) {
     host.core_amount = 1;
   lua_pop(L, 1);
 
-  //get power_scale
-  lua_pushstring(L, "availability");
-  lua_gettable(L, -2);
-  if(!lua_isnumber(L,-1)) host.speed_scale = 1;// Default value
-  else host.speed_scale = lua_tonumber(L, -1);
-  lua_pop(L, 1);
-
   //get power_trace
   lua_pushstring(L, "availability_file");
   lua_gettable(L, -2);
   host.speed_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
-
-  //get state initial
-  lua_pushstring(L, "state");
-  lua_gettable(L, -2);
-  if(!lua_isnumber(L,-1)) state = 1;// Default value
-  else state = lua_tonumber(L, -1);
-  lua_pop(L, 1);
-
-  if (state)
-    host.initiallyOn = 1;
-  else
-    host.initiallyOn = 0;
 
   //get trace state
   lua_pushstring(L, "state_file");
@@ -301,15 +279,6 @@ int  console_add_link(lua_State *L) {
   lua_pushstring(L, "state_file");
   lua_gettable(L, -2);
   link.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
-  lua_pop(L, 1);
-
-  //get state_initial value
-  lua_pushstring(L, "state");
-  lua_gettable(L, -2);
-  if (!lua_isnumber(L,-1) || lua_tonumber(L, -1))
-    link.initiallyOn = 1;
-  else
-    link.initiallyOn = 0;
   lua_pop(L, 1);
 
   //get policy value

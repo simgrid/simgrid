@@ -52,7 +52,7 @@ HostL07Model::HostL07Model() : HostModel() {
   routing_model_create(surf_network_model->createLink("__loopback__",
                                                     498000000, NULL,
                                                     0.000015, NULL,
-                                                    1/*ON*/, NULL,
+                                                    NULL,
                                                     SURF_LINK_FATPIPE, NULL));
 }
 
@@ -296,11 +296,9 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
 }
 
 Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t powerPeakList,
-                          double power_scale,
-                          tmgr_trace_t power_trace, int core,
-                          tmgr_trace_t state_trace)
+    tmgr_trace_t power_trace, int core, tmgr_trace_t state_trace)
 {
-  CpuL07 *cpu = new CpuL07(this, host, powerPeakList, power_scale, power_trace, core, state_trace);
+  CpuL07 *cpu = new CpuL07(this, host, powerPeakList, power_trace, core, state_trace);
   return cpu;
 }
 
@@ -309,7 +307,6 @@ Link* NetworkL07Model::createLink(const char *name,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
                                  tmgr_trace_t lat_trace,
-                                 int initiallyOn,
                                  tmgr_trace_t state_trace,
                                  e_surf_link_sharing_policy_t policy,
                                  xbt_dict_t properties)
@@ -318,10 +315,10 @@ Link* NetworkL07Model::createLink(const char *name,
            "Link '%s' declared several times in the platform file.", name);
 
   Link* link = new LinkL07(this, name, properties,
-                 bw_initial, bw_trace,
-           lat_initial, lat_trace,
-           initiallyOn, state_trace,
-           policy);
+      bw_initial, bw_trace,
+      lat_initial, lat_trace,
+      state_trace,
+      policy);
   Link::onCreation(link);
   return link;
 }
@@ -332,11 +329,11 @@ Link* NetworkL07Model::createLink(const char *name,
 
 CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host,
     xbt_dynar_t speedPeakList,
-    double speedScale, tmgr_trace_t speedTrace,
+    tmgr_trace_t speedTrace,
     int core, tmgr_trace_t state_trace)
- : Cpu(model, host, speedPeakList, core, xbt_dynar_get_as(speedPeakList,0,double), speedScale)
+ : Cpu(model, host, speedPeakList, core, xbt_dynar_get_as(speedPeakList,0,double))
 {
-  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,0,double) * speedScale);
+  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,0,double));
 
   if (speedTrace)
     p_speed.event = future_evt_set->add_trace(speedTrace, 0.0, this);
@@ -352,7 +349,7 @@ CpuL07::~CpuL07()
 LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
              double bw_initial, tmgr_trace_t bw_trace,
              double lat_initial, tmgr_trace_t lat_trace,
-             int initiallyOn, tmgr_trace_t state_trace,
+             tmgr_trace_t state_trace,
              e_surf_link_sharing_policy_t policy)
  : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), state_trace)
 {
@@ -360,17 +357,12 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
   if (bw_trace)
     m_bandwidth.event = future_evt_set->add_trace(bw_trace, 0.0, this);
 
-  if (initiallyOn)
-    turnOn();
-  else
-    turnOff();
-
   m_latency.peak = lat_initial;
   if (lat_trace)
     m_latency.event = future_evt_set->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
-  lmm_constraint_shared(getConstraint());
+    lmm_constraint_shared(getConstraint());
 }
 
 Action *CpuL07::execution_start(double size)

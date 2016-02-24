@@ -101,15 +101,13 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
 
   simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h,
       host->speed_peak,
-      host->speed_scale, host->speed_trace,
+      host->speed_trace,
       host->core_amount,
       host->state_trace);
   surf_host_model->createHost(host->id, netcard, cpu, host->properties)->attach(h);
 
   if (host->pstate != 0)
     cpu->setPState(host->pstate);
-  if (! host->initiallyOn)
-    cpu->turnOff();
 
   simgrid::s4u::Host::onCreation(*h);
 
@@ -278,9 +276,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       host.pstate = 0;
 
       //host.power_peak = cluster->power;
-      host.speed_scale = 1.0;
       host.core_amount = cluster->core_amount;
-      host.initiallyOn = 1;
       host.coord = "";
       sg_platf_new_host(&host);
       xbt_dynar_free(&host.speed_peak);
@@ -309,7 +305,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         link.id        = tmp_link;
         link.bandwidth = cluster->loopback_bw;
         link.latency   = cluster->loopback_lat;
-        link.initiallyOn = 1;
         link.policy    = SURF_LINK_FATPIPE;
         sg_platf_new_link(&link);
         info_loop.link_up   = Link::byName(tmp_link);
@@ -330,7 +325,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         link.id = tmp_link;
         link.bandwidth = cluster->limiter_link;
         link.latency = 0;
-        link.initiallyOn = 1;
         link.policy = SURF_LINK_SHARED;
         sg_platf_new_link(&link);
         info_lim.link_up = Link::byName(tmp_link);
@@ -394,7 +388,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     link.id        = link_backbone;
     link.bandwidth = cluster->bb_bw;
     link.latency   = cluster->bb_lat;
-    link.initiallyOn = 1;
     link.policy    = cluster->bb_sharing_policy;
 
     sg_platf_new_link(&link);

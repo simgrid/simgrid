@@ -39,8 +39,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/one_host_availability.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_host_properties.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_host_state_file.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_state_off.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_state_on.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_host_trace_file.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_host_trace_inside.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_host.xml
