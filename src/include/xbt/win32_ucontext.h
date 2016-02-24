@@ -29,7 +29,7 @@
 #ifndef UCONTEXT_H
 #define UCONTEXT_H
     
-#ifdef _cplusplus
+#ifdef __cplusplus
 extern "C"
 {
 #endif
@@ -54,7 +54,7 @@ int setcontext(const ucontext_t * ucp);
 int makecontext(ucontext_t *, void (*)(), int, ...);
 int swapcontext(ucontext_t *, const ucontext_t *);
 
-#ifdef _cplusplus
+#ifdef __cplusplus
 }
 #endif
 #endif  /* UCONTEXT_H */
