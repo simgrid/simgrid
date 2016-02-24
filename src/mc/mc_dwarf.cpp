@@ -666,7 +666,6 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   case DW_TAG_pointer_type:
   case DW_TAG_reference_type:
   case DW_TAG_rvalue_reference_type:
-    type.is_pointer_type = 1;
     break;
 
   case DW_TAG_structure_type:

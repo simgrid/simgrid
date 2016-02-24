@@ -72,7 +72,6 @@ public:
   int element_count = 0; /* Number of elements for array type */
   unsigned type_id = 0; /* DW_AT_type id */
   std::vector<Member> members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
-  int is_pointer_type = 0;
 
   simgrid::mc::Type* subtype = nullptr; // DW_AT_type
   simgrid::mc::Type* full_type = nullptr; // The same (but more complete) type
