@@ -31,7 +31,7 @@ public:
   ~Mailbox();
   
 protected:
-  smx_rdv_t getInferior() { return p_inferior; }
+  smx_rdv_t getInferior() { return inferior_; }
 
 public:
   /** Get the name of that mailbox */
@@ -40,8 +40,8 @@ public:
   static Mailbox *byName(const char *name);
 
 private:
-  std::string p_name;
-  smx_rdv_t p_inferior;
+  std::string name_;
+  smx_rdv_t inferior_;
   static boost::unordered_map<std::string, Mailbox *> *mailboxes;
 };
 }} // namespace simgrid::s4u

@@ -100,7 +100,7 @@ msg_host_t MSG_host_self(void)
  */
 void MSG_host_on(msg_host_t host)
 {
-  host->turn_on();
+  host->turnOn();
 }
 
 /** \ingroup m_host_management
@@ -111,7 +111,7 @@ void MSG_host_on(msg_host_t host)
  */
 void MSG_host_off(msg_host_t host)
 {
-  host->turn_off();
+  host->turnOff();
 }
 
 /*
@@ -252,7 +252,7 @@ int MSG_host_is_off(msg_host_t host)
  */
 void MSG_host_set_params(msg_host_t host, vm_params_t params)
 {
-  host->set_parameters(params);
+  host->setParameters(params);
 }
 
 /** \ingroup m_host_management
@@ -263,7 +263,7 @@ void MSG_host_set_params(msg_host_t host, vm_params_t params)
  */
 void MSG_host_get_params(msg_host_t host, vm_params_t params)
 {
-  host->get_parameters(params);
+  host->parameters(params);
 }
 
 /** \ingroup m_host_management
@@ -275,7 +275,7 @@ void MSG_host_get_params(msg_host_t host, vm_params_t params)
  */
 double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
     xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-    return host->power_peak_at(pstate_index);
+    return host->powerPeakAt(pstate_index);
 }
 
 /** \ingroup m_host_management
@@ -286,7 +286,7 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
  */
 double MSG_host_get_current_power_peak(msg_host_t host) {
     xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-    return host->current_power_peak();
+    return host->currentPowerPeak();
 }
 
 /** \ingroup m_host_management
@@ -306,7 +306,7 @@ int MSG_host_get_nb_pstates(msg_host_t host) {
 xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
-  return host->mounted_storages_as_dict();
+  return host->mountedStoragesAsDict();
 }
 
 /** \ingroup m_host_management
@@ -317,7 +317,7 @@ xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
 xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
 {
   xbt_assert((host != NULL), "Invalid parameters");
-  return host->attached_storages();
+  return host->attachedStorages();
 }
 
 /** \ingroup m_host_management
@@ -334,7 +334,7 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
   char* mount_name;
   xbt_dict_cursor_t cursor = NULL;
 
-  xbt_dict_t storage_list = host->mounted_storages_as_dict();
+  xbt_dict_t storage_list = host->mountedStoragesAsDict();
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
     storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);

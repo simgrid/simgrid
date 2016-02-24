@@ -24,10 +24,10 @@ void s4u::Engine::loadPlatform(const char *platf) {
   SIMIX_create_environment(platf);
 }
 
-void s4u::Engine::register_function(const char*name, int (*code)(int,char**)) {
+void s4u::Engine::registerFunction(const char*name, int (*code)(int,char**)) {
   SIMIX_function_register(name,code);
 }
-void s4u::Engine::register_default(int (*code)(int,char**)) {
+void s4u::Engine::registerDefault(int (*code)(int,char**)) {
   SIMIX_function_register_default(code);
 }
 void s4u::Engine::loadDeployment(const char *deploy) {

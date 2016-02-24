@@ -23,8 +23,8 @@ public:
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage &byName(const char* name);
   const char *name();
-  sg_size_t size_free();
-  sg_size_t size_used();
+  sg_size_t sizeFree();
+  sg_size_t sizeUsed();
   /** Retrieve the total amount of space of this storage element */
   sg_size_t size();
 
@@ -40,16 +40,16 @@ XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
 protected:
   smx_storage_t inferior();
 private:
-  static boost::unordered_map<std::string, Storage *> *storages;
-  std::string p_name;
-  smx_storage_t p_inferior;
+  static boost::unordered_map<std::string, Storage *> *storages_;
+  std::string name_;
+  smx_storage_t inferior_;
 
 
 public:
-  void set_userdata(void *data) {p_userdata = data;}
-  void *userdata() {return p_userdata;}
+  void setUserdata(void *data) {userdata_ = data;}
+  void *userdata() {return userdata_;}
 private:
-  void *p_userdata = NULL;
+  void *userdata_ = NULL;
 
 };
 

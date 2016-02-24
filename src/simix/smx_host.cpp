@@ -45,7 +45,7 @@ void SIMIX_host_on(sg_host_t h)
 
   xbt_assert((host != NULL), "Invalid parameters");
 
-  if (h->is_off()) {
+  if (h->isOff()) {
     simgrid::surf::Host* surf_host = h->extension<simgrid::surf::Host>();
     surf_host->turnOn();
 
@@ -94,7 +94,7 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
 
   xbt_assert((host != NULL), "Invalid parameters");
 
-  if (h->is_on()) {
+  if (h->isOn()) {
     simgrid::surf::Host* surf_host = h->extension<simgrid::surf::Host>();
     surf_host->turnOff();
 
@@ -467,7 +467,7 @@ void SIMIX_execution_finish(smx_synchro_t synchro)
             (int)synchro->state);
     }
     /* check if the host is down */
-    if (simcall->issuer->host->is_off()) {
+    if (simcall->issuer->host->isOff()) {
       simcall->issuer->context->iwannadie = 1;
     }
 
@@ -485,7 +485,7 @@ void SIMIX_post_host_execute(smx_synchro_t synchro)
 {
   if (synchro->type == SIMIX_SYNC_EXECUTE && /* FIMXE: handle resource failure
                                                * for parallel tasks too */
-      synchro->execution.host->is_off()) {
+      synchro->execution.host->isOff()) {
     /* If the host running the synchro failed, notice it so that the asking
      * process can be killed if it runs on that host itself */
     synchro->state = SIMIX_FAILED;

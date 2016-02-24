@@ -20,12 +20,12 @@ boost::unordered_map <std::string, s4u::Mailbox *> *s4u::Mailbox::mailboxes = ne
 
 
 s4u::Mailbox::Mailbox(const char*name, smx_rdv_t inferior) {
-  p_inferior = inferior;
-  p_name = name;
+  inferior_ = inferior;
+  name_ = name;
   mailboxes->insert({name, this});
 }
 const char *s4u::Mailbox::getName() {
-  return p_name.c_str();
+  return name_.c_str();
 }
 s4u::Mailbox *s4u::Mailbox::byName(const char*name) {
   s4u::Mailbox *res;

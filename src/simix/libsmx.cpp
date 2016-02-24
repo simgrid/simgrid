@@ -54,40 +54,40 @@ xbt_swag_t simcall_host_get_process_list(sg_host_t host)
  * \deprecated */
 double simcall_host_get_current_power_peak(sg_host_t host)
 {
-  return host->current_power_peak();
+  return host->currentPowerPeak();
 }
 
 /** \ingroup simix_host_management
  * \deprecated */
 double simcall_host_get_power_peak_at(sg_host_t host, int pstate_index)
 {
-  return host->power_peak_at(pstate_index);
+  return host->powerPeakAt(pstate_index);
 }
 
 /** \deprecated */
 void simcall_host_get_params(sg_host_t vm, vm_params_t params)
 {
-  vm->get_parameters(params);
+  vm->parameters(params);
 }
 
 /** \deprecated */
 void simcall_host_set_params(sg_host_t vm, vm_params_t params)
 {
-  vm->set_parameters(params);
+  vm->setParameters(params);
 }
 
 /** \ingroup simix_storage_management
  *  \deprecated */
 xbt_dict_t simcall_host_get_mounted_storage_list(sg_host_t host)
 {
-  return host->mounted_storages_as_dict();
+  return host->mountedStoragesAsDict();
 }
 
 /** \ingroup simix_storage_management
  *  \deprecated */
 xbt_dynar_t simcall_host_get_attached_storage_list(sg_host_t host)
 {
-  return host->attached_storages();
+  return host->attachedStorages();
 }
 
 // ***** Other simcalls

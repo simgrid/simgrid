@@ -30,30 +30,32 @@ public:
   File(const char *fullpath, void* userdata);
   ~File();
 private:
-  smx_file_t p_inferior;
-  const char *p_path;
+  smx_file_t inferior_;
+  const char *path_;
 
 public:
   /** Retrieves the path to the file */
-  const char *path() { return p_path;}
+  const char *path() { return path_;}
 public:
   /** Simulates a read action. Returns the size of data actually read
    *
-   *  FIXME: reading from a remotely mounted disk is not implemented yet. Any storage is considered as local, and no network communication ever occur.
+   *  FIXME: reading from a remotely mounted disk is not implemented yet.
+   *  Any storage is considered as local, and no network communication ever occur.
    */
   sg_size_t read(sg_size_t size);
   /** Simulates a write action. Returns the size of data actually written.
    *
-   *  FIXME: reading from a remotely mounted disk is not implemented yet. Any storage is considered as local, and no network communication ever occur.
+   *  FIXME: reading from a remotely mounted disk is not implemented yet.
+   *  Any storage is considered as local, and no network communication ever occur.
    */
   sg_size_t write(sg_size_t size);
 
   /** Allows to store user data on that host */
-  void set_userdata(void *data) {p_userdata = data;}
+  void setUserdata(void *data) {userdata_ = data;}
   /** Retrieves the previously stored data */
-  void* userdata() {return p_userdata;}
+  void* userdata() {return userdata_;}
 private:
-  void *p_userdata=NULL;
+  void *userdata_=NULL;
 
 public:
   /** Retrieve the datasize */

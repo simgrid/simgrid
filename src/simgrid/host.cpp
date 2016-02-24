@@ -157,7 +157,7 @@ int sg_host_core_count(sg_host_t host) {
  *  @return 1 if the host is active or 0 if it has crashed.
  */
 int sg_host_is_on(sg_host_t host) {
-  return host->is_on();
+  return host->isOn();
 }
 
 /** @brief Returns the number of power states for a host.
@@ -165,7 +165,7 @@ int sg_host_is_on(sg_host_t host) {
  *  See also @ref SURF_plugin_energy.
  */
 int sg_host_get_nb_pstates(sg_host_t host) {
-  return host->pstates_count();
+  return host->pstatesCount();
 }
 
 /** @brief Gets the pstate at which that host currently runs.
@@ -180,7 +180,7 @@ int sg_host_get_pstate(sg_host_t host) {
  *  See also @ref SURF_plugin_energy.
  */
 void sg_host_set_pstate(sg_host_t host,int pstate) {
-  host->set_pstate(pstate);
+  host->setPstate(pstate);
 }
 
 /** @brief Get the properties of an host */

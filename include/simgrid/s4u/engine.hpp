@@ -29,14 +29,14 @@ public:
   void loadPlatform(const char *platf);
 
   /** Registers the main function of an actor that will be launched from the deployment file */
-  void register_function(const char*name, int (*code)(int,char**));
+  void registerFunction(const char*name, int (*code)(int,char**));
 
   /** Registers a function as the default main function of actors
    *
    * It will be used as fallback when the function requested from the deployment file was not registered.
    * It is used for trace-based simulations (see examples/msg/actions).
    */
-  void register_default(int (*code)(int,char**));
+  void registerDefault(int (*code)(int,char**));
 
   /** @brief Load a deployment file and launch the actors that it contains */
   void loadDeployment(const char *deploy);

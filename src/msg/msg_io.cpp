@@ -343,7 +343,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   msg_host_t host_dest;
   size_t longest_prefix_length = 0;
 
-  xbt_dict_t storage_list = host->mounted_storages_as_dict();
+  xbt_dict_t storage_list = host->mountedStoragesAsDict();
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
     file_mount_name = (char *) xbt_malloc ((strlen(mount_name)+1));
     strncpy(file_mount_name,fullpath,strlen(mount_name)+1);

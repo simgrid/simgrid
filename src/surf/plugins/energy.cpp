@@ -83,7 +83,7 @@ void HostEnergy::update()
   double previous_energy = this->total_energy;
 
   double instantaneous_consumption;
-  if (host->is_off())
+  if (host->isOff())
     instantaneous_consumption = this->watts_off;
   else
     instantaneous_consumption = this->getCurrentWattsValue(cpu_load);
