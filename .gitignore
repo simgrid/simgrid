@@ -274,6 +274,8 @@ teshsuite/java/sleep_host_off/java_sleep_host_off_compiled
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf_expression/dwarf-expression
 teshsuite/mc/replay/random_bug
+teshsuite/mc/with_mutex_handling
+teshsuite/mc/without_mutex_handling
 teshsuite/msg/get_sender/get_sender
 teshsuite/msg/host_on_off/host_on_off
 teshsuite/msg/host_on_off/host_on_off_recv
