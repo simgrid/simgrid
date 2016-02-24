@@ -124,50 +124,6 @@ void xbt_str_trim(char *s, const char *char_list)
   xbt_str_ltrim(s, char_list);
 }
 
-/**  @brief Replace double whitespaces (but no other characters) from the string.
- *
- * The function modifies the string so that each time that several spaces appear,
- * they are replaced by a single space. It will only do so for spaces (ASCII 32, 0x20).
- *
- * @param s The string to strip. Modified in place.
- *
- */
-void xbt_str_strip_spaces(char *s)
-{
-  char *p = s;
-  int e = 0;
-
-  if (!s)
-    return;
-
-  while (1) {
-    if (!*p)
-      goto end;
-
-    if (*p != ' ')
-      break;
-
-    p++;
-  }
-
-  e = 1;
-
-  do {
-    if (e)
-      *s++ = *p;
-
-    if (!*++p)
-      goto end;
-
-    if (e ^ (*p != ' '))
-      if ((e = !e))
-        *s++ = ' ';
-  } while (1);
-
-end:
-  *s = '\0';
-}
-
 /** @brief Substitutes a char for another in a string
  *
  * @param str the string to modify
@@ -850,28 +806,6 @@ char *xbt_str_from_file(FILE * file)
   res = buff->data;
   xbt_strbuff_free_container(buff);
   return res;
-}
-
-/* @brief Retrun 1 if string 'str' starts with string 'start'
- *
- * \param str a string
- * \param start the string to search in str
- *
- * \return 1 if 'str' starts with 'start'
- */
-int xbt_str_start_with(const char* str, const char* start)
-{
-  unsigned int i;
-  size_t l_str = strlen(str);
-  size_t l_start = strlen(start);
-
-  if(l_start > l_str) return 0;
-
-  for(i = 0; i< l_start; i++){
-    if(str[i] != start[i]) return 0;
-  }
-
-  return 1;
 }
 
 /** @brief Parse an integer out of a string, or raise an error

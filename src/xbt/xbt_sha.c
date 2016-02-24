@@ -32,11 +32,8 @@ static void sha_calculate(xbt_sha_t sha);
 /** @brief constructor */
 xbt_sha_t xbt_sha_new(void)
 {
-  xbt_sha_t sha;
-
-  sha = xbt_new(s_xbt_sha_t, 1);
+  xbt_sha_t sha = xbt_new(s_xbt_sha_t, 1);
   xbt_sha_reset(sha);
-
   return sha;
 }
 
