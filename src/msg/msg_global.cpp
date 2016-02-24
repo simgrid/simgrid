@@ -15,7 +15,6 @@
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "xbt/replay.h"
 #include "simgrid/sg_config.h" /* Configuration mechanism of SimGrid */
-#include "src/surf/callbacks.h"
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME by removing MSG_post_create_environment()
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");

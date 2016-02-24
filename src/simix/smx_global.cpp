@@ -12,6 +12,7 @@
 #endif
 
 #include "src/surf/surf_interface.hpp"
+#include "src/surf/storage_interface.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "smx_private.h"
 #include "smx_private.hpp"
@@ -23,8 +24,6 @@
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
-
-#include "src/surf/callbacks.h"
 
 #ifdef HAVE_MC
 #include "src/mc/mc_private.h"
@@ -259,7 +258,14 @@ void SIMIX_global_init(int *argc, char **argv)
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       SIMIX_host_create(&host);
     });
-    surf_on_storage_created(SIMIX_storage_create_);
+    simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
+      const char* id = storage->getName();
+        // TODO, create sg_storage_by_name
+        sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, id);
+        xbt_assert(s != NULL, "Storage not found for name %s", id);
+        SIMIX_storage_create_(s);
+      });
+
 
   }
   if (!simix_timers) {
