@@ -110,7 +110,6 @@ public:
 }} // namespace simgrid::s4u
 
 extern int MSG_HOST_LEVEL;
-extern int SD_HOST_LEVEL;
 extern int SIMIX_HOST_LEVEL;
 extern int ROUTING_HOST_LEVEL;
 extern int USER_HOST_LEVEL;

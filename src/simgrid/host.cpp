@@ -90,7 +90,6 @@ void sg_host_init()
     delete static_cast<simgrid::surf::NetCard*>(p);
   });
 
-  SD_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
   SIMIX_HOST_LEVEL = simgrid::s4u::Host::extension_create(SIMIX_host_destroy);
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
 }

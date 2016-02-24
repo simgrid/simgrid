@@ -21,7 +21,6 @@
 #include "simgrid/s4u/storage.hpp"
 
 int MSG_HOST_LEVEL;
-int SD_HOST_LEVEL;
 int SIMIX_HOST_LEVEL;
 int ROUTING_HOST_LEVEL;
 int USER_HOST_LEVEL;
