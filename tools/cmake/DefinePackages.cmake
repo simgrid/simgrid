@@ -1199,9 +1199,9 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/cluster_no_backbone.xml
   examples/platforms/clusters_routing_full.xml
   examples/platforms/crosstraffic.xml
-  examples/platforms/conf/gridpp_grid_2004.conf
-  examples/platforms/conf/lcg_sept2004_grid.conf
-  examples/platforms/conf/transform_optorsim_platform.pl
+  examples/platforms/optorsim/gridpp_grid_2004.conf
+  examples/platforms/optorsim/lcg_sept2004_grid.conf
+  examples/platforms/optorsim/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/config_tracing.xml
   examples/platforms/trace/faulty_host.trace
