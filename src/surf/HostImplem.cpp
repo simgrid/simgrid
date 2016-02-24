@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "host_interface.hpp"
+#include "HostImplem.hpp"
 
 #include <simgrid/s4u/host.hpp>
 
@@ -27,15 +27,15 @@ simgrid::surf::HostModel *surf_host_model = NULL;
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::Extension<simgrid::s4u::Host, Host> Host::EXTENSION_ID;
+simgrid::xbt::Extension<simgrid::s4u::Host, HostImplem> HostImplem::EXTENSION_ID;
 
 /*********
  * Model *
  *********/
-Host *HostModel::createHost(const char *name,NetCard *netElm, Cpu *cpu, xbt_dict_t props){
+HostImplem *HostModel::createHost(const char *name,NetCard *netElm, Cpu *cpu, xbt_dict_t props){
   xbt_dynar_t storageList = (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL);
 
-  Host *host = new simgrid::surf::Host(surf_host_model, name, props, storageList, cpu);
+  HostImplem *host = new simgrid::surf::HostImplem(surf_host_model, name, props, storageList, cpu);
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
   return host;
 }
@@ -117,14 +117,14 @@ Action *HostModel::executeParallelTask(int host_nb,
  ************/
 
 
-void Host::classInit()
+void HostImplem::classInit()
 {
   if (!EXTENSION_ID.valid()) {
-    EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::surf::Host>();
+    EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::surf::HostImplem>();
   }
 }
 
-Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
+HostImplem::HostImplem(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
                      xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name)
  , PropertyHolder(props)
@@ -133,7 +133,7 @@ Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
   p_params.ramsize = 0;
 }
 
-Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
+HostImplem::HostImplem(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
                  xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name, constraint)
  , PropertyHolder(props)
@@ -143,11 +143,11 @@ Host::Host(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props, 
 }
 
 /** @brief use destroy() instead of this destructor */
-Host::~Host()
+HostImplem::~HostImplem()
 {
 }
 
-void Host::attach(simgrid::s4u::Host* host)
+void HostImplem::attach(simgrid::s4u::Host* host)
 {
   if (p_host != nullptr)
     xbt_die("Already attached to host %s", host->name().c_str());
@@ -155,26 +155,26 @@ void Host::attach(simgrid::s4u::Host* host)
   p_host = host;
 }
 
-bool Host::isOn() {
+bool HostImplem::isOn() {
   return p_cpu->isOn();
 }
-bool Host::isOff() {
+bool HostImplem::isOff() {
   return p_cpu->isOff();
 }
-void Host::turnOn(){
+void HostImplem::turnOn(){
   if (isOff()) {
     p_cpu->turnOn();
     simgrid::s4u::Host::onStateChange(*this->p_host);
   }
 }
-void Host::turnOff(){
+void HostImplem::turnOff(){
   if (isOn()) {
     p_cpu->turnOff();
     simgrid::s4u::Host::onStateChange(*this->p_host);
   }
 }
 
-simgrid::surf::Storage *Host::findStorageOnMountList(const char* mount)
+simgrid::surf::Storage *HostImplem::findStorageOnMountList(const char* mount)
 {
   simgrid::surf::Storage *st = NULL;
   s_mount_t mnt;
@@ -193,7 +193,7 @@ simgrid::surf::Storage *Host::findStorageOnMountList(const char* mount)
   return st;
 }
 
-xbt_dict_t Host::getMountedStorageList()
+xbt_dict_t HostImplem::getMountedStorageList()
 {
   s_mount_t mnt;
   unsigned int i;
@@ -207,7 +207,7 @@ xbt_dict_t Host::getMountedStorageList()
   return storage_list;
 }
 
-xbt_dynar_t Host::getAttachedStorageList()
+xbt_dynar_t HostImplem::getAttachedStorageList()
 {
   xbt_lib_cursor_t cursor;
   char *key;
@@ -224,7 +224,7 @@ xbt_dynar_t Host::getAttachedStorageList()
   return result;
 }
 
-Action *Host::open(const char* fullpath) {
+Action *HostImplem::open(const char* fullpath) {
 
   simgrid::surf::Storage *st = NULL;
   s_mount_t mnt;
@@ -268,25 +268,25 @@ Action *Host::open(const char* fullpath) {
   return action;
 }
 
-Action *Host::close(surf_file_t fd) {
+Action *HostImplem::close(surf_file_t fd) {
   simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("CLOSE %s on disk '%s'",fd->name, st->getName());
   return st->close(fd);
 }
 
-Action *Host::read(surf_file_t fd, sg_size_t size) {
+Action *HostImplem::read(surf_file_t fd, sg_size_t size) {
   simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("READ %s on disk '%s'",fd->name, st->getName());
   return st->read(fd, size);
 }
 
-Action *Host::write(surf_file_t fd, sg_size_t size) {
+Action *HostImplem::write(surf_file_t fd, sg_size_t size) {
   simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
   XBT_DEBUG("WRITE %s on disk '%s'",fd->name, st->getName());
   return st->write(fd, size);
 }
 
-int Host::unlink(surf_file_t fd) {
+int HostImplem::unlink(surf_file_t fd) {
   if (!fd){
     XBT_WARN("No such file descriptor. Impossible to unlink");
     return -1;
@@ -313,11 +313,11 @@ int Host::unlink(surf_file_t fd) {
   }
 }
 
-sg_size_t Host::getSize(surf_file_t fd){
+sg_size_t HostImplem::getSize(surf_file_t fd){
   return fd->size;
 }
 
-xbt_dynar_t Host::getInfo( surf_file_t fd)
+xbt_dynar_t HostImplem::getInfo( surf_file_t fd)
 {
   simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
   sg_size_t *psize = xbt_new(sg_size_t, 1);
@@ -332,11 +332,11 @@ xbt_dynar_t Host::getInfo( surf_file_t fd)
   return info;
 }
 
-sg_size_t Host::fileTell(surf_file_t fd){
+sg_size_t HostImplem::fileTell(surf_file_t fd){
   return fd->current_position;
 }
 
-int Host::fileSeek(surf_file_t fd, sg_offset_t offset, int origin){
+int HostImplem::fileSeek(surf_file_t fd, sg_offset_t offset, int origin){
 
   switch (origin) {
   case SEEK_SET:
@@ -353,7 +353,7 @@ int Host::fileSeek(surf_file_t fd, sg_offset_t offset, int origin){
   }
 }
 
-int Host::fileMove(surf_file_t fd, const char* fullpath){
+int HostImplem::fileMove(surf_file_t fd, const char* fullpath){
   /* Check if the new full path is on the same mount point */
   if(!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
     sg_size_t *psize, *new_psize;
@@ -383,7 +383,7 @@ int Host::fileMove(surf_file_t fd, const char* fullpath){
   }
 }
 
-xbt_dynar_t Host::getVms()
+xbt_dynar_t HostImplem::getVms()
 {
   xbt_dynar_t dyn = xbt_dynar_new(sizeof(simgrid::surf::VirtualMachine*), NULL);
 
@@ -393,19 +393,19 @@ xbt_dynar_t Host::getVms()
        iter !=  simgrid::surf::VMModel::ws_vms.end(); ++iter) {
 
     simgrid::surf::VirtualMachine *ws_vm = &*iter;
-    if (this == ws_vm->p_hostPM->extension(simgrid::surf::Host::EXTENSION_ID))
+    if (this == ws_vm->p_hostPM->extension(simgrid::surf::HostImplem::EXTENSION_ID))
       xbt_dynar_push(dyn, &ws_vm);
   }
 
   return dyn;
 }
 
-void Host::getParams(vm_params_t params)
+void HostImplem::getParams(vm_params_t params)
 {
   *params = p_params;
 }
 
-void Host::setParams(vm_params_t params)
+void HostImplem::setParams(vm_params_t params)
 {
   /* may check something here. */
   p_params = *params;

@@ -10,6 +10,7 @@
 #include "xbt/dict.h"
 #include "xbt/RngStream.h"
 #include <xbt/signal.hpp>
+#include "HostImplem.hpp"
 #include "surf/surf.h"
 
 #include "src/simix/smx_private.h"
@@ -18,7 +19,6 @@
 #include "src/surf/xml/platf_private.hpp"
 
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/host_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf_routing.h" // FIXME: brain dead public header
 #include "src/surf/surf_routing_cluster.hpp"

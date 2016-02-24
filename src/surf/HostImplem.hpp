@@ -23,7 +23,7 @@ namespace simgrid {
 namespace surf {
 
 class XBT_PRIVATE HostModel;
-class XBT_PRIVATE Host;
+class XBT_PRIVATE HostImplem;
 class XBT_PRIVATE HostAction;
 
 
@@ -52,7 +52,7 @@ public:
   HostModel() : Model() {}
   ~HostModel() override {}
 
-  Host *createHost(const char *name, NetCard *net, Cpu *cpu, xbt_dict_t props);
+  HostImplem *createHost(const char *name, NetCard *net, Cpu *cpu, xbt_dict_t props);
 
   virtual void adjustWeightOfDummyCpuActions();
   virtual Action *executeParallelTask(int host_nb,
@@ -71,11 +71,11 @@ public:
  * @brief SURF Host interface class
  * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
-class Host :
+class HostImplem :
     public simgrid::surf::Resource,
    public simgrid::surf::PropertyHolder {
 public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
+  static simgrid::xbt::Extension<simgrid::s4u::Host, HostImplem> EXTENSION_ID;
 
 public:
   static void classInit(); // must be called before the first use of that class
@@ -88,7 +88,7 @@ public:
    * @param storage The Storage associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  Host(HostModel *model, const char *name, xbt_dict_t props,
+  HostImplem(HostModel *model, const char *name, xbt_dict_t props,
           xbt_dynar_t storage, Cpu *cpu);
 
   /**
@@ -101,12 +101,12 @@ public:
    * @param storage The Storage associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  Host(HostModel *model, const char *name, xbt_dict_t props,
+  HostImplem(HostModel *model, const char *name, xbt_dict_t props,
       lmm_constraint_t constraint, xbt_dynar_t storage, Cpu *cpu);
 
   /* Host destruction logic */
   /**************************/
-  ~Host();
+  ~HostImplem();
 
 public:
   HostModel *getModel()

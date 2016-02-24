@@ -7,8 +7,9 @@
 #include <xbt/asserts.h>
 
 #include "src/surf/callbacks.h"
+
+#include "src/surf/HostImplem.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "src/surf/host_interface.hpp"
 
 void surf_on_storage_created(void (*callback)(sg_storage_t))
 {

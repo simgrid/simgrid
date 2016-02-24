@@ -8,9 +8,10 @@
 #include <utility>
 
 #include "network_ib.hpp"
+
+#include "src/surf/HostImplem.hpp"
 #include "simgrid/sg_config.h"
 #include "maxmin_private.hpp"
-#include "src/surf/host_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 

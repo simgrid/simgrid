@@ -4,14 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/host_interface.hpp"
 #include "src/simdag/simdag_private.h"
-#include "simgrid/simdag.h"
-#include "simgrid/host.h"
 #include <simgrid/s4u/host.hpp>
-#include "xbt/dict.h"
-#include "xbt/lib.h"
-#include "xbt/sysdep.h"
+#include "src/surf/HostImplem.hpp"
 #include "surf/surf.h"
 
 /** @brief Returns the route between two workstations

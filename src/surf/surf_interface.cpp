@@ -8,7 +8,7 @@
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
 #include "cpu_interface.hpp"
-#include "host_interface.hpp"
+#include "HostImplem.hpp"
 #include "src/simix/smx_host_private.h"
 #include "surf_routing.hpp"
 #include "simgrid/sg_config.h"
@@ -321,7 +321,7 @@ void surf_init(int *argc, char **argv)
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
 
   XBT_DEBUG("Add SURF levels");
-  simgrid::surf::Host::classInit();
+  simgrid::surf::HostImplem::classInit();
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);

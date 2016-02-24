@@ -5,12 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_private.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "xbt/dict.h"
 #include "mc/mc.h"
-#include "src/surf/host_interface.hpp"
 #include "src/surf/virtual_machine.hpp"
+#include "src/surf/HostImplem.hpp"
 
 //If you need to log some stuffs, just uncomment these two lines and uses XBT_DEBUG for instance
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms)");
@@ -40,7 +37,7 @@ sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host)
 static long host_get_ramsize(sg_host_t vm, int *overcommit)
 {
   s_vm_params_t params;
-  vm->extension<simgrid::surf::Host>()->getParams(&params);
+  vm->extension<simgrid::surf::HostImplem>()->getParams(&params);
 
   if (overcommit)
     *overcommit = params.overcommit;
@@ -68,7 +65,7 @@ static int __can_be_started(sg_host_t vm)
   }
 
   long total_ramsize_of_vms = 0;
-  xbt_dynar_t dyn_vms = pm->extension<simgrid::surf::Host>()->getVms();
+  xbt_dynar_t dyn_vms = pm->extension<simgrid::surf::HostImplem>()->getVms();
   {
     unsigned int cursor = 0;
     sg_host_t another_vm;
@@ -93,7 +90,7 @@ void SIMIX_vm_start(sg_host_t ind_vm)
 {
   if (__can_be_started(ind_vm))
     static_cast<simgrid::surf::VirtualMachine*>(
-      ind_vm->extension<simgrid::surf::Host>()
+      ind_vm->extension<simgrid::surf::HostImplem>()
     )->setState(SURF_VM_STATE_RUNNING);
   else
     THROWF(vm_error, 0, "The VM %s cannot be started", sg_host_get_name(ind_vm));
@@ -103,7 +100,7 @@ void SIMIX_vm_start(sg_host_t ind_vm)
 e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm)
 {
   return static_cast<simgrid::surf::VirtualMachine*>(
-    ind_vm->extension<simgrid::surf::Host>()
+    ind_vm->extension<simgrid::surf::HostImplem>()
   )->getState();
 }
 
@@ -348,7 +345,7 @@ void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer)
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
   static_cast<simgrid::surf::VirtualMachine*>(
-    ind_vm->extension<simgrid::surf::Host>()
+    ind_vm->extension<simgrid::surf::HostImplem>()
   )->setState(SURF_VM_STATE_CREATED);
 }
 
