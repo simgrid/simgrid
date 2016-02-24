@@ -128,18 +128,14 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  * Resource *
  ************/
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host,
-       xbt_dynar_t speedPeakList, int pstate,
-     int core, double speedPeak, double speedScale,
-     int initiallyOn)
- : Cpu(model, host, NULL/*constraint*/, speedPeakList, pstate, core, speedPeak, speedScale, initiallyOn)
+    xbt_dynar_t speedPeakList, int core, double speedPeak, double speedScale)
+ : Cpu(model, host, NULL/*constraint*/, speedPeakList, core, speedPeak, speedScale)
 {
 }
 
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
-        xbt_dynar_t speedPeakList, int pstate,
-      int core, double speedPeak,
-        double speedScale, int initiallyOn)
- : Resource(model, host->name().c_str(), constraint, initiallyOn)
+    xbt_dynar_t speedPeakList, int core, double speedPeak, double speedScale)
+ : Resource(model, host->name().c_str(), constraint)
  , m_core(core)
  , m_host(host)
 {
@@ -155,8 +151,6 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
     double value = xbt_dynar_get_as(speedPeakList, i, double);
     xbt_dynar_push(p_speedPeakList, &value);
   }
-
-  m_pstate = pstate;
 
   /* Currently, we assume that a VM does not have a multicore CPU. */
   if (core > 1)

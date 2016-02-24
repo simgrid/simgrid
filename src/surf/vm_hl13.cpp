@@ -132,12 +132,12 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
 
   p_cpu = surf_cpu_model_vm->createCpu(host_VM, // the machine hosting the VM
       sub_cpu->getSpeedPeakList(),        // host->power_peak,
-      sub_cpu->getPState(),
       1,                          // host->power_scale,
       NULL,                       // host->power_trace,
       1,                          // host->core_amount,
-      1/*ON*/,                    // host->initiallyOn,
       NULL);                      // host->state_trace,
+  if (sub_cpu->getPState() != 0)
+    p_cpu->setPState(sub_cpu->getPState());
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */

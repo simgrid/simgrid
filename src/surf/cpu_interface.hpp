@@ -44,17 +44,14 @@ public:
    *
    * @param host The host that will have this CPU
    * @param speedPeak The peak spead (max speed in Flops)
-   * @param pstate [TODO]
    * @param speedScale The speed scale (in [O;1] available speed from peak)
    * @param speedTrace Trace variations
    * @param core The number of core of this Cpu
-   * @param initiallyOn [TODO]
    * @param state_trace [TODO]
    */
   virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-                          int pstate, double speedScale,
+                          double speedScale,
                           tmgr_trace_t speedTrace, int core,
-                          int initiallyOn,
                           tmgr_trace_t state_trace)=0;
 
   void updateActionsStateLazy(double now, double delta);
@@ -79,17 +76,14 @@ public:
    * @param host The host in which this Cpu should be plugged
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
    * @param speedPeakList [TODO]
-   * @param pstate [TODO]
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
-   * @param initiallyOn whether it is created running or crashed
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
     lmm_constraint_t constraint,
-    xbt_dynar_t speedPeakList, int pstate,
-    int core, double speedPeak, double speedScale,
-    int initiallyOn);
+    xbt_dynar_t speedPeakList,
+    int core, double speedPeak, double speedScale);
 
   /**
    * @brief Cpu constructor
@@ -97,16 +91,13 @@ public:
    * @param model The CpuModel associated to this Cpu
    * @param host The host in which this Cpu should be plugged
    * @param speedPeakList [TODO]
-   * @param pstate
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    * @param speedScale The speed scale of this Cpu in [0;1] (available amount)
-   * @param initiallyOn whether it is created running or crashed
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
-      xbt_dynar_t speedPeakList, int pstate,
-    int core, double speedPeak, double speedScale,
-    int initiallyOn);
+      xbt_dynar_t speedPeakList,
+    int core, double speedPeak, double speedScale);
 
   ~Cpu();
 

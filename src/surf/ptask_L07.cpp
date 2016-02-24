@@ -296,13 +296,11 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
 }
 
 Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t powerPeakList,
-                          int pstate, double power_scale,
+                          double power_scale,
                           tmgr_trace_t power_trace, int core,
-                          int initiallyOn,
                           tmgr_trace_t state_trace)
 {
-  CpuL07 *cpu = new CpuL07(this, host, powerPeakList, pstate, power_scale, power_trace,
-                         core, initiallyOn, state_trace);
+  CpuL07 *cpu = new CpuL07(this, host, powerPeakList, power_scale, power_trace, core, state_trace);
   return cpu;
 }
 
@@ -333,13 +331,12 @@ Link* NetworkL07Model::createLink(const char *name,
  ************/
 
 CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host,
-               xbt_dynar_t speedPeakList, int pstate,
-         double speedScale, tmgr_trace_t speedTrace,
-             int core, int initiallyOn, tmgr_trace_t state_trace)
- : Cpu(model, host, speedPeakList, pstate,
-     core, xbt_dynar_get_as(speedPeakList,pstate,double), speedScale, initiallyOn)
+    xbt_dynar_t speedPeakList,
+    double speedScale, tmgr_trace_t speedTrace,
+    int core, tmgr_trace_t state_trace)
+ : Cpu(model, host, speedPeakList, core, xbt_dynar_get_as(speedPeakList,0,double), speedScale)
 {
-  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,pstate,double) * speedScale);
+  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,0,double) * speedScale);
 
   if (speedTrace)
     p_speed.event = future_evt_set->add_trace(speedTrace, 0.0, this);
