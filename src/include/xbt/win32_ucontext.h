@@ -29,6 +29,8 @@
 #ifndef UCONTEXT_H
 #define UCONTEXT_H
     
+extern "C"{
+
 #include <windows.h>
     typedef struct __stack {
   void *ss_sp;
@@ -49,4 +51,5 @@ int setcontext(const ucontext_t * ucp);
 int makecontext(ucontext_t *, void (*)(), int, ...);
 int swapcontext(ucontext_t *, const ucontext_t *);
 
+}
 #endif  /* UCONTEXT_H */
