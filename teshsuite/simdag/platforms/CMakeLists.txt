@@ -74,7 +74,7 @@ set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/bob.fail
   ${CMAKE_CURRENT_SOURCE_DIR}/bob.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/link1.bw
-  ${CMAKE_CURRENT_SOURCE_DIR}/link1.fail
-  ${CMAKE_CURRENT_SOURCE_DIR}/link1.lat
+  ${CMAKE_CURRENT_SOURCE_DIR}/link.bw
+  ${CMAKE_CURRENT_SOURCE_DIR}/link.fail
+  ${CMAKE_CURRENT_SOURCE_DIR}/link.lat
   PARENT_SCOPE)
