@@ -217,7 +217,15 @@ XBT_PUBLIC(double) lmm_constraint_get_usage(lmm_constraint_t cnst);
  */
 XBT_PUBLIC(void) lmm_constraint_concurrency_limit_set(lmm_constraint_t cnst, int concurrency_limit);
 
+/**
+ * @brief Gets the concurrency limit for this constraint
+ * 
+ * @param cnst A constraint
+ * @return The concurrency limit used by this constraint
+ */
+XBT_PUBLIC(int) lmm_constraint_concurrency_limit_get(lmm_constraint_t cnst);
 
+			     
 /**
  * @brief Reset the concurrency maximum for a given variable (we will update the maximum to reflect constraint evolution).
  *
@@ -474,6 +482,13 @@ XBT_PUBLIC(void) lmm_update_constraint_bound(lmm_system_t sys,
  */
 XBT_PUBLIC(int) lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst);
 
+/**
+ * @brief Print the lmm system
+ * 
+ * @param sys The lmm system to print
+ */
+XBT_PUBLIC(void) lmm_print(lmm_system_t sys);
+			     
 /**
  * @brief Solve the lmm system
  * 

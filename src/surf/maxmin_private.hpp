@@ -140,7 +140,7 @@ typedef struct lmm_system {
  * 
  * @param sys A lmm system
  */
-XBT_PRIVATE void lmm_print(lmm_system_t sys);
+//XBT_PRIVATE void lmm_print(lmm_system_t sys);
 
 extern XBT_PRIVATE double (*func_f_def) (lmm_variable_t, double);
 extern XBT_PRIVATE double (*func_fp_def) (lmm_variable_t, double);
