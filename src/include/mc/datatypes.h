@@ -7,7 +7,12 @@
 #ifndef MC_DATATYPE_H
 #define MC_DATATYPE_H
 
-#include <ucontext.h>
+#ifdef _XBT_WIN32
+#  include <xbt/win32_ucontext.h>     /* context relative declarations */
+#else
+#  include <ucontext.h>           /* context relative declarations */
+#endif
+
 
 #include "xbt/misc.h"
 #include "xbt/swag.h"

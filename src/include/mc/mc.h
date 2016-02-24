@@ -7,7 +7,12 @@
 #ifndef _MC_MC_H
 #define _MC_MC_H
 
-#include <ucontext.h>
+#ifdef _XBT_WIN32
+#  include <xbt/win32_ucontext.h>     /* context relative declarations */
+#else
+#  include <ucontext.h>           /* context relative declarations */
+#endif
+
 
 #include "xbt/base.h"
 #include "xbt/misc.h"
