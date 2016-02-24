@@ -79,9 +79,14 @@ $ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/optim:TI
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > Workstation number: 1, link number: 1
 
+$ cp -f ./bob.trace ./bob0_availability_file.trace
+$ cp -f ./bob.trace ./bob2_availability_file.trace
+$ cp -f ./bob.trace ./bob0_state_file.trace
+$ cp -f ./bob.trace ./bob2_state_file.trace
 $ ${bindir:=.}/basic_parsing_test ./one_cluster_file.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 6
+$ rm -f ./bob0_availability_file.trace ./bob2_availability_file.trace ./bob0_state_file.trace ./bob2_state_file.trace
 
 $ ${bindir:=.}/is_router_test ./test_of_is_router.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.

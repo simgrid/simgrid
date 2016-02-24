@@ -56,7 +56,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_src_gateway.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_dst_gateway.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric-2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_one_link_fullduplex.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_one_link_symmetrical.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_one_link.xml
@@ -76,10 +75,6 @@ set(teshsuite_src
   PARENT_SCOPE)
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/bob0_availability_file.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/bob0_state_file.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/bob2_availability_file.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/bob2_state_file.trace
   ${CMAKE_CURRENT_SOURCE_DIR}/bob.fail
   ${CMAKE_CURRENT_SOURCE_DIR}/bob.trace
   ${CMAKE_CURRENT_SOURCE_DIR}/link1.bw
