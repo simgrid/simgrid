@@ -20,16 +20,8 @@ SG_BEGIN_DECL()
 typedef size_t yy_size_t;
 #endif
 
-static inline char* sg_storage_name(sg_storage_t storage) {
-  return storage->key;
-}
-
 XBT_PUBLIC(sg_netcard_t) sg_netcard_by_name_or_null(const char *name);
 
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
-                                                    const char *input,
-                                                    double periodicity);
 typedef enum {
   SURF_CLUSTER_FAT_TREE=2,
   SURF_CLUSTER_FLAT = 1,
@@ -304,6 +296,20 @@ XBT_PRIVATE void surfxml_bufferstack_push(int _new);
 XBT_PRIVATE void surfxml_bufferstack_pop(int _new);
 XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
 
+XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
+/********** Instr. **********/
+XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
+XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
+XBT_PRIVATE void sg_instr_new_host(sg_platf_host_cbarg_t host);
+XBT_PRIVATE void sg_instr_AS_end(void);
+
+typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
+typedef struct s_surf_parsing_link_up_down {
+  void* link_up;
+  void* link_down;
+} s_surf_parsing_link_up_down_t;
+
+
 SG_END_DECL()
 
 namespace simgrid {
@@ -311,7 +317,6 @@ namespace surf {
 
 extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_link_cbarg_t)> on_link;
 extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
-extern XBT_PRIVATE simgrid::xbt::signal<void(void)> on_postparse;
 
 }
 }

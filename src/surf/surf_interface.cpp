@@ -14,6 +14,8 @@
 #include "simgrid/sg_config.h"
 #include "mc/mc.h"
 #include "virtual_machine.hpp"
+#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,

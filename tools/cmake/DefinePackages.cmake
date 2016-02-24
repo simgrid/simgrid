@@ -13,7 +13,6 @@ set(EXTRA_DIST
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
   src/include/surf/surf.h
-  src/include/surf/surfxml_parse_values.h
   src/include/xbt/win32_ucontext.h
   src/include/xbt/wine_dbghelp.h
   src/msg/msg_mailbox.h

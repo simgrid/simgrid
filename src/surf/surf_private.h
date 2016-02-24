@@ -7,15 +7,9 @@
 #ifndef _SURF_SURF_PRIVATE_H
 #define _SURF_SURF_PRIVATE_H
 
-#include <xbt/base.h>
-
 #include "surf/surf.h"
 #include "surf/maxmin.h"
-#include "xbt/log.h"
 #include "src/surf/trace_mgr.hpp"
-#include "src/instr/instr_private.h"
-#include "surf/surfxml_parse_values.h"
-#include "src/surf/xml/platf_private.hpp"
 
 #define NO_MAX_DURATION -1.0
 
@@ -65,7 +59,6 @@ XBT_PUBLIC(void) routing_exit(void);
 XBT_PUBLIC(void) storage_register_callbacks(void);
 
 XBT_PUBLIC(void) routing_register_callbacks(void);
-XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route); // FIXME: make previous function private to routing again?
 
 XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
 XBT_PRIVATE void parse_after_config(void);
@@ -74,13 +67,6 @@ XBT_PRIVATE void parse_after_config(void);
 /* from surf_instr.c */
 void TRACE_surf_host_set_speed(double date, const char *resource, double power);
 void TRACE_surf_link_set_bandwidth(double date, const char *resource, double bandwidth);
-
-/********** Instr. **********/
-
-XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
-XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
-XBT_PRIVATE void sg_instr_new_host(sg_platf_host_cbarg_t host);
-XBT_PRIVATE void sg_instr_AS_end(void);
 
 SG_END_DECL()
 

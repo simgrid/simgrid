@@ -30,16 +30,11 @@ XBT_PRIVATE void model_generic_finalize(AS_t as);
 
 XBT_PRIVATE int generic_parse_PU(AS_t rc, sg_netcard_t elm);
 XBT_PRIVATE int generic_parse_AS(AS_t rc, sg_netcard_t elm);
-XBT_PRIVATE void generic_parse_bypassroute(AS_t rc, sg_platf_route_cbarg_t e_route);
 
 /* ************************************************************************** */
 /* *************** GENERIC BUSINESS METHODS (declarations) ****************** */
 
 XBT_PRIVATE xbt_dynar_t generic_get_onelink_routes(AS_t rc);
-XBT_PRIVATE sg_platf_route_cbarg_t generic_get_bypassroute(AS_t rc,
-    sg_netcard_t src,
-    sg_netcard_t dst,
-    double *lat);
 
 /* ************************************************************************** */
 /* ****************** GENERIC AUX FUNCTIONS (declarations) ****************** */
@@ -47,25 +42,18 @@ XBT_PRIVATE sg_platf_route_cbarg_t generic_get_bypassroute(AS_t rc,
 /* change a route containing link names into a route containing link entities.
  * If change_order is true, the links are put in reverse order in the
  * produced route */
-XBT_PRIVATE sg_platf_route_cbarg_t generic_new_extended_route(e_surf_routing_hierarchy_t hierarchy,
-                                   sg_platf_route_cbarg_t data, int preserve_order);
 XBT_PRIVATE AS_t generic_autonomous_system_exist(AS_t rc, char *element);
 XBT_PRIVATE AS_t generic_processing_units_exist(AS_t rc, char *element);
 void generic_src_dst_check(AS_t rc, sg_netcard_t src, sg_netcard_t dst);
 
 /* ************************************************************************** */
 /* *************************** FLOYD ROUTING ******************************** */
-XBT_PRIVATE void model_floyd_parse_route(AS_t rc, sg_platf_route_cbarg_t route);
+//XBT_PRIVATE void model_floyd_parse_route(AS_t rc, sg_platf_route_cbarg_t route);
 
 #define HOST_PEER(peername) bprintf("peer_%s", peername)
 #define ROUTER_PEER(peername) bprintf("router_%s", peername)
 #define LINK_PEER(peername) bprintf("link_%s", peername)
 
-/* ************************************************************************** */
-/* ********** Dijkstra & Dijkstra Cached ROUTING **************************** */
-XBT_PRIVATE void model_dijkstra_both_parse_route (AS_t rc, sg_platf_route_cbarg_t route);
-XBT_PRIVATE void model_full_set_route(  /* Set the route and ASroute between src and dst */
-    AS_t rc, sg_platf_route_cbarg_t route);
 /* ************************************************************************** */
 /* ************************* GRAPH EXPORTING FUNCTIONS ********************** */
 XBT_PRIVATE xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_dict_t nodes);

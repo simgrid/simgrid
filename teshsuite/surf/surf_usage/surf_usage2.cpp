@@ -7,6 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/sg_config.h"
+#include "simgrid/host.h"
 #include "surf/surf.h"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/cpu_interface.hpp"

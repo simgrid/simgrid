@@ -15,6 +15,7 @@
 #include "xbt/dict.h"
 #include "src/surf/surf_private.h"
 #include "simgrid/sg_config.h"
+#include "simgrid/link.h"
 
 #include "src/surf/xml/platf_private.hpp"
 

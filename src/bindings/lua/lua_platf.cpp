@@ -7,7 +7,7 @@
 /* SimGrid Lua bindings                                                     */
 
 #include "lua_private.h"
-#include "src/surf/xml/platf.hpp"
+#include "src/surf/xml/platf_private.hpp"
 #include "surf/surf_routing.h"
 #include <string.h>
 #include <ctype.h>

@@ -6,7 +6,8 @@
 
 #include "src/instr/instr_private.h"
 
-#include "src/surf/surf_private.h"
+#include "src/surf/surf_routing.hpp"
+#include "src/surf/xml/platf_private.hpp"
 #include "xbt/graph.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
@@ -122,14 +123,14 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
 }
 
-static void recursiveGraphExtraction (AS_t rc, container_t container, xbt_dict_t filter)
+static void recursiveGraphExtraction (simgrid::surf::As *rc, container_t container, xbt_dict_t filter)
 {
   if (!TRACE_platform_topology()){
     XBT_DEBUG("Graph extraction disabled by user.");
     return;
   }
-  XBT_DEBUG ("Graph extraction for routing_component = %s", surf_AS_get_name(rc));
-  if (!xbt_dict_is_empty(surf_AS_get_routing_sons(rc))){
+  XBT_DEBUG ("Graph extraction for routing_component = %s", rc->name_);
+  if (!xbt_dict_is_empty(rc->sons_)){
     xbt_dict_cursor_t cursor = NULL;
     AS_t rc_son;
     char *child_name;

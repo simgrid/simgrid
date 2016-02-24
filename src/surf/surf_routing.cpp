@@ -10,7 +10,6 @@
 
 #include "simgrid/sg_config.h"
 #include "storage_interface.hpp"
-#include "surf/surfxml_parse_values.h"
 
 #include "src/surf/surf_routing_cluster_torus.hpp"
 #include "src/surf/surf_routing_cluster_fat_tree.hpp"

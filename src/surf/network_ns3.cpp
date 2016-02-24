@@ -8,6 +8,7 @@
 #include "src/surf/surf_private.h"
 #include "src/surf/host_interface.hpp"
 #include "simgrid/sg_config.h"
+#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 

@@ -7,6 +7,7 @@
 #include <xbt/dynar.h>
 #include "cpu_interface.hpp"
 #include "plugins/energy.hpp"
+#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
