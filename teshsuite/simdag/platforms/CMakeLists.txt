@@ -50,7 +50,6 @@ set(xml_files
   ${CMAKE_CURRENT_SOURCE_DIR}/one_link_state_file.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform_include.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/properties.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/random.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_of_is_router.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/three_hosts_non_symmetric_route.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_one_name.xml
