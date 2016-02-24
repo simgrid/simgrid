@@ -24,14 +24,14 @@ namespace mc {
  */
 class Member {
 public:
-  Member() : inheritance(false), byte_size(0), type_id(0) {}
+  Member() {}
 
-  bool inheritance;
+  bool inheritance = false;
   std::string name;
   simgrid::dwarf::DwarfExpression location_expression;
-  std::size_t byte_size; // Do we really need this?
-  unsigned type_id;
-  simgrid::mc::Type* type;
+  std::size_t byte_size = 0; // Do we really need this?
+  unsigned type_id = 0;
+  simgrid::mc::Type* type = nullptr;
 
   bool has_offset_location() const
   {
@@ -58,38 +58,25 @@ public:
 /** A type in the model-checked program */
 class Type {
 public:
-  Type();
+  Type() {}
   Type(Type const& type) = default;
   Type& operator=(Type const&) = default;
   Type(Type&& type) = default;
   Type& operator=(Type&&) = default;
 
   /** The DWARF TAG of the type (e.g. DW_TAG_array_type) */
-  int type;
-  unsigned id; /* Offset in the section (in hexadecimal form) */
+  int type = 0;
+  unsigned id = 0; /* Offset in the section (in hexadecimal form) */
   std::string name; /* Name of the type */
-  int byte_size; /* Size in bytes */
-  int element_count; /* Number of elements for array type */
-  unsigned type_id; /* DW_AT_type id */
+  int byte_size = 0; /* Size in bytes */
+  int element_count = 0; /* Number of elements for array type */
+  unsigned type_id = 0; /* DW_AT_type id */
   std::vector<Member> members; /* if DW_TAG_structure_type, DW_TAG_class_type, DW_TAG_union_type*/
-  int is_pointer_type;
+  int is_pointer_type = 0;
 
-  simgrid::mc::Type* subtype; // DW_AT_type
-  simgrid::mc::Type* full_type; // The same (but more complete) type
+  simgrid::mc::Type* subtype = nullptr; // DW_AT_type
+  simgrid::mc::Type* full_type = nullptr; // The same (but more complete) type
 };
-
-inline
-Type::Type()
-{
-  this->type = 0;
-  this->id = 0;
-  this->byte_size = 0;
-  this->element_count = 0;
-  this->is_pointer_type = 0;
-  this->type_id = 0;
-  this->subtype = nullptr;
-  this->full_type = nullptr;
-}
 
 }
 }
