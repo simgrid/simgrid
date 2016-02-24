@@ -29,7 +29,10 @@
 #ifndef UCONTEXT_H
 #define UCONTEXT_H
     
-extern "C"{
+#ifdef _cplusplus
+extern "C"
+{
+#endif
 
 #include <windows.h>
     typedef struct __stack {
@@ -51,5 +54,7 @@ int setcontext(const ucontext_t * ucp);
 int makecontext(ucontext_t *, void (*)(), int, ...);
 int swapcontext(ucontext_t *, const ucontext_t *);
 
+#ifdef _cplusplus
 }
+#endif
 #endif  /* UCONTEXT_H */
