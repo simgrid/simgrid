@@ -6,47 +6,28 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 #include "simgrid/sg_config.h"
 #include "surf/surf.h"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/cpu_interface.hpp"
 
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
-                             "Messages specific for surf example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-const char *string_action(e_surf_action_state_t state);
-const char *string_action(e_surf_action_state_t state)
-{
-  switch (state) {
-  case (SURF_ACTION_READY):
-    return "SURF_ACTION_READY";
-  case (SURF_ACTION_RUNNING):
-    return "SURF_ACTION_RUNNING";
-  case (SURF_ACTION_FAILED):
-    return "SURF_ACTION_FAILED";
-  case (SURF_ACTION_DONE):
-    return "SURF_ACTION_DONE";
-  case (SURF_ACTION_NOT_IN_THE_SYSTEM):
-    return "SURF_ACTION_NOT_IN_THE_SYSTEM";
-  default:
-    return "INVALID STATE";
-  }
-}
-
-
-void test(char *platform);
-void test(char *platform)
+int main(int argc, char **argv)
 {
   sg_host_t hostA = NULL;
   sg_host_t hostB = NULL;
   double now = -1.0;
   int running;
 
+  surf_init(&argc, argv);       /* Initialize some common structures */
+
   xbt_cfg_set_parse(_sg_cfg_set, "network/model:CM02");
   xbt_cfg_set_parse(_sg_cfg_set, "cpu/model:Cas01");
-  parse_platform_file(platform);
+
+  xbt_assert(argc >1, "Usage : %s platform.txt\n", argv[0]);
+  parse_platform_file(argv[1]);
 
   /*********************** HOST ***********************************/
   hostA = sg_host_by_name("Cpu A");
@@ -71,39 +52,27 @@ void test(char *platform)
     running = 0;
 
     now = surf_get_clock();
-    XBT_DEBUG("Next Event : %g", now);
+    XBT_INFO("Next Event : %g", now);
 
     xbt_dynar_foreach(all_existing_models, iter, model) {
-      XBT_DEBUG("\t Actions");
+      if (surf_model_running_action_set_size((surf_model_t)model)) {
+        XBT_DEBUG("\t Running that model");
+        running = 1;
+      }
       while ((action = surf_model_extract_failed_action_set((surf_model_t)model))) {
-        XBT_DEBUG("\t * Failed : %p", action);
+        XBT_INFO("   * Done Action");
+        XBT_DEBUG("\t * Failed Action: %p", action);
         action->unref();
       }
       while ((action = surf_model_extract_done_action_set((surf_model_t)model))) {
-        XBT_DEBUG("\t * Done : %p", action);
+        XBT_INFO("   * Done Action");
+        XBT_DEBUG("\t * Done Action: %p", action);
         action->unref();
-      }
-      if (surf_model_running_action_set_size((surf_model_t)model)) {
-        XBT_DEBUG("running that model");
-        running = 1;
       }
     }
   } while (running && surf_solve(-1.0) >= 0.0);
 
-  XBT_DEBUG("Simulation Terminated");
-
-}
-
-int main(int argc, char **argv)
-{
-  surf_init(&argc, argv);       /* Initialize some common structures */
-  if (argc == 1) {
-    fprintf(stderr, "Usage : %s platform.txt\n", argv[0]);
-    surf_exit();
-    return 1;
-  }
-  test(argv[1]);
-
+  XBT_INFO("Simulation Terminated");
   surf_exit();
   return 0;
 }

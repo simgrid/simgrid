@@ -35,95 +35,76 @@ const char *string_action(e_surf_action_state_t state)
   }
 }
 
-void test(char *platform);
-void test(char *platform)
+int main(int argc, char **argv)
 {
-  sg_host_t hostA = NULL;
-  sg_host_t hostB = NULL;
-  surf_action_t actionA = NULL;
-  surf_action_t actionB = NULL;
-  surf_action_t actionC = NULL;
-  e_surf_action_state_t stateActionA;
-  e_surf_action_state_t stateActionB;
-  e_surf_action_state_t stateActionC;
   double now = -1.0;
+  surf_init(&argc, argv);       /* Initialize some common structures */
   xbt_cfg_set_parse(_sg_cfg_set, "cpu/model:Cas01");
   xbt_cfg_set_parse(_sg_cfg_set, "network/model:CM02");
-  parse_platform_file(platform);
 
-  /*********************** CPU ***********************************/
-  XBT_DEBUG("%p", surf_cpu_model_pm);
-  hostA = sg_host_by_name("Cpu A");
-  hostB = sg_host_by_name("Cpu B");
+  xbt_assert(argc >1, "Usage : %s platform.txt\n", argv[0]);
+  parse_platform_file(argv[1]);
+
+  XBT_DEBUG("CPU model: %p", surf_cpu_model_pm);
+  XBT_DEBUG("Network model: %p", surf_network_model);
+  sg_host_t hostA = sg_host_by_name("Cpu A");
+  sg_host_t hostB = sg_host_by_name("Cpu B");
 
   /* Let's check that those two processors exist */
   XBT_DEBUG("%s : %p", sg_host_get_name(hostA), hostA);
   XBT_DEBUG("%s : %p", sg_host_get_name(hostB), hostB);
 
   /* Let's do something on it */
-  actionA = hostA->pimpl_cpu->execution_start(1000.0);
-  actionB = hostB->pimpl_cpu->execution_start(1000.0);
-  actionC = surf_host_sleep(hostB, 7.32);
+  surf_action_t actionA = hostA->pimpl_cpu->execution_start(1000.0);
+  surf_action_t actionB = hostB->pimpl_cpu->execution_start(1000.0);
+  surf_action_t actionC = surf_host_sleep(hostB, 7.32);
 
   /* Use whatever calling style you want... */
-  stateActionA = actionA->getState(); /* When you know actionA model type */
-  stateActionB = actionB->getState(); /* If you're unsure about it's model type */
-  stateActionC = actionC->getState(); /* When you know actionA model type */
+  e_surf_action_state_t stateActionA = actionA->getState(); /* When you know actionA model type */
+  e_surf_action_state_t stateActionB = actionB->getState(); /* If you're unsure about it's model type */
+  e_surf_action_state_t stateActionC = actionC->getState(); /* When you know actionA model type */
 
   /* And just look at the state of these tasks */
-  XBT_DEBUG("actionA : %p (%s)", actionA, string_action(stateActionA));
-  XBT_DEBUG("actionB : %p (%s)", actionB, string_action(stateActionB));
-  XBT_DEBUG("actionC : %p (%s)", actionB, string_action(stateActionC));
+  XBT_INFO("actionA state: %s", string_action(stateActionA));
+  XBT_INFO("actionB state: %s", string_action(stateActionB));
+  XBT_INFO("actionC state: %s", string_action(stateActionC));
 
-  /*********************** Network *******************************/
-  XBT_DEBUG("%p", surf_network_model);
 
   /* Let's do something on it */
   surf_network_model_communicate(surf_network_model, hostA, hostB, 150.0, -1.0);
 
-  surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
+  surf_solve(-1.0);
   do {
     surf_action_t action = NULL;
     now = surf_get_clock();
-    XBT_DEBUG("Next Event : %g", now);
+    XBT_INFO("Next Event : %g", now);
     XBT_DEBUG("\t CPU actions");
-    while ((action =
-            surf_model_extract_failed_action_set((surf_model_t)surf_cpu_model_pm))) {
-      XBT_DEBUG("\t * Failed : %p", action);
-      action->unref();
+    while ((action = surf_model_extract_failed_action_set((surf_model_t)surf_cpu_model_pm))) {
+       XBT_INFO("   CPU Failed action");
+       XBT_DEBUG("\t * Failed : %p", action);
+       action->unref();
     }
-    while ((action =
-            surf_model_extract_done_action_set((surf_model_t)surf_cpu_model_pm))) {
+    while ((action = surf_model_extract_done_action_set((surf_model_t)surf_cpu_model_pm))) {
+      XBT_INFO("   CPU Done action");
       XBT_DEBUG("\t * Done : %p", action);
       action->unref();
     }
     XBT_DEBUG("\t Network actions");
-    while ((action =
-            surf_model_extract_failed_action_set((surf_model_t)surf_network_model))) {
+    while ((action = surf_model_extract_failed_action_set((surf_model_t)surf_network_model))) {
+      XBT_INFO("   Network Failed action");
       XBT_DEBUG("\t * Failed : %p", action);
       action->unref();
     }
-    while ((action =
-            surf_model_extract_done_action_set((surf_model_t)surf_network_model))) {
+    while ((action = surf_model_extract_done_action_set((surf_model_t)surf_network_model))) {
+      XBT_INFO("   Network Failed action");
       XBT_DEBUG("\t * Done : %p", action);
       action->unref();
     }
 
   } while ((surf_model_running_action_set_size((surf_model_t)surf_network_model) ||
-            surf_model_running_action_set_size((surf_model_t)surf_cpu_model_pm)) &&
-           surf_solve(-1.0) >= 0.0);
+            surf_model_running_action_set_size((surf_model_t)surf_cpu_model_pm)) && surf_solve(-1.0) >= 0.0);
 
   XBT_DEBUG("Simulation Terminated");
-}
-
-int main(int argc, char **argv)
-{
-  surf_init(&argc, argv);       /* Initialize some common structures */
-  if (argc == 1) {
-    fprintf(stderr, "Usage : %s platform.xml\n", argv[0]);
-    return 1;
-  }
-  test(argv[1]);
 
   surf_exit();
   return 0;
