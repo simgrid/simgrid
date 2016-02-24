@@ -10,6 +10,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include <utility>
+
 #include <signal.h>
 #include <poll.h>
 
@@ -39,7 +41,30 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 
-static int do_child(int socket, char** argv)
+/** Execute some code in a forked process */
+template<class F>
+static inline
+pid_t do_fork(F f)
+{
+  pid_t pid = fork();
+  if (pid < 0)
+    throw new std::system_error(errno, std::generic_category());
+  if (pid != 0)
+    return pid;
+
+  // Child-process:
+  try {
+    f();
+    std::exit(EXIT_SUCCESS);
+  }
+  catch(...) {
+    // The callback should catch exceptions:
+    abort();
+  }
+}
+
+static
+int exec_model_checked(int socket, char** argv)
 {
   XBT_DEBUG("Inside the child process PID=%i", (int) getpid());
 
@@ -47,36 +72,25 @@ static int do_child(int socket, char** argv)
   // Make sure we do not outlive our parent:
   sigset_t mask;
   sigemptyset (&mask);
-  if (sigprocmask(SIG_SETMASK, &mask, nullptr) < 0) {
-    std::perror ("sigprocmask");
-    return SIMGRID_MC_EXIT_ERROR;
-  }
-
-  if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0) {
-    std::perror("simgrid-mc");
-    return SIMGRID_MC_EXIT_ERROR;
-  }
+  if (sigprocmask(SIG_SETMASK, &mask, nullptr) < 0)
+    throw new std::system_error(errno, std::generic_category(), "sigprocmask");
+  if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0)
+    throw new std::system_error(errno, std::generic_category(), "PR_SET_PDEATHSIG");
 #endif
 
   int res;
 
   // Remove CLOEXEC in order to pass the socket to the exec-ed program:
   int fdflags = fcntl(socket, F_GETFD, 0);
-  if (fdflags == -1) {
-    std::perror("simgrid-mc");
-    return SIMGRID_MC_EXIT_ERROR;
-  }
-  if (fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) == -1) {
-    std::perror("simgrid-mc");
-    return SIMGRID_MC_EXIT_ERROR;
-  }
-
-  XBT_DEBUG("CLOEXEC removed on socket %i", socket);
+  if (fdflags == -1)
+    throw new std::system_error(errno, std::generic_category(), "F_GETFD");
+  if (fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) == -1)
+    throw new std::system_error(errno, std::generic_category(), "Remove FD_CLOEXEC");
 
   // Set environment:
   setenv(MC_ENV_VARIABLE, "1", 1);
 
-  // Disable lazy relocation in the model-ched process.
+  // Disable lazy relocation in the model-checked process.
   // We don't want the model-checked process to modify its .got.plt during
   // snapshot.
   setenv("LC_BIND_NOW", "1", 1);
@@ -84,22 +98,74 @@ static int do_child(int socket, char** argv)
   char buffer[64];
   res = std::snprintf(buffer, sizeof(buffer), "%i", socket);
   if ((size_t) res >= sizeof(buffer) || res == -1)
-    return SIMGRID_MC_EXIT_ERROR;
+    std::abort();
   setenv(MC_ENV_SOCKET_FD, buffer, 1);
 
   execvp(argv[1], argv+1);
-  XBT_ERROR("Could not execute the child process");
-  return SIMGRID_MC_EXIT_ERROR;
+
+  XBT_ERROR("Could not run the model-checked program");
+  // This is the value used by system() and popen() in this case:
+  return 127;
 }
 
-static int do_parent(int socket, pid_t child)
+static
+std::pair<pid_t, int> create_model_checked(char** argv)
 {
-  XBT_DEBUG("Inside the parent process");
-  if (mc_model_checker)
-    xbt_die("MC server already present");
+  // Create a AF_LOCAL socketpair used for exchanging messages
+  // bewteen the model-checker process (ourselves) and the model-checked
+  // process:
+  int res;
+  int sockets[2];
+  res = socketpair(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets);
+  if (res == -1)
+    throw new std::system_error(errno, std::generic_category(), "socketpair");
+
+  pid_t pid = do_fork([&] {
+    close(sockets[1]);
+    int res = exec_model_checked(sockets[0], argv);
+    XBT_DEBUG("Error in the child process creation");
+    exit(res);
+  });
+
+  // Parent (model-checker):
+  close(sockets[0]);
+  return std::make_pair(pid, sockets[1]);
+}
+
+static
+char** argvdup(int argc, char** argv)
+{
+  char** argv_copy = xbt_new(char*, argc+1);
+  std::memcpy(argv_copy, argv, sizeof(char*) * argc);
+  argv_copy[argc] = NULL;
+  return argv_copy;
+}
+
+int main(int argc, char** argv)
+{
   try {
+    if (argc < 2)
+      xbt_die("Missing arguments.\n");
+
+    _sg_do_model_check = 1;
+
+    // The initialisation function can touch argv.
+    // We need to keep the original parameters in order to pass them to the
+    // model-checked process so we make a copy of them:
+    int argc_copy = argc;
+    char** argv_copy = argvdup(argc, argv);
+    xbt_log_init(&argc_copy, argv_copy);
+    sg_config_init(&argc_copy, argv_copy);
+
+    int sock;
+    pid_t model_checked_pid;
+    std::tie(model_checked_pid, sock) = create_model_checked(argv);
+    XBT_DEBUG("Inside the parent process");
+    if (mc_model_checker)
+      xbt_die("MC server already present");
+
     mc_mode = MC_MODE_SERVER;
-    std::unique_ptr<simgrid::mc::Process> process(new simgrid::mc::Process(child, socket));
+    std::unique_ptr<simgrid::mc::Process> process(new simgrid::mc::Process(model_checked_pid, sock));
     process->privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
     mc_model_checker = new simgrid::mc::ModelChecker(std::move(process));
     mc_model_checker->start();
@@ -117,55 +183,8 @@ static int do_parent(int socket, pid_t child)
     XBT_ERROR("Exception: %s", e.what());
     return SIMGRID_MC_EXIT_ERROR;
   }
-}
-
-static char** argvdup(int argc, char** argv)
-{
-  char** argv_copy = xbt_new(char*, argc+1);
-  std::memcpy(argv_copy, argv, sizeof(char*) * argc);
-  argv_copy[argc] = NULL;
-  return argv_copy;
-}
-
-int main(int argc, char** argv)
-{
-  _sg_do_model_check = 1;
-
-  // We need to keep the original parameters in order to pass them to the
-  // model-checked process:
-  int argc_copy = argc;
-  char** argv_copy = argvdup(argc, argv);
-  xbt_log_init(&argc_copy, argv_copy);
-  sg_config_init(&argc_copy, argv_copy);
-
-  if (argc < 2)
-    xbt_die("Missing arguments.\n");
-
-  // Create a AF_LOCAL socketpair:
-  int res;
-
-  int sockets[2];
-  res = socketpair(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets);
-  if (res == -1) {
-    perror("simgrid-mc");
+  catch(...) {
+    XBT_ERROR("Unknown exception");
     return SIMGRID_MC_EXIT_ERROR;
   }
-
-  XBT_DEBUG("Created socketpair");
-
-  pid_t pid = fork();
-  if (pid < 0) {
-    perror("simgrid-mc");
-    return SIMGRID_MC_EXIT_ERROR;
-  } else if (pid == 0) {
-    close(sockets[1]);
-    int res = do_child(sockets[0], argv);
-    XBT_DEBUG("Error in the child process creation");
-    return res;
-  } else {
-    close(sockets[0]);
-    return do_parent(sockets[1], pid);
-  }
-
-  return 0;
 }
