@@ -16,7 +16,6 @@
 #include "xbt/dynar.h"
 #include "xbt/graph.h"
 
-#include "surf_routing_private.hpp"
 #include "network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");

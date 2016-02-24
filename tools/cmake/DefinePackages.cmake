@@ -76,7 +76,6 @@ set(EXTRA_DIST
   src/surf/surf_routing_full.hpp
   src/surf/surf_routing_RoutedGraph.hpp
   src/surf/surf_routing_none.hpp
-  src/surf/surf_routing_private.hpp
   src/surf/surf_routing_vivaldi.hpp
   src/surf/vm_hl13.hpp
   src/surf/PropertyHolder.hpp

@@ -6,7 +6,6 @@
 #include <vector>
 #include <iostream>
 
-#include "src/surf/surf_routing_private.hpp"
 #include "src/surf/surf_routing_cluster_fat_tree.hpp"
 #include "xbt/lib.h"
 

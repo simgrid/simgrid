@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_routing.hpp"
-#include "surf_routing_private.hpp"
 #include "surf_routing_cluster.hpp"
 
 #include "simgrid/sg_config.h"
@@ -666,9 +665,9 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   char *router_id = NULL;
 
   XBT_DEBUG(" ");
-  host_id = HOST_PEER(peer->id);
-  link_id = LINK_PEER(peer->id);
-  router_id = ROUTER_PEER(peer->id);
+  host_id = bprintf("peer_%s", peer->id);
+  link_id = bprintf("link_%s", peer->id);
+  router_id = bprintf("router_%s", peer->id);
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", peer->id);
   s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
