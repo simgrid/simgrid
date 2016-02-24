@@ -608,10 +608,7 @@ if(WIN32)
   try_compile(HAVE_UCONTEXT
     ${CMAKE_BINARY_DIR}
     ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_AC_CHECK_MCSC.c
-    COMPILE_DEFINITIONS _XBT_WIN32
-    INCLUDE_DIRECTORIES
-      ${CMAKE_HOME_DIRECTORY}/src/include
-      ${CMAKE_HOME_DIRECTORY}/src/xbt
+    COMPILE_DEFINITIONS -D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/src/include -I${CMAKE_HOME_DIRECTORY}/src/xbt
   )
 else()
   # We always provide our own implementation of ucontext on Windows.
