@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "HostImplem.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
 #include "surf_routing_cluster.hpp"
@@ -18,12 +18,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  * TOOLS *
  *********/
 
-static simgrid::surf::HostImplem *get_casted_host(sg_host_t host){ //FIXME: killme
-  return host->extension<simgrid::surf::HostImplem>();
+static simgrid::surf::HostImpl *get_casted_host(sg_host_t host){ //FIXME: killme
+  return host->extension<simgrid::surf::HostImpl>();
 }
 
 static simgrid::surf::VirtualMachine *get_casted_vm(sg_host_t host){
-  return static_cast<simgrid::surf::VirtualMachine*>(host->extension<simgrid::surf::HostImplem>());
+  return static_cast<simgrid::surf::VirtualMachine*>(host->extension<simgrid::surf::HostImpl>());
 }
 
 extern double NOW;

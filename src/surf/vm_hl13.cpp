@@ -181,7 +181,7 @@ void VMHL13::restore()
  */
 void VMHL13::migrate(sg_host_t host_dest)
 {
-   HostImplem *surfHost_dst = host_dest->extension<HostImplem>();
+   HostImpl *surfHost_dst = host_dest->extension<HostImpl>();
    const char *vm_name = getName();
    const char *pm_name_src = p_hostPM->name().c_str();
    const char *pm_name_dst = surfHost_dst->getName();
