@@ -23,29 +23,19 @@
 #include "surf/surf.h"
 #include "src/surf/surf_private.h"
 
-static const char link_ctn_v2[] =  "link:ctn";
-static const char link_ctn_v3[] = "link_ctn";
-
-XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier,
-                             "Logging specific to this platform parsing tool");
+XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier, "Logging specific to this platform parsing tool");
 
 static int name_compare_hosts(const void *n1, const void *n2)
 {
-  return strcmp(
-      sg_host_get_name(*(sg_host_t *) n1),
-      sg_host_get_name(*(sg_host_t *) n2)
-  );
+  return strcmp(sg_host_get_name(*(sg_host_t *) n1), sg_host_get_name(*(sg_host_t *) n2));
 }
 
 static int name_compare_links(const void *n1, const void *n2)
 {
-  return strcmp(
-      sg_link_name(*(SD_link_t *) n1),
-      sg_link_name(*(SD_link_t *) n2)
-  );
+  return strcmp(sg_link_name(*(SD_link_t *) n1),sg_link_name(*(SD_link_t *) n2));
 }
 
-static int parse_cmdline(int *timings, int *downgrade, char **platformFile, int argc, char **argv)
+static int parse_cmdline(int *timings, char **platformFile, int argc, char **argv)
 {
   int wrong_option = 0;
   int i;
@@ -54,12 +44,8 @@ static int parse_cmdline(int *timings, int *downgrade, char **platformFile, int 
       if (!strcmp(argv[i], "--timings")) {
         *timings = 1;
       } else {
-        if (!strcmp(argv[i], "--downgrade")) {
-          *downgrade = 1;
-        } else {
           wrong_option = 1;
           break;
-        }
       }
     } else {
       *platformFile = argv[i];
@@ -86,9 +72,8 @@ int main(int argc, char **argv)
   char *platformFile = NULL;
   unsigned int totalHosts, totalLinks;
   int timings=0;
-  int downgrade = 0;
-  int version = 3;
-  const char *link_ctn = link_ctn_v3;
+  int version = 4;
+  const char *link_ctn = "link_ctn";
   unsigned int i;
   xbt_dict_t props = NULL;
   xbt_dict_cursor_t cursor = NULL;
@@ -104,40 +89,30 @@ int main(int argc, char **argv)
 
   SD_init(&argc, argv);
 
-  if (parse_cmdline(&timings, &downgrade, &platformFile, argc, argv) || !platformFile) {
-    xbt_die("Invalid command line arguments: expected [--timings|--downgrade] platformFile");
+  if (parse_cmdline(&timings, &platformFile, argc, argv) || !platformFile) {
+    xbt_die("Invalid command line arguments: expected [--timings] platformFile");
   }
 
-  XBT_DEBUG("%d,%d,%s", timings, downgrade, platformFile);
-
-  if (downgrade) {
-    version = 2;
-    link_ctn = link_ctn_v2;
-  }
+  XBT_DEBUG("%d,%s", timings, platformFile);
 
   create_environment(parse_time, platformFile);
 
   if (timings) {
-    XBT_INFO("Parsing time: %fs (%zu hosts, %d links)",
-          xbt_os_timer_elapsed(parse_time),sg_host_count(),
-          sg_link_count());
+    XBT_INFO("Parsing time: %fs (%zu hosts, %d links)", xbt_os_timer_elapsed(parse_time),
+             sg_host_count(), sg_link_count());
   } else {
     printf("<?xml version='1.0'?>\n");
-    printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid.dtd\">\n");
+    printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n");
     printf("<platform version=\"%d\">\n", version);
-    if (!downgrade)
-      printf("<AS id=\"AS0\" routing=\"Full\">\n");
+    printf("<AS id=\"AS0\" routing=\"Full\">\n");
 
     // Hosts
     totalHosts = sg_host_count();
     hosts = sg_host_list();
-    qsort((void *) hosts, totalHosts, sizeof(sg_host_t),
-        name_compare_hosts);
+    qsort((void *) hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
 
     for (i = 0; i < totalHosts; i++) {
-      printf("  <host id=\"%s\" power=\"%.0f\"",
-          sg_host_get_name(hosts[i]),
-          sg_host_speed(hosts[i]));
+      printf("  <host id=\"%s\" speed=\"%.0f\"", sg_host_get_name(hosts[i]), sg_host_speed(hosts[i]));
       props = sg_host_get_properties(hosts[i]);
       if (sg_host_core_count(hosts[i])>1) {
         printf(" core=\"%d\"", sg_host_core_count(hosts[i]));
@@ -156,8 +131,7 @@ int main(int argc, char **argv)
     // Routers
     xbt_lib_foreach(as_router_lib, cursor_src, key, value1) {
       value1 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, key, ROUTING_ASR_LEVEL);
-      if(value1->getRcType() == SURF_NETWORK_ELEMENT_ROUTER)
-      {
+      if(value1->getRcType() == SURF_NETWORK_ELEMENT_ROUTER) {
         printf("  <router id=\"%s\"/>\n",key);
       }
     }
@@ -171,10 +145,8 @@ int main(int argc, char **argv)
     for (i = 0; i < totalLinks; i++) {
       printf("  <link id=\"");
 
-      printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"",
-          sg_link_name(links[i]),
-          sg_link_bandwidth(links[i]),
-          sg_link_latency(links[i]));
+      printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", sg_link_name(links[i]),
+             sg_link_bandwidth(links[i]), sg_link_latency(links[i]));
       if (sg_link_is_shared(links[i])) {
         printf("/>\n");
       } else {
@@ -183,36 +155,32 @@ int main(int argc, char **argv)
     }
 
     sg_host_t host1, host2;
-    xbt_dict_foreach(host_list, cursor_src, src, host1) // Routes from host
-    {
+    xbt_dict_foreach(host_list, cursor_src, src, host1){ // Routes from host
       value1 = sg_host_by_name(src)->pimpl_netcard;
-      xbt_dict_foreach(host_list, cursor_dst, dst, host2) //to host
-      {
-        printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
+      xbt_dict_foreach(host_list, cursor_dst, dst, host2){ //to host
         xbt_dynar_t route=NULL;
         value2 = sg_host_by_name(dst)->pimpl_netcard;
         routing_platf->getRouteAndLatency(value1, value2, &route,NULL);
-        for(i=0;i<xbt_dynar_length(route) ;i++)
-        {
-          void *link = xbt_dynar_get_as(route,i,void *);
+        if (!xbt_dynar_is_empty(route)){
+          printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
+          for(i=0;i<xbt_dynar_length(route) ;i++){
+            void *link = xbt_dynar_get_as(route,i,void *);
 
-          char *link_name = xbt_strdup(surf_resource_name((surf_cpp_resource_t)link));
-          printf("<%s id=\"%s\"/>",link_ctn,link_name);
-          free(link_name);
+            char *link_name = xbt_strdup(surf_resource_name((surf_cpp_resource_t)link));
+            printf("<%s id=\"%s\"/>",link_ctn,link_name);
+            free(link_name);
+          }
+          printf("\n  </route>\n");
         }
-        printf("\n  </route>\n");
       }
-      xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2) //to router
-      {
+      xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
         value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
         if(value2->getRcType() == SURF_NETWORK_ELEMENT_ROUTER){
           printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
           xbt_dynar_t route=NULL;
           routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
-          for(i=0;i<xbt_dynar_length(route) ;i++)
-          {
+          for(i=0;i<xbt_dynar_length(route) ;i++){
             void *link = xbt_dynar_get_as(route,i,void *);
-
             printf("<%s id=\"%s\"/>",link_ctn,surf_resource_name((surf_cpp_resource_t)link));
           }
           printf("\n  </route>\n");
@@ -220,19 +188,16 @@ int main(int argc, char **argv)
       }
     }
 
-    xbt_lib_foreach(as_router_lib, cursor_src, src, value1) // Routes from router
-    {
+    xbt_lib_foreach(as_router_lib, cursor_src, src, value1){ // Routes from router
       value1 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,src,ROUTING_ASR_LEVEL);
       if (value1->getRcType() == SURF_NETWORK_ELEMENT_ROUTER){
-        xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2) //to router
-          {
+        xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
           value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
           if(value2->getRcType() == SURF_NETWORK_ELEMENT_ROUTER){
             printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
             xbt_dynar_t route=NULL;
             routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
-            for(i=0;i<xbt_dynar_length(route) ;i++)
-            {
+            for(i=0;i<xbt_dynar_length(route) ;i++){
               void *link = xbt_dynar_get_as(route,i,void *);
 
               char *link_name = xbt_strdup(surf_resource_name((surf_cpp_resource_t)link));
@@ -241,16 +206,13 @@ int main(int argc, char **argv)
             }
             printf("\n  </route>\n");
           }
-          }
-        xbt_dict_foreach(host_list, cursor_dst, dst, value2) //to host
-        {
-          printf("  <route src=\"%s\" dst=\"%s\">\n  "
-              ,src, dst);
+        }
+        xbt_dict_foreach(host_list, cursor_dst, dst, value2){ //to host
+          printf("  <route src=\"%s\" dst=\"%s\">\n  ",src, dst);
           xbt_dynar_t route=NULL;
           value2 = sg_host_by_name(dst)->pimpl_netcard;
           routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route, NULL);
-          for(i=0;i<xbt_dynar_length(route) ;i++)
-          {
+          for(i=0;i<xbt_dynar_length(route) ;i++){
             void *link = xbt_dynar_get_as(route,i,void *);
 
             char *link_name = xbt_strdup(surf_resource_name((surf_cpp_resource_t)link));
@@ -262,8 +224,7 @@ int main(int argc, char **argv)
       }
     }
 
-    if (!downgrade)
-      printf("</AS>\n");
+    printf("</AS>\n");
     printf("</platform>\n");
   }
   SD_exit();

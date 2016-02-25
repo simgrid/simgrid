@@ -3,14 +3,14 @@
 $ ${bindir:=.}/flatifier$EXEEXT one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="bob0.hamburger.edu" power="1000000000"/>
->   <host id="bob2.hamburger.edu" power="1000000000"/>
->   <host id="bob3.hamburger.edu" power="1000000000"/>
->   <host id="bob4.hamburger.edu" power="1000000000"/>
->   <host id="bob6.hamburger.edu" power="1000000000"/>
+>   <host id="bob0.hamburger.edu" speed="1000000000"/>
+>   <host id="bob2.hamburger.edu" speed="1000000000"/>
+>   <host id="bob3.hamburger.edu" speed="1000000000"/>
+>   <host id="bob4.hamburger.edu" speed="1000000000"/>
+>   <host id="bob6.hamburger.edu" speed="1000000000"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_backbone" bandwidth="2250000000" latency="0.000500000"/>
@@ -138,14 +138,14 @@ $ ${bindir:=.}/flatifier$EXEEXT one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P
 $ ${bindir:=.}/flatifier$EXEEXT one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="bob0.hamburger.edu" power="1000000000" core="6"/>
->   <host id="bob2.hamburger.edu" power="1000000000" core="6"/>
->   <host id="bob3.hamburger.edu" power="1000000000" core="6"/>
->   <host id="bob4.hamburger.edu" power="1000000000" core="6"/>
->   <host id="bob6.hamburger.edu" power="1000000000" core="6"/>
+>   <host id="bob0.hamburger.edu" speed="1000000000" core="6"/>
+>   <host id="bob2.hamburger.edu" speed="1000000000" core="6"/>
+>   <host id="bob3.hamburger.edu" speed="1000000000" core="6"/>
+>   <host id="bob4.hamburger.edu" speed="1000000000" core="6"/>
+>   <host id="bob6.hamburger.edu" speed="1000000000" core="6"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
@@ -269,88 +269,34 @@ $ ${bindir:=.}/flatifier$EXEEXT one_cluster_multicore.xml "--log=root.fmt:[%10.6
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT one_host_availability.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="bob" power="500000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
->   <route src="bob" dst="bob">
->   <link_ctn id="__loopback__"/>
->   </route>
-> </AS>
-> </platform>
-
-$ ${bindir:=.}/flatifier$EXEEXT one_host_properties.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
-> <AS id="AS0" routing="Full">
->   <host id="bob" power="1000000000">
+>   <host id="alice" speed="1000000000"/>
+>   <host id="bob" speed="1000000000"/>
+>   <host id="carol" speed="500000000"/>
+>   <host id="dave" speed="1000000000">
 >     <prop id="OS" value="Linux 2.6.22-14"/>
 >     <prop id="disk" value="80E9"/>
 >     <prop id="memory" value="1000000000"/>
 >   </host>
+>   <host id="erin" speed="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
->   <route src="bob" dst="bob">
+>   <route src="dave" dst="dave">
 >   <link_ctn id="__loopback__"/>
 >   </route>
-> </AS>
-> </platform>
-
-$ ${bindir:=.}/flatifier$EXEEXT one_host_state_file.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
-> <AS id="AS0" routing="Full">
->   <host id="bob" power="500000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
->   <route src="bob" dst="bob">
+>   <route src="erin" dst="erin">
 >   <link_ctn id="__loopback__"/>
 >   </route>
-> </AS>
-> </platform>
-
-$ ${bindir:=.}/flatifier$EXEEXT one_host_trace_file.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
-> <AS id="AS0" routing="Full">
->   <host id="bob" power="1000000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
->   <route src="bob" dst="bob">
+>   <route src="alice" dst="alice">
 >   <link_ctn id="__loopback__"/>
 >   </route>
-> </AS>
-> </platform>
-
-$ ${bindir:=.}/flatifier$EXEEXT one_host_trace_inside.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
-> <AS id="AS0" routing="Full">
->   <host id="bob" power="1000000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
->   <route src="bob" dst="bob">
+>   <route src="carol" dst="carol">
 >   <link_ctn id="__loopback__"/>
 >   </route>
-> </AS>
-> </platform>
-
-$ ${bindir:=.}/flatifier$EXEEXT one_host.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
-> <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
-> <AS id="AS0" routing="Full">
->   <host id="bob" power="500000000"/>
->   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <route src="bob" dst="bob">
 >   <link_ctn id="__loopback__"/>
 >   </route>
@@ -360,10 +306,10 @@ $ ${bindir:=.}/flatifier$EXEEXT one_host.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h
 $ ${bindir:=.}/flatifier$EXEEXT link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="bob" power="500000000"/>
+>   <host id="bob" speed="500000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="link1" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="link2" bandwidth="125000000" latency="0.000050000" sharing_policy="FATPIPE"/>
@@ -378,12 +324,12 @@ $ ${bindir:=.}/flatifier$EXEEXT link_attributes.xml "--log=root.fmt:[%10.6r]%e[%
 $ ${bindir:=.}/flatifier$EXEEXT three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="alice" power="500000000"/>
->   <host id="bob" power="1000000000"/>
->   <host id="trudy" power="250000000"/>
+>   <host id="alice" speed="500000000"/>
+>   <host id="bob" speed="1000000000"/>
+>   <host id="trudy" speed="250000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="link1" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="link2" bandwidth="125000000" latency="0.000050000"/>
@@ -421,19 +367,19 @@ $ ${bindir:=.}/flatifier$EXEEXT three_hosts_non_symmetric_route.xml "--log=root.
 $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="alice0.crepe.fr" power="1000000000"/>
->   <host id="alice1.crepe.fr" power="1000000000"/>
->   <host id="alice2.crepe.fr" power="1000000000"/>
->   <host id="alice3.crepe.fr" power="1000000000"/>
->   <host id="alice4.crepe.fr" power="1000000000"/>
->   <host id="bob0.hamburger.edu" power="1000000000"/>
->   <host id="bob1.hamburger.edu" power="1000000000"/>
->   <host id="bob2.hamburger.edu" power="1000000000"/>
->   <host id="bob3.hamburger.edu" power="1000000000"/>
->   <host id="bob4.hamburger.edu" power="1000000000"/>
+>   <host id="alice0.crepe.fr" speed="1000000000"/>
+>   <host id="alice1.crepe.fr" speed="1000000000"/>
+>   <host id="alice2.crepe.fr" speed="1000000000"/>
+>   <host id="alice3.crepe.fr" speed="1000000000"/>
+>   <host id="alice4.crepe.fr" speed="1000000000"/>
+>   <host id="bob0.hamburger.edu" speed="1000000000"/>
+>   <host id="bob1.hamburger.edu" speed="1000000000"/>
+>   <host id="bob2.hamburger.edu" speed="1000000000"/>
+>   <host id="bob3.hamburger.edu" speed="1000000000"/>
+>   <host id="bob4.hamburger.edu" speed="1000000000"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
 >   <router id="alicealice_cluster_router.crepe.fr"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -898,11 +844,11 @@ $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%
 $ ${bindir:=.}/flatifier$EXEEXT two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="alice" power="500000000"/>
->   <host id="bob" power="1000000000"/>
+>   <host id="alice" speed="500000000"/>
+>   <host id="bob" speed="1000000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="link_alice" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="link_bob" bandwidth="125000000" latency="0.000050000"/>
@@ -925,11 +871,11 @@ $ ${bindir:=.}/flatifier$EXEEXT two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]
 $ ${bindir:=.}/flatifier$EXEEXT two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="alice" power="500000000"/>
->   <host id="bob" power="1000000000"/>
+>   <host id="alice" speed="500000000"/>
+>   <host id="bob" speed="1000000000"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="link1" bandwidth="125000000" latency="0.000050000"/>
 >   <route src="alice" dst="alice">
@@ -950,12 +896,12 @@ $ ${bindir:=.}/flatifier$EXEEXT two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%
 $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="1" power="1000000000"/>
->   <host id="2" power="1000000000"/>
->   <host id="3" power="1000000000"/>
+>   <host id="1" speed="1000000000"/>
+>   <host id="2" speed="1000000000"/>
+>   <host id="3" speed="1000000000"/>
 >   <router id="my_cluster_2_router"/>
 >   <router id="my_cluster_1_router"/>
 >   <router id="my_cluster_3_router"/>
@@ -1085,21 +1031,21 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/torus_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
-> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
-> <platform version="3">
+> <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+> <platform version="4">
 > <AS id="AS0" routing="Full">
->   <host id="node-0.acme.org" power="1000000000"/>
->   <host id="node-1.acme.org" power="1000000000"/>
->   <host id="node-10.acme.org" power="1000000000"/>
->   <host id="node-11.acme.org" power="1000000000"/>
->   <host id="node-2.acme.org" power="1000000000"/>
->   <host id="node-3.acme.org" power="1000000000"/>
->   <host id="node-4.acme.org" power="1000000000"/>
->   <host id="node-5.acme.org" power="1000000000"/>
->   <host id="node-6.acme.org" power="1000000000"/>
->   <host id="node-7.acme.org" power="1000000000"/>
->   <host id="node-8.acme.org" power="1000000000"/>
->   <host id="node-9.acme.org" power="1000000000"/>
+>   <host id="node-0.acme.org" speed="1000000000"/>
+>   <host id="node-1.acme.org" speed="1000000000"/>
+>   <host id="node-10.acme.org" speed="1000000000"/>
+>   <host id="node-11.acme.org" speed="1000000000"/>
+>   <host id="node-2.acme.org" speed="1000000000"/>
+>   <host id="node-3.acme.org" speed="1000000000"/>
+>   <host id="node-4.acme.org" speed="1000000000"/>
+>   <host id="node-5.acme.org" speed="1000000000"/>
+>   <host id="node-6.acme.org" speed="1000000000"/>
+>   <host id="node-7.acme.org" speed="1000000000"/>
+>   <host id="node-8.acme.org" speed="1000000000"/>
+>   <host id="node-9.acme.org" speed="1000000000"/>
 >   <router id="node-bob_cluster_router.acme.org"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
 >   <link id="bob_cluster_link_0_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
