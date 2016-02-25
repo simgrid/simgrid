@@ -372,14 +372,8 @@ $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%
 > <AS id="AS0" routing="Full">
 >   <host id="alice0.crepe.fr" speed="1000000000"/>
 >   <host id="alice1.crepe.fr" speed="1000000000"/>
->   <host id="alice2.crepe.fr" speed="1000000000"/>
->   <host id="alice3.crepe.fr" speed="1000000000"/>
->   <host id="alice4.crepe.fr" speed="1000000000"/>
 >   <host id="bob0.hamburger.edu" speed="1000000000"/>
 >   <host id="bob1.hamburger.edu" speed="1000000000"/>
->   <host id="bob2.hamburger.edu" speed="1000000000"/>
->   <host id="bob3.hamburger.edu" speed="1000000000"/>
->   <host id="bob4.hamburger.edu" speed="1000000000"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
 >   <router id="alicealice_cluster_router.crepe.fr"/>
 >   <link id="__loopback__" bandwidth="498000000" latency="0.000015000" sharing_policy="FATPIPE"/>
@@ -388,50 +382,20 @@ $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%
 >   <link id="alice_cluster_link_0_UP" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="alice_cluster_link_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="alice_cluster_link_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="alice_cluster_link_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="alice_cluster_link_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="alice_cluster_link_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="alice_cluster_link_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="alice_cluster_link_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="alice_cluster_link_4_UP" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="backbone" bandwidth="1250000000" latency="0.000500000"/>
 >   <link id="bob_cluster_backbone" bandwidth="2250000000" latency="0.000500000"/>
 >   <link id="bob_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_0_UP" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
 >   <link id="bob_cluster_link_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_4_UP" bandwidth="125000000" latency="0.000050000"/>
 >   <route src="bob1.hamburger.edu" dst="bob1.hamburger.edu">
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="alice2.crepe.fr">
->   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="alice3.crepe.fr">
->   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
 >   </route>
 >   <route src="bob1.hamburger.edu" dst="bob0.hamburger.edu">
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
 >   </route>
->   <route src="bob1.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
 >   <route src="bob1.hamburger.edu" dst="alice0.crepe.fr">
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bob1.hamburger.edu" dst="alice4.crepe.fr">
->   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
 >   </route>
 >   <route src="bob1.hamburger.edu" dst="alice1.crepe.fr">
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
@@ -442,140 +406,14 @@ $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%
 >   <route src="bob1.hamburger.edu" dst="alicealice_cluster_router.crepe.fr">
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/>
 >   </route>
->   <route src="bob3.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="alice2.crepe.fr">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="alice3.crepe.fr">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="alice0.crepe.fr">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="alice4.crepe.fr">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="alice1.crepe.fr">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/>
->   </route>
->   <route src="bob3.hamburger.edu" dst="alicealice_cluster_router.crepe.fr">
->   <link_ctn id="bob_cluster_link_3_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="bob1.hamburger.edu">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="bob3.hamburger.edu">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="alice2.crepe.fr">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="alice3.crepe.fr">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="bob0.hamburger.edu">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="bob2.hamburger.edu">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="bob4.hamburger.edu">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="alice0.crepe.fr">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="alice4.crepe.fr">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="alice1.crepe.fr">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/>
->   </route>
->   <route src="alice2.crepe.fr" dst="alicealice_cluster_router.crepe.fr">
->   <link_ctn id="alice_cluster_link_2_UP"/><link_ctn id="alice_cluster_backbone"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="bob1.hamburger.edu">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="bob3.hamburger.edu">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="alice2.crepe.fr">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="alice3.crepe.fr">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="bob0.hamburger.edu">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="bob2.hamburger.edu">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="bob4.hamburger.edu">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="alice0.crepe.fr">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="alice4.crepe.fr">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="alice1.crepe.fr">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/>
->   </route>
->   <route src="alice3.crepe.fr" dst="alicealice_cluster_router.crepe.fr">
->   <link_ctn id="alice_cluster_link_3_UP"/><link_ctn id="alice_cluster_backbone"/>
->   </route>
 >   <route src="bob0.hamburger.edu" dst="bob1.hamburger.edu">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="alice2.crepe.fr">
->   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="alice3.crepe.fr">
->   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
 >   </route>
->   <route src="bob0.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
 >   <route src="bob0.hamburger.edu" dst="alice0.crepe.fr">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bob0.hamburger.edu" dst="alice4.crepe.fr">
->   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
 >   </route>
 >   <route src="bob0.hamburger.edu" dst="alice1.crepe.fr">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
@@ -586,104 +424,14 @@ $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%
 >   <route src="bob0.hamburger.edu" dst="alicealice_cluster_router.crepe.fr">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/>
 >   </route>
->   <route src="bob2.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="alice2.crepe.fr">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="alice3.crepe.fr">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="alice0.crepe.fr">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="alice4.crepe.fr">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="alice1.crepe.fr">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/>
->   </route>
->   <route src="bob2.hamburger.edu" dst="alicealice_cluster_router.crepe.fr">
->   <link_ctn id="bob_cluster_link_2_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob1.hamburger.edu">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="alice2.crepe.fr">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="alice3.crepe.fr">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob0.hamburger.edu">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="alice0.crepe.fr">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="alice4.crepe.fr">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="alice1.crepe.fr">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/>
->   </route>
->   <route src="bob4.hamburger.edu" dst="alicealice_cluster_router.crepe.fr">
->   <link_ctn id="bob_cluster_link_4_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="backbone"/>
->   </route>
 >   <route src="alice0.crepe.fr" dst="bob1.hamburger.edu">
 >   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="alice0.crepe.fr" dst="bob3.hamburger.edu">
->   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="alice0.crepe.fr" dst="alice2.crepe.fr">
->   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice0.crepe.fr" dst="alice3.crepe.fr">
->   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
 >   </route>
 >   <route src="alice0.crepe.fr" dst="bob0.hamburger.edu">
 >   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
 >   </route>
->   <route src="alice0.crepe.fr" dst="bob2.hamburger.edu">
->   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice0.crepe.fr" dst="bob4.hamburger.edu">
->   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
 >   <route src="alice0.crepe.fr" dst="alice0.crepe.fr">
 >   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="alice0.crepe.fr" dst="alice4.crepe.fr">
->   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
 >   </route>
 >   <route src="alice0.crepe.fr" dst="alice1.crepe.fr">
 >   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
@@ -694,68 +442,14 @@ $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%
 >   <route src="alice0.crepe.fr" dst="alicealice_cluster_router.crepe.fr">
 >   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/>
 >   </route>
->   <route src="alice4.crepe.fr" dst="bob1.hamburger.edu">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="bob3.hamburger.edu">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="alice2.crepe.fr">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="alice3.crepe.fr">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="bob0.hamburger.edu">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="bob2.hamburger.edu">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="bob4.hamburger.edu">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="alice0.crepe.fr">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="alice4.crepe.fr">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="alice1.crepe.fr">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/>
->   </route>
->   <route src="alice4.crepe.fr" dst="alicealice_cluster_router.crepe.fr">
->   <link_ctn id="alice_cluster_link_4_UP"/><link_ctn id="alice_cluster_backbone"/>
->   </route>
 >   <route src="alice1.crepe.fr" dst="bob1.hamburger.edu">
 >   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
->   </route>
->   <route src="alice1.crepe.fr" dst="bob3.hamburger.edu">
->   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="alice1.crepe.fr" dst="alice2.crepe.fr">
->   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice1.crepe.fr" dst="alice3.crepe.fr">
->   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
 >   </route>
 >   <route src="alice1.crepe.fr" dst="bob0.hamburger.edu">
 >   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
 >   </route>
->   <route src="alice1.crepe.fr" dst="bob2.hamburger.edu">
->   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alice1.crepe.fr" dst="bob4.hamburger.edu">
->   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
 >   <route src="alice1.crepe.fr" dst="alice0.crepe.fr">
 >   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="alice1.crepe.fr" dst="alice4.crepe.fr">
->   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
 >   </route>
 >   <route src="alice1.crepe.fr" dst="alice1.crepe.fr">
 >   <link_ctn id="alice_cluster_link_1_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
@@ -775,29 +469,11 @@ $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bob1.hamburger.edu">
 >   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob3.hamburger.edu">
->   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="alice2.crepe.fr">
->   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="alice3.crepe.fr">
->   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
->   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bob0.hamburger.edu">
 >   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
 >   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob2.hamburger.edu">
->   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="bob4.hamburger.edu">
->   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="alice0.crepe.fr">
 >   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="bobbob_cluster_router.hamburger.edu" dst="alice4.crepe.fr">
->   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="alice1.crepe.fr">
 >   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>
@@ -811,29 +487,11 @@ $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%
 >   <route src="alicealice_cluster_router.crepe.fr" dst="bob1.hamburger.edu">
 >   <link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_1_DOWN"/>
 >   </route>
->   <route src="alicealice_cluster_router.crepe.fr" dst="bob3.hamburger.edu">
->   <link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_3_DOWN"/>
->   </route>
->   <route src="alicealice_cluster_router.crepe.fr" dst="alice2.crepe.fr">
->   <link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alicealice_cluster_router.crepe.fr" dst="alice3.crepe.fr">
->   <link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_3_DOWN"/>
->   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="bob0.hamburger.edu">
 >   <link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
 >   </route>
->   <route src="alicealice_cluster_router.crepe.fr" dst="bob2.hamburger.edu">
->   <link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_2_DOWN"/>
->   </route>
->   <route src="alicealice_cluster_router.crepe.fr" dst="bob4.hamburger.edu">
->   <link_ctn id="backbone"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_4_DOWN"/>
->   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="alice0.crepe.fr">
 >   <link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
->   </route>
->   <route src="alicealice_cluster_router.crepe.fr" dst="alice4.crepe.fr">
->   <link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_4_DOWN"/>
 >   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="alice1.crepe.fr">
 >   <link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_1_DOWN"/>

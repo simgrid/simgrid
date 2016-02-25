@@ -18,7 +18,7 @@ $ ${bindir:=.}/basic_parsing_test three_hosts_non_symmetric_route.xml "--log=roo
 
 $ ${bindir:=.}/basic_parsing_test two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 10, link number: 24
+> Workstation number: 4, link number: 12
 
 $ ${bindir:=.}/basic_parsing_test two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
