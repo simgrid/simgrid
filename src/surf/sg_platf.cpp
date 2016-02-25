@@ -10,7 +10,7 @@
 #include "xbt/dict.h"
 #include "xbt/RngStream.h"
 #include <xbt/signal.hpp>
-#include "HostImplem.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "surf/surf.h"
 
 #include "src/simix/smx_private.h"

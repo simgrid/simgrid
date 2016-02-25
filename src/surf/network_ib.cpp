@@ -9,7 +9,7 @@
 
 #include "network_ib.hpp"
 
-#include "src/surf/HostImplem.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "simgrid/sg_config.h"
 #include "maxmin_private.hpp"
 

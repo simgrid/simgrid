@@ -9,7 +9,7 @@
 #include <xbt/Extendable.hpp>
 #include <simgrid/s4u/host.hpp>
 
-#include "src/surf/HostImplem.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "surf/surf.h" // routing_get_network_element_type FIXME:killme
 
 #include "src/simix/smx_private.hpp"
@@ -126,11 +126,11 @@ void sg_host_simix_destroy(sg_host_t host) {
 
 // ========= storage related functions ============
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
-  return host->extension<simgrid::surf::HostImplem>()->getMountedStorageList();
+  return host->extension<simgrid::surf::HostImpl>()->getMountedStorageList();
 }
 
 xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
-  return host->extension<simgrid::surf::HostImplem>()->getAttachedStorageList();
+  return host->extension<simgrid::surf::HostImpl>()->getAttachedStorageList();
 }
 
 

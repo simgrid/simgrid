@@ -10,7 +10,7 @@
 
 #include <xbt/base.h>
 
-#include "HostImplem.hpp"
+#include "src/surf/HostImpl.hpp"
 
 #ifndef HOST_L07_HPP_
 #define HOST_L07_HPP_

@@ -167,7 +167,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
       while ((cnst = lmm_get_cnst_from_var(p_maxminSystem, action->getVariable(), i++))) {
         void *constraint_id = lmm_constraint_id(cnst);
 
-        if (static_cast<HostImplem*>(constraint_id)->isOff()) {
+        if (static_cast<HostImpl*>(constraint_id)->isOff()) {
           XBT_DEBUG("Action (%p) Failed!!", action);
           action->finish();
           action->setState(SURF_ACTION_FAILED);

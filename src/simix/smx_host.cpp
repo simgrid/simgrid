@@ -9,7 +9,7 @@
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "src/surf/virtual_machine.hpp"
-#include "src/surf/HostImplem.hpp"
+#include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
                                 "SIMIX hosts");
@@ -43,7 +43,7 @@ void SIMIX_host_on(sg_host_t h)
   xbt_assert((host != NULL), "Invalid parameters");
 
   if (h->isOff()) {
-    simgrid::surf::HostImplem* surf_host = h->extension<simgrid::surf::HostImplem>();
+    simgrid::surf::HostImpl* surf_host = h->extension<simgrid::surf::HostImpl>();
     surf_host->turnOn();
 
     unsigned int cpt;
@@ -92,7 +92,7 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
   xbt_assert((host != NULL), "Invalid parameters");
 
   if (h->isOn()) {
-    simgrid::surf::HostImplem* surf_host = h->extension<simgrid::surf::HostImplem>();
+    simgrid::surf::HostImpl* surf_host = h->extension<simgrid::surf::HostImpl>();
     surf_host->turnOff();
 
     /* Clean Simulator data */
@@ -322,10 +322,10 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name,
     host_list_cpy[i] = host_list[i];
 
   /* Check that we are not mixing VMs and PMs in the parallel task */
-  simgrid::surf::HostImplem *host = host_list[0]->extension<simgrid::surf::HostImplem>();
+  simgrid::surf::HostImpl *host = host_list[0]->extension<simgrid::surf::HostImpl>();
   bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host));
   for (i = 1; i < host_nb; i++) {
-    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[i]->extension<simgrid::surf::HostImplem>()));
+    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[i]->extension<simgrid::surf::HostImpl>()));
     xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
   }
 

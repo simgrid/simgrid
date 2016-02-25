@@ -6,7 +6,7 @@
 
 #include "src/surf/network_ns3.hpp"
 
-#include "src/surf/HostImplem.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_private.h"
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals

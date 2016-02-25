@@ -11,7 +11,7 @@
 #include <unordered_map>
 
 #include "simgrid/simix.hpp"
-#include "src/surf/HostImplem.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_process_private.h"
@@ -112,7 +112,7 @@ boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
 /** Get the properties assigned to a host */
 xbt_dict_t Host::properties() {
   return simgrid::simix::kernel([&] {
-    simgrid::surf::HostImplem* surf_host = this->extension<simgrid::surf::HostImplem>();
+    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
     return surf_host->getProperties();
   });
 }
@@ -166,14 +166,14 @@ int Host::pstate()
 void Host::parameters(vm_params_t params)
 {
   simgrid::simix::kernel([&]() {
-    this->extension<simgrid::surf::HostImplem>()->getParams(params);
+    this->extension<simgrid::surf::HostImpl>()->getParams(params);
   });
 }
 
 void Host::setParameters(vm_params_t params)
 {
   simgrid::simix::kernel([&]() {
-    this->extension<simgrid::surf::HostImplem>()->setParams(params);
+    this->extension<simgrid::surf::HostImpl>()->setParams(params);
   });
 }
 
@@ -185,7 +185,7 @@ void Host::setParameters(vm_params_t params)
 xbt_dict_t Host::mountedStoragesAsDict()
 {
   return simgrid::simix::kernel([&] {
-    return this->extension<simgrid::surf::HostImplem>()->getMountedStorageList();
+    return this->extension<simgrid::surf::HostImpl>()->getMountedStorageList();
   });
 }
 
@@ -197,7 +197,7 @@ xbt_dict_t Host::mountedStoragesAsDict()
 xbt_dynar_t Host::attachedStorages()
 {
   return simgrid::simix::kernel([&] {
-    return this->extension<simgrid::surf::HostImplem>()->getAttachedStorageList();
+    return this->extension<simgrid::surf::HostImpl>()->getAttachedStorageList();
   });
 }
 

@@ -10,7 +10,7 @@
 
 #include <map>
 
-#include "src/surf/HostImplem.hpp"
+#include "src/surf/HostImpl.hpp"
 
 #ifndef ENERGY_CALLBACK_HPP_
 #define ENERGY_CALLBACK_HPP_
