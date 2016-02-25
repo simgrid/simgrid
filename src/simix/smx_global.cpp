@@ -16,9 +16,6 @@
 #include "src/surf/xml/platf.hpp"
 #include "smx_private.h"
 #include "smx_private.hpp"
-#include "xbt/heap.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
