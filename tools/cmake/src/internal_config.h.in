@@ -39,11 +39,9 @@
 #ifndef _M_IX86
 	#cmakedefine _M_IX86 @_M_IX86@
 #endif
-#cmakedefine _XBT_WIN32 @_XBT_WIN32@	//this variable is set if it is a windows platform
-#cmakedefine _WIN32 @_WIN32@			//this variable is set if it is a 32 bits windows platform
-#cmakedefine _WIN64 @_WIN64@			//this variable is set if it is a 64 bits  windows platform
-#cmakedefine __VISUALC__ @__VISUALC__@
-#cmakedefine __BORLANDC__ @__BORLANDC__@
+#cmakedefine _XBT_WIN32 @_XBT_WIN32@	// this variable is set if it is a windows platform
+#cmakedefine _WIN32 @_WIN32@		// this variable is set if it is a 32 bits windows platform
+#cmakedefine _WIN64 @_WIN64@		// this variable is set if it is a 64 bits  windows platform
 #cmakedefine APPLE @APPLE@
 /* Set to true if enable_model-checking is true */
 #cmakedefine MMALLOC_WANT_OVERRIDE_LEGACY @MMALLOC_WANT_OVERRIDE_LEGACY@
@@ -60,9 +58,6 @@
 
 /* Define if building universal (internal helper macro) */
 #cmakedefine AC_APPLE_UNIVERSAL_BUILD @AC_APPLE_UNIVERSAL_BUILD@
-
-/* Arguments passed to the configure script */
-#cmakedefine AC_CONFIGURE_ARGS @AC_CONFIGURE_ARGS@
 
 /* Path to the addr2line tool */
 #cmakedefine ADDR2LINE "@ADDR2LINE@"
@@ -82,9 +77,6 @@
 #cmakedefine CMAKE_SYSTEM_PROCESSOR @CMAKE_SYSTEM_PROCESSOR@
 #cmakedefine HAVE_RAW_CONTEXTS @HAVE_RAW_CONTEXTS@
 #cmakedefine HAVE_BOOST_CONTEXTS @HAVE_BOOST_CONTEXTS@
-
-/* Define to 1 if you have the GNU ld library */
-#cmakedefine HAVE_GNU_LD @HAVE_GNU_LD@
 
 /* Define to 1 if you have the <errno.h> header file. */
 #cmakedefine HAVE_ERRNO_H @HAVE_ERRNO_H@
@@ -125,9 +117,6 @@
 /* defines whether Lua bindings must be compiled or not */
 #cmakedefine HAVE_LUA @HAVE_LUA@
 
-/* Define to 1 if you have the <lua5.1/lualib.h> header file. */
-#cmakedefine HAVE_LUA5_1_LUALIB_H @HAVE_LUA5_1_LUALIB_H@
-
 /* Define to 1 if you have the `makecontext' function. */
 #cmakedefine HAVE_MAKECONTEXT @HAVE_MAKECONTEXT@
 
@@ -141,17 +130,11 @@
 /* Define to 1 if threads are usable . */
 #cmakedefine HAVE_PTHREAD @HAVE_PTHREAD@
 
-/* Define to 1 if you have the `readv' function. */
-#cmakedefine HAVE_READV @HAVE_READV@
-
 /* Define if sem_init() is avaible or not (part of XPG6 standard only) */
 #cmakedefine HAVE_SEM_INIT @HAVE_SEM_INIT@
 
 /* Define if sem_timedwait() is avaible or not (part of XPG6 standard only) */
 #cmakedefine HAVE_SEM_TIMEDWAIT @HAVE_SEM_TIMEDWAIT@
-
-/* Define to 1 if you have the `signal' function. */
-#cmakedefine HAVE_SIGNAL @HAVE_SIGNAL@
 
 /* Define to 1 if you have the <signal.h> header file. */
 #cmakedefine HAVE_SIGNAL_H @HAVE_SIGNAL_H@
@@ -195,9 +178,6 @@
 /* Define to 1 if you have the <windows.h> header file. */
 #cmakedefine HAVE_WINDOWS_H @HAVE_WINDOWS_H@
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.*/
-#cmakedefine LT_OBJDIR @LT_OBJDIR@
-
 /* enable the asprintf replacement */
 #cmakedefine NEED_ASPRINTF @NEED_ASPRINTF@
 
@@ -230,9 +210,6 @@
 
 /* define for stack growth */
 #cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@
-
-/* The maximal size of any scalar on this arch */
-#cmakedefine SIZEOF_MAX @SIZEOF_MAX@
 
 /* Define to 1 if you have the ANSI C header files. */
 #cmakedefine STDC_HEADERS @STDC_HEADERS@
