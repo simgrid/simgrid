@@ -1,6 +1,10 @@
 #! ./tesh
 
-! output display
-$ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench
+! timeout 40
+! expect return 0
+$ ./maxmin_bench big 3
 > Starting to solve
-> One shot execution time for a total of 2000 constraints, 2000 variables with 80 active constraint each : 66293 microsecondes
+> Starting to solve
+> Starting to solve
+> 3x One shot execution time for a total of 2000 constraints, 2000 variables with 96 active constraint each, concurrency in [32,288] and max concurrency share 2
+

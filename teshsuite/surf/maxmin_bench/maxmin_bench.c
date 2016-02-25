@@ -28,8 +28,8 @@ int int_random(int max)
   return (int) (((max * 1.0) * rand()) / (RAND_MAX + 1.0));
 }
 
-void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_limit, float rate_no_limit, int max_share, int testmode);
-void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_limit, float rate_no_limit, int max_share, int testmode)
+void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_limit, float rate_no_limit, int max_share, int mode);
+void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_limit, float rate_no_limit, int max_share, int mode)
 {
   lmm_system_t Sys = NULL;
   lmm_constraint_t *cnst = xbt_new0(lmm_constraint_t, nb_cnst);
@@ -77,7 +77,7 @@ void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_li
   lmm_solve(Sys);
   date = xbt_os_time() * 1000000 - date;
 
-  if(testmode){
+  if(mode==1){
     printf("Max concurrency:\n");
     l=0;
     for (i = 0; i < nb_cnst; i++) {
@@ -119,11 +119,11 @@ int main(int argc, char **argv)
   int nb_cnst, nb_var,nb_elem,pw_base_limit,pw_max_limit,max_share;
   float rate_no_limit=0.2;
   float acc_date=0,acc_date2=0;
-  int testclass,testmode,testcount;
+  int testclass,mode,testcount;
   int i;
   
   if(argc<3) {
-    printf("Syntax: <small|medium|big|huge> <count> [test]\n");
+    printf("Syntax: <small|medium|big|huge> <count> [test|perf]\n");
     return -1;
   }
 
@@ -144,10 +144,15 @@ int main(int argc, char **argv)
   //How many times?
   testcount=atoi(argv[2]);
   
-  //Show me everything!
-  testmode=(argc>=4 && strcmp(argv[3],"test")==0);
+  //Show me everything (debug or performance)!
+  mode=0;
+  if(argc>=4 && strcmp(argv[3],"test")==0)
+    mode=1;
+  if(argc>=4 && strcmp(argv[3],"perf")==0)
+    mode=2;
 
-  if(testmode)
+
+  if(mode==1)
     xbt_log_control_set("surf/maxmin.threshold:DEBUG surf.threshold:DEBUG");
 
   nb_cnst= TestClasses[testclass][0];
@@ -164,7 +169,7 @@ int main(int argc, char **argv)
   xbt_init(&argc, argv);
   
   for(i=0;i<testcount;i++){
-    test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit,max_share,testmode);
+    test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit,max_share,mode);
     acc_date+=date;
     acc_date2+=date*date;
   }
@@ -173,7 +178,9 @@ int main(int argc, char **argv)
   float stdev_date= sqrt(acc_date2/(float)testcount-mean_date*mean_date);
     
   printf("%ix One shot execution time for a total of %d constraints, "
-         "%d variables with %d active constraint each, concurrency in [%i,%i] and max concurrency share %i: %g +- %g  microseconds \n",
-	 testcount,nb_cnst, nb_var, nb_elem, (1<<pw_base_limit), (1<<pw_base_limit)+(1<<pw_max_limit), max_share, mean_date, stdev_date);
+         "%d variables with %d active constraint each, concurrency in [%i,%i] and max concurrency share %i\n",
+	 testcount,nb_cnst, nb_var, nb_elem, (1<<pw_base_limit), (1<<pw_base_limit)+(1<<pw_max_limit), max_share);
+  if(mode==2)
+ 	 printf("Execution time: %g +- %g  microseconds \n",mean_date, stdev_date);
   return 0;
 }

@@ -891,7 +891,8 @@ void lmm_solve(lmm_system_t sys)
       if (min_bound < 0) {
   //If no variable could reach its bound, deal iteratively the constraints usage ( at worst one constraint is saturated at each cycle) 
         var->value = min_usage / var->weight;
-        XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
+	// XBT_DEBUG("Setting %p (%d) value to %f\n", var, var->id_int, var->value);
+        XBT_DEBUG("Setting var (%d) value to %f\n", var->id_int, var->value);
       } else {
   //If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
       if (double_equals(min_bound, var->bound*var->weight, sg_maxmin_precision)){
@@ -921,8 +922,10 @@ void lmm_solve(lmm_system_t sys)
           if(!double_positive(cnst->usage,sg_maxmin_precision) || !double_positive(cnst->remaining,cnst->bound*sg_maxmin_precision)) {
             if (cnst->cnst_light) {
               int index = (cnst->cnst_light-cnst_light_tab);
-              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ",
-      index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab, cnst->usage, cnst->remaining, cnst->bound);
+              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || usage: %f remaining: %f bound: %f  ",
+	      index,cnst_light_num, cnst->usage, cnst->remaining, cnst->bound);
+	      //              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p \t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ",
+	      //index,cnst_light_num, cnst, cnst->cnst_light, cnst_light_tab, cnst->usage, cnst->remaining, cnst->bound);
               cnst_light_tab[index]=cnst_light_tab[cnst_light_num-1];
               cnst_light_tab[index].cnst->cnst_light = &cnst_light_tab[index];
               cnst_light_num--;
