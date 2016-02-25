@@ -179,9 +179,6 @@
  *
  *   * If you build the DLL, define the DLL_EXPORT symbol so that all symbols
  *     actually get exported by this file.
-
- *   * If you do a static windows compilation, define DLL_STATIC, both when
- *     compiling the application files and when compiling the library.
  *
  *   * If you link your application against the DLL or if you do a UNIX build,
  *     don't do anything special. This file will do the right thing for you
@@ -218,17 +215,8 @@
 #  define XBT_PUBLIC_CLASS            class __declspec(dllexport)
 #  define XBT_PRIVATE
 
-/* Pack everything up statically */
-#elif defined(DLL_STATIC)
-#  define XBT_PUBLIC(type)            type
-#  define XBT_EXPORT_NO_IMPORT(type)  type
-#  define XBT_IMPORT_NO_EXPORT(type)  type
-#  define XBT_PUBLIC_DATA(type)       extern type
-#  define XBT_PUBLIC_CLASS            class
-#  define XBT_PRIVATE
-
 /* Link against the DLL */
-#elif (defined(_XBT_WIN32) && !defined(DLL_EXPORT) && !defined(DLL_STATIC))
+#elif (defined(_XBT_WIN32) && !defined(DLL_EXPORT))
 #  define XBT_PUBLIC(type)            __declspec(dllimport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type

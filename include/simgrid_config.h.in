@@ -31,20 +31,13 @@
                                              SIMGRID_VERSION_PATCH)
 
 /* take care of DLL usage madness */
-
 #ifdef _XBT_DLL_EXPORT
 	#ifndef DLL_EXPORT
 		#define DLL_EXPORT
 	#endif
 #else
-	#ifdef _XBT_DLL_STATIC
-		#ifndef DLL_STATIC
-			#define DLL_STATIC
-		#endif
-	#else
-		#ifndef DLL_EXPORT
-			#define DLL_IMPORT
-		#endif
+	#ifndef DLL_EXPORT
+		#define DLL_IMPORT
 	#endif
 #endif
 
