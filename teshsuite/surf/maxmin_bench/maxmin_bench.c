@@ -147,6 +147,8 @@ int main(int argc, char **argv)
   
   srand(testcount);
 
+  printf("Starting to test (%i,%i,%i)\n",rand()%1000,rand()%1000,rand()%1000);
+
   //Show me everything (debug or performance)!
   mode=0;
   if(argc>=4 && strcmp(argv[3],"test")==0)

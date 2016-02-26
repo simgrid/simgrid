@@ -754,7 +754,7 @@ void lmm_print(lmm_system_t sys)
     //   xbt_assert(!double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision),
     //           "Incorrect value (%f is not smaller than %f): %g",
     //             sum, cnst->bound, sum - cnst->bound);
-    if(!double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision))
+    if(double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision))
       XBT_ERROR("Incorrect value (%f is not smaller than %f): %g",sum, cnst->bound, sum - cnst->bound);
       
   }
