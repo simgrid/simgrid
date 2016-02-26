@@ -11,81 +11,32 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/
 > [ 32.703314] (0:maestro@) Simulation time 32.7033
 
 ! output sort 19
-$ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_allReduce.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml mpi_actions_shared.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > WARNING: THIS BINARY IS KINDA DEPRECATED
 > This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
 > [  0.000000] (1:p0@Tremblay) p0 comm_size 3 0.000000
-> [  7.171139] (2:p1@Ruby) p1 allReduce 5e8 5e8 7.171139
-> [  7.171139] (3:p2@Perl) p2 allReduce 5e8 5e8 7.171139
-> [  7.171139] (1:p0@Tremblay) p0 allReduce 5e8 5e8 7.171139
-> [ 12.268239] (2:p1@Ruby) p1 compute 5e8 5.097100
-> [ 12.268239] (1:p0@Tremblay) p0 compute 5e8 5.097100
-> [ 12.268239] (3:p2@Perl) p2 compute 5e8 5.097100
-> [ 12.268239] (0:maestro@) Simulation time 12.2682
-
-! output sort 19
-$ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_barrier.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> WARNING: THIS BINARY IS KINDA DEPRECATED
-> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
-> [  0.000000] (1:p0@Tremblay) p0 comm_size 3 0.000000
-> [  0.000000] (2:p1@Ruby) p1 comm_size 3 0.000000
-> [  0.000000] (3:p2@Perl) p2 comm_size 3 0.000000
-> [  0.022653] (2:p1@Ruby) p1 recv p0 0.022653
-> [  0.022653] (1:p0@Tremblay) p0 send p1 1E7 0.022653
-> [  0.063430] (3:p2@Perl) p2 compute 4E6 0.040777
-> [  0.063430] (2:p1@Ruby) p1 compute 4E6 0.040777
-> [  0.068527] (1:p0@Tremblay) p0 compute 4.5E6 0.045874
-> [  0.068527] (0:maestro@) Simulation time 0.0685268
-
-! output sort 19
-$ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_bcast.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> WARNING: THIS BINARY IS KINDA DEPRECATED
-> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
-> [  0.000000] (1:p0@Tremblay) p0 comm_size 3 0.000000
+> [  1.037020] (1:p0@Tremblay) p0 bcast 5e8 1.037020
 > [  1.037020] (2:p1@Ruby) p1 bcast 5e8 1.037020
 > [  1.037020] (3:p2@Perl) p2 bcast 5e8 1.037020
-> [  1.037020] (1:p0@Tremblay) p0 bcast 5e8 1.037020
-> [  3.075860] (2:p1@Ruby) p1 compute 2e8 2.038840
-> [  6.134119] (1:p0@Tremblay) p0 compute 5e8 5.097100
-> [  6.134119] (3:p2@Perl) p2 compute 5e8 5.097100
-> [  7.171139] (2:p1@Ruby) p1 bcast 5e8 4.095279
-> [  7.171139] (3:p2@Perl) p2 bcast 5e8 1.037020
-> [  7.171139] (1:p0@Tremblay) p0 bcast 5e8 1.037020
-> [  9.209979] (2:p1@Ruby) p1 compute 2e8 2.038840
-> [ 12.268239] (1:p0@Tremblay) p0 compute 5e8 5.097100
-> [ 12.268239] (3:p2@Perl) p2 compute 5e8 5.097100
-> [ 13.305258] (2:p1@Ruby) p1 reduce 5e8 5e8 4.095279
-> [ 13.305258] (3:p2@Perl) p2 reduce 5e8 5e8 1.037020
-> [ 18.402358] (1:p0@Tremblay) p0 reduce 5e8 5e8 6.134119
-> [ 18.402358] (0:maestro@) Simulation time 18.4024
-
-! output sort 19
-$ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_reduce.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> WARNING: THIS BINARY IS KINDA DEPRECATED
-> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
-> [  0.000000] (1:p0@Tremblay) p0 comm_size 3 0.000000
-> [  1.037020] (2:p1@Ruby) p1 reduce 5e8 5e8 1.037020
-> [  1.037020] (3:p2@Perl) p2 reduce 5e8 5e8 1.037020
-> [  6.134119] (2:p1@Ruby) p1 compute 5e8 5.097100
-> [  6.134119] (1:p0@Tremblay) p0 reduce 5e8 5e8 6.134119
-> [  6.134119] (3:p2@Perl) p2 compute 5e8 5.097100
-> [ 11.231219] (1:p0@Tremblay) p0 compute 5e8 5.097100
-> [ 11.231219] (0:maestro@) Simulation time 11.2312
-
-! output sort 19
-$ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml actions_with_isend.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> WARNING: THIS BINARY IS KINDA DEPRECATED
-> This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
-> [  0.000000] (2:p1@Ruby) p1 Irecv p0 0.000000
-> [  0.000000] (3:p2@Perl) p2 Irecv p1 0.000000
-> [  2.072088] (1:p0@Tremblay) p0 send p1 1e9 2.072088
-> [  5.097100] (3:p2@Perl) p2 compute 5e8 5.097100
-> [ 10.194200] (2:p1@Ruby) p1 compute 1e9 10.194200
-> [ 10.194200] (2:p1@Ruby) p1 wait 0.000000
-> [ 12.266287] (1:p0@Tremblay) p0 compute 1e9 10.194200
-> [ 12.266287] (3:p2@Perl) p2 wait 7.169187
-> [ 12.266287] (2:p1@Ruby) p1 send p2 1e9 2.072088
-> [ 12.266287] (3:p2@Perl) p2 Isend p0 1e9 0.000000
-> [ 14.338375] (1:p0@Tremblay) p0 recv p2 2.072088
-> [ 17.363387] (3:p2@Perl) p2 compute 5e8 5.097100
-> [ 17.363387] (0:maestro@) Simulation time 17.3634
+> [  1.082894] (1:p0@Tremblay) p0 compute 4.5E6 0.045874
+> [  1.123670] (1:p0@Tremblay) p0 compute 4E6 0.040777
+> [  1.149156] (1:p0@Tremblay) p0 compute 2.5E6 0.025485
+> [  1.149156] (2:p1@Ruby) p1 Irecv p0 0.000000
+> [  1.149156] (3:p2@Perl) p2 Irecv p1 0.000000
+> [  3.221244] (1:p0@Tremblay) p0 send p1 1e9 2.072088
+> [  6.246256] (3:p2@Perl) p2 compute 5e8 5.097100
+> [ 11.343355] (2:p1@Ruby) p1 compute 1e9 10.194200
+> [ 11.343355] (2:p1@Ruby) p1 wait 0.000000
+> [ 11.343355] (2:p1@Ruby) p1 Isend p2 1e9 0.000000
+> [ 13.415443] (1:p0@Tremblay) p0 compute 1e9 10.194200
+> [ 13.415443] (3:p2@Perl) p2 wait 7.169187
+> [ 14.452463] (2:p1@Ruby) p1 reduce 5e8 5e8 1.037020
+> [ 14.452463] (3:p2@Perl) p2 reduce 5e8 5e8 1.037020
+> [ 19.549562] (1:p0@Tremblay) p0 reduce 5e8 5e8 6.134119
+> [ 19.549562] (2:p1@Ruby) p1 compute 5e8 5.097100
+> [ 19.549562] (3:p2@Perl) p2 compute 5e8 5.097100
+> [ 24.646662] (1:p0@Tremblay) p0 compute 5e8 5.097100
+> [ 31.817801] (0:maestro@) Simulation time 31.8178
+> [ 31.817801] (1:p0@Tremblay) p0 allReduce 5e8 5e8 7.171139
+> [ 31.817801] (2:p1@Ruby) p1 allReduce 5e8 5e8 7.171139
+> [ 31.817801] (3:p2@Perl) p2 allReduce 5e8 5e8 7.171139

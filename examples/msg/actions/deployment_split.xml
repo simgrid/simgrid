@@ -6,9 +6,9 @@
          ./actions homogeneous_3_hosts.xml deployment_split.xml  -->
 
   <process host="Tremblay" function="p0">
-    <argument value="actions_split_p0.txt"/>
+    <argument value="mpi_actions_split_p0.txt"/>
   </process>
   <process host="Ruby" function="p1">
-    <argument value="actions_split_p1.txt"/>
+    <argument value="mpi_actions_split_p1.txt"/>
   </process>
 </platform>
