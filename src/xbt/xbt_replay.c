@@ -55,17 +55,9 @@ xbt_replay_reader_t xbt_replay_reader_new(const char *filename)
 {
   xbt_replay_reader_t res = xbt_new0(s_xbt_replay_reader_t,1);
   res->fp = fopen(filename, "r");
-  if (res->fp == NULL)
-    xbt_die("Cannot open %s: %s", filename, strerror(errno));
+  xbt_assert(res->fp != NULL, "Cannot open %s: %s", filename, strerror(errno));
   res->filename = xbt_strdup(filename);
   return res;
-}
-
-const char *xbt_replay_reader_position(xbt_replay_reader_t reader)
-{
-  free(reader->position);
-  reader->position = bprintf("%s:%d",reader->filename,reader->linenum);
-  return reader->position;
 }
 
 const char **xbt_replay_reader_get(xbt_replay_reader_t reader)
@@ -121,18 +113,6 @@ void xbt_replay_action_register(const char *action_name, action_fun function)
   xbt_free(lowername);
 }
 
-/** \ingroup XBT_replay
- * \brief Unregisters a function, which handled a kind of action
- *
- * \param action_name the reference name of the action.
- */
-void xbt_replay_action_unregister(const char *action_name)
-{
-  char* lowername = str_tolower (action_name);
-  xbt_dict_remove(xbt_action_funs, lowername);
-  xbt_free(lowername);
-}
-
 /** @brief Initializes the replay mechanism, and returns true if (and only if) it was necessary
  *
  * It returns false if it was already done by another process.
@@ -180,8 +160,7 @@ int xbt_replay_action_runner(int argc, char *argv[])
       }
       CATCH(e) {
         free(evt);
-        xbt_die("Replay error :\n %s"
-                  , e.msg);
+        xbt_die("Replay error :\n %s", e.msg);
       }
       for (i=0;evt[i]!= NULL;i++)
         free(evt[i]);
@@ -205,12 +184,10 @@ int xbt_replay_action_runner(int argc, char *argv[])
         }
         CATCH(e) {
           free(evt);
-          xbt_die("Replay error on line %d of file %s :\n %s"
-                     , reader->linenum,reader->filename, e.msg);               
+          xbt_die("Replay error on line %d of file %s :\n %s" , reader->linenum,reader->filename, e.msg);
         }
       } else {
-        XBT_WARN("%s: Ignore trace element not for me",
-              xbt_replay_reader_position(reader));
+        XBT_WARN("%s:%d: Ignore trace element not for me", reader->filename, reader->linenum);
       }
       free(evt);
     }

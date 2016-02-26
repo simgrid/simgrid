@@ -171,7 +171,6 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
 
   xbt_dictelm_t current, previous = NULL;
-  xbt_assert(dict);
 
   XBT_CDEBUG(xbt_dict,
              "ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
@@ -237,17 +236,11 @@ XBT_INLINE void xbt_dict_set(xbt_dict_t dict,
  *
  * Search the given \a key. Throws not_found_error when not found.
  */
-XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key,
-                                  int key_len)
+XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
 {
-
-
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
-  xbt_dictelm_t current;
+  xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  xbt_assert(dict);
-
-  current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
          (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
@@ -260,19 +253,12 @@ XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key,
   return current->content;
 }
 
-/**
- * \brief like xbt_dict_get_ext(), but returning NULL when not found
- */
-void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key,
-                               int key_len)
+/** @brief like xbt_dict_get_ext(), but returning NULL when not found */
+void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
 {
-
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
-  xbt_dictelm_t current;
+  xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  xbt_assert(dict);
-
-  current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
          (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
@@ -292,12 +278,8 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key,
  */
 char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
 {
-  int i;
-  xbt_dictelm_t current;
-
-
-  for (i = 0; i <= dict->table_size; i++) {
-    current = dict->table[i];
+  for (int i = 0; i <= dict->table_size; i++) {
+    xbt_dictelm_t current = dict->table[i];
     while (current != NULL) {
       if (current->content == data)
         return current->key;
@@ -308,10 +290,7 @@ char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
   return NULL;
 }
 
-/**
- * @brief retrieve the key associated to that xbt_dictelm_t.
- *
- */
+/** @brief retrieve the key associated to that xbt_dictelm_t. */
 char *xbt_dict_get_elm_key(xbt_dictelm_t elm)
 {
   return elm->key;
@@ -371,11 +350,8 @@ XBT_INLINE void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 XBT_INLINE xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
 {
   unsigned int hash_code = xbt_str_hash(key);
-  xbt_dictelm_t current;
+  xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  xbt_assert(dict);
-
-  current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
          (hash_code != current->hash_code || strcmp(key, current->key)))
     current = current->next;
@@ -392,18 +368,12 @@ XBT_INLINE xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *k
  *
  * Remove the entry associated with the given \a key (throws not_found)
  */
-XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
-                                    int key_len)
+XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
 {
-
-
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
-  xbt_dictelm_t current, previous = NULL;
+  xbt_dictelm_t previous = NULL;
+  xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  xbt_assert(dict);
-
-  //  fprintf(stderr,"RM %.*s hash = %d, size = %d, & = %d\n",key_len,key,hash_code, dict->table_size, hash_code & dict->table_size);
-  current = dict->table[hash_code & dict->table_size];
   while (current != NULL &&
          (hash_code != current->hash_code || key_len != current->key_len
           || strncmp(key, current->key, key_len))) {
@@ -479,23 +449,15 @@ XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key)
 }
 #endif
 
-/**
- * \brief Remove all data from the dict
- * \param dict the dict
- */
+/** @brief Remove all data from the dict */
 void xbt_dict_reset(xbt_dict_t dict)
 {
-
-  int i;
-  xbt_dictelm_t current, previous = NULL;
-
-  xbt_assert(dict);
-
   if (dict->count == 0)
     return;
 
-  for (i = 0; i <= dict->table_size; i++) {
-    current = dict->table[i];
+  for (int i = 0; i <= dict->table_size; i++) {
+    xbt_dictelm_t previous = NULL;
+    xbt_dictelm_t current = dict->table[i];
     while (current != NULL) {
       previous = current;
       current = current->next;
@@ -514,8 +476,6 @@ void xbt_dict_reset(xbt_dict_t dict)
  */
 XBT_INLINE int xbt_dict_length(xbt_dict_t dict)
 {
-  xbt_assert(dict);
-
   return dict->count;
 }
 
@@ -573,57 +533,57 @@ xbt_dynar_t all_sizes = NULL;
 /** @brief shows some debugging info about the bucklet repartition */
 void xbt_dict_dump_sizes(xbt_dict_t dict)
 {
-
-  int i;
   unsigned int count;
   unsigned int size;
-  xbt_dictelm_t element;
+
+  printf("Dict %p: %d bucklets, %d used cells (of %d) ", dict, dict->count, dict->fill, dict->table_size);
+
+  if (!dict) {
+    printf("\n");
+    return;
+  }
   xbt_dynar_t sizes = xbt_dynar_new(sizeof(int), NULL);
 
-  printf("Dict %p: %d bucklets, %d used cells (of %d) ", dict, dict->count,
-         dict->fill, dict->table_size);
-  if (dict != NULL) {
-    for (i = 0; i < dict->table_size; i++) {
-      element = dict->table[i];
-      size = 0;
-      if (element) {
-        while (element != NULL) {
-          size++;
-          element = element->next;
-        }
-      }
-      if (xbt_dynar_length(sizes) <= size) {
-        int prevsize = 1;
-        xbt_dynar_set(sizes, size, &prevsize);
-      } else {
-        int prevsize;
-        xbt_dynar_get_cpy(sizes, size, &prevsize);
-        prevsize++;
-        xbt_dynar_set(sizes, size, &prevsize);
+  for (int i = 0; i < dict->table_size; i++) {
+    xbt_dictelm_t element = dict->table[i];
+    size = 0;
+    if (element) {
+      while (element != NULL) {
+        size++;
+        element = element->next;
       }
     }
-    if (!all_sizes)
-      all_sizes = xbt_dynar_new(sizeof(int), NULL);
-
-    xbt_dynar_foreach(sizes, count, size) {
-      /* Copy values of this one into all_sizes */
-      int prevcount;
-      if (xbt_dynar_length(all_sizes) <= count) {
-        prevcount = size;
-        xbt_dynar_set(all_sizes, count, &prevcount);
-      } else {
-        xbt_dynar_get_cpy(all_sizes, count, &prevcount);
-        prevcount += size;
-        xbt_dynar_set(all_sizes, count, &prevcount);
-      }
-
-      /* Report current sizes */
-      if (count == 0)
-        continue;
-      if (size == 0)
-        continue;
-      printf("%uelm x %u cells; ", count, size);
+    if (xbt_dynar_length(sizes) <= size) {
+      int prevsize = 1;
+      xbt_dynar_set(sizes, size, &prevsize);
+    } else {
+      int prevsize;
+      xbt_dynar_get_cpy(sizes, size, &prevsize);
+      prevsize++;
+      xbt_dynar_set(sizes, size, &prevsize);
     }
+  }
+  if (!all_sizes)
+    all_sizes = xbt_dynar_new(sizeof(int), NULL);
+
+  xbt_dynar_foreach(sizes, count, size) {
+    /* Copy values of this one into all_sizes */
+    int prevcount;
+    if (xbt_dynar_length(all_sizes) <= count) {
+      prevcount = size;
+      xbt_dynar_set(all_sizes, count, &prevcount);
+    } else {
+      xbt_dynar_get_cpy(all_sizes, count, &prevcount);
+      prevcount += size;
+      xbt_dynar_set(all_sizes, count, &prevcount);
+    }
+
+    /* Report current sizes */
+    if (count == 0)
+      continue;
+    if (size == 0)
+      continue;
+    printf("%uelm x %u cells; ", count, size);
   }
   printf("\n");
   xbt_dynar_free(&sizes);
