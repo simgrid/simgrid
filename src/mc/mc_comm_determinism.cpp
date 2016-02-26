@@ -145,7 +145,7 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
         xbt_free(initial_global_state->send_diff);
         initial_global_state->send_diff = NULL;
         MC_print_statistics(mc_stats);
-        exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
+        mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       }else if(_sg_mc_comms_determinism && (!initial_global_state->send_deterministic && !initial_global_state->recv_deterministic)) {
         XBT_INFO("****************************************************");
         XBT_INFO("***** Non-deterministic communications pattern *****");
@@ -157,7 +157,7 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
         xbt_free(initial_global_state->recv_diff);
         initial_global_state->recv_diff = NULL;
         MC_print_statistics(mc_stats);
-        exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
+        mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       } 
     }
   }
