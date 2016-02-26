@@ -277,7 +277,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
 
   case MC_MESSAGE_ASSERTION_FAILED:
     MC_report_assertion_error();
-    ::exit(SIMGRID_MC_EXIT_SAFETY);
+    this->exit(SIMGRID_MC_EXIT_SAFETY);
     break;
 
   default:
@@ -285,6 +285,15 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
 
   }
   return true;
+}
+
+/** Terminate the model-checker aplication */
+void ModelChecker::exit(int status)
+{
+  // TODO, terminate the model checker politely instead of exiting rudel
+  if (process().running())
+    kill(process().pid(), SIGKILL);
+  ::exit(status);
 }
 
 bool ModelChecker::handle_events()
@@ -384,7 +393,7 @@ void ModelChecker::handle_waitpid()
           xbt_die("Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
-          ::exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
+          mc_model_checker->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
         }
       }
 

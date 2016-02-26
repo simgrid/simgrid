@@ -10,7 +10,9 @@
 #ifndef SIMGRID_PORTABLE_H
 #define SIMGRID_PORTABLE_H
 
-#include "src/internal_config.h"
+#include "simgrid_config.h"       /* what was compiled in? */
+#include "src/internal_config.h"  /* some information about the environment */
+
 #include "xbt/base.h"
 #include "xbt/misc.h"
 #ifdef _XBT_WIN32

@@ -286,5 +286,5 @@ static void MC_modelcheck_safety_init(void)
 
   /* Save the initial state */
   initial_global_state = xbt_new0(s_mc_global_t, 1);
-  initial_global_state->snapshot = MC_take_snapshot(0);
+  initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
 }

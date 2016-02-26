@@ -9,6 +9,8 @@
 #ifndef SIMGRID_PUBLIC_CONFIG_H
 #define SIMGRID_PUBLIC_CONFIG_H
 
+/* This file should only contain public declarations, mainly the definitions of SimGrid modules that were compiled in */
+
 /** Define the version numbers of the used header files. 
     sg_version() can be used to retrieve the version of the dynamic library.
     But actually, if these numbers don't match, SimGrid refuses to start (so you shouldn't have to care about sg_version() yourself) */
@@ -36,18 +38,15 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@
+
 /* Define to 1 if you have the <sys/time.h> header file. */
 #cmakedefine HAVE_SYS_TIME_H @HAVE_SYS_TIME_H@
-
 
 /* Whether mallocators were enabled in ccmake or not. */
 #define MALLOCATOR_COMPILED_IN @MALLOCATOR_IS_WANTED@
 
 /* Define if xbt contexts are based on our threads implementation or not */
 #cmakedefine HAVE_THREAD_CONTEXTS @HAVE_THREAD_CONTEXTS@
-
-/* Jedule output  */
-#cmakedefine HAVE_JEDULE @HAVE_JEDULE@
 
 /* Tracking of latency bound */
 #cmakedefine HAVE_LATENCY_BOUND_TRACKING @HAVE_LATENCY_BOUND_TRACKING@
@@ -57,11 +56,12 @@
 
 /* Define to 1 if mmalloc is compiled in. */
 #cmakedefine HAVE_MMALLOC @HAVE_MMALLOC@
-/* If Model-Checking support was requested */
-#cmakedefine HAVE_MC @HAVE_MC@
+
+#cmakedefine HAVE_JEDULE @HAVE_JEDULE@ /* Was Jedule compiled in?  */
+#cmakedefine HAVE_MC     @HAVE_MC@     /* Was the model-checking compiled in? */
+#cmakedefine HAVE_NS3    @HAVE_NS3@    /* Was the NS3 support compiled in? */
+#cmakedefine HAVE_LUA    @HAVE_LUA@    /* Was the Lua support compiled in? */
 
 #cmakedefine SIMGRID_HAVE_LIBSIG @SIMGRID_HAVE_LIBSIG@
-
-#cmakedefine HAVE_VASPRINTF @HAVE_VASPRINTF@
 
 #endif /* SIMGRID_PUBLIC_CONFIG_H */

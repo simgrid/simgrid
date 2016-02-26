@@ -90,12 +90,6 @@
 /* We have mmap and objdump to handle privatization */
 #cmakedefine HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@
 
-/* Indicates that we have NS3 support */
-#cmakedefine HAVE_NS3 @HAVE_NS3@
-
-/* defines whether Lua bindings must be compiled or not */
-#cmakedefine HAVE_LUA @HAVE_LUA@
-
 /* Define to 1 if you have the `makecontext' function. */
 #cmakedefine HAVE_MAKECONTEXT @HAVE_MAKECONTEXT@
 

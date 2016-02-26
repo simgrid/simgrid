@@ -20,33 +20,18 @@ namespace mc {
 /** A variable (global or local) in the model-checked program */
 class Variable {
 public:
-  Variable();
-
-  unsigned dwarf_offset; /* Global offset of the field. */
-  int global;
+  Variable() {}
+  unsigned dwarf_offset = 0; /* Global offset of the field. */
+  int global = 0;
   std::string name;
-  unsigned type_id;
-  simgrid::mc::Type* type;
-
+  unsigned type_id = 0;
+  simgrid::mc::Type* type = nullptr;
   // Use either of:
   simgrid::dwarf::LocationList location_list;
-  void* address;
-
-  size_t start_scope;
-  simgrid::mc::ObjectInformation* object_info;
+  void* address = nullptr;
+  size_t start_scope = 0;
+  simgrid::mc::ObjectInformation* object_info = nullptr;
 };
-
-inline
-Variable::Variable()
-{
-  this->dwarf_offset = 0;
-  this->global = 0;
-  this->type = nullptr;
-  this->type_id = 0;
-  this->address = nullptr;
-  this->start_scope = 0;
-  this->object_info = nullptr;
-}
 
 }
 }
