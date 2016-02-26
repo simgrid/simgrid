@@ -72,7 +72,7 @@ void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_li
     }
   }
 
-  printf("Starting to solve\n");
+  printf("Starting to solve(%i,%i,%i)\n",rand()%1000,rand()%1000,rand()%1000);
   date = xbt_os_time() * 1000000;
   lmm_solve(Sys);
   date = xbt_os_time() * 1000000 - date;
