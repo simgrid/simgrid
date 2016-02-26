@@ -11,21 +11,30 @@
 #include "xbt/xbt_os_time.h"
 #include "xbt/sysdep.h"         /* time manipulation for benchmarking */
 
+#define MYRANDMAX 1000
+
 #include <stdlib.h>
 #include <stdio.h>
 
 double date;
+unsigned long seedx= 0;
+
+int myrand();
+inline int myrand() {
+  seedx=seedx * 16807 % 2147483647;
+  return seedx%1000;
+}
 
 double float_random(double max);
 double float_random(double max)
 {
-  return ((max * rand()) / (RAND_MAX + 1.0));
+  return ((max * myrand()) / (MYRANDMAX + 1.0));
 }
 
 int int_random(int max);
 int int_random(int max)
 {
-  return (int) (((max * 1.0) * rand()) / (RAND_MAX + 1.0));
+  return (int) (((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
 }
 
 void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_limit, float rate_no_limit, int max_share, int mode);
@@ -72,7 +81,7 @@ void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_li
     }
   }
 
-  printf("Starting to solve(%i,%i,%i)\n",rand()%1000,rand()%1000,rand()%1000);
+  printf("Starting to solve(%i,%i,%i)\n",myrand()%1000,myrand()%1000,myrand()%1000);
   date = xbt_os_time() * 1000000;
   lmm_solve(Sys);
   date = xbt_os_time() * 1000000 - date;
@@ -176,8 +185,8 @@ int main(int argc, char **argv)
   xbt_init(&argc, argv);
   
   for(i=0;i<testcount;i++){
-    srand(i+1);
-    printf("Starting %i: (%i,%i,%i)\n",i,rand()%1000,rand()%1000,rand()%1000);
+    seedx=i+1;
+    printf("Starting %i: (%i,%i,%i)\n",i,myrand()%1000,myrand()%1000,myrand()%1000);
     test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit,max_share,mode);
     acc_date+=date;
     acc_date2+=date*date;
