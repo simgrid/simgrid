@@ -8,7 +8,6 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <errno.h>
 
@@ -25,6 +24,9 @@
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
+#include <xbt/dynar.h>
+#include <xbt/log.h>
+#include <xbt/base.h>
 #include <xbt/mmalloc.h>
 
 #include "src/mc/mc_object_info.h"
@@ -104,7 +106,7 @@ static char* MC_get_lib_name(const char* pathname, struct s_mc_memory_map_re* re
 
   regmatch_t match;
   if(regexec(&res->so_re, map_basename, 1, &match, 0))
-    return NULL;
+    return nullptr;
 
   char* libname = strndup(map_basename, match.rm_so);
 
@@ -166,7 +168,7 @@ static void MC_zero_buffer_init(void)
   int fd = open("/dev/zero", O_RDONLY);
   if (fd<0)
     xbt_die("Could not open /dev/zero");
-  zero_buffer = mmap(NULL, zero_buffer_size, PROT_READ, MAP_SHARED, fd, 0);
+  zero_buffer = mmap(nullptr, zero_buffer_size, PROT_READ, MAP_SHARED, fd, 0);
   if (zero_buffer == MAP_FAILED)
     xbt_die("Could not map the zero buffer");
   close(fd);
@@ -256,11 +258,11 @@ Process::~Process()
     unw_destroy_addr_space(this->unw_underlying_addr_space);
     _UPT_destroy(this->unw_underlying_context);
   }
-  this->unw_underlying_context = NULL;
-  this->unw_underlying_addr_space = NULL;
+  this->unw_underlying_context = nullptr;
+  this->unw_underlying_addr_space = nullptr;
 
   unw_destroy_addr_space(this->unw_addr_space);
-  this->unw_addr_space = NULL;
+  this->unw_addr_space = nullptr;
 
   this->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
 
@@ -312,8 +314,8 @@ void Process::init_memory_map_info()
   this->maestro_stack_start_ = nullptr;
   this->maestro_stack_end_ = nullptr;
   this->object_infos.resize(0);
-  this->binary_info = NULL;
-  this->libsimgrid_info = NULL;
+  this->binary_info = nullptr;
+  this->libsimgrid_info = nullptr;
 
   struct s_mc_memory_map_re res;
 
@@ -322,7 +324,7 @@ void Process::init_memory_map_info()
 
   std::vector<simgrid::xbt::VmMap> const& maps = this->memory_map_;
 
-  const char* current_name = NULL;
+  const char* current_name = nullptr;
 
   this->object_infos.resize(0);
 
@@ -332,7 +334,7 @@ void Process::init_memory_map_info()
 
     // Nothing to do
     if (maps[i].pathname.empty()) {
-      current_name = NULL;
+      current_name = nullptr;
       continue;
     }
 
@@ -342,7 +344,7 @@ void Process::init_memory_map_info()
         this->maestro_stack_start_ = remote(reg.start_addr);
         this->maestro_stack_end_ = remote(reg.end_addr);
       }
-      current_name = NULL;
+      current_name = nullptr;
       continue;
     }
 
@@ -354,7 +356,7 @@ void Process::init_memory_map_info()
       continue;
 
     const bool is_executable = !i;
-    char* libname = NULL;
+    char* libname = nullptr;
     if (!is_executable) {
       libname = MC_get_lib_name(pathname, &res);
       if(!libname)
@@ -396,7 +398,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> Process::find_object_info(remote
       return object_info;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 std::shared_ptr<ObjectInformation> Process::find_object_info_exec(remote_ptr<void> addr) const
@@ -448,7 +450,7 @@ simgrid::mc::Variable* Process::find_variable(const char* name) const
       return var;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 void Process::read_variable(const char* name, void* target, size_t size) const
@@ -467,7 +469,7 @@ void Process::read_variable(const char* name, void* target, size_t size) const
 char* Process::read_string(remote_ptr<void> address) const
 {
   if (!address)
-    return NULL;
+    return nullptr;
 
   off_t len = 128;
   char* res = (char*) malloc(len);

@@ -7,10 +7,15 @@
 #ifndef SIMGRID_MC_TYPE_HPP
 #define SIMGRID_MC_TYPE_HPP
 
+#include <cstddef>
+
 #include <vector>
 #include <string>
 
 #include <xbt/base.h>
+#include <xbt/asserts.h>
+
+#include <dwarf.h>
 
 #include "src/mc/mc_forward.h"
 #include "src/mc/LocationList.hpp"

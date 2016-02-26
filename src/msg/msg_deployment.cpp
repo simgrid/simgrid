@@ -12,8 +12,7 @@
  * \brief An application deployer.
  *
  * Creates the process described in \a file.
- * \param file a filename of a xml description of the application. This file 
- * follows this DTD :
+ * \param file a filename of a xml description of the application. This file follows this DTD :
  *
  *     \include simgrid.dtd
  *
@@ -25,13 +24,8 @@
  */
 void MSG_launch_application(const char *file)
 {
-
-  xbt_assert(msg_global,
-              "MSG_init has to be called before MSG_launch_application.");
-
+  xbt_assert(msg_global, "MSG_init has to be called before MSG_launch_application.");
   SIMIX_launch_application(file);
-
-  return;
 }
 
 /** \ingroup msg_simulation
@@ -45,7 +39,6 @@ void MSG_launch_application(const char *file)
 void MSG_function_register(const char *name, xbt_main_func_t code)
 {
   SIMIX_function_register(name, code);
-  return;
 }
 
 /** \ingroup msg_simulation
@@ -75,8 +68,7 @@ xbt_main_func_t MSG_get_registered_function(const char *name)
  * \brief register functions bypassing the parser
  */
 
-void MSG_set_function(const char *host_id, const char *function_name,
-                      xbt_dynar_t arguments)
+void MSG_set_function(const char *host_id, const char *function_name, xbt_dynar_t arguments)
 {
   SIMIX_process_set_function(host_id, function_name, arguments, -1, -1);
 }

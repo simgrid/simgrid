@@ -8,6 +8,7 @@
 #define _POPPING_PRIVATE_H
 
 #include <xbt/base.h>
+#include <simgrid/simix.h>
 
 SG_BEGIN_DECL()
 

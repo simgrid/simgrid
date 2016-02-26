@@ -8,6 +8,7 @@
 #define SIMGRID_MC_FRAME_HPP
 
 #include <string>
+#include <cstdint>
 
 #include <xbt/base.h>
 #include <xbt/range.hpp>

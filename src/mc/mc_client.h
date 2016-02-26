@@ -7,7 +7,9 @@
 #ifndef SIMGRID_MC_CLIENT_H
 #define SIMGRID_MC_CLIENT_H
 
-#include <xbt/misc.h>
+#include <cstddef>
+
+#include <xbt/base.h>
 #include "src/mc/mc_protocol.h"
 
 SG_BEGIN_DECL()
@@ -21,11 +23,11 @@ extern XBT_PRIVATE mc_client_t mc_client;
 
 XBT_PRIVATE void MC_client_init(void);
 XBT_PRIVATE void MC_client_handle_messages(void);
-XBT_PRIVATE void MC_client_send_message(void* message, size_t size);
+XBT_PRIVATE void MC_client_send_message(void* message, std::size_t size);
 XBT_PRIVATE void MC_client_send_simple_message(e_mc_message_type type);
 
 #ifdef HAVE_MC
-void MC_ignore(void* addr, size_t size);
+void MC_ignore(void* addr, std::size_t size);
 #endif
 
 void MC_client_main_loop(void);

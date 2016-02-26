@@ -5,15 +5,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
-#include "xbt/str.h"
 #include "xbt/dynar.h"
 #include "xbt/replay.h"
 
 #include <errno.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg,
-                                "MSG actions for trace driven simulation");
-
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_action, msg, "MSG actions for trace driven simulation");
 
 void MSG_action_init()
 {
@@ -25,8 +22,6 @@ void MSG_action_exit()
 {
   _xbt_replay_action_exit();
 }
-
-
 
 /** \ingroup msg_trace_driven
  * \brief A trace loader
@@ -44,15 +39,13 @@ msg_error_t MSG_action_trace_run(char *path)
   xbt_action_fp=NULL;
   if (path) {
     xbt_action_fp = fopen(path, "r");
-    xbt_assert(xbt_action_fp != NULL, "Cannot open %s: %s",
-               path, strerror(errno));
+    xbt_assert(xbt_action_fp != NULL, "Cannot open %s: %s", path, strerror(errno));
   }
   res = MSG_main();
 
   if (!xbt_dict_is_empty(xbt_action_queues)) {
-    XBT_WARN
-        ("Not all actions got consumed. If the simulation ended successfully (without deadlock), you may want to add new processes to your deployment file.");
-
+    XBT_WARN("Not all actions got consumed. If the simulation ended successfully (without deadlock),"
+             " you may want to add new processes to your deployment file.");
 
     xbt_dict_foreach(xbt_action_queues, cursor, name, todo) {
       XBT_WARN("Still %lu actions for %s", xbt_dynar_length(todo), name);

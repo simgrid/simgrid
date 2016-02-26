@@ -19,10 +19,8 @@
 /** \ingroup msg_simulation
  * \brief A platform constructor.
  *
- * Creates a new platform, including hosts, links and the
- * routing_table. 
- * \param file a filename of a xml description of a platform. This file 
- * follows this DTD :
+ * Creates a new platform, including hosts, links and the routing_table.
+ * \param file a filename of a xml description of a platform. This file follows this DTD :
  *
  *     \include simgrid.dtd
  *
@@ -47,7 +45,6 @@ void MSG_post_create_environment(void) {
     if(data[SIMIX_STORAGE_LEVEL])
       __MSG_storage_create(xbt_dict_cursor_get_elm(cursor));
   }
-
 }
 
 msg_as_t MSG_environment_get_routing_root() {

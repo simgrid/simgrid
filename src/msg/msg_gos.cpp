@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
-#include "msg_mailbox.h"
 #include "mc/mc.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
@@ -16,11 +15,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
 /** \ingroup msg_task_usage
  * \brief Executes a task and waits for its termination.
  *
- * This function is used for describing the behavior of a process. It
- * takes only one parameter.
+ * This function is used for describing the behavior of a process. It takes only one parameter.
  * \param task a #msg_task_t to execute on the location on which the process is running.
- * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED
- * or #MSG_HOST_FAILURE otherwise
+ * \return #MSG_OK if the task was successfully completed, #MSG_TASK_CANCELED or #MSG_HOST_FAILURE otherwise
  */
 msg_error_t MSG_task_execute(msg_task_t task)
 {
@@ -55,8 +52,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
   TRACE_msg_task_execute_start(task);
 
   xbt_assert((!simdata->compute) && (task->simdata->isused == 0),
-             "This task is executed somewhere else. Go fix your code! %d",
-             task->simdata->isused!=NULL);
+             "This task is executed somewhere else. Go fix your code! %d", task->simdata->isused!=NULL);
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
@@ -65,7 +61,6 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
     return MSG_OK;
   }
 
-
   TRY {
     if (msg_global->debug_multiple_use)
       MSG_BT(simdata->isused, "Using Backtrace");
@@ -73,24 +68,19 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       simdata->isused = (void*)1;
 
     if (simdata->host_nb > 0) {
-      simdata->compute = simcall_execution_parallel_start(task->name,
-                                                       simdata->host_nb,
-                                                       simdata->host_list,
-                                                       simdata->flops_parallel_amount,
-                                                       simdata->bytes_parallel_amount,
+      simdata->compute = simcall_execution_parallel_start(task->name, simdata->host_nb,simdata->host_list,
+                                                       simdata->flops_parallel_amount, simdata->bytes_parallel_amount,
                                                        1.0, -1.0);
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
-      unsigned long affinity_mask = (unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host, sizeof(msg_host_t));
-      XBT_DEBUG("execute %s@%s with affinity(0x%04lx)", MSG_task_get_name(task), MSG_host_get_name(p_simdata->m_host), affinity_mask);
+      unsigned long affinity_mask =
+         (unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host,
+                                                             sizeof(msg_host_t));
+      XBT_DEBUG("execute %s@%s with affinity(0x%04lx)",
+                MSG_task_get_name(task), MSG_host_get_name(p_simdata->m_host), affinity_mask);
 
-      simdata->compute = simcall_execution_start(task->name,
-                                              simdata->flops_amount,
-                                              simdata->priority,
-                                              simdata->bound,
-                                              affinity_mask
-                                              );
-
+      simdata->compute = simcall_execution_start(task->name, simdata->flops_amount, simdata->priority,
+                                                 simdata->bound, affinity_mask);
     }
     simcall_set_category(simdata->compute, task->category);
     p_simdata->waiting_action = simdata->compute;
@@ -102,8 +92,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       xbt_ex_free(*(xbt_ex_t*)simdata->isused);
     simdata->isused = 0;
 
-    XBT_DEBUG("Execution task '%s' finished in state %d",
-              task->name, (int)comp_state);
+    XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
   }
   CATCH(e) {
     switch (e.category) {
@@ -118,8 +107,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
     }
     xbt_ex_free(e);
   }
-  /* action ended, set comm and compute = NULL, the actions is already destroyed
-   * in the main function */
+  /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
   simdata->flops_amount = 0.0;
   simdata->comm = NULL;
   simdata->compute = NULL;
@@ -127,7 +115,6 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
   MSG_RETURN(status);
 }
-
 
 /** \ingroup msg_task_usage
  * \brief Sleep for the specified number of seconds
@@ -172,8 +159,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
 /** \ingroup msg_task_usage
  * \brief Receives a task from a mailbox.
  *
- * This is a blocking function, the execution flow will be blocked
- * until the task is received. See #MSG_task_irecv
+ * This is a blocking function, the execution flow will be blocked until the task is received. See #MSG_task_irecv
  * for receiving tasks asynchronously.
  *
  * \param task a memory location for storing a #msg_task_t.
@@ -193,14 +179,13 @@ msg_error_t MSG_task_receive(msg_task_t * task, const char *alias)
  *
  * \param task a memory location for storing a #msg_task_t.
  * \param alias name of the mailbox to receive the task from
- *  \param rate limit the reception to rate bandwidth
+ * \param rate limit the reception to rate bandwidth
  *
  * \return Returns
  * #MSG_OK if the task was successfully received,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
-msg_error_t MSG_task_receive_bounded(msg_task_t * task, const char *alias,
-                                     double rate)
+msg_error_t MSG_task_receive_bounded(msg_task_t * task, const char *alias, double rate)
 {
   return MSG_task_receive_with_timeout_bounded(task, alias, -1, rate);
 }
@@ -208,9 +193,8 @@ msg_error_t MSG_task_receive_bounded(msg_task_t * task, const char *alias,
 /** \ingroup msg_task_usage
  * \brief Receives a task from a mailbox with a given timeout.
  *
- * This is a blocking function with a timeout, the execution flow will be blocked
- * until the task is received or the timeout is achieved. See #MSG_task_irecv
- * for receiving tasks asynchronously.  You can provide a -1 timeout
+ * This is a blocking function with a timeout, the execution flow will be blocked until the task is received or the
+ * timeout is achieved. See #MSG_task_irecv for receiving tasks asynchronously.  You can provide a -1 timeout
  * to obtain an infinite timeout.
  *
  * \param task a memory location for storing a #msg_task_t.
@@ -221,9 +205,7 @@ msg_error_t MSG_task_receive_bounded(msg_task_t * task, const char *alias,
  * #MSG_OK if the task was successfully received,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-msg_error_t
-MSG_task_receive_with_timeout(msg_task_t * task, const char *alias,
-                              double timeout)
+msg_error_t MSG_task_receive_with_timeout(msg_task_t * task, const char *alias, double timeout)
 {
   return MSG_task_receive_ext(task, alias, timeout, NULL);
 }
@@ -240,9 +222,7 @@ MSG_task_receive_with_timeout(msg_task_t * task, const char *alias,
  * #MSG_OK if the task was successfully received,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-msg_error_t
-MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias,
-                                      double timeout,double rate)
+msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias, double timeout,double rate)
 {
   return MSG_task_receive_ext_bounded(task, alias, timeout, NULL, rate);
 }
@@ -250,9 +230,8 @@ MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias,
 /** \ingroup msg_task_usage
  * \brief Receives a task from a mailbox from a specific host with a given timeout.
  *
- * This is a blocking function with a timeout, the execution flow will be blocked
- * until the task is received or the timeout is achieved. See #MSG_task_irecv
- * for receiving tasks asynchronously. You can provide a -1 timeout
+ * This is a blocking function with a timeout, the execution flow will be blocked until the task is received or the
+ * timeout is achieved. See #MSG_task_irecv for receiving tasks asynchronously. You can provide a -1 timeout
  * to obtain an infinite timeout.
  *
  * \param task a memory location for storing a #msg_task_t.
@@ -264,18 +243,13 @@ MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias,
  * #MSG_OK if the task was successfully received,
 * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-msg_error_t
-MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
-                     msg_host_t host)
+msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout, msg_host_t host)
 {
   xbt_ex_t e;
   msg_error_t ret = MSG_OK;
-  XBT_DEBUG
-      ("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'",
-       alias);
+  XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
   TRY {
-    ret = MSG_mailbox_get_task_ext(MSG_mailbox_get_by_alias(alias), task,
-                                   host, timeout);
+    ret = MSG_mailbox_get_task_ext(MSG_mailbox_get_by_alias(alias), task, host, timeout);
   }
   CATCH(e) {
     switch (e.category) {
@@ -291,8 +265,7 @@ MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
 }
 
 /** \ingroup msg_task_usage
- * \brief Receives a task from a mailbox from a specific host with a given timeout
- *  and at a given rate.
+ * \brief Receives a task from a mailbox from a specific host with a given timeout  and at a given rate.
  *
  * \param task a memory location for storing a #msg_task_t.
  * \param alias name of the mailbox to receive the task from
@@ -304,25 +277,17 @@ MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout,
  * #MSG_OK if the task was successfully received,
 * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-msg_error_t
-MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, double timeout,
-                             msg_host_t host, double rate)
+msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, double timeout, msg_host_t host,
+                                         double rate)
 {
-  XBT_DEBUG
-      ("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'",
-       alias);
-  return MSG_mailbox_get_task_ext_bounded(MSG_mailbox_get_by_alias(alias), task,
-                                          host, timeout, rate);
+  XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
+  return MSG_mailbox_get_task_ext_bounded(MSG_mailbox_get_by_alias(alias), task, host, timeout, rate);
 }
 
-/* Internal function used to factorize code between
- * MSG_task_isend_with_matching() and MSG_task_dsend().
- */
-static XBT_INLINE
-msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
-                                   int (*match_fun)(void*,void*, smx_synchro_t),
-                                   void *match_data, void_f_pvoid_t cleanup,
-                                   int detached)
+/* Internal function used to factorize code between MSG_task_isend_with_matching() and MSG_task_dsend(). */
+static XBT_INLINE msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
+                                                     int (*match_fun)(void*,void*, smx_synchro_t),
+                                                     void *match_data, void_f_pvoid_t cleanup, int detached)
 {
   simdata_task_t t_simdata = NULL;
   msg_process_t process = MSG_process_self();
@@ -342,7 +307,8 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
       xbt_backtrace_display_current();
     } else {
       xbt_assert(t_simdata->isused == 0,
-                 "This task is still being used somewhere else. You cannot send it now. Go fix your code! (use --cfg=msg/debug_multiple_use:on to get the backtrace of the other process)");
+                 "This task is still being used somewhere else. You cannot send it now. Go fix your code!"
+                 "(use --cfg=msg/debug_multiple_use:on to get the backtrace of the other process)");
     }
   }
 
@@ -354,9 +320,8 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_synchro_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->bytes_amount,
-                                        t_simdata->rate, task, sizeof(void *),
-                                        match_fun, cleanup, NULL, match_data,detached);
+  smx_synchro_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->bytes_amount, t_simdata->rate,
+                                         task, sizeof(void *), match_fun, cleanup, NULL, match_data,detached);
   t_simdata->comm = act; /* FIXME: is the field t_simdata->comm still useful? */
 
   msg_comm_t comm;
@@ -378,12 +343,10 @@ msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
   return comm;
 }
 
-
 /** \ingroup msg_task_usage
  * \brief Sends a task on a mailbox.
  *
- * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
- * to end the communication.
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication.
  *
  * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
@@ -397,28 +360,24 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
 /** \ingroup msg_task_usage
  * \brief Sends a task on a mailbox with a maximum rate
  *
- * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
- * to end the communication. The maxrate parameter allows the application
- * to limit the bandwidth utilization of network links when sending the task.
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication. The maxrate
+ * parameter allows the application to limit the bandwidth utilization of network links when sending the task.
  *
  * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  * \param maxrate the maximum communication rate for sending this task .
  * \return the msg_comm_t communication created
  */
-msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias,
-                                  double maxrate)
+msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate)
 {
   task->simdata->rate = maxrate;
   return MSG_task_isend_internal(task, alias, NULL, NULL, NULL, 0);
 }
 
-
 /** \ingroup msg_task_usage
  * \brief Sends a task on a mailbox, with support for matching requests
  *
- * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
- * to end the communication.
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication.
  *
  * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
@@ -430,9 +389,7 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias,
  * \return the msg_comm_t communication created
  */
 msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
-                                        int (*match_fun)(void*, void*,
-                                                         smx_synchro_t),
-                                        void *match_data)
+                                        int (*match_fun)(void*, void*, smx_synchro_t), void *match_data)
 {
   return MSG_task_isend_internal(task, alias, match_fun, match_data, NULL, 0);
 }
@@ -441,17 +398,15 @@ msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
  * \brief Sends a task on a mailbox.
  *
  * This is a non blocking detached send function.
- * Think of it as a best effort send. Keep in mind that the third parameter
- * is only called if the communication fails. If the communication does work,
- * it is responsibility of the receiver code to free anything related to
- * the task, as usual. More details on this can be obtained on
+ * Think of it as a best effort send. Keep in mind that the third parameter is only called if the communication fails.
+ * If the communication does work, it is responsibility of the receiver code to free anything related to the task, as
+ * usual. More details on this can be obtained on
  * <a href="http://lists.gforge.inria.fr/pipermail/simgrid-user/2011-November/002649.html">this thread</a>
  * in the SimGrid-user mailing list archive.
  *
  * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
- * \param cleanup a function to destroy the task if the
- * communication fails, e.g. MSG_task_destroy
+ * \param cleanup a function to destroy the task if the communication fails, e.g. MSG_task_destroy
  * (if NULL, no function will be called)
  */
 void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
@@ -463,10 +418,9 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
  * \brief Sends a task on a mailbox with a maximal rate.
  *
  * This is a non blocking detached send function.
- * Think of it as a best effort send. Keep in mind that the third parameter
- * is only called if the communication fails. If the communication does work,
- * it is responsibility of the receiver code to free anything related to
- * the task, as usual. More details on this can be obtained on
+ * Think of it as a best effort send. Keep in mind that the third parameter is only called if the communication fails.
+ * If the communication does work, it is responsibility of the receiver code to free anything related to the task, as
+ * usual. More details on this can be obtained on
  * <a href="http://lists.gforge.inria.fr/pipermail/simgrid-user/2011-November/002649.html">this thread</a>
  * in the SimGrid-user mailing list archive.
  *
@@ -478,8 +432,7 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
  * \param maxrate the maximum communication rate for sending this task
  *
  */
-void MSG_task_dsend_bounded(msg_task_t task, const char *alias,
-                            void_f_pvoid_t cleanup, double maxrate)
+void MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate)
 {
   task->simdata->rate = maxrate;
   MSG_task_dsend(task, alias, cleanup);
@@ -488,8 +441,7 @@ void MSG_task_dsend_bounded(msg_task_t task, const char *alias,
 /** \ingroup msg_task_usage
  * \brief Starts listening for receiving a task from an asynchronous communication.
  *
- * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test()
- * to end the communication.
+ * This is a non blocking function: use MSG_comm_wait() or MSG_comm_test() to end the communication.
  *
  * \param task a memory location for storing a #msg_task_t. has to be valid until the end of the communication.
  * \param name of the mailbox to receive the task on
@@ -501,27 +453,23 @@ msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
 }
 
 /** \ingroup msg_task_usage
- * \brief Starts listening for receiving a task from an asynchronous communication
- * at a given rate.
+ * \brief Starts listening for receiving a task from an asynchronous communication at a given rate.
  *
  * \param task a memory location for storing a #msg_task_t. has to be valid until the end of the communication.
  * \param name of the mailbox to receive the task on
  * \param rate limit the bandwidth to the given rate
  * \return the msg_comm_t communication created
  */
-msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name,
-                                  double rate)
+msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rate)
 {
   smx_rdv_t rdv = MSG_mailbox_get_by_alias(name);
 
   /* FIXME: these functions are not traceable */
-
   /* Sanity check */
   xbt_assert(task, "Null pointer for the task storage");
 
   if (*task)
-    XBT_CRITICAL
-        ("MSG_task_irecv() was asked to write in a non empty task struct.");
+    XBT_CRITICAL("MSG_task_irecv() was asked to write in a non empty task struct.");
 
   /* Try to receive it by calling SIMIX network layer */
   msg_comm_t comm = xbt_new0(s_msg_comm_t, 1);
@@ -562,12 +510,10 @@ int MSG_comm_test(msg_comm_t comm)
         comm->status = MSG_TRANSFER_FAILURE;
         finished = 1;
         break;
-
       case timeout_error:
         comm->status = MSG_TIMEOUT;
         finished = 1;
         break;
-
       default:
         RETHROW;
     }
@@ -607,12 +553,10 @@ int MSG_comm_testany(xbt_dynar_t comms)
         finished_index = e.value;
         status = MSG_TRANSFER_FAILURE;
         break;
-
       case timeout_error:
         finished_index = e.value;
         status = MSG_TIMEOUT;
         break;
-
       default:
         RETHROW;
     }
@@ -650,8 +594,8 @@ void MSG_comm_destroy(msg_comm_t comm)
  *
  * It takes two parameters.
  * \param comm the communication to wait.
- * \param timeout Wait until the communication terminates or the timeout
- * occurs. You can provide a -1 timeout to obtain an infinite timeout.
+ * \param timeout Wait until the communication terminates or the timeout occurs.
+ *                You can provide a -1 timeout to obtain an infinite timeout.
  * \return msg_error_t
  */
 msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
@@ -730,12 +674,10 @@ int MSG_comm_waitany(xbt_dynar_t comms)
         finished_index = e.value;
         status = MSG_TRANSFER_FAILURE;
         break;
-
       case timeout_error:
         finished_index = e.value;
         status = MSG_TIMEOUT;
         break;
-
       default:
         RETHROW;
     }
@@ -791,23 +733,21 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
  * \param buff_size size of the buffer
  */
 void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size) {
-
   // copy the task
   SIMIX_comm_copy_pointer_callback(comm, buff, buff_size);
 
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
     msg_task_t task = (msg_task_t) buff;
-    msg_global->task_copy_callback(task,
-        simcall_comm_get_src_proc(comm), simcall_comm_get_dst_proc(comm));
+    msg_global->task_copy_callback(task, simcall_comm_get_src_proc(comm), simcall_comm_get_dst_proc(comm));
   }
 }
 
 /** \ingroup msg_task_usage
  * \brief Sends a task to a mailbox
  *
- * This is a blocking function, the execution flow will be blocked
- * until the task is sent (and received in the other side if #MSG_task_receive is used).
+ * This is a blocking function, the execution flow will be blocked until the task is sent (and received on the other
+ * side if #MSG_task_receive is used).
  * See #MSG_task_isend for sending tasks asynchronously.
  *
  * \param task the task to be sent
@@ -825,9 +765,8 @@ msg_error_t MSG_task_send(msg_task_t task, const char *alias)
 /** \ingroup msg_task_usage
  * \brief Sends a task to a mailbox with a maximum rate
  *
- * This is a blocking function, the execution flow will be blocked
- * until the task is sent. The maxrate parameter allows the application
- * to limit the bandwidth utilization of network links when sending the task.
+ * This is a blocking function, the execution flow will be blocked until the task is sent. The maxrate parameter allows
+ * the application to limit the bandwidth utilization of network links when sending the task.
  *
  * \param task the task to be sent
  * \param alias the mailbox name to where the task is sent
@@ -836,8 +775,7 @@ msg_error_t MSG_task_send(msg_task_t task, const char *alias)
  * \return Returns #MSG_OK if the task was successfully sent,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE otherwise.
  */
-msg_error_t
-MSG_task_send_bounded(msg_task_t task, const char *alias, double maxrate)
+msg_error_t MSG_task_send_bounded(msg_task_t task, const char *alias, double maxrate)
 {
   task->simdata->rate = maxrate;
   return MSG_task_send(task, alias);
@@ -846,8 +784,7 @@ MSG_task_send_bounded(msg_task_t task, const char *alias, double maxrate)
 /** \ingroup msg_task_usage
  * \brief Sends a task to a mailbox with a timeout
  *
- * This is a blocking function, the execution flow will be blocked
- * until the task is sent or the timeout is achieved.
+ * This is a blocking function, the execution flow will be blocked until the task is sent or the timeout is achieved.
  *
  * \param task the task to be sent
  * \param alias the mailbox name to where the task is sent
@@ -856,19 +793,15 @@ MSG_task_send_bounded(msg_task_t task, const char *alias, double maxrate)
  * \return Returns #MSG_OK if the task was successfully sent,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-msg_error_t
-MSG_task_send_with_timeout(msg_task_t task, const char *alias,
-                           double timeout)
+msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, double timeout)
 {
-  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias),
-                                      task, timeout);
+  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias), task, timeout);
 }
 
 /** \ingroup msg_task_usage
  * \brief Sends a task to a mailbox with a timeout and with a maximum rate
  *
- * This is a blocking function, the execution flow will be blocked
- * until the task is sent or the timeout is achieved.
+ * This is a blocking function, the execution flow will be blocked until the task is sent or the timeout is achieved.
  *
  * \param task the task to be sent
  * \param alias the mailbox name to where the task is sent
@@ -878,13 +811,10 @@ MSG_task_send_with_timeout(msg_task_t task, const char *alias,
  * \return Returns #MSG_OK if the task was successfully sent,
  * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
-msg_error_t
-MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias,
-                           double timeout, double maxrate)
+msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias, double timeout, double maxrate)
 {
   task->simdata->rate = maxrate;
-  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias),
-                                      task, timeout);
+  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias), task, timeout);
 }
 
 /** \ingroup msg_task_usage
@@ -905,20 +835,16 @@ int MSG_task_listen(const char *alias)
  * \param alias the name of the mailbox to be considered
  * \param host the host to check for communication
  *
- * \return Returns the number of pending communication actions of the host in the
- * given mailbox, 0 if there is no pending communication actions.
- *
+ * \return Returns the number of pending communication actions of the host in the given mailbox, 0 if there is no
+ *         pending communication actions.
  */
 int MSG_task_listen_from_host(const char *alias, msg_host_t host)
 {
-  return
-      MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias
-                                               (alias), host);
+  return MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias(alias), host);
 }
 
 /** \ingroup msg_task_usage
- * \brief Look if there is a communication on a mailbox and return the
- * PID of the sender process.
+ * \brief Look if there is a communication on a mailbox and return the PID of the sender process.
  *
  * \param alias the name of the mailbox to be considered
  *
@@ -929,8 +855,7 @@ int MSG_task_listen_from(const char *alias)
 {
   msg_task_t task;
 
-  if (NULL ==
-      (task = MSG_mailbox_get_head(MSG_mailbox_get_by_alias(alias))))
+  if (NULL == (task = MSG_mailbox_get_head(MSG_mailbox_get_by_alias(alias))))
     return -1;
 
   return MSG_process_get_PID(task->simdata->sender);
@@ -939,16 +864,12 @@ int MSG_task_listen_from(const char *alias)
 /** \ingroup msg_task_usage
  * \brief Sets the tracing category of a task.
  *
- * This function should be called after the creation of
- * a MSG task, to define the category of that task. The
- * first parameter task must contain a task that was
- * created with the function #MSG_task_create. The second
- * parameter category must contain a category that was
- * previously declared with the function #TRACE_category
+ * This function should be called after the creation of a MSG task, to define the category of that task. The
+ * first parameter task must contain a task that was  created with the function #MSG_task_create. The second
+ * parameter category must contain a category that was previously declared with the function #TRACE_category
  * (or with #TRACE_category_with_color).
  *
- * See \ref tracing for details on how to trace
- * the (categorized) resource utilization.
+ * See \ref tracing for details on how to trace the (categorized) resource utilization.
  *
  * \param task the task that is going to be categorized
  * \param category the name of the category to be associated to the task
@@ -984,8 +905,7 @@ const char *MSG_task_get_category (msg_task_t task)
  */
 const char *MSG_as_router_get_property_value(const char* asr, const char *name)
 {
-  return (char*) xbt_dict_get_or_null(
-    MSG_as_router_get_properties(asr), name);
+  return (char*) xbt_dict_get_or_null(MSG_as_router_get_properties(asr), name);
 }
 
 /**

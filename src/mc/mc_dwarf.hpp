@@ -11,6 +11,7 @@
 
 #include <string.h>
 
+#include <xbt/base.h>
 #include <xbt/sysdep.h>
 
 #define DW_LANG_Objc DW_LANG_ObjC       /* fix spelling error in older dwarf.h */

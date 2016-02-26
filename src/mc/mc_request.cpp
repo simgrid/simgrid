@@ -4,7 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <assert.h>
+#include <cassert>
+
+#include <xbt/log.h>
+#include <xbt/str.h>
+#include <xbt/sysdep.h>
+#include <xbt/dynar.h>
 
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_safety.h"
@@ -100,13 +105,13 @@ int MC_request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
 
   if (r1->call == SIMCALL_COMM_WAIT
       && (r2->call == SIMCALL_COMM_WAIT || r2->call == SIMCALL_COMM_TEST)
-      && (synchro1->comm.src_proc == NULL || synchro1->comm.dst_proc == NULL))
+      && (synchro1->comm.src_proc == nullptr || synchro1->comm.dst_proc == NULL))
     return FALSE;
 
   if (r1->call == SIMCALL_COMM_TEST &&
-      (simcall_comm_test__get__comm(r1) == NULL
-       || synchro1->comm.src_buff == NULL
-       || synchro1->comm.dst_buff == NULL))
+      (simcall_comm_test__get__comm(r1) == nullptr
+       || synchro1->comm.src_buff == nullptr
+       || synchro1->comm.dst_buff == nullptr))
     return FALSE;
 
   if (r1->call == SIMCALL_COMM_TEST && r2->call == SIMCALL_COMM_WAIT
@@ -115,10 +120,10 @@ int MC_request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
     return FALSE;
 
   if (r1->call == SIMCALL_COMM_WAIT && r2->call == SIMCALL_COMM_TEST
-      && synchro1->comm.src_buff != NULL
-      && synchro1->comm.dst_buff != NULL
-      && synchro2->comm.src_buff != NULL
-      && synchro2->comm.dst_buff != NULL
+      && synchro1->comm.src_buff != nullptr
+      && synchro1->comm.dst_buff != nullptr
+      && synchro2->comm.src_buff != nullptr
+      && synchro2->comm.dst_buff != nullptr
       && synchro1->comm.dst_buff != synchro2->comm.src_buff
       && synchro1->comm.dst_buff != synchro2->comm.dst_buff
       && synchro2->comm.dst_buff != synchro1->comm.src_buff)
@@ -160,10 +165,10 @@ int MC_request_depend(smx_simcall_t r1, smx_simcall_t r2)
     if (synchro1->comm.src_buff == synchro2->comm.src_buff
         && synchro1->comm.dst_buff == synchro2->comm.dst_buff)
       return FALSE;
-    else if (synchro1->comm.src_buff != NULL
-        && synchro1->comm.dst_buff != NULL
-        && synchro2->comm.src_buff != NULL
-        && synchro2->comm.dst_buff != NULL
+    else if (synchro1->comm.src_buff != nullptr
+        && synchro1->comm.dst_buff != nullptr
+        && synchro2->comm.src_buff != nullptr
+        && synchro2->comm.dst_buff != nullptr
         && synchro1->comm.dst_buff != synchro2->comm.src_buff
         && synchro1->comm.dst_buff != synchro2->comm.dst_buff
         && synchro2->comm.dst_buff != synchro1->comm.src_buff)
@@ -207,8 +212,8 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
     break;
   }
 
-  const char* type = NULL;
-  char *args = NULL;
+  const char* type = nullptr;
+  char *args = nullptr;
 
   smx_process_t issuer = MC_smx_simcall_get_issuer(req);
 
@@ -307,7 +312,7 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
         act = remote_act;
 
     char* p;
-    if (act->comm.src_proc == NULL || act->comm.dst_proc == NULL) {
+    if (act->comm.src_proc == nullptr || act->comm.dst_proc == NULL) {
       type = "Test FALSE";
       p = pointer_to_string(remote_act);
       args = bprintf("comm=%s", p);
@@ -382,19 +387,19 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
 
     args = bprintf("locked = %d, owner = %d, sleeping = %d",
       mutex.locked,
-      mutex.owner != NULL ? (int) MC_smx_resolve_process(mutex.owner)->pid : -1,
+      mutex.owner != nullptr ? (int) MC_smx_resolve_process(mutex.owner)->pid : -1,
       mutex_sleeping.count);
     break;
   }
 
   case SIMCALL_MC_SNAPSHOT:
     type = "MC_SNAPSHOT";
-    args = NULL;
+    args = nullptr;
     break;
 
   case SIMCALL_MC_COMPARE_SNAPSHOTS:
     type = "MC_COMPARE_SNAPSHOTS";
-    args = NULL;
+    args = nullptr;
     break;
 
   case SIMCALL_MC_RANDOM:
@@ -407,7 +412,7 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
   }
 
   char* str;
-  if (args != NULL) {
+  if (args != nullptr) {
     str =
         bprintf("[(%lu)%s (%s)] %s(%s)", issuer->pid,
                 MC_smx_process_get_host_name(issuer),
@@ -445,7 +450,7 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
   for (cursor=0; cursor != comms.used; ++cursor) {
 
     // Get the element:
-    smx_synchro_t remote_action = NULL;
+    smx_synchro_t remote_action = nullptr;
     memcpy(&remote_action, buffer + comms.elmsize * cursor, sizeof(remote_action));
 
     // Dereference the pointer:
@@ -463,7 +468,7 @@ unsigned int MC_request_testany_fail(smx_simcall_t req)
 
 int MC_request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
-  smx_synchro_t remote_act = NULL;
+  smx_synchro_t remote_act = nullptr;
   switch (req->call) {
 
   case SIMCALL_COMM_WAIT:
@@ -504,7 +509,7 @@ int MC_process_is_enabled(smx_process_t process)
 
 char *MC_request_get_dot_output(smx_simcall_t req, int value)
 {
-  char *label = NULL;
+  char *label = nullptr;
 
   const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
 
@@ -563,7 +568,7 @@ char *MC_request_get_dot_output(smx_simcall_t req, int value)
     s_smx_synchro_t synchro;
     mc_model_checker->process().read_bytes(&synchro,
       sizeof(synchro), remote(remote_act));
-    if (synchro.comm.src_proc == NULL || synchro.comm.dst_proc == NULL) {
+    if (synchro.comm.src_proc == nullptr || synchro.comm.dst_proc == NULL) {
       if (issuer->host)
         label =
             bprintf("[(%lu)%s] Test FALSE", issuer->pid,

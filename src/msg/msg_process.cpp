@@ -10,19 +10,19 @@
 #include "src/simix/smx_process_private.h"
 #include "src/simix/smx_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg,
-                                "Logging specific to MSG (process)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
 /** @addtogroup m_process_management
  * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Processes" --> \endhtmlonly
  *
- *  Processes (#msg_process_t) are independent agents that can do stuff on their own. They are in charge of executing your code interacting with the simulated world.
+ *  Processes (#msg_process_t) are independent agents that can do stuff on their own. They are in charge of executing
+ *  your code interacting with the simulated world.
  *  A process may be defined as a <em>code</em> with some <em>private data</em>.
- *  Processes must be located on <em>hosts</em> (#msg_host_t), and they exchange data by sending tasks (#msg_task_t) that are similar to envelops containing data.
+ *  Processes must be located on <em>hosts</em> (#msg_host_t), and they exchange data by sending tasks (#msg_task_t)
+ *  that are similar to envelops containing data.
  */
 
 /******************************** Process ************************************/
-
 /**
  * \brief Cleans the MSG data of a process.
  * \param smx_proc a SIMIX process
@@ -36,8 +36,7 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
     /* avoid a SIMIX request if this function is called by the process itself */
     msg_proc = (simdata_process_t) SIMIX_process_self_get_data(smx_proc);
     SIMIX_process_self_set_data(smx_proc, NULL);
-  }
-  else {
+  } else {
     msg_proc = (simdata_process_t) simcall_process_get_data(smx_proc);
     simcall_process_set_data(smx_proc, NULL);
   }
@@ -54,17 +53,12 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-smx_process_t MSG_process_create_from_SIMIX(const char *name,
-                                   xbt_main_func_t code, void *data,
-                                   const char *hostname, double kill_time,
-                                   int argc, char **argv,
-                                   xbt_dict_t properties, int auto_restart,
-                                   smx_process_t parent_process)
+smx_process_t MSG_process_create_from_SIMIX(const char *name, xbt_main_func_t code, void *data, const char *hostname,
+                                            double kill_time, int argc, char **argv, xbt_dict_t properties,
+                                            int auto_restart, smx_process_t parent_process)
 {
   msg_host_t host = MSG_host_by_name(hostname);
-  msg_process_t p = MSG_process_create_with_environment(name, code, data,
-                                                      host, argc, argv,
-                                                      properties);
+  msg_process_t p = MSG_process_create_with_environment(name, code, data, host, argc, argv, properties);
   if (p) {
     MSG_process_set_kill_time(p,kill_time);
     MSG_process_auto_restart_set(p,auto_restart);
@@ -75,36 +69,28 @@ smx_process_t MSG_process_create_from_SIMIX(const char *name,
 /** \ingroup m_process_management
  * \brief Creates and runs a new #msg_process_t.
  *
- * Does exactly the same as #MSG_process_create_with_arguments but without
-   providing standard arguments (\a argc, \a argv, \a start_time, \a kill_time).
+ * Does exactly the same as #MSG_process_create_with_arguments but without providing standard arguments
+ * (\a argc, \a argv, \a start_time, \a kill_time).
  * \sa MSG_process_create_with_arguments
  */
-msg_process_t MSG_process_create(const char *name,
-                               xbt_main_func_t code, void *data,
-                               msg_host_t host)
+msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
 {
-  return MSG_process_create_with_environment(name, code, data, host, 0,
-                                             NULL, NULL);
+  return MSG_process_create_with_environment(name, code, data, host, 0, NULL, NULL);
 }
 
 /** \ingroup m_process_management
  * \brief Creates and runs a new #msg_process_t.
 
- * A constructor for #msg_process_t taking four arguments and returning the
- * corresponding object. The structure (and the corresponding thread) is
- * created, and put in the list of ready process.
- * \param name a name for the object. It is for user-level information
-   and can be NULL.
- * \param code is a function describing the behavior of the process. It
-   should then only use functions described in \ref
-   m_process_management (to create a new #msg_process_t for example),
-   in \ref m_host_management (only the read-only functions i.e. whose
-   name contains the word get), in \ref m_task_management (to create
-   or destroy some #msg_task_t for example) and in \ref
-   msg_task_usage (to handle file transfers and task processing).
- * \param data a pointer to any data one may want to attach to the new
-   object.  It is for user-level information and can be NULL. It can
-   be retrieved with the function \ref MSG_process_get_data.
+ * A constructor for #msg_process_t taking four arguments and returning the corresponding object. The structure (and
+ * the corresponding thread) is created, and put in the list of ready process.
+ * \param name a name for the object. It is for user-level information and can be NULL.
+ * \param code is a function describing the behavior of the process. It should then only use functions described
+ * in \ref m_process_management (to create a new #msg_process_t for example),
+   in \ref m_host_management (only the read-only functions i.e. whose name contains the word get),
+   in \ref m_task_management (to create or destroy some #msg_task_t for example) and
+   in \ref msg_task_usage (to handle file transfers and task processing).
+ * \param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
+ *        can be NULL. It can be retrieved with the function \ref MSG_process_get_data.
  * \param host the location where the new process is executed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
@@ -112,45 +98,35 @@ msg_process_t MSG_process_create(const char *name,
  * \return The new corresponding object.
  */
 
-msg_process_t MSG_process_create_with_arguments(const char *name,
-                                              xbt_main_func_t code,
-                                              void *data, msg_host_t host,
+msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
                                               int argc, char **argv)
 {
-  return MSG_process_create_with_environment(name, code, data, host,
-                                             argc, argv, NULL);
+  return MSG_process_create_with_environment(name, code, data, host, argc, argv, NULL);
 }
 
 /** \ingroup m_process_management
  * \brief Creates and runs a new #msg_process_t.
 
- * A constructor for #msg_process_t taking four arguments and returning the
- * corresponding object. The structure (and the corresponding thread) is
- * created, and put in the list of ready process.
- * \param name a name for the object. It is for user-level information
-   and can be NULL.
- * \param code is a function describing the behavior of the process. It
-   should then only use functions described in \ref
-   m_process_management (to create a new #msg_process_t for example),
-   in \ref m_host_management (only the read-only functions i.e. whose
-   name contains the word get), in \ref m_task_management (to create
-   or destroy some #msg_task_t for example) and in \ref
-   msg_task_usage (to handle file transfers and task processing).
- * \param data a pointer to any data one may want to attach to the new
-   object.  It is for user-level information and can be NULL. It can
-   be retrieved with the function \ref MSG_process_get_data.
+ * A constructor for #msg_process_t taking four arguments and returning the corresponding object. The structure (and
+ * the corresponding thread) is created, and put in the list of ready process.
+ * \param name a name for the object. It is for user-level information and can be NULL.
+ * \param code is a function describing the behavior of the process. It should then only use functions described
+ * in \ref m_process_management (to create a new #msg_process_t for example),
+   in \ref m_host_management (only the read-only functions i.e. whose name contains the word get),
+   in \ref m_task_management (to create or destroy some #msg_task_t for example) and
+   in \ref msg_task_usage (to handle file transfers and task processing).
+ * \param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
+ *        can be NULL. It can be retrieved with the function \ref MSG_process_get_data.
  * \param host the location where the new process is executed.
  * \param argc first argument passed to \a code
- * \param argv second argument passed to \a code. WARNING, these strings are freed by the SimGrid kernel when the process exits, so they cannot be static nor shared between several processes.
+ * \param argv second argument passed to \a code. WARNING, these strings are freed by the SimGrid kernel when the
+ *             process exits, so they cannot be static nor shared between several processes.
  * \param properties list a properties defined for this process
  * \see msg_process_t
  * \return The new corresponding object.
  */
-msg_process_t MSG_process_create_with_environment(const char *name,
-                                                xbt_main_func_t code,
-                                                void *data, msg_host_t host,
-                                                int argc, char **argv,
-                                                xbt_dict_t properties)
+msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
+                                                int argc, char **argv, xbt_dict_t properties)
 {
   xbt_assert(code != NULL && host != NULL, "Invalid parameters: host and code params must not be NULL");
   simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
@@ -167,8 +143,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  process = simcall_process_create(name, code, simdata, sg_host_get_name(host), -1,
-                           argc, argv, properties,0);
+  process = simcall_process_create(name, code, simdata, sg_host_get_name(host), -1, argc, argv, properties,0);
 
   if (!process) {
     /* Undo everything we have just changed */
@@ -181,8 +156,7 @@ msg_process_t MSG_process_create_with_environment(const char *name,
   return process;
 }
 
-static
-int MSG_maestro(int argc, char** argv)
+static int MSG_maestro(int argc, char** argv)
 {
   int res = MSG_main();
   return res;
@@ -190,15 +164,12 @@ int MSG_maestro(int argc, char** argv)
 
 /* Become a process in the simulation
  *
- * Currently this can only be called by the main thread (once) and only work
- * with some thread factories (currently ThreadContextFactory).
+ * Currently this can only be called by the main thread (once) and only work with some thread factories
+ * (currently ThreadContextFactory).
  *
- * In the future, it might be extended in order to attach other threads created
- * by a third party library.
+ * In the future, it might be extended in order to attach other threads created by a third party library.
  */
-msg_process_t MSG_process_attach(
-  const char *name, void *data,
-  msg_host_t host, xbt_dict_t properties)
+msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(host != NULL, "Invalid parameters: host and code params must not be NULL");
   simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
@@ -213,8 +184,7 @@ msg_process_t MSG_process_attach(
   simdata->data = data;
   simdata->last_errno = MSG_OK;
 
-  /* Let's create the process: SIMIX may decide to start it right now,
-   * even before returning the flow control to us */
+  /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
   process = SIMIX_process_attach(name, simdata, sg_host_get_name(host), properties, NULL);
   if (!process)
     xbt_die("Could not attach");
@@ -225,9 +195,8 @@ msg_process_t MSG_process_attach(
 /** Detach a process attached with `MSG_process_attach()`
  *
  *  This is called when the current process has finished its job.
- *  Used in the main thread, it waits for the simulation to finish before
- *  returning. When it returns, the other simulated processes and the maestro
- *  are destroyed.
+ *  Used in the main thread, it waits for the simulation to finish before  returning. When it returns, the other
+ *  simulated processes and the maestro are destroyed.
  */
 void MSG_process_detach(void)
 {
@@ -246,10 +215,7 @@ void MSG_process_kill(msg_process_t process)
 //  if (p_simdata->waiting_task && p_simdata->waiting_task->simdata->comm) {
 //    simcall_comm_cancel(p_simdata->waiting_task->simdata->comm);
 //  }
-
   simcall_process_kill(process);
-
-  return;
 }
 
 /**
@@ -266,8 +232,8 @@ msg_error_t MSG_process_join(msg_process_t process, double timeout){
 /** \ingroup m_process_management
  * \brief Migrates a process to another location.
  *
- * This function checks whether \a process and \a host are valid pointers
-   and change the value of the #msg_host_t on which \a process is running.
+ * This function checks whether \a process and \a host are valid pointers and change the value of the #msg_host_t on
+ * which \a process is running.
  */
 msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 {
@@ -282,8 +248,7 @@ msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
 /** \ingroup m_process_management
  * \brief Returns the user data of a process.
  *
- * This function checks whether \a process is a valid pointer or not
-   and returns the user data associated to this process.
+ * This function checks whether \a process is a valid pointer and returns the user data associated to this process.
  */
 void* MSG_process_get_data(msg_process_t process)
 {
@@ -300,36 +265,30 @@ void* MSG_process_get_data(msg_process_t process)
 /** \ingroup m_process_management
  * \brief Sets the user data of a process.
  *
- * This function checks whether \a process is a valid pointer or not
-   and sets the user data associated to this process.
+ * This function checks whether \a process is a valid pointer and sets the user data associated to this process.
  */
 msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
   xbt_assert(process != NULL, "Invalid parameter: first parameter must not be NULL!");
 
-  simdata_process_t simdata =
-    (simdata_process_t) simcall_process_get_data(process);
+  simdata_process_t simdata = (simdata_process_t) simcall_process_get_data(process);
   simdata->data = data;
 
   return MSG_OK;
 }
 
 /** \ingroup m_process_management
- * \brief Sets a cleanup function to be called to free the userdata of a
- * process when a process is destroyed.
- * \param data_cleanup a cleanup function for the userdata of a process,
- * or NULL to call no function
+ * \brief Sets a cleanup function to be called to free the userdata of a process when a process is destroyed.
+ * \param data_cleanup a cleanup function for the userdata of a process, or NULL to call no function
  */
 XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
-
   msg_global->process_data_cleanup = data_cleanup;
 }
 
 /** \ingroup m_process_management
  * \brief Return the location on which a process is running.
  * \param process a process (NULL means the current one)
- * \return the msg_host_t corresponding to the location on which \a
- * process is running.
+ * \return the msg_host_t corresponding to the location on which \a process is running.
  */
 msg_host_t MSG_process_get_host(msg_process_t process)
 {
@@ -347,8 +306,8 @@ msg_host_t MSG_process_get_host(msg_process_t process)
  *
  * \brief Return a #msg_process_t given its PID.
  *
- * This function search in the list of all the created msg_process_t for a msg_process_t
-   whose PID is equal to \a PID. If no host is found, \c NULL is returned.
+ * This function search in the list of all the created msg_process_t for a msg_process_t  whose PID is equal to \a PID.
+ * If no host is found, \c NULL is returned.
    Note that the PID are uniq in the whole simulation, not only on a given host.
  */
 msg_process_t MSG_process_from_PID(int PID)
@@ -360,8 +319,8 @@ msg_process_t MSG_process_from_PID(int PID)
 xbt_dynar_t MSG_processes_as_dynar(void) {
   return SIMIX_processes_as_dynar();
 }
-/** @brief Return the current number MSG processes.
- */
+
+/** @brief Return the current number MSG processes. */
 int MSG_process_get_number(void)
 {
   return SIMIX_process_count();
@@ -382,8 +341,7 @@ msg_error_t MSG_process_set_kill_time(msg_process_t process, double kill_time)
 /** \ingroup m_process_management
  * \brief Returns the process ID of \a process.
  *
- * This function checks whether \a process is a valid pointer or not
-   and return its PID (or 0 in case of problem).
+ * This function checks whether \a process is a valid pointer and return its PID (or 0 in case of problem).
  */
 int MSG_process_get_PID(msg_process_t process)
 {
@@ -398,27 +356,23 @@ int MSG_process_get_PID(msg_process_t process)
 /** \ingroup m_process_management
  * \brief Returns the process ID of the parent of \a process.
  *
- * This function checks whether \a process is a valid pointer or not
-   and return its PID. Returns -1 if the process has not been created by
-   any other process.
+ * This function checks whether \a process is a valid pointer and return its PID.
+ * Returns -1 if the process has not been created by any other process.
  */
 int MSG_process_get_PPID(msg_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
-
   return simcall_process_get_PPID(process);
 }
 
 /** \ingroup m_process_management
  * \brief Return the name of a process.
  *
- * This function checks whether \a process is a valid pointer or not
-   and return its name.
+ * This function checks whether \a process is a valid pointer and return its name.
  */
 const char *MSG_process_get_name(msg_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
-
   return simcall_process_get_name(process);
 }
 
@@ -429,8 +383,7 @@ const char *MSG_process_get_name(msg_process_t process)
  * \param name a property name
  * \return value of a property (or NULL if the property is not set)
  */
-const char *MSG_process_get_property_value(msg_process_t process,
-                                           const char *name)
+const char *MSG_process_get_property_value(msg_process_t process, const char *name)
 {
   return (char*) xbt_dict_get_or_null(MSG_process_get_properties(process), name);
 }
@@ -443,9 +396,7 @@ const char *MSG_process_get_property_value(msg_process_t process,
 xbt_dict_t MSG_process_get_properties(msg_process_t process)
 {
   xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
-
   return simcall_process_get_properties(process);
-
 }
 
 /** \ingroup m_process_management
@@ -461,8 +412,7 @@ int MSG_process_self_PID(void)
 /** \ingroup m_process_management
  * \brief Return the PPID of the current process.
  *
- * This function returns the PID of the parent of the currently
- * running #msg_process_t.
+ * This function returns the PID of the parent of the currently running #msg_process_t.
  */
 int MSG_process_self_PPID(void)
 {
@@ -482,8 +432,7 @@ msg_process_t MSG_process_self(void)
 /** \ingroup m_process_management
  * \brief Suspend the process.
  *
- * This function suspends the process by suspending the task on which
- * it was waiting for the completion.
+ * This function suspends the process by suspending the task on which it was waiting for the completion.
  */
 msg_error_t MSG_process_suspend(msg_process_t process)
 {
@@ -497,8 +446,7 @@ msg_error_t MSG_process_suspend(msg_process_t process)
 /** \ingroup m_process_management
  * \brief Resume a suspended process.
  *
- * This function resumes a suspended process by resuming the task on
- * which it was waiting for the completion.
+ * This function resumes a suspended process by resuming the task on which it was waiting for the completion.
  */
 msg_error_t MSG_process_resume(msg_process_t process)
 {
@@ -512,8 +460,7 @@ msg_error_t MSG_process_resume(msg_process_t process)
 /** \ingroup m_process_management
  * \brief Returns true if the process is suspended .
  *
- * This checks whether a process is suspended or not by inspecting the
- * task on which it was waiting for the completion.
+ * This checks whether a process is suspended or not by inspecting the task on which it was waiting for the completion.
  */
 int MSG_process_is_suspended(msg_process_t process)
 {
@@ -536,8 +483,7 @@ void MSG_process_on_exit(int_f_pvoid_pvoid_t fun, void *data) {
 /**
  * \ingroup m_process_management
  * \brief Sets the "auto-restart" flag of the process.
- * If the flag is set to 1, the process will be automatically restarted when
- * its host comes back up.
+ * If the flag is set to 1, the process will be automatically restarted when its host comes back up.
  */
 XBT_PUBLIC(void) MSG_process_auto_restart_set(msg_process_t process, int auto_restart) {
   simcall_process_auto_restart_set(process,auto_restart);

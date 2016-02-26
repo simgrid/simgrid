@@ -7,6 +7,12 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#include <xbt/automaton.h>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
+#include <xbt/dynar.h>
+#include <xbt/fifo.h>
+
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_liveness.h"
@@ -73,10 +79,10 @@ static mc_visited_state_t visited_state_new()
 mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());
-  mc_visited_pair_t pair = NULL;
+  mc_visited_pair_t pair = nullptr;
   pair = xbt_new0(s_mc_visited_pair_t, 1);
   pair->graph_state = graph_state;
-  if(pair->graph_state->system_state == NULL)
+  if(pair->graph_state->system_state == nullptr)
     pair->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
   pair->heap_bytes_used = mmalloc_get_bytes_used_remote(
     process->get_heap()->heaplimit,
@@ -92,7 +98,7 @@ mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automa
   pair->acceptance_removed = 0;
   pair->visited_removed = 0;
   pair->acceptance_pair = 0;
-  pair->atomic_propositions = xbt_dynar_new(sizeof(int), NULL);
+  pair->atomic_propositions = xbt_dynar_new(sizeof(int), nullptr);
   unsigned int cursor = 0;
   int value;
   xbt_dynar_foreach(atomic_propositions, cursor, value)
@@ -114,12 +120,12 @@ static int is_exploration_stack_pair(mc_visited_pair_t pair){
 
 void MC_visited_pair_delete(mc_visited_pair_t p)
 {
-  p->automaton_state = NULL;
+  p->automaton_state = nullptr;
   if( !is_exploration_stack_pair(p))
     MC_state_delete(p->graph_state, 1);
   xbt_dynar_free(&(p->atomic_propositions));
   xbt_free(p);
-  p = NULL;
+  p = nullptr;
 }
 
 /**
@@ -225,7 +231,7 @@ void replace_state(
   else
     new_state->other_num = state_test->other_num;
 
-  if (dot_output == NULL)
+  if (dot_output == nullptr)
     XBT_DEBUG("State %d already visited ! (equal to state %d)",
       new_state->num, state_test->num);
   else
@@ -236,7 +242,7 @@ void replace_state(
   /* Replace the old state with the new one (with a bigger num)
      (when the max number of visited states is reached,  the oldest
      one is removed according to its number (= with the min number) */
-  xbt_dynar_remove_at(visited_states, cursor, NULL);
+  xbt_dynar_remove_at(visited_states, cursor, nullptr);
   xbt_dynar_insert_at(visited_states, cursor, &new_state);
   XBT_DEBUG("Replace visited state %d with the new visited state %d",
     state_test->num, new_state->num);
@@ -264,7 +270,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
 {
 
   if (_sg_mc_visited == 0)
-    return NULL;
+    return nullptr;
 
   /* If comm determinism verification, we cannot stop the exploration if some 
      communications are not finished (at least, data are transfered). These communications 
@@ -280,7 +286,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
   if (xbt_dynar_is_empty(visited_states)) {
 
     xbt_dynar_push(visited_states, &new_state);
-    return NULL;
+    return nullptr;
 
   } else {
 
@@ -298,11 +304,11 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
          new_state->other_num = state_test->num;
          else
          new_state->other_num = state_test->other_num;
-         if(dot_output == NULL)
+         if(dot_output == nullptr)
          XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
          else
          XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
-         xbt_dynar_remove_at(visited_states, (min + res) - 1, NULL);
+         xbt_dynar_remove_at(visited_states, (min + res) - 1, nullptr);
          xbt_dynar_insert_at(visited_states, (min+res) - 1, &new_state);
          return new_state->other_num;
          } */
@@ -363,11 +369,11 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
       }
 
       // and drop it:
-      xbt_dynar_remove_at(visited_states, index2, NULL);
+      xbt_dynar_remove_at(visited_states, index2, nullptr);
       XBT_DEBUG("Remove visited state (maximum number of stored states reached)");
     }
 
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -379,9 +385,9 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
   if (_sg_mc_visited == 0)
     return -1;
 
-  mc_visited_pair_t new_visited_pair = NULL;
+  mc_visited_pair_t new_visited_pair = nullptr;
 
-  if (visited_pair == NULL) {
+  if (visited_pair == nullptr) {
     new_visited_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
   } else {
     new_visited_pair = visited_pair;
@@ -408,11 +414,11 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
          pair->other_num = pair_test->num;
          else
          pair->other_num = pair_test->other_num;
-         if(dot_output == NULL)
+         if(dot_output == nullptr)
          XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", pair->num, pair_test->num);
          else
          XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", pair->num, pair_test->num, pair->other_num);
-         xbt_dynar_remove_at(visited_pairs, (min + res) - 1, NULL);
+         xbt_dynar_remove_at(visited_pairs, (min + res) - 1, nullptr);
          xbt_dynar_insert_at(visited_pairs, (min+res) - 1, &pair);
          pair_test->visited_removed = 1;
          if(pair_test->stack_removed && pair_test->visited_removed){
@@ -436,7 +442,7 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
                 new_visited_pair->other_num = pair_test->num;
               else
                 new_visited_pair->other_num = pair_test->other_num;
-              if (dot_output == NULL)
+              if (dot_output == nullptr)
                 XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", new_visited_pair->num, pair_test->num);
               else
                 XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", new_visited_pair->num, pair_test->num, new_visited_pair->other_num);

@@ -8,7 +8,10 @@
 
 #include <cstdint>
 
+#include <xbt/log.h>
+
 #include "src/mc/mc_private.h"
+#include "src/mc/mc_snapshot.h"
 #include "mc/datatypes.h"
 #include "src/mc/mc_hash.hpp"
 #include <mc/mc.h>

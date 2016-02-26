@@ -4,11 +4,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstring>
+
 #include <unistd.h>
 #include <sys/wait.h>
 
-#include <xbt/dynar.h>
 #include <xbt/automaton.h>
+#include <xbt/dynar.h>
+#include <xbt/fifo.h>
+#include <xbt/log.h>
+#include <xbt/parmap.h>
+#include <xbt/sysdep.h>
 
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_liveness.h"
@@ -35,8 +41,8 @@ xbt_parmap_t parmap;
 static xbt_dynar_t get_atomic_propositions_values()
 {
   unsigned int cursor = 0;
-  xbt_automaton_propositional_symbol_t ps = NULL;
-  xbt_dynar_t values = xbt_dynar_new(sizeof(int), NULL);
+  xbt_automaton_propositional_symbol_t ps = nullptr;
+  xbt_dynar_t values = xbt_dynar_new(sizeof(int), nullptr);
   xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, ps) {
     int res = xbt_automaton_propositional_symbol_evaluate(ps);
     xbt_dynar_push_as(values, int, res);
@@ -47,7 +53,7 @@ static xbt_dynar_t get_atomic_propositions_values()
 
 static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair)
 {
-  mc_visited_pair_t new_pair = NULL;
+  mc_visited_pair_t new_pair = nullptr;
   new_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
   new_pair->acceptance_pair = 1;
 
@@ -81,9 +87,9 @@ static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair)
               if (snapshot_compare(pair_test, new_pair) == 0) {
                 XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
                 xbt_fifo_shift(mc_stack);
-                if (dot_output != NULL)
+                if (dot_output != nullptr)
                   fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, pair_test->num, initial_global_state->prev_req);
-                return NULL;
+                return nullptr;
               }
             }
           }
@@ -109,7 +115,7 @@ static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair)
 static void remove_acceptance_pair(int pair_num)
 {
   unsigned int cursor = 0;
-  mc_visited_pair_t pair_test = NULL;
+  mc_visited_pair_t pair_test = nullptr;
   int pair_found = 0;
 
   xbt_dynar_foreach(acceptance_pairs, cursor, pair_test) {
@@ -152,9 +158,9 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
     }
   case 3:{
       unsigned int cursor = 0;
-      xbt_automaton_propositional_symbol_t p = NULL;
+      xbt_automaton_propositional_symbol_t p = nullptr;
       xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, p) {
-        if (strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
+        if (std::strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
           return (int) xbt_dynar_get_as(atomic_propositions_values, cursor, int);
       }
       return -1;
@@ -171,14 +177,14 @@ static int MC_modelcheck_liveness_main(void);
 
 static void MC_pre_modelcheck_liveness(void)
 {
-  mc_pair_t initial_pair = NULL;
+  mc_pair_t initial_pair = nullptr;
   smx_process_t process;
 
   mc_model_checker->wait_for_requests();
 
-  acceptance_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
+  acceptance_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), nullptr);
   if(_sg_mc_visited > 0)
-    visited_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), NULL);
+    visited_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), nullptr);
 
   initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
   initial_global_state->prev_pair = 0;
@@ -212,15 +218,15 @@ static void MC_pre_modelcheck_liveness(void)
 
 static int MC_modelcheck_liveness_main(void)
 {
-  smx_process_t process = NULL;
-  mc_pair_t current_pair = NULL;
+  smx_process_t process = nullptr;
+  mc_pair_t current_pair = nullptr;
   int value, res, visited_num = -1;
-  smx_simcall_t req = NULL;
-  xbt_automaton_transition_t transition_succ = NULL;
+  smx_simcall_t req = nullptr;
+  xbt_automaton_transition_t transition_succ = nullptr;
   int cursor = 0;
-  mc_pair_t next_pair = NULL;
-  xbt_dynar_t prop_values = NULL;
-  mc_visited_pair_t reached_pair = NULL;
+  mc_pair_t next_pair = nullptr;
+  xbt_dynar_t prop_values = nullptr;
+  mc_visited_pair_t reached_pair = nullptr;
   
   while(xbt_fifo_size(mc_stack) > 0){
 
@@ -239,7 +245,7 @@ static int MC_modelcheck_liveness_main(void)
 
       if (current_pair->automaton_state->type == 1 && current_pair->exploration_started == 0) {
         /* If new acceptance pair, return new pair */
-        if ((reached_pair = is_reached_acceptance_pair(current_pair)) == NULL) {
+        if ((reached_pair = is_reached_acceptance_pair(current_pair)) == nullptr) {
           int counter_example_depth = current_pair->depth;
           XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
           XBT_INFO("|             ACCEPTANCE CYCLE            |");
@@ -257,7 +263,7 @@ static int MC_modelcheck_liveness_main(void)
       /* Pair already visited ? stop the exploration on the current path */
       if ((current_pair->exploration_started == 0) && (visited_num = is_visited_pair(reached_pair, current_pair)) != -1) {
 
-        if (dot_output != NULL){
+        if (dot_output != nullptr){
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, visited_num, initial_global_state->prev_req);
           fflush(dot_output);
         }
@@ -270,7 +276,7 @@ static int MC_modelcheck_liveness_main(void)
 
         req = MC_state_get_request(current_pair->graph_state, &value);
 
-         if (dot_output != NULL) {
+         if (dot_output != nullptr) {
            if (initial_global_state->prev_pair != 0 && initial_global_state->prev_pair != current_pair->num) {
              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, current_pair->num, initial_global_state->prev_req);
              xbt_free(initial_global_state->prev_req);
@@ -349,7 +355,7 @@ static int MC_modelcheck_liveness_main(void)
     
       /* Traverse the stack backwards until a pair with a non empty interleave
          set is found, deleting all the pairs that have it empty in the way. */
-      while ((current_pair = (mc_pair_t) xbt_fifo_shift(mc_stack)) != NULL) {
+      while ((current_pair = (mc_pair_t) xbt_fifo_shift(mc_stack)) != nullptr) {
         if (current_pair->requests > 0) {
           /* We found a backtracking point */
           XBT_DEBUG("Backtracking to depth %d", current_pair->depth);

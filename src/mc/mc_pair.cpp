@@ -4,6 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/dynar.h>
+#include <xbt/sysdep.h>
+
 #include "src/mc/mc_liveness.h"
 #include "src/mc/mc_private.h"
 
@@ -11,7 +14,7 @@ extern "C" {
 
 mc_pair_t MC_pair_new()
 {
-  mc_pair_t p = NULL;
+  mc_pair_t p = nullptr;
   p = xbt_new0(s_mc_pair_t, 1);
   p->num = ++mc_stats->expanded_pairs;
   p->exploration_started = 0;
@@ -22,12 +25,12 @@ mc_pair_t MC_pair_new()
 
 void MC_pair_delete(mc_pair_t p)
 {
-  p->automaton_state = NULL;
+  p->automaton_state = nullptr;
   if(p->visited_pair_removed)
     MC_state_delete(p->graph_state, 1);
   xbt_dynar_free(&(p->atomic_propositions));
   xbt_free(p);
-  p = NULL;
+  p = nullptr;
 }
 
 }

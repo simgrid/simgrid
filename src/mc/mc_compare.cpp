@@ -13,7 +13,6 @@
 #include <xbt/sysdep.h>
 
 #include "src/internal_config.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_liveness.h"
 #include "src/mc/mc_private.h"
@@ -157,9 +156,9 @@ static int compare_areas_with_type(ComparisonState& state,
       return (addr_pointed1 != addr_pointed2);
     } else {
 
-      if (addr_pointed1 == NULL && addr_pointed2 == NULL)
+      if (addr_pointed1 == nullptr && addr_pointed2 == NULL)
         return 0;
-      if (addr_pointed1 == NULL || addr_pointed2 == NULL)
+      if (addr_pointed1 == nullptr || addr_pointed2 == NULL)
         return 1;
       if (!state.compared_pointers.insert(
           std::make_pair(addr_pointed1, addr_pointed2)).second)
@@ -180,7 +179,7 @@ static int compare_areas_with_type(ComparisonState& state,
           return 1;
         // The pointers are both in the heap:
         return compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
-                                 snapshot2, NULL, type->subtype, pointer_level);
+                                 snapshot2, nullptr, type->subtype, pointer_level);
       }
 
       // The pointers are both in the current object R/W segment:

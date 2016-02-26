@@ -15,7 +15,6 @@ set(EXTRA_DIST
   src/include/surf/surf.h
   src/include/xbt/win32_ucontext.h
   src/include/xbt/wine_dbghelp.h
-  src/msg/msg_mailbox.h
   src/msg/msg_private.h
   src/portable.h
   src/probes.tp
@@ -582,7 +581,6 @@ set(MC_SRC
   src/mc/mc_unw.h
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
-  src/mc/mc_mmalloc.h
   src/mc/mc_object_info.h
   src/mc/mc_checkpoint.cpp
   src/mc/mc_snapshot.h
@@ -603,6 +601,7 @@ set(MC_SRC
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.cpp
   src/mc/mc_ignore.h
+  src/mc/mc_mmalloc.h
   src/mc/mc_liveness.h
   src/mc/LocationList.hpp
   src/mc/LocationList.cpp

@@ -4,13 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstddef>
 #include <cstdint>
-#include <cstdarg>
 
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/LocationList.hpp"
 #include "src/mc/AddressSpace.hpp"

@@ -8,6 +8,7 @@
 #define SIMGRID_MC_STATE_H
 
 #include <xbt/base.h>
+#include <xbt/dynar.h>
 
 #include <simgrid_config.h>
 #include "src/simix/smx_private.h"

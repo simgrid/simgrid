@@ -5,13 +5,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cinttypes>
-
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 
 #include "mc_base.h"
+
+#include "mc/mc.h"
 
 #ifndef _XBT_WIN32
 #include <unistd.h>
@@ -19,19 +19,13 @@
 #include <sys/time.h>
 #endif
 
-#include "simgrid/sg_config.h"
-#include "src/surf/surf_private.h"
-#include "src/simix/smx_private.h"
-#include "xbt/fifo.h"
-#include "xbt/automaton.h"
-#include "xbt/dict.h"
-#include "mc_record.h"
+#include <xbt/fifo.h>
+#include <xbt/automaton.h>
+
+#include "src/simix/smx_process_private.h"
 
 #ifdef HAVE_MC
 #include <libunwind.h>
-#include <xbt/mmalloc.h>
-#include "src/xbt/mmalloc/mmprivate.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_safety.h"
@@ -41,6 +35,7 @@
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_smx.h"
 #endif
+
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/mc_client.h"
@@ -52,24 +47,24 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
 
 e_mc_mode_t mc_mode;
 
-double *mc_time = NULL;
+double *mc_time = nullptr;
 
 #ifdef HAVE_MC
 int user_max_depth_reached = 0;
 
 /* MC global data structures */
-mc_state_t mc_current_state = NULL;
+mc_state_t mc_current_state = nullptr;
 char mc_replay_mode = FALSE;
 
-mc_stats_t mc_stats = NULL;
-mc_global_t initial_global_state = NULL;
-xbt_fifo_t mc_stack = NULL;
+mc_stats_t mc_stats = nullptr;
+mc_global_t initial_global_state = nullptr;
+xbt_fifo_t mc_stack = nullptr;
 
 /* Liveness */
-xbt_automaton_t _mc_property_automaton = NULL;
+xbt_automaton_t _mc_property_automaton = nullptr;
 
 /* Dot output */
-FILE *dot_output = NULL;
+FILE *dot_output = nullptr;
 const char *colors[13];
 
 
@@ -95,7 +90,7 @@ void MC_init_dot_output()
 
   dot_output = fopen(_sg_mc_dot_output_file, "w");
 
-  if (dot_output == NULL) {
+  if (dot_output == nullptr) {
     perror("Error open dot output file");
     xbt_abort();
   }
@@ -191,7 +186,7 @@ void MC_replay(xbt_fifo_t stack)
 {
   int value, count = 1;
   char *req_str;
-  smx_simcall_t req = NULL, saved_req = NULL;
+  smx_simcall_t req = nullptr, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
   mc_state_t state;
   
@@ -258,7 +253,7 @@ void MC_replay(xbt_fifo_t stack)
       MC_simcall_handle(req, value);
 
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-        MC_handle_comm_pattern(call, req, value, NULL, 1);
+        MC_handle_comm_pattern(call, req, value, nullptr, 1);
 
       mc_model_checker->wait_for_requests();
 
@@ -277,9 +272,9 @@ void MC_replay(xbt_fifo_t stack)
 void MC_replay_liveness(xbt_fifo_t stack)
 {
   xbt_fifo_item_t item;
-  mc_pair_t pair = NULL;
-  mc_state_t state = NULL;
-  smx_simcall_t req = NULL, saved_req = NULL;
+  mc_pair_t pair = nullptr;
+  mc_state_t state = nullptr;
+  smx_simcall_t req = nullptr, saved_req = NULL;
   int value, depth = 1;
   char *req_str;
 
@@ -311,7 +306,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
 
         saved_req = MC_state_get_executed_request(state, &value);
 
-        if (saved_req != NULL) {
+        if (saved_req != nullptr) {
           /* because we got a copy of the executed request, we have to fetch the
              real one, pointed by the request field of the issuer process */
           const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
@@ -352,7 +347,7 @@ void MC_dump_stack_safety(xbt_fifo_t stack)
   
   mc_state_t state;
 
-  while ((state = (mc_state_t) xbt_fifo_pop(stack)) != NULL)
+  while ((state = (mc_state_t) xbt_fifo_pop(stack)) != nullptr)
     MC_state_delete(state, !state->in_visited_states ? 1 : 0);
 }
 
@@ -363,7 +358,7 @@ void MC_show_stack_safety(xbt_fifo_t stack)
   mc_state_t state;
   xbt_fifo_item_t item;
   smx_simcall_t req;
-  char *req_str = NULL;
+  char *req_str = nullptr;
 
   for (item = xbt_fifo_get_last_item(stack);
        item; item = xbt_fifo_get_prev_item(item)) {
@@ -379,7 +374,7 @@ void MC_show_stack_safety(xbt_fifo_t stack)
 
 void MC_show_deadlock(smx_simcall_t req)
 {
-  /*char *req_str = NULL; */
+  /*char *req_str = nullptr; */
   XBT_INFO("**************************");
   XBT_INFO("*** DEAD-LOCK DETECTED ***");
   XBT_INFO("**************************");
@@ -408,7 +403,7 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
   mc_pair_t pair;
   xbt_fifo_item_t item;
   smx_simcall_t req;
-  char *req_str = NULL;
+  char *req_str = nullptr;
 
   for (item = xbt_fifo_get_last_item(stack);
        item; item = xbt_fifo_get_prev_item(item)) {
@@ -426,7 +421,7 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
 void MC_dump_stack_liveness(xbt_fifo_t stack)
 {
   mc_pair_t pair;
-  while ((pair = (mc_pair_t) xbt_fifo_pop(stack)) != NULL)
+  while ((pair = (mc_pair_t) xbt_fifo_pop(stack)) != nullptr)
     MC_pair_delete(pair);
 }
 
@@ -454,11 +449,11 @@ void MC_print_statistics(mc_stats_t stats)
     XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
   }
   XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  if ((_sg_mc_dot_output_file != NULL) && (_sg_mc_dot_output_file[0] != '\0')) {
+  if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0')) {
     fprintf(dot_output, "}\n");
     fclose(dot_output);
   }
-  if (initial_global_state != NULL && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
+  if (initial_global_state != nullptr && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
     XBT_INFO("Send-deterministic : %s", !initial_global_state->send_deterministic ? "No" : "Yes");
     if (_sg_mc_comms_determinism)
       XBT_INFO("Recv-deterministic : %s", !initial_global_state->recv_deterministic ? "No" : "Yes");
@@ -471,7 +466,7 @@ void MC_print_statistics(mc_stats_t stats)
 
 void MC_automaton_load(const char *file)
 {
-  if (_mc_property_automaton == NULL)
+  if (_mc_property_automaton == nullptr)
     _mc_property_automaton = xbt_automaton_new();
 
   xbt_automaton_load(_mc_property_automaton, file);
@@ -515,7 +510,7 @@ static void MC_dump_stacks(FILE* file)
 double MC_process_clock_get(smx_process_t process)
 {
   if (mc_time) {
-    if (process != NULL)
+    if (process != nullptr)
       return mc_time[process->pid];
     else
       return -1;

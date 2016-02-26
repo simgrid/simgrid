@@ -20,13 +20,8 @@ set(examples_src
   PARENT_SCOPE)
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/actions_io.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/actions_allReduce.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/actions_barrier.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/actions_bcast.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/actions_reduce.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/actions_split_p0.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/actions_split_p1.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/actions.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/actions_with_isend.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/mpi_actions_shared.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/mpi_actions_split_p0.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/mpi_actions_split_p1.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/storage_actions.txt
   PARENT_SCOPE)

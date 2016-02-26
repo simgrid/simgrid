@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdlib>
+
 #include <sys/mman.h>
 
 #include "mc/mc.h"
@@ -41,7 +43,7 @@ void data_deleter::operator()(void* p) const
 {
   switch(type_) {
   case Free:
-    free(p);
+    std::free(p);
     break;
   case Munmap:
     munmap(p, size_);
@@ -55,7 +57,7 @@ RegionSnapshot dense_region(
 {
   simgrid::mc::RegionSnapshot::flat_data_ptr data;
   if (!_sg_mc_ksm)
-    data = simgrid::mc::RegionSnapshot::flat_data_ptr((char*) malloc(size));
+    data = simgrid::mc::RegionSnapshot::flat_data_ptr((char*) std::malloc(size));
   else {
     char* ptr = (char*) mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
     if (ptr == MAP_FAILED)
@@ -104,7 +106,7 @@ RegionSnapshot sparse_region(RegionType region_type,
   RegionSnapshot const* ref_region)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
-  assert(process != NULL);
+  assert(process != nullptr);
 
   bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty
     && ref_region != nullptr

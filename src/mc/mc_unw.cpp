@@ -18,7 +18,6 @@
 
 #include <libunwind.h>
 
-#include "src/mc/mc_object_info.h"
 #include "src/mc/Process.hpp"
 #include "src/mc/mc_unw.h"
 #include "src/mc/Frame.hpp"
@@ -110,10 +109,10 @@ static void* get_reg(unw_context_t* context, unw_regnum_t regnum)
   case UNW_X86_64_R14: return &mcontext->gregs[REG_R14];
   case UNW_X86_64_R15: return &mcontext->gregs[REG_R15];
   case UNW_X86_64_RIP: return &mcontext->gregs[REG_RIP];
-  default: return NULL;
+  default: return nullptr;
   }
 #else
-  return NULL;
+  return nullptr;
 #endif
 }
 

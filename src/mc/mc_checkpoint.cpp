@@ -15,7 +15,6 @@
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
 #include "src/smpi/private.h"
-#include <alloca.h>
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -28,7 +27,6 @@
 #include <mc/mc.h>
 
 #include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_mmu.h"
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_protocol.h"
@@ -169,7 +167,7 @@ static void get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snap
   void *start_heap = heap->base;
   void *end_heap = heap->breakval;
 
-  add_region(n, snapshot, simgrid::mc::RegionType::Heap, NULL,
+  add_region(n, snapshot, simgrid::mc::RegionType::Heap, nullptr,
                         start_heap, start_heap,
                         (char *) end_heap - (char *) start_heap);
   snapshot->heap_bytes_used = mmalloc_get_bytes_used_remote(
@@ -302,7 +300,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
     new_var.region = region_type;
     new_var.address = nullptr;
 
-    if (current_variable.address != NULL) {
+    if (current_variable.address != nullptr) {
       new_var.address = current_variable.address;
     } else if (!current_variable.location_list.empty()) {
       simgrid::dwarf::Location location =
@@ -478,7 +476,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
     xbt_die("Unexpected buffer is too small for fd_dir_path");
 
   DIR* fd_dir = opendir(fd_dir_path);
-  if (fd_dir == NULL)
+  if (fd_dir == nullptr)
     xbt_die("Cannot open directory '/proc/self/fd'\n");
 
   std::vector<s_fd_infos_t> fds;
@@ -526,7 +524,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
       continue;
 
     // If dot_output enabled, do not handle the corresponding file
-    if (dot_output !=  NULL && strcmp(xbt_basename(link), _sg_mc_dot_output_file) == 0)
+    if (dot_output !=  nullptr && strcmp(xbt_basename(link), _sg_mc_dot_output_file) == 0)
       continue;
 
     // This is probably a shared memory used by lttng-ust:

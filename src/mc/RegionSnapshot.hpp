@@ -10,8 +10,12 @@
 #include <cstddef>
 #include <utility>
 
+#include <memory>
+#include <vector>
+
 #include <xbt/base.h>
 
+#include "src/mc/remote_ptr.hpp"
 #include "src/mc/PageStore.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ChunkedData.hpp"

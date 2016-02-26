@@ -1,0 +1,54 @@
+# sample action file
+p0 init
+p1 init
+p2 init
+
+p0 comm_size 3
+p0 bcast 5e8
+p1 bcast 5e8
+p2 bcast 5e8
+
+p0 compute 4.5E6
+p0 compute 4E6
+p0 compute 2.5E6
+
+p0 barrier
+p1 barrier
+p2 barrier
+
+p0 send p1 1e9
+p0 compute 1e9
+
+p1 Irecv p0
+p1 compute 1e9
+p1 wait
+p1 Isend p2 1e9
+
+p2 Irecv p1
+p2 compute 5e8
+p2 wait
+
+p0 barrier
+p1 barrier
+p2 barrier
+
+p0 reduce 5e8 5e8
+p1 reduce 5e8 5e8
+p2 reduce 5e8 5e8
+
+p0 compute 5e8
+p1 compute 5e8
+p2 compute 5e8
+
+p0 barrier
+p1 barrier
+p2 barrier
+
+p0 allReduce 5e8 5e8
+p1 allReduce 5e8 5e8
+p2 allReduce 5e8 5e8
+
+p0 finalize
+p1 finalize
+p2 finalize
+

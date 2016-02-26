@@ -18,13 +18,13 @@ const std::error_category& errno_category() noexcept
 }
 
 inline
-std::system_error errno_error(int errnum) noexcept
+std::system_error errno_error(int errnum)
 {
   return std::system_error(errnum, errno_category());
 }
 
 inline
-std::system_error errno_error(int errno, const char* what)
+std::system_error errno_error(int errnum, const char* what)
 {
   return std::system_error(errnum, errno_category(), what);
 }
