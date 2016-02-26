@@ -9,9 +9,14 @@
 
 #include <cstdint>
 #include <cstdlib>
-#include <stdexcept>
 
-#include "src/mc/AddressSpace.hpp"
+#include <stdexcept>
+#include <utility>
+#include <vector>
+
+#include <elfutils/libdw.h>
+
+#include "src/mc/mc_forward.hpp"
 
 /** @file DwarfExession.hpp
  *

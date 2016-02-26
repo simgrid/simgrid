@@ -15,9 +15,9 @@
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
+#include <xbt/base.h>
 #include <xbt/range.hpp>
 
-#include "simgrid_config.h"
 #include "src/mc/mc_base.h"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/AddressSpace.hpp"

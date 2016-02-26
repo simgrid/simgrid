@@ -7,6 +7,8 @@
 #ifndef SIMGRID_MC_PROTOCOL_H
 #define SIMGRID_MC_PROTOCOL_H
 
+#include <stdint.h>
+
 #include <xbt/misc.h>
 
 #include "mc/datatypes.h"

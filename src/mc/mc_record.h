@@ -19,7 +19,7 @@
 
 #include <stdbool.h>
 
-#include "simgrid_config.h"
+#include <xbt/base.h>
 
 SG_BEGIN_DECL()
 

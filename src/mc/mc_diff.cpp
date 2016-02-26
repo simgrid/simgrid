@@ -10,7 +10,6 @@
 #include "xbt/str.h"
 #include "mc/mc.h"
 #include "xbt/mmalloc.h"
-#include "src/mc/mc_object_info.h"
 #include "mc/datatypes.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_snapshot.h"

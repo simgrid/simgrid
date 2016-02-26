@@ -18,8 +18,9 @@
 #include <stdbool.h>
 
 #include <simgrid_config.h> /* HAVE_MC ? */
-#include <xbt.h>
-#include "xbt/automaton.h"
+
+#include <xbt/base.h>
+#include <xbt/automaton.h>
 
 SG_BEGIN_DECL()
 

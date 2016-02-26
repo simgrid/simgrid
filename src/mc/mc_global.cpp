@@ -5,11 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cinttypes>
-
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 
 #include "mc_base.h"
 
@@ -19,19 +17,11 @@
 #include <sys/time.h>
 #endif
 
-#include "simgrid/sg_config.h"
-#include "src/surf/surf_private.h"
-#include "src/simix/smx_private.h"
-#include "xbt/fifo.h"
-#include "xbt/automaton.h"
-#include "xbt/dict.h"
-#include "mc_record.h"
+#include <xbt/fifo.h>
+#include <xbt/automaton.h>
 
 #ifdef HAVE_MC
 #include <libunwind.h>
-#include <xbt/mmalloc.h>
-#include "src/xbt/mmalloc/mmprivate.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_safety.h"
@@ -41,6 +31,7 @@
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_smx.h"
 #endif
+
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/mc_client.h"
