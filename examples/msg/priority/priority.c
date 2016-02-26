@@ -4,22 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc, printf */
-
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+#include "simgrid/msg.h"
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
  * 
  * - <b>priority/priority.c</b>: Demonstrates the use of @ref
- *   MSG_task_set_priority to change the computation priority of a
- *   given task.
- *
+ *   MSG_task_set_priority to change the computation priority of a  given task.
  */
 
 static int test(int argc, char *argv[])
@@ -33,8 +24,7 @@ static int test(int argc, char *argv[])
   res = sscanf(argv[2], "%lg", &priority);
   xbt_assert(res, "Invalid argument %s\n", argv[2]);
 
-  XBT_INFO("Hello! Running a task of size %g with priority %g",
-        computation_amount, priority);
+  XBT_INFO("Hello! Running a task of size %g with priority %g", computation_amount, priority);
   task = MSG_task_create("Task", computation_amount, 0.0, NULL);
   MSG_task_set_priority(task, priority);
 
@@ -45,44 +35,21 @@ static int test(int argc, char *argv[])
   return 0;
 }
 
-static msg_error_t test_all(const char *platform_file,
-                            const char *application_file)
-{
-  msg_error_t res = MSG_OK;
-
-  {                             /*  Simulation setting */
-    MSG_create_environment(platform_file);
-  }
-  {                             /*   Application deployment */
-    MSG_function_register("test", test);
-    MSG_launch_application(application_file);
-  }
-  res = MSG_main();
-
-  XBT_INFO("Simulation time %g", MSG_get_clock());
-  return res;
-}
-
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
 
-#ifdef _MSC_VER
-  unsigned int prev_exponent_format =
-      _set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
-
-
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-           "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-           argv[0], argv[0]);
-  
-  res = test_all(argv[1], argv[2]);
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
-#ifdef _MSC_VER
-  _set_output_format(prev_exponent_format);
-#endif
+  MSG_create_environment(argv[1]);
+  MSG_function_register("test", test);
+  MSG_launch_application(argv[2]);
+
+  res = MSG_main();
+
+  XBT_INFO("Simulation time %g", MSG_get_clock());
 
   return res != MSG_OK;
 }
