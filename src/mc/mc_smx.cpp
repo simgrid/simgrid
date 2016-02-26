@@ -21,9 +21,9 @@ extern "C" {
 static
 void MC_smx_process_info_clear(mc_smx_process_info_t p)
 {
-  p->hostname = NULL;
+  p->hostname = nullptr;
   free(p->name);
-  p->name = NULL;
+  p->name = nullptr;
 }
 
 xbt_dynar_t MC_smx_process_info_list_new(void)
@@ -74,8 +74,8 @@ static void MC_process_refresh_simix_process_list(
 
     s_mc_smx_process_info_t info;
     info.address = p;
-    info.name = NULL;
-    info.hostname = NULL;
+    info.name = nullptr;
+    info.hostname = nullptr;
     process->read_bytes(&info.copy, sizeof(info.copy), remote(p));
     xbt_dynar_push(target, &info);
 
@@ -146,7 +146,7 @@ smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
 smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address)
 {
   if (!process_remote_address)
-    return NULL;
+    return nullptr;
   if (mc_mode == MC_MODE_CLIENT)
     return process_remote_address;
 
@@ -154,7 +154,7 @@ smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address)
   if (process_info)
     return &process_info->copy;
   else
-    return NULL;
+    return nullptr;
 }
 
 mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address)
@@ -216,7 +216,7 @@ const char* MC_smx_process_get_name(smx_process_t p)
   if (mc_mode == MC_MODE_CLIENT)
     return p->name;
   if (!p->name)
-    return NULL;
+    return nullptr;
 
   mc_smx_process_info_t info = MC_smx_process_get_info(p);
   if (!info->name) {

@@ -31,7 +31,7 @@ class ModelChecker {
   struct pollfd fds_[2];
   /** String pool for host names */
   // TODO, use std::unordered_set with heterogeneous comparison lookup (C++14)
-  xbt_dict_t /* <hostname, NULL> */ hostnames_;
+  xbt_dict_t /* <hostname, nullptr> */ hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_;
   std::unique_ptr<Process> process_;

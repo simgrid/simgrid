@@ -104,7 +104,7 @@ RegionSnapshot sparse_region(RegionType region_type,
   RegionSnapshot const* ref_region)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
-  assert(process != NULL);
+  assert(process != nullptr);
 
   bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty
     && ref_region != nullptr

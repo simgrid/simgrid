@@ -41,9 +41,9 @@ static e_mc_comm_pattern_difference_t compare_comm_pattern(mc_comm_pattern_t com
     return TAG_DIFF;
   if (comm1->data_size != comm2->data_size)
     return DATA_SIZE_DIFF;
-  if(comm1->data == NULL && comm2->data == NULL)
+  if(comm1->data == nullptr && comm2->data == NULL)
     return NONE_DIFF;
-  if(comm1->data != NULL && comm2->data !=NULL) {
+  if(comm1->data != nullptr && comm2->data !=NULL) {
     if (!memcmp(comm1->data, comm2->data, comm1->data_size))
       return NONE_DIFF;
     return DATA_DIFF;
@@ -84,7 +84,7 @@ static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int p
     res = bprintf("%s\n Different data for communication #%d", type, cursor);
     break;
   default:
-    res = NULL;
+    res = nullptr;
     break;
   }
 
@@ -102,7 +102,7 @@ static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t co
   comm_pattern->dst_proc = dst_proc->pid;
   comm_pattern->src_host = MC_smx_process_get_host_name(src_proc);
   comm_pattern->dst_host = MC_smx_process_get_host_name(dst_proc);
-  if (comm_pattern->data_size == -1 && comm.comm.src_buff != NULL) {
+  if (comm_pattern->data_size == -1 && comm.comm.src_buff != nullptr) {
     size_t buff_size;
     mc_model_checker->process().read(
       &buff_size, remote(comm.comm.dst_buff_size));
@@ -128,12 +128,12 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
     if (diff != NONE_DIFF) {
       if (comm->type == SIMIX_COMM_SEND){
         initial_global_state->send_deterministic = 0;
-        if(initial_global_state->send_diff != NULL)
+        if(initial_global_state->send_diff != nullptr)
           xbt_free(initial_global_state->send_diff);
         initial_global_state->send_diff = print_determinism_result(diff, process, comm, list->index_comm + 1);
       }else{
         initial_global_state->recv_deterministic = 0;
-        if(initial_global_state->recv_diff != NULL)
+        if(initial_global_state->recv_diff != nullptr)
           xbt_free(initial_global_state->recv_diff);
         initial_global_state->recv_diff = print_determinism_result(diff, process, comm, list->index_comm + 1);
       }
@@ -143,7 +143,7 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
         XBT_INFO("*********************************************************");
         XBT_INFO("%s", initial_global_state->send_diff);
         xbt_free(initial_global_state->send_diff);
-        initial_global_state->send_diff = NULL;
+        initial_global_state->send_diff = nullptr;
         MC_print_statistics(mc_stats);
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       }else if(_sg_mc_comms_determinism && (!initial_global_state->send_deterministic && !initial_global_state->recv_deterministic)) {
@@ -153,9 +153,9 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
         XBT_INFO("%s", initial_global_state->send_diff);
         XBT_INFO("%s", initial_global_state->recv_diff);
         xbt_free(initial_global_state->send_diff);
-        initial_global_state->send_diff = NULL;
+        initial_global_state->send_diff = nullptr;
         xbt_free(initial_global_state->recv_diff);
-        initial_global_state->recv_diff = NULL;
+        initial_global_state->recv_diff = nullptr;
         MC_print_statistics(mc_stats);
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       } 
@@ -178,7 +178,7 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
 
   mc_comm_pattern_t pattern = xbt_new0(s_mc_comm_pattern_t, 1);
   pattern->data_size = -1;
-  pattern->data = NULL;
+  pattern->data = nullptr;
   pattern->index =
     initial_pattern->index_comm + xbt_dynar_length(incomplete_pattern);
 
@@ -201,7 +201,7 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
         (std::uint64_t) simcall_comm_isend__get__data(request));
     pattern->tag = mpi_request.tag;
 
-    if(synchro.comm.src_buff != NULL){
+    if(synchro.comm.src_buff != nullptr){
       pattern->data_size = synchro.comm.src_buff_size;
       pattern->data = xbt_malloc0(pattern->data_size);
       mc_model_checker->process().read_bytes(
@@ -294,7 +294,7 @@ static int MC_modelcheck_comm_determinism_main(void);
 
 static void MC_pre_modelcheck_comm_determinism(void)
 {
-  mc_state_t initial_state = NULL;
+  mc_state_t initial_state = nullptr;
   smx_process_t process;
   int i;
   const int maxpid = MC_smx_get_maxpid();
@@ -314,7 +314,7 @@ static void MC_pre_modelcheck_comm_determinism(void)
   // Create incomplete_communications_pattern elements:
   incomplete_communications_pattern = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
   for (i=0; i < maxpid; i++){
-    xbt_dynar_t process_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), NULL);
+    xbt_dynar_t process_pattern = xbt_dynar_new(sizeof(mc_comm_pattern_t), nullptr);
     xbt_dynar_insert_at(incomplete_communications_pattern, i, &process_pattern);
   }
 
@@ -338,12 +338,12 @@ static void MC_pre_modelcheck_comm_determinism(void)
 static int MC_modelcheck_comm_determinism_main(void)
 {
 
-  char *req_str = NULL;
+  char *req_str = nullptr;
   int value;
-  mc_visited_state_t visited_state = NULL;
-  smx_simcall_t req = NULL;
-  smx_process_t process = NULL;
-  mc_state_t state = NULL, next_state = NULL;
+  mc_visited_state_t visited_state = nullptr;
+  smx_simcall_t req = nullptr;
+  smx_process_t process = nullptr;
+  mc_state_t state = nullptr, next_state = NULL;
 
   while (xbt_fifo_size(mc_stack) > 0) {
 
@@ -360,13 +360,13 @@ static int MC_modelcheck_comm_determinism_main(void)
 
     if ((xbt_fifo_size(mc_stack) <= _sg_mc_max_depth)
         && (req = MC_state_get_request(state, &value))
-        && (visited_state == NULL)) {
+        && (visited_state == nullptr)) {
 
       req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX);
       XBT_DEBUG("Execute: %s", req_str);
       xbt_free(req_str);
       
-      if (dot_output != NULL) {
+      if (dot_output != nullptr) {
         req_str = MC_request_get_dot_output(req, value);
       }
 
@@ -385,7 +385,7 @@ static int MC_modelcheck_comm_determinism_main(void)
       if(!initial_global_state->initial_communications_pattern_done)
         MC_handle_comm_pattern(call, req, value, initial_communications_pattern, 0);
       else
-        MC_handle_comm_pattern(call, req, value, NULL, 0);
+        MC_handle_comm_pattern(call, req, value, nullptr, 0);
 
       /* Wait for requests (schedules processes) */
       mc_model_checker->wait_for_requests();
@@ -393,7 +393,7 @@ static int MC_modelcheck_comm_determinism_main(void)
       /* Create the new expanded state */
       next_state = MC_state_new();
 
-      if ((visited_state = is_visited_state(next_state)) == NULL) {
+      if ((visited_state = is_visited_state(next_state)) == nullptr) {
 
         /* Get enabled processes and insert them in the interleave set of the next state */
         MC_EACH_SIMIX_PROCESS(process,
@@ -402,26 +402,26 @@ static int MC_modelcheck_comm_determinism_main(void)
           }
         );
 
-        if (dot_output != NULL)
+        if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,  next_state->num, req_str);
 
       } else {
 
-        if (dot_output != NULL)
+        if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
 
       }
 
       xbt_fifo_unshift(mc_stack, next_state);
 
-      if (dot_output != NULL)
+      if (dot_output != nullptr)
         xbt_free(req_str);
 
     } else {
 
       if (xbt_fifo_size(mc_stack) > _sg_mc_max_depth) {
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-      } else if (visited_state != NULL) {
+      } else if (visited_state != nullptr) {
         XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);
       } else {
         XBT_DEBUG("There are no more processes to interleave. (depth %d)", xbt_fifo_size(mc_stack));
@@ -435,15 +435,15 @@ static int MC_modelcheck_comm_determinism_main(void)
       MC_state_delete(state, !state->in_visited_states ? 1 : 0);
       XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
 
-      visited_state = NULL;
+      visited_state = nullptr;
 
       /* Check for deadlocks */
       if (MC_deadlock_check()) {
-        MC_show_deadlock(NULL);
+        MC_show_deadlock(nullptr);
         return SIMGRID_MC_EXIT_DEADLOCK;
       }
 
-      while ((state = (mc_state_t) xbt_fifo_shift(mc_stack)) != NULL) {
+      while ((state = (mc_state_t) xbt_fifo_shift(mc_stack)) != nullptr) {
         if (MC_state_interleave_size(state) && xbt_fifo_size(mc_stack) < _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
@@ -487,8 +487,8 @@ int MC_modelcheck_comm_determinism(void)
   initial_global_state->initial_communications_pattern_done = 0;
   initial_global_state->recv_deterministic = 1;
   initial_global_state->send_deterministic = 1;
-  initial_global_state->recv_diff = NULL;
-  initial_global_state->send_diff = NULL;
+  initial_global_state->recv_diff = nullptr;
+  initial_global_state->send_diff = nullptr;
 
   return MC_modelcheck_comm_determinism_main();
 }

@@ -48,9 +48,9 @@ void *ObjectInformation::base_address() const
     return nullptr;
 
   void *result = this->start_exec;
-  if (this->start_rw != NULL && result > (void *) this->start_rw)
+  if (this->start_rw != nullptr && result > (void *) this->start_rw)
     result = this->start_rw;
-  if (this->start_ro != NULL && result > (void *) this->start_ro)
+  if (this->start_ro != nullptr && result > (void *) this->start_ro)
     result = this->start_ro;
   return result;
 }
@@ -153,7 +153,7 @@ void ObjectInformation::remove_global_variable(const char* name)
  *  name.
  *
  *  \param var_name        Name of the local variable (or parameter to ignore)
- *  \param subprogram_name Name of the subprogram fo ignore (NULL for any)
+ *  \param subprogram_name Name of the subprogram fo ignore (nullptr for any)
  *  \param subprogram      (possibly inlined) Subprogram of the scope
  *  \param scope           Current scope
  */

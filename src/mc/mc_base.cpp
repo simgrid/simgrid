@@ -93,9 +93,9 @@ int MC_request_is_enabled(smx_simcall_t req)
         return TRUE;
     } else {
       /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
-      if (act->comm.detached && act->comm.src_proc == NULL
+      if (act->comm.detached && act->comm.src_proc == nullptr
           && act->comm.type == SIMIX_COMM_READY)
-        return (act->comm.dst_proc != NULL);
+        return (act->comm.dst_proc != nullptr);
     }
     return (act->comm.src_proc && act->comm.dst_proc);
 
@@ -153,7 +153,7 @@ int MC_request_is_enabled(smx_simcall_t req)
       mutex = &temp_mutex;
     }
 #endif
-    if(mutex->owner == NULL)
+    if(mutex->owner == nullptr)
       return TRUE;
     else
 #ifdef HAVE_MC
@@ -228,7 +228,7 @@ void MC_simcall_handle(smx_simcall_t req, int value)
   }
 
   unsigned i;
-  mc_smx_process_info_t pi = NULL;
+  mc_smx_process_info_t pi = nullptr;
 
   xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, i, pi) {
     if (req == &pi->copy.simcall) {

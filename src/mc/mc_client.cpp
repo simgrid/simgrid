@@ -62,7 +62,7 @@ void MC_client_init(void)
   mc_client->active = 1;
 
   // Waiting for the model-checker:
-  if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) == -1 || raise(SIGSTOP) != 0)
+  if (ptrace(PTRACE_TRACEME, 0, nullptr, NULL) == -1 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker");
   MC_client_handle_messages();
 }

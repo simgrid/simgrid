@@ -16,7 +16,7 @@ namespace dwarf {
  * @param object   Process address of the struct/class
  * @param type     Type of the struct/class
  * @param member   Member description
- * @param snapshot Snapshot (or NULL)
+ * @param snapshot Snapshot (or nullptr)
  * @return Process address of the given member of the 'object' struct/class
  */
 void *resolve_member(
@@ -28,8 +28,8 @@ void *resolve_member(
     return ((char *) base) + member->offset();
 
   ExpressionContext state;
-  state.frame_base = NULL;
-  state.cursor = NULL;
+  state.frame_base = nullptr;
+  state.cursor = nullptr;
   state.address_space = address_space;
   state.process_index = process_index;
 
