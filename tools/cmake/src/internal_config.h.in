@@ -130,9 +130,6 @@
 /* Define to 1 if you have the <signal.h> header file. */
 #cmakedefine HAVE_SIGNAL_H @HAVE_SIGNAL_H@
 
-/* Define to 1 if you have the `snprintf' function. */
-#cmakedefine HAVE_SNPRINTF @HAVE_SNPRINTF@
-
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H @HAVE_STDINT_H@
 
@@ -159,9 +156,6 @@
 
 /* Define to 1 if you have the <valgrind/valgrind.h> header file. */
 #cmakedefine HAVE_VALGRIND_VALGRIND_H @HAVE_VALGRIND_VALGRIND_H@
-
-/* Define to 1 if you have the `vsnprintf' function. */
-#cmakedefine HAVE_VSNPRINTF @HAVE_VSNPRINTF@
 
 /* Define to 1 if you have the <windows.h> header file. */
 #cmakedefine HAVE_WINDOWS_H @HAVE_WINDOWS_H@
@@ -192,9 +186,6 @@
 
 /* Define to the version of this package. */
 #cmakedefine PACKAGE_VERSION @PACKAGE_VERSION@
-
-/* "enable replacement (v)snprintf if system (v)snprintf is broken" */
-#cmakedefine PREFER_PORTABLE_SNPRINTF @PREFER_PORTABLE_SNPRINTF@
 
 /* define for stack growth */
 #cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@

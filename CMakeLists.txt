@@ -319,8 +319,6 @@ CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
 
-CHECK_SYMBOL_EXISTS(snprintf stdio.h HAVE_SNPRINTF)
-CHECK_SYMBOL_EXISTS(vsnprintf stdio.h HAVE_VSNPRINTF)
 CHECK_SYMBOL_EXISTS(asprintf stdio.h HAVE_ASPRINTF)
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 
@@ -328,8 +326,6 @@ if(MINGW)
   # The detection of asprintf fails on MinGW, assumingly because it's
   # defined as an inline function in stdio.h instead of a regular
   # function. So force the result to be 1 despite of the test.
-  set(HAVE_SNPRINTF 1)
-  set(HAVE_VSNPRINTF 1)
   set(HAVE_ASPRINTF 1)
   set(HAVE_VASPRINTF 1)
 endif()
@@ -750,37 +746,6 @@ endif()
 ###############
 ## System checks
 ##
-
-### check for a working snprintf
-if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
-  if(CMAKE_CROSSCOMPILING)
-    set(RUN_SNPRINTF_FUNC "cross")
-    #set(PREFER_PORTABLE_SNPRINTF 1)
-  else()
-    try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
-      ${CMAKE_BINARY_DIR}
-      ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_snprintf.c
-      )
-  endif()
-
-  if(CMAKE_CROSSCOMPILING)
-    set(RUN_VSNPRINTF_FUNC "cross")
-    set(PREFER_PORTABLE_VSNPRINTF 1)
-  else()
-    try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
-      ${CMAKE_BINARY_DIR}
-      ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_vsnprintf.c
-      )
-  endif()
-
-  set(PREFER_PORTABLE_SNPRINTF 0)
-  if(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
-    set(PREFER_PORTABLE_SNPRINTF 1)
-  endif()
-  if(RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
-    set(PREFER_PORTABLE_SNPRINTF 1)
-  endif()
-endif()
 
 ### check for asprintf function familly
 if(HAVE_ASPRINTF)

@@ -642,7 +642,6 @@ void xbt_dict_postexit(void)
 #include "xbt/ex.h"
 #include "src/portable.h"
 
-#define PRINTF_STR(a) (a)?:"(null)"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 
@@ -653,8 +652,7 @@ static void debuged_add_ext(xbt_dict_t head, const char *key,
 {
   char *data = xbt_strdup(data_to_fill);
 
-  xbt_test_log("Add %s under %s", PRINTF_STR(data_to_fill),
-                PRINTF_STR(key));
+  xbt_test_log("Add %s under %s", data_to_fill, key);
 
   xbt_dict_set(head, key, data, free_f);
   if (XBT_LOG_ISENABLED(xbt_dict, xbt_log_priority_debug)) {
@@ -717,7 +715,7 @@ static void search(xbt_dict_t head, const char *key)
 static void debuged_remove(xbt_dict_t head, const char *key)
 {
 
-  xbt_test_add("Remove '%s'", PRINTF_STR(key));
+  xbt_test_add("Remove '%s'", key);
   xbt_dict_remove(head, key);
   /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 }
@@ -732,10 +730,9 @@ static void traverse(xbt_dict_t head)
 
   xbt_dict_foreach(head, cursor, key, data) {
     if (!key || !data || strcmp(key, data)) {
-      xbt_test_log("Seen #%d:  %s->%s", ++i, PRINTF_STR(key),
-                    PRINTF_STR(data));
+      xbt_test_log("Seen #%d:  %s->%s", ++i, key, data);
     } else {
-      xbt_test_log("Seen #%d:  %s", ++i, PRINTF_STR(key));
+      xbt_test_log("Seen #%d:  %s", ++i, key);
     }
     xbt_test_assert(!data || !strcmp(key, data),
                      "Key(%s) != value(%s). Aborting", key, data);
@@ -1012,9 +1009,9 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
 
     xbt_dict_foreach(head, cursor, key, data) {
       if (!key || !data || strcmp(key, data)) {
-        xbt_test_log("Seen:  %s->%s", PRINTF_STR(key), PRINTF_STR(data));
+        xbt_test_log("Seen:  %s->%s", key, data);
       } else {
-        xbt_test_log("Seen:  %s", PRINTF_STR(key));
+        xbt_test_log("Seen:  %s", key);
       }
 
       if (!strcmp(key, "null"))

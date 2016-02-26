@@ -89,39 +89,11 @@
 # include <signal.h>
 #endif
 
-/****
- **** string handling (parts from http://www.ijs.si/software/snprintf/)
- ****/
-
-/* prototype of C99 functions */
-#if defined(HAVE_SNPRINTF)
-#include <stdio.h>
-#else
-XBT_PUBLIC(int) snprintf(char *, size_t, const char *, /*args */ ...);
-XBT_PUBLIC(int) vsnprintf(char *, size_t, const char *, va_list);
-#endif
-
-
-/* use internal functions when OS provided ones are borken */
-#if defined(HAVE_SNPRINTF) && defined(PREFER_PORTABLE_SNPRINTF)
-XBT_PRIVATE int portable_snprintf(char *str, size_t str_m, const char *fmt,
-                             /*args */ ...);
-XBT_PRIVATE int portable_vsnprintf(char *str, size_t str_m, const char *fmt,
-                              va_list ap);
-#define snprintf  portable_snprintf
-#define vsnprintf portable_vsnprintf
-#endif
-
 /* prototype of GNU functions  */
 #if (defined(__GNUC__) && !defined(__cplusplus))
 XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt, /*args */ ...);
 XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
 #endif
-
-extern int asnprintf(char **ptr, size_t str_m, const char *fmt, /*args */
-                     ...);
-extern int vasnprintf(char **ptr, size_t str_m, const char *fmt,
-                      va_list ap);
 
 /*
  * What we need to extract the backtrace in exception handling code
