@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <simgrid_config.h>
+#include <xbt/base.h>
 #include <xbt/fifo.h>
 #include <xbt/dynar.h>
 #include <xbt/automaton.h>

@@ -15,7 +15,6 @@
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
 #include "src/smpi/private.h"
-#include <alloca.h>
 
 #include "src/xbt/mmalloc/mmprivate.h"
 

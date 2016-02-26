@@ -11,6 +11,8 @@
 
 #include "mc_base.h"
 
+#include "mc/mc.h"
+
 #ifndef _XBT_WIN32
 #include <unistd.h>
 #include <sys/wait.h>
@@ -19,6 +21,8 @@
 
 #include <xbt/fifo.h>
 #include <xbt/automaton.h>
+
+#include "src/simix/smx_process_private.h"
 
 #ifdef HAVE_MC
 #include <libunwind.h>

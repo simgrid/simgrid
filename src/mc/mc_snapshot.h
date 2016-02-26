@@ -7,23 +7,24 @@
 #ifndef SIMGRID_MC_SNAPSHOT_H
 #define SIMGRID_MC_SNAPSHOT_H
 
-#include <sys/types.h> // off_t
-#include <stdint.h> // size_t
+#include <cstdint>
+#include <cstddef>
 
 #include <vector>
 #include <set>
+#include <string>
 #include <memory>
+
+#include <sys/types.h> // off_t
 
 #include <simgrid_config.h>
 #include "src/xbt/mmalloc/mmprivate.h"
 #include <xbt/asserts.h>
-#include <xbt/dynar.h>
 #include <xbt/base.h>
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/PageStore.hpp"
-#include "src/mc/mc_mmalloc.h"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/mc_unw.h"
 #include "src/mc/RegionSnapshot.hpp"

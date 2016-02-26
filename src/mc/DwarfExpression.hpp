@@ -10,7 +10,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include <stdexcept>
+#include <stdexcept> // runtime_error
 #include <utility>
 #include <vector>
 

@@ -4,7 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <assert.h>
+#include <cassert>
+
+#include <xbt/log.h>
+#include <xbt/str.h>
+#include <xbt/sysdep.h>
+#include <xbt/dynar.h>
+#include <xbt/misc.h>
 
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_safety.h"

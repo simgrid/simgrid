@@ -7,6 +7,12 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#include <xbt/automaton.h>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
+#include <xbt/dynar.h>
+#include <xbt/fifo.h>
+
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_liveness.h"

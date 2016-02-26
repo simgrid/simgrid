@@ -9,7 +9,9 @@
 
 #include <stddef.h>
 
+#include <xbt/base.h>
 #include <xbt/log.h>
+
 #include <simgrid/simix.h>
 
 #include "src/smpi/private.h"

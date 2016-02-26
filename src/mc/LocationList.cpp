@@ -4,6 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstddef>
+#include <cstdint>
+#include <utility>
+
+#include <xbt/asserts.h>
+#include <xbt/sysdep.h>
+
+#include <libunwind.h>
+
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/LocationList.hpp"
