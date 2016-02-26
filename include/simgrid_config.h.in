@@ -30,26 +30,9 @@
                                              SIMGRID_VERSION_MINOR, \
                                              SIMGRID_VERSION_PATCH)
 
-/* take care of DLL usage madness */
-#ifdef _XBT_DLL_EXPORT
-	#ifndef DLL_EXPORT
-		#define DLL_EXPORT
-	#endif
-#else
-	#ifndef DLL_EXPORT
-		#define DLL_IMPORT
-	#endif
-#endif
-
 #cmakedefine _XBT_WIN32 @_XBT_WIN32@	/*this variable is set if it is a windows platform*/
 #cmakedefine _WIN32 @_WIN32@			/*this variable is set if it is a 32 bits windows platform*/
 #cmakedefine _WIN64 @_WIN64@			/*this variable is set if it is a 64 bits  windows platform*/
-#cmakedefine __VISUALC__ @__VISUALC__@
-#ifdef _XBT_WIN32
-	#ifndef __GNUC__
-		#cmakedefine __GNUC__ @__GNUC__@
-	#endif
-#endif
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@
