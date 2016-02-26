@@ -49,8 +49,8 @@
  *   http://www.ijs.si/software/snprintf/
  */
 
-#include "xbt/sysdep.h"       /* xbt_abort() */
-#include "simgrid_config.h"   /* Do we need vasprintf? */
+#include "xbt/sysdep.h"           /* xbt_abort() */
+#include "src/internal_config.h"  /* Do we need vasprintf? */
 #include <stdio.h>
 
 #if !defined(HAVE_VASPRINTF)

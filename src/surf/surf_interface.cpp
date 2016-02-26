@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "portable.h"
 #include "surf_private.h"
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
@@ -15,7 +16,6 @@
 #include "mc/mc.h"
 #include "virtual_machine.hpp"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
-
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
