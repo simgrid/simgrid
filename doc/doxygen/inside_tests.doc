@@ -201,7 +201,7 @@ To add a new integration test, you thus have 3 things to do:
    details.\n
    Tesh is sometimes annoying as you have to ensure that the expected
    output will always be exactly the same. In particular, your should
-   not output machine dependent informations, nor memory adresses as
+   not output machine dependent informations such as absolute data path, nor memory adresses as
    they would change on each run. Several steps can be used here, such
    as the obfucation of the memory adresses unless the verbose logs
    are displayed (using the #XBT_LOG_ISENABLED() macro), or the
