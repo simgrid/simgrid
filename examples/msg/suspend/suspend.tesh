@@ -3,7 +3,7 @@
 p Testing the suspend/resume feature of MSG
 
 ! output sort 19
-$ $SG_TEST_EXENV suspend/suspend ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/suspend/deployment_suspend.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV suspend/suspend ${srcdir:=.}/../platforms/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:dream_master@Jacquelin) Let's create a lazy guy.
 > [  0.000000] (1:dream_master@Jacquelin) Let's wait a little bit...
 > [  0.000000] (2:Lazy@Jacquelin) Nobody's watching me ? Let's go to sleep.
