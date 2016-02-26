@@ -5,10 +5,6 @@ set(tesh_files
   ${tesh_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/pmm.tesh
   PARENT_SCOPE)
-set(xml_files
-  ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/pmm_9_deploy.xml
-  PARENT_SCOPE)
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/msg_pmm.c

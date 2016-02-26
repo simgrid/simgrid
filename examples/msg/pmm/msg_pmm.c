@@ -9,22 +9,15 @@
 #include "simgrid/msg.h"
 #include "xbt/matrix.h"
 #include "xbt/log.h"
-
-// #define BENCH_THIS_CODE /* Will only work from within the source tree as we require xbt/xbt_os_time.h, that is not public yet) */
-#ifdef BENCH_THIS_CODE
 #include "xbt/xbt_os_time.h"
-#endif
 
 /** @addtogroup MSG_examples
  * 
- * - <b>pmm/msg_pmm.c</b>: Parallel Matrix Multiplication is a little
- *   application. This is something that most MPI developper have
- *   written during their class, here implemented using MSG instead
- *   of MPI. 
+ * - <b>pmm/msg_pmm.c</b>: Parallel Matrix Multiplication is a little application. This is something that most MPI
+ *   developers have written during their class, here implemented using MSG instead of MPI.
  */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm, "Messages specific for this msg example");
 
 /* This example should always be executed using a deployment of
  * GRID_SIZE * GRID_SIZE nodes. */
@@ -144,15 +137,12 @@ int node(int argc, char **argv)
     receive_results(results);
 
     /* First add our results */
-    xbt_matrix_copy_values(C, sC, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE,
-                           0, 0, 0, 0, NULL);
+    xbt_matrix_copy_values(C, sC, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, 0, 0, 0, 0, NULL);
 
     /* Reconstruct the rest of the result matrix */
     for (node = 1; node < GRID_NUM_NODES; node++){
-      xbt_matrix_copy_values(C, results[node]->sC,
-                             NODE_MATRIX_SIZE, NODE_MATRIX_SIZE,
-                             NODE_MATRIX_SIZE * results[node]->row,
-                             NODE_MATRIX_SIZE * results[node]->col,
+      xbt_matrix_copy_values(C, results[node]->sC, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE,
+                             NODE_MATRIX_SIZE * results[node]->row, NODE_MATRIX_SIZE * results[node]->col,
                              0, 0, NULL);
       xbt_matrix_free(results[node]->sC);
       xbt_free(results[node]);
@@ -173,8 +163,7 @@ int node(int argc, char **argv)
     result = xbt_new0(s_result_t, 1);
     result->row = myjob->row;
     result->col = myjob->col;
-    result->sC =
-      xbt_matrix_new_sub(sC, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, 0, 0, NULL);
+    result->sC = xbt_matrix_new_sub(sC, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, 0, 0, NULL);
     task = MSG_task_create("result",100,100,result);
     MSG_task_send(task, "0");
   }
@@ -217,8 +206,7 @@ static node_job_t wait_job(int selfid)
   msg_error_t err;
   snprintf(self_mbox, MAILBOX_NAME_SIZE - 1, "%d", selfid);
   err = MSG_task_receive(&task, self_mbox);
-  xbt_assert(err == MSG_OK, "Error while receiving from %s (%d)",
-             self_mbox, (int)err);
+  xbt_assert(err == MSG_OK, "Error while receiving from %s (%d)", self_mbox, (int)err);
   job = (node_job_t)MSG_task_get_data(task);
   MSG_task_destroy(task);
   XBT_VERB("Got Job (%d,%d)", job->row, job->col);
@@ -240,7 +228,6 @@ static void broadcast_matrix(xbt_matrix_t M, int num_nodes, int *nodes)
     MSG_task_dsend(task, node_mbox, task_cleanup);
     XBT_DEBUG("sub-matrix sent to %s", node_mbox);
   }
-
 }
 
 static void get_sub_matrix(xbt_matrix_t *sM, int selfid)
@@ -266,9 +253,6 @@ static void task_cleanup(void *arg){
   MSG_task_destroy(task);
 }
 
-/**
- * \brief Main function.
- */
 int main(int argc, char *argv[])
 {
 #ifdef BENCH_THIS_CODE
@@ -277,14 +261,18 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
-  char **options = &argv[1];
-  const char* platform_file = options[0];
-  const char* application_file = options[1];
-
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
 
   MSG_function_register("node", node);
-  MSG_launch_application(application_file);
+  for(int i = 0 ; i< 9; i++) {
+    char *hostname = bprintf("node-%d.acme.org", i);
+    char **argvF = xbt_new(char *, 3);
+    argvF[0] = xbt_strdup("node");
+    argvF[1] = bprintf("%d", i);
+    argvF[2] = NULL;
+    MSG_process_create_with_arguments("node", node, NULL, MSG_host_by_name(hostname), 2, argvF);
+    xbt_free(hostname);
+  }
 
 #ifdef BENCH_THIS_CODE
   xbt_os_cputimer_start(timer);
@@ -326,13 +314,9 @@ static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)
 
     /* Assign a sub matrix of A and B to the job */
     jobs[node]->A =
-      xbt_matrix_new_sub(A, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE,
-                         NODE_MATRIX_SIZE * row, NODE_MATRIX_SIZE * col,
-                         NULL);
+      xbt_matrix_new_sub(A, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE * row, NODE_MATRIX_SIZE * col, NULL);
     jobs[node]->B =
-      xbt_matrix_new_sub(B, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE,
-                         NODE_MATRIX_SIZE * row, NODE_MATRIX_SIZE * col,
-                         NULL);
+      xbt_matrix_new_sub(B, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE * row, NODE_MATRIX_SIZE * col, NULL);
 
     if (++col >= GRID_SIZE){
       col = 0;
