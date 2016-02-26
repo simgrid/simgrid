@@ -81,7 +81,7 @@ void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_li
     }
   }
 
-  printf("Starting to solve(%i,%i,%i)\n",myrand()%1000,myrand()%1000,myrand()%1000);
+  printf("Starting to solve(%i)\n",myrand()%1000);
   date = xbt_os_time() * 1000000;
   lmm_solve(Sys);
   date = xbt_os_time() * 1000000 - date;
@@ -186,7 +186,7 @@ int main(int argc, char **argv)
   
   for(i=0;i<testcount;i++){
     seedx=i+1;
-    printf("Starting %i: (%i,%i,%i)\n",i,myrand()%1000,myrand()%1000,myrand()%1000);
+    printf("Starting %i: (%i)\n",i,myrand()%1000);
     test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit,max_share,mode);
     acc_date+=date;
     acc_date2+=date*date;
