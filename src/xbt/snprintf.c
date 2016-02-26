@@ -51,6 +51,7 @@
 
 #include "xbt/sysdep.h"       /* xbt_abort() */
 #include "simgrid_config.h"   /* Do we need vasprintf? */
+#include <stdio.h>
 
 #if !defined(HAVE_VASPRINTF)
 #include <stdarg.h> /* vsnprintf */
