@@ -22,8 +22,6 @@ SG_BEGIN_DECL()
 /**************** datatypes **********************************/
 
 /********************************* Task **************************************/
-
-
 #define MSG_BT(ptr, m)                              \
   do {xbt_ex_t *_xbt_ex_t = xbt_new0(xbt_ex_t, 1); \
   /* build the exception */                                             \
@@ -110,7 +108,6 @@ typedef struct msg_comm {
   msg_error_t status;           /* status of the communication once finished */
 } s_msg_comm_t;
 
-
 /******************************* VM *************************************/
 typedef struct dirty_page {
   double prev_clock;
@@ -137,9 +134,7 @@ typedef struct MSG_Global {
 /*extern MSG_Global_t msg_global;*/
 XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
-
 /*************************************************************/
-
 // FIXME: KILLME
 #  define MSG_RETURN(val) return(val)
 
@@ -183,8 +178,7 @@ XBT_PRIVATE void TRACE_msg_task_put_end(void);
 /* declaration of instrumentation functions from msg_process_instr.c */
 XBT_PRIVATE char *instr_process_id (msg_process_t proc, char *str, int len);
 XBT_PRIVATE char *instr_process_id_2 (const char *process_name, int process_pid, char *str, int len);
-XBT_PRIVATE void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host,
-                                   msg_host_t new_host);
+XBT_PRIVATE void TRACE_msg_process_change_host(msg_process_t process, msg_host_t old_host, msg_host_t new_host);
 XBT_PRIVATE void TRACE_msg_process_create (const char *process_name, int process_pid, msg_host_t host);
 XBT_PRIVATE void TRACE_msg_process_destroy (const char *process_name, int process_pid);
 XBT_PRIVATE void TRACE_msg_process_kill(smx_process_exit_status_t status, msg_process_t process);
@@ -196,8 +190,7 @@ XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
 /* declaration of instrumentation functions from instr_msg_vm.c */
 XBT_PRIVATE char *instr_vm_id(msg_vm_t vm, char *str, int len);
 XBT_PRIVATE char *instr_vm_id_2(const char *vm_name, char *str, int len);
-XBT_PRIVATE void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host,
-                                   msg_host_t new_host);
+XBT_PRIVATE void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host, msg_host_t new_host);
 XBT_PRIVATE void TRACE_msg_vm_start(msg_vm_t vm);
 XBT_PRIVATE void TRACE_msg_vm_create(const char *vm_name, msg_host_t host);
 XBT_PRIVATE void TRACE_msg_vm_kill(msg_vm_t process);

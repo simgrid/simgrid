@@ -16,12 +16,9 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
  * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
  * (#msg_host_t) and the functions for managing it.
  *  
- *  A <em>location</em> (or <em>host</em>) is any possible place where
- *  a process may run. Thus it may be represented as a
- *  <em>physical resource with computing capabilities</em>, some
- *  <em>mailboxes</em> to enable running process to communicate with
- *  remote ones, and some <em>private data</em> that can be only
- *  accessed by local process.
+ *  A <em>location</em> (or <em>host</em>) is any possible place where  a process may run. Thus it may be represented
+ *  as a <em>physical resource with computing capabilities</em>, some <em>mailboxes</em> to enable running process to
+ *  communicate with remote ones, and some <em>private data</em> that can be only accessed by local process.
  *  \see msg_host_t
  */
 
@@ -42,7 +39,7 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
     xbt_dynar_push_as(priv->file_descriptor_table, int, i);
 
   sg_host_msg_set(host,priv);
-  
+
   return host;
 }
 
@@ -62,8 +59,7 @@ msg_host_t MSG_host_by_name(const char *name)
  *
  * \brief Set the user data of a #msg_host_t.
  *
- * This functions checks whether some data has already been associated to \a host
-   or not and attach \a data to \a host if it is possible.
+ * This functions attach \a data to \a host if it is possible.
  */
 msg_error_t MSG_host_set_data(msg_host_t host, void *data) {
   sg_host_user_set(host, data);
@@ -74,8 +70,7 @@ msg_error_t MSG_host_set_data(msg_host_t host, void *data) {
  *
  * \brief Return the user data of a #msg_host_t.
  *
- * This functions checks whether \a host is a valid pointer or not and return
-   the user data associated to \a host if it is possible.
+ * This functions returns the user data associated to \a host if it is possible.
  */
 void *MSG_host_get_data(msg_host_t host) {
   return sg_host_user(host);
@@ -90,12 +85,12 @@ msg_host_t MSG_host_self(void)
   return MSG_process_get_host(NULL);
 }
 
-
 /** \ingroup m_host_management
  *
  * \brief Start the host if it is off
  *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy for more info on DVFS.
+ * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * for more info on DVFS.
  */
 void MSG_host_on(msg_host_t host)
 {
@@ -106,7 +101,8 @@ void MSG_host_on(msg_host_t host)
  *
  * \brief Stop the host if it is on
  *
- * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy for more info on DVFS.
+ * See also #MSG_host_is_on() and #MSG_host_is_off() to test the current state of the host and @ref SURF_plugin_energy
+ * for more info on DVFS.
  */
 void MSG_host_off(msg_host_t host)
 {
@@ -118,7 +114,6 @@ void MSG_host_off(msg_host_t host)
  */
 void __MSG_host_priv_free(msg_host_priv_t priv)
 {
-
   if (priv == NULL)
     return;
   unsigned int size = xbt_dict_size(priv->dp_objs);
@@ -141,20 +136,19 @@ int MSG_get_host_number(void)
 
 /** \ingroup m_host_management
  * \brief Return a dynar containing all the hosts declared at a given point of time
- * \remark The host order in the returned array is generally different from the host creation/declaration order in the XML platform (we use a hash table internally)
+ * \remark The host order in the returned array is generally different from the host creation/declaration order in the
+ *         XML platform (we use a hash table internally)
  */
 xbt_dynar_t MSG_hosts_as_dynar(void) {
   return sg_hosts_as_dynar();
 }
 
 /** \ingroup m_host_management
- * \brief Return the speed of the processor (in flop/s), regardless of 
-    the current load on the machine.
+ * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
  */
 double MSG_get_host_speed(msg_host_t host) {
   return host->speed();
 }
-
 
 /** \ingroup m_host_management
  * \brief Return the number of cores.
@@ -177,7 +171,6 @@ xbt_swag_t MSG_host_get_process_list(msg_host_t host)
   xbt_assert((host != NULL), "Invalid parameters");
   return host->processes();
 }
-
 
 /** \ingroup m_host_management
  * \brief Returns the value of a given host property
@@ -212,13 +205,10 @@ xbt_dict_t MSG_host_get_properties(msg_host_t host)
  * \param free_ctn the freeing function to use to kill the value on need
  */
 void MSG_host_set_property_value(msg_host_t host, const char *name, char *value,void_f_pvoid_t free_ctn) {
-
   xbt_dict_set(MSG_host_get_properties(host), name, value,free_ctn);
 }
 
-
 /** @ingroup m_host_management
- *
  * @brief Determine if a host is up and running.
  *
  * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref SURF_plugin_energy for more info on DVFS.
@@ -231,8 +221,8 @@ int MSG_host_is_on(msg_host_t host)
   xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
   return sg_host_is_on(host);
 }
+
 /** @ingroup m_host_management
- *
  * @brief Determine if a host is currently off.
  *
  * See also #MSG_host_on() and #MSG_host_off() to switch the host ON and OFF and @ref SURF_plugin_energy for more info on DVFS.
@@ -273,8 +263,8 @@ void MSG_host_get_params(msg_host_t host, vm_params_t params)
  * \return Returns the processor speed associated with pstate_index
  */
 double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
-    xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-    return host->powerPeakAt(pstate_index);
+  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+  return host->powerPeakAt(pstate_index);
 }
 
 /** \ingroup m_host_management
@@ -284,8 +274,8 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
  * \return Returns the current processor speed
  */
 double MSG_host_get_current_power_peak(msg_host_t host) {
-    xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-    return host->currentPowerPeak();
+  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+  return host->currentPowerPeak();
 }
 
 /** \ingroup m_host_management
@@ -294,7 +284,7 @@ double MSG_host_get_current_power_peak(msg_host_t host) {
  * \param  host host to test
  */
 int MSG_host_get_nb_pstates(msg_host_t host) {
-    return sg_host_get_nb_pstates(host);
+  return sg_host_get_nb_pstates(host);
 }
 
 /** \ingroup m_host_management
@@ -346,8 +336,7 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 
 int __MSG_host_get_file_descriptor_id(msg_host_t host){
   msg_host_priv_t priv = sg_host_msg(host);
-  xbt_assert(!xbt_dynar_is_empty(priv->file_descriptor_table),
-    "Too much files are opened! Some have to be closed.");
+  xbt_assert(!xbt_dynar_is_empty(priv->file_descriptor_table), "Too much files are opened! Some have to be closed.");
   return xbt_dynar_pop_as(priv->file_descriptor_table, int);
 }
 

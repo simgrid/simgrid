@@ -10,15 +10,11 @@
 #include "mc/mc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "xbt/virtu.h"
-#include "xbt/ex.h"             /* ex_backtrace_display */
-#include "xbt/replay.h"
 #include "simgrid/sg_config.h" /* Configuration mechanism of SimGrid */
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME by removing MSG_post_create_environment()
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg,
-                                "Logging specific to MSG (kernel)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
 
 MSG_Global_t msg_global = NULL;
 static void MSG_exit(void);
@@ -110,7 +106,6 @@ void MSG_config(const char *key, const char *value){
   xbt_cfg_set_as_string(_sg_cfg_set, key, value);
 }
 
-
 /** \ingroup msg_simulation
  * \brief Kill all running process
 
@@ -138,7 +133,6 @@ static void MSG_exit(void) {
   free(msg_global);
   msg_global = NULL;
 }
-
 
 /** \ingroup msg_simulation
  * \brief A clock (in second).
