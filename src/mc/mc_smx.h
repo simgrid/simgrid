@@ -10,6 +10,7 @@
 #include <stddef.h>
 
 #include <xbt/base.h>
+#include <xbt/dynar.h>
 #include <xbt/log.h>
 
 #include <simgrid/simix.h>

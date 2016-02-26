@@ -4,6 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdint>
+
+#include <xbt/dynar.h>
+#include <xbt/fifo.h>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
+
 #include "src/mc/mc_state.h"
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_request.h"

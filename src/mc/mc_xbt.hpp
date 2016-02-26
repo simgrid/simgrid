@@ -9,7 +9,7 @@
 
 #include <cstddef>
 
-#include <xbt/base.h>
+#include <xbt/dynar.h>
 
 #include "src/mc/remote_ptr.hpp"
 #include "src/mc/AddressSpace.hpp"

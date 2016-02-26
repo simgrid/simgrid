@@ -18,6 +18,8 @@
 #define SIMGRID_MC_RECORD_H
 
 #include <xbt/base.h>
+#include <xbt/dynar.h>
+#include <xbt/fifo.h>
 
 SG_BEGIN_DECL()
 

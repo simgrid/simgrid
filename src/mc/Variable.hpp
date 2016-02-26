@@ -7,9 +7,9 @@
 #ifndef SIMGRID_MC_VARIABLE_HPP
 #define SIMGRID_MC_VARIABLE_HPP
 
-#include <string>
+#include <cstddef>
 
-#include <xbt/base.h>
+#include <string>
 
 #include "src/mc/mc_forward.h"
 #include "src/mc/LocationList.hpp"
@@ -29,7 +29,7 @@ public:
   // Use either of:
   simgrid::dwarf::LocationList location_list;
   void* address = nullptr;
-  size_t start_scope = 0;
+  std::size_t start_scope = 0;
   simgrid::mc::ObjectInformation* object_info = nullptr;
 };
 

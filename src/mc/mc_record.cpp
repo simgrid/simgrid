@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <xbt/fifo.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 

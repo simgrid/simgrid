@@ -11,8 +11,6 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <xbt/misc.h>
-
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/remote_ptr.hpp"
 

@@ -4,6 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/dynar.h>
+#include <xbt/sysdep.h>
+
 #include "src/mc/mc_liveness.h"
 #include "src/mc/mc_private.h"
 

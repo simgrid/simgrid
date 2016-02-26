@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 
-#include <xbt/misc.h>
+#include <xbt/base.h>
 
 #include "mc/datatypes.h"
 

@@ -5,14 +5,17 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cassert>
+#include <cstdlib>
 
 #include <xbt/log.h>
-#include <xbt/string.hpp>
+#include <xbt/dynar.h>
+#include <xbt/str.h>
+#include <xbt/swag.h>
 
 #include "src/simix/smx_private.h"
 
 #include "src/mc/mc_smx.h"
-#include "ModelChecker.hpp"
+#include "src/mc/ModelChecker.hpp"
 
 using simgrid::mc::remote;
 
@@ -22,7 +25,7 @@ static
 void MC_smx_process_info_clear(mc_smx_process_info_t p)
 {
   p->hostname = nullptr;
-  free(p->name);
+  std::free(p->name);
   p->name = nullptr;
 }
 

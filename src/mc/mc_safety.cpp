@@ -9,6 +9,7 @@
 #include <cstdio>
 
 #include <xbt/log.h>
+#include <xbt/dynar.h>
 #include <xbt/fifo.h>
 #include <xbt/sysdep.h>
 

@@ -19,6 +19,7 @@
 #include <simgrid_config.h>
 
 #include <xbt/base.h>
+#include <xbt/dynar.h>
 #include <xbt/mmalloc.h>
 
 #ifdef HAVE_MC
@@ -50,14 +51,14 @@ namespace mc {
 
 struct IgnoredRegion {
   std::uint64_t addr;
-  size_t size;
+  std::size_t size;
 };
 
 struct IgnoredHeapRegion {
   int block;
   int fragment;
   void *address;
-  size_t size;
+  std::size_t size;
 };
 
 /** Representation of a process

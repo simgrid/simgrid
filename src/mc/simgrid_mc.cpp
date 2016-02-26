@@ -27,6 +27,7 @@
 #endif
 
 #include <xbt/log.h>
+#include <xbt/sysdep.h>
 #include <xbt/system_error.hpp>
 
 #include "simgrid/sg_config.h"

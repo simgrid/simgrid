@@ -10,6 +10,7 @@
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/mc_xbt.hpp"
 
+#include <xbt/dynar.h>
 #include <xbt/sysdep.h>
 
 namespace simgrid {

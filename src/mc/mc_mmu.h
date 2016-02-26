@@ -8,8 +8,10 @@
 #define SIMGRID_MC_MMU_H
 
 #include <cstdint>
+#include <cstddef>
 
 #include <xbt/asserts.h>
+#include <xbt/base.h> // xbt_pagesize...
 #include <xbt/misc.h>
 
 #include <simgrid_config.h>

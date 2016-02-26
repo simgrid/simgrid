@@ -24,6 +24,9 @@
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
+#include <xbt/dynar.h>
+#include <xbt/log.h>
+#include <xbt/base.h>
 #include <xbt/mmalloc.h>
 
 #include "src/mc/mc_object_info.h"
