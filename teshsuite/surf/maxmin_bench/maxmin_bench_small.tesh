@@ -1,0 +1,5 @@
+#! ./tesh
+
+! expect return 0
+# ! output display
+$ ./maxmin_bench small 1 test

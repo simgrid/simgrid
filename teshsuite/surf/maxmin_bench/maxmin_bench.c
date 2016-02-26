@@ -141,9 +141,12 @@ int main(int argc, char **argv)
     return -2;
   }
 
+  
   //How many times?
   testcount=atoi(argv[2]);
   
+  srand(testcount);
+
   //Show me everything (debug or performance)!
   mode=0;
   if(argc>=4 && strcmp(argv[3],"test")==0)
