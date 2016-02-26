@@ -702,6 +702,7 @@ set(headers_to_install
   include/xbt/swag.h
   include/xbt/synchro_core.h
   include/xbt/sysdep.h
+  include/xbt/system_error.hpp
   include/xbt/virtu.h
   include/xbt/xbt_os_thread.h
   include/xbt/xbt_os_time.h
