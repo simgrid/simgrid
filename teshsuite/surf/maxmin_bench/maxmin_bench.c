@@ -98,7 +98,7 @@ void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_li
       xbt_assert(k<0 || j<=k);
       if(j>l)
 	l=j;
-      sprintf(buf,"(%i):%i/%i ",i,j,k);
+      sprintf(buf+strlen(buf),"(%i):%i/%i ",i,j,k);
       lmm_constraint_concurrency_maximum_reset(cnst[i]);
       xbt_assert(!lmm_constraint_concurrency_maximum_get(cnst[i]));
       if(i%10==9) {
