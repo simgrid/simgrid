@@ -19,6 +19,7 @@
 #include <xbt/log.h>
 #include <xbt/automaton.h>
 #include <xbt/automaton.hpp>
+#include <xbt/system_error.hpp>
 
 #include "simgrid/sg_config.h"
 
@@ -83,7 +84,7 @@ void ModelChecker::start()
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
   if (sigprocmask(SIG_BLOCK, &set, nullptr) == -1)
-    throw std::system_error(errno, std::system_category());
+    throw simgrid::xbt::errno_error(errno);
 
   sigset_t full_set;
   sigfillset(&full_set);
@@ -97,7 +98,7 @@ void ModelChecker::start()
 
   int signal_fd = signalfd(-1, &set, 0);
   if (signal_fd == -1)
-    throw std::system_error(errno, std::system_category());
+    throw simgrid::xbt::errno_error(errno);
 
   struct pollfd* signalfd_pollfd = &fds_[SIGNAL_FD_INDEX];
   signalfd_pollfd->fd = signal_fd;
@@ -178,7 +179,7 @@ void ModelChecker::resume(simgrid::mc::Process& process)
 {
   int res = process.send_message(MC_MESSAGE_CONTINUE);
   if (res)
-    throw std::system_error(res, std::system_category());
+    throw simgrid::xbt::errno_error(res);
   process.cache_flags = (mc_process_cache_flags_t) 0;
 }
 
@@ -189,7 +190,7 @@ void throw_socket_error(int fd)
   socklen_t errlen = sizeof(error);
   if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) == -1)
     error = errno;
-  throw std::system_error(error, std::system_category());
+  throw simgrid::xbt::errno_error(errno);
 }
 
 bool ModelChecker::handle_message(char* buffer, ssize_t size)
@@ -307,7 +308,7 @@ bool ModelChecker::handle_events()
     case EINTR:
       continue;
     default:
-      throw std::system_error(errno, std::system_category());
+      throw simgrid::mc::errno_error(errno);
     }
   }
 
@@ -315,7 +316,7 @@ bool ModelChecker::handle_events()
     if (socket_pollfd->revents & POLLIN) {
       ssize_t size = MC_receive_message(socket_pollfd->fd, buffer, sizeof(buffer), MSG_DONTWAIT);
       if (size == -1 && errno != EAGAIN)
-        throw std::system_error(errno, std::system_category());
+        throw simgrid::mc::errno_error(errno);
       return handle_message(buffer, size);
     }
     if (socket_pollfd->revents & POLLERR) {
@@ -356,7 +357,7 @@ void ModelChecker::handle_signals()
       if (errno == EINTR)
         continue;
       else
-        throw std::system_error(errno, std::system_category());
+        throw simgrid::mc::errno_error(errno);
     } else if (size != sizeof(info))
         return throw std::runtime_error(
           "Bad communication with model-checked application");
@@ -381,7 +382,7 @@ void ModelChecker::handle_waitpid()
           break;
       } else {
         XBT_ERROR("Could not wait for pid");
-        throw std::system_error(errno, std::system_category());
+        throw simgrid::mc::errno_error(errno);
       }
     }
 

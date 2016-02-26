@@ -48,7 +48,7 @@ pid_t do_fork(F f)
 {
   pid_t pid = fork();
   if (pid < 0)
-    throw new std::system_error(errno, std::generic_category());
+    throw simgrid::mc::errno_error(errno, "Could not fork model-checked process");
   if (pid != 0)
     return pid;
 
@@ -73,19 +73,17 @@ int exec_model_checked(int socket, char** argv)
   sigset_t mask;
   sigemptyset (&mask);
   if (sigprocmask(SIG_SETMASK, &mask, nullptr) < 0)
-    throw new std::system_error(errno, std::generic_category(), "sigprocmask");
+    throw simgrid::mc::errno_error(errno, "Could not unblock signals");
   if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0)
-    throw new std::system_error(errno, std::generic_category(), "PR_SET_PDEATHSIG");
+    throw simgrid::mc::errno_error(errno, "Could not PR_SET_PDEATHSIG");
 #endif
 
   int res;
 
   // Remove CLOEXEC in order to pass the socket to the exec-ed program:
   int fdflags = fcntl(socket, F_GETFD, 0);
-  if (fdflags == -1)
-    throw new std::system_error(errno, std::generic_category(), "F_GETFD");
-  if (fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) == -1)
-    throw new std::system_error(errno, std::generic_category(), "Remove FD_CLOEXEC");
+  if (fdflags == -1 || fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) == -1)
+    throw simgrid::xbt::system_error(errno, "Could not remove CLOEXEC for socket");
 
   // Set environment:
   setenv(MC_ENV_VARIABLE, "1", 1);
@@ -118,7 +116,7 @@ std::pair<pid_t, int> create_model_checked(char** argv)
   int sockets[2];
   res = socketpair(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets);
   if (res == -1)
-    throw new std::system_error(errno, std::generic_category(), "socketpair");
+    throw simgrid::xbt::system_error(errno, "Could not create socketpair");
 
   pid_t pid = do_fork([&] {
     close(sockets[1]);
