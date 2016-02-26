@@ -601,6 +601,7 @@ set(MC_SRC
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.cpp
   src/mc/mc_ignore.h
+  src/mc/mc_mmalloc.h
   src/mc/mc_liveness.h
   src/mc/LocationList.hpp
   src/mc/LocationList.cpp
