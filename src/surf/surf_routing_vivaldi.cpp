@@ -35,7 +35,7 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]",
       src->name(), src->id(), dst->name(), dst->id());
 
-  if(src->getRcType() == SURF_NETWORK_ELEMENT_AS) {
+  if(src->isAS()) {
     char *src_name = ROUTER_PEER(src->name());
     char *dst_name = ROUTER_PEER(dst->name());
     route->gw_src = (sg_netcard_t) xbt_lib_get_or_null(as_router_lib, src_name, ROUTING_ASR_LEVEL);
@@ -48,7 +48,7 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   xbt_dynar_t src_ctn, dst_ctn;
   char *tmp_src_name, *tmp_dst_name;
 
-  if(src->getRcType() == SURF_NETWORK_ELEMENT_HOST){
+  if(src->isHost()){
     tmp_src_name = HOST_PEER(src->name());
 
     if ((int)xbt_dynar_length(upDownLinks)>src->id()) {
@@ -63,7 +63,7 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     if (src_ctn == nullptr)
       src_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(src->name())->extension(COORD_HOST_LEVEL);
   }
-  else if(src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_AS){
+  else if(src->isRouter() || src->isAS()){
     tmp_src_name = ROUTER_PEER(src->name());
     src_ctn = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_src_name, COORD_ASR_LEVEL);
   }
@@ -71,7 +71,7 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     THROW_IMPOSSIBLE;
   }
 
-  if(dst->getRcType() == SURF_NETWORK_ELEMENT_HOST){
+  if(dst->isHost()){
     tmp_dst_name = HOST_PEER(dst->name());
 
     if ((int)xbt_dynar_length(upDownLinks)>dst->id()) {
@@ -88,7 +88,7 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
       dst_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(dst->name())
         ->extension(COORD_HOST_LEVEL);
   }
-  else if(dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || dst->getRcType() == SURF_NETWORK_ELEMENT_AS){
+  else if(dst->isRouter() || dst->isAS()){
     tmp_dst_name = ROUTER_PEER(dst->name());
     dst_ctn = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_dst_name, COORD_ASR_LEVEL);
   }

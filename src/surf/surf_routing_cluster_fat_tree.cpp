@@ -66,7 +66,8 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
 
   std::map<int, FatTreeNode*>::const_iterator tempIter;
   
-if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER) return;
+  if (dst->isRouter() || src->isRouter())
+    return;
 
   /* Let's find the source and the destination in our internal structure */
   tempIter = this->computeNodes_.find(src->id());

@@ -115,7 +115,7 @@ namespace simgrid {
       XBT_VERB("torus_get_route_and_latency from '%s'[%d] to '%s'[%d]",
           src->name(), src->id(), dst->name(), dst->id());
 
-      if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER)
+      if (dst->isRouter() || src->isRouter())
         return;
 
       if ((src->id() == dst->id()) && has_loopback_) {

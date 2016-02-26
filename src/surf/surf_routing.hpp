@@ -47,12 +47,13 @@ public:
   virtual void setId(int id)=0;
   virtual char *name()=0;
   virtual As *containingAS()=0; // This is the AS in which I am
-  virtual e_surf_network_element_type_t getRcType()=0;
+  virtual bool isAS()=0;
+  virtual bool isHost()=0;
+  virtual bool isRouter()=0;
 };
 
 /** @ingroup SURF_routing_interface
  * @brief Network Autonomous System (AS)
- * @details [TODO]
  */
 class As {
 public:
@@ -126,7 +127,11 @@ public:
   void setId(int id) override {id_ = id;}
   char *name()       override {return name_;}
   As *containingAS() override {return containingAS_;}
-  e_surf_network_element_type_t getRcType() override {return componentType_;}
+
+  bool isAS()        override {return componentType_ == SURF_NETWORK_ELEMENT_AS;}
+  bool isHost()      override {return componentType_ == SURF_NETWORK_ELEMENT_HOST;}
+  bool isRouter()    override {return componentType_ == SURF_NETWORK_ELEMENT_ROUTER;}
+
 private:
   int id_ = -1;
   char *name_;

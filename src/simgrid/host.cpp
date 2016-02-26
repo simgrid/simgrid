@@ -68,7 +68,7 @@ xbt_dynar_t sg_hosts_as_dynar(void)
   const char* name = nullptr;
   simgrid::s4u::Host* host = nullptr;
   xbt_dict_foreach(host_list, cursor, name, host)
-    if (host && host->pimpl_netcard && host->pimpl_netcard->getRcType() == SURF_NETWORK_ELEMENT_HOST)
+    if (host && host->pimpl_netcard && host->pimpl_netcard->isHost())
        xbt_dynar_push(res, &host);
   return res;
 }

@@ -131,7 +131,7 @@ int main(int argc, char **argv)
     // Routers
     xbt_lib_foreach(as_router_lib, cursor_src, key, value1) {
       value1 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, key, ROUTING_ASR_LEVEL);
-      if(value1->getRcType() == SURF_NETWORK_ELEMENT_ROUTER) {
+      if(value1->isRouter()) {
         printf("  <router id=\"%s\"/>\n",key);
       }
     }
@@ -175,7 +175,7 @@ int main(int argc, char **argv)
       }
       xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
         value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-        if(value2->getRcType() == SURF_NETWORK_ELEMENT_ROUTER){
+        if(value2->isRouter()){
           printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
           xbt_dynar_t route=NULL;
           routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
@@ -190,10 +190,10 @@ int main(int argc, char **argv)
 
     xbt_lib_foreach(as_router_lib, cursor_src, src, value1){ // Routes from router
       value1 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,src,ROUTING_ASR_LEVEL);
-      if (value1->getRcType() == SURF_NETWORK_ELEMENT_ROUTER){
+      if (value1->isRouter()){
         xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
           value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
-          if(value2->getRcType() == SURF_NETWORK_ELEMENT_ROUTER){
+          if(value2->isRouter()){
             printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
             xbt_dynar_t route=NULL;
             routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
