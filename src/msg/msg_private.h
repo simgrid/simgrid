@@ -162,6 +162,11 @@ XBT_PRIVATE void MSG_post_create_environment(void);
 
 XBT_PRIVATE void MSG_host_add_task(msg_host_t host, msg_task_t task);
 XBT_PRIVATE void MSG_host_del_task(msg_host_t host, msg_task_t task);
+/* @brief MSG_mailbox_free - release a mailbox from the memory.
+ * Releases a mailbox from the memory but does not remove it from the dictionary.
+ * @param   mailbox  The mailbox to release.
+ */
+XBT_PRIVATE void MSG_mailbox_free(void *mailbox);
 
 /********** Tracing **********/
 /* declaration of instrumentation functions from msg_task_instr.c */

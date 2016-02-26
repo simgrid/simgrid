@@ -15,7 +15,6 @@ set(EXTRA_DIST
   src/include/surf/surf.h
   src/include/xbt/win32_ucontext.h
   src/include/xbt/wine_dbghelp.h
-  src/msg/msg_mailbox.h
   src/msg/msg_private.h
   src/portable.h
   src/probes.tp

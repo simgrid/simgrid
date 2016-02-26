@@ -6,7 +6,6 @@
 
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
-#include "src/msg/msg_mailbox.h"
 
 #include "simgrid/s4u/async.hpp"
 

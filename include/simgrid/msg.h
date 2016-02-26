@@ -490,20 +490,57 @@ XBT_PUBLIC(int) MSG_task_listen_from(const char *alias);
 XBT_PUBLIC(void) MSG_task_set_category (msg_task_t task, const char *category);
 XBT_PUBLIC(const char *) MSG_task_get_category (msg_task_t task);
 
-/************************** Task handling ************************************/
-XBT_PUBLIC(msg_error_t)
-    MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task,
-                         msg_host_t host, double timeout);
+/************************** Mailbox handling ************************************/
+/* @brief MSG_mailbox_new - create a new mailbox.
+ * Creates a new mailbox identified by the key specified by the parameter alias and add it in the global dictionary.
+ * @param  alias  The alias of the mailbox to create.
+ * @return        The newly created mailbox.
+ */
+XBT_PUBLIC(msg_mailbox_t) MSG_mailbox_new(const char *alias);
 
-XBT_PUBLIC(msg_error_t)
-    MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *task,
-                                     msg_host_t host, double timeout, double rate);
+/* @brief MSG_mailbox_get_by_alias - get a mailbox from its alias.
+ * Returns the mailbox associated with the key specified by the parameter alias. If the mailbox does not exists,
+ * the function creates it.
+ * @param   alias    The alias of the mailbox to return.
+ * @return           The mailbox associated with the alias specified as parameter or a new one if the key doesn't match.
+ */
+XBT_PUBLIC(msg_mailbox_t) MSG_mailbox_get_by_alias(const char *alias);
 
-XBT_PUBLIC(msg_error_t)
-    MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task,
-                             double timeout);
+/* @brief MSG_mailbox_is_empty - test if a mailbox is empty.
+ * Tests if a mailbox is empty (contains no msg task).
+ * @param   mailbox  The mailbox to get test.
+ * @return           1 if the mailbox is empty, 0 otherwise.
+ */
+XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
 
+/* @brief MSG_mailbox_set_async - set a mailbox as eager
+ * Sets the mailbox to a permanent receiver mode. Messages sent to this mailbox will then be sent just after the send
+ * is issued, without waiting for the corresponding receive.
+ * This call should be done before issuing any receive, and on the receiver's side only
+ * @param alias    The alias of the mailbox to modify.
+ */
 XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
+
+/* @brief MSG_mailbox_get_head - get the task at the head of a mailbox.
+ * Returns the task at the head of the mailbox. This function does not remove the task from the mailbox.
+ * @param   mailbox  The mailbox concerned by the operation.
+ * @return           The task at the head of the mailbox.
+ */
+XBT_PUBLIC(msg_task_t) MSG_mailbox_get_head(msg_mailbox_t mailbox);
+
+/* @brief MSG_mailbox_get_count_host_waiting_tasks
+ * Return the number of tasks waiting to be received in a mailbox and sent by a host.
+ * @param  mailbox  The mailbox concerned by the operation.
+ * @param  host     The host containing the processes that sended the tasks.
+ * @return          The number of tasks in the mailbox specified by the parameter mailbox and sended by all the
+ *                  processes located on the host specified by the parameter host.
+ */
+XBT_PUBLIC(int) MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox, msg_host_t host);
+XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task, msg_host_t host,
+                                                 double timeout);
+XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *task, msg_host_t host,
+                                                         double timeout, double rate);
+XBT_PUBLIC(msg_error_t) MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task, double timeout);
 
 
 /************************** Action handling **********************************/

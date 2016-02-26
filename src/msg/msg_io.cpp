@@ -6,7 +6,6 @@
 
 #include "msg_private.h"
 #include "xbt/log.h"
-#include "msg_mailbox.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
                                 "Logging specific to MSG (io)");

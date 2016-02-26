@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "msg_private.h"
-#include "msg_mailbox.h"
 #include "mc/mc.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"

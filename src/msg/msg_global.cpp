@@ -7,7 +7,6 @@
 #include "simgrid/msg.h"
 #include "instr/instr_interface.h"
 #include "msg_private.h"
-#include "msg_mailbox.h"
 #include "mc/mc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
