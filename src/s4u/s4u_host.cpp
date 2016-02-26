@@ -22,7 +22,6 @@
 
 int MSG_HOST_LEVEL;
 int SIMIX_HOST_LEVEL;
-int ROUTING_HOST_LEVEL;
 int USER_HOST_LEVEL;
 
 namespace simgrid {
