@@ -6,8 +6,11 @@
 
 #include <assert.h>
 
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
+#include <xbt/fifo.h>
+
 #include "src/simix/smx_private.h"
-#include "xbt/fifo.h"
 #include "src/mc/mc_state.h"
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_private.h"

@@ -4,11 +4,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstring>
+
 #include <unistd.h>
 #include <sys/wait.h>
 
-#include <xbt/dynar.h>
 #include <xbt/automaton.h>
+#include <xbt/dynar.h>
+#include <xbt/fifo.h>
+#include <xbt/log.h>
+#include <xbt/parmap.h>
+#include <xbt/sysdep.h>
 
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_liveness.h"
@@ -154,7 +160,7 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
       unsigned int cursor = 0;
       xbt_automaton_propositional_symbol_t p = NULL;
       xbt_dynar_foreach(_mc_property_automaton->propositional_symbols, cursor, p) {
-        if (strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
+        if (std::strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
           return (int) xbt_dynar_get_as(atomic_propositions_values, cursor, int);
       }
       return -1;

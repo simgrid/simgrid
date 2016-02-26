@@ -17,8 +17,6 @@
 #ifndef SIMGRID_MC_RECORD_H
 #define SIMGRID_MC_RECORD_H
 
-#include <stdbool.h>
-
 #include <xbt/base.h>
 
 SG_BEGIN_DECL()

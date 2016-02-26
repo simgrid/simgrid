@@ -4,7 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <assert.h>
+#include <cassert>
+
+#include <cstdio>
+
+#include <xbt/log.h>
+#include <xbt/fifo.h>
+#include <xbt/sysdep.h>
 
 #include "src/mc/mc_state.h"
 #include "src/mc/mc_request.h"
@@ -142,12 +148,12 @@ int MC_modelcheck_safety(void)
         );
 
         if (dot_output != NULL)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
+          std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
 
       } else {
 
         if (dot_output != NULL)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
+          std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
 
       }
 

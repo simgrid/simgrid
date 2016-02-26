@@ -7,15 +7,16 @@
 #ifndef SIMGRID_MC_PROCESS_H
 #define SIMGRID_MC_PROCESS_H
 
+#include <cstdint>
+#include <cstddef>
+
 #include <type_traits>
-
-#include <sys/types.h>
-
 #include <vector>
 #include <memory>
 
-#include "simgrid_config.h"
 #include <sys/types.h>
+
+#include <simgrid_config.h>
 
 #include <xbt/base.h>
 #include <xbt/mmalloc.h>
@@ -32,7 +33,6 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_base.h"
-#include "src/mc/mc_mmalloc.h" // std_heap
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/ObjectInformation.hpp"

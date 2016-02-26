@@ -19,7 +19,6 @@
 #include "src/mc/mc_client.h"
 
 // We won't need those once the separation MCer/MCed is complete:
-#include "src/mc/mc_mmalloc.h"
 #include "src/mc/mc_ignore.h"
 #include "src/mc/mc_private.h" // MC_deadlock_check()
 #include "src/mc/mc_smx.h"

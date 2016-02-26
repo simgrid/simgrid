@@ -4,7 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdbool.h>
+#include <cstddef>
+
+#include <memory>
+#include <utility>
+
+#include <xbt/asserts.h>
+#include <xbt/sysdep.h>
 
 #include "src/internal_config.h"
 #include "src/smpi/private.h"

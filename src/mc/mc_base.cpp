@@ -4,13 +4,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <assert.h>
+#include <cassert>
+
+#include <simgrid_config.h>
+
+#include <xbt/log.h>
+#include <xbt/asserts.h>
+#include <xbt/dynar.h>
 
 #include <simgrid/simix.h>
 
 #include "src/mc/mc_base.h"
 #include "src/simix/smx_private.h"
-#include "src/mc/mc_record.h"
 #include "src/mc/mc_replay.h"
 #include "mc/mc.h"
 #include "src/mc/mc_protocol.h"

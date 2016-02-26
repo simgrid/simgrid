@@ -28,6 +28,8 @@
 
 #include <xbt/base.h>
 
+#include <libunwind.h>
+
 #include "src/mc/Process.hpp"
 
 SG_BEGIN_DECL()

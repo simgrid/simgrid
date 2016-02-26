@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include <xbt/misc.h>
+#include <xbt/misc.h> // xbt_pagesize and friends
 #include <xbt/asserts.h>
 
 #include "src/mc/AddressSpace.hpp"
