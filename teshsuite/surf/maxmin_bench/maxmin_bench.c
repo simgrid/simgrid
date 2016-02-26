@@ -123,7 +123,7 @@ int main(int argc, char **argv)
   int i;
   
   if(argc<3) {
-    printf("Syntax: <small|medium|big|huge> <count> [test|perf]\n");
+    printf("Syntax: <small|medium|big|huge> <count> [test|debug|perf]\n");
     return -1;
   }
 
@@ -148,13 +148,19 @@ int main(int argc, char **argv)
   mode=0;
   if(argc>=4 && strcmp(argv[3],"test")==0)
     mode=1;
-  if(argc>=4 && strcmp(argv[3],"perf")==0)
+  if(argc>=4 && strcmp(argv[3],"debug")==0)
     mode=2;
+  if(argc>=4 && strcmp(argv[3],"perf")==0)
+    mode=3;
 
 
   if(mode==1)
+    xbt_log_control_set("surf/maxmin.threshold:DEBUG surf/maxmin.fmt:\'[%r]: [%c/%p] %m%n\'\
+                         surf.threshold:DEBUG surf.fmt:\'[%r]: [%c/%p] %m%n\' ");
+  
+  if(mode==2)
     xbt_log_control_set("surf/maxmin.threshold:DEBUG surf.threshold:DEBUG");
-
+    
   nb_cnst= TestClasses[testclass][0];
   nb_var= TestClasses[testclass][1];
   pw_base_limit= TestClasses[testclass][2];
@@ -180,7 +186,7 @@ int main(int argc, char **argv)
   printf("%ix One shot execution time for a total of %d constraints, "
          "%d variables with %d active constraint each, concurrency in [%i,%i] and max concurrency share %i\n",
 	 testcount,nb_cnst, nb_var, nb_elem, (1<<pw_base_limit), (1<<pw_base_limit)+(1<<pw_max_limit), max_share);
-  if(mode==2)
+  if(mode==3)
  	 printf("Execution time: %g +- %g  microseconds \n",mean_date, stdev_date);
   return 0;
 }
