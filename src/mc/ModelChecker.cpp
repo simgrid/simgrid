@@ -308,7 +308,7 @@ bool ModelChecker::handle_events()
     case EINTR:
       continue;
     default:
-      throw simgrid::mc::errno_error(errno);
+      throw simgrid::xbt::errno_error(errno);
     }
   }
 
@@ -316,7 +316,7 @@ bool ModelChecker::handle_events()
     if (socket_pollfd->revents & POLLIN) {
       ssize_t size = MC_receive_message(socket_pollfd->fd, buffer, sizeof(buffer), MSG_DONTWAIT);
       if (size == -1 && errno != EAGAIN)
-        throw simgrid::mc::errno_error(errno);
+        throw simgrid::xbt::errno_error(errno);
       return handle_message(buffer, size);
     }
     if (socket_pollfd->revents & POLLERR) {
@@ -357,7 +357,7 @@ void ModelChecker::handle_signals()
       if (errno == EINTR)
         continue;
       else
-        throw simgrid::mc::errno_error(errno);
+        throw simgrid::xbt::errno_error(errno);
     } else if (size != sizeof(info))
         return throw std::runtime_error(
           "Bad communication with model-checked application");
@@ -382,7 +382,7 @@ void ModelChecker::handle_waitpid()
           break;
       } else {
         XBT_ERROR("Could not wait for pid");
-        throw simgrid::mc::errno_error(errno);
+        throw simgrid::xbt::errno_error(errno);
       }
     }
 

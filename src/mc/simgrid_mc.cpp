@@ -27,6 +27,7 @@
 #endif
 
 #include <xbt/log.h>
+#include <xbt/system_error.hpp>
 
 #include "simgrid/sg_config.h"
 #include "src/xbt_modinter.h"
@@ -48,7 +49,7 @@ pid_t do_fork(F f)
 {
   pid_t pid = fork();
   if (pid < 0)
-    throw simgrid::mc::errno_error(errno, "Could not fork model-checked process");
+    throw simgrid::xbt::errno_error(errno, "Could not fork model-checked process");
   if (pid != 0)
     return pid;
 
@@ -73,9 +74,9 @@ int exec_model_checked(int socket, char** argv)
   sigset_t mask;
   sigemptyset (&mask);
   if (sigprocmask(SIG_SETMASK, &mask, nullptr) < 0)
-    throw simgrid::mc::errno_error(errno, "Could not unblock signals");
+    throw simgrid::xbt::errno_error(errno, "Could not unblock signals");
   if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0)
-    throw simgrid::mc::errno_error(errno, "Could not PR_SET_PDEATHSIG");
+    throw simgrid::xbt::errno_error(errno, "Could not PR_SET_PDEATHSIG");
 #endif
 
   int res;
@@ -83,7 +84,7 @@ int exec_model_checked(int socket, char** argv)
   // Remove CLOEXEC in order to pass the socket to the exec-ed program:
   int fdflags = fcntl(socket, F_GETFD, 0);
   if (fdflags == -1 || fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) == -1)
-    throw simgrid::xbt::system_error(errno, "Could not remove CLOEXEC for socket");
+    throw simgrid::xbt::errno_error(errno, "Could not remove CLOEXEC for socket");
 
   // Set environment:
   setenv(MC_ENV_VARIABLE, "1", 1);
@@ -116,7 +117,7 @@ std::pair<pid_t, int> create_model_checked(char** argv)
   int sockets[2];
   res = socketpair(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets);
   if (res == -1)
-    throw simgrid::xbt::system_error(errno, "Could not create socketpair");
+    throw simgrid::xbt::errno_error(errno, "Could not create socketpair");
 
   pid_t pid = do_fork([&] {
     close(sockets[1]);
