@@ -208,9 +208,7 @@
  *   #define va_copy(ap2,ap) ap2 = ap
  */
 /* #define NEED_ASPRINTF   */
-/* #define NEED_ASNPRINTF  */
 /* #define NEED_VASPRINTF  */
-/* #define NEED_VASNPRINTF */
 
 
 /* ============================================= */
@@ -286,7 +284,7 @@ int vasprintf(char **ptr, const char *fmt, va_list ap)
   {
     va_list ap2;
     va_copy(ap2, ap);           /* don't consume the original ap, we'll need it again */
-    str_l = portable_vsnprintf(NULL, (size_t) 0, fmt, ap2);     /*get required size */
+    str_l = vsnprintf(NULL, (size_t) 0, fmt, ap2);     /*get required size */
     va_end(ap2);
   }
   assert(str_l >= 0);           /* possible integer overflow if str_m > INT_MAX */
@@ -295,77 +293,12 @@ int vasprintf(char **ptr, const char *fmt, va_list ap)
     errno = ENOMEM;
     str_l = -1;
   } else {
-    int str_l2 = portable_vsnprintf(*ptr, str_m, fmt, ap);
+    int str_l2 = vsnprintf(*ptr, str_m, fmt, ap);
     assert(str_l2 == str_l);
   }
   return str_l;
 }
 #endif
-
-#if defined(NEED_ASNPRINTF)
-int asnprintf(char **ptr, size_t str_m, const char *fmt, /*args */ ...)
-{
-  va_list ap;
-  int str_l;
-
-  *ptr = NULL;
-  va_start(ap, fmt);            /* measure the required size */
-  str_l = portable_vsnprintf(NULL, (size_t) 0, fmt, ap);
-  va_end(ap);
-  assert(str_l >= 0);           /* possible integer overflow if str_m > INT_MAX */
-  if ((size_t) str_l + 1 < str_m)
-    str_m = (size_t) str_l + 1; /* truncate */
-  /* if str_m is 0, no buffer is allocated, just set *ptr to NULL */
-  if (str_m == 0) {             /* not interested in resulting string, just return size */
-  } else {
-    *ptr = (char *) xbt_malloc(str_m);
-    if (*ptr == NULL) {
-      errno = ENOMEM;
-      str_l = -1;
-    } else {
-      int str_l2;
-      va_start(ap, fmt);
-      str_l2 = portable_vsnprintf(*ptr, str_m, fmt, ap);
-      va_end(ap);
-      assert(str_l2 == str_l);
-    }
-  }
-  return str_l;
-}
-#endif
-
-#if defined(NEED_VASNPRINTF)
-int vasnprintf(char **ptr, size_t str_m, const char *fmt, va_list ap)
-{
-  int str_l;
-
-  *ptr = NULL;
-  {
-    va_list ap2;
-    va_copy(ap2, ap);           /* don't consume the original ap, we'll need it again */
-    str_l = portable_vsnprintf(NULL, (size_t) 0, fmt, ap2);     /*get required size */
-    va_end(ap2);
-  }
-  assert(str_l >= 0);           /* possible integer overflow if str_m > INT_MAX */
-  if ((size_t) str_l + 1 < str_m)
-    str_m = (size_t) str_l + 1; /* truncate */
-  /* if str_m is 0, no buffer is allocated, just set *ptr to NULL */
-  if (str_m == 0) {             /* not interested in resulting string, just return size */
-  } else {
-    *ptr = (char *) xbt_malloc(str_m);
-    if (*ptr == NULL) {
-      errno = ENOMEM;
-      str_l = -1;
-    } else {
-      int str_l2 = portable_vsnprintf(*ptr, str_m, fmt, ap);
-      assert(str_l2 == str_l);
-    }
-  }
-  return str_l;
-}
-#endif
-
-
 
 char *bvprintf(const char *fmt, va_list ap)
 {
