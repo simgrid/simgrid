@@ -7,22 +7,17 @@
 #ifndef _MC_MC_H
 #define _MC_MC_H
 
+#include <simgrid_config.h>
+#include <xbt/base.h>
+#include <xbt/misc.h>
+#include <simgrid/simix.h>
+#include <simgrid/modelchecker.h> /* our public interface (and definition of HAVE_MC) */
+
 #ifdef _XBT_WIN32
 #  include <xbt/win32_ucontext.h>     /* context relative declarations */
 #else
 #  include <ucontext.h>           /* context relative declarations */
 #endif
-
-
-#include "xbt/base.h"
-#include "xbt/misc.h"
-#include "xbt/fifo.h"
-#include "xbt/dict.h"
-#include "xbt/function_types.h"
-#include "simgrid/simix.h"
-#include "simgrid/modelchecker.h" /* our public interface (and definition of HAVE_MC) */
-#include "xbt/automaton.h"
-#include "xbt/dynar.h"
 
 /* Maximum size of the application heap.
  *

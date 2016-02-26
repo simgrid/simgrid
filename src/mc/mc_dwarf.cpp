@@ -20,10 +20,10 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_dwarf.hpp"
 
+#include "src/mc/mc_object_info.h"
 #include "src/mc/Process.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"

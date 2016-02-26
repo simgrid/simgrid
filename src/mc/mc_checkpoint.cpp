@@ -28,7 +28,6 @@
 #include <mc/mc.h>
 
 #include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_mmu.h"
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_protocol.h"

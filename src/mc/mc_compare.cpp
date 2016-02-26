@@ -13,7 +13,6 @@
 #include <xbt/sysdep.h>
 
 #include "src/internal_config.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_liveness.h"
 #include "src/mc/mc_private.h"

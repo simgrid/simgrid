@@ -4,7 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstddef>
+#include <cstdint>
 
+#include <vector>
+
+#include <xbt/misc.h>
+#include <xbt/asserts.h>
+
+#include "src/mc/AddressSpace.hpp"
 #include "src/mc/ChunkedData.hpp"
 
 #define SOFT_DIRTY_BIT_NUMBER 55

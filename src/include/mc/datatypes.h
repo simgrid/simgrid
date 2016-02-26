@@ -7,29 +7,22 @@
 #ifndef MC_DATATYPE_H
 #define MC_DATATYPE_H
 
+#include <simgrid_config.h>
+#include <xbt/base.h>
+
 #ifdef _XBT_WIN32
 #  include <xbt/win32_ucontext.h>     /* context relative declarations */
 #else
 #  include <ucontext.h>           /* context relative declarations */
 #endif
 
-
-#include "xbt/misc.h"
-#include "xbt/swag.h"
-#include "xbt/fifo.h"
-
 #if HAVE_MC
-#include <libunwind.h>
 #include <dwarf.h>
 #endif 
 
 SG_BEGIN_DECL()
 
-/******************************* Transitions **********************************/
-
 typedef struct s_mc_transition *mc_transition_t;
-
-/*********** Structures for snapshot comparison **************************/
 
 typedef struct s_stack_region{
   void *address;
@@ -39,7 +32,6 @@ typedef struct s_stack_region{
   int process_index;
 }s_stack_region_t, *stack_region_t;
 
-/************ DWARF structures *************/
-
 SG_END_DECL()
+
 #endif                          /* _MC_MC_H */

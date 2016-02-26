@@ -9,6 +9,8 @@
 #include <ctype.h>
 #include <mpi.h>
 
+#include <xbt/str.h>
+
 #define ITERATIONS         10
 
 #define USAGE_ERROR        1

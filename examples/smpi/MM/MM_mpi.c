@@ -9,10 +9,10 @@
  *
  */
 
-
 #include "Matrix_init.h"
 #include "2.5D_MM.h"
 #include "xbt/log.h"
+#include <xbt/str.h>
 
 /*int sched_setaffinity(pid_t pid, size_t cpusetsize, cpu_set_t *mask);
   int sched_getaffinity(pid_t pid, size_t cpusetsize, cpu_set_t *mask);
