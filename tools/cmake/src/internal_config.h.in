@@ -160,9 +160,6 @@
 /* Define to 1 if you have the <windows.h> header file. */
 #cmakedefine HAVE_WINDOWS_H @HAVE_WINDOWS_H@
 
-/* enable the asprintf replacement */
-#cmakedefine NEED_ASPRINTF @NEED_ASPRINTF@
-
 /* enable the vasprintf replacement */
 #cmakedefine NEED_VASPRINTF @NEED_VASPRINTF@
 

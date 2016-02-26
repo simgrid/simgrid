@@ -40,37 +40,15 @@ XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
 /* snprintf related functions */
 /** @addtogroup XBT_str
   * @{ */
-/** @brief print to allocated string (reimplemented when not provided by the system)
- *
- * The functions asprintf() and vasprintf() are analogues of
- * sprintf() and vsprintf(), except that they allocate a string large
- * enough to hold the output including the terminating null byte, and
- * return a pointer to it via the first parameter.  This pointer
- * should be passed to free(3) to release the allocated storage when
- * it is no longer needed.
- */
-#if defined(SIMGRID_NEED_ASPRINTF)||defined(DOXYGEN)
-XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt,   /*args */
-                         ...) XBT_ATTRIB_PRINTF(2, 3);
-#endif
-/** @brief print to allocated string (reimplemented when not provided by the system)
- *
- * See asprintf()
- */
-#if defined(SIMGRID_NEED_VASPRINTF)||defined(DOXYGEN)
-XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
-#endif
 
 /** @brief print to allocated string
  *
- * Works just like vasprintf(), but returns a pointer to the newly
- * created string, or aborts on error.
+ * Similar to vasprintf(), but returns a pointer to the newly created string (or aborts on error).
  */
 XBT_PUBLIC(char *) bvprintf(const char *fmt, va_list ap);
 /** @brief print to allocated string
  *
- * Works just like asprintf(), but returns a pointer to the newly
- * created string, or aborts on error.
+ * Similar to asprintf(), but returns a pointer to the newly created string (or aborts on error).
  */
 XBT_PUBLIC(char *) bprintf(const char *fmt, ...) XBT_ATTRIB_PRINTF(1, 2);
 /** @} */

@@ -56,15 +56,6 @@ XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 #endif
 
-/* these ones live in str.h, but redeclare them here so that we do
-   not need to load the whole str.h and its heavy dependencies */
-#ifndef __USE_GNU               /* do not redeclare existing headers */
-XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt,   /*args */
-                         ...) XBT_ATTRIB_PRINTF(2, 3);
-XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
-#endif
-XBT_PUBLIC(char *) bprintf(const char *fmt, ...) XBT_ATTRIB_PRINTF(1, 2);
-
 /** @addtogroup XBT_syscall
  *  @brief Malloc and associated functions, killing the program on error (with \ref XBT_ex)
  *

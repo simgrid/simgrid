@@ -34,33 +34,28 @@ static void log_timed_action (const char *const *action, double clock){
 }
 
 
-static xbt_dynar_t get_reqq_self(){
-   char * key;
-   
-   int size = asprintf(&key, "%d", smpi_process_index());
-   if(size==-1)
-     xbt_die("could not allocate memory for asprintf");
+static xbt_dynar_t get_reqq_self()
+{
+   char * key = bprintf("%d", smpi_process_index());
    xbt_dynar_t dynar_mpi_request = (xbt_dynar_t) xbt_dict_get(reqq, key);
    free(key);
  
    return dynar_mpi_request;
 }
 
-static void set_reqq_self(xbt_dynar_t mpi_request){
-   char * key;
-   
-   int size = asprintf(&key, "%d", smpi_process_index());
-   if(size==-1)
-     xbt_die("could not allocate memory for asprintf");
+static void set_reqq_self(xbt_dynar_t mpi_request)
+{
+   char * key = bprintf("%d", smpi_process_index());
    xbt_dict_set(reqq, key, mpi_request, free);
    free(key);
 }
 
 
 //allocate a single buffer for all sends, growing it if needed
-void* smpi_get_tmp_sendbuffer(int size){
+void* smpi_get_tmp_sendbuffer(int size)
+{
   if (!smpi_process_get_replaying())
-  return xbt_malloc(size);
+    return xbt_malloc(size);
   if (sendbuffer_size<size){
     sendbuffer=static_cast<char*>(xbt_realloc(sendbuffer,size));
     sendbuffer_size=size;

@@ -319,14 +319,12 @@ CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
 
-CHECK_SYMBOL_EXISTS(asprintf stdio.h HAVE_ASPRINTF)
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 
 if(MINGW) 
-  # The detection of asprintf fails on MinGW, assumingly because it's
+  # The detection of vasprintf fails on MinGW, assumingly because it's
   # defined as an inline function in stdio.h instead of a regular
   # function. So force the result to be 1 despite of the test.
-  set(HAVE_ASPRINTF 1)
   set(HAVE_VASPRINTF 1)
 endif()
 
@@ -747,25 +745,7 @@ endif()
 ## System checks
 ##
 
-### check for asprintf function familly
-if(HAVE_ASPRINTF)
-  SET(simgrid_need_asprintf "")
-  SET(NEED_ASPRINTF 0)
-else()
-  SET(simgrid_need_asprintf "#define SIMGRID_NEED_ASPRINTF 1")
-  SET(NEED_ASPRINTF 1)
-endif()
-
-if(HAVE_VASPRINTF)
-  SET(simgrid_need_vasprintf "")
-  SET(NEED_VASPRINTF 0)
-else()
-  SET(simgrid_need_vasprintf "#define SIMGRID_NEED_VASPRINTF 1")
-  SET(NEED_VASPRINTF 1)
-endif()
-
 ### check for addr2line
-
 find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS	)
 if(ADDR2LINE)
   set(ADDR2LINE "${ADDR2LINE}/addr2line")

@@ -56,14 +56,6 @@
 /* Define to 1 if you have the <sys/time.h> header file. */
 #cmakedefine HAVE_SYS_TIME_H @HAVE_SYS_TIME_H@
 
-/* Define to 1 if mmalloc is compiled in. */
-#cmakedefine HAVE_MMALLOC @HAVE_MMALLOC@
-
-/* Get the config */
-#undef SIMGRID_NEED_ASPRINTF
-#undef SIMGRID_NEED_VASPRINTF
-@simgrid_need_asprintf@
-@simgrid_need_vasprintf@
 
 /* Whether mallocators were enabled in ccmake or not. */
 #define MALLOCATOR_COMPILED_IN @MALLOCATOR_IS_WANTED@
@@ -80,9 +72,13 @@
 /* If __thread is available */
 #cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@
 
+/* Define to 1 if mmalloc is compiled in. */
+#cmakedefine HAVE_MMALLOC @HAVE_MMALLOC@
 /* If Model-Checking support was requested */
 #cmakedefine HAVE_MC @HAVE_MC@
 
 #cmakedefine SIMGRID_HAVE_LIBSIG @SIMGRID_HAVE_LIBSIG@
+
+#cmakedefine HAVE_VASPRINTF @HAVE_VASPRINTF@
 
 #endif /* SIMGRID_PUBLIC_CONFIG_H */

@@ -89,15 +89,7 @@
 # include <signal.h>
 #endif
 
-/* prototype of GNU functions  */
-#if (defined(__GNUC__) && !defined(__cplusplus))
-XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt, /*args */ ...);
-XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
-#endif
-
-/*
- * What we need to extract the backtrace in exception handling code
- */
+/* What we need to extract the backtrace in exception handling code */
 #ifdef HAVE_EXECINFO_H
 #  include <execinfo.h>
 #endif
