@@ -50,8 +50,6 @@ XBT_PUBLIC(void) xbt_str_subst(char *str, char from, char to, int amount);
 XBT_PUBLIC(char *) xbt_str_varsubst(const char *str, xbt_dict_t patterns);
 
 /* */
-XBT_PUBLIC(char *) xbt_str_diff(const char *a, const char *b);
-
 XBT_PUBLIC(char *) xbt_str_from_file(FILE * file);
 
 XBT_PUBLIC(long int) xbt_str_parse_int(const char* str, const char* error_msg);
