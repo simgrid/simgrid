@@ -1,8 +1,6 @@
 #! ./tesh
 
-! timeout 10
 ! expect return 0
-! output sort
 $ ./maxmin_bench small  10 test
 > [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
@@ -965,61 +963,61 @@ $ ./maxmin_bench small  10 test
 > Starting 0: (807)
 > Starting to solve(813)
 > Max concurrency:
-> (0):1/-1 (1):2/3 (2):1/4 (3):1/3 (4):2/-1 (5):3/3 (6):2/4 (7):1/-1 (8):2/-1 (9):2/3 
+> (9):2/3 
 > 
 > Total maximum concurrency is 3
 > Starting 1: (614)
 > Starting to solve(68)
 > Max concurrency:
-> (0):3/3 (1):0/3 (2):3/-1 (3):1/4 (4):2/-1 (5):2/3 (6):3/3 (7):3/4 (8):2/3 (9):4/4 
+> (9):4/4 
 > 
 > Total maximum concurrency is 4
 > Starting 2: (421)
 > Starting to solve(310)
 > Max concurrency:
-> (0):2/3 (1):1/4 (2):4/4 (3):2/3 (4):3/4 (5):2/-1 (6):1/3 (7):1/3 (8):1/-1 (9):2/-1 
+> (9):2/-1 
 > 
 > Total maximum concurrency is 4
 > Starting 3: (228)
 > Starting to solve(952)
 > Max concurrency:
-> (0):1/4 (1):3/-1 (2):2/3 (3):6/-1 (4):4/-1 (5):3/4 (6):1/4 (7):2/3 (8):2/3 (9):4/4 
+> (9):4/4 
 > 
 > Total maximum concurrency is 6
 > Starting 4: (35)
 > Starting to solve(203)
 > Max concurrency:
-> (0):1/4 (1):4/4 (2):1/4 (3):0/4 (4):3/3 (5):2/4 (6):2/4 (7):3/-1 (8):2/3 (9):2/4 
+> (9):2/4 
 > 
 > Total maximum concurrency is 4
 > Starting 5: (842)
 > Starting to solve(329)
 > Max concurrency:
-> (0):1/4 (1):3/3 (2):3/3 (3):3/-1 (4):3/4 (5):2/3 (6):4/4 (7):3/4 (8):3/4 (9):1/3 
+> (9):1/3 
 > 
 > Total maximum concurrency is 4
 > Starting 6: (649)
 > Starting to solve(908)
 > Max concurrency:
-> (0):1/4 (1):4/4 (2):2/3 (3):1/3 (4):3/4 (5):4/-1 (6):0/4 (7):3/3 (8):0/4 (9):2/4 
+> (9):2/4 
 > 
 > Total maximum concurrency is 4
 > Starting 7: (456)
 > Starting to solve(563)
 > Max concurrency:
-> (0):2/3 (1):2/3 (2):2/-1 (3):1/4 (4):3/4 (5):2/4 (6):3/3 (7):1/-1 (8):3/4 (9):3/4 
+> (9):3/4 
 > 
 > Total maximum concurrency is 3
 > Starting 8: (263)
 > Starting to solve(118)
 > Max concurrency:
-> (0):2/3 (1):2/4 (2):1/3 (3):3/4 (4):3/4 (5):4/4 (6):2/4 (7):3/4 (8):2/3 (9):2/-1 
+> (9):2/-1 
 > 
 > Total maximum concurrency is 4
 > Starting 9: (70)
 > Starting to solve(117)
 > Max concurrency:
-> (0):1/4 (1):2/3 (2):3/3 (3):3/4 (4):4/4 (5):1/3 (6):1/4 (7):1/3 (8):2/4 (9):1/3 
+> (9):1/3 
 > 
 > Total maximum concurrency is 4
 > 10x One shot execution time for a total of 10 constraints, 10 variables with 4 active constraint each, concurrency in [2,6] and max concurrency share 2
