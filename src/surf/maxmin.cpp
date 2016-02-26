@@ -751,11 +751,11 @@ void lmm_print(lmm_system_t sys)
     }
     XBT_DEBUG("%s", trace_buf);
     trace_buf[0] = '\000';
-    //   xbt_assert(!double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision),
-    //           "Incorrect value (%f is not smaller than %f): %g",
-    //             sum, cnst->bound, sum - cnst->bound);
-    if(double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision))
-      XBT_ERROR("Incorrect value (%f is not smaller than %f): %g",sum, cnst->bound, sum - cnst->bound);
+       xbt_assert(!double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision),
+               "Incorrect value (%f is not smaller than %f): %g",
+                 sum, cnst->bound, sum - cnst->bound);
+       //if(double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision))
+       //XBT_ERROR("Incorrect value (%f is not smaller than %f): %g",sum, cnst->bound, sum - cnst->bound);
       
   }
 

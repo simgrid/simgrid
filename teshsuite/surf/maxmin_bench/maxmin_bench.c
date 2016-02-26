@@ -145,10 +145,6 @@ int main(int argc, char **argv)
   //How many times?
   testcount=atoi(argv[2]);
   
-  srand(testcount);
-
-  printf("Starting to test (%i,%i,%i)\n",rand()%1000,rand()%1000,rand()%1000);
-
   //Show me everything (debug or performance)!
   mode=0;
   if(argc>=4 && strcmp(argv[3],"test")==0)
@@ -180,6 +176,8 @@ int main(int argc, char **argv)
   xbt_init(&argc, argv);
   
   for(i=0;i<testcount;i++){
+    srand(i+1);
+    printf("Starting %i: (%i,%i,%i)\n",i,rand()%1000,rand()%1000,rand()%1000);
     test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit,max_share,mode);
     acc_date+=date;
     acc_date2+=date*date;
