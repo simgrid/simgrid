@@ -18,5 +18,4 @@ set(examples_src
 set(bin_files
   ${bin_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/generate.py
-  ${CMAKE_CURRENT_SOURCE_DIR}/run_chord
   PARENT_SCOPE)
