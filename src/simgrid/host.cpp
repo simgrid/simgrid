@@ -86,10 +86,6 @@ void sg_host_init()
     __MSG_host_priv_free((msg_host_priv_t) p);
   });
 
-  ROUTING_HOST_LEVEL = simgrid::s4u::Host::extension_create([](void *p) {
-    delete static_cast<simgrid::surf::NetCard*>(p);
-  });
-
   SIMIX_HOST_LEVEL = simgrid::s4u::Host::extension_create(SIMIX_host_destroy);
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
 }

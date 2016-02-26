@@ -111,7 +111,6 @@ public:
 
 extern int MSG_HOST_LEVEL;
 extern int SIMIX_HOST_LEVEL;
-extern int ROUTING_HOST_LEVEL;
 extern int USER_HOST_LEVEL;
 
 #endif /* SIMGRID_S4U_HOST_HPP */
