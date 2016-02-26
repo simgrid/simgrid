@@ -60,11 +60,7 @@ XBT_PUBLIC(void) xbt_matrix_dump_display_double(void *d);
 
 XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_zeros(int lines, int rows);
 XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_id(int lines, int rows);
-XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_rand(int lines, int rows);
 XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_seq(int lines, int rows);
-XBT_PUBLIC(int) xbt_matrix_double_is_seq(xbt_matrix_t mat);
-XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_mult(xbt_matrix_t A,
-                                                    xbt_matrix_t B);
 XBT_PUBLIC(void) xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B,
                                            /*OUT*/ xbt_matrix_t C);
 SG_END_DECL()
