@@ -81,6 +81,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
  * Kill the xbt_peer_t data type: it's useless without GRAS.
  * Kill rm_cb feature of config sets: it was never useful.
  * Kill graphxml parsing feature. It was not used.
+ * Kill the deprecated code protected by XBT_USE_DEPRECATED
  * New functions:
    - xbt_dynar_sort_strings(), when the content is char*
    - xbt_str_parse_int / xbt_str_parse_double, wrapping strtol/strtod

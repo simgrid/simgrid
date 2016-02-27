@@ -570,9 +570,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_dict);
   XBT_LOG_CONNECT(xbt_dict_cursor);
   XBT_LOG_CONNECT(xbt_dict_elm);
-#ifdef XBT_USE_DEPRECATED
-  XBT_LOG_CONNECT(xbt_dict_multi);
-#endif
   XBT_LOG_CONNECT(xbt_dyn);
   XBT_LOG_CONNECT(xbt_ex);
   XBT_LOG_CONNECT(xbt_fifo);

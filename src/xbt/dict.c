@@ -412,43 +412,6 @@ XBT_INLINE void xbt_dict_remove(xbt_dict_t dict, const char *key)
   xbt_dict_remove_ext(dict, key, strlen(key));
 }
 
-#ifdef XBT_USE_DEPRECATED
-/**
- * \brief Add data to the dict (arbitrary key)
- * \param dict the container
- * \param key the key to set the new data
- * \param data the data to add in the dict
- *
- * Set the \a data in the structure under the \a key.
- * Both \a data and \a key are considered as uintptr_t.
- */
-XBT_INLINE void xbt_dicti_set(xbt_dict_t dict,
-                              uintptr_t key, uintptr_t data)
-{
-  xbt_dict_set_ext(dict, (void *)&key, sizeof key, (void*)data, NULL);
-}
-
-/**
- * \brief Retrieve data from the dict (key considered as a uintptr_t)
- *
- * \param dict the dealer of data
- * \param key the key to find data
- * \return the data that we are looking for (or 0 if not found)
- *
- * Mixing uintptr_t keys with regular keys in the same dict is discouraged
- */
-XBT_INLINE uintptr_t xbt_dicti_get(xbt_dict_t dict, uintptr_t key)
-{
-  return (uintptr_t)xbt_dict_get_or_null_ext(dict, (void *)&key, sizeof key);
-}
-
-/** Remove a uintptr_t key from the dict */
-XBT_INLINE void xbt_dicti_remove(xbt_dict_t dict, uintptr_t key)
-{
-  xbt_dict_remove_ext(dict, (void *)&key, sizeof key);
-}
-#endif
-
 /** @brief Remove all data from the dict */
 void xbt_dict_reset(xbt_dict_t dict)
 {

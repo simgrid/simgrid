@@ -41,17 +41,6 @@ SG_BEGIN_DECL()
   do { if (!(cond)) THROWF(0, 0, __VA_ARGS__); } while (0)
 #endif
 
-#ifdef XBT_USE_DEPRECATED
-
-#define xbt_assert0(...)        xbt_assert(__VA_ARGS__)
-#define xbt_assert1(...)        xbt_assert(__VA_ARGS__)
-#define xbt_assert2(...)        xbt_assert(__VA_ARGS__)
-#define xbt_assert3(...)        xbt_assert(__VA_ARGS__)
-#define xbt_assert4(...)        xbt_assert(__VA_ARGS__)
-#define xbt_assert5(...)        xbt_assert(__VA_ARGS__)
-#define xbt_assert6(...)        xbt_assert(__VA_ARGS__)
-
-#endif
 /** @} */
     SG_END_DECL()
 #endif                          /* _XBT_ASSERTS_H */

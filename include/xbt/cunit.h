@@ -151,39 +151,5 @@ XBT_PUBLIC(void) xbt_test_skip(void);
 
 /** @} */
 
-#ifdef XBT_USE_DEPRECATED
-
-/* Kept for backward compatibility. */
-
-#define xbt_test_add0(...)      xbt_test_add(__VA_ARGS__)
-#define xbt_test_add1(...)      xbt_test_add(__VA_ARGS__)
-#define xbt_test_add2(...)      xbt_test_add(__VA_ARGS__)
-#define xbt_test_add3(...)      xbt_test_add(__VA_ARGS__)
-#define xbt_test_add4(...)      xbt_test_add(__VA_ARGS__)
-#define xbt_test_add5(...)      xbt_test_add(__VA_ARGS__)
-
-#define xbt_test_fail0(...)     xbt_test_fail(__VA_ARGS__)
-#define xbt_test_fail1(...)     xbt_test_fail(__VA_ARGS__)
-#define xbt_test_fail2(...)     xbt_test_fail(__VA_ARGS__)
-#define xbt_test_fail3(...)     xbt_test_fail(__VA_ARGS__)
-#define xbt_test_fail4(...)     xbt_test_fail(__VA_ARGS__)
-#define xbt_test_fail5(...)     xbt_test_fail(__VA_ARGS__)
-
-#define xbt_test_assert0(...)   xbt_test_assert(__VA_ARGS__)
-#define xbt_test_assert1(...)   xbt_test_assert(__VA_ARGS__)
-#define xbt_test_assert2(...)   xbt_test_assert(__VA_ARGS__)
-#define xbt_test_assert3(...)   xbt_test_assert(__VA_ARGS__)
-#define xbt_test_assert4(...)   xbt_test_assert(__VA_ARGS__)
-#define xbt_test_assert5(...)   xbt_test_assert(__VA_ARGS__)
-
-#define xbt_test_log0(...)      xbt_test_log(__VA_ARGS__)
-#define xbt_test_log1(...)      xbt_test_log(__VA_ARGS__)
-#define xbt_test_log2(...)      xbt_test_log(__VA_ARGS__)
-#define xbt_test_log3(...)      xbt_test_log(__VA_ARGS__)
-#define xbt_test_log4(...)      xbt_test_log(__VA_ARGS__)
-#define xbt_test_log5(...)      xbt_test_log(__VA_ARGS__)
-
-#endif
-
 SG_END_DECL()
-#endif                          /* _TS_H_ */
+#endif                          /* _XBT_CUNIT_H_ */

@@ -107,13 +107,6 @@ XBT_PUBLIC(void *) xbt_dict_get_or_null_ext(xbt_dict_t dict,
 XBT_PUBLIC(void) xbt_dict_remove_ext(xbt_dict_t dict, const char *key,
                                      int key_len);
 
-#ifdef XBT_USE_DEPRECATED
-XBT_PUBLIC(void) xbt_dicti_set(xbt_dict_t dict, uintptr_t key,
-                               uintptr_t data);
-XBT_PUBLIC(uintptr_t) xbt_dicti_get(xbt_dict_t dict, uintptr_t key);
-XBT_PUBLIC(void) xbt_dicti_remove(xbt_dict_t dict, uintptr_t key);
-#endif
-
 struct s_xbt_dict_cursor {
   xbt_dictelm_t current;
   int line;
@@ -190,45 +183,6 @@ xbt_dict_foreach(head, cursor, key, data) {
          xbt_dict_cursor_step(cursor) )
 
 /** @} */
-
-#ifdef XBT_USE_DEPRECATED
-/** @defgroup XBT_dict_multi Multi-level dictionaries
- *  @ingroup XBT_dict
- *
- * They can be seen as dictionary of multiple keys or as dictionary of
- * dictionary of ... of data. Most of the functions here work the same way
- * than their simple dictionary counterpart.
- *
- * Note that there is no xbt_multidict_free neither xbt_multi_dict_new functions.
- * Use xbt_dict_free() and xbt_dict_new() instead.
- *
- * @{
- */
-
-/*----[ xbt_multidict_set ]--------------------------------------------------*/
-XBT_PUBLIC(void)
-xbt_multidict_set(xbt_dict_t mdict,
-                  xbt_dynar_t keys, void *data, void (*free_ctn) (void *));
-XBT_PUBLIC(void)
-xbt_multidict_set_ext(xbt_dict_t mdict,
-                      xbt_dynar_t keys, xbt_dynar_t lens,
-                      void *data, void_f_pvoid_t free_ctn);
-
-/*----[ xbt_multidict_get ]--------------------------------------------------*/
-XBT_PUBLIC(void *) xbt_multidict_get(xbt_dict_t mdict, xbt_dynar_t keys);
-XBT_PUBLIC(void *) xbt_multidict_get_ext(xbt_dict_t mdict,
-                                         xbt_dynar_t keys,
-                                         xbt_dynar_t lens);
-
-/*----[ xbt_multidict_remove ]-----------------------------------------------*/
-/*---------------------------------------------------------------------------*/
-XBT_PUBLIC(void) xbt_multidict_remove(xbt_dict_t mdict, xbt_dynar_t keys);
-XBT_PUBLIC(void) xbt_multidict_remove_ext(xbt_dict_t mdict,
-                                          xbt_dynar_t keys,
-                                          xbt_dynar_t lens);
-
-/** @} */
-#endif
 
 SG_END_DECL()
 #endif                          /* _XBT_DICT_H */

@@ -500,29 +500,6 @@ XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t * e);
 /** @brief Get current backtrace with libunwind */
 XBT_PUBLIC(int) xbt_libunwind_backtrace(void *bt[XBT_BACKTRACE_SIZE], int size);
 
-#ifdef XBT_USE_DEPRECATED
-
-/* Kept for backward compatibility. */
-
-#define THROW0(c, v, m) \
-  do { if (m) THROWF(c, v, m); else THROW(c, v); } while (0)
-#define THROW1(c, v, ...)       THROWF(c, v, __VA_ARGS__)
-#define THROW2(c, v, ...)       THROWF(c, v, __VA_ARGS__)
-#define THROW3(c, v, ...)       THROWF(c, v, __VA_ARGS__)
-#define THROW4(c, v, ...)       THROWF(c, v, __VA_ARGS__)
-#define THROW5(c, v, ...)       THROWF(c, v, __VA_ARGS__)
-#define THROW6(c, v, ...)       THROWF(c, v, __VA_ARGS__)
-#define THROW7(c, v, ...)       THROWF(c, v, __VA_ARGS__)
-
-#define RETHROW0(...)           RETHROWF(__VA_ARGS__)
-#define RETHROW1(...)           RETHROWF(__VA_ARGS__)
-#define RETHROW2(...)           RETHROWF(__VA_ARGS__)
-#define RETHROW3(...)           RETHROWF(__VA_ARGS__)
-#define RETHROW4(...)           RETHROWF(__VA_ARGS__)
-#define RETHROW5(...)           RETHROWF(__VA_ARGS__)
-
-#endif
-
 SG_END_DECL()
 
 /** @} */

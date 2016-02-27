@@ -361,11 +361,6 @@ IF(NOT enable_memcheck)
     ENDIF()
     # smpi broken usage
     ADD_TESH_FACTORIES(tesh-smpi-broken          "thread"              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong broken_hostfiles.tesh)
-    # https://gforge.inria.fr/tracker/index.php?func=detail&aid=17132&group_id=12&atid=165
-    ADD_TESH_FACTORIES(tesh-smpi-bug-17132       "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132 --cd ${CMAKE_BINARY_DIR}/teshsuite/bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132/bug-17132.tesh)
-    IF(enable_debug)
-      ADD_TESH_FACTORIES(tesh-smpi-bug-17132-surf-debug "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132 --cd ${CMAKE_BINARY_DIR}/teshsuite/bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132/bug-17132-surf-debug.tesh)
-    ENDIF()
     ADD_TESH(tesh-smpi-replay-ti-tracing       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong TI_output.tesh)
     FOREACH (GATHER_COLL default ompi mpich ompi_basic_linear ompi_linear_sync ompi_binomial mvapich2 mvapich2_two_level impi)
       ADD_TESH(tesh-smpi-gather-coll-${GATHER_COLL} --cfg smpi/gather:${GATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/gather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gather gather_coll.tesh)

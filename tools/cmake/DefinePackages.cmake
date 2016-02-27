@@ -249,7 +249,6 @@ set(XBT_SRC
   src/xbt/dict.c
   src/xbt/dict_cursor.c
   src/xbt/dict_elm.c
-  src/xbt/dict_multi.c
   src/xbt/dynar.c
   src/xbt/ex.c
   src/xbt/fifo.c

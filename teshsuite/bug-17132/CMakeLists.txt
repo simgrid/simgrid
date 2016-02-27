@@ -22,3 +22,5 @@ set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/hostfile.txt
   PARENT_SCOPE)
+
+ADD_TESH_FACTORIES(tesh-smpi-bug-17132 "thread" --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} --cd ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/bug-17132.tesh)
