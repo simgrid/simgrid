@@ -19,8 +19,8 @@
 double date;
 unsigned long seedx= 0;
 
-int myrand();
-inline int myrand() {
+int myrand(void);
+int myrand(void) {
   seedx=seedx * 16807 % 2147483647;
   return seedx%1000;
 }
