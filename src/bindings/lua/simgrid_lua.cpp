@@ -11,7 +11,7 @@
 #include "src/surf/xml/platf.hpp"
 
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua, bindings, "Lua Bindings");
+XBT_LOG_NEW_DEFAULT_CATEGORY(lua, "Lua Bindings");
 
 extern "C" {
 #include <lauxlib.h>
