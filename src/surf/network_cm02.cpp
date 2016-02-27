@@ -419,7 +419,9 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
       link = static_cast<NetworkCm02Link*>(_link);
       lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), .05);
     }
-    lmm_variable_concurrency_share_set(action->getVariable(),2);
+    //Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
+    //(You would also have to change lmm_element_concurrency())
+    //lmm_variable_concurrency_share_set(action->getVariable(),2);
   }
 
   xbt_dynar_free(&route);

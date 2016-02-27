@@ -18,7 +18,7 @@ in examples/ is used as an integration test, while some other torture
 tests and corner cases integration tests are located in teshsuite/.
 For each integration test, we ensure that the output exactly matches
 the defined expectations. Since SimGrid displays the timestamp of
-every loggued line, this ensures that every change of the models'
+every logged line, this ensures that every change of the models'
 prediction will be noticed. All these tests should ensure that SimGrid
 is safe to use and to depend on.
 
@@ -182,7 +182,7 @@ integration tests. It is distributed with the SimGrid source file, and
 even comes with a man page. TESH ensures that the output produced by a
 command perfectly matches the expected output. This is very precious
 to ensure that no change modifies the timings computed by the models
-without notice.
+without notice. 
 
 To add a new integration test, you thus have 3 things to do:
 
@@ -192,20 +192,25 @@ To add a new integration test, you thus have 3 things to do:
    examples/ and modify the cmake files as explained on this page:
    \ref inside_cmake_examples. If you feel like you should write a
    torture test that is not interesting to the users (because nobody
-   would sainly write something similar in user code), then put it under 
+   would sanely write something similar in user code), then put it under 
    teshsuite/ somewhere.
+   
  - <b>Write the tesh file</b>, containing the command to run, the
    provided input (if any, but almost no SimGrid test provide such an
    input) and the expected output. Check the tesh man page for more
-   details. \n
+   details.\n
    Tesh is sometimes annoying as you have to ensure that the expected
    output will always be exactly the same. In particular, your should
-   not output machine dependent informations, nor memory adresses as
+   not output machine dependent informations such as absolute data path, nor memory adresses as
    they would change on each run. Several steps can be used here, such
    as the obfucation of the memory adresses unless the verbose logs
    are displayed (using the #XBT_LOG_ISENABLED() macro), or the
    modification of the log formats to hide the timings when they
-   depend on the host machine.
+   depend on the host machine.\n
+   The script located in <project/directory>/tools/cmake/tesh/generate_tesh.sh can
+   help you a lot in particular if the output is large (though a smaller output is preferable). 
+   There are also example tesh files in the <project/directory>/tools/cmake/tesh/ directory, that can be useful to understand the tesh syntax.
+   
  - <b>Add your test in the cmake infrastructure</b>. For that, modify
    the file <project/directory>/tools/cmake/Tests.cmake. Make sure to
    pick a wise name for your test. It is often useful to check a

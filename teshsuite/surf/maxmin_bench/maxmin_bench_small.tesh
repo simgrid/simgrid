@@ -1,0 +1,756 @@
+#! ./tesh
+
+! timeout 10
+! output sort
+! expect return 0
+$ ./maxmin_bench small  10 test
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '9' usage: 4.703796 remaining: 7.082917 concurrency: 2<=2<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '6' usage: 5.688312 remaining: 9.860140 concurrency: 3<=3<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '7' usage: 5.541459 remaining: 7.282717 concurrency: 2<=2<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '10' usage: 4.696304 remaining: 5.594406 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '5' usage: 3.197802 remaining: 4.915085 concurrency: 2<=2<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '1' usage: 2.429071 remaining: 2.487512 concurrency: 1<=1<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '2' usage: 4.501499 remaining: 6.573427 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '4' usage: 1.014486 remaining: 7.082917 concurrency: 1<=1<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '8' usage: 2.985015 remaining: 3.026973 concurrency: 1<=1<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '3' usage: 2.495005 remaining: 5.434565 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] var=9, var->bound=-1.000000, var->weight=1.000000, min_usage=1.014056, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (9) value to 1.014056
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.014056, Var(9)->weight: 1.000000, Var(9)->value: 1.014056 
+> [0.000000]: [surf_maxmin/DEBUG] index: 8 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 0.000000 bound: 3.026973  
+> [0.000000]: [surf_maxmin/DEBUG] var=2, var->bound=-1.000000, var->weight=1.000000, min_usage=1.024059, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=10, var->bound=-1.000000, var->weight=1.000000, min_usage=1.024059, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (2) value to 1.024059
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.024059, Var(2)->weight: 1.000000, Var(2)->value: 1.024059 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (10) value to 1.024059
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.024059, Var(10)->weight: 1.000000, Var(10)->value: 1.024059 
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 2.487512  
+> [0.000000]: [surf_maxmin/DEBUG] index: 7 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 6.044024 bound: 7.082917  
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 2.879533 bound: 5.434565  
+> [0.000000]: [surf_maxmin/DEBUG] var=1, var->bound=-1.000000, var->weight=1.000000, min_usage=1.338213, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=4, var->bound=-1.000000, var->weight=1.000000, min_usage=1.338213, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (1) value to 1.338213
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.338213, Var(1)->weight: 1.000000, Var(1)->value: 1.338213 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (4) value to 1.338213
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.338213, Var(4)->weight: 1.000000, Var(4)->value: 1.338213 
+> [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 5.594406  
+> [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 1.623266 bound: 6.573427  
+> [0.000000]: [surf_maxmin/DEBUG] var=3, var->bound=-1.000000, var->weight=1.000000, min_usage=1.625653, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (3) value to 1.625653
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.625653, Var(3)->weight: 1.000000, Var(3)->value: 1.625653 
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 1.548031 bound: 9.860140  
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.581095 bound: 7.282717  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 0.000000 bound: 7.082917  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.593717 bound: 4.915085  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '10'(1.000000) '9'(1.000000) '4'(1.000000) '3'(1.000000) '2'(1.000000) '1'(1.000000) '5'(0.000000) '6'(0.000000) '7'(0.000000) '8'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.314186.'4'(1.338213) + 2.742258.'3'(1.625653) + 0.647353.'1'(1.338213) + 1.975025.'5'(0.000000) + 0.741758.'6'(0.000000) + 0) <= 7.082917 ('9')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.639361.'4'(1.338213) + 2.435065.'3'(1.625653) + 1.613886.'1'(1.338213) + 0.157343.'5'(0.000000) + 1.305195.'6'(0.000000) + 0) <= 9.860140 ('6')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.072428.'9'(1.014056) + 0.858641.'3'(1.625653) + 0.920080.'2'(1.024059) + 1.690310.'1'(1.338213) + 1.462537.'7'(0.000000) + 0) <= 7.282717 ('7')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.129371.'9'(1.014056) + 0.971029.'4'(1.338213) + 1.595904.'1'(1.338213) + 1.958541.'8'(0.000000) + 0) <= 5.594406 ('10')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.739760.'3'(1.625653) + 1.458042.'2'(1.024059) + 1.122378.'5'(0.000000) + 1.224276.'7'(0.000000) + 0) <= 4.915085 ('5')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.603397.'10'(1.024059) + 0.825674.'2'(1.024059) + 3.191808.'8'(0.000000) + 1.276723.'8'(0.000000) + 0) <= 2.487512 ('1')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.942557.'10'(1.024059) + 1.083417.'4'(1.338213) + 2.475524.'2'(1.024059) + 0.941059.'5'(0.000000) + 1.035465.'6'(0.000000) + 1.897103.'7'(0.000000) + 0.597902.'7'(0.000000) + 0.008991.'8'(0.000000) + 0) <= 6.573427 ('2')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.014486.'10'(1.024059) + 0.872128.'6'(0.000000) + 0) <= 7.082917 ('4')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.959041.'9'(1.014056) + 2.025974.'9'(1.014056) + 0) <= 3.026973 ('8')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.495005.'10'(1.024059) + 0) <= 5.434565 ('3')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '10'(1.000000) : 1.024059
+> [0.000000]: [surf_maxmin/DEBUG] '9'(1.000000) : 1.014056
+> [0.000000]: [surf_maxmin/DEBUG] '4'(1.000000) : 1.338213
+> [0.000000]: [surf_maxmin/DEBUG] '3'(1.000000) : 1.625653
+> [0.000000]: [surf_maxmin/DEBUG] '2'(1.000000) : 1.024059
+> [0.000000]: [surf_maxmin/DEBUG] '1'(1.000000) : 1.338213
+> [0.000000]: [surf_maxmin/DEBUG] '5'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '6'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '7'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '8'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '16' usage: 2.596903 remaining: 9.730270 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '20' usage: 6.927572 remaining: 1.978022 concurrency: 4<=4<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '17' usage: 5.505495 remaining: 4.575425 concurrency: 3<=3<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '12' usage: 2.631369 remaining: 2.127872 concurrency: 0<=0<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '19' usage: 4.567433 remaining: 6.663337 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '18' usage: 5.965534 remaining: 6.053946 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '15' usage: 4.024975 remaining: 3.366633 concurrency: 2<=2<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '11' usage: 4.858142 remaining: 4.975025 concurrency: 3<=3<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '13' usage: 5.908591 remaining: 1.088911 concurrency: 3<=3<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '14' usage: 1.957043 remaining: 7.702298 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] var=14, var->bound=-1.000000, var->weight=1.000000, min_usage=0.184293, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=15, var->bound=-1.000000, var->weight=1.000000, min_usage=0.184293, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=17, var->bound=-1.000000, var->weight=1.000000, min_usage=0.184293, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (14) value to 0.184293
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.184293, Var(14)->weight: 1.000000, Var(14)->value: 0.184293 
+> [0.000000]: [surf_maxmin/DEBUG] index: 9 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 7.341629 bound: 7.702298  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (15) value to 0.184293
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.184293, Var(15)->weight: 1.000000, Var(15)->value: 0.184293 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (17) value to 0.184293
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.184293, Var(17)->weight: 1.000000, Var(17)->value: 0.184293 
+> [0.000000]: [surf_maxmin/DEBUG] index: 8 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 1.088911  
+> [0.000000]: [surf_maxmin/DEBUG] var=11, var->bound=-1.000000, var->weight=1.000000, min_usage=0.316463, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=12, var->bound=-1.000000, var->weight=1.000000, min_usage=0.316463, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=13, var->bound=-1.000000, var->weight=1.000000, min_usage=0.316463, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=19, var->bound=-1.000000, var->weight=1.000000, min_usage=0.316463, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (11) value to 0.316463
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.316463, Var(11)->weight: 1.000000, Var(11)->value: 0.316463 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (12) value to 0.316463
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.316463, Var(12)->weight: 1.000000, Var(12)->value: 0.316463 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (13) value to 0.316463
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.316463, Var(13)->weight: 1.000000, Var(13)->value: 0.316463 
+> [0.000000]: [surf_maxmin/DEBUG] index: 4 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 5.345264 bound: 6.663337  
+> [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 2.183786 bound: 3.366633  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (19) value to 0.316463
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.316463, Var(19)->weight: 1.000000, Var(19)->value: 0.316463 
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 4.337989 bound: 6.053946  
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 0.000000 bound: 1.978022  
+> [0.000000]: [surf_maxmin/DEBUG] var=18, var->bound=-1.000000, var->weight=1.000000, min_usage=1.961597, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (18) value to 1.961597
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.961597, Var(18)->weight: 1.000000, Var(18)->value: 1.961597 
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 0.987622 bound: 4.975025  
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 2.127872  
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 0.826438 bound: 4.575425  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 6.827787 bound: 9.730270  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '19'(1.000000) '18'(1.000000) '17'(1.000000) '15'(1.000000) '14'(1.000000) '13'(1.000000) '12'(1.000000) '11'(1.000000) '16'(0.000000) '20'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.288711.'19'(0.316463) + 1.264735.'18'(1.961597) + 0.043457.'11'(0.316463) + 1.523976.'20'(0.000000) + 0) <= 9.730270 ('16')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.107393.'19'(0.316463) + 1.621379.'17'(0.184293) + 1.846154.'13'(0.316463) + 1.488012.'12'(0.316463) + 0.864635.'11'(0.316463) + 2.066434.'16'(0.000000) + 0) <= 1.978022 ('20')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.557942.'19'(0.316463) + 1.219780.'18'(1.961597) + 1.727772.'11'(0.316463) + 0) <= 4.575425 ('17')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.885614.'18'(1.961597) + 0.305694.'17'(0.184293) + 0.918581.'14'(0.184293) + 0.521479.'11'(0.316463) + 0) <= 2.127872 ('12')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.963536.'15'(0.184293) + 2.220779.'13'(0.316463) + 1.383117.'12'(0.316463) + 2.316683.'16'(0.000000) + 0.906593.'20'(0.000000) + 0) <= 6.663337 ('19')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.021978.'19'(0.316463) + 1.300699.'17'(0.184293) + 2.652348.'13'(0.316463) + 0.990509.'12'(0.316463) + 1.393606.'16'(0.000000) + 0) <= 6.053946 ('18')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.687812.'15'(0.184293) + 1.502997.'13'(0.316463) + 1.834166.'12'(0.316463) + 1.158342.'20'(0.000000) + 0) <= 3.366633 ('15')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.739760.'18'(1.961597) + 1.459540.'15'(0.184293) + 1.658841.'14'(0.184293) + 1.189810.'16'(0.000000) + 0) <= 4.975025 ('11')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.013986.'17'(0.184293) + 1.985514.'15'(0.184293) + 1.909091.'14'(0.184293) + 0.956044.'20'(0.000000) + 0) <= 1.088911 ('13')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.957043.'14'(0.184293) + 0) <= 7.702298 ('14')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '19'(1.000000) : 0.316463
+> [0.000000]: [surf_maxmin/DEBUG] '18'(1.000000) : 1.961597
+> [0.000000]: [surf_maxmin/DEBUG] '17'(1.000000) : 0.184293
+> [0.000000]: [surf_maxmin/DEBUG] '15'(1.000000) : 0.184293
+> [0.000000]: [surf_maxmin/DEBUG] '14'(1.000000) : 0.184293
+> [0.000000]: [surf_maxmin/DEBUG] '13'(1.000000) : 0.316463
+> [0.000000]: [surf_maxmin/DEBUG] '12'(1.000000) : 0.316463
+> [0.000000]: [surf_maxmin/DEBUG] '11'(1.000000) : 0.316463
+> [0.000000]: [surf_maxmin/DEBUG] '16'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '20'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '28' usage: 2.611888 remaining: 2.127872 concurrency: 1<=1<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '26' usage: 3.101898 remaining: 6.863137 concurrency: 2<=2<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '29' usage: 4.377123 remaining: 3.856144 concurrency: 1<=1<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '25' usage: 4.861139 remaining: 1.258741 concurrency: 2<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '23' usage: 8.006494 remaining: 3.396603 concurrency: 4<=4<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '24' usage: 4.473027 remaining: 6.723277 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '22' usage: 2.761738 remaining: 1.428571 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '30' usage: 3.939560 remaining: 2.967033 concurrency: 2<=2<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '27' usage: 3.490010 remaining: 8.721279 concurrency: 1<=1<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '21' usage: 3.869131 remaining: 7.462537 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] var=21, var->bound=-1.000000, var->weight=1.000000, min_usage=0.258940, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=23, var->bound=-1.000000, var->weight=1.000000, min_usage=0.258940, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=28, var->bound=-1.000000, var->weight=1.000000, min_usage=0.258940, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (21) value to 0.258940
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.258940, Var(21)->weight: 1.000000, Var(21)->value: 0.258940 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (23) value to 0.258940
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.258940, Var(23)->weight: 1.000000, Var(23)->value: 0.258940 
+> [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 0.713448 bound: 1.428571  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (28) value to 0.258940
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.258940, Var(28)->weight: 1.000000, Var(28)->value: 0.258940 
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 1.451551 bound: 2.127872  
+> [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 0.000000 bound: 1.258741  
+> [0.000000]: [surf_maxmin/DEBUG] var=22, var->bound=-1.000000, var->weight=1.000000, min_usage=0.493696, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=24, var->bound=-1.000000, var->weight=1.000000, min_usage=0.493696, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=25, var->bound=-1.000000, var->weight=1.000000, min_usage=0.493696, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (22) value to 0.493696
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.493696, Var(22)->weight: 1.000000, Var(22)->value: 0.493696 
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 5.661363 bound: 6.863137  
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 1.851017 bound: 3.856144  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (24) value to 0.493696
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.493696, Var(24)->weight: 1.000000, Var(24)->value: 0.493696 
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 7.221658 bound: 8.721279  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (25) value to 0.493696
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.493696, Var(25)->weight: 1.000000, Var(25)->value: 0.493696 
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 0.000000 bound: 3.396603  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 1.022089 bound: 2.967033  
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 6.051192 bound: 7.462537  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 4.540291 bound: 6.723277  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '28'(1.000000) '25'(1.000000) '24'(1.000000) '23'(1.000000) '22'(1.000000) '21'(1.000000) '26'(0.000000) '27'(0.000000) '29'(0.000000) '30'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.842158.'28'(0.258940) + 1.769730.'21'(0.258940) + 0) <= 2.127872 ('28')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.697802.'22'(0.493696) + 1.404096.'21'(0.258940) + 0.933566.'27'(0.000000) + 2.462038.'29'(0.000000) + 0) <= 6.863137 ('26')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.185814.'22'(0.493696) + 3.527473.'22'(0.493696) + 0.663836.'21'(0.258940) + 0.860140.'29'(0.000000) + 1.050450.'30'(0.000000) + 0) <= 3.856144 ('29')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.761239.'28'(0.258940) + 1.526973.'23'(0.258940) + 2.572927.'21'(0.258940) + 2.180320.'26'(0.000000) + 0.639860.'26'(0.000000) + 0) <= 1.258741 ('25')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.642358.'25'(0.493696) + 2.472527.'24'(0.493696) + 2.369131.'23'(0.258940) + 1.522478.'22'(0.493696) + 0.798701.'27'(0.000000) + 0.542458.'30'(0.000000) + 0) <= 3.396603 ('23')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.797702.'25'(0.493696) + 1.567433.'24'(0.493696) + 0.107892.'23'(0.258940) + 1.282717.'26'(0.000000) + 1.227273.'27'(0.000000) + 0.184316.'29'(0.000000) + 2.492008.'30'(0.000000) + 0) <= 6.723277 ('24')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.761738.'23'(0.258940) + 1.105894.'29'(0.000000) + 0) <= 1.428571 ('22')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.407093.'25'(0.493696) + 2.532468.'24'(0.493696) + 0) <= 2.967033 ('30')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.951548.'28'(0.258940) + 2.538462.'24'(0.493696) + 1.522478.'27'(0.000000) + 0) <= 8.721279 ('27')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.124875.'28'(0.258940) + 1.744256.'25'(0.493696) + 1.643856.'26'(0.000000) + 0.959041.'30'(0.000000) + 0) <= 7.462537 ('21')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '28'(1.000000) : 0.258940
+> [0.000000]: [surf_maxmin/DEBUG] '25'(1.000000) : 0.493696
+> [0.000000]: [surf_maxmin/DEBUG] '24'(1.000000) : 0.493696
+> [0.000000]: [surf_maxmin/DEBUG] '23'(1.000000) : 0.258940
+> [0.000000]: [surf_maxmin/DEBUG] '22'(1.000000) : 0.493696
+> [0.000000]: [surf_maxmin/DEBUG] '21'(1.000000) : 0.258940
+> [0.000000]: [surf_maxmin/DEBUG] '26'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '27'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '29'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '30'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '31' usage: 1.213786 remaining: 9.950050 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '35' usage: 6.809191 remaining: 3.656344 concurrency: 4<=4<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '39' usage: 2.653846 remaining: 5.414585 concurrency: 1<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '34' usage: 11.232767 remaining: 8.941059 concurrency: 6<=6<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '33' usage: 3.109391 remaining: 1.758242 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '40' usage: 7.257243 remaining: 4.375624 concurrency: 4<=4<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '32' usage: 5.985015 remaining: 4.255744 concurrency: 3<=3<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '38' usage: 3.966533 remaining: 4.475524 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '36' usage: 4.104396 remaining: 1.678322 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '37' usage: 0.000000 remaining: 0.139860 concurrency: 0<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] var=36, var->bound=-1.000000, var->weight=1.000000, min_usage=0.408908, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=38, var->bound=-1.000000, var->weight=1.000000, min_usage=0.408908, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=39, var->bound=-1.000000, var->weight=1.000000, min_usage=0.408908, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (36) value to 0.408908
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.408908, Var(36)->weight: 1.000000, Var(36)->value: 0.408908 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (38) value to 0.408908
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.408908, Var(38)->weight: 1.000000, Var(38)->value: 0.408908 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (39) value to 0.408908
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.408908, Var(39)->weight: 1.000000, Var(39)->value: 0.408908 
+> [0.000000]: [surf_maxmin/DEBUG] index: 8 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 1.678322  
+> [0.000000]: [surf_maxmin/DEBUG] var=32, var->bound=-1.000000, var->weight=1.000000, min_usage=0.565462, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=33, var->bound=-1.000000, var->weight=1.000000, min_usage=0.565462, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (32) value to 0.565462
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.565462, Var(32)->weight: 1.000000, Var(32)->value: 0.565462 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (33) value to 0.565462
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.565462, Var(33)->weight: 1.000000, Var(33)->value: 0.565462 
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 0.541481 bound: 4.375624  
+> [0.000000]: [surf_maxmin/DEBUG] index: 4 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.000000 bound: 1.758242  
+> [0.000000]: [surf_maxmin/DEBUG] var=31, var->bound=-1.000000, var->weight=1.000000, min_usage=0.757364, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=40, var->bound=-1.000000, var->weight=1.000000, min_usage=0.757364, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (31) value to 0.757364
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.757364, Var(31)->weight: 1.000000, Var(31)->value: 0.757364 
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 9.030772 bound: 9.950050  
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 3.662606 bound: 5.414585  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (40) value to 0.757364
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.757364, Var(40)->weight: 1.000000, Var(40)->value: 0.757364 
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 0.000000 bound: 3.656344  
+> [0.000000]: [surf_maxmin/DEBUG] var=35, var->bound=-1.000000, var->weight=1.000000, min_usage=1.232357, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (35) value to 1.232357
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.232357, Var(35)->weight: 1.000000, Var(35)->value: 1.232357 
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.095809 bound: 4.255744  
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 0.000000 bound: 8.941059  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.886438 bound: 4.475524  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '40'(1.000000) '39'(1.000000) '38'(1.000000) '36'(1.000000) '35'(1.000000) '33'(1.000000) '32'(1.000000) '31'(1.000000) '34'(0.000000) '37'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.213786.'31'(0.757364) + 0) <= 9.950050 ('31')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.983017.'40'(0.757364) + 1.603397.'39'(0.408908) + 1.153846.'38'(0.408908) + 1.549451.'36'(0.408908) + 1.519481.'31'(0.757364) + 0) <= 3.656344 ('35')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.740260.'38'(0.408908) + 1.913586.'31'(0.757364) + 2.193806.'37'(0.000000) + 0) <= 5.414585 ('39')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.026474.'40'(0.757364) + 0.986014.'39'(0.408908) + 1.434066.'39'(0.408908) + 1.293207.'35'(1.232357) + 2.213287.'35'(1.232357) + 2.024476.'33'(0.565462) + 2.255245.'31'(0.757364) + 0) <= 8.941059 ('34')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.537463.'33'(0.565462) + 1.571928.'32'(0.565462) + 1.504496.'34'(0.000000) + 0.851149.'37'(0.000000) + 0) <= 1.758242 ('33')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.721778.'36'(0.408908) + 2.535465.'33'(0.565462) + 1.246753.'32'(0.565462) + 1.753247.'32'(0.565462) + 1.345654.'34'(0.000000) + 0) <= 4.375624 ('40')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.129870.'40'(0.757364) + 0.337163.'38'(0.408908) + 0.917083.'35'(1.232357) + 2.336164.'33'(0.565462) + 1.264735.'32'(0.565462) + 2.480020.'34'(0.000000) + 1.137363.'34'(0.000000) + 0) <= 4.255744 ('32')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.332168.'40'(0.757364) + 0.809191.'36'(0.408908) + 1.825175.'35'(1.232357) + 0) <= 4.475524 ('38')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.607892.'39'(0.408908) + 1.140360.'38'(0.408908) + 1.356144.'36'(0.408908) + 1.837163.'37'(0.000000) + 0) <= 1.678322 ('36')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.165335.'37'(0.000000) + 0) <= 0.139860 ('37')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '40'(1.000000) : 0.757364
+> [0.000000]: [surf_maxmin/DEBUG] '39'(1.000000) : 0.408908
+> [0.000000]: [surf_maxmin/DEBUG] '38'(1.000000) : 0.408908
+> [0.000000]: [surf_maxmin/DEBUG] '36'(1.000000) : 0.408908
+> [0.000000]: [surf_maxmin/DEBUG] '35'(1.000000) : 1.232357
+> [0.000000]: [surf_maxmin/DEBUG] '33'(1.000000) : 0.565462
+> [0.000000]: [surf_maxmin/DEBUG] '32'(1.000000) : 0.565462
+> [0.000000]: [surf_maxmin/DEBUG] '31'(1.000000) : 0.757364
+> [0.000000]: [surf_maxmin/DEBUG] '34'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '37'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '42' usage: 10.002498 remaining: 3.556444 concurrency: 4<=4<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '49' usage: 2.623876 remaining: 2.117882 concurrency: 1<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '48' usage: 4.849151 remaining: 2.507493 concurrency: 3<=3<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '44' usage: 0.831668 remaining: 5.524476 concurrency: 0<=0<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '45' usage: 3.843656 remaining: 2.097902 concurrency: 3<=3<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '47' usage: 3.278721 remaining: 0.599401 concurrency: 2<=2<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '41' usage: 0.804695 remaining: 2.447552 concurrency: 0<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '50' usage: 5.187812 remaining: 4.485514 concurrency: 2<=2<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '46' usage: 3.005994 remaining: 6.933067 concurrency: 1<=2<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '43' usage: 1.075924 remaining: 4.485514 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] var=42, var->bound=-1.000000, var->weight=1.000000, min_usage=0.182815, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=46, var->bound=-1.000000, var->weight=1.000000, min_usage=0.182815, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=50, var->bound=-1.000000, var->weight=1.000000, min_usage=0.182815, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (42) value to 0.182815
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.182815, Var(42)->weight: 1.000000, Var(42)->value: 0.182815 
+> [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 5.372434 bound: 5.524476  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (46) value to 0.182815
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.182815, Var(46)->weight: 1.000000, Var(46)->value: 0.182815 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (50) value to 0.182815
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.182815, Var(50)->weight: 1.000000, Var(50)->value: 0.182815 
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 0.599401  
+> [0.000000]: [surf_maxmin/DEBUG] var=41, var->bound=-1.000000, var->weight=1.000000, min_usage=0.380694, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=44, var->bound=-1.000000, var->weight=1.000000, min_usage=0.380694, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=47, var->bound=-1.000000, var->weight=1.000000, min_usage=0.380694, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (41) value to 0.380694
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.380694, Var(41)->weight: 1.000000, Var(41)->value: 0.380694 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (44) value to 0.380694
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.380694, Var(44)->weight: 1.000000, Var(44)->value: 0.380694 
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 0.977541 bound: 2.507493  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (47) value to 0.380694
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.380694, Var(47)->weight: 1.000000, Var(47)->value: 0.380694 
+> [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 4.075916 bound: 4.485514  
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 1.304610 bound: 2.117882  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 0.000000 bound: 3.556444  
+> [0.000000]: [surf_maxmin/DEBUG] var=43, var->bound=-1.000000, var->weight=1.000000, min_usage=1.071335, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (43) value to 1.071335
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.071335, Var(43)->weight: 1.000000, Var(43)->value: 1.071335 
+> [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 1.585454 bound: 2.447552  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 2.097902  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 2.853240 bound: 4.485514  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 5.086515 bound: 6.933067  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '50'(1.000000) '47'(1.000000) '46'(1.000000) '44'(1.000000) '43'(1.000000) '42'(1.000000) '41'(1.000000) '45'(0.000000) '48'(0.000000) '49'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.571429.'47'(0.380694) + 1.270729.'46'(0.182815) + 2.084416.'44'(0.380694) + 0.776224.'41'(0.380694) + 3.299700.'41'(0.380694) + 0.271229.'48'(0.000000) + 1.144855.'49'(0.000000) + 0) <= 3.556444 ('42')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.938062.'50'(0.182815) + 0.539461.'47'(0.380694) + 1.146354.'41'(0.380694) + 1.946553.'48'(0.000000) + 0.614386.'48'(0.000000) + 0) <= 2.117882 ('49')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.108392.'44'(0.380694) + 1.597403.'42'(0.182815) + 1.143357.'41'(0.380694) + 0) <= 2.507493 ('48')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.831668.'42'(0.182815) + 0) <= 5.524476 ('44')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.062438.'44'(0.380694) + 1.333666.'43'(1.071335) + 1.447552.'42'(0.182815) + 0.428571.'45'(0.000000) + 0.299700.'49'(0.000000) + 0) <= 2.097902 ('45')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.927572.'50'(0.182815) + 1.188312.'46'(0.182815) + 1.162837.'42'(0.182815) + 1.790709.'45'(0.000000) + 0) <= 0.599401 ('47')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.804695.'43'(1.071335) + 0.993506.'45'(0.000000) + 0.427073.'48'(0.000000) + 2.357143.'49'(0.000000) + 0) <= 2.447552 ('41')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.353646.'50'(0.182815) + 2.229770.'50'(0.182815) + 1.585415.'47'(0.380694) + 0.602398.'46'(0.182815) + 0.416583.'43'(1.071335) + 1.489510.'45'(0.000000) + 0) <= 4.485514 ('50')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.954545.'46'(0.182815) + 0.761239.'44'(0.380694) + 1.290210.'43'(1.071335) + 1.020480.'49'(0.000000) + 0) <= 6.933067 ('46')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.075924.'47'(0.380694) + 0) <= 4.485514 ('43')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '50'(1.000000) : 0.182815
+> [0.000000]: [surf_maxmin/DEBUG] '47'(1.000000) : 0.380694
+> [0.000000]: [surf_maxmin/DEBUG] '46'(1.000000) : 0.182815
+> [0.000000]: [surf_maxmin/DEBUG] '44'(1.000000) : 0.380694
+> [0.000000]: [surf_maxmin/DEBUG] '43'(1.000000) : 1.071335
+> [0.000000]: [surf_maxmin/DEBUG] '42'(1.000000) : 0.182815
+> [0.000000]: [surf_maxmin/DEBUG] '41'(1.000000) : 0.380694
+> [0.000000]: [surf_maxmin/DEBUG] '45'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '48'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '49'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '54' usage: 5.379620 remaining: 3.456543 concurrency: 3<=3<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '53' usage: 4.633367 remaining: 6.793207 concurrency: 3<=3<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '57' usage: 6.217283 remaining: 7.452547 concurrency: 4<=4<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '58' usage: 5.442557 remaining: 4.255744 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '55' usage: 3.918581 remaining: 3.636364 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '59' usage: 6.424076 remaining: 1.248751 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '60' usage: 3.827173 remaining: 7.262737 concurrency: 1<=1<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '52' usage: 5.824675 remaining: 6.383616 concurrency: 3<=3<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '56' usage: 2.324176 remaining: 0.769231 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '51' usage: 1.348651 remaining: 4.935065 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] var=52, var->bound=-1.000000, var->weight=1.000000, min_usage=0.194386, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=53, var->bound=-1.000000, var->weight=1.000000, min_usage=0.194386, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=56, var->bound=-1.000000, var->weight=1.000000, min_usage=0.194386, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=57, var->bound=-1.000000, var->weight=1.000000, min_usage=0.194386, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=59, var->bound=-1.000000, var->weight=1.000000, min_usage=0.194386, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (52) value to 0.194386
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.194386, Var(52)->weight: 1.000000, Var(52)->value: 0.194386 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (53) value to 0.194386
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.194386, Var(53)->weight: 1.000000, Var(53)->value: 0.194386 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (56) value to 0.194386
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.194386, Var(56)->weight: 1.000000, Var(56)->value: 0.194386 
+> [0.000000]: [surf_maxmin/DEBUG] index: 9 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 4.672906 bound: 4.935065  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (57) value to 0.194386
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.194386, Var(57)->weight: 1.000000, Var(57)->value: 0.194386 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (59) value to 0.194386
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.194386, Var(59)->weight: 1.000000, Var(59)->value: 0.194386 
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 1.248751  
+> [0.000000]: [surf_maxmin/DEBUG] var=54, var->bound=-1.000000, var->weight=1.000000, min_usage=0.330969, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (54) value to 0.330969
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.330969, Var(54)->weight: 1.000000, Var(54)->value: 0.330969 
+> [0.000000]: [surf_maxmin/DEBUG] index: 7 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 5.027881 bound: 6.383616  
+> [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 6.410722 bound: 7.262737  
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 0.769231  
+> [0.000000]: [surf_maxmin/DEBUG] var=51, var->bound=-1.000000, var->weight=1.000000, min_usage=1.219766, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=58, var->bound=-1.000000, var->weight=1.000000, min_usage=1.219766, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (51) value to 1.219766
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.219766, Var(51)->weight: 1.000000, Var(51)->value: 1.219766 
+> [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 1.051250 bound: 4.255744  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (58) value to 1.219766
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.219766, Var(58)->weight: 1.000000, Var(58)->value: 1.219766 
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 2.727287 bound: 6.793207  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 3.456543  
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 1.596251 bound: 3.636364  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 3.017275 bound: 7.452547  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '59'(1.000000) '58'(1.000000) '57'(1.000000) '56'(1.000000) '54'(1.000000) '53'(1.000000) '52'(1.000000) '51'(1.000000) '55'(0.000000) '60'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.812188.'58'(1.219766) + 1.428072.'56'(0.194386) + 1.600400.'53'(0.194386) + 1.538961.'51'(1.219766) + 0) <= 3.456543 ('54')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.462537.'58'(1.219766) + 1.546454.'57'(0.194386) + 1.624376.'51'(1.219766) + 1.315684.'55'(0.000000) + 0.594905.'60'(0.000000) + 0) <= 6.793207 ('53')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.720280.'58'(1.219766) + 1.975025.'57'(0.194386) + 1.095405.'52'(0.194386) + 1.426573.'51'(1.219766) + 0) <= 7.452547 ('57')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.335165.'59'(0.194386) + 2.013986.'57'(0.194386) + 2.093407.'51'(1.219766) + 1.660340.'60'(0.000000) + 0) <= 4.255744 ('58')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.203297.'59'(0.194386) + 1.246753.'58'(1.219766) + 0.227772.'53'(0.194386) + 1.240759.'52'(0.194386) + 1.549451.'55'(0.000000) + 0) <= 3.636364 ('55')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.743257.'59'(0.194386) + 2.105395.'57'(0.194386) + 1.020480.'56'(0.194386) + 0.993506.'53'(0.194386) + 1.561439.'52'(0.194386) + 0) <= 1.248751 ('59')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.951548.'56'(0.194386) + 0.791209.'54'(0.330969) + 2.084416.'52'(0.194386) + 0) <= 7.262737 ('60')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.022977.'59'(0.194386) + 1.636364.'54'(0.330969) + 2.165335.'53'(0.194386) + 1.248252.'60'(0.000000) + 0) <= 6.383616 ('52')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.159840.'54'(0.330969) + 1.164336.'54'(0.330969) + 0.002997.'55'(0.000000) + 2.099401.'60'(0.000000) + 0) <= 0.769231 ('56')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.348651.'56'(0.194386) + 1.628871.'55'(0.000000) + 0) <= 4.935065 ('51')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '59'(1.000000) : 0.194386
+> [0.000000]: [surf_maxmin/DEBUG] '58'(1.000000) : 1.219766
+> [0.000000]: [surf_maxmin/DEBUG] '57'(1.000000) : 0.194386
+> [0.000000]: [surf_maxmin/DEBUG] '56'(1.000000) : 0.194386
+> [0.000000]: [surf_maxmin/DEBUG] '54'(1.000000) : 0.330969
+> [0.000000]: [surf_maxmin/DEBUG] '53'(1.000000) : 0.194386
+> [0.000000]: [surf_maxmin/DEBUG] '52'(1.000000) : 0.194386
+> [0.000000]: [surf_maxmin/DEBUG] '51'(1.000000) : 1.219766
+> [0.000000]: [surf_maxmin/DEBUG] '55'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '60'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '66' usage: 8.571429 remaining: 7.002997 concurrency: 4<=4<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '65' usage: 4.924076 remaining: 2.937063 concurrency: 2<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '69' usage: 3.437562 remaining: 6.843157 concurrency: 0<=0<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '62' usage: 7.347153 remaining: 5.684316 concurrency: 4<=4<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '68' usage: 5.917582 remaining: 5.944056 concurrency: 3<=3<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '64' usage: 2.562438 remaining: 7.852148 concurrency: 1<=1<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '61' usage: 1.570430 remaining: 7.422577 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '63' usage: 3.103397 remaining: 5.574426 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '70' usage: 1.173327 remaining: 3.576424 concurrency: 1<=2<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '67' usage: 0.000000 remaining: 5.854146 concurrency: 0<=0<=4
+> [0.000000]: [surf_maxmin/DEBUG] var=61, var->bound=-1.000000, var->weight=1.000000, min_usage=0.596470, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=64, var->bound=-1.000000, var->weight=1.000000, min_usage=0.596470, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (61) value to 0.596470
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.596470, Var(61)->weight: 1.000000, Var(61)->value: 0.596470 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (64) value to 0.596470
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.596470, Var(64)->weight: 1.000000, Var(64)->value: 0.596470 
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 2.937063  
+> [0.000000]: [surf_maxmin/DEBUG] var=62, var->bound=-1.000000, var->weight=1.000000, min_usage=0.840184, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=66, var->bound=-1.000000, var->weight=1.000000, min_usage=0.840184, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=67, var->bound=-1.000000, var->weight=1.000000, min_usage=0.840184, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (62) value to 0.840184
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.840184, Var(62)->weight: 1.000000, Var(62)->value: 0.840184 
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 5.699228 bound: 7.852148  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (66) value to 0.840184
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.840184, Var(66)->weight: 1.000000, Var(66)->value: 0.840184 
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 2.590613 bound: 3.576424  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (67) value to 0.840184
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.840184, Var(67)->weight: 1.000000, Var(67)->value: 0.840184 
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 3.285095 bound: 5.574426  
+> [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 0.000000 bound: 5.684316  
+> [0.000000]: [surf_maxmin/DEBUG] var=63, var->bound=-1.000000, var->weight=1.000000, min_usage=1.205488, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (63) value to 1.205488
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.205488, Var(63)->weight: 1.000000, Var(63)->value: 1.205488 
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 3.912988 bound: 6.843157  
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 5.944056  
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 5.529444 bound: 7.422577  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.612830 bound: 7.002997  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '67'(1.000000) '66'(1.000000) '64'(1.000000) '63'(1.000000) '62'(1.000000) '61'(1.000000) '65'(0.000000) '68'(0.000000) '69'(0.000000) '70'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.553447.'67'(0.840184) + 2.235764.'64'(0.596470) + 1.075924.'63'(1.205488) + 2.706294.'61'(0.596470) + 0) <= 7.002997 ('66')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.377123.'64'(0.596470) + 2.944555.'64'(0.596470) + 0.602398.'61'(0.596470) + 1.300699.'65'(0.000000) + 2.515984.'68'(0.000000) + 0) <= 2.937063 ('65')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.738761.'67'(0.840184) + 0.690809.'66'(0.840184) + 0.738761.'63'(1.205488) + 0.334166.'62'(0.840184) + 0.935065.'61'(0.596470) + 1.874625.'69'(0.000000) + 0) <= 6.843157 ('69')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.288212.'67'(0.840184) + 1.150849.'66'(0.840184) + 1.903097.'62'(0.840184) + 2.004995.'61'(0.596470) + 0.812188.'68'(0.000000) + 0) <= 5.684316 ('62')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.354645.'66'(0.840184) + 2.661339.'63'(1.205488) + 1.901598.'62'(0.840184) + 0.185814.'65'(0.000000) + 0.320679.'70'(0.000000) + 0) <= 5.944056 ('68')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.562438.'62'(0.840184) + 0.791209.'68'(0.000000) + 0) <= 7.852148 ('64')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.570430.'63'(1.205488) + 0) <= 7.422577 ('61')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.798202.'67'(0.840184) + 1.305195.'64'(0.596470) + 2.865135.'65'(0.000000) + 0.349151.'65'(0.000000) + 1.861139.'69'(0.000000) + 0.719281.'69'(0.000000) + 0) <= 5.574426 ('63')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.173327.'66'(0.840184) + 0.686314.'68'(0.000000) + 1.131369.'70'(0.000000) + 0) <= 3.576424 ('70')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.444555.'69'(0.000000) + 2.076923.'70'(0.000000) + 1.162837.'70'(0.000000) + 0) <= 5.854146 ('67')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '67'(1.000000) : 0.840184
+> [0.000000]: [surf_maxmin/DEBUG] '66'(1.000000) : 0.840184
+> [0.000000]: [surf_maxmin/DEBUG] '64'(1.000000) : 0.596470
+> [0.000000]: [surf_maxmin/DEBUG] '63'(1.000000) : 1.205488
+> [0.000000]: [surf_maxmin/DEBUG] '62'(1.000000) : 0.840184
+> [0.000000]: [surf_maxmin/DEBUG] '61'(1.000000) : 0.596470
+> [0.000000]: [surf_maxmin/DEBUG] '65'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '68'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '69'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '70'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '73' usage: 5.087413 remaining: 7.882118 concurrency: 2<=2<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '72' usage: 4.393606 remaining: 8.511489 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '76' usage: 4.218282 remaining: 4.355644 concurrency: 2<=2<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '71' usage: 4.032468 remaining: 3.446553 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '77' usage: 6.539461 remaining: 7.782218 concurrency: 3<=3<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '79' usage: 7.630370 remaining: 7.262737 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '78' usage: 3.404595 remaining: 1.168831 concurrency: 1<=1<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '80' usage: 3.623377 remaining: 7.912088 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '75' usage: 4.765235 remaining: 0.539461 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '74' usage: 1.476024 remaining: 1.428571 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] var=74, var->bound=-1.000000, var->weight=1.000000, min_usage=0.113208, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=75, var->bound=-1.000000, var->weight=1.000000, min_usage=0.113208, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=76, var->bound=-1.000000, var->weight=1.000000, min_usage=0.113208, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=77, var->bound=-1.000000, var->weight=1.000000, min_usage=0.113208, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (74) value to 0.113208
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.113208, Var(74)->weight: 1.000000, Var(74)->value: 0.113208 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (75) value to 0.113208
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.113208, Var(75)->weight: 1.000000, Var(75)->value: 0.113208 
+> [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 0.783405 bound: 1.168831  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (76) value to 0.113208
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.113208, Var(76)->weight: 1.000000, Var(76)->value: 0.113208 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (77) value to 0.113208
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.113208, Var(77)->weight: 1.000000, Var(77)->value: 0.113208 
+> [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 1.261474 bound: 1.428571  
+> [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 0.000000 bound: 0.539461  
+> [0.000000]: [surf_maxmin/DEBUG] var=71, var->bound=-1.000000, var->weight=1.000000, min_usage=0.854701, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=73, var->bound=-1.000000, var->weight=1.000000, min_usage=0.854701, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (71) value to 0.854701
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.854701, Var(71)->weight: 1.000000, Var(71)->value: 0.854701 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (73) value to 0.854701
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.854701, Var(73)->weight: 1.000000, Var(73)->value: 0.854701 
+> [0.000000]: [surf_maxmin/DEBUG] index: 3 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.000000 bound: 3.446553  
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 2.798086 bound: 4.355644  
+> [0.000000]: [surf_maxmin/DEBUG] var=72, var->bound=-1.000000, var->weight=1.000000, min_usage=1.655984, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=80, var->bound=-1.000000, var->weight=1.000000, min_usage=1.655984, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (72) value to 1.655984
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.655984, Var(72)->weight: 1.000000, Var(72)->value: 1.655984 
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 3.146068 bound: 7.882118  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (80) value to 1.655984
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.655984, Var(80)->weight: 1.000000, Var(80)->value: 1.655984 
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 3.590351 bound: 7.262737  
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 5.451282 bound: 7.912088  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 0.000000 bound: 7.782218  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 2.454483 bound: 8.511489  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '80'(1.000000) '77'(1.000000) '76'(1.000000) '75'(1.000000) '74'(1.000000) '73'(1.000000) '72'(1.000000) '71'(1.000000) '78'(0.000000) '79'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.313686.'73'(0.854701) + 0.484016.'72'(1.655984) + 2.289710.'71'(0.854701) + 0) <= 7.882118 ('73')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.665335.'80'(1.655984) + 0.424076.'72'(1.655984) + 1.783217.'72'(1.655984) + 1.520979.'71'(0.854701) + 0.762737.'78'(0.000000) + 0) <= 8.511489 ('72')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.408591.'76'(0.113208) + 1.353147.'74'(0.113208) + 0.837662.'73'(0.854701) + 0.618881.'71'(0.854701) + 0) <= 4.355644 ('76')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.401099.'73'(0.854701) + 2.631369.'71'(0.854701) + 1.162837.'78'(0.000000) + 0) <= 3.446553 ('71')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.243257.'80'(1.655984) + 0.362637.'77'(0.113208) + 1.612388.'75'(0.113208) + 2.321179.'72'(1.655984) + 1.168831.'79'(0.000000) + 0) <= 7.782218 ('77')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.551449.'80'(1.655984) + 1.489510.'77'(0.113208) + 0.630869.'76'(0.113208) + 2.318182.'75'(0.113208) + 2.640360.'73'(0.854701) + 0) <= 7.262737 ('79')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.867632.'75'(0.113208) + 2.536963.'74'(0.113208) + 0) <= 1.168831 ('78')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.329171.'80'(1.655984) + 1.086414.'76'(0.113208) + 1.207792.'74'(0.113208) + 0) <= 7.912088 ('80')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.579421.'77'(0.113208) + 1.362138.'76'(0.113208) + 1.609391.'75'(0.113208) + 0.214286.'74'(0.113208) + 1.036963.'78'(0.000000) + 1.843157.'79'(0.000000) + 0) <= 0.539461 ('75')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.476024.'77'(0.113208) + 1.489510.'78'(0.000000) + 0.974026.'79'(0.000000) + 1.212288.'79'(0.000000) + 0) <= 1.428571 ('74')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '80'(1.000000) : 1.655984
+> [0.000000]: [surf_maxmin/DEBUG] '77'(1.000000) : 0.113208
+> [0.000000]: [surf_maxmin/DEBUG] '76'(1.000000) : 0.113208
+> [0.000000]: [surf_maxmin/DEBUG] '75'(1.000000) : 0.113208
+> [0.000000]: [surf_maxmin/DEBUG] '74'(1.000000) : 0.113208
+> [0.000000]: [surf_maxmin/DEBUG] '73'(1.000000) : 0.854701
+> [0.000000]: [surf_maxmin/DEBUG] '72'(1.000000) : 1.655984
+> [0.000000]: [surf_maxmin/DEBUG] '71'(1.000000) : 0.854701
+> [0.000000]: [surf_maxmin/DEBUG] '78'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '79'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '86' usage: 5.734765 remaining: 0.609391 concurrency: 4<=4<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '85' usage: 7.075924 remaining: 3.776224 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '89' usage: 2.815684 remaining: 8.081918 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '88' usage: 6.223277 remaining: 1.458541 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '81' usage: 3.684815 remaining: 5.934066 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '84' usage: 5.168332 remaining: 0.189810 concurrency: 3<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '90' usage: 1.853646 remaining: 4.025974 concurrency: 1<=2<=-1
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '82' usage: 3.173826 remaining: 7.812188 concurrency: 2<=2<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '87' usage: 2.877123 remaining: 5.074925 concurrency: 1<=2<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '83' usage: 1.522478 remaining: 0.199800 concurrency: 1<=1<=3
+> [0.000000]: [surf_maxmin/DEBUG] var=83, var->bound=-1.000000, var->weight=1.000000, min_usage=0.036726, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=85, var->bound=-1.000000, var->weight=1.000000, min_usage=0.036726, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=89, var->bound=-1.000000, var->weight=1.000000, min_usage=0.036726, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (83) value to 0.036726
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036726, Var(83)->weight: 1.000000, Var(83)->value: 0.036726 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (85) value to 0.036726
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036726, Var(85)->weight: 1.000000, Var(85)->value: 0.036726 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (89) value to 0.036726
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.036726, Var(89)->weight: 1.000000, Var(89)->value: 0.036726 
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 0.000000 bound: 0.189810  
+> [0.000000]: [surf_maxmin/DEBUG] index: 5 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.143886 bound: 0.199800  
+> [0.000000]: [surf_maxmin/DEBUG] var=81, var->bound=-1.000000, var->weight=1.000000, min_usage=0.133180, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=82, var->bound=-1.000000, var->weight=1.000000, min_usage=0.133180, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=84, var->bound=-1.000000, var->weight=1.000000, min_usage=0.133180, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (81) value to 0.133180
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.133180, Var(81)->weight: 1.000000, Var(81)->value: 0.133180 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (82) value to 0.133180
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.133180, Var(82)->weight: 1.000000, Var(82)->value: 0.133180 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (84) value to 0.133180
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.133180, Var(84)->weight: 1.000000, Var(84)->value: 0.133180 
+> [0.000000]: [surf_maxmin/DEBUG] index: 7 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 7.532445 bound: 7.812188  
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 7.706925 bound: 8.081918  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 0.609391  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 4.876179 bound: 5.074925  
+> [0.000000]: [surf_maxmin/DEBUG] var=88, var->bound=-1.000000, var->weight=1.000000, min_usage=0.552648, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (88) value to 0.552648
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.552648, Var(88)->weight: 1.000000, Var(88)->value: 0.552648 
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 2.232278 bound: 3.776224  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 5.081262 bound: 5.934066  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 3.095879 bound: 4.025974  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.000000 bound: 1.458541  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '89'(1.000000) '88'(1.000000) '85'(1.000000) '84'(1.000000) '83'(1.000000) '82'(1.000000) '81'(1.000000) '86'(0.000000) '87'(0.000000) '90'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.600400.'85'(0.036726) + 1.288711.'84'(0.133180) + 1.771229.'82'(0.133180) + 1.074426.'81'(0.133180) + 0.878122.'86'(0.000000) + 1.260240.'87'(0.000000) + 0) <= 0.609391 ('86')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.967532.'88'(0.552648) + 2.319680.'83'(0.036726) + 0.597902.'82'(0.133180) + 0.052448.'81'(0.133180) + 2.138362.'81'(0.133180) + 0) <= 3.776224 ('85')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.621379.'84'(0.133180) + 1.194306.'81'(0.133180) + 0.600899.'87'(0.000000) + 0) <= 8.081918 ('89')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.938062.'89'(0.036726) + 2.073926.'88'(0.552648) + 1.552448.'85'(0.036726) + 1.658841.'82'(0.133180) + 0.714785.'87'(0.000000) + 0) <= 1.458541 ('88')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.314186.'88'(0.552648) + 1.961538.'83'(0.036726) + 0.409091.'82'(0.133180) + 1.278222.'86'(0.000000) + 0) <= 5.934066 ('81')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.907592.'89'(0.036726) + 2.123377.'85'(0.036726) + 1.137363.'83'(0.036726) + 0.212787.'90'(0.000000) + 0) <= 0.189810 ('84')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.670829.'88'(0.552648) + 0.182817.'83'(0.036726) + 0.954545.'86'(0.000000) + 2.270230.'90'(0.000000) + 0) <= 4.025974 ('90')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.482018.'89'(0.036726) + 1.691808.'84'(0.133180) + 0.773227.'86'(0.000000) + 2.360140.'87'(0.000000) + 0) <= 7.812188 ('82')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.912088.'85'(0.036726) + 0.965035.'84'(0.133180) + 4.087912.'90'(0.000000) + 0.058442.'90'(0.000000) + 0) <= 5.074925 ('87')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.522478.'89'(0.036726) + 0) <= 0.199800 ('83')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '89'(1.000000) : 0.036726
+> [0.000000]: [surf_maxmin/DEBUG] '88'(1.000000) : 0.552648
+> [0.000000]: [surf_maxmin/DEBUG] '85'(1.000000) : 0.036726
+> [0.000000]: [surf_maxmin/DEBUG] '84'(1.000000) : 0.133180
+> [0.000000]: [surf_maxmin/DEBUG] '83'(1.000000) : 0.036726
+> [0.000000]: [surf_maxmin/DEBUG] '82'(1.000000) : 0.133180
+> [0.000000]: [surf_maxmin/DEBUG] '81'(1.000000) : 0.133180
+> [0.000000]: [surf_maxmin/DEBUG] '86'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '87'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '90'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
+> [0.000000]: [surf_maxmin/DEBUG] Active constraints : 10
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '99' usage: 6.451049 remaining: 0.949051 concurrency: 2<=2<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '94' usage: 4.122378 remaining: 4.585415 concurrency: 2<=3<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '100' usage: 4.119381 remaining: 5.714286 concurrency: 1<=1<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '95' usage: 6.350649 remaining: 4.195804 concurrency: 4<=4<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '97' usage: 2.192308 remaining: 1.198801 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '98' usage: 1.356144 remaining: 8.541459 concurrency: 1<=1<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '92' usage: 3.732767 remaining: 0.649351 concurrency: 2<=2<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '91' usage: 1.179321 remaining: 8.421578 concurrency: 1<=1<=4
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '96' usage: 2.234266 remaining: 3.876124 concurrency: 1<=1<=3
+> [0.000000]: [surf_maxmin/DEBUG] Constraint '93' usage: 4.747253 remaining: 8.971029 concurrency: 3<=3<=3
+> [0.000000]: [surf_maxmin/DEBUG] var=91, var->bound=-1.000000, var->weight=1.000000, min_usage=0.147116, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=94, var->bound=-1.000000, var->weight=1.000000, min_usage=0.147116, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] var=97, var->bound=-1.000000, var->weight=1.000000, min_usage=0.147116, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (91) value to 0.147116
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.147116, Var(91)->weight: 1.000000, Var(91)->value: 0.147116 
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (94) value to 0.147116
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.147116, Var(94)->weight: 1.000000, Var(94)->value: 0.147116 
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 3.978948 bound: 4.585415  
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (97) value to 0.147116
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.147116, Var(97)->weight: 1.000000, Var(97)->value: 0.147116 
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 0.949051  
+> [0.000000]: [surf_maxmin/DEBUG] var=93, var->bound=-1.000000, var->weight=1.000000, min_usage=0.194272, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (93) value to 0.194272
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.194272, Var(93)->weight: 1.000000, Var(93)->value: 0.194272 
+> [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 0.000000 bound: 0.649351  
+> [0.000000]: [surf_maxmin/DEBUG] index: 6 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 8.192469 bound: 8.421578  
+> [0.000000]: [surf_maxmin/DEBUG] var=92, var->bound=-1.000000, var->weight=1.000000, min_usage=0.546822, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (92) value to 0.546822
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 0.546822, Var(92)->weight: 1.000000, Var(92)->value: 0.546822 
+> [0.000000]: [surf_maxmin/DEBUG] index: 4 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 1.198801  
+> [0.000000]: [surf_maxmin/DEBUG] index: 4 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 7.799890 bound: 8.541459  
+> [0.000000]: [surf_maxmin/DEBUG] var=95, var->bound=-1.000000, var->weight=1.000000, min_usage=1.734854, var->bound*var->weight=-1.000000
+> [0.000000]: [surf_maxmin/DEBUG] Setting var (95) value to 1.734854
+> 
+> [0.000000]: [surf_maxmin/DEBUG] Min usage: 1.734854, Var(95)->weight: 1.000000, Var(95)->value: 1.734854 
+> [0.000000]: [surf_maxmin/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 3.148664 bound: 5.714286  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 3.876124  
+> [0.000000]: [surf_maxmin/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 6.621449 bound: 8.971029  
+> [0.000000]: [surf_maxmin/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.691691 bound: 4.195804  
+> [0.000000]: [surf_maxmin/DEBUG] MAX-MIN ( '97'(1.000000) '95'(1.000000) '94'(1.000000) '93'(1.000000) '92'(1.000000) '91'(1.000000) '96'(0.000000) '98'(0.000000) '99'(0.000000) '100'(0.000000) )
+> [0.000000]: [surf_maxmin/DEBUG] Constraints
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.201299.'97'(0.147116) + 0.543956.'94'(0.147116) + 0.600899.'91'(0.147116) + 3.104895.'91'(0.147116) + 1.733766.'96'(0.000000) + 0) <= 0.949051 ('99')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.321678.'94'(0.147116) + 2.800699.'91'(0.147116) + 2.343656.'96'(0.000000) + 1.960040.'99'(0.000000) + 1.711289.'100'(0.000000) + 0) <= 4.585415 ('94')
+> [0.000000]: [surf_maxmin/DEBUG] 	(0.882617.'95'(1.734854) + 0.873626.'94'(0.147116) + 1.396603.'92'(0.546822) + 0.966533.'91'(0.147116) + 0) <= 5.714286 ('100')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.147852.'95'(1.734854) + 2.036464.'94'(0.147116) + 0.382118.'93'(0.194272) + 1.087912.'93'(0.194272) + 1.696304.'92'(0.546822) + 1.083417.'96'(0.000000) + 1.383117.'98'(0.000000) + 0.996503.'99'(0.000000) + 0) <= 4.195804 ('95')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.192308.'92'(0.546822) + 0) <= 1.198801 ('97')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.356144.'92'(0.546822) + 1.077423.'96'(0.000000) + 1.757742.'98'(0.000000) + 0.403097.'98'(0.000000) + 0) <= 8.541459 ('98')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.607892.'97'(0.147116) + 2.124875.'93'(0.194272) + 0.008991.'98'(0.000000) + 1.888112.'99'(0.000000) + 1.177822.'100'(0.000000) + 0) <= 0.649351 ('92')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.179321.'93'(0.194272) + 0.905095.'99'(0.000000) + 2.109890.'100'(0.000000) + 0) <= 8.421578 ('91')
+> [0.000000]: [surf_maxmin/DEBUG] 	(2.234266.'95'(1.734854) + 0) <= 3.876124 ('96')
+> [0.000000]: [surf_maxmin/DEBUG] 	(1.408591.'97'(0.147116) + 2.298701.'97'(0.147116) + 1.039960.'95'(1.734854) + 0.251748.'100'(0.000000) + 0) <= 8.971029 ('93')
+> [0.000000]: [surf_maxmin/DEBUG] Variables
+> [0.000000]: [surf_maxmin/DEBUG] '97'(1.000000) : 0.147116
+> [0.000000]: [surf_maxmin/DEBUG] '95'(1.000000) : 1.734854
+> [0.000000]: [surf_maxmin/DEBUG] '94'(1.000000) : 0.147116
+> [0.000000]: [surf_maxmin/DEBUG] '93'(1.000000) : 0.194272
+> [0.000000]: [surf_maxmin/DEBUG] '92'(1.000000) : 0.546822
+> [0.000000]: [surf_maxmin/DEBUG] '91'(1.000000) : 0.147116
+> [0.000000]: [surf_maxmin/DEBUG] '96'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '98'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '99'(0.000000) : 0.000000
+> [0.000000]: [surf_maxmin/DEBUG] '100'(0.000000) : 0.000000
+> Starting 0: (807)
+> Starting to solve(813)
+> Starting 1: (614)
+> Starting to solve(68)
+> Starting 2: (421)
+> Starting to solve(310)
+> Starting 3: (228)
+> Starting to solve(952)
+> Starting 4: (35)
+> Starting to solve(203)
+> Starting 5: (842)
+> Starting to solve(329)
+> Starting 6: (649)
+> Starting to solve(908)
+> Starting 7: (456)
+> Starting to solve(563)
+> Starting 8: (263)
+> Starting to solve(118)
+> Starting 9: (70)
+> Starting to solve(117)
+> 10x One shot execution time for a total of 10 constraints, 10 variables with 4 active constraint each, concurrency in [2,6] and max concurrency share 2
+
