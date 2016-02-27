@@ -1,6 +1,6 @@
 #! ./tesh
 
-! timeout 60
+! timeout 50
 ! expect return 0
 $ ./maxmin_bench big 1
 > Starting 0: (807)

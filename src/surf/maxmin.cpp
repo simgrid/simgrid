@@ -844,7 +844,7 @@ void lmm_solve(lmm_system_t sys)
           sys->keep_track->push_back(*action);
       }
     }
-    XBT_DEBUG("Constraint '%d' usage: %f remaining: %f ", cnst->id_int, cnst->usage, cnst->remaining);
+    XBT_DEBUG("Constraint '%d' usage: %f remaining: %f concurrency: %i<=%i<=%i", cnst->id_int, cnst->usage, cnst->remaining,cnst->concurrency_current,cnst->concurrency_maximum,cnst->concurrency_limit);
     /* Saturated constraints update */
 
     if(cnst->usage > 0) {

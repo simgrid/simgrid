@@ -46,8 +46,6 @@ void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_li
   int *used = xbt_new0(int, nb_cnst);
   int i, j, k,l;
   int concurrency_share;
-
-  char buf[1000];
   
   Sys = lmm_system_new(1);
 
@@ -88,23 +86,20 @@ void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_li
   lmm_solve(Sys);
   date = xbt_os_time() * 1000000 - date;
 
-  if(mode==1){
+  if(mode==2){
     printf("Max concurrency:\n");
     l=0;
-    buf[0]=0;
     for (i = 0; i < nb_cnst; i++) {
       j=lmm_constraint_concurrency_maximum_get(cnst[i]);
       k=lmm_constraint_concurrency_limit_get(cnst[i]);
       xbt_assert(k<0 || j<=k);
       if(j>l)
 	l=j;
-      sprintf(buf+strlen(buf),"(%i):%i/%i ",i,j,k);
+      printf("(%i):%i/%i ",i,j,k);
       lmm_constraint_concurrency_maximum_reset(cnst[i]);
       xbt_assert(!lmm_constraint_concurrency_maximum_get(cnst[i]));
-      if(i%10==9) {
-	printf("%s\n",buf);
-	buf[0]=0;
-      }
+      if(i%10==9)
+	printf("\n");
     }
     printf("\nTotal maximum concurrency is %i\n",l);
 
