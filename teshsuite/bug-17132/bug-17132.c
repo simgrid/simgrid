@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* Bug report: https://gforge.inria.fr/tracker/index.php?func=detail&aid=17132&group_id=12&atid=165 */
+ 
 #include "xbt/log.h"
 #include <stdio.h>
 #include <mpi.h>
