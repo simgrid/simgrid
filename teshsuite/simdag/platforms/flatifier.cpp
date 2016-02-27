@@ -166,9 +166,7 @@ int main(int argc, char **argv)
           for(i=0;i<xbt_dynar_length(route) ;i++){
             void *link = xbt_dynar_get_as(route,i,void *);
 
-            char *link_name = xbt_strdup(surf_resource_name((surf_cpp_resource_t)link));
-            printf("<%s id=\"%s\"/>",link_ctn,link_name);
-            free(link_name);
+            printf("<%s id=\"%s\"/>",link_ctn,surf_resource_name((surf_cpp_resource_t)link));
           }
           printf("\n  </route>\n");
         }
@@ -200,9 +198,7 @@ int main(int argc, char **argv)
             for(i=0;i<xbt_dynar_length(route) ;i++){
               void *link = xbt_dynar_get_as(route,i,void *);
 
-              char *link_name = xbt_strdup(surf_resource_name((surf_cpp_resource_t)link));
-              printf("<%s id=\"%s\"/>",link_ctn,link_name);
-              free(link_name);
+              printf("<%s id=\"%s\"/>",link_ctn,surf_resource_name((surf_cpp_resource_t)link));
             }
             printf("\n  </route>\n");
           }
@@ -215,9 +211,7 @@ int main(int argc, char **argv)
           for(i=0;i<xbt_dynar_length(route) ;i++){
             void *link = xbt_dynar_get_as(route,i,void *);
 
-            char *link_name = xbt_strdup(surf_resource_name((surf_cpp_resource_t)link));
-            printf("<%s id=\"%s\"/>",link_ctn,link_name);
-            free(link_name);
+            printf("<%s id=\"%s\"/>",link_ctn,surf_resource_name((surf_cpp_resource_t)link));
           }
           printf("\n  </route>\n");
         }
