@@ -8,8 +8,8 @@ $ ./replay_multiple description_file ${srcdir:=.}/../../platforms/small_platform
 > [0.000000] [msg_test/INFO] Initializing instance 1 of size 32
 > [0.000000] [msg_test/INFO] Initializing instance 2 of size 32
 > [0.000000] [smpi_kernel/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/running_power:<flops>" to set its value.Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.
-> [Jupiter:2:(52) 1140699.561082] [smpi_replay/INFO] Simulation time 1124382.208410
-> [1140699.561082] [msg_test/INFO] Simulation time 1.1407e+06
+> [Jupiter:2:(52) 1140688.493796] [smpi_replay/INFO] Simulation time 1124371.141124
+> [1140688.493796] [msg_test/INFO] Simulation time 1.14069e+06
 
 
 $ rm -f deployment.xml
