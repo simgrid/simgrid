@@ -1,9 +1,9 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/simix/smx_private.h" /* MSG_task_listen looks inside the rdv directly. Not clean. */
 #include "msg_private.h"
 #include "mc/mc.h"
 #include "xbt/log.h"
@@ -826,7 +826,8 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
  */
 int MSG_task_listen(const char *alias)
 {
-  return !MSG_mailbox_is_empty(MSG_mailbox_get_by_alias(alias));
+  smx_rdv_t rdv = MSG_mailbox_get_by_alias(alias);
+  return !MSG_mailbox_is_empty(rdv) || (rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0);
 }
 
 /** \ingroup msg_task_usage

@@ -1037,6 +1037,7 @@ set(CMAKEFILES_TXT
   teshsuite/msg/get_sender/CMakeLists.txt
   teshsuite/msg/host_on_off/CMakeLists.txt
   teshsuite/msg/host_on_off_processes/CMakeLists.txt
+  teshsuite/msg/listen_async/CMakeLists.txt
   teshsuite/msg/pid/CMakeLists.txt
   teshsuite/msg/process/CMakeLists.txt
   teshsuite/msg/process_join/CMakeLists.txt

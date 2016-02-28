@@ -281,6 +281,7 @@ teshsuite/msg/host_on_off/host_on_off
 teshsuite/msg/host_on_off/host_on_off_recv
 teshsuite/msg/host_on_off/host_on_off_wait
 teshsuite/msg/host_on_off_processes/host_on_off_processes
+teshsuite/msg/listen_async/listen_async
 teshsuite/msg/pid/pid
 teshsuite/msg/process_join/process_join
 teshsuite/msg/process/process
