@@ -45,7 +45,7 @@ done
 cd $WORKSPACE/build
 
 ### Proceed with the tests
-ctest -D ExperimentalStart
+ctest -D ExperimentalStart || true
 
 cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
@@ -54,7 +54,7 @@ cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON \
       -Denable_memcheck_xml=ON $WORKSPACE
 
 ctest -D ExperimentalBuild -V
-ctest -D ExperimentalMemCheck
+ctest -D ExperimentalMemCheck || true
 
 cd $WORKSPACE/build
 if [ -f Testing/TAG ] ; then
@@ -63,7 +63,7 @@ if [ -f Testing/TAG ] ; then
 fi
 
 make clean
-ctest -D ExperimentalStart
+ctest -D ExperimentalStart || true
 
 cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON -Denable_tracing=ON \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
@@ -72,8 +72,8 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON -Denable_traci
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=ON $WORKSPACE
 
 ctest -D ExperimentalBuild -V
-ctest -D ExperimentalTest
-ctest -D ExperimentalCoverage
+ctest -D ExperimentalTest || true
+ctest -D ExperimentalCoverage || true
 
 if [ -f Testing/TAG ] ; then
    gcovr -r .. --xml-pretty -e teshsuite.* -u -o $WORKSPACE/xml_coverage.xml
