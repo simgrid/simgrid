@@ -12,59 +12,59 @@
 #include "network_interface.hpp"
 
 namespace simgrid {
-namespace surf {
+  namespace surf {
 
-/***********
- * Classes *
- ***********/
- 
-class XBT_PRIVATE NetworkConstantModel;
-class XBT_PRIVATE NetworkConstantAction;
+    /***********
+     * Classes *
+     ***********/
 
-/*********
- * Model *
- *********/
-class NetworkConstantModel : public NetworkModel {
-public:
-  NetworkConstantModel()  : NetworkModel() { };
-  ~NetworkConstantModel() { }
+    class XBT_PRIVATE NetworkConstantModel;
+    class XBT_PRIVATE NetworkConstantAction;
 
-  Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
-  double next_occuring_event(double now) override;
-  bool next_occuring_event_isIdempotent() override {return true;}
-  void updateActionsState(double now, double delta) override;
+    /*********
+     * Model *
+     *********/
+    class NetworkConstantModel : public NetworkModel {
+    public:
+      NetworkConstantModel()  : NetworkModel() { };
+      ~NetworkConstantModel() { }
 
-  Link*
-  createLink(const char *name,
-      double bw_initial, tmgr_trace_t bw_trace,
-      double lat_initial, tmgr_trace_t lat_trace,
-      tmgr_trace_t state_trace,
-      e_surf_link_sharing_policy_t policy,
-      xbt_dict_t properties)          override { DIE_IMPOSSIBLE; }
-};
+      Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
+      double next_occuring_event(double now) override;
+      bool next_occuring_event_isIdempotent() override {return true;}
+      void updateActionsState(double now, double delta) override;
 
-/**********
- * Action *
- **********/
-class NetworkConstantAction : public NetworkAction {
-public:
-  NetworkConstantAction(NetworkConstantModel *model_, double size, double latency)
-  : NetworkAction(model_, size, false)
-  , m_latInit(latency)
-  {
-  m_latency = latency;
-  if (m_latency <= 0.0) {
-    p_stateSet = getModel()->getDoneActionSet();
-    p_stateSet->push_back(*this);
+      Link*
+      createLink(const char *name,
+          double bw_initial, tmgr_trace_t bw_trace,
+          double lat_initial, tmgr_trace_t lat_trace,
+          tmgr_trace_t state_trace,
+          e_surf_link_sharing_policy_t policy,
+          xbt_dict_t properties)          override { DIE_IMPOSSIBLE; }
+    };
+
+    /**********
+     * Action *
+     **********/
+    class NetworkConstantAction : public NetworkAction {
+    public:
+      NetworkConstantAction(NetworkConstantModel *model_, double size, double latency)
+    : NetworkAction(model_, size, false)
+    , m_latInit(latency)
+    {
+        m_latency = latency;
+        if (m_latency <= 0.0) {
+          p_stateSet = getModel()->getDoneActionSet();
+          p_stateSet->push_back(*this);
+        }
+        p_variable = NULL;
+    };
+      int unref() override;
+      void cancel() override;
+      double m_latInit;
+    };
+
   }
-  p_variable = NULL;
-  };
-  int unref() override;
-  void cancel() override;
-  double m_latInit;
-};
-
-}
 }
 
 #endif /* NETWORK_CONSTANT_HPP_ */

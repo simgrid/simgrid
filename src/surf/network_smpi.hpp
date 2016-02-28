@@ -9,45 +9,31 @@
 #include "network_cm02.hpp"
 
 namespace simgrid {
-namespace surf {
+  namespace surf {
 
-/***********
- * Classes *
- ***********/
+    class XBT_PRIVATE NetworkSmpiModel : public NetworkCm02Model {
+    public:
+      NetworkSmpiModel();
+      ~NetworkSmpiModel();
 
-class XBT_PRIVATE NetworkSmpiModel;
-
-/*********
- * Tools *
- *********/
-
-/*********
- * Model *
- *********/
-
-class NetworkSmpiModel : public NetworkCm02Model {
-public:
-  NetworkSmpiModel();
-  ~NetworkSmpiModel();
-
-  using NetworkCm02Model::gapAppend; // Explicit about overloaded method (silence Woverloaded-virtual from clang)
-  void gapAppend(double size, Link* link, NetworkAction *action);
-  void gapRemove(Action *action);
-  double latencyFactor(double size);
-  double bandwidthFactor(double size);
-  double bandwidthConstraint(double rate, double bound, double size);
-  void communicateCallBack() {};
-};
+      using NetworkCm02Model::gapAppend; // Explicit about overloaded method (silence Woverloaded-virtual from clang)
+      void gapAppend(double size, Link* link, NetworkAction *action);
+      void gapRemove(Action *action);
+      double latencyFactor(double size);
+      double bandwidthFactor(double size);
+      double bandwidthConstraint(double rate, double bound, double size);
+      void communicateCallBack() {};
+    };
 
 
-/************
- * Resource *
- ************/
+    /************
+     * Resource *
+     ************/
 
 
-/**********
- * Action *
- **********/
+    /**********
+     * Action *
+     **********/
 
-}
+  }
 }
