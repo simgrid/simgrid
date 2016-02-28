@@ -28,8 +28,8 @@ xbt_dict_t gap_lookup = NULL;
 
 static int factor_cmp(const void *pa, const void *pb)
 {
- return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor) ? 1 :
-         (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
+  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor) ? 1 :
+      (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
 }
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
@@ -97,43 +97,43 @@ void surf_network_model_init_SMPI(void)
 }
 
 namespace simgrid {
-namespace surf {
+  namespace surf {
 
-NetworkSmpiModel::NetworkSmpiModel()
- : NetworkCm02Model() {
-  m_haveGap=true;
-}
-
-NetworkSmpiModel::~NetworkSmpiModel(){
-  xbt_dict_free(&gap_lookup);
-  xbt_dynar_free(&smpi_bw_factor);
-  xbt_dynar_free(&smpi_lat_factor);
-}
-
-void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *act)
-{
-  const char *src = link->getName();
-  xbt_fifo_t fifo;
-  NetworkCm02Action *action= static_cast<NetworkCm02Action*>(act);
-
-  if (sg_sender_gap > 0.0) {
-    if (!gap_lookup) {
-      gap_lookup = xbt_dict_new_homogeneous(NULL);
+    NetworkSmpiModel::NetworkSmpiModel()
+    : NetworkCm02Model() {
+      m_haveGap=true;
     }
-    fifo = (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup, src);
-    action->m_senderGap = 0.0;
-    if (fifo && xbt_fifo_size(fifo) > 0) {
-      /* Compute gap from last send */
-      /*last_action =
+
+    NetworkSmpiModel::~NetworkSmpiModel(){
+      xbt_dict_free(&gap_lookup);
+      xbt_dynar_free(&smpi_bw_factor);
+      xbt_dynar_free(&smpi_lat_factor);
+    }
+
+    void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *act)
+    {
+      const char *src = link->getName();
+      xbt_fifo_t fifo;
+      NetworkCm02Action *action= static_cast<NetworkCm02Action*>(act);
+
+      if (sg_sender_gap > 0.0) {
+        if (!gap_lookup) {
+          gap_lookup = xbt_dict_new_homogeneous(NULL);
+        }
+        fifo = (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup, src);
+        action->m_senderGap = 0.0;
+        if (fifo && xbt_fifo_size(fifo) > 0) {
+          /* Compute gap from last send */
+          /*last_action =
           (surf_action_network_CM02_t)
           xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));*/
-     // bw = net_get_link_bandwidth(link);
-      action->m_senderGap = sg_sender_gap;
-        /*  max(sg_sender_gap,last_action->sender.size / bw);*/
-      action->m_latency += action->m_senderGap;
-    }
-    /* Append action as last send */
-    /*action->sender.link_name = link->lmm_resource.generic_resource.name;
+          // bw = net_get_link_bandwidth(link);
+          action->m_senderGap = sg_sender_gap;
+          /*  max(sg_sender_gap,last_action->sender.size / bw);*/
+          action->m_latency += action->m_senderGap;
+        }
+        /* Append action as last send */
+        /*action->sender.link_name = link->lmm_resource.generic_resource.name;
     fifo =
         (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
                                           action->sender.link_name);
@@ -142,90 +142,90 @@ void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *act)
       xbt_dict_set(gap_lookup, action->sender.link_name, fifo, NULL);
     }
     action->sender.fifo_item = xbt_fifo_push(fifo, action);*/
-    action->m_senderSize = size;
-  }
-}
-
-void NetworkSmpiModel::gapRemove(Action *lmm_action)
-{
-  xbt_fifo_t fifo;
-  size_t size;
-  NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_action);
-
-  if (sg_sender_gap > 0.0 && action->p_senderLinkName
-      && action->p_senderFifoItem) {
-    fifo =
-        (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
-                                          action->p_senderLinkName);
-    xbt_fifo_remove_item(fifo, action->p_senderFifoItem);
-    size = xbt_fifo_size(fifo);
-    if (size == 0) {
-      xbt_fifo_free(fifo);
-      xbt_dict_remove(gap_lookup, action->p_senderLinkName);
-      size = xbt_dict_length(gap_lookup);
-      if (size == 0) {
-        xbt_dict_free(&gap_lookup);
+        action->m_senderSize = size;
       }
     }
-  }
-}
 
-double NetworkSmpiModel::bandwidthFactor(double size)
-{
-  if (!smpi_bw_factor)
-    smpi_bw_factor =
-        parse_factor(sg_cfg_get_string("smpi/bw_factor"));
+    void NetworkSmpiModel::gapRemove(Action *lmm_action)
+    {
+      xbt_fifo_t fifo;
+      size_t size;
+      NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_action);
 
-  unsigned int iter = 0;
-  s_smpi_factor_t fact;
-  double current=1.0;
-  xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
-    if (size <= fact.factor) {
-      XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
+      if (sg_sender_gap > 0.0 && action->p_senderLinkName
+          && action->p_senderFifoItem) {
+        fifo =
+            (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
+                action->p_senderLinkName);
+        xbt_fifo_remove_item(fifo, action->p_senderFifoItem);
+        size = xbt_fifo_size(fifo);
+        if (size == 0) {
+          xbt_fifo_free(fifo);
+          xbt_dict_remove(gap_lookup, action->p_senderLinkName);
+          size = xbt_dict_length(gap_lookup);
+          if (size == 0) {
+            xbt_dict_free(&gap_lookup);
+          }
+        }
+      }
+    }
+
+    double NetworkSmpiModel::bandwidthFactor(double size)
+    {
+      if (!smpi_bw_factor)
+        smpi_bw_factor =
+            parse_factor(sg_cfg_get_string("smpi/bw_factor"));
+
+      unsigned int iter = 0;
+      s_smpi_factor_t fact;
+      double current=1.0;
+      xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
+        if (size <= fact.factor) {
+          XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
+          return current;
+        }else
+          current=fact.value;
+      }
+      XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
+
       return current;
-    }else
-      current=fact.value;
-  }
-  XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
+    }
 
-  return current;
-}
+    double NetworkSmpiModel::latencyFactor(double size)
+    {
+      if (!smpi_lat_factor)
+        smpi_lat_factor =
+            parse_factor(sg_cfg_get_string("smpi/lat_factor"));
 
-double NetworkSmpiModel::latencyFactor(double size)
-{
-  if (!smpi_lat_factor)
-    smpi_lat_factor =
-        parse_factor(sg_cfg_get_string("smpi/lat_factor"));
+      unsigned int iter = 0;
+      s_smpi_factor_t fact;
+      double current=1.0;
+      xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
+        if (size <= fact.factor) {
+          XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
+          return current;
+        }else
+          current=fact.value;
+      }
+      XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
 
-  unsigned int iter = 0;
-  s_smpi_factor_t fact;
-  double current=1.0;
-  xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
-    if (size <= fact.factor) {
-      XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
       return current;
-    }else
-      current=fact.value;
+    }
+
+    double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double size)
+    {
+      return rate < 0 ? bound : std::min(bound, rate * bandwidthFactor(size));
+    }
+
+    /************
+     * Resource *
+     ************/
+
+
+
+    /**********
+     * Action *
+     **********/
+
   }
-  XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
-
-  return current;
-}
-
-double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double size)
-{
-  return rate < 0 ? bound : std::min(bound, rate * bandwidthFactor(size));
-}
-
-/************
- * Resource *
- ************/
-
-
-
-/**********
- * Action *
- **********/
-
-}
 }
