@@ -1,7 +1,6 @@
 #! ./tesh
 
 ! timeout 50
-! output sort
 ! expect return 0
 $ ./maxmin_bench medium 5 test
 > [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
