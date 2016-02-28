@@ -19,9 +19,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm, "Messages specific for this msg example");
 
-/* This example should always be executed using a deployment of
- * GRID_SIZE * GRID_SIZE nodes. */
-#define GRID_SIZE 3    /* Modify to adjust the grid's size */
+/* This example should always be executed using a deployment of GRID_SIZE * GRID_SIZE nodes. */
+#define GRID_SIZE 3           /* Modify to adjust the grid's size */
 #define NODE_MATRIX_SIZE 300  /* Amount of work done by each node*/
 
 #define GRID_NUM_NODES GRID_SIZE * GRID_SIZE
@@ -61,7 +60,6 @@ static void task_cleanup(void *arg);
 
 int node(int argc, char **argv)
 {
-  int k, myid;
   char my_mbox[MAILBOX_NAME_SIZE];
   node_job_t myjob, jobs[GRID_NUM_NODES];
   xbt_matrix_t A, B, C, sA, sB, sC;
@@ -70,7 +68,7 @@ int node(int argc, char **argv)
   xbt_assert(argc != 1, "Wrong number of arguments for this node");
 
   /* Initialize the node's data-structures */
-  myid = xbt_str_parse_int(argv[1], "Invalid ID received as first node parameter: %s");
+  int myid = xbt_str_parse_int(argv[1], "Invalid ID received as first node parameter: %s");
   snprintf(my_mbox, MAILBOX_NAME_SIZE - 1, "%d", myid);
   sC = xbt_matrix_double_new_zeros(NODE_MATRIX_SIZE, NODE_MATRIX_SIZE);
 
@@ -89,14 +87,14 @@ int node(int argc, char **argv)
     /* Broadcast the rest of the jobs to the other nodes */
     broadcast_jobs(jobs + 1);
 
-  }else{
+  } else {
     A = B = C = NULL;           /* Avoid warning at compilation */
     myjob = wait_job(myid);
   }
 
   /* Multiplication main-loop */
   XBT_VERB("Start Multiplication's Main-loop");
-  for(k=0; k < GRID_SIZE; k++){
+  for (int k=0; k < GRID_SIZE; k++){
     if(k == myjob->col){
       XBT_VERB("Broadcast sA(%d,%d) to row %d", myjob->row, k, myjob->row);
       broadcast_matrix(myjob->A, NEIGHBOURS_COUNT, myjob->nodes_in_row);
@@ -181,20 +179,18 @@ int node(int argc, char **argv)
  */
 static void broadcast_jobs(node_job_t *jobs)
 {
-  int node;
   char node_mbox[MAILBOX_NAME_SIZE];
-  msg_task_t task;
   msg_comm_t comms[GRID_NUM_NODES - 1] = {0};
 
   XBT_VERB("Broadcast Jobs");
-  for (node = 1; node < GRID_NUM_NODES; node++){
-    task = MSG_task_create("Job", 100, 100, jobs[node-1]);
+  for (int node = 1; node < GRID_NUM_NODES; node++){
+    msg_task_t task  = MSG_task_create("Job", 100, 100, jobs[node-1]);
     snprintf(node_mbox, MAILBOX_NAME_SIZE - 1, "%d", node);
     comms[node-1] = MSG_task_isend(task, node_mbox);
   }
 
   MSG_comm_waitall(comms, GRID_NUM_NODES-1, -1);
-  for (node = 1; node < GRID_NUM_NODES; node++)
+  for (int node = 1; node < GRID_NUM_NODES; node++)
     MSG_comm_destroy(comms[node - 1]);
 }
 
@@ -202,12 +198,10 @@ static node_job_t wait_job(int selfid)
 {
   msg_task_t task = NULL;
   char self_mbox[MAILBOX_NAME_SIZE];
-  node_job_t job;
-  msg_error_t err;
   snprintf(self_mbox, MAILBOX_NAME_SIZE - 1, "%d", selfid);
-  err = MSG_task_receive(&task, self_mbox);
+  msg_error_t err = MSG_task_receive(&task, self_mbox);
   xbt_assert(err == MSG_OK, "Error while receiving from %s (%d)", self_mbox, (int)err);
-  job = (node_job_t)MSG_task_get_data(task);
+  node_job_t job  = (node_job_t)MSG_task_get_data(task);
   MSG_task_destroy(task);
   XBT_VERB("Got Job (%d,%d)", job->row, job->col);
 
@@ -216,15 +210,12 @@ static node_job_t wait_job(int selfid)
 
 static void broadcast_matrix(xbt_matrix_t M, int num_nodes, int *nodes)
 {
-  int node;
   char node_mbox[MAILBOX_NAME_SIZE];
-  msg_task_t task;
-  xbt_matrix_t sM;
 
-  for(node=0; node < num_nodes; node++){
+  for(int node=0; node < num_nodes; node++){
     snprintf(node_mbox, MAILBOX_NAME_SIZE - 1, "%d", nodes[node]);
-    sM = xbt_matrix_new_sub(M, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, 0, 0, NULL);
-    task = MSG_task_create("sub-matrix", 100, 100, sM);
+    xbt_matrix_t sM  = xbt_matrix_new_sub(M, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, 0, 0, NULL);
+    msg_task_t task = MSG_task_create("sub-matrix", 100, 100, sM);
     MSG_task_dsend(task, node_mbox, task_cleanup);
     XBT_DEBUG("sub-matrix sent to %s", node_mbox);
   }
@@ -234,14 +225,12 @@ static void get_sub_matrix(xbt_matrix_t *sM, int selfid)
 {
   msg_task_t task = NULL;
   char node_mbox[MAILBOX_NAME_SIZE];
-  msg_error_t err;
 
   XBT_VERB("Get sub-matrix");
 
   snprintf(node_mbox, MAILBOX_NAME_SIZE - 1, "%d", selfid);
-  err = MSG_task_receive(&task, node_mbox);
-  if (err != MSG_OK)
-    xbt_die("Error while receiving from %s (%d)", node_mbox, (int)err);
+  msg_error_t err = MSG_task_receive(&task, node_mbox);
+  xbt_assert(err == MSG_OK, "Error while receiving from %s (%d)", node_mbox, (int)err);
   *sM = (xbt_matrix_t)MSG_task_get_data(task);
   MSG_task_destroy(task);
 }
@@ -255,12 +244,9 @@ static void task_cleanup(void *arg){
 
 int main(int argc, char *argv[])
 {
-#ifdef BENCH_THIS_CODE
-  xbt_os_cputimer_t timer = xbt_os_timer_new();
-#endif
+  xbt_os_timer_t timer = xbt_os_timer_new();
 
   MSG_init(&argc, argv);
-
   MSG_create_environment(argv[1]);
 
   MSG_function_register("node", node);
@@ -274,13 +260,9 @@ int main(int argc, char *argv[])
     xbt_free(hostname);
   }
 
-#ifdef BENCH_THIS_CODE
   xbt_os_cputimer_start(timer);
-#endif
   msg_error_t res = MSG_main();
-#ifdef BENCH_THIS_CODE
   xbt_os_cputimer_stop(timer);
-#endif
   XBT_CRITICAL("Simulated time: %g", MSG_get_clock());
 
   return res != MSG_OK;
@@ -288,9 +270,9 @@ int main(int argc, char *argv[])
 
 static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)
 {
-  int node, j, k, row = 0, col = 0;
+  int row = 0, col = 0;
 
-  for (node = 0; node < GRID_NUM_NODES; node++){
+  for (int node = 0; node < GRID_NUM_NODES; node++){
     XBT_VERB("Create job %d", node);
     jobs[node] = xbt_new0(s_node_job_t, 1);
     jobs[node]->row = row;
@@ -298,14 +280,14 @@ static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)
 
     /* Compute who are the nodes in the same row and column */
     /* than the node receiving this job */
-    for (j = 0, k = 0; j < GRID_SIZE; j++) {
+    for (int j = 0, k = 0; j < GRID_SIZE; j++) {
       if (node != (GRID_SIZE * row) + j) {
         jobs[node]->nodes_in_row[k] = (GRID_SIZE * row) + j;
         k++;
       }
     }
 
-    for (j = 0, k = 0; j < GRID_SIZE; j++) {
+    for (int j = 0, k = 0; j < GRID_SIZE; j++) {
       if (node != (GRID_SIZE * j) + col) {
         jobs[node]->nodes_in_col[k] = (GRID_SIZE * j) + col;
         k++;
@@ -325,24 +307,22 @@ static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)
   }
 }
 
-static void receive_results(result_t *results){
-  int node;
+static void receive_results(result_t *results) {
   msg_comm_t comms[GRID_NUM_NODES-1] = {0};
   msg_task_t tasks[GRID_NUM_NODES-1] = {0};
 
   XBT_VERB("Receive Results.");
 
   /* Get the result from the nodes in the GRID */
-  for (node = 1; node < GRID_NUM_NODES; node++){
+  for (int node = 1; node < GRID_NUM_NODES; node++)
    comms[node-1] = MSG_task_irecv(&tasks[node-1], "0");
-  }
 
   MSG_comm_waitall(comms, GRID_NUM_NODES - 1, -1);
-  for (node = 1; node < GRID_NUM_NODES; node++)
+  for (int node = 1; node < GRID_NUM_NODES; node++)
     MSG_comm_destroy(comms[node - 1]);
 
   /* Reconstruct the result matrix */
-  for (node = 1; node < GRID_NUM_NODES; node++){
+  for (int node = 1; node < GRID_NUM_NODES; node++){
     results[node] = (result_t)MSG_task_get_data(tasks[node-1]);
     MSG_task_destroy(tasks[node-1]);
   }

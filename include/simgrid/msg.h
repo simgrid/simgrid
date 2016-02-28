@@ -437,20 +437,14 @@ XBT_PUBLIC(msg_error_t)
     MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, double timeout,
                      msg_host_t host, double rate);
 
-XBT_PUBLIC(msg_error_t)
-    MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias,
-                              double timeout, double rate);
-
-XBT_PUBLIC(msg_error_t)
-    MSG_task_receive_bounded(msg_task_t * task, const char *alias,double rate);
+XBT_PUBLIC(msg_error_t) MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias,  double timeout, double rate);
+XBT_PUBLIC(msg_error_t) MSG_task_receive_bounded(msg_task_t * task, const char *alias,double rate);
 #define MSG_task_recv_bounded(t,a,r) MSG_task_receive_bounded(t,a,r)
 
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
-XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task,
-                                                    const char *alias,
-                                                    int (*match_fun)(void*,void*, smx_synchro_t),
-                                                    void *match_data);
+XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task, const char *alias,
+    int (*match_fun)(void*,void*, smx_synchro_t), void *match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
 XBT_PUBLIC(void) MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate);
@@ -460,33 +454,18 @@ XBT_PUBLIC(int) MSG_comm_test(msg_comm_t comm);
 XBT_PUBLIC(int) MSG_comm_testany(xbt_dynar_t comms);
 XBT_PUBLIC(void) MSG_comm_destroy(msg_comm_t comm);
 XBT_PUBLIC(msg_error_t) MSG_comm_wait(msg_comm_t comm, double timeout);
-XBT_PUBLIC(void) MSG_comm_waitall(msg_comm_t * comm, int nb_elem,
-                                  double timeout);
+XBT_PUBLIC(void) MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout);
 XBT_PUBLIC(int) MSG_comm_waitany(xbt_dynar_t comms);
 XBT_PUBLIC(msg_task_t) MSG_comm_get_task(msg_comm_t comm);
 XBT_PUBLIC(msg_error_t) MSG_comm_get_status(msg_comm_t comm);
 
 XBT_PUBLIC(int) MSG_task_listen(const char *alias);
-
-XBT_PUBLIC(int) MSG_task_listen_from_host(const char *alias,
-                                          msg_host_t host);
-
-XBT_PUBLIC(msg_error_t)
-    MSG_task_send_with_timeout(msg_task_t task, const char *alias,
-                           double timeout);
-
-XBT_PUBLIC(msg_error_t)
-    MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias,
-                           double timeout, double maxrate);
-
-XBT_PUBLIC(msg_error_t)
-    MSG_task_send(msg_task_t task, const char *alias);
-
-XBT_PUBLIC(msg_error_t)
-    MSG_task_send_bounded(msg_task_t task, const char *alias, double rate);
-
+XBT_PUBLIC(int) MSG_task_listen_from_host(const char *alias, msg_host_t host);
+XBT_PUBLIC(msg_error_t) MSG_task_send_with_timeout(msg_task_t task, const char *alias, double timeout);
+XBT_PUBLIC(msg_error_t) MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias, double timeout, double maxrate);
+XBT_PUBLIC(msg_error_t) MSG_task_send(msg_task_t task, const char *alias);
+XBT_PUBLIC(msg_error_t) MSG_task_send_bounded(msg_task_t task, const char *alias, double rate);
 XBT_PUBLIC(int) MSG_task_listen_from(const char *alias);
-
 XBT_PUBLIC(void) MSG_task_set_category (msg_task_t task, const char *category);
 XBT_PUBLIC(const char *) MSG_task_get_category (msg_task_t task);
 

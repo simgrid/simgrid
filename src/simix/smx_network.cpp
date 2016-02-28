@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/surf/surf_interface.hpp"
-#include "smx_private.h"
+#include "src/simix/smx_private.h"
 #include "xbt/log.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
@@ -432,29 +432,25 @@ void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, sm
 }
 
 smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_rdv_t rdv,
-                                  void *dst_buff, size_t *dst_buff_size,
-                                  int (*match_fun)(void *, void *, smx_synchro_t),
-                                  void (*copy_data_fun)(smx_synchro_t, void*, size_t),
-          void *data, double rate)
+    void *dst_buff, size_t *dst_buff_size,
+    int (*match_fun)(void *, void *, smx_synchro_t),
+    void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+    void *data, double rate)
 {
-  return SIMIX_comm_irecv(receiver, rdv, dst_buff, dst_buff_size,
-              match_fun, copy_data_fun, data, rate);
+  return SIMIX_comm_irecv(receiver, rdv, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
 }
 
-smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
-                              void *dst_buff, size_t *dst_buff_size,
-                              int (*match_fun)(void *, void *, smx_synchro_t),
-                              void (*copy_data_fun)(smx_synchro_t, void*, size_t), // used to copy data if not default one
-                              void *data, double rate)
+smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
+    int (*match_fun)(void *, void *, smx_synchro_t),
+    void (*copy_data_fun)(smx_synchro_t, void*, size_t), // used to copy data if not default one
+    void *data, double rate)
 {
   XBT_DEBUG("recv from %p %p", rdv, rdv->comm_fifo);
   smx_synchro_t this_synchro = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
 
   smx_synchro_t other_synchro;
   //communication already done, get it inside the fifo of completed comms
-  //permanent receive v1
-  //int already_received=0;
-  if(rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0){
+  if (rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0) {
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the already received fifo
@@ -464,21 +460,18 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
       XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo");
       other_synchro = this_synchro;
       SIMIX_rdv_push(rdv, this_synchro);
-    }else{
-      if(other_synchro->comm.surf_comm &&   SIMIX_comm_get_remains(other_synchro)==0.0)
-      {
+    } else {
+      if(other_synchro->comm.surf_comm && SIMIX_comm_get_remains(other_synchro)==0.0) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",&(other_synchro->comm));
         other_synchro->state = SIMIX_DONE;
         other_synchro->comm.type = SIMIX_COMM_DONE;
         other_synchro->comm.rdv = NULL;
-      }/*else{
-         XBT_DEBUG("Not yet finished, we have to wait %d", xbt_fifo_size(rdv->comm_fifo));
-         }*/
+      }
       other_synchro->comm.refcount--;
       SIMIX_comm_destroy(this_synchro);
       --smx_total_comms; // this creation was a pure waste
     }
-  }else{
+  } else {
     /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
 
     /* Look for communication synchro matching our needs. We also provide a description of
@@ -507,17 +500,11 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   other_synchro->comm.dst_buff_size = dst_buff_size;
   other_synchro->comm.dst_data = data;
 
-  if (rate != -1.0 &&
-      (other_synchro->comm.rate == -1.0 || rate < other_synchro->comm.rate))
+  if (rate != -1.0 && (other_synchro->comm.rate == -1.0 || rate < other_synchro->comm.rate))
     other_synchro->comm.rate = rate;
 
   other_synchro->comm.match_fun = match_fun;
   other_synchro->comm.copy_data_fun = copy_data_fun;
-
-
-  /*if(already_received)//do the actual copy, because the first one after the comm didn't have all the info
-    SIMIX_comm_copy_data(other_synchro);*/
-
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     other_synchro->state = SIMIX_RUNNING;
@@ -525,7 +512,6 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
   }
 
   SIMIX_comm_start(other_synchro);
-  // }
   return other_synchro;
 }
 
