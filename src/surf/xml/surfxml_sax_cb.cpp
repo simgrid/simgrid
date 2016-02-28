@@ -750,6 +750,7 @@ void ETag_surfxml_route(void){
   route.gw_src    = NULL;
   route.gw_dst    = NULL;
   route.link_list = new std::vector<Link*>();
+  route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
   unsigned int cpt;
   char *link_name;
@@ -759,15 +760,6 @@ void ETag_surfxml_route(void){
   }
 
 
-  switch (A_surfxml_route_symmetrical) {
-  case AU_surfxml_route_symmetrical:
-  case A_surfxml_route_symmetrical_YES:
-    route.symmetrical = TRUE;
-    break;
-  case A_surfxml_route_symmetrical_NO:
-    route.symmetrical = FALSE;;
-    break;
-  }
 
   sg_platf_new_route(&route);
   parsed_link_list = NULL;
