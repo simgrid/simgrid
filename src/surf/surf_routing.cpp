@@ -181,28 +181,21 @@ namespace surf {
     if (e_route->gw_dst) {
       XBT_DEBUG("Load bypassASroute from %s@%s to %s@%s",
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
-      xbt_assert(!xbt_dynar_is_empty(e_route->link_list), "Bypass route between %s@%s and %s@%s cannot be empty.",
+      xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
       xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(),
           "The bypass route between %s@%s and %s@%s already exists.",
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
     } else {
       XBT_DEBUG("Load bypassRoute from %s to %s", src, dst);
-      xbt_assert(!xbt_dynar_is_empty(e_route->link_list),                 "Bypass route between %s and %s cannot be empty.",    src, dst);
+      xbt_assert(!e_route->link_list->empty(),                            "Bypass route between %s and %s cannot be empty.",    src, dst);
       xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(), "The bypass route between %s and %s already exists.", src, dst);
     }
 
-    /* Build the value that will be stored in the dict */
+    /* Build a copy that will be stored in the dict */
     std::vector<Link*> *newRoute = new std::vector<Link*>();
-    char *linkName;
-    unsigned int cpt;
-    xbt_dynar_foreach(e_route->link_list, cpt, linkName) {
-      Link *link = Link::byName(linkName);
-      if (link)
-        newRoute->push_back(link);
-      else
-        THROWF(mismatch_error, 0, "Link '%s' not found", linkName);
-    }
+    for (auto link: *e_route->link_list)
+      newRoute->push_back(link);
 
     /* Store it */
     bypassRoutes_->insert({route_name, newRoute});
@@ -460,7 +453,7 @@ static void elements_father(sg_netcard_t src, sg_netcard_t dst,
  * \param *latency the latency, if needed
  */
 static void _get_route_and_latency(simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
-  xbt_dynar_t * links, double *latency)
+    std::vector<Link*> * links, double *latency)
 {
   s_sg_platf_route_cbarg_t route = SG_PLATF_ROUTE_INITIALIZER;
   memset(&route,0,sizeof(route));
@@ -478,7 +471,7 @@ static void _get_route_and_latency(simgrid::surf::NetCard *src, simgrid::surf::N
   std::vector<Link*> *bypassed_route = common_father->getBypassRoute(src, dst);
   if (nullptr != bypassed_route) {
     for (Link *link : *bypassed_route) {
-      xbt_dynar_push(*links,&link);
+      links->push_back(link);
       if (latency)
         *latency += link->getLatency();
     }
@@ -487,14 +480,14 @@ static void _get_route_and_latency(simgrid::surf::NetCard *src, simgrid::surf::N
 
   /* If src and dst are in the same AS, life is good */
   if (src_father == dst_father) {       /* SURF_ROUTING_BASE */
-    route.link_list = *links;
+    route.link_list = links;
     common_father->getRouteAndLatency(src, dst, &route, latency);
     return;
   }
 
   /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
 
-  route.link_list = xbt_dynar_new(sizeof(Link*), NULL);
+  route.link_list = new std::vector<Link*>();
 
   common_father->getRouteAndLatency(src_father->netcard_, dst_father->netcard_, &route, latency);
   xbt_assert((route.gw_src != NULL) && (route.gw_dst != NULL),
@@ -503,7 +496,8 @@ static void _get_route_and_latency(simgrid::surf::NetCard *src, simgrid::surf::N
   /* If source gateway is not our source, we have to recursively find our way up to this point */
   if (src != route.gw_src)
     _get_route_and_latency(src, route.gw_src, links, latency);
-  xbt_dynar_merge(links, &route.link_list);
+  for (auto link: *route.link_list)
+    links->push_back(link);
 
   /* If dest gateway is not our destination, we have to recursively find our way from this point */
   if (route.gw_dst != dst)
@@ -528,13 +522,9 @@ namespace surf {
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
  */
-void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t* route, double *latency)
+void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * route, double *latency)
 {
   XBT_DEBUG("getRouteAndLatency from %s to %s", src->name(), dst->name());
-  if (NULL == *route) {
-    xbt_dynar_reset(routing_platf->lastRoute_);
-    *route = routing_platf->lastRoute_;
-  }
 
   _get_route_and_latency(src, dst, route, latency);
 }
@@ -568,7 +558,7 @@ xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
 }
 
 /** @brief create the root AS */
-void routing_model_create( void *loopback)
+void routing_model_create(Link *loopback)
 {
   routing_platf = new simgrid::surf::RoutingPlatf(loopback);
 }
@@ -908,7 +898,7 @@ void routing_exit(void) {
 namespace simgrid {
 namespace surf {
 
-  RoutingPlatf::RoutingPlatf(void *loopback)
+  RoutingPlatf::RoutingPlatf(Link *loopback)
   : loopback_(loopback)
   {
   }

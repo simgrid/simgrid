@@ -93,7 +93,7 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
   /* In case destination is the source, and there is a loopback, let's get
      through it instead of going up to a switch*/
   if(source->id == destination->id && this->has_loopback_) {
-    xbt_dynar_push_as(into->link_list, void*, source->loopback);
+    into->link_list->push_back(source->loopback);
     if(latency) {
       *latency += source->loopback->getLatency();
     }
@@ -112,14 +112,14 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
     }
     k = this->upperLevelNodesNumber_[currentNode->level];
     d = d % k;
-    xbt_dynar_push_as(into->link_list, void*,currentNode->parents[d]->upLink);
+    into->link_list->push_back(currentNode->parents[d]->upLink);
 
     if(latency) {
       *latency += currentNode->parents[d]->upLink->getLatency();
     }
 
     if (this->has_limiter_) {
-      xbt_dynar_push_as(into->link_list, void*,currentNode->limiterLink);
+      into->link_list->push_back(currentNode->limiterLink);
     }
     currentNode = currentNode->parents[d]->upNode;
   }
@@ -133,13 +133,13 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
     for(unsigned int i = 0 ; i < currentNode->children.size() ; i++) {
       if(i % this->lowerLevelNodesNumber_[currentNode->level - 1] ==
          destination->label[currentNode->level - 1]) {
-        xbt_dynar_push_as(into->link_list, void*,currentNode->children[i]->downLink);
+        into->link_list->push_back(currentNode->children[i]->downLink);
         if(latency) {
           *latency += currentNode->children[i]->downLink->getLatency();
         }
         currentNode = currentNode->children[i]->downNode;
         if (this->has_limiter_) {
-          xbt_dynar_push_as(into->link_list, void*,currentNode->limiterLink);
+          into->link_list->push_back(currentNode->limiterLink);
         }
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id,
                   destination->level, destination->position, currentNode->id,

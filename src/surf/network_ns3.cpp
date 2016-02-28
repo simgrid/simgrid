@@ -273,13 +273,6 @@ Link* NetworkNS3Model::createLink(const char *name,
   return link;
 }
 
-xbt_dynar_t NetworkNS3Model::getRoute(NetCard *src, NetCard *dst)
-{
-  xbt_dynar_t route = NULL;
-  routing_platf->getRouteAndLatency(src, dst, &route, NULL);
-  return route;
-}
-
 Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst,
                                    double size, double rate)
 {
@@ -345,18 +338,13 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
       double data_sent = ns3_get_socket_sent(data);
       double data_delta_sent = data_sent - action->m_lastSent;
 
-      xbt_dynar_t route = NULL;
+      std::vector<Link*> *route = new std::vector<Link*>();
 
-      routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, &route, NULL);
-      unsigned int i;
-      for (i = 0; i < xbt_dynar_length (route); i++){
-        NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr(route, i));
-        TRACE_surf_link_set_utilization (link->getName(),
-            action->getCategory(),
-          (data_delta_sent)/delta,
-          now-delta,
-          delta);
-      }
+      routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, route, NULL);
+      for (auto link : *route)
+        TRACE_surf_link_set_utilization (link->getName(), action->getCategory(), (data_delta_sent)/delta, now-delta, delta);
+      delete route;
+
       action->m_lastSent = data_sent;
     }
 

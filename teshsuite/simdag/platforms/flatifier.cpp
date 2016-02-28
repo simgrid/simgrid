@@ -158,29 +158,26 @@ int main(int argc, char **argv)
     xbt_dict_foreach(host_list, cursor_src, src, host1){ // Routes from host
       value1 = sg_host_by_name(src)->pimpl_netcard;
       xbt_dict_foreach(host_list, cursor_dst, dst, host2){ //to host
-        xbt_dynar_t route=NULL;
+        std::vector<Link*> *route = new std::vector<Link*>();
         value2 = sg_host_by_name(dst)->pimpl_netcard;
-        routing_platf->getRouteAndLatency(value1, value2, &route,NULL);
-        if (!xbt_dynar_is_empty(route)){
+        routing_platf->getRouteAndLatency(value1, value2, route,NULL);
+        if (! route->empty()){
           printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
-          for(i=0;i<xbt_dynar_length(route) ;i++){
-            void *link = xbt_dynar_get_as(route,i,void *);
-
-            printf("<%s id=\"%s\"/>",link_ctn,surf_resource_name((surf_cpp_resource_t)link));
-          }
+          for (auto link: *route)
+            printf("<%s id=\"%s\"/>",link_ctn,link->getName());
           printf("\n  </route>\n");
         }
+        delete route;
       }
       xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
         value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
         if(value2->isRouter()){
           printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
-          xbt_dynar_t route=NULL;
-          routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
-          for(i=0;i<xbt_dynar_length(route) ;i++){
-            void *link = xbt_dynar_get_as(route,i,void *);
-            printf("<%s id=\"%s\"/>",link_ctn,surf_resource_name((surf_cpp_resource_t)link));
-          }
+          std::vector<Link*> *route = new std::vector<Link*>();
+          routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route,NULL);
+          for (auto link : *route)
+            printf("<%s id=\"%s\"/>",link_ctn,link->getName());
+          delete route;
           printf("\n  </route>\n");
         }
       }
@@ -193,26 +190,22 @@ int main(int argc, char **argv)
           value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
           if(value2->isRouter()){
             printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
-            xbt_dynar_t route=NULL;
-            routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route,NULL);
-            for(i=0;i<xbt_dynar_length(route) ;i++){
-              void *link = xbt_dynar_get_as(route,i,void *);
-
-              printf("<%s id=\"%s\"/>",link_ctn,surf_resource_name((surf_cpp_resource_t)link));
-            }
+            std::vector<Link*> *route = new std::vector<Link*>();
+            routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route,NULL);
+            for(auto link :*route)
+              printf("<%s id=\"%s\"/>",link_ctn,link->getName());
+            delete route;
             printf("\n  </route>\n");
           }
         }
         xbt_dict_foreach(host_list, cursor_dst, dst, value2){ //to host
           printf("  <route src=\"%s\" dst=\"%s\">\n  ",src, dst);
-          xbt_dynar_t route=NULL;
+          std::vector<Link*> *route = new std::vector<Link*>();
           value2 = sg_host_by_name(dst)->pimpl_netcard;
-          routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,&route, NULL);
-          for(i=0;i<xbt_dynar_length(route) ;i++){
-            void *link = xbt_dynar_get_as(route,i,void *);
-
-            printf("<%s id=\"%s\"/>",link_ctn,surf_resource_name((surf_cpp_resource_t)link));
-          }
+          routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route, NULL);
+          for(auto link : *route)
+            printf("<%s id=\"%s\"/>",link_ctn,link->getName());
+          delete route;
           printf("\n  </route>\n");
         }
       }

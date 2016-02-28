@@ -30,7 +30,7 @@ static void graph_edge_data_free(void *e) // FIXME: useless code duplication
 {
   sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t) e;
   if (e_route) {
-    xbt_dynar_free(&(e_route->link_list));
+    delete e_route->link_list;
     xbt_free(e_route);
   }
 }
@@ -65,8 +65,8 @@ void AsDijkstra::Seal()
 
       if (!found) {
         sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-        e_route->link_list = xbt_dynar_new(sizeof(Link*), NULL);
-        xbt_dynar_push(e_route->link_list, &routing_platf->loopback_);
+        e_route->link_list = new std::vector<Link*>();
+        e_route->link_list->push_back(routing_platf->loopback_);
         xbt_graph_new_edge(routeGraph_, node, node, e_route);
       }
     }
@@ -142,18 +142,18 @@ xbt_dynar_t AsDijkstra::getOneLinkRoutes()
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
   sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
-  route->link_list = xbt_dynar_new(sizeof(Link*),NULL);
+  route->link_list = new std::vector<Link*>();
 
   int table_size = (int)xbt_dynar_length(vertices_);
   for(int src=0; src < table_size; src++) {
     for(int dst=0; dst< table_size; dst++) {
-      xbt_dynar_reset(route->link_list);
+      route->link_list->clear();
       NetCard *src_elm = xbt_dynar_get_as(vertices_, src, NetCard*);
       NetCard *dst_elm = xbt_dynar_get_as(vertices_, dst, NetCard*);
       this->getRouteAndLatency(src_elm, dst_elm,route, NULL);
 
-      if (xbt_dynar_length(route->link_list) == 1) {
-        void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
+      if (route->link_list->size() == 1) {
+        Link *link = route->link_list->at(0);
         Onelink *onelink;
         if (hierarchy_ == SURF_ROUTING_BASE)
           onelink = new Onelink(link, src_elm, dst_elm);
@@ -177,8 +177,6 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
   int *pred_arr = NULL;
   sg_platf_route_cbarg_t e_route;
   int size = 0;
-  unsigned int cpt;
-  void *link;
   xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
   /* Use the graph_node id mapping set to quickly find the nodes */
@@ -200,8 +198,8 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
 
     e_route = (sg_platf_route_cbarg_t) xbt_graph_edge_get_data(edge);
 
-    xbt_dynar_foreach(e_route->link_list, cpt, link) {
-      xbt_dynar_unshift(route->link_list, &link);
+    for (auto link: *e_route->link_list) {
+      route->link_list->insert(route->link_list->begin(), link);
       if (lat)
         *lat += static_cast<Link*>(link)->getLatency();
     }
@@ -210,8 +208,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
 
   route_cache_element_t elm = NULL;
   if (routeCache_) {  /* cache mode  */
-    elm = (route_cache_element_t)
-            xbt_dict_get_or_null_ext(routeCache_, (char *) (&src_id), sizeof(int));
+    elm = (route_cache_element_t) xbt_dict_get_or_null_ext(routeCache_, (char *) (&src_id), sizeof(int));
   }
 
   if (elm) {                    /* cached mode and cache hit */
@@ -252,7 +249,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
         graph_node_data_t data = (graph_node_data_t) xbt_graph_node_get_data(u_node);
         int u_id = data->graph_id;
         sg_platf_route_cbarg_t tmp_e_route = (sg_platf_route_cbarg_t) xbt_graph_edge_get_data(edge);
-        int cost_v_u = (tmp_e_route->link_list)->used;    /* count of links, old model assume 1 */
+        int cost_v_u = tmp_e_route->link_list->size();    /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[*v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = *v_id;
@@ -293,22 +290,20 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
       first_gw = gw_dst;
 
     if (hierarchy_ == SURF_ROUTING_RECURSIVE && v != dst_node_id && strcmp(gw_dst->name(), prev_gw_src->name())) {
-      xbt_dynar_t e_route_as_to_as=NULL;
+      std::vector<Link*> *e_route_as_to_as = new std::vector<Link*>();
 
-      routing_platf->getRouteAndLatency(gw_dst_net_elm, prev_gw_src_net_elm, &e_route_as_to_as, NULL);
-      if (edge == NULL)
-        THROWF(arg_error,0,"No route from '%s' to '%s'", src->name(), dst->name());
-      int pos = 0;
-      xbt_dynar_foreach(e_route_as_to_as, cpt, link) {
-        xbt_dynar_insert_at(route->link_list, pos, &link);
+      routing_platf->getRouteAndLatency(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, NULL);
+      auto pos = route->link_list->begin();
+      for (auto link : *e_route_as_to_as) {
+        route->link_list->insert(pos, link);
         if (lat)
-          *lat += static_cast<Link*>(link)->getLatency();
+          *lat += link->getLatency();
         pos++;
       }
     }
 
-    xbt_dynar_foreach(e_route->link_list, cpt, link) {
-      xbt_dynar_unshift(route->link_list, &link);
+    for (auto link: *e_route->link_list) {
+      route->link_list->insert(route->link_list->begin(), link);
       if (lat)
         *lat += static_cast<Link*>(link)->getLatency();
     }
@@ -392,7 +387,7 @@ void AsDijkstra::addRoute(sg_platf_route_cbarg_t route)
     sg_platf_route_cbarg_t link_route_back = newExtendedRoute(hierarchy_, route, 0);
     newRoute(dst->id(), src->id(), link_route_back);
   }
-  xbt_dynar_free(&route->link_list);
+  delete route->link_list;
 }
 
 }

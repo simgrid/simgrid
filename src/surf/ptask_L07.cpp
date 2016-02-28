@@ -186,14 +186,10 @@ Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t *host_list,
 }
 
 
-L07Action::L07Action(Model *model, int host_nb,
-    sg_host_t*host_list,
-    double *flops_amount,
-    double *bytes_amount,
-    double rate)
+L07Action::L07Action(Model *model, int host_nb, sg_host_t*host_list,
+    double *flops_amount, double *bytes_amount, double rate)
   : CpuAction(model, 1, 0)
 {
-  unsigned int cpt;
   int nb_link = 0;
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
   double latency = 0.0;
@@ -211,16 +207,14 @@ L07Action::L07Action(Model *model, int host_nb,
 
         if (bytes_amount[i * host_nb + j] > 0) {
           double lat=0.0;
-          xbt_dynar_t route=NULL;
+          std::vector<Link*> *route = new std::vector<Link*>();
 
-          routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], &route, &lat);
+          routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], route, &lat);
           latency = MAX(latency, lat);
 
-          void *_link;
-          xbt_dynar_foreach(route, cpt, _link) {
-            LinkL07 *link = static_cast<LinkL07*>(_link);
+          for (auto link : *route)
             xbt_dict_set(ptask_parallel_task_link_set, link->getName(), link, NULL);
-          }
+          delete route;
         }
       }
     }
@@ -254,19 +248,16 @@ L07Action::L07Action(Model *model, int host_nb,
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
 
-        xbt_dynar_t route=NULL;
         if (bytes_amount[i * host_nb + j] == 0.0)
           continue;
+        std::vector<Link*> *route = new std::vector<Link*>();
 
-        routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j],
-                                                    &route, NULL);
+        routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], route, NULL);
 
-        void *_link;
-        xbt_dynar_foreach(route, cpt, _link) {
-          LinkL07 *link = static_cast<LinkL07*>(_link);
-          lmm_expand_add(model->getMaxminSystem(), link->getConstraint(),
-                        this->getVariable(), bytes_amount[i * host_nb + j]);
-        }
+        for (auto link : *route)
+          lmm_expand_add(model->getMaxminSystem(), link->getConstraint(), this->getVariable(), bytes_amount[i * host_nb + j]);
+
+        delete route;
       }
     }
   }
@@ -495,14 +486,14 @@ void L07Action::updateBound()
   if (p_communicationAmount != NULL) {
     for (i = 0; i < hostNb; i++) {
       for (j = 0; j < hostNb; j++) {
-        xbt_dynar_t route=NULL;
 
         if (p_communicationAmount[i * hostNb + j] > 0) {
           double lat = 0.0;
-          routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j],
-                                                                &route, &lat);
+          std::vector<Link*> *route = new std::vector<Link*>();
+          routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], route, &lat);
 
           lat_current = MAX(lat_current, lat * p_communicationAmount[i * hostNb + j]);
+          delete route;
         }
       }
     }

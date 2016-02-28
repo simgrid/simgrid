@@ -28,30 +28,29 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
     if((src->id() == dst->id()) && has_loopback_  ){
       info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_, s_surf_parsing_link_up_down_t);
-      xbt_dynar_push_as(route->link_list, void *, info.link_up);
+      route->link_list->push_back(info.link_up);
       if (lat)
-        *lat += static_cast<Link*>(info.link_up)->getLatency();
+        *lat += info.link_up->getLatency();
       return;
     }
 
 
     if (has_limiter_){          // limiter for sender
       info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
-      xbt_dynar_push_as(route->link_list, void *, info.link_up);
+      route->link_list->push_back((Link*)info.link_up);
     }
 
     info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
     if (info.link_up) {         // link up
-      xbt_dynar_push_as(route->link_list, void *, info.link_up);
+      route->link_list->push_back(info.link_up);
       if (lat)
-        *lat += static_cast<Link*>(info.link_up)->getLatency();
+        *lat += info.link_up->getLatency();
     }
 
   }
 
   if (backbone_) {
-    xbt_dynar_push_as(route->link_list, void *,
-      static_cast<simgrid::surf::Resource*>(backbone_));
+    route->link_list->push_back(backbone_);
     if (lat)
       *lat += backbone_->getLatency();
   }
@@ -60,13 +59,13 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     info = xbt_dynar_get_as(upDownLinks, dst->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
 
     if (info.link_down) {       // link down
-      xbt_dynar_push_as(route->link_list, void *, info.link_down);
+      route->link_list->push_back(info.link_down);
       if (lat)
-        *lat += static_cast<Link*>(info.link_down)->getLatency();
+        *lat += info.link_down->getLatency();
     }
     if (has_limiter_){          // limiter for receiver
         info = xbt_dynar_get_as(upDownLinks, dst->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
-        xbt_dynar_push_as(route->link_list, void *, info.link_up);
+        route->link_list->push_back(info.link_up);
     }
   }
 }

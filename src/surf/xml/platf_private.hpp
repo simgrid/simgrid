@@ -105,7 +105,7 @@ typedef struct s_sg_platf_route_cbarg {
   const char *dst;
   sg_netcard_t gw_src;
   sg_netcard_t gw_dst;
-  xbt_dynar_t link_list;
+  std::vector<Link*> *link_list;
 } s_sg_platf_route_cbarg_t;
 
 #define SG_PLATF_ROUTE_INITIALIZER {1,NULL,NULL,NULL,NULL,NULL}
@@ -305,8 +305,8 @@ XBT_PRIVATE void sg_instr_AS_end(void);
 
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
 typedef struct s_surf_parsing_link_up_down {
-  void* link_up;
-  void* link_down;
+  Link* link_up;
+  Link* link_down;
 } s_surf_parsing_link_up_down_t;
 
 

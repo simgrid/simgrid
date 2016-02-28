@@ -49,7 +49,6 @@ public:
       tmgr_trace_t state_trace,
       e_surf_link_sharing_policy_t policy,
       xbt_dict_t properties) override;
-  xbt_dynar_t getRoute(NetCard *src, NetCard *dst);
   Action *communicate(NetCard *src, NetCard *dst, double size, double rate);
   double next_occuring_event(double now) override;
   bool next_occuring_event_isIdempotent() {return false;}

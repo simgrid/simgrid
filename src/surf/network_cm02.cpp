@@ -308,41 +308,32 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
 Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
                                                 double size, double rate)
 {
-  unsigned int i;
-  void *_link;
-  NetworkCm02Link *link;
   int failed = 0;
   NetworkCm02Action *action = NULL;
   double bandwidth_bound;
   double latency = 0.0;
-  xbt_dynar_t back_route = NULL;
+  std::vector<Link*> * back_route = NULL;
   int constraints_per_variable = 0;
 
-  xbt_dynar_t route = xbt_dynar_new(sizeof(NetCard*), NULL);
+  std::vector<Link*> *route = new std::vector<Link*>();
 
   XBT_IN("(%s,%s,%g,%g)", src->name(), dst->name(), size, rate);
 
-  routing_platf->getRouteAndLatency(src, dst, &route, &latency);
-  xbt_assert(!xbt_dynar_is_empty(route) || latency,
+  routing_platf->getRouteAndLatency(src, dst, route, &latency);
+  xbt_assert(! route->empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->name(), dst->name());
 
-  xbt_dynar_foreach(route, i, _link) {
-  link = static_cast<NetworkCm02Link*>(_link);
-    if (link->isOff()) {
+  for (auto link: *route)
+    if (link->isOff())
       failed = 1;
-      break;
-    }
-  }
+
   if (sg_network_crosstraffic == 1) {
-    routing_platf->getRouteAndLatency(dst, src, &back_route, NULL);
-    xbt_dynar_foreach(back_route, i, _link) {
-      link = static_cast<NetworkCm02Link*>(_link);
-      if (link->isOff()) {
+    back_route = new std::vector<Link*>();
+    routing_platf->getRouteAndLatency(dst, src, back_route, NULL);
+    for (auto link: *back_route)
+      if (link->isOff())
         failed = 1;
-        break;
-      }
-    }
   }
 
   action = new NetworkCm02Action(this, size, failed);
@@ -359,45 +350,37 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
   }
 
   bandwidth_bound = -1.0;
-  if (sg_weight_S_parameter > 0) {
-    xbt_dynar_foreach(route, i, _link) {
-      link = static_cast<NetworkCm02Link*>(_link);
+  if (sg_weight_S_parameter > 0)
+    for (auto link : *route)
       action->m_weight += sg_weight_S_parameter / link->getBandwidth();
-    }
-  }
-  xbt_dynar_foreach(route, i, _link) {
-    link = static_cast<NetworkCm02Link*>(_link);
+
+  for (auto link : *route) {
     double bb = bandwidthFactor(size) * link->getBandwidth();
-    bandwidth_bound =
-        (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
+    bandwidth_bound = (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
   }
 
   action->m_latCurrent = action->m_latency;
   action->m_latency *= latencyFactor(size);
   action->m_rate = bandwidthConstraint(action->m_rate, bandwidth_bound, size);
   if (m_haveGap) {
-    xbt_assert(!xbt_dynar_is_empty(route),
+    xbt_assert(! route->empty(),
                "Using a model with a gap (e.g., SMPI) with a platform without links (e.g. vivaldi)!!!");
 
-    link = *static_cast<NetworkCm02Link **>(xbt_dynar_get_ptr(route, 0));
-    gapAppend(size, link, action);
-    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)",
-              action, src->name(), dst->name(), action->m_senderGap,
-              action->m_latency);
+    gapAppend(size, route->at(0), action);
+    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)", action, src->name(), dst->name(), action->m_senderGap, action->m_latency);
   }
 
-  constraints_per_variable = xbt_dynar_length(route);
+  constraints_per_variable = route->size();
   if (back_route != NULL)
-    constraints_per_variable += xbt_dynar_length(back_route);
+    constraints_per_variable += back_route->size();
 
   if (action->m_latency > 0) {
     action->p_variable = lmm_variable_new(p_maxminSystem, action, 0.0, -1.0,
                          constraints_per_variable);
     if (p_updateMechanism == UM_LAZY) {
       // add to the heap the event when the latency is payed
-      XBT_DEBUG("Added action (%p) one latency event at date %f", action,
-                action->m_latency + action->m_lastUpdate);
-      action->heapInsert(p_actionHeap, action->m_latency + action->m_lastUpdate, xbt_dynar_is_empty(route) ? NORMAL : LATENCY);
+      XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->m_latency + action->m_lastUpdate);
+      action->heapInsert(p_actionHeap, action->m_latency + action->m_lastUpdate, route->empty() ? NORMAL : LATENCY);
     }
   } else
     action->p_variable = lmm_variable_new(p_maxminSystem, action, 1.0, -1.0, constraints_per_variable);
@@ -408,21 +391,17 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
     lmm_update_variable_bound(p_maxminSystem, action->getVariable(), (action->m_latCurrent > 0) ? std::min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)) : action->m_rate);
   }
 
-  xbt_dynar_foreach(route, i, _link) {
-    link = static_cast<NetworkCm02Link*>(_link);
+  for (auto link: *route)
     lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), 1.0);
-  }
 
   if (sg_network_crosstraffic == 1) {
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
-    xbt_dynar_foreach(back_route, i, _link) {
-      link = static_cast<NetworkCm02Link*>(_link);
+    for (auto link : *back_route)
       lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), .05);
-    }
     lmm_variable_concurrency_share_set(action->getVariable(),2);
   }
 
-  xbt_dynar_free(&route);
+  delete route;
   XBT_OUT();
 
   networkCommunicateCallbacks(action, src, dst, size, rate);

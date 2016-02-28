@@ -8,6 +8,7 @@
 
 #include "lua_private.h"
 #include "src/surf/xml/platf_private.hpp"
+#include "src/surf/network_interface.hpp"
 #include "surf/surf_routing.h"
 #include <string.h>
 #include <ctype.h>
@@ -364,9 +365,22 @@ int console_add_route(lua_State *L) {
   if (type != LUA_TSTRING) {
     XBT_ERROR("Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
   }
-  route.link_list = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
-  if (xbt_dynar_is_empty(route.link_list))
-    xbt_dynar_push_as(route.link_list,char*,xbt_strdup(lua_tostring(L, -1)));
+  route.link_list = new std::vector<Link*>();
+  xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
+  if (xbt_dynar_is_empty(names)) {
+    /* unique name */
+    route.link_list->push_back(Link::byName(lua_tostring(L, -1)));
+  } else {
+    // Several names separated by , \t\r\n
+    unsigned int cpt;
+    char *name;
+    xbt_dynar_foreach(names, cpt, name) {
+      if (strlen(name)>0) {
+        Link *link = Link::byName(name);
+        route.link_list->push_back(link);
+      }
+    }
+  }
   lua_pop(L,1);
 
   /* We are relying on the XML bypassing mechanism since the corresponding sg_platf does not exist yet.
@@ -434,9 +448,22 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
-  ASroute.link_list = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
-  if (xbt_dynar_is_empty(ASroute.link_list))
-    xbt_dynar_push_as(ASroute.link_list,char*,xbt_strdup(lua_tostring(L, -1)));
+  ASroute.link_list = new std::vector<Link*>();
+  xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
+  if (xbt_dynar_is_empty(names)) {
+    /* unique name */
+    ASroute.link_list->push_back(Link::byName(lua_tostring(L, -1)));
+  } else {
+    // Several names separated by , \t\r\n
+    unsigned int cpt;
+    char *name;
+    xbt_dynar_foreach(names, cpt, name) {
+      if (strlen(name)>0) {
+        Link *link = Link::byName(name);
+        ASroute.link_list->push_back(link);
+      }
+    }
+  }
   lua_pop(L,1);
 
   lua_pushstring(L,"symmetrical");

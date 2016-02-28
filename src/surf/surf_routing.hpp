@@ -18,7 +18,7 @@
 #include <map>
 
 SG_BEGIN_DECL()
-XBT_PUBLIC(void) routing_model_create( void *loopback);
+XBT_PUBLIC(void) routing_model_create(Link *loopback);
 XBT_PRIVATE xbt_node_t new_xbt_graph_node (xbt_graph_t graph, const char *name, xbt_dict_t nodes);
 XBT_PRIVATE xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt_dict_t edges);
 SG_END_DECL()
@@ -156,13 +156,13 @@ public:
  */
 XBT_PUBLIC_CLASS RoutingPlatf {
 public:
-  RoutingPlatf(void *loopback);
+  RoutingPlatf(Link *loopback);
   ~RoutingPlatf();
   As *root_ = nullptr;
-  void *loopback_;
+  Link *loopback_;
   xbt_dynar_t lastRoute_ = xbt_dynar_new(sizeof(Link*),NULL);
   xbt_dynar_t getOneLinkRoutes(void);
-  void getRouteAndLatency(NetCard *src, NetCard *dst, xbt_dynar_t * links, double *latency);
+  void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };
 
 /*************

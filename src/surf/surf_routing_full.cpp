@@ -37,8 +37,8 @@ void AsFull::Seal() {
         e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->gw_src = NULL;
         e_route->gw_dst = NULL;
-        e_route->link_list = xbt_dynar_new(sizeof(Link*), NULL);
-        xbt_dynar_push(e_route->link_list, &routing_platf->loopback_);
+        e_route->link_list = new std::vector<Link*>();
+        e_route->link_list->push_back(routing_platf->loopback_);
         TO_ROUTE_FULL(i, i) = e_route;
       }
     }
@@ -53,7 +53,7 @@ AsFull::~AsFull(){
     for (i = 0; i < table_size; i++)
       for (j = 0; j < table_size; j++) {
         if (TO_ROUTE_FULL(i,j)){
-          xbt_dynar_free(&TO_ROUTE_FULL(i,j)->link_list);
+          delete TO_ROUTE_FULL(i,j)->link_list;
           xbt_free(TO_ROUTE_FULL(i,j));
         }
       }
@@ -72,8 +72,8 @@ xbt_dynar_t AsFull::getOneLinkRoutes()
     for(dst=0; dst< table_size; dst++) {
       sg_platf_route_cbarg_t route = TO_ROUTE_FULL(src,dst);
       if (route) {
-        if (xbt_dynar_length(route->link_list) == 1) {
-          void *link = *(void **) xbt_dynar_get_ptr(route->link_list, 0);
+        if (route->link_list->size() == 1) {
+          Link *link = route->link_list->at(0);
           Onelink *onelink;
           if (hierarchy_ == SURF_ROUTING_BASE) {
           NetCard *tmp_src = xbt_dynar_get_as(vertices_, src, sg_netcard_t);
@@ -108,25 +108,18 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
   size_t table_size = xbt_dynar_length(vertices_);
 
   sg_platf_route_cbarg_t e_route = NULL;
-  void *link;
-  unsigned int cpt = 0;
 
   e_route = TO_ROUTE_FULL(src->id(), dst->id());
 
   if (e_route) {
     res->gw_src = e_route->gw_src;
     res->gw_dst = e_route->gw_dst;
-    xbt_dynar_foreach(e_route->link_list, cpt, link) {
-      xbt_dynar_push(res->link_list, &link);
+    for (auto link : *e_route->link_list) {
+      res->link_list->push_back(link);
       if (lat)
         *lat += static_cast<Link*>(link)->getLatency();
     }
   }
-}
-
-static int full_pointer_resource_cmp(const void *a, const void *b)
-{
-  return a != b;
 }
 
 void AsFull::addRoute(sg_platf_route_cbarg_t route)
@@ -154,40 +147,25 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
 
   /* Add the route to the base */
   TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()) = newExtendedRoute(hierarchy_, route, 1);
-  xbt_dynar_shrink(TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list, 0);
+  TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list->shrink_to_fit();
 
-  if (route->symmetrical == TRUE) {
+  if (route->symmetrical == TRUE && src_net_elm != dst_net_elm) {
     if (route->gw_dst && route->gw_src) {
       NetCard* gw_tmp = route->gw_src;
       route->gw_src = route->gw_dst;
       route->gw_dst = gw_tmp;
     }
-    if (TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())) {
-      char *link_name;
-      unsigned int i;
-      xbt_dynar_t link_route_to_test = xbt_dynar_new(sizeof(Link*), NULL);
-      for (i = xbt_dynar_length(route->link_list); i > 0; i--) {
-        link_name = xbt_dynar_get_as(route->link_list, i - 1, char *);
-        void *link = Link::byName(link_name);
-        xbt_assert(link, "Link : '%s' doesn't exists.", link_name);
-        xbt_dynar_push(link_route_to_test, &link);
-      }
-      xbt_assert(!xbt_dynar_compare(TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())->link_list,
-          link_route_to_test,
-          full_pointer_resource_cmp),
-          "The route between \"%s\" and \"%s\" already exists", src,
-          dst);
-    } else {
-      if (!route->gw_dst && !route->gw_src)
-        XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst, src);
-      else
-        XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"",
-            dst, route->gw_src->name(), src, route->gw_dst->name());
-      TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id()) = newExtendedRoute(hierarchy_, route, 0);
-      xbt_dynar_shrink(TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())->link_list, 0);
-    }
+    if (route->gw_dst) // AS route (to adapt the error message, if any)
+      xbt_assert(nullptr == TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id()),
+          "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
+          dst,route->gw_dst->name(),src,route->gw_src->name());
+    else
+      xbt_assert(nullptr == TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id()),
+          "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.", dst,src);
+
+    TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id()) = newExtendedRoute(hierarchy_, route, 0);
+    TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())->link_list->shrink_to_fit();
   }
-  xbt_dynar_free(&route->link_list);
 }
 
 }

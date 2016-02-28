@@ -14,6 +14,7 @@
 #include "xbt/file.h"
 #include "xbt/dict.h"
 #include "src/surf/surf_private.h"
+#include "src/surf/network_interface.hpp"
 #include "simgrid/sg_config.h"
 #include "simgrid/link.h"
 
@@ -748,7 +749,15 @@ void ETag_surfxml_route(void){
   route.dst       = A_surfxml_route_dst;
   route.gw_src    = NULL;
   route.gw_dst    = NULL;
-  route.link_list = parsed_link_list;
+  route.link_list = new std::vector<Link*>();
+
+  unsigned int cpt;
+  char *link_name;
+  xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
+    simgrid::surf::Link *link = Link::byName(link_name);
+    route.link_list->push_back(link);
+  }
+
 
   switch (A_surfxml_route_symmetrical) {
   case AU_surfxml_route_symmetrical:
@@ -781,7 +790,14 @@ void ETag_surfxml_ASroute(void){
     surf_parse_error("gw_dst=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
                      A_surfxml_ASroute_gw___dst, ASroute.src, ASroute.dst);
 
-  ASroute.link_list = parsed_link_list;
+  ASroute.link_list =  new std::vector<Link*>();
+
+  unsigned int cpt;
+  char *link_name;
+  xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
+    simgrid::surf::Link *link = Link::byName(link_name);
+    ASroute.link_list->push_back(link);
+  }
 
   switch (A_surfxml_ASroute_symmetrical) {
   case AU_surfxml_ASroute_symmetrical:
@@ -805,11 +821,18 @@ void ETag_surfxml_bypassRoute(void){
   route.dst = A_surfxml_bypassRoute_dst;
   route.gw_src = NULL;
   route.gw_dst = NULL;
-  route.link_list = parsed_link_list;
   route.symmetrical = FALSE;
+  route.link_list =  new std::vector<Link*>();
+
+  unsigned int cpt;
+  char *link_name;
+  xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
+    simgrid::surf::Link *link = Link::byName(link_name);
+    route.link_list->push_back(link);
+  }
+  xbt_dynar_free(&parsed_link_list);
 
   sg_platf_new_bypassRoute(&route);
-  xbt_dynar_free(&parsed_link_list);
 }
 
 void ETag_surfxml_bypassASroute(void){
@@ -818,14 +841,20 @@ void ETag_surfxml_bypassASroute(void){
 
   ASroute.src         = A_surfxml_bypassASroute_src;
   ASroute.dst         = A_surfxml_bypassASroute_dst;
-  ASroute.link_list   = parsed_link_list;
+  ASroute.link_list   =  new std::vector<Link*>();
+  unsigned int cpt;
+  char *link_name;
+  xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
+    simgrid::surf::Link *link = Link::byName(link_name);
+    ASroute.link_list->push_back(link);
+  }
+  xbt_dynar_free(&parsed_link_list);
   ASroute.symmetrical = FALSE;
 
   ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src);
   ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
   sg_platf_new_bypassRoute(&ASroute);
-  xbt_dynar_free(&parsed_link_list);
 }
 
 void ETag_surfxml_trace(void){

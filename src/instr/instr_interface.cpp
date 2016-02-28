@@ -364,20 +364,17 @@ static void instr_user_srcdst_variable(double time,
                               double value,
                               InstrUserVariable what)
 {
-  xbt_dynar_t route=NULL;
   sg_netcard_t src_elm = sg_netcard_by_name_or_null(src);
   if(!src_elm) xbt_die("Element '%s' not found!",src);
 
   sg_netcard_t dst_elm = sg_netcard_by_name_or_null(dst);
   if(!dst_elm) xbt_die("Element '%s' not found!",dst);
 
-  routing_platf->getRouteAndLatency (src_elm, dst_elm, &route,NULL);
-  unsigned int i;
-  surf_cpp_resource_t link;
-  xbt_dynar_foreach (route, i, link) {
-    char *link_name = (char*)surf_resource_name(link);
-    instr_user_variable (time, link_name, variable, father_type, value, what, NULL, user_link_variables);
-  }
+  std::vector<Link*> *route = new std::vector<Link*>();
+  routing_platf->getRouteAndLatency (src_elm, dst_elm, route,NULL);
+  for (auto link : *route)
+    instr_user_variable (time, link->getName(), variable, father_type, value, what, NULL, user_link_variables);
+  delete route;
 }
 
 /** \ingroup TRACE_API
