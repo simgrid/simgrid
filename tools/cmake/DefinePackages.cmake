@@ -437,7 +437,6 @@ else()
 endif()
 
 set(BINDINGS_SRC
-  src/bindings/bindings_global.c
   src/bindings/lua/lua_private.h
   src/bindings/lua/lua_utils.h
   src/bindings/lua/simgrid_lua.h

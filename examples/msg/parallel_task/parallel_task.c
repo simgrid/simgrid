@@ -4,32 +4,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/msg.h"        /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc, printf */
+#include "simgrid/msg.h"
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
  * 
- * - <b>parallel_task/parallel_task.c</b>: Demonstrates the use of
- *   @ref MSG_parallel_task_create, to create special tasks that run
- *   on several hosts at the same time. The resulting simulations are
- *   very close to what can be achieved in @ref SD_API, but still
- *   allows to use the other features of MSG (it'd be cool to be able
- *   to mix interfaces, but it's not possible ATM).
+ * - <b>parallel_task/parallel_task.c</b>: Demonstrates the use of @ref MSG_parallel_task_create, to create special
+ *   tasks that run on several hosts at the same time. The resulting simulations are very close to what can be
+ *   achieved in @ref SD_API, but still allows to use the other features of MSG (it'd be cool to be able to mix
+ *   interfaces, but it's not possible ATM).
  */
 
 
-/** Function in charge of running the example (that's a simgrid process) */
 static int runner(int argc, char *argv[])
 {
-  int i, j;
-
   /* Retrieve the list of all hosts as an array of hosts */
   xbt_dynar_t slaves_dynar = MSG_hosts_as_dynar();
   int slaves_count = xbt_dynar_length(slaves_dynar);
@@ -39,24 +28,25 @@ static int runner(int argc, char *argv[])
   double *computation_amounts = xbt_new0(double, slaves_count);
   double *communication_amounts = xbt_new0(double, slaves_count * slaves_count);
 
-  for (i = 0; i < slaves_count; i++)
+  for (int i = 0; i < slaves_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
 
-  for (i = 0; i < slaves_count; i++)
-    for (j = i + 1; j < slaves_count; j++)
+  for (int i = 0; i < slaves_count; i++)
+    for (int j = i + 1; j < slaves_count; j++)
       communication_amounts[i * slaves_count + j] = 1e7; // 10 MB
 
-  msg_task_t ptask = MSG_parallel_task_create("parallel task",
-      slaves_count, slaves, computation_amounts, communication_amounts, NULL /* no specific data to attach */);
+  msg_task_t ptask =
+    MSG_parallel_task_create("parallel task", slaves_count, slaves, computation_amounts, communication_amounts, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
   /* The arrays communication_amounts and computation_amounts are not to be freed manually */
 
   XBT_INFO("Then, build a parallel task involving only computations and no communication (1 Gflop per node)");
   computation_amounts = xbt_new0(double, slaves_count);
-  for (i = 0; i < slaves_count; i++)
+  for (int i = 0; i < slaves_count; i++)
     computation_amounts[i] = 1e9; // 1 Gflop
-  ptask = MSG_parallel_task_create("parallel exec", slaves_count, slaves, computation_amounts, NULL/* no comm */, NULL /* no data */);
+  ptask =
+    MSG_parallel_task_create("parallel exec", slaves_count, slaves, computation_amounts, NULL/* no comm */, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
 
@@ -65,7 +55,7 @@ static int runner(int argc, char *argv[])
   computation_amounts[0] = 1e9; // 1 Gflop
   msg_host_t *remote = xbt_new(msg_host_t,1);
   remote[0] = slaves[1];
-  ptask = MSG_parallel_task_create("remote exec", 1, remote, computation_amounts, NULL/* no comm */, NULL /* no data */);
+  ptask = MSG_parallel_task_create("remote exec", 1, remote, computation_amounts, NULL/* no comm */, NULL);
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
   free(remote);

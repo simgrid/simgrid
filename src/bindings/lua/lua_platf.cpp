@@ -20,7 +20,7 @@ extern "C" {
 #include <simgrid/host.h>
 #include "src/surf/surf_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_platf, bindings, "Lua bindings (platform module)");
+XBT_LOG_NEW_DEFAULT_CATEGORY(lua_platf, "Lua bindings (platform module)");
 
 #define PLATF_MODULE_NAME "simgrid.platf"
 

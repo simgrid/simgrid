@@ -78,7 +78,9 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(argv[1]);
   MSG_function_register("dream_master", dream_master);
-  MSG_process_create("dream_master", dream_master, NULL, xbt_dynar_getfirst_as(MSG_hosts_as_dynar(), msg_host_t));
+  xbt_dynar_t hosts = MSG_hosts_as_dynar();
+  MSG_process_create("dream_master", dream_master, NULL, xbt_dynar_getfirst_as(hosts, msg_host_t));
+  xbt_dynar_free(&hosts);
   res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
