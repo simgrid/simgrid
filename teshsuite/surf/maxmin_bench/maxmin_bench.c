@@ -15,13 +15,14 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 double date;
-unsigned long seedx= 0;
+int64_t seedx= 0;
 
 static int myrand(void) {
   seedx=seedx * 16807 % 2147483647;
-  return seedx%1000;
+  return (int32_t) seedx%1000;
 }
 
 static double float_random(double max)
@@ -31,7 +32,7 @@ static double float_random(double max)
 
 static int int_random(int max)
 {
-  return (int) (((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
+  return (int32_t) (((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
 }
 
 static void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_limit, float rate_no_limit,
