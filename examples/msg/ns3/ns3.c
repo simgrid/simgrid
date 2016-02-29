@@ -82,7 +82,7 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-int timer(int argc, char *argv[])
+static int timer(int argc, char *argv[])
 {
   double sleep_time;
   double first_sleep;
