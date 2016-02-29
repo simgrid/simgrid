@@ -45,10 +45,8 @@ namespace surf {
     xbt_dict_free(&sons_);
     xbt_dynar_free(&vertices_);
     xbt_dynar_free(&upDownLinks);
-    if (nullptr != bypassRoutes_)
-      for (auto &kv : *bypassRoutes_)
-        delete kv.second;
-    delete bypassRoutes_;
+    for (auto &kv : bypassRoutes_)
+      delete kv.second;
     xbt_free(name_);
     delete netcard_;
   }
@@ -75,15 +73,15 @@ namespace surf {
   {
     // If never set a bypass route return NULL without any further computations
     XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
-    if (bypassRoutes_ == nullptr)
+    if (bypassRoutes_.empty())
       return nullptr;
 
     std::vector<Link*> *bypassedRoute = nullptr;
 
     if(dst->containingAS() == this && src->containingAS() == this ){
       char *route_name = bprintf("%s#%s", src->name(), dst->name());
-      if (bypassRoutes_->find(route_name) != bypassRoutes_->end()) {
-        bypassedRoute = bypassRoutes_->at(route_name);
+      if (bypassRoutes_.find(route_name) != bypassRoutes_.end()) {
+        bypassedRoute = bypassRoutes_.at(route_name);
         XBT_DEBUG("Found a bypass route with %zu links",bypassedRoute->size());
       }
       free(route_name);
@@ -136,8 +134,8 @@ namespace surf {
           char *route_name = bprintf("%s#%s",
               (*(As **) (xbt_dynar_get_ptr(path_src, i)))->name_,
               (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
-          if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
-            bypassedRoute = bypassRoutes_->at(route_name);
+          if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
+            bypassedRoute = bypassRoutes_.at(route_name);
           xbt_free(route_name);
         }
         if (bypassedRoute)
@@ -146,8 +144,8 @@ namespace surf {
           char *route_name = bprintf("%s#%s",
               (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
               (*(As **) (xbt_dynar_get_ptr(path_dst, i)))->name_);
-          if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
-            bypassedRoute = bypassRoutes_->at(route_name);
+          if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
+            bypassedRoute = bypassRoutes_.at(route_name);
           xbt_free(route_name);
         }
         if (bypassedRoute)
@@ -162,8 +160,8 @@ namespace surf {
             (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
             (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
 
-        if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
-          bypassedRoute = bypassRoutes_->at(route_name);
+        if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
+          bypassedRoute = bypassRoutes_.at(route_name);
         xbt_free(route_name);
       }
       if (bypassedRoute)
@@ -180,9 +178,6 @@ namespace surf {
     const char *src = e_route->src;
     const char *dst = e_route->dst;
 
-    if(bypassRoutes_ == nullptr)
-      bypassRoutes_ = new std::map<std::string, std::vector<Link*>*>();
-
     char *route_name = bprintf("%s#%s", src, dst);
 
     /* Argument validity checks */
@@ -191,13 +186,12 @@ namespace surf {
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
       xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
-      xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(),
-          "The bypass route between %s@%s and %s@%s already exists.",
+      xbt_assert(bypassRoutes_.find(route_name) == bypassRoutes_.end(), "The bypass route between %s@%s and %s@%s already exists.",
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
     } else {
       XBT_DEBUG("Load bypassRoute from %s to %s", src, dst);
-      xbt_assert(!e_route->link_list->empty(),                            "Bypass route between %s and %s cannot be empty.",    src, dst);
-      xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(), "The bypass route between %s and %s already exists.", src, dst);
+      xbt_assert(!e_route->link_list->empty(),                          "Bypass route between %s and %s cannot be empty.",    src, dst);
+      xbt_assert(bypassRoutes_.find(route_name) == bypassRoutes_.end(), "The bypass route between %s and %s already exists.", src, dst);
     }
 
     /* Build a copy that will be stored in the dict */
@@ -206,7 +200,7 @@ namespace surf {
       newRoute->push_back(link);
 
     /* Store it */
-    bypassRoutes_->insert({route_name, newRoute});
+    bypassRoutes_.insert({route_name, newRoute});
     xbt_free(route_name);
   }
 

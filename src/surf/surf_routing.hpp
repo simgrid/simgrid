@@ -73,7 +73,7 @@ public:
 
 private:
   bool sealed_ = false; // We cannot add more content when sealed
-  std::map<std::string, std::vector<Link*>*> *bypassRoutes_ = nullptr;
+  std::map<std::string, std::vector<Link*>*> bypassRoutes_;
 
 public:
   /**
