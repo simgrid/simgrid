@@ -12,15 +12,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test, "Logging specific to this SimDag example")
 
 int main(int argc, char **argv)
 {
-  int i;
   unsigned int ctr;
-  const sg_host_t *hosts;
-  const char *name1, *name2;
-  double comp_amount1, comp_amount2;
-  double comm_amount12, comm_amount21;
-  const SD_link_t *route;
-  int route_size;
-  SD_task_t task, taskA, taskB, taskC, taskD, checkB, checkD;
+  SD_task_t checkB, checkD;
   xbt_dynar_t changed_tasks;
   xbt_ex_t ex;
   const int host_count = 2;
@@ -28,7 +21,6 @@ int main(int argc, char **argv)
   double computation_amount[2];
   double communication_amount[4] = { 0 };
   double rate = -1.0;
-  sg_host_t h1, h2;
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -37,22 +29,22 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /* test the estimation functions */
-  hosts = sg_host_list();
-  h1 = hosts[0];
-  h2 = hosts[1];
-  name1 = sg_host_get_name(h1);
-  name2 = sg_host_get_name(h2);
-  comp_amount1 = 2000000;
-  comp_amount2 = 1000000;
-  comm_amount12 = 2000000;
-  comm_amount21 = 3000000;
+  const sg_host_t *hosts = sg_host_list();
+  sg_host_t h1 = hosts[0];
+  sg_host_t h2 = hosts[1];
+  const char *name1 = sg_host_get_name(h1);
+  const char *name2 = sg_host_get_name(h2);
+  double comp_amount1 = 2000000;
+  double comp_amount2 = 1000000;
+  double comm_amount12 = 2000000;
+  double comm_amount21 = 3000000;
   XBT_INFO("Computation time for %f flops on %s: %f", comp_amount1, name1, comp_amount1/sg_host_speed(h1));
   XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, name2, comp_amount2/sg_host_speed(h2));
 
   XBT_INFO("Route between %s and %s:", name1, name2);
-  route = SD_route_get_list(h1, h2);
-  route_size = SD_route_get_size(h1, h2);
-  for (i = 0; i < route_size; i++) {
+  const SD_link_t *route = SD_route_get_list(h1, h2);
+  int route_size = SD_route_get_size(h1, h2);
+  for (int i = 0; i < route_size; i++) {
     XBT_INFO("   Link %s: latency = %f, bandwidth = %f", sg_link_name(route[i]), sg_link_latency(route[i]),
              sg_link_bandwidth(route[i]));
   }
@@ -63,10 +55,10 @@ int main(int argc, char **argv)
         SD_route_get_latency(h2, h1) + comm_amount21 / SD_route_get_bandwidth(h2, h1));
 
   /* creation of the tasks and their dependencies */
-  taskA = SD_task_create("Task A", NULL, 10.0);
-  taskB = SD_task_create("Task B", NULL, 40.0);
-  taskC = SD_task_create("Task C", NULL, 30.0);
-  taskD = SD_task_create("Task D", NULL, 60.0);
+  SD_task_t taskA = SD_task_create("Task A", NULL, 10.0);
+  SD_task_t taskB = SD_task_create("Task B", NULL, 40.0);
+  SD_task_t taskC = SD_task_create("Task C", NULL, 30.0);
+  SD_task_t taskD = SD_task_create("Task D", NULL, 60.0);
 
   /* try to attach and retrieve user data to a task */
   SD_task_set_data(taskA, (void*) &comp_amount1);
@@ -136,7 +128,7 @@ int main(int argc, char **argv)
   communication_amount[2] = comm_amount21;
 
   /* estimated time */
-  task = taskD;
+  SD_task_t task = taskD;
   XBT_INFO("Estimated time for '%s': %f", SD_task_get_name(task), SD_task_get_execution_time(task, host_count,
            host_list, computation_amount, communication_amount));
 

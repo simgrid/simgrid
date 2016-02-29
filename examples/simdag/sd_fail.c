@@ -5,13 +5,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_fail, "Logging specific to this SimDag example");
 
 int main(int argc, char **argv)
 {
-  SD_task_t task;
   double computation_amount[1];
   double communication_amount[2] = { 0 };
   sg_host_t hosts[1];
@@ -21,11 +19,10 @@ int main(int argc, char **argv)
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
- 
-  /* creation of a single task that will poorly fail when the workstation
-   * will stop */
+
+  /* creation of a single task that will poorly fail when the workstation will stop */
   XBT_INFO("First test: COMP_SEQ task");
-  task = SD_task_create_comp_seq("Poor task", NULL, 2e10);
+  SD_task_t task = SD_task_create_comp_seq("Poor task", NULL, 2e10);
   SD_task_watch(task, SD_FAILED);
   SD_task_watch(task, SD_DONE);
 

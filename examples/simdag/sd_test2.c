@@ -19,17 +19,6 @@ static int nameCompareHosts(const void *n1, const void *n2)
 int main(int argc, char **argv)
 {
   int i, j;
-  int n_hosts;
-  const sg_host_t *hosts;
-  SD_task_t taskInit;
-  SD_task_t PtoPComm1;
-  SD_task_t PtoPComm2;
-  SD_task_t ParComp_wocomm;
-  SD_task_t IntraRedist;
-  SD_task_t ParComp_wcomm1;
-  SD_task_t InterRedist;
-  SD_task_t taskFinal;
-  SD_task_t ParComp_wcomm2;
   sg_host_t PtoPcomm1_hosts[2];
   sg_host_t PtoPcomm2_hosts[2];
   double PtoPcomm1_table[] = { 0, 12500000, 0, 0 };     /* 100Mb */
@@ -56,22 +45,22 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /* getting platform infos */
-  n_hosts = sg_host_count();
-  hosts = sg_host_list();
+  int n_hosts = sg_host_count();
+  const sg_host_t *hosts = sg_host_list();
 
   /* sorting hosts by hostname */
   qsort((void *) hosts, n_hosts, sizeof(sg_host_t), nameCompareHosts);
 
   /* creation of the tasks */
-  taskInit = SD_task_create("Initial", NULL, 1.0);
-  PtoPComm1 = SD_task_create("PtoP Comm 1", NULL, 1.0);
-  PtoPComm2 = SD_task_create("PtoP Comm 2", NULL, 1.0);
-  ParComp_wocomm = SD_task_create("Par Comp without comm", NULL, 1.0);
-  IntraRedist = SD_task_create("intra redist", NULL, 1.0);
-  ParComp_wcomm1 = SD_task_create("Par Comp with comm 1", NULL, 1.0);
-  InterRedist = SD_task_create("inter redist", NULL, 1.0);
-  taskFinal = SD_task_create("Final", NULL, 1.0);
-  ParComp_wcomm2 = SD_task_create("Par Comp with comm 2", NULL, 1.0);
+  SD_task_t taskInit = SD_task_create("Initial", NULL, 1.0);
+  SD_task_t PtoPComm1 = SD_task_create("PtoP Comm 1", NULL, 1.0);
+  SD_task_t PtoPComm2 = SD_task_create("PtoP Comm 2", NULL, 1.0);
+  SD_task_t ParComp_wocomm = SD_task_create("Par Comp without comm", NULL, 1.0);
+  SD_task_t IntraRedist = SD_task_create("intra redist", NULL, 1.0);
+  SD_task_t ParComp_wcomm1 = SD_task_create("Par Comp with comm 1", NULL, 1.0);
+  SD_task_t InterRedist = SD_task_create("inter redist", NULL, 1.0);
+  SD_task_t taskFinal = SD_task_create("Final", NULL, 1.0);
+  SD_task_t ParComp_wcomm2 = SD_task_create("Par Comp with comm 2", NULL, 1.0);
 
   /* creation of the dependencies */
   SD_task_dependency_add(NULL, NULL, taskInit, PtoPComm1);

@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_avail, "Logging specific to this SimDag example");
 
@@ -41,21 +40,20 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_avail, "Logging specific to this SimDag example"
 int main(int argc, char **argv)
 {
   unsigned int ctr;
-  const sg_host_t *hosts;
-  SD_task_t t1, c1, t2, c2, t3, c3, t4, task;
+  SD_task_t task;
   xbt_dynar_t changed_tasks;
 
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
-  hosts = sg_host_list();
+  const sg_host_t *hosts = sg_host_list();
 
-  t1 = SD_task_create_comp_seq("t1", NULL, 25000000);
-  c1 = SD_task_create_comm_e2e("c1", NULL, 125000000);
-  t2 = SD_task_create_comp_seq("t2", NULL, 25000000);
-  c2 = SD_task_create_comm_e2e("c2", NULL, 62500000);
-  t3 = SD_task_create_comp_seq("t3", NULL, 25000000);
-  c3 = SD_task_create_comm_e2e("c3", NULL, 31250000);
-  t4 = SD_task_create_comp_seq("t4", NULL, 25000000);
+  SD_task_t t1 = SD_task_create_comp_seq("t1", NULL, 25000000);
+  SD_task_t c1 = SD_task_create_comm_e2e("c1", NULL, 125000000);
+  SD_task_t t2 = SD_task_create_comp_seq("t2", NULL, 25000000);
+  SD_task_t c2 = SD_task_create_comm_e2e("c2", NULL, 62500000);
+  SD_task_t t3 = SD_task_create_comp_seq("t3", NULL, 25000000);
+  SD_task_t c3 = SD_task_create_comm_e2e("c3", NULL, 31250000);
+  SD_task_t t4 = SD_task_create_comp_seq("t4", NULL, 25000000);
 
   /* Add dependencies: t1->c1->t2->c2->t3 */
   SD_task_dependency_add(NULL, NULL, t1, c1);
