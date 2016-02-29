@@ -9,7 +9,6 @@ set(TEST_CFILES
   src/xbt/swag.c
   src/xbt/xbt_str.c
   src/xbt/xbt_strbuff.c
-  src/xbt/xbt_sha.c
   src/xbt/config.c
   )
 set(TEST_UNITS
@@ -20,7 +19,6 @@ set(TEST_UNITS
   ${CMAKE_CURRENT_BINARY_DIR}/src/swag_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_str_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_strbuff_unit.c
-  ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_sha_unit.c
   ${CMAKE_CURRENT_BINARY_DIR}/src/config_unit.c
 
   ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c
