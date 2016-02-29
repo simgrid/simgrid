@@ -4,6 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstring>
+
+#include <unordered_map>
+#include <utility>
+
 #include "src/internal_config.h"
 #include "private.h"
 #include "xbt/dict.h"
@@ -67,8 +72,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
 
 #define PTR_STRLEN (2 + 2 * sizeof(void*) + 1)
 
-xbt_dict_t allocs = NULL;          /* Allocated on first use */
-xbt_dict_t allocs_metadata = NULL; /* Allocated on first use */
 xbt_dict_t samples = NULL;         /* Allocated on first use */
 xbt_dict_t calls = NULL;           /* Allocated on first use */
 
@@ -82,16 +85,71 @@ int smpi_privatize_global_variables;
 double smpi_total_benched_time = 0;
 smpi_privatisation_region_t smpi_privatisation_regions;
 
+namespace {
+
+/** Some location in the source code
+ *
+ *  This information is used by SMPI_SHARED_MALLOC to allocate
+ *  some shared memory for all simulated processes.
+ */
+class smpi_source_location {
+public:
+  smpi_source_location(const char* filename, int line)
+    : filename(filename), filename_length(strlen(filename)), line(line) {}
+
+  /** Pointer to a static string containing the file name */
+  const char* filename = nullptr;
+  int filename_length = 0;
+  int line = 0;
+
+  bool operator==(smpi_source_location const& that) const
+  {
+    return filename_length == that.filename_length
+      && line == that.line
+      && std::memcmp(filename, that.filename, filename_length) == 0;
+  }
+  bool operator!=(smpi_source_location const& that) const
+  {
+    return !(*this == that);
+  }
+};
+
+}
+
+namespace std {
+
+template<>
+class hash<smpi_source_location> {
+public:
+  typedef smpi_source_location argument_type;
+  typedef std::size_t result_type;
+  result_type operator()(smpi_source_location const& loc) const
+  {
+    return xbt_str_hash_ext(loc.filename, loc.filename_length)
+      ^ xbt_str_hash_ext((const char*) &loc.line, sizeof(loc.line));
+  }
+};
+
+}
+
+namespace {
+
 typedef struct {
-  int fd;
-  int count;
-  char* loc;
+  int fd = -1;
+  int count = 0;
 } shared_data_t;
+
+std::unordered_map<smpi_source_location, shared_data_t> allocs;
+typedef std::unordered_map<smpi_source_location, shared_data_t>::value_type shared_data_key_type;
 
 typedef struct  {
   size_t size;
-  shared_data_t* data;
+  shared_data_key_type* data;
 } shared_metadata_t;
+
+std::unordered_map<void*, shared_metadata_t> allocs_metadata;
+
+}
 
 static size_t shm_size(int fd) {
   struct stat st;
@@ -103,10 +161,10 @@ static size_t shm_size(int fd) {
 }
 
 #ifndef WIN32
-static void* shm_map(int fd, size_t size, shared_data_t* data) {
+static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
   void* mem;
   char loc[PTR_STRLEN];
-  shared_metadata_t* meta;
+  shared_metadata_t meta;
 
   if(size > shm_size(fd)) {
     if(ftruncate(fd, (off_t)size) < 0) {
@@ -118,14 +176,10 @@ static void* shm_map(int fd, size_t size, shared_data_t* data) {
   if(mem == MAP_FAILED) {
     xbt_die("Could not map fd %d: %s", fd, strerror(errno));
   }
-  if(!allocs_metadata) {
-    allocs_metadata = xbt_dict_new_homogeneous(xbt_free_f);
-  }
   snprintf(loc, PTR_STRLEN, "%p", mem);
-  meta = xbt_new(shared_metadata_t, 1);
-  meta->size = size;
-  meta->data = data;
-  xbt_dict_set(allocs_metadata, loc, meta, NULL);
+  meta.size = size;
+  meta.data = data;
+  allocs_metadata[mem] = meta;
   XBT_DEBUG("MMAP %zu to %p", size, mem);
   return mem;
 }
@@ -133,8 +187,8 @@ static void* shm_map(int fd, size_t size, shared_data_t* data) {
 
 void smpi_bench_destroy(void)
 {
-  xbt_dict_free(&allocs);
-  xbt_dict_free(&allocs_metadata);
+  allocs.clear();
+  allocs_metadata.clear();
   xbt_dict_free(&samples);
   xbt_dict_free(&calls);
 }
@@ -424,78 +478,42 @@ void smpi_sample_3(int global, const char *file, int line)
 }
 
 #ifndef WIN32
-static void smpi_shared_alloc_free(void *p)
-{
-  shared_data_t *data = static_cast<shared_data_t *>(p);
-  xbt_free(data->loc);
-  xbt_free(data);
-}
-
-static char *smpi_shared_alloc_hash(char *loc)
-{
-  char hash[42];
-  char s[7];
-  unsigned val;
-  int i, j;
-
-  xbt_sha(loc, hash);
-  hash[41] = '\0';
-  s[6] = '\0';
-  loc = static_cast<char *>(xbt_realloc(loc, 30));
-  loc[0] = '/';
-  for (i = 0; i < 40; i += 6) { /* base64 encode */
-    memcpy(s, hash + i, 6);
-    val = strtoul(s, NULL, 16);
-    for (j = 0; j < 4; j++) {
-      unsigned char x = (val >> (18 - 3 * j)) & 0x3f;
-      loc[1 + 4 * i / 6 + j] =
-        "ABCDEFGHIJKLMNOPQRSTUVZXYZabcdefghijklmnopqrstuvzxyz0123456789-_"[x];
-    }
-  }
-  loc[29] = '\0';
-  return loc;
-}
 
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
   void* mem;
   if (sg_cfg_get_boolean("smpi/use_shared_malloc")){
-    char *loc = bprintf("/%zu_%s_%d", (size_t)getpid(), file, line);
     int fd;
-    shared_data_t *data;
-    loc = smpi_shared_alloc_hash(loc); /* hash loc, in order to have something
-                                        * not too long */
-    if (!allocs) {
-      allocs = xbt_dict_new_homogeneous(smpi_shared_alloc_free);
-    }
-    data = static_cast<shared_data_t *>(xbt_dict_get_or_null(allocs, loc));
-    if (!data) {
-      fd = shm_open(loc, O_RDWR | O_CREAT | O_EXCL,
+    smpi_source_location loc(file, line);
+    auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
+    auto data = res.first;
+    if (res.second) {
+      // The insertion did not take place.
+      // Generate a shared memory name from the address of the shared_data:
+      char shmname[256];
+      sprintf(shmname, "smpi_shared_malloc_%p", &*data);
+      fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL,
                     S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
       if (fd < 0) {
         switch(errno) {
           case EEXIST:
-            xbt_die("Please cleanup /dev/shm/%s", loc);
+            xbt_die("Please cleanup /dev/shm/%s", shmname);
           default:
-            xbt_die("An unhandled error occured while opening %s. shm_open: %s", loc, strerror(errno));
+            xbt_die("An unhandled error occured while opening %s. shm_open: %s", shmname, strerror(errno));
         }
       }
-      data = xbt_new(shared_data_t, 1);
-      data->fd = fd;
-      data->count = 1;
-      data->loc = loc;
-      mem = shm_map(fd, size, data);
-      if (shm_unlink(loc) < 0) {
-        XBT_WARN("Could not early unlink %s. shm_unlink: %s", loc, strerror(errno));
+      data->second.fd = fd;
+      data->second.count = 1;
+      mem = shm_map(fd, size, &*data);
+      if (shm_unlink(shmname) < 0) {
+        XBT_WARN("Could not early unlink %s. shm_unlink: %s", shmname, strerror(errno));
       }
-      xbt_dict_set(allocs, loc, data, NULL);
-      XBT_DEBUG("Mapping %s at %p through %d", loc, mem, fd);
+      XBT_DEBUG("Mapping %s at %p through %d", shmname, mem, fd);
     } else {
-      xbt_free(loc);
-      mem = shm_map(data->fd, size, data);
-      data->count++;
+      mem = shm_map(data->second.fd, size, &*data);
+      data->second.count++;
     }
-    XBT_DEBUG("Shared malloc %zu in %p (metadata at %p)", size, mem, data);
+    XBT_DEBUG("Shared malloc %zu in %p (metadata at %p)", size, mem, &*data);
   } else {
     mem = xbt_malloc(size);
     XBT_DEBUG("Classic malloc %zu in %p", size, mem);
@@ -503,39 +521,27 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
 
   return mem;
 }
+
 void smpi_shared_free(void *ptr)
 {
   char loc[PTR_STRLEN];
-  shared_metadata_t* meta;
-  shared_data_t* data;
-  if (sg_cfg_get_boolean("smpi/use_shared_malloc")){
 
-    if (!allocs) {
-      XBT_WARN("Cannot free: nothing was allocated");
-      return;
-    }
-    if(!allocs_metadata) {
-      XBT_WARN("Cannot free: no metadata was allocated");
-    }
+  if (sg_cfg_get_boolean("smpi/use_shared_malloc")){
     snprintf(loc, PTR_STRLEN, "%p", ptr);
-    meta = (shared_metadata_t*)xbt_dict_get_or_null(allocs_metadata, loc);
-    if (!meta) {
+    auto meta = allocs_metadata.find(ptr);
+    if (meta == allocs_metadata.end()) {
       XBT_WARN("Cannot free: %p was not shared-allocated by SMPI", ptr);
       return;
     }
-    data = meta->data;
-    if(!data) {
-      XBT_WARN("Cannot free: something is broken in the metadata link");
-      return;
-    }
-    if(munmap(ptr, meta->size) < 0) {
+    shared_data_t* data = &meta->second.data->second;
+    if (munmap(ptr, meta->second.size) < 0) {
       XBT_WARN("Unmapping of fd %d failed: %s", data->fd, strerror(errno));
     }
     data->count--;
     XBT_DEBUG("Shared free - no removal - of %p, count = %d", ptr, data->count);
     if (data->count <= 0) {
       close(data->fd);
-      xbt_dict_remove(allocs, data->loc);
+      allocs.erase(allocs.find(meta->second.data->first));
       XBT_DEBUG("Shared free - with removal - of %p", ptr);
     }
   }else{
