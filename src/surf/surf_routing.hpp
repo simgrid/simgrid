@@ -73,7 +73,11 @@ public:
 
 private:
   bool sealed_ = false; // We cannot add more content when sealed
+
+  friend RoutingPlatf;
   std::map<std::string, std::vector<Link*>*> bypassRoutes_;
+  static void getRouteRecursive(NetCard *src, NetCard *dst, /* OUT */ std::vector<Link*> * links, double *latency);
+  std::vector<Link*> *getBypassRoute(NetCard *src, NetCard *dst);
 
 public:
   /**
@@ -106,12 +110,11 @@ public:
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
 
-  std::vector<Link*> *getBypassRoute(NetCard *src, NetCard *dst);
-
   /* Add content to the AS, at parsing time. It should be sealed afterward. */
   virtual int addComponent(NetCard *elm); /* A host, a router or an AS, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
   void addBypassRoute(sg_platf_route_cbarg_t e_route);
+
 };
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
