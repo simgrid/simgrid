@@ -34,6 +34,14 @@ namespace surf {
   {}
   As::~As()
   {
+    xbt_dict_cursor_t cursor = NULL;
+    char *key;
+    AS_t elem;
+    xbt_dict_foreach(sons_, cursor, key, elem) {
+      delete (As*)elem;
+    }
+
+
     xbt_dict_free(&sons_);
     xbt_dynar_free(&vertices_);
     xbt_dynar_free(&upDownLinks);
@@ -740,26 +748,6 @@ void routing_register_callbacks()
   instr_routing_define_callbacks();
 }
 
-/**
- * \brief Recursive function for finalize
- *
- * \param rc the source host name
- *
- * This fuction is call by "finalize". It allow to finalize the
- * AS or routing components. It delete all the structures.
- */
-static void finalize_rec(simgrid::surf::As *as) {
-  xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  AS_t elem;
-
-  xbt_dict_foreach(as->sons_, cursor, key, elem) {
-    finalize_rec(elem);
-  }
-
-  delete as;;
-}
-
 /** \brief Frees all memory allocated by the routing module */
 void routing_exit(void) {
   delete routing_platf;
@@ -774,7 +762,7 @@ namespace surf {
   }
   RoutingPlatf::~RoutingPlatf()
   {
-    finalize_rec(root_);
+    delete root_;
   }
 
 }
