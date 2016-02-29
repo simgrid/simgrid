@@ -19,16 +19,6 @@ option(enable_compile_warnings "Whether compilation warnings should be turned in
 option(enable_maintainer_mode "Whether flex and flexml files should be rebuilt." off)
 option(enable_tracing "Tracing simulations for visualization." on)
 option(enable_latency_bound_tracking "" off)
-
-option(enable_ust "Enable userspace static tracepoint (lttng-ust)." off)
-if(enable_sdt)
-  add_definitions(-DUSE_SDT)
-endif()
-  
-option(enable_sdt "Enable statically defined tracepoint (strace/systemtap)." off)
-if(enable_ust)
-  add_definitions(-DUSE_UST)
-endif()
     
 option(enable_coverage "Whether coverage should be enabled." off)
 mark_as_advanced(enable_coverage)
