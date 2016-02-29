@@ -4,23 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc, printf */
+#include "simgrid/msg.h"
 #include "mpi.h"
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-int master(int argc, char *argv[]);
-int slave(int argc, char *argv[]);
-int master_mpi(int argc, char *argv[]);
-int alltoall_mpi(int argc, char *argv[]);
-
-/** sender function  */
-int master(int argc, char *argv[])
+static int master(int argc, char *argv[])
 {
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
@@ -38,18 +26,14 @@ int master(int argc, char *argv[])
 
     sprintf(mailbox, "slave-%ld", i % slaves_count);
     sprintf(sprintf_buffer, "Task_%d", i);
-    task =
-        MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size,
-                        NULL);
+    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
     if (number_of_tasks < 10000 || i % 10000 == 0)
-      XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name,
-            number_of_tasks, mailbox);
+      XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name, number_of_tasks, mailbox);
 
     MSG_task_send(task, mailbox);
   }
 
-  XBT_INFO
-      ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+  XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
     char mailbox[80];
 
@@ -58,12 +42,10 @@ int master(int argc, char *argv[])
     MSG_task_send(finalize, mailbox);
   }
 
-//  XBT_INFO("Goodbye now!");
   return 0;
-}                               /* end_of_master */
+}
 
-
-int master_mpi(int argc, char *argv[])
+static int master_mpi(int argc, char *argv[])
 {
   MPI_Init(&argc, &argv);
 
@@ -72,22 +54,18 @@ int master_mpi(int argc, char *argv[])
   XBT_INFO("here for rank %d", rank);
   int test[1000]={rank};
   if(rank==0)
-        MPI_Send(&test, 1000, 
-                 MPI_INT, 1, 1, MPI_COMM_WORLD); 
+    MPI_Send(&test, 1000, MPI_INT, 1, 1, MPI_COMM_WORLD);
   else
-        MPI_Recv(&test, 1000, 
-                 MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUSES_IGNORE); 
+    MPI_Recv(&test, 1000, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUSES_IGNORE);
 
   XBT_INFO("After comm %d", rank);
   MPI_Finalize();
 
   XBT_INFO("After finalize %d %d", rank, test[0]);
   return 0;
-}                               /* end_of_master */
+}
 
-
-
-int alltoall_mpi(int argc, char *argv[])
+static int alltoall_mpi(int argc, char *argv[])
 {
   MPI_Init(&argc, &argv);
 
@@ -104,11 +82,9 @@ int alltoall_mpi(int argc, char *argv[])
   free(in);
   MPI_Finalize();
   return 0;
-}                               /* end_of_master */
+}
 
-
-/** Receiver function  */
-int slave(int argc, char *argv[])
+static int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
@@ -139,46 +115,32 @@ int slave(int argc, char *argv[])
   XBT_INFO("I'm done. See you!");
 
   return 0;
-}                               /* end_of_slave */
+}
 
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res;
-  const char *platform_file;
-  const char *application_file;
 
   MSG_init(&argc, argv);
 
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file\n", argv[0]);
-    printf("example: %s msg_platform.xml msg_deployment.xml\n", argv[0]);
-    exit(1);
-  }
-  platform_file = argv[1];
-  application_file = argv[2];
+  xbt_assert(argc > 2,"Usage: %s platform_file deployment_file\n"
+             "\nexample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
-  {                             /*  Simulation setting */
-    MSG_create_environment(platform_file);
-  }
-  {                             /*   Application deployment */
-    MSG_function_register("master", master);
-    MSG_function_register("slave", slave);
-    // launch two MPI applications as well, one using master_mpi function as main on 2 nodes
-    SMPI_app_instance_register("master_mpi", master_mpi,2);
-    // the second performing an alltoall on 4 nodes
-    SMPI_app_instance_register("alltoall_mpi", alltoall_mpi,4);
-    MSG_launch_application(application_file);
-    SMPI_init();
-  }
+  MSG_create_environment(argv[1]);
+
+  MSG_function_register("master", master);
+  MSG_function_register("slave", slave);
+  // launch two MPI applications as well, one using master_mpi function as main on 2 nodes
+  SMPI_app_instance_register("master_mpi", master_mpi,2);
+  // the second performing an alltoall on 4 nodes
+  SMPI_app_instance_register("alltoall_mpi", alltoall_mpi,4);
+  MSG_launch_application(argv[2]);
+  SMPI_init();
+
   res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
-
   SMPI_finalize();
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
-}                               /* end_of_main */
+  return res != MSG_OK;
+}

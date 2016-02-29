@@ -24,7 +24,6 @@
 
 int main(int argc, char *argv[])
 {
-
   int size, rank;
   int N;
   struct timeval *start_time = NULL, *stop_time = NULL;
@@ -46,7 +45,6 @@ int main(int argc, char *argv[])
   }
 
   for (N = N_START; N <= N_STOP; N = N_NEXT) {
-
     buffer = malloc(sizeof(char) * N);
 
     if (0 == rank) {
@@ -64,8 +62,7 @@ int main(int argc, char *argv[])
       MPI_Bcast(buffer, N, MPI_BYTE, 0, MPI_COMM_WORLD);
       if (0 == rank) {
         for (j = 1; j < size; j++) {
-          MPI_Recv(&check, 1, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD,
-                   MPI_STATUS_IGNORE);
+          MPI_Recv(&check, 1, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
       } else {
         MPI_Send(&rank, 1, MPI_INT, 0, 1, MPI_COMM_WORLD);
@@ -78,20 +75,16 @@ int main(int argc, char *argv[])
         MPI_Abort(MPI_COMM_WORLD, GETTIMEOFDAY_ERROR);
         exit(EXIT_FAILURE);
       }
-      seconds =
-          (double) (stop_time->tv_sec - start_time->tv_sec) +
-          (double) (stop_time->tv_usec -
-                    start_time->tv_usec) / ONE_MILLION;
+      seconds = (double) (stop_time->tv_sec - start_time->tv_sec) +
+                (double) (stop_time->tv_usec - start_time->tv_usec) / ONE_MILLION;
     }
 
     free(buffer);
 
     if (0 == rank) {
-      printf("N: %10d, iter: %d, time: %10f s, avg rate: %12f Mbps\n", N,
-             ITER, seconds,
+      printf("N: %10d, iter: %d, time: %10f s, avg rate: %12f Mbps\n", N, ITER, seconds,
              ((double) N * ITER * 8) / (1024.0 * 1024.0 * seconds));
     }
-
   }
 
   if (0 == rank) {
