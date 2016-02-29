@@ -34,8 +34,8 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
   // get the MSG process from the SIMIX process
   if (smx_proc == SIMIX_process_self()) {
     /* avoid a SIMIX request if this function is called by the process itself */
-    msg_proc = (simdata_process_t) SIMIX_process_self_get_data(smx_proc);
-    SIMIX_process_self_set_data(smx_proc, NULL);
+    msg_proc = (simdata_process_t) SIMIX_process_self_get_data();
+    SIMIX_process_self_set_data(NULL);
   } else {
     msg_proc = (simdata_process_t) simcall_process_get_data(smx_proc);
     simcall_process_set_data(smx_proc, NULL);
@@ -294,7 +294,7 @@ msg_host_t MSG_process_get_host(msg_process_t process)
 {
   simdata_process_t simdata;
   if (process == NULL) {
-    simdata = (simdata_process_t) SIMIX_process_self_get_data(SIMIX_process_self());
+    simdata = (simdata_process_t) SIMIX_process_self_get_data();
   }
   else {
     simdata = (simdata_process_t) simcall_process_get_data(process);
