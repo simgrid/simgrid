@@ -16,11 +16,6 @@
 \#*
 .attach_pid* 
 smpitmp-*
-# exuberant ctags
-ctags
-# vim completion
-.ycm_extra_conf.py
-.ycm_extra_conf.pyc
 
 ### cmake
 CTestCustom.cmake
@@ -81,8 +76,6 @@ tools/cmake/test_prog/prog_va_copy.c
 *.bpr
 *.bpf
 ### Documentation
-doc/*.tmp
-doc/example_lists/*
 doc/allclasses-frame.html
 doc/allclasses-noframe.html
 doc/constant-values.html
@@ -146,8 +139,6 @@ examples/msg/cloud/scale
 examples/msg/cloud/simple_vm
 examples/msg/cloud/two_tasks_vm
 examples/msg/energy/consumption/energy_consumption
-examples/msg/energy/e1/e1
-examples/msg/energy/e2/e2
 examples/msg/energy/e3/e3
 examples/msg/energy/onoff/onoff
 examples/msg/energy/pstate/pstate
@@ -166,7 +157,6 @@ examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
 examples/msg/kademlia/kademlia
 examples/msg/masterslave/masterslave_arg
-examples/msg/masterslave/masterslave_bypass
 examples/msg/masterslave/masterslave_cluster
 examples/msg/masterslave/masterslave_console
 examples/msg/masterslave/masterslave_failure
@@ -211,7 +201,6 @@ examples/msg/start_kill_time/sk_time
 examples/msg/suspend/suspend
 examples/msg/tasks.trace
 examples/msg/token_ring/token_ring
-examples/msg/token_ring/token_bypass
 examples/msg/toto.txt
 examples/msg/trace/test_trace_integration
 examples/msg/tracing/categories
@@ -274,7 +263,6 @@ examples/smpi/smpi_replay
 examples/smpi/smpi_traced
 examples/smpi/smpi_traced_simple
 examples/smpi/smpi_traced.trace
-examples/smpi/tmp*
 examples/smpi/toto.txt
 examples/smpi/ttest01
 src/replay/replay
