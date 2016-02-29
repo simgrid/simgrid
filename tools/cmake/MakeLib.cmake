@@ -56,6 +56,10 @@ if(HAVE_LUA)
   SET(SIMGRID_DEP "${SIMGRID_DEP} ${LUA_LIBRARY} -ldl")
 endif()
 
+if(HAVE_PAPI)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lpapi")
+endif()
+
 if(HAVE_GRAPHVIZ)
   if(HAVE_CGRAPH_LIB)
     SET(SIMGRID_DEP "${SIMGRID_DEP} -lcgraph")
