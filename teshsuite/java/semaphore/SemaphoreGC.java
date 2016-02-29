@@ -10,6 +10,7 @@
 package semaphore;
 
 import org.simgrid.msg.*;
+import org.simgrid.msg.Process;
 
 class SemCreator extends Process {
   Semaphore sem; 

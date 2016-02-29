@@ -7,6 +7,7 @@
 package sleep_host_off;
 
 import org.simgrid.msg.*;
+import org.simgrid.msg.Process;
 
 class Sleeper extends Process {
   public Sleeper(Host host, String name, String[] args) {

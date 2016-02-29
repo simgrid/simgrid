@@ -26,6 +26,16 @@ static int compare_double(const void *a, const void *b)
   return -1;
 }
 
+static void test_reset_heap(xbt_heap_t * heap, int size)
+{
+  xbt_heap_free(*heap);
+  *heap = xbt_heap_new(size, NULL);
+
+  for (int i = 0; i < size; i++) {
+    xbt_heap_push(*heap, NULL, (10.0 * rand() / (RAND_MAX + 1.0)));
+  }
+}
+
 static void test_heap_validity(int size)
 {
   xbt_heap_t heap = xbt_heap_new(size, NULL);
@@ -77,16 +87,6 @@ static void test_heap_mean_operation(int size)
   printf("Mean access time for a %d size heap : %g\n", size, date * 1.0 / (MAX_TEST + 0.0));
 
   xbt_heap_free(heap);
-}
-
-static void test_reset_heap(xbt_heap_t * heap, int size)
-{
-  xbt_heap_free(*heap);
-  *heap = xbt_heap_new(size, NULL);
-
-  for (int i = 0; i < size; i++) {
-    xbt_heap_push(*heap, NULL, (10.0 * rand() / (RAND_MAX + 1.0)));
-  }
 }
 
 int main(int argc, char **argv)
