@@ -140,7 +140,7 @@ private:
 };
 
 /** @ingroup SURF_routing_interface
- * @brief Link of lenght 1, alongside with its source and destination. This is mainly usefull in the ns3 bindings
+ * @brief Link of length 1, alongside with its source and destination. This is mainly useful in the ns3 bindings
  */
 class Onelink {
 public:
@@ -160,7 +160,6 @@ public:
   ~RoutingPlatf();
   As *root_ = nullptr;
   Link *loopback_;
-  xbt_dynar_t lastRoute_ = xbt_dynar_new(sizeof(Link*),NULL);
   xbt_dynar_t getOneLinkRoutes(void);
   void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };
