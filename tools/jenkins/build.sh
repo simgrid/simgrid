@@ -7,6 +7,9 @@
 
 set -e
 
+# ensure that the locales are set, so that perl keeps its nerves
+export LC_ALL=C
+
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
 rm -rf /tmp/jvm-* 
