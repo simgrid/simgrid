@@ -82,7 +82,7 @@ static const char *instr_find_color (const char *state)
   return ret;
 }
 
-static char *smpi_container(int rank, char *container, int n)
+XBT_PRIVATE char *smpi_container(int rank, char *container, int n)
 {
   snprintf(container, n, "rank-%d", rank);
   return container;

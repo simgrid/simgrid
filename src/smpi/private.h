@@ -699,6 +699,7 @@ XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int size);
 XBT_PRIVATE void TRACE_smpi_recv(int rank, int src, int dst);
 XBT_PRIVATE void TRACE_smpi_init(int rank);
 XBT_PRIVATE void TRACE_smpi_finalize(int rank);
+XBT_PRIVATE char *smpi_container(int rank, char *container, int n);
 
 XBT_PRIVATE const char* encode_datatype(MPI_Datatype datatype, int* known);
 
