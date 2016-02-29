@@ -490,7 +490,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       // The insertion did not take place.
       // Generate a shared memory name from the address of the shared_data:
       char shmname[256];
-      sprintf(shmname, "smpi_shared_malloc_%p", &*data);
+      sprintf(shmname, "/smpi_shared_malloc_%p", &*data);
       fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL,
                     S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
       if (fd < 0) {
