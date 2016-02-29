@@ -26,7 +26,6 @@
 + examples/msg/actions/NAS_LU_S_4/.*
 + examples/msg/chord/chord3\.xml
 
-+ examples/smpi/MM/command_exemple
 + examples/smpi/MM/host
 + examples/smpi/NAS/.*
 
