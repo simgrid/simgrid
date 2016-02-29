@@ -37,18 +37,16 @@ namespace surf {
     xbt_dict_cursor_t cursor = NULL;
     char *key;
     AS_t elem;
-    xbt_dict_foreach(sons_, cursor, key, elem) {
+    xbt_dict_foreach(children_, cursor, key, elem) {
       delete (As*)elem;
     }
 
 
-    xbt_dict_free(&sons_);
+    xbt_dict_free(&children_);
     xbt_dynar_free(&vertices_);
     xbt_dynar_free(&upDownLinks);
-    if (nullptr != bypassRoutes_)
-      for (auto &kv : *bypassRoutes_)
-        delete kv.second;
-    delete bypassRoutes_;
+    for (auto &kv : bypassRoutes_)
+      delete kv.second;
     xbt_free(name_);
     delete netcard_;
   }
@@ -75,15 +73,15 @@ namespace surf {
   {
     // If never set a bypass route return NULL without any further computations
     XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
-    if (bypassRoutes_ == nullptr)
+    if (bypassRoutes_.empty())
       return nullptr;
 
     std::vector<Link*> *bypassedRoute = nullptr;
 
     if(dst->containingAS() == this && src->containingAS() == this ){
       char *route_name = bprintf("%s#%s", src->name(), dst->name());
-      if (bypassRoutes_->find(route_name) != bypassRoutes_->end()) {
-        bypassedRoute = bypassRoutes_->at(route_name);
+      if (bypassRoutes_.find(route_name) != bypassRoutes_.end()) {
+        bypassedRoute = bypassRoutes_.at(route_name);
         XBT_DEBUG("Found a bypass route with %zu links",bypassedRoute->size());
       }
       free(route_name);
@@ -136,8 +134,8 @@ namespace surf {
           char *route_name = bprintf("%s#%s",
               (*(As **) (xbt_dynar_get_ptr(path_src, i)))->name_,
               (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
-          if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
-            bypassedRoute = bypassRoutes_->at(route_name);
+          if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
+            bypassedRoute = bypassRoutes_.at(route_name);
           xbt_free(route_name);
         }
         if (bypassedRoute)
@@ -146,8 +144,8 @@ namespace surf {
           char *route_name = bprintf("%s#%s",
               (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
               (*(As **) (xbt_dynar_get_ptr(path_dst, i)))->name_);
-          if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
-            bypassedRoute = bypassRoutes_->at(route_name);
+          if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
+            bypassedRoute = bypassRoutes_.at(route_name);
           xbt_free(route_name);
         }
         if (bypassedRoute)
@@ -162,8 +160,8 @@ namespace surf {
             (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
             (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
 
-        if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
-          bypassedRoute = bypassRoutes_->at(route_name);
+        if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
+          bypassedRoute = bypassRoutes_.at(route_name);
         xbt_free(route_name);
       }
       if (bypassedRoute)
@@ -180,9 +178,6 @@ namespace surf {
     const char *src = e_route->src;
     const char *dst = e_route->dst;
 
-    if(bypassRoutes_ == nullptr)
-      bypassRoutes_ = new std::map<std::string, std::vector<Link*>*>();
-
     char *route_name = bprintf("%s#%s", src, dst);
 
     /* Argument validity checks */
@@ -191,13 +186,12 @@ namespace surf {
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
       xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
-      xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(),
-          "The bypass route between %s@%s and %s@%s already exists.",
+      xbt_assert(bypassRoutes_.find(route_name) == bypassRoutes_.end(), "The bypass route between %s@%s and %s@%s already exists.",
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
     } else {
       XBT_DEBUG("Load bypassRoute from %s to %s", src, dst);
-      xbt_assert(!e_route->link_list->empty(),                            "Bypass route between %s and %s cannot be empty.",    src, dst);
-      xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(), "The bypass route between %s and %s already exists.", src, dst);
+      xbt_assert(!e_route->link_list->empty(),                          "Bypass route between %s and %s cannot be empty.",    src, dst);
+      xbt_assert(bypassRoutes_.find(route_name) == bypassRoutes_.end(), "The bypass route between %s and %s already exists.", src, dst);
     }
 
     /* Build a copy that will be stored in the dict */
@@ -206,7 +200,7 @@ namespace surf {
       newRoute->push_back(link);
 
     /* Store it */
-    bypassRoutes_->insert({route_name, newRoute});
+    bypassRoutes_.insert({route_name, newRoute});
     xbt_free(route_name);
   }
 
@@ -342,7 +336,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     netcard->setId(-1);
   } else if (current_routing != NULL && routing_platf->root_ != NULL) {
 
-    xbt_assert(!xbt_dict_get_or_null(current_routing->sons_, AS->id),
+    xbt_assert(!xbt_dict_get_or_null(current_routing->children_, AS->id),
                "The AS \"%s\" already exists", AS->id);
     /* it is a part of the tree */
     new_as->father_ = current_routing;
@@ -350,7 +344,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     if (current_routing->hierarchy_ == SURF_ROUTING_NULL)
       current_routing->hierarchy_ = SURF_ROUTING_RECURSIVE;
     /* add to the sons dictionary */
-    xbt_dict_set(current_routing->sons_, AS->id, (void *) new_as, NULL);
+    xbt_dict_set(current_routing->children_, AS->id, (void *) new_as, NULL);
     /* add to the father element list */
     netcard->setId(current_routing->addComponent(netcard));
   } else {
@@ -540,7 +534,7 @@ static xbt_dynar_t _recursiveGetOneLinkRoutes(As *rc)
   char *key;
   xbt_dict_cursor_t cursor = NULL;
   AS_t rc_child;
-  xbt_dict_foreach(rc->sons_, cursor, key, rc_child) {
+  xbt_dict_foreach(rc->children_, cursor, key, rc_child) {
     xbt_dynar_t onelink_child = _recursiveGetOneLinkRoutes(rc_child);
     if (onelink_child)
       xbt_dynar_merge(&ret,&onelink_child);
@@ -786,7 +780,7 @@ static simgrid::surf::As *surf_AS_recursive_get_by_name(simgrid::surf::As *curre
   if(!strcmp(current->name_, name))
     return current;
 
-  xbt_dict_foreach(current->sons_, cursor, key, elem) {
+  xbt_dict_foreach(current->children_, cursor, key, elem) {
     tmp = surf_AS_recursive_get_by_name(elem, name);
     if(tmp != NULL ) {
         break;
@@ -803,9 +797,9 @@ simgrid::surf::As *surf_AS_get_by_name(const char * name)
   return as;
 }
 
-xbt_dict_t surf_AS_get_routing_sons(simgrid::surf::As *as)
+xbt_dict_t surf_AS_get_children(simgrid::surf::As *as)
 {
-  return as->sons_;
+  return as->children_;
 }
 
 xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)

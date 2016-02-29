@@ -44,8 +44,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 {
   xbt_ex_t e;
   simdata_task_t simdata = task->simdata;
-  msg_process_t self = SIMIX_process_self();
-  simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data(self);
+  simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data();
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
@@ -297,7 +296,7 @@ static XBT_INLINE msg_comm_t MSG_task_isend_internal(msg_task_t task, const char
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data(process))->m_host;
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data())->m_host;
 
   if (t_simdata->isused != 0) {
     if (msg_global->debug_multiple_use){

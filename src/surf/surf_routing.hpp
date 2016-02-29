@@ -68,12 +68,12 @@ public:
   char *name_ = nullptr;
   NetCard *netcard_ = nullptr; // Our representative in the father AS
   As *father_ = nullptr;
-  xbt_dict_t sons_ = xbt_dict_new_homogeneous(NULL); // sub-ASes
+  xbt_dict_t children_ = xbt_dict_new_homogeneous(NULL); // sub-ASes
   xbt_dynar_t vertices_ = xbt_dynar_new(sizeof(char*),NULL); // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
 private:
   bool sealed_ = false; // We cannot add more content when sealed
-  std::map<std::string, std::vector<Link*>*> *bypassRoutes_ = nullptr;
+  std::map<std::string, std::vector<Link*>*> bypassRoutes_;
 
 public:
   /**

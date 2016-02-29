@@ -37,22 +37,53 @@ enum class StorageType {
   Privatized = 3
 };
 
-class data_deleter {
+class buffer {
 public:
-  enum Type {
-    Free,
-    Munmap
+  enum class Type {
+    Malloc,
+    Mmap
   };
 private:
-  Type type_;
+  void* data_ = nullptr;
   std::size_t size_;
+  Type type_ = Type::Malloc;
 public:
-  data_deleter() : type_(Free) {}
-  data_deleter(Type type, std::size_t size) : type_(type), size_(size) {}
-  void operator()(void* p) const;
-};
+  buffer() {}
+  buffer(std::size_t size, Type type = Type::Malloc);
+  buffer(void* data, std::size_t size, Type type = Type::Malloc) :
+    data_(data), size_(size), type_(type) {}
+  void clear() noexcept;
+  ~buffer() noexcept { clear(); }
 
-typedef std::unique_ptr<char[], data_deleter> unique_data_ptr;
+  // No copy
+  buffer(buffer const& buffer) = delete;
+  buffer& operator=(buffer const& buffer) = delete;
+
+  // Move
+  buffer(buffer&& that) noexcept
+    : data_(that.data_), size_(that.size_), type_(that.type_)
+  {
+    that.data_ = nullptr;
+    that.size_ = 0;
+    that.type_ = Type::Malloc;
+  }
+  buffer& operator=(buffer&& that) noexcept
+  {
+    clear();
+    data_ = that.data_;
+    size_ = that.size_;
+    type_ = that.type_;
+    that.data_ = nullptr;
+    that.size_ = 0;
+    that.type_ = Type::Malloc;
+    return *this;
+  }
+
+  void* get()              { return data_; }
+  const void* get()  const { return data_; }
+  std::size_t size() const { return size_; }
+  Type type()        const { return type_; }
+};
 
 /** A copy/snapshot of a given memory region
  *
@@ -77,8 +108,6 @@ public:
   static const RegionType UnknownRegion = RegionType::Unknown;
   static const RegionType HeapRegion = RegionType::Heap;
   static const RegionType DataRegion = RegionType::Data;
-public:
-  typedef unique_data_ptr flat_data_ptr;
 private:
   RegionType region_type_;
   StorageType storage_type_;
@@ -101,7 +130,7 @@ private:
    * */
   void *permanent_addr_;
 
-  flat_data_ptr flat_data_;
+  buffer flat_data_;
   ChunkedData page_numbers_;
   std::vector<RegionSnapshot> privatized_regions_;
 public:
@@ -160,7 +189,7 @@ public:
     storage_type_ = StorageType::NoData;
     privatized_regions_.clear();
     page_numbers_.clear();
-    flat_data_.reset();
+    flat_data_.clear();
     object_info_ = nullptr;
     start_addr_ = nullptr;
     size_ = 0;
@@ -170,24 +199,25 @@ public:
   void clear_data()
   {
     storage_type_ = StorageType::NoData;
-    flat_data_.reset();
+    flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_.clear();
   }
   
-  void flat_data(flat_data_ptr data)
+  void flat_data(buffer data)
   {
     storage_type_ = StorageType::Flat;
     flat_data_ = std::move(data);
     page_numbers_.clear();
     privatized_regions_.clear();
   }
-  const char* flat_data() const { return flat_data_.get(); }
+  const buffer& flat_data() const { return flat_data_; }
+  buffer& flat_data()             { return flat_data_; }
 
   void page_data(ChunkedData page_data)
   {
     storage_type_ = StorageType::Chunked;
-    flat_data_.reset();
+    flat_data_.clear();
     page_numbers_ = std::move(page_data);
     privatized_regions_.clear();
   }
@@ -196,7 +226,7 @@ public:
   void privatized_data(std::vector<RegionSnapshot> data)
   {
     storage_type_ = StorageType::Privatized;
-    flat_data_.reset();
+    flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_ = std::move(data);
   }

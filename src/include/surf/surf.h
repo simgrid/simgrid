@@ -779,7 +779,7 @@ XBT_PUBLIC_DATA(xbt_dict_t) watched_hosts_lib;
 XBT_PUBLIC_DATA(AS_t) surf_AS_get_routing_root(void);
 XBT_PUBLIC_DATA(const char *) surf_AS_get_name(AS_t as);
 XBT_PUBLIC_DATA(AS_t) surf_AS_get_by_name(const char * name);
-XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_routing_sons(AS_t as);
+XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_children(AS_t as);
 XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
 XBT_PUBLIC_DATA(void) surf_AS_get_graph(AS_t as, xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges);
 

@@ -17,7 +17,6 @@ set(EXTRA_DIST
   src/include/xbt/wine_dbghelp.h
   src/msg/msg_private.h
   src/portable.h
-  src/probes.tp
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
@@ -108,7 +107,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmorecore.c
   src/xbt/mmalloc/mmprivate.h
   src/xbt/mmalloc/mrealloc.c
-  src/xbt/probes.h
   src/xbt/win32_ucontext.c
   tools/tesh/generate_tesh
   tools/lualib.patch
@@ -1144,7 +1142,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindLuaSimgrid.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindRngStream.cmake
-  tools/cmake/Modules/FindRubySimgrid.cmake
   tools/cmake/Modules/FindSimGrid.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
@@ -1250,23 +1247,6 @@ set(generated_src_files
   src/xbt/automaton/parserPromela.tab.cacc
   src/xbt/automaton/parserPromela.tab.hacc
   )
-
-if(enable_ust)
-  set(simgrid_sources ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.c ${simgrid_sources})
-  ADD_CUSTOM_COMMAND(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.c
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.h
-    COMMAND lttng-gen-tp -o simgrid_ust.c -o simgrid_ust.h ${CMAKE_CURRENT_SOURCE_DIR}/src/probes.tp
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/probes.tp
-  )
-  ADD_CUSTOM_TARGET(simgrid_ust
-    DEPENDS
-      ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.c
-      ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.h
-    )
-  set(generated_src_files ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_ust.c ${generated_src_files})
-endif()
 
 foreach(file ${generated_src_files})
   set_source_files_properties(${file} PROPERTIES GENERATED true)
