@@ -223,7 +223,7 @@ Java_org_simgrid_msg_Task_execute(JNIEnv * env, jobject jtask)
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Task_setBound(JNIEnv * env, jobject jtask, jdouble load)
+Java_org_simgrid_msg_Task_setBound(JNIEnv * env, jobject jtask, jdouble bound)
 {
   msg_task_t task = jtask_to_native_task(jtask, env);
 
@@ -231,7 +231,7 @@ Java_org_simgrid_msg_Task_setBound(JNIEnv * env, jobject jtask, jdouble load)
     jxbt_throw_notbound(env, "task", jtask);
     return;
   }
-  MSG_task_set_bound(task, load);
+  MSG_task_set_bound(task, bound);
 }
 
 JNIEXPORT jstring JNICALL
