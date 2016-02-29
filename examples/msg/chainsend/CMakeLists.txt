@@ -23,10 +23,3 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/peer.c
   ${CMAKE_CURRENT_SOURCE_DIR}/chainsend.c
   PARENT_SCOPE)
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE)
-set(txt_files
-  ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/README
-  PARENT_SCOPE)

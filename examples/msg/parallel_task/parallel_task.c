@@ -16,7 +16,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
  *   interfaces, but it's not possible ATM).
  */
 
-
 static int runner(int argc, char *argv[])
 {
   /* Retrieve the list of all hosts as an array of hosts */
@@ -24,7 +23,8 @@ static int runner(int argc, char *argv[])
   int slaves_count = xbt_dynar_length(slaves_dynar);
   msg_host_t *slaves = xbt_dynar_to_array(slaves_dynar);
 
-  XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, and 10MB to exchange between each pair");
+  XBT_INFO("First, build a classical parallel task, with 1 Gflop to execute on each node, "
+           "and 10MB to exchange between each pair");
   double *computation_amounts = xbt_new0(double, slaves_count);
   double *communication_amounts = xbt_new0(double, slaves_count * slaves_count);
 

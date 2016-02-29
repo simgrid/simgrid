@@ -4,16 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"         /* calloc, printf */
-
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
-
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 static int computation_fun(int argc, char *argv[])
 {
@@ -81,9 +73,7 @@ static int communication_rx_fun(int argc, char *argv[])
   struct task_priv *priv = MSG_task_get_data(task);
   double clock_end = MSG_get_clock();
 
-  XBT_INFO("%s:%s to %s:%s => %g sec",
-      MSG_host_get_name(priv->tx_host),
-      MSG_process_get_name(priv->tx_proc),
+  XBT_INFO("%s:%s to %s:%s => %g sec", MSG_host_get_name(priv->tx_host), MSG_process_get_name(priv->tx_proc),
       host_name, pr_name, clock_end - priv->clock_sta);
 
   xbt_free(priv);
@@ -94,9 +84,7 @@ static int communication_rx_fun(int argc, char *argv[])
 
 static void launch_communication_worker(msg_host_t tx_host, msg_host_t rx_host)
 {
-  char *mbox = bprintf("MBOX:%s-%s",
-      MSG_host_get_name(tx_host),
-      MSG_host_get_name(rx_host));
+  char *mbox = bprintf("MBOX:%s-%s", MSG_host_get_name(tx_host), MSG_host_get_name(rx_host));
   char **argv = NULL;
   
   const char *pr_name_tx =  "comm_tx";
@@ -146,7 +134,6 @@ static int master_main(int argc, char *argv[])
 
   XBT_INFO("## Test 1 (ended)");
 
-
   XBT_INFO("## Test 2 (started): check impact of running a task inside a VM (there is no degradation for the moment)");
 
   XBT_INFO("### Put a VM on a PM, and put a task to the VM");
@@ -158,7 +145,6 @@ static int master_main(int argc, char *argv[])
 
   XBT_INFO("## Test 2 (ended)");
 
-  
   XBT_INFO("## Test 3 (started): check impact of running a task collocated with a VM (there is no VM noise for the moment)");
 
   XBT_INFO("### Put a VM on a PM, and put a task to the PM");
@@ -170,8 +156,8 @@ static int master_main(int argc, char *argv[])
 
   XBT_INFO("## Test 3 (ended)");
 
-
-  XBT_INFO("## Test 4 (started): compare the cost of running two tasks inside two different VMs collocated or not (for the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1");
+  XBT_INFO("## Test 4 (started): compare the cost of running two tasks inside two different VMs collocated or not (for"
+           " the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1");
 
   XBT_INFO("### Put two VMs on a PM, and put a task to each VM");
   vm0 = MSG_vm_create_core(pm0, "VM0");
@@ -196,7 +182,6 @@ static int master_main(int argc, char *argv[])
   MSG_vm_destroy(vm1);
   XBT_INFO("## Test 4 (ended)");
 
-  
   XBT_INFO("## Test 5  (started): Analyse network impact");
   XBT_INFO("### Make a connection between PM0 and PM1");
   launch_communication_worker(pm0, pm1);
@@ -250,8 +235,8 @@ static int master_main(int argc, char *argv[])
 
   XBT_INFO("## Test 5 (ended)");
 
-
-  XBT_INFO("## Test 6 (started): Check migration impact (not yet implemented neither on the CPU resource nor on the network one");
+  XBT_INFO("## Test 6 (started): Check migration impact (not yet implemented neither on the CPU resource nor on the"
+           " network one");
   XBT_INFO("### Relocate VM0 between PM0 and PM1");
   vm0 = MSG_vm_create_core(pm0, "VM0");
   {
@@ -269,7 +254,7 @@ static int master_main(int argc, char *argv[])
   MSG_process_sleep(5);
   MSG_vm_destroy(vm0);
   XBT_INFO("## Test 6 (ended)");
-  
+
   xbt_dynar_free(&hosts_dynar);
   return 0;
 }
@@ -283,7 +268,6 @@ static void launch_master(msg_host_t host)
 
   MSG_process_create_with_arguments(pr_name, master_main, NULL, host, 1, argv);
 }
-
 
 int main(int argc, char *argv[])
 {

@@ -8,7 +8,6 @@
 
 #include "simgrid/msg.h"
 #include "xbt/matrix.h"
-#include "xbt/log.h"
 #include "xbt/xbt_os_time.h"
 
 /** @addtogroup MSG_examples

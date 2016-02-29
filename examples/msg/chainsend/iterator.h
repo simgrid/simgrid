@@ -4,10 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef KADEPLOY_ITERATOR_H
-#define KADEPLOY_ITERATOR_H
-
-#include <stdlib.h>
+#ifndef ITERATOR_H
+#define ITERATOR_H
 
 #include "xbt/dynar.h"
 #include "xbt/sysdep.h"
@@ -45,4 +43,4 @@ void xbt_dynar_shuffle_in_place(xbt_dynar_t indices_list);
     xbt_dynar_get_as(indices_list, (unsigned int)i, type)); \
   xbt_dynar_set_as(indices_list, (unsigned int)i, type, tmp);
 
-#endif /* KADEPLOY_ITERATOR_H */
+#endif /* ITERATOR_H */
