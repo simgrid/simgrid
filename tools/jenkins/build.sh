@@ -125,7 +125,6 @@ cmake -G"$GENERATOR"\
   -Denable_tracing=ON -Denable_java=ON -Denable_lua=OFF $SRCFOLDER
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 
-
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
 if test "$(uname -o)" != "Msys"; then

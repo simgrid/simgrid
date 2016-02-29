@@ -6,7 +6,6 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-
 #usage to print the way this script should be called
 usage () {
     cat <<EOF
@@ -74,10 +73,6 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-
-##-----------------------------------
-
-
 if [ -z "${HOSTFILE}" ] && [ -z "${PLATFORM}" ] ; then
     echo "No hostfile nor platform specified."
     usage
@@ -105,14 +100,12 @@ if [ "${multiple_processes}" -gt 0 ] ; then
     HOSTFILE=$UNROLLEDHOSTFILE
 fi
 
-
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
 hostfile_procs=`grep -c "[a-zA-Z0-9]" $HOSTFILE`
 if [ ${hostfile_procs} = 0 ] ; then
    echo "[`basename $0`] ** error: the hostfile '${HOSTFILE}' is empty. Aborting." >&2
    exit 1
 fi
-
 
 ##-------------------------------- DEFAULT APPLICATION --------------------------------------
 
@@ -130,18 +123,16 @@ if [ -n "${HOSTFILE}" ] && [ -f ${HOSTFILE} ]; then
     NUMHOSTS=$(cat ${HOSTFILE} | wc -l)
 fi
 
+DESCRIPTIONFILE=$(echo $PROC_ARGS|cut -d' ' -f1)
 
-    DESCRIPTIONFILE=$(echo $PROC_ARGS|cut -d' ' -f1)
-
-    if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
-        NUMINSTANCES=$(cat ${DESCRIPTIONFILE} | wc -l)
-        replayinstances=$(cat ${DESCRIPTIONFILE})
-        IFS_OLD=$IFS
-        IFS=$'\n'
-        set -f
-        NUMPROCS=0
-        while IFS= read -r line; do
-        
+if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
+    NUMINSTANCES=$(cat ${DESCRIPTIONFILE} | wc -l)
+    replayinstances=$(cat ${DESCRIPTIONFILE})
+    IFS_OLD=$IFS
+    IFS=$'\n'
+    set -f
+    NUMPROCS=0
+    while IFS= read -r line; do
         # return IFS back if you need to split new line by spaces:
         IFS=$IFS_OLD
         IFS_OLD=
@@ -170,8 +161,6 @@ fi
         fi
         #NUMPROCS=$((${NUMPROCS}+${NUMPROCSMINE}));
         for i in $SEQ1
-        
-
 ##----------------------------------------------------------
 ##  generate application.xml with hostnames from hostfile:
 ##  the name of host_i (1<=i<=p, where -np p) is the line i
@@ -180,54 +169,49 @@ fi
 ##----------------------------------------------------------
 
 ##---- generate <process> tags------------------------------
-
         do
-          if [ -n "${HOSTFILE}" ]; then
-          j=$(( ${NUMPROCS} % ${NUMHOSTS} +1))
-          fi
-          hostname=$(echo $hostnames|cut -d' ' -f$j)
-          if [ -z "${hostname}" ]; then
-            host="host"$($j)
-          else
-            host="${hostname}"
-          fi
+	    if [ -n "${HOSTFILE}" ]; then
+		j=$(( ${NUMPROCS} % ${NUMHOSTS} +1))
+            fi
+            hostname=$(echo $hostnames|cut -d' ' -f$j)
+            if [ -z "${hostname}" ]; then
+		host="host"$($j)
+            else
+		host="${hostname}"
+            fi
         
-          echo "  <process host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
-          echo "    <argument value=\"${instance}\"/> <!-- instance -->" >> ${APPLICATIONTMP}
-          echo "    <argument value=\"${i}\"/> <!-- rank -->" >> ${APPLICATIONTMP}
-          echo "    <argument value=\"$(echo $hosttrace|cut -d' ' -f$(($i+1)))\"/>" >> ${APPLICATIONTMP}
-       
-          echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->" >> ${APPLICATIONTMP}
-          echo "  </process>" >> ${APPLICATIONTMP}
-          NUMPROCS=$(( ${NUMPROCS} +1))
+            echo "  <process host=\"${host}\" function=\"${instance}\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
+            echo "    <argument value=\"${instance}\"/> <!-- instance -->" >> ${APPLICATIONTMP}
+            echo "    <argument value=\"${i}\"/> <!-- rank -->" >> ${APPLICATIONTMP}
+            echo "    <argument value=\"$(echo $hosttrace|cut -d' ' -f$(($i+1)))\"/>" >> ${APPLICATIONTMP}
+	    
+            echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->" >> ${APPLICATIONTMP}
+            echo "  </process>" >> ${APPLICATIONTMP}
+            NUMPROCS=$(( ${NUMPROCS} +1))
         done
         # return IFS back to newline for "for" loop
         IFS_OLD=$IFS
         IFS=$'\n'
-      done < ${DESCRIPTIONFILE}
+    done < ${DESCRIPTIONFILE}
 
-        # return delimiter to previous value
-      IFS=$IFS_OLD
-      IFS_OLD=
-      else
-        printf "File not found: %s\n", "${APP_TRACES[0]:-\${APP_TRACES[0]\}}" >&2
-        exit 1
-    fi
-
-
+    # return delimiter to previous value
+    IFS=$IFS_OLD
+    IFS_OLD=
+else
+    printf "File not found: %s\n", "${APP_TRACES[0]:-\${APP_TRACES[0]\}}" >&2
+    exit 1
+fi
 
 cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
 </platform>
 APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
 
-
-    if [ ${HOSTFILETMP} = 1 ] ; then
-        rm ${HOSTFILE}
-    fi
-    if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
-        rm ${UNROLLEDHOSTFILE}
-    fi
-
+if [ ${HOSTFILETMP} = 1 ] ; then
+    rm ${HOSTFILE}
+fi
+if [ ${UNROLLEDHOSTFILETMP} = 1 ] ; then
+    rm ${UNROLLEDHOSTFILE}
+fi
 
 exit 0
