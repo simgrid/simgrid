@@ -43,6 +43,7 @@ set(EXTRA_DIST
   src/smpi/colls/colls_private.h
   src/smpi/colls/smpi_mvapich2_selector_stampede.h
   src/smpi/private.h
+  src/smpi/private.hpp
   src/smpi/smpi_mpi_dt_private.h
   src/surf/cpu_cas01.hpp
   src/surf/cpu_interface.hpp
