@@ -27,7 +27,6 @@ public:
   ~AsFloyd();
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
-  xbt_dynar_t getOneLinkRoutes() override;
   void addRoute(sg_platf_route_cbarg_t route) override;
   void Seal() override;
 

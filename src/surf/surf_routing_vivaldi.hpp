@@ -28,6 +28,7 @@ public:
   AsVivaldi(const char *name);
   ~AsVivaldi() {};
 
+  xbt_dynar_t getOneLinkRoutes() override {return NULL;};
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
 };
 

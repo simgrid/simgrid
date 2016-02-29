@@ -61,48 +61,10 @@ AsFull::~AsFull(){
   }
 }
 
-xbt_dynar_t AsFull::getOneLinkRoutes()
-{
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
-
-  int src, dst;
-  int table_size = xbt_dynar_length(vertices_);
-
-  for(src=0; src < table_size; src++) {
-    for(dst=0; dst< table_size; dst++) {
-      sg_platf_route_cbarg_t route = TO_ROUTE_FULL(src,dst);
-      if (route) {
-        if (route->link_list->size() == 1) {
-          Link *link = route->link_list->at(0);
-          Onelink *onelink;
-          if (hierarchy_ == SURF_ROUTING_BASE) {
-          NetCard *tmp_src = xbt_dynar_get_as(vertices_, src, sg_netcard_t);
-            tmp_src->setId(src);
-          NetCard *tmp_dst = xbt_dynar_get_as(vertices_, dst, sg_netcard_t);
-          tmp_dst->setId(dst);
-            onelink = new Onelink(link, tmp_src, tmp_dst);
-          } else if (hierarchy_ == SURF_ROUTING_RECURSIVE)
-            onelink = new Onelink(link, route->gw_src, route->gw_dst);
-          else
-            onelink = new Onelink(link, NULL, NULL);
-          xbt_dynar_push(ret, &onelink);
-          XBT_DEBUG("Push route from '%d' to '%d'",
-              src,
-              dst);
-        }
-      }
-    }
-  }
-  return ret;
-}
-
 void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t res, double *lat)
 {
   XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]",
-      src->name(),
-      src->id(),
-      dst->name(),
-      dst->id());
+      src->name(), src->id(), dst->name(), dst->id());
 
   /* set utils vars */
   size_t table_size = xbt_dynar_length(vertices_);
