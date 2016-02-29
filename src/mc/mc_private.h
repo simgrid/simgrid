@@ -33,7 +33,6 @@
 #include "src/simix/smx_private.h"
 #include "src/xbt/mmalloc/mmprivate.h"
 #include "xbt/automaton.h"
-#include "xbt/hash.h"
 #include <simgrid/msg.h>
 #include "xbt/strbuff.h"
 #include "xbt/parmap.h"

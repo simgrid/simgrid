@@ -14,7 +14,6 @@
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
-#include "xbt/hash.h"
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
 #include "simgrid/modelchecker.h"

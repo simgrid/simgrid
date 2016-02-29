@@ -270,7 +270,6 @@ set(XBT_SRC
   src/xbt/xbt_os_synchro.c
   src/xbt/xbt_os_time.c
   src/xbt/xbt_replay.c
-  src/xbt/xbt_sha.c
   src/xbt/xbt_str.c
   src/xbt/xbt_strbuff.c
   src/xbt/xbt_virtu.c
@@ -679,7 +678,6 @@ set(headers_to_install
   include/xbt/file.h
   include/xbt/function_types.h
   include/xbt/graph.h
-  include/xbt/hash.h
   include/xbt/heap.h
   include/xbt/lib.h
   include/xbt/Extendable.hpp
