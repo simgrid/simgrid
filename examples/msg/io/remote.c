@@ -17,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(remote_io, "Messages specific for this io example")
 
 static int host(int argc, char *argv[]){
   msg_file_t file = MSG_file_open(argv[1], NULL);
-  char *filename = MSG_file_get_name(file);
+  const char *filename = MSG_file_get_name(file);
   XBT_INFO("Opened file '%s'",filename);
   MSG_file_dump(file);
 

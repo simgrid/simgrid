@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
+#include "xbt/synchro_core.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
