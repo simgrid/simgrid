@@ -10,7 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
 
-
 int test_amount = 99;           /* Up to 999 to not break the logs (and thus the testing mecanism) */
 int crasher_amount = 99;        /* Up to 99  to not break the logs (and thus the testing mecanism) */
 int *id;                        /* to pass a pointer to the threads without race condition */
@@ -21,9 +20,8 @@ int more_info = 0;              /* SET IT TO TRUE TO GET MORE INFO */
 static void* crasher_thread(void *arg)
 {
   int id = *(int *) arg;
-  int i;
 
-  for (i = 0; i < test_amount; i++) {
+  for (int i = 0; i < test_amount; i++) {
     if (more_info)
       XBT_INFO("%03d (%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d|%02d)",
              test_amount - i, id, id, id, id, id, id, id, id, id);
@@ -51,8 +49,7 @@ int crasher(int argc, char *argv[])
   /* spawn threads */
   for (i = 0; i < crasher_amount; i++) {
     char *name = bprintf("thread %d", i);
-    crashers[i] =
-        xbt_os_thread_create(name, &crasher_thread, &id[i], NULL );
+    crashers[i] = xbt_os_thread_create(name, &crasher_thread, &id[i], NULL );
     free(name);
   }
 

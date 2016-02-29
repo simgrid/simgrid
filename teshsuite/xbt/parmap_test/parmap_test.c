@@ -47,8 +47,7 @@ static int test_parmap_basic(e_xbt_parmap_mode_t mode)
     for (i = 0; i < len; i++) {
       unsigned expected = (1U << num) * (i + 1) - 1;
       if (a[i] != expected) {
-        XBT_CRITICAL("with %u threads, a[%u]: expected %u, got %u",
-                     num_workers, i, expected, a[i]);
+        XBT_CRITICAL("with %u threads, a[%u]: expected %u, got %u", num_workers, i, expected, a[i]);
         ret = 1;
         break;
       }
