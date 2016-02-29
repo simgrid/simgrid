@@ -1144,7 +1144,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindLuaSimgrid.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindRngStream.cmake
-  tools/cmake/Modules/FindRubySimgrid.cmake
   tools/cmake/Modules/FindSimGrid.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
