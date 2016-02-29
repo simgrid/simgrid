@@ -20,7 +20,7 @@ while i < len(sys.argv):
         if i + 1 >= len(sys.argv):
             sys.stderr.write("Missing argument\n")
             sys.exit(1)
-        args.append(sys.argv[i+1])
+        args.append(sys.argv[i + 1])
         i = i + 1
     elif re.match('^-', sys.argv[i][0]):
         args.append(sys.argv[i])
@@ -37,7 +37,8 @@ if input_filename == None:
 temp_file, temp_filename = tempfile.mkstemp(suffix=".s", prefix="as_wrapper")
 try:
     # Generate temporary file with modified assembly code:
-    script_file = os.path.join(os.path.dirname(sys.argv[0]), "clean-stack-filter")
+    script_file = os.path.join(
+        os.path.dirname(sys.argv[0]), "clean-stack-filter")
     input_file = os.open(input_filename, os.O_RDONLY)
     status = subprocess.call([script_file], stdin=input_file, stdout=temp_file)
     os.close(input_file)
