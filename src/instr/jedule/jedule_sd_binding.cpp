@@ -58,7 +58,7 @@ static void create_hierarchy(AS_t current_comp,
   xbt_dict_cursor_t cursor = NULL;
   char *key;
   AS_t elem;
-  xbt_dict_t routing_sons = surf_AS_get_routing_sons(current_comp);
+  xbt_dict_t routing_sons = surf_AS_get_children(current_comp);
 
   if (xbt_dict_is_empty(routing_sons)) {
     // I am no AS

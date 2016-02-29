@@ -37,12 +37,12 @@ namespace surf {
     xbt_dict_cursor_t cursor = NULL;
     char *key;
     AS_t elem;
-    xbt_dict_foreach(sons_, cursor, key, elem) {
+    xbt_dict_foreach(children_, cursor, key, elem) {
       delete (As*)elem;
     }
 
 
-    xbt_dict_free(&sons_);
+    xbt_dict_free(&children_);
     xbt_dynar_free(&vertices_);
     xbt_dynar_free(&upDownLinks);
     for (auto &kv : bypassRoutes_)
@@ -336,7 +336,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     netcard->setId(-1);
   } else if (current_routing != NULL && routing_platf->root_ != NULL) {
 
-    xbt_assert(!xbt_dict_get_or_null(current_routing->sons_, AS->id),
+    xbt_assert(!xbt_dict_get_or_null(current_routing->children_, AS->id),
                "The AS \"%s\" already exists", AS->id);
     /* it is a part of the tree */
     new_as->father_ = current_routing;
@@ -344,7 +344,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     if (current_routing->hierarchy_ == SURF_ROUTING_NULL)
       current_routing->hierarchy_ = SURF_ROUTING_RECURSIVE;
     /* add to the sons dictionary */
-    xbt_dict_set(current_routing->sons_, AS->id, (void *) new_as, NULL);
+    xbt_dict_set(current_routing->children_, AS->id, (void *) new_as, NULL);
     /* add to the father element list */
     netcard->setId(current_routing->addComponent(netcard));
   } else {
@@ -534,7 +534,7 @@ static xbt_dynar_t _recursiveGetOneLinkRoutes(As *rc)
   char *key;
   xbt_dict_cursor_t cursor = NULL;
   AS_t rc_child;
-  xbt_dict_foreach(rc->sons_, cursor, key, rc_child) {
+  xbt_dict_foreach(rc->children_, cursor, key, rc_child) {
     xbt_dynar_t onelink_child = _recursiveGetOneLinkRoutes(rc_child);
     if (onelink_child)
       xbt_dynar_merge(&ret,&onelink_child);
@@ -780,7 +780,7 @@ static simgrid::surf::As *surf_AS_recursive_get_by_name(simgrid::surf::As *curre
   if(!strcmp(current->name_, name))
     return current;
 
-  xbt_dict_foreach(current->sons_, cursor, key, elem) {
+  xbt_dict_foreach(current->children_, cursor, key, elem) {
     tmp = surf_AS_recursive_get_by_name(elem, name);
     if(tmp != NULL ) {
         break;
@@ -797,9 +797,9 @@ simgrid::surf::As *surf_AS_get_by_name(const char * name)
   return as;
 }
 
-xbt_dict_t surf_AS_get_routing_sons(simgrid::surf::As *as)
+xbt_dict_t surf_AS_get_children(simgrid::surf::As *as)
 {
-  return as->sons_;
+  return as->children_;
 }
 
 xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)
