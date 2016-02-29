@@ -66,7 +66,7 @@ static void restore(mc_mem_region_t region)
     break;
 
   case simgrid::mc::StorageType::Flat:
-    mc_model_checker->process().write_bytes(region->flat_data(),
+    mc_model_checker->process().write_bytes(region->flat_data().get(),
       region->size(), region->permanent_address());
     break;
 
