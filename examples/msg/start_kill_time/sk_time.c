@@ -17,7 +17,7 @@ static int sleeper(int argc, char *argv[])
 {
   XBT_INFO("Hello! I go to sleep.");
   MSG_process_on_exit(my_onexit, NULL);
-   
+
   MSG_process_sleep(xbt_str_parse_int(argv[1], "sleeper process expects an integer parameter but got %s"));
   XBT_INFO("Done sleeping.");
   return 0;

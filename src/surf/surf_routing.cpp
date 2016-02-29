@@ -34,13 +34,19 @@ namespace surf {
   {}
   As::~As()
   {
-    xbt_dict_free(&sons_);
+    xbt_dict_cursor_t cursor = NULL;
+    char *key;
+    AS_t elem;
+    xbt_dict_foreach(children_, cursor, key, elem) {
+      delete (As*)elem;
+    }
+
+
+    xbt_dict_free(&children_);
     xbt_dynar_free(&vertices_);
     xbt_dynar_free(&upDownLinks);
-    if (nullptr != bypassRoutes_)
-      for (auto &kv : *bypassRoutes_)
-        delete kv.second;
-    delete bypassRoutes_;
+    for (auto &kv : bypassRoutes_)
+      delete kv.second;
     xbt_free(name_);
     delete netcard_;
   }
@@ -67,15 +73,15 @@ namespace surf {
   {
     // If never set a bypass route return NULL without any further computations
     XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
-    if (bypassRoutes_ == nullptr)
+    if (bypassRoutes_.empty())
       return nullptr;
 
     std::vector<Link*> *bypassedRoute = nullptr;
 
     if(dst->containingAS() == this && src->containingAS() == this ){
       char *route_name = bprintf("%s#%s", src->name(), dst->name());
-      if (bypassRoutes_->find(route_name) != bypassRoutes_->end()) {
-        bypassedRoute = bypassRoutes_->at(route_name);
+      if (bypassRoutes_.find(route_name) != bypassRoutes_.end()) {
+        bypassedRoute = bypassRoutes_.at(route_name);
         XBT_DEBUG("Found a bypass route with %zu links",bypassedRoute->size());
       }
       free(route_name);
@@ -128,8 +134,8 @@ namespace surf {
           char *route_name = bprintf("%s#%s",
               (*(As **) (xbt_dynar_get_ptr(path_src, i)))->name_,
               (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
-          if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
-            bypassedRoute = bypassRoutes_->at(route_name);
+          if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
+            bypassedRoute = bypassRoutes_.at(route_name);
           xbt_free(route_name);
         }
         if (bypassedRoute)
@@ -138,8 +144,8 @@ namespace surf {
           char *route_name = bprintf("%s#%s",
               (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
               (*(As **) (xbt_dynar_get_ptr(path_dst, i)))->name_);
-          if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
-            bypassedRoute = bypassRoutes_->at(route_name);
+          if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
+            bypassedRoute = bypassRoutes_.at(route_name);
           xbt_free(route_name);
         }
         if (bypassedRoute)
@@ -154,8 +160,8 @@ namespace surf {
             (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
             (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
 
-        if (bypassRoutes_->find(route_name) != bypassRoutes_->end())
-          bypassedRoute = bypassRoutes_->at(route_name);
+        if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
+          bypassedRoute = bypassRoutes_.at(route_name);
         xbt_free(route_name);
       }
       if (bypassedRoute)
@@ -172,9 +178,6 @@ namespace surf {
     const char *src = e_route->src;
     const char *dst = e_route->dst;
 
-    if(bypassRoutes_ == nullptr)
-      bypassRoutes_ = new std::map<std::string, std::vector<Link*>*>();
-
     char *route_name = bprintf("%s#%s", src, dst);
 
     /* Argument validity checks */
@@ -183,13 +186,12 @@ namespace surf {
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
       xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
-      xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(),
-          "The bypass route between %s@%s and %s@%s already exists.",
+      xbt_assert(bypassRoutes_.find(route_name) == bypassRoutes_.end(), "The bypass route between %s@%s and %s@%s already exists.",
           src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
     } else {
       XBT_DEBUG("Load bypassRoute from %s to %s", src, dst);
-      xbt_assert(!e_route->link_list->empty(),                            "Bypass route between %s and %s cannot be empty.",    src, dst);
-      xbt_assert(bypassRoutes_->find(route_name) == bypassRoutes_->end(), "The bypass route between %s and %s already exists.", src, dst);
+      xbt_assert(!e_route->link_list->empty(),                          "Bypass route between %s and %s cannot be empty.",    src, dst);
+      xbt_assert(bypassRoutes_.find(route_name) == bypassRoutes_.end(), "The bypass route between %s and %s already exists.", src, dst);
     }
 
     /* Build a copy that will be stored in the dict */
@@ -198,7 +200,7 @@ namespace surf {
       newRoute->push_back(link);
 
     /* Store it */
-    bypassRoutes_->insert({route_name, newRoute});
+    bypassRoutes_.insert({route_name, newRoute});
     xbt_free(route_name);
   }
 
@@ -334,7 +336,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     netcard->setId(-1);
   } else if (current_routing != NULL && routing_platf->root_ != NULL) {
 
-    xbt_assert(!xbt_dict_get_or_null(current_routing->sons_, AS->id),
+    xbt_assert(!xbt_dict_get_or_null(current_routing->children_, AS->id),
                "The AS \"%s\" already exists", AS->id);
     /* it is a part of the tree */
     new_as->father_ = current_routing;
@@ -342,8 +344,7 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     if (current_routing->hierarchy_ == SURF_ROUTING_NULL)
       current_routing->hierarchy_ = SURF_ROUTING_RECURSIVE;
     /* add to the sons dictionary */
-    xbt_dict_set(current_routing->sons_, AS->id,
-                 (void *) new_as, NULL);
+    xbt_dict_set(current_routing->children_, AS->id, (void *) new_as, NULL);
     /* add to the father element list */
     netcard->setId(current_routing->addComponent(netcard));
   } else {
@@ -366,11 +367,6 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
  *
  * Once you've declared all the content of your AS, you have to close
  * it with this call. Your AS is not usable until you call this function.
- *
- * @fixme: this call is not as robust as wanted: bad things WILL happen
- * if you call it twice for the same AS, or if you forget calling it, or
- * even if you add stuff to a closed AS
- *
  */
 void routing_AS_end()
 {
@@ -378,8 +374,6 @@ void routing_AS_end()
   current_routing->Seal();
   current_routing = current_routing->father_;
 }
-
-/* Aux Business methods */
 
 /**
  * \brief Get the AS father and the first elements of the chain
@@ -391,9 +385,7 @@ void routing_AS_end()
  * father in the chain
  */
 static void elements_father(sg_netcard_t src, sg_netcard_t dst,
-                            AS_t * res_father,
-                            AS_t * res_src,
-                            AS_t * res_dst)
+    AS_t * res_father, AS_t * res_src, AS_t * res_dst)
 {
   xbt_assert(src && dst, "bad parameters for \"elements_father\" method");
 #define ROUTING_HIERARCHY_MAXDEPTH 16     /* increase if it is not enough */
@@ -542,7 +534,7 @@ static xbt_dynar_t _recursiveGetOneLinkRoutes(As *rc)
   char *key;
   xbt_dict_cursor_t cursor = NULL;
   AS_t rc_child;
-  xbt_dict_foreach(rc->sons_, cursor, key, rc_child) {
+  xbt_dict_foreach(rc->children_, cursor, key, rc_child) {
     xbt_dynar_t onelink_child = _recursiveGetOneLinkRoutes(rc_child);
     if (onelink_child)
       xbt_dynar_merge(&ret,&onelink_child);
@@ -727,126 +719,6 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   free(link_down);
 }
 
-// static void routing_parse_Srandom(void)
-// {
-//   double mean, std, min, max, seed;
-//   char *random_id = A_surfxml_random_id;
-//   char *random_radical = A_surfxml_random_radical;
-//   char *rd_name = NULL;
-//   char *rd_value;
-//   mean = surf_parse_get_double(A_surfxml_random_mean);
-//   std = surf_parse_get_double(A_surfxml_random_std___deviation);
-//   min = surf_parse_get_double(A_surfxml_random_min);
-//   max = surf_parse_get_double(A_surfxml_random_max);
-//   seed = surf_parse_get_double(A_surfxml_random_seed);
-
-//   double res = 0;
-//   int i = 0;
-//   random_data_t random = xbt_new0(s_random_data_t, 1);
-//   char *tmpbuf;
-
-//   xbt_dynar_t radical_elements;
-//   unsigned int iter;
-//   char *groups;
-//   int start, end;
-//   xbt_dynar_t radical_ends;
-
-//   switch (A_surfxml_random_generator) {
-//   case AU_surfxml_random_generator:
-//   case A_surfxml_random_generator_NONE:
-//     random->generator = NONE;
-//     break;
-//   case A_surfxml_random_generator_DRAND48:
-//     random->generator = DRAND48;
-//     break;
-//   case A_surfxml_random_generator_RAND:
-//     random->generator = RAND;
-//     break;
-//   case A_surfxml_random_generator_RNGSTREAM:
-//     random->generator = RNGSTREAM;
-//     break;
-//   default:
-//     surf_parse_error("Invalid random generator");
-//     break;
-//   }
-//   random->seed = seed;
-//   random->min = min;
-//   random->max = max;
-
-//   /* Check user stupidities */
-//   if (max < min)
-//     THROWF(arg_error, 0, "random->max < random->min (%f < %f)", max, min);
-//   if (mean < min)
-//     THROWF(arg_error, 0, "random->mean < random->min (%f < %f)", mean, min);
-//   if (mean > max)
-//     THROWF(arg_error, 0, "random->mean > random->max (%f > %f)", mean, max);
-
-//   /* normalize the mean and standard deviation before storing */
-//   random->mean = (mean - min) / (max - min);
-//   random->std = std / (max - min);
-
-//   if (random->mean * (1 - random->mean) < random->std * random->std)
-//     THROWF(arg_error, 0, "Invalid mean and standard deviation (%f and %f)",
-//            random->mean, random->std);
-
-//   XBT_DEBUG
-//       ("id = '%s' min = '%f' max = '%f' mean = '%f' std_deviatinon = '%f' generator = '%d' seed = '%ld' radical = '%s'",
-//        random_id, random->min, random->max, random->mean, random->std,
-//        (int)random->generator, random->seed, random_radical);
-
-//   if (!random_value)
-//     random_value = xbt_dict_new_homogeneous(free);
-
-//   if (!strcmp(random_radical, "")) {
-//     res = random_generate(random);
-//     rd_value = bprintf("%f", res);
-//     xbt_dict_set(random_value, random_id, rd_value, NULL);
-//   } else {
-//     radical_elements = xbt_str_split(random_radical, ",");
-//     xbt_dynar_foreach(radical_elements, iter, groups) {
-//       radical_ends = xbt_str_split(groups, "-");
-//       switch (xbt_dynar_length(radical_ends)) {
-//       case 1:
-//         xbt_assert(!xbt_dict_get_or_null(random_value, random_id),
-//                    "Custom Random '%s' already exists !", random_id);
-//         res = random_generate(random);
-//         tmpbuf =
-//             bprintf("%s%d", random_id,
-//                     atoi(xbt_dynar_getfirst_as(radical_ends, char *)));
-//         xbt_dict_set(random_value, tmpbuf, bprintf("%f", res), NULL);
-//         xbt_free(tmpbuf);
-//         break;
-
-//       case 2:
-//         start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-//         end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
-//         for (i = start; i <= end; i++) {
-//           xbt_assert(!xbt_dict_get_or_null(random_value, random_id),
-//                      "Custom Random '%s' already exists !", bprintf("%s%d",
-//                                                                     random_id,
-//                                                                     i));
-//           res = random_generate(random);
-//           tmpbuf = bprintf("%s%d", random_id, i);
-//           xbt_dict_set(random_value, tmpbuf, bprintf("%f", res), NULL);
-//           xbt_free(tmpbuf);
-//         }
-//         break;
-//       default:
-//         XBT_CRITICAL("Malformed radical");
-//         break;
-//       }
-//       res = random_generate(random);
-//       rd_name = bprintf("%s_router", random_id);
-//       rd_value = bprintf("%f", res);
-//       xbt_dict_set(random_value, rd_name, rd_value, NULL);
-
-//       xbt_dynar_free(&radical_ends);
-//     }
-//     free(rd_name);
-//     xbt_dynar_free(&radical_elements);
-//   }
-// }
-
 static void check_disk_attachment()
 {
   xbt_lib_cursor_t cursor;
@@ -870,26 +742,6 @@ void routing_register_callbacks()
   instr_routing_define_callbacks();
 }
 
-/**
- * \brief Recursive function for finalize
- *
- * \param rc the source host name
- *
- * This fuction is call by "finalize". It allow to finalize the
- * AS or routing components. It delete all the structures.
- */
-static void finalize_rec(simgrid::surf::As *as) {
-  xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  AS_t elem;
-
-  xbt_dict_foreach(as->sons_, cursor, key, elem) {
-    finalize_rec(elem);
-  }
-
-  delete as;;
-}
-
 /** \brief Frees all memory allocated by the routing module */
 void routing_exit(void) {
   delete routing_platf;
@@ -904,8 +756,7 @@ namespace surf {
   }
   RoutingPlatf::~RoutingPlatf()
   {
-    xbt_dynar_free(&lastRoute_);
-    finalize_rec(root_);
+    delete root_;
   }
 
 }
@@ -919,8 +770,7 @@ const char *surf_AS_get_name(simgrid::surf::As *as) {
   return as->name_;
 }
 
-static simgrid::surf::As *surf_AS_recursive_get_by_name(
-  simgrid::surf::As *current, const char * name)
+static simgrid::surf::As *surf_AS_recursive_get_by_name(simgrid::surf::As *current, const char * name)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *key;
@@ -930,7 +780,7 @@ static simgrid::surf::As *surf_AS_recursive_get_by_name(
   if(!strcmp(current->name_, name))
     return current;
 
-  xbt_dict_foreach(current->sons_, cursor, key, elem) {
+  xbt_dict_foreach(current->children_, cursor, key, elem) {
     tmp = surf_AS_recursive_get_by_name(elem, name);
     if(tmp != NULL ) {
         break;
@@ -947,9 +797,9 @@ simgrid::surf::As *surf_AS_get_by_name(const char * name)
   return as;
 }
 
-xbt_dict_t surf_AS_get_routing_sons(simgrid::surf::As *as)
+xbt_dict_t surf_AS_get_children(simgrid::surf::As *as)
 {
-  return as->sons_;
+  return as->children_;
 }
 
 xbt_dynar_t surf_AS_get_hosts(simgrid::surf::As *as)

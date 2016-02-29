@@ -4,21 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"         /* calloc */
 #include "simgrid/plugins/energy.h"
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-           "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 static void simulate_bootup(msg_host_t host) {
-
   int previous_pstate = MSG_host_get_pstate(host);
 
   XBT_INFO("Switch to virtual pstate 3, that encodes the shutting down state in the XML file of that example");
@@ -42,7 +34,6 @@ static void simulate_bootup(msg_host_t host) {
 }
 
 static void simulate_shutdown(msg_host_t host) {
-
   int previous_pstate = MSG_host_get_pstate(host);
 
   XBT_INFO("Switch to virtual pstate 4, that encodes the shutting down state in the XML file of that example");
@@ -67,8 +58,7 @@ static void simulate_shutdown(msg_host_t host) {
 static int onoff(int argc, char *argv[]) {
   msg_host_t host1 = MSG_host_by_name("MyHost1");
 
-  XBT_INFO("Energetic profile: %s",
-     MSG_host_get_property_value(host1,"watt_per_state"));
+  XBT_INFO("Energetic profile: %s", MSG_host_get_property_value(host1,"watt_per_state"));
   XBT_INFO("Initial peak speed=%.0E flop/s; Energy dissipated =%.0E J",
      MSG_host_get_current_power_peak(host1), sg_host_get_consumed_energy(host1));
 
@@ -90,7 +80,6 @@ static int onoff(int argc, char *argv[]) {
   XBT_INFO("Host1 is now ON again. Current peak speed=%.0E flop/s; Energy dissipated=%.0f J",
      MSG_host_get_current_power_peak(host1), sg_host_get_consumed_energy(host1));
 
-
   return 0;
 }
 
@@ -101,14 +90,11 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-       "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-       argv[0], argv[0]);
+       "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
-  /*   Application deployment */
   MSG_function_register("onoff_test", onoff);
-
   MSG_launch_application(argv[2]);
 
   res = MSG_main();
@@ -117,4 +103,3 @@ int main(int argc, char *argv[])
 
   return res != MSG_OK;
 }
-

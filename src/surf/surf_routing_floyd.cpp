@@ -39,41 +39,8 @@ AsFloyd::~AsFloyd(){
   xbt_free(costTable_);
 }
 
-/* Business methods */
-xbt_dynar_t AsFloyd::getOneLinkRoutes()
-{
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
-  sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-  route->link_list = new std::vector<Link*>();
-
-  int table_size = xbt_dynar_length(vertices_);
-  for(int src=0; src < table_size; src++) {
-    for(int dst=0; dst< table_size; dst++) {
-      route->link_list->clear();
-      NetCard *src_elm = xbt_dynar_get_as(vertices_, src, NetCard*);
-      NetCard *dst_elm = xbt_dynar_get_as(vertices_, dst, NetCard*);
-      this->getRouteAndLatency(src_elm, dst_elm, route, NULL);
-
-      if (route->link_list->size() == 1) {
-        void *link = route->link_list->at(0);
-        Onelink *onelink;
-        if (hierarchy_ == SURF_ROUTING_BASE)
-          onelink = new Onelink(link, src_elm, dst_elm);
-        else if (hierarchy_ == SURF_ROUTING_RECURSIVE)
-          onelink = new Onelink(link, route->gw_src, route->gw_dst);
-        else
-          onelink = new Onelink(link, NULL, NULL);
-        xbt_dynar_push(ret, &onelink);
-      }
-    }
-  }
-
-  return ret;
-}
-
 void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
-
   size_t table_size = xbt_dynar_length(vertices_);
 
   getRouteCheckParams(src, dst);

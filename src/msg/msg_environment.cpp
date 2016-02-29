@@ -60,7 +60,7 @@ msg_as_t MSG_environment_as_get_by_name(const char * name) {
 }
 
 xbt_dict_t MSG_environment_as_get_routing_sons(msg_as_t as) {
-  xbt_dict_t res = surf_AS_get_routing_sons(as);
+  xbt_dict_t res = surf_AS_get_children(as);
   return res;
 }
 

@@ -8,10 +8,6 @@
 add_library(simgrid SHARED ${simgrid_sources})
 set_target_properties(simgrid PROPERTIES VERSION ${libsimgrid_version})
 
-if(enable_ust)
-  ADD_DEPENDENCIES(simgrid simgrid_ust)
-endif()
-
 add_dependencies(simgrid maintainer_files)
 
 if(enable_model-checking)
@@ -107,12 +103,6 @@ endif()
 if(HAVE_BACKTRACE_IN_LIBEXECINFO)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lexecinfo")
 endif(HAVE_BACKTRACE_IN_LIBEXECINFO)
-
-# Dependencies from USR
-###################################
-if(enable_ust)
-  set(SIMGRID_DEP "${SIMGRID_DEP} -llttng-ust")
-endif()
 
 # Compute the dependencies of SMPI
 ##################################

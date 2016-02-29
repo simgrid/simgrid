@@ -740,6 +740,8 @@ else()
     message(FATAL_ERROR "Could not figure out the stack direction. Test prog returned: ${stack}; CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
   endif()
 endif()
+# If the test ran well, remove the test binary
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove test_stackgrowth)
 
 ###############
 ## System checks

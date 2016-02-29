@@ -6,12 +6,7 @@
 
 #include "peer.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peer,
-                             "Messages specific for the peer");
-
-/*******************************************************
- *                     Peer                            *
- *******************************************************/
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_peer, "Messages specific for the peer");
 
 void peer_init_chain(peer_t peer, message_t msg)
 {
@@ -161,4 +156,4 @@ int peer(int argc, char *argv[])
   peer_delete(p);
 
   return status;
-}                               /* end_of_receiver */
+}

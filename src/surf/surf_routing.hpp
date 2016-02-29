@@ -68,12 +68,12 @@ public:
   char *name_ = nullptr;
   NetCard *netcard_ = nullptr; // Our representative in the father AS
   As *father_ = nullptr;
-  xbt_dict_t sons_ = xbt_dict_new_homogeneous(NULL); // sub-ASes
+  xbt_dict_t children_ = xbt_dict_new_homogeneous(NULL); // sub-ASes
   xbt_dynar_t vertices_ = xbt_dynar_new(sizeof(char*),NULL); // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
 private:
   bool sealed_ = false; // We cannot add more content when sealed
-  std::map<std::string, std::vector<Link*>*> *bypassRoutes_ = nullptr;
+  std::map<std::string, std::vector<Link*>*> bypassRoutes_;
 
 public:
   /**
@@ -140,7 +140,7 @@ private:
 };
 
 /** @ingroup SURF_routing_interface
- * @brief Link of lenght 1, alongside with its source and destination. This is mainly usefull in the ns3 bindings
+ * @brief Link of length 1, alongside with its source and destination. This is mainly useful in the ns3 bindings
  */
 class Onelink {
 public:
@@ -160,7 +160,6 @@ public:
   ~RoutingPlatf();
   As *root_ = nullptr;
   Link *loopback_;
-  xbt_dynar_t lastRoute_ = xbt_dynar_new(sizeof(Link*),NULL);
   xbt_dynar_t getOneLinkRoutes(void);
   void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };

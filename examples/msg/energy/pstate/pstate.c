@@ -5,38 +5,21 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"         /* calloc */
-
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-
 
 /** @addtogroup MSG_examples
  *
- * - <b>energy/e1/e1.c</b> Shows how a set of pstates can be defined
- *     for a host and how the current pstate can be accessed/changed
- *     with @ref MSG_get_host_current_power_peak and @ref
- *     MSG_set_host_pstate.
- *     Make sure to read the platform XML file for details on how
- *     to declare the CPU capacity for each pstate.
- *
+ * - <b>energy/e1/e1.c</b> Shows how a set of pstates can be defined for a host and how the current pstate can be
+ *     accessed/changed with @ref MSG_get_host_current_power_peak and @ref  MSG_set_host_pstate.
+ *     Make sure to read the platform XML file for details on how to declare the CPU capacity for each pstate.
  */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(test,
-                             "Pstate properties test");
+XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Pstate properties test");
 
-int dvfs(int argc, char *argv[]);
-
-
-int dvfs(int argc, char *argv[])
+static int dvfs(int argc, char *argv[])
 {
-  msg_host_t host = NULL;
-  msg_task_t task1 = NULL;
-  double task_time = 0;
   double workload = 100E6;
   int new_peak_index=2;
-  host = MSG_host_self();; //MSG_get_host_by_name("MyHost1");
+  msg_host_t host = MSG_host_self();; //MSG_get_host_by_name("MyHost1");
 
   int nb = MSG_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb);
@@ -45,19 +28,18 @@ int dvfs(int argc, char *argv[])
   XBT_INFO("Current power peak=%f", current_peak);
 
   // Run a task
-  task1 = MSG_task_create ("t1", workload, 0, NULL);
+  msg_task_t task1 = MSG_task_create ("t1", workload, 0, NULL);
   MSG_task_execute (task1);
   MSG_task_destroy(task1);
 
-  task_time = MSG_get_clock();
+  double task_time = MSG_get_clock();
   XBT_INFO("Task1 simulation time: %e", task_time);
 
   // Change power peak
-  if ((new_peak_index >= nb) || (new_peak_index < 0))
-    {
+  if ((new_peak_index >= nb) || (new_peak_index < 0)){
     XBT_INFO("Cannot set pstate %d, host supports only %d pstates", new_peak_index, nb);
     return 0;
-    }
+  }
 
   double peak_at = MSG_host_get_power_peak_at(host, new_peak_index);
   XBT_INFO("Changing power peak value to %f (at index %d)", peak_at, new_peak_index);
@@ -74,7 +56,6 @@ int dvfs(int argc, char *argv[])
 
   task_time = MSG_get_clock() - task_time;
   XBT_INFO("Task2 simulation time: %e", task_time);
-
 
   // Verify the default pstate is set to 0
   host = MSG_host_by_name("MyHost2");
@@ -93,14 +74,11 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-            "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-            argv[0], argv[0]);
-  
+            "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+
   MSG_create_environment(argv[1]);
 
-  /*   Application deployment */
   MSG_function_register("dvfs_test", dvfs);
-
   MSG_launch_application(argv[2]);
 
   res = MSG_main();
@@ -109,4 +87,3 @@ int main(int argc, char *argv[])
 
   return res != MSG_OK;
 }
-

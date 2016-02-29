@@ -214,7 +214,7 @@ int smpi_global_size(void)
 
 smpi_process_data_t smpi_process_data(void)
 {
-  simdata_process_t simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data(SIMIX_process_self()));
+  simdata_process_t simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
   return static_cast<smpi_process_data_t>(simdata->data);
 }
 

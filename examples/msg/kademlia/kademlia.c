@@ -9,8 +9,6 @@
 #include "task.h"
 
 #include "simgrid/msg.h"
-#include "xbt/log.h"
-#include "xbt/asserts.h"
 /** @addtogroup MSG_examples
   * <b>kademlia/kademlia.c: Kademlia protocol</b>
   * Implements the Kademlia protocol, using 32 bits identifiers.

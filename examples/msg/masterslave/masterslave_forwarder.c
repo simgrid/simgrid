@@ -4,35 +4,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/msg.h"        /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc, printf */
+#include "simgrid/msg.h"
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
  * 
- *  - <b>masterslave/masterslave_forwarder.c: Master/slaves
- *    example</b>. This good old example is also very simple. Its basic
- *    version is fully commented on this page: \ref MSG_ex_master_slave,
- *    but several variants can be found in the same directory. 
+ *  - <b>masterslave/masterslave_forwarder.c: Master/slaves example</b>. This good old example is also very simple. Its
+ *    basic version is fully commented on this page: \ref MSG_ex_master_slave, but several variants can be found in the
+ *    same directory.
  */
-
-
-int master(int argc, char *argv[]);
-int slave(int argc, char *argv[]);
-int forwarder(int argc, char *argv[]);
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file);
 
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
 /** Emitter function  */
-int master(int argc, char *argv[])
+static int master(int argc, char *argv[])
 {
   int slaves_count = 0;
   msg_host_t *slaves = NULL;
@@ -57,9 +43,7 @@ int master(int argc, char *argv[])
 
     for (i = 0; i < number_of_tasks; i++) {
       sprintf(sprintf_buffer, "Task_%d", i);
-      todo[i] =
-          MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size,
-                          NULL);
+      todo[i] = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
     }
   }
 
@@ -69,19 +53,16 @@ int master(int argc, char *argv[])
 
     for (i = 4; i < argc; i++) {
       slaves[i - 4] = MSG_host_by_name(argv[i]);
-      xbt_assert(slaves[i - 4] != NULL, "Unknown host %s. Stopping Now! ",
-                  argv[i]);
+      xbt_assert(slaves[i - 4] != NULL, "Unknown host %s. Stopping Now! ", argv[i]);
     }
   }
 
-  XBT_INFO("Got %d slaves and %d tasks to process", slaves_count,
-        number_of_tasks);
+  XBT_INFO("Got %d slaves and %d tasks to process", slaves_count, number_of_tasks);
   for (i = 0; i < slaves_count; i++)
     XBT_DEBUG("%s", MSG_host_get_name(slaves[i]));
 
   for (i = 0; i < number_of_tasks; i++) {
-    XBT_INFO("Sending \"%s\" to \"%s\"",
-          todo[i]->name, MSG_host_get_name(slaves[i % slaves_count]));
+    XBT_INFO("Sending \"%s\" to \"%s\"", todo[i]->name, MSG_host_get_name(slaves[i % slaves_count]));
     if (MSG_host_self() == slaves[i % slaves_count]) {
       XBT_INFO("Hey ! It's me ! :)");
     }
@@ -90,8 +71,7 @@ int master(int argc, char *argv[])
     XBT_INFO("Sent");
   }
 
-  XBT_INFO
-      ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+  XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
     MSG_task_send(finalize, MSG_host_get_name(slaves[i]));
@@ -101,10 +81,9 @@ int master(int argc, char *argv[])
   free(slaves);
   free(todo);
   return 0;
-}                               /* end_of_master */
+}
 
-/** Receiver function  */
-int slave(int argc, char *argv[])
+static int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
@@ -126,10 +105,9 @@ int slave(int argc, char *argv[])
   }
   XBT_INFO("I'm done. See you!");
   return 0;
-}                               /* end_of_slave */
+}
 
-/** Forwarder function */
-int forwarder(int argc, char *argv[])
+static int forwarder(int argc, char *argv[])
 {
   int i;
   int slaves_count;
@@ -156,16 +134,13 @@ int forwarder(int argc, char *argv[])
     if (a == MSG_OK) {
       XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
-        XBT_INFO
-            ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+        XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
         for (i = 0; i < slaves_count; i++)
-          MSG_task_send(MSG_task_create("finalize", 0, 0, FINALIZE),
-              MSG_host_get_name(slaves[i]));
+          MSG_task_send(MSG_task_create("finalize", 0, 0, FINALIZE), MSG_host_get_name(slaves[i]));
         MSG_task_destroy(task);
         break;
       }
-      XBT_INFO("Sending \"%s\" to \"%s\"",
-            MSG_task_get_name(task), MSG_host_get_name(slaves[i % slaves_count]));
+      XBT_INFO("Sending \"%s\" to \"%s\"", MSG_task_get_name(task), MSG_host_get_name(slaves[i % slaves_count]));
       MSG_task_send(task, MSG_host_get_name(slaves[i % slaves_count]));
       i++;
     } else {
@@ -177,41 +152,26 @@ int forwarder(int argc, char *argv[])
 
   XBT_INFO("I'm done. See you!");
   return 0;
-}                               /* end_of_forwarder */
+}
 
-/** Test function */
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file)
-{
-  msg_error_t res = MSG_OK;
-
-  {                             /*  Simulation setting */
-    MSG_create_environment(platform_file);
-  }
-  {                             /*   Application deployment */
-    MSG_function_register("master", master);
-    MSG_function_register("slave", slave);
-    MSG_function_register("forwarder", forwarder);
-    MSG_launch_application(application_file);
-  }
-  res = MSG_main();
-
-  XBT_INFO("Simulation time %g", MSG_get_clock());
-  return res;
-}                               /* end_of_test_all */
-
-
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-            "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-            argv[0], argv[0]);
-  
-  res = test_all(argv[1], argv[2]);
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+
+  MSG_create_environment(argv[1]);
+
+  MSG_function_register("master", master);
+  MSG_function_register("slave", slave);
+  MSG_function_register("forwarder", forwarder);
+  MSG_launch_application(argv[2]);
+
+  res = MSG_main();
+
+  XBT_INFO("Simulation time %g", MSG_get_clock());
 
   return res != MSG_OK;
 }

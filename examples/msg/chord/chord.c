@@ -4,10 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 #include "simgrid/msg.h"
-#include "xbt/log.h"
-#include "xbt/asserts.h"
 #include "simgrid/modelchecker.h"
 #include <xbt/RngStream.h>
 #include "src/mc/mc_replay.h" // FIXME: this is an internal header
@@ -15,15 +12,13 @@
 /** @addtogroup MSG_examples
  *
  *  - <b>chord/chord.c: Classical Chord P2P protocol</b>
- *    This example implements the well known Chord P2P protocol. Its
- *    main advantage is that it constitute a fully working non-trivial
- *    example. In addition, its implementation is rather efficient, as
- *    demonstrated in http://hal.inria.fr/inria-00602216/
+ *    This example implements the well known Chord P2P protocol. Its main advantage is that it constitute a fully
+ *    working non-trivial example. In addition, its implementation is rather efficient, as demonstrated in
+ *    http://hal.inria.fr/inria-00602216/
  */
 
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord, "Messages specific for this msg example");
 
 #define COMM_SIZE 10
 #define COMP_SIZE 0
@@ -42,17 +37,13 @@ static const double sleep_delay = 4.9999;
 
 extern long int smx_total_comms;
 
-/*
- * Finger element.
- */
+/* Finger element. */
 typedef struct s_finger {
   int id;
   char mailbox[MAILBOX_NAME_SIZE]; // string representation of the id
 } s_finger_t, *finger_t;
 
-/*
- * Node data.
- */
+/* Node data. */
 typedef struct s_node {
   int id;                                 // my id
   char mailbox[MAILBOX_NAME_SIZE];        // my mailbox name (string representation of the id)
@@ -65,9 +56,7 @@ typedef struct s_node {
   RngStream stream;                       //RngStream for
 } s_node_t, *node_t;
 
-/**
- * Types of tasks exchanged between nodes.
- */
+/* Types of tasks exchanged between nodes. */
 typedef enum {
   TASK_FIND_SUCCESSOR,
   TASK_FIND_SUCCESSOR_ANSWER,
@@ -80,9 +69,7 @@ typedef enum {
   TASK_PREDECESSOR_ALIVE_ANSWER
 } e_task_type_t;
 
-/*
- * Data attached with the tasks sent and received
- */
+/* Data attached with the tasks sent and received */
 typedef struct s_task_data {
   e_task_type_t type;                     // type of task
   int request_id;                         // id paramater (used by some types of tasks)
@@ -96,7 +83,6 @@ static int *powers2;
 static xbt_dynar_t host_list;
 
 // utility functions
-static void chord_initialize(void);
 static void chord_exit(void);
 static int normalize(int id);
 static int is_in_interval(int id, int start, int end);
@@ -126,9 +112,7 @@ static void check_predecessor(node_t node);
 static void random_lookup(node_t);
 static void quit_notify(node_t node);
 
-/**
- * \brief Global initialization of the Chord simulation.
- */
+/* \brief Global initialization of the Chord simulation. */
 static void chord_initialize(void)
 {
   // compute the powers of 2 once for all
@@ -994,7 +978,8 @@ static void check_predecessor(node_t node)
           node->comm_receive = NULL;
           handle_task(node, task_received);
         }else{
-          XBT_DEBUG("Received the answer to my 'Predecessor Alive' request (task %p) : my predecessor %d is alive", task_received, node->pred_id);
+          XBT_DEBUG("Received the answer to my 'Predecessor Alive' request (task %p) : my predecessor %d is alive",
+                    task_received, node->pred_id);
           stop = 1;
           MSG_comm_destroy(node->comm_receive);
           node->comm_receive = NULL;
@@ -1019,16 +1004,12 @@ static void random_lookup(node_t node)
 
 }
 
-/**
- * \brief Main function.
- */
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, 
        "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
-       "\tExample: %s ../msg_platform.xml chord.xml\n", 
-       argv[0], argv[0]);
+       "\tExample: %s ../msg_platform.xml chord.xml\n", argv[0], argv[0]);
 
   char **options = &argv[1];
   while (!strncmp(options[0], "-", 1)) {

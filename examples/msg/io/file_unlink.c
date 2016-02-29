@@ -11,23 +11,15 @@
 
 #define FILENAME1 "/home/doc/simgrid/examples/platforms/g5k.xml"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/msg.h"
 
-int host(int argc, char *argv[]);
+XBT_LOG_NEW_DEFAULT_CATEGORY(io_file, "Messages specific for this io example");
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(io_file,
-                             "Messages specific for this io example");
-
-int host(int argc, char *argv[])
+static int host(int argc, char *argv[])
 {
-  msg_file_t file = NULL;
-  sg_size_t write;
-
   // First open
   XBT_INFO("\tOpen file '%s'",FILENAME1);
-  file = MSG_file_open(FILENAME1, NULL);
+  msg_file_t file = MSG_file_open(FILENAME1, NULL);
 
   // Unlink the file
   XBT_INFO("\tUnlink file '%s'",MSG_file_get_name(file));
@@ -38,7 +30,7 @@ int host(int argc, char *argv[])
   file = MSG_file_open(FILENAME1, NULL);
 
   // Write into the new file
-  write = MSG_file_write(file,100000);  // Write for 100Ko
+  sg_size_t write = MSG_file_write(file,100000);  // Write for 100Ko
   XBT_INFO("\tHave written %llu on %s",write,MSG_file_get_name(file));
 
   // Write into the new file
@@ -54,7 +46,6 @@ int host(int argc, char *argv[])
 
 int main(int argc, char **argv)
 {
-  int res;
   MSG_init(&argc, argv);
   MSG_create_environment(argv[1]);
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
@@ -67,7 +58,7 @@ int main(int argc, char **argv)
 
   xbt_dynar_free(&hosts);
 
-  res = MSG_main();
+  int res = MSG_main();
   XBT_INFO("Simulation time %g", MSG_get_clock());
   return res != MSG_OK;
 }

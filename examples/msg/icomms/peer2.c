@@ -4,29 +4,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc, printf */
+#include "simgrid/msg.h"
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
  * 
  * - <b>msg/icomms/peer2.c</b>: demonstrates the @ref MSG_comm_waitall function
  */
 
-int sender(int argc, char *argv[]);
-int receiver(int argc, char *argv[]);
-
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file);
-
-/** Sender function  */
-int sender(int argc, char *argv[])
+static int sender(int argc, char *argv[])
 {
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
@@ -63,10 +50,9 @@ int sender(int argc, char *argv[])
   XBT_INFO("Goodbye now!");
   xbt_free(comm);
   return 0;
-}                               /* end_of_sender */
+}
 
-/** Receiver function  */
-int receiver(int argc, char *argv[])
+static int receiver(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED msg_error_t res;
@@ -98,40 +84,24 @@ int receiver(int argc, char *argv[])
   }
   XBT_INFO("I'm done. See you!");
   return 0;
-}                               /* end_of_receiver */
+}
 
-/** Test function */
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file)
-{
-  msg_error_t res = MSG_OK;
-
-  {                             /*  Simulation setting */
-    MSG_create_environment(platform_file);
-  }
-  {                             /*   Application deployment */
-    MSG_function_register("sender", sender);
-    MSG_function_register("receiver", receiver);
-    MSG_launch_application(application_file);
-  }
-  res = MSG_main();
-
-  XBT_INFO("Simulation time %g", MSG_get_clock());
-  return res;
-}                               /* end_of_test_all */
-
-
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-           "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-           argv[0], argv[0]);
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
-  res = test_all(argv[1], argv[2]);
+  MSG_create_environment(argv[1]);
+  MSG_function_register("sender", sender);
+  MSG_function_register("receiver", receiver);
+  MSG_launch_application(argv[2]);
+
+  res = MSG_main();
+
+  XBT_INFO("Simulation time %g", MSG_get_clock());
 
   return res != MSG_OK;
 }

@@ -9,17 +9,10 @@
  * - <b>gpu/test_MSG_gpu_task_create.c</b> Example of use of the very experimental (for now) GPU resource. 
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/msg.h"
-#include "xbt/log.h"
-#include "xbt/asserts.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for GPU msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for GPU msg example");
 
-
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;

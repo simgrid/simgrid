@@ -1,59 +1,53 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env python
 # Wrapper around the real `as` which adds filtering capabilities.
 
-require "tempfile"
-require "fileutils"
+import os
+import re
+import subprocess
+import sys
+import tempfile
 
-def wrapped_as(argv)
-
-  args=[]
-  input=nil
-
-  i = 0
-  while i<argv.size
-    case argv[i]
-    when "-o", "-I"
-      args.push(argv[i])
-      args.push(argv[i+1])
-      i = i + 1
-    when /^-/
-      args.push(argv[i])
-    else
-      if input
-        exit 1
-      else
-        input = argv[i]
-      end
-    end
+# Process the arguments:
+# * build the argument array for calling the real assembler;
+# * get the input file name.
+args = []
+input_filename = None
+args.append('as')
+i = 1
+while i < len(sys.argv):
+    if sys.argv[i] == '-o' or sys.argv[i] == '-I':
+        args.append(sys.argv[i])
+        if i + 1 >= len(sys.argv):
+            sys.stderr.write("Missing argument\n")
+            sys.exit(1)
+        args.append(sys.argv[i + 1])
+        i = i + 1
+    elif re.match('^-', sys.argv[i][0]):
+        args.append(sys.argv[i])
+    elif input_filename:
+        sys.stdout.write("Too many input files\n")
+        sys.exit(1)
+    else:
+        input_filename = sys.argv[i]
     i = i + 1
-  end
+if input_filename == None:
+    sys.stderr.write("Missing input file\n")
+    sys.exit(1)
 
-  if input==nil
-    # We dont handle pipe yet:
-    exit 1
-  end
+temp_file, temp_filename = tempfile.mkstemp(suffix=".s", prefix="as_wrapper")
+try:
+    # Generate temporary file with modified assembly code:
+    script_file = os.path.join(
+        os.path.dirname(sys.argv[0]), "clean-stack-filter")
+    input_file = os.open(input_filename, os.O_RDONLY)
+    status = subprocess.call([script_file], stdin=input_file, stdout=temp_file)
+    os.close(input_file)
+    if status != 0:
+        sys.stderr.write("Filtering the assembly code failed.\n")
+        sys.exit(status)
 
-  # Generate temp file
-  tempfile = Tempfile.new("as-filter")
-  tempfile.close
-  script = File.dirname($0) + "/clean-stack-filter"
-  unless system([script, script], 0 => input, 1 => tempfile.path)
-    status=$?.exitstatus
-    FileUtils.rm tempfile
-    exit status
-  end
-  args.push(tempfile.path)
-
-  # Call the real assembler:
-  res = system("as", *args)
-  status = if res != nil
-             $?.exitstatus
-           else
-             1
-           end
-  FileUtils.rm tempfile
-  exit status
-
-end
-
-wrapped_as(ARGV)
+    # Call the real assembler on this modified assembly code:
+    args.append(temp_filename)
+    sys.exit(subprocess.call(args))
+finally:
+    os.remove(temp_filename)

@@ -57,7 +57,7 @@ communications, there is several other examples in the archive:
  * msg/icomms/peer2.c: demonstrates the MSG_comm_waitall() function
  * msg/icomms/peer3.c: demonstrates the MSG_comm_waitany() function
 
-Tracing and vizualization features
+Tracing and visualization features
 ==================================
  * tracing/simple.c very simple program that creates, executes and
    destroy a task

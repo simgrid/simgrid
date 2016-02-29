@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef KADEPLOY_COMMON_H
-#define KADEPLOY_COMMON_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include "simgrid/msg.h"
 #include "xbt/sysdep.h"
@@ -17,4 +17,4 @@ static XBT_INLINE void queue_pending_connection(msg_comm_t comm, xbt_dynar_t q)
 
 int process_pending_connections(xbt_dynar_t q);
 
-#endif /* KADEPLOY_COMMON_H */
+#endif /* COMMON_H */

@@ -39,36 +39,63 @@ const char* to_cstr(RegionType region)
   }
 }
 
-void data_deleter::operator()(void* p) const
+buffer::buffer(std::size_t size, Type type) : size_(size), type_(type)
 {
   switch(type_) {
-  case Free:
-    std::free(p);
+  case Type::Malloc:
+    data_ = malloc(size_);
     break;
-  case Munmap:
-    munmap(p, size_);
+  case Type::Mmap:
+    data_ = mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+    if (data_ == MAP_FAILED) {
+      data_ = nullptr;
+      size_ = 0;
+      type_ = Type::Malloc;
+      throw std::bad_alloc();
+    }
     break;
+  default:
+    abort();
   }
+}
+
+void buffer::clear() noexcept
+{
+  switch(type_) {
+  case Type::Malloc:
+    std::free(data_);
+    break;
+  case Type::Mmap:
+    if (munmap(data_, size_) != 0)
+      abort();
+    break;
+  default:
+    abort();
+  }
+  data_ = nullptr;
+  size_ = 0;
+  type_ = Type::Malloc;
 }
 
 RegionSnapshot dense_region(
   RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  simgrid::mc::RegionSnapshot::flat_data_ptr data;
-  if (!_sg_mc_ksm)
-    data = simgrid::mc::RegionSnapshot::flat_data_ptr((char*) std::malloc(size));
-  else {
-    char* ptr = (char*) mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
-    if (ptr == MAP_FAILED)
-      throw std::bad_alloc();
-    simgrid::mc::data_deleter deleter(
-      simgrid::mc::data_deleter::Munmap, size);
-    data = simgrid::mc::RegionSnapshot::flat_data_ptr(ptr, deleter);
-  }
+  simgrid::mc::buffer::Type buffer_type;
+  if (_sg_mc_ksm)
+    // We use mmap to allocate the memory in order to madvise it.
+    // We don't want to madvise the main heap.
+    // Moreover we get aligned pgaes which is merge-friendly.
+    buffer_type = simgrid::mc::buffer::Type::Mmap;
+  else
+    buffer_type = simgrid::mc::buffer::Type::Malloc;
+
+  simgrid::mc::buffer data(size, buffer_type);
+
   mc_model_checker->process().read_bytes(data.get(), size,
     remote(permanent_addr),
     simgrid::mc::ProcessIndexDisabled);
+
   if (_sg_mc_ksm)
     // Mark the region as mergeable *after* we have written into it.
     // There no point to let KSM do the hard work before that.
@@ -79,7 +106,7 @@ RegionSnapshot dense_region(
   region.flat_data(std::move(data));
 
   XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
-            to_cstr(region_type), region.flat_data(), permanent_addr, size);
+            to_cstr(region_type), region.flat_data().get(), permanent_addr, size);
   return std::move(region);
 }
 

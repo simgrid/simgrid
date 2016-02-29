@@ -4,15 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"         /* calloc, printf */
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 #define MAXMBOXLEN 64
 
@@ -25,15 +19,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 const double task_comp_size = 10000000;
 const double task_comm_size = 10000000;
 
-
-int master_fun(int argc, char *argv[]);
-int worker_fun(int argc, char *argv[]);
-
-
 static void send_tasks(int nb_workers)
 {
-  int i;
-  for (i = 0; i < nb_workers; i++) {
+  for (int i = 0; i < nb_workers; i++) {
     char *tname = bprintf("Task%02d", i);
     char *mbox  = bprintf("MBOX:WRK%02d", i);
 
@@ -47,7 +35,38 @@ static void send_tasks(int nb_workers)
   }
 }
 
-int master_fun(int argc, char *argv[])
+static int worker_fun(int argc, char *argv[])
+{
+  const char *pr_name = MSG_process_get_name(MSG_process_self());
+  char mbox[MAXMBOXLEN];
+  snprintf(mbox, MAXMBOXLEN, "MBOX:%s", pr_name);
+
+  XBT_INFO("%s is listening on mailbox(%s)", pr_name, mbox);
+
+  for (;;) {
+    msg_task_t task = NULL;
+
+    msg_error_t res = MSG_task_receive(&task, mbox);
+    if (res != MSG_OK) {
+      XBT_CRITICAL("MSG_task_get failed");
+      DIE_IMPOSSIBLE;
+    }
+
+    XBT_INFO("%s received task(%s) from mailbox(%s)", pr_name, MSG_task_get_name(task), mbox);
+
+    if (!strcmp(MSG_task_get_name(task), "finalize")) {
+      MSG_task_destroy(task);
+      break;
+    }
+
+    MSG_task_execute(task);
+    XBT_INFO("%s executed task(%s)", pr_name, MSG_task_get_name(task));
+    MSG_task_destroy(task);
+  }
+  return 0;
+}
+
+static int master_fun(int argc, char *argv[])
 {
   msg_vm_t vm;
   unsigned int i;
@@ -57,11 +76,9 @@ int master_fun(int argc, char *argv[])
 
   xbt_dynar_t vms = xbt_dynar_new(sizeof(msg_vm_t), NULL);
 
-
   /* Launch VMs and worker processes. One VM per PM, and one worker process per VM. */
-
   XBT_INFO("# Launch %d VMs", nb_workers);
-  for (i = 0; i< nb_workers; i++) {
+  for (int i = 0; i< nb_workers; i++) {
     char *vm_name = bprintf("VM%02d", i);
     char *pr_name = bprintf("WRK%02d", i);
 
@@ -85,7 +102,6 @@ int master_fun(int argc, char *argv[])
     xbt_free(pr_name);
   }
 
-
   /* Send a bunch of work to every one */
   XBT_INFO("# Send a task to %d worker process", nb_workers);
   send_tasks(nb_workers);
@@ -104,7 +120,6 @@ int master_fun(int argc, char *argv[])
   xbt_dynar_foreach(vms, i, vm) {
     MSG_vm_resume(vm);
   }
-
 
   XBT_INFO("# Sleep long enough for everyone to be done with previous batch of work");
   MSG_process_sleep(1000 - MSG_get_clock());
@@ -138,7 +153,6 @@ int master_fun(int argc, char *argv[])
     MSG_vm_migrate(vm, worker_pm1);
   }
 
-
   XBT_INFO("# Shutdown the half of worker processes gracefuly. The remaining half will be forcibly killed.");
   for (i = 0; i < nb_workers; i++) {
     char mbox[MAXMBOXLEN];
@@ -150,7 +164,6 @@ int master_fun(int argc, char *argv[])
   XBT_INFO("# Wait a while before effective shutdown.");
   MSG_process_sleep(2);
 
-
   XBT_INFO("# Shutdown and destroy all the VMs. The remaining worker processes will be forcibly killed.");
   xbt_dynar_foreach(vms, i, vm) {
     XBT_INFO("shutdown %s", MSG_host_get_name(vm));
@@ -161,56 +174,16 @@ int master_fun(int argc, char *argv[])
 
   XBT_INFO("# Goodbye now!");
   xbt_dynar_free(&vms);
-
   return 0;
 }
 
 /** Receiver function  */
-int worker_fun(int argc, char *argv[])
-{
-  const char *pr_name = MSG_process_get_name(MSG_process_self());
-  char mbox[MAXMBOXLEN];
-  snprintf(mbox, MAXMBOXLEN, "MBOX:%s", pr_name);
-
-  XBT_INFO("%s is listenning on mailbox(%s)", pr_name, mbox);
-
-  for (;;) {
-    msg_task_t task = NULL;
-
-    msg_error_t res = MSG_task_receive(&task, mbox);
-    if (res != MSG_OK) {
-      XBT_CRITICAL("MSG_task_get failed");
-      DIE_IMPOSSIBLE;
-    }
-
-    XBT_INFO("%s received task(%s) from mailbox(%s)",
-        pr_name, MSG_task_get_name(task), mbox);
-
-    if (!strcmp(MSG_task_get_name(task), "finalize")) {
-      MSG_task_destroy(task);
-      break;
-    }
-
-    MSG_task_execute(task);
-    XBT_INFO("%s executed task(%s)", pr_name, MSG_task_get_name(task));
-    MSG_task_destroy(task);
-  }
-
-  return 0;
-}
-
-
-
-
 int main(int argc, char *argv[])
 {
   const int nb_workers = 2;
 
   MSG_init(&argc, argv);
-  if (argc != 2) {
-    printf("Usage: %s example/msg/msg_platform.xml\n", argv[0]);
-    return 1;
-  }
+  xbt_assert(argc >1,"Usage: %s example/msg/msg_platform.xml\n", argv[0]);
 
   /* Load the platform file */
   MSG_create_environment(argv[1]);
@@ -219,21 +192,16 @@ int main(int argc, char *argv[])
   xbt_dynar_t pms = MSG_hosts_as_dynar();
 
   /* we need a master node and worker nodes */
-  if (xbt_dynar_length(pms) < nb_workers + 1) {
-    XBT_CRITICAL("need %d hosts", nb_workers + 1);
-    return 1;
-  }
+  xbt_assert(xbt_dynar_length(pms) > nb_workers,"need %d hosts", nb_workers + 1);
 
   /* the first pm is the master, the others are workers */
   msg_host_t master_pm = xbt_dynar_get_as(pms, 0, msg_host_t);
 
   xbt_dynar_t worker_pms = xbt_dynar_new(sizeof(msg_host_t), NULL);
-  int i;
-  for (i = 1; i < nb_workers + 1; i++) {
+  for (int i = 1; i < nb_workers + 1; i++) {
     msg_host_t pm = xbt_dynar_get_as(pms, i, msg_host_t);
     xbt_dynar_push(worker_pms, &pm);
   }
-
 
   /* Start the master process on the master pm. */
   MSG_process_create("master", master_fun, worker_pms, master_pm);

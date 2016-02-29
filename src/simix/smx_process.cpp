@@ -768,9 +768,9 @@ int SIMIX_process_get_PPID(smx_process_t self){
     return self->ppid;
 }
 
-void* SIMIX_process_self_get_data(smx_process_t self)
+void* SIMIX_process_self_get_data()
 {
-  xbt_assert(self == SIMIX_process_self(), "This is not the current process");
+  smx_process_t self = SIMIX_process_self();
 
   if (!self) {
     return NULL;
@@ -778,9 +778,9 @@ void* SIMIX_process_self_get_data(smx_process_t self)
   return SIMIX_process_get_data(self);
 }
 
-void SIMIX_process_self_set_data(smx_process_t self, void *data)
+void SIMIX_process_self_set_data(void *data)
 {
-  xbt_assert(self == SIMIX_process_self(), "This is not the current process");
+  smx_process_t self = SIMIX_process_self();
 
   SIMIX_process_set_data(self, data);
 }
