@@ -5,10 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
+
 const char* mailbox = "mailbox";
 #define task_comp_size 1000
 #define task_comm_size 100000
@@ -33,8 +32,8 @@ static int sendpid(int argc, char *argv[])
 static int killall(int argc, char *argv[]){
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
-  int i;
-  for (i=0; i<3;i++) {
+
+  for (int i=0; i<3;i++) {
     res = MSG_task_receive(&(task), mailbox);
     int pid = *(int*)MSG_task_get_data(task);
     MSG_task_destroy(task);
@@ -45,14 +44,12 @@ static int killall(int argc, char *argv[]){
   return 0;
 }
 
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
 
-  /*   Application deployment */
   MSG_function_register("sendpid", &sendpid);
   MSG_function_register("killall", &killall);
 

@@ -4,25 +4,73 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 #include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc, printf */
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
-
-int test_launcher(int argc, char *argv[]);
-int process_daemon(int argc, char *argv[]);
-int process_sleep(int argc, char *argv[]);
-int commRX(int argc, char *argv[]);
-int commTX(int argc, char *argv[]);
 
 xbt_dynar_t tests;
 int tasks_done = 0;
 
-int test_launcher(int argc, char *argv[])
+static int process_daemon(int argc, char *argv[])
+{
+  msg_task_t task = NULL;
+  XBT_INFO("  Start daemon on %s (%f)",  MSG_host_get_name(MSG_host_self()), MSG_get_host_speed(MSG_host_self()));
+  for(;;){
+    task = MSG_task_create("daemon", MSG_get_host_speed(MSG_host_self()), 0, NULL);
+    XBT_INFO("  Execute daemon");
+    MSG_task_execute(task);
+    MSG_task_destroy(task);
+    tasks_done ++;
+  }
+  XBT_INFO("  daemon done. See you!");
+  return 0;
+}
+
+static int process_sleep(int argc, char *argv[])
+{
+  for(;;){
+    XBT_INFO("  I'm alive but I should sleep");
+    MSG_process_sleep(10);
+  }
+  XBT_INFO("  I'm done. See you!");
+  return 0;
+}
+
+static int commTX(int argc, char *argv[])
+{
+  msg_task_t task = NULL;
+  char mailbox[80];
+  sprintf(mailbox, "comm");
+  XBT_INFO("  Start TX");
+  task = MSG_task_create("COMM", 0, 100000000, NULL);
+  MSG_task_isend(task, mailbox);
+  // We should wait a bit (if not the process will end before the communication, hence an exception on the other side).
+  MSG_process_sleep(30);
+  XBT_INFO("  TX done");
+  return 0;
+}
+
+static int commRX(int argc, char *argv[])
+{
+  msg_task_t task = NULL;
+  char mailbox[80];
+  sprintf(mailbox, "comm");
+  XBT_INFO("  Start RX");
+  msg_error_t error = MSG_task_receive(&(task), mailbox);
+  if (error==MSG_OK) {
+    XBT_INFO("  Receive message: %s", task->name);
+  } else if (error==MSG_HOST_FAILURE) {
+    XBT_INFO("  Receive message: HOST_FAILURE");
+  } else if (error==MSG_TRANSFER_FAILURE) {
+    XBT_INFO("  Receive message: TRANSFERT_FAILURE");
+  } else {
+    XBT_INFO("  Receive message: %d", error);
+  }
+  XBT_INFO("  RX Done");
+  return 0;
+}
+
+static int test_launcher(int argc, char *argv[])
 {
   int test = 0;
   char **argvF;
@@ -64,7 +112,9 @@ int test_launcher(int argc, char *argv[])
     MSG_host_off(jupiter);
     XBT_INFO("  sleep");
     MSG_process_sleep(10);
-    XBT_INFO("number of Process : %d it should be 1. The daemon that has been created for test2 has been correctly destroyed....ok at least it looks rigorous, cool ! You just have to disallow the possibility to create a new process on a node when the node is off.)", MSG_process_get_number());
+    XBT_INFO("number of Process : %d it should be 1. The daemon that has been created for test2 has been correctly "
+             "destroyed....ok at least it looks rigorous, cool ! You just have to disallow the possibility to create "
+             "a new process on a node when the node is off.)", MSG_process_get_number());
   }
 
    test = 3;
@@ -85,7 +135,8 @@ int test_launcher(int argc, char *argv[])
 
   test = 4;
   if (xbt_dynar_search_or_negative(tests, &test)!=-1){
-    XBT_INFO("Test 4 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication");
+    XBT_INFO("Test 4 (turn off src during a communication) : Create a Process/task to make a communication between "
+             "Jupiter and Tremblay and turn off Jupiter during the communication");
     MSG_host_on(jupiter);
     MSG_process_sleep(10);
     argvF = xbt_new(char*, 2);
@@ -98,12 +149,14 @@ int test_launcher(int argc, char *argv[])
     MSG_process_sleep(10);
     XBT_INFO("  Turn Jupiter off");
     MSG_host_off(jupiter);
-    XBT_INFO("Test 4 seems ok  (number of Process : %d, it should be 1 or 2 if RX has not been satisfied) cool, you can now turn off a node that has a process paused by a sleep call", MSG_process_get_number());
+    XBT_INFO("Test 4 seems ok  (number of Process : %d, it should be 1 or 2 if RX has not been satisfied) cool, you "
+             "can now turn off a node that has a process paused by a sleep call", MSG_process_get_number());
   }
 
   test = 5;
   if (xbt_dynar_search_or_negative(tests, &test)!=-1){
-    XBT_INFO("Test 5 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication");
+    XBT_INFO("Test 5 (turn off dest during a communication : Create a Process/task to make a communication between "
+             "Tremblay and Jupiter and turn off Jupiter during the communication");
     MSG_host_on(jupiter);
     MSG_process_sleep(10);
     argvF = xbt_new(char*, 2);
@@ -151,99 +204,21 @@ int test_launcher(int argc, char *argv[])
     MSG_vm_shutdown(vm0);
     XBT_INFO("  Destroy vm0");
     MSG_vm_destroy(vm0);
-    XBT_INFO("Test 6 is also weird: when the node Jupiter is turned off once again, the VM and its daemon are not killed. However, the issue regarding the shutdown of hosted VMs can be seen a feature not a bug ;)");
+    XBT_INFO("Test 6 is also weird: when the node Jupiter is turned off once again, the VM and its daemon are not "
+             "killed. However, the issue regarding the shutdown of hosted VMs can be seen a feature not a bug ;)");
   }
 
-  test = 7;
-  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
-
-  }
-
-  test = 8;
-  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
-
-  }
-
-  test = 9;
-  if (xbt_dynar_search_or_negative(tests, &test)!=-1){
-
-  }
   XBT_INFO("  Test done. See you!");
   return 0;
 }
 
-int process_daemon(int argc, char *argv[])
-{
-  msg_task_t task = NULL;
-  XBT_INFO("  Start daemon on %s (%f)",  MSG_host_get_name(MSG_host_self()), MSG_get_host_speed(MSG_host_self()));
-  for(;;){
-    task = MSG_task_create("daemon", MSG_get_host_speed(MSG_host_self()), 0, NULL);
-    XBT_INFO("  Execute daemon");
-    MSG_task_execute(task);
-    MSG_task_destroy(task);
-    tasks_done ++;
-  }
-  XBT_INFO("  daemon done. See you!");
-  return 0;
-}
-
-int process_sleep(int argc, char *argv[])
-{
-  for(;;){
-    XBT_INFO("  I'm alive but I should sleep");
-    MSG_process_sleep(10);
-  }
-  XBT_INFO("  I'm done. See you!");
-  return 0;
-}
-
-int commTX(int argc, char *argv[])
-{
-  msg_task_t task = NULL;
-  char mailbox[80];
-  sprintf(mailbox, "comm");
-  XBT_INFO("  Start TX");
-  task = MSG_task_create("COMM", 0, 100000000, NULL);
-  MSG_task_isend(task, mailbox);
-  // We should wait a bit (if not the process will end before the communication, leading to an exception at the other side).
-  MSG_process_sleep(30);
-  XBT_INFO("  TX done");
-  return 0;
-}
-
-int commRX(int argc, char *argv[])
-{
-  msg_task_t task = NULL;
-  char mailbox[80];
-  sprintf(mailbox, "comm");
-  XBT_INFO("  Start RX");
-  msg_error_t error = MSG_task_receive(&(task), mailbox);
-  if (error==MSG_OK) {
-    XBT_INFO("  Receive message: %s", task->name);
-  } else if (error==MSG_HOST_FAILURE) {
-    XBT_INFO("  Receive message: HOST_FAILURE");
-  } else if (error==MSG_TRANSFER_FAILURE) {
-    XBT_INFO("  Receive message: TRANSFERT_FAILURE");
-  } else {
-    XBT_INFO("  Receive message: %d", error);
-  }
-  XBT_INFO("  RX Done");
-  return 0;
-}
-
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res;
-  const char *platform_file;
-  const char *application_file;
 
   MSG_init(&argc, argv);
-  if (argc != 4) {
-    printf("Usage: %s platform_file deployment_file test_number\n", argv[0]);
-    printf("example: %s msg_platform.xml msg_deployment.xml 1\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 3,"Usage: %s platform_file deployment_file test_number\n"
+            "\tExample: %s msg_platform.xml msg_deployment.xml 1\n", argv[0], argv[0]);
 
   unsigned int iter;
   char *groups;
@@ -256,22 +231,17 @@ int main(int argc, char *argv[])
   }
   xbt_dynar_free(&s_tests);
 
-  platform_file = argv[1];
-  application_file = argv[2];
+  MSG_create_environment(argv[1]);
 
-  {                             /*  Simulation setting */
-    MSG_create_environment(platform_file);
-  }
-  {                             /*   Application deployment */
-    MSG_function_register("test_launcher", test_launcher);
-    MSG_function_register("process_daemon", process_daemon);
-    MSG_function_register("process_sleep", process_sleep);
+  MSG_function_register("test_launcher", test_launcher);
+  MSG_function_register("process_daemon", process_daemon);
+  MSG_function_register("process_sleep", process_sleep);
 
-    MSG_launch_application(application_file);
-  }
+  MSG_launch_application(argv[2]);
+
   res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
   return res != MSG_OK;
-}                               /* end_of_main */
+}
