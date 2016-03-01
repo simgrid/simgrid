@@ -43,10 +43,10 @@ Buffer::Buffer(std::size_t size, Type type) : size_(size), type_(type)
 {
   switch(type_) {
   case Type::Malloc:
-    data_ = malloc(size_);
+    data_ = ::malloc(size_);
     break;
   case Type::Mmap:
-    data_ = mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+    data_ = ::mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
     if (data_ == MAP_FAILED) {
       data_ = nullptr;
       size_ = 0;
@@ -81,16 +81,14 @@ RegionSnapshot dense_region(
   RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  simgrid::mc::Buffer::Type buffer_type;
+  // When KSM support is enables, we allocate memory using mmap:
+  // * we don't want to madvise bits of the heap;
+  // * mmap gives data aligned on page boundaries which is merge friendly.
+  simgrid::mc::Buffer data;
   if (_sg_mc_ksm)
-    // We use mmap to allocate the memory in order to madvise it.
-    // We don't want to madvise the main heap.
-    // Moreover we get aligned pgaes which is merge-friendly.
-    buffer_type = simgrid::mc::Buffer::Type::Mmap;
+    data = Buffer::mmap(size);
   else
-    buffer_type = simgrid::mc::Buffer::Type::Malloc;
-
-  simgrid::mc::Buffer data(size, buffer_type);
+    data = Buffer::malloc(size);
 
   mc_model_checker->process().read_bytes(data.get(), size,
     remote(permanent_addr),
@@ -98,7 +96,7 @@ RegionSnapshot dense_region(
 
   if (_sg_mc_ksm)
     // Mark the region as mergeable *after* we have written into it.
-    // There no point to let KSM do the hard work before that.
+    // Trying to merge them before is useless/counterproductive.
     madvise(data.get(), size, MADV_MERGEABLE);
 
   simgrid::mc::RegionSnapshot region(

@@ -38,22 +38,31 @@ enum class StorageType {
 };
 
 class Buffer {
-public:
+private:
   enum class Type {
     Malloc,
     Mmap
   };
-private:
   void* data_ = nullptr;
   std::size_t size_;
   Type type_ = Type::Malloc;
-public:
-  Buffer() {}
+private:
   Buffer(std::size_t size, Type type = Type::Malloc);
   Buffer(void* data, std::size_t size, Type type = Type::Malloc) :
     data_(data), size_(size), type_(type) {}
+public:
+  Buffer() {}
   void clear() noexcept;
   ~Buffer() noexcept { clear(); }
+
+  static Buffer malloc(std::size_t size)
+  {
+    return Buffer(size, Type::Malloc);
+  }
+  static Buffer mmap(std::size_t size)
+  {
+    return Buffer(size, Type::Mmap);
+  }
 
   // No copy
   Buffer(Buffer const& buffer) = delete;
@@ -82,7 +91,6 @@ public:
   void* get()              { return data_; }
   const void* get()  const { return data_; }
   std::size_t size() const { return size_; }
-  Type type()        const { return type_; }
 };
 
 /** A copy/snapshot of a given memory region
