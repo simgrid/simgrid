@@ -133,8 +133,7 @@
 /*
  * Expands to `one' if there is only one argument for the variadic part.
  * Otherwise, expands to `more'.
- * Works with up to 63 arguments, which is the maximum mandated by the C99
- * standard.
+ * Works with up to 63 arguments, which is the maximum mandated by the C99 standard.
  */
 #define _XBT_IF_ONE_ARG(one, more, ...)                                 \
     _XBT_IF_ONE_ARG_(__VA_ARGS__,                                       \
@@ -172,38 +171,29 @@
  *
  * Rational of XBT_PUBLIC:
  *   * This is for library symbols visible from the application-land.
- *     Basically, any symbols defined in the include/directory must be
- *     like this (plus some other globals).
+ *     Basically, any symbols defined in the include/directory must be like this (plus some other globals).
  *
  *     UNIX coders should just think of it as a special way to say "extern".
  *
- *   * If you build the DLL, define the DLL_EXPORT symbol so that all symbols
- *     actually get exported by this file.
+ *   * If you build the DLL, define the DLL_EXPORT symbol so that all symbols actually get exported by this file.
  *
- *   * If you link your application against the DLL or if you do a UNIX build,
- *     don't do anything special. This file will do the right thing for you
- *     by default.
- *
+ *   * If you link your application against the DLL or if you do a UNIX build, don't do anything special. This file
+ *     will do the right thing for you by default.
  *
  * Rational of XBT_EXPORT_NO_IMPORT: (windows-only)
  *   * Symbols which must be exported in the DLL, but not imported from it.
  *
- *   * This is obviously useful for initialized globals (which cannot be
- *     extern or similar).
- *   * This is also used in the log mechanism where a macro creates the
- *     variable automatically. When the macro is called from within SimGrid,
- *     the symbol must be exported, but when called  from within the client
- *     code, it must not try to retrieve the symbol from the DLL since it's
- *      not in there.
+ *   * This is obviously useful for initialized globals (which cannot be  extern or similar).
+ *   * This is also used in the log mechanism where a macro creates the variable automatically. When the macro is
+ *     called from within SimGrid, the symbol must be exported, but when called  from within the client code, it must
+ *     not try to retrieve the symbol from the DLL since it's not in there.
  *
  * Rational of XBT_IMPORT_NO_EXPORT: (windows-only)
- *   * Symbols which must be imported from the DLL, but not explicitly
- *     exported from it.
+ *   * Symbols which must be imported from the DLL, but not explicitly  exported from it.
  *
- *   * The root log category is already exported, but not imported explicitly
- *     when creating a subcategory since we cannot import the parent category
- *     to deal with the fact that the parent may be in application space, not
- *     DLL space.
+ *   * The root log category is already exported, but not imported explicitly when creating a subcategory since we
+ *     cannot import the parent category to deal with the fact that the parent may be in application space, not DLL
+ *     space.
  */
 
 /* Build the DLL */

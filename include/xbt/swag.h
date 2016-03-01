@@ -4,9 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* Warning, this module is done to be efficient and performs tons of
-   cast and dirty things. So avoid using it unless you really know
-   what you are doing. */
+/* Warning, this module is done to be efficient and performs tons of cast and dirty things. So avoid using it unless
+ * you really know what you are doing. */
 
 #ifndef _XBT_SWAG_H
 #define _XBT_SWAG_H
@@ -20,11 +19,10 @@ SG_BEGIN_DECL()
  * @addtogroup XBT_swag
  * @brief a O(1) set based on linked lists
  * 
- *  Warning, this module is done to be efficient and performs tons of
- *  cast and dirty things. So make sure you know what you are doing while using it.
- *  It is basically a fifo but with restrictions so that
- *  it can be used as a set. Any operation (add, remove, belongs) is O(1) and
- *  no call to malloc/free is done.
+ *  Warning, this module is done to be efficient and performs tons of cast and dirty things. So make sure you know what
+ *  you are doing while using it.
+ *  It is basically a fifo but with restrictions so that it can be used as a set. Any operation (add, remove, belongs)
+ *  is O(1) and no call to malloc/free is done.
  *
  */
 /** @defgroup XBT_swag_type Swag types
@@ -32,9 +30,7 @@ SG_BEGIN_DECL()
 
     Specific set. 
 
-
-    These typedefs are public so that the compiler can
-    do his job but believe me, you don't want to try to play with 
+    These typedefs are public so that the compiler can do his job but believe me, you don't want to try to play with
     those structs directly. Use them as an abstract datatype.
 */
 /* @{ */
@@ -44,8 +40,7 @@ typedef struct xbt_swag_hookup {
 } s_xbt_swag_hookup_t;
 /**< This type should be added to a type that is to be used in a swag. 
  *
- *  Whenever a new object with this struct is created, all fields have
- *  to be set to NULL 
+ *  Whenever a new object with this struct is created, all fields have to be set to NULL
  *
  * Here is an example like that :
 
@@ -69,7 +64,6 @@ typedef struct foo {
 \endcode
 */
 typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
-
 
 typedef struct xbt_swag {
   void *head;
@@ -121,7 +115,6 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
   return (swag->head);
 }
 
-
 /**
  * \brief Offset computation
  * \arg var a variable of type <tt>struct</tt> something
@@ -129,9 +122,8 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
  * \return the offset of \a field in <tt>struct</tt> something.
  * @hideinitializer
  *
- * It is very similar to offsetof except that is done at runtime and that 
- * you have to declare a variable. Why defining such a macro then ? 
- * Because it is portable...
+ * It is very similar to offsetof except that is done at runtime and that you have to declare a variable. Why defining
+ * such a macro then ? Because it is portable...
  */
 #define xbt_swag_offset(var,field) ((char *)&( (var).field ) - (char *)&(var))
 /* @} */
@@ -168,8 +160,7 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
  * @hideinitializer
 
     You can safely modify the \a swag while using this loop. 
-    Well, safely... Err. You can remove \a obj without having any 
-    trouble at least.  */
+    Well, safely... Err. You can remove \a obj without having any trouble at least.  */
 
 #ifndef __cplusplus
 

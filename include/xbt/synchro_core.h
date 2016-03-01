@@ -64,16 +64,15 @@ XBT_PUBLIC(xbt_cond_t) xbt_cond_init(void);
 
 /** @brief Blocks onto the given condition variable */
 XBT_PUBLIC(void) xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex);
-/** @brief Blocks onto the given condition variable, but only for the given amount of time. a timeout exception is raised if it was impossible to acquire it in the given time frame */
-XBT_PUBLIC(void) xbt_cond_timedwait(xbt_cond_t cond,
-                                    xbt_mutex_t mutex, double delay);
+/** @brief Blocks onto the given condition variable, but only for the given amount of time. a timeout exception is
+ *   raised if it was impossible to acquire it in the given time frame */
+XBT_PUBLIC(void) xbt_cond_timedwait(xbt_cond_t cond, xbt_mutex_t mutex, double delay);
 /** @brief Signals the given mutex variable */
 XBT_PUBLIC(void) xbt_cond_signal(xbt_cond_t cond);
 /** @brief Broadcasts the given mutex variable */
 XBT_PUBLIC(void) xbt_cond_broadcast(xbt_cond_t cond);
 /** @brief Destroys the given mutex variable */
 XBT_PUBLIC(void) xbt_cond_destroy(xbt_cond_t cond);
-
 
 #define XBT_BARRIER_SERIAL_PROCESS -1
 typedef struct s_xbt_bar_ *xbt_bar_t;

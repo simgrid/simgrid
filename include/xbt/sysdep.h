@@ -37,11 +37,9 @@ XBT_PUBLIC(void) XBT_ATTRIB_NORETURN xbt_abort(void);
  * @brief Kill the program with an error message
  * \param ... a format string and its arguments
  *
- * Things are so messed up that the only thing to do now, is to stop the
- * program.
+ * Things are so messed up that the only thing to do now, is to stop the program.
  *
- * The message is handled by a CRITICAL logging request, and may consist of a
- * format string with arguments.
+ * The message is handled by a CRITICAL logging request, and may consist of a format string with arguments.
  */
 #define xbt_die(...)                            \
   do {                                          \

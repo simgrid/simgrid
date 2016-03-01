@@ -73,7 +73,6 @@
       parameter(MPI_UNEQUAL=2)
       parameter(MPI_CONGRUENT=3)
 
-
       integer MPI_NULL_COPY_FN, MPI_NULL_DELETE_FN
       parameter(MPI_NULL_COPY_FN =0)
       parameter(MPI_NULL_DELETE_FN =0)
@@ -83,8 +82,6 @@
       integer MPI_COMM_NULL_DUP_FN, MPI_COMM_DUP_FN
       parameter(MPI_COMM_NULL_DUP_FN =0)
       parameter(MPI_COMM_DUP_FN =0)
-
-
 
       integer MPI_ROOT, MPI_INFO_NULL,MPI_COMM_TYPE_SHARED
       parameter(MPI_ROOT=0)
@@ -179,8 +176,6 @@
       parameter(MPI_COMPLEX32=26)
       parameter(MPI_PACKED=27)
 
-
-
 ! These should be ordered as in smpi_f77.c
       integer MPI_OP_NULL,MPI_MAX, MPI_MIN, MPI_MAXLOC, MPI_MINLOC
       integer MPI_SUM, MPI_PROD, MPI_LAND, MPI_LOR, MPI_LXOR, MPI_BAND
@@ -198,7 +193,7 @@
       parameter(MPI_BAND=9)
       parameter(MPI_BOR=10)
       parameter(MPI_BXOR=11)
-      
+
       INTEGER MPI_ADDRESS_KIND, MPI_OFFSET_KIND
       PARAMETER (MPI_ADDRESS_KIND=@CMAKE_SIZEOF_VOID_P@)
       PARAMETER (MPI_OFFSET_KIND=@CMAKE_SIZEOF_VOID_P@)

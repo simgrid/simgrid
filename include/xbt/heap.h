@@ -20,8 +20,7 @@ SG_BEGIN_DECL()
 /* @brief heap datatype */
 typedef struct xbt_heap *xbt_heap_t;
 
-XBT_PUBLIC(xbt_heap_t) xbt_heap_new(int init_size,
-                                    void_f_pvoid_t const free_func);
+XBT_PUBLIC(xbt_heap_t) xbt_heap_new(int init_size, void_f_pvoid_t const free_func);
 XBT_PUBLIC(void) xbt_heap_free(xbt_heap_t H);
 XBT_PUBLIC(int) xbt_heap_size(xbt_heap_t H);
 
@@ -31,10 +30,7 @@ XBT_PUBLIC(void) xbt_heap_rm_elm(xbt_heap_t H, void *content, double key);
 
 XBT_PUBLIC(double) xbt_heap_maxkey(xbt_heap_t H);
 XBT_PUBLIC(void *) xbt_heap_maxcontent(xbt_heap_t H);
-XBT_PUBLIC(void) xbt_heap_set_update_callback(xbt_heap_t H,
-                                              void (*update_callback) (void
-                                                                       *,
-                                                                       int));
+XBT_PUBLIC(void) xbt_heap_set_update_callback(xbt_heap_t H, void (*update_callback) (void*, int));
 XBT_PUBLIC(void *) xbt_heap_remove(xbt_heap_t H, int i);
 XBT_PUBLIC(void ) xbt_heap_update(xbt_heap_t H, int i, double key);
 
