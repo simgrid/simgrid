@@ -461,7 +461,7 @@ msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
  */
 msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rate)
 {
-  smx_rdv_t rdv = MSG_mailbox_get_by_alias(name);
+  smx_mailbox_t rdv = MSG_mailbox_get_by_alias(name);
 
   /* FIXME: these functions are not traceable */
   /* Sanity check */
@@ -825,7 +825,7 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
  */
 int MSG_task_listen(const char *alias)
 {
-  smx_rdv_t rdv = MSG_mailbox_get_by_alias(alias);
+  smx_mailbox_t rdv = MSG_mailbox_get_by_alias(alias);
   return !MSG_mailbox_is_empty(rdv) || (rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0);
 }
 

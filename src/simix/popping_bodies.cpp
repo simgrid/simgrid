@@ -633,7 +633,7 @@ inline static smx_process_t simcall_BODY_process_restart(smx_process_t process) 
     return (smx_process_t) self->simcall.result.dp;
   }
   
-inline static smx_rdv_t simcall_BODY_rdv_create(const char* name) {
+inline static smx_mailbox_t simcall_BODY_rdv_create(const char* name) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -651,10 +651,10 @@ inline static smx_rdv_t simcall_BODY_rdv_create(const char* name) {
     } else {
       SIMIX_simcall_handle(&self->simcall, 0);
     }    
-    return (smx_rdv_t) self->simcall.result.dp;
+    return (smx_mailbox_t) self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_rdv_destroy(smx_rdv_t rdv) {
+inline static void simcall_BODY_rdv_destroy(smx_mailbox_t rdv) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -675,7 +675,7 @@ inline static void simcall_BODY_rdv_destroy(smx_rdv_t rdv) {
     
   }
   
-inline static unsigned int simcall_BODY_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host) {
+inline static unsigned int simcall_BODY_rdv_comm_count_by_host(smx_mailbox_t rdv, sg_host_t host) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -697,7 +697,7 @@ inline static unsigned int simcall_BODY_rdv_comm_count_by_host(smx_rdv_t rdv, sg
     return (unsigned int) self->simcall.result.ui;
   }
   
-inline static smx_synchro_t simcall_BODY_rdv_get_head(smx_rdv_t rdv) {
+inline static smx_synchro_t simcall_BODY_rdv_get_head(smx_mailbox_t rdv) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -718,7 +718,7 @@ inline static smx_synchro_t simcall_BODY_rdv_get_head(smx_rdv_t rdv) {
     return (smx_synchro_t) self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_rdv_set_receiver(smx_rdv_t rdv, smx_process_t receiver) {
+inline static void simcall_BODY_rdv_set_receiver(smx_mailbox_t rdv, smx_process_t receiver) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -740,7 +740,7 @@ inline static void simcall_BODY_rdv_set_receiver(smx_rdv_t rdv, smx_process_t re
     
   }
   
-inline static smx_process_t simcall_BODY_rdv_get_receiver(smx_rdv_t rdv) {
+inline static smx_process_t simcall_BODY_rdv_get_receiver(smx_mailbox_t rdv) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -761,7 +761,7 @@ inline static smx_process_t simcall_BODY_rdv_get_receiver(smx_rdv_t rdv) {
     return (smx_process_t) self->simcall.result.dp;
   }
   
-inline static smx_synchro_t simcall_BODY_comm_iprobe(smx_rdv_t rdv, int type, int src, int tag, simix_match_func_t match_fun, void* data) {
+inline static smx_synchro_t simcall_BODY_comm_iprobe(smx_mailbox_t rdv, int type, int src, int tag, simix_match_func_t match_fun, void* data) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -787,7 +787,7 @@ inline static smx_synchro_t simcall_BODY_comm_iprobe(smx_rdv_t rdv, int type, in
     return (smx_synchro_t) self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_comm_send(smx_process_t sender, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) {
+inline static void simcall_BODY_comm_send(smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -817,7 +817,7 @@ inline static void simcall_BODY_comm_send(smx_process_t sender, smx_rdv_t rdv, d
     
   }
   
-inline static smx_synchro_t simcall_BODY_comm_isend(smx_process_t sender, smx_rdv_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached) {
+inline static smx_synchro_t simcall_BODY_comm_isend(smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -848,7 +848,7 @@ inline static smx_synchro_t simcall_BODY_comm_isend(smx_process_t sender, smx_rd
     return (smx_synchro_t) self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_comm_recv(smx_process_t receiver, smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate) {
+inline static void simcall_BODY_comm_recv(smx_process_t receiver, smx_mailbox_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */
@@ -877,7 +877,7 @@ inline static void simcall_BODY_comm_recv(smx_process_t receiver, smx_rdv_t rdv,
     
   }
   
-inline static smx_synchro_t simcall_BODY_comm_irecv(smx_process_t receiver, smx_rdv_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate) {
+inline static smx_synchro_t simcall_BODY_comm_irecv(smx_process_t receiver, smx_mailbox_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate) {
     smx_process_t self = SIMIX_process_self();
 
     /* Go to that function to follow the code flow through the simcall barrier */

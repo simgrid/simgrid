@@ -18,7 +18,7 @@ using namespace simgrid;
 boost::unordered_map <std::string, s4u::Mailbox *> *s4u::Mailbox::mailboxes = new boost::unordered_map<std::string, s4u::Mailbox*> ();
 
 
-s4u::Mailbox::Mailbox(const char*name, smx_rdv_t inferior) {
+s4u::Mailbox::Mailbox(const char*name, smx_mailbox_t inferior) {
   inferior_ = inferior;
   name_ = name;
   mailboxes->insert({name, this});

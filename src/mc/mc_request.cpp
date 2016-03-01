@@ -41,7 +41,7 @@ smx_synchro_t MC_get_comm(smx_simcall_t r)
 }
 
 static inline
-smx_rdv_t MC_get_rdv(smx_simcall_t r)
+smx_mailbox_t MC_get_rdv(smx_simcall_t r)
 {
   switch(r->call) {
   case SIMCALL_COMM_ISEND:
@@ -71,7 +71,7 @@ int MC_request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
   if ((r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
       && r2->call == SIMCALL_COMM_WAIT) {
 
-    smx_rdv_t rdv = MC_get_rdv(r1);
+    smx_mailbox_t rdv = MC_get_rdv(r1);
 
     if (rdv != synchro2->comm.rdv_cpy
         && simcall_comm_wait__get__timeout(r2) <= 0)

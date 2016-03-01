@@ -26,12 +26,12 @@ XBT_PUBLIC_CLASS Mailbox {
   friend Comm;
 
 private:
-  Mailbox(const char*name, smx_rdv_t inferior);
+  Mailbox(const char*name, smx_mailbox_t inferior);
 public:
   ~Mailbox();
   
 protected:
-  smx_rdv_t getInferior() { return inferior_; }
+  smx_mailbox_t getInferior() { return inferior_; }
 
 public:
   /** Get the name of that mailbox */
@@ -41,7 +41,7 @@ public:
 
 private:
   std::string name_;
-  smx_rdv_t inferior_;
+  smx_mailbox_t inferior_;
   static boost::unordered_map<std::string, Mailbox *> *mailboxes;
 };
 }} // namespace simgrid::s4u

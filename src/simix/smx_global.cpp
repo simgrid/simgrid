@@ -214,10 +214,8 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), NULL);
     simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), NULL);
-    simix_global->process_list =
-        xbt_swag_new(xbt_swag_offset(proc, process_hookup));
-    simix_global->process_to_destroy =
-        xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
+    simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc, process_hookup));
+    simix_global->process_to_destroy = xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
 
     simix_global->maestro_process = NULL;
     simix_global->registered_functions = xbt_dict_new_homogeneous(NULL);

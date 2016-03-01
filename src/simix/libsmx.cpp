@@ -733,7 +733,7 @@ e_smx_state_t simcall_process_sleep(double duration)
  *  \param name The name of the rendez-vous point
  *  \return The created rendez-vous point
  */
-smx_rdv_t simcall_rdv_create(const char *name)
+smx_mailbox_t simcall_rdv_create(const char *name)
 {
   return simcall_BODY_rdv_create(name);
 }
@@ -744,7 +744,7 @@ smx_rdv_t simcall_rdv_create(const char *name)
  *  \brief Destroy a rendez-vous point
  *  \param rdv The rendez-vous point to destroy
  */
-void simcall_rdv_destroy(smx_rdv_t rdv)
+void simcall_rdv_destroy(smx_mailbox_t rdv)
 {
   simcall_BODY_rdv_destroy(rdv);
 }
@@ -752,7 +752,7 @@ void simcall_rdv_destroy(smx_rdv_t rdv)
  *  \ingroup simix_rdv_management
  *  \brief Returns a rendez-vous point knowing its name
  */
-smx_rdv_t simcall_rdv_get_by_name(const char *name)
+smx_mailbox_t simcall_rdv_get_by_name(const char *name)
 {
   xbt_assert(name != NULL, "Invalid parameter for simcall_rdv_get_by_name (name is NULL)");
 
@@ -771,7 +771,7 @@ smx_rdv_t simcall_rdv_get_by_name(const char *name)
  *  \param host The host to be counted
  *  \return The number of comm synchros pending in the rdv
  */
-int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host)
+int simcall_rdv_comm_count_by_host(smx_mailbox_t rdv, sg_host_t host)
 {
   return simcall_BODY_rdv_comm_count_by_host(rdv, host);
 }
@@ -782,17 +782,17 @@ int simcall_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host)
  *  \param rdv The rendez-vous point
  *  \return The communication or NULL if empty
  */
-smx_synchro_t simcall_rdv_get_head(smx_rdv_t rdv)
+smx_synchro_t simcall_rdv_get_head(smx_mailbox_t rdv)
 {
   return simcall_BODY_rdv_get_head(rdv);
 }
 
-void simcall_rdv_set_receiver(smx_rdv_t rdv, smx_process_t process)
+void simcall_rdv_set_receiver(smx_mailbox_t rdv, smx_process_t process)
 {
   simcall_BODY_rdv_set_receiver(rdv, process);
 }
 
-smx_process_t simcall_rdv_get_receiver(smx_rdv_t rdv)
+smx_process_t simcall_rdv_get_receiver(smx_mailbox_t rdv)
 {
   return simcall_BODY_rdv_get_receiver(rdv);
 }
@@ -800,7 +800,7 @@ smx_process_t simcall_rdv_get_receiver(smx_rdv_t rdv)
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_send(smx_process_t sender, smx_rdv_t rdv, double task_size, double rate,
+void simcall_comm_send(smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
                          int (*match_fun)(void *, void *, smx_synchro_t),
                          void (*copy_data_fun)(smx_synchro_t, void*, size_t), void *data,
@@ -830,7 +830,7 @@ void simcall_comm_send(smx_process_t sender, smx_rdv_t rdv, double task_size, do
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_rdv_t rdv, double task_size, double rate,
+smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
                               int (*match_fun)(void *, void *, smx_synchro_t),
                               void (*clean_fun)(void *),
@@ -852,7 +852,7 @@ smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_rdv_t rdv, double tas
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_recv(smx_process_t receiver, smx_rdv_t rdv, void *dst_buff, size_t * dst_buff_size,
+void simcall_comm_recv(smx_process_t receiver, smx_mailbox_t rdv, void *dst_buff, size_t * dst_buff_size,
                        int (*match_fun)(void *, void *, smx_synchro_t),
                        void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                        void *data, double timeout, double rate)
@@ -876,7 +876,7 @@ void simcall_comm_recv(smx_process_t receiver, smx_rdv_t rdv, void *dst_buff, si
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_irecv(smx_process_t receiver, smx_rdv_t rdv, void *dst_buff, size_t *dst_buff_size,
+smx_synchro_t simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t rdv, void *dst_buff, size_t *dst_buff_size,
                                 int (*match_fun)(void *, void *, smx_synchro_t),
                                 void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                 void *data, double rate)
@@ -890,7 +890,7 @@ smx_synchro_t simcall_comm_irecv(smx_process_t receiver, smx_rdv_t rdv, void *ds
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_iprobe(smx_rdv_t rdv, int type, int src, int tag,
+smx_synchro_t simcall_comm_iprobe(smx_mailbox_t rdv, int type, int src, int tag,
                                 int (*match_fun)(void *, void *, smx_synchro_t), void *data)
 {
   xbt_assert(rdv, "No rendez-vous point defined for iprobe");

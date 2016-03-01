@@ -27,8 +27,8 @@ typedef struct s_smpi_process_data {
   double simulated;
   int *argc;
   char ***argv;
-  smx_rdv_t mailbox;
-  smx_rdv_t mailbox_small;
+  smx_mailbox_t mailbox;
+  smx_mailbox_t mailbox_small;
   xbt_mutex_t mailboxes_mutex;
   xbt_os_timer_t timer;
   MPI_Comm comm_self;
@@ -254,13 +254,13 @@ MPI_Comm smpi_process_comm_world(void)
   return data ? *data->comm_world : MPI_COMM_NULL;
 }
 
-smx_rdv_t smpi_process_mailbox(void)
+smx_mailbox_t smpi_process_mailbox(void)
 {
   smpi_process_data_t data = smpi_process_data();
   return data->mailbox;
 }
 
-smx_rdv_t smpi_process_mailbox_small(void)
+smx_mailbox_t smpi_process_mailbox_small(void)
 {
   smpi_process_data_t data = smpi_process_data();
   return data->mailbox_small;
@@ -272,14 +272,14 @@ xbt_mutex_t smpi_process_mailboxes_mutex(void)
   return data->mailboxes_mutex;
 }
 
-smx_rdv_t smpi_process_remote_mailbox(int index)
+smx_mailbox_t smpi_process_remote_mailbox(int index)
 {
   smpi_process_data_t data = smpi_process_remote_data(index);
   return data->mailbox;
 }
 
 
-smx_rdv_t smpi_process_remote_mailbox_small(int index)
+smx_mailbox_t smpi_process_remote_mailbox_small(int index)
 {
   smpi_process_data_t data = smpi_process_remote_data(index);
   return data->mailbox_small;
