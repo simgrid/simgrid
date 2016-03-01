@@ -561,7 +561,7 @@ mc_snapshot_t take_snapshot(int num_state)
   snapshot_handle_ignore(snapshot);
 
   if (_sg_mc_snapshot_fds)
-    snapshot->current_fds = get_current_fds(process->pid);
+    snapshot->current_fds = get_current_fds(mc_model_checker->process().pid());
 
   const bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty;
 
