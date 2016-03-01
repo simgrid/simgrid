@@ -11,6 +11,7 @@
 
 #include <xbt/base.h>
 #include <xbt/dynar.h>
+#include <xbt/dynar.hpp>
 #include <xbt/log.h>
 
 #include <simgrid/simix.h>
@@ -42,16 +43,6 @@
 
 SG_BEGIN_DECL()
 
-struct s_mc_smx_process_info {
-  /** MCed address of the process */
-  void* address;
-  /** (Flat) Copy of the process data structure */
-  struct s_smx_process copy;
-  /** Hostname (owned by `mc_modelchecker->hostnames`) */
-  const char* hostname;
-  char* name;
-};
-
 typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
 
 XBT_PRIVATE xbt_dynar_t MC_smx_process_info_list_new(void);
@@ -71,22 +62,6 @@ XBT_PRIVATE smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req);
 
 XBT_PRIVATE const char* MC_smx_process_get_name(smx_process_t p);
 XBT_PRIVATE const char* MC_smx_process_get_host_name(smx_process_t p);
-
-#define MC_EACH_SIMIX_PROCESS(process, code) \
-  if (mc_mode == MC_MODE_CLIENT) { \
-    xbt_swag_foreach(process, simix_global->process_list) { \
-      code; \
-    } \
-  } else { \
-    MC_process_smx_refresh(&mc_model_checker->process()); \
-    unsigned int _smx_process_index; \
-    mc_smx_process_info_t _smx_process_info; \
-    xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, _smx_process_index, _smx_process_info) { \
-      smx_process_t process = &_smx_process_info->copy; \
-      code; \
-    } \
-  }
-
 
 XBT_PRIVATE int MC_smpi_process_count(void);
 

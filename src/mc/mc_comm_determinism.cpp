@@ -302,7 +302,6 @@ static int MC_modelcheck_comm_determinism_main(void);
 static void MC_pre_modelcheck_comm_determinism(void)
 {
   mc_state_t initial_state = nullptr;
-  smx_process_t process;
   int i;
   const int maxpid = MC_smx_get_maxpid();
 
@@ -333,11 +332,9 @@ static void MC_pre_modelcheck_comm_determinism(void)
   mc_model_checker->wait_for_requests();
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
-  MC_EACH_SIMIX_PROCESS(process,
-    if (MC_process_is_enabled(process)) {
-      MC_state_interleave_process(initial_state, process);
-    }
-  );
+  for (auto& p : mc_model_checker->process().simix_processes())
+    if (MC_process_is_enabled(&p.copy))
+      MC_state_interleave_process(initial_state, &p.copy);
 
   xbt_fifo_unshift(mc_stack, initial_state);
 }
@@ -349,7 +346,6 @@ static int MC_modelcheck_comm_determinism_main(void)
   int value;
   mc_visited_state_t visited_state = nullptr;
   smx_simcall_t req = nullptr;
-  smx_process_t process = nullptr;
   mc_state_t state = nullptr, next_state = NULL;
 
   while (xbt_fifo_size(mc_stack) > 0) {
@@ -403,11 +399,9 @@ static int MC_modelcheck_comm_determinism_main(void)
       if ((visited_state = is_visited_state(next_state)) == nullptr) {
 
         /* Get enabled processes and insert them in the interleave set of the next state */
-        MC_EACH_SIMIX_PROCESS(process,
-          if (MC_process_is_enabled(process)) {
-            MC_state_interleave_process(next_state, process);
-          }
-        );
+        for (auto& p : mc_model_checker->process().simix_processes())
+          if (MC_process_is_enabled(&p.copy))
+            MC_state_interleave_process(next_state, &p.copy);
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,  next_state->num, req_str);

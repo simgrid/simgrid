@@ -554,9 +554,8 @@ mc_snapshot_t take_snapshot(int num_state)
 
   snapshot->num_state = num_state;
 
-  smx_process_t process;
-  MC_EACH_SIMIX_PROCESS(process,
-    snapshot->enabled_processes.insert(process->pid));
+  for (auto& p : mc_model_checker->process().simix_processes())
+    snapshot->enabled_processes.insert(p.copy.pid);
 
   snapshot_handle_ignore(snapshot);
 

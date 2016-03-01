@@ -178,10 +178,7 @@ static int MC_modelcheck_liveness_main(void);
 static void MC_pre_modelcheck_liveness(void)
 {
   mc_pair_t initial_pair = nullptr;
-  smx_process_t process;
-
   mc_model_checker->wait_for_requests();
-
   acceptance_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), nullptr);
   if(_sg_mc_visited > 0)
     visited_pairs = xbt_dynar_new(sizeof(mc_visited_pair_t), nullptr);
@@ -202,11 +199,9 @@ static void MC_pre_modelcheck_liveness(void)
       initial_pair->depth = 1;
 
       /* Get enabled processes and insert them in the interleave set of the graph_state */
-      MC_EACH_SIMIX_PROCESS(process,
-        if (MC_process_is_enabled(process)) {
-          MC_state_interleave_process(initial_pair->graph_state, process);
-        }
-      );
+      for (auto& p : mc_model_checker->process().simix_processes())
+        if (MC_process_is_enabled(&p.copy))
+          MC_state_interleave_process(initial_pair->graph_state, &p.copy);
 
       initial_pair->requests = MC_state_interleave_size(initial_pair->graph_state);
       initial_pair->search_cycle = 0;
@@ -218,7 +213,6 @@ static void MC_pre_modelcheck_liveness(void)
 
 static int MC_modelcheck_liveness_main(void)
 {
-  smx_process_t process = nullptr;
   mc_pair_t current_pair = nullptr;
   int value, res, visited_num = -1;
   smx_simcall_t req = nullptr;
@@ -324,11 +318,9 @@ static int MC_modelcheck_liveness_main(void)
               next_pair->atomic_propositions = get_atomic_propositions_values();
               next_pair->depth = current_pair->depth + 1;
               /* Get enabled processes and insert them in the interleave set of the next graph_state */
-              MC_EACH_SIMIX_PROCESS(process,
-                if (MC_process_is_enabled(process)) {
-                  MC_state_interleave_process(next_pair->graph_state, process);
-                }
-              );
+              for (auto& p : mc_model_checker->process().simix_processes())
+                if (MC_process_is_enabled(&p.copy))
+                  MC_state_interleave_process(next_pair->graph_state, &p.copy);
 
               next_pair->requests = MC_state_interleave_size(next_pair->graph_state);
 

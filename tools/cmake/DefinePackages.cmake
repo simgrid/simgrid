@@ -673,6 +673,7 @@ set(headers_to_install
   include/xbt/string.hpp
   include/xbt/signal.hpp
   include/xbt/dynar.h
+  include/xbt/dynar.hpp
   include/xbt/ex.h
   include/xbt/fifo.h
   include/xbt/file.h

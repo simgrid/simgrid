@@ -33,7 +33,7 @@ public:
   std::string name;
 
   /** Range of instruction addresses for which this scope is valid */
-  simgrid::xbt::range<std::uint64_t> range;
+  simgrid::xbt::Range<std::uint64_t> range;
 
   simgrid::dwarf::LocationList frame_base_location;
 

@@ -701,5 +701,12 @@ void Process::ignore_local_variable(const char *var_name, const char *frame_name
     info->remove_local_variable(var_name, frame_name);
 }
 
+boost::iterator_range<s_mc_smx_process_info*> Process::simix_processes()
+{
+  xbt_assert(mc_mode != MC_MODE_CLIENT);
+  MC_process_smx_refresh(&mc_model_checker->process());
+  return simgrid::xbt::range<s_mc_smx_process_info>(smx_process_infos);
+}
+
 }
 }

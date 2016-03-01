@@ -64,14 +64,12 @@ static void MC_pre_modelcheck_safety()
   mc_model_checker->wait_for_requests();
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
-  smx_process_t process;
-  MC_EACH_SIMIX_PROCESS(process,
-    if (MC_process_is_enabled(process)) {
-      MC_state_interleave_process(initial_state, process);
+  for (auto& p : mc_model_checker->process().simix_processes())
+    if (MC_process_is_enabled(&p.copy)) {
+      MC_state_interleave_process(initial_state, &p.copy);
       if (mc_reduce_kind != e_mc_reduce_none)
         break;
     }
-  );
 
   xbt_fifo_unshift(mc_stack, initial_state);
 }
@@ -139,14 +137,12 @@ int MC_modelcheck_safety(void)
       if ((visited_state = is_visited_state(next_state)) == nullptr) {
 
         /* Get an enabled process and insert it in the interleave set of the next state */
-        smx_process_t process = nullptr;
-        MC_EACH_SIMIX_PROCESS(process,
-          if (MC_process_is_enabled(process)) {
-            MC_state_interleave_process(next_state, process);
+        for (auto& p : mc_model_checker->process().simix_processes())
+          if (MC_process_is_enabled(&p.copy)) {
+            MC_state_interleave_process(next_state, &p.copy);
             if (mc_reduce_kind != e_mc_reduce_none)
               break;
           }
-        );
 
         if (dot_output != nullptr)
           std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);

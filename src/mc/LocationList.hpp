@@ -29,7 +29,7 @@ namespace dwarf {
 /** \brief A DWARF expression with optional validity contraints */
 class LocationListEntry {
 public:
-  typedef simgrid::xbt::range<std::uint64_t> range_type;
+  typedef simgrid::xbt::Range<std::uint64_t> range_type;
 private:
   DwarfExpression expression_;
   range_type range_ = {0, UINT64_MAX};

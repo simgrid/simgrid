@@ -102,8 +102,6 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
   state->executed_req = *req;
   state->req_num = value;
 
-  smx_process_t process = nullptr;
-
   /* The waitany and testany request are transformed into a wait or test request over the
    * corresponding communication action so it can be treated later by the dependence
    * function. */
@@ -157,14 +155,14 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
     state->internal_req = *req;
     int random_max = simcall_mc_random__get__max(req);
     if (value != random_max) {
-      MC_EACH_SIMIX_PROCESS(process,
-        mc_procstate_t procstate = &state->proc_status[process->pid];
+      for (auto& p : mc_model_checker->process().simix_processes()) {
+        mc_procstate_t procstate = &state->proc_status[p.copy.pid];
         const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
-        if (process->pid == issuer->pid) {
+        if (p.copy.pid == issuer->pid) {
           procstate->state = MC_MORE_INTERLEAVE;
           break;
         }
-      );
+      }
     }
     break;
   }
@@ -283,13 +281,11 @@ static inline smx_simcall_t MC_state_get_request_for_process(
 
 smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
 {
-  smx_process_t process = nullptr;
-  MC_EACH_SIMIX_PROCESS(process,
-    smx_simcall_t res = MC_state_get_request_for_process(state, value, process);
+  for (auto& p : mc_model_checker->process().simix_processes()) {
+    smx_simcall_t res = MC_state_get_request_for_process(state, value, &p.copy);
     if (res)
       return res;
-  );
-
+  }
   return nullptr;
 }
 
