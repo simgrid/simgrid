@@ -37,7 +37,7 @@ enum class StorageType {
   Privatized = 3
 };
 
-class buffer {
+class Buffer {
 public:
   enum class Type {
     Malloc,
@@ -48,26 +48,26 @@ private:
   std::size_t size_;
   Type type_ = Type::Malloc;
 public:
-  buffer() {}
-  buffer(std::size_t size, Type type = Type::Malloc);
-  buffer(void* data, std::size_t size, Type type = Type::Malloc) :
+  Buffer() {}
+  Buffer(std::size_t size, Type type = Type::Malloc);
+  Buffer(void* data, std::size_t size, Type type = Type::Malloc) :
     data_(data), size_(size), type_(type) {}
   void clear() noexcept;
-  ~buffer() noexcept { clear(); }
+  ~Buffer() noexcept { clear(); }
 
   // No copy
-  buffer(buffer const& buffer) = delete;
-  buffer& operator=(buffer const& buffer) = delete;
+  Buffer(Buffer const& buffer) = delete;
+  Buffer& operator=(Buffer const& buffer) = delete;
 
   // Move
-  buffer(buffer&& that) noexcept
+  Buffer(Buffer&& that) noexcept
     : data_(that.data_), size_(that.size_), type_(that.type_)
   {
     that.data_ = nullptr;
     that.size_ = 0;
     that.type_ = Type::Malloc;
   }
-  buffer& operator=(buffer&& that) noexcept
+  Buffer& operator=(Buffer&& that) noexcept
   {
     clear();
     data_ = that.data_;
@@ -130,7 +130,7 @@ private:
    * */
   void *permanent_addr_;
 
-  buffer flat_data_;
+  Buffer flat_data_;
   ChunkedData page_numbers_;
   std::vector<RegionSnapshot> privatized_regions_;
 public:
@@ -204,15 +204,15 @@ public:
     privatized_regions_.clear();
   }
   
-  void flat_data(buffer data)
+  void flat_data(Buffer data)
   {
     storage_type_ = StorageType::Flat;
     flat_data_ = std::move(data);
     page_numbers_.clear();
     privatized_regions_.clear();
   }
-  const buffer& flat_data() const { return flat_data_; }
-  buffer& flat_data()             { return flat_data_; }
+  const Buffer& flat_data() const { return flat_data_; }
+  Buffer& flat_data()             { return flat_data_; }
 
   void page_data(ChunkedData page_data)
   {

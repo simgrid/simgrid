@@ -39,7 +39,7 @@ const char* to_cstr(RegionType region)
   }
 }
 
-buffer::buffer(std::size_t size, Type type) : size_(size), type_(type)
+Buffer::Buffer(std::size_t size, Type type) : size_(size), type_(type)
 {
   switch(type_) {
   case Type::Malloc:
@@ -59,7 +59,7 @@ buffer::buffer(std::size_t size, Type type) : size_(size), type_(type)
   }
 }
 
-void buffer::clear() noexcept
+void Buffer::clear() noexcept
 {
   switch(type_) {
   case Type::Malloc:
@@ -81,16 +81,16 @@ RegionSnapshot dense_region(
   RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  simgrid::mc::buffer::Type buffer_type;
+  simgrid::mc::Buffer::Type buffer_type;
   if (_sg_mc_ksm)
     // We use mmap to allocate the memory in order to madvise it.
     // We don't want to madvise the main heap.
     // Moreover we get aligned pgaes which is merge-friendly.
-    buffer_type = simgrid::mc::buffer::Type::Mmap;
+    buffer_type = simgrid::mc::Buffer::Type::Mmap;
   else
-    buffer_type = simgrid::mc::buffer::Type::Malloc;
+    buffer_type = simgrid::mc::Buffer::Type::Malloc;
 
-  simgrid::mc::buffer data(size, buffer_type);
+  simgrid::mc::Buffer data(size, buffer_type);
 
   mc_model_checker->process().read_bytes(data.get(), size,
     remote(permanent_addr),
