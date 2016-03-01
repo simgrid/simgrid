@@ -75,7 +75,7 @@ private:
   bool sealed_ = false; // We cannot add more content when sealed
 
   friend RoutingPlatf;
-  std::map<std::string, std::vector<Link*>*> bypassRoutes_;
+  std::map<std::pair<std::string, std::string>, std::vector<Link*>*> bypassRoutes_; // srcName x dstName -> route
   static void getRouteRecursive(NetCard *src, NetCard *dst, /* OUT */ std::vector<Link*> * links, double *latency);
   std::vector<Link*> *getBypassRoute(NetCard *src, NetCard *dst);
 

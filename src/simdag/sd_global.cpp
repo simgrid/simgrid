@@ -50,8 +50,7 @@ void SD_init(int *argc, char **argv)
 
   surf_init(argc, argv);
 
-  xbt_cfg_setdefault_string(_sg_cfg_set, "host/model",
-                            "ptask_L07");
+  xbt_cfg_setdefault_string(_sg_cfg_set, "host/model", "ptask_L07");
 
 #ifdef HAVE_JEDULE
   jedule_sd_init();
