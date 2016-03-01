@@ -11,8 +11,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <stdio.h>
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
 #include "xbt/xbt_os_time.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(goal, "The GOAL loader into SimDag");

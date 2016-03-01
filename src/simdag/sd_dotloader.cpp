@@ -6,6 +6,7 @@
 
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
+#include "xbt/file.h"
 #include <string.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
