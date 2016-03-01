@@ -982,7 +982,6 @@ set(CMAKEFILES_TXT
   examples/msg/energy/pstate/CMakeLists.txt
   examples/msg/energy/vm/CMakeLists.txt
   examples/msg/exception/CMakeLists.txt
-  examples/msg/gpu/CMakeLists.txt
   examples/msg/gtnets/CMakeLists.txt 
   examples/msg/icomms/CMakeLists.txt
   examples/msg/io/CMakeLists.txt
