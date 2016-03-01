@@ -253,6 +253,8 @@ void SIMIX_global_init(int *argc, char **argv)
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       SIMIX_host_create(&host);
     });
+    SIMIX_HOST_LEVEL = simgrid::s4u::Host::extension_create(SIMIX_host_destroy);
+
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
       const char* id = storage->getName();
         // TODO, create sg_storage_by_name

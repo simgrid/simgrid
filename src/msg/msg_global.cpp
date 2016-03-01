@@ -63,6 +63,10 @@ void MSG_init_nocheck(int *argc, char **argv) {
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       MSG_host_create_(&host);
     });
+    MSG_HOST_LEVEL = simgrid::s4u::Host::extension_create([](void *p) {
+      __MSG_host_priv_free((msg_host_priv_t) p);
+    });
+
   }
 
   if(MC_is_active()){

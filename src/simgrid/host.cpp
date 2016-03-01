@@ -75,20 +75,8 @@ xbt_dynar_t sg_hosts_as_dynar(void)
 
 // ========= Layering madness ==============*
 
-#include "src/msg/msg_private.h" // MSG_host_priv_free. FIXME: killme by initializing that level in msg when used
-#include "src/simix/smx_host_private.h" // SIMIX_host_destroy. FIXME: killme by initializing that level in simix when used
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_routing.hpp"
-
-void sg_host_init()
-{
-  MSG_HOST_LEVEL = simgrid::s4u::Host::extension_create([](void *p) {
-    __MSG_host_priv_free((msg_host_priv_t) p);
-  });
-
-  SIMIX_HOST_LEVEL = simgrid::s4u::Host::extension_create(SIMIX_host_destroy);
-  USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
-}
 
 // ========== User data Layer ==========
 void *sg_host_user(sg_host_t host) {

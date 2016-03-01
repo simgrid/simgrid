@@ -303,13 +303,14 @@ void surf_init(int *argc, char **argv)
     simgrid::s4u::Host::onDestruction(*host);
     delete host;
   });
+  USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
+
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
   file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(NULL);
 
-  sg_host_init();
 
   XBT_DEBUG("Add routing levels");
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib, NULL);
