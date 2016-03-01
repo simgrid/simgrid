@@ -83,7 +83,7 @@ public:
   }
 
   ChunkedData(PageStore& store, AddressSpace& as,
-    remote_ptr<void> addr, std::size_t page_count,
+    RemotePtr<void> addr, std::size_t page_count,
     const std::size_t* ref_page_numbers, const std::uint64_t* pagemap);
 };
 

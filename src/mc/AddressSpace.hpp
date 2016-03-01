@@ -12,7 +12,7 @@
 #include <type_traits>
 
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/remote_ptr.hpp"
+#include "src/mc/RemotePtr.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -116,19 +116,19 @@ public:
    *  @param options
    */
   virtual const void* read_bytes(void* buffer, std::size_t size,
-    remote_ptr<void> address, int process_index = ProcessIndexAny,
+    RemotePtr<void> address, int process_index = ProcessIndexAny,
     ReadOptions options = ReadOptions::none()) const = 0;
 
   /** Read a given data structure from the address space */
   template<class T> inline
-  void read(T *buffer, remote_ptr<T> ptr, int process_index = ProcessIndexAny)
+  void read(T *buffer, RemotePtr<T> ptr, int process_index = ProcessIndexAny)
   {
     this->read_bytes(buffer, sizeof(T), ptr, process_index);
   }
 
   /** Read a given data structure from the address space */
   template<class T> inline
-  T read(remote_ptr<T> ptr, int process_index = ProcessIndexMissing)
+  T read(RemotePtr<T> ptr, int process_index = ProcessIndexMissing)
   {
     static_assert(std::is_trivial<T>::value, "Cannot read a non-trivial type");
     T res;

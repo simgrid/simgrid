@@ -550,7 +550,7 @@ set(MC_SRC_BASE
   )
 
 set(MC_SRC
-  src/mc/remote_ptr.hpp
+  src/mc/RemotePtr.hpp
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
   src/mc/Frame.hpp

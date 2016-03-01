@@ -28,7 +28,7 @@ namespace mc {
  *  @return                Snapshot page numbers of this new snapshot
  */
 ChunkedData::ChunkedData(PageStore& store, AddressSpace& as,
-    remote_ptr<void> addr, std::size_t page_count,
+    RemotePtr<void> addr, std::size_t page_count,
     const std::size_t* ref_page_numbers, const std::uint64_t* pagemap)
 {
   store_ = &store;
@@ -44,7 +44,7 @@ ChunkedData::ChunkedData(PageStore& store, AddressSpace& as,
       continue;
     }
 
-      remote_ptr<void> page = remote(addr.address() + (i << xbt_pagebits));
+      RemotePtr<void> page = remote(addr.address() + (i << xbt_pagebits));
       xbt_assert(mc_page_offset((void*)page.address())==0,
         "Not at the beginning of a page");
 

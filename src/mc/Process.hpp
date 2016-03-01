@@ -76,7 +76,7 @@ public:
 
   // Read memory:
   const void* read_bytes(void* buffer, std::size_t size,
-    remote_ptr<void> address, int process_index = ProcessIndexAny,
+    RemotePtr<void> address, int process_index = ProcessIndexAny,
     ReadOptions options = ReadOptions::none()) const override;
   void read_variable(const char* name, void* target, size_t size) const;
   template<class T>
@@ -87,17 +87,17 @@ public:
     read_variable(name, &res, sizeof(T));
     return res;
   }
-  char* read_string(remote_ptr<void> address) const;
+  char* read_string(RemotePtr<void> address) const;
 
   // Write memory:
-  void write_bytes(const void* buffer, size_t len, remote_ptr<void> address);
-  void clear_bytes(remote_ptr<void> address, size_t len);
+  void write_bytes(const void* buffer, size_t len, RemotePtr<void> address);
+  void clear_bytes(RemotePtr<void> address, size_t len);
 
   // Debug information:
-  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info(remote_ptr<void> addr) const;
-  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_exec(remote_ptr<void> addr) const;
-  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_rw(remote_ptr<void> addr) const;
-  simgrid::mc::Frame* find_function(remote_ptr<void> ip) const;
+  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info(RemotePtr<void> addr) const;
+  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_exec(RemotePtr<void> addr) const;
+  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_rw(RemotePtr<void> addr) const;
+  simgrid::mc::Frame* find_function(RemotePtr<void> ip) const;
   simgrid::mc::Variable* find_variable(const char* name) const;
 
   // Heap access:
@@ -122,7 +122,7 @@ public:
 
   pid_t pid() const { return pid_; }
 
-  bool in_maestro_stack(remote_ptr<void> p) const
+  bool in_maestro_stack(RemotePtr<void> p) const
   {
     return p >= this->maestro_stack_start_ && p < this->maestro_stack_end_;
   }
@@ -205,7 +205,7 @@ private:
   int socket_ = -1;
   bool running_ = false;
   std::vector<simgrid::xbt::VmMap> memory_map_;
-  remote_ptr<void> maestro_stack_start_, maestro_stack_end_;
+  RemotePtr<void> maestro_stack_start_, maestro_stack_end_;
   int memory_file = -1;
   std::vector<IgnoredRegion> ignored_regions_;
   int clear_refs_fd_ = -1;

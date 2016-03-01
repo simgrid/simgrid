@@ -23,15 +23,15 @@ namespace mc {
  *  model-checker.
  *
  *  We do not actually store the target address space because we can
- *  always detect it in context. This way `remote_ptr` is as efficient
+ *  always detect it in context. This way `RemotePtr` is as efficient
  *  as a `uint64_t`.
  */
-template<class T> class remote_ptr {
+template<class T> class RemotePtr {
   std::uint64_t address_;
 public:
-  remote_ptr() : address_(0) {}
-  remote_ptr(std::uint64_t address) : address_(address) {}
-  remote_ptr(T* address) : address_((std::uintptr_t)address) {}
+  RemotePtr() : address_(0) {}
+  RemotePtr(std::uint64_t address) : address_(address) {}
+  RemotePtr(T* address) : address_((std::uintptr_t)address) {}
   std::uint64_t address() const { return address_; }
 
   operator bool() const
@@ -42,24 +42,24 @@ public:
   {
     return !address_;
   }
-  operator remote_ptr<void>() const
+  operator RemotePtr<void>() const
   {
-    return remote_ptr<void>(address_);
+    return RemotePtr<void>(address_);
   }
-  remote_ptr<T> operator+(std::uint64_t n) const
+  RemotePtr<T> operator+(std::uint64_t n) const
   {
-    return remote_ptr<T>(address_ + n * sizeof(T));
+    return RemotePtr<T>(address_ + n * sizeof(T));
   }
-  remote_ptr<T> operator-(std::uint64_t n) const
+  RemotePtr<T> operator-(std::uint64_t n) const
   {
-    return remote_ptr<T>(address_ - n * sizeof(T));
+    return RemotePtr<T>(address_ - n * sizeof(T));
   }
-  remote_ptr<T>& operator+=(std::uint64_t n)
+  RemotePtr<T>& operator+=(std::uint64_t n)
   {
     address_ += n * sizeof(T);
     return *this;
   }
-  remote_ptr<T>& operator-=(std::uint64_t n)
+  RemotePtr<T>& operator-=(std::uint64_t n)
   {
     address_ -= n * sizeof(T);
     return *this;
@@ -67,51 +67,51 @@ public:
 };
 
 template<class X, class Y>
-bool operator<(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+bool operator<(RemotePtr<X> const& x, RemotePtr<Y> const& y)
 {
   return x.address() < y.address();
 }
 
 template<class X, class Y>
-bool operator>(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+bool operator>(RemotePtr<X> const& x, RemotePtr<Y> const& y)
 {
   return x.address() > y.address();
 }
 
 template<class X, class Y>
-bool operator>=(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+bool operator>=(RemotePtr<X> const& x, RemotePtr<Y> const& y)
 {
   return x.address() >= y.address();
 }
 
 template<class X, class Y>
-bool operator<=(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+bool operator<=(RemotePtr<X> const& x, RemotePtr<Y> const& y)
 {
   return x.address() <= y.address();
 }
 
 template<class X, class Y>
-bool operator==(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+bool operator==(RemotePtr<X> const& x, RemotePtr<Y> const& y)
 {
   return x.address() == y.address();
 }
 
 template<class X, class Y>
-bool operator!=(remote_ptr<X> const& x, remote_ptr<Y> const& y)
+bool operator!=(RemotePtr<X> const& x, RemotePtr<Y> const& y)
 {
   return x.address() != y.address();
 }
 
 template<class T> inline
-remote_ptr<T> remote(T *p)
+RemotePtr<T> remote(T *p)
 {
-  return remote_ptr<T>(p);
+  return RemotePtr<T>(p);
 }
 
 template<class T=void> inline
-remote_ptr<T> remote(uint64_t p)
+RemotePtr<T> remote(uint64_t p)
 {
-  return remote_ptr<T>(p);
+  return RemotePtr<T>(p);
 }
 
 }

@@ -15,7 +15,7 @@
 
 #include <xbt/base.h>
 
-#include "src/mc/remote_ptr.hpp"
+#include "src/mc/RemotePtr.hpp"
 #include "src/mc/PageStore.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ChunkedData.hpp"
@@ -252,14 +252,14 @@ public:
 
   // Other getters
 
-  remote_ptr<void> start() const { return remote(start_addr_); }
-  remote_ptr<void> end() const { return remote((char*)start_addr_ + size_); }
-  remote_ptr<void> permanent_address() const { return remote(permanent_addr_); }
+  RemotePtr<void> start() const { return remote(start_addr_); }
+  RemotePtr<void> end() const { return remote((char*)start_addr_ + size_); }
+  RemotePtr<void> permanent_address() const { return remote(permanent_addr_); }
   std::size_t size() const { return size_; }
   StorageType storage_type() const { return storage_type_; }
   RegionType region_type() const { return region_type_; }
 
-  bool contain(remote_ptr<void> p) const
+  bool contain(RemotePtr<void> p) const
   {
     return p >= start() && p < end();
   }

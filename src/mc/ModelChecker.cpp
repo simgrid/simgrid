@@ -263,7 +263,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
         _mc_property_automaton = xbt_automaton_new();
 
       simgrid::mc::Process* process = &this->process();
-      simgrid::mc::remote_ptr<int> address
+      simgrid::mc::RemotePtr<int> address
         = simgrid::mc::remote((int*) message.data);
       simgrid::xbt::add_proposition(_mc_property_automaton,
         message.name,

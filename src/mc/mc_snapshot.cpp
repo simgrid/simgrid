@@ -176,7 +176,7 @@ Snapshot::~Snapshot()
 }
 
 const void* Snapshot::read_bytes(void* buffer, std::size_t size,
-  remote_ptr<void> address, int process_index,
+  RemotePtr<void> address, int process_index,
   ReadOptions options) const
 {
   mc_mem_region_t region = mc_get_snapshot_region((void*)address.address(), this, process_index);

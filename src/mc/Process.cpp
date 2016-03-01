@@ -390,7 +390,7 @@ void Process::init_memory_map_info()
   XBT_DEBUG("Get debug information done !");
 }
 
-std::shared_ptr<simgrid::mc::ObjectInformation> Process::find_object_info(remote_ptr<void> addr) const
+std::shared_ptr<simgrid::mc::ObjectInformation> Process::find_object_info(RemotePtr<void> addr) const
 {
   for (auto const& object_info : this->object_infos) {
     if (addr.address() >= (std::uint64_t)object_info->start
@@ -401,7 +401,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> Process::find_object_info(remote
   return nullptr;
 }
 
-std::shared_ptr<ObjectInformation> Process::find_object_info_exec(remote_ptr<void> addr) const
+std::shared_ptr<ObjectInformation> Process::find_object_info_exec(RemotePtr<void> addr) const
 {
   for (std::shared_ptr<ObjectInformation> const& info : this->object_infos) {
     if (addr.address() >= (std::uint64_t) info->start_exec
@@ -412,7 +412,7 @@ std::shared_ptr<ObjectInformation> Process::find_object_info_exec(remote_ptr<voi
   return nullptr;
 }
 
-std::shared_ptr<ObjectInformation> Process::find_object_info_rw(remote_ptr<void> addr) const
+std::shared_ptr<ObjectInformation> Process::find_object_info_rw(RemotePtr<void> addr) const
 {
   for (std::shared_ptr<ObjectInformation> const& info : this->object_infos) {
     if (addr.address() >= (std::uint64_t)info->start_rw
@@ -423,7 +423,7 @@ std::shared_ptr<ObjectInformation> Process::find_object_info_rw(remote_ptr<void>
   return nullptr;
 }
 
-simgrid::mc::Frame* Process::find_function(remote_ptr<void> ip) const
+simgrid::mc::Frame* Process::find_function(RemotePtr<void> ip) const
 {
   std::shared_ptr<simgrid::mc::ObjectInformation> info = this->find_object_info_exec(ip);
   return info ? info->find_function((void*) ip.address()) : nullptr;
@@ -466,7 +466,7 @@ void Process::read_variable(const char* name, void* target, size_t size) const
   this->read_bytes(target, size, remote(var->address));
 }
 
-char* Process::read_string(remote_ptr<void> address) const
+char* Process::read_string(RemotePtr<void> address) const
 {
   if (!address)
     return nullptr;
@@ -499,7 +499,7 @@ char* Process::read_string(remote_ptr<void> address) const
 }
 
 const void *Process::read_bytes(void* buffer, std::size_t size,
-  remote_ptr<void> address, int process_index,
+  RemotePtr<void> address, int process_index,
   ReadOptions options) const
 {
   if (process_index != simgrid::mc::ProcessIndexDisabled) {
@@ -541,13 +541,13 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
  *  @param remote  target process memory address (target)
  *  @param len     data size
  */
-void Process::write_bytes(const void* buffer, size_t len, remote_ptr<void> address)
+void Process::write_bytes(const void* buffer, size_t len, RemotePtr<void> address)
 {
   if (pwrite_whole(this->memory_file, buffer, len, address.address()) < 0)
     xbt_die("Write to process %lli failed", (long long) this->pid_);
 }
 
-void Process::clear_bytes(remote_ptr<void> address, size_t len)
+void Process::clear_bytes(RemotePtr<void> address, size_t len)
 {
   pthread_once(&zero_buffer_flag, MC_zero_buffer_init);
   while (len) {
