@@ -6,10 +6,7 @@
 
 #include "xbt/config.h"
 
-/*******************************************/
-/*** Config Globals **************************/
-/*******************************************/
-
+/** Config Globals */
 SG_BEGIN_DECL()
 
 XBT_PUBLIC_DATA(xbt_cfg_t) _sg_cfg_set;
