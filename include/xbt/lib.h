@@ -21,9 +21,8 @@ SG_BEGIN_DECL()
  *
  *  * the element itself is represented aby the xbt_dictelm_t;
  *
- *  * the element can store any number of associated facets/data structures
- *    (corresponding to the different layers of SimGrid or its extensions)
- *    in ((void**)dictelt->content)[level];
+ *  * the element can store any number of associated facets/data structures (corresponding to the different layers of
+ *    SimGrid or its extensions) in ((void**)dictelt->content)[level];
  *
  *  * each level is allocated in the lib with `xbt_lib_add_level`.
  *
@@ -60,11 +59,9 @@ typedef struct s_xbt_lib {
 XBT_PUBLIC(xbt_lib_t) xbt_lib_new(void);
 XBT_PUBLIC(void) xbt_lib_free(xbt_lib_t * lib);
 XBT_PUBLIC(int) xbt_lib_add_level(xbt_lib_t lib, void_f_pvoid_t free_f);
-XBT_PUBLIC(void) xbt_lib_set(xbt_lib_t lib, const char *name, int level,
-                             void *obj);
+XBT_PUBLIC(void) xbt_lib_set(xbt_lib_t lib, const char *name, int level, void *obj);
 XBT_PUBLIC(void) xbt_lib_unset(xbt_lib_t lib, const char *key, int level, int invoke_callback);
-XBT_PUBLIC(void *) xbt_lib_get_or_null(xbt_lib_t lib, const char *name,
-                                       int level);
+XBT_PUBLIC(void *) xbt_lib_get_or_null(xbt_lib_t lib, const char *name, int level);
 XBT_PUBLIC(xbt_dictelm_t) xbt_lib_get_elm_or_null(xbt_lib_t lib, const char *key);
 XBT_PUBLIC(void *) xbt_lib_get_level(xbt_dictelm_t elm, int level);
 XBT_PUBLIC(void) xbt_lib_remove(xbt_lib_t lib, const char *key);

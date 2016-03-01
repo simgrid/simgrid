@@ -19,13 +19,11 @@ SG_BEGIN_DECL()
   * \ingroup XBT_misc  
   * \brief Parallel map.
   *
-  * A function is applied to all elements of a dynar in parallel with n worker
-  * threads.
+  * A function is applied to all elements of a dynar in parallel with n worker threads.
   * The worker threads are persistent until the destruction of the parmap.
   *
-  * If there are more than n elements in the dynar, the worker threads are
-  * allowed to fetch themselves remaining work with xbt_parmap_next() and
-  * execute it.
+  * If there are more than n elements in the dynar, the worker threads are allowed to fetch themselves remaining work
+  * with xbt_parmap_next() and execute it.
   *
   * \{
   */
@@ -33,9 +31,7 @@ SG_BEGIN_DECL()
 /** \brief Parallel map data type (opaque type) */
 typedef struct s_xbt_parmap *xbt_parmap_t;
 
-/**
- * \brief Synchronization mode of the worker threads of a parmap.
- */
+/** \brief Synchronization mode of the worker threads of a parmap. */
 typedef enum {
   XBT_PARMAP_POSIX,          /**< use POSIX synchronization primitives */
   XBT_PARMAP_FUTEX,          /**< use Linux futex system call */
@@ -43,27 +39,18 @@ typedef enum {
   XBT_PARMAP_DEFAULT         /**< futex if available, posix otherwise */
 } e_xbt_parmap_mode_t;
 
-XBT_PUBLIC(xbt_parmap_t) xbt_parmap_new(unsigned int num_workers,
-    e_xbt_parmap_mode_t mode);
+XBT_PUBLIC(xbt_parmap_t) xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode);
 XBT_PUBLIC(void) xbt_parmap_destroy(xbt_parmap_t parmap);
-
-XBT_PUBLIC(void) xbt_parmap_apply(xbt_parmap_t parmap,
-                                  void_f_pvoid_t fun,
-                                  xbt_dynar_t data);
+XBT_PUBLIC(void) xbt_parmap_apply(xbt_parmap_t parmap, void_f_pvoid_t fun, xbt_dynar_t data);
 XBT_PUBLIC(void*) xbt_parmap_next(xbt_parmap_t parmap);
 
 #ifdef HAVE_MC
-XBT_PUBLIC(xbt_parmap_t) xbt_parmap_mc_new(unsigned int num_workers,
-    e_xbt_parmap_mode_t mode);
+XBT_PUBLIC(xbt_parmap_t) xbt_parmap_mc_new(unsigned int num_workers, e_xbt_parmap_mode_t mode);
 
-XBT_PUBLIC(int) xbt_parmap_mc_apply(xbt_parmap_t parmap, 
-                         int_f_pvoid_pvoid_t fun, 
-                         void *data,
-                         unsigned int length,
+XBT_PUBLIC(int) xbt_parmap_mc_apply(xbt_parmap_t parmap, int_f_pvoid_pvoid_t fun, void *data, unsigned int length,
                          void* ref_snapshot);
 #endif
 /** \} */
 
 SG_END_DECL()
-
 #endif

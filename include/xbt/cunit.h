@@ -28,14 +28,10 @@ typedef struct s_xbt_test_unit *xbt_test_unit_t;
 typedef void (*ts_test_cb_t) (void);
 
 /* test suite operations */
-XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_new(const char *name,
-                                                const char *fmt, ...);
-XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_by_name(const char *name,
-                                                    const char *fmt, ...);
+XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_new(const char *name, const char *fmt, ...);
+XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_by_name(const char *name, const char *fmt, ...);
 XBT_PUBLIC(void) xbt_test_suite_dump(xbt_test_suite_t suite);
-XBT_PUBLIC(void) xbt_test_suite_push(xbt_test_suite_t suite,
-                                     const char *name, ts_test_cb_t func,
-                                     const char *fmt, ...);
+XBT_PUBLIC(void) xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t func, const char *fmt, ...);
 
 /* Run all the specified tests. what_to_do allows to disable some tests.
  * It is a coma (,) separated list of directives. They are applied from left to right.
@@ -59,34 +55,28 @@ XBT_PUBLIC(void) xbt_test_dump(char *selection);
 /* Cleanup the mess */
 XBT_PUBLIC(void) xbt_test_exit(void);
 
-
 /** 
  * @addtogroup XBT_cunit
  * @brief Unit testing implementation (see @ref inside_tests_add_units)
  *  
- * This module is mainly intended to allow the tests of SimGrid
- * itself and may lack the level of genericity that you would expect
- * as a user. Only use it in external projects at your own risk (but
- * it work rather well for us). We play with the idea of migrating
- * to an external solution for our unit tests, possibly offering
- * more features, but having absolutely no dependencies is a nice
- * feature of SimGrid (and this code is sufficient to cover our
- * needs, actually, so why should we bother switching?)
+ * This module is mainly intended to allow the tests of SimGrid itself and may lack the level of genericity that you
+ * would expect as a user. Only use it in external projects at your own risk (but it works rather well for us). We play
+ * with the idea of migrating to an external solution for our unit tests, possibly offering more features, but having
+ * absolutely no dependencies is a nice feature of SimGrid (and this code is sufficient to cover our needs, actually,
+ * so why should we bother switching?)
  * 
  * Unit testing is not intended to write integration tests.
  * Please refer to \ref inside_tests_add_integration for that instead.
- * 
- * 
  *
  * @{ 
  */
 /** @brief Provide informations about the suite declared in this file
  *  @hideinitializer
  * 
- * Actually, this macro is only used by the script extracting the test 
- * units, but that should be transparent for you. 
+ * Actually, this macro is only used by the script extracting the test units, but that should be transparent for you.
  *
- * @param suite_name the short name of this suite, to be used in the --tests argument of testall afterward. Avoid spaces and any other strange chars
+ * @param suite_name the short name of this suite, to be used in the --tests argument of testall afterward. Avoid
+ *        spaces and any other strange chars
  * @param suite_title instructive title that testall should display when your suite is run
  */
 #define XBT_TEST_SUITE(suite_name,suite_title)
@@ -109,13 +99,9 @@ XBT_PUBLIC(void) xbt_test_exit(void);
 #endif
 
 /* test operations */
-XBT_PUBLIC(void) _xbt_test_add(const char *file, int line, const char *fmt,
-                               ...) XBT_ATTRIB_PRINTF(3, 4);
-XBT_PUBLIC(void) _xbt_test_fail(const char *file, int line,
-                                const char *fmt, ...) XBT_ATTRIB_PRINTF(3,
-                                                                       4);
-XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt,
-                               ...) XBT_ATTRIB_PRINTF(3, 4);
+XBT_PUBLIC(void) _xbt_test_add(const char *file, int line, const char *fmt, ...) XBT_ATTRIB_PRINTF(3, 4);
+XBT_PUBLIC(void) _xbt_test_fail(const char *file, int line, const char *fmt, ...) XBT_ATTRIB_PRINTF(3, 4);
+XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt, ...) XBT_ATTRIB_PRINTF(3, 4);
 /** @brief Declare that a new test begins (printf-like parameters, describing the test) 
  *  @hideinitializer */
 #define xbt_test_add(...)       _xbt_test_add(__FILE__, __LINE__, __VA_ARGS__)
@@ -126,7 +112,8 @@ XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt,
  *  @hideinitializer 
  * 
  * - If provided a uniq parameter, this is assumed to be a condition that is expected to be true
- * - If provided more parameters, the first one is a condition, and the other ones are printf-like arguments that are to be displayed when the condition fails.
+ * - If provided more parameters, the first one is a condition, and the other ones are printf-like arguments that are
+ *   to be displayed when the condition fails.
  */
 #define xbt_test_assert(...)    _XBT_IF_ONE_ARG(_xbt_test_assert_ARG1,  \
                                                 _xbt_test_assert_ARGN,  \

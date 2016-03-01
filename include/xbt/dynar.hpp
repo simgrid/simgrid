@@ -8,7 +8,6 @@
 #define SIMGRId_XBT_DYNAR_HPP
 
 #include <boost/range/iterator_range.hpp>
-
 #include <xbt/asserts.h>
 #include <xbt/dynar.h>
 
@@ -35,5 +34,4 @@ DynarRange<T> range(xbt_dynar_t dynar)
 
 }
 }
-
 #endif

@@ -17,14 +17,11 @@
 
 SG_BEGIN_DECL()
 
-/**
- ** Buffer code
- **/
+/** Buffer code **/
 typedef struct {
   char *data;
   int used, size;
 } s_xbt_strbuff_t, *xbt_strbuff_t;
-
 
 XBT_PUBLIC(void) xbt_strbuff_empty(xbt_strbuff_t b);
 XBT_PUBLIC(xbt_strbuff_t) xbt_strbuff_new(void);
@@ -34,8 +31,7 @@ XBT_PUBLIC(void) xbt_strbuff_free_container(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_append(xbt_strbuff_t b, const char *toadd);
 XBT_PUBLIC(void) xbt_strbuff_chomp(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_trim(xbt_strbuff_t b);
-XBT_PUBLIC(void) xbt_strbuff_varsubst(xbt_strbuff_t b,
-                                      xbt_dict_t patterns);
+XBT_PUBLIC(void) xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns);
 
 SG_END_DECL()
 #endif

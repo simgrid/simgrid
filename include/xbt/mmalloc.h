@@ -26,9 +26,8 @@
 
 SG_BEGIN_DECL()
 
-/* Datatype representing a separate heap. The whole point of the mmalloc module
- * is to allow several such heaps in the process. It thus works by redefining
- * all the classical memory management functions (malloc and friends) with an
+/* Datatype representing a separate heap. The whole point of the mmalloc module is to allow several such heaps in the
+ * process. It thus works by redefining all the classical memory management functions (malloc and friends) with an
  * extra first argument: the heap in which the memory is to be taken.
  *
  * The heap structure itself is an opaque object that shouldnt be messed with.
@@ -42,9 +41,7 @@ XBT_PUBLIC( void ) *mmalloc(xbt_mheap_t md, size_t size);
 /* Allocate SIZE bytes of memory (and don't mess with it) */
 void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size);
 
-/* Re-allocate the previously allocated block in void*, making the new block
-   SIZE bytes long.  */
-
+/* Re-allocate the previously allocated block in void*, making the new block SIZE bytes long.  */
 XBT_PUBLIC( void ) *mrealloc(xbt_mheap_t md, void *ptr, size_t size);
 
 /* Free a block allocated by `mmalloc', `mrealloc' or `mcalloc'.  */
@@ -70,7 +67,8 @@ xbt_mheap_t mmalloc_get_current_heap(void);
 int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2);
 int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t to_ignore1, xbt_dynar_t to_ignore2);
-int compare_heap_area(int process_index, const void *area1, const void* area2, mc_snapshot_t snapshot1, mc_snapshot_t snapshot2, xbt_dynar_t previous, mc_type_t type, int pointer_level);
+int compare_heap_area(int process_index, const void *area1, const void* area2, mc_snapshot_t snapshot1,
+                      mc_snapshot_t snapshot2, xbt_dynar_t previous, mc_type_t type, int pointer_level);
 void reset_heap_information(void);
 
 size_t mmalloc_get_bytes_used(xbt_mheap_t);

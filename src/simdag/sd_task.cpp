@@ -12,8 +12,39 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd, "Logging specific to SimDag (task)");
 
-static void __SD_task_remove_dependencies(SD_task_t task);
-static void __SD_task_destroy_scheduling_data(SD_task_t task);
+/* Destroys a dependency between two tasks. */
+static void __SD_task_dependency_destroy(void *dependency)
+{
+  xbt_free(((SD_dependency_t)dependency)->name);
+  xbt_free(dependency);
+}
+
+/* Remove all dependencies associated with a task. This function is called when the task is destroyed. */
+static void __SD_task_remove_dependencies(SD_task_t task)
+{
+  /* we must destroy the dependencies carefuly (with SD_dependency_remove) because each one is stored twice */
+  SD_dependency_t dependency;
+  while (!xbt_dynar_is_empty(task->tasks_before)) {
+    xbt_dynar_get_cpy(task->tasks_before, 0, &dependency);
+    SD_task_dependency_remove(dependency->src, dependency->dst);
+  }
+
+  while (!xbt_dynar_is_empty(task->tasks_after)) {
+    xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
+    SD_task_dependency_remove(dependency->src, dependency->dst);
+  }
+}
+
+/* Destroys the data memorized by SD_task_schedule. Task state must be SD_SCHEDULED or SD_RUNNABLE. */
+static void __SD_task_destroy_scheduling_data(SD_task_t task)
+{
+  if (task->state != SD_SCHEDULED && task->state != SD_RUNNABLE)
+    THROWF(arg_error, 0, "Task '%s' must be SD_SCHEDULED or SD_RUNNABLE", SD_task_get_name(task));
+
+  xbt_free(task->flops_amount);
+  xbt_free(task->bytes_amount);
+  task->flops_amount = task->bytes_amount = NULL;
+}
 
 void* SD_task_new_f(void)
 {
@@ -559,14 +590,6 @@ void SD_task_dotty(SD_task_t task, void *out)
   }
 }
 
-/* Destroys a dependency between two tasks.
- */
-static void __SD_task_dependency_destroy(void *dependency)
-{
-  xbt_free(((SD_dependency_t)dependency)->name);
-  xbt_free(dependency);
-}
-
 /**
  * \brief Adds a dependency between two tasks
  *
@@ -930,18 +953,6 @@ void SD_task_unschedule(SD_task_t task)
   task->start_time = -1.0;
 }
 
-/* Destroys the data memorized by SD_task_schedule. Task state must be SD_SCHEDULED or SD_RUNNABLE.
- */
-static void __SD_task_destroy_scheduling_data(SD_task_t task)
-{
-  if (task->state != SD_SCHEDULED && task->state != SD_RUNNABLE)
-    THROWF(arg_error, 0, "Task '%s' must be SD_SCHEDULED or SD_RUNNABLE", SD_task_get_name(task));
-
-  xbt_free(task->flops_amount);
-  xbt_free(task->bytes_amount);
-  task->flops_amount = task->bytes_amount = NULL;
-}
-
 /* Runs a task. */
 void SD_task_run(SD_task_t task)
 {
@@ -977,24 +988,6 @@ void SD_task_run(SD_task_t task)
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   SD_task_set_state(task, SD_RUNNING);
-}
-
-/* 
- * Remove all dependencies associated with a task. This function is called when the task is destroyed.
- */
-static void __SD_task_remove_dependencies(SD_task_t task)
-{
-  /* we must destroy the dependencies carefuly (with SD_dependency_remove) because each one is stored twice */
-  SD_dependency_t dependency;
-  while (!xbt_dynar_is_empty(task->tasks_before)) {
-    xbt_dynar_get_cpy(task->tasks_before, 0, &dependency);
-    SD_task_dependency_remove(dependency->src, dependency->dst);
-  }
-
-  while (!xbt_dynar_is_empty(task->tasks_after)) {
-    xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
-    SD_task_dependency_remove(dependency->src, dependency->dst);
-  }
 }
 
 /**

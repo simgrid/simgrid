@@ -25,9 +25,8 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_str
  *  @brief String manipulation functions
  *
- * This module defines several string related functions. Looking at the diversity of string
- * manipulation functions that are provided, you can see that several SimGrid core developers
- * actually like Perl.
+ * This module defines several string related functions. Looking at the diversity of string manipulation functions that
+ * are provided, you can see that several SimGrid core developers actually like Perl.
  * @{
  */
 

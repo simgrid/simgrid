@@ -23,28 +23,24 @@
 #ifdef HAVE_JEDULE
 
 XBT_LOG_NEW_CATEGORY(jedule, "Logging specific to Jedule");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, jedule,
-                                "Logging specific to Jedule SD binding");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, jedule, "Logging specific to Jedule SD binding");
 
 jedule_t jedule;
 
 void jedule_log_sd_event(SD_task_t task)
 {
-  xbt_dynar_t host_list;
   jed_event_t event;
-  int i;
 
   xbt_assert(task != NULL);
 
-  host_list = xbt_dynar_new(sizeof(char*), NULL);
+  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), NULL);
 
-  for(i=0; i<task->host_count; i++) {
+  for(int i=0; i<task->host_count; i++) {
     const char *hostname = sg_host_get_name(task->host_list[i]);
     xbt_dynar_push(host_list, &hostname);
   }
 
-  create_jed_event(&event, (char*)SD_task_get_name(task),
-      task->start_time, task->finish_time,"SD");
+  create_jed_event(&event, (char*)SD_task_get_name(task), task->start_time, task->finish_time,"SD");
 
   jed_event_add_resources(event, host_list);
   jedule_store_event(event);
@@ -52,8 +48,7 @@ void jedule_log_sd_event(SD_task_t task)
   xbt_dynar_free(&host_list);
 }
 
-static void create_hierarchy(AS_t current_comp,
-                             jed_simgrid_container_t current_container)
+static void create_hierarchy(AS_t current_comp, jed_simgrid_container_t current_container)
 {
   xbt_dict_cursor_t cursor = NULL;
   char *key;
@@ -105,7 +100,6 @@ void jedule_setup_platform()
   create_hierarchy(root_comp, root_container);
 }
 
-
 void jedule_sd_cleanup()
 {
   jedule_cleanup_output();
@@ -143,5 +137,4 @@ void jedule_sd_dump(const char * filename)
     free(fname);
   }
 }
-
 #endif

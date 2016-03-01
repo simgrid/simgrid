@@ -8,6 +8,7 @@
 
 #include "simgrid/simdag.h"
 #include "xbt/log.h"
+#include <stdio.h>
 #include <string.h>
 #include <libgen.h>
 
