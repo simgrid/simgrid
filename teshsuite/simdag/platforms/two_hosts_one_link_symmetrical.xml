@@ -9,6 +9,6 @@
     <link id="link2" bandwidth="125MBps" latency="50us"/>
     <link id="link3" bandwidth="125MBps" latency="50us"/>
 
-    <route src="bob" dst="alice" symmetrical="YES"><link_ctn id="link1"/><link_ctn id="link2"/><link_ctn id="link3"/></route>
+    <route src="bob" dst="alice"><link_ctn id="link1"/><link_ctn id="link2"/><link_ctn id="link3"/></route>
   </AS>
 </platform>

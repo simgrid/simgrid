@@ -1710,8 +1710,7 @@ non-intuitive schema ... Something like that :
 <ASroute src="cl_4_1"
 	dst="cl_4_2"
 	gw_src="c_4_1-cl_4_1_router"
-	gw_dst="c_4_2-cl_4_2_router"
-	symmetrical="YES">
+	gw_dst="c_4_2-cl_4_2_router">
 		<link_ctn id="4_1"/>
 		<link_ctn id="bb_4"/>
 		<link_ctn id="4_2"/>
@@ -1719,16 +1718,14 @@ non-intuitive schema ... Something like that :
 <ASroute src="cl_4_1"
 	dst="exitAS_4"
 	gw_src="c_4_1-cl_4_1_router"
-	gw_dst="router_4"
-	symmetrical="YES">
+	gw_dst="router_4">
 		<link_ctn id="4_1"/>
 		<link_ctn id="bb_4"/>
 </ASroute>
 <ASroute src="cl_4_2"
 	dst="exitAS_4"
 	gw_src="c_4_2-cl_4_2_router"
-	gw_dst="router_4"
-	symmetrical="YES">
+	gw_dst="router_4">
 		<link_ctn id="4_2"/>
 		<link_ctn id="bb_4"/>
 </ASroute>
@@ -1864,7 +1861,7 @@ id="3"/&gt;&lt;/route&gt;), without trying to build new routes by aggregating
 the provided ones.
 
 You are also free to declare platform where the routing is not
-symmetric. For example, add the following to the previous file:
+symmetrical. For example, add the following to the previous file:
 
 \verbatim
 <route src="C" dst="A">
