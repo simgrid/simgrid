@@ -12,12 +12,24 @@
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
 using namespace simgrid;
 
-double s4u::Engine::getClock() {
-  return SIMIX_get_clock();
-}
+s4u::Engine *s4u::Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
+
 
 s4u::Engine::Engine(int *argc, char **argv) {
+  xbt_assert(s4u::Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
+  s4u::Engine::instance_ = this;
+
   SIMIX_global_init(argc, argv);
+}
+
+s4u::Engine *s4u::Engine::instance() {
+  if (s4u::Engine::instance_ == nullptr)
+    new Engine(0,nullptr);
+  return s4u::Engine::instance_;
+}
+
+double s4u::Engine::getClock() {
+  return SIMIX_get_clock();
 }
 
 void s4u::Engine::loadPlatform(const char *platf) {

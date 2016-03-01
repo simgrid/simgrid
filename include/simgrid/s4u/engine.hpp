@@ -47,6 +47,10 @@ public:
   /** @brief Retrieve the simulation time */
   static double getClock();
   
+  /** @brief Retrieve the engine singleton */
+  static s4u::Engine *instance();
+private:
+  static s4u::Engine *instance_;
 };
 }} // namespace simgrid::sgo
 
