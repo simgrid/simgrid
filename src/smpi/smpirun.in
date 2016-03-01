@@ -147,7 +147,6 @@ while true; do
             fi
 	    shift 2
             ;;
-
         "-machinefile")
 	    HOSTFILE="$2"
             if [ ! -f "${HOSTFILE}" ]; then
@@ -156,83 +155,67 @@ while true; do
             fi
 	    shift 2
             ;;
-
         "-ext")
             EXTOPT="$2"
             shift 2
             ;;
-
         "-map")
 	    MAPOPT="true"
             shift 1
             ;;
-
         "-trace")
             TRACE_ACTIVE="true"
             shift 1
             ;;
-
         "-trace-ti")
             TRACE_ACTIVE="true"
             TRACE_TI_ACTIVE="true"
             shift 1
             ;;
-
         "-trace-comment")
             TRACE_COMMENT="$2"
             shift 2
             ;;
-
         "-trace-comment-file")
             TRACE_COMMENT_FILE="$2"
             shift 2
             ;;
-
         "-trace-file")
             TRACE_FILENAME="$2"
             shift 2
             ;;
-
         "-trace-grouped")
             TRACE_GROUPED="true"
             shift 1
             ;;
-
         "-trace-resource")
             TRACE_RESOURCE="true"
             shift 1
             ;;
-
         "-trace-viva")
    	    TRACE_VIVA="true"
    	    shift 1
             ;;
-
         "-keep-temps")
 	    KEEP="true"
             shift 1
             ;;
-
         "-wrapper")
             WRAPPER="$2"
             shift 2
             ;;
-
         "-help" | "--help" | "-h")
             usage
             exit 0
             ;;
-
         "-version" | "--version" | "-v")
             printf '%b\n' "$SIMGRID_VERSION"
             exit 0
             ;;
-	    
         "-git-version" | "--git-version")
             printf '%b\n' "$SIMGRID_GITHASH"
             exit 0
             ;;
-
         "--cfg="*|"--log="*)
             for OPT in ${1#*=}
             do
@@ -274,10 +257,6 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-
-##-----------------------------------
-
-
 if [ -z "${HOSTFILE}" ] && [ -z "${PLATFORM}" ] ; then
     echo "No hostfile nor platform specified."
     usage
@@ -318,7 +297,6 @@ if [ "${multiple_processes}" -gt 0 ] ; then
     HOSTFILE=$UNROLLEDHOSTFILE
 fi
 
-
 # Don't use wc -l to compute it to avoid issues with trailing \n at EOF
 hostfile_procs=`grep -c "[a-zA-Z0-9]" $HOSTFILE`
 if [ ${hostfile_procs} = 0 ] ; then
@@ -330,7 +308,6 @@ if [ -z "${NUMPROCS}" ] ; then
     # Use the amount of processes in the hostfile as default value for the -np parameter
     NUMPROCS=$hostfile_procs
 fi
-
 
 if [ ${NUMPROCS} -gt ${hostfile_procs} ] ; then
     echo "You requested to use ${NUMPROCS} processes, but there is only ${hostfile_procs} processes in your hostfile..." >&2
@@ -378,11 +355,9 @@ else
     PLATFORMTMP=${PLATFORM}
 fi
 ##-------------------------------- end DEFAULT or SPECIFIED PLATFORM --------------------------------------
-
 ##-------------------------------- DEFAULT APPLICATION --------------------------------------
 APPLICATIONTMP="$(mktemp smpitmp-appXXXXXX)"
 #APPLICATIONTMP="app.xml"
-
 
 cat > ${APPLICATIONTMP} <<APPLICATIONHEAD
 <?xml version='1.0'?>
@@ -409,8 +384,7 @@ fi
 
 ##----------------------------------------------------------
 ##  generate application.xml with hostnames from hostfile:
-##  the name of host_i (1<=i<=p, where -np p) is the line i
-##  in hostfile (where -hostfile hostfile), or "host$i" if
+##  the name of host_i (1<=i<=p, where -np p) is the line i in hostfile (where -hostfile hostfile), or "host$i" if 
 ##  hostfile has less than i lines.
 ##----------------------------------------------------------
 
@@ -427,7 +401,6 @@ else
 fi
 
 ##---- generate <process> tags------------------------------
-
 for i in ${SEQ}
 do
     if [ -n "${HOSTFILE}" ]; then
@@ -464,7 +437,6 @@ cat >> ${APPLICATIONTMP} <<APPLICATIONFOOT
 </platform>
 APPLICATIONFOOT
 ##-------------------------------- end DEFAULT APPLICATION --------------------------------------
-
 ##---------------------- SMPI TRACING OPTIONS ---------------------------------
 if [ -n "${TRACE_ACTIVE}" ]; then
     #define trace filename
@@ -515,18 +487,14 @@ fi
 
 # Execute the process
 #
-# The shell still need to be alive for the duration in order to do some cleanup
-# after the process.
+# The shell still need to be alive for the duration in order to do some cleanup after the process.
 #
-# We are going through great lengths in order to both keep stdin and be able
-# to handle signals:
+# We are going through great lengths in order to both keep stdin and be able to handle signals:
 #
-# * The job is launched in the background in order to be able to handle
-#   signals.
+# * The job is launched in the background in order to be able to handle signals.
 #
-# * The FD 3 is used to temporarily store FD 1. This is because the shell
-#   connects FD 1 to /dev/null when the command is launched in the
-#   background: this can be overriden in bash but not in standard bourne shell.
+# * The FD 3 is used to temporarily store FD 1. This is because the shell connects FD 1 to /dev/null when the command
+#   is launched in the background: this can be overriden in bash but not in standard bourne shell.
 exec 3<&0
 ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP} <&3 3>&- &
 pid=$!

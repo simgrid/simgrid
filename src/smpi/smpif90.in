@@ -35,7 +35,6 @@ filter_and_compile() {
     list_add CMDLINE "${SRCFILE}"
 }
 
-
 list_set CMDLINE "${F90}"
 list_add_not_empty CMDLINE "${FFLAGS}"
 while [ $# -gt 0 ]; do
