@@ -1,18 +1,14 @@
-add_executable       (storage_basic storage_basic.c)
-target_link_libraries(storage_basic simgrid)
-add_executable       (concurrent_rw concurrent_rw.c)
-target_link_libraries(concurrent_rw simgrid)
+foreach(x storage_basic concurrent_rw)
+  add_executable       (${x} ${x}.c)
+  target_link_libraries(${x} simgrid)
 
-set(tesh_files
-  ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/storage_basic.tesh
-  PARENT_SCOPE)
-set(xml_files
-  ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/deployment.xml
-  PARENT_SCOPE)
-set(teshsuite_src
-  ${teshsuite_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/storage_basic.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/concurrent_rw.c
-  PARENT_SCOPE)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}.tesh)
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}.c)
+
+  ADD_TESH_FACTORIES(tesh-msg-${x} "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/storage ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage/${x}.tesh)
+endforeach()
+
+set(tesh_files    ${tesh_files}                                                    PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}                                                 PARENT_SCOPE)
+set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/deployment.xml      PARENT_SCOPE)
+
