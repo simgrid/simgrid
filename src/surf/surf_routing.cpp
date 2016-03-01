@@ -141,52 +141,37 @@ namespace surf {
       return bypassedRoute;
     }
 
-    int index_src, index_dst;
-    As **current_src = NULL;
-    As **current_dst = NULL;
-
-    As *src_as = src->containingAS();
-    As *dst_as = dst->containingAS();
-
     /* (2) find the path to the root routing component */
-    xbt_dynar_t path_src = xbt_dynar_new(sizeof(As*), NULL);
-    As *current = src_as;
+    std::vector<As*> path_src;
+    As *current = src->containingAS();
     while (current != NULL) {
-      xbt_dynar_push(path_src, &current);
+      path_src.push_back(current);
       current = current->father_;
     }
-    xbt_dynar_t path_dst = xbt_dynar_new(sizeof(As*), NULL);
-    current = dst_as;
+
+    std::vector<As*> path_dst;
+    current = dst->containingAS();
     while (current != NULL) {
-      xbt_dynar_push(path_dst, &current);
+      path_dst.push_back(current);
       current = current->father_;
     }
 
     /* (3) find the common father */
-    index_src = path_src->used - 1;
-    index_dst = path_dst->used - 1;
-    current_src = (As **) xbt_dynar_get_ptr(path_src, index_src);
-    current_dst = (As **) xbt_dynar_get_ptr(path_dst, index_dst);
-    while (index_src >= 0 && index_dst >= 0 && *current_src == *current_dst) {
-      xbt_dynar_pop_ptr(path_src);
-      xbt_dynar_pop_ptr(path_dst);
-      index_src--;
-      index_dst--;
-      current_src = (As **) xbt_dynar_get_ptr(path_src, index_src);
-      current_dst = (As **) xbt_dynar_get_ptr(path_dst, index_dst);
+    while (path_src.size() > 1 && path_dst.size() >1
+        && path_src.at(path_src.size() -1) == path_dst.at(path_dst.size() -1)) {
+      path_src.pop_back();
+      path_dst.pop_back();
     }
 
-    int max_index_src = path_src->used - 1;
-    int max_index_dst = path_dst->used - 1;
+    int max_index_src = path_src.size() - 1;
+    int max_index_dst = path_dst.size() - 1;
 
     int max_index = std::max(max_index_src, max_index_dst);
 
     for (int max = 0; max <= max_index; max++) {
       for (int i = 0; i < max; i++) {
         if (i <= max_index_src && max <= max_index_dst) {
-          char *route_name = bprintf("%s#%s",
-              (*(As **) (xbt_dynar_get_ptr(path_src, i)))->name_,
-              (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
+          char *route_name = bprintf("%s#%s", path_src.at(i)->name_, path_dst.at(max)->name_);
           if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
             bypassedRoute = bypassRoutes_.at(route_name);
           xbt_free(route_name);
@@ -194,9 +179,7 @@ namespace surf {
         if (bypassedRoute)
           break;
         if (max <= max_index_src && i <= max_index_dst) {
-          char *route_name = bprintf("%s#%s",
-              (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
-              (*(As **) (xbt_dynar_get_ptr(path_dst, i)))->name_);
+          char *route_name = bprintf("%s#%s", path_src.at(max)->name_, path_dst.at(i)->name_);
           if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
             bypassedRoute = bypassRoutes_.at(route_name);
           xbt_free(route_name);
@@ -209,10 +192,7 @@ namespace surf {
         break;
 
       if (max <= max_index_src && max <= max_index_dst) {
-        char *route_name = bprintf("%s#%s",
-            (*(As **) (xbt_dynar_get_ptr(path_src, max)))->name_,
-            (*(As **) (xbt_dynar_get_ptr(path_dst, max)))->name_);
-
+        char *route_name = bprintf("%s#%s", path_src.at(max)->name_, path_dst.at(max)->name_);
         if (bypassRoutes_.find(route_name) != bypassRoutes_.end())
           bypassedRoute = bypassRoutes_.at(route_name);
         xbt_free(route_name);
@@ -220,9 +200,6 @@ namespace surf {
       if (bypassedRoute)
         break;
     }
-
-    xbt_dynar_free(&path_src);
-    xbt_dynar_free(&path_dst);
 
     return bypassedRoute;
   }
