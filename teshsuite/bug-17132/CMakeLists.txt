@@ -9,19 +9,10 @@ if(enable_smpi)
   add_executable       (bug-17132 bug-17132.c)
   target_link_libraries(bug-17132 simgrid)
 
-  ADD_TESH_FACTORIES(tesh-smpi-bug-17132 "thread" --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR} --cd ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/bug-17132.tesh)
+  ADD_TESH_FACTORIES(tesh-smpi-bug-17132 "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132 --cd ${CMAKE_BINARY_DIR}/teshsuite/bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132/bug-17132.tesh)
 endif(enable_smpi)
 
-set(tesh_files
-  ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/bug-17132.tesh
-  PARENT_SCOPE)
-set(teshsuite_src
-  ${teshsuite_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/bug-17132.c
-  PARENT_SCOPE)
-set(txt_files
-  ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/hostfile.txt
-  PARENT_SCOPE)
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/bug-17132.tesh   PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/bug-17132.c      PARENT_SCOPE)
+set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile.txt     PARENT_SCOPE)
 
