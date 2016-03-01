@@ -1820,7 +1820,7 @@ characteristics (lookup : time to resolve a route):
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
     not be used.
 
-\subsection pf_switch Hey, I want to describe a switch but there is no switch tag !
+\subsection pf_switch I want to describe a switch but there is no switch tag !
 
 Actually we did not include switch tag, ok. But when you're trying to
 simulate a switch, the only major impact it has when you're using
@@ -1875,90 +1875,5 @@ to C go directly. Don't worry about realism of such settings since
 we've seen ways more weird situation in real settings (in fact, that's
 the realism of very regular platforms which is questionable, but
 that's another story).
-
-\section pf_flexml_bypassing Bypassing the XML parser with your own C functions
-<b>NOTE THAT THIS DOCUMENTATION, WHILE STILL WORKING, IS STRONGLY DEPRECATED</b>
-
-So you want to bypass the XML files parser, uh? Maybe doing some parameter
-sweep experiments on your simulations or so? This is possible, and
-it's not even really difficult (well. Such a brutal idea could be
-harder to implement). Here is how it goes.
-
-For this, you have to first remember that the XML parsing in SimGrid is done
-using a tool called FleXML. Given a DTD, this gives a flex-based parser. If
-you want to bypass the parser, you need to provide some code mimicking what
-it does and replacing it in its interactions with the SURF code. So, let's
-have a look at these interactions.
-
-FleXML parser are close to classical SAX parsers. It means that a
-well-formed SimGrid platform XML file might result in the following
-"events":
-
-  - start "platform_description" with attribute version="4"
-  - start "host" with attributes id="host1" power="1.0"
-  - end "host"
-  - start "host" with attributes id="host2" power="2.0"
-  - end "host"
-  - start "link" with ...
-  - end "link"
-  - start "route" with ...
-  - start "link_ctn" with ...
-  - end "link_ctn"
-  - end "route"
-  - end "platform_description"
-
-The communication from the parser to the SURF code uses two means:
-Attributes get copied into some global variables, and a surf-provided
-function gets called by the parser for each event. For example, the event
-  - start "host" with attributes id="host1" power="1.0"
-
-let the parser do something roughly equivalent to:
-\verbatim
-  strcpy(A_host_id,"host1");
-  A_host_power = 1.0;
-  STag_host();
-\endverbatim
-
-In SURF, we attach callbacks to the different events by initializing the
-pointer functions to some the right surf functions. Since there can be
-more than one callback attached to the same event (if more than one
-model is in use, for example), they are stored in a dynar. Example in
-host_ptask_L07.c:
-\verbatim
-  /* Adding callback functions */
-  surf_parse_reset_parser();
-  surfxml_add_callback(STag_surfxml_host_cb_list, &parse_cpu_init);
-  surfxml_add_callback(STag_surfxml_prop_cb_list, &parse_properties);
-  surfxml_add_callback(STag_surfxml_link_cb_list, &parse_link_init);
-  surfxml_add_callback(STag_surfxml_route_cb_list, &parse_route_set_endpoints);
-  surfxml_add_callback(ETag_surfxml_link_c_ctn_cb_list, &parse_route_elem);
-  surfxml_add_callback(ETag_surfxml_route_cb_list, &parse_route_set_route);
-
-  /* Parse the file */
-  surf_parse_open(file);
-  xbt_assert(!surf_parse(), "Parse error in %s", file);
-  surf_parse_close();
-\endverbatim
-
-So, to bypass the FleXML parser, you need to write your own version of the
-surf_parse function, which should do the following:
-   - Fill the A_<tag>_<attribute> variables with the wanted values
-   - Call the corresponding STag_<tag>_fun function to simulate tag start
-   - Call the corresponding ETag_<tag>_fun function to simulate tag end
-   - (do the same for the next set of values, and loop)
-
-Then, tell SimGrid that you want to use your own "parser" instead of the stock one:
-\verbatim
-  surf_parse = surf_parse_bypass_environment;
-  MSG_create_environment(NULL);
-  surf_parse = surf_parse_bypass_application;
-  MSG_launch_application(NULL);
-\endverbatim
-
-A set of macros are provided at the end of
-include/surf/surfxml_parse.h to ease the writing of the bypass
-functions. An example of this trick is distributed in the file
-examples/msg/masterslave/masterslave_bypass.c
-
 
 */
