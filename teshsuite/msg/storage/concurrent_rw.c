@@ -7,22 +7,37 @@
 #include "simgrid/msg.h"
 #include <unistd.h>
 
-#define FILENAME1 "/sd1/doc/simgrid/examples/cxx/autoDestination/Main.cxx"
+#define FILENAME1 "/home/doc/simgrid/examples/platforms/g5k.xml"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 
 static int host(int argc, char *argv[])
 {
   char name[2048];
-  sprintf(name,"%s%i", FILENAME1,MSG_process_self_PID());
+  int id = MSG_process_self_PID();
+  sprintf(name,"%s%i", FILENAME1, id);
   msg_file_t file = MSG_file_open(name, NULL);
-  //MSG_file_read(file, MSG_file_get_size(file));
-  MSG_file_write(file, 500000);
+  XBT_INFO("process %d is writing!", id);
+  MSG_file_write(file, 3000000);
+  XBT_INFO("process %d goes to sleep for %d seconds", id, id);
+  MSG_process_sleep(id);
+  XBT_INFO("process %d is writing again!", id);
+  MSG_file_write(file, 3000000);
+  XBT_INFO("process %d goes to sleep for %d seconds", id, 6 - id);
+  MSG_process_sleep(6-id);
+  XBT_INFO("process %d is reading!", id);
+  MSG_file_seek(file, 0, SEEK_SET);
+  MSG_file_read(file, 3000000);
+  XBT_INFO("process %d goes to sleep for %d seconds", id, id);
+  MSG_process_sleep(id);
+  XBT_INFO("process %d is reading again!", id);
+  MSG_file_seek(file, 0, SEEK_SET);
+  MSG_file_read(file, 3000000);
 
-  XBT_INFO("Size of %s: %llu", MSG_file_get_name(file), MSG_file_get_size(file));
+  XBT_INFO("process %d => Size of %s: %llu", id, MSG_file_get_name(file), MSG_file_get_size(file));
   MSG_file_close(file);
 
-  return 1;
+  return 0;
 }
 
 int main(int argc, char **argv)
@@ -31,8 +46,8 @@ int main(int argc, char **argv)
   MSG_create_environment(argv[1]);
 
   MSG_function_register("host", host);
-  for(int i = 0 ; i<10; i++){
-    MSG_process_create(xbt_strdup("host"), host, NULL, MSG_host_by_name(xbt_strdup("host")));
+  for(int i = 0 ; i < 5; i++){
+    MSG_process_create("bob", host, NULL, MSG_host_by_name(xbt_strdup("bob")));
   }
 
   int res = MSG_main();
