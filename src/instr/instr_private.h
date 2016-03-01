@@ -255,12 +255,16 @@ XBT_PUBLIC(void) new_pajeAddVariable (double timestamp, container_t container, t
 XBT_PUBLIC(void) new_pajeSubVariable (double timestamp, container_t container, type_t type, double value);
 XBT_PUBLIC(void) new_pajeSetState (double timestamp, container_t container, type_t type, val_t value);
 XBT_PUBLIC(void) new_pajePushState (double timestamp, container_t container, type_t type, val_t value);
-XBT_PUBLIC(void) new_pajePushStateWithExtra (double timestamp, container_t container, type_t type, val_t value, void* extra);
+XBT_PUBLIC(void) new_pajePushStateWithExtra (double timestamp, container_t container, type_t type, val_t value,
+                                             void* extra);
 XBT_PUBLIC(void) new_pajePopState (double timestamp, container_t container, type_t type);
 XBT_PUBLIC(void) new_pajeResetState (double timestamp, container_t container, type_t type);
-XBT_PUBLIC(void) new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key);
-XBT_PUBLIC(void) new_pajeStartLinkWithSize (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key, int size);
-XBT_PUBLIC(void) new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key);
+XBT_PUBLIC(void) new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer,
+                                    const char *value, const char *key);
+XBT_PUBLIC(void) new_pajeStartLinkWithSize (double timestamp, container_t container, type_t type,
+                                            container_t sourceContainer, const char *value, const char *key, int size);
+XBT_PUBLIC(void) new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer,
+                                  const char *value, const char *key);
 XBT_PUBLIC(void) new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
 
 /* from instr_config.c */
@@ -299,15 +303,9 @@ XBT_PUBLIC(int) TRACE_smpi_is_sleeping(void);
 XBT_PUBLIC(int) TRACE_smpi_view_internals(void);
 
 /* from resource_utilization.c */
-XBT_PRIVATE void TRACE_surf_host_set_utilization(const char *resource,
-                                     const char *category,
-                                     double value,
-                                     double now,
+XBT_PRIVATE void TRACE_surf_host_set_utilization(const char *resource, const char *category, double value, double now,
                                      double delta);
-XBT_PRIVATE void TRACE_surf_link_set_utilization(const char *resource,
-                                     const char *category,
-                                     double value,
-                                     double now,
+XBT_PRIVATE void TRACE_surf_link_set_utilization(const char *resource,const char *category, double value, double now,
                                      double delta);
 XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc(void);
 
@@ -377,9 +375,6 @@ XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
 XBT_PRIVATE void dump_comment_file (const char *filename);
 XBT_PRIVATE void dump_comment (const char *comment);
 
-
-
-
 typedef struct instr_trace_writer {
   void (*print_DefineContainerType) (paje_event_t event);
   void (*print_DefineVariableType)(paje_event_t event);
@@ -401,11 +396,8 @@ typedef struct instr_trace_writer {
   void (*print_NewEvent) (paje_event_t event);
 } s_instr_trace_writer_t;
 
-
-
 struct s_instr_extra_data;
 typedef struct s_instr_extra_data *instr_extra_data;
-
 
 typedef enum{
   TRACING_INIT,
@@ -442,8 +434,6 @@ typedef enum{
   TRACING_SCAN,
   TRACING_EXSCAN
 } e_caller_type ;
-
-
 
 typedef struct s_instr_extra_data {
   e_caller_type type;

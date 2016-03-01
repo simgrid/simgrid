@@ -135,7 +135,6 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   if (newContainer->kind == INSTR_HOST || newContainer->kind == INSTR_LINK || newContainer->kind == INSTR_ROUTER) {
     xbt_dict_set (trivaNodeTypes, newContainer->type->name, xbt_strdup("1"), NULL);
   }
-
   return newContainer;
 }
 

@@ -9,7 +9,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_trace, instr, "tracing event system");
 
-
 FILE *tracing_file = NULL;
 
 void print_NULL(paje_event_t event){}
@@ -118,10 +117,8 @@ static void insert_into_buffer (paje_event_t tbi)
   if (i == 0)
     XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
   else
-    XBT_DEBUG("%s: inserted at%s %u", __FUNCTION__,
-              (i == xbt_dynar_length(buffer) - 1 ? " end, pos =" : ""), i);
+    XBT_DEBUG("%s: inserted at%s %u", __FUNCTION__, (i == xbt_dynar_length(buffer) - 1 ? " end, pos =" : ""), i);
 }
-
 
 static void free_paje_event (paje_event_t event)
 {
@@ -418,7 +415,8 @@ void new_pajeResetState (double timestamp, container_t container, type_t type)
   insert_into_buffer (event);
 }
 
-void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key)
+void new_pajeStartLink (double timestamp, container_t container, type_t type, container_t sourceContainer,
+                        const char *value, const char *key)
 {
   paje_event_t event = xbt_new0(s_paje_event_t, 1);
   event->event_type = PAJE_StartLink;
@@ -437,7 +435,8 @@ void new_pajeStartLink (double timestamp, container_t container, type_t type, co
   insert_into_buffer (event);
 }
 
-void new_pajeStartLinkWithSize (double timestamp, container_t container, type_t type, container_t sourceContainer, const char *value, const char *key, int size)
+void new_pajeStartLinkWithSize (double timestamp, container_t container, type_t type, container_t sourceContainer,
+                                const char *value, const char *key, int size)
 {
   paje_event_t event = xbt_new0(s_paje_event_t, 1);
   event->event_type = PAJE_StartLink;
@@ -457,7 +456,8 @@ void new_pajeStartLinkWithSize (double timestamp, container_t container, type_t 
   insert_into_buffer (event);
 }
 
-void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer, const char *value, const char *key)
+void new_pajeEndLink (double timestamp, container_t container, type_t type, container_t destContainer,
+                      const char *value, const char *key)
 {
   paje_event_t event = xbt_new0(s_paje_event_t, 1);
   event->event_type = PAJE_EndLink;

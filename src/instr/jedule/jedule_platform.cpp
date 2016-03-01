@@ -15,31 +15,14 @@
 
 #ifdef HAVE_JEDULE
 
-/********************************************************************/
-
 static xbt_dict_t host2_simgrid_parent_container;
 static xbt_dict_t container_name2container;
 
-/********************************************************************/
-
-static void add_subset_to(xbt_dynar_t subset_list, int start, int end,
-    jed_simgrid_container_t parent);
-
-static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup,
-    jed_simgrid_container_t parent);
-
-static void jed_free_container(jed_simgrid_container_t container);
-
-/********************************************************************/
-
 static int compare_ids(const void *num1, const void *num2) {
-  int *i1 = (int*) num1;
-  int *i2 = (int*) num2;
-  return *i1 - *i2;
+  return *((int*) num1) - *((int*) num2);
 }
 
 static void jed_free_container(jed_simgrid_container_t container) {
-
   xbt_dict_free(&container->name2id);
   xbt_dynar_free(&container->resource_list);
 
@@ -51,13 +34,11 @@ static void jed_free_container(jed_simgrid_container_t container) {
     }
     xbt_dynar_free(&container->container_children);
   }
-
   xbt_free(container->name);
   xbt_free(container);
 }
 
-void jed_simgrid_create_container(jed_simgrid_container_t *container,
-                                  const char *name)
+void jed_simgrid_create_container(jed_simgrid_container_t *container, const char *name)
 {
   xbt_assert( name != NULL );
 
@@ -70,18 +51,14 @@ void jed_simgrid_create_container(jed_simgrid_container_t *container,
   xbt_dict_set(container_name2container, (*container)->name, *container, NULL);
 }
 
-
-void jed_simgrid_add_container(jed_simgrid_container_t parent,
-    jed_simgrid_container_t child) {
+void jed_simgrid_add_container(jed_simgrid_container_t parent, jed_simgrid_container_t child) {
   xbt_assert(parent != NULL);
   xbt_assert(child != NULL);
   xbt_dynar_push(parent->container_children, &child);
   child->parent = parent;
 }
 
-void jed_simgrid_add_resources(jed_simgrid_container_t parent,
-    xbt_dynar_t host_names) {
-
+void jed_simgrid_add_resources(jed_simgrid_container_t parent, xbt_dynar_t host_names) {
   unsigned int iter;
   char *host_name;
   char *buf;
@@ -102,18 +79,13 @@ void jed_simgrid_add_resources(jed_simgrid_container_t parent,
     xbt_dict_set(host2_simgrid_parent_container, host_name, parent, NULL);
     xbt_dynar_push(parent->resource_list, &host_name);
   }
-
 }
 
-static void add_subset_to(xbt_dynar_t subset_list, int start, int end,
-    jed_simgrid_container_t parent) {
-
+static void add_subset_to(xbt_dynar_t subset_list, int start, int end, jed_simgrid_container_t parent) {
   jed_res_subset_t subset;
 
   xbt_assert( subset_list != NULL );
   xbt_assert( parent != NULL );
-
-  // printf(">>> start=%d end=%d\n", start, end);
 
   subset = xbt_new0(s_jed_res_subset_t,1);
   subset->start_idx = start;
@@ -121,12 +93,9 @@ static void add_subset_to(xbt_dynar_t subset_list, int start, int end,
   subset->parent    = parent;
 
   xbt_dynar_push(subset_list, &subset);
-
 }
 
-static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup,
-    jed_simgrid_container_t parent) {
-
+static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup, jed_simgrid_container_t parent) {
   unsigned int iter;
   char *host_name;
   xbt_dynar_t id_list;
@@ -169,16 +138,13 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup,
 
     pos = start;
     for(i=0; i<nb_ids; i++) {
-
       if( id_ar[i] - id_ar[pos] > 1 ) {
-
         add_subset_to( subset_list, id_ar[start], id_ar[pos], parent );
         start = i;
 
         if( i == nb_ids-1 ) {
           add_subset_to( subset_list, id_ar[i], id_ar[i], parent );
         }
-
       } else {
         if( i == nb_ids-1 ) {
           add_subset_to( subset_list, id_ar[start], id_ar[i], parent );
@@ -191,13 +157,9 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup,
 
   free(id_ar);
   xbt_dynar_free(&id_list);
-
-
 }
 
-void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list,
-    xbt_dynar_t host_names) {
-
+void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list, xbt_dynar_t host_names) {
   char *host_name;
   unsigned int iter;
   xbt_dict_t parent2hostgroup;  // group hosts by parent
@@ -211,8 +173,6 @@ void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list,
   //  group by parent container
 
   xbt_dynar_foreach(host_names, iter, host_name) {
-    //printf("checking %s \n", host_name);
-
     jed_simgrid_container_t parent = (jed_simgrid_container_t)xbt_dict_get(host2_simgrid_parent_container, host_name);
     xbt_assert( parent != NULL );
 
@@ -225,27 +185,21 @@ void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list,
     xbt_dynar_push(hostgroup, &host_name);
   }
 
-  {
-    xbt_dict_cursor_t cursor=NULL;
-    char *parent_name;
-    xbt_dynar_t hostgroup;
-    jed_simgrid_container_t parent;
+  xbt_dict_cursor_t cursor=NULL;
+  char *parent_name;
+  xbt_dynar_t hostgroup;
+  jed_simgrid_container_t parent;
 
-    xbt_dict_foreach(parent2hostgroup,cursor,parent_name,hostgroup) {
-      parent = (jed_simgrid_container_t)xbt_dict_get(container_name2container, parent_name);
-      // printf("subset parent >>> %s\n", parent->name);
-      add_subsets_to(subset_list, hostgroup, parent);
-    }
-    xbt_dynar_free(&hostgroup);
+  xbt_dict_foreach(parent2hostgroup,cursor,parent_name,hostgroup) {
+    parent = (jed_simgrid_container_t)xbt_dict_get(container_name2container, parent_name);
+    add_subsets_to(subset_list, hostgroup, parent);
   }
+  xbt_dynar_free(&hostgroup);
 
   xbt_dict_free(&parent2hostgroup);
-
 }
 
-
 void jedule_add_meta_info(jedule_t jedule, char *key, char *value) {
-
   char *val_cp;
 
   xbt_assert(key != NULL);
@@ -263,7 +217,6 @@ void jed_create_jedule(jedule_t *jedule) {
 }
 
 void jed_free_jedule(jedule_t jedule) {
-
   jed_free_container(jedule->root_container);
 
   xbt_dict_free(&jedule->jedule_meta_info);
@@ -272,5 +225,4 @@ void jed_free_jedule(jedule_t jedule) {
   xbt_dict_free(&host2_simgrid_parent_container);
   xbt_dict_free(&container_name2container);
 }
-
 #endif
