@@ -10,10 +10,6 @@
 #include "src/simdag/simdag_private.h"
 #include "src/surf/surf_interface.hpp"
 
-#include "xbt/dynar.h"
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
-
 #ifdef HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
 #endif
@@ -267,7 +263,6 @@ double SD_get_clock(void) {
 void SD_exit(void)
 {
   TRACE_surf_resource_utilization_release();
-  TRACE_end();
 
 #ifdef HAVE_JEDULE
   jedule_sd_cleanup();

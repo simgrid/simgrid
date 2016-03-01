@@ -10,7 +10,6 @@
 #include "xbt/misc.h"
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
-
 #include "simgrid/link.h"
 
 SG_BEGIN_DECL()
@@ -61,7 +60,6 @@ typedef enum {
   SD_TASK_COMM_PAR_MXN_1D_BLOCK = 4 /**< @brief MxN data redistribution (1D Block distribution) */
 } e_SD_task_kind_t;
 
-
 /** @brief Storage datatype
     @ingroup SD_datatypes_management
 
@@ -69,7 +67,6 @@ typedef enum {
 typedef xbt_dictelm_t SD_storage_t;
 
 /************************** Workstation handling ****************************/
-
 /** @defgroup sg_host_management Hosts
  *  @brief Functions for managing the Hosts
  *
@@ -93,7 +90,6 @@ XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
 /** @} */
 
 /************************** Task handling ************************************/
-
 /** @defgroup SD_task_management Tasks
  *  @brief Functions for managing the tasks
  *
@@ -156,7 +152,6 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
 /** @} */
 
-
 /** @defgroup SD_task_dependency_management Tasks dependencies
  *  @brief Functions for managing the task dependencies
  *
@@ -173,7 +168,6 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @} */
 
 /************************** Global *******************************************/
-
 /** @defgroup SD_simulation Simulation
  *  @brief Functions for creating the environment and launching the simulation
  *
@@ -227,7 +221,4 @@ XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
 //TRACE_sd_set_task_category
 
 SG_END_DECL()
-
-#include "simgrid/instr.h"
-
 #endif

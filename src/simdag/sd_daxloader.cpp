@@ -20,15 +20,9 @@ extern "C" {
   #undef register
 }
 
-bool children_are_marked(SD_task_t task);
-bool parents_are_marked(SD_task_t task);
-
-/* Parsing helpers */
-
 static double dax_parse_double(const char *string)
 {
   double value;
-
   int ret = sscanf(string, "%lg", &value);
   xbt_assert (ret == 1, "Parse error on line %d: %s is not a double", dax_lineno, string);
   return value;
@@ -55,25 +49,23 @@ void uniq_transfer_task_name(SD_task_t task)
   free(new_name);
 }
 
-bool children_are_marked(SD_task_t task){
+static bool children_are_marked(SD_task_t task){
   SD_dependency_t depafter = NULL;
   unsigned int count;
 
   xbt_dynar_foreach(task->tasks_after,count,depafter){
-    if(depafter->dst->marked == 0) {
+    if(depafter->dst->marked == 0)
       return false;
-    }
   }
   return true;
 }
 
-bool parents_are_marked(SD_task_t task){
+static bool parents_are_marked(SD_task_t task){
   SD_dependency_t depbefore = NULL;
   unsigned int count;
   xbt_dynar_foreach(task->tasks_before,count,depbefore){
-    if(depbefore->src->marked == 0) {
+    if(depbefore->src->marked == 0)
       return false;
-    }
   }
   return true;
 }
