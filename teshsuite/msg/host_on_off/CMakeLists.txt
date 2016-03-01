@@ -9,4 +9,5 @@ foreach(x host_on_off host_on_off_wait host_on_off_recv)
 endforeach()
 
 set(xml_files ${xml_files} ${CMAKE_CURRENT_SOURCE_DIR}/host_on_off_d.xml PARENT_SCOPE)
-
+set(teshsuite_src ${teshsuite_src} PARENT_SCOPE)
+set(tesh_files    ${tesh_files}    PARENT_SCOPE)
