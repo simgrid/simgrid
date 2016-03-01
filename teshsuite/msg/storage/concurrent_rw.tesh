@@ -1,4 +1,4 @@
-$ ./concurrent_rw $EXEEXT --cfg=path:${srcdir:=.} ${srcdir:=.}/../../../examples/platforms/storage/storage.xml --log=root.fmt:> [%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ./concurrent_rw$EXEEXT ${srcdir:=.}/../../../examples/platforms/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:bob@bob) process 1 is writing!
 > [  0.000000] (2:bob@bob) process 2 is writing!
 > [  0.000000] (3:bob@bob) process 3 is writing!
