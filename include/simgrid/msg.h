@@ -29,7 +29,7 @@ SG_BEGIN_DECL()
 typedef struct s_smx_rvpoint *msg_mailbox_t;
 
 /* ******************************** Environment ************************************ */
-typedef surf_As *msg_as_t;
+typedef simgrid_As *msg_as_t;
 
 /* ******************************** Host ************************************ */
 

@@ -935,7 +935,6 @@ void sg_config_init(int *argc, char **argv)
     sg_config_cmd_line(argc, argv);
 
     xbt_mallocator_initialization_is_done(SIMIX_context_is_parallel());
-
   } else {
     XBT_WARN("Call to sg_config_init() after initialization ignored");
   }

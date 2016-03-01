@@ -18,6 +18,9 @@
 #include "simgrid/simdag.h"
 #include "src/simdag/simdag_private.h"
 
+#include "simgrid/s4u/as.hpp"
+#include "simgrid/s4u/engine.hpp"
+
 #include <stdio.h>
 
 #ifdef HAVE_JEDULE
@@ -53,12 +56,12 @@ static void create_hierarchy(AS_t current_comp, jed_simgrid_container_t current_
   xbt_dict_cursor_t cursor = NULL;
   char *key;
   AS_t elem;
-  xbt_dict_t routing_sons = surf_AS_get_children(current_comp);
+  xbt_dict_t routing_sons = current_comp->children();
 
   if (xbt_dict_is_empty(routing_sons)) {
     // I am no AS
     // add hosts to jedule platform
-    xbt_dynar_t table = surf_AS_get_hosts(current_comp);
+    xbt_dynar_t table = current_comp->hosts();
     xbt_dynar_t hosts;
     unsigned int dynar_cursor;
     sg_host_t host_elem;
@@ -75,9 +78,9 @@ static void create_hierarchy(AS_t current_comp, jed_simgrid_container_t current_
   } else {
     xbt_dict_foreach(routing_sons, cursor, key, elem) {
       jed_simgrid_container_t child_container;
-      jed_simgrid_create_container(&child_container, surf_AS_get_name(elem));
+      jed_simgrid_create_container(&child_container, elem->name());
       jed_simgrid_add_container(current_container, child_container);
-      XBT_DEBUG("name : %s\n", surf_AS_get_name(elem));
+      XBT_DEBUG("name : %s\n", elem->name());
       create_hierarchy(elem, child_container);
     }
   }
@@ -85,16 +88,13 @@ static void create_hierarchy(AS_t current_comp, jed_simgrid_container_t current_
 
 void jedule_setup_platform()
 {
-  AS_t root_comp;
-
-  jed_simgrid_container_t root_container;
-
   jed_create_jedule(&jedule);
 
-  root_comp = surf_AS_get_routing_root();
-  XBT_DEBUG("root name %s\n", surf_AS_get_name(root_comp));
+  AS_t root_comp = simgrid::s4u::Engine::instance()->rootAs();
+  XBT_DEBUG("root name %s\n", root_comp->name());
 
-  jed_simgrid_create_container(&root_container, surf_AS_get_name(root_comp));
+  jed_simgrid_container_t root_container;
+  jed_simgrid_create_container(&root_container, root_comp->name());
   jedule->root_container = root_container;
 
   create_hierarchy(root_comp, root_container);

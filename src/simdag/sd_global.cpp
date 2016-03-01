@@ -276,6 +276,4 @@ void SD_exit(void)
   xbt_dynar_free_container(&(sd_global->return_set));
   xbt_free(sd_global);
   sd_global = NULL;
-
-  surf_exit();
 }

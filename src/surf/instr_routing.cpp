@@ -6,7 +6,9 @@
 
 #include "src/instr/instr_private.h"
 
-#include "src/surf/surf_routing.hpp"
+#include "simgrid/s4u/as.hpp"
+#include "simgrid/s4u/engine.hpp"
+#include "surf/surf.h"
 #include "src/surf/xml/platf_private.hpp"
 #include "xbt/graph.h"
 
@@ -123,21 +125,20 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
   XBT_DEBUG ("  linkContainers %s <-> %s", src->name, dst->name);
 }
 
-static void recursiveGraphExtraction (simgrid::surf::As *rc, container_t container, xbt_dict_t filter)
+static void recursiveGraphExtraction (simgrid::s4u::As *as, container_t container, xbt_dict_t filter)
 {
   if (!TRACE_platform_topology()){
     XBT_DEBUG("Graph extraction disabled by user.");
     return;
   }
-  XBT_DEBUG ("Graph extraction for routing_component = %s", rc->name_);
-  if (!xbt_dict_is_empty(rc->children_)){
+  XBT_DEBUG ("Graph extraction for routing_component = %s", as->name());
+  if (!xbt_dict_is_empty(as->children())){
     xbt_dict_cursor_t cursor = NULL;
     AS_t rc_son;
     char *child_name;
     //bottom-up recursion
-    xbt_dict_foreach(surf_AS_get_children(rc), cursor, child_name, rc_son) {
-      container_t child_container = (container_t) xbt_dict_get (
-        container->children, surf_AS_get_name(rc_son));
+    xbt_dict_foreach(as->children(), cursor, child_name, rc_son) {
+      container_t child_container = (container_t) xbt_dict_get (container->children, rc_son->name());
       recursiveGraphExtraction (rc_son, child_container, filter);
     }
   }
@@ -151,7 +152,7 @@ static void recursiveGraphExtraction (simgrid::surf::As *rc, container_t contain
     xbt_dict_cursor_t cursor = NULL;
     char *edge_name;
 
-    surf_AS_get_graph(rc, graph, nodes, edges);
+    as->getGraph(graph, nodes, edges);
     xbt_dict_foreach(edges,cursor,edge_name,edge) {
         linkContainers(
           PJ_container_get((const char*) edge->src->data),
@@ -331,7 +332,7 @@ static void instr_routing_parse_end_platform ()
   currentContainer = NULL;
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free_f);
   XBT_DEBUG ("Starting graph extraction.");
-  recursiveGraphExtraction (surf_AS_get_routing_root(), PJ_container_get_root(), filter);
+  recursiveGraphExtraction (simgrid::s4u::Engine::instance()->rootAs(), PJ_container_get_root(), filter);
   XBT_DEBUG ("Graph extraction finished.");
   xbt_dict_free(&filter);
   platform_created = 1;
@@ -444,21 +445,21 @@ int instr_platform_traced ()
 
 
 static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
-    AS_t rc, container_t container)
+    AS_t as, container_t container)
 {
-  if (!xbt_dict_is_empty(surf_AS_get_children(rc))){
+  if (!xbt_dict_is_empty(as->children())){
     xbt_dict_cursor_t cursor = NULL;
-    AS_t rc_son;
+    AS_t as_child;
     char *child_name;
     //bottom-up recursion
-    xbt_dict_foreach(surf_AS_get_children(rc), cursor, child_name, rc_son) {
+    xbt_dict_foreach(as->children(), cursor, child_name, as_child) {
       container_t child_container = (container_t) xbt_dict_get (
-        container->children, surf_AS_get_name(rc_son));
-      recursiveXBTGraphExtraction (graph, nodes, edges, rc_son, child_container);
+        container->children, as_child->name());
+      recursiveXBTGraphExtraction (graph, nodes, edges, as_child, child_container);
     }
   }
 
-  surf_AS_get_graph(rc, graph, nodes, edges);
+  as->getGraph(graph, nodes, edges);
 }
 
 xbt_graph_t instr_routing_platform_graph (void)
@@ -466,7 +467,7 @@ xbt_graph_t instr_routing_platform_graph (void)
   xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
   xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
   xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
-  recursiveXBTGraphExtraction (ret, nodes, edges, surf_AS_get_routing_root(), PJ_container_get_root());
+  recursiveXBTGraphExtraction (ret, nodes, edges, simgrid::s4u::Engine::instance()->rootAs(), PJ_container_get_root());
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
   return ret;

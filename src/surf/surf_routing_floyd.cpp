@@ -57,7 +57,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
     cur = pred;
   } while (cur != src->id());
 
-  if (hierarchy_ == SURF_ROUTING_RECURSIVE) {
+  if (hierarchy_ == s4u::As::ROUTING_RECURSIVE) {
     route->gw_src = xbt_dynar_getlast_as(route_stack, sg_platf_route_cbarg_t)->gw_src;
     route->gw_dst = xbt_dynar_getfirst_as(route_stack, sg_platf_route_cbarg_t)->gw_dst;
   }
@@ -66,7 +66,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
   while (!xbt_dynar_is_empty(route_stack)) {
     sg_platf_route_cbarg_t e_route = xbt_dynar_pop_as(route_stack, sg_platf_route_cbarg_t);
 
-    if (hierarchy_ == SURF_ROUTING_RECURSIVE && prev_dst_gw != NULL && strcmp(prev_dst_gw->name(), e_route->gw_src->name())) {
+    if (hierarchy_ == s4u::As::ROUTING_RECURSIVE && prev_dst_gw != NULL && strcmp(prev_dst_gw->name(), e_route->gw_src->name())) {
       routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src, route->link_list, lat);
     }
 
@@ -169,7 +169,7 @@ void AsFloyd::Seal(){
   }
 
   /* Add the loopback if needed */
-  if (routing_platf->loopback_ && hierarchy_ == SURF_ROUTING_BASE) {
+  if (routing_platf->loopback_ && hierarchy_ == s4u::As::ROUTING_BASE) {
     for (unsigned int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
       if (!e_route) {

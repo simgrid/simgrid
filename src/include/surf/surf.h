@@ -58,7 +58,6 @@ class NetworkCm02Link;
 class Action;
 class ActionLmm;
 class StorageActionLmm;
-class As;
 class RoutingPlatf;
 
 }
@@ -772,16 +771,6 @@ XBT_PUBLIC_DATA(xbt_dynar_t) host_that_restart;
  *  \brief List of hosts for which one want to be notified if they ever restart.
  */
 XBT_PUBLIC_DATA(xbt_dict_t) watched_hosts_lib;
-
-/*******************************************/
-/*** SURF Platform *************************/
-/*******************************************/
-XBT_PUBLIC_DATA(AS_t) surf_AS_get_routing_root(void);
-XBT_PUBLIC_DATA(const char *) surf_AS_get_name(AS_t as);
-XBT_PUBLIC_DATA(AS_t) surf_AS_get_by_name(const char * name);
-XBT_PUBLIC_DATA(xbt_dict_t) surf_AS_get_children(AS_t as);
-XBT_PUBLIC_DATA(xbt_dynar_t) surf_AS_get_hosts(AS_t as);
-XBT_PUBLIC_DATA(void) surf_AS_get_graph(AS_t as, xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges);
 
 /*******************************************/
 /*** SURF Globals **************************/

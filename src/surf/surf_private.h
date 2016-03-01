@@ -45,12 +45,6 @@ XBT_PRIVATE int __surf_is_absolute_file_path(const char *file_path);
  * Routing logic
  */
 
-/* This enum used in the routing structure helps knowing in which situation we are. */
-typedef enum {
-  SURF_ROUTING_NULL = 0,   /**< Undefined type                                   */
-  SURF_ROUTING_BASE,       /**< Base case: use simple link lists for routing     */
-  SURF_ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
-} e_surf_routing_hierarchy_t;
 extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set *future_evt_set;
 
 

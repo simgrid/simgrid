@@ -384,6 +384,7 @@ endif()
 
 set(S4U_SRC
   src/s4u/s4u_actor.cpp
+  src/s4u/s4u_as.cpp
   src/s4u/s4u_async.cpp
   src/s4u/s4u_comm.cpp
   src/s4u/s4u_engine.cpp  
@@ -648,6 +649,7 @@ set(headers_to_install
   include/simgrid/link.h
   include/simgrid/s4u/forward.hpp
   include/simgrid/s4u/actor.hpp
+  include/simgrid/s4u/as.hpp
   include/simgrid/s4u/async.hpp
   include/simgrid/s4u/comm.hpp
   include/simgrid/s4u/engine.hpp  

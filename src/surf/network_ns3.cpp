@@ -11,6 +11,8 @@
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
+#include "simgrid/s4u/as.hpp"
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
 int NS3_EXTENSION_ID;
@@ -55,9 +57,9 @@ static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
     );
 }
 
-static void parse_ns3_add_AS(simgrid::surf::As* as)
+static void parse_ns3_add_AS(simgrid::s4u::As* as)
 {
-  const char* as_id = as->name_;
+  const char* as_id = as->name();
   XBT_DEBUG("NS3_ADD_AS '%s'", as_id);
   xbt_lib_set(as_router_lib, as_id, NS3_ASR_LEVEL, ns3_add_AS(as_id) );
 }

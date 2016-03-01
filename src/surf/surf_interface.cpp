@@ -266,6 +266,9 @@ void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
 
 void surf_init(int *argc, char **argv)
 {
+  if (host_list != nullptr) // Already initialized
+    return;
+
   XBT_DEBUG("Create all Libs");
   host_list = xbt_dict_new_homogeneous([](void*p) {
     simgrid::s4u::Host* host = static_cast<simgrid::s4u::Host*>(p);

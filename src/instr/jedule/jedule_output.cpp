@@ -88,23 +88,6 @@ static void print_key_value_dict(xbt_dict_t key_value_dict) {
   }
 }
 
-static void print_container(jed_simgrid_container_t container) {
-  unsigned int i;
-  jed_simgrid_container_t child_container;
-
-  xbt_assert( container != NULL );
-
-  fprintf(jed_file, "    <res name=\"%s\">\n", container->name);
-  if( container->container_children != NULL ) {
-    xbt_dynar_foreach(container->container_children, i, child_container) {
-      print_container(child_container);
-    }
-  } else {
-    print_resources(container);
-  }
-  fprintf(jed_file, "    </res>\n");
-}
-
 static void print_resources(jed_simgrid_container_t resource_parent) {
   unsigned int res_nb;
   unsigned int i;
@@ -124,6 +107,23 @@ static void print_resources(jed_simgrid_container_t resource_parent) {
     }
   }
   fprintf(jed_file, "\" />\n");
+}
+
+static void print_container(jed_simgrid_container_t container) {
+  unsigned int i;
+  jed_simgrid_container_t child_container;
+
+  xbt_assert( container != NULL );
+
+  fprintf(jed_file, "    <res name=\"%s\">\n", container->name);
+  if( container->container_children != NULL ) {
+    xbt_dynar_foreach(container->container_children, i, child_container) {
+      print_container(child_container);
+    }
+  } else {
+    print_resources(container);
+  }
+  fprintf(jed_file, "    </res>\n");
 }
 
 static void print_platform(jed_simgrid_container_t root_container) {

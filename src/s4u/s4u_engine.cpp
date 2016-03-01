@@ -7,6 +7,7 @@
 
 #include "simgrid/simix.h"
 #include "mc/mc.h"
+#include "simgrid/s4u/as.hpp"
 #include "simgrid/s4u/engine.hpp"
 
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
@@ -28,21 +29,26 @@ s4u::Engine *s4u::Engine::instance() {
   return s4u::Engine::instance_;
 }
 
-double s4u::Engine::getClock() {
+double s4u::Engine::getClock()
+{
   return SIMIX_get_clock();
 }
 
-void s4u::Engine::loadPlatform(const char *platf) {
+void s4u::Engine::loadPlatform(const char *platf)
+{
   SIMIX_create_environment(platf);
 }
 
-void s4u::Engine::registerFunction(const char*name, int (*code)(int,char**)) {
+void s4u::Engine::registerFunction(const char*name, int (*code)(int,char**))
+{
   SIMIX_function_register(name,code);
 }
-void s4u::Engine::registerDefault(int (*code)(int,char**)) {
+void s4u::Engine::registerDefault(int (*code)(int,char**))
+{
   SIMIX_function_register_default(code);
 }
-void s4u::Engine::loadDeployment(const char *deploy) {
+void s4u::Engine::loadDeployment(const char *deploy)
+{
   SIMIX_launch_application(deploy);
 }
 
@@ -53,3 +59,32 @@ void s4u::Engine::run() {
     SIMIX_run();
   }
 }
+
+#include "surf/surf.h"               // routing_platf. FIXME:KILLME. SOON
+#include "src/surf/surf_routing.hpp" // routing_platf. FIXME:KILLME. SOON
+
+s4u::As *s4u::Engine::rootAs()
+{
+  return routing_platf->root_; // FIXME: get the root into the Engine directly (and kill the platf)
+}
+
+static s4u::As *asByNameRecursive(s4u::As *current, const char *name)
+{
+  if(!strcmp(current->name(), name))
+    return current;
+
+  xbt_dict_cursor_t cursor = NULL;
+  char *key;
+  AS_t elem;
+  xbt_dict_foreach(current->children(), cursor, key, elem) {
+    simgrid::s4u::As *tmp = asByNameRecursive(elem, name);
+    if (tmp != NULL )
+        return tmp;
+  }
+  return nullptr;
+}
+/** @brief Retrieve the AS of the given name (or nullptr if not found) */
+s4u::As *s4u::Engine::asByNameOrNull(const char *name) {
+  return asByNameRecursive(rootAs(),name);
+}
+

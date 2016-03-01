@@ -7,6 +7,7 @@
 #include <xbt/base.h>
 
 #include "surf_routing.hpp"
+#include "simgrid/s4u/as.hpp"
 
 #ifndef SURF_ROUTING_GENERIC_HPP_
 #define SURF_ROUTING_GENERIC_HPP_
@@ -16,7 +17,7 @@ namespace surf {
 
 class XBT_PRIVATE AsRoutedGraph;
 
-class XBT_PRIVATE AsRoutedGraph : public As {
+class XBT_PRIVATE AsRoutedGraph : public s4u::As {
 public:
   AsRoutedGraph(const char*name);
   ~AsRoutedGraph();
@@ -24,7 +25,7 @@ public:
   xbt_dynar_t getOneLinkRoutes() override;
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
-  virtual sg_platf_route_cbarg_t newExtendedRoute(e_surf_routing_hierarchy_t hierarchy, sg_platf_route_cbarg_t routearg, int change_order);
+  virtual sg_platf_route_cbarg_t newExtendedRoute(s4u::As::RoutingKind hierarchy, sg_platf_route_cbarg_t routearg, int change_order);
 protected:
   void getRouteCheckParams(NetCard *src, NetCard *dst);
   void addRouteCheckParams(sg_platf_route_cbarg_t route);

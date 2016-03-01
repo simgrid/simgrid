@@ -108,9 +108,9 @@ namespace surf {
         if (route->link_list->size() == 1) {
           Link *link = route->link_list->at(0);
           Onelink *onelink;
-          if (hierarchy_ == SURF_ROUTING_BASE)
+          if (hierarchy_ == s4u::As::ROUTING_BASE)
             onelink = new Onelink(link, src_elm, dst_elm);
-          else if (hierarchy_ == SURF_ROUTING_RECURSIVE)
+          else if (hierarchy_ == s4u::As::ROUTING_RECURSIVE)
             onelink = new Onelink(link, route->gw_src, route->gw_dst);
           else
             onelink = new Onelink(link, NULL, NULL);
@@ -184,7 +184,7 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(e_surf_routing_hierarchy_t hierarchy,
+sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(s4u::As::RoutingKind hierarchy,
     sg_platf_route_cbarg_t routearg, int change_order)
 {
 
@@ -193,15 +193,12 @@ sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(e_surf_routing_hierarchy_
   result = xbt_new0(s_sg_platf_route_cbarg_t, 1);
   result->link_list = new std::vector<Link*>();
 
-  xbt_assert(hierarchy == SURF_ROUTING_BASE
-      || hierarchy == SURF_ROUTING_RECURSIVE,
+  xbt_assert(hierarchy == s4u::As::ROUTING_BASE || hierarchy == s4u::As::ROUTING_RECURSIVE,
       "The hierarchy of this AS is neither BASIC nor RECURSIVE, I'm lost here.");
 
-  if (hierarchy == SURF_ROUTING_RECURSIVE) {
-
+  if (hierarchy == s4u::As::ROUTING_RECURSIVE) {
     xbt_assert(routearg->gw_src && routearg->gw_dst, "NULL is obviously a deficient gateway");
 
-    /* remember not erase the gateway names */
     result->gw_src = routearg->gw_src;
     result->gw_dst = routearg->gw_dst;
   }
@@ -225,11 +222,11 @@ void AsRoutedGraph::getRouteCheckParams(NetCard *src, NetCard *dst)
   As *dst_as = dst->containingAS();
 
   xbt_assert(src_as == dst_as, "Internal error: %s@%s and %s@%s are not in the same AS as expected. Please report that bug.",
-        src->name(), src_as->name_, dst->name(), dst_as->name_);
+        src->name(), src_as->name(), dst->name(), dst_as->name());
 
   xbt_assert(this == dst_as,
       "Internal error: route destination %s@%s is not in AS %s as expected (route source: %s@%s). Please report that bug.",
-        src->name(), dst->name(),  src_as->name_, dst_as->name_,  name_);
+        src->name(), dst->name(),  src_as->name(), dst_as->name(),  name());
 }
 void AsRoutedGraph::addRouteCheckParams(sg_platf_route_cbarg_t route) {
   const char *srcName = route->src;
