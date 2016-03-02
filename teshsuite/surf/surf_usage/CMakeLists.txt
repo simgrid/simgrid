@@ -1,14 +1,13 @@
-add_executable       (surf_usage  surf_usage.cpp)
-target_link_libraries(surf_usage  simgrid)
-add_executable       (surf_usage2 surf_usage2.cpp)
-target_link_libraries(surf_usage2 simgrid )
+foreach(x surf_usage surf_usage2)
+  add_executable       (${x} ${x}.cpp)
+  target_link_libraries(${x} simgrid)
 
-set(tesh_files
-  ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/surf_usage.tesh
-  PARENT_SCOPE)
-set(testsuite_src
-  ${testsuite_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/surf_usage.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/surf_usage2.cpp
-  PARENT_SCOPE)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}.tesh)
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}.cpp)
+
+  ADD_TESH(tesh-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/surf_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/surf_usage/${x}.tesh)
+endforeach()
+
+set(teshsuite_src ${teshsuite_src}                                               PARENT_SCOPE)
+set(tesh_files    ${tesh_files}                                                  PARENT_SCOPE)
+

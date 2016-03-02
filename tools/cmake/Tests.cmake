@@ -153,18 +153,6 @@ IF(NOT enable_memcheck)
     ENDIF()
   ENDIF()
 
-
-  ### SURF ###
-  # BEGIN TESH TESTS
-  ADD_TESH(tesh-surf-lmm                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/lmm_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/lmm_usage lmm_usage.tesh)
-  ADD_TESH(tesh-surf-maxmin-small                --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench_small.tesh)
-  ADD_TESH(tesh-surf-maxmin-debug                --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench_medium.tesh)
-  ADD_TESH(tesh-surf-maxmin-large                --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/maxmin_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/maxmin_bench maxmin_bench_large.tesh)
-  ADD_TESH(tesh-surf-usage                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/surf_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ surf_usage/surf_usage.tesh)
-  ADD_TESH(tesh-surf-trace                       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/surf/trace_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/ trace_usage/trace_usage.tesh)
-  # END TESH TESTS
-
-
   ### XBT ###
   # BEGIN TESH TESTS
   ADD_TESH(tesh-xbt-log-large                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_large --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_large log_large_test.tesh)
@@ -294,24 +282,6 @@ IF(NOT enable_memcheck)
   ADD_TESH(tesh-simdag-parser                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test.tesh)
   ADD_TESH(tesh-simdag-parser-sym-full           --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms basic_parsing_test_sym_full.tesh)
   ADD_TESH(tesh-simdag-full-links                --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms get_full_link.tesh)
-  ADD_TESH(tesh-simdag-basic0                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic basic0.tesh)
-  ADD_TESH(tesh-simdag-basic1                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic basic1.tesh)
-  ADD_TESH(tesh-simdag-basic2                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic basic2.tesh)
-  ADD_TESH(tesh-simdag-basic3                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic basic3.tesh)
-  ADD_TESH(tesh-simdag-basic4                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic basic4.tesh)
-  ADD_TESH(tesh-simdag-basic5                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic basic5.tesh)
-  ADD_TESH(tesh-simdag-basic6                    --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic basic6.tesh)
-  ADD_TESH(tesh-simdag-incomplete                --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/incomplete --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/incomplete incomplete.tesh)
-  ADD_TESH(tesh-simdag-p2p-1                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency1.tesh)
-  ADD_TESH(tesh-simdag-p2p-2                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency2.tesh)
-  ADD_TESH(tesh-simdag-p2p-3                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency3.tesh)
-  ADD_TESH(tesh-simdag-p2p-4                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/p2p/test_latency_bound.tesh)
-  ADD_TESH(tesh-simdag-mxn-1                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_all2all.tesh)
-  ADD_TESH(tesh-simdag-mxn-2                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_independent_comm.tesh)
-  ADD_TESH(tesh-simdag-mxn-3                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/network/mxn/test_intra_scatter.tesh)
-  ADD_TESH(tesh-simdag-par-1                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/partask/test_comp_only_seq.tesh)
-  ADD_TESH(tesh-simdag-par-2                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/partask/test_comp_only_par.tesh)
-  ADD_TESH(tesh-simdag-availability              --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite --cd ${CMAKE_BINARY_DIR}/teshsuite ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/availability/availability_test.tesh)
   ADD_TEST(tesh-simdag-full-links01                ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters.xml FULL_LINK)
   ADD_TEST(tesh-simdag-full-links02                ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters_one_name.xml FULL_LINK)
   ADD_TEST(tesh-simdag-one-link-g5k                ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
@@ -501,10 +471,6 @@ IF(NOT enable_memcheck)
     ADD_TESH(java-startKillTime                  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/startKillTime/startKillTime.tesh)
     ADD_TESH(java-suspend                        --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/suspend/suspend.tesh)
     ADD_TESH(java-tracing                        --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/tracing/tracingPingPong.tesh)
-
-    # teshsuite ones
-    ADD_TESH(tesh-java-sleep-host-off            --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java ${CMAKE_HOME_DIRECTORY}/teshsuite/java/sleep_host_off/sleep_host_off.tesh)
-    ADD_TESH(tesh-java-semaphore-gc              --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java ${CMAKE_HOME_DIRECTORY}/teshsuite/java/semaphore/semaphore_gc.tesh)
   ENDIF()
 ENDIF()
 
