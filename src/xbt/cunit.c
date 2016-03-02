@@ -7,6 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* This is partially inspirated from the OSSP ts (Test Suite Library)       */
+/* At some point we should use https://github.com/google/googletest instead */
 
 #include "src/portable.h"
 
