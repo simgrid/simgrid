@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/surf_usage ../../examples/platforms/two_hosts_platform_with_availability.xml
+$ $SG_TEST_EXENV ${bindir:=.}/surf_usage ${bindir:=.}/../../examples/platforms/two_hosts_platform_with_availability.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
 > [0.000000] [surf_test/INFO] actionA state: SURF_ACTION_RUNNING
