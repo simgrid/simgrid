@@ -118,10 +118,8 @@ XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt, ...)
 #define xbt_test_assert(...)    _XBT_IF_ONE_ARG(_xbt_test_assert_ARG1,  \
                                                 _xbt_test_assert_ARGN,  \
                                                 __VA_ARGS__)(__VA_ARGS__)
-#define _xbt_test_assert_ARG1(cond)      _xbt_test_assert_CHECK(cond,   \
-                                                                "%s", #cond)
-#define _xbt_test_assert_ARGN(cond, ...) _xbt_test_assert_CHECK(cond,   \
-                                                                __VA_ARGS__)
+#define _xbt_test_assert_ARG1(cond)      _xbt_test_assert_CHECK(cond, "%s", #cond)
+#define _xbt_test_assert_ARGN(cond, ...) _xbt_test_assert_CHECK(cond, __VA_ARGS__)
 #define _xbt_test_assert_CHECK(cond, ...)                       \
   do { if (!(cond)) xbt_test_fail(__VA_ARGS__); } while (0)
 /** @brief Report some details to help debugging when the test fails (shown only on failure)
