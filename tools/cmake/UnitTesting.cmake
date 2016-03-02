@@ -27,7 +27,8 @@ endif()
 
 foreach(file ${FILES_CONTAINING_UNITTESTS})
   get_filename_component(basename ${file} NAME_WE)
-  set(EXTRACTED_TEST_SOURCE_FILES ${EXTRACTED_TEST_SOURCE_FILES} ${CMAKE_CURRENT_BINARY_DIR}/src/${basename}_unit.c)
+  get_filename_component(ext ${file} EXT)
+  set(EXTRACTED_TEST_SOURCE_FILES ${EXTRACTED_TEST_SOURCE_FILES} ${CMAKE_CURRENT_BINARY_DIR}/src/${basename}_unit${ext})
 endforeach()
   
 set(EXTRACTED_TEST_SOURCE_FILES ${EXTRACTED_TEST_SOURCE_FILES} ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c)
