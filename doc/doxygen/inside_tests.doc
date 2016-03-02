@@ -49,8 +49,8 @@ make testall                    # Rebuild the test runner on need
 ./testall                       # Launch all tests
 ./testall --help                # revise how it goes if you forgot
 ./testall --tests=-all          # run no test at all (yeah, that's useless)
-./testall --dump-only           # Display all existing test suite
-./testall --tests=-all,+dict    # Only launch the tests from the dict testsuite
+./testall --dump-only           # Display all existing test suites
+./testall --tests=-all,+dict    # Only launch the tests from the dict test suite
 ./testall --tests=-all,+foo:bar # run only the bar test from the foo suite.
 \endverbatim
 
@@ -58,35 +58,22 @@ make testall                    # Rebuild the test runner on need
 \section inside_tests_add_units Adding unit tests
 
 If you want to test a specific function or set of functions, you need
-a unit test. Edit
-<project/directory>/tools/cmake/UnitTesting.cmake to add your
-source file to the TEST_CFILES list, and add the corresponding unit
-file to the TEST_UNITS list. For example, if your file is toto.c,
-your unit file will be toto_unit.c. The full path to your file must be
-provided, but the unit file will always be in src/ directly.
-
-If you want to create unit tests in the file src/xbt/toto.c, your
-changes should look similar to:
+a unit test. Edit the file tools/cmake/UnitTesting.cmake to
+add your source file to the FILES_CONTAINING_UNITTESTS list. For
+example, if you want to create unit tests in the file src/xbt/plouf.c,
+your changes should look like that:
 
 \verbatim
 --- a/tools/cmake/UnitTesting.cmake
 +++ b/tools/cmake/UnitTesting.cmake
-@@ -11,6 +11,7 @@ set(TEST_CFILES
+@@ -11,6 +11,7 @@ set(FILES_CONTAINING_UNITTESTS
    src/xbt/xbt_strbuff.c
    src/xbt/xbt_sha.c
    src/xbt/config.c
-+  src/xbt/toto.c
++  src/xbt/plouf.c
    )
- set(TEST_UNITS
-   ${CMAKE_CURRENT_BINARY_DIR}/src/cunit_unit.c
-@@ -22,6 +23,7 @@ set(TEST_UNITS
-   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_strbuff_unit.c
-   ${CMAKE_CURRENT_BINARY_DIR}/src/xbt_sha_unit.c
-   ${CMAKE_CURRENT_BINARY_DIR}/src/config_unit.c
-+  ${CMAKE_CURRENT_BINARY_DIR}/src/toto_unit.c
- 
-   ${CMAKE_CURRENT_BINARY_DIR}/src/simgrid_units_main.c
-   )
+
+ if(HAVE_MC)
 \endverbatim
 
 Then, you want to actually add your tests in the source file. All the
@@ -112,7 +99,8 @@ reporting any issue. Finally, #xbt_test_log can be used to report
 intermediate steps. The messages will be shown only if the
 corresponding test fails.
 
-Here is a recaping example, inspired from the dynar implementation.
+Here is a recaping example, inspired from src/xbt/dynar.h (see that
+file for details).
 @code
 /* The rest of your module implementation */
 
